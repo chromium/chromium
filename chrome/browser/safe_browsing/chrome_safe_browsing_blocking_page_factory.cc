@@ -4,10 +4,12 @@
 
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/chrome_settings_page_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_controller_client.h"
+#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/content_metrics_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
@@ -54,10 +56,14 @@ ChromeSafeBrowsingBlockingPageFactory::CreateSafeBrowsingPage(
                       true,  // is_enhanced_protection_message_enabled
                       IsSafeBrowsingPolicyManaged(*prefs), kHelpCenterLink);
 
+  auto* trigger_manager =
+      g_browser_process->safe_browsing_service()
+          ? g_browser_process->safe_browsing_service()->trigger_manager()
+          : nullptr;
   return new SafeBrowsingBlockingPage(
       ui_manager, web_contents, main_frame_url, unsafe_resources,
       CreateControllerClient(web_contents, unsafe_resources, ui_manager),
-      display_options, should_trigger_reporting);
+      display_options, should_trigger_reporting, trigger_manager);
 }
 
 ChromeSafeBrowsingBlockingPageFactory::ChromeSafeBrowsingBlockingPageFactory() =

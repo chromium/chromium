@@ -357,7 +357,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 unsafe_resources,
                 manager),
             display_options,
-            should_trigger_reporting),
+            should_trigger_reporting,
+            g_browser_process->safe_browsing_service()->trigger_manager()),
         wait_for_delete_(false) {
     // Don't wait the whole 3 seconds for the browser test.
     SetThreatDetailsProceedDelayForTesting(100);

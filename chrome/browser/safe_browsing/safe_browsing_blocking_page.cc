@@ -11,12 +11,10 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -80,6 +78,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
         controller_client,
     const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
     bool should_trigger_reporting,
+    TriggerManager* trigger_manager,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
                        web_contents,
@@ -88,10 +87,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        std::move(controller_client),
                        display_options),
       threat_details_in_progress_(false),
-      threat_source_(unsafe_resources[0].threat_source) {
-  // Make sure the safe browsing service is available - it may not be when
-  // shutting down.
-  if (!g_browser_process->safe_browsing_service())
+      threat_source_(unsafe_resources[0].threat_source),
+      trigger_manager_(trigger_manager) {
+  if (!trigger_manager_)
     return;
 
   if (unsafe_resources.size() == 1) {
@@ -118,16 +116,14 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                                      ->GetURLLoaderFactoryForBrowserProcess();
     if (should_trigger_reporting) {
       threat_details_in_progress_ =
-          g_browser_process->safe_browsing_service()
-              ->trigger_manager()
-              ->StartCollectingThreatDetails(
-                  TriggerType::SECURITY_INTERSTITIAL, web_contents,
-                  unsafe_resources[0], url_loader_factory,
-                  HistoryServiceFactory::GetForProfile(
-                      profile, ServiceAccessType::EXPLICIT_ACCESS),
-                  SafeBrowsingNavigationObserverManagerFactory::
-                      GetForBrowserContext(web_contents->GetBrowserContext()),
-                  sb_error_ui()->get_error_display_options());
+          trigger_manager_->StartCollectingThreatDetails(
+              TriggerType::SECURITY_INTERSTITIAL, web_contents,
+              unsafe_resources[0], url_loader_factory,
+              HistoryServiceFactory::GetForProfile(
+                  profile, ServiceAccessType::EXPLICIT_ACCESS),
+              SafeBrowsingNavigationObserverManagerFactory::
+                  GetForBrowserContext(web_contents->GetBrowserContext()),
+              sb_error_ui()->get_error_display_options());
     }
   }
 }
@@ -169,19 +165,14 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
   if (!threat_details_in_progress_)
     return;
 
-  // Make sure the safe browsing service is available - it may not be when
-  // shutting down.
-  if (!g_browser_process->safe_browsing_service())
+  if (!trigger_manager_)
     return;
 
   // Finish computing threat details. TriggerManager will decide if its safe to
   // send the report.
-  bool report_sent = g_browser_process->safe_browsing_service()
-                         ->trigger_manager()
-                         ->FinishCollectingThreatDetails(
-                             TriggerType::SECURITY_INTERSTITIAL, web_contents(),
-                             delay, did_proceed, num_visits,
-                             sb_error_ui()->get_error_display_options());
+  bool report_sent = trigger_manager_->FinishCollectingThreatDetails(
+      TriggerType::SECURITY_INTERSTITIAL, web_contents(), delay, did_proceed,
+      num_visits, sb_error_ui()->get_error_display_options());
 
   if (report_sent) {
     controller()->metrics_helper()->RecordUserInteraction(

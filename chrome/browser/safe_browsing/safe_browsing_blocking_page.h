@@ -43,6 +43,7 @@ class SharedURLLoaderFactory;
 namespace safe_browsing {
 
 class ThreatDetails;
+class TriggerManager;
 
 class SafeBrowsingBlockingPage : public BaseBlockingPage {
  public:
@@ -85,6 +86,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   void UpdateReportingPref();  // Used for the transition from old to new pref.
 
   // Don't instantiate this class directly, use CreateBlockingPage instead.
+  // |trigger_manager| may be null, in which case reporting will not occur.
   SafeBrowsingBlockingPage(
       BaseUIManager* ui_manager,
       content::WebContents* web_contents,
@@ -95,6 +97,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
           controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
       bool should_trigger_reporting,
+      TriggerManager* trigger_manager,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
 
   // Called when an interstitial is closed, either due to a click through or a
@@ -116,6 +119,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
  private:
+  TriggerManager* trigger_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
 };

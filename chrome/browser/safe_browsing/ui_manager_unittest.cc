@@ -123,7 +123,8 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 false,                 // is_enhanced_protection_message_enabled
                 false,                 // is_safe_browsing_managed
                 "cpn_safe_browsing"),  // help_center_article_link
-            true) {                    // should_trigger_reporting
+            true,                      // should_trigger_reporting
+            g_browser_process->safe_browsing_service()->trigger_manager()) {
     // Don't delay details at all for the unittest.
     SetThreatDetailsProceedDelayForTesting(0);
     DontCreateViewForTesting();
