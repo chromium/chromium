@@ -242,24 +242,24 @@ std::unique_ptr<URLMatcherPortFilter> URLMatcherFactory::CreateURLMatcherPorts(
     const base::Value* value,
     std::string* error) {
   std::vector<URLMatcherPortFilter::Range> ranges;
-  const base::ListValue* value_list = nullptr;
-  if (!value->GetAsList(&value_list)) {
+  if (!value->is_list()) {
     *error = kInvalidPortRanges;
     return nullptr;
   }
+  base::Value::ConstListView value_list = value->GetList();
 
-  for (const auto& entry : value_list->GetList()) {
-    const base::ListValue* range = nullptr;
+  for (const auto& entry : value_list) {
     if (entry.is_int()) {
       ranges.push_back(URLMatcherPortFilter::CreateRange(entry.GetInt()));
-    } else if (entry.GetAsList(&range)) {
-      int from = 0, to = 0;
-      if (range->GetSize() != 2u ||
-          !range->GetInteger(0, &from) ||
-          !range->GetInteger(1, &to)) {
+    } else if (entry.is_list()) {
+      base::Value::ConstListView entry_list = entry.GetList();
+      if (entry_list.size() != 2u || !entry_list[0].is_int() ||
+          !entry_list[1].is_int()) {
         *error = kInvalidPortRanges;
         return nullptr;
       }
+      int from = entry_list[0].GetInt();
+      int to = entry_list[1].GetInt();
       ranges.push_back(URLMatcherPortFilter::CreateRange(from, to));
     } else {
       *error = kInvalidPortRanges;
