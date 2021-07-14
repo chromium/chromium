@@ -142,7 +142,11 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
   if (!frame_tree_node->frame_tree()->is_prerendering())
     return NavigationThrottle::PROCEED;
 
-  // Proceed for the same origin subframe navigation.
+  // Proceed for same-origin subframe navigation.
+  // TODO(https://crbug.com/1229027): url::Origin::Create() might not be
+  // completely accurate for cases like sandboxed flags (while about:blank and
+  // srcdoc are OK because NavigationThrottles do not run for those). We may
+  // also need to defer at response time by using GetOriginToCommit().
   RenderFrameHostImpl* rfhi = frame_tree_node->frame_tree()->GetMainFrame();
   const url::Origin& main_origin = rfhi->GetLastCommittedOrigin();
   if (main_origin.IsSameOriginWith(
