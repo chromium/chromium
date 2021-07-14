@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/common/content_features.h"
 #include "extensions/browser/api/messaging/channel_endpoint.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/process_manager.h"
@@ -28,6 +30,14 @@
 #include "extensions/common/manifest_handlers/background_info.h"
 
 namespace {
+
+bool IsExtensionMessageSupported() {
+  if (!content::BackForwardCache::IsBackForwardCacheFeatureEnabled())
+    return false;
+  static const base::FeatureParam<bool> extension_message_supported(
+      &features::kBackForwardCache, "extension_message_supported", false);
+  return extension_message_supported.Get();
+}
 
 std::string PortIdToString(const extensions::PortId& port_id) {
   return base::StrCat({port_id.GetChannelId().first.ToString(), ":",
@@ -56,10 +66,16 @@ class MessagePortStatePerRenderDocument
     ports_opened_.insert(port);
     if (ports_opened_.size() != 1)
       return;
+    back_forward_cache::DisabledReasonId reason_id =
+        back_forward_cache::DisabledReasonId::kExtensionMessagingForOpenPort;
+    if (!IsExtensionMessageSupported()) {
+      // When extension messages are not supported, use kExtensionMessaging.
+      // kExtensionMessaging will not be cleared by
+      // ClearDisableReasonForRenderFrameHost(kExtensionMessagingForOpenPort).
+      reason_id = back_forward_cache::DisabledReasonId::kExtensionMessaging;
+    }
     content::BackForwardCache::DisableForRenderFrameHost(
-        rfh_id_, back_forward_cache::DisabledReason(
-                     back_forward_cache::DisabledReasonId::
-                         kExtensionMessagingForOpenPort));
+        rfh_id_, back_forward_cache::DisabledReason(reason_id));
   }
 
   void PortClosed(extensions::ExtensionMessagePort* port) {

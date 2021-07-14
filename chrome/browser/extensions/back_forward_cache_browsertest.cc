@@ -29,14 +29,22 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
   explicit ExtensionBackForwardCacheBrowserTest(
       bool all_extensions_allowed = true,
       bool allow_content_scripts = true,
-      std::string blocked_extensions = "") {
+      bool extension_message_support = true,
+      std::string blocked_extensions = "")
+      : extension_message_support_(extension_message_support) {
     // If `allow_content_scripts` is true then `all_extensions_allowed` must
     // also be true.
     DCHECK(!(allow_content_scripts && !all_extensions_allowed));
+    // If `extension_message_support` is true then `allow_content_scripts` and
+    // `all_extensions_allowed` must also be true.
+    if (extension_message_support)
+      DCHECK(allow_content_scripts && all_extensions_allowed);
     feature_list_.InitWithFeaturesAndParameters(
         {{features::kBackForwardCache,
           {{"content_injection_supported",
             allow_content_scripts ? "true" : "false"},
+           {"extension_message_supported",
+            extension_message_support ? "true" : "false"},
            {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
            {"enable_same_site", "true"},
            {"all_extensions_allowed",
@@ -69,11 +77,14 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     content::TitleWatcher title_watcher(
         browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
 
-    constexpr int kMessagingBucket =
+    const int kMessagingBucket =
         (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
          << 16) +
-        static_cast<int>(back_forward_cache::DisabledReasonId::
-                             kExtensionMessagingForOpenPort);
+        static_cast<int>(
+            extension_message_support_
+                ? back_forward_cache::DisabledReasonId::
+                      kExtensionMessagingForOpenPort
+                : back_forward_cache::DisabledReasonId::kExtensionMessaging);
 
     std::string action = base::StringPrintf(
         R"HTML(
@@ -106,8 +117,10 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
     web_contents->GetController().GoBack();
     EXPECT_TRUE(WaitForLoadStop(web_contents));
 
-    // Validate that the not restored reason is `ExtensionMessagingForOpenPort`
-    // due to an active message channel..
+    // When extension_message_support_ = true, validate that the not restored
+    // reason is `ExtensionMessagingForOpenPort` due to an active message
+    // channel. Otherwise, validate that the not restored reason is
+    // `ExtensionMessaging` due to extension messages.
     EXPECT_EQ(1, histogram_tester_.GetBucketCount(
                      "BackForwardCache.HistoryNavigationOutcome."
                      "DisabledForRenderFrameHostReason2",
@@ -167,6 +180,7 @@ class ExtensionBackForwardCacheBrowserTest : public ExtensionBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  bool extension_message_support_;
 };
 
 // Test that does not allow content scripts to be injected.
@@ -174,8 +188,21 @@ class ExtensionBackForwardCacheContentScriptDisabledBrowserTest
     : public ExtensionBackForwardCacheBrowserTest {
  public:
   ExtensionBackForwardCacheContentScriptDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(/*all_extensions_allowed*/ true,
-                                             /*allow_content_scripts=*/false) {}
+      : ExtensionBackForwardCacheBrowserTest(
+            /*all_extensions_allowed=*/true,
+            /*allow_content_scripts=*/false,
+            /*extension_message_support=*/false) {}
+};
+
+// Test that does not support extension message.
+class ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest
+    : public ExtensionBackForwardCacheBrowserTest {
+ public:
+  ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest()
+      : ExtensionBackForwardCacheBrowserTest(
+            /*all_extensions_allowed=*/true,
+            /*allow_content_scripts=*/true,
+            /*extension_message_support=*/false) {}
 };
 
 // Test that causes non-component extensions to disable back forward cache.
@@ -183,8 +210,10 @@ class ExtensionBackForwardCacheExtensionsDisabledBrowserTest
     : public ExtensionBackForwardCacheBrowserTest {
  public:
   ExtensionBackForwardCacheExtensionsDisabledBrowserTest()
-      : ExtensionBackForwardCacheBrowserTest(/*all_extensions_allowed*/ false,
-                                             /*allow_content_scripts*/ false) {}
+      : ExtensionBackForwardCacheBrowserTest(
+            /*all_extensions_allowed=*/false,
+            /*allow_content_scripts=*/false,
+            /*extension_message_support=*/false) {}
 };
 
 // Tests that a non-component extension that is installed prevents back forward
@@ -544,6 +573,85 @@ IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
             content::RenderFrameHost::LifecycleState::kInBackForwardCache);
 }
 
+// Test if the chrome.runtime.connect is called then disconnected, the page is
+// not allowed to enter the bfcache if extension_message_supported = false.
+IN_PROC_BROWSER_TEST_F(
+    ExtensionBackForwardCacheExtensionMessageDisabledBrowserTest,
+    ChromeRuntimeConnectDisconnect) {
+  const Extension* extension =
+      LoadExtension(test_data_dir_.AppendASCII("back_forward_cache")
+                        .AppendASCII("content_script"));
+  ASSERT_TRUE(extension);
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  constexpr int kMessagingBucket =
+      (static_cast<int>(content::BackForwardCache::DisabledSource::kEmbedder)
+       << 16) +
+      static_cast<int>(
+          back_forward_cache::DisabledReasonId::kExtensionMessaging);
+
+  // 1) Navigate to A.
+  content::RenderFrameHostWrapper rfh_a(
+      ui_test_utils::NavigateToURL(browser(), url_a));
+  std::u16string expected_title = u"connected";
+  auto title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+
+  std::string action = base::StringPrintf(
+      R"HTML(
+        var p = chrome.runtime.connect('%s');
+        p.onMessage.addListener((m) => {document.title = m;});
+      )HTML",
+      extension->id().c_str());
+  EXPECT_TRUE(ExecJs(rfh_a.get(), action));
+
+  // 2) Wait for the message port to be connected.
+  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+  expected_title = u"disconnect";
+  title_watcher = std::make_unique<content::TitleWatcher>(
+      browser()->tab_strip_model()->GetActiveWebContents(), expected_title);
+  EXPECT_TRUE(ExecJs(rfh_a.get(),
+                     R"HTML(
+        p.onDisconnect.addListener((m) => {document.title = 'disconnect';});
+        p.postMessage('disconnect');
+      )HTML"));
+
+  EXPECT_EQ(expected_title, title_watcher->WaitAndGetTitle());
+
+  // Expect that the channel is closed.
+  EXPECT_EQ(0u, MessageService::Get(profile())->GetChannelCountForTest());
+
+  EXPECT_EQ(0, histogram_tester_.GetBucketCount(
+                   "BackForwardCache.HistoryNavigationOutcome."
+                   "DisabledForRenderFrameHostReason2",
+                   kMessagingBucket));
+
+  // 3) Navigate to B.
+  ui_test_utils::NavigateToURL(browser(), url_b);
+  EXPECT_TRUE(
+      WaitForLoadStop(browser()->tab_strip_model()->GetActiveWebContents()));
+
+  // 4) Expect that `rfh_a` is deleted.
+  rfh_a.WaitUntilRenderFrameDeleted();
+  EXPECT_TRUE(rfh_a.IsRenderFrameDeleted());
+
+  // 5) Go back to A.
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  web_contents->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(web_contents));
+
+  // Validate that the not restored reason is `ExtensionMessaging`
+  // due to extension_message_supported = false.
+  EXPECT_EQ(1, histogram_tester_.GetBucketCount(
+                   "BackForwardCache.HistoryNavigationOutcome."
+                   "DisabledForRenderFrameHostReason2",
+                   kMessagingBucket));
+}
+
 // Test if the chrome.tabs.connect is called and then the page is navigated,
 // the page is not allowed to enter the bfcache due to an open channel.
 IN_PROC_BROWSER_TEST_F(ExtensionBackForwardCacheBrowserTest,
@@ -827,8 +935,9 @@ class ExtensionBackForwardCacheBlockedExtensionBrowserTest
  public:
   ExtensionBackForwardCacheBlockedExtensionBrowserTest()
       : ExtensionBackForwardCacheBrowserTest(
-            /*all_extensions_allowed*/ true,
+            /*all_extensions_allowed=*/true,
             /*allow_content_scripts=*/true,
+            /*extension_message_support=*/true,
             /*blocked_extensions=*/
             "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa,mockepjebcnmhmhcahfddgfcdgkdifnc,"
             "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb") {}
