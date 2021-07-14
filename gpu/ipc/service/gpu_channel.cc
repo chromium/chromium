@@ -274,6 +274,7 @@ void GpuChannelMessageFilter::AddRoute(int32_t route_id,
   base::AutoLock auto_lock(gpu_channel_lock_);
   DCHECK(gpu_channel_);
   DCHECK(scheduler_);
+  DCHECK(!route_sequences_.count(route_id));
   route_sequences_[route_id] = sequence_id;
 }
 
@@ -281,6 +282,7 @@ void GpuChannelMessageFilter::RemoveRoute(int32_t route_id) {
   base::AutoLock auto_lock(gpu_channel_lock_);
   DCHECK(gpu_channel_);
   DCHECK(scheduler_);
+  DCHECK(route_sequences_.count(route_id));
   route_sequences_.erase(route_id);
 }
 

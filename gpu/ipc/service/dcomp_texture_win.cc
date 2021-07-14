@@ -19,6 +19,7 @@
 #include "gpu/ipc/common/gpu_channel.mojom.h"
 #include "gpu/ipc/service/gpu_channel.h"
 #include "gpu/ipc/service/gpu_channel_manager.h"
+#include "ipc/ipc_mojo_bootstrap.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gl/dcomp_surface_registry.h"
@@ -79,7 +80,11 @@ DCOMPTexture::DCOMPTexture(
       context_state_(std::move(context_state)),
       sequence_(channel_->scheduler()->CreateSequence(SchedulingPriority::kLow,
                                                       channel_->task_runner())),
-      receiver_(this, std::move(receiver)) {
+      receiver_(this) {
+  auto runner = base::MakeRefCounted<SchedulerTaskRunner>(
+      *channel_->scheduler(), sequence_);
+  IPC::ScopedAllowOffSequenceChannelAssociatedBindings allow_binding;
+  receiver_.Bind(std::move(receiver), runner);
   context_state_->AddContextLostObserver(this);
   channel_->AddRoute(route_id, sequence_);
 }
