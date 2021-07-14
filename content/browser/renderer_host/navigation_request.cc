@@ -785,13 +785,15 @@ network::mojom::IPAddressSpace CalculateIPAddressSpace(
   return IPAddressSpaceForSpecialScheme(url);
 }
 
-// Returns true if the parent's COEP policy should block a child embedded
-// in an <iframe>.
-bool CoepBlockIframe(
-    network::mojom::CrossOriginEmbedderPolicyValue parent_coep,
-    network::mojom::CrossOriginEmbedderPolicyValue child_coep) {
-  return network::CompatibleWithCrossOriginIsolated(parent_coep) &&
-         !network::CompatibleWithCrossOriginIsolated(child_coep);
+// Returns true if the parent's COEP policy `parent_coep` should block a child
+// embedded in an <iframe> loaded with `child_coep` policy. The `anonymous`
+// parameter reflects whether the child will be loaded as an anonymous document.
+bool CoepBlockIframe(network::mojom::CrossOriginEmbedderPolicyValue parent_coep,
+                     network::mojom::CrossOriginEmbedderPolicyValue child_coep,
+                     bool anonymous) {
+  return !anonymous &&
+         (network::CompatibleWithCrossOriginIsolated(parent_coep) &&
+          !network::CompatibleWithCrossOriginIsolated(child_coep));
 }
 
 // Computes the history offset of the new document compared to the current one.
@@ -2955,15 +2957,15 @@ void NavigationRequest::OnResponseStarted(
         cross_origin_embedder_policy.value = parent_coep.value;
 
       if (CoepBlockIframe(parent_coep.report_only_value,
-                          cross_origin_embedder_policy.value)) {
+                          cross_origin_embedder_policy.value, anonymous())) {
         if (parent_coep_reporter) {
           parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
                                                       /*report_only=*/true);
         }
       }
 
-      if (CoepBlockIframe(parent_coep.value,
-                          cross_origin_embedder_policy.value)) {
+      if (CoepBlockIframe(parent_coep.value, cross_origin_embedder_policy.value,
+                          anonymous())) {
         if (parent_coep_reporter) {
           parent_coep_reporter->QueueNavigationReport(redirect_chain_[0],
                                                       /*report_only=*/false);
@@ -6313,6 +6315,9 @@ NavigationRequest::EnforceCOEP() {
   // https://html.spec.whatwg.org/#check-a-navigation-response's-adherence-to-its-embedder-policy
   auto* parent_frame = GetParentFrame();
   if (!parent_frame) {
+    return absl::nullopt;
+  }
+  if (anonymous()) {
     return absl::nullopt;
   }
   const auto& url = common_params_->url;
