@@ -370,6 +370,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
@@ -393,6 +394,7 @@ public class WebContentsAccessibilityTest {
      */
     @Test
     @SmallTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
