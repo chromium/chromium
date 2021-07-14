@@ -257,4 +257,23 @@ absl::optional<unsigned> LayoutTextFragment::CaretOffsetForPosition(
   return dom_offset - Start();
 }
 
+String LayoutTextFragment::PlainText() const {
+  // Special handling for floating ::first-letter in LayoutNG to ensure that
+  // PlainText() returns the full text of the node, not just the remaining text.
+  // See also ElementInnerTextCollector::ProcessTextNode(), which does the same.
+  NOT_DESTROYED();
+  if (!is_remaining_text_layout_object_ || !GetNode())
+    return LayoutText::PlainText();
+  LayoutText* first_letter = GetFirstLetterPart();
+  if (!first_letter)
+    return LayoutText::PlainText();
+  const NGOffsetMapping* remaining_text_mapping = GetNGOffsetMapping();
+  const NGOffsetMapping* first_letter_mapping =
+      first_letter->GetNGOffsetMapping();
+  if (first_letter_mapping && remaining_text_mapping &&
+      first_letter_mapping != remaining_text_mapping)
+    return first_letter_mapping->GetText() + LayoutText::PlainText();
+  return LayoutText::PlainText();
+}
+
 }  // namespace blink

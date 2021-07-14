@@ -123,7 +123,7 @@ class CORE_EXPORT LayoutText : public LayoutObject {
     NOT_DESTROYED();
     return 0;
   }
-  String PlainText() const;
+  virtual String PlainText() const;
 
   // Returns first letter part of |LayoutTextFragment|.
   virtual LayoutText* GetFirstLetterPart() const {

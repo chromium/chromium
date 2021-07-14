@@ -1373,4 +1373,18 @@ TEST_P(ParameterizedLayoutTextTest, PositionForPointAtLeading) {
             text->PositionForPoint({10, 55}).GetPosition());
 }
 
+// https://crbug.com/2654312
+TEST_P(ParameterizedLayoutTextTest, FloatFirstLetterPlainText) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    div::first-letter { float: left; }
+    </style>
+    <div id="target">Foo</div>
+  )HTML");
+
+  LayoutText* text =
+      To<LayoutText>(GetElementById("target")->firstChild()->GetLayoutObject());
+  EXPECT_EQ("Foo", text->PlainText());
+}
+
 }  // namespace blink

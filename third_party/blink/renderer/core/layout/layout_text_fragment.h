@@ -118,6 +118,8 @@ class CORE_EXPORT LayoutTextFragment : public LayoutText {
   Text* AssociatedTextNode() const;
   LayoutText* GetFirstLetterPart() const override;
 
+  String PlainText() const override;
+
  protected:
   friend class LayoutObjectFactory;
   LayoutTextFragment(Node*, StringImpl*, int start_offset, int length);
