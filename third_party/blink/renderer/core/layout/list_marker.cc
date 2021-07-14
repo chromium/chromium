@@ -314,6 +314,10 @@ LayoutUnit ListMarker::WidthOfSymbol(const ComputedStyle& style) {
   DCHECK(font_data);
   if (!font_data)
     return LayoutUnit();
+  if (UNLIKELY(style.SpecifiedFontSize() == 0)) {
+    // See http://crbug.com/1228157
+    return LayoutUnit();
+  }
   const AtomicString& name = style.ListStyleType()->GetCounterStyleName();
   if (name == "disclosure-open" || name == "disclosure-closed")
     return DisclosureSymbolSize(style);

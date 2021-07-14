@@ -311,4 +311,14 @@ TEST_F(ListMarkerTest, ModifyShadowDOMWithOwnCounterStyles) {
   EXPECT_EQ("D. ", GetMarkerText(shadow2, "shadow-foo"));
 }
 
+TEST_F(ListMarkerTest, WidthOfSymbolForFontSizeZero) {
+  InsertStyleElement("li { font-size: 0px; }");
+  SetBodyInnerHTML("<li id=target>a</li>");
+  const auto& target = *GetElementById("target");
+  const auto& target_layout_object = *target.GetLayoutObject();
+
+  EXPECT_EQ(LayoutUnit(),
+            ListMarker::WidthOfSymbol(target_layout_object.StyleRef()));
+}
+
 }  // namespace blink
