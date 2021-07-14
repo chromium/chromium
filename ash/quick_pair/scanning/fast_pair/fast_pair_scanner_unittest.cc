@@ -24,6 +24,11 @@ std::unique_ptr<device::MockBluetoothDevice> CreateTestBluetoothDevice() {
       kTestBleDeviceAddress, /*paired=*/true, /*connected=*/true);
 }
 
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
+
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
  public:
@@ -45,11 +50,6 @@ class FakeBluetoothAdapter
  private:
   ~FakeBluetoothAdapter() override = default;
 };
-
-}  // namespace
-
-namespace ash {
-namespace quick_pair {
 
 class FastPairScannerObserver : public FastPairScanner::Observer {
  public:
@@ -82,6 +82,10 @@ class FastPairScannerTest : public testing::Test {
     scanner_ = std::make_unique<FastPairScannerImpl>();
     scanner_observer_ = std::make_unique<FastPairScannerObserver>();
     scanner().AddObserver(scanner_observer_.get());
+
+    // TODO(crbug.com/1227522) Add support for the Bluetooth LE Scanner here
+    // when available, as well as new tests to check for the correct behavior
+    // when a device is found and removed.
   }
 
   void TearDown() override {
@@ -102,24 +106,6 @@ class FastPairScannerTest : public testing::Test {
   std::unique_ptr<FastPairScannerImpl> scanner_;
   std::unique_ptr<FastPairScannerObserver> scanner_observer_;
 };
-
-TEST_F(FastPairScannerTest, DeviceAddedNotifiesObservers) {
-  adapter().AddDevice();
-  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice());
-}
-
-TEST_F(FastPairScannerTest, DeviceRemovedNotifiesObservers) {
-  adapter().AddDevice();
-  EXPECT_TRUE(scanner_observer().DoesDeviceListContainTestDevice());
-  adapter().RemoveDevice();
-  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice());
-}
-
-TEST_F(FastPairScannerTest, RemovedObserverReceivesNoNewEvents) {
-  scanner().RemoveObserver(&scanner_observer());
-  adapter().AddDevice();
-  EXPECT_FALSE(scanner_observer().DoesDeviceListContainTestDevice());
-}
 
 }  // namespace quick_pair
 }  // namespace ash

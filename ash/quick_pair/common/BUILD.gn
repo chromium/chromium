@@ -13,6 +13,7 @@ component("common") {
   defines = [ "IS_QUICK_PAIR_COMMON_IMPL" ]
 
   sources = [
+    "constants.h",
     "device.cc",
     "device.h",
     "fast_pair/fast_pair_decoder.cc",
