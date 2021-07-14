@@ -85,13 +85,18 @@ SanitizerConfig* SanitizerConfigCopy(const SanitizerConfig* config) {
 Sanitizer::Sanitizer(ExecutionContext* execution_context,
                      const SanitizerConfig* config) {
   // The spec treats an absent config as the default. We'll handle this by
-  // checking for this an empty dictionary and representing it as nullptr.
+  // normalizing this here to make sure the config_dictionary_ is nullptr
+  // in these cases, while the config_ will be a copy of the default config.
   if (ConfigIsEmpty(config)) {
     config = nullptr;
+  }
+
+  config_ = SanitizerConfigImpl::From(config);
+  config_dictionary_ = SanitizerConfigCopy(config);
+  if (!config_dictionary_) {
     UseCounter::Count(execution_context,
                       WebFeature::kSanitizerAPIDefaultConfiguration);
   }
-  config_ = SanitizerConfigImpl::From(config);
 }
 
 Sanitizer::~Sanitizer() = default;
@@ -211,7 +216,7 @@ void Sanitizer::DoSanitizing(ContainerNode* fragment,
         // TODO(crbug.com/1126936): Review the sanitising algorithm for
         // non-HTMLs.
         // 1. Let |name| be |element|'s tag name.
-        String name = node->nodeName().LowerASCII();
+        String name = node->nodeName().UpperASCII();
 
         // 2. Detect whether current element is a custom element or not.
         bool is_custom_element =
@@ -382,15 +387,18 @@ Node* Sanitizer::KeepElement(Node* node,
 }
 
 SanitizerConfig* Sanitizer::getConfiguration() const {
-  return SanitizerConfigImpl::ToAPI(config_);
+  return SanitizerConfigCopy(config_dictionary_
+                                 ? config_dictionary_.Get()
+                                 : SanitizerConfigImpl::defaultConfig());
 }
 
 SanitizerConfig* Sanitizer::getDefaultConfiguration() {
-  return SanitizerConfigCopy(SanitizerConfigImpl::DefaultConfig());
+  return SanitizerConfigCopy(SanitizerConfigImpl::defaultConfig());
 }
 
 void Sanitizer::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
+  visitor->Trace(config_dictionary_);
 }
 
 }  // namespace blink
