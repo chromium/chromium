@@ -168,7 +168,7 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
                           const FontFaceDescriptors*);
 
   void InitCSSFontFace(ExecutionContext*, const CSSValue& src);
-  void InitCSSFontFace(const unsigned char* data, size_t);
+  void InitCSSFontFace(ExecutionContext*, const unsigned char* data, size_t);
   void SetPropertyFromString(const ExecutionContext*,
                              const String&,
                              AtRuleDescriptorID,
@@ -179,8 +179,8 @@ class CORE_EXPORT FontFace : public ScriptWrappable,
   ScriptPromise FontStatusPromise(ScriptState*);
   void RunCallbacks();
 
-  using LoadedProperty = ScriptPromiseProperty<Member<FontFace>,
-                                               Member<DOMException>>;
+  using LoadedProperty =
+      ScriptPromiseProperty<Member<FontFace>, Member<DOMException>>;
 
   AtomicString family_;
   String ots_parse_message_;

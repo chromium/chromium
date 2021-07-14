@@ -59,6 +59,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
@@ -171,7 +172,8 @@ FontFace* FontFace::Create(ExecutionContext* context,
                            const FontFaceDescriptors* descriptors) {
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
-  font_face->InitCSSFontFace(static_cast<const unsigned char*>(source->Data()),
+  font_face->InitCSSFontFace(context,
+                             static_cast<const unsigned char*>(source->Data()),
                              source->ByteLength());
   return font_face;
 }
@@ -183,7 +185,7 @@ FontFace* FontFace::Create(ExecutionContext* context,
   FontFace* font_face =
       MakeGarbageCollected<FontFace>(context, family, descriptors);
   font_face->InitCSSFontFace(
-      static_cast<const unsigned char*>(source->BaseAddress()),
+      context, static_cast<const unsigned char*>(source->BaseAddress()),
       source->byteLength());
   return font_face;
 }
@@ -862,7 +864,9 @@ void FontFace::InitCSSFontFace(ExecutionContext* context, const CSSValue& src) {
   }
 }
 
-void FontFace::InitCSSFontFace(const unsigned char* data, size_t size) {
+void FontFace::InitCSSFontFace(ExecutionContext* context,
+                               const unsigned char* data,
+                               size_t size) {
   css_font_face_ = CreateCSSFontFace(this, unicode_range_.Get());
   if (error_)
     return;
@@ -874,6 +878,12 @@ void FontFace::InitCSSFontFace(const unsigned char* data, size_t size) {
   if (source->IsValid()) {
     SetLoadStatus(kLoaded);
   } else {
+    if (!ots_parse_message_.IsEmpty()) {
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+          mojom::blink::ConsoleMessageSource::kOther,
+          mojom::blink::ConsoleMessageLevel::kWarning,
+          "OTS parsing error: " + ots_parse_message_));
+    }
     SetError(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kSyntaxError, "Invalid font data in ArrayBuffer."));
   }

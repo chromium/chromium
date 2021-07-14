@@ -1,4 +1,5 @@
 CONSOLE WARNING: line 4: SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
+CONSOLE WARNING: line 35: OTS parsing error: file less than 4 bytes
 Tests ArrayBuffer / ArrayBufferView constructors of FontFace.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
