@@ -30,6 +30,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -2976,21 +2977,13 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
   EXPECT_THAT(offsets_, testing::ElementsAre(1, 0, 1, 1, -1, -1, 1));
 }
 
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationEntryOffsetsForSubframes \
-  DISABLED_NavigationEntryOffsetsForSubframes
-#else
-#define MAYBE_NavigationEntryOffsetsForSubframes \
-  NavigationEntryOffsetsForSubframes
-#endif
 IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
-                       MAYBE_NavigationEntryOffsetsForSubframes) {
+                       NavigationEntryOffsetsForSubframes) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   const GURL url1_fragment1(
       embedded_test_server()->GetURL("/title1.html#id_1"));
-  const GURL url2(
-      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  const GURL url2(embedded_test_server()->GetURL(
+      "b.com", "/frame_tree/page_with_one_frame.html"));
   const char kChildFrameId[] = "child0";
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
@@ -3016,7 +3009,11 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
 
   {
     // We are waiting for two navigations here: main frame and subframe.
-    TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
+    // However, when back/forward cache is enabled, back navigation to a page
+    // with subframes will not trigger a subframe navigation (since the
+    // subframe is cached with the page).
+    TestNavigationObserver navigation_observer(
+        shell()->web_contents(), IsBackForwardCacheEnabled() ? 1 : 2);
     shell()->GoBackOrForward(-1);
     navigation_observer.WaitForNavigationFinished();
   }
@@ -3059,8 +3056,16 @@ IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,
   // navigations have offset 3 as requested.
   // Note that all subframe navigations have offset 1 regardless of whether they
   // result in a new entry being generated or not.
-  EXPECT_THAT(offsets_,
-              testing::ElementsAre(1, 1, 1, 0, 1, 1, -1, 1, -1, -1, -1, 4));
+  if (IsBackForwardCacheEnabled()) {
+    // When back/forward cache is enabled, back navigation to a page with
+    // subframes will not trigger a subframe navigation (since the subframe is
+    // cached with the page and won't need to be reconstructed/navigated).
+    EXPECT_THAT(offsets_,
+                testing::ElementsAre(1, 1, 1, 0, 1, 1, -1, -1, -1, -1, 4));
+  } else {
+    EXPECT_THAT(offsets_,
+                testing::ElementsAre(1, 1, 1, 0, 1, 1, -1, 1, -1, -1, -1, 4));
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(NavigationRequestBackForwardBrowserTest,

@@ -638,6 +638,26 @@ class RenderFrameHostImplWrapper : public RenderFrameHostWrapper {
   RenderFrameHostImpl* operator->() const;
 };
 
+// Use this class to wait for all RenderFrameHosts in a WebContents that are
+// inactive (pending deletion, stored in BackForwardCache, prerendered, etc) to
+// be deleted. This will triggerBackForwardCache flushing and prerender
+// cancellations..
+class InactiveRenderFrameHostDeletionObserver : public WebContentsObserver {
+ public:
+  explicit InactiveRenderFrameHostDeletionObserver(WebContents* content);
+  ~InactiveRenderFrameHostDeletionObserver() override;
+
+  void Wait();
+
+ private:
+  void RenderFrameDeleted(RenderFrameHost*) override;
+
+  void CheckCondition();
+
+  std::unique_ptr<base::RunLoop> loop_;
+  std::set<RenderFrameHost*> inactive_rfhs_;
+};
+
 }  // namespace content
 
 #endif  // CONTENT_TEST_CONTENT_BROWSER_TEST_UTILS_INTERNAL_H_

@@ -277,6 +277,21 @@ PrerenderHost* PrerenderHostRegistry::FindHostByUrlForTesting(
   return nullptr;
 }
 
+void PrerenderHostRegistry::CancelAllHostsForTesting() {
+  DCHECK(reserved_prerender_host_by_frame_tree_node_id_.empty())
+      << "It is not possible to cancel reserved hosts, so they must not exist "
+         "when trying to cancel all hosts";
+
+  for (auto& iter : prerender_host_by_frame_tree_node_id_) {
+    // Asynchronously delete the prerender host.
+    ScheduleToDeleteAbandonedHost(
+        std::move(iter.second),
+        PrerenderHost::FinalStatus::kCancelAllHostsForTesting);
+  }
+  // After we're done scheduling deletion, clear the map.
+  prerender_host_by_frame_tree_node_id_.clear();
+}
+
 base::WeakPtr<PrerenderHostRegistry> PrerenderHostRegistry::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

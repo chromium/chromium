@@ -1534,6 +1534,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CompositorFrameSwapped) {
 
 // Ensure that OOPIFs are deleted after navigating to a new main frame.
 IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, CleanupCrossSiteIframe) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back-forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   GURL main_url(embedded_test_server()->GetURL(
       "a.com", "/cross_site_iframe_factory.html?a(a,a(a,a(a)))"));
   EXPECT_TRUE(NavigateToURL(shell(), main_url));
@@ -13218,6 +13222,16 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
 
   // Navigate away - this will trigger logging of the UMA.
   EXPECT_TRUE(NavigateToURL(shell(), GURL("about:blank")));
+
+  // Wait until the page with the crashed frame gets unloaded (triggering its
+  // evicton if it got into the back/forward cache), so that the histogram will
+  // be recorded when the renderer process is gone.
+  // TODO(https://crbug.com/1193386): Ensure pages with crashed subframes won't
+  // get into back/forward cache.
+  InactiveRenderFrameHostDeletionObserver inactive_rfh_deletion_observer(
+      web_contents());
+  inactive_rfh_deletion_observer.Wait();
+
   histograms.ExpectUniqueSample("Stability.ChildFrameCrash.Visibility",
                                 CrashVisibility::kNeverVisibleAfterCrash, 10);
 }
