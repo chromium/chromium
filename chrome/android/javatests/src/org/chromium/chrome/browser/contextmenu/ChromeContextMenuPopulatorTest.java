@@ -30,6 +30,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
+import org.chromium.base.CollectionUtil;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -37,6 +38,7 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.blink_public.common.ContextMenuDataMediaType;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator.ContextMenuMode;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -54,6 +56,7 @@ import org.chromium.ui.base.MenuSourceType;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -132,10 +135,10 @@ public class ChromeContextMenuPopulatorTest {
         doReturn(true).when(mExternalAuthUtils).isGoogleSigned(IntentHandler.PACKAGE_GSA);
     }
 
-    private void checkMenuOptions(int[]... tabs) {
+    private void checkMenuOptions(int[]... groups) {
         List<Pair<Integer, ModelList>> contextMenuState = mPopulator.buildContextMenu();
 
-        assertEquals("Number of groups doesn't match", tabs[0] == null ? 0 : tabs.length,
+        assertEquals("Number of groups doesn't match", groups[0] == null ? 0 : groups.length,
                 contextMenuState.size());
 
         for (int i = 0; i < contextMenuState.size(); i++) {
@@ -144,7 +147,22 @@ public class ChromeContextMenuPopulatorTest {
                 availableInTab[j] = contextMenuState.get(i).second.get(j).model.get(MENU_ID);
             }
 
-            if (!Arrays.equals(tabs[i], availableInTab)) {
+            int[] expectedItemsInGroup = groups[i];
+
+            // Strip ephemeral tab options if they're not supported.
+            if (!EphemeralTabCoordinator.isSupported()) {
+                ArrayList<Integer> updatedList = new ArrayList<>();
+                for (int initialListIndex = 0; initialListIndex < expectedItemsInGroup.length;
+                        initialListIndex++) {
+                    if (expectedItemsInGroup[initialListIndex]
+                            != R.id.contextmenu_open_in_ephemeral_tab) {
+                        updatedList.add(expectedItemsInGroup[initialListIndex]);
+                    }
+                }
+                expectedItemsInGroup = CollectionUtil.integerListToIntArray(updatedList);
+            }
+
+            if (!Arrays.equals(expectedItemsInGroup, availableInTab)) {
                 StringBuilder info = new StringBuilder();
                 for (int j = 0; j < contextMenuState.get(i).second.size(); j++) {
                     info.append("'");
