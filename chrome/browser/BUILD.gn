@@ -2461,7 +2461,7 @@ static_library("browser") {
     sources += [ "net/net_error_diagnostics_dialog_stub.cc" ]
   }
 
-  if (is_posix || is_fuchsia) {
+  if (is_posix) {
     sources += [
       "download/trusted_sources_manager_posix.cc",
       "google/google_update_settings_posix.cc",
@@ -4304,7 +4304,7 @@ static_library("browser") {
       deps += [ "//chrome:packed_resources_integrity" ]
     }
 
-    if (is_posix || is_fuchsia) {
+    if (is_posix) {
       sources += [
         "chrome_browser_main_posix.cc",
         "chrome_browser_main_posix.h",
@@ -5366,7 +5366,7 @@ static_library("browser") {
     }
   }
 
-  if (is_posix || is_fuchsia) {
+  if (is_posix) {
     sources += [
       "shutdown_signal_handlers_posix.cc",
       "shutdown_signal_handlers_posix.h",
@@ -5522,7 +5522,7 @@ static_library("browser") {
   }
 
   if (is_posix && !is_mac) {
-    # TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+    # TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
     sources += [
       "//chrome/app/chrome_crash_reporter_client.cc",
       "//chrome/app/chrome_crash_reporter_client.h",
@@ -7033,7 +7033,7 @@ static_library("test_support") {
     "//ui/gfx:test_support",
   ]
 
-  if (!is_android && !is_fuchsia) {
+  if (!is_android) {
     deps += [ "//components/policy/test_support" ]
   }
 

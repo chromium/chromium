@@ -8,7 +8,7 @@ if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-# TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+# TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
 assert(!is_fuchsia)
 
 source_set("browser") {

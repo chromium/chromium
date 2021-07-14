@@ -15,14 +15,11 @@ source_set("test_support") {
     "//base",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/test:sync_integration_test_support",
     "//components/signin/public/identity_manager",
     "//components/sync/test/fake_server",
     "//third_party/metrics_proto",
   ]
-
-  if (!is_fuchsia) {
-    deps += [ "//chrome/test:sync_integration_test_support" ]
-  }
 
   if (is_android) {
     deps += [ "//content/public/browser" ]

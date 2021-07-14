@@ -326,8 +326,8 @@ void HeadlessContentMainDelegate::InitCrashReporter(
   if (command_line.HasSwitch(::switches::kDisableBreakpad))
     return;
 #if defined(OS_FUCHSIA)
-  // TODO(fuchsia): Implement this when crash reporting/Breakpad are available
-  // in Fuchsia. (crbug.com/753619)
+  // TODO(crbug.com/1226159): Implement this when crash reporting/Breakpad are
+  // available in Fuchsia.
   NOTIMPLEMENTED();
 #else
   const std::string process_type =

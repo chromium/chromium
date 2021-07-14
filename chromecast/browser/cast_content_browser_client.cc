@@ -753,7 +753,7 @@ void CastContentBrowserClient::GetAdditionalMappedFilesForChildProcess(
       base::GlobalDescriptors::GetInstance()->GetRegion(kAndroidPakDescriptor));
 #endif  // defined(OS_ANDROID)
 #if !defined(OS_FUCHSIA)
-  // TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+  // TODO(crbug.com/753619): Complete crash reporting integration on Fuchsia.
   int crash_signal_fd = GetCrashSignalFD(command_line);
   if (crash_signal_fd >= 0) {
     mappings->Share(kCrashDumpSignal, crash_signal_fd);

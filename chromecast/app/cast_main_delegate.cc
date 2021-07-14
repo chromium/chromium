@@ -151,7 +151,7 @@ void CastMainDelegate::PreSandboxStartup() {
   bool enable_crash_reporter = !command_line->HasSwitch(
       switches::kDisableCrashReporter);
   if (enable_crash_reporter) {
-  // TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+    // TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
 #if defined(OS_ANDROID)
     base::FilePath log_file;
     base::PathService::Get(FILE_CAST_ANDROID_LOG, &log_file);
