@@ -3045,8 +3045,8 @@
   },
   {
     "name": "files-single-partition-format",
-    "owners": [ "austinct", "oto" ],
-    "expiry_milestone": 90
+    "owners": [ "austinct", "petermarshall" ],
+    "expiry_milestone": 95
   },
   {
     "name": "files-swa",
