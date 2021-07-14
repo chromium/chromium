@@ -681,6 +681,14 @@ class GLCopyTextureCHROMIUMES3Test : public GLCopyTextureCHROMIUMTest {
     return false;
 #endif
   }
+
+  bool IsMac() const {
+#if defined(OS_MAC)
+    return true;
+#else
+    return false;
+#endif
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(CopyType,
@@ -750,6 +758,12 @@ TEST_P(GLCopyTextureCHROMIUMES3Test, FormatCombinations) {
     // TODO(geofflang): anglebug.com/1932
     LOG(INFO)
         << "Passthrough command decoder expected failure. Skipping test...";
+    return;
+  }
+  if (IsMac() && !gl_.gpu_preferences().use_passthrough_cmd_decoder) {
+    // TODO(crbug.com/1227853): Remove this suppression once this passes on Mac
+    // 11.
+    LOG(INFO) << "Validating decoder on Mac. Skipping.";
     return;
   }
   const CopyType copy_type = GetParam();
