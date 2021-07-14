@@ -44,6 +44,7 @@ class PageInfoViewFactory {
     VIEW_ID_PAGE_INFO_BACK_BUTTON,
     VIEW_ID_PAGE_INFO_CLOSE_BUTTON,
     VIEW_ID_PAGE_INFO_CURRENT_VIEW,
+    VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON,
   };
 
   // Creates a separator view with padding on top and bottom. Use with flex

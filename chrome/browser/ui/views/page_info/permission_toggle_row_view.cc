@@ -113,6 +113,7 @@ void PermissionToggleRowView::InitForUserSource(bool should_show_spacer_view) {
         IDS_PAGE_INFO_PERMISSIONS_SUBPAGE_BUTTON_TOOLTIP));
     views::InstallCircleHighlightPathGenerator(subpage_button.get());
     subpage_button->SetMinimumImageSize({icon_size, icon_size});
+    subpage_button->SetFlipCanvasOnPaintForRTLUI(false);
     row_view_->AddControl(std::move(subpage_button));
   } else {
     // If there is a permission that supports one time grants, offset all other
@@ -163,13 +164,17 @@ void PermissionToggleRowView::UpdateUiOnPermissionChanged() {
     state_label_ = nullptr;
   }
 
-  // Add explanation for the permission state if needed. This would be shown
-  // if permission is in allowed once or default states or if it is
+  // Add explanation for the user-managed permission state if needed. This would
+  // be shown if permission is in allowed once or default states or if it is
   // automatically blocked.
-  std::u16string state_text =
-      PageInfoUI::PermissionMainPageStateToUIString(delegate_, permission_);
-  if (!state_text.empty()) {
-    state_label_ = row_view_->AddSecondaryLabel(state_text);
+  if (permission_.source == content_settings::SETTING_SOURCE_USER &&
+      (delegate_->ShouldShowAllow(permission_.type) ||
+       delegate_->ShouldShowAsk(permission_.type))) {
+    std::u16string state_text =
+        PageInfoUI::PermissionMainPageStateToUIString(delegate_, permission_);
+    if (!state_text.empty()) {
+      state_label_ = row_view_->AddSecondaryLabel(state_text);
+    }
   }
 }
 

@@ -98,10 +98,13 @@ class PageInfoBubbleViewTestApi {
     }
 
     views::View* anchor_view = nullptr;
+    Profile* profile =
+        use_off_the_record_profile_
+            ? profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true)
+            : profile_;
     if (is_version_two_) {
       auto* bubble = new PageInfoNewBubbleView(
-          anchor_view, gfx::Rect(), parent_, profile_, web_contents_,
-          GURL(kUrl),
+          anchor_view, gfx::Rect(), parent_, profile, web_contents_, GURL(kUrl),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();
@@ -111,8 +114,7 @@ class PageInfoBubbleViewTestApi {
           &static_cast<PageInfoMainView*>(current_view())->selector_rows_;
     } else {
       auto* bubble = new PageInfoBubbleView(
-          anchor_view, gfx::Rect(), parent_, profile_, web_contents_,
-          GURL(kUrl),
+          anchor_view, gfx::Rect(), parent_, profile, web_contents_, GURL(kUrl),
           base::BindOnce(&PageInfoBubbleViewTestApi::OnPageInfoBubbleClosed,
                          base::Unretained(this), run_loop_.QuitClosure()));
       presenter_ = bubble->presenter_.get();
@@ -155,6 +157,12 @@ class PageInfoBubbleViewTestApi {
         PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL));
   }
 
+  views::LabelButton* reset_permissions_button() {
+    DCHECK(is_version_two_);
+    return static_cast<views::LabelButton*>(bubble_delegate_->GetViewByID(
+        PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON));
+  }
+
   PageInfoNavigationHandler* navigation_handler() {
     DCHECK(is_version_two_);
     return navigation_handler_;
@@ -174,11 +182,12 @@ class PageInfoBubbleViewTestApi {
 
   views::ToggleButton* GetToggleViewAt(int index) {
     DCHECK(is_version_two_);
-    const int kToggleViewIndex = 2;
-    return static_cast<views::ToggleButton*>(
-        GetPermissionToggleRowAt(index)
-            ->row_view_for_testing()
-            ->children()[kToggleViewIndex]);
+    return GetPermissionToggleRowAt(index)->toggle_button_;
+  }
+
+  views::Label* GetStateLabelAt(int index) {
+    DCHECK(is_version_two_);
+    return GetPermissionToggleRowAt(index)->state_label_;
   }
 
   // Returns the number of cookies shown on the link or button to open the
@@ -206,10 +215,9 @@ class PageInfoBubbleViewTestApi {
   }
 
   std::u16string GetPermissionLabelTextAt(int index) {
-    return is_version_two_ ? GetPermissionToggleRowAt(index)
-                                 ->row_view_for_testing()
-                                 ->title_->GetText()
-                           : GetPermissionSelectorAt(index)->label_->GetText();
+    return is_version_two_
+               ? GetPermissionToggleRowAt(index)->row_view_->title_->GetText()
+               : GetPermissionSelectorAt(index)->label_->GetText();
   }
 
   std::u16string GetPermissionComboboxTextAt(int index) {
@@ -277,6 +285,11 @@ class PageInfoBubbleViewTestApi {
 
   void WaitForBubbleClose() { run_loop_.Run(); }
 
+  void SetOffTheRecordProfile() {
+    use_off_the_record_profile_ = true;
+    CreateView();
+  }
+
  private:
   void OnPageInfoBubbleClosed(base::RepeatingCallback<void()> quit_closure,
                               views::Widget::ClosedReason closed_reason,
@@ -301,6 +314,7 @@ class PageInfoBubbleViewTestApi {
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
   bool is_version_two_;
+  bool use_off_the_record_profile_ = false;
 
   DISALLOW_COPY_AND_ASSIGN(PageInfoBubbleViewTestApi);
 };
@@ -477,6 +491,9 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   // Initially, no permissions are shown because they are all set to default.
   size_t num_expected_children = 0;
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  if (is_page_info_v2_enabled()) {
+    EXPECT_FALSE(api_->reset_permissions_button());
+  }
 
   num_expected_children += is_page_info_v2_enabled()
                                ? list.size()
@@ -486,6 +503,9 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
 
   if (is_page_info_v2_enabled()) {
+    EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+    EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
+    EXPECT_EQ(u"Reset permission", api_->reset_permissions_button()->GetText());
     PermissionToggleRowView* toggle_view = api_->GetPermissionToggleRowAt(0);
     EXPECT_TRUE(toggle_view);
   } else {
@@ -524,7 +544,19 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
     EXPECT_EQ(u"Allow", api_->GetPermissionComboboxTextAt(0));
   }
 
-  if (!is_page_info_v2_enabled()) {
+  if (is_page_info_v2_enabled()) {
+    const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                               ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi(api_->reset_permissions_button())
+        .NotifyClick(event);
+    // After resetting permissions, button doesn't disappear but is disabled.
+    EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+    EXPECT_FALSE(api_->reset_permissions_button()->GetEnabled());
+
+    // In the ask state, the toggle is in the off state, indicating that
+    // permission isn't granted.
+    EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(0));
+  } else {
     // User cannot set permission to default on the main page in the v2.
     // Setting to the default via the UI should keep the button around.
     api_->SimulateUserSelectingComboboxItemAt(0, 0);
@@ -540,6 +572,82 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfo) {
   // permission is not being omitted from the UI.
   api_->SetPermissionInfo(list);
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+}
+
+// Test resetting blocked in Incognito permission.
+TEST_P(PageInfoBubbleViewTest, ResetBlockedInIncognitoPermission) {
+  if (!is_page_info_v2_enabled()) {
+    return;
+  }
+
+  api_->SetOffTheRecordProfile();
+
+  PermissionInfoList list(1);
+  list.back().type = ContentSettingsType::NOTIFICATIONS;
+  list.back().source = content_settings::SETTING_SOURCE_POLICY;
+  list.back().setting = CONTENT_SETTING_BLOCK;
+
+  // Initially, no permissions are shown because they are all set to default.
+  size_t num_expected_children = 0;
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+  EXPECT_FALSE(api_->reset_permissions_button());
+
+  num_expected_children = list.size();
+  api_->SetPermissionInfo(list);
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+
+  // Because permission is autoblocked, no reset button initially is shown.
+  EXPECT_FALSE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_FALSE(api_->reset_permissions_button()->GetEnabled());
+
+  // Autoblocked permissions don't have toggles or state labels.
+  EXPECT_FALSE(api_->GetToggleViewAt(0));
+  EXPECT_FALSE(api_->GetStateLabelAt(0));
+
+  // Verify labels match the settings on the PermissionInfoList.
+  EXPECT_EQ(u"Notifications", api_->GetPermissionLabelTextAt(0));
+
+  PageInfo::PermissionInfo window_placement_permission;
+  window_placement_permission.type = ContentSettingsType::WINDOW_PLACEMENT;
+  window_placement_permission.setting = CONTENT_SETTING_ALLOW;
+  window_placement_permission.default_setting = CONTENT_SETTING_ASK;
+  window_placement_permission.source = content_settings::SETTING_SOURCE_USER;
+  list.push_back(window_placement_permission);
+
+  num_expected_children = list.size();
+  api_->SetPermissionInfo(list);
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(num_expected_children));
+
+  // Because a non-managed permission was added, reset button is visible and
+  // enabled.
+  EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
+  // Although there are only one resettable permission, multiple rows are
+  // shown. Because of that use plural version of the "permission" word.
+  EXPECT_EQ(u"Reset permissions", api_->reset_permissions_button()->GetText());
+
+  // User managed permissions have toggles. |camera_permission| is allowed and
+  // the toggle must be on.
+  EXPECT_TRUE(api_->GetToggleViewAt(1));
+  EXPECT_TRUE(api_->GetPermissionToggleIsOnAt(1));
+
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(api_->reset_permissions_button())
+      .NotifyClick(event);
+  // After resetting permissions, button doesn't disappear but is disabled.
+  EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_FALSE(api_->reset_permissions_button()->GetEnabled());
+
+  // Show state label for user managed permission, indicating that permission
+  // is in the default ask state now. Autoblocked permission doesn't change.
+  EXPECT_FALSE(api_->GetStateLabelAt(0));
+  EXPECT_EQ(u"Can ask to open and place windows on your screens",
+            api_->GetStateLabelAt(1)->GetText());
+
+  // In the ask state, the toggle is in the off state, indicating that
+  // permission isn't granted.
+  EXPECT_FALSE(api_->GetPermissionToggleIsOnAt(1));
 }
 
 // Test UI construction and reconstruction with USB devices.
@@ -580,6 +688,54 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
   views::test::ButtonTestApi(button).NotifyClick(event);
   api_->SetPermissionInfo(list);
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
+}
+
+// Test resetting USB devices permission.
+TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
+  if (!is_page_info_v2_enabled()) {
+    return;
+  }
+
+  constexpr size_t kExpectedChildren = 0;
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_FALSE(api_->reset_permissions_button());
+
+  const auto origin = url::Origin::Create(GURL(kUrl));
+
+  // Connect the UsbChooserContext with FakeUsbDeviceManager.
+  device::FakeUsbDeviceManager usb_device_manager;
+  mojo::PendingRemote<device::mojom::UsbDeviceManager> usb_manager;
+  usb_device_manager.AddReceiver(usb_manager.InitWithNewPipeAndPassReceiver());
+  UsbChooserContext* store =
+      UsbChooserContextFactory::GetForProfile(web_contents_helper_->profile());
+  store->SetDeviceManagerForTesting(std::move(usb_manager));
+
+  auto device_info = usb_device_manager.CreateAndAddDevice(
+      0, 0, "Google", "Gizmo", "1234567890");
+  store->GrantDevicePermission(origin, *device_info);
+
+  PermissionInfoList list;
+  api_->SetPermissionInfo(list);
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren + 1));
+  EXPECT_TRUE(api_->reset_permissions_button()->GetVisible());
+  EXPECT_TRUE(api_->reset_permissions_button()->GetEnabled());
+  EXPECT_EQ(u"Reset permission", api_->reset_permissions_button()->GetText());
+
+  const auto& chosen_object_children = api_->GetChosenObjectChildren();
+  EXPECT_EQ(3u, chosen_object_children.size());
+
+  views::Label* label = GetChosenObjectTitle(chosen_object_children);
+  EXPECT_EQ(u"Gizmo", label->GetText());
+
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+  views::test::ButtonTestApi(api_->reset_permissions_button())
+      .NotifyClick(event);
+  api_->SetPermissionInfo(list);
+  EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
+  EXPECT_EQ(api_->permissions_view()->children().size(), 0u);
+  EXPECT_FALSE(api_->reset_permissions_button());
   EXPECT_FALSE(store->HasDevicePermission(origin, *device_info));
 }
 

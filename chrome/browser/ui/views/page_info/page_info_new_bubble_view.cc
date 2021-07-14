@@ -68,10 +68,14 @@ void PageInfoNewBubbleView::OpenMainPage() {
 }
 
 void PageInfoNewBubbleView::OpenSecurityPage() {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_SECURITY_DETAILS_OPENED);
   page_container_->SwitchToPage(view_factory_->CreateSecurityPageView());
 }
 
 void PageInfoNewBubbleView::OpenPermissionPage(ContentSettingsType type) {
+  presenter_->RecordPageInfoAction(
+      PageInfo::PageInfoAction::PAGE_INFO_PERMISSION_DIALOG_OPENED);
   page_container_->SwitchToPage(view_factory_->CreatePermissionPageView(type));
 }
 

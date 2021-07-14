@@ -235,6 +235,8 @@ void PageInfoMainView::SetPermissionInfo(
   reset_button_->SetProperty(
       views::kMarginsKey,
       gfx::Insets(controls_spacing, side_offset, controls_spacing, 0));
+  reset_button_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_RESET_PERMISSIONS_BUTTON);
 
   // If a permission is in a non-default state or chooser object is present,
   // show reset button.
@@ -250,7 +252,12 @@ void PageInfoMainView::UpdateResetButton(
   reset_button_->SetEnabled(false);
   int num_permissions = 0;
   for (const auto& permission : permission_info_list) {
-    if (permission.setting != CONTENT_SETTING_DEFAULT) {
+    const bool is_permission_user_managed =
+        permission.source == content_settings::SETTING_SOURCE_USER &&
+        (ui_delegate_->ShouldShowAllow(permission.type) ||
+         ui_delegate_->ShouldShowAsk(permission.type));
+    if (is_permission_user_managed &&
+        permission.setting != CONTENT_SETTING_DEFAULT) {
       reset_button_->SetEnabled(true);
       reset_button_->SetVisible(true);
     }
