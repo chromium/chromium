@@ -51,8 +51,10 @@ void AwRenderThreadObserver::SetCpuAffinityToLittleCores() {
 }
 
 void AwRenderThreadObserver::EnableIdleThrottling() {
-  power_scheduler::PowerScheduler::GetInstance()->SetPolicy(
-      power_scheduler::SchedulingPolicy::kThrottleIdle);
+  power_scheduler::SchedulingPolicyParams params{
+      power_scheduler::SchedulingPolicy::kThrottleIdleAndNopAnimation,
+      base::TimeDelta::FromMilliseconds(500), 0.5f};
+  power_scheduler::PowerScheduler::GetInstance()->SetPolicy(params);
 }
 
 }  // namespace android_webview
