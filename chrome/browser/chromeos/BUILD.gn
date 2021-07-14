@@ -2119,6 +2119,10 @@ source_set("chromeos") {
     "../ash/power/auto_screen_brightness/fake_observer.h",
     "../ash/power/auto_screen_brightness/gaussian_trainer.cc",
     "../ash/power/auto_screen_brightness/gaussian_trainer.h",
+    "../ash/power/auto_screen_brightness/light_provider_mojo.cc",
+    "../ash/power/auto_screen_brightness/light_provider_mojo.h",
+    "../ash/power/auto_screen_brightness/light_samples_observer.cc",
+    "../ash/power/auto_screen_brightness/light_samples_observer.h",
     "../ash/power/auto_screen_brightness/metrics_reporter.cc",
     "../ash/power/auto_screen_brightness/metrics_reporter.h",
     "../ash/power/auto_screen_brightness/model_config.cc",
@@ -3226,19 +3230,6 @@ source_set("chromeos") {
     "extensions/wm/wm_desks_private_api.h",
   ]
 
-  if (use_iioservice) {
-    sources -= [
-      "../ash/power/auto_screen_brightness/als_file_reader.cc",
-      "../ash/power/auto_screen_brightness/als_file_reader.h",
-    ]
-    sources += [
-      "../ash/power/auto_screen_brightness/light_provider_mojo.cc",
-      "../ash/power/auto_screen_brightness/light_provider_mojo.h",
-      "../ash/power/auto_screen_brightness/light_samples_observer.cc",
-      "../ash/power/auto_screen_brightness/light_samples_observer.h",
-    ]
-  }
-
   if (use_cups) {
     configs += [ "//printing:cups" ]
     deps += [
@@ -3981,6 +3972,8 @@ source_set("unit_tests") {
     "../ash/power/auto_screen_brightness/als_samples_unittest.cc",
     "../ash/power/auto_screen_brightness/brightness_monitor_impl_unittest.cc",
     "../ash/power/auto_screen_brightness/gaussian_trainer_unittest.cc",
+    "../ash/power/auto_screen_brightness/light_provider_mojo_unittest.cc",
+    "../ash/power/auto_screen_brightness/light_samples_observer_unittest.cc",
     "../ash/power/auto_screen_brightness/metrics_reporter_unittest.cc",
     "../ash/power/auto_screen_brightness/model_config_loader_impl_unittest.cc",
     "../ash/power/auto_screen_brightness/modeller_impl_unittest.cc",
@@ -4371,6 +4364,7 @@ source_set("unit_tests") {
     "//chromeos/components/phonehub:test_support",
     "//chromeos/components/proximity_auth",
     "//chromeos/components/proximity_auth:test_support",
+    "//chromeos/components/sensors:test_support",
     "//chromeos/components/tether:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/attestation",
@@ -4470,15 +4464,6 @@ source_set("unit_tests") {
     "//ui/events/devices:test_support",
     "//ui/shell_dialogs",
   ]
-  if (use_iioservice) {
-    sources -=
-        [ "../ash/power/auto_screen_brightness/als_file_reader_unittest.cc" ]
-    sources += [
-      "../ash/power/auto_screen_brightness/light_provider_mojo_unittest.cc",
-      "../ash/power/auto_screen_brightness/light_samples_observer_unittest.cc",
-    ]
-    deps += [ "//chromeos/components/sensors:test_support" ]
-  }
 
   if (use_udev) {
     deps += [ "//device/udev_linux:test_support" ]
