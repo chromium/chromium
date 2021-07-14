@@ -27,23 +27,13 @@ std::unique_ptr<VulkanSurfaceX11> VulkanSurfaceX11::Create(
     return nullptr;
   }
 
-  x11::VisualId visual_id{};
-  uint8_t depth = 0;
-  x11::ColorMap colormap{};
-  auto* visual_manager = ui::XVisualManager::GetInstance();
-  visual_manager->ChooseVisualForWindow(true, &visual_id, &depth, &colormap,
-                                        nullptr);
-
   auto window = connection->GenerateId<x11::Window>();
   connection->CreateWindow(x11::CreateWindowRequest{
-      .depth = depth,
       .wid = window,
       .parent = parent_window,
       .width = geometry->width,
       .height = geometry->height,
       .c_class = x11::WindowClass::InputOutput,
-      .visual = visual_id,
-      .colormap = colormap,
   });
   if (connection->MapWindow({window}).Sync().error) {
     LOG(ERROR) << "Failed to create or map window.";
