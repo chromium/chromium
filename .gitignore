@@ -190,6 +190,7 @@ vs-chromium-project.txt
 /components/history_clusters/internal
 /components/leveldb_proto_test_support.xml
 /components/ntp_tiles/resources/internal
+/components/optimization_guide/internal
 /components/resources/default_100_percent/google_chrome
 /components/resources/default_200_percent/google_chrome
 /components/resources/default_300_percent/google_chrome
