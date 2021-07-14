@@ -4,6 +4,9 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 
+#include <algorithm>
+
+#include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -148,8 +151,16 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
   int content_width = std::min(full_content_width, available_content_width);
   int current_offset = (width() - content_width) / 2;
 
-  canvas->DrawImageInt(icon_image(), current_offset, y, flags);
-  current_offset += icon_image().width() + kMarginBetweenContents;
+  absl::optional<gfx::ImageSkia> left_icon = icon_image();
+  absl::optional<gfx::ImageSkia> right_icon = sub_icon_image_;
+  if (base::i18n::IsRTL())
+    std::swap(left_icon, right_icon);
+
+  if (left_icon) {
+    canvas->DrawImageInt(*left_icon, current_offset,
+                         (height() - left_icon->height()) / 2, flags);
+    current_offset += left_icon->width() + kMarginBetweenContents;
+  }
 
   if (text_) {
     int available_text_width =
@@ -167,9 +178,9 @@ void FrameCenterButton::DrawIconContents(gfx::Canvas* canvas,
     current_offset += text_bounds.width() + kMarginBetweenContents;
   }
 
-  if (sub_icon_image_) {
-    canvas->DrawImageInt(*sub_icon_image_, current_offset,
-                         (height() - sub_icon_image_->height()) / 2, flags);
+  if (right_icon) {
+    canvas->DrawImageInt(*right_icon, current_offset,
+                         (height() - right_icon->height()) / 2, flags);
   }
 }
 
