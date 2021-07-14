@@ -4,7 +4,6 @@
 
 #include "base/component_export.h"
 #include "base/macros.h"
-#include "base/no_destructor.h"
 #include "base/system/sys_info.h"
 
 #ifndef STORAGE_BROWSER_QUOTA_QUOTA_DEVICE_INFO_HELPER_H_

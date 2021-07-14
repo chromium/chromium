@@ -6,6 +6,7 @@
 
 #include <wrl/implements.h>
 
+#include "base/no_destructor.h"
 #include "ui/accessibility/accessibility_features.h"
 
 namespace ui {

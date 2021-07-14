@@ -5,6 +5,7 @@
 #include "ui/accessibility/ax_tree_manager_map.h"
 
 #include "base/containers/contains.h"
+#include "base/no_destructor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {

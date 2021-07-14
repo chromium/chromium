@@ -11,7 +11,6 @@
 #include <string>
 #include <vector>
 
-#include "base/no_destructor.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
 #include "ios/chrome/browser/voice/speech_input_locale_match.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_language.h"

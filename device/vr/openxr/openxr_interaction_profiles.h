@@ -6,7 +6,6 @@
 #define DEVICE_VR_OPENXR_OPENXR_INTERACTION_PROFILES_H_
 
 #include "base/containers/flat_map.h"
-#include "base/no_destructor.h"
 #include "base/stl_util.h"
 #include "device/gamepad/public/cpp/gamepad.h"
 #include "device/vr/openxr/openxr_defs.h"

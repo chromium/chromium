@@ -4,6 +4,8 @@
 
 #include "chromecast/base/chromecast_config_android.h"
 
+#include "base/no_destructor.h"
+
 namespace chromecast {
 namespace android {
 

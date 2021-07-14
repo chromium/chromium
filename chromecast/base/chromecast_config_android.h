@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/no_destructor.h"
 
 namespace chromecast {
 namespace android {

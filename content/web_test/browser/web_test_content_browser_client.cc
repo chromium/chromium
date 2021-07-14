@@ -13,6 +13,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"

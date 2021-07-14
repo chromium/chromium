@@ -4,6 +4,8 @@
 
 #include "device/vr/openxr/openxr_interaction_profiles.h"
 
+#include "base/no_destructor.h"
+
 namespace device {
 OpenXrSystemInputProfiles::OpenXrSystemInputProfiles(
     std::string system_name,

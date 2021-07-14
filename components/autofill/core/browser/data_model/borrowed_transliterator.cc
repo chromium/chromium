@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
 namespace autofill {
 
