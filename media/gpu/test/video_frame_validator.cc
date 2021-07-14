@@ -458,6 +458,7 @@ SSIMVideoFrameValidator::Validate(scoped_refptr<const VideoFrame> frame,
                                   size_t frame_index) {
   SEQUENCE_CHECKER(validator_thread_sequence_checker_);
   auto model_frame = get_model_frame_cb_.Run(frame_index);
+
   CHECK(model_frame);
   double ssim = ComputeSSIM(*frame, *model_frame);
   DVLOGF(4) << "frame_index: " << frame_index << ", ssim: " << ssim;

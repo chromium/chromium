@@ -41,6 +41,7 @@ namespace {
 constexpr const char* usage_msg =
     "usage: video_encode_accelerator_tests\n"
     "           [--codec=<codec>] [--num_temporal_layers=<number>]\n"
+    "           [--num_spatial_layers=<number>]\n"
     "           [--disable_validator] [--output_bitstream]\n"
     "           [--output_images=(all|corrupt)] [--output_format=(png|yuv)]\n"
     "           [--output_folder=<filepath>] [--output_limit=<number>]\n"
@@ -61,6 +62,10 @@ constexpr const char* help_msg =
     "                        H264 Baseline is selected if unspecified.\n"
     "  --num_temporal_layers the number of temporal layers of the encoded\n"
     "                        bitstream. Only used in --codec=vp9 currently.\n"
+    "  --num_spatial_layers  the number of spatial layers of the encoded\n"
+    "                        bitstream. Only used in --codec=vp9 currently.\n"
+    "                        Spatial SVC encoding is applied only in\n"
+    "                        NV12Dmabuf test cases.\n"
     "  --disable_validator   disable validation of encoded bitstream.\n"
     "  --output_bitstream    save the output bitstream in either H264 AnnexB\n"
     "                        format (for H264) or IVF format (for vp8 and\n"
@@ -100,10 +105,14 @@ media::test::VideoEncoderTestEnvironment* g_env;
 // Video encode test class. Performs setup and teardown for each single test.
 class VideoEncoderTest : public ::testing::Test {
  public:
+  // GetDefaultConfig() creates VideoEncoderClientConfig for SharedMemory input
+  // encoding. This function must not be called in spatial SVC encoding.
   VideoEncoderClientConfig GetDefaultConfig() {
+    const auto& spatial_layers = g_env->SpatialLayers();
+    CHECK_LE(spatial_layers.size(), 1u);
+
     return VideoEncoderClientConfig(g_env->Video(), g_env->Profile(),
-                                    g_env->NumTemporalLayers(),
-                                    g_env->Bitrate());
+                                    spatial_layers, g_env->Bitrate());
   }
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoder(
@@ -128,6 +137,7 @@ class VideoEncoderTest : public ::testing::Test {
       const VideoDecoderConfig& decoder_config,
       const size_t last_frame_index,
       VideoFrameValidator::GetModelFrameCB get_model_frame_cb,
+      absl::optional<size_t> vp9_spatial_layer_index_to_decode,
       absl::optional<size_t> num_vp9_temporal_layers_to_decode) {
     std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors;
 
@@ -141,8 +151,9 @@ class VideoEncoderTest : public ::testing::Test {
       image_writer = VideoFrameFileWriter::Create(
           output_folder, frame_output_config.output_format,
           frame_output_config.output_limit,
-          num_vp9_temporal_layers_to_decode
-              ? base::NumberToString(*num_vp9_temporal_layers_to_decode)
+          vp9_spatial_layer_index_to_decode
+              ? base::NumberToString(*vp9_spatial_layer_index_to_decode) +
+                    base::NumberToString(*num_vp9_temporal_layers_to_decode)
               : "");
       LOG_ASSERT(image_writer);
       if (frame_output_config.output_mode == FrameOutputMode::kAll)
@@ -164,9 +175,9 @@ class VideoEncoderTest : public ::testing::Test {
         VideoFrameValidator::ValidationMode::kAverage, ssim_tolerance);
     LOG_ASSERT(ssim_validator);
     video_frame_processors.push_back(std::move(ssim_validator));
-    return BitstreamValidator::Create(decoder_config, last_frame_index,
-                                      std::move(video_frame_processors),
-                                      num_vp9_temporal_layers_to_decode);
+    return BitstreamValidator::Create(
+        decoder_config, last_frame_index, std::move(video_frame_processors),
+        vp9_spatial_layer_index_to_decode, num_vp9_temporal_layers_to_decode);
   }
 
   std::vector<std::unique_ptr<BitstreamProcessor>> CreateBitstreamProcessors(
@@ -184,17 +195,27 @@ class VideoEncoderTest : public ::testing::Test {
           g_env->OutputFolder()
               .Append(g_env->GetTestOutputFilePath())
               .Append(video->FilePath().BaseName().ReplaceExtension(extension));
-      if (config.num_temporal_layers > 1) {
-        for (size_t num_vp9_temporal_layers_to_write = 1;
-             num_vp9_temporal_layers_to_write <= config.num_temporal_layers;
-             ++num_vp9_temporal_layers_to_write) {
-          bitstream_processors.emplace_back(BitstreamFileWriter::Create(
-              output_bitstream_filepath.InsertBeforeExtensionASCII(
-                  FILE_PATH_LITERAL(".TL") +
-                  base::NumberToString(num_vp9_temporal_layers_to_write)),
-              codec, visible_rect.size(), config.framerate,
-              config.num_frames_to_encode, num_vp9_temporal_layers_to_write));
-          LOG_ASSERT(bitstream_processors.back());
+      if (config.num_temporal_layers > 1 || config.num_spatial_layers > 1) {
+        for (size_t vp9_spatial_layer_index_to_write = 0;
+             vp9_spatial_layer_index_to_write < config.num_spatial_layers;
+             ++vp9_spatial_layer_index_to_write) {
+          gfx::Size layer_size = gfx::Size(
+              config.spatial_layers[vp9_spatial_layer_index_to_write].width,
+              config.spatial_layers[vp9_spatial_layer_index_to_write].height);
+          for (size_t num_vp9_temporal_layers_to_write = 1;
+               num_vp9_temporal_layers_to_write <= config.num_temporal_layers;
+               ++num_vp9_temporal_layers_to_write) {
+            bitstream_processors.emplace_back(BitstreamFileWriter::Create(
+                output_bitstream_filepath.InsertBeforeExtensionASCII(
+                    FILE_PATH_LITERAL(".SL") +
+                    base::NumberToString(vp9_spatial_layer_index_to_write) +
+                    FILE_PATH_LITERAL(".TL") +
+                    base::NumberToString(num_vp9_temporal_layers_to_write - 1)),
+                codec, layer_size, config.framerate,
+                config.num_frames_to_encode, vp9_spatial_layer_index_to_write,
+                num_vp9_temporal_layers_to_write));
+            LOG_ASSERT(bitstream_processors.back());
+          }
         }
       } else {
         bitstream_processors.emplace_back(BitstreamFileWriter::Create(
@@ -218,7 +239,7 @@ class VideoEncoderTest : public ::testing::Test {
         break;
       case kCodecVP9:
         bitstream_processors.emplace_back(new VP9Validator(
-            config.output_profile, visible_rect, /*num_spatial_layers=*/1,
+            config.output_profile, visible_rect, config.num_spatial_layers,
             config.num_temporal_layers));
         break;
       default:
@@ -227,36 +248,57 @@ class VideoEncoderTest : public ::testing::Test {
         break;
     }
 
-    // Attach a bitstream validator to validate all encoded video frames. The
-    // bitstream validator uses a software video decoder to validate the
-    // encoded buffers by decoding them. Metrics such as the image's SSIM can
-    // be calculated for additional quality checks.
-    VideoDecoderConfig decoder_config(
-        codec, config.output_profile, VideoDecoderConfig::AlphaMode::kIsOpaque,
-        VideoColorSpace(), kNoTransformation, visible_rect.size(), visible_rect,
-        visible_rect.size(), EmptyExtraData(), EncryptionScheme::kUnencrypted);
     raw_data_helper_ = RawDataHelper::Create(video);
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
       return bitstream_processors;
     }
 
-    VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
-        base::BindRepeating(&VideoEncoderTest::GetModelFrame,
-                            base::Unretained(this), visible_rect);
-    if (config.num_temporal_layers > 1) {
-      for (size_t num_temporal_layers_to_decode = 1;
-           num_temporal_layers_to_decode <= config.num_temporal_layers;
-           ++num_temporal_layers_to_decode) {
-        bitstream_processors.emplace_back(CreateBitstreamValidator(
-            video, decoder_config, config.num_frames_to_encode - 1,
-            get_model_frame_cb, num_temporal_layers_to_decode));
-        LOG_ASSERT(bitstream_processors.back());
+    if (config.num_temporal_layers > 1 || config.num_spatial_layers > 1) {
+      CHECK_GE(config.num_spatial_layers, 1u);
+      CHECK_GE(config.num_temporal_layers, 1u);
+      DCHECK_EQ(config.spatial_layers.size(), config.num_spatial_layers);
+      for (size_t vp9_spatial_layer_index_to_decode = 0;
+           vp9_spatial_layer_index_to_decode < config.num_spatial_layers;
+           ++vp9_spatial_layer_index_to_decode) {
+        gfx::Size layer_size = gfx::Size(
+            config.spatial_layers[vp9_spatial_layer_index_to_decode].width,
+            config.spatial_layers[vp9_spatial_layer_index_to_decode].height);
+        VideoDecoderConfig decoder_config(
+            codec, config.output_profile,
+            VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+            kNoTransformation, layer_size, gfx::Rect(layer_size), layer_size,
+            EmptyExtraData(), EncryptionScheme::kUnencrypted);
+        VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
+            base::BindRepeating(&VideoEncoderTest::GetModelFrame,
+                                base::Unretained(this), gfx::Rect(layer_size));
+        for (size_t num_temporal_layers_to_decode = 1;
+             num_temporal_layers_to_decode <= config.num_temporal_layers;
+             ++num_temporal_layers_to_decode) {
+          bitstream_processors.emplace_back(CreateBitstreamValidator(
+              video, decoder_config, config.num_frames_to_encode - 1,
+              get_model_frame_cb, vp9_spatial_layer_index_to_decode,
+              num_temporal_layers_to_decode));
+          LOG_ASSERT(bitstream_processors.back());
+        }
       }
     } else {
+      // Attach a bitstream validator to validate all encoded video frames. The
+      // bitstream validator uses a software video decoder to validate the
+      // encoded buffers by decoding them. Metrics such as the image's SSIM can
+      // be calculated for additional quality checks.
+      VideoDecoderConfig decoder_config(
+          codec, config.output_profile,
+          VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace(),
+          kNoTransformation, visible_rect.size(), visible_rect,
+          visible_rect.size(), EmptyExtraData(),
+          EncryptionScheme::kUnencrypted);
+      VideoFrameValidator::GetModelFrameCB get_model_frame_cb =
+          base::BindRepeating(&VideoEncoderTest::GetModelFrame,
+                              base::Unretained(this), visible_rect);
       bitstream_processors.emplace_back(CreateBitstreamValidator(
           video, decoder_config, config.num_frames_to_encode - 1,
-          get_model_frame_cb, absl::nullopt));
+          get_model_frame_cb, absl::nullopt, absl::nullopt));
       LOG_ASSERT(bitstream_processors.back());
     }
     return bitstream_processors;
@@ -291,11 +333,15 @@ absl::optional<std::string> SupportsNV12DmaBufInput() {
                                      "supported in kepler.")
                                : absl::nullopt;
 }
+
 }  // namespace
 
 // Encode video from start to end. Wait for the kFlushDone event at the end of
 // the stream, that notifies us all frames have been encoded.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
   encoder->Encode();
@@ -311,6 +357,9 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream) {
 // resolution. The test only verifies initialization and doesn't do any
 // encoding.
 TEST_F(VideoEncoderTest, Initialize) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto encoder = CreateVideoEncoder(g_env->Video(), GetDefaultConfig());
 
   EXPECT_EQ(encoder->GetEventCount(VideoEncoder::kInitialized), 1u);
@@ -321,6 +370,9 @@ TEST_F(VideoEncoderTest, Initialize) {
 // of scope at the end of the test. The test will pass if no asserts or crashes
 // are triggered upon destroying.
 TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto video_encoder = VideoEncoder::Create(GetDefaultConfig(),
                                             g_env->GetGpuMemoryBufferFactory());
 
@@ -329,6 +381,9 @@ TEST_F(VideoEncoderTest, DestroyBeforeInitialize) {
 
 // Test forcing key frames while encoding a video.
 TEST_F(VideoEncoderTest, ForceKeyFrame) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto config = GetDefaultConfig();
   const size_t middle_frame = config.num_frames_to_encode;
   config.num_frames_to_encode *= 2;
@@ -370,6 +425,9 @@ TEST_F(VideoEncoderTest, ForceKeyFrame) {
 // Encode video from start to end. Multiple buffer encodes will be queued in the
 // encoder, without waiting for the result of the previous encode requests.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto config = GetDefaultConfig();
   config.max_outstanding_encode_requests = 4;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -384,6 +442,9 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleOutstandingEncodes) {
 
 // Encode multiple videos simultaneously from start to finish.
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   // Run two encoders for larger resolutions to avoid creating shared memory
   // buffers during the test on lower end devices.
   constexpr gfx::Size k1080p(1920, 1080);
@@ -409,6 +470,9 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_MultipleConcurrentEncodes) {
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -422,11 +486,14 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
   EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate,
-              kBitrateTolerance * config.bitrate);
+  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
+              kBitrateTolerance * config.bitrate.GetSumBps());
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   auto config = GetDefaultConfig();
   config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
@@ -435,7 +502,7 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
 
   // Encode the video with the first bitrate.
-  const uint32_t first_bitrate = config.bitrate;
+  const uint32_t first_bitrate = config.bitrate.GetSumBps();
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
   EXPECT_TRUE(encoder->WaitUntilIdle());
@@ -445,7 +512,9 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   // Encode the video with the second bitrate.
   const uint32_t second_bitrate = first_bitrate * 3 / 2;
   encoder->ResetStats();
-  encoder->UpdateBitrate(second_bitrate, config.framerate);
+  encoder->UpdateBitrate(
+      g_env->GetDefaultVideoBitrateAllocation(second_bitrate),
+      config.framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
@@ -457,6 +526,9 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
 }
 
 TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
+
   if (auto skip_reason = SupportsDynamicFramerate())
     GTEST_SKIP() << *skip_reason;
   auto config = GetDefaultConfig();
@@ -472,8 +544,8 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   encoder->EncodeUntil(VideoEncoder::kFrameReleased,
                        kNumFramesToEncodeForBitrateCheck);
   EXPECT_TRUE(encoder->WaitUntilIdle());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate,
-              kBitrateTolerance * config.bitrate);
+  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
+              kBitrateTolerance * config.bitrate.GetSumBps());
 
   // Encode the video with the second framerate.
   const uint32_t second_framerate = first_framerate * 3 / 2;
@@ -481,8 +553,8 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
   encoder->UpdateBitrate(config.bitrate, second_framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate,
-              kBitrateTolerance * config.bitrate);
+  EXPECT_NEAR(encoder->GetStats().Bitrate(), config.bitrate.GetSumBps(),
+              kBitrateTolerance * config.bitrate.GetSumBps());
 
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
@@ -495,7 +567,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 
   Video* nv12_video = g_env->GenerateNV12Video();
   VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->NumTemporalLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate());
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
 
@@ -515,6 +587,9 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12Dmabuf) {
 TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   if (auto skip_reason = SupportsNV12DmaBufInput())
     GTEST_SKIP() << *skip_reason;
+  if (g_env->SpatialLayers().size() > 1)
+    GTEST_SKIP() << "Skip simulcast test case for spatial SVC encoding";
+
   constexpr gfx::Size kMinOutputResolution(240, 180);
   const gfx::Size output_resolution =
       gfx::Size(g_env->Video()->Resolution().width() / 2,
@@ -529,9 +604,10 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   auto* nv12_video = g_env->GenerateNV12Video();
   // Set 1/4 of the original bitrate because the area of |output_resolution| is
   // 1/4 of the original resolution.
-  VideoEncoderClientConfig config(nv12_video, g_env->Profile(),
-                                  g_env->NumTemporalLayers(),
-                                  g_env->Bitrate() / 4);
+  uint32_t new_bitrate = g_env->Bitrate().GetSumBps() / 4;
+  VideoEncoderClientConfig config(
+      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      g_env->GetDefaultVideoBitrateAllocation(new_bitrate));
   config.output_resolution = output_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -572,7 +648,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingTopAndBottom) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->NumTemporalLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -613,7 +689,7 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufCroppingRightAndLeft) {
       expanded_resolution, expanded_visible_rect);
   ASSERT_TRUE(nv12_expanded_video);
   VideoEncoderClientConfig config(nv12_expanded_video.get(), g_env->Profile(),
-                                  g_env->NumTemporalLayers(), g_env->Bitrate());
+                                  g_env->SpatialLayers(), g_env->Bitrate());
   config.output_resolution = original_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;
@@ -651,6 +727,7 @@ int main(int argc, char** argv) {
       (args.size() >= 2) ? base::FilePath(args[1]) : base::FilePath();
   std::string codec = "h264";
   size_t num_temporal_layers = 1u;
+  size_t num_spatial_layers = 1u;
   bool output_bitstream = false;
   media::test::FrameOutputConfig frame_output_config;
   base::FilePath output_folder =
@@ -672,6 +749,11 @@ int main(int argc, char** argv) {
       if (!base::StringToSizeT(it->second, &num_temporal_layers)) {
         std::cout << "invalid number of temporal layers: " << it->second
                   << "\n";
+        return EXIT_FAILURE;
+      }
+    } else if (it->first == "num_spatial_layers") {
+      if (!base::StringToSizeT(it->second, &num_spatial_layers)) {
+        std::cout << "invalid number of spatial layers: " << it->second << "\n";
         return EXIT_FAILURE;
       }
     } else if (it->first == "disable_validator") {
@@ -722,7 +804,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, enable_bitstream_validator,
-          output_folder, codec, num_temporal_layers, output_bitstream,
+          output_folder, codec, num_temporal_layers, num_spatial_layers,
+          output_bitstream,
           /*output_bitrate=*/absl::nullopt, frame_output_config);
 
   if (!test_environment)

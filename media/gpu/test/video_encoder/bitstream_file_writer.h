@@ -27,6 +27,7 @@ class BitstreamFileWriter : public BitstreamProcessor {
       const gfx::Size& resolution,
       uint32_t frame_rate,
       uint32_t num_frames,
+      absl::optional<size_t> vp9_spatial_layer_index_to_write = absl::nullopt,
       absl::optional<size_t> num_vp9_temporal_layers_to_write = absl::nullopt);
   BitstreamFileWriter(const BitstreamFileWriter&) = delete;
   BitstreamFileWriter operator=(const BitstreamFileWriter&) = delete;
@@ -39,11 +40,13 @@ class BitstreamFileWriter : public BitstreamProcessor {
  private:
   class FrameFileWriter;
   BitstreamFileWriter(std::unique_ptr<FrameFileWriter> frame_file_writer,
-                      absl::optional<size_t> num_vp9_temporal_layers_to_write_);
+                      absl::optional<size_t> vp9_spatial_layer_index_to_write,
+                      absl::optional<size_t> num_vp9_temporal_layers_to_write);
   void WriteBitstreamTask(scoped_refptr<BitstreamRef> bitstream,
                           size_t frame_index);
 
   const std::unique_ptr<FrameFileWriter> frame_file_writer_;
+  const absl::optional<size_t> vp9_spatial_layer_index_to_write_;
   const absl::optional<size_t> num_vp9_temporal_layers_to_write_;
 
   // The number of buffers currently queued for writing.

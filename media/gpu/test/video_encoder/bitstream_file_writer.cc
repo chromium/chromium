@@ -40,8 +40,10 @@ class BitstreamFileWriter::FrameFileWriter {
 
 BitstreamFileWriter::BitstreamFileWriter(
     std::unique_ptr<FrameFileWriter> frame_file_writer,
+    absl::optional<size_t> vp9_spatial_layer_index_to_write,
     absl::optional<size_t> num_vp9_temporal_layers_to_write)
     : frame_file_writer_(std::move(frame_file_writer)),
+      vp9_spatial_layer_index_to_write_(vp9_spatial_layer_index_to_write),
       num_vp9_temporal_layers_to_write_(num_vp9_temporal_layers_to_write),
       num_buffers_writing_(0),
       num_errors_(0),
@@ -62,6 +64,7 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
     const gfx::Size& resolution,
     uint32_t frame_rate,
     uint32_t num_frames,
+    absl::optional<size_t> vp9_spatial_layer_index_to_write,
     absl::optional<size_t> num_vp9_temporal_layers_to_write) {
   std::unique_ptr<FrameFileWriter> frame_file_writer;
   if (!base::DirectoryExists(output_filepath.DirName()))
@@ -86,7 +89,8 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
   }
 
   auto bitstream_file_writer = base::WrapUnique(new BitstreamFileWriter(
-      std::move(frame_file_writer), num_vp9_temporal_layers_to_write));
+      std::move(frame_file_writer), vp9_spatial_layer_index_to_write,
+      num_vp9_temporal_layers_to_write));
   if (!bitstream_file_writer->writer_thread_.Start()) {
     LOG(ERROR) << "Failed to start file writer thread";
     return nullptr;
@@ -98,6 +102,16 @@ std::unique_ptr<BitstreamFileWriter> BitstreamFileWriter::Create(
 void BitstreamFileWriter::ProcessBitstream(
     scoped_refptr<BitstreamRef> bitstream,
     size_t frame_index) {
+  if (vp9_spatial_layer_index_to_write_ &&
+      (bitstream->metadata.vp9->spatial_idx >
+           *vp9_spatial_layer_index_to_write_ ||
+       (bitstream->metadata.vp9->spatial_idx <
+            *vp9_spatial_layer_index_to_write_ &&
+        !bitstream->metadata.vp9->referenced_by_upper_spatial_layers))) {
+    // Skip |bitstream| because it contains a frame not needed by desired
+    // spatial layers.
+    return;
+  }
   if (num_vp9_temporal_layers_to_write_ &&
       bitstream->metadata.vp9->temporal_idx >=
           *num_vp9_temporal_layers_to_write_) {

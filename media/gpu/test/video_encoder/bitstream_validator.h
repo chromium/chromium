@@ -45,6 +45,7 @@ class BitstreamValidator : public BitstreamProcessor {
       size_t last_frame_index,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors =
           {},
+      absl::optional<size_t> vp9_spatial_layer_index_to_decode_ = absl::nullopt,
       absl::optional<size_t> num_vp9_temporal_layers_to_decode = absl::nullopt);
 
   ~BitstreamValidator() override;
@@ -59,6 +60,8 @@ class BitstreamValidator : public BitstreamProcessor {
       std::unique_ptr<VideoDecoder> decoder,
       std::unique_ptr<MediaLog> media_log,
       size_t last_frame_index,
+      const gfx::Rect& decoding_rect,
+      absl::optional<size_t> vp9_spatial_layer_index_to_decode_,
       absl::optional<size_t> num_vp9_temporal_layers_to_decode,
       std::vector<std::unique_ptr<VideoFrameProcessor>> video_frame_processors);
   BitstreamValidator(const BitstreamValidator&) = delete;
@@ -79,6 +82,8 @@ class BitstreamValidator : public BitstreamProcessor {
   std::unique_ptr<VideoDecoder> decoder_;
   const std::unique_ptr<MediaLog> media_log_;
   const size_t last_frame_index_;
+  const gfx::Rect desired_decoding_rect_;
+  const absl::optional<size_t> vp9_spatial_layer_index_to_decode_;
   const absl::optional<size_t> num_vp9_temporal_layers_to_decode_;
   const std::vector<std::unique_ptr<VideoFrameProcessor>>
       video_frame_processors_;

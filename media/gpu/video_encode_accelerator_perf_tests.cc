@@ -401,26 +401,24 @@ void BitstreamQualityMetrics::WriteToFile() const {
 class VideoEncoderTest : public ::testing::Test {
  public:
   // Create a new video encoder instance.
-  std::unique_ptr<VideoEncoder> CreateVideoEncoder(Video* video,
-                                                   VideoCodecProfile profile,
-                                                   size_t num_temporal_layers,
-                                                   uint32_t bitrate,
-                                                   uint32_t encoder_rate = 0) {
+  std::unique_ptr<VideoEncoder> CreateVideoEncoder(
+      Video* video,
+      VideoCodecProfile profile,
+      const media::VideoBitrateAllocation& bitrate,
+      uint32_t encoder_rate = 0) {
     auto performance_evaluator = std::make_unique<PerformanceEvaluator>();
     performance_evaluator_ = performance_evaluator.get();
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     bitstream_processors.push_back(std::move(performance_evaluator));
-    return CreateVideoEncoderWithProcessors(video, profile, num_temporal_layers,
-                                            bitrate, encoder_rate,
-                                            std::move(bitstream_processors));
+    return CreateVideoEncoderWithProcessors(
+        video, profile, bitrate, encoder_rate, std::move(bitstream_processors));
   }
 
   // Create a new video encoder instance for quality performance tests.
   std::unique_ptr<VideoEncoder> CreateVideoEncoderForQualityPerformance(
       Video* video,
       VideoCodecProfile profile,
-      size_t num_temporal_layers,
-      uint32_t bitrate) {
+      const media::VideoBitrateAllocation& bitrate) {
     raw_data_helper_ = RawDataHelper::Create(video);
     if (!raw_data_helper_) {
       LOG(ERROR) << "Failed to create raw data helper";
@@ -459,20 +457,19 @@ class VideoEncoderTest : public ::testing::Test {
     LOG_ASSERT(bitstream_validator);
     std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors;
     bitstream_processors.push_back(std::move(bitstream_validator));
-    return CreateVideoEncoderWithProcessors(video, profile, num_temporal_layers,
-                                            bitrate, /*encoder_rate=*/0,
+    return CreateVideoEncoderWithProcessors(video, profile, bitrate,
+                                            /*encoder_rate=*/0,
                                             std::move(bitstream_processors));
   }
 
   std::unique_ptr<VideoEncoder> CreateVideoEncoderWithProcessors(
       Video* video,
       VideoCodecProfile profile,
-      size_t num_temporal_layers,
-      uint32_t bitrate,
+      const media::VideoBitrateAllocation& bitrate,
       uint32_t encoder_rate,
       std::vector<std::unique_ptr<BitstreamProcessor>> bitstream_processors) {
     LOG_ASSERT(video);
-    VideoEncoderClientConfig config(video, profile, num_temporal_layers,
+    VideoEncoderClientConfig config(video, profile, g_env->SpatialLayers(),
                                     bitrate);
     config.num_frames_to_encode = kNumFramesToEncodeForPerformance;
     if (encoder_rate != 0)
@@ -508,8 +505,7 @@ class VideoEncoderTest : public ::testing::Test {
 // idea about the maximum output of the encoder.
 TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
   auto encoder =
-      CreateVideoEncoder(g_env->Video(), g_env->Profile(),
-                         g_env->NumTemporalLayers(), g_env->Bitrate());
+      CreateVideoEncoder(g_env->Video(), g_env->Profile(), g_env->Bitrate());
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   performance_evaluator_->StartMeasuring();
@@ -531,7 +527,6 @@ TEST_F(VideoEncoderTest, MeasureUncappedPerformance) {
 TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
   const uint32_t kEncodeRate = 30;
   auto encoder = CreateVideoEncoder(g_env->Video(), g_env->Profile(),
-                                    g_env->NumTemporalLayers(),
                                     g_env->Bitrate(), kEncodeRate);
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
@@ -550,8 +545,7 @@ TEST_F(VideoEncoderTest, MeasureCappedPerformance) {
 
 TEST_F(VideoEncoderTest, MeasureProducedBitstreamQuality) {
   auto encoder = CreateVideoEncoderForQualityPerformance(
-      g_env->Video(), g_env->Profile(), g_env->NumTemporalLayers(),
-      g_env->Bitrate());
+      g_env->Video(), g_env->Profile(), g_env->Bitrate());
   encoder->SetEventWaitTimeout(kPerfEventTimeout);
 
   encoder->Encode();
@@ -633,8 +627,8 @@ int main(int argc, char** argv) {
   media::test::VideoEncoderTestEnvironment* test_environment =
       media::test::VideoEncoderTestEnvironment::Create(
           video_path, video_metadata_path, false, base::FilePath(output_folder),
-          codec, num_temporal_layers, false /* output_bitstream */,
-          encode_bitrate);
+          codec, num_temporal_layers, /*num_spatial_layers=*/1u,
+          false /* output_bitstream */, encode_bitrate);
   if (!test_environment)
     return EXIT_FAILURE;
 

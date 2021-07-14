@@ -10,8 +10,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "media/base/video_bitrate_allocation.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/test/video_test_environment.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
@@ -20,7 +22,6 @@ class GpuMemoryBufferFactory;
 
 namespace media {
 namespace test {
-
 class Video;
 
 // Test environment for video encoder tests. Performs setup and teardown once
@@ -41,6 +42,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& output_folder,
       const std::string& codec,
       size_t num_temporal_layers,
+      size_t num_spatial_layers,
       bool output_bitstream,
       absl::optional<uint32_t> output_bitrate,
       const FrameOutputConfig& frame_output_config = FrameOutputConfig());
@@ -57,10 +59,14 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   const base::FilePath& OutputFolder() const;
   // Get the output codec profile.
   VideoCodecProfile Profile() const;
-  // Get the number of temporal layers.
-  size_t NumTemporalLayers() const;
+  // Get the spatial layers config for SVC. Return empty vector in non SVC mode.
+  const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
+  SpatialLayers() const;
+  // Get default bitrate allocation from target bitrate.
+  VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
+      uint32_t bitrate) const;
   // Get the target bitrate (bits/second).
-  uint32_t Bitrate() const;
+  VideoBitrateAllocation Bitrate() const;
   // Whether the encoded bitstream is saved to disk.
   bool SaveOutputBitstream() const;
   absl::optional<base::FilePath> OutputBitstreamFilePath() const;
@@ -82,6 +88,7 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
                               const base::FilePath& output_folder,
                               VideoCodecProfile profile,
                               size_t num_temporal_layers,
+                              size_t num_spatial_layers,
                               uint32_t bitrate,
                               bool save_output_bitstream,
                               const FrameOutputConfig& frame_output_config);
@@ -99,8 +106,14 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // The number of temporal layers of the stream to be produced by VideoEncoder.
   // This is only for vp9 stream.
   const size_t num_temporal_layers_;
+  // The number of spatial layers of the stream to be produced by VideoEncoder.
+  // This is only for vp9 stream.
+  const size_t num_spatial_layers_;
   // Targeted bitrate (bits/second) of the stream produced by VideoEncoder.
-  const uint32_t bitrate_;
+  const VideoBitrateAllocation bitrate_;
+  // The spatial layers of the stream which aligned with |num_spatial_layers_|
+  // and |num_temporal_layers_|. This is only for vp9 stream.
+  std::vector<VideoEncodeAccelerator::Config::SpatialLayer> spatial_layers_;
   // Whether the bitstream produced by VideoEncoder is saved to disk.
   const bool save_output_bitstream_;
   // The configuration about saving decoded images of bitstream encoded by

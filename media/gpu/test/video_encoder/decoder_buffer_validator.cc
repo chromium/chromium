@@ -250,11 +250,11 @@ VP9Validator::VP9Validator(VideoCodecProfile profile,
                            size_t num_spatial_layers,
                            size_t num_temporal_layers)
     : DecoderBufferValidator(visible_rect),
-      parser_(false /* parsing_compressed_header */),
+      parser_(/*parsing_compressed_header=*/false),
       profile_(VideoCodecProfileToVP9Profile(profile)),
       num_spatial_layers_(num_spatial_layers),
       num_temporal_layers_(num_temporal_layers),
-      next_picture_id_(-1) {}
+      next_picture_id_(0) {}
 
 VP9Validator::~VP9Validator() = default;
 
@@ -282,13 +282,15 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     return false;
   }
 
-  if (next_picture_id_ == -1 && !header.IsKeyframe()) {
+  if (next_picture_id_ == 0 &&
+      (num_spatial_layers_ == 1 ||
+       (num_spatial_layers_ > 1 && metadata.vp9->spatial_idx == 0)) &&
+      !header.IsKeyframe()) {
     LOG(ERROR) << "First frame must be a key-frame.";
     return false;
   }
 
   BufferState new_buffer_state{};
-  new_buffer_state.picture_id = next_picture_id_++;
   if (num_spatial_layers_ > 1 || num_temporal_layers_ > 1) {
     if (!metadata.vp9) {
       LOG(ERROR) << "Metadata must be populated if spatial/temporal "
@@ -300,8 +302,13 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                     "scaliblity is enabled.";
       return false;
     }
-    // TODO(crbug.com/1186051): spatial_id = metadata.vp9->spatial_id;
+    new_buffer_state.spatial_id = metadata.vp9->spatial_idx;
     new_buffer_state.temporal_id = metadata.vp9->temporal_idx;
+    new_buffer_state.picture_id = next_picture_id_;
+    if (metadata.vp9->spatial_idx == num_spatial_layers_ - 1)
+      next_picture_id_++;
+  } else {
+    new_buffer_state.picture_id = next_picture_id_++;
   }
 
   if (metadata.vp9 &&
@@ -318,7 +325,9 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                  << ", expected profile: " << profile_;
       return false;
     }
-    if (gfx::Rect(header.render_width, header.render_height) != visible_rect_) {
+    if ((!metadata.vp9.has_value() ||
+         metadata.vp9->spatial_layer_resolutions.size() == 1u) &&
+        gfx::Rect(header.render_width, header.render_height) != visible_rect_) {
       LOG(ERROR)
           << "Visible rectangle mismatched. Actual visible_rect: "
           << gfx::Rect(header.render_width, header.render_height).ToString()
@@ -332,7 +341,8 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
     }
 
     new_buffer_state.picture_id = 0;
-    next_picture_id_ = 1;
+    if (!metadata.vp9 || metadata.vp9->spatial_idx == num_spatial_layers_ - 1)
+      next_picture_id_ = 1;
   } else if (header.show_existing_frame) {
     if (!reference_buffers_[header.frame_to_show_map_idx]) {
       LOG(ERROR) << "Attempting to show an existing frame, but the selected "
@@ -397,6 +407,13 @@ bool VP9Validator::Validate(const DecoderBuffer& decoder_buffer,
                       "temporal layer.";
         return false;
       }
+
+      // For key picture (|new_buffer_state.picture_id| == 0), we don't fill
+      // |p_diffs| even though it reference lower spatial layer frame. Skip
+      // inserting |expected_pdiffs|.
+      if (new_buffer_state.picture_id == 0)
+        continue;
+
       expected_pdiffs.push_back(new_buffer_state.picture_id - ref.picture_id);
     }
     if (metadata.vp9) {
