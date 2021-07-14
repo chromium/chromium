@@ -174,7 +174,6 @@ PASS oldChildWindow.onratechange is newChildWindow.onratechange
 PASS oldChildWindow.onrejectionhandled is newChildWindow.onrejectionhandled
 PASS oldChildWindow.onreset is newChildWindow.onreset
 PASS oldChildWindow.onresize is newChildWindow.onresize
-PASS oldChildWindow.onscreenschange is newChildWindow.onscreenschange
 PASS oldChildWindow.onscroll is newChildWindow.onscroll
 PASS oldChildWindow.onscrollend is newChildWindow.onscrollend
 PASS oldChildWindow.onsearch is newChildWindow.onsearch

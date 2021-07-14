@@ -3474,8 +3474,6 @@ void LocalFrame::OnScreensChange() {
   if (RuntimeEnabledFeatures::WindowPlacementEnabled(DomWindow())) {
     // Allow fullscreen requests shortly after user-generated screens changes.
     transient_allow_fullscreen_.Activate();
-    DomWindow()->DispatchEvent(
-        *Event::Create(event_type_names::kScreenschange));
   }
 }
 

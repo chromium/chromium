@@ -129,7 +129,6 @@
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
 #include "content/browser/scoped_active_url.h"
-#include "content/browser/screen_enumeration/screen_enumeration_impl.h"
 #include "content/browser/service_worker/service_worker_container_host.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_object_host.h"
@@ -8798,13 +8797,6 @@ void RenderFrameHostImpl::GetFeatureObserver(
         client, GlobalRenderFrameHostId(GetProcess()->GetID(), routing_id_));
   }
   feature_observer_->GetFeatureObserver(std::move(receiver));
-}
-
-void RenderFrameHostImpl::BindScreenEnumerationReceiver(
-    mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver) {
-  if (!screen_enumeration_impl_)
-    screen_enumeration_impl_ = std::make_unique<ScreenEnumerationImpl>(this);
-  screen_enumeration_impl_->Bind(std::move(receiver));
 }
 
 void RenderFrameHostImpl::BindRenderAccessibilityHost(

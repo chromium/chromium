@@ -133,7 +133,6 @@ PASS childWindow.onratechange is null
 PASS childWindow.onrejectionhandled is null
 PASS childWindow.onreset is null
 PASS childWindow.onresize is null
-PASS childWindow.onscreenschange is null
 PASS childWindow.onscroll is null
 PASS childWindow.onscrollend is null
 PASS childWindow.onsearch is null

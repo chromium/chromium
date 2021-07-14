@@ -116,7 +116,6 @@
 #include "third_party/blink/public/mojom/peerconnection/peer_connection_tracker.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom-forward.h"
-#include "third_party/blink/public/mojom/screen_enumeration/screen_enumeration.mojom-forward.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-forward.h"
 #include "third_party/blink/public/mojom/sms/webotp_service.mojom-forward.h"
 #include "third_party/blink/public/mojom/speech/speech_synthesis.mojom-forward.h"
@@ -221,7 +220,6 @@ class RenderProcessHost;
 class RenderViewHostImpl;
 class RenderWidgetHostView;
 class RenderWidgetHostViewBase;
-class ScreenEnumerationImpl;
 class SensorProviderProxyImpl;
 class SpeechSynthesisImpl;
 class SubresourceWebBundleNavigationInfo;
@@ -1710,9 +1708,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   void GetFeatureObserver(
       mojo::PendingReceiver<blink::mojom::FeatureObserver> receiver);
-
-  void BindScreenEnumerationReceiver(
-      mojo::PendingReceiver<blink::mojom::ScreenEnumeration> receiver);
 
   void BindRenderAccessibilityHost(
       mojo::PendingReceiver<mojom::RenderAccessibilityHost> receiver);
@@ -3314,8 +3309,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   std::unique_ptr<service_manager::InterfaceProvider> remote_interfaces_;
 
   std::list<std::unique_ptr<WebBluetoothServiceImpl>> web_bluetooth_services_;
-
-  std::unique_ptr<ScreenEnumerationImpl> screen_enumeration_impl_;
 
   // The object managing the accessibility tree for this frame.
   std::unique_ptr<BrowserAccessibilityManager> browser_accessibility_manager_;

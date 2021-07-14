@@ -47,7 +47,6 @@
 #include "content/browser/renderer_host/raw_clipboard_host_impl.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
-#include "content/browser/screen_enumeration/screen_enumeration_impl.h"
 #include "content/browser/service_worker/service_worker_host.h"
 #include "content/browser/speculation_rules/speculation_host_impl.h"
 #include "content/browser/speech/speech_recognition_dispatcher_host.h"
@@ -710,10 +709,6 @@ void PopulateFrameBinders(RenderFrameHostImpl* host, mojo::BinderMap* map) {
       base::BindRepeating(&RenderFrameHostImpl::GetManagedConfigurationService,
                           base::Unretained(host)));
 #endif  // !defined(OS_ANDROID)
-
-  map->Add<blink::mojom::ScreenEnumeration>(
-      base::BindRepeating(&RenderFrameHostImpl::BindScreenEnumerationReceiver,
-                          base::Unretained(host)));
 
   if (base::FeatureList::IsEnabled(features::kWebOTP)) {
     map->Add<blink::mojom::WebOTPService>(

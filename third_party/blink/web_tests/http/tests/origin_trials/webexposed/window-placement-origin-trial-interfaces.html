@@ -14,17 +14,13 @@ generate_token.py http://127.0.0.1:8000 WindowPlacementOT2 --expire-timestamp=20
 
 test(t => {
   OriginTrialsHelper.check_properties_exist(this, {
-     'global': ['getScreens', 'isMultiScreen', 'onscreenschange'],
+     'global': ['getScreens'],
   });
 }, 'Window Placement API interfaces and properties in Origin-Trial enabled document.');
 
 test(t => {
   assert_true('getScreens' in window, 'getScreens function exists on window scope');
-  assert_true('isMultiScreen' in window, 'isMultiScreen function exists on window scope');
-  assert_true('onscreenschange' in window, 'onscreenschange EventHandler exists on window scope');
   assert_not_equals(window.getScreens, undefined, 'getScreens function can be accessed on window');
-  assert_not_equals(window.isMultiScreen, undefined, 'isMultiScreen function can be accessed on window');
-  assert_not_equals(window.onscreenschange, undefined, 'onscreenschange function can be accessed on window');
 }, 'Window Placement API entry point in Origin-Trial enabled document.');
 
 </script>

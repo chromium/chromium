@@ -11406,7 +11406,6 @@ namespace CSS
     getter onrejectionhandled
     getter onreset
     getter onresize
-    getter onscreenschange
     getter onscroll
     getter onscrollend
     getter onsearch
@@ -11494,10 +11493,8 @@ namespace CSS
     method getDigitalGoodsService
     method getLockScreenData
     method getScreens
-    method getScreensDeprecated
     method getSelection
     method getWindowSegments
-    method isMultiScreen
     method matchMedia
     method moveBy
     method moveTo
@@ -11623,7 +11620,6 @@ namespace CSS
     setter onrejectionhandled
     setter onreset
     setter onresize
-    setter onscreenschange
     setter onscroll
     setter onscrollend
     setter onsearch

@@ -127,6 +127,9 @@ float ScreenAdvanced::devicePixelRatio() const {
 }
 
 const String& ScreenAdvanced::id() const {
+  // TODO(http://crbug.com/994889): Implement temporary, generated per-origin
+  // unique device IDs that reset when cookies are deleted. See related:
+  // web_bluetooth_device_id.h, unguessable_token.h, and uuid.h
   NOTIMPLEMENTED_LOG_ONCE();
   return g_empty_string;
 }

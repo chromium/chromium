@@ -1456,8 +1456,8 @@ void WebContentsImpl::OnScreensChange(bool is_multi_screen_changed) {
 #if !defined(OS_MAC)
   // Send |is_multi_screen_changed| events to all visible frames, but limit
   // other events to frames with the Window Placement permission. This obviates
-  // the most pressing need for sites to poll isMultiScreen(), which is exposed
-  // without explicit permission, while also protecting privacy.
+  // the most pressing need for sites to poll window.screen.isExtended which is
+  // exposed without explicit permission, while also protecting privacy.
   // TODO(crbug.com/1109989): Postpone events; refine utility/privacy balance.
   // TODO(crbug.com/1205676): Remove this deprecated window.screenschange code.
   for (FrameTreeNode* node : frame_tree_.Nodes()) {

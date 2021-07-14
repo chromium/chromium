@@ -1671,8 +1671,6 @@ source_set("browser") {
     "scoped_active_url.h",
     "screen_enumeration/screen_change_monitor.cc",
     "screen_enumeration/screen_change_monitor.h",
-    "screen_enumeration/screen_enumeration_impl.cc",
-    "screen_enumeration/screen_enumeration_impl.h",
     "screen_orientation/screen_orientation_provider.cc",
     "screen_orientation/screen_orientation_provider.h",
     "screenlock_monitor/screenlock_monitor.cc",
