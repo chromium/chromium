@@ -150,8 +150,8 @@ class MediaRouterAndroid : public MediaRouterBase {
   void OnRouteRequestError(
       const std::string& error_text,
       int route_request_id,
-      base::OnceCallback<void(MediaRouteProviderId,
-                              RouteRequestResult::ResultCode)> callback);
+      base::OnceCallback<void(RouteRequestResult::ResultCode,
+                              absl::optional<MediaRouteProviderId>)> callback);
 
   void SetMediaRouterBridgeForTest(MediaRouterAndroidBridge* bridge) {
     bridge_.reset(bridge);

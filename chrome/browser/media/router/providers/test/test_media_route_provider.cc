@@ -19,6 +19,7 @@
 #include "components/media_router/common/media_source.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/route_request_result.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -61,8 +62,8 @@ TestMediaRouteProvider::~TestMediaRouteProvider() = default;
 void TestMediaRouteProvider::SetSinks() {
   MediaSinkInternal sink_internal_1;
   MediaSinkInternal sink_internal_2;
-  MediaSink sink1("id1", "test-sink-1", SinkIconType::CAST);
-  MediaSink sink2("id2", "test-sink-2", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("id1", "test-sink-1")};
+  MediaSink sink2{CreateCastSink("id2", "test-sink-2")};
   sink1.set_provider_id(kProviderId);
   sink2.set_provider_id(kProviderId);
   sink_internal_1.set_sink(sink1);

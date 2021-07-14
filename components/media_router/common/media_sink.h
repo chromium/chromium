@@ -40,11 +40,10 @@ class MediaSink {
  public:
   using Id = std::string;
 
-  // TODO(takumif): Remove the default argument for |provider_id|.
   MediaSink(const MediaSink::Id& sink_id,
             const std::string& name,
             SinkIconType icon_type,
-            MediaRouteProviderId provider_id = MediaRouteProviderId::UNKNOWN);
+            MediaRouteProviderId provider_id);
   MediaSink(const MediaSink& other);
   MediaSink(MediaSink&& other) noexcept;
   MediaSink();
@@ -102,7 +101,7 @@ class MediaSink {
   SinkIconType icon_type_ = SinkIconType::GENERIC;
 
   // The ID of the MediaRouteProvider that the MediaSink belongs to.
-  MediaRouteProviderId provider_id_ = MediaRouteProviderId::UNKNOWN;
+  MediaRouteProviderId provider_id_;
 };
 
 }  // namespace media_router

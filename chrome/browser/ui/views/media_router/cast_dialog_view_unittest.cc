@@ -40,7 +40,7 @@ namespace media_router {
 namespace {
 
 UIMediaSink CreateAvailableSink() {
-  UIMediaSink sink;
+  UIMediaSink sink{MediaRouteProviderId::CAST};
   sink.id = "sink_available";
   sink.state = UIMediaSinkState::AVAILABLE;
   sink.cast_modes = {TAB_MIRROR};
@@ -48,7 +48,7 @@ UIMediaSink CreateAvailableSink() {
 }
 
 UIMediaSink CreateConnectedSink() {
-  UIMediaSink sink;
+  UIMediaSink sink{MediaRouteProviderId::CAST};
   sink.id = "sink_connected";
   sink.state = UIMediaSinkState::CONNECTED;
   sink.cast_modes = {TAB_MIRROR};

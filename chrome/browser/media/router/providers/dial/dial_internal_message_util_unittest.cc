@@ -9,6 +9,7 @@
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -22,8 +23,8 @@ class DialInternalMessageUtilTest : public ::testing::Test {
                      "152127444812943594",
                      GURL("http://172.17.32.151/app/YouTube")),
         util_("hash-token") {
-    MediaSink sink("dial:<29a400068c051073801508058128105d>", "Lab Roku",
-                   SinkIconType::GENERIC);
+    MediaSink sink{
+        CreateDialSink("dial:<29a400068c051073801508058128105d>", "Lab Roku")};
     DialSinkExtraData extra_data;
     extra_data.ip_address = net::IPAddress(172, 17, 32, 151);
     sink_ = MediaSinkInternal(sink, extra_data);

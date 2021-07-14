@@ -2813,6 +2813,7 @@ if (!is_android) {
         "//components/guest_view/browser:test_support",
         "//components/keep_alive_registry",
         "//components/media_router/browser:test_support",
+        "//components/media_router/common:test_support",
         "//components/web_package:test_support",
         "//google_apis/drive:test_support",
 
@@ -5997,6 +5998,7 @@ test("unit_tests") {
 
     deps += [
       "//chrome/browser/share/core:share_targets_unittest",
+      "//components/media_router/common:test_support",
       "//components/soda:constants",
       "//services/network:test_support",
     ]
@@ -7206,6 +7208,7 @@ test("unit_tests") {
       "//components/constrained_window",
       "//components/media_message_center",
       "//components/media_router/browser:test_support",
+      "//components/media_router/common:test_support",
       "//components/web_modal:test_support",
       "//content/test:test_support",
       "//ui/base/dragdrop:types",

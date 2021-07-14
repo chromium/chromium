@@ -14,7 +14,7 @@
 namespace {
 
 media_router::UIMediaSink CreateAvailableSink() {
-  media_router::UIMediaSink sink;
+  media_router::UIMediaSink sink{media_router::MediaRouteProviderId::CAST};
   sink.id = "sink_available";
   sink.friendly_name = u"TestAvailableSink";
   sink.state = media_router::UIMediaSinkState::AVAILABLE;
@@ -23,7 +23,7 @@ media_router::UIMediaSink CreateAvailableSink() {
 }
 
 media_router::UIMediaSink CreateConnectedSink() {
-  media_router::UIMediaSink sink;
+  media_router::UIMediaSink sink{media_router::MediaRouteProviderId::CAST};
   sink.id = "sink_connected";
   sink.friendly_name = u"TestConnectedSink";
   sink.state = media_router::UIMediaSinkState::CONNECTED;
@@ -35,7 +35,7 @@ media_router::UIMediaSink CreateConnectedSink() {
 }
 
 media_router::UIMediaSink CreateUnavailableSink() {
-  media_router::UIMediaSink sink;
+  media_router::UIMediaSink sink{media_router::MediaRouteProviderId::CAST};
   sink.id = "sink_unavailable";
   sink.friendly_name = u"TestUnavailableSink";
   sink.state = media_router::UIMediaSinkState::UNAVAILABLE;

@@ -10,7 +10,10 @@
 #include "base/macros.h"
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/media_route_provider_helper.h"
+#include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -157,10 +160,10 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 }
 
 TEST_F(QueryResultManagerTest, MultipleQueries) {
-  MediaSink sink1("sinkId1", "Sink 1", SinkIconType::CAST);
-  MediaSink sink2("sinkId2", "Sink 2", SinkIconType::CAST);
-  MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
-  MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("sinkId1", "Sink 1")};
+  MediaSink sink2{CreateCastSink("sinkId2", "Sink 2")};
+  MediaSink sink3{CreateCastSink("sinkId3", "Sink 3")};
+  MediaSink sink4{CreateCastSink("sinkId4", "Sink 4")};
   MediaSource presentation_source1 =
       MediaSource::ForPresentationUrl(GURL("http://bar.com"));
   MediaSource presentation_source2 =
@@ -257,10 +260,10 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
 }
 
 TEST_F(QueryResultManagerTest, MultipleUrls) {
-  const MediaSink sink1("sinkId1", "Sink 1", SinkIconType::CAST);
-  const MediaSink sink2("sinkId2", "Sink 2", SinkIconType::CAST);
-  const MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
-  const MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("sinkId1", "Sink 1")};
+  MediaSink sink2{CreateCastSink("sinkId2", "Sink 2")};
+  MediaSink sink3{CreateCastSink("sinkId3", "Sink 3")};
+  MediaSink sink4{CreateCastSink("sinkId4", "Sink 4")};
   const MediaSource source_a(
       MediaSource::ForPresentationUrl(GURL("http://urlA.com")));
   const MediaSource source_b(

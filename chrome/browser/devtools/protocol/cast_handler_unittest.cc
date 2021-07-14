@@ -11,11 +11,14 @@
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/presentation_request.h"
 
+using media_router::CreateCastSink;
 using testing::_;
 using testing::DoAll;
 using testing::Return;
@@ -30,12 +33,9 @@ constexpr char kSinkId2[] = "sink2";
 constexpr char kSinkName1[] = "Sink 1";
 constexpr char kSinkName2[] = "Sink 2";
 
-const media_router::MediaSink sink1(kSinkId1,
-                                    kSinkName1,
-                                    media_router::SinkIconType::CAST);
-const media_router::MediaSink sink2(kSinkId2,
-                                    kSinkName2,
-                                    media_router::SinkIconType::CAST);
+const media_router::MediaSink sink1{CreateCastSink(kSinkId1, kSinkName1)};
+const media_router::MediaSink sink2{CreateCastSink(kSinkId2, kSinkName2)};
+
 media_router::MediaRoute Route1() {
   return media_router::MediaRoute(
       kRouteId1, media_router::MediaSource("https://example.com/"), kSinkId1,

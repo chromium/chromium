@@ -34,7 +34,7 @@ enum class UIMediaSinkState {
 
 struct UIMediaSink {
  public:
-  UIMediaSink();
+  explicit UIMediaSink(MediaRouteProviderId provider);
   UIMediaSink(const UIMediaSink& other);
   ~UIMediaSink();
 
@@ -61,7 +61,7 @@ struct UIMediaSink {
   SinkIconType icon_type = SinkIconType::GENERIC;
 
   // The provider of the sink.
-  MediaRouteProviderId provider = MediaRouteProviderId::UNKNOWN;
+  MediaRouteProviderId provider;
 
   // The current state of the media sink.
   UIMediaSinkState state = UIMediaSinkState::AVAILABLE;

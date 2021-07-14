@@ -213,11 +213,11 @@ void MediaRouterMojoImpl::RouteResponseReceived(
   }
 
   if (is_join) {
-    MediaRouterMetrics::RecordJoinRouteResultCode(provider_id,
-                                                  result->result_code());
+    MediaRouterMetrics::RecordJoinRouteResultCode(result->result_code(),
+                                                  provider_id);
   } else {
-    MediaRouterMetrics::RecordCreateRouteResultCode(provider_id,
-                                                    result->result_code());
+    MediaRouterMetrics::RecordCreateRouteResultCode(result->result_code(),
+                                                    provider_id);
   }
 
   std::move(callback).Run(std::move(connection), *result);
@@ -236,8 +236,7 @@ void MediaRouterMojoImpl::CreateRoute(const MediaSource::Id& source_id,
   if (!sink) {
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
         "Sink not found", RouteRequestResult::SINK_NOT_FOUND);
-    MediaRouterMetrics::RecordCreateRouteResultCode(
-        MediaRouteProviderId::UNKNOWN, result->result_code());
+    MediaRouterMetrics::RecordCreateRouteResultCode(result->result_code());
     std::move(callback).Run(nullptr, *result);
     return;
   }
@@ -302,9 +301,7 @@ void MediaRouterMojoImpl::JoinRoute(const MediaSource::Id& source_id,
   if (!provider_id || !HasJoinableRoute()) {
     std::unique_ptr<RouteRequestResult> result = RouteRequestResult::FromError(
         "Route not found", RouteRequestResult::ROUTE_NOT_FOUND);
-    MediaRouterMetrics::RecordJoinRouteResultCode(
-        provider_id.value_or(MediaRouteProviderId::UNKNOWN),
-        result->result_code());
+    MediaRouterMetrics::RecordJoinRouteResultCode(result->result_code());
     // TODO(btolsch): This should really move |result| now that there's only a
     // single callback.
     std::move(callback).Run(nullptr, *result);
@@ -354,7 +351,7 @@ void MediaRouterMojoImpl::TerminateRoute(const MediaRoute::Id& route_id) {
       GetProviderIdForRoute(route_id);
   if (!provider_id) {
     MediaRouterMetrics::RecordJoinRouteResultCode(
-        MediaRouteProviderId::UNKNOWN, RouteRequestResult::ROUTE_NOT_FOUND);
+        RouteRequestResult::ROUTE_NOT_FOUND);
     return;
   }
   auto callback =
@@ -848,8 +845,8 @@ void MediaRouterMojoImpl::OnTerminateRouteResult(
     MediaRouteProviderId provider_id,
     const absl::optional<std::string>& error_text,
     RouteRequestResult::ResultCode result_code) {
-  MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(provider_id,
-                                                             result_code);
+  MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(result_code,
+                                                             provider_id);
 }
 
 void MediaRouterMojoImpl::OnRouteAdded(MediaRouteProviderId provider_id,
@@ -1065,7 +1062,6 @@ void MediaRouterMojoImpl::RecordPresentationRequestUrlBySink(
       break;
     case MediaRouteProviderId::ANDROID_CAF:
     case MediaRouteProviderId::TEST:
-    case MediaRouteProviderId::UNKNOWN:
       break;
   }
   base::UmaHistogramEnumeration("MediaRouter.PresentationRequest.UrlBySink",

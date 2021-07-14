@@ -16,6 +16,7 @@
 #include "components/media_router/browser/media_sinks_observer.h"
 #include "components/media_router/browser/test/mock_media_router.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/message_center/message_center.h"
@@ -26,12 +27,6 @@ using testing::_;
 namespace {
 
 const char kNotificationId[] = "chrome://cast";
-
-// Helper to create a MediaSink intance.
-media_router::MediaSink MakeSink(const std::string& id,
-                                 const std::string& name) {
-  return media_router::MediaSink(id, name, media_router::SinkIconType::GENERIC);
-}
 
 // Helper to create a MediaRoute instance.
 media_router::MediaRoute MakeRoute(const std::string& route_id,
@@ -138,9 +133,9 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
   std::vector<media_router::MediaSink> zero_sinks;
   std::vector<media_router::MediaSink> one_sink;
   std::vector<media_router::MediaSink> two_sinks;
-  one_sink.push_back(MakeSink("id1", "name"));
-  two_sinks.push_back(MakeSink("id1", "name"));
-  two_sinks.push_back(MakeSink("id2", "name"));
+  one_sink.push_back(media_router::CreateCastSink("id1", "name"));
+  two_sinks.push_back(media_router::CreateCastSink("id1", "name"));
+  two_sinks.push_back(media_router::CreateCastSink("id2", "name"));
 
   // The tray should be hidden when there are no sinks.
   EXPECT_FALSE(IsTrayVisible());
@@ -174,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(SystemTrayTrayCastMediaRouterChromeOSTest,
 
   // Setup the sinks.
   const std::vector<media_router::MediaSink> sinks = {
-      MakeSink("remote_sink", "Remote Sink"),
-      MakeSink("local_sink", "Local Sink")};
+      media_router::CreateCastSink("remote_sink", "Remote Sink"),
+      media_router::CreateCastSink("local_sink", "Local Sink")};
   media_sinks_observer()->OnSinksUpdated(sinks, std::vector<url::Origin>());
   content::RunAllPendingInMessageLoop();
 

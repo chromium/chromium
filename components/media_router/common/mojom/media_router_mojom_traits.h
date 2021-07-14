@@ -502,8 +502,6 @@ struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
         return media_router::mojom::MediaRouteProvider_Id::ANDROID_CAF;
       case media_router::MediaRouteProviderId::TEST:
         return media_router::mojom::MediaRouteProvider_Id::TEST;
-      case media_router::MediaRouteProviderId::UNKNOWN:
-        break;
     }
     NOTREACHED() << "Invalid MediaRouteProvider_Id: "
                  << static_cast<int>(provider_id);

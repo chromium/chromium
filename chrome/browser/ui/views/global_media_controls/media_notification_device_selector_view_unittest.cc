@@ -44,7 +44,7 @@ constexpr char16_t kSinkFriendlyName16[] = u"Nest Hub";
 
 UIMediaSink CreateMediaSink(
     UIMediaSinkState state = UIMediaSinkState::AVAILABLE) {
-  UIMediaSink sink;
+  UIMediaSink sink{media_router::MediaRouteProviderId::CAST};
   sink.friendly_name = kSinkFriendlyName16;
   sink.id = kSinkId;
   sink.state = state;

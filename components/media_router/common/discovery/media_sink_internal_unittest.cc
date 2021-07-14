@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/discovery/media_sink_internal.h"
+
+#include "components/media_router/common/test/test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -59,7 +61,7 @@ TEST(MediaSinkInternalTest, TestIsValidSinkId) {
 }
 
 TEST(MediaSinkInternalTest, TestConstructorAndAssignment) {
-  MediaSink sink(kSinkId, kSinkName, SinkIconType::CAST);
+  MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   DialSinkExtraData dial_extra_data = CreateDialSinkExtraData();
   CastSinkExtraData cast_extra_data = CreateCastSinkExtraData();
 
@@ -96,7 +98,7 @@ TEST(MediaSinkInternalTest, TestConstructorAndAssignment) {
 }
 
 TEST(MediaSinkInternalTest, TestSetExtraData) {
-  MediaSink sink(kSinkId, kSinkName, SinkIconType::CAST);
+  MediaSink sink{CreateCastSink(kSinkId, kSinkName)};
   DialSinkExtraData dial_extra_data = CreateDialSinkExtraData();
   CastSinkExtraData cast_extra_data = CreateCastSinkExtraData();
 

@@ -27,9 +27,13 @@ constexpr char kHistogramProviderJoinRouteResult[] =
 constexpr char kHistogramProviderTerminateRouteResult[] =
     "MediaRouter.Provider.TerminateRoute.Result";
 
-std::string GetHistogramNameForProvider(const std::string& base_name,
-                                        MediaRouteProviderId provider_id) {
-  switch (provider_id) {
+std::string GetHistogramNameForProvider(
+    const std::string& base_name,
+    absl::optional<MediaRouteProviderId> provider_id) {
+  if (!provider_id) {
+    return base_name;
+  }
+  switch (*provider_id) {
     case MediaRouteProviderId::CAST:
       return base_name + ".Cast";
     case MediaRouteProviderId::DIAL:
@@ -40,7 +44,6 @@ std::string GetHistogramNameForProvider(const std::string& base_name,
       return base_name + ".AndroidCaf";
     // The rest use the base histogram name.
     case MediaRouteProviderId::TEST:
-    case MediaRouteProviderId::UNKNOWN:
       return base_name;
   }
 }
@@ -239,8 +242,8 @@ void MediaRouterMetrics::RecordCloudPrefAtInit(bool enabled) {
 
 // static
 void MediaRouterMetrics::RecordCreateRouteResultCode(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
+    RouteRequestResult::ResultCode result_code,
+    absl::optional<MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderCreateRouteResult,
@@ -250,8 +253,8 @@ void MediaRouterMetrics::RecordCreateRouteResultCode(
 
 // static
 void MediaRouterMetrics::RecordJoinRouteResultCode(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
+    RouteRequestResult::ResultCode result_code,
+    absl::optional<MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderJoinRouteResult,
@@ -261,8 +264,8 @@ void MediaRouterMetrics::RecordJoinRouteResultCode(
 
 // static
 void MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-    MediaRouteProviderId provider_id,
-    RouteRequestResult::ResultCode result_code) {
+    RouteRequestResult::ResultCode result_code,
+    absl::optional<MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,

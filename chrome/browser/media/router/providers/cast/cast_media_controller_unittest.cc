@@ -13,6 +13,7 @@
 #include "chrome/browser/media/router/providers/cast/mock_app_activity.h"
 #include "chrome/browser/media/router/test/media_router_mojo_test.h"
 #include "components/media_router/common/media_route.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -128,8 +129,8 @@ mojom::MediaStatusPtr CreateSampleMediaStatus() {
 }
 
 std::unique_ptr<CastSession> CreateSampleSession() {
-  MediaSinkInternal sink(MediaSink("sinkId123", "name", SinkIconType::CAST),
-                         CastSinkExtraData());
+  MediaSinkInternal sink{CreateCastSink("sinkId123", "name"),
+                         CastSinkExtraData{}};
   absl::optional<Value> receiver_status = base::JSONReader::Read(R"({
     "applications": [{
       "appId": "ABCD1234",

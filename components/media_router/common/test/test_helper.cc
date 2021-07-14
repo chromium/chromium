@@ -6,8 +6,23 @@
 
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "components/media_router/common/media_sink.h"
 
 namespace media_router {
+
+MediaSink CreateCastSink(const std::string& id, const std::string& name) {
+  return MediaSink{id, name, SinkIconType::CAST, MediaRouteProviderId::CAST};
+}
+
+MediaSink CreateDialSink(const std::string& id, const std::string& name) {
+  return MediaSink{id, name, SinkIconType::GENERIC, MediaRouteProviderId::DIAL};
+}
+
+MediaSink CreateWiredDisplaySink(const std::string& id,
+                                 const std::string& name) {
+  return MediaSink{id, name, SinkIconType::GENERIC,
+                   MediaRouteProviderId::WIRED_DISPLAY};
+}
 
 #if !defined(OS_ANDROID)
 TestMediaSinkService::TestMediaSinkService()

@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -134,7 +135,7 @@ MediaSinkInternal CreateCastSink(int num) {
   std::string unique_id = base::StringPrintf("cast:<id%d>", num);
   net::IPEndPoint ip_endpoint = CreateIPEndPoint(num);
 
-  MediaSink sink(unique_id, friendly_name, SinkIconType::CAST);
+  MediaSink sink{CreateCastSink(unique_id, friendly_name)};
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint = ip_endpoint;
   extra_data.port = ip_endpoint.port();

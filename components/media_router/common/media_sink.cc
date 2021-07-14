@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/media_router/common/media_sink.h"
+
 #include "base/i18n/string_compare.h"
 #include "base/strings/utf_string_conversions.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"

@@ -6,6 +6,7 @@
 #define COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_ROUTE_PROVIDER_HELPER_H_
 
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_router {
 
@@ -19,11 +20,11 @@ enum MediaRouteProviderId {
   DIAL,
   ANDROID_CAF,
   TEST,
-  UNKNOWN  // New values must be added above this value.
 };
 
 const char* ProviderIdToString(MediaRouteProviderId provider_id);
-MediaRouteProviderId ProviderIdFromString(base::StringPiece provider_id);
+absl::optional<MediaRouteProviderId> ProviderIdFromString(
+    base::StringPiece provider_id);
 
 }  // namespace media_router
 

@@ -19,6 +19,7 @@
 #include "components/media_router/browser/route_message_observer.h"
 #include "components/media_router/browser/route_message_util.h"
 #include "components/media_router/common/route_request_result.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -267,10 +268,10 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
     observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
-        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+        result->result_code(), MediaRouteProviderId::ANDROID_CAF);
   } else {
     MediaRouterMetrics::RecordJoinRouteResultCode(
-        MediaRouteProviderId::ANDROID_CAF, result->result_code());
+        result->result_code(), MediaRouteProviderId::ANDROID_CAF);
   }
 }
 
@@ -303,7 +304,7 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
     }
   }
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-      MediaRouteProviderId::ANDROID_CAF, RouteRequestResult::OK);
+      RouteRequestResult::OK, MediaRouteProviderId::ANDROID_CAF);
   RemoveRoute(route_id);
 }
 
@@ -367,8 +368,8 @@ void MediaRouterAndroid::OnPresentationConnectionError(
 void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
-    base::OnceCallback<void(MediaRouteProviderId,
-                            RouteRequestResult::ResultCode)> callback) {
+    base::OnceCallback<void(RouteRequestResult::ResultCode,
+                            absl::optional<MediaRouteProviderId>)> callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
   if (!request)
     return;
@@ -379,8 +380,8 @@ void MediaRouterAndroid::OnRouteRequestError(
   std::move(request->callback).Run(nullptr, *result);
 
   route_requests_.Remove(route_request_id);
-  std::move(callback).Run(MediaRouteProviderId::ANDROID_CAF,
-                          result->result_code());
+  std::move(callback).Run(result->result_code(),
+                          MediaRouteProviderId::ANDROID_CAF);
 }
 
 }  // namespace media_router

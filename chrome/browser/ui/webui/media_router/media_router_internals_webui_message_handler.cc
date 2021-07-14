@@ -64,16 +64,18 @@ void MediaRouterInternalsWebUIMessageHandler::HandleGetProviderState(
   base::Value callback_id = args->GetList()[0].Clone();
   if (args->GetList().size() != 2 || !args->GetList()[1].is_string()) {
     RejectJavascriptCallback(callback_id, base::Value("Invalid arguments"));
+    return;
   }
 
-  MediaRouteProviderId provider_id =
+  absl::optional<MediaRouteProviderId> provider_id =
       ProviderIdFromString(args->GetList()[1].GetString());
-  if (provider_id == MediaRouteProviderId::UNKNOWN) {
+  if (!provider_id) {
     RejectJavascriptCallback(callback_id,
                              base::Value("Unknown MediaRouteProviderId"));
+    return;
   }
   router_->GetProviderState(
-      provider_id,
+      *provider_id,
       base::BindOnce(&MediaRouterInternalsWebUIMessageHandler::OnProviderState,
                      weak_factory_.GetWeakPtr(), std::move(callback_id)));
 }

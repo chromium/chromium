@@ -35,6 +35,7 @@
 #include "components/media_router/common/issue.h"
 #include "components/media_router/common/media_route.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "components/version_info/version_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -642,8 +643,7 @@ TEST_F(MediaRouterMojoImplTest, RegisterAndUnregisterMediaSinksObserver) {
   base::RunLoop().RunUntilIdle();
 
   const std::vector<MediaSink> kExpectedSinks{
-      MediaSink{kSinkId, kSinkName, SinkIconType::CAST},
-      MediaSink{kSinkId2, kSinkName, SinkIconType::CAST}};
+      CreateCastSink(kSinkId, kSinkName), CreateCastSink(kSinkId2, kSinkName)};
 
   EXPECT_CALL(*sinks_observer, OnSinksReceived(kExpectedSinks));
   EXPECT_CALL(*extra_sinks_observer, OnSinksReceived(kExpectedSinks));
@@ -704,8 +704,7 @@ TEST_F(MediaRouterMojoImplTest, TabSinksObserverIsShared) {
   base::RunLoop().RunUntilIdle();
 
   const std::vector<MediaSink> kExpectedSinks{
-      MediaSink(kSinkId, kSinkName, SinkIconType::CAST),
-      MediaSink(kSinkId2, kSinkName, SinkIconType::CAST)};
+      CreateCastSink(kSinkId, kSinkName), CreateCastSink(kSinkId2, kSinkName)};
 
   // All tabs should get the same updates.
   EXPECT_CALL(*sinks_observer, OnSinksReceived(kExpectedSinks));
