@@ -6,7 +6,7 @@ import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {EventType} from '../common/constants.js';
+import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
 import {unguessableTokenToString} from '../common/utils.js';
 
@@ -19,7 +19,12 @@ const kLocalCollectionId = 'local_';
 
 /**
  * A displayable type constructed from a LocalImage or a WallpaperImage.
- * @typedef {{id: string, name: string, count: string, preview: ?url.mojom.Url}}
+ * @typedef {{
+ *   id: string,
+ *   name: string,
+ *   count: string,
+ *   preview: !Array<!url.mojom.Url>,
+ * }}
  */
 let Tile;
 
@@ -47,6 +52,26 @@ function getCountText(x) {
 }
 
 /**
+ *
+ * @param {?Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
+ * @param {Object<string, string>} localImageData
+ * @return {!Array<!url.mojom.Url>}
+ */
+function getImages(localImages, localImageData) {
+  if (!localImageData || !Array.isArray(localImages)) {
+    return [];
+  }
+  return localImages
+      .map(({id}) => ({url: localImageData[unguessableTokenToString(id)]}))
+      .filter((data, index) => {
+        // |data.url| may be undefined or empty if this local image thumbnail
+        // has not loaded yet.
+        return !!data.url && data.url.length > 0 &&
+            index < kMaximumLocalImagePreviews;
+      });
+}
+
+/**
  * A common display format between local images and WallpaperCollection.
  * Get the first displayable image with data from the list of possible images.
  * TODO(b/184774974) display a collage of up to three images.
@@ -56,29 +81,14 @@ function getCountText(x) {
  */
 function getLocalTile(localImages, localImageData) {
   const name = loadTimeData.getString('myImagesLabel');
-  if (localImageData && Array.isArray(localImages)) {
-    for (const {id} of localImages) {
-      const key = unguessableTokenToString(id);
-      const data = localImageData[key];
-      if (!data) {
-        continue;
-      }
-      return {
-        name,
-        id: kLocalCollectionId,
-        count: getCountText(localImages.length),
-        preview: {url: data},
-      };
-    }
-  }
+  const imagesToDisplay = getImages(localImages, localImageData);
   return {
     name,
     id: kLocalCollectionId,
-    count: getCountText(0),
-    preview: null,
+    count: getCountText(Array.isArray(localImages) ? localImages.length : 0),
+    preview: imagesToDisplay,
   };
 }
-
 
 class CollectionsGrid extends PolymerElement {
   static get is() {
@@ -164,6 +174,7 @@ class CollectionsGrid extends PolymerElement {
    *     collections
    * @param {!Object<string, number>} imageCounts
    * @param {!Array<!chromeos.personalizationApp.mojom.LocalImage>} localImages
+   * @param {!Object<string, string>} localImageData
    */
   computeTiles_(collections, imageCounts, localImages, localImageData) {
     const localTile = getLocalTile(localImages, localImageData);
@@ -172,7 +183,7 @@ class CollectionsGrid extends PolymerElement {
         name,
         id,
         count: getCountText(imageCounts[id]),
-        preview,
+        preview: [preview],
       };
     });
     return [localTile, ...collectionTiles];
@@ -217,6 +228,16 @@ class CollectionsGrid extends PolymerElement {
         console.error(`Unexpected event type ${message.data.type}`);
         break;
     }
+  }
+
+  /**
+   * @param {!Tile} tile
+   * @return {string}
+   */
+  getClassForImagesContainer_(tile) {
+    const numImages = Array.isArray(tile?.preview) ? tile.preview.length : 0;
+    return `photo-images-container photo-images-container-${
+        Math.min(numImages, kMaximumLocalImagePreviews)}`;
   }
 
   /**

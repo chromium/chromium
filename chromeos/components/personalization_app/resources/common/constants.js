@@ -10,6 +10,8 @@ export const untrustedOrigin = 'chrome-untrusted://personalization';
 
 export const trustedOrigin = 'chrome://personalization';
 
+export const kMaximumLocalImagePreviews = 3;
+
 /** @enum {string} */
 export const EventType = {
   SEND_COLLECTIONS: 'send_collections',

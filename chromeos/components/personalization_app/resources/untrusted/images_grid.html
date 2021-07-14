@@ -9,9 +9,11 @@
     <div class="photo-container" tabindex$="[[tabIndex]]" role="option"
         aria-posinset$="[[getAriaIndex_(index)]]"
         aria-selected$="[[getAriaSelected_(item)]]">
-      <div class="padding-fix">
-        <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
-            on-click="onImageClicked_" alt$="[[getImgAlt_(item)]]">
+      <div class="photo-inner-container">
+        <div class="photo-images-container">
+          <img data-id$="[[item.assetId]]" src="[[item.url.url]]"
+              on-click="onImageClicked_" alt$="[[getImgAlt_(item)]]">
+        </div>
       </div>
     </div>
   </template>

@@ -15,18 +15,20 @@
 <template is="dom-if" if="[[showImages_]]">
   <div id="main" role="main" aria-label="[[i18n('myImagesLabel')]]">
     <iron-list items="[[getImages_(hidden, images_)]]" grid role="listbox"
-        scroll-target="main"
         aria-setsize$="[[getImageCount_(hidden, images_)]]">
       <template>
         <div class="photo-container" role="option" tabindex$="[[tabIndex]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
             aria-selected$="[[getAriaSelected_(item)]]">
-          <div class="padding-fix">
-            <template is="dom-if"
-              if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-              <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
-                src="[[getImageData_(item, imageData_)]]" alt="[[item.name]]">
-            </template>
+          <div class="photo-inner-container">
+            <div class="photo-images-container">
+              <template is="dom-if"
+                  if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
+                <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
+                    src="[[getImageData_(item, imageData_)]]"
+                    alt="[[item.name]]">
+              </template>
+            </div>
           </div>
         </div>
       </template>

@@ -14,6 +14,7 @@ import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {sendCollections, sendImageCounts, sendLocalImageData, sendLocalImages} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload, unguessableTokenToString} from '../common/utils.js';
+import {kMaximumLocalImagePreviews} from '../common/constants.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {initializeBackdropData, initializeLocalData} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
@@ -48,8 +49,6 @@ export function promisifyIframeFunctionsForTesting() {
       resolvers[sendLocalImageData.name](args);
   return promises;
 }
-
-export const kMaximumImageThumbnailsCount = 3;
 
 /** @polymer */
 export class WallpaperCollections extends WithPersonalizationStore {
@@ -234,7 +233,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
     const iframe = await this.iframePromise_;
 
     for (const image of images) {
-      if (this.sentLocalImages_.size >= kMaximumImageThumbnailsCount) {
+      if (this.sentLocalImages_.size >= kMaximumLocalImagePreviews) {
         return;
       }
       const key = unguessableTokenToString(image.id);

@@ -61,7 +61,7 @@ styles.innerHTML = `
     }
     /* This extra position: relative element corrects for absolutely positioned
        elements ignoring parent interior padding. */
-    .padding-fix {
+    .photo-container .photo-inner-container {
       border-radius: 12px;
       height: 100%;
       /* stop img and gradient-mask from ignoring above border-radius. */
@@ -69,10 +69,21 @@ styles.innerHTML = `
       position: relative;
       width: 100%;
     }
-    .photo-container img {
+    .photo-images-container {
+      display: flex;
+      flex-flow: row wrap;
       height: 100%;
+      width: 100%;
+    }
+    .photo-images-container img {
+      flex: 1 1 0;
+      height: 100%;
+      min-width: 50%;
       object-fit: cover;
       width: 100%;
+    }
+    .photo-images-container.photo-images-container-3 img {
+      height: 50%;
     }
     .photo-text-container {
       box-sizing: border-box;
