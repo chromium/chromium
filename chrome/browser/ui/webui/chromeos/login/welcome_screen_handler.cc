@@ -276,7 +276,7 @@ void WelcomeScreenHandler::GetAdditionalParameters(
   if (screen_) {
     if (screen_->language_list() &&
         screen_->language_list_locale() == application_locale) {
-      language_list.reset(screen_->language_list()->DeepCopy());
+      language_list = screen_->language_list()->CreateDeepCopy();
     } else {
       screen_->UpdateLanguageList();
     }
