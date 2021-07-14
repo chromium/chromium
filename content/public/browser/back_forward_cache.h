@@ -127,6 +127,14 @@ class CONTENT_EXPORT BackForwardCache {
     // load a page that is ineligible for caching (e.g. due to an unsupported
     // feature).
     TEST_USES_UNLOAD_EVENT,
+
+    // This test expects that same-site navigations won't result in a
+    // RenderFrameHost / RenderFrame / RenderView / RenderWidget change.
+    // But when same-site BackForwardCache is enabled, the change usually does
+    // happen. Even so, there will still be valid navigations that don't result
+    // in those objects changing, so we should keep the test as is, just with
+    // BackForwardCache disabled.
+    TEST_ASSUMES_NO_RENDER_FRAME_CHANGE,
   };
 
   // Evict all entries from the BackForwardCache.

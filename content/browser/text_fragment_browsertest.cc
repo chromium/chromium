@@ -266,16 +266,8 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest, UserGestureConsumed) {
   }
 }
 
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_DisabledOnScriptHistoryNavigation \
-  DISABLED_DisabledOnScriptHistoryNavigation
-#else
-#define MAYBE_DisabledOnScriptHistoryNavigation \
-  DisabledOnScriptHistoryNavigation
-#endif
 IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
-                       MAYBE_DisabledOnScriptHistoryNavigation) {
+                       DisabledOnScriptHistoryNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL target_text_url(embedded_test_server()->GetURL(
       "/scrollable_page_with_content.html#:~:text=text"));
@@ -284,6 +276,12 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), target_text_url));
 
   WebContents* main_contents = shell()->web_contents();
+  // The test assumes the previous page gets deleted after navigation and will
+  // be recreated with did_scroll == false. Disable back/forward cache to ensure
+  // that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(
+      main_contents, BackForwardCacheImpl::TEST_ASSUMES_NO_CACHING);
+
   {
     // The RenderFrameSubmissionObserver destructor expects the RenderFrameHost
     // stays the same until it gets destructed, so we need to scope this to make
@@ -355,25 +353,16 @@ IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
   EXPECT_DID_SCROLL(true);
 }
 
-// Similar to the above test, we're checking that browser-initiated
-// same-document navigations invoke the text fragment. However, this time, the
-// initial landing on the page is via a non-user-activated script navigation.
-// This ensure we're not inappropriately blocking a text-fragment based on the
-// state of the initial document load.
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument \
-  DISABLED_SameDocumentBrowserNavigationOnScriptNavigatedDocument
-#else
-#define MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument \
-  SameDocumentBrowserNavigationOnScriptNavigatedDocument
-#endif
-IN_PROC_BROWSER_TEST_F(
-    TextFragmentAnchorBrowserTest,
-    MAYBE_SameDocumentBrowserNavigationOnScriptNavigatedDocument) {
+IN_PROC_BROWSER_TEST_F(TextFragmentAnchorBrowserTest,
+                       SameDocumentBrowserNavigationOnScriptNavigatedDocument) {
   ASSERT_TRUE(embedded_test_server()->Start());
   WebContents* main_contents = shell()->web_contents();
   RenderFrameSubmissionObserver frame_observer(main_contents);
+  // The test assumes the RenderWidgetHost stays the same after navigation,
+  // which won't happen if same-site back/forward-cache is enabled. Disable it
+  // so that we will keep RenderWidgetHost even after navigation.
+  DisableBackForwardCacheForTesting(
+      main_contents, BackForwardCacheImpl::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
 
   // Load an initial page
   {

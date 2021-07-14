@@ -40,6 +40,7 @@
 #include "content/public/common/bindings_policy.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/scoped_web_ui_controller_factory_registration.h"
@@ -979,6 +980,10 @@ TEST_F(NavigationControllerTest, LoadURL_PrivilegedPending) {
 // current page fires history.back().
 TEST_F(NavigationControllerTest, LoadURL_BackPreemptsPending) {
   NavigationControllerImpl& controller = controller_impl();
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // First make some history.
   const GURL kExistingURL1("http://foo/eh");
@@ -1522,6 +1527,10 @@ TEST_F(NavigationControllerTest, Back) {
 // Tests what happens when a back navigation produces a new page.
 TEST_F(NavigationControllerTest, Back_GeneratesNewPage) {
   NavigationControllerImpl& controller = controller_impl();
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   const GURL url1("http://foo/1");
   const GURL url2("http://foo/2");
@@ -3804,11 +3813,17 @@ TEST_F(NavigationControllerTest, PruneAllButLastCommittedForPendingNotInList) {
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(2, controller.GetEntryCount());
 
-  testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
-  contents()->GetRenderViewHost()->BindPageBroadcast(
-      mock_page_broadcast.GetRemote());
-  EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
-  controller.PruneAllButLastCommitted();
+  {
+    // Ensure that the PruneAllButLastCommitted() call will result in a
+    // SetHistoryOffsetAndLength() call. We put this into its own scope so that
+    // other PageBroadcast calls (e.g. SetPageLifecycleState()) won't go through
+    // the mock.
+    testing::NiceMock<MockPageBroadcast> mock_page_broadcast;
+    contents()->GetRenderViewHost()->BindPageBroadcast(
+        mock_page_broadcast.GetRemote());
+    EXPECT_CALL(mock_page_broadcast, SetHistoryOffsetAndLength(0, 1));
+    controller.PruneAllButLastCommitted();
+  }
 
   // We should only have the last committed and pending entries at this point,
   // and the pending entry should still not be in the entry list.
@@ -4048,6 +4063,12 @@ TEST_F(NavigationControllerTest, ClearHistoryList) {
 // resurrected.
 TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   NavigationControllerImpl& controller = controller_impl();
+  // When back/forward cache is enabled, the ReadyToCommit() call for the
+  // forward navigation to B will commit the navigation immediately, making the
+  // navigation to page C not prune the entry to B. Disable back/forward cache
+  // to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // Start on page A.
   const GURL url_a("http://foo.com/a");

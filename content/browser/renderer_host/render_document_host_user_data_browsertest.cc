@@ -718,19 +718,14 @@ IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, CrossSiteNavigation) {
   EXPECT_FALSE(data);
 }
 
-// Tests that RenderDocumentHostUserData object is cleared on performing same
-// site navigation.
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_SameSiteNavigation DISABLED_SameSiteNavigation
-#else
-#define MAYBE_SameSiteNavigation SameSiteNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest,
-                       MAYBE_SameSiteNavigation) {
+IN_PROC_BROWSER_TEST_F(RenderDocumentHostUserDataTest, SameSiteNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back-forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));

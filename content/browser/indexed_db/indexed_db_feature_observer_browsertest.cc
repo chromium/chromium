@@ -8,6 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/browser/feature_observer.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/feature_observer_client.h"
 #include "content/public/browser/render_process_host.h"
@@ -253,9 +254,16 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 
 // Verify that content::FeatureObserver is notified when a frame with active
 // IndexedDB connections is navigated away.
-// https://crbug.com/1218731 fails when BackforwardCache is enabled.
-IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
-                       DISABLED_ObserverNavigate) {
+IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
+  // The test expects the OnStopUsing() method to be called, which won't happen
+  // if the BackForwardCache is enabled.
+  // TODO(https://crbug.com/1228693): Figure out why this is happening.
+  shell()
+      ->web_contents()
+      ->GetController()
+      .GetBackForwardCache()
+      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   if (!CheckShouldRunTestAndNavigate())
     return;
 

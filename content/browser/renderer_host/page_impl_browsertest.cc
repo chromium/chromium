@@ -394,40 +394,34 @@ IN_PROC_BROWSER_TEST_F(PageImplTest, PrimaryPageChangedOnCrossSiteNavigation) {
 }
 
 // Test that a new Page object is created for a same-site same-RFH navigation.
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_SameSiteSameRenderFrameHostNavigation \
-  DISABLED_SameSiteSameRenderFrameHostNavigation
-#else
-#define MAYBE_SameSiteSameRenderFrameHostNavigation \
-  SameSiteSameRenderFrameHostNavigation
-#endif
-IN_PROC_BROWSER_TEST_F(PageImplTest,
-                       MAYBE_SameSiteSameRenderFrameHostNavigation) {
+IN_PROC_BROWSER_TEST_F(PageImplTest, SameSiteSameRenderFrameHostNavigation) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
 
   // 1) Navigate to A1.
   EXPECT_TRUE(NavigateToURL(shell(), url_a1));
-  RenderFrameHostImpl* main_rfh_a1 = primary_main_frame_host();
+  RenderFrameHostImplWrapper main_rfh_a1(primary_main_frame_host());
   PageImpl& page_a1 = main_rfh_a1->GetPage();
   testing::NiceMock<MockWebContentsObserver> page_changed_observer(
       web_contents());
   base::WeakPtr<Data> data = CreateOrGetDataForPage(page_a1)->GetWeakPtr();
 
-  // 2) Navigate to A2, both A1 and A2 should reuse RenderFrameHost. This will
-  // result in invoking PrimaryPageChanged callback.
+  // 2) Navigate to A2. This will result in invoking PrimaryPageChanged
+  // callback.
   EXPECT_CALL(page_changed_observer, PrimaryPageChanged(testing::_)).Times(1);
   EXPECT_TRUE(NavigateToURL(shell(), url_a2));
-  RenderFrameHostImpl* main_rfh_a2 = primary_main_frame_host();
-  EXPECT_EQ(main_rfh_a1, main_rfh_a2);
-  PageImpl& page_a2 = main_rfh_a1->GetPage();
+  RenderFrameHostImplWrapper main_rfh_a2(primary_main_frame_host());
+  EXPECT_EQ(CanSameSiteMainFrameNavigationsChangeRenderFrameHosts(),
+            main_rfh_a1.get() != main_rfh_a2.get());
+  PageImpl& page_a2 = main_rfh_a2.get()->GetPage();
 
   // 3) New Page object should be created and the associated PageUserData object
-  // should be deleted for page_a1.
+  // should be deleted for page_a1 if it the page is not in the back-forward
+  // cache.
   EXPECT_NE(&page_a1, &page_a2);
-  EXPECT_FALSE(data);
+  if (!IsSameSiteBackForwardCacheEnabled())
+    EXPECT_FALSE(data);
 }
 
 // Test that a new Page object is created when RenderFrame is recreated after

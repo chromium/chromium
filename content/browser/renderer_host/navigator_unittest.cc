@@ -24,6 +24,7 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_navigation_throttle_inserter.h"
@@ -49,6 +50,16 @@ namespace {
 bool ExpectSiteInstanceChange(SiteInstanceImpl* site_instance) {
   return AreAllSitesIsolatedForTesting() ||
          CanCrossSiteNavigationsProactivelySwapBrowsingInstances() ||
+         !site_instance->IsDefaultSiteInstance();
+}
+
+// Same as above but does not return true if back/forward cache is the only
+// trigger for SiteInstance change. This function is useful if, e.g. the test
+// intends to disable back/forward cache.
+bool ExpectSiteInstanceChangeWithoutBackForwardCache(
+    SiteInstanceImpl* site_instance) {
+  return AreAllSitesIsolatedForTesting() ||
+         IsProactivelySwapBrowsingInstanceEnabled() ||
          !site_instance->IsDefaultSiteInstance();
 }
 
@@ -270,8 +281,17 @@ TEST_F(NavigatorTest, RendererAbortedAboutBlankNavigation) {
 
   contents()->NavigateAndCommit(kUrl0);
   EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
-  if (!ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance()))
+
+  // The test expects cross-site navigations to change SiteInstances, but not
+  // same-site navigations. Return if SiteInstance change is not possible, and
+  // disable same-site back/forward cache to ensure SiteInstance won't change
+  // for same-site navigations.
+  DisableBackForwardCacheForTesting(
+      contents(), BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+  if (!ExpectSiteInstanceChangeWithoutBackForwardCache(
+          main_test_rfh()->GetSiteInstance())) {
     return;
+  }
 
   // Start a renderer-initiated navigation to about:blank.
   EXPECT_FALSE(main_test_rfh()->is_loading());
@@ -321,8 +341,17 @@ TEST_F(NavigatorTest,
 
   contents()->NavigateAndCommit(kUrl0);
   EXPECT_TRUE(main_test_rfh()->IsRenderFrameLive());
-  if (!ExpectSiteInstanceChange(main_test_rfh()->GetSiteInstance()))
+
+  // The test expects cross-site navigations to change SiteInstances, but not
+  // same-site navigations. Return if SiteInstance change is not possible, and
+  // disable same-site back/forward cache to ensure SiteInstance won't change
+  // for same-site navigations.
+  DisableBackForwardCacheForTesting(
+      contents(), BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+  if (!ExpectSiteInstanceChangeWithoutBackForwardCache(
+          main_test_rfh()->GetSiteInstance())) {
     return;
+  }
 
   // Start a renderer-initiated navigation to about:blank.
   EXPECT_FALSE(main_test_rfh()->is_loading());

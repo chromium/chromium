@@ -138,6 +138,11 @@ class CONTENT_EXPORT PrerenderHostRegistry {
   // the URL doesn't match any non-reserved host.
   PrerenderHost* FindHostByUrlForTesting(const GURL& prerendering_url);
 
+  // Cancels all hosts. Since reserved hosts can't be canceled, this will
+  // DCHECK when `reserved_prerender_host_by_frame_tree_node_id_` is not empty.
+  // This will cancel all hosts in `prerender_host_by_frame_tree_node_id_`.
+  void CancelAllHostsForTesting();
+
   base::WeakPtr<PrerenderHostRegistry> GetWeakPtr();
 
  private:

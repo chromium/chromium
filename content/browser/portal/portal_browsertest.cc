@@ -2128,15 +2128,10 @@ IN_PROC_BROWSER_TEST_F(
 // Ensure portal activations respect navigation precedence. If there is an
 // ongoing browser initiated navigation, then a portal activation without user
 // activation cannot proceed.
-// https://crbug.com/1219373 fails with BFCache field trial testing config.
-#if defined(OS_ANDROID)
-#define MAYBE_NavigationPrecedence DISABLED_NavigationPrecedence
-#else
-#define MAYBE_NavigationPrecedence NavigationPrecedence
-#endif
-IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_NavigationPrecedence) {
+IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigationPrecedence) {
   GURL main_url1(embedded_test_server()->GetURL("portal.test", "/title1.html"));
   GURL main_url2(embedded_test_server()->GetURL("portal.test", "/title2.html"));
+  GURL main_url3(embedded_test_server()->GetURL("portal.test", "/title3.html"));
   ASSERT_TRUE(NavigateToURL(shell(), main_url1));
   ASSERT_TRUE(NavigateToURL(shell(), main_url2));
   WebContentsImpl* web_contents_impl =
@@ -2146,18 +2141,17 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, MAYBE_NavigationPrecedence) {
   GURL portal_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
   CreatePortalToUrl(web_contents_impl, portal_url);
 
-  TestNavigationManager pending_back_navigation(web_contents_impl, main_url1);
-  ASSERT_TRUE(web_contents_impl->GetController().CanGoBack());
-  web_contents_impl->GetController().GoBack();
-  EXPECT_TRUE(pending_back_navigation.WaitForRequestStart());
+  TestNavigationManager pending_navigation(web_contents_impl, main_url3);
+  shell()->LoadURL(main_url3);
+  EXPECT_TRUE(pending_navigation.WaitForRequestStart());
 
   EXPECT_EQ("reject", EvalJs(main_frame,
                              "document.querySelector('portal').activate().then("
                              "    () => 'resolve', () => 'reject');",
                              EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  pending_back_navigation.WaitForNavigationFinished();
-  EXPECT_TRUE(pending_back_navigation.was_successful());
+  pending_navigation.WaitForNavigationFinished();
+  EXPECT_TRUE(pending_navigation.was_successful());
 }
 
 IN_PROC_BROWSER_TEST_F(PortalBrowserTest, RejectActivationOfErrorPages) {

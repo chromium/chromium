@@ -29,6 +29,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -1206,6 +1207,11 @@ void RunIframeNavigationTest(
     const GURL& web_bundle_url,
     const GURL& url_origin,
     base::RepeatingCallback<GURL(const GURL&)> get_url_for_bundle) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(web_contents,
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
@@ -1394,6 +1400,11 @@ void RunIframeSameDocumentNavigationTest(
     const GURL& web_bundle_url,
     const GURL& url_origin,
     base::RepeatingCallback<GURL(const GURL&)> get_url_for_bundle) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(web_contents,
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   NavigateAndWaitForTitle(
       web_contents, web_bundle_url,
       get_url_for_bundle.Run(url_origin.Resolve("/top-page/")), "Ready");
@@ -2711,15 +2722,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
                 "/web_bundle/path_test/in_scope/page.html"));
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_HistoryNavigationError_UnexpectedContentType \
-  DISABLED_HistoryNavigationError_UnexpectedContentType
-#else
-#define MAYBE_HistoryNavigationError_UnexpectedContentType \
-  HistoryNavigationError_UnexpectedContentType
-#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       MAYBE_HistoryNavigationError_UnexpectedContentType) {
+                       HistoryNavigationError_UnexpectedContentType) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2747,15 +2756,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   HistoryBackAndWaitUntilConsoleError("Unexpected content type.");
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_HistoryNavigationError_MissingNosniff \
-  DISABLED_HistoryNavigationError_MissingNosniff
-#else
-#define MAYBE_HistoryNavigationError_MissingNosniff \
-  HistoryNavigationError_MissingNosniff
-#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       MAYBE_HistoryNavigationError_MissingNosniff) {
+                       HistoryNavigationError_MissingNosniff) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2784,15 +2791,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
       "header.");
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_HistoryNavigationError_UnexpectedRedirect \
-  DISABLED_HistoryNavigationError_UnexpectedRedirect
-#else
-#define MAYBE_HistoryNavigationError_UnexpectedRedirect \
-  HistoryNavigationError_UnexpectedRedirect
-#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       MAYBE_HistoryNavigationError_UnexpectedRedirect) {
+                       HistoryNavigationError_UnexpectedRedirect) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2820,15 +2825,12 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
   HistoryBackAndWaitUntilConsoleError("Unexpected redirect.");
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_HistoryNavigationError_ReadMetadataFailure \
-  DISABLED_HistoryNavigationError_ReadMetadataFailure
-#else
-#define MAYBE_HistoryNavigationError_ReadMetadataFailure \
-  HistoryNavigationError_ReadMetadataFailure
-#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       MAYBE_HistoryNavigationError_ReadMetadataFailure) {
+                       HistoryNavigationError_ReadMetadataFailure) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   RegisterRequestHandler(wbn_path);
@@ -2849,15 +2851,13 @@ IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
       "Failed to read metadata of Web Bundle file: Wrong magic bytes.");
 }
 
-#if defined(OS_ANDROID)
-#define MAYBE_HistoryNavigationError_ExpectedUrlNotFound \
-  DISABLED_HistoryNavigationError_ExpectedUrlNotFound
-#else
-#define MAYBE_HistoryNavigationError_ExpectedUrlNotFound \
-  HistoryNavigationError_ExpectedUrlNotFound
-#endif
 IN_PROC_BROWSER_TEST_F(WebBundleNetworkBrowserTest,
-                       MAYBE_HistoryNavigationError_ExpectedUrlNotFound) {
+                       HistoryNavigationError_ExpectedUrlNotFound) {
+  // The test assumes the previous page gets deleted after navigation and doing
+  // back navigation will recreate the page. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(shell()->web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
   const std::string wbn_path = "/web_bundle/test.wbn";
   const std::string primary_url_path = "/web_bundle/test.html";
   const std::string alt_primary_url_path = "/web_bundle/alt.html";
