@@ -5394,8 +5394,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Error" units="ms"
-    expires_after="2021-08-22">
-  <owner>eroman@chromium.org</owner>
+    expires_after="2022-07-12">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Time taken when failed to establish a TCP connection to an individual
@@ -5405,8 +5405,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Net.TcpConnectAttempt.Latency.Success" units="ms"
-    expires_after="2021-10-25">
-  <owner>eroman@chromium.org</owner>
+    expires_after="2022-07-12">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Time taken to successfully establish a TCP connection to an individual
