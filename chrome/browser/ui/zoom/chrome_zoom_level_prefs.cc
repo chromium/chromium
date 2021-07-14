@@ -38,7 +38,7 @@ std::string GetPartitionKey(const base::FilePath& relative_path) {
              path.size() * sizeof(base::FilePath::StringType::value_type));
 }
 
-const char kZoomLevelPath[] = "zoom_level";
+const char kZoomLevelKey[] = "zoom_level";
 const char kLastModifiedPath[] = "last_modified";
 
 // Extract a timestamp from |dictionary[kLastModifiedPath]|.
@@ -87,7 +87,7 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
     return;
 
   DictionaryPrefUpdate update(pref_service_, prefs::kPartitionDefaultZoomLevel);
-  update->SetDouble(partition_key_, level);
+  update->SetDoubleKey(partition_key_, level);
   // For unregistered paths, OnDefaultZoomLevelChanged won't be called, so
   // set this manually.
   host_zoom_map_->SetDefaultZoomLevel(level);
@@ -145,7 +145,7 @@ void ChromeZoomLevelPrefs::OnZoomLevelChanged(
     host_zoom_dictionary_weak->RemoveKey(change.host);
   } else {
     base::DictionaryValue dict;
-    dict.SetDouble(kZoomLevelPath, level);
+    dict.SetDoubleKey(kZoomLevelKey, level);
     dict.SetString(
         kLastModifiedPath,
         base::NumberToString(change.last_modified.ToInternalValue()));
@@ -172,7 +172,7 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
     if (i.value().is_dict()) {
       const base::DictionaryValue* dict;
       i.value().GetAsDictionary(&dict);
-      maybe_zoom = dict->FindDoubleKey(kZoomLevelPath);
+      maybe_zoom = dict->FindDoubleKey(kZoomLevelKey);
       last_modified = GetTimeStamp(dict);
     } else {
       // Old zoom level that is stored directly as a double.

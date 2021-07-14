@@ -927,13 +927,15 @@ void PrintPreviewUI::DidGetDefaultPageLayout(
   }
 
   base::DictionaryValue layout;
-  layout.SetDouble(kSettingMarginTop, page_layout_in_points->margin_top);
-  layout.SetDouble(kSettingMarginLeft, page_layout_in_points->margin_left);
-  layout.SetDouble(kSettingMarginBottom, page_layout_in_points->margin_bottom);
-  layout.SetDouble(kSettingMarginRight, page_layout_in_points->margin_right);
-  layout.SetDouble(kSettingContentWidth, page_layout_in_points->content_width);
-  layout.SetDouble(kSettingContentHeight,
-                   page_layout_in_points->content_height);
+  layout.SetDoubleKey(kSettingMarginTop, page_layout_in_points->margin_top);
+  layout.SetDoubleKey(kSettingMarginLeft, page_layout_in_points->margin_left);
+  layout.SetDoubleKey(kSettingMarginBottom,
+                      page_layout_in_points->margin_bottom);
+  layout.SetDoubleKey(kSettingMarginRight, page_layout_in_points->margin_right);
+  layout.SetDoubleKey(kSettingContentWidth,
+                      page_layout_in_points->content_width);
+  layout.SetDoubleKey(kSettingContentHeight,
+                      page_layout_in_points->content_height);
   layout.SetInteger(kSettingPrintableAreaX, printable_area_in_points.x());
   layout.SetInteger(kSettingPrintableAreaY, printable_area_in_points.y());
   layout.SetInteger(kSettingPrintableAreaWidth,

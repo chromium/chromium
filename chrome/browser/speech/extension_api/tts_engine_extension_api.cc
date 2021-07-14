@@ -359,16 +359,16 @@ std::unique_ptr<base::ListValue> TtsExtensionEngine::BuildSpeakArgs(
   // the options. TODO(dmazzoni): these shouldn't be redundant.
   // http://crbug.com/463264
   if (!options->FindKey(constants::kRateKey)) {
-    options->SetDouble(constants::kRateKey,
-                       utterance->GetContinuousParameters().rate);
+    options->SetDoubleKey(constants::kRateKey,
+                          utterance->GetContinuousParameters().rate);
   }
   if (!options->FindKey(constants::kPitchKey)) {
-    options->SetDouble(constants::kPitchKey,
-                       utterance->GetContinuousParameters().pitch);
+    options->SetDoubleKey(constants::kPitchKey,
+                          utterance->GetContinuousParameters().pitch);
   }
   if (!options->FindKey(constants::kVolumeKey)) {
-    options->SetDouble(constants::kVolumeKey,
-                       utterance->GetContinuousParameters().volume);
+    options->SetDoubleKey(constants::kVolumeKey,
+                          utterance->GetContinuousParameters().volume);
   }
 
   // Add the voice name and language to the options if they're not

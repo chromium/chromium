@@ -683,8 +683,8 @@ void FileManagerPrivateGetSizeStatsFunction::OnGetSizeStats(
     const uint64_t* remaining_size) {
   std::unique_ptr<base::DictionaryValue> sizes(new base::DictionaryValue());
 
-  sizes->SetDouble("totalSize", static_cast<double>(*total_size));
-  sizes->SetDouble("remainingSize", static_cast<double>(*remaining_size));
+  sizes->SetDoubleKey("totalSize", static_cast<double>(*total_size));
+  sizes->SetDoubleKey("remainingSize", static_cast<double>(*remaining_size));
 
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(sizes))));
 }

@@ -66,10 +66,10 @@ void WebApksHandler::OnWebApkInfoRetrieved(const WebApkInfo& webapk_info) {
                    ui::OptionalSkColorToString(webapk_info.theme_color));
   result.SetString("backgroundColor",
                    ui::OptionalSkColorToString(webapk_info.background_color));
-  result.SetDouble("lastUpdateCheckTimeMs",
-                   webapk_info.last_update_check_time.ToJsTime());
-  result.SetDouble("lastUpdateCompletionTimeMs",
-                   webapk_info.last_update_completion_time.ToJsTime());
+  result.SetDoubleKey("lastUpdateCheckTimeMs",
+                      webapk_info.last_update_check_time.ToJsTime());
+  result.SetDoubleKey("lastUpdateCompletionTimeMs",
+                      webapk_info.last_update_completion_time.ToJsTime());
   result.SetBoolean("relaxUpdates", webapk_info.relax_updates);
   result.SetString("backingBrowser", webapk_info.backing_browser_package_name);
   result.SetBoolean("isBackingBrowser", webapk_info.is_backing_browser);

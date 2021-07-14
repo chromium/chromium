@@ -106,7 +106,7 @@ void RecordIgnore(base::DictionaryValue* dict) {
   int times_ignored = 0;
   dict->GetInteger(kNumTimesIgnoredName, &times_ignored);
   dict->SetInteger(kNumTimesIgnoredName, ++times_ignored);
-  dict->SetDouble(kTimeLastIgnored, base::Time::Now().ToDoubleT());
+  dict->SetDoubleKey(kTimeLastIgnored, base::Time::Now().ToDoubleT());
 }
 
 // If we should suppress the item with the given dictionary ignored record.

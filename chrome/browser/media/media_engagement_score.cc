@@ -205,8 +205,8 @@ bool MediaEngagementScore::UpdateScoreDict() {
 
   score_dict_->SetInteger(kVisitsKey, visits_);
   score_dict_->SetInteger(kMediaPlaybacksKey, media_playbacks_);
-  score_dict_->SetDouble(kLastMediaPlaybackTimeKey,
-                         last_media_playback_time_.ToInternalValue());
+  score_dict_->SetDoubleKey(kLastMediaPlaybackTimeKey,
+                            last_media_playback_time_.ToInternalValue());
   score_dict_->SetBoolean(kHasHighScoreKey, is_high_);
 
   // visitsWithMediaTag was deprecated in https://crbug.com/998687 and should

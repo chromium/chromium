@@ -185,8 +185,8 @@ TEST_F(MediaEngagementScoreTest, PopulatedDictionary) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
   dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                  test_clock.Now().ToInternalValue());
+  dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                     test_clock.Now().ToInternalValue());
   dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
 
   TestScoreInitializesAndUpdates(std::move(dict), 20, 12, test_clock.Now(),
@@ -246,8 +246,8 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   score_dict->SetInteger(MediaEngagementScore::kVisitsKey, example_num_visits);
   score_dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey,
                          example_media_playbacks);
-  score_dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                        test_clock.Now().ToInternalValue());
+  score_dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                           test_clock.Now().ToInternalValue());
   score_dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, false);
   settings_map->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
@@ -363,8 +363,8 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetInteger(MediaEngagementScore::kVisitsKey, 10);
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 1);
-    dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                    test_clock.Now().ToInternalValue());
+    dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                       test_clock.Now().ToInternalValue());
     dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
 
     settings_map->SetWebsiteSettingDefaultScope(
@@ -454,8 +454,9 @@ TEST_F(MediaEngagementScoreTest, PopulatedDictionary_HTTPSOnly) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
   dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                  test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
+  dict->SetDoubleKey(
+      MediaEngagementScore::kLastMediaPlaybackTimeKey,
+      test_clock.Now().ToDeltaSinceWindowsEpoch().InMicroseconds());
   dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
 
   TestScoreInitializesAndUpdates(std::move(dict), 0, 0, base::Time(), false,
@@ -491,8 +492,8 @@ TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
   // These fields are not deprecated and should not be removed.
   score_dict->SetInteger(MediaEngagementScore::kVisitsKey, 20);
   score_dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 12);
-  score_dict->SetDouble(MediaEngagementScore::kLastMediaPlaybackTimeKey,
-                        test_clock.Now().ToInternalValue());
+  score_dict->SetDoubleKey(MediaEngagementScore::kLastMediaPlaybackTimeKey,
+                           test_clock.Now().ToInternalValue());
   score_dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, true);
   score_dict->SetInteger(kNotDeprectedUnknown, 10);
   settings_map->SetWebsiteSettingDefaultScope(

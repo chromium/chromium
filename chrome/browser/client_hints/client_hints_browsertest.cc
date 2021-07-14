@@ -1885,7 +1885,7 @@ IN_PROC_BROWSER_TEST_P(ClientHintsBrowserTest,
   auto expiration_times_dictionary = std::make_unique<base::DictionaryValue>();
   expiration_times_dictionary->SetList("client_hints",
                                        std::move(expiration_times_list));
-  expiration_times_dictionary->SetDouble(
+  expiration_times_dictionary->SetDoubleKey(
       "expiration_time",
       (base::Time::Now() + base::TimeDelta::FromDays(1)).ToDoubleT());
   host_content_settings_map->SetWebsiteSettingDefaultScope(

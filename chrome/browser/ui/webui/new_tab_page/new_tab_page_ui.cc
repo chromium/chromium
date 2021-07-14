@@ -516,7 +516,8 @@ void NewTabPageUI::DidStartNavigation(
       navigation_handle->GetURL() == GURL(chrome::kChromeUINewTabPageURL)) {
     navigation_start_time_ = base::Time::Now();
     std::unique_ptr<base::DictionaryValue> update(new base::DictionaryValue);
-    update->SetDouble("navigationStartTime", navigation_start_time_.ToJsTime());
+    update->SetDoubleKey("navigationStartTime",
+                         navigation_start_time_.ToJsTime());
     content::WebUIDataSource::Update(profile_, chrome::kChromeUINewTabPageHost,
                                      std::move(update));
     auto prev_navigation_time =

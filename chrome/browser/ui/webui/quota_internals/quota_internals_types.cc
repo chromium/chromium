@@ -43,11 +43,11 @@ std::unique_ptr<base::Value> GlobalStorageInfo::NewValue() const {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
   dict->SetString("type", StorageTypeToString(type_));
   if (usage_ >= 0)
-    dict->SetDouble("usage", static_cast<double>(usage_));
+    dict->SetDoubleKey("usage", static_cast<double>(usage_));
   if (unlimited_usage_ >= 0)
-    dict->SetDouble("unlimitedUsage", static_cast<double>(unlimited_usage_));
+    dict->SetDoubleKey("unlimitedUsage", static_cast<double>(unlimited_usage_));
   if (quota_ >= 0)
-    dict->SetDouble("quota", static_cast<double>(quota_));
+    dict->SetDoubleKey("quota", static_cast<double>(quota_));
   return std::move(dict);
 }
 
@@ -63,9 +63,9 @@ std::unique_ptr<base::Value> PerHostStorageInfo::NewValue() const {
   dict->SetString("host", host_);
   dict->SetString("type", StorageTypeToString(type_));
   if (usage_ >= 0)
-    dict->SetDouble("usage", static_cast<double>(usage_));
+    dict->SetDoubleKey("usage", static_cast<double>(usage_));
   if (quota_ >= 0)
-    dict->SetDouble("quota", static_cast<double>(quota_));
+    dict->SetDoubleKey("quota", static_cast<double>(quota_));
   return std::move(dict);
 }
 
@@ -94,10 +94,11 @@ std::unique_ptr<base::Value> PerOriginStorageInfo::NewValue() const {
   if (used_count_ >= 0)
     dict->SetInteger("usedCount", used_count_);
   if (!last_access_time_.is_null())
-    dict->SetDouble("lastAccessTime", last_access_time_.ToDoubleT() * 1000.0);
+    dict->SetDoubleKey("lastAccessTime",
+                       last_access_time_.ToDoubleT() * 1000.0);
   if (!last_modified_time_.is_null()) {
-    dict->SetDouble("lastModifiedTime",
-                    last_modified_time_.ToDoubleT() * 1000.0);
+    dict->SetDoubleKey("lastModifiedTime",
+                       last_modified_time_.ToDoubleT() * 1000.0);
   }
   return std::move(dict);
 }

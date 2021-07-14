@@ -190,7 +190,8 @@ ExtensionFunction::ResponseAction BrowsingDataSettingsFunction::Run() {
   std::unique_ptr<base::DictionaryValue> options(new base::DictionaryValue);
   options->Set(extension_browsing_data_api_constants::kOriginTypesKey,
                std::move(origin_types));
-  options->SetDouble(extension_browsing_data_api_constants::kSinceKey, since);
+  options->SetDoubleKey(extension_browsing_data_api_constants::kSinceKey,
+                        since);
 
   // Fill dataToRemove and dataRemovalPermitted.
   std::unique_ptr<base::DictionaryValue> selected(new base::DictionaryValue);

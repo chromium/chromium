@@ -196,7 +196,7 @@ SetTimeUI::SetTimeUI(content::WebUI* web_ui) : WebDialogUI(web_ui) {
   std::string current_timezone_id;
   CrosSettings::Get()->GetString(kSystemTimezone, &current_timezone_id);
   values.SetString("currentTimezoneId", current_timezone_id);
-  values.SetDouble("buildTime", base::GetBuildTime().ToJsTime());
+  values.SetDoubleKey("buildTime", base::GetBuildTime().ToJsTime());
 
   source->AddLocalizedStrings(values);
 

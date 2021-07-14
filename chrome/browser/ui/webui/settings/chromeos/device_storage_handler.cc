@@ -307,8 +307,8 @@ void StorageHandler::UpdateSizeStat(
   base::DictionaryValue size_stat;
   size_stat.SetString("availableSize", ui::FormatBytes(available_bytes));
   size_stat.SetString("usedSize", ui::FormatBytes(in_use_total_bytes_));
-  size_stat.SetDouble("usedRatio", static_cast<double>(in_use_total_bytes_) /
-                                       rounded_total_bytes);
+  size_stat.SetDoubleKey("usedRatio", static_cast<double>(in_use_total_bytes_) /
+                                          rounded_total_bytes);
   int storage_space_state =
       static_cast<int>(StorageSpaceState::kStorageSpaceNormal);
   if (available_bytes < kSpaceCriticallyLowBytes)

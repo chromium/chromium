@@ -276,8 +276,8 @@ std::unique_ptr<base::DictionaryValue> DownloadItemToJSON(
   json->SetString(kMimeKey, download_item->GetMimeType());
   json->SetString(kStartTimeKey,
                   base::TimeToISO8601(download_item->GetStartTime()));
-  json->SetDouble(kBytesReceivedKey, download_item->GetReceivedBytes());
-  json->SetDouble(kTotalBytesKey, download_item->GetTotalBytes());
+  json->SetDoubleKey(kBytesReceivedKey, download_item->GetReceivedBytes());
+  json->SetDoubleKey(kTotalBytesKey, download_item->GetTotalBytes());
   json->SetBoolean(kDownloadsApiIncognitoKey,
                    browser_context->IsOffTheRecord());
   if (download_item->GetState() == DownloadItem::INTERRUPTED) {
@@ -311,7 +311,7 @@ std::unique_ptr<base::DictionaryValue> DownloadItemToJSON(
       json->SetString(kByExtensionNameKey, extension->name());
   }
   // TODO(benjhayden): Implement fileSize.
-  json->SetDouble(kFileSizeKey, download_item->GetTotalBytes());
+  json->SetDoubleKey(kFileSizeKey, download_item->GetTotalBytes());
   return std::unique_ptr<base::DictionaryValue>(json);
 }
 

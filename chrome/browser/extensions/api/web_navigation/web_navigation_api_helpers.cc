@@ -137,8 +137,8 @@ void DispatchOnCommitted(events::HistogramValue histogram_value,
     qualifiers.Append("from_address_bar");
   dict->SetKey(web_navigation_api_constants::kTransitionQualifiersKey,
                std::move(qualifiers));
-  dict->SetDouble(web_navigation_api_constants::kTimeStampKey,
-                  MilliSecondsFromTime(base::Time::Now()));
+  dict->SetDoubleKey(web_navigation_api_constants::kTimeStampKey,
+                     MilliSecondsFromTime(base::Time::Now()));
   args->Append(std::move(dict));
 
   content::BrowserContext* browser_context =
