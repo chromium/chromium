@@ -240,7 +240,7 @@ Polymer({
     if (this.currentStep !== UIState.VALUE_PROP) {
       return;
     }
-    this.$.valueProp.showNextSettingZippy();
+    this.$.valueProp.showNextStep();
   },
 
   /**

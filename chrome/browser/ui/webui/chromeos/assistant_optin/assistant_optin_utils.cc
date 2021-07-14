@@ -96,12 +96,19 @@ assistant::SettingsUiUpdate GetEmailOptInUpdate(bool opted_in) {
 }
 
 // Helper method to create zippy data.
-base::Value CreateZippyData(const SettingZippyList& zippy_list,
+base::Value CreateZippyData(const ActivityControlUi& activity_control_ui,
                             bool is_minor_mode) {
   base::Value zippy_data(base::Value::Type::LIST);
+  auto zippy_list = activity_control_ui.setting_zippy();
   for (auto& setting_zippy : zippy_list) {
     base::Value data(base::Value::Type::DICTIONARY);
-    data.SetKey("title", base::Value(setting_zippy.title()));
+    data.SetKey("title", base::Value(activity_control_ui.title()));
+    data.SetKey("identity", base::Value(activity_control_ui.identity()));
+    if (activity_control_ui.intro_text_paragraph_size()) {
+      data.SetKey("intro",
+                  base::Value(activity_control_ui.intro_text_paragraph(0)));
+    }
+    data.SetKey("name", base::Value(setting_zippy.title()));
     if (setting_zippy.description_paragraph_size()) {
       data.SetKey("description",
                   base::Value(setting_zippy.description_paragraph(0)));
@@ -113,6 +120,7 @@ base::Value CreateZippyData(const SettingZippyList& zippy_list,
     data.SetKey("iconUri", base::Value(setting_zippy.icon_uri()));
     data.SetKey("popupLink", base::Value(l10n_util::GetStringUTF16(
                                  IDS_ASSISTANT_ACTIVITY_CONTROL_POPUP_LINK)));
+    // TODO(https://crbug.com/1224850) Add data from learn_more_dialog field.
     data.SetKey("isMinorMode", base::Value(is_minor_mode));
     zippy_data.Append(std::move(data));
   }
@@ -203,11 +211,6 @@ base::Value GetSettingsUiStrings(const assistant::SettingsUi& settings_ui,
                       base::Value(activity_control_ui.identity()));
     dictionary.SetKey("valuePropTitle",
                       base::Value(activity_control_ui.title()));
-    if (activity_control_ui.intro_text_paragraph_size()) {
-      dictionary.SetKey(
-          "valuePropIntro",
-          base::Value(activity_control_ui.intro_text_paragraph(0)));
-    }
     if (activity_control_ui.footer_paragraph_size()) {
       dictionary.SetKey("valuePropFooter",
                         base::Value(activity_control_ui.footer_paragraph(0)));

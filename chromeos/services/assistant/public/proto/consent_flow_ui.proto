@@ -93,6 +93,18 @@ message ConsentFlowUi {
       //
       // Required.
       repeated string footer_paragraph = 9;
+
+      message LearnMoreDialog {
+        // Title heading of the dialog.
+        optional string title = 1;
+        // May contain HTML tags for like bold and hyperlinks.
+        repeated string paragraph = 2;
+        // Bottom button that closes dialog.
+        optional string dismiss_button = 3;
+      }
+      // Learn more dialog that can be opened from the Learn More CTA within
+      // setting_zippy.
+      optional LearnMoreDialog learn_more_dialog = 13;
     }
     optional ActivityControlUi activity_control_ui = 1;
 

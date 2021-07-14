@@ -429,8 +429,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   DCHECK(settings_ui.has_consent_flow_ui());
 
   RecordAssistantOptInStatus(FLOW_STARTED);
-  auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
-  auto third_party_disclosure_ui = consent_ui.third_party_disclosure_ui();
+  auto third_party_disclosure_ui =
+      settings_ui.consent_flow_ui().consent_ui().third_party_disclosure_ui();
 
   base::Value zippy_data(base::Value::Type::LIST);
   bool skip_activity_control = true;
@@ -448,11 +448,12 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
         data.consent_token = activity_control_ui.consent_token();
         data.ui_audit_key = activity_control_ui.ui_audit_key();
         pending_consent_data_.push_back(data);
-        zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy(),
-                                          /*is_minor_mode=*/true));
+        zippy_data.Append(
+            CreateZippyData(activity_control_ui, /*is_minor_mode=*/true));
       }
     }
   } else {
+    auto consent_ui = settings_ui.consent_flow_ui().consent_ui();
     auto activity_control_ui = consent_ui.activity_control_ui();
     if (activity_control_ui.setting_zippy().size()) {
       skip_activity_control = false;
@@ -460,8 +461,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
       data.consent_token = activity_control_ui.consent_token();
       data.ui_audit_key = activity_control_ui.ui_audit_key();
       pending_consent_data_.push_back(data);
-      zippy_data.Append(CreateZippyData(activity_control_ui.setting_zippy(),
-                                        /*is_minor_mode=*/false));
+      zippy_data.Append(
+          CreateZippyData(activity_control_ui, /*is_minor_mode=*/false));
     }
   }
 

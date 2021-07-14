@@ -29,7 +29,7 @@
       </div>
       <div slot="content" id="content-container"
           class="landscape-vertical-centered">
-        <div class="content" id="intro-text"></div>
+        <div class="content" id="subtitle-container"></div>
         <div hidden$="[[!newLayoutEnabled_]]">
           <div class="line" hidden$="[[isMinorMode_]]"></div>
         </div>
@@ -44,7 +44,7 @@
           </div>
           <div id="consents-container"></div>
         </div>
-        <div class="content" id="footer-text"></div>
+        <div class="content" id="footer-text" hidden$="[[isMinorMode_]]"></div>
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button id="skip-button" on-click="onSkipTap_"

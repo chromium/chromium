@@ -6,8 +6,24 @@
   --oobe-adaptive-dialog-content-top-padding: 0;
 }
 
-#intro-text {
+.subtitle-text {
+  color: var(--google-grey-900);
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 24px;
+}
+
+.subtitle-message-text {
   padding: 0 8px 16px 0;
+}
+
+.subtitle-message-text-minor {
+  color: var(--google-grey-900);
+  padding: 0 8px 16px 0;
+}
+
+.username-text {
+  padding-bottom: 30px;
 }
 
 #footer-text {
