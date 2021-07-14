@@ -170,6 +170,11 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
 #endif
 
+  // V8 uses PKU (a.k.a. MPK / PKEY) for protecting code spaces.
+  if (sysno == __NR_pkey_alloc || sysno == __NR_pkey_free) {
+    return Allow();
+  }
+
   if (SyscallSets::IsClockApi(sysno)) {
     return RestrictClockID();
   }
@@ -259,8 +264,11 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return RestrictMmapFlags();
 #endif
 
-  if (sysno == __NR_mprotect)
+  if (sysno == __NR_mprotect || sysno == __NR_pkey_mprotect) {
+    // pkey_mprotect is identical to mprotect except for the additional (last)
+    // parameter, which can be ignored here.
     return RestrictMprotectFlags();
+  }
 
   if (sysno == __NR_prctl)
     return RestrictPrctl();
