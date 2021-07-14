@@ -57,14 +57,6 @@ class RestoreOnStartupPolicyTest : public PolicyTest,
   RestoreOnStartupPolicyTest() = default;
   ~RestoreOnStartupPolicyTest() override = default;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(nkostylev): Investigate if we can remove this switch.
-    command_line->AppendSwitch(switches::kCreateBrowserOnStartupForTests);
-    PolicyTest::SetUpCommandLine(command_line);
-  }
-#endif
-
   void SetUpInProcessBrowserTestFixture() override {
     PolicyTest::SetUpInProcessBrowserTestFixture();
     // Set early policies now, before the browser is created.
