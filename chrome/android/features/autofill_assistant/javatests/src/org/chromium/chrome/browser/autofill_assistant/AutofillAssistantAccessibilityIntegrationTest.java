@@ -21,10 +21,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
 
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementExists;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.checkElementOnScreen;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.fullyCovers;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.getAbsoluteBoundingRect;
-import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.scrollIntoViewIfNeeded;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.startAutofillAssistant;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.tapElement;
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.waitUntil;
@@ -43,7 +41,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.autofill_assistant.R;
 import org.chromium.chrome.browser.autofill_assistant.proto.ActionProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ChipProto;
@@ -65,6 +62,7 @@ import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -120,7 +118,6 @@ public class AutofillAssistantAccessibilityIntegrationTest {
 
     @Test
     @MediumTest
-    @FlakyTest(message = "see crbug.com/1207665")
     public void testBottomSheetHasRestrictedFixedHeight() throws Exception {
         ArrayList<ActionProto> list = new ArrayList<>();
 
@@ -166,6 +163,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                         .build(),
                 list);
 
+        cleanUpWebsiteForTest();
         setAccessibilityEnabledForTesting(true);
         runScript(script);
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
@@ -185,8 +183,6 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                 .perform(scrollTo(), typeText("Hello World!"));
         onView(withId(R.id.control_container)).check(matches(isCompletelyDisplayed()));
         assertThat(checkElementExists(mTestRule.getWebContents(), "touch_area_four"), is(true));
-        scrollIntoViewIfNeeded(mTestRule.getWebContents(), "touch_area_four");
-        waitUntil(() -> checkElementOnScreen(mTestRule, "touch_area_four"));
         tapElement(mTestRule, "touch_area_four");
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_four"));
     }
@@ -238,6 +234,7 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                         .build(),
                 list);
 
+        cleanUpWebsiteForTest();
         runScript(script);
         waitUntilViewMatchesCondition(withText("Continue"), isCompletelyDisplayed());
 
@@ -276,5 +273,15 @@ public class AutofillAssistantAccessibilityIntegrationTest {
                 not(fullyCovers(getAbsoluteBoundingRect(mTestRule, "touch_area_four"))));
         tapElement(mTestRule, "touch_area_four");
         waitUntil(() -> !checkElementExists(mTestRule.getWebContents(), "touch_area_four"));
+    }
+
+    private void cleanUpWebsiteForTest() throws Exception {
+        // This makes sure that #touch_area_one and #touch_area_four are the topmost elements on
+        // the page. This way they can be clicked directly without needing to scroll.
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+        javascriptHelper.evaluateJavaScriptForTests(
+                mTestRule.getWebContents(), "document.getElementById('trigger-keyboard').remove()");
+        javascriptHelper.waitUntilHasValue();
     }
 }
