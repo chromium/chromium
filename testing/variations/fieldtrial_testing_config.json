@@ -7719,6 +7719,21 @@
             ]
         }
     ],
+    "SurfaceSyncThrottling": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SurfaceSyncThrottling"
+                    ]
+                }
+            ]
+        }
+    ],
     "SwipeToMoveCursor": [
         {
             "platforms": [
