@@ -18,14 +18,15 @@ the Java version.
 directive (optional)
 * Strip enum entry prefixes to make the generated classes less verbose using
 the `GENERATED_JAVA_PREFIX_TO_STRIP` directive (optional)
-* Supports
-[`@IntDef`](https://developer.android.com/reference/android/support/annotation/IntDef.html)
+* Follows best practices by using
+[IntDef Instead of Enum](/styleguide/java/java.md#IntDef-Instead-of-Enum)
 * Copies comments that directly precede enum entries into the generated Java
 class
 
 ## Usage
 
-1. Add directives to your C++ enum
+1. Add directives to your C++ enum. Only the `GENERATED_JAVA_ENUM_PACKAGE`
+   directive is required:
 
     ```cpp
     // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome
@@ -38,34 +39,43 @@ class
     };
     ```
 
-2. Add a new build target
+2. Add a new build target and add it to the `srcjar_deps` of an
+   `android_library` target:
 
     ```gn
-    import("//build/config/android/rules.gni")
+    if (is_android) {
+      import("//build/config/android/rules.gni")
+    }
 
-    java_cpp_enum("foo_generated_enum") {
-      sources = [
-        "base/android/native_foo_header.h",
-      ]
+    if (is_android) {
+      java_cpp_enum("java_enum_srcjar") {
+        # External code should depend on ":foo_java" instead.
+        visibility = [ ":*" ]
+        sources = [
+          # Include the .h or .cc file(s) which defines the enum(s).
+          "base/android/native_foo_header.h",
+        ]
+      }
+
+      # If there's already an android_library target, you can add
+      # java_enum_srcjar to that target's srcjar_deps. Otherwise, the best
+      # practice is to create a new android_library just for this target.
+      android_library("foo_java") {
+        srcjar_deps = [ ":java_enum_srcjar" ]
+
+        # Important: the generated enum uses the @IntDef annotation provided by
+        # this dependency.
+        deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+      }
     }
     ```
 
-3. Add the new target to the desired android_library targets srcjar_deps:
-
-    ```gn
-    android_library("base_java") {
-      srcjar_deps = [
-        ":foo_generated_enum",
-      ]
-    }
-    ```
-
-4. The generated file `org/chromium/chrome/FooBar.java` would contain:
+3. The generated file `org/chromium/chrome/FooBar.java` would contain:
 
     ```java
     package org.chromium.chrome;
 
-    import android.support.annotation.IntDef;
+    import androidx.annotation.IntDef;
 
     import java.lang.annotation.Retention;
     import java.lang.annotation.RetentionPolicy;
@@ -145,6 +155,40 @@ class
       int THREE = 2;
     }
     ```
+
+## Troubleshooting
+
+### Symbol not found/could not resolve IntDef
+
+You may see an error like this when compiling:
+
+```shell
+$ autoninja -C out/Default base/foo_java
+util.build_utils.CalledProcessError: Command failed: ...
+org/chromium/chrome/FooBar.java:13: error: symbol not found androidx.annotation.IntDef
+Please add //third_party/androidx:androidx_annotation_annotation_java dep to //base/foo_java. File a crbug if this suggestion is incorrect.
+import androidx.annotation.IntDef;
+       ^
+org/chromium/chrome/FooBar.java:18: error: could not resolve IntDef
+@IntDef({
+^
+```
+
+The fix is to add
+`"//third_party/androidx:androidx_annotation_annotation_java"` to the `deps` of
+the `android_library`. Note: **do not** add this to the `java_cpp_enum` target
+by mistake, otherwise you'll see a new error:
+
+```shell
+$ autoninja -C out/Default base/foo_java
+[0/1] Regenerating ninja files
+ERROR at //base/BUILD.gn:194:12: Assignment had no effect.
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+           ^--------------------------------------------------------------
+You set the variable "deps" here and it was unused before it went
+out of scope.
+...
+```
 
 ## See also
 * [Accessing C++ Switches In Java](android_accessing_cpp_switches_in_java.md)
