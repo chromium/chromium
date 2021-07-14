@@ -1591,6 +1591,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_TRAFFIC_COUNTERS_RESET_TRAFFIC_COUNTERS" desc="Label for button resetting traffic counters">
         Reset Traffic Counters
       </message>
+      <message name="IDS_TRAFFIC_COUNTERS_LAST_RESET_TIME" desc="Label for traffic counters' last reset time">
+        Last Reset Time
+      </message>
       <message name="IDS_TRAFFIC_COUNTERS_TRAFFIC_COUNTERS" desc="Label for showing traffic counters">
         Traffic Counters
       </message>

@@ -32,7 +32,8 @@ const TechnologyIcons = {
  *   guid: string,
  *   name: string,
  *   type: !chromeos.networkConfig.mojom.NetworkType,
- *   counters: !Array<!Object>
+ *   counters: !Array<!Object>,
+ *   lastResetTime: ?mojoBase.mojom.Time,
  * }}
  */
 let Network;
@@ -43,14 +44,16 @@ let Network;
  * @param {string} name
  * @param {!chromeos.networkConfig.mojom.NetworkType} type
  * @param {!Array<!Object>} counters
+ * @param {?mojoBase.mojom.Time} lastResetTime
  * @return {Network} Network object
  */
-function createNetwork(guid, name, type, counters) {
+function createNetwork(guid, name, type, counters, lastResetTime) {
   return {
     guid: guid,
     name: name,
     type: type,
     counters: counters,
+    lastResetTime: lastResetTime,
   };
 }
 
@@ -127,6 +130,7 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     this.networkConfig_.resetTrafficCounters(network.guid);
     const trafficCounters =
         await this.getTrafficCountersForNetwork_(network.guid);
+    const lastResetTime = await this.getLastResetTime(network.guid);
     const foundIdx = this.networks_.findIndex(n => n.guid === network.guid);
     if (foundIdx === -1) {
       return;
@@ -134,7 +138,8 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     this.splice(
         'networks_', foundIdx, 1,
         createNetwork(
-            network.guid, network.name, network.type, trafficCounters));
+            network.guid, network.name, network.type, trafficCounters,
+            lastResetTime));
   }
 
   /**
@@ -151,21 +156,21 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     const networkStateList =
         await this.networkConfig_.getNetworkStateList(filter);
     for (const networkState of networkStateList.result) {
-      const trafficCountersObj =
-          await this.networkConfig_.requestTrafficCounters(networkState.guid);
-      this.convertSourceEnumToString_(trafficCountersObj.trafficCounters);
+      const trafficCounters =
+          await this.getTrafficCountersForNetwork_(networkState.guid);
+      const lastResetTime = await this.getLastResetTime(networkState.guid);
       this.push(
           'networks_',
           createNetwork(
               networkState.guid, networkState.name, networkState.type,
-              trafficCountersObj.trafficCounters));
+              trafficCounters, lastResetTime));
     }
   }
 
   /**
    * Requests and sets traffic counters for the given network.
    * @param {string} guid
-   * @return {!Promise<!Array<!Object>>} traff counters for network with guid
+   * @return {!Promise<!Array<!Object>>} traffic counters for network with guid
    * @private
    */
   async getTrafficCountersForNetwork_(guid) {
@@ -173,6 +178,23 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
         await this.networkConfig_.requestTrafficCounters(guid);
     this.convertSourceEnumToString_(trafficCountersObj.trafficCounters);
     return trafficCountersObj.trafficCounters;
+  }
+
+  /**
+   * Gets last reset time.
+   * @param {string} guid
+   * @return {?Promise<?mojoBase.mojom.Time>} last reset
+   *     time for network with guid
+   * @private
+   */
+  async getLastResetTime(guid) {
+    const managedPropertiesPromise =
+        await this.networkConfig_.getManagedProperties(guid);
+    if (!managedPropertiesPromise) {
+      return null;
+    }
+
+    return managedPropertiesPromise.result.trafficCounterResetTime || null;
   }
 
   /**
@@ -278,6 +300,16 @@ export class TrafficCountersElement extends TrafficCountersElementBase {
     // '\t' describes the number of white space characters to use as white space
     // while forming the JSON string.
     return JSON.stringify(counters, replacer, '\t');
+  }
+
+  /**
+   * @param {Network} network
+   * @return {string} a representation of the last reset time for a particular
+   * network.
+   * @private
+   */
+  lastResetTimeString_(network) {
+    return JSON.stringify(network.lastResetTime.internalValue, replacer, '\t');
   }
 }
 customElements.define(TrafficCountersElement.is, TrafficCountersElement);

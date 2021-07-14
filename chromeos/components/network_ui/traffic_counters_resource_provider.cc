@@ -31,6 +31,7 @@ constexpr webui::LocalizedString kLocalizedStrings[] = {
      IDS_TRAFFIC_COUNTERS_REQUEST_TRAFFIC_COUNTERS},
     {"TrafficCountersResetTrafficCounters",
      IDS_TRAFFIC_COUNTERS_RESET_TRAFFIC_COUNTERS},
+    {"TrafficCountersLastResetTime", IDS_TRAFFIC_COUNTERS_LAST_RESET_TIME},
 };
 
 }  // namespace

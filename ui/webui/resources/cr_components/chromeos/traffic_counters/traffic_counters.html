@@ -30,6 +30,14 @@
       </span>
     </div>
     <div class="network-attribute-container">
+      <div class="network-attribute-label">
+        [[i18n('TrafficCountersLastResetTime')]]
+      </div>
+      <span class="network-attribute-value">
+        [[lastResetTimeString_(network)]]
+      </span>
+    </div>
+    <div class="network-attribute-container">
       <div class="button-group">
         <cr-button on-click="onResetTrafficCountersClick_">
           [[i18n('TrafficCountersResetTrafficCounters')]]
