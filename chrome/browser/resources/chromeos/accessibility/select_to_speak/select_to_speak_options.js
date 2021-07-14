@@ -40,8 +40,22 @@ class SelectToSpeakOptionsPage {
             window.speechSynthesis.onvoiceschanged = (function() {
               this.populateVoiceList_('localVoices');
             }.bind(this));
-            // TODO(crbug.com/1227589): add enhanced voice settings to prefs
-            // and sync the controls for those settings to preferences
+
+            this.syncSelectControlToPref_('localVoices', 'voice', 'voiceName');
+            this.syncCheckboxControlToPref_(
+                'naturalVoices', 'enhancedNetworkVoices', (checked) => {
+                  const voice =
+                      document.getElementById('naturalVoiceSelection');
+                  const preview =
+                      document.getElementById('naturalVoicePreview');
+                  const select = document.getElementById('naturalVoice');
+                  this.setElementVisible(voice, checked);
+                  this.setElementVisible(preview, checked);
+                  select.disabled = !checked;
+                });
+            // TODO(crbug.com/1227589): add enhanced voice and language
+            // selection to prefs and sync the controls for those settings to
+            // preferences.
           }
         });
 

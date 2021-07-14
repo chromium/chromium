@@ -39,6 +39,9 @@ export class PrefsManager {
 
     /** @private {boolean} */
     this.navigationControlsEnabled_ = true;
+
+    /** @private {boolean} */
+    this.enhancedNetworkVoicesEnabled_ = true;
   }
 
   /**
@@ -228,7 +231,7 @@ export class PrefsManager {
       chrome.storage.sync.get(
           [
             'voice', 'rate', 'pitch', 'wordHighlight', 'highlightColor',
-            'backgroundShading', 'navigationControls'
+            'backgroundShading', 'navigationControls', 'enhancedNetworkVoices'
           ],
           (prefs) => {
             if (prefs['voice']) {
@@ -255,6 +258,14 @@ export class PrefsManager {
             } else {
               chrome.storage.sync.set(
                   {'navigationControls': this.navigationControlsEnabled_});
+            }
+            if (prefs['enhancedNetworkVoices'] !== undefined) {
+              this.enhancedNetworkVoicesEnabled_ =
+                  prefs['enhancedNetworkVoices'];
+            } else {
+              chrome.storage.sync.set({
+                'enhancedNetworkVoices': this.enhancedNetworkVoicesEnabled_
+              });
             }
             if (prefs['rate'] && prefs['pitch']) {
               // Removes 'rate' and 'pitch' prefs after migrating data to global
