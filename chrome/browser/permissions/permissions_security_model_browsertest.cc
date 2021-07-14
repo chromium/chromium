@@ -5,6 +5,7 @@
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -29,7 +30,7 @@ void AssertResultIsString(const content::EvalJsResult& result) {
 }
 
 // Creates a blob containing dummy HTML, then returns its URL.
-// Executes javascript to do so in |rfh|.
+// Executes javascript to do so in `rfh`.
 GURL CreateBlobURL(content::RenderFrameHost* rfh) {
   content::EvalJsResult result = content::EvalJs(rfh, R"(
     const blob = new Blob(["foo"], {type: "text/html"});
@@ -38,6 +39,64 @@ GURL CreateBlobURL(content::RenderFrameHost* rfh) {
 
   AssertResultIsString(result);
   return GURL(result.ExtractString());
+}
+
+// Writes some dummy HTML to a file, then returns its `filesystem:` URL.
+// Executes javascript to do so in `rfh`, which must not be nullptr.
+GURL CreateFilesystemURL(content::RenderFrameHost* rfh) {
+  content::EvalJsResult result = content::EvalJs(rfh, R"(
+    // It seems anonymous async functions are not available yet, so we cannot
+    // use an immediately-invoked function expression.
+    async function run() {
+      const fs = await new Promise((resolve, reject) => {
+        window.webkitRequestFileSystem(window.TEMPORARY, 1024, resolve,
+        reject);
+      });
+      const file = await new Promise((resolve, reject) => {
+        fs.root.getFile('hello.html', {create: true}, resolve, reject);
+      });
+      const writer = await new Promise((resolve, reject) => {
+        file.createWriter(resolve, reject);
+      });
+      await new Promise((resolve) => {
+        writer.onwriteend = resolve;
+        writer.write(new Blob(["foo"], {type: "text/html"}));
+      });
+      return file.toURL();
+    }
+    run()
+  )");
+
+  AssertResultIsString(result);
+  GURL fs_url = GURL(result.ExtractString());
+  EXPECT_TRUE(fs_url.SchemeIsFileSystem());
+
+  return fs_url;
+}
+
+// Adds a child iframe sourced from `url` to the given `parent_rfh` document.
+// `parent_rfh` must not be nullptr.
+content::RenderFrameHost* EmbedIframeFromURL(
+    content::RenderFrameHost* parent_rfh,
+    const GURL& url) {
+  std::string script_template = R"(
+    new Promise((resolve) => {
+      const iframe = document.createElement("iframe");
+      iframe.name = "my_iframe";
+      iframe.src = $1;
+      iframe.onload = _ => { resolve(true); };
+      document.body.appendChild(iframe);
+    })
+  )";
+
+  content::EvalJsResult result =
+      content::EvalJs(parent_rfh, content::JsReplace(script_template, url));
+  EXPECT_EQ(true, result);  // For the error message.
+
+  content::RenderFrameHost* iframe_rfh = content::FrameMatchingPredicate(
+      content::WebContents::FromRenderFrameHost(parent_rfh),
+      base::BindRepeating(&content::FrameMatchesName, "my_iframe"));
+  return iframe_rfh;
 }
 
 // Tests of permissions behavior for an inheritance and embedding of an origin.
@@ -309,14 +368,16 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, WindowOpenBlob) {
 
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL url(embedded_test_server()->GetURL("/empty.html"));
-  EXPECT_TRUE(ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
-      browser(), url, 1));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
   content::WebContents* opener_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(opener_contents);
 
   content::WebContents* blob_popup_contents =
-      OpenPopup(browser(), CreateBlobURL(opener_contents->GetMainFrame()));
+      OpenPopup(browser(), CreateBlobURL(main_rfh));
   ASSERT_TRUE(blob_popup_contents);
 
   EXPECT_TRUE(blob_popup_contents->GetLastCommittedURL().SchemeIsBlob());
@@ -326,4 +387,84 @@ IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest, WindowOpenBlob) {
   TestCamera(opener_contents, blob_popup_contents->GetMainFrame());
 }
 
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       EmbedIframeFileSystem) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+  content::WebContents* embedder_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(embedder_contents);
+
+  content::RenderFrameHost* embedded_iframe_rfh =
+      EmbedIframeFromURL(main_rfh, CreateFilesystemURL(main_rfh));
+  ASSERT_TRUE(embedded_iframe_rfh);
+  EXPECT_EQ(url::kFileSystemScheme,
+            embedded_iframe_rfh->GetLastCommittedURL().scheme());
+
+  TestNotifications(embedder_contents, embedded_iframe_rfh);
+  TestGeolocation(embedder_contents, embedded_iframe_rfh);
+  TestCamera(embedder_contents, embedded_iframe_rfh);
+}
+
+// Renderer navigation for "filesystem:" is not allowed.
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       WindowOpenFileSystemRendererNavigationNotAllowed) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(opener_contents);
+
+  content::WebContents* popup_iframe =
+      OpenPopup(browser(), CreateFilesystemURL(main_rfh));
+  ASSERT_TRUE(popup_iframe);
+
+  // Not allowed to navigate top frame to filesystem URL.
+  EXPECT_EQ("", popup_iframe->GetLastCommittedURL().scheme());
+}
+
+IN_PROC_BROWSER_TEST_P(PermissionsSecurityModelBrowserTest,
+                       WindowOpenFileSystemBrowserNavigation) {
+  if (!GetParam()) {
+    // Filesystem iframe on an opener contents does not work if
+    // `kRevisedOriginHandling` feature disabled.
+    return;
+  }
+  ASSERT_TRUE(embedded_test_server()->Start());
+  const GURL url(embedded_test_server()->GetURL("/empty.html"));
+  content::RenderFrameHost* main_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(browser(), url,
+                                                                1);
+  ASSERT_TRUE(main_rfh);
+  content::WebContents* opener_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(opener_contents);
+
+  GURL fs_url = CreateFilesystemURL(main_rfh);
+
+  content::WebContents* popup_iframe_web_contents =
+      OpenPopup(browser(), fs_url);
+  ASSERT_TRUE(popup_iframe_web_contents);
+
+  EXPECT_EQ("", popup_iframe_web_contents->GetLastCommittedURL().scheme());
+
+  content::RenderFrameHost* popup_rfh =
+      ui_test_utils::NavigateToURLBlockUntilNavigationsComplete(
+          chrome::FindBrowserWithWebContents(popup_iframe_web_contents), fs_url,
+          1);
+
+  EXPECT_TRUE(popup_rfh->GetLastCommittedURL().SchemeIsFileSystem());
+
+  TestNotifications(opener_contents, popup_rfh);
+  TestGeolocation(opener_contents, popup_rfh);
+  TestCamera(opener_contents, popup_rfh);
+}
 }  // anonymous namespace
