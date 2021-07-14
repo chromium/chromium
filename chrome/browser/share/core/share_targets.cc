@@ -120,8 +120,12 @@ void ShareTargets::RemoveObserver(ShareTargetsObserver* observer) {
 }
 
 void ShareTargets::NotifyObserver(ShareTargetsObserver* observer) {
-  // This retrieves just the country code from the locale.
-  std::string locale = g_browser_process->GetApplicationLocale().substr(3, 2);
+  std::string locale = GLOBAL;
+  std::string app_locale = g_browser_process->GetApplicationLocale();
+  if (!app_locale.empty() && app_locale.size() == 5) {
+    // This retrieves just the country code from the locale.
+    locale = app_locale.substr(3, 2);
+  }
   auto it = targets_->map_target_locale_map().find(locale);
 
   if (it == targets_->map_target_locale_map().end()) {
