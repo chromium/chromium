@@ -31,6 +31,7 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.components.metrics.ChromeUserMetricsExtensionProtos.ChromeUserMetricsExtension;
 import org.chromium.components.metrics.MetricsSwitches;
+import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -283,6 +284,55 @@ public class AwMetricsIntegrationTest {
                 systemProfile.getNetwork().hasMinEffectiveConnectionType());
         Assert.assertTrue("Should have some network.max_effective_connection_type",
                 systemProfile.getNetwork().hasMaxEffectiveConnectionType());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_pageLoad() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            Assert.assertEquals("Should have correct stability histogram kPageLoad count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.PAGE_LOAD));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_rendererLaunchCount() throws Throwable {
+        EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        try {
+            // Load a page to ensure the renderer process is created.
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                    embeddedTestServer.getURL("/android_webview/test/data/hello_world.html"));
+
+            Assert.assertEquals("Should have correct stability histogram kRendererLaunch count", 1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            "Stability.Counts2", StabilityEventType.RENDERER_LAUNCH));
+        } finally {
+            embeddedTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testMetadata_stability_browserLaunchCount() throws Throwable {
+        // This should be triggered simply by initializing the MetricsService. This should be logged
+        // (and persisted) even before we start collecting the first metrics log.
+        Assert.assertEquals("Should have correct stability histogram kLaunch count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.LAUNCH));
     }
 
     @Test

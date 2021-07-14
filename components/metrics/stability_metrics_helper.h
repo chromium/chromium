@@ -18,6 +18,7 @@ namespace metrics {
 // The values here correspond to values in the Stability message in
 // system_profile.proto.
 // This must stay 1-1 with the StabilityEventType enum in enums.xml.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.metrics
 enum class StabilityEventType {
   kPageLoad = 2,
   kRendererCrash = 3,
