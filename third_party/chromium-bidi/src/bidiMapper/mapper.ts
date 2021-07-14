@@ -15,7 +15,7 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpServer } from './utils/cdpServer';
+import { CdpClient } from './utils/cdpClient';
 import { BidiServer } from './utils/bidiServer';
 import { ServerBinding } from './utils/iServer';
 
@@ -78,7 +78,7 @@ function _createCdpServer() {
       globalObj.cdp.onmessage = handler;
     }
   );
-  return new CdpServer(cdpBinding);
+  return new CdpClient(cdpBinding);
 }
 
 function _createBidiServer() {

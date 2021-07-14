@@ -15,21 +15,8 @@
  */
 `use strict`;
 
-import { rollup } from 'rollup';
-import typescript from '@rollup/plugin-typescript';
+import fs from 'fs/promises';
 
 export default async function read(): Promise<string> {
-  const bundle = await rollup({
-    input: 'src/bidiMapper/mapper.ts',
-    plugins: [
-      typescript({
-        tsconfig: 'src/bidiMapper/tsconfig.json',
-      }),
-    ],
-  });
-
-  const result = await bundle.generate({
-    format: 'iife',
-  });
-  return result.output[0].code;
+  return await fs.readFile(new URL('./mapper.js', import.meta.url), 'utf8');
 }
