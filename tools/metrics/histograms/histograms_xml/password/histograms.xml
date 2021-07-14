@@ -2488,6 +2488,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.UpdateLoginPasswordIssuesHasValue"
+    enum="BooleanSet" expires_after="2021-09-30">
+  <owner>ioanap@chromium.org</owner>
+  <owner>chrome-password-manager-metrics-alerts@google.com</owner>
+  <summary>
+    Recorded when UpdateLogin is called on the login database. Records whether
+    the form passed to the method has a value set for password_issues or not.
+  </summary>
+</histogram>
+
 <histogram name="PasswordManager.UpdateUIDismissalReason"
     enum="PasswordManagerUIDismissalReason" expires_after="2021-12-12">
   <owner>vasilii@chromium.org</owner>

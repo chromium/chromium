@@ -103,8 +103,9 @@ PasswordForm GenerateExamplePasswordForm() {
   form.in_store = PasswordForm::Store::kProfileStore;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user1"));
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("user2"));
+
   // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  //  via UpdateLogin properly set |password_issues|, setting them to an empty
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
   // map should be part of the default constructor.
   form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   return form;
@@ -1324,6 +1325,14 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   ASSERT_EQ(2U, result.size());
   result.clear();
 
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  complete_form.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
+  incomplete_form.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
+
   // Simulate the user changing their password.
   complete_form.password_value = u"new_password";
   complete_form.date_synced = base::Time::Now();
@@ -1334,14 +1343,6 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   complete_form.in_store = PasswordForm::Store::kProfileStore;
   incomplete_form.in_store = PasswordForm::Store::kProfileStore;
 
-  // And |password_issues| should be set to empty.
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  complete_form.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
-  incomplete_form.password_issues =
-      base::flat_map<InsecureType, InsecurityMetadata>();
 
   // Both still exist now.
   EXPECT_TRUE(db().GetAutofillableLogins(&result));
@@ -1418,6 +1419,10 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
 
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/true), changes);
   ASSERT_EQ(1U, changes.size());
@@ -1425,12 +1430,6 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
-
-  // And |password_issues| should be empty
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   EXPECT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
@@ -1462,6 +1461,11 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.skip_zero_click = true;
   form.moving_blocked_for_list.push_back(GaiaIdHash::FromGaiaId("gaia_id"));
 
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via UpdateLogin properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
+
   PasswordStoreChangeList changes = db().UpdateLogin(form);
   EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false), changes);
   ASSERT_EQ(1U, changes.size());
@@ -1469,11 +1473,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
 
   // When we retrieve the form from the store, it should have |in_store| set.
   form.in_store = PasswordForm::Store::kProfileStore;
-  // And |password_issues| should be empty
-  // TODO(crbug.com/1223022): Once all places that operate changes on forms
-  // via UpdateLogin properly set |password_issues|, setting them to an empty
-  // map should be part of the default constructor.
-  form.password_issues = base::flat_map<InsecureType, InsecurityMetadata>();
 
   std::vector<std::unique_ptr<PasswordForm>> result;
   ASSERT_TRUE(db().GetLogins(PasswordFormDigest(form), &result));
@@ -2766,7 +2765,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithNoInsecureCredentialInformation) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ignore_result(db().AddLogin(form));
   InsecureCredential insecure_credential{form.signon_realm, form.username_value,
                                          base::Time(), InsecureType::kLeaked,
                                          IsMuted(false)};
@@ -2775,15 +2773,13 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithNoInsecureCredentialInformation) {
       insecure_credential.create_time, insecure_credential.is_muted);
   form.password_issues = std::move(issues);
 
-  ASSERT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
-                                /*insecure_changed=*/true),
-            db().UpdateLogin(form, nullptr));
+  ignore_result(db().AddLogin(form));
   ASSERT_THAT(db().insecure_credentials_table().GetAllRows(),
               ElementsAre(insecure_credential));
 
   PasswordForm no_info_form = form;
-  form.password_issues = absl::nullopt;
-  EXPECT_EQ(UpdateChangeForForm(no_info_form, /*password_changed=*/false,
+  no_info_form.password_issues.reset();
+  EXPECT_EQ(UpdateChangeForForm(form, /*password_changed=*/false,
                                 /*insecure_changed=*/false),
             db().UpdateLogin(no_info_form, nullptr));
   EXPECT_THAT(db().insecure_credentials_table().GetAllRows(),

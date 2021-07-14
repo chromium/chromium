@@ -1214,6 +1214,8 @@ PasswordStoreChangeList LoginDatabase::AddLogin(const PasswordForm& form,
 PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
                                                    UpdateLoginError* error) {
   TRACE_EVENT0("passwords", "LoginDatabase::UpdateLogin");
+  base::UmaHistogramBoolean("PasswordManager.UpdateLoginPasswordIssuesHasValue",
+                            form.password_issues.has_value());
   if (error) {
     *error = UpdateLoginError::kNone;
   }
@@ -1296,23 +1298,36 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   bool password_changed =
       form.password_value != old_primary_key_password.decrypted_password;
 
+  PasswordForm form_with_encrypted_password = form;
+  form_with_encrypted_password.encrypted_password = encrypted_password;
+
   InsecureCredentialsChanged insecure_changed(false);
   // TODO(crbug.com/1223022): It should be the responsibility of the caller to
   // set `password_issues` to empty instead of leaving it nullopt in this case.
   // Remove this once all `UpdateLogin` calls have been checked.
-  if (password_changed && !form.password_issues.has_value()) {
+  if (password_changed) {
     insecure_changed = UpdateInsecureCredentials(
         FormPrimaryKey(old_primary_key_password.primary_key),
         base::flat_map<InsecureType, InsecurityMetadata>());
+    form_with_encrypted_password.password_issues =
+        base::flat_map<InsecureType, InsecurityMetadata>();
   } else if (form.password_issues.has_value()) {
     insecure_changed = UpdateInsecureCredentials(
         FormPrimaryKey(old_primary_key_password.primary_key),
         form.password_issues.value());
   }
 
+  // Make sure that the form included in the `PasswordStoreChangeList` contains
+  // password issues info.
+  if (!form_with_encrypted_password.password_issues.has_value()) {
+    // TODO(crbug.com/1223022): Re-evaluate this once all places that call
+    // UpdateLogin have been changed to populate the |password_issues| field.
+    PopulateFormWithPasswordIssues(
+        FormPrimaryKey(old_primary_key_password.primary_key),
+        &form_with_encrypted_password);
+  }
+
   PasswordStoreChangeList list;
-  PasswordForm form_with_encrypted_password = form;
-  form_with_encrypted_password.encrypted_password = encrypted_password;
   FillFormInStore(&form_with_encrypted_password);
   list.emplace_back(PasswordStoreChange::UPDATE,
                     std::move(form_with_encrypted_password),
@@ -1534,15 +1549,7 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
         s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR));
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
-
-  std::vector<InsecureCredential> insecure_credentials =
-      insecure_credentials_table_.GetRows(FormPrimaryKey(*primary_key));
-  base::flat_map<InsecureType, InsecurityMetadata> issues;
-  for (const auto& insecure_credential : insecure_credentials) {
-    issues[insecure_credential.insecure_type] = InsecurityMetadata(
-        insecure_credential.create_time, insecure_credential.is_muted);
-  }
-  form->password_issues = std::move(issues);
+  PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
 
   return ENCRYPTION_RESULT_SUCCESS;
 }
@@ -2175,6 +2182,18 @@ void LoginDatabase::InitializeStatementStrings(const SQLTableBuilder& builder) {
 void LoginDatabase::FillFormInStore(PasswordForm* form) const {
   form->in_store = is_account_store() ? PasswordForm::Store::kAccountStore
                                       : PasswordForm::Store::kProfileStore;
+}
+
+void LoginDatabase::PopulateFormWithPasswordIssues(FormPrimaryKey primary_key,
+                                                   PasswordForm* form) const {
+  std::vector<InsecureCredential> insecure_credentials =
+      insecure_credentials_table_.GetRows(primary_key);
+  base::flat_map<InsecureType, InsecurityMetadata> issues;
+  for (const auto& insecure_credential : insecure_credentials) {
+    issues[insecure_credential.insecure_type] = InsecurityMetadata(
+        insecure_credential.create_time, insecure_credential.is_muted);
+  }
+  form->password_issues = std::move(issues);
 }
 
 InsecureCredentialsChanged LoginDatabase::UpdateInsecureCredentials(

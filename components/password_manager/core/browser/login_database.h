@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
 #include "components/password_manager/core/browser/password_store_change.h"
 #include "components/password_manager/core/browser/password_store_sync.h"
@@ -326,6 +327,11 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // Sets the `in_store` member of `form` to either kProfileStore or
   // kAccountStore depending on the value of `is_account_store_`.
   void FillFormInStore(PasswordForm* form) const;
+
+  // Reads the insecure credentials corresponding to the `primary_key` from the
+  // database and fills them into `form->password_issues`.
+  void PopulateFormWithPasswordIssues(FormPrimaryKey primary_key,
+                                      PasswordForm* form) const;
 
   // Updates data in the `insecure_credentials_table_` with the password issues
   // data from `password_issues`. Returns whether any insecure credential entry
