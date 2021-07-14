@@ -48,7 +48,7 @@ class BLINK_PLATFORM_EXPORT MultiBufferDataSource : public media::DataSource {
   // Please see the HTML5 spec for the descriptions of these values:
   // http://www.w3.org/TR/html5/video.html#attr-media-preload
   //
-  // Enum values must match the values in blink::WebMediaPlayer::Preload and
+  // Enum values must match the values in WebMediaPlayer::Preload and
   // there will be assertions at compile time if they do not match.
   enum Preload {
     NONE,

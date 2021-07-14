@@ -28,7 +28,7 @@ class WebSecurityOrigin;
 struct WebMediaKeySystemConfiguration;
 
 class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
-    : public blink::WebEncryptedMediaClient {
+    : public WebEncryptedMediaClient {
  public:
   WebEncryptedMediaClientImpl(
       media::CdmFactory* cdm_factory,
@@ -38,16 +38,14 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   ~WebEncryptedMediaClientImpl() override;
 
   // WebEncryptedMediaClient implementation.
-  void RequestMediaKeySystemAccess(
-      blink::WebEncryptedMediaRequest request) override;
+  void RequestMediaKeySystemAccess(WebEncryptedMediaRequest request) override;
 
   // Create the CDM for |key_system| and |security_origin|. The caller owns
   // the created cdm (passed back using |result|).
-  void CreateCdm(
-      const blink::WebString& key_system,
-      const blink::WebSecurityOrigin& security_origin,
-      const media::CdmConfig& cdm_config,
-      std::unique_ptr<blink::WebContentDecryptionModuleResult> result);
+  void CreateCdm(const WebString& key_system,
+                 const WebSecurityOrigin& security_origin,
+                 const media::CdmConfig& cdm_config,
+                 std::unique_ptr<WebContentDecryptionModuleResult> result);
 
  private:
   // Report usage of key system to UMA. There are 2 different counts logged:
@@ -60,14 +58,14 @@ class BLINK_PLATFORM_EXPORT WebEncryptedMediaClientImpl
   // `accumulated_configuration` and `cdm_config` are non-null iff `status` is
   // `kSupported`.
   void OnConfigSelected(
-      blink::WebEncryptedMediaRequest request,
+      WebEncryptedMediaRequest request,
       KeySystemConfigSelector::Status status,
-      blink::WebMediaKeySystemConfiguration* accumulated_configuration,
+      WebMediaKeySystemConfiguration* accumulated_configuration,
       media::CdmConfig* cdm_config);
 
   // Gets the Reporter for |key_system|. If it doesn't already exist,
   // create one.
-  Reporter* GetReporter(const blink::WebString& key_system);
+  Reporter* GetReporter(const WebString& key_system);
 
   // Reporter singletons.
   std::unordered_map<std::string, std::unique_ptr<Reporter>> reporters_;

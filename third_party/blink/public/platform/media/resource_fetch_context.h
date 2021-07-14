@@ -18,8 +18,8 @@ class BLINK_PLATFORM_EXPORT ResourceFetchContext {
  public:
   virtual ~ResourceFetchContext() {}
 
-  virtual std::unique_ptr<blink::WebAssociatedURLLoader> CreateUrlLoader(
-      const blink::WebAssociatedURLLoaderOptions& options) = 0;
+  virtual std::unique_ptr<WebAssociatedURLLoader> CreateUrlLoader(
+      const WebAssociatedURLLoaderOptions& options) = 0;
 };
 
 }  // namespace blink

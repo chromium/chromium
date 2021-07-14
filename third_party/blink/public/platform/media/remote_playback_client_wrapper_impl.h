@@ -19,13 +19,13 @@ class WebRemotePlaybackClient;
 class BLINK_PLATFORM_EXPORT RemotePlaybackClientWrapperImpl
     : public media::RemotePlaybackClientWrapper {
  public:
-  explicit RemotePlaybackClientWrapperImpl(blink::WebMediaPlayerClient* client);
+  explicit RemotePlaybackClientWrapperImpl(WebMediaPlayerClient* client);
   ~RemotePlaybackClientWrapperImpl() override;
 
   std::string GetActivePresentationId() override;
 
  private:
-  blink::WebRemotePlaybackClient* remote_playback_client_;
+  WebRemotePlaybackClient* remote_playback_client_;
 };
 
 }  // namespace blink

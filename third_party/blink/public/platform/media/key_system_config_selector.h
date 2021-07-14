@@ -32,27 +32,27 @@ struct WebMediaKeySystemConfiguration;
 class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
  public:
   // This is to facilitate testing, it abstracts the calls we are making into
-  // blink::WebLocalFrame so we can override them for testing without
-  // implementing the entire interface for blink::WebLocalFrame.
+  // WebLocalFrame so we can override them for testing without implementing the
+  // entire interface for WebLocalFrame.
   class BLINK_PLATFORM_EXPORT WebLocalFrameDelegate {
    public:
-    explicit WebLocalFrameDelegate(blink::WebLocalFrame* web_frame)
+    explicit WebLocalFrameDelegate(WebLocalFrame* web_frame)
         : web_frame_(web_frame) {}
 
     virtual ~WebLocalFrameDelegate() = default;
 
-    // Delegate to blink::WebLocalFrame.
+    // Delegate to WebLocalFrame.
     virtual bool IsCrossOriginToMainFrame();
 
-    // Delegate to blink::WebContentSettingsClient within blink::WebLocalFrame.
+    // Delegate to WebContentSettingsClient within WebLocalFrame.
     virtual bool AllowStorageAccessSync(
-        blink::WebContentSettingsClient::StorageType storage_type);
+        WebContentSettingsClient::StorageType storage_type);
 
    private:
     // The pointer below will always be valid for the lifetime of this object
     // because it is held by KeySystemConfigSelector whose chain of ownership is
     // the same as RenderFrameImpl.
-    blink::WebLocalFrame* web_frame_;
+    WebLocalFrame* web_frame_;
   };
 
   KeySystemConfigSelector(
@@ -79,9 +79,8 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
       void(Status status, WebMediaKeySystemConfiguration*, media::CdmConfig*)>;
 
   void SelectConfig(
-      const blink::WebString& key_system,
-      const blink::WebVector<blink::WebMediaKeySystemConfiguration>&
-          candidate_configurations,
+      const WebString& key_system,
+      const WebVector<WebMediaKeySystemConfiguration>& candidate_configurations,
       SelectConfigCB cb);
 
   using IsSupportedMediaTypeCB =
@@ -110,17 +109,17 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   ConfigurationSupport GetSupportedConfiguration(
       const std::string& key_system,
-      const blink::WebMediaKeySystemConfiguration& candidate,
+      const WebMediaKeySystemConfiguration& candidate,
       ConfigState* config_state,
-      blink::WebMediaKeySystemConfiguration* accumulated_configuration);
+      WebMediaKeySystemConfiguration* accumulated_configuration);
 
   bool GetSupportedCapabilities(
       const std::string& key_system,
       media::EmeMediaType media_type,
-      const blink::WebVector<blink::WebMediaKeySystemMediaCapability>&
+      const WebVector<WebMediaKeySystemMediaCapability>&
           requested_media_capabilities,
       ConfigState* config_state,
-      std::vector<blink::WebMediaKeySystemMediaCapability>*
+      std::vector<WebMediaKeySystemMediaCapability>*
           supported_media_capabilities);
 
   bool IsSupportedContentType(const std::string& key_system,
@@ -131,7 +130,7 @@ class BLINK_PLATFORM_EXPORT KeySystemConfigSelector {
 
   media::EmeConfigRule GetEncryptionSchemeConfigRule(
       const std::string& key_system,
-      const blink::WebMediaKeySystemMediaCapability::EncryptionScheme
+      const WebMediaKeySystemMediaCapability::EncryptionScheme
           encryption_scheme);
 
   media::KeySystems* const key_systems_;

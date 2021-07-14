@@ -40,8 +40,8 @@ class WebSurfaceLayerBridge;
 class WebSurfaceLayerBridgeObserver;
 
 using CreateSurfaceLayerBridgeCB =
-    base::OnceCallback<std::unique_ptr<blink::WebSurfaceLayerBridge>(
-        blink::WebSurfaceLayerBridgeObserver*,
+    base::OnceCallback<std::unique_ptr<WebSurfaceLayerBridge>(
+        WebSurfaceLayerBridgeObserver*,
         cc::UpdateSubmissionStateCB)>;
 
 // Holds parameters for constructing WebMediaPlayerImpl without having
@@ -71,7 +71,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
       const scoped_refptr<base::SingleThreadTaskRunner>&
           video_frame_compositor_task_runner,
       const AdjustAllocatedMemoryCB& adjust_allocated_memory_cb,
-      blink::WebContentDecryptionModule* initial_cdm,
+      WebContentDecryptionModule* initial_cdm,
       media::RequestRoutingTokenCallback request_routing_token_cb,
       base::WeakPtr<media::MediaObserver> media_observer,
       bool enable_instant_source_buffer_gc,
@@ -79,7 +79,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
       mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider,
       CreateSurfaceLayerBridgeCB bridge_callback,
       scoped_refptr<viz::RasterContextProvider> raster_context_provider,
-      blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
+      WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video,
       bool is_background_suspend_enabled,
       bool is_background_video_play_enabled,
       bool is_background_video_track_optimization_supported,
@@ -124,9 +124,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
     return video_frame_compositor_task_runner_;
   }
 
-  blink::WebContentDecryptionModule* initial_cdm() const {
-    return initial_cdm_;
-  }
+  WebContentDecryptionModule* initial_cdm() const { return initial_cdm_; }
 
   AdjustAllocatedMemoryCB adjust_allocated_memory_cb() const {
     return adjust_allocated_memory_cb_;
@@ -156,7 +154,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
     return raster_context_provider_;
   }
 
-  blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video() const {
+  WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video() const {
     return use_surface_layer_for_video_;
   }
 
@@ -189,7 +187,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
       video_frame_compositor_task_runner_;
   AdjustAllocatedMemoryCB adjust_allocated_memory_cb_;
 
-  blink::WebContentDecryptionModule* initial_cdm_;
+  WebContentDecryptionModule* initial_cdm_;
   media::RequestRoutingTokenCallback request_routing_token_cb_;
   base::WeakPtr<media::MediaObserver> media_observer_;
   bool enable_instant_source_buffer_gc_;
@@ -197,7 +195,7 @@ class BLINK_PLATFORM_EXPORT WebMediaPlayerParams {
   mojo::PendingRemote<media::mojom::MediaMetricsProvider> metrics_provider_;
   CreateSurfaceLayerBridgeCB create_bridge_callback_;
   scoped_refptr<viz::RasterContextProvider> raster_context_provider_;
-  blink::WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video_;
+  WebMediaPlayer::SurfaceLayerMode use_surface_layer_for_video_;
 
   // Whether the renderer should automatically suspend media playback in
   // background tabs.
