@@ -9,32 +9,54 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/scoped_native_library.h"
+#include "base/win/scoped_gdi_object.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/icon_util.h"
 #include "ui/gfx/image/image_skia.h"
 
-namespace {
-// Provides storage for icon handles.
-struct ScopedIconHandles {
- public:
-  explicit ScopedIconHandles(size_t n)
-      : handles(std::vector<HICON>(n, nullptr)),
-        resources(std::vector<UINT>(n, 0)) {}
-  ~ScopedIconHandles() {
-    for (HICON icon : handles) {
-      if (icon) {
-        DeleteObject(icon);
-      }
-    }
-  }
-
-  std::vector<HICON> handles;
-  std::vector<UINT> resources;
-};
-}  // namespace
-
 using chrome::mojom::IconSize;
+
+namespace {
+
+gfx::ImageSkia LoadIcon(const wchar_t* filename, int size, float scale) {
+  base::ScopedNativeLibrary library(::LoadLibraryEx(
+      filename, nullptr,
+      LOAD_LIBRARY_AS_DATAFILE | LOAD_LIBRARY_AS_IMAGE_RESOURCE));
+  if (!library.is_valid())
+    return gfx::ImageSkia();
+
+  // Find the first icon referenced in the file.  This matches Explorer.
+  LPWSTR id = nullptr;
+  // Because the lambda below returns FALSE, EnumResourceNames() itself will
+  // return FALSE even when it "succeeds", so ignore its return value.
+  ::EnumResourceNames(
+      library.get(), RT_GROUP_ICON,
+      [](HMODULE, LPCWSTR, LPWSTR name, LONG_PTR param) {
+        *reinterpret_cast<LPWSTR*>(param) =
+            IS_INTRESOURCE(name) ? name : _wcsdup(name);
+        return FALSE;
+      },
+      reinterpret_cast<LONG_PTR>(&id));
+
+  base::win::ScopedHICON icon(static_cast<HICON>(
+      ::LoadImage(library.get(), id, IMAGE_ICON, size, size, LR_DEFAULTCOLOR)));
+  if (!IS_INTRESOURCE(id))
+    free(id);
+  if (!icon.is_valid())
+    return gfx::ImageSkia();
+
+  const SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(icon.get());
+  if (bitmap.isNull())
+    return gfx::ImageSkia();
+
+  gfx::ImageSkia image_skia(gfx::ImageSkiaRep(bitmap, scale));
+  image_skia.MakeThreadSafe();
+  return image_skia;
+}
+
+}  // namespace
 
 UtilReadIcon::UtilReadIcon(
     mojo::PendingReceiver<chrome::mojom::UtilReadIcon> receiver)
@@ -63,46 +85,7 @@ void UtilReadIcon::ReadIcon(const base::FilePath& filename,
     default:
       NOTREACHED();
   }
-
-  size *= scale;
-
-  gfx::ImageSkia image_ret;
-
-  // Returns number of icons, or 0 on failure.
-  UINT nIcons = PrivateExtractIconsW(filename.value().c_str(), 0, 0, 0, nullptr,
-                                     nullptr, 0, 0);
-
-  if (nIcons == 0) {
-    std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
-    return;
-  }
-
-  ScopedIconHandles icons(nIcons);
-  UINT ret = PrivateExtractIconsW(filename.value().c_str(), 0, size, size,
-                                  icons.handles.data(), icons.resources.data(),
-                                  nIcons, 0);
-
-  if (ret != nIcons) {
-    std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
-    return;
-  }
-
-  // Use icon with lowest resource value, or first if no hints available.
-  UINT best = 0xFFFFFFFF;
-  HICON selected = icons.handles.at(0);
-  for (size_t i = 0; i < icons.handles.size(); i++) {
-    if (icons.resources.at(i) < best) {
-      best = icons.resources.at(i);
-      selected = icons.handles.at(i);
-    }
-  }
-
-  const SkBitmap bitmap = IconUtil::CreateSkBitmapFromHICON(selected);
-  if (!bitmap.isNull()) {
-    gfx::ImageSkia image_skia(gfx::ImageSkiaRep(bitmap, scale));
-    image_skia.MakeThreadSafe();
-    image_ret = std::move(image_skia);
-  }
-
-  std::move(callback).Run(std::move(image_ret), filename.AsUTF16Unsafe());
+  std::move(callback).Run(
+      LoadIcon(filename.value().c_str(), size * scale, scale),
+      filename.AsUTF16Unsafe());
 }
