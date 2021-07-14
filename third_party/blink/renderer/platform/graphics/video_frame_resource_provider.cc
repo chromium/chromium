@@ -66,7 +66,7 @@ void VideoFrameResourceProvider::OnContextLost() {
 void VideoFrameResourceProvider::AppendQuads(
     viz::CompositorRenderPass* render_pass,
     scoped_refptr<media::VideoFrame> frame,
-    media::VideoRotation rotation,
+    media::VideoTransformation media_transform,
     bool is_opaque) {
   TRACE_EVENT0("media", "VideoFrameResourceProvider::AppendQuads");
   DCHECK(resource_updater_);
@@ -86,26 +86,32 @@ void VideoFrameResourceProvider::AppendQuads(
     resource_updater_->ObtainFrameResources(frame);
   }
 
-  gfx::Transform transform = gfx::Transform();
+  auto transform = gfx::Transform();
+
   // The quad's rect is in pre-transform space so that applying the transform on
   // it will produce the bounds in target space.
-  gfx::Rect quad_rect = gfx::Rect(frame->natural_size());
+  auto quad_rect = gfx::Rect(frame->natural_size());
 
-  switch (rotation) {
+  switch (media_transform.rotation) {
     case media::VIDEO_ROTATION_90:
-      transform.Rotate(90.0);
-      transform.Translate(0.0, -quad_rect.height());
+      transform.RotateAboutZAxis(90.0);
+      transform.Translate(0, -quad_rect.height());
       break;
     case media::VIDEO_ROTATION_180:
-      transform.Rotate(180.0);
+      transform.RotateAboutZAxis(180.0);
       transform.Translate(-quad_rect.width(), -quad_rect.height());
       break;
     case media::VIDEO_ROTATION_270:
-      transform.Rotate(270.0);
+      transform.RotateAboutZAxis(270.0);
       transform.Translate(-quad_rect.width(), 0);
       break;
     case media::VIDEO_ROTATION_0:
       break;
+  }
+
+  if (media_transform.mirrored) {
+    transform.RotateAboutYAxis(180.0);
+    transform.Translate(-quad_rect.width(), 0);
   }
 
   gfx::Rect visible_quad_rect = quad_rect;

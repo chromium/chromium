@@ -5,6 +5,7 @@
 #ifndef CC_LAYERS_VIDEO_LAYER_IMPL_H_
 #define CC_LAYERS_VIDEO_LAYER_IMPL_H_
 
+#include <memory>
 #include <vector>
 
 #include "cc/cc_export.h"
@@ -29,7 +30,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
       LayerTreeImpl* tree_impl,
       int id,
       VideoFrameProvider* provider,
-      media::VideoRotation video_rotation);
+      media::VideoTransformation video_transform);
   VideoLayerImpl(const VideoLayerImpl&) = delete;
   ~VideoLayerImpl() override;
 
@@ -48,14 +49,17 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
   gfx::ContentColorUsage GetContentColorUsage() const override;
 
   void SetNeedsRedraw();
-  media::VideoRotation video_rotation() const { return video_rotation_; }
+
+  media::VideoTransformation video_transform_for_testing() const {
+    return video_transform_;
+  }
 
  private:
   VideoLayerImpl(
       LayerTreeImpl* tree_impl,
       int id,
       scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
-      media::VideoRotation video_rotation);
+      media::VideoTransformation video_transform);
 
   const char* LayerTypeAsString() const override;
 
@@ -63,7 +67,7 @@ class CC_EXPORT VideoLayerImpl : public LayerImpl {
 
   scoped_refptr<media::VideoFrame> frame_;
 
-  media::VideoRotation video_rotation_;
+  media::VideoTransformation video_transform_;
 
   std::unique_ptr<media::VideoResourceUpdater> updater_;
 };

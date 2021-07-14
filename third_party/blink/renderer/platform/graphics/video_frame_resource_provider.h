@@ -44,7 +44,7 @@ class PLATFORM_EXPORT VideoFrameResourceProvider {
                           viz::SharedBitmapReporter* shared_bitmap_reporter);
   virtual void AppendQuads(viz::CompositorRenderPass*,
                            scoped_refptr<media::VideoFrame>,
-                           media::VideoRotation,
+                           media::VideoTransformation,
                            bool is_opaque);
   virtual void ReleaseFrameResources();
 

@@ -1940,11 +1940,9 @@ void WebMediaPlayerImpl::OnMetadata(const media::PipelineMetadata& metadata) {
       ActivateSurfaceLayerForVideo();
     } else {
       DCHECK(!video_layer_);
-      // TODO(tmathmeyer) does this need support for reflections as well?
       video_layer_ = cc::VideoLayer::Create(
           compositor_.get(),
-          pipeline_metadata_.video_decoder_config.video_transformation()
-              .rotation);
+          pipeline_metadata_.video_decoder_config.video_transformation());
       video_layer_->SetContentsOpaque(opaque_);
       client_->SetCcLayer(video_layer_.get());
     }

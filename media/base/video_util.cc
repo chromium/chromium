@@ -164,10 +164,16 @@ scoped_refptr<VideoFrame> ReadbackTextureBackedFrameToMemorySyncGLES(
     gl_texture_info.fTarget = holder.texture_target;
     gl_texture_info.fFormat = texture_format;
 
+    auto origin =
+        txt_frame.metadata().transformation.value_or(kNoTransformation) ==
+                VideoTransformation(VIDEO_ROTATION_180, /*mirrored=*/true)
+            ? kBottomLeft_GrSurfaceOrigin
+            : kTopLeft_GrSurfaceOrigin;
+
     GrBackendTexture texture(width, height, GrMipMapped::kNo, gl_texture_info);
-    auto image = SkImage::MakeFromTexture(
-        gr_context, texture, kTopLeft_GrSurfaceOrigin, sk_color_type,
-        kOpaque_SkAlphaType, nullptr /* colorSpace */);
+    auto image =
+        SkImage::MakeFromTexture(gr_context, texture, origin, sk_color_type,
+                                 kOpaque_SkAlphaType, nullptr /* colorSpace */);
 
     if (!image) {
       DLOG(ERROR) << "Can't create SkImage from texture!"

@@ -16,6 +16,9 @@
 namespace cc {
 namespace {
 
+constexpr auto kTestTransform =
+    media::VideoTransformation(media::VIDEO_ROTATION_90, /*mirrored=*/true);
+
 // These tests deal with compositing video.
 class LayerTreeHostVideoTest : public LayerTreeTest {};
 
@@ -28,7 +31,7 @@ class LayerTreeHostVideoTestSetNeedsDisplay
     root->SetIsDrawable(true);
 
     scoped_refptr<VideoLayer> video =
-        VideoLayer::Create(&video_frame_provider_, media::VIDEO_ROTATION_90);
+        VideoLayer::Create(&video_frame_provider_, kTestTransform);
     video->SetPosition(gfx::PointF(3.f, 3.f));
     video->SetBounds(gfx::Size(4, 5));
     video->SetIsDrawable(true);
@@ -74,7 +77,7 @@ class LayerTreeHostVideoTestSetNeedsDisplay
     VideoLayerImpl* video = static_cast<VideoLayerImpl*>(
         host_impl->active_tree()->LayerById(video_layer_id_));
 
-    EXPECT_EQ(media::VIDEO_ROTATION_90, video->video_rotation());
+    EXPECT_EQ(kTestTransform, video->video_transform_for_testing());
 
     if (num_draws_ == 0)
       video->SetNeedsRedraw();

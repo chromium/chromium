@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/limits.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_frame.h"
@@ -47,40 +48,6 @@
 namespace blink {
 
 namespace {
-
-struct YUVReadbackContext {
-  gfx::Size coded_size;
-  gfx::Rect visible_rect;
-  gfx::Size natural_size;
-  base::TimeDelta timestamp;
-  scoped_refptr<media::VideoFrame> frame;
-};
-
-void OnYUVReadbackDone(
-    void* raw_ctx,
-    std::unique_ptr<const SkImage::AsyncReadResult> async_result) {
-  if (!async_result)
-    return;
-  auto* context = reinterpret_cast<YUVReadbackContext*>(raw_ctx);
-  context->frame = media::VideoFrame::WrapExternalYuvData(
-      media::PIXEL_FORMAT_I420, context->coded_size, context->visible_rect,
-      context->natural_size, static_cast<int>(async_result->rowBytes(0)),
-      static_cast<int>(async_result->rowBytes(1)),
-      static_cast<int>(async_result->rowBytes(2)),
-      // TODO(crbug.com/1161304): We should be able to wrap readonly memory in
-      // a VideoFrame without resorting to a const_cast.
-      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(0))),
-      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(1))),
-      reinterpret_cast<uint8_t*>(const_cast<void*>(async_result->data(2))),
-      context->timestamp);
-  if (!context->frame)
-    return;
-  context->frame->AddDestructionObserver(
-      ConvertToBaseOnceCallback(WTF::CrossThreadBindOnce(
-          base::DoNothing::Once<
-              std::unique_ptr<const SkImage::AsyncReadResult>>(),
-          std::move(async_result))));
-}
 
 media::VideoPixelFormat ToMediaPixelFormat(V8VideoPixelFormat::Enum fmt) {
   switch (fmt) {
@@ -353,7 +320,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   if (!sk_color_space)
     sk_color_space = SkColorSpace::MakeSRGB();
 
-  const auto gfx_color_space = gfx::ColorSpace(*sk_color_space);
+  auto gfx_color_space = gfx::ColorSpace(*sk_color_space);
   if (!gfx_color_space.IsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Invalid color space");
@@ -365,52 +332,56 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size natural_size = coded_size;
 
   scoped_refptr<media::VideoFrame> frame;
-  if (sk_image->isTextureBacked() &&
-      (sk_image->isOpaque() || init->alpha() == kAlphaDiscard)) {
-    // TODO(crbug.com/1220822): Avoid readback and just use the mailbox once
-    // VideoFrame can reliably have flipY textures. We can also use the mailbox
-    // path immediately when flipY isn't required.
-    YUVReadbackContext result;
-    result.coded_size = coded_size;
-    result.visible_rect = visible_rect;
-    result.natural_size = natural_size;
-    result.timestamp = timestamp;
+  if (image->IsTextureBacked() && image->HasDefaultOrientation()) {
+    DCHECK(image->IsStaticBitmapImage());
+    auto format = media::VideoPixelFormatFromSkColorType(
+        sk_image->colorType(),
+        image->CurrentFrameKnownToBeOpaque() || init->alpha() == kAlphaDiscard);
 
-    // While this function indicates it's asynchronous, the flushAndSubmit()
-    // call ensures it completes synchronously.
-    sk_image->asyncRescaleAndReadPixelsYUV420(
-        kRec709_SkYUVColorSpace, sk_color_space, sk_image_info.bounds(),
-        sk_image_info.dimensions(), SkImage::RescaleGamma::kSrc,
-        SkImage::RescaleMode::kRepeatedCubic, &OnYUVReadbackDone, &result);
+    auto* sbi = static_cast<StaticBitmapImage*>(image.get());
+    gpu::MailboxHolder mailbox_holders[media::VideoFrame::kMaxPlanes] = {
+        sbi->GetMailboxHolder()};
+    const bool is_origin_top_left = sbi->IsOriginTopLeft();
 
-    GrDirectContext* gr_context = image->ContextProvider()->GetGrContext();
-    DCHECK(gr_context);
-    gr_context->flushAndSubmit(/*syncCpu=*/true);
+    // The sync token needs to be updated when |frame| is released, but
+    // AcceleratedStaticBitmapImage::UpdateSyncToken() is not thread-safe.
+    auto release_cb = media::BindToCurrentLoop(WTF::Bind(
+        [](scoped_refptr<Image> image, const gpu::SyncToken& sync_token) {
+          static_cast<StaticBitmapImage*>(image.get())
+              ->UpdateSyncToken(sync_token);
+        },
+        std::move(image)));
 
-    if (!result.frame) {
-      exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
-                                        "YUV conversion error during readback");
-      return nullptr;
+    frame = media::VideoFrame::WrapNativeTextures(
+        format, mailbox_holders, std::move(release_cb), coded_size,
+        visible_rect, natural_size, timestamp);
+
+    if (frame && !is_origin_top_left) {
+      frame->metadata().transformation = media::VideoTransformation(
+          media::VIDEO_ROTATION_180, /*mirrored=*/true);
     }
 
-    frame = std::move(result.frame);
-    frame->set_color_space(gfx::ColorSpace::CreateREC709());
-    if (init->hasDuration()) {
-      frame->metadata().frame_duration =
-          base::TimeDelta::FromMicroseconds(init->duration());
+    // Drop the SkImage, we don't want it in the VideoFrameHandle.
+    // (We did need it to get the color space though.)
+    //
+    // Note: We could add the PaintImage to the VideoFrameHandle so we can round
+    // trip through VideoFrame back to canvas w/o any copies, but this doesn't
+    // seem like a common use case.
+    sk_image.reset();
+  } else {
+    if (image->IsTextureBacked()) {
+      sk_image = sk_image->makeRasterImage();
+      if (auto new_cs = sk_image_info.refColorSpace())
+        gfx_color_space = gfx::ColorSpace(*new_cs);
     }
-    return MakeGarbageCollected<VideoFrame>(
-        std::move(frame), ExecutionContext::From(script_state));
+
+    const bool force_opaque =
+        init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
+
+    frame = media::CreateFromSkImage(sk_image, visible_rect, natural_size,
+                                     timestamp, force_opaque);
   }
 
-  if (sk_image->isTextureBacked())
-    sk_image = sk_image->makeRasterImage();
-
-  const bool force_opaque =
-      init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
-
-  frame = media::CreateFromSkImage(sk_image, visible_rect, natural_size,
-                                   timestamp, force_opaque);
   if (!frame) {
     exception_state.ThrowDOMException(DOMExceptionCode::kOperationError,
                                       "Failed to create video frame");

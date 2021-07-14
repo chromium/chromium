@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "cc/metrics/video_playback_roughness_reporter.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
@@ -38,7 +39,6 @@ VideoFrameSubmitter::VideoFrameSubmitter(
     std::unique_ptr<VideoFrameResourceProvider> resource_provider)
     : context_provider_callback_(context_provider_callback),
       resource_provider_(std::move(resource_provider)),
-      rotation_(media::VIDEO_ROTATION_0),
       roughness_reporter_(std::make_unique<cc::VideoPlaybackRoughnessReporter>(
           std::move(roughness_reporting_callback))),
       frame_trackers_(false, nullptr),
@@ -121,7 +121,7 @@ void VideoFrameSubmitter::Initialize(cc::VideoFrameProvider* provider,
 
 void VideoFrameSubmitter::SetRotation(media::VideoRotation rotation) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  rotation_ = rotation;
+  transform_.rotation = rotation;
 }
 
 void VideoFrameSubmitter::EnableSubmission(viz::SurfaceId surface_id) {
@@ -474,8 +474,11 @@ bool VideoFrameSubmitter::SubmitFrame(
   last_frame_id_ = video_frame->unique_id();
 
   gfx::Size frame_size(video_frame->natural_size());
-  if (rotation_ == media::VIDEO_ROTATION_90 ||
-      rotation_ == media::VIDEO_ROTATION_270) {
+
+  // Prefer the frame level transform if set.
+  auto transform = video_frame->metadata().transformation.value_or(transform_);
+  if (transform.rotation == media::VIDEO_ROTATION_90 ||
+      transform.rotation == media::VIDEO_ROTATION_270) {
     frame_size = gfx::Size(frame_size.height(), frame_size.width());
   }
 
@@ -500,8 +503,8 @@ bool VideoFrameSubmitter::SubmitFrame(
     roughness_reporter_->FrameSubmitted(frame_token, *video_frame.get(),
                                         last_begin_frame_args_.interval);
   }
-  auto compositor_frame = CreateCompositorFrame(frame_token, begin_frame_ack,
-                                                std::move(video_frame));
+  auto compositor_frame = CreateCompositorFrame(
+      frame_token, begin_frame_ack, std::move(video_frame), transform);
 
   WebVector<viz::ResourceId> resources;
   const auto& quad_list = compositor_frame.render_pass_list.back()->quad_list;
@@ -541,8 +544,8 @@ void VideoFrameSubmitter::SubmitEmptyFrame() {
   last_frame_id_.reset();
   auto begin_frame_ack = viz::BeginFrameAck::CreateManualAckWithDamage();
   auto frame_token = ++next_frame_token_;
-  auto compositor_frame =
-      CreateCompositorFrame(frame_token, begin_frame_ack, nullptr);
+  auto compositor_frame = CreateCompositorFrame(
+      frame_token, begin_frame_ack, nullptr, media::kNoTransformation);
 
   compositor_frame_sink_->SubmitCompositorFrame(
       child_local_surface_id_allocator_.GetCurrentLocalSurfaceId(),
@@ -583,7 +586,8 @@ bool VideoFrameSubmitter::ShouldSubmit() const {
 viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
     uint32_t frame_token,
     const viz::BeginFrameAck& begin_frame_ack,
-    scoped_refptr<media::VideoFrame> video_frame) {
+    scoped_refptr<media::VideoFrame> video_frame,
+    media::VideoTransformation transform) {
   DCHECK(!frame_size_.IsEmpty());
 
   viz::CompositorFrame compositor_frame;
@@ -634,7 +638,7 @@ viz::CompositorFrame VideoFrameSubmitter::CreateCompositorFrame(
         video_frame->ColorSpace().GetContentColorUsage();
     const bool is_opaque = media::IsOpaque(video_frame->format());
     resource_provider_->AppendQuads(render_pass.get(), std::move(video_frame),
-                                    rotation_, is_opaque);
+                                    transform, is_opaque);
   }
 
   compositor_frame.render_pass_list.emplace_back(std::move(render_pass));

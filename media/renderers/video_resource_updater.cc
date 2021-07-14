@@ -70,15 +70,18 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_XRGB:
     case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_BGRA:
       DCHECK_EQ(num_textures, 1);
       // This maps VideoPixelFormat back to GMB BufferFormat
       // NOTE: ABGR == RGBA and ARGB == BGRA, they differ only byte order
       // See: VideoFormat function in gpu_memory_buffer_video_frame_pool
       // https://cs.chromium.org/chromium/src/media/video/gpu_memory_buffer_video_frame_pool.cc?type=cs&g=0&l=281
-      buffer_formats[0] = (format == PIXEL_FORMAT_ABGR)
-                              ? gfx::BufferFormat::RGBA_8888
-                              : gfx::BufferFormat::BGRA_8888;
+      buffer_formats[0] =
+          (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR)
+              ? gfx::BufferFormat::RGBA_8888
+              : gfx::BufferFormat::BGRA_8888;
+
       switch (target) {
         case GL_TEXTURE_EXTERNAL_OES:
           if (use_stream_video_draw_quad)
@@ -160,7 +163,6 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     case PIXEL_FORMAT_YUV422P12:
     case PIXEL_FORMAT_YUV444P12:
     case PIXEL_FORMAT_Y16:
-    case PIXEL_FORMAT_XBGR:
     case PIXEL_FORMAT_UNKNOWN:
       break;
   }
@@ -966,6 +968,8 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
     output_resource_format = viz::BGRX_8888;
   } else if (input_frame_format == PIXEL_FORMAT_ABGR) {
     output_resource_format = viz::RGBA_8888;
+  } else if (input_frame_format == PIXEL_FORMAT_XBGR) {
+    output_resource_format = viz::RGBX_8888;
   } else if (input_frame_format == PIXEL_FORMAT_ARGB) {
     output_resource_format = viz::BGRA_8888;
   } else if (input_frame_format == PIXEL_FORMAT_Y16) {
