@@ -33,11 +33,19 @@ class PrefRegistrySyncable;
 // method is idempotent.
 - (void)updateActiveURL:(const GURL&)url;
 
+// The active title is defined as the title of the most recently accessed tab.
+// This method should be called any time the active title might have changed.
+// This method is idempotent.
+// -updateActiveURL: should be called prior since the URL identifier is
+// required while the title is optional.
+- (void)updateActiveTitle:(const std::u16string&)title;
+
 @end
 
 #if defined(OS_IOS)
 @interface HandoffManager (TestingOnly)
 - (NSURL*)userActivityWebpageURL;
+- (NSString*)userActivityTitle;
 @end
 #endif
 

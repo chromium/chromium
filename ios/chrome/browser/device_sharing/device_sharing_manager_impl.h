@@ -26,6 +26,8 @@ class DeviceSharingManagerImpl : public DeviceSharingManager {
 
   void SetActiveBrowser(Browser* browser) override;
   void UpdateActiveUrl(Browser* browser, const GURL& active_url) override;
+  void UpdateActiveTitle(Browser* browser,
+                         const std::u16string& title) override;
   void ClearActiveUrl(Browser* browser) override;
 
  private:

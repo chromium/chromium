@@ -26,6 +26,7 @@ DeviceSharingManagerImpl::DeviceSharingManagerImpl(
                           base::Unretained(this)));
   UpdateHandoffManager();
   [handoff_manager_ updateActiveURL:GURL()];
+  [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
 DeviceSharingManagerImpl::~DeviceSharingManagerImpl() {}
@@ -47,11 +48,20 @@ void DeviceSharingManagerImpl::UpdateActiveUrl(Browser* browser,
   [handoff_manager_ updateActiveURL:active_url];
 }
 
+void DeviceSharingManagerImpl::UpdateActiveTitle(Browser* browser,
+                                                 const std::u16string& title) {
+  if (browser != active_browser_)
+    return;
+
+  [handoff_manager_ updateActiveTitle:title];
+}
+
 void DeviceSharingManagerImpl::ClearActiveUrl(Browser* browser) {
   if (browser != active_browser_)
     return;
 
   [handoff_manager_ updateActiveURL:GURL()];
+  [handoff_manager_ updateActiveTitle:std::u16string()];
 }
 
 void DeviceSharingManagerImpl::UpdateHandoffManager() {

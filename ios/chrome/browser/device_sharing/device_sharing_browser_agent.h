@@ -54,6 +54,9 @@ class DeviceSharingBrowserAgent
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
 
+  // web::WebStateObserver
+  void TitleWasSet(web::WebState* web_state) override;
+
   // The Browser this agent is associated with.
   Browser* browser_;
   // Whether the browser state assoicated with |browser_| is inocgnito or not.
