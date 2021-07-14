@@ -1317,8 +1317,8 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
   // Applying the scissor explicitly means avoiding a clipRect() call and
   // allows more quads to be batched together in a DrawEdgeAAImageSet call
   if (scissor_rect) {
-    if (CanExplicitlyScissor(quad, draw_region,
-                             params.content_device_transform)) {
+    if (CanExplicitlyScissor(quad, draw_region, params.content_device_transform,
+                             *scissor_rect)) {
       ApplyExplicitScissor(quad, *scissor_rect, params.content_device_transform,
                            &params.aa_flags, &params.visible_rect);
       params.vis_tex_coords = params.visible_rect;
@@ -1358,7 +1358,8 @@ SkiaRenderer::DrawQuadParams SkiaRenderer::CalculateDrawQuadParams(
 bool SkiaRenderer::CanExplicitlyScissor(
     const DrawQuad* quad,
     const gfx::QuadF* draw_region,
-    const gfx::Transform& contents_device_transform) const {
+    const gfx::Transform& contents_device_transform,
+    const gfx::Rect& scissor_rect) const {
   // PICTURE_CONTENT is not like the others, since it is executing a list of
   // draw calls into the canvas.
   if (quad->material == DrawQuad::Material::kPictureContent)
@@ -1371,11 +1372,14 @@ bool SkiaRenderer::CanExplicitlyScissor(
   // This is slightly different than
   // gfx::Transform::IsPositiveScaleAndTranslation in that it also allows zero
   // scales. This is because in the common orthographic case the z scale is 0.
-  if (!contents_device_transform.IsScaleOrTranslation())
+  if (!contents_device_transform.IsScaleOrTranslation() ||
+      contents_device_transform.matrix().get(0, 0) < 0.0f ||
+      contents_device_transform.matrix().get(1, 1) < 0.0f ||
+      contents_device_transform.matrix().get(2, 2) < 0.0f) {
     return false;
+  }
 
-  // Sanity check: we should not have a Compositor CompositorRenderPassDrawQuad
-  // here.
+  // State check: should not have a CompositorRenderPassDrawQuad if we got here.
   DCHECK_NE(quad->material, DrawQuad::Material::kCompositorRenderPass);
   if (quad->material == DrawQuad::Material::kAggregatedRenderPass) {
     // If the renderpass has filters, the filters may modify the effective
@@ -1386,9 +1390,18 @@ bool SkiaRenderer::CanExplicitlyScissor(
       return false;
   }
 
-  return contents_device_transform.matrix().get(0, 0) >= 0.0 &&
-         contents_device_transform.matrix().get(1, 1) >= 0.0 &&
-         contents_device_transform.matrix().get(2, 2) >= 0.0;
+  // If the intersection of the scissor and the quad's visible_rect results in
+  // subpixel device-space geometry, do not drop the scissor. Otherwise Skia
+  // sees an unclipped anti-aliased hairline and uses different AA methods that
+  // would cause the rasterized result to extend beyond the scissor.
+  gfx::RectF device_bounds(quad->visible_rect);
+  contents_device_transform.TransformRect(&device_bounds);
+  device_bounds.Intersect(gfx::RectF(scissor_rect));
+  if (device_bounds.width() < 1.0f || device_bounds.height() < 1.0f) {
+    return false;
+  }
+
+  return true;
 }
 
 const DrawQuad* SkiaRenderer::CanPassBeDrawnDirectly(

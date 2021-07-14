@@ -158,10 +158,10 @@ class VIZ_SERVICE_EXPORT SkiaRenderer : public DirectRenderer {
       DrawQuadParams* params) const;
   // True or false if the DrawQuad can have the scissor rect applied by
   // modifying the quad's visible_rect instead of as a separate clip operation.
-  bool CanExplicitlyScissor(
-      const DrawQuad* quad,
-      const gfx::QuadF* draw_region,
-      const gfx::Transform& contents_device_transform) const;
+  bool CanExplicitlyScissor(const DrawQuad* quad,
+                            const gfx::QuadF* draw_region,
+                            const gfx::Transform& contents_device_transform,
+                            const gfx::Rect& scissor_rect) const;
 
   bool MustFlushBatchedQuads(const DrawQuad* new_quad,
                              const DrawRPDQParams* rpdq_params,
