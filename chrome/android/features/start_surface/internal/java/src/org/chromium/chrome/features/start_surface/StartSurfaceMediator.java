@@ -52,7 +52,6 @@ import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -551,8 +550,6 @@ class StartSurfaceMediator
                         mFeedSurfaceController.createFeedSurfaceCoordinator(
                                 ColorUtils.inNightMode(mContext), shouldShowFeedPlaceholder(),
                                 mLaunchOrigin));
-            } else {
-                showFeedSurfaceCoordinator();
             }
             mTabModelSelector.addObserver(mTabModelSelectorObserver);
 
@@ -655,13 +652,7 @@ class StartSurfaceMediator
             }
             mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
 
-            if (mTabModelSelector.getCurrentTab() == null
-                    || mTabModelSelector.getCurrentTab().getLaunchType()
-                            != TabLaunchType.FROM_START_SURFACE) {
-                destroyFeedSurfaceCoordinator();
-            } else {
-                hideFeedSurfaceCoordinator();
-            }
+            destroyFeedSurfaceCoordinator();
             if (mNormalTabModelObserver != null) {
                 if (mNormalTabModel != null) {
                     mNormalTabModel.removeObserver(mNormalTabModelObserver);
@@ -695,14 +686,6 @@ class StartSurfaceMediator
                 mPropertyModel.get(FEED_SURFACE_COORDINATOR);
         if (feedSurfaceCoordinator != null) feedSurfaceCoordinator.destroy();
         mPropertyModel.set(FEED_SURFACE_COORDINATOR, null);
-    }
-
-    private void hideFeedSurfaceCoordinator() {
-        if (mFeedSurfaceController != null) mFeedSurfaceController.hideFeedSurface();
-    }
-
-    private void showFeedSurfaceCoordinator() {
-        if (mFeedSurfaceController != null) mFeedSurfaceController.showFeedSurface();
     }
 
     // TODO(crbug.com/982018): turn into onClickMoreTabs() and hide the OnClickListener signature

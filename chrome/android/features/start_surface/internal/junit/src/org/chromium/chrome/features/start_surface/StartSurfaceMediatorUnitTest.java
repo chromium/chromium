@@ -8,7 +8,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -1022,18 +1021,10 @@ public class StartSurfaceMediatorUnitTest {
         mediator.hideOverview(true);
         mOverviewModeObserverCaptor.getValue().startedHiding();
         mOverviewModeObserverCaptor.getValue().finishedHiding();
-        verify(mFeedSurfaceController).hideFeedSurface();
-        assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
+        assertNull(mPropertyModel.get(FEED_SURFACE_COORDINATOR));
 
-        FeedSurfaceCoordinator feedSurfaceCoordinator = mock(FeedSurfaceCoordinator.class);
-        assertNotEquals(mFeedSurfaceCoordinator, feedSurfaceCoordinator);
-        when(mFeedSurfaceController.createFeedSurfaceCoordinator(
-                     anyBoolean(), anyBoolean(), anyInt()))
-                .thenReturn(feedSurfaceCoordinator);
         mediator.setOverviewState(StartSurfaceState.SHOWING_PREVIOUS);
         mediator.showOverview(false);
-        verify(mFeedSurfaceController).showFeedSurface();
-        mainTabGridController.verify(mMainTabGridController).showOverview(eq(false));
         assertThat(mediator.getStartSurfaceState(), equalTo(StartSurfaceState.SHOWN_HOMEPAGE));
         assertThat(mPropertyModel.get(FEED_SURFACE_COORDINATOR), equalTo(mFeedSurfaceCoordinator));
 
