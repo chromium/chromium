@@ -49,8 +49,11 @@ src/demo/file_depth_2/in_single_child_dir/r.spec.ts
 src/unittests/test_group_test.ts
 src/unittests/async_expectations.spec.ts
 src/unittests/basic.spec.ts
+src/webgpu/util/math.ts
+src/webgpu/util/conversion.ts
 src/webgpu/util/check_contents.ts
 src/unittests/check_contents.spec.ts
+src/unittests/conversion.spec.ts
 src/unittests/getStackTrace.spec.ts
 src/unittests/listing.ts
 src/unittests/loaders_and_trees.spec.ts
@@ -67,11 +70,9 @@ src/webgpu/capability_info.ts
 src/webgpu/util/buffer.ts
 src/webgpu/util/navigator_gpu.ts
 src/webgpu/util/device_pool.ts
-src/webgpu/util/math.ts
 src/webgpu/util/unions.ts
 src/webgpu/util/texture/base.ts
 src/webgpu/util/texture/layout.ts
-src/webgpu/util/conversion.ts
 src/webgpu/util/texture/texel_data.ts
 src/webgpu/gpu_test.ts
 src/webgpu/examples.spec.ts
