@@ -4365,6 +4365,9 @@ Capabilities GLES2DecoderImpl::GetCapabilities() {
   caps.num_surface_buffers = surface_->GetBufferCount();
   caps.mesa_framebuffer_flip_y =
       feature_info_->feature_flags().mesa_framebuffer_flip_y;
+  caps.disable_legacy_mailbox =
+      group_->shared_image_manager() &&
+      group_->shared_image_manager()->display_context_on_another_thread();
 
   caps.gpu_memory_buffer_formats =
       feature_info_->feature_flags().gpu_memory_buffer_formats;

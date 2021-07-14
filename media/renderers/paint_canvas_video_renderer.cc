@@ -1379,6 +1379,9 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   if (!raster_context_provider || !raster_context_provider->GrContext())
     return false;
 
+  if (raster_context_provider->ContextCapabilities().disable_legacy_mailbox)
+    return false;
+
   // Trigger resource allocation for dst texture to back SkSurface.
   // Dst texture size should equal to video frame visible rect.
   destination_gl->BindTexture(target, texture);

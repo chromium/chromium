@@ -863,6 +863,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   static const CommandInfo command_info[kNumCommands - kFirstRasterCommand];
 
   const int raster_decoder_id_;
+  const bool disable_legacy_mailbox_;
 
   // Number of commands remaining to be processed in DoCommands().
   int commands_to_process_ = 0;
@@ -1023,6 +1024,9 @@ RasterDecoderImpl::RasterDecoderImpl(
     bool is_privileged)
     : RasterDecoder(client, command_buffer_service, outputter),
       raster_decoder_id_(g_raster_decoder_id.GetNext() + 1),
+      disable_legacy_mailbox_(
+          shared_image_manager &&
+          shared_image_manager->display_context_on_another_thread()),
       supports_gpu_raster_(
           gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] ==
           kGpuFeatureStatusEnabled),
@@ -1274,6 +1278,7 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
   caps.shared_image_swap_chain =
       SharedImageBackingFactoryD3D::IsSwapChainSupported();
 #endif  // OS_WIN
+  caps.disable_legacy_mailbox = disable_legacy_mailbox_;
   return caps;
 }
 
