@@ -144,5 +144,8 @@ public final class ProductionSupportedFlagList {
                     "Enables using a server-defined allowlist of apps whose name can be recorded "
                             + "in UMA logs. The allowlist is downloaded and fetched via component "
                             + "updater services in WebView."),
+            Flag.commandLine(AwSwitches.WEBVIEW_DISABLE_APPS_PACKAGE_NAMES_ALLOWLIST_COMPONENT,
+                    "Disable downloading the apps package names allowlist component by the "
+                            + "component updater."),
     };
 }

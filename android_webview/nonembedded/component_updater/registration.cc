@@ -24,10 +24,10 @@ void RegisterComponentsForUpdate(
     base::RepeatingCallback<bool(const update_client::CrxComponent&)>
         register_callback,
     base::OnceClosure on_finished) {
-  // TODO(crbug.com/1202702): remove command line flag
+  // TODO(crbug.com/1174022): remove command line flag once launched.
   bool package_names_allowlist_enabled =
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kWebViewAppsPackageNamesAllowlist);
+      !base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kWebViewDisableAppsPackageNamesAllowlistComponent);
   int num_webview_components =
       package_names_allowlist_enabled ? kNumWebViewComponents : 2;
 
