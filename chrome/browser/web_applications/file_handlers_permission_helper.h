@@ -55,6 +55,7 @@ class FileHandlersPermissionHelper : public content_settings::Observer,
   // AppRegistrarObserver:
   void OnWebAppManifestUpdated(const AppId& app_id,
                                base::StringPiece old_name) override;
+  void OnWebAppWillBeUninstalled(const AppId& app_id) override;
 
  private:
   // Checks if file handling permission is blocked in settings.

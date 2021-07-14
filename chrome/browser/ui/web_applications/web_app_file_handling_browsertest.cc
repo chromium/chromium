@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -24,6 +25,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/web_applications/file_handling_permission_request_dialog_test_api.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/ui/webui/settings/site_settings_helper.h"
 #include "chrome/browser/web_applications/components/file_handler_manager.h"
@@ -287,6 +289,16 @@ class WebAppFileHandlingBrowserTest : public WebAppFileHandlingTestBase {
           expected_file_path.BaseName().AsUTF8Unsafe(),
           content::EvalJs(web_contents_, "window.launchParams.files[0].name"));
     }
+  }
+
+  void UninstallWebApp(const AppId& app_id) {
+    base::RunLoop run_loop;
+    UninstallWebAppWithCallback(
+        profile(), app_id, base::BindLambdaForTesting([&](bool uninstalled) {
+          EXPECT_TRUE(uninstalled);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
   }
 
  protected:
@@ -598,6 +610,76 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
   // permission.
   GURL fourth_app_url = https_server()->GetURL("app.com", "/pwa2/app2.html");
   InstallAnotherFileHandlingPwa(fourth_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
+                       ResetPermissionOnUninstall) {
+  // Install an app and simulate the user granting it the file handling
+  // permission.
+  InstallFileHandlingPWA();
+  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
+  const GURL origin = GetSecureAppURL().GetOrigin();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Install a second app, which is on the same origin and does not handle any
+  // files. This should not affect the permission.
+  GURL second_app_url = https_server()->GetURL("app.com", "/pwa/app2.html");
+  InstallPWA(second_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Uninstall the first app. It should reset the permission since no other app
+  // is installed with file handlers.
+  UninstallWebApp(app_id());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Install the first app again and grant the permission.
+  InstallFileHandlingPWA();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+
+  // Install a third app, which is on a different origin; this should have no
+  // effect on the permission.
+  GURL third_app_url = https_server()->GetURL("otherapp.com", "/pwa/app2.html");
+  InstallAnotherFileHandlingPwa(third_app_url);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Uninstall the first app. It should reset the permission since no other app
+  // is installed *on the same origin* with file handlers.
+  UninstallWebApp(app_id());
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            map->GetContentSetting(origin, origin,
+                                   ContentSettingsType::FILE_HANDLING));
+
+  // Install two PWAs with file handlers on the same origin, then grant the
+  // permission. Uninstalling one should not reset the permission.
+  InstallFileHandlingPWA();
+  InstallAnotherFileHandlingPwa(
+      https_server()->GetURL("app.com", "/pwa/app2.html"));
+  map->SetContentSettingDefaultScope(origin, origin,
+                                     ContentSettingsType::FILE_HANDLING,
+                                     CONTENT_SETTING_ALLOW);
+  UninstallWebApp(app_id());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));

@@ -116,6 +116,31 @@ void FileHandlersPermissionHelper::OnWebAppManifestUpdated(
   app->SetFileHandlerPermissionBlocked(IsPermissionBlocked(app->scope()));
 }
 
+void FileHandlersPermissionHelper::OnWebAppWillBeUninstalled(
+    const AppId& app_id) {
+  // If the uninstalled app had no file handler registrations, do nothing.
+  const WebAppRegistrar& registrar = finalizer_->GetWebAppRegistrar();
+  if (registrar.GetAppFileHandlers(app_id)->empty())
+    return;
+
+  // See if there are any remaining apps in the same origin that have file
+  // handlers. If so, do nothing.
+  const WebApp* app = registrar.GetAppById(app_id);
+  const GURL origin = app->scope().GetOrigin();
+  std::vector<AppId> app_ids = registrar.FindAppsInScope(origin);
+  for (const AppId& app_id_iter : app_ids) {
+    const apps::FileHandlers* handlers =
+        registrar.GetAppFileHandlers(app_id_iter);
+    if (app_id != app_id_iter && !handlers->empty())
+      return;
+  }
+
+  // This was the last app in the given origin that had file handlers, so reset
+  // the permission.
+  PermissionManagerFactory::GetForProfile(finalizer_->profile())
+      ->ResetPermission(content::PermissionType::FILE_HANDLING, origin, origin);
+}
+
 bool FileHandlersPermissionHelper::IsPermissionBlocked(const GURL& scope) {
   permissions::PermissionManager* permission_manager =
       PermissionManagerFactory::GetForProfile(finalizer_->profile());
