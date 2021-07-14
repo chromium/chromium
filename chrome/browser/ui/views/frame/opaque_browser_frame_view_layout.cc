@@ -645,13 +645,14 @@ void OpaqueBrowserFrameViewLayout::LayoutTitleBarForWindowControlsOverlay(
         web_app_frame_toolbar_->GetPreferredSize().width();
   }
 
+  auto insets = FrameBorderInsets(/*restored=*/false);
+
   caption_button_placeholder_container_->SetBounds(
-      container_x, FrameBorderInsets(/*restored=*/false).top(),
-      minimum_size_for_buttons_, height);
+      container_x, insets.top(), minimum_size_for_buttons_ - insets.width(),
+      height);
 
   web_app_frame_toolbar_->LayoutForWindowControlsOverlay(
-      gfx::Rect(x, FrameBorderInsets(/*restored=*/false).top(),
-                web_app_frame_toolbar_view_width, height));
+      gfx::Rect(x, insets.top(), web_app_frame_toolbar_view_width, height));
 
   int bounding_rect_width =
       web_app_frame_toolbar_->bounds().x() - available_space_leading_x_;
