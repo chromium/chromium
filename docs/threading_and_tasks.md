@@ -567,7 +567,7 @@ class A {
   }
   void StartDoingStuff() {
     timer_.Start(FROM_HERE, TimeDelta::FromSeconds(1),
-                 this, &MyClass::DoStuff);
+                 this, &A::DoStuff);
   }
   void StopDoingStuff() {
     timer_.Stop();
