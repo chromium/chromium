@@ -6,6 +6,8 @@ build features which interact with the web page contents.
 Chrome for iOS doesn't have access to the renderer code so many browser features
 require JavaScript in order to interact with the webpage.
 
+Slides covering this topic are available [here](https://docs.google.com/presentation/d/1HKdi7CGtNTGhMcCscpX_LVFZ8iLTtXjpSQ-980N7J38/edit?usp=sharing).
+
 ## Background
 
 It is important to first understand the following concepts in order to properly
