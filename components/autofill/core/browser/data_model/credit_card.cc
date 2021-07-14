@@ -808,7 +808,7 @@ void CreditCard::SetExpirationDateFromString(const std::u16string& text) {
   // Check that |text| fits the supported patterns: mmyy, mmyyyy, m-yy,
   // mm-yy, m-yyyy and mm-yyyy. Note that myy and myyyy matched by this pattern
   // but are not supported (ambiguous). Separators: -, / and |.
-  if (!MatchesPattern(text, u"^[0-9]{1,2}[-/|]?[0-9]{2,4}$"))
+  if (!MatchesPattern(text, uR"(^\s*[0-9]{1,2}\s*[-/|]?\s*[0-9]{2,4}\s*$)"))
     return;
 
   std::u16string month;

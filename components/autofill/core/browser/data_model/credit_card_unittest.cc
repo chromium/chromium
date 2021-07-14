@@ -559,6 +559,8 @@ INSTANTIATE_TEST_SUITE_P(
         SetExpirationDateFromStringTestCase{"05/45", 5, 2045},
         SetExpirationDateFromStringTestCase{"5/2045", 5, 2045},
         SetExpirationDateFromStringTestCase{"05/2045", 5, 2045},
+        SetExpirationDateFromStringTestCase{"05 / 45", 5, 2045},
+        SetExpirationDateFromStringTestCase{"05 / 2045", 5, 2045},
 
         // "-" separator.
         SetExpirationDateFromStringTestCase{"05-45", 5, 2045},
