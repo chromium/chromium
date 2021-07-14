@@ -207,14 +207,6 @@ static_library("test_support") {
   ]
 }
 
-config("platform_config") {
-  if (use_nss_certs && is_clang) {
-    # There is a broken header guard in /usr/include/nss/secmod.h:
-    # https://bugzilla.mozilla.org/show_bug.cgi?id=884072
-    cflags = [ "-Wno-header-guard" ]
-  }
-}
-
 # This is a meta-target that forwards to NSS's SSL library or OpenSSL,
 # according to the state of the crypto flags. A target just wanting to depend
 # on the current SSL library should just depend on this.
@@ -224,7 +216,6 @@ group("platform") {
   # Link in NSS if it is used for the platform certificate library
   # (use_nss_certs).
   if (use_nss_certs) {
-    public_configs = [ ":platform_config" ]
-    public_configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
+    public_configs = [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
   }
 }
