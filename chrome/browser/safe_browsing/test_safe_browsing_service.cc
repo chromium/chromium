@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 
 #include "base/strings/string_util.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -197,11 +198,19 @@ void TestSafeBrowsingServiceFactory::UseV4LocalDatabaseManager() {
 
 // TestSafeBrowsingUIManager functions:
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager()
-    : SafeBrowsingUIManager(nullptr) {}
+    : SafeBrowsingUIManager(
+          nullptr,
+          std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()) {}
 
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
     const scoped_refptr<SafeBrowsingService>& service)
-    : SafeBrowsingUIManager(service) {}
+    : SafeBrowsingUIManager(
+          service,
+          std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()) {}
+
+TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
+    std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
+    : SafeBrowsingUIManager(nullptr, std::move(blocking_page_factory)) {}
 
 void TestSafeBrowsingUIManager::SetSafeBrowsingService(
     SafeBrowsingService* sb_service) {

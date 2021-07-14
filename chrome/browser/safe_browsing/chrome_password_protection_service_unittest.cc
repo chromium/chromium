@@ -15,6 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -312,7 +313,8 @@ class ChromePasswordProtectionServiceTest
         profile(),
         new SafeBrowsingUIManager(
             static_cast<safe_browsing::SafeBrowsingService*>(
-                SafeBrowsingService::CreateSafeBrowsingService())),
+                SafeBrowsingService::CreateSafeBrowsingService()),
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()),
         sync_password_hash_provider, cache_manager_.get());
   }
 

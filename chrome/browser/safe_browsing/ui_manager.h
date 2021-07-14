@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
+#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
@@ -55,8 +56,9 @@ class SafeBrowsingUIManager : public BaseUIManager {
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
-  explicit SafeBrowsingUIManager(
-      const scoped_refptr<SafeBrowsingService>& service);
+  SafeBrowsingUIManager(
+      const scoped_refptr<SafeBrowsingService>& service,
+      std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory);
 
   // Displays a SafeBrowsing interstitial.
   // |ui_manager| is the manager which eventually displays the blocking page.
@@ -99,6 +101,10 @@ class SafeBrowsingUIManager : public BaseUIManager {
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* remove);
 
+  SafeBrowsingBlockingPageFactory* blocking_page_factory() {
+    return blocking_page_factory_.get();
+  }
+
   const std::string app_locale() const override;
   history::HistoryService* history_service(
       content::WebContents* web_contents) override;
@@ -133,6 +139,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   // Safebrowsing service.
   scoped_refptr<SafeBrowsingService> sb_service_;
+
+  std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

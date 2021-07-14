@@ -8,6 +8,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -37,9 +38,9 @@ SafeBrowsingNavigationThrottle::WillFailRequest() {
 
   if (manager->PopUnsafeResourceForURL(handle->GetURL(), &resource)) {
     SafeBrowsingBlockingPage* blocking_page =
-        SafeBrowsingBlockingPage::CreateBlockingPage(
-            manager.get(), handle->GetWebContents(), handle->GetURL(), resource,
-            true);
+        manager->blocking_page_factory()->CreateSafeBrowsingPage(
+            manager.get(), handle->GetWebContents(), handle->GetURL(),
+            {resource}, true);
     MaybeTriggerSecurityInterstitialShownEvent(
         handle->GetWebContents(), handle->GetURL(),
         GetThreatTypeStringForInterstitial(resource.threat_type),

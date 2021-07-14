@@ -347,10 +347,11 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   // creates a SafeBrowsingBlockingPage but does not actually show a real
   // interstitial. Instead it extracts the html and displays it manually, so the
   // parts which depend on the NavigationEntry are not hit.
+  auto* ui_manager =
+      g_browser_process->safe_browsing_service()->ui_manager().get();
   return base::WrapUnique<safe_browsing::SafeBrowsingBlockingPage>(
-      safe_browsing::SafeBrowsingBlockingPage::CreateBlockingPage(
-          g_browser_process->safe_browsing_service()->ui_manager().get(),
-          web_contents, main_frame_url, resource, true));
+      ui_manager->blocking_page_factory()->CreateSafeBrowsingPage(
+          ui_manager, web_contents, main_frame_url, {resource}, true));
 }
 
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>

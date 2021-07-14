@@ -14,7 +14,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
@@ -65,13 +64,6 @@ SafeBrowsingMetricsCollector::EventType GetEventTypeFromThreatSource(
 }
 
 }  // namespace
-
-// static
-SafeBrowsingBlockingPageFactory* SafeBrowsingBlockingPage::factory_ = NULL;
-
-static base::LazyInstance<ChromeSafeBrowsingBlockingPageFactory>::
-    DestructorAtExit g_chrome_safe_browsing_blocking_page_factory =
-        LAZY_INSTANCE_INITIALIZER;
 
 // static
 const security_interstitials::SecurityInterstitialPage::TypeID
@@ -195,22 +187,6 @@ void SafeBrowsingBlockingPage::FinishThreatDetails(const base::TimeDelta& delay,
     controller()->metrics_helper()->RecordUserInteraction(
         security_interstitials::MetricsHelper::EXTENDED_REPORTING_IS_ENABLED);
   }
-}
-
-// static
-SafeBrowsingBlockingPage* SafeBrowsingBlockingPage::CreateBlockingPage(
-    BaseUIManager* ui_manager,
-    WebContents* web_contents,
-    const GURL& main_frame_url,
-    const UnsafeResource& unsafe_resource,
-    bool should_trigger_reporting) {
-  // Set up the factory if this has not been done already (tests do that
-  // before this method is called).
-  if (!factory_)
-    factory_ = g_chrome_safe_browsing_blocking_page_factory.Pointer();
-  return factory_->CreateSafeBrowsingPage(ui_manager, web_contents,
-                                          main_frame_url, {unsafe_resource},
-                                          should_trigger_reporting);
 }
 
 }  // namespace safe_browsing

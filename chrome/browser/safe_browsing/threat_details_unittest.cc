@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -161,7 +162,10 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
  public:
   // The safe browsing UI manager does not need a service for this test.
   MockSafeBrowsingUIManager()
-      : SafeBrowsingUIManager(nullptr), report_sent_(false) {}
+      : SafeBrowsingUIManager(
+            nullptr,
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()),
+        report_sent_(false) {}
 
   // When the serialized report is sent, this is called.
   void SendSerializedThreatDetails(content::BrowserContext* browser_context,

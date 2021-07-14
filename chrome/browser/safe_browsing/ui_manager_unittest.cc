@@ -94,11 +94,66 @@ class SafeBrowsingCallbackWaiter {
   base::RunLoop loop_;
 };
 
+// A test blocking page that does not create windows.
+class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
+ public:
+  TestSafeBrowsingBlockingPage(BaseUIManager* manager,
+                               content::WebContents* web_contents,
+                               const GURL& main_frame_url,
+                               const UnsafeResourceList& unsafe_resources)
+      : SafeBrowsingBlockingPage(
+            manager,
+            web_contents,
+            main_frame_url,
+            unsafe_resources,
+            ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
+                web_contents,
+                unsafe_resources,
+                manager),
+            BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
+                BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
+                false,                 // is_extended_reporting_opt_in_allowed
+                false,                 // is_off_the_record
+                false,                 // is_extended_reporting_enabled
+                false,                 // is_extended_reporting_policy_managed
+                false,                 // is_enhanced_protection_enabled
+                false,                 // is_proceed_anyway_disabled
+                true,                  // should_open_links_in_new_tab
+                true,                  // always_show_back_to_safety
+                false,                 // is_enhanced_protection_message_enabled
+                false,                 // is_safe_browsing_managed
+                "cpn_safe_browsing"),  // help_center_article_link
+            true) {                    // should_trigger_reporting
+    // Don't delay details at all for the unittest.
+    SetThreatDetailsProceedDelayForTesting(0);
+    DontCreateViewForTesting();
+  }
+};
+
+// A factory that creates TestSafeBrowsingBlockingPages.
+class TestSafeBrowsingBlockingPageFactory
+    : public SafeBrowsingBlockingPageFactory {
+ public:
+  TestSafeBrowsingBlockingPageFactory() = default;
+  ~TestSafeBrowsingBlockingPageFactory() override = default;
+
+  SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
+      BaseUIManager* delegate,
+      content::WebContents* web_contents,
+      const GURL& main_frame_url,
+      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
+      bool should_trigger_reporting) override {
+    return new TestSafeBrowsingBlockingPage(delegate, web_contents,
+                                            main_frame_url, unsafe_resources);
+  }
+};
+
 class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   SafeBrowsingUIManagerTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {
-    ui_manager_ = new SafeBrowsingUIManager(nullptr);
+    ui_manager_ = new SafeBrowsingUIManager(
+        nullptr, std::make_unique<TestSafeBrowsingBlockingPageFactory>());
   }
 
   ~SafeBrowsingUIManagerTest() override {}
@@ -453,60 +508,6 @@ class SecurityStateWebContentsDelegate : public content::WebContentsDelegate {
   DISALLOW_COPY_AND_ASSIGN(SecurityStateWebContentsDelegate);
 };
 
-// A test blocking page that does not create windows.
-class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
- public:
-  TestSafeBrowsingBlockingPage(BaseUIManager* manager,
-                               content::WebContents* web_contents,
-                               const GURL& main_frame_url,
-                               const UnsafeResourceList& unsafe_resources)
-      : SafeBrowsingBlockingPage(
-            manager,
-            web_contents,
-            main_frame_url,
-            unsafe_resources,
-            ChromeSafeBrowsingBlockingPageFactory::CreateControllerClient(
-                web_contents,
-                unsafe_resources,
-                manager),
-            BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
-                BaseBlockingPage::IsMainPageLoadBlocked(unsafe_resources),
-                false,                 // is_extended_reporting_opt_in_allowed
-                false,                 // is_off_the_record
-                false,                 // is_extended_reporting_enabled
-                false,                 // is_extended_reporting_policy_managed
-                false,                 // is_enhanced_protection_enabled
-                false,                 // is_proceed_anyway_disabled
-                true,                  // should_open_links_in_new_tab
-                true,                  // always_show_back_to_safety
-                false,                 // is_enhanced_protection_message_enabled
-                false,                 // is_safe_browsing_managed
-                "cpn_safe_browsing"),  // help_center_article_link
-            true) {                    // should_trigger_reporting
-    // Don't delay details at all for the unittest.
-    SetThreatDetailsProceedDelayForTesting(0);
-    DontCreateViewForTesting();
-  }
-};
-
-// A factory that creates TestSafeBrowsingBlockingPages.
-class TestSafeBrowsingBlockingPageFactory
-    : public SafeBrowsingBlockingPageFactory {
- public:
-  TestSafeBrowsingBlockingPageFactory() {}
-  ~TestSafeBrowsingBlockingPageFactory() override {}
-
-  SafeBrowsingBlockingPage* CreateSafeBrowsingPage(
-      BaseUIManager* delegate,
-      content::WebContents* web_contents,
-      const GURL& main_frame_url,
-      const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
-      bool should_trigger_reporting) override {
-    return new TestSafeBrowsingBlockingPage(delegate, web_contents,
-                                            main_frame_url, unsafe_resources);
-  }
-};
-
 }  // namespace
 
 // Tests that the WebContentsDelegate is notified of a visible security
@@ -521,8 +522,6 @@ class TestSafeBrowsingBlockingPageFactory
 #endif
 TEST_F(SafeBrowsingUIManagerTest,
        MAYBE_VisibleSecurityStateChangedForUnsafeSubresource) {
-  TestSafeBrowsingBlockingPageFactory factory;
-  SafeBrowsingBlockingPage::RegisterFactory(&factory);
   SecurityStateWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);
 
@@ -560,8 +559,6 @@ TEST_F(SafeBrowsingUIManagerTest,
 }
 
 TEST_F(SafeBrowsingUIManagerTest, ShowBlockPageNoCallback) {
-  TestSafeBrowsingBlockingPageFactory factory;
-  SafeBrowsingBlockingPage::RegisterFactory(&factory);
   SecurityStateWebContentsDelegate delegate;
   web_contents()->SetDelegate(&delegate);
 

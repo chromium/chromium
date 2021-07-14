@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 
-#include "base/lazy_instance.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 
 namespace safe_browsing {
@@ -21,6 +20,7 @@ class ChromeSafeBrowsingBlockingPageFactory
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
       bool should_trigger_reporting) override;
 
+  ChromeSafeBrowsingBlockingPageFactory();
   ChromeSafeBrowsingBlockingPageFactory(
       const ChromeSafeBrowsingBlockingPageFactory&) = delete;
   ChromeSafeBrowsingBlockingPageFactory& operator=(
@@ -34,12 +34,6 @@ class ChromeSafeBrowsingBlockingPageFactory
       content::WebContents* web_contents,
       const SafeBrowsingBlockingPage::UnsafeResourceList& unsafe_resources,
       const BaseUIManager* ui_manager);
-
- private:
-  friend struct base::LazyInstanceTraitsBase<
-      ChromeSafeBrowsingBlockingPageFactory>;
-
-  ChromeSafeBrowsingBlockingPageFactory();
 };
 
 }  // namespace safe_browsing

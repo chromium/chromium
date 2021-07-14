@@ -51,8 +51,10 @@ using safe_browsing::SBThreatType;
 namespace safe_browsing {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
-    const scoped_refptr<SafeBrowsingService>& service)
-    : BaseUIManager(), sb_service_(service) {}
+    const scoped_refptr<SafeBrowsingService>& service,
+    std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
+    : sb_service_(service),
+      blocking_page_factory_(std::move(blocking_page_factory)) {}
 
 SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
 
@@ -286,8 +288,8 @@ BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
   // triggered when creating the blocking page that gets associated in
   // SafeBrowsingSubresourceTabHelper.
   SafeBrowsingBlockingPage* blocking_page =
-      SafeBrowsingBlockingPage::CreateBlockingPage(
-          this, contents, blocked_url, unsafe_resource,
+      blocking_page_factory_->CreateSafeBrowsingPage(
+          this, contents, blocked_url, {unsafe_resource},
           /*should_trigger_reporting=*/false);
 
   // Report that we showed an interstitial.
