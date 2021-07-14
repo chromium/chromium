@@ -136,6 +136,8 @@ bool LoadEGLGLES2Bindings(const base::FilePath& egl_library_path,
       FILE_PATH_LITERAL("egltrace.so");
   base::NativeLibrary trace_library =
       base::LoadNativeLibrary(base::FilePath(kDefaultTraceSoname), &error);
+  if (!trace_library)
+    LOG(ERROR) << error.ToString();
   gl::AddGLNativeLibrary(trace_library);
 #endif
 
