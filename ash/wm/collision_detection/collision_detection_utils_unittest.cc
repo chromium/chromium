@@ -60,7 +60,7 @@ TEST_F(CollisionDetectionUtilsTest,
 }
 
 TEST_F(CollisionDetectionUtilsTest, AvoidObstaclesAvoidsUnifiedSystemTray) {
-  UpdateDisplay("1000x1000");
+  UpdateDisplay("1000x900");
   auto* unified_system_tray = GetPrimaryUnifiedSystemTray();
   unified_system_tray->ShowBubble();
 
@@ -108,6 +108,21 @@ class CollisionDetectionUtilsDisplayTest
  protected:
   display::Display GetDisplay() { return GetDisplayForWindow(root_window_); }
 
+  gfx::Rect GetKeyboardBounds(int keyboard_height) {
+    gfx::Rect keyboard_bounds(GetDisplay().bounds().size());
+    keyboard_bounds.set_y(keyboard_bounds.bottom() - keyboard_height);
+    keyboard_bounds.set_height(100);
+    return keyboard_bounds;
+  }
+
+  void TransposeIfPortrait(gfx::Rect* rect) {
+    bool landscape =
+        GetDisplay().bounds().width() > GetDisplay().bounds().height();
+    if (!landscape) {
+      rect->SetRect(rect->y(), rect->x(), rect->height(), rect->width());
+    }
+  }
+
   aura::Window* root_window() { return root_window_; }
 
   gfx::Rect ConvertToScreen(const gfx::Rect& bounds) {
@@ -135,7 +150,9 @@ class CollisionDetectionUtilsDisplayTest
 
 TEST_P(CollisionDetectionUtilsDisplayTest, MovementAreaIsInset) {
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(GetDisplay());
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 8, 384, 384)), area);
+  gfx::Rect expected(8, 8, 484, 384);
+  TransposeIfPortrait(&expected);
+  EXPECT_EQ(ConvertToScreen(expected), area);
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest,
@@ -144,14 +161,23 @@ TEST_P(CollisionDetectionUtilsDisplayTest,
   keyboard_controller->ShowKeyboardInDisplay(GetDisplay());
   ASSERT_TRUE(keyboard::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
-  keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
+
+  constexpr int keyboard_height = 100;
+  gfx::Rect keyboard_bounds = GetKeyboardBounds(keyboard_height);
+  keyboard_window->SetBounds(keyboard_bounds);
+
+  gfx::Rect expected = gfx::Rect(GetDisplay().bounds().size());
+  expected.Inset(0, 0, 0, keyboard_height);
+  expected.Inset(8, 8);
 
   gfx::Rect area = CollisionDetectionUtils::GetMovementArea(GetDisplay());
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 8, 384, 284)), area);
+  EXPECT_EQ(ConvertToScreen(expected), area);
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
   auto display = GetDisplay();
+  int right = display.bounds().width();
+  int bottom = display.bounds().height();
 
   // Snap near top edge to top.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
@@ -160,9 +186,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near bottom edge to bottom.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 292, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(100, 250, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(100, bottom - 50, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near left edge to left.
@@ -172,14 +198,16 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsToClosestEdge) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near right edge to right.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(292, 100, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(250, 100, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(right - 50, 100, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
 TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
   auto display = GetDisplay();
+  int right = display.bounds().width();
+  int bottom = display.bounds().height();
 
   // Snap near top edge outside movement area to top.
   EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 8, 100, 100)),
@@ -188,9 +216,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near bottom edge outside movement area to bottom.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, 292, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(100, bottom - 108, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(100, 450, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(100, 1000, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near left edge outside movement area to left.
@@ -200,9 +228,9 @@ TEST_P(CollisionDetectionUtilsDisplayTest, RestingPositionSnapsInsideDisplay) {
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 
   // Snap near right edge outside movement area to right.
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(292, 100, 100, 100)),
+  EXPECT_EQ(ConvertToScreen(gfx::Rect(right - 108, 100, 100, 100)),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(450, 100, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(1000, 100, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
@@ -330,11 +358,16 @@ TEST_P(CollisionDetectionUtilsDisplayTest, GetRestingPositionAvoidsKeyboard) {
   keyboard_controller->ShowKeyboardInDisplay(display);
   ASSERT_TRUE(keyboard::WaitUntilShown());
   aura::Window* keyboard_window = keyboard_controller->GetKeyboardWindow();
-  keyboard_window->SetBounds(gfx::Rect(0, 300, 400, 100));
 
-  EXPECT_EQ(ConvertToScreen(gfx::Rect(8, 192, 100, 100)),
+  constexpr int keyboard_height = 100;
+  gfx::Rect keyboard_bounds = GetKeyboardBounds(keyboard_height);
+  keyboard_window->SetBounds(keyboard_bounds);
+
+  gfx::Rect expected =
+      gfx::Rect(8, display.bounds().height() - 100 - 108, 100, 100);
+  EXPECT_EQ(ConvertToScreen(expected),
             CollisionDetectionUtils::GetRestingPosition(
-                display, ConvertToScreen(gfx::Rect(8, 300, 100, 100)),
+                display, ConvertToScreen(gfx::Rect(8, 500, 100, 100)),
                 CollisionDetectionUtils::RelativePriority::kPictureInPicture));
 }
 
@@ -355,13 +388,13 @@ TEST_P(CollisionDetectionUtilsDisplayTest, AutoHideShownShelfAffectsWindow) {
 INSTANTIATE_TEST_SUITE_P(
     /* no prefix */,
     CollisionDetectionUtilsDisplayTest,
-    testing::Values(std::make_tuple("400x400", 0u),
-                    std::make_tuple("400x400/r", 0u),
-                    std::make_tuple("400x400/u", 0u),
-                    std::make_tuple("400x400/l", 0u),
-                    std::make_tuple("800x800*2", 0u),
-                    std::make_tuple("400x400,400x400", 0u),
-                    std::make_tuple("400x400,400x400", 1u)));
+    testing::Values(std::make_tuple("500x400", 0u),
+                    std::make_tuple("500x400/r", 0u),
+                    std::make_tuple("500x400/u", 0u),
+                    std::make_tuple("500x400/l", 0u),
+                    std::make_tuple("1000x800*2", 0u),
+                    std::make_tuple("500x400,500x400", 0u),
+                    std::make_tuple("500x400,500x400", 1u)));
 
 class CollisionDetectionUtilsLogicTest : public ::testing::Test {
  public:
