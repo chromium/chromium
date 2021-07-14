@@ -385,22 +385,53 @@ public class ContinuousSearchListMediatorTest {
     }
 
     /**
-     * Tests that the data is invalidated on user dismissal.
+     * Tests that the UI vanishes on dismissal.
      */
     @Test
-    public void testUserInvalidate() {
+    public void testUserDismissal() {
         initMediatorWithTriggerMode(TRIGGER_MODE_ALWAYS);
-        mMediator.onResult(Mockito.mock(Tab.class));
-        PageItem pageItem = new PageItem(Mockito.mock(GURL.class), "result");
-        PageGroup pageGroup = new PageGroup("group", true, Arrays.asList(pageItem));
-        ContinuousNavigationMetadata continuousNavigationMetadata =
-                new ContinuousNavigationMetadata(Mockito.mock(GURL.class), "query",
-                        getProvider(null), Arrays.asList(pageGroup));
-        mMediator.onUpdate(continuousNavigationMetadata);
-        Assert.assertEquals("ModelList length is incorrect.", 2, mModelList.size());
 
+        // UI should hide on observing a new tab.
+        mMediator.onResult(Mockito.mock(Tab.class));
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 0,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 1,
+                mLayoutVisibilityFalse.getCallCount());
+
+        PageItem pageItem = new PageItem(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), "result 1");
+        PageGroup pageGroup = new PageGroup("result", false, Arrays.asList(pageItem));
+        ContinuousNavigationMetadata continuousNavigationMetadata =
+                new ContinuousNavigationMetadata(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL),
+                        "query", getProvider(null), Arrays.asList(pageGroup));
+        mMediator.onUpdate(continuousNavigationMetadata);
+
+        // Open URL.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should not have been called.", 1,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Dismiss.
         mRootViewModel.get(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK).onClick(null);
-        Assert.assertEquals("ModelList length is incorrect.", 0, mModelList.size());
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 2,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Return to SRP.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL), true);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 3,
+                mLayoutVisibilityFalse.getCallCount());
+
+        // Return to URL - remains not visible.
+        mMediator.onUrlChanged(JUnitTestGURLs.getGURL(JUnitTestGURLs.BLUE_1), false);
+        Assert.assertEquals("mLayoutVisibilityTrue should not have been called.", 1,
+                mLayoutVisibilityTrue.getCallCount());
+        Assert.assertEquals("mLayoutVisibilityFalse should have been called.", 4,
+                mLayoutVisibilityFalse.getCallCount());
     }
 
     /**

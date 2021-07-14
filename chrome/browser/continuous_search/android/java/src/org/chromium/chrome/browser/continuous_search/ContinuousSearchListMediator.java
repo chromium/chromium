@@ -58,6 +58,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private @PageCategory int mPageCategory;
     private boolean mVisible;
     private boolean mScrolled;
+    private boolean mDismissed;
     // The navigation index when CSN metadata was retrieved.
     private int mStartNavigationIndex;
     private int mSrpVisits;
@@ -83,7 +84,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mResources = resources;
 
         mRootViewModel.set(ContinuousSearchListProperties.DISMISS_CLICK_CALLBACK,
-                (v) -> invalidateOnUserRequest());
+                (v) -> dismissOnUserRequest());
         if (mThemeColorProvider != null) {
             mThemeColorProvider.addThemeColorObserver(this);
             int themeColor = mThemeColorProvider.getThemeColor();
@@ -96,14 +97,22 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         initScrollObserver();
     }
 
-    private void invalidateOnUserRequest() {
-        // |mCurrentUserData| should *almost* always be non-null here. This is because we invalidate
-        // the UI immediately after nullifying |mCurrentUserData|.
-        // There might be a rare race condition where the user manages to click the dismiss button
-        // after |mCurrentUserData| is nullified and before the UI is invalidated. In that case,
-        // |#invalidateOnUserRequest| will be no-op. However, the UI will be dismissed eventually
-        // when |#onInvalidate| is called.
-        if (mCurrentUserData != null) mCurrentUserData.invalidateData();
+    private void dismissOnUserRequest() {
+        // To avoid showing for duration of the current SRP session don't delete the data, instead
+        // hide the UI permamently. Data will be deleted as soon as the SRP session is over.
+        mDismissed = true;
+        setVisibility(false, null);
+    }
+
+    private void reset() {
+        mModelList.clear();
+        mDismissed = false;
+        mOnSrp = false;
+        mSrpVisits = 0;
+    }
+
+    private boolean shouldShow() {
+        return mModelList.size() > 0 && !mOnSrp && !mDismissed;
     }
 
     /**
@@ -135,12 +144,6 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     @Override
     public void onInvalidate() {
         setVisibility(false, this::reset);
-    }
-
-    private void reset() {
-        mModelList.clear();
-        mOnSrp = false;
-        mSrpVisits = 0;
     }
 
     @Override
@@ -195,7 +198,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                 shouldTrigger = mSrpVisits >= 2;
                 break;
         }
-        setVisibility(mModelList.size() > 0 && !mOnSrp && shouldTrigger, null);
+        setVisibility(shouldShow() && shouldTrigger, null);
     }
 
     private @TriggerMode int getTriggerMode() {
@@ -308,8 +311,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     int bottomOffset, int bottomControlsMinHeightOffset, boolean needsAnimate) {
                 if (mVisible) return;
 
-                final boolean shouldShow = mModelList.size() > 0 && !mOnSrp;
-                if (!shouldShow) return;
+                if (!shouldShow()) return;
 
                 // Show the UI only when the browser controls are fully hidden then on any
                 // subsequent reverse scroll the omnibox will be shown along with the UI.
