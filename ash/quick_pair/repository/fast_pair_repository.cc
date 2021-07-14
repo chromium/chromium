@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/quick_pair/repository/fast_pair_device_metadata_service.h"
+#include "ash/quick_pair/repository/fast_pair_repository.h"
 
 #include "ash/quick_pair/common/logging.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -10,10 +10,10 @@
 namespace ash {
 namespace quick_pair {
 
-FastPairDeviceMetadataService::FastPairDeviceMetadataService() = default;
-FastPairDeviceMetadataService::~FastPairDeviceMetadataService() = default;
+FastPairRepository::FastPairRepository() = default;
+FastPairRepository::~FastPairRepository() = default;
 
-void FastPairDeviceMetadataService::GetDeviceMetadata(
+void FastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     base::OnceCallback<void(absl::optional<nearby::fastpair::Device>)>
         callback) {
@@ -21,14 +21,14 @@ void FastPairDeviceMetadataService::GetDeviceMetadata(
   std::move(callback).Run(absl::nullopt);
 }
 
-void FastPairDeviceMetadataService::IsValidModelId(
+void FastPairRepository::IsValidModelId(
     const std::string& hex_model_id,
     base::OnceCallback<void(bool)> callback) {
   QP_LOG(INFO) << __func__;
   std::move(callback).Run(false);
 }
 
-void FastPairDeviceMetadataService::GetAssociatedAccountKey(
+void FastPairRepository::GetAssociatedAccountKey(
     const std::string& address,
     const std::string& account_key_filter,
     base::OnceCallback<void(absl::optional<std::string>)> callback) {
@@ -36,13 +36,12 @@ void FastPairDeviceMetadataService::GetAssociatedAccountKey(
   std::move(callback).Run(absl::nullopt);
 }
 
-void FastPairDeviceMetadataService::AssociateAccountKey(
-    const Device& device,
-    const std::string& account_key) {
+void FastPairRepository::AssociateAccountKey(const Device& device,
+                                             const std::string& account_key) {
   QP_LOG(INFO) << __func__;
 }
 
-void FastPairDeviceMetadataService::DeleteAssociatedDevice(
+void FastPairRepository::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   QP_LOG(INFO) << __func__;
 }

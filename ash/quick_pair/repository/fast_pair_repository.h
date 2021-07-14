@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_SERVICE_H_
-#define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_SERVICE_H_
+#ifndef ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
+#define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
 
 #include "ash/quick_pair/common/device.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -19,13 +19,12 @@ namespace quick_pair {
 
 // The entry point for the Repository component in the Quick Pair system,
 // responsible for connecting to back-end services.
-class FastPairDeviceMetadataService {
+class FastPairRepository {
  public:
-  FastPairDeviceMetadataService();
-  FastPairDeviceMetadataService(const FastPairDeviceMetadataService&) = delete;
-  FastPairDeviceMetadataService& operator=(
-      const FastPairDeviceMetadataService&) = delete;
-  virtual ~FastPairDeviceMetadataService();
+  FastPairRepository();
+  FastPairRepository(const FastPairRepository&) = delete;
+  FastPairRepository& operator=(const FastPairRepository&) = delete;
+  virtual ~FastPairRepository();
 
   // Returns the DeviceMetadata for a given |hex_model_id| to the provided
   // |callback|, if available.
@@ -59,4 +58,4 @@ class FastPairDeviceMetadataService {
 }  // namespace quick_pair
 }  // namespace ash
 
-#endif  // ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_DEVICE_METADATA_SERVICE_H_
+#endif  // ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_H_
