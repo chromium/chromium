@@ -291,7 +291,9 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForSafeBrowsing) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue, QuicAllowedForProfile) {
+// TODO(crbug.com/1228869): Flaky on multiple platforms
+IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue,
+                       DISABLED_QuicAllowedForProfile) {
   EXPECT_TRUE(IsQuicEnabled(browser()->profile()));
 
   // If using the network service, crash the service, and make sure QUIC is
