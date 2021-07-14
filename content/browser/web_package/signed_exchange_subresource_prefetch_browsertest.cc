@@ -46,7 +46,6 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/common/shell_switches.h"
-#include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_cache.h"
@@ -237,9 +236,6 @@ class SignedExchangePrefetchBrowserTest
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
-    inactive_rfh_deletion_observer_ =
-        std::make_unique<InactiveRenderFrameHostDeletionObserver>(
-            shell()->web_contents());
     PrefetchBrowserTestBase::SetUpOnMainThread();
   }
 
@@ -250,9 +246,6 @@ class SignedExchangePrefetchBrowserTest
   static constexpr uint64_t kTestBlobStorageMaxDiskSpace = 500;
   static constexpr uint64_t kTestBlobStorageMinFileSizeBytes = 10;
   static constexpr uint64_t kTestBlobStorageMaxFileSizeBytes = 100;
-
-  std::unique_ptr<InactiveRenderFrameHostDeletionObserver>
-      inactive_rfh_deletion_observer_;
 
   static bool IsSignedExchangePrefetchCacheEnabled() {
     return base::FeatureList::IsEnabled(
@@ -324,9 +317,6 @@ class SignedExchangePrefetchBrowserTest
       // the target URL. The target content should still be read correctly.
       // The content is loaded from HTTPCache.
       NavigateToURLAndWaitTitle(sxg_url, "Prefetch Target (SXG)");
-      // Wait for the previous page's RFH to be deleted (if it changed) so that
-      // the histograms will get updated.
-      inactive_rfh_deletion_observer_->Wait();
 
       EXPECT_EQ(1, sxg_request_counter->GetRequestCount());
       histograms.ExpectTotalCount("PrefetchedSignedExchangeCache.Count", 0);
@@ -359,9 +349,6 @@ class SignedExchangePrefetchBrowserTest
     // the target URL. The target content should still be read correctly.
     // The content is loaded from PrefetchedSignedExchangeCache.
     NavigateToURLAndWaitTitle(sxg_url, "Prefetch Target (SXG)");
-    // Wait for the previous page's RFH to be deleted (if it changed) so that
-    // the histograms will get updated.
-    inactive_rfh_deletion_observer_->Wait();
 
     EXPECT_EQ(1, sxg_request_counter->GetRequestCount());
     histograms.ExpectBucketCount("PrefetchedSignedExchangeCache.Count", 1, 1);
@@ -439,8 +426,16 @@ class SignedExchangePrefetchBrowserTest
   DISALLOW_COPY_AND_ASSIGN(SignedExchangePrefetchBrowserTest);
 };
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_SameOrigin \
+  DISABLED_PrefetchMainResourceSXG_SameOrigin
+#else
+#define MAYBE_PrefetchMainResourceSXG_SameOrigin \
+  PrefetchMainResourceSXG_SameOrigin
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_SameOrigin) {
+                       MAYBE_PrefetchMainResourceSXG_SameOrigin) {
   RunPrefetchMainResourceSXGTest("example.com" /* prefetch_page_hostname */,
                                  "/prefetch.html" /* prefetch_page_path */,
                                  "example.com" /* sxg_hostname */,
@@ -449,8 +444,16 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
                                  "/target.html" /* inner_url_path */);
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_CrossOrigin \
+  DISABLED_PrefetchMainResourceSXG_CrossOrigin
+#else
+#define MAYBE_PrefetchMainResourceSXG_CrossOrigin \
+  PrefetchMainResourceSXG_CrossOrigin
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_CrossOrigin) {
+                       MAYBE_PrefetchMainResourceSXG_CrossOrigin) {
   RunPrefetchMainResourceSXGTest(
       "aggregator.example.com" /* prefetch_page_hostname */,
       "/prefetch.html" /* prefetch_page_path */,
@@ -460,8 +463,15 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
       "/target.html" /* inner_url_path */);
 }
 
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchMainResourceSXG_SameURL \
+  DISABLED_PrefetchMainResourceSXG_SameURL
+#else
+#define MAYBE_PrefetchMainResourceSXG_SameURL PrefetchMainResourceSXG_SameURL
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchMainResourceSXG_SameURL) {
+                       MAYBE_PrefetchMainResourceSXG_SameURL) {
   RunPrefetchMainResourceSXGTest("example.com" /* prefetch_page_hostname */,
                                  "/prefetch.html" /* prefetch_page_path */,
                                  "example.com" /* sxg_hostname */,
@@ -778,8 +788,16 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
 // SignedExchangePrefetchCacheForNavigations when
 // |sxg_subresource_prefetch_enabled| is false to check the behavior of
 // SignedExchangePrefetchCacheForNavigations feature.
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_PrefetchAlternativeSubresourceSXG \
+  DISABLED_PrefetchAlternativeSubresourceSXG
+#else
+#define MAYBE_PrefetchAlternativeSubresourceSXG \
+  PrefetchAlternativeSubresourceSXG
+#endif
 IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
-                       PrefetchAlternativeSubresourceSXG) {
+                       MAYBE_PrefetchAlternativeSubresourceSXG) {
   const char* prefetch_page_path = "/prefetch.html";
   const char* page_sxg_path = "/target.sxg";
   const char* page_inner_url_path = "/target.html";
@@ -923,10 +941,6 @@ IN_PROC_BROWSER_TEST_P(SignedExchangePrefetchBrowserTest,
     // HTTPCache. But the script is loaded from the server.
     NavigateToURLAndWaitTitle(sxg_page_url, "from server");
   }
-
-  // Wait for the previous page's RFH to be deleted (if it changed) so that the
-  // histograms will get updated.
-  inactive_rfh_deletion_observer_->Wait();
 
   EXPECT_EQ(1, page_sxg_request_counter->GetRequestCount());
 

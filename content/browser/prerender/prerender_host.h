@@ -72,8 +72,7 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
     kClientCertRequested = 19,
     kNavigationRequestNetworkError = 20,
     kMaxNumOfRunningPrerendersExceeded = 21,
-    kCancelAllHostsForTesting = 22,
-    kMaxValue = kCancelAllHostsForTesting
+    kMaxValue = kMaxNumOfRunningPrerendersExceeded
   };
 
   PrerenderHost(blink::mojom::PrerenderAttributesPtr attributes,

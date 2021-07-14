@@ -18,7 +18,6 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -62,13 +61,12 @@ constexpr blink::scheduler::WebSchedulerTrackedFeatures kFeaturesToIgnore =
 using UkmMetrics = ukm::TestUkmRecorder::HumanReadableUkmMetrics;
 using UkmEntry = ukm::TestUkmRecorder::HumanReadableUkmEntry;
 
-enum BackForwardCacheStatus { kDisabled = 0, kEnabled = 1 };
 }  // namespace
 
-class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
-                                               public WebContentsObserver {
+class BackForwardCacheMetricsBrowserTest : public ContentBrowserTest,
+                                           public WebContentsObserver {
  public:
-  BackForwardCacheMetricsBrowserTestBase() {
+  BackForwardCacheMetricsBrowserTest() {
     geolocation_override_ =
         std::make_unique<device::ScopedGeolocationOverrider>(1.0, 1.0);
   }
@@ -107,40 +105,18 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
   std::unique_ptr<device::ScopedGeolocationOverrider> geolocation_override_;
 };
 
-class BackForwardCacheMetricsBrowserTest
-    : public BackForwardCacheMetricsBrowserTestBase,
-      public testing::WithParamInterface<BackForwardCacheStatus> {
- public:
-  BackForwardCacheMetricsBrowserTest() {
-    if (GetParam() == BackForwardCacheStatus::kEnabled) {
-      // Enable BackForwardCache.
-      feature_list_.InitWithFeaturesAndParameters(
-          {{features::kBackForwardCache, {{"enable_same_site", "true"}}},
-           {kBackForwardCacheNoTimeEviction, {}}},
-          // Allow BackForwardCache for all devices regardless of their memory.
-          {features::kBackForwardCacheMemoryControls});
-      DCHECK(IsSameSiteBackForwardCacheEnabled());
-    } else {
-      feature_list_.InitAndDisableFeature(features::kBackForwardCache);
-      DCHECK(!IsBackForwardCacheEnabled());
-    }
-  }
-
-  static std::string DescribeParams(
-      const testing::TestParamInfo<ParamType>& info) {
-    return info.param ? "BFCacheEnabled" : "BFCacheDisabled";
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, UKM) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_UKM DISABLED_UKM
+#else
+#define MAYBE_UKM UKM
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, MAYBE_UKM) {
   ukm::TestAutoSetUkmRecorder recorder;
 
-  const GURL url1(embedded_test_server()->GetURL(
-      "a.com", "/frame_tree/page_with_one_frame.html"));
-  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  const GURL url1(
+      embedded_test_server()->GetURL("/frame_tree/page_with_one_frame.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title1.html"));
   const char kChildFrameId[] = "child0";
 
   EXPECT_TRUE(NavigateToURL(shell(), url2));
@@ -162,11 +138,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, UKM) {
 
   {
     // We are waiting for two navigations here: main frame and subframe.
-    // However, when back/forward cache is enabled, back navigation to a page
-    // with subframes will not trigger a subframe navigation (since the
-    // subframe is cached with the page).
-    TestNavigationObserver navigation_observer(
-        shell()->web_contents(), 1 + (IsBackForwardCacheEnabled() ? 0 : 1));
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
     shell()->GoBackOrForward(-1);
     navigation_observer.WaitForNavigationFinished();
   }
@@ -189,13 +161,10 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, UKM) {
   // The navigation entries are:
   // [*url2, url1(subframe), url1(url2), url2].
 
-  // There are five new navigations and four back navigations (3 if
-  // back/forward cache is enabled, as the first subframe back navigation won't
-  // happen).
+  // There are five new navigations and four back navigations.
   // Navigations 1, 2, 5 are main frame. Navigation 3 is an initial navigation
   // in the subframe, navigation 4 is a subframe navigation.
-  ASSERT_EQ(navigation_ids_.size(),
-            static_cast<size_t>(8 + (IsBackForwardCacheEnabled() ? 0 : 1)));
+  ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(9));
   ukm::SourceId id1 = ToSourceId(navigation_ids_[0]);
   ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
@@ -204,25 +173,23 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, UKM) {
   ukm::SourceId id6 = ToSourceId(navigation_ids_[5]);
   // ukm::SourceId id7 = ToSourceId(navigation_ids_[6]);
   // ukm::SourceId id8 = ToSourceId(navigation_ids_[7]);
-  ukm::SourceId id_last =
-      ToSourceId(navigation_ids_[navigation_ids_.size() - 1]);
+  ukm::SourceId id9 = ToSourceId(navigation_ids_[8]);
 
   std::string last_navigation_id =
       "LastCommittedCrossDocumentNavigationSourceIdForTheSameDocument";
 
-  // First back/forward navigation (#6) navigates back to navigation #3, but it
+  // First back-forward navigation (#6) navigates back to navigation #3, but it
   // is the subframe navigation, so the corresponding main frame navigation is
   // #2. Navigation #7 loads the subframe for navigation #6.
-  // Second back/forward navigation (#8) navigates back to navigation #2,
-  // but it is subframe navigation and not reflected here. Third back/forward
+  // Second back-forward navigation (#8) navigates back to navigation #2,
+  // but it is subframe navigation and not reflected here. Third back-forward
   // navigation (#9) navigates back to navigation #1.
-  EXPECT_THAT(
-      recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
-      testing::ElementsAre(UkmEntry{id6, {{last_navigation_id, id2}}},
-                           UkmEntry{id_last, {{last_navigation_id, id1}}}));
+  EXPECT_THAT(recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
+              testing::ElementsAre(UkmEntry{id6, {{last_navigation_id, id2}}},
+                                   UkmEntry{id9, {{last_navigation_id, id1}}}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
@@ -282,7 +249,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, CloneAndGoBack) {
 }
 
 // Confirms that UKMs are not recorded on reloading.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Reload) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Reload) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -318,7 +285,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Reload) {
                                    UkmEntry{id6, {{last_navigation_id, id4}}}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
                        SameDocumentNavigationAndGoBackImmediately) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -341,7 +308,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre());
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
                        GoBackToSameDocumentNavigationEntry) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -370,14 +337,14 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // the first navigation. The third navigation is a regular navigation. The
   // fourth navigation goes back.
   //
-  // The back/forward navigation (#4) goes back to the navigation entry created
+  // The back-forward navigation (#4) goes back to the navigation entry created
   // by the same-document navigation (#2), so we expect the id corresponding to
   // the previous non-same-document navigation (#1).
   EXPECT_THAT(recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
               testing::ElementsAre(UkmEntry{id4, {{last_navigation_id, id1}}}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
                        GoBackToSameDocumentNavigationEntry2) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -406,7 +373,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // the first navigation. The third navigation is a regular navigation. The
   // fourth navigation goes back.
   //
-  // The back/forward navigation (#4) goes back to navigation #1, skipping a
+  // The back-forward navigation (#4) goes back to navigation #1, skipping a
   // navigation entry generated by same-document navigation (#2). Ensure that
   // the recorded id belongs to the navigation #1, not #2.
   EXPECT_THAT(recorder.GetEntries("HistoryNavigation", {last_navigation_id}),
@@ -463,7 +430,7 @@ std::vector<FeatureUsage> GetFeatureUsageMetrics(
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL(
@@ -488,7 +455,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
               testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
                        Features_MainFrame_CrossOriginNavigation) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -514,30 +481,30 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
-                       Features_SameOriginSubframes) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_Features_SameOriginSubframes DISABLED_Features_SameOriginSubframes
+#else
+#define MAYBE_Features_SameOriginSubframes Features_SameOriginSubframes
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
+                       MAYBE_Features_SameOriginSubframes) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_same_origin_subframe_with_pageshow.html"));
-  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title1.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
   {
-    // We are waiting for two navigations here: main frame and subframe.
-    // However, when back/forward cache is enabled, back navigation to a page
-    // with subframes will not trigger a subframe navigation (since the
-    // subframe is cached with the page).
-    TestNavigationObserver navigation_observer(
-        shell()->web_contents(), 1 + (IsBackForwardCacheEnabled() ? 0 : 1));
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
     shell()->GoBackOrForward(-1);
     navigation_observer.WaitForNavigationFinished();
   }
 
-  ASSERT_EQ(navigation_ids_.size(),
-            static_cast<size_t>(4 + (IsBackForwardCacheEnabled() ? 0 : 1)));
+  ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(5));
   // ukm::SourceId id1 = ToSourceId(navigation_ids_[0]);
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
@@ -547,7 +514,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
                        Features_SameOriginSubframes_CrossOriginNavigation) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -561,7 +528,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().GoBack();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // When the page is restored from back/forward cache, there is one navigation
+  // When the page is restored from back-forward cache, there is one navigation
   // corresponding to the bfcache restore. Whereas, when the page is reloaded,
   // there are two navigations i.e., one loading the main frame and one loading
   // the subframe.
@@ -575,31 +542,32 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
-                       Features_CrossOriginSubframes) {
+// https://crbug.com/1219373 fails with BFCache field trial testing config.
+#if defined(OS_ANDROID)
+#define MAYBE_Features_CrossOriginSubframes \
+  DISABLED_Features_CrossOriginSubframes
+#else
+#define MAYBE_Features_CrossOriginSubframes Features_CrossOriginSubframes
+#endif
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest,
+                       MAYBE_Features_CrossOriginSubframes) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url1(embedded_test_server()->GetURL(
       "/back_forward_cache/"
       "page_with_cross_origin_subframe_with_pageshow.html"));
-  const GURL url2(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  const GURL url2(embedded_test_server()->GetURL("/title1.html"));
 
   EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
   {
-    // We are waiting for two navigations here: main frame and subframe.
-    // However, when back/forward cache is enabled, back navigation to a page
-    // with subframes will not trigger a subframe navigation (since the
-    // subframe is cached with the page).
-    TestNavigationObserver navigation_observer(
-        shell()->web_contents(), 1 + (IsBackForwardCacheEnabled() ? 0 : 1));
+    TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
     shell()->GoBackOrForward(-1);
     navigation_observer.WaitForNavigationFinished();
   }
 
-  ASSERT_EQ(navigation_ids_.size(),
-            static_cast<size_t>(4 + (IsBackForwardCacheEnabled() ? 0 : 1)));
+  ASSERT_EQ(navigation_ids_.size(), static_cast<size_t>(5));
   // ukm::SourceId id1 = ToSourceId(navigation_ids_[0]);
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
@@ -609,7 +577,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
   ukm::TestAutoSetUkmRecorder recorder;
 
   const GURL url(embedded_test_server()->GetURL(
@@ -633,7 +601,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
 #else
 #define MAYBE_SharedWorker SharedWorker
 #endif
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_shared_worker.html"));
 
@@ -648,7 +616,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
                 blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsBrowserTest, Geolocation) {
   const GURL url1(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), url1));
 
@@ -664,7 +632,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {
 }
 
 class RecordBackForwardCacheMetricsWithoutEnabling
-    : public BackForwardCacheMetricsBrowserTestBase {
+    : public BackForwardCacheMetricsBrowserTest {
  public:
   RecordBackForwardCacheMetricsWithoutEnabling() {
     // Sets the allowed websites for testing.
@@ -739,7 +707,7 @@ IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
               1)));
 
   // BackForwardCache is disabled here, the navigation is not served from
-  // back/forward cache.
+  // back-forward cache.
   EXPECT_THAT(
       histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
       ElementsAre(Bucket(
@@ -776,10 +744,28 @@ IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
           1)));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+class BackForwardCacheEnabledMetricsBrowserTest
+    : public BackForwardCacheMetricsBrowserTest {
+ protected:
+  BackForwardCacheEnabledMetricsBrowserTest() {
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {// Set a very long TTL before expiration (longer than the test
+           // timeout) so tests that are expecting deletion don't pass when
+           // they shouldn't.
+           {"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
+  }
+
+  ~BackForwardCacheEnabledMetricsBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheEnabledMetricsBrowserTest,
                        RecordReloadsAfterHistoryNavigation) {
-  if (!IsBackForwardCacheEnabled())
-    return;
   base::HistogramTester histogram_tester;
   using ReloadsAfterHistoryNavigation =
       BackForwardCacheMetrics::ReloadsAfterHistoryNavigation;
@@ -842,7 +828,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
       web_contents()->GetFrameTree()->root()->current_frame_host();
 
   // Make url1 ineligible for caching so that when we navigate back it doesn't
-  // fetch the RenderFrameHost from the back/forward cache.
+  // fetch the RenderFrameHost from the back-forward cache.
   DisableForRenderFrameHostForTesting(rfh_url1);
   EXPECT_TRUE(NavigateToURL(shell(), url3));
 
@@ -867,10 +853,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
               2)));
 }
 
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheEnabledMetricsBrowserTest,
                        RestoreNavigationToNextPaint) {
-  if (!IsBackForwardCacheEnabled())
-    return;
   base::HistogramTester histogram_tester;
   const char kRestoreNavigationToNextPaintTimeHistogram[] =
       "BackForwardCache.Restore.NavigationToFirstPaint";
@@ -927,7 +911,7 @@ class BackForwardCacheMetricsPrerenderingBrowserTest
 
 // Tests that activating a prerender works correctly when navigated
 // back.
-IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(BackForwardCacheMetricsPrerenderingBrowserTest,
                        MainFrameNavigation) {
   ukm::TestAutoSetUkmRecorder recorder;
 
@@ -973,16 +957,5 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
               testing::ElementsAre(FeatureUsage{id5, 0, 0, 0}));
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheMetricsBrowserTest,
-                         testing::ValuesIn({BackForwardCacheStatus::kDisabled,
-                                            BackForwardCacheStatus::kEnabled}),
-                         BackForwardCacheMetricsBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         BackForwardCacheMetricsPrerenderingBrowserTest,
-                         testing::ValuesIn({BackForwardCacheStatus::kDisabled,
-                                            BackForwardCacheStatus::kEnabled}),
-                         BackForwardCacheMetricsBrowserTest::DescribeParams);
 
 }  // namespace content
