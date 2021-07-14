@@ -62,7 +62,7 @@ public class SyncErrorCardPreferenceTest {
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
-            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(5).build();
+            ChromeRenderTestRule.Builder.withPublicCorpus().setRevision(6).build();
 
     private FakeSyncServiceImpl mFakeSyncServiceImpl;
 

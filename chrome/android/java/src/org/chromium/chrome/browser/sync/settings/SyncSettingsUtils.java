@@ -169,10 +169,24 @@ public class SyncSettingsUtils {
      * @param error The sync error.
      */
     public static String getSyncErrorCardTitle(Context context, @SyncError int error) {
-        return (error == SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS
-                       || error == SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS)
-                ? context.getString(R.string.password_sync_error_summary)
-                : context.getString(R.string.sync_error_card_title);
+        switch (error) {
+            case SyncError.ANDROID_SYNC_DISABLED:
+            case SyncError.AUTH_ERROR:
+            case SyncError.CLIENT_OUT_OF_DATE:
+            case SyncError.OTHER_ERRORS:
+            case SyncError.PASSPHRASE_REQUIRED:
+            case SyncError.SYNC_SETUP_INCOMPLETE:
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_EVERYTHING:
+                return context.getString(R.string.sync_error_card_title);
+            case SyncError.TRUSTED_VAULT_KEY_REQUIRED_FOR_PASSWORDS:
+                return context.getString(R.string.password_sync_error_summary);
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
+            case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
+                return context.getString(R.string.sync_needs_verification_title);
+            case SyncError.NO_ERROR:
+            default:
+                return null;
+        }
     }
 
     public static @Nullable String getSyncErrorCardButtonLabel(
@@ -255,11 +269,14 @@ public class SyncSettingsUtils {
             return context.getString(R.string.sync_need_passphrase);
         }
 
-        if (syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()
-                || syncService.isTrustedVaultRecoverabilityDegraded()) {
+        if (syncService.isTrustedVaultKeyRequiredForPreferredDataTypes()) {
             return syncService.isEncryptEverythingEnabled()
                     ? context.getString(R.string.sync_error_card_title)
                     : context.getString(R.string.password_sync_error_summary);
+        }
+
+        if (syncService.isTrustedVaultRecoverabilityDegraded()) {
+            return context.getString(R.string.sync_needs_verification_title);
         }
 
         return context.getString(R.string.sync_on);

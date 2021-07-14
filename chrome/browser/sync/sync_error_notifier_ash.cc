@@ -104,10 +104,7 @@ BubbleViewParameters GetBubbleViewParameters(
       sync_service, profile->GetPrefs()));
 
   BubbleViewParameters params;
-  params.title_id =
-      sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
-          ? IDS_SYNC_ERROR_BUBBLE_VIEW_TITLE
-          : IDS_SYNC_ERROR_PASSWORDS_BUBBLE_VIEW_TITLE;
+  params.title_id = IDS_SYNC_NEEDS_VERIFICATION_BUBBLE_VIEW_TITLE;
   params.message_id =
       sync_service->GetUserSettings()->IsEncryptEverythingEnabled()
           ? IDS_SYNC_RECOVERABILITY_DEGRADED_FOR_EVERYTHING_ERROR_BUBBLE_VIEW_MESSAGE
