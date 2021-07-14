@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/scoped_handle.h"
 #endif
 
 namespace base {

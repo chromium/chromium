@@ -11,6 +11,9 @@
 
 #include <windows.h>
 
+// To avoid conflicts with the macro from the Windows SDK...
+#undef FindWindow
+
 namespace base {
 
 namespace {

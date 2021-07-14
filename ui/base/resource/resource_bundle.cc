@@ -62,6 +62,9 @@
 
 #if defined(OS_WIN)
 #include "ui/display/win/dpi.h"
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef LoadBitmap
 #endif
 
 namespace ui {

@@ -26,7 +26,7 @@
 #include "build/chromeos_buildflags.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #elif defined(OS_FUCHSIA)
 #include <lib/fdio/spawn.h>
 #include <zircon/types.h>

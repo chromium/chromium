@@ -75,6 +75,9 @@
 #include "base/win/windows_version.h"
 
 #include <windows.h>
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef GetCommandLine
 #endif
 
 #if defined(OS_FUCHSIA)

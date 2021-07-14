@@ -5,8 +5,6 @@
 #ifndef BASE_WIN_MESSAGE_WINDOW_H_
 #define BASE_WIN_MESSAGE_WINDOW_H_
 
-#include <windows.h>
-
 #include <string>
 
 #include "base/base_export.h"
@@ -14,6 +12,10 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/threading/thread_checker.h"
+#include "base/win/windows_types.h"
+
+// Protect against windows.h being included before this header.
+#undef FindWindow
 
 namespace base {
 namespace win {
