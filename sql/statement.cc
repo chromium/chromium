@@ -447,23 +447,6 @@ bool Statement::ColumnBlobAsString(int col, std::string* blob) const {
   return true;
 }
 
-bool Statement::ColumnBlobAsString16(int col, std::u16string* val) const {
-#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#endif  // OS_ANDROID
-
-  if (!CheckValid())
-    return false;
-
-  const void* data = ColumnBlob(col);
-  size_t len = ColumnByteLength(col) / sizeof(char16_t);
-  val->resize(len);
-  if (val->size() != len)
-    return false;
-  val->assign(reinterpret_cast<const char16_t*>(data), len);
-  return true;
-}
-
 bool Statement::ColumnBlobAsVector(int col, std::vector<char>* val) const {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

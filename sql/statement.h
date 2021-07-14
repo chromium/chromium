@@ -190,7 +190,6 @@ class COMPONENT_EXPORT(SQL) Statement {
   int ColumnByteLength(int col) const;
   const void* ColumnBlob(int col) const;
   bool ColumnBlobAsString(int col, std::string* blob) const;
-  bool ColumnBlobAsString16(int col, std::u16string* val) const;
   bool ColumnBlobAsVector(int col, std::vector<char>* val) const;
   bool ColumnBlobAsVector(int col, std::vector<uint8_t>* val) const;
 
