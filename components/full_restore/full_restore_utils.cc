@@ -107,6 +107,13 @@ bool HasAppTypeBrowser(const base::FilePath& profile_path) {
   return FullRestoreReadHandler::GetInstance()->HasAppTypeBrowser(profile_path);
 }
 
+bool HasBrowser(const base::FilePath& profile_path) {
+  if (!full_restore::features::IsFullRestoreEnabled())
+    return false;
+
+  return FullRestoreReadHandler::GetInstance()->HasBrowser(profile_path);
+}
+
 bool HasWindowInfo(int32_t restore_window_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return false;

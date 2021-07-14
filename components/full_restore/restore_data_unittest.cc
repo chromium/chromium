@@ -718,4 +718,17 @@ TEST_F(RestoreDataTest, HasAppTypeBrowser) {
   EXPECT_TRUE(restore_data().HasAppTypeBrowser());
 }
 
+TEST_F(RestoreDataTest, HasBrowser) {
+  std::unique_ptr<AppLaunchInfo> app_launch_info1 =
+      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId1);
+  app_launch_info1->app_type_browser = true;
+  restore_data().AddAppLaunchInfo(std::move(app_launch_info1));
+  EXPECT_FALSE(restore_data().HasBrowser());
+
+  std::unique_ptr<AppLaunchInfo> app_launch_info2 =
+      std::make_unique<AppLaunchInfo>(extension_misc::kChromeAppId, kWindowId2);
+  restore_data().AddAppLaunchInfo(std::move(app_launch_info2));
+  EXPECT_TRUE(restore_data().HasBrowser());
+}
+
 }  // namespace full_restore

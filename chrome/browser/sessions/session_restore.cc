@@ -123,6 +123,7 @@ class SessionRestoreImpl : public BrowserListObserver {
                      bool clobber_existing_tab,
                      bool always_create_tabbed_browser,
                      bool restore_apps,
+                     bool restore_browser,
                      bool log_event,
                      const std::vector<GURL>& urls_to_open,
                      SessionRestore::CallbackList* callbacks)
@@ -133,10 +134,13 @@ class SessionRestoreImpl : public BrowserListObserver {
         always_create_tabbed_browser_(always_create_tabbed_browser),
         log_event_(log_event),
         restore_apps_(restore_apps),
+        restore_browser_(restore_browser),
         urls_to_open_(urls_to_open),
         active_window_id_(SessionID::InvalidValue()),
         restore_started_(base::TimeTicks::Now()),
         on_session_restored_callbacks_(callbacks) {
+    DCHECK(restore_browser_ || restore_apps_);
+
     if (active_session_restorers == nullptr)
       active_session_restorers = new std::set<SessionRestoreImpl*>();
 
@@ -161,12 +165,14 @@ class SessionRestoreImpl : public BrowserListObserver {
   bool synchronous() const { return synchronous_; }
 
   Browser* Restore() {
-    SessionServiceBase* service =
-        SessionServiceFactory::GetForProfileForSessionRestore(profile_);
-    CHECK(service);
-    service->GetLastSession(base::BindOnce(&SessionRestoreImpl::OnGotSession,
-                                           weak_factory_.GetWeakPtr(),
-                                           /* for_apps */ false));
+    if (restore_browser_) {
+      SessionServiceBase* service =
+          SessionServiceFactory::GetForProfileForSessionRestore(profile_);
+      CHECK(service);
+      service->GetLastSession(base::BindOnce(&SessionRestoreImpl::OnGotSession,
+                                             weak_factory_.GetWeakPtr(),
+                                             /* for_apps */ false));
+    }
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
     if (restore_apps_) {
@@ -460,6 +466,10 @@ class SessionRestoreImpl : public BrowserListObserver {
   bool IsReadyToProcessSessionWindows() const {
     if (!restore_apps_)
       return got_browser_windows_;
+
+    if (!restore_browser_)
+      return got_app_windows_ && web_app_registry_ready_;
+
     return (got_app_windows_ && got_browser_windows_ &&
             web_app_registry_ready_);
   }
@@ -907,6 +917,9 @@ class SessionRestoreImpl : public BrowserListObserver {
   // If true, restores apps.
   const bool restore_apps_;
 
+  // If true, restores the normal browser.
+  bool restore_browser_ = true;
+
   // App restores depend on web_app::WebAppProvider on_registry_ready(). This
   // bool will track that and hold up restores until that's ready too if apps
   // are being restored.
@@ -970,13 +983,13 @@ Browser* SessionRestore::RestoreSession(
   DCHECK(SessionServiceFactory::GetForProfile(profile));
   profile->set_restored_last_session(true);
   // SessionRestoreImpl takes care of deleting itself when done.
-  SessionRestoreImpl* restorer =
-      new SessionRestoreImpl(profile, browser, (behavior & SYNCHRONOUS) != 0,
-                             (behavior & CLOBBER_CURRENT_TAB) != 0,
-                             (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
-                             (behavior & RESTORE_APPS) != 0,
-                             /* log_event */ true, urls_to_open,
-                             SessionRestore::on_session_restored_callbacks());
+  SessionRestoreImpl* restorer = new SessionRestoreImpl(
+      profile, browser, (behavior & SYNCHRONOUS) != 0,
+      (behavior & CLOBBER_CURRENT_TAB) != 0,
+      (behavior & ALWAYS_CREATE_TABBED_BROWSER) != 0,
+      (behavior & RESTORE_APPS) != 0, (behavior & RESTORE_BROWSER) != 0,
+      /* log_event */ true, urls_to_open,
+      SessionRestore::on_session_restored_callbacks());
   return restorer->Restore();
 }
 
@@ -995,9 +1008,10 @@ void SessionRestore::RestoreSessionAfterCrash(Browser* browser) {
 #endif
 
   SessionRestore::BehaviorBitmask behavior =
-      browser && HasSingleNewTabPage(browser)
-          ? SessionRestore::CLOBBER_CURRENT_TAB
-          : 0;
+      SessionRestore::RESTORE_BROWSER |
+      (browser && HasSingleNewTabPage(browser)
+           ? SessionRestore::CLOBBER_CURRENT_TAB
+           : 0);
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE)
   // Apps should always be restored on crash restore.
@@ -1024,10 +1038,10 @@ std::vector<Browser*> SessionRestore::RestoreForeignSessionWindows(
     std::vector<const sessions::SessionWindow*>::const_iterator begin,
     std::vector<const sessions::SessionWindow*>::const_iterator end) {
   std::vector<GURL> gurls;
-  SessionRestoreImpl restorer(profile, static_cast<Browser*>(nullptr), true,
-                              false, true, /* restore_apps */ false,
-                              /* log_event */ false, gurls,
-                              on_session_restored_callbacks());
+  SessionRestoreImpl restorer(
+      profile, static_cast<Browser*>(nullptr), true, false, true,
+      /* restore_apps */ false, /* restore_browser */ true,
+      /* log_event */ false, gurls, on_session_restored_callbacks());
   return restorer.RestoreForeignSession(begin, end);
 }
 
@@ -1039,10 +1053,10 @@ WebContents* SessionRestore::RestoreForeignSessionTab(
   Browser* browser = chrome::FindBrowserWithWebContents(source_web_contents);
   Profile* profile = browser->profile();
   std::vector<GURL> gurls;
-  SessionRestoreImpl restorer(profile, browser, true, false, false,
-                              /* restore_apps */ false,
-                              /* log_event */ false, gurls,
-                              on_session_restored_callbacks());
+  SessionRestoreImpl restorer(
+      profile, browser, true, false, false,
+      /* restore_apps */ false, /* restore_browser */ true,
+      /* log_event */ false, gurls, on_session_restored_callbacks());
   return restorer.RestoreForeignTab(tab, disposition);
 }
 

@@ -97,6 +97,20 @@ bool RestoreData::HasAppTypeBrowser() {
   return false;
 }
 
+bool RestoreData::HasBrowser() {
+  auto it = app_id_to_launch_list_.find(extension_misc::kChromeAppId);
+  if (it == app_id_to_launch_list_.end())
+    return false;
+
+  for (const auto& data : it->second) {
+    if (!data.second->app_type_browser.has_value() ||
+        !data.second->app_type_browser.value()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 bool RestoreData::HasAppRestoreData(const std::string& app_id,
                                     int32_t window_id) {
   return GetAppRestoreData(app_id, window_id) != nullptr;

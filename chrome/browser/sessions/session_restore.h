@@ -50,6 +50,9 @@ class SessionRestore {
 
     // Restore apps as well.
     RESTORE_APPS = 1 << 3,
+
+    // Restores normal browsers.
+    RESTORE_BROWSER = 1 << 4,
   };
 
   // Notification callback list.

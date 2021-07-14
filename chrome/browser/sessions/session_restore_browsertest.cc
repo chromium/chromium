@@ -1722,10 +1722,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, RestorePinnedSelectedTab) {
   ui_test_utils::NavigateToURL(new_browser, GetUrl3());
 
   // Restore the session again, clobbering the existing tab.
-  SessionRestore::RestoreSession(
-      profile, new_browser,
-      SessionRestore::CLOBBER_CURRENT_TAB | SessionRestore::SYNCHRONOUS,
-      std::vector<GURL>());
+  SessionRestore::RestoreSession(profile, new_browser,
+                                 SessionRestore::CLOBBER_CURRENT_TAB |
+                                     SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 std::vector<GURL>());
 
   // The pinned tab is the selected tab.
   ASSERT_EQ(2, new_browser->tab_strip_model()->count());
@@ -1823,10 +1824,11 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreTest, ClobberRestoreTest) {
       new_browser->tab_strip_model()->GetWebContentsAt(0));
 
   // Restore the session again, clobbering the existing tab.
-  SessionRestore::RestoreSession(
-      profile, new_browser,
-      SessionRestore::CLOBBER_CURRENT_TAB | SessionRestore::SYNCHRONOUS,
-      std::vector<GURL>());
+  SessionRestore::RestoreSession(profile, new_browser,
+                                 SessionRestore::CLOBBER_CURRENT_TAB |
+                                     SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 std::vector<GURL>());
 
   // Wait until the existing tab finished closing.
   existing_tab_destroyed_watcher.Wait();
@@ -3036,9 +3038,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_BasicAppSessionRestore) {
   // We need to start up the services again before restoring.
   StartupServices(profile);
 
-  SessionRestore::RestoreSession(
-      profile, nullptr,
-      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
 
   // We should get +1 browser +1 app.
   // Ensure the apps are the same, and ensure the browsers are the same.
@@ -3176,9 +3180,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreAppMinimized) {
 
   StartupServices(profile);
 
-  SessionRestore::RestoreSession(
-      profile, nullptr,
-      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
 
   // It opens up the browser and the app.
   app_browser = nullptr;
@@ -3246,9 +3252,11 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, MAYBE_RestoreMaximizedApp) {
   // We need to start up the services again before restoring.
   StartupServices(profile);
 
-  SessionRestore::RestoreSession(
-      profile, nullptr,
-      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_APPS, {});
+  SessionRestore::RestoreSession(profile, nullptr,
+                                 SessionRestore::SYNCHRONOUS |
+                                     SessionRestore::RESTORE_APPS |
+                                     SessionRestore::RESTORE_BROWSER,
+                                 {});
 
   app_browser = nullptr;
   Browser* normal_browser = nullptr;
@@ -3324,8 +3332,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest,
   ASSERT_EQ(0u, BrowserList::GetInstance()->size());
 
   // Now restore.
-  SessionRestore::RestoreSession(profile, nullptr, SessionRestore::SYNCHRONOUS,
-                                 {});
+  SessionRestore::RestoreSession(
+      profile, nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
   // There's just one window open at the moment.
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
@@ -3497,8 +3506,9 @@ IN_PROC_BROWSER_TEST_F(AppSessionRestoreTest, NoAppRestore) {
   StartupServices(profile);
 
   // Now restore.
-  SessionRestore::RestoreSession(profile, nullptr, SessionRestore::SYNCHRONOUS,
-                                 {});
+  SessionRestore::RestoreSession(
+      profile, nullptr,
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
 

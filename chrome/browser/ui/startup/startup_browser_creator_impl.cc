@@ -414,7 +414,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
       StartupBrowserCreator::GetSessionStartupPref(command_line_, profile_),
       behavior_options);
 
-  SessionRestore::BehaviorBitmask restore_options = 0;
+  SessionRestore::BehaviorBitmask restore_options =
+      SessionRestore::RESTORE_BROWSER;
   if (behavior == BrowserOpenBehavior::SYNCHRONOUS_RESTORE) {
 #if defined(OS_MAC)
     bool was_mac_login_or_resume = base::mac::WasLaunchedAsLoginOrResumeItem();
@@ -714,7 +715,8 @@ StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
     bool has_create_browser_default,
     bool has_create_browser_switch,
     bool was_mac_login_or_resume) {
-  SessionRestore::BehaviorBitmask options = SessionRestore::SYNCHRONOUS;
+  SessionRestore::BehaviorBitmask options =
+      SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER;
 
   // Suppress the creation of a new window on Mac when restoring with no windows
   // if launching Chrome via a login item or the resume feature in OS 10.7+.

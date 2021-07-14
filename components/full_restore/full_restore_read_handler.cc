@@ -168,6 +168,14 @@ bool FullRestoreReadHandler::HasAppTypeBrowser(
   return it->second->HasAppTypeBrowser();
 }
 
+bool FullRestoreReadHandler::HasBrowser(const base::FilePath& profile_path) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  if (it == profile_path_to_restore_data_.end())
+    return false;
+
+  return it->second->HasBrowser();
+}
+
 bool FullRestoreReadHandler::HasWindowInfo(int32_t restore_window_id) {
   if (!SessionID::IsValidValue(restore_window_id))
     return false;

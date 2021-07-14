@@ -139,6 +139,11 @@ void SetActiveProfilePath(const base::FilePath& profile_path);
 COMPONENT_EXPORT(FULL_RESTORE)
 bool HasAppTypeBrowser(const base::FilePath& profile_path);
 
+// Returns true if there are normal browsers from the full restore file.
+// Otherwise, returns false.
+COMPONENT_EXPORT(FULL_RESTORE)
+bool HasBrowser(const base::FilePath& profile_path);
+
 // Returns true if there is a window info for |restore_window_id| from the full
 // restore file. Otherwise, returns false. This interface can't be used for Arc
 // app windows.

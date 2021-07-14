@@ -93,8 +93,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
                             int32_t restore_window_id);
 
   // Returns true if there are app type browsers from the full restore file.
-  // Otherwise, returns false..
+  // Otherwise, returns false.
   bool HasAppTypeBrowser(const base::FilePath& profile_path);
+
+  // Returns true if there are normal browsers (non app type browser) from the
+  // full restore file. Otherwise, returns false.
+  bool HasBrowser(const base::FilePath& profile_path);
 
   // Returns true if there is a window info for |restore_window_id| from the
   // full restore file. Otherwise, returns false. This interface can't be used

@@ -97,8 +97,9 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
     // before restoring.
     SessionServiceFactory::GetForProfileForSessionRestore(profile);
 
-    SessionRestore::RestoreSession(profile, nullptr,
-                                   SessionRestore::SYNCHRONOUS, {});
+    SessionRestore::RestoreSession(
+        profile, nullptr,
+        SessionRestore::SYNCHRONOUS | SessionRestore::RESTORE_BROWSER, {});
 
     for (Browser* browser : *(BrowserList::GetInstance())) {
       WaitForTabsToLoad(browser);

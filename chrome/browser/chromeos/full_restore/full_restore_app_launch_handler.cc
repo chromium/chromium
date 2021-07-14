@@ -21,6 +21,7 @@
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sessions/session_restore.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/full_restore/full_restore_read_handler.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -164,6 +165,14 @@ void FullRestoreAppLaunchHandler::LaunchBrowser() {
   if (profile_->GetLastSessionExitType() == Profile::EXIT_CRASHED) {
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         ::switches::kHideCrashRestoreBubble);
+  }
+
+  if (!::full_restore::HasBrowser(profile_->GetPath())) {
+    // If there is no normal browsers before reboot, call session restore to
+    // restore app type browsers only.
+    SessionRestore::RestoreSession(
+        profile_, nullptr, SessionRestore::RESTORE_APPS, std::vector<GURL>());
+    return;
   }
 
   // Modify the command line to restore browser sessions.

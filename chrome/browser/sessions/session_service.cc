@@ -408,7 +408,8 @@ bool SessionService::RestoreIfNecessary(const std::vector<GURL>& urls_to_open,
         (!tab_restore_service || !tab_restore_service->IsRestoring())) {
       SessionRestore::RestoreSession(
           profile(), browser,
-          (browser ? 0 : SessionRestore::ALWAYS_CREATE_TABBED_BROWSER) |
+          SessionRestore::RESTORE_BROWSER |
+              (browser ? 0 : SessionRestore::ALWAYS_CREATE_TABBED_BROWSER) |
               (restore_apps ? SessionRestore::RESTORE_APPS : 0),
           urls_to_open);
       return true;
