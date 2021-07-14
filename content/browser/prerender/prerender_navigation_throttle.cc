@@ -66,9 +66,6 @@ PrerenderNavigationThrottle::PrerenderNavigationThrottle(
   int ftn_id = ftn->frame_tree_node_id();
   PrerenderHost* prerender_host =
       prerender_host_registry->FindNonReservedHostById(ftn_id);
-  if (!prerender_host) {
-    prerender_host = prerender_host_registry->FindReservedHostById(ftn_id);
-  }
   DCHECK(prerender_host);
 
   // This throttle is responsible for setting the initial navigation id on the

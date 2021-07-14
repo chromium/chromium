@@ -156,11 +156,6 @@ PrerenderSubframeNavigationThrottle::WillStartOrRedirectRequest() {
                                         ->GetPrerenderHostRegistry();
   PrerenderHost* prerender_host =
       registry->FindNonReservedHostById(prerender_root_ftn_id_);
-  if (!prerender_host) {
-    // The host might be reserved already for activation. In either case, we
-    // defer until activation for simplicity.
-    prerender_host = registry->FindReservedHostById(prerender_root_ftn_id_);
-  }
   DCHECK(prerender_host);
 
   // Defer cross-origin subframe navigations during prerendering.
