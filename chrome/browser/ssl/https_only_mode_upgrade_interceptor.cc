@@ -70,10 +70,26 @@ void HttpsOnlyModeUpgradeInterceptor::MaybeCreateLoader(
 
   auto* web_contents =
       content::WebContents::FromFrameTreeNodeId(frame_tree_node_id_);
+  // Could be null if the FrameTreeNode's RenderFrameHost is shutting down.
+  if (!web_contents) {
+    std::move(callback).Run({});
+    return;
+  }
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
-
+  if (!profile) {
+    std::move(callback).Run({});
+    return;
+  }
+  // TODO(crbug.com/1228188) There might be a race condition where we
+  // get here before there is a tab. If the issue was caused by web
+  // contents, profile or tab helper being null, try to determine the
+  // actual cause using DCHECKs.
   auto* tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  if (!tab_helper) {
+    HttpsOnlyModeTabHelper::CreateForWebContents(web_contents);
+    tab_helper = HttpsOnlyModeTabHelper::FromWebContents(web_contents);
+  }
   if (ShouldCreateLoader(tentative_resource_request, tab_helper)) {
     // If the navigation is a fallback, redirect to the original URL.
     if (tab_helper->is_navigation_fallback()) {
