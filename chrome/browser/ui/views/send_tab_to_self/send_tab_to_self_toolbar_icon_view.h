@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/controls/image_view.h"
 
 class Browser;
 class BrowserView;
@@ -19,7 +19,7 @@ namespace send_tab_to_self {
 // of its parent ToolbarView. The icon is made visible when there is a received
 // STTS notification.
 class SendTabToSelfToolbarIconView
-    : public views::ColorTrackingIconView,
+    : public views::ImageView,
       public SendTabToSelfToolbarIconControllerDelegate {
  public:
   explicit SendTabToSelfToolbarIconView(BrowserView* browser_view);

@@ -23,13 +23,13 @@
 #include "components/url_formatter/elide_url.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -244,11 +244,12 @@ void SharingDialogView::InitListView() {
   LogSharingDevicesToShow(data_.prefix, kSharingUiDialog, data_.devices.size());
   size_t index = 0;
   for (const auto& device : data_.devices) {
-    auto icon = std::make_unique<views::ColorTrackingIconView>(
-        device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
-            ? kTabletIcon
-            : kHardwareSmartphoneIcon,
-        kPrimaryIconSize);
+    auto icon =
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            device->device_type() == sync_pb::SyncEnums::TYPE_TABLET
+                ? kTabletIcon
+                : kHardwareSmartphoneIcon,
+            ui::NativeTheme::kColorId_DefaultIconColor, kPrimaryIconSize));
 
     auto* dialog_button =
         button_list->AddChildView(std::make_unique<HoverButton>(
@@ -266,8 +267,9 @@ void SharingDialogView::InitListView() {
   for (const auto& app : data_.apps) {
     std::unique_ptr<views::ImageView> icon;
     if (app.vector_icon) {
-      icon = std::make_unique<views::ColorTrackingIconView>(*app.vector_icon,
-                                                            kPrimaryIconSize);
+      icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          *app.vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
+          kPrimaryIconSize));
     } else {
       icon = std::make_unique<views::ImageView>();
       icon->SetImage(app.image.AsImageSkia());

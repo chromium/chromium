@@ -11,8 +11,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/font_list.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
@@ -37,8 +37,9 @@ std::unique_ptr<views::ImageView> CreateImageView(
     image->SetImage(icon.value());
     return image;
   } else if (vector_icon != nullptr) {
-    return std::make_unique<views::ColorTrackingIconView>(
-        *vector_icon, sharesheet::kIconSize);
+    return std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+        *vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
+        sharesheet::kIconSize));
   }
   NOTREACHED();
   return nullptr;

@@ -10,9 +10,10 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace autofill {
@@ -66,10 +67,10 @@ views::View* AutofillErrorDialogViewNativeViews::GetContentsView() {
   layout->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
-  AddChildView(std::make_unique<views::ColorTrackingIconView>(
-      vector_icons::kErrorIcon,
-      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon),
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
+  AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
 
   auto* label = AddChildView(std::make_unique<views::Label>(
       controller_->GetDescription(),

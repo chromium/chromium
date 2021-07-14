@@ -10,7 +10,8 @@
 #include "chrome/browser/ui/views/sharing_hub/sharing_hub_bubble_view_impl.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/base/models/image_model.h"
+#include "ui/views/controls/image_view.h"
 
 namespace sharing_hub {
 
@@ -19,10 +20,11 @@ namespace {
 static constexpr int kPrimaryIconSize = 20;
 constexpr auto kPrimaryIconBorder = gfx::Insets(6);
 
-std::unique_ptr<views::ColorTrackingIconView> CreateIconFromVector(
+std::unique_ptr<views::ImageView> CreateIconFromVector(
     const gfx::VectorIcon& vector_icon) {
-  auto icon = std::make_unique<views::ColorTrackingIconView>(vector_icon,
-                                                             kPrimaryIconSize);
+  auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+      vector_icon, ui::NativeTheme::kColorId_DefaultIconColor,
+      kPrimaryIconSize));
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;
 }

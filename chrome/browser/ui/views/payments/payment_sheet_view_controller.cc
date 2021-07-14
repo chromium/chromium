@@ -41,6 +41,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -52,7 +53,6 @@
 #include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/styled_label.h"
@@ -279,9 +279,11 @@ class PaymentSheetRowBuilder {
   std::unique_ptr<PaymentRequestRowView> CreateWithChevron(
       std::unique_ptr<views::View> content_view,
       std::unique_ptr<views::View> extra_content_view) {
-    auto chevron = std::make_unique<views::ColorTrackingIconView>(
-        vector_icons::kSubmenuArrowIcon,
-        gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon));
+    auto chevron =
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kSubmenuArrowIcon,
+            ui::NativeTheme::kColorId_DefaultIconColor,
+            gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon)));
     chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
         GetPressedCallback(), section_name_, accessible_content_,

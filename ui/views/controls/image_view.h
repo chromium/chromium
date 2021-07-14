@@ -39,6 +39,7 @@ class VIEWS_EXPORT ImageView : public View {
   enum class Alignment { kLeading, kCenter, kTrailing };
 
   ImageView();
+  explicit ImageView(const ui::ImageModel& image_model);
   ~ImageView() override;
 
   // Set the image that should be displayed.

@@ -16,20 +16,21 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
+#include "ui/views/controls/image_view.h"
 
 namespace send_tab_to_self {
 
 namespace {
 
-std::unique_ptr<views::ColorTrackingIconView> CreateIcon(
+std::unique_ptr<views::ImageView> CreateIcon(
     const sync_pb::SyncEnums::DeviceType device_type) {
   static constexpr int kPrimaryIconSize = 20;
-  auto icon = std::make_unique<views::ColorTrackingIconView>(
+  auto icon = std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
       device_type == sync_pb::SyncEnums::TYPE_PHONE ? kHardwareSmartphoneIcon
                                                     : kHardwareComputerIcon,
-      kPrimaryIconSize);
+      ui::NativeTheme::kColorId_DefaultIconColor, kPrimaryIconSize));
   constexpr auto kPrimaryIconBorder = gfx::Insets(6);
   icon->SetBorder(views::CreateEmptyBorder(kPrimaryIconBorder));
   return icon;

@@ -23,6 +23,7 @@
 #include "components/password_manager/core/common/password_manager_ui.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_combobox_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/favicon_size.h"
@@ -35,7 +36,6 @@
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
@@ -195,8 +195,10 @@ void PasswordItemsView::PasswordRow::AddPasswordRow(
 
   if (parent_->favicon_.IsEmpty()) {
     // Use a globe fallback until the actual favicon is loaded.
-    layout->AddView(std::make_unique<views::ColorTrackingIconView>(
-        kGlobeIcon, gfx::kFaviconSize));
+    layout->AddView(
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            kGlobeIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+            gfx::kFaviconSize)));
   } else {
     layout->AddView(std::make_unique<views::ImageView>())
         ->SetImage(parent_->favicon_.AsImageSkia());

@@ -20,9 +20,9 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/views/controls/button/checkbox.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/flex_layout.h"
@@ -74,10 +74,11 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
 
   // File icon.
   auto checkbox = std::make_unique<views::Checkbox>();
-  auto* icon =
-      files_view->AddChildView(std::make_unique<views::ColorTrackingIconView>(
+  auto* icon = files_view->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kDescriptionIcon,
-          checkbox->GetImage(views::Button::STATE_NORMAL).width()));
+          ui::NativeTheme::kColorId_DefaultIconColor,
+          checkbox->GetImage(views::Button::STATE_NORMAL).width())));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   icon->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));

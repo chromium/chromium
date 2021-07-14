@@ -33,6 +33,10 @@ void* GetBitmapPixels(const gfx::ImageSkia& image, float image_scale) {
 
 ImageView::ImageView() = default;
 
+ImageView::ImageView(const ui::ImageModel& image_model) {
+  SetImage(image_model);
+}
+
 ImageView::~ImageView() = default;
 
 void ImageView::SetImage(const ui::ImageModel& image_model) {

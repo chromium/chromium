@@ -25,6 +25,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -33,7 +34,6 @@
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
-#include "ui/views/controls/color_tracking_icon_view.h"
 #include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
@@ -389,10 +389,10 @@ void CardUnmaskPromptViews::InitIfNecessary() {
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   temporary_error->SetVisible(false);
-  temporary_error->AddChildView(std::make_unique<views::ColorTrackingIconView>(
-      vector_icons::kErrorIcon,
-      gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon),
-      ui::NativeTheme::kColorId_AlertSeverityHigh));
+  temporary_error->AddChildView(
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          vector_icons::kErrorIcon, ui::NativeTheme::kColorId_AlertSeverityHigh,
+          gfx::GetDefaultSizeOfVectorIcon(vector_icons::kErrorIcon))));
 
   auto error_label = std::make_unique<views::Label>(
       std::u16string(), ChromeTextContext::CONTEXT_DIALOG_BODY_TEXT_SMALL,
