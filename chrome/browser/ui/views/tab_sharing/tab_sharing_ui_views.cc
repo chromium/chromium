@@ -135,16 +135,22 @@ uint32_t GetHash(const ui::ImageModel& image) {
 std::unique_ptr<TabSharingUI> TabSharingUI::Create(
     GlobalRenderFrameHostId capturer,
     const content::DesktopMediaID& media_id,
-    std::u16string app_name) {
-  return base::WrapUnique(new TabSharingUIViews(capturer, media_id, app_name));
+    std::u16string app_name,
+    bool favicons_used_for_switch_to_tab_button) {
+  return base::WrapUnique(new TabSharingUIViews(
+      capturer, media_id, app_name, favicons_used_for_switch_to_tab_button));
 }
 
-TabSharingUIViews::TabSharingUIViews(GlobalRenderFrameHostId capturer,
-                                     const content::DesktopMediaID& media_id,
-                                     std::u16string app_name)
+TabSharingUIViews::TabSharingUIViews(
+    GlobalRenderFrameHostId capturer,
+    const content::DesktopMediaID& media_id,
+    std::u16string app_name,
+    bool favicons_used_for_switch_to_tab_button)
     : capturer_(capturer),
       shared_tab_media_id_(media_id),
-      app_name_(std::move(app_name)) {
+      app_name_(std::move(app_name)),
+      favicons_used_for_switch_to_tab_button_(
+          favicons_used_for_switch_to_tab_button) {
   shared_tab_ = WebContents::FromRenderFrameHost(
       RenderFrameHost::FromID(media_id.web_contents_id.render_process_id,
                               media_id.web_contents_id.main_render_frame_id));
@@ -173,7 +179,9 @@ gfx::NativeViewId TabSharingUIViews::OnStarted(
   CreateInfobarsForAllTabs();
   SetContentsBorderVisible(shared_tab_, true);
   CreateTabCaptureIndicator();
-  FaviconPeriodicUpdate(++share_session_seq_num_);
+  if (favicons_used_for_switch_to_tab_button_) {
+    FaviconPeriodicUpdate(++share_session_seq_num_);
+  }
   return 0;
 }
 
@@ -336,7 +344,8 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
       shared_tab_ == contents /*shared_tab*/,
-      !source_callback_.is_null() /*can_share*/, focus_target, this);
+      !source_callback_.is_null() /*can_share*/, focus_target, this,
+      favicons_used_for_switch_to_tab_button_);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
@@ -369,6 +378,7 @@ void TabSharingUIViews::CreateTabCaptureIndicator() {
 
 void TabSharingUIViews::FaviconPeriodicUpdate(size_t share_session_seq_num) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(favicons_used_for_switch_to_tab_button_);
 
   if (share_session_seq_num != share_session_seq_num_) {
     return;

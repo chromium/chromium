@@ -21,7 +21,7 @@ class TabSharingUI;
 // per tab.
 //
 // 1. Layout for currently shared tab:
-// "Sharing this tab to |app_name_|  [Stop]"
+// "Sharing this tab to |app_name_| [Stop]"
 //
 // 2. Layout for capturing/captured tab:
 // "Sharing |shared_tab_name_| to |app_name_| [Stop] [Switch-Label]"
@@ -56,7 +56,8 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
       bool shared_tab,
       bool can_share,
       absl::optional<FocusTarget> focus_target,
-      TabSharingUI* ui);
+      TabSharingUI* ui,
+      bool favicons_used_for_switch_to_tab_button = false);
 
   ~TabSharingInfoBarDelegate() override;
 
@@ -66,7 +67,8 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
                             bool shared_tab,
                             bool can_share,
                             absl::optional<FocusTarget> focus_target,
-                            TabSharingUI* ui);
+                            TabSharingUI* ui,
+                            bool favicons_used_for_switch_to_tab_button);
 
   // ConfirmInfoBarDelegate:
   bool EqualsDelegate(InfoBarDelegate* delegate) const override;
@@ -87,6 +89,9 @@ class TabSharingInfoBarDelegate : public ConfirmInfoBarDelegate {
 
   // Creates and removes delegate's infobar; outlives delegate.
   TabSharingUI* const ui_;
+
+  // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
+  const bool favicons_used_for_switch_to_tab_button_;
 
   std::unique_ptr<TabSharingInfoBarDelegateButton> secondary_button_;
 };

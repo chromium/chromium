@@ -118,9 +118,12 @@ const std::u16string kShareThisTabInsteadMessage = u"Share this tab instead";
 
 }  // namespace
 
-class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
+class TabSharingUIViewsBrowserTest
+    : public InProcessBrowserTest,
+      public ::testing::WithParamInterface<bool> {
  public:
-  TabSharingUIViewsBrowserTest() {}
+  TabSharingUIViewsBrowserTest()
+      : favicons_used_for_switch_to_tab_button_(GetParam()) {}
 
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -136,13 +139,16 @@ class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
 
     tab_sharing_ui_ = TabSharingUI::Create(
         GetGlobalId(browser, capturing_tab),
-        GetDesktopMediaID(browser, captured_tab), u"example-sharing.com");
+        GetDesktopMediaID(browser, captured_tab), u"example-sharing.com",
+        favicons_used_for_switch_to_tab_button_);
 
-    for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
-      content::WebContents* const web_contents =
-          browser->tab_strip_model()->GetWebContentsAt(i);
-      tab_sharing_ui_views()->SetTabFaviconForTesting(
-          web_contents, favicons_.find(web_contents)->second);
+    if (favicons_used_for_switch_to_tab_button_) {
+      for (int i = 0; i < browser->tab_strip_model()->count(); ++i) {
+        content::WebContents* const web_contents =
+            browser->tab_strip_model()->GetWebContentsAt(i);
+        tab_sharing_ui_views()->SetTabFaviconForTesting(
+            web_contents, favicons_.find(web_contents)->second);
+      }
     }
 
     tab_sharing_ui_->OnStarted(
@@ -247,12 +253,19 @@ class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
   }
 
   ui::ImageModel GetFaviconAssociatedWith(Browser* browser, int tab) {
+    if (!favicons_used_for_switch_to_tab_button_) {
+      return ui::ImageModel();
+    }
     content::WebContents* const web_contents =
         browser->tab_strip_model()->GetWebContentsAt(tab);
     return favicons_.find(web_contents)->second;
   }
 
   void UpdateTabFavicon(Browser* browser, int tab) {
+    if (!favicons_used_for_switch_to_tab_button_) {
+      return;
+    }
+
     CreateUniqueFaviconFor(browser->tab_strip_model()->GetWebContentsAt(tab));
 
     content::WebContents* const web_contents =
@@ -276,13 +289,17 @@ class TabSharingUIViewsBrowserTest : public InProcessBrowserTest {
                             base::Unretained(this)));
   }
 
+  const bool favicons_used_for_switch_to_tab_button_;
+
   std::unique_ptr<TabSharingUI> tab_sharing_ui_;
 
   std::map<content::WebContents*, ui::ImageModel> favicons_;
   char next_unique_char_ = 'a';  // Derive https://x.com from x.
 };
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
+INSTANTIATE_TEST_SUITE_P(All, TabSharingUIViewsBrowserTest, ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StartSharing) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
 
@@ -300,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StartSharing) {
   VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -314,7 +331,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, SwitchSharedTab) {
   VerifyUi(browser(), /*capturing_tab=*/0, /*captured_tab=*/2);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        ChangeCapturingTabFavicon) {
   constexpr int kCapturingTab = 0;
   constexpr int kCapturedTab = 1;
@@ -331,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
   VerifyUi(browser(), kCapturingTab, kCapturedTab);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, ChangeCapturedTabFavicon) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, ChangeCapturedTabFavicon) {
   constexpr int kCapturingTab = 0;
   constexpr int kCapturedTab = 1;
 
@@ -347,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, ChangeCapturedTabFavicon) {
   VerifyUi(browser(), kCapturingTab, kCapturedTab);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, ChangeOtherTabFavicon) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, ChangeOtherTabFavicon) {
   constexpr int kCapturingTab = 0;
   constexpr int kCapturedTab = 1;
   constexpr int kOtherTab = 2;
@@ -364,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, ChangeOtherTabFavicon) {
   VerifyUi(browser(), kCapturingTab, kCapturedTab);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, StopSharing) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -377,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, StopSharing) {
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, CloseTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -401,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, CloseTab) {
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        CloseTabInIncognitoBrowser) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
@@ -441,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
            /*has_border=*/false);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/1, /*captured_tab=*/2);
@@ -464,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillTab) {
   tab_sharing_ui_views()->StopSharing();
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest, KillSharedTab) {
   AddTabs(browser(), 2);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 3);
   CreateUiAndStartSharing(browser(), /*capturing_tab=*/0, /*captured_tab=*/1);
@@ -484,7 +501,7 @@ IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest, KillSharedTab) {
            /*captured_tab=*/kNullTabIndex, /*infobar_count=*/0);
 }
 
-IN_PROC_BROWSER_TEST_F(TabSharingUIViewsBrowserTest,
+IN_PROC_BROWSER_TEST_P(TabSharingUIViewsBrowserTest,
                        InfobarLabelUpdatedOnNavigation) {
   AddTabs(browser(), 1);
   ASSERT_EQ(browser()->tab_strip_model()->count(), 2);

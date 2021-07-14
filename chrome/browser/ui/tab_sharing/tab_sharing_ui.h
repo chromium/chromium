@@ -22,7 +22,8 @@ class TabSharingUI : public MediaStreamUI {
   static std::unique_ptr<TabSharingUI> Create(
       content::GlobalRenderFrameHostId capturer,
       const content::DesktopMediaID& media_id,
-      std::u16string app_name);
+      std::u16string app_name,
+      bool favicons_used_for_switch_to_tab_button = false);
 
   virtual void StartSharing(infobars::InfoBar* infobar) = 0;
   virtual void StopSharing() = 0;

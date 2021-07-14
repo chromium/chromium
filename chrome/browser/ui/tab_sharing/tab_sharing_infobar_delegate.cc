@@ -121,11 +121,13 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     bool shared_tab,
     bool can_share,
     absl::optional<FocusTarget> focus_target,
-    TabSharingUI* ui) {
+    TabSharingUI* ui,
+    bool favicons_used_for_switch_to_tab_button) {
   DCHECK(infobar_manager);
-  return infobar_manager->AddInfoBar(CreateConfirmInfoBar(base::WrapUnique(
-      new TabSharingInfoBarDelegate(shared_tab_name, app_name, shared_tab,
-                                    can_share, focus_target, ui))));
+  return infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
+          shared_tab_name, app_name, shared_tab, can_share, focus_target, ui,
+          favicons_used_for_switch_to_tab_button))));
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
@@ -134,11 +136,14 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     bool shared_tab,
     bool can_share,
     absl::optional<FocusTarget> focus_target,
-    TabSharingUI* ui)
+    TabSharingUI* ui,
+    bool favicons_used_for_switch_to_tab_button)
     : shared_tab_name_(std::move(shared_tab_name)),
       app_name_(std::move(app_name)),
       shared_tab_(shared_tab),
-      ui_(ui) {
+      ui_(ui),
+      favicons_used_for_switch_to_tab_button_(
+          favicons_used_for_switch_to_tab_button) {
   if (focus_target.has_value()) {
     secondary_button_ =
         std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
@@ -190,7 +195,7 @@ std::u16string TabSharingInfoBarDelegate::GetButtonLabel(
 
 ui::ImageModel TabSharingInfoBarDelegate::GetButtonImage(
     InfoBarButton button) const {
-  if (button == BUTTON_CANCEL) {
+  if (favicons_used_for_switch_to_tab_button_ && button == BUTTON_CANCEL) {
     DCHECK(secondary_button_);
     return secondary_button_->GetImage();
   }

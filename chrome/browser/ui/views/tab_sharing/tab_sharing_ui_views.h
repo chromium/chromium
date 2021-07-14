@@ -39,7 +39,8 @@ class TabSharingUIViews : public TabSharingUI,
  public:
   TabSharingUIViews(content::GlobalRenderFrameHostId capturer,
                     const content::DesktopMediaID& media_id,
-                    std::u16string app_name);
+                    std::u16string app_name,
+                    bool favicons_used_for_switch_to_tab_button);
   ~TabSharingUIViews() override;
 
   // MediaStreamUI:
@@ -128,6 +129,9 @@ class TabSharingUIViews : public TabSharingUI,
 
   content::MediaStreamUI::SourceCallback source_callback_;
   base::OnceClosure stop_callback_;
+
+  // TODO(crbug.com/1224363): Re-enable favicons by default or drop the code.
+  const bool favicons_used_for_switch_to_tab_button_;
 
   absl::optional<uint32_t> capturer_favicon_hash_;
   absl::optional<uint32_t> captured_favicon_hash_;
