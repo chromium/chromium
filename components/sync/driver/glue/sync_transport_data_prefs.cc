@@ -54,9 +54,9 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(kSyncCacheGuid, std::string());
   registry->RegisterStringPref(kSyncBirthday, std::string());
   registry->RegisterStringPref(kSyncBagOfChips, std::string());
-  registry->RegisterInt64Pref(kSyncLastSyncedTime, 0);
-  registry->RegisterInt64Pref(kSyncLastPollTime, 0);
-  registry->RegisterInt64Pref(kSyncPollIntervalSeconds, 0);
+  registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
+  registry->RegisterTimePref(kSyncLastPollTime, base::Time());
+  registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
   registry->RegisterStringPref(kSyncKeystoreEncryptionBootstrapToken,
                                std::string());
   registry->RegisterDictionaryPref(kSyncInvalidationVersions);
@@ -78,39 +78,32 @@ void SyncTransportDataPrefs::ClearAll() {
 
 base::Time SyncTransportDataPrefs::GetLastSyncedTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(
-          pref_service_->GetInt64(kSyncLastSyncedTime)));
+  return pref_service_->GetTime(kSyncLastSyncedTime);
 }
 
 void SyncTransportDataPrefs::SetLastSyncedTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(kSyncLastSyncedTime,
-                          time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pref_service_->SetTime(kSyncLastSyncedTime, time);
 }
 
 base::Time SyncTransportDataPrefs::GetLastPollTime() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(
-          pref_service_->GetInt64(kSyncLastPollTime)));
+  return pref_service_->GetTime(kSyncLastPollTime);
 }
 
 void SyncTransportDataPrefs::SetLastPollTime(base::Time time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(kSyncLastPollTime,
-                          time.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  pref_service_->SetTime(kSyncLastPollTime, time);
 }
 
 base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return base::TimeDelta::FromSeconds(
-      pref_service_->GetInt64(kSyncPollIntervalSeconds));
+  return pref_service_->GetTimeDelta(kSyncPollIntervalSeconds);
 }
 
 void SyncTransportDataPrefs::SetPollInterval(base::TimeDelta interval) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  pref_service_->SetInt64(kSyncPollIntervalSeconds, interval.InSeconds());
+  pref_service_->SetTimeDelta(kSyncPollIntervalSeconds, interval);
 }
 
 std::string SyncTransportDataPrefs::GetKeystoreEncryptionBootstrapToken()
