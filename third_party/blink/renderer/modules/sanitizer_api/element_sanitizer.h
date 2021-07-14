@@ -17,7 +17,7 @@ class ScriptState;
 
 class MODULES_EXPORT ElementSanitizer final {
  public:
-  static void SetHTML(ScriptState*,
+  static void setHTML(ScriptState*,
                       Element&,
                       const String&,
                       Sanitizer*,

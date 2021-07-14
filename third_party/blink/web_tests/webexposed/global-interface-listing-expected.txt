@@ -2258,7 +2258,6 @@ interface Element : Node
     getter shadowRoot
     getter slot
     getter tagName
-    method SetHTML
     method after
     method animate
     method append
@@ -2308,6 +2307,7 @@ interface Element : Node
     method setAttributeNS
     method setAttributeNode
     method setAttributeNodeNS
+    method setHTML
     method setPointerCapture
     method toggleAttribute
     method webkitMatchesSelector

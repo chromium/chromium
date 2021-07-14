@@ -20,20 +20,20 @@
 
   test(t => {
     const div = document.createElement("div");
-    assert_throws_js(TypeError, _ => div.SetHTML());
-    assert_throws_js(TypeError, _ => div.SetHTML("abc"));
-    assert_throws_js(TypeError, _ => div.SetHTML("abc", null));
-  }, "Sanitizer: Element.SetHTML throws with insufficient arguments.");
+    assert_throws_js(TypeError, _ => div.setHTML());
+    assert_throws_js(TypeError, _ => div.setHTML("abc"));
+    assert_throws_js(TypeError, _ => div.setHTML("abc", null));
+  }, "Sanitizer: Element.setHTML throws with insufficient arguments.");
 
   for(const context of ["div", "template", "table"]) {
     const elem1 = document.createElement(context);
     const elem2 = document.createElement(context);
     for (const probe of ["<em>Hello</em>", "<td>data</td>"]) {
-      elem1.SetHTML(probe, new Sanitizer());
+      elem1.setHTML(probe, new Sanitizer());
       elem2.innerHTML = probe;
       test(t => {
         assert_node_equals(elem2, elem1);
-      }, `Sanitizer: <${context}>.SetHTML("${probe}", ...) obeys parse context.`);
+      }, `Sanitizer: <${context}>.setHTML("${probe}", ...) obeys parse context.`);
     }
   }
 
@@ -41,9 +41,9 @@
     const element = document.createElement("template");
     test(t => {
       let s = new Sanitizer(testcase.config_input);
-      element.SetHTML(testcase.value, s);
+      element.setHTML(testcase.value, s);
       assert_node_equals(buildNode(element.localName, testcase.result), element);
-    }, "Sanitizer: Element.SetHTML with config: " + testcase.message);
+    }, "Sanitizer: Element.setHTML with config: " + testcase.message);
   }
 </script>
 </body>

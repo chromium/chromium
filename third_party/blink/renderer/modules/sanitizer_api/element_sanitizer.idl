@@ -8,6 +8,6 @@
   RuntimeEnabled=SanitizerAPI,
   ImplementedAs=ElementSanitizer
 ] partial interface Element {
-    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void SetHTML(DOMString markup, Sanitizer sanitizer);
+    [CEReactions, RaisesException, CallWith=ScriptState, MeasureAs=SanitizerAPIElementSetSanitized] void setHTML(DOMString markup, Sanitizer sanitizer);
 };
 
