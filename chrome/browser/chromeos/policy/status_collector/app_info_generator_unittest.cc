@@ -341,6 +341,31 @@ TEST_F(AppInfoGeneratorTest, GenerateWebApp) {
                                       MakeUTCTime("29-MAR-2020 5:00am"))})));
 }
 
+TEST_F(AppInfoGeneratorTest, GenerateSystemWebApp) {
+  user_manager()->LoginUser(account_id(), true);
+  auto generator = GetReadyGenerator();
+  PushApp("c", "App", apps::mojom::Readiness::kUninstalledByUser, "",
+          apps::mojom::AppType::kSystemWeb);
+  auto web_app = CreateWebApp();
+  RegisterApp(std::move(web_app));
+  Instance app_instance("c");
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 3:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kStarted);
+  test_clock().SetNow(MakeLocalTime("29-MAR-2020 8:30pm"));
+  PushAppInstance(app_instance, apps::InstanceState::kDestroyed);
+
+  test_clock().SetNow(MakeLocalTime("30-MAR-2020 11:00am"));
+  auto result = generator->Generate();
+
+  EXPECT_THAT(
+      result.value(),
+      ElementsAre(EqApp("http://app.com/", "http://app.com/",
+                        em::AppInfo_Status_STATUS_UNINSTALLED, "",
+                        em::AppInfo_AppType_TYPE_WEB,
+                        {MakeActivity(MakeUTCTime("29-MAR-2020 12:00am"),
+                                      MakeUTCTime("29-MAR-2020 5:00am"))})));
+}
+
 TEST_F(AppInfoGeneratorTest, MultipleInstances) {
   user_manager()->LoginUser(account_id(), true);
   auto generator = GetReadyGenerator();

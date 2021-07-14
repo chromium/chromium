@@ -220,7 +220,8 @@ const em::AppInfo AppInfoGenerator::ConvertToAppInfo(
     const apps::AppUpdate& update,
     const std::vector<em::TimePeriod>& app_activity) const {
   em::AppInfo info;
-  bool is_web_app = update.AppType() == apps::mojom::AppType::kWeb;
+  bool is_web_app = (update.AppType() == apps::mojom::AppType::kWeb) ||
+                    (update.AppType() == apps::mojom::AppType::kSystemWeb);
   if (!is_web_app) {
     info.set_app_id(update.AppId());
     info.set_app_name(update.Name());
