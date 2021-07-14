@@ -87,7 +87,7 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
     }
 
     InstallManager& install_manager =
-        WebAppProvider::GetForWebApps(browser()->profile())->install_manager();
+        WebAppProvider::Get(browser()->profile())->install_manager();
 
     base::RunLoop run_loop;
     install_manager.InstallWebAppFromInfo(

@@ -251,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BackgroundColor) {
                                         web_app_info.get());
   AppId app_id = InstallWebApp(std::move(web_app_info));
 
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
   EXPECT_EQ(provider->registrar().GetAppBackgroundColor(app_id), SK_ColorBLUE);
 }
 
@@ -359,7 +359,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppInfoOpensPageInfo) {
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, AppLastLaunchTime) {
   const GURL app_url(kExampleURL);
   const AppId app_id = InstallPWA(app_url);
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
 
   // last_launch_time is not set before launch
   EXPECT_TRUE(provider->registrar().GetAppLastLaunchTime(app_id).is_null());
@@ -833,7 +833,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, InstallInstallableSite) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
   const AppId app_id = InstallPwaForCurrentUrl();
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
   EXPECT_EQ(provider->registrar().GetAppShortName(app_id),
             GetInstallableAppName());
 
@@ -859,7 +859,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, CanInstallOverTabPwa) {
   const AppId app_id = InstallPwaForCurrentUrl();
 
   // Change display mode to open in tab.
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
   provider->registry_controller().SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kBrowser, /*is_user_action=*/false);
 
@@ -968,7 +968,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppCreateAndDeleteShortcut) {
 #endif
   SetShortcutOverrideForTesting(shortcut_override);
 
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
 
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
@@ -1301,10 +1301,9 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NewAppWindow) {
   EXPECT_TRUE(new_browser->is_type_app());
   EXPECT_EQ(new_browser->app_controller()->GetAppId(), app_id);
 
-  WebAppProvider::GetForWebApps(profile())
-      ->registry_controller()
-      .SetAppUserDisplayMode(app_id, DisplayMode::kBrowser,
-                             /*is_user_action=*/false);
+  WebAppProvider::Get(profile())->registry_controller().SetAppUserDisplayMode(
+      app_id, DisplayMode::kBrowser,
+      /*is_user_action=*/false);
   EXPECT_EQ(browser()->tab_strip_model()->count(), 1);
   EXPECT_TRUE(chrome::ExecuteCommand(app_browser, IDC_NEW_WINDOW));
   EXPECT_EQ(browser_list->GetLastActive(), browser());
@@ -1465,7 +1464,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, NoManifestId) {
   NavigateToURLAndWait(browser(), GetInstallableAppURL());
 
   const AppId app_id = InstallPwaForCurrentUrl();
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
   auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
 
   EXPECT_EQ(
@@ -1484,7 +1483,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_ManifestId, ManifestIdSpecified) {
           "/banners/manifest_test_page.html?manifest=manifest_with_id.json"));
 
   const AppId app_id = InstallPwaForCurrentUrl();
-  auto* provider = WebAppProvider::GetForWebApps(profile());
+  auto* provider = WebAppProvider::Get(profile());
   auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
 
   EXPECT_EQ(web_app::GenerateAppId(app->manifest_id(), app->start_url()),

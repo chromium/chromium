@@ -20,7 +20,7 @@ namespace web_app {
 class WebAppProfileDeletionBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppRegistrar& registrar() {
-    auto* provider = WebAppProvider::GetForWebApps(profile());
+    auto* provider = WebAppProvider::Get(profile());
     CHECK(provider);
     return provider->registrar();
   }

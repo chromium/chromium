@@ -28,8 +28,7 @@ namespace apps {
 
 WebApkManager::WebApkManager(Profile* profile)
     : profile_(profile),
-      web_app_registrar_(
-          web_app::WebAppProvider::GetForWebApps(profile)->registrar()),
+      web_app_registrar_(web_app::WebAppProvider::Get(profile)->registrar()),
       initialized_(false) {
   proxy_ = AppServiceProxyFactory::GetForProfile(profile);
   apk_service_ = ash::ApkWebAppService::Get(profile_);

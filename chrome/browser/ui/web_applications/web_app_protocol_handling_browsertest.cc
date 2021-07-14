@@ -63,7 +63,7 @@ class WebAppProtocolHandlingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   web_app::WebAppProvider* provider() {
-    return WebAppProvider::GetForWebApps(browser()->profile());
+    return WebAppProvider::Get(browser()->profile());
   }
 
   web_app::ProtocolHandlerManager& protocol_handler_manager() {

@@ -59,7 +59,7 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
     return true;
   }
   web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+      web_app::WebAppProvider::Get(profile)->registrar();
   return registrar.IsInstalled(app_id);
 }
 
@@ -82,7 +82,7 @@ void SetAppIdForWebContents(Profile* profile,
         ->SetExtensionAppById(app_id);
   } else {
     web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::GetForWebApps(profile)->registrar();
+        web_app::WebAppProvider::Get(profile)->registrar();
     web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(registrar.IsInstalled(app_id) ? app_id : std::string());
     extensions::TabHelper::FromWebContents(web_contents)

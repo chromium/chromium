@@ -180,8 +180,7 @@ class WebAppsUninstallDialogViewBrowserTest
     web_app::LaunchWebAppBrowser(browser()->profile(), app_id_);
     navigation_observer.WaitForNavigationFinished();
 
-    auto* provider =
-        web_app::WebAppProvider::GetForWebApps(browser()->profile());
+    auto* provider = web_app::WebAppProvider::Get(browser()->profile());
     DCHECK(provider);
     app_name_ = provider->registrar().GetAppShortName(app_id_);
   }

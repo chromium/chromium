@@ -234,7 +234,7 @@ namespace apps {
 WebApkInstallTask::WebApkInstallTask(Profile* profile,
                                      const std::string& app_id)
     : profile_(profile),
-      web_app_provider_(web_app::WebAppProvider::GetForWebApps(profile_)),
+      web_app_provider_(web_app::WebAppProvider::Get(profile_)),
       app_id_(app_id),
       package_name_to_update_(
           webapk_prefs::GetWebApkPackageName(profile_, app_id_)),

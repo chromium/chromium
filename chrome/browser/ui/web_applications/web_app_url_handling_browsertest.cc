@@ -58,7 +58,7 @@ class WebAppUrlHandlingBrowserTest : public WebAppNavigationBrowserTest {
   }
 
   WebAppProvider& provider() {
-    auto* provider = WebAppProvider::GetForWebApps(browser()->profile());
+    auto* provider = WebAppProvider::Get(browser()->profile());
     DCHECK(provider);
     return *provider;
   }

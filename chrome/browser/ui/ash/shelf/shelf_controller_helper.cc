@@ -80,7 +80,7 @@ const extensions::Extension* GetExtensionForTab(Profile* profile,
 absl::optional<std::string> GetAppIdForTab(Profile* profile,
                                            content::WebContents* tab) {
   if (web_app::WebAppProvider* provider =
-          web_app::WebAppProvider::GetForWebApps(profile)) {
+          web_app::WebAppProvider::Get(profile)) {
     // Use the Browser's app name to determine the web app for app windows and
     // use the tab's url for app tabs.
 

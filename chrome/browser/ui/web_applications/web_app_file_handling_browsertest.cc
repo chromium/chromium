@@ -106,9 +106,7 @@ class FakeFileHandlingExpiryService
 
 class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
  public:
-  WebAppProvider* provider() {
-    return WebAppProvider::GetForWebApps(profile());
-  }
+  WebAppProvider* provider() { return WebAppProvider::Get(profile()); }
 
   FileHandlerManager& file_handler_manager() {
     return provider()

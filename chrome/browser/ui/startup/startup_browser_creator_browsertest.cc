@@ -1500,7 +1500,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   // Install a web app that we will launch from the command line in
   // the PRE test.
   web_app::WebAppProvider* const provider =
-      web_app::WebAppProvider::GetForWebApps(browser()->profile());
+      web_app::WebAppProvider::Get(browser()->profile());
   web_app::InstallFinalizer& web_app_finalizer = provider->install_finalizer();
 
   web_app::InstallFinalizer::FinalizeOptions options;
@@ -2173,7 +2173,7 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   }
 
   web_app::WebAppProvider* provider() {
-    return web_app::WebAppProvider::GetForWebApps(browser()->profile());
+    return web_app::WebAppProvider::Get(browser()->profile());
   }
 
   // Install a web app with protocol_handlers then register it with the

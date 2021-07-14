@@ -661,7 +661,7 @@ void NewWindow(Browser* browser) {
 
     auto launch_container =
         apps::mojom::LaunchContainer::kLaunchContainerWindow;
-    if (web_app::WebAppProvider::GetForWebApps(profile)
+    if (web_app::WebAppProvider::Get(profile)
             ->registrar()
             .GetAppEffectiveDisplayMode(app_id) ==
         blink::mojom::DisplayMode::kBrowser) {

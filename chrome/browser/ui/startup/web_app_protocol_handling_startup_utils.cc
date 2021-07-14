@@ -86,7 +86,7 @@ void OnWebAppSystemReadyMaybeLaunchProtocolHandler(
          bool accepted) {
         if (accepted) {
           web_app::WebAppProvider* provider =
-              web_app::WebAppProvider::GetForWebApps(profile);
+              web_app::WebAppProvider::Get(profile);
           {
             web_app::ScopedRegistryUpdate update(
                 provider->registry_controller().AsWebAppSyncBridge());

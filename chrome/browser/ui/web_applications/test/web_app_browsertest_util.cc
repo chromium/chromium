@@ -184,8 +184,7 @@ Browser* LaunchWebAppBrowser(Profile* profile, const AppId& app_id) {
 // Launches the app, waits for the app url to load.
 Browser* LaunchWebAppBrowserAndWait(Profile* profile, const AppId& app_id) {
   ui_test_utils::UrlLoadObserver url_observer(
-      WebAppProvider::GetForWebApps(profile)->registrar().GetAppLaunchUrl(
-          app_id),
+      WebAppProvider::Get(profile)->registrar().GetAppLaunchUrl(app_id),
       content::NotificationService::AllSources());
   Browser* const app_browser = LaunchWebAppBrowser(profile, app_id);
   url_observer.Wait();
@@ -335,7 +334,7 @@ bool IsBrowserOpen(const Browser* test_browser) {
 }
 
 void UninstallWebApp(Profile* profile, const AppId& app_id) {
-  auto* provider = WebAppProvider::GetForWebApps(profile);
+  auto* provider = WebAppProvider::Get(profile);
   DCHECK(provider);
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
@@ -345,7 +344,7 @@ void UninstallWebApp(Profile* profile, const AppId& app_id) {
 void UninstallWebAppWithCallback(Profile* profile,
                                  const AppId& app_id,
                                  UninstallWebAppCallback callback) {
-  auto* provider = WebAppProvider::GetForWebApps(profile);
+  auto* provider = WebAppProvider::Get(profile);
   DCHECK(provider);
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));
   provider->install_finalizer().UninstallWebApp(
@@ -359,7 +358,7 @@ SkColor ReadAppIconPixel(Profile* profile,
                          int y) {
   SkColor result;
   base::RunLoop run_loop;
-  WebAppProvider::GetForWebApps(profile)->icon_manager().ReadIcons(
+  WebAppProvider::Get(profile)->icon_manager().ReadIcons(
       app_id, IconPurpose::ANY, {size},
       base::BindLambdaForTesting(
           [&](std::map<SquareSizePx, SkBitmap> icon_bitmaps) {

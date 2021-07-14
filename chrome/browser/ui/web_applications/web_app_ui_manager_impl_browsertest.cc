@@ -64,7 +64,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   }
 
   WebAppUiManager& ui_manager() {
-    return WebAppProvider::GetForWebApps(profile())->ui_manager();
+    return WebAppProvider::Get(profile())->ui_manager();
   }
 
   TestShortcutManager* shortcut_manager_;

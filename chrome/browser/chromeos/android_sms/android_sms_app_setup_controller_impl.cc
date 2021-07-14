@@ -71,7 +71,7 @@ void AndroidSmsAppSetupControllerImpl::PwaDelegate::RemovePwa(
     const web_app::AppId& app_id,
     Profile* profile,
     SuccessCallback callback) {
-  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
+  auto* provider = web_app::WebAppProvider::Get(profile);
   if (!provider) {
     std::move(callback).Run(false);
     return;

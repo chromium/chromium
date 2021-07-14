@@ -79,7 +79,7 @@ AppId InstallDummyWebApp(Profile* profile,
   // Hence we use FinalizeInstall instead of InstallWebAppFromManifest
   // to install the web app.
   base::RunLoop run_loop;
-  WebAppProvider::GetForWebApps(profile)->install_finalizer().FinalizeInstall(
+  WebAppProvider::Get(profile)->install_finalizer().FinalizeInstall(
       web_app_info, options,
       base::BindLambdaForTesting(
           [&](const AppId& installed_app_id, InstallResultCode code) {
@@ -133,7 +133,7 @@ AppId InstallWebAppWithUrlHandlers(
   web_app::AppId app_id =
       web_app::test::InstallWebApp(profile, std::move(info));
 
-  auto& url_handler_manager = WebAppProvider::GetForWebApps(profile)
+  auto& url_handler_manager = WebAppProvider::Get(profile)
                                   ->os_integration_manager()
                                   .url_handler_manager_for_testing();
 

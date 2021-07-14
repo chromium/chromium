@@ -184,7 +184,7 @@ class AppServiceWrapperTest : public ::testing::Test {
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
       base::RunLoop run_loop;
-      WebAppProvider::GetForWebApps(&profile_)
+      WebAppProvider::Get(&profile_)
           ->install_finalizer()
           .UninstallExternalWebApp(
               app_id.app_id(),
@@ -221,9 +221,8 @@ class AppServiceWrapperTest : public ::testing::Test {
     }
 
     if (app_id.app_type() == apps::mojom::AppType::kWeb) {
-      WebAppProvider::GetForWebApps(&profile_)
-          ->registry_controller()
-          .SetAppIsDisabled(app_id.app_id(), disabled);
+      WebAppProvider::Get(&profile_)->registry_controller().SetAppIsDisabled(
+          app_id.app_id(), disabled);
       task_environment_.RunUntilIdle();
       return;
     }

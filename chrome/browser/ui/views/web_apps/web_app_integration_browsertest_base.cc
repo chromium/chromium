@@ -759,7 +759,7 @@ void WebAppIntegrationBrowserTestBase::UninstallInternal(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for scope: " << action_param;
   auto app_id = app_state->id;
-  WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile());
+  WebAppProvider* const provider = WebAppProvider::Get(profile());
   base::RunLoop run_loop;
 
   DCHECK(provider->install_finalizer().CanUserUninstallWebApp(app_id));

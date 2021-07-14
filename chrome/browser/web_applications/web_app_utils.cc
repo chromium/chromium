@@ -185,7 +185,7 @@ bool AreFileHandlersAlreadyRegistered(
 
 apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
                                                           const GURL& url) {
-  auto* provider = WebAppProvider::GetForWebApps(profile);
+  auto* provider = WebAppProvider::Get(profile);
   if (!provider)
     return {};
 

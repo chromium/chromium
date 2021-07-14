@@ -132,8 +132,7 @@ Browser* ReparentWebContentsIntoAppBrowser(content::WebContents* contents,
   // entered the app's scope. The minimal-ui Back button will be initially
   // disabled if the previous page was outside scope. Packaged apps are not
   // affected.
-  WebAppRegistrar& registrar =
-      WebAppProvider::GetForWebApps(profile)->registrar();
+  WebAppRegistrar& registrar = WebAppProvider::Get(profile)->registrar();
   if (registrar.IsInstalled(app_id)) {
     absl::optional<GURL> app_scope = registrar.GetAppScope(app_id);
     if (!app_scope)

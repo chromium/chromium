@@ -92,7 +92,7 @@ class WebAppMoverBrowsertestBase : public InProcessBrowserTest {
   }
 
   WebAppProvider& GetProvider() {
-    return *WebAppProvider::GetForWebApps(browser()->profile());
+    return *WebAppProvider::Get(browser()->profile());
   }
 
   bool clean_up_completed_ = false;

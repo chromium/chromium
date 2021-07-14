@@ -57,8 +57,7 @@ void FindWebTasks(Profile* profile,
     }
   }
 
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
+  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
   web_app::WebAppRegistrar& registrar = provider->registrar();
   web_app::OsIntegrationManager& os_integration_manager =
       provider->os_integration_manager();
@@ -121,8 +120,7 @@ void ExecuteWebTask(Profile* profile,
                     const TaskDescriptor& task,
                     const std::vector<storage::FileSystemURL>& file_system_urls,
                     FileTaskFinishedCallback done) {
-  web_app::WebAppProvider* provider =
-      web_app::WebAppProvider::GetForWebApps(profile);
+  web_app::WebAppProvider* provider = web_app::WebAppProvider::Get(profile);
   web_app::WebAppRegistrar& registrar = provider->registrar();
 
   if (!registrar.IsInstalled(task.app_id)) {
