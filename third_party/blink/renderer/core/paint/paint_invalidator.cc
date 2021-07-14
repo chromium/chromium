@@ -378,10 +378,6 @@ bool PaintInvalidator::InvalidatePaint(
         UpdateFromTreeBuilderContext(fragment_tree_builder_context, context);
         UpdateLayoutShiftTracking(object, fragment_tree_builder_context,
                                   context);
-
-        if (auto* mf_checker =
-                object.GetFrameView()->GetMobileFriendlinessChecker())
-          mf_checker->NotifyInvalidatePaint(object);
       } else {
         context.old_paint_offset = fragment_data->PaintOffset();
       }
@@ -397,6 +393,13 @@ bool PaintInvalidator::InvalidatePaint(
        // Delay invalidation if the client has never been painted.
        reason == PaintInvalidationReason::kJustCreated))
     pending_delayed_paint_invalidations_.push_back(&object);
+
+  if (auto* mf_checker =
+          object.GetFrameView()->GetMobileFriendlinessChecker()) {
+    if (tree_builder_context &&
+        (!pre_paint_info || pre_paint_info->is_last_for_node))
+      mf_checker->NotifyInvalidatePaint(object);
+  }
 
   if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
     cache->InvalidateBoundingBox(&object);
