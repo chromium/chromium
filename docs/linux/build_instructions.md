@@ -214,7 +214,8 @@ tracking trunk and is up to date with trunk and was gclient sync'ed at about the
 same time should build chrome in about 1/3 the time, and the cache misses as
 reported by `ccache -s` should barely increase.
 
-This is especially useful if you use `git-new-workdir` and keep multiple local
+This is especially useful if you use
+[git-worktree](http://git-scm.com/docs/git-worktree) and keep multiple local
 working directories going at once.
 
 #### Using tmpfs
