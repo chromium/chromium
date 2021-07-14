@@ -93,7 +93,10 @@ mediaApp.AbstractFile.prototype.saveAs;
  * A function that will show a file picker using the filename and an appropriate
  * starting folder for `this` file. Returns a writable file picked by the user.
  * The argument configures the dialog with the provided set of predefined file
- * extensions that the user may select from.
+ * extensions that the user may select from. This also helps populate an
+ * extension on the chosen file. Contains an array of strings that are "keys" to
+ * preconfigured settings for the file picker `accept` option. E.g. ["PNG",
+ * "JPG", "PDF", "WEBP"].
  * @type {function(!Array<string>): !Promise<!mediaApp.AbstractFile>|undefined}
  */
 mediaApp.AbstractFile.prototype.getExportFile;
@@ -164,18 +167,15 @@ mediaApp.ClientApiDelegate.prototype.openFeedbackDialog = function() {};
  * Request for the user to be prompted with a save file dialog. Once the user
  * selects a location a new file handle is created and a new AbstractFile
  * representing that file will be returned. This can be then used in a save as
- * operation. The file extension on `suggestedName` and the provided `mimeType`
- * are used to inform the save as dialog what file should be created. Once the
- * Native Filesystem API allows, this save as dialog will additionally have the
- * filename input be pre-filled with `suggestedName`.
- * TODO(b/161087799): Update function description once Native Filesystem API
- * supports suggestedName.
- * @param {string} suggestedName
- * @param {string} mimeType
+ * operation.
+ * @param {string} suggestedName The name to suggest in the file picker.
+ * @param {string} mimeType Fallback MIME type (deprecated).
+ * @param {!Array<string>} acceptTypeKeys File filter configuration for the file
+ * picker dialog. See getExportFile.
  * @return {!Promise<!mediaApp.AbstractFile>}
  */
 mediaApp.ClientApiDelegate.prototype.requestSaveFile = function(
-    suggestedName, mimeType) {};
+    suggestedName, mimeType, acceptTypeKeys) {};
 /**
  * Attempts to extract a JPEG "preview" from a RAW image file. Throws on any
  * failure. Note this is typically a full-sized preview, not a thumbnail.

@@ -1004,18 +1004,33 @@ function mockShowSaveFilePicker() {
 
 // Tests the IPC behind the requestSaveFile delegate function.
 MediaAppUIBrowserTest.RequestSaveFileIPC = async () => {
-  const chooseEntries = mockShowSaveFilePicker();
+  let chooseEntries = mockShowSaveFilePicker();
   await launchWithFiles([await createTestImageFile(10, 10)]);
 
-  const result = await sendTestMessage({simple: 'requestSaveFile'});
-  const options = await chooseEntries;
-  const lastToken = [...tokenMap.keys()].slice(-1)[0];
+  // Initially test with accept `empty`.
+  let result = await sendTestMessage({simple: 'requestSaveFile'});
+  let options = await chooseEntries;
+  let lastToken = [...tokenMap.keys()].slice(-1)[0];
+
   // Check the token matches to confirm the ReceivedFile returned represents the
   // new file created on disk.
   assertMatch(result.testQueryResult, lastToken);
   assertEquals(options.types.length, 1);
   assertEquals(options.types[0].description, 'PNG');
   assertDeepEquals(options.types[0].accept['image/png'], ['.png']);
+
+  chooseEntries = mockShowSaveFilePicker();
+  result = await sendTestMessage(
+      {simple: 'requestSaveFile', simpleArgs: {accept: ['PDF', 'PNG']}});
+  options = await chooseEntries;
+  lastToken = [...tokenMap.keys()].slice(-1)[0];
+
+  assertMatch(result.testQueryResult, lastToken);
+  assertEquals(options.types.length, 2);
+  assertEquals(options.types[0].description, 'PDF');
+  assertDeepEquals(options.types[0].accept['application/pdf'], ['.pdf']);
+  assertEquals(options.types[1].description, 'PNG');
+  assertDeepEquals(options.types[1].accept['image/png'], ['.png']);
 };
 
 // Tests the IPC behind the getExportFile method.

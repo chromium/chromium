@@ -61,14 +61,15 @@ function currentFile() {
  * @type{!Object<string, function(!TestMessageQueryData): Promise<string>>}
  */
 const SIMPLE_TEST_QUERIES = {
-  requestSaveFile: async () => {
+  requestSaveFile: async (data) => {
     // Call requestSaveFile on the delegate.
     const existingFile = assertLastReceivedFileList().item(0);
     if (!existingFile) {
       return 'requestSaveFile failed, no file loaded';
     }
     const pickedFile = await DELEGATE.requestSaveFile(
-        existingFile.name, existingFile.mimeType);
+        existingFile.name, existingFile.mimeType,
+        data.simpleArgs ? data.simpleArgs.accept : []);
     return assertCast(pickedFile.token).toString();
   },
   getExportFile: async (data) => {
@@ -169,7 +170,7 @@ async function runTestQuery(data) {
       const file = currentFile();
       try {
         const token = (await DELEGATE.requestSaveFile(
-                           existingFile.name, existingFile.mimeType))
+                           existingFile.name, existingFile.mimeType, []))
                           .token;
         const testBlob = new Blob([data.saveAs]);
         await assertCast(file.saveAs).call(file, testBlob, assertCast(token));
