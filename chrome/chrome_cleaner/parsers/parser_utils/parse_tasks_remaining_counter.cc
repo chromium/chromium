@@ -4,6 +4,8 @@
 
 #include "chrome/chrome_cleaner/parsers/parser_utils/parse_tasks_remaining_counter.h"
 
+#include <ostream>
+
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/waitable_event.h"
 
