@@ -37,13 +37,6 @@ namespace {
 gfx::Rect GetLocationForFindBarView(gfx::Rect view_location,
                                     const gfx::Rect& dialog_bounds,
                                     const gfx::Rect& avoid_overlapping_rect) {
-  if (base::i18n::IsRTL()) {
-    int boundary = dialog_bounds.width() - view_location.width();
-    view_location.set_x(std::min(view_location.x(), boundary));
-  } else {
-    view_location.set_x(std::max(view_location.x(), dialog_bounds.x()));
-  }
-
   gfx::Rect new_pos = view_location;
 
   // The minimum space between the FindInPage window and the search result.
@@ -309,12 +302,8 @@ gfx::Rect FindBarHost::GetDialogPosition(gfx::Rect avoid_overlapping_rect) {
   // Ask the view how large an area it needs to draw on.
   gfx::Size prefsize = view()->GetPreferredSize();
 
-  // Limit width to the available area.
-  gfx::Insets insets = view()->GetInsets();
-  prefsize.set_width(
-      std::min(prefsize.width(), widget_bounds.width() + insets.width()));
-
   // Don't show the find bar if |widget_bounds| is not tall enough to fit.
+  gfx::Insets insets = view()->GetInsets();
   if (widget_bounds.height() < prefsize.height() - insets.height())
     return gfx::Rect();
 
