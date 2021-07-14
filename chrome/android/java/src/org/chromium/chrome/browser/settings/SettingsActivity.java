@@ -25,8 +25,6 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import com.google.android.material.appbar.AppBarLayout;
-
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
@@ -36,8 +34,6 @@ import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.flags.CachedFeatureFlags;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
 import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
@@ -124,13 +120,6 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         Toolbar actionBar = findViewById(R.id.action_bar);
         setSupportActionBar(actionBar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-        if (CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
-            // Setting the outline provider to null to prevent the elevation shadow being drawn.
-            // This is needed because we can't remove the shadow in xml pre-P.
-            AppBarLayout appBarLayout = findViewById(R.id.app_bar_layout);
-            appBarLayout.setOutlineProvider(null);
-        }
 
         mIsNewlyCreated = savedInstanceState == null;
 
@@ -394,9 +383,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     protected void applyThemeOverlays() {
         super.applyThemeOverlays();
 
-        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.THEME_REFACTOR_ANDROID)) {
-            setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
-        }
+        setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
     }
 
     /**
