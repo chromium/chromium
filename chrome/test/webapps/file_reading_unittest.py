@@ -8,7 +8,7 @@ import csv
 from typing import List
 import unittest
 
-from file_reading import get_tests_in_browsertest
+from file_reading import get_tests_in_browsertest, read_platform_supported_actions
 from file_reading import read_actions_file
 from file_reading import read_unprocessed_coverage_tests_file
 from models import ActionsByName
@@ -20,12 +20,42 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 
 class TestAnalysisTest(unittest.TestCase):
+    def test_supported_actions(self):
+        supported_actions_filename = os.path.join(
+            TEST_DATA_DIR, "framework_supported_actions.csv")
+
+        with open(supported_actions_filename, "r", encoding="utf-8") \
+                    as supported_actions:
+            supported = read_platform_supported_actions(
+                csv.reader(supported_actions))
+            self.assertEqual(len(supported), 4)
+            (check_a_partial, check_a_full) = supported["check_a"]
+            self.assertEqual(len(check_a_partial), 1)
+            self.assertEqual(len(check_a_full), 3)
+            (check_b_partial, check_b_full) = supported["check_b"]
+            self.assertEqual(len(check_b_partial), 1)
+            self.assertEqual(len(check_b_full), 3)
+            (state_change_a_partial,
+             state_change_a_full) = supported["state_change_a"]
+            self.assertEqual(len(state_change_a_partial), 0)
+            self.assertEqual(len(state_change_a_full), 4)
+            (state_change_b_partial,
+             state_change_b_full) = supported["state_change_b"]
+            self.assertEqual(len(state_change_b_partial), 0)
+            self.assertEqual(len(state_change_b_full), 3)
+
     def test_action_file_reading(self):
         actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
-        with open(actions_filename) as f:
+        supported_actions_filename = os.path.join(
+            TEST_DATA_DIR, "framework_supported_actions.csv")
+        with open(actions_filename) as f, \
+                open(supported_actions_filename, "r", encoding="utf-8") \
+                    as supported_actions:
+            supported_actions = read_platform_supported_actions(
+                csv.reader(supported_actions))
             actions_csv = csv.reader(f, delimiter=',')
-            (actions, action_base_name_to_default_param
-             ) = read_actions_file(actions_csv)
+            (actions, action_base_name_to_default_param) = read_actions_file(
+                actions_csv, supported_actions)
             self.assertEqual(len(actions), 10)
             self.assertEqual(len(action_base_name_to_default_param), 4)
 
@@ -42,12 +72,18 @@ class TestAnalysisTest(unittest.TestCase):
 
     def test_coverage_file_reading(self):
         actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        supported_actions_filename = os.path.join(
+            TEST_DATA_DIR, "framework_supported_actions.csv")
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
-        with open(actions_filename) as f:
+        with open(actions_filename) as f, \
+                open(supported_actions_filename, "r", encoding="utf-8") \
+                    as supported_actions:
+            supported_actions = read_platform_supported_actions(
+                csv.reader(supported_actions))
             actions_csv = csv.reader(f, delimiter=',')
-            (actions, action_base_name_to_default_param
-             ) = read_actions_file(actions_csv)
+            (actions, action_base_name_to_default_param) = read_actions_file(
+                actions_csv, supported_actions)
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_unprocessed_coverage.csv")

@@ -12,15 +12,18 @@ import re
 from typing import Dict, List, Set, Tuple
 
 from models import Action
+from models import ActionCoverage
+from models import ActionType
 from models import ActionsByName
+from models import CoverageTest
+from models import PartialAndFullCoverageByBaseName
 from models import TestIdsByPlatform
 from models import TestIdsByPlatformSet
 from models import TestPartitionDescription
-from models import ActionType
 from models import TestPlatform
-from models import CoverageTest
 
 MIN_COLUMNS_ACTIONS_FILE = 9
+MIN_COLUMNS_SUPPORTED_ACTIONS_FILE = 5
 MIN_COLUMNS_UNPROCESSED_COVERAGE_FILE = 6
 
 
@@ -54,8 +57,64 @@ def human_friendly_name_to_canonical_action_name(
     return human_friendly_action_name
 
 
-def read_actions_file(actions_csv_file
-                      ) -> Tuple[ActionsByName, Dict[str, str]]:
+def read_platform_supported_actions(csv_file
+                                    ) -> PartialAndFullCoverageByBaseName:
+    """Reads the action base names and coverage from the given csv file.
+
+    Args:
+        csv_file: The comma-separated-values file which lists action base names
+                  and whether it is fully or partially supported.
+
+    Returns:
+        A dictionary of action base name to a set of partially supported
+        and fully supported platforms.
+    """
+    actions_base_name_to_coverage: PartialAndFullCoverageByBaseName = {}
+    column_offset_to_platform = {
+        0: TestPlatform.MAC,
+        1: TestPlatform.WINDOWS,
+        2: TestPlatform.LINUX,
+        3: TestPlatform.CHROME_OS
+    }
+    for i, row in enumerate(csv_file):
+        if not row:
+            continue
+        if row[0].startswith("#"):
+            continue
+        if len(row) < MIN_COLUMNS_SUPPORTED_ACTIONS_FILE:
+            raise ValueError(f"Row {i} does not contain enough entries. "
+                             f"Got {row}.")
+        action_base_name: str = row[0].strip()
+        if action_base_name in actions_base_name_to_coverage:
+            raise ValueError(f"Action base name '{action_base_name}' on "
+                             f"row {i} is already specified.")
+        if not re.fullmatch(r'[a-z_]+', action_base_name):
+            raise ValueError(
+                f"Invald action base name '{action_base_name}' on "
+                f"row {i}. Please use snake_case.")
+        fully_supported_platforms: Set[TestPlatform] = set()
+        partially_supported_platforms: Set[TestPlatform] = set()
+        for j, value in enumerate(row[1:5]):
+            value = value.strip()
+            if not value:
+                continue
+            if value == "🌕":
+                fully_supported_platforms.add(column_offset_to_platform[j])
+            elif value == "🌓":
+                partially_supported_platforms.add(column_offset_to_platform[j])
+            elif value != "🌑":
+                raise ValueError(f"Invalid coverage '{value}' on row {i}. "
+                                 f"Please use '🌕', '🌓', or '🌑'.")
+
+        actions_base_name_to_coverage[action_base_name] = (
+            partially_supported_platforms, fully_supported_platforms)
+    return actions_base_name_to_coverage
+
+
+def read_actions_file(
+        actions_csv_file,
+        supported_platform_actions: PartialAndFullCoverageByBaseName
+) -> Tuple[ActionsByName, Dict[str, str]]:
     """Reads the actions comma-separated-values file.
 
     If modes are specified for an action in the file, then one action is
@@ -72,6 +131,9 @@ def read_actions_file(actions_csv_file
     Args:
         actions_csv_file: The comma-separated-values file read to parse all
                           actions.
+        supported_platform_actions: A dictionary of platform to the actions that
+                                    are fully or partially covered on that
+                                    platform.
 
     Returns (actions_by_name,
              action_base_name_to_default_mode):
@@ -84,17 +146,11 @@ def read_actions_file(actions_csv_file
     Raises:
         ValueError: The input file is invalid.
     """
-    actions_by_name = {}
-    action_base_name_to_default_mode = {}
-    action_base_names = set()
-    all_output_action_names = []
-    all_short_name = set()
-    column_offset_to_platform = {
-        0: TestPlatform.MAC,
-        1: TestPlatform.WINDOWS,
-        2: TestPlatform.LINUX,
-        3: TestPlatform.CHROME_OS
-    }
+    actions_by_name: Dict[str, Action] = {}
+    action_base_name_to_default_mode: Dict[str, str] = {}
+    action_base_names: Set[str] = set()
+    all_output_action_names: List[str] = []
+    all_short_name: Set[str] = set()
     for i, row in enumerate(actions_csv_file):
         if not row:
             continue
@@ -117,15 +173,6 @@ def read_actions_file(actions_csv_file
                 f"Short name '{short_name_base}' on line {i!r} is "
                 f"not populated or already used.")
 
-        fully_supported_platforms = set()
-        partially_supported_platforms = set()
-        for i, value in enumerate(row[4:8]):
-            value = value.strip()
-            if value == "🌕":
-                fully_supported_platforms.add(column_offset_to_platform[i])
-            if value == "🌓":
-                partially_supported_platforms.add(column_offset_to_platform[i])
-
         type = ActionType.STATE_CHANGE
         if action_base_name.startswith("check_"):
             type = ActionType.STATE_CHECK
@@ -142,6 +189,16 @@ def read_actions_file(actions_csv_file
             output_action_names = [
                 output.strip() for output in output_actions_str.split("&")
             ]
+            # Keep track of all specified output actions for error checking.
+            # Resolve any parameters if they are specified.
+            all_output_action_names.extend([
+                name.replace("(", "_").rstrip(")")
+                for name in output_action_names
+            ])
+
+        (partially_supported_platforms,
+         fully_supported_platforms) = supported_platform_actions.get(
+             action_base_name, (set(), set()))
 
         modes = [mode.strip() for mode in row[1].split("|")]
         if not modes:
@@ -185,6 +242,12 @@ def read_actions_file(actions_csv_file
                 action._output_action_names = output_action_names_with_mode
             actions_by_name[action.name] = action
 
+    unused_supported_actions = set(
+        supported_platform_actions.keys()).difference(action_base_names)
+    if unused_supported_actions:
+        raise ValueError(f"Actions specified as suppored that are not in "
+                         f"the actions list: {unused_supported_actions}.")
+
     # Filter out empty strings from the output_action_base_names.
     all_output_action_names = list(filter(len, all_output_action_names))
     # Make sure all output actions are either resolvable or are base names.
@@ -215,7 +278,6 @@ def read_actions_file(actions_csv_file
                              f"parameterized action {action.name}.")
         assert (action.output_actions)
     return (actions_by_name, action_base_name_to_default_mode)
-
 
 def read_unprocessed_coverage_tests_file(
         coverage_csv_file, actions_by_name: ActionsByName,

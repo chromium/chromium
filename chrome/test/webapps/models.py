@@ -8,7 +8,7 @@
 from enum import Enum
 from enum import unique
 import os
-from typing import FrozenSet, Optional, Set, List, Dict
+from typing import FrozenSet, Optional, Set, List, Dict, Tuple
 
 TestId = str
 
@@ -43,10 +43,10 @@ class TestPlatform(Enum):
         suffix: The suffix applied to browsertest files to specify that the
                 file runs on that platform.
     """
-    MAC = ("defined(OS_MAC)", "M", "_mac")
-    WINDOWS = ("defined(OS_WIN)", "W", "_win")
-    LINUX = ("defined(OS_LINUX)", "L", "_linux")
-    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS_ASH)", "C", "_cros")
+    MAC = ("defined(OS_MAC)", "M", "mac")
+    WINDOWS = ("defined(OS_WIN)", "W", "win")
+    LINUX = ("defined(OS_LINUX)", "L", "linux")
+    CHROME_OS = ("BUILDFLAG(IS_CHROMEOS_ASH)", "C", "cros")
 
     def __init__(self, macro: str, char: str, suffix: str):
         self.macro: str = macro
@@ -275,7 +275,7 @@ class TestPartitionDescription:
             # Iterating TestPlatform to get stable ordering.
             for platform in TestPlatform:
                 if platform in platforms:
-                    suffix += platform.suffix
+                    suffix += "_" + platform.suffix
         return (os.path.join(self.browsertest_dir,
                              (self.test_file_prefix + suffix + ".cc")))
 
@@ -285,3 +285,5 @@ TestIdsByPlatformSet = Dict[FrozenSet[TestPlatform], Set[TestId]]
 CoverageTestsByPlatformSet = Dict[FrozenSet[TestPlatform], List[CoverageTest]]
 CoverageTestsByPlatform = Dict[TestPlatform, List[CoverageTest]]
 ActionsByName = Dict[str, Action]
+PartialAndFullCoverageByBaseName = Dict[
+    str, Tuple[Set[TestPlatform], Set[TestPlatform]]]

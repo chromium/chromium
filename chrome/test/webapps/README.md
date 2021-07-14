@@ -129,6 +129,16 @@ If a new test needs a new action implemented, it will only be used in the genera
 
 The action also needs to be implemented by the testing framework. See the [Testing Framework Implementation README.md](../../browser/ui/views/web_apps/README.md) for more info about how to do that.
 
+#### Adding 'support' for an action
+
+To tell the script that an action is supported by the testing framework (on a given platform), modify the [`framework_supported_actions.csv`](./data/framework_supported_actions.csv) file, and use the following emojis to specify coverage for an action on a given platform:
+
+* 🌕 - Full coverage
+* 🌓 - Partial coverage
+* 🌑 - No coverage
+
+The script reads this file to determine what tests to generate.
+
 ## Script Usage
 
 ### Downloading test data
@@ -140,7 +150,7 @@ The test data is hosted in this [spreadsheet](https://docs.google.com/spreadshee
 
 This will download the data from the sheet into csv files in the [data/](data/) directory:
 
-* `actions.csv` This lists all actions that can be used and which platforms they are supported on.
+* `actions.csv` This describes all actions that can be used in the required coverage tests (processed or unprocessed).
 * `coverage_required.csv` This is the full list of all tests needed to fully cover the Web App system. The first column specifies the platforms for testing, and the test starts on the fifth column.
 
 ### Generating test descriptions & coverage

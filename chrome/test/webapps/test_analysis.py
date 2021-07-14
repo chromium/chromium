@@ -95,13 +95,15 @@ def compare_and_print_tests_to_remove_and_add(
     for platforms, test_ids in existing_tests.items():
         tests_to_remove = []
         prompt_str = ""
+        nice_platform_str = ", ".join(
+            [f"{platform}" for platform in platforms])
         if platforms not in test_ids_to_keep:
             prompt_str = (f"\n\nRemove ALL tests from the file for the "
-                          f"platforms {platforms}:\n")
+                          f"platforms [{nice_platform_str}]:\n")
             tests_to_remove = test_ids
         else:
             prompt_str = (f"\n\nRemove these tests from the file for the "
-                          f" platforms {platforms}:\n")
+                          f" platforms [{nice_platform_str}]:\n")
             tests_to_remove = [
                 test_id for test_id in test_ids
                 if test_id not in test_ids_to_keep[platforms]

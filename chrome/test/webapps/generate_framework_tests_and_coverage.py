@@ -12,9 +12,10 @@ import argparse
 from io import TextIOWrapper
 import logging
 import os
-from typing import List, Optional
+from typing import List, Optional, Dict
 import csv
 
+from models import ActionCoverage
 from models import ActionNode
 from models import CoverageTestsByPlatform
 from models import CoverageTestsByPlatformSet
@@ -26,7 +27,7 @@ from graph_analysis import generate_coverage_file_and_percents
 from graph_analysis import trim_graph_to_platform_actions
 from graph_analysis import generate_framework_tests
 from graph_analysis import generage_graphviz_dot_file
-from file_reading import find_existing_and_disabled_tests
+from file_reading import find_existing_and_disabled_tests, read_platform_supported_actions
 from file_reading import read_actions_file
 from file_reading import read_unprocessed_coverage_tests_file
 from test_analysis import compare_and_print_tests_to_remove_and_add
@@ -45,6 +46,7 @@ def check_partition_prefixes(partition_a: TestPartitionDescription,
 
 
 def generate_framework_tests_and_coverage(
+        supported_framework_action_file: TextIOWrapper,
         actions_file: TextIOWrapper, coverage_required_file: TextIOWrapper,
         custom_partitions: List[TestPartitionDescription],
         default_partition: TestPartitionDescription, coverage_output_dir: str,
@@ -57,8 +59,10 @@ def generate_framework_tests_and_coverage(
                 continue
             check_partition_prefixes(partition_a, partition_b)
     actions_csv = csv.reader(actions_file, delimiter=',')
-    (actions,
-     action_base_name_to_default_param) = read_actions_file(actions_csv)
+    platform_supported_actions = read_platform_supported_actions(
+        csv.reader(supported_framework_action_file))
+    (actions, action_base_name_to_default_param) = read_actions_file(
+        actions_csv, platform_supported_actions)
 
     coverage_csv = csv.reader(coverage_required_file, delimiter=',')
     required_coverage_tests = read_unprocessed_coverage_tests_file(
@@ -98,7 +102,7 @@ def generate_framework_tests_and_coverage(
                                                     platform)
             output_coverage_graph_file_name = os.path.join(
                 graph_output_dir,
-                "generated_tests_graph" + platform.suffix + ".dot")
+                "generated_tests_graph_" + platform.suffix + ".dot")
             with open(output_coverage_graph_file_name, "w",
                       encoding="'utf-8") as coverage_graph_file:
                 coverage_graph_file.write("# This is a generated file.\n")
@@ -149,7 +153,7 @@ def generate_framework_tests_and_coverage(
             required_coverage_by_platform[platform], generated_tests_root_node,
             platform)
         coverage_filename = os.path.join(coverage_output_dir,
-                                         f"coverage{platform.suffix}.tsv")
+                                         f"coverage_{platform.suffix}.tsv")
         with open(coverage_filename, 'w+', encoding="'utf-8") as file:
             file.write("# This is a generated file.\n")
             file.write(f"# Full coverage: {full:.0%}, "
@@ -177,6 +181,8 @@ def main():
                         datefmt='%H:%M:%S')
     script_dir = os.path.dirname(os.path.realpath(__file__))
     actions_filename = os.path.join(script_dir, "data", "actions.csv")
+    supported_actions_filename = os.path.join(
+        script_dir, "data", "framework_supported_actions.csv")
     coverage_required_filename = os.path.join(script_dir, "data",
                                               "coverage_required.csv")
     coverage_output_dir = os.path.join(script_dir, "coverage")
@@ -205,11 +211,13 @@ def main():
     if options.graphs:
         graph_output_dir = script_dir
 
-    with open(actions_filename, 'r', encoding="'utf-8") as actions_file, open(
-            coverage_required_filename, 'r',
-            encoding="'utf-8") as coverage_file:
-        generate_framework_tests_and_coverage(actions_file, coverage_file,
-                                              custom_partitions,
+    with open(actions_filename, 'r', encoding="utf-8") as actions_file, \
+            open(supported_actions_filename, 'r', encoding="utf-8") \
+                as supported_actions, \
+            open(coverage_required_filename, 'r', encoding="utf-8") \
+                as coverage_file:
+        generate_framework_tests_and_coverage(supported_actions, actions_file,
+                                              coverage_file, custom_partitions,
                                               default_partition,
                                               coverage_output_dir,
                                               graph_output_dir)

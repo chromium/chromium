@@ -9,6 +9,7 @@ from typing import List, Set
 import unittest
 
 from file_reading import read_actions_file
+from file_reading import read_platform_supported_actions
 from file_reading import read_unprocessed_coverage_tests_file
 from models import Action
 from models import ActionsByName
@@ -73,12 +74,18 @@ class TestAnalysisTest(unittest.TestCase):
 
     def test_processed_coverage(self):
         actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        supported_actions_filename = os.path.join(
+            TEST_DATA_DIR, "framework_supported_actions.csv")
         actions: ActionsByName = {}
         action_base_name_to_default_param = {}
-        with open(actions_filename, "r", encoding="utf-8") as f:
+        with open(actions_filename, "r", encoding="utf-8") as f, \
+                open(supported_actions_filename, "r", encoding="utf-8") \
+                    as supported_actions_file:
+            supported_actions = read_platform_supported_actions(
+                csv.reader(supported_actions_file))
             actions_csv = csv.reader(f, delimiter=',')
-            (actions, action_base_name_to_default_param
-             ) = read_actions_file(actions_csv)
+            (actions, action_base_name_to_default_param) = read_actions_file(
+                actions_csv, supported_actions)
 
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_unprocessed_coverage.csv")

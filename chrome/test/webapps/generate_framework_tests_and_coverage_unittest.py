@@ -6,6 +6,7 @@
 from io import StringIO
 import os
 import sys
+from typing import Dict
 import unittest
 import tempfile
 
@@ -20,6 +21,9 @@ TEST_DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)),
 class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
     def test_coverage(self):
         actions_filename = os.path.join(TEST_DATA_DIR, "test_actions.csv")
+        supported_actions_filename = os.path.join(
+            TEST_DATA_DIR, "framework_supported_actions.csv")
+
         coverage_filename = os.path.join(TEST_DATA_DIR,
                                          "test_unprocessed_coverage.csv")
 
@@ -37,12 +41,15 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
             test_fixture="WebAppIntegrationBrowserTest")
 
         with open(actions_filename, "r", encoding="utf-8") as actions_file, \
+                open(supported_actions_filename, "r", encoding="utf-8") \
+                    as supported_actions_file, \
                 open(coverage_filename, "r", encoding="utf-8") \
-                as coverage_file, \
+                    as coverage_file, \
                 tempfile.TemporaryDirectory() as output_dir:
             capturedOutput = StringIO()
             sys.stdout = capturedOutput
-            generate_framework_tests_and_coverage(actions_file, coverage_file,
+            generate_framework_tests_and_coverage(supported_actions_file,
+                                                  actions_file, coverage_file,
                                                   custom_partitions,
                                                   default_partition,
                                                   output_dir, None)
@@ -53,7 +60,7 @@ class GenerateFrameworkTestsAndCoverageTest(unittest.TestCase):
             sys.stdout = sys.__stdout__
 
             for platform in TestPlatform:
-                file_title = "coverage" + platform.suffix + ".tsv"
+                file_title = "coverage_" + platform.suffix + ".tsv"
                 gen_coverage_filename = os.path.join(output_dir, file_title)
                 expected_coverage_filename = os.path.join(
                     TEST_DATA_DIR, "expected_" + file_title)
