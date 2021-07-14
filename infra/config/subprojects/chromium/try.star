@@ -390,6 +390,7 @@ try_.chromium_android_builder(
     main_list_view = "try",
     ssd = True,
     use_java_coverage = True,
+    coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(),
     # TODO(crbug/1202741)
     os = os.LINUX_XENIAL_OR_BIONIC_REMOVE,
