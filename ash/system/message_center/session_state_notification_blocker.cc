@@ -112,6 +112,14 @@ bool SessionStateNotificationBlocker::ShouldShowNotificationAsPopup(
   if (session_controller->IsRunningInAppMode())
     return false;
 
+  // Do not show non system notifications for `kLoginNotificationsDelay`
+  // duration.
+  if (notification.notifier_id().type !=
+          message_center::NotifierType::SYSTEM_COMPONENT &&
+      login_delay_timer_.IsRunning()) {
+    return false;
+  }
+
   if (notification.id() == BatteryNotification::kNotificationId)
     return true;
 
