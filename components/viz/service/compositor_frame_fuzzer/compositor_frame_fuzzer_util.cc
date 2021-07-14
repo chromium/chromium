@@ -36,7 +36,8 @@ float MakeNormal(float x) {
 // Normalizes value to a float in [0, 1]. Use to convert a fuzzed
 // uint32 into a percentage.
 float Normalize(uint32_t x) {
-  return static_cast<float>(x) / std::numeric_limits<uint32_t>::max();
+  return static_cast<float>(x) /
+         static_cast<float>(std::numeric_limits<uint32_t>::max());
 }
 
 gfx::Size GetSizeFromProtobuf(const proto::Size& proto_size) {

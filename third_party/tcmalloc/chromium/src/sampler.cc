@@ -116,7 +116,8 @@ ssize_t Sampler::PickNextSamplingPoint() {
   // Very large values of interval overflow ssize_t. If we happen to
   // hit such improbable condition, we simply cheat and clamp interval
   // to largest supported value.
-  return static_cast<ssize_t>(std::min<double>(interval, MAX_SSIZE));
+  return static_cast<ssize_t>(
+      std::min(interval, static_cast<double>(MAX_SSIZE)));
 }
 
 bool Sampler::RecordAllocationSlow(size_t k) {
