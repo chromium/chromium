@@ -1304,14 +1304,13 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
     return;
 
   ClearAccessibilityNodes();
-  doc_info_ = doc_info;
+  page_count_ = doc_info.page_count;
   doc_node_ =
       CreateNode(ax::mojom::Role::kPdfRoot, ax::mojom::Restriction::kReadOnly,
                  render_accessibility, &nodes_);
-  doc_node_->AddStringAttribute(
-      ax::mojom::StringAttribute::kName,
-      l10n_util::GetPluralStringFUTF8(IDS_PDF_DOCUMENT_PAGE_COUNT,
-                                      doc_info.page_count));
+  doc_node_->AddStringAttribute(ax::mojom::StringAttribute::kName,
+                                l10n_util::GetPluralStringFUTF8(
+                                    IDS_PDF_DOCUMENT_PAGE_COUNT, page_count_));
 
   // Because all of the coordinates are expressed relative to the
   // doc's coordinates, the origin of the doc must be (0, 0). Its
@@ -1344,8 +1343,7 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   if (invalid_plugin_message_received_)
     return;
 
-  CHECK_GE(page_index, 0U);
-  CHECK_LT(page_index, doc_info_.page_count);
+  CHECK_LT(page_index, page_count_);
   ++next_page_index_;
 
   ui::AXNodeData* page_node =
@@ -1365,7 +1363,7 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   AddPageContent(page_node, page_bounds, page_index, text_runs, chars,
                  page_objects, render_accessibility);
 
-  if (page_index == doc_info_.page_count - 1)
+  if (page_index == page_count_ - 1)
     Finish();
 }
 
