@@ -781,21 +781,18 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   LocalToAncestorVisualRectInternal(transform1_state, transform2_and_clip_state,
                                     result, success);
   // Fails, because the clip of the destination state is not an ancestor of the
-  // clip of the source state. A known bug in SPv1 would make such query,
-  // in such case, no clips are applied.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_FALSE(success);
-  } else {
-    EXPECT_TRUE(success);
-    FloatClipRect expected(FloatRect(-100, 0, 100, 100));
-    expected.ClearIsTight();
-    EXPECT_CLIP_RECT_EQ(expected, result);
-  }
+  // clip of the source state. Known bugs in pre-CompositeAfterPaint or
+  // CompositeAfterPaint without LayoutNGBlockFragmentation would make such
+  // query. In such cases, no clips are applied.
+  EXPECT_TRUE(success);
+  FloatClipRect expected(FloatRect(-100, 0, 100, 100));
+  expected.ClearIsTight();
+  EXPECT_CLIP_RECT_EQ(expected, result);
 
   result = FloatClipRect(input_rect);
   GeometryMapper::LocalToAncestorVisualRect(transform2_and_clip_state,
                                             transform1_state, result);
-  FloatClipRect expected(FloatRect(20, -40, 40, 30));
+  expected = FloatClipRect(FloatRect(20, -40, 40, 30));
   // This is because the combined Rotate(45) and Rotate(-45) is not exactly a
   // translation-only transform due to calculation errors.
   expected.ClearIsTight();

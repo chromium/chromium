@@ -55,22 +55,3 @@ crbug.com/1058792 fast/multicol/composited-with-child-layer-vertical-rl.html [ S
 crbug.com/1191032 http/tests/devtools/tracing/frame-model-instrumentation.js [ Failure ]
 crbug.com/1191032 http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
 crbug.com/1191032 virtual/threaded/http/tests/devtools/tracing/timeline-paint/paint-profiler-update.js [ Timeout ]
-
-# Tests pass with LayoutNGBlockFragmentation enabled and fail without. Tests
-# crash with CompositeAfterPaint enabled and LayoutNGBlockFragmentation
-# disabled.
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-036.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-038.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-039.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-040.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-041.html [ Pass ]
-virtual/layout_ng_block_frag/external/wpt/css/css-break/out-of-flow-in-multicolumn-044.html [ Pass ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-029.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-036.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-038.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-039.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-040.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-041.html [ Crash Failure ]
-crbug.com/829028 external/wpt/css/css-break/out-of-flow-in-multicolumn-044.html [ Crash Failure ]
-

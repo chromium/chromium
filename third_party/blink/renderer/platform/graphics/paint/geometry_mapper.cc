@@ -278,8 +278,12 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     // --enable-prefer-compositing-to-lcd-text) for details.
     // Ignore it for SPv1 for now.
     success = true;
-    rect_to_map.ClearIsTight();
+  } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
+    // clips. See crbug.com/1228364 for the tests.
+    success = true;
   }
+  rect_to_map.ClearIsTight();
   return !rect_to_map.Rect().IsEmpty();
 }
 
@@ -431,6 +435,10 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
       // test compositing/overflow/handle-non-ancestor-clip-parent.html (run
       // with --enable-prefer-compositing-to-lcd-text) for details.
       // Ignore it for SPv1 for now.
+      success = true;
+    } else if (!RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+      // TODO(crbug.com/803649): We still have clip hierarchy issues with
+      // fragment clips. See crbug.com/1228364 for the tests.
       success = true;
     }
     return InfiniteLooseFloatClipRect();
