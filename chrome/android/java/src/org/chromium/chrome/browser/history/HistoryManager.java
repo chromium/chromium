@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -229,12 +230,14 @@ public class HistoryManager implements OnMenuItemClickListener, SelectionObserve
     private ViewGroup getIncognitoHistoryPlaceholderView() {
         ViewGroup placeholderView = (ViewGroup) LayoutInflater.from(mActivity).inflate(
                 R.layout.incognito_history_placeholder, null);
-        ImageButton dismissButton =
-                placeholderView.findViewById(R.id.close_history_placeholder_button);
         if (mIsSeparateActivity) {
+            ImageButton dismissButton =
+                    placeholderView.findViewById(R.id.close_history_placeholder_button);
             dismissButton.setOnClickListener(v -> mActivity.finish());
         } else {
-            dismissButton.setVisibility(View.GONE);
+            LinearLayout titleView =
+                    placeholderView.findViewById(R.id.incognito_history_placeholder_title);
+            titleView.setVisibility(View.GONE);
         }
         placeholderView.setFocusable(true);
         placeholderView.setFocusableInTouchMode(true);
