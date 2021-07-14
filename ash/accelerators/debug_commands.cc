@@ -34,6 +34,24 @@ namespace ash {
 namespace debug {
 namespace {
 
+void HandlePrintLayerHierarchy() {
+  std::ostringstream out;
+  PrintLayerHierarchy(&out);
+  LOG(ERROR) << out.str();
+}
+
+void HandlePrintViewHierarchy() {
+  std::ostringstream out;
+  PrintViewHierarchy(&out);
+  LOG(ERROR) << out.str();
+}
+
+void HandlePrintWindowHierarchy() {
+  std::ostringstream out;
+  PrintWindowHierarchy(&out, /*scrub_data=*/false);
+  LOG(ERROR) << out.str();
+}
+
 gfx::ImageSkia CreateWallpaperImage(SkColor fill, SkColor rect) {
   // TODO(oshima): Consider adding a command line option to control wallpaper
   // images for testing. The size is randomly picked.
@@ -108,24 +126,6 @@ void HandleTriggerHUDDisplay() {
 }
 
 }  // namespace
-
-void HandlePrintLayerHierarchy() {
-  std::ostringstream out;
-  PrintLayerHierarchy(&out);
-  LOG(ERROR) << out.str();
-}
-
-void HandlePrintViewHierarchy() {
-  std::ostringstream out;
-  PrintViewHierarchy(&out);
-  LOG(ERROR) << out.str();
-}
-
-void HandlePrintWindowHierarchy() {
-  std::ostringstream out;
-  PrintWindowHierarchy(&out, /*scrub_data=*/false);
-  LOG(ERROR) << out.str();
-}
 
 void PrintUIHierarchies() {
   // This is a separate command so the user only has to hit one key to generate
