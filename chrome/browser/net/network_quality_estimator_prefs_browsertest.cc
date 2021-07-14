@@ -217,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(NetworkQualityEstimatorPrefsBrowserTest,
       base::BindOnce([](base::RunLoop* loop) { loop->Quit(); }, &loop));
   loop.Run();
 
-  content::GetNetworkService()->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       network_context.InitWithNewPipeAndPassReceiver(),
       std::move(context_params));
 

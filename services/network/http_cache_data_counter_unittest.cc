@@ -31,6 +31,7 @@
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
 #include "services/network/test/fake_test_cert_verifier_params_factory.h"
+#include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {
@@ -54,7 +55,8 @@ constexpr CacheTestEntry kCacheEntries[] = {
     {"https://localhost:3456/yoursite", "15 Jun 2018", 512}};
 
 mojom::NetworkContextParamsPtr CreateContextParams() {
-  mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+  mojom::NetworkContextParamsPtr params =
+      CreateNetworkContextParamsForTesting();
   // Use a dummy CertVerifier that always passes cert verification, since
   // these unittests don't need to test CertVerifier behavior.
   params->cert_verifier_params =

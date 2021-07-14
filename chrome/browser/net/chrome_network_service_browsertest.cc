@@ -93,7 +93,7 @@ class ChromeNetworkServiceBrowserTest
         browser()->profile()->GetPath().Append(FILE_PATH_LITERAL("cookies"));
     context_params->cert_verifier_params = content::GetCertVerifierParams(
         cert_verifier::mojom::CertVerifierCreationParams::New());
-    GetNetworkService()->CreateNetworkContext(
+    CreateNetworkContextInNetworkService(
         network_context.InitWithNewPipeAndPassReceiver(),
         std::move(context_params));
     return network_context;

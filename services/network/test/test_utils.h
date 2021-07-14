@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
 namespace network {
@@ -30,6 +31,10 @@ mojom::URLResponseHeadPtr CreateURLResponseHead(
 // |report_raw_headers| true, the cookies are also added to the raw headers.
 void AddCookiesToURLResponseHead(const std::vector<std::string>& cookies,
                                  mojom::URLResponseHead* response_header);
+
+// Creates a new NetworkContextParamsPtr for testing that uses a fixed proxy
+// config and is safe to use without setting file permissions on Windows.
+mojom::NetworkContextParamsPtr CreateNetworkContextParamsForTesting();
 
 }  // namespace network
 

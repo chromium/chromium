@@ -97,6 +97,20 @@ GetCertVerifierParams(cert_verifier::mojom::CertVerifierCreationParamsPtr
 CONTENT_EXPORT void SetCertVerifierServiceFactoryForTesting(
     cert_verifier::mojom::CertVerifierServiceFactory* service_factory);
 
+// Sets up permissions on filesystem, if required by certain platforms, e.g.
+// Windows. Call this with |params| set to the NetworkContext parameters before
+// calling CreateNetworkContext on the NetworkService instance. On some
+// platforms this function does nothing but is safe to call.
+CONTENT_EXPORT void MaybeSetNetworkContextSandboxPermissions(
+    network::mojom::NetworkContextParams* params);
+
+// Convenience function to create a NetworkContext from the given set of
+// |params|. This also calls MaybeSetNetworkContextSandboxPermissions as needed.
+// This must be called on the UI thread.
+CONTENT_EXPORT void CreateNetworkContextInNetworkService(
+    mojo::PendingReceiver<network::mojom::NetworkContext> context,
+    network::mojom::NetworkContextParamsPtr params);
+
 }  // namespace content
 
 #endif  // CONTENT_PUBLIC_BROWSER_NETWORK_SERVICE_INSTANCE_H_

@@ -73,7 +73,7 @@ void WilcoDtcSupportdNetworkContextImpl::CreateNetworkContext() {
   proxy_config_monitor_.AddToNetworkContextParams(network_context_params.get());
 
   network_context_.reset();
-  content::GetNetworkService()->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       network_context_.BindNewPipeAndPassReceiver(),
       std::move(network_context_params));
 }

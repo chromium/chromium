@@ -14,6 +14,7 @@
 #include "base/build_time.h"
 #include "base/command_line.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -420,6 +421,19 @@ NetworkContext::NetworkContext(
 #endif
       receiver_(this, std::move(receiver)),
       cors_preflight_controller_(network_service) {
+#if defined(OS_WIN) && DCHECK_IS_ON()
+  if (params_->cookie_path.has_value() ||
+      params_->http_cache_path.has_value() ||
+      params_->http_server_properties_path.has_value() ||
+      params_->transport_security_persister_path.has_value() ||
+      params_->reporting_and_nel_store_path.has_value() ||
+      params_->trust_token_path.has_value()) {
+    DCHECK(params_->win_permissions_set)
+        << "Permissions not set on files. Call "
+           "CreateNetworkContextInNetworkService or "
+           "MaybeSetNetworkContextSandboxPermissions.";
+  }
+#endif  // defined(OS_WIN) && DCHECK_IS_ON()
   mojo::PendingRemote<mojom::URLLoaderFactory>
       url_loader_factory_for_cert_net_fetcher;
   mojo::PendingReceiver<mojom::URLLoaderFactory>

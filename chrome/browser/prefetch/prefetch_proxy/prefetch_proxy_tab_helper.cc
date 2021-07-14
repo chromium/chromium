@@ -1616,7 +1616,7 @@ void PrefetchProxyTabHelper::CreateIsolatedURLLoaderFactory() {
   context_params->enable_expect_ct_reporting = false;
   context_params->enable_domain_reliability = false;
 
-  content::GetNetworkService()->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       page_->isolated_network_context_.BindNewPipeAndPassReceiver(),
       std::move(context_params));
 

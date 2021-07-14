@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/dcheck_is_on.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -657,6 +658,25 @@ bool IsNetworkSandboxEnabled() {
   return base::FeatureList::IsEnabled(
       sandbox::policy::features::kNetworkServiceSandbox);
 #endif  // defined(OS_MAC) || defined(OS_FUCHSIA)
+}
+
+void MaybeSetNetworkContextSandboxPermissions(
+    network::mojom::NetworkContextParams* params) {
+  // TODO(wfh): Set permissions on files here.
+#if defined(OS_WIN) && DCHECK_IS_ON()
+  params->win_permissions_set = true;
+#endif
+}
+
+void CreateNetworkContextInNetworkService(
+    mojo::PendingReceiver<network::mojom::NetworkContext> context,
+    network::mojom::NetworkContextParamsPtr params) {
+  MaybeSetNetworkContextSandboxPermissions(params.get());
+  auto* network_service = GetNetworkService();
+  if (network_service) {
+    network_service->CreateNetworkContext(std::move(context),
+                                          std::move(params));
+  }
 }
 
 }  // namespace content

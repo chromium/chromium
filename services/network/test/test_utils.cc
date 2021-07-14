@@ -5,10 +5,17 @@
 #include "services/network/test/test_utils.h"
 
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "net/http/http_util.h"
+#include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "services/network/public/cpp/http_raw_request_response_info.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+
+#if defined(OS_WIN)
+#include "base/dcheck_is_on.h"
+#endif
 
 namespace network {
 
@@ -49,6 +56,19 @@ void AddCookiesToURLResponseHead(const std::vector<std::string>& cookies,
           mojom::HttpRawHeaderPair::New("Set-Cookie", cookie_string));
     }
   }
+}
+
+mojom::NetworkContextParamsPtr CreateNetworkContextParamsForTesting() {
+  mojom::NetworkContextParamsPtr params = mojom::NetworkContextParams::New();
+#if defined(OS_WIN) && DCHECK_IS_ON()
+  // For unit tests, no need to verify that permissions on the files are
+  // correct, as this testing is done in integration tests.
+  params->win_permissions_set = true;
+#endif
+  // Use a fixed proxy config, to avoid dependencies on local network
+  // configuration.
+  params->initial_proxy_config = net::ProxyConfigWithAnnotation::CreateDirect();
+  return params;
 }
 
 }  // namespace network

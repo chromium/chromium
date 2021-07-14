@@ -440,6 +440,11 @@ struct NetworkContextParams {
   // If true, all requests that can take a NetworkIsolationKey or IsolationInfo
   // must be given a non-empty one.
   bool require_network_isolation_key = false;
+
+  // If true, then the correct permissions have been set on the network service
+  // files and sandbox can be enabled for this network context.
+  [EnableIf=win_permissions_validation]
+  bool win_permissions_set = false;
 };
 
 struct NetworkConditions {

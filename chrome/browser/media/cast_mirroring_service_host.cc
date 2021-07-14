@@ -286,7 +286,7 @@ void CastMirroringServiceHost::GetNetworkContext(
       g_browser_process->system_network_context_manager()
           ->CreateDefaultNetworkContextParams();
   network_context_params->context_name = "mirroring";
-  content::GetNetworkService()->CreateNetworkContext(
+  content::CreateNetworkContextInNetworkService(
       std::move(receiver), std::move(network_context_params));
 }
 

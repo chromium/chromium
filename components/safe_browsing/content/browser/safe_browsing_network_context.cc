@@ -44,7 +44,7 @@ class SafeBrowsingNetworkContext::SharedURLLoaderFactory
     DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
     if (!network_context_ || !network_context_.is_connected()) {
       network_context_.reset();
-      content::GetNetworkService()->CreateNetworkContext(
+      content::CreateNetworkContextInNetworkService(
           network_context_.BindNewPipeAndPassReceiver(),
           CreateNetworkContextParams());
 
