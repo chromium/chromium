@@ -111,7 +111,6 @@
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer.h"
 #include "third_party/blink/renderer/core/frame/frame_serializer_delegate_impl.h"
-#include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_mojo_receiver.h"
@@ -125,7 +124,6 @@
 #include "third_party/blink/renderer/core/frame/report.h"
 #include "third_party/blink/renderer/core/frame/reporting_context.h"
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
-#include "third_party/blink/renderer/core/frame/savable_resources.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/smart_clip.h"
 #include "third_party/blink/renderer/core/frame/user_activation.h"
@@ -155,7 +153,6 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
-#include "third_party/blink/renderer/core/loader/mixed_content_checker.h"
 #include "third_party/blink/renderer/core/loader/prerender_handle.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/mobile_metrics/mobile_friendliness_checker.h"
@@ -221,9 +218,6 @@
 namespace blink {
 
 namespace {
-
-constexpr char kInvalidWorldID[] =
-    "JavaScriptExecuteRequestInIsolatedWorld gets an invalid world id.";
 
 // Maintain a global (statically-allocated) hash map indexed by the the result
 // of hashing the |frame_token| passed on creation of a LocalFrame object.
@@ -297,14 +291,6 @@ inline float ParentTextZoomFactor(LocalFrame* frame) {
   return parent_local_frame ? parent_local_frame->TextZoomFactor() : 1;
 }
 
-#if defined(OS_MAC)
-uint32_t GetCurrentCursorPositionInFrame(LocalFrame* local_frame) {
-  blink::WebRange range =
-      WebLocalFrameImpl::FromFrame(local_frame)->SelectionRange();
-  return range.IsNull() ? 0U : static_cast<uint32_t>(range.StartOffset());
-}
-#endif
-
 // Convert a data url to a message pipe handle that corresponds to a remote
 // blob, so that it can be passed across processes.
 mojo::PendingRemote<mojom::blink::Blob> DataURLToBlob(const String& data_url) {
@@ -321,130 +307,6 @@ RemoteFrame* SourceFrameForOptionalToken(
   if (!source_frame_token)
     return nullptr;
   return RemoteFrame::FromFrameToken(source_frame_token.value());
-}
-
-class WebBundleGenerationDelegate
-    : public WebFrameSerializer::MHTMLPartsGenerationDelegate {
-  STACK_ALLOCATED();
-
- public:
-  WebBundleGenerationDelegate() = default;
-  ~WebBundleGenerationDelegate() = default;
-
-  WebBundleGenerationDelegate(const WebBundleGenerationDelegate&) = delete;
-  WebBundleGenerationDelegate& operator=(const WebBundleGenerationDelegate&) =
-      delete;
-
-  bool ShouldSkipResource(const WebURL& url) override { return false; }
-  bool UseBinaryEncoding() override { return false; }
-  bool RemovePopupOverlay() override { return false; }
-  bool UsePageProblemDetectors() override { return false; }
-};
-
-class ResourceSnapshotForWebBundleImpl
-    : public data_decoder::mojom::blink::ResourceSnapshotForWebBundle {
- public:
-  explicit ResourceSnapshotForWebBundleImpl(Deque<SerializedResource> resources)
-      : resources_(std::move(resources)) {}
-  ~ResourceSnapshotForWebBundleImpl() override = default;
-
-  ResourceSnapshotForWebBundleImpl(const ResourceSnapshotForWebBundleImpl&) =
-      delete;
-  ResourceSnapshotForWebBundleImpl& operator=(
-      const ResourceSnapshotForWebBundleImpl&) = delete;
-
-  // data_decoder::mojom::blink::ResourceSnapshotForWebBundle:
-  void GetResourceCount(GetResourceCountCallback callback) override {
-    std::move(callback).Run(resources_.size());
-  }
-  void GetResourceInfo(uint64_t index,
-                       GetResourceInfoCallback callback) override {
-    if (index >= resources_.size()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
-    const auto& resource = resources_.at(SafeCast<WTF::wtf_size_t>(index));
-    auto info = data_decoder::mojom::blink::SerializedResourceInfo::New();
-    info->url = resource.url;
-    info->mime_type = resource.mime_type;
-    info->size = resource.data ? resource.data->size() : 0;
-    std::move(callback).Run(std::move(info));
-  }
-  void GetResourceBody(uint64_t index,
-                       GetResourceBodyCallback callback) override {
-    if (index >= resources_.size()) {
-      std::move(callback).Run(absl::nullopt);
-      return;
-    }
-    const auto& resource = resources_.at(SafeCast<WTF::wtf_size_t>(index));
-    if (!resource.data) {
-      std::move(callback).Run(absl::nullopt);
-      return;
-    }
-    std::move(callback).Run(
-        mojo_base::BigBuffer(resource.data->CopyAs<std::vector<uint8_t>>()));
-  }
-
- private:
-  const Deque<SerializedResource> resources_;
-};
-
-v8::Local<v8::Context> MainWorldScriptContext(LocalFrame* local_frame) {
-  ScriptState* script_state = ToScriptStateForMainWorld(local_frame);
-  DCHECK(script_state);
-  return script_state->GetContext();
-}
-
-base::Value GetJavaScriptExecutionResult(v8::Local<v8::Value> result,
-                                         LocalFrame* local_frame,
-                                         WebV8ValueConverter* converter) {
-  if (!result.IsEmpty()) {
-    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
-    v8::Context::Scope context_scope(context);
-    std::unique_ptr<base::Value> new_value =
-        converter->FromV8Value(result, context);
-    if (new_value)
-      return std::move(*new_value);
-  }
-  return base::Value();
-}
-
-v8::MaybeLocal<v8::Value> GetProperty(v8::Local<v8::Context> context,
-                                      v8::Local<v8::Value> object,
-                                      const String& name) {
-  v8::Isolate* isolate = context->GetIsolate();
-  v8::Local<v8::String> name_str = V8String(isolate, name);
-  v8::Local<v8::Object> object_obj;
-  if (!object->ToObject(context).ToLocal(&object_obj)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-  return object_obj->Get(context, name_str);
-}
-
-v8::MaybeLocal<v8::Value> CallMethodOnFrame(LocalFrame* local_frame,
-                                            const String& object_name,
-                                            const String& method_name,
-                                            base::Value arguments,
-                                            WebV8ValueConverter* converter) {
-  v8::Local<v8::Context> context = MainWorldScriptContext(local_frame);
-
-  v8::Context::Scope context_scope(context);
-  WTF::Vector<v8::Local<v8::Value>> args;
-  for (auto const& argument : arguments.GetList()) {
-    args.push_back(converter->ToV8Value(&argument, context));
-  }
-
-  v8::Local<v8::Value> object;
-  v8::Local<v8::Value> method;
-  if (!GetProperty(context, context->Global(), object_name).ToLocal(&object) ||
-      !GetProperty(context, object, method_name).ToLocal(&method)) {
-    return v8::MaybeLocal<v8::Value>();
-  }
-
-  return local_frame->DomWindow()
-      ->GetScriptController()
-      .EvaluateMethodInMainWorld(v8::Local<v8::Function>::Cast(method), object,
-                                 static_cast<int>(args.size()), args.data());
 }
 
 }  // namespace
@@ -471,8 +333,6 @@ void LocalFrame::Init(Frame* opener,
   GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
           GetTaskRunner(blink::TaskType::kInternalDefault)));
-  GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-      &LocalFrame::BindToReceiver, WrapWeakPersistent(this)));
   GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
   DCHECK(!mojo_receiver_);
@@ -572,7 +432,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
 #endif
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(back_forward_cache_controller_host_remote_);
-  visitor->Trace(receiver_);
   visitor->Trace(mojo_receiver_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
@@ -644,40 +503,6 @@ bool LocalFrame::ShouldMaintainTrivialSessionHistory() const {
   //
   // TODO(mcnee): Similarly, we need to restrict orphaned contexts.
   return GetPage()->InsidePortal() || GetDocument()->IsPrerendering();
-}
-
-LocalFrame::JavaScriptIsolatedWorldRequest::JavaScriptIsolatedWorldRequest(
-    LocalFrame* local_frame,
-    bool wants_result,
-    JavaScriptExecuteRequestInIsolatedWorldCallback callback)
-    : local_frame_(local_frame),
-      wants_result_(wants_result),
-      callback_(std::move(callback)) {}
-
-LocalFrame::JavaScriptIsolatedWorldRequest::~JavaScriptIsolatedWorldRequest() =
-    default;
-
-void LocalFrame::JavaScriptIsolatedWorldRequest::Completed(
-    const WebVector<v8::Local<v8::Value>>& result) {
-  base::Value value;
-  if (!result.empty() && !result.begin()->IsEmpty() && wants_result_) {
-    // It's safe to always use the main world context when converting
-    // here. V8ValueConverter shouldn't actually care about the context
-    // scope, and it switches to v8::Object's creation context when
-    // encountered. (from extensions/renderer/script_injection.cc)
-    v8::Local<v8::Context> context = MainWorldScriptContext(local_frame_);
-    v8::Context::Scope context_scope(context);
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
-    converter->SetDateAllowed(true);
-    converter->SetRegExpAllowed(true);
-    std::unique_ptr<base::Value> new_value =
-        converter->FromV8Value(*result.begin(), context);
-    if (new_value)
-      value = base::Value::FromUniquePtrValue(std::move(new_value));
-  }
-
-  std::move(callback_).Run(std::move(value));
 }
 
 bool LocalFrame::DetachImpl(FrameDetachType type) {
@@ -802,7 +627,6 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   supplements_.clear();
   frame_scheduler_.reset();
-  receiver_.reset();
   mojo_receiver_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
 
@@ -2901,37 +2725,6 @@ void LocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {
       Selection().CharacterIndexForPoint(result.RoundedPointInInnerNodeFrame());
   GetTextInputHost().GotCharacterIndexAtPoint(index);
 }
-
-void LocalFrame::GetFirstRectForRange(const gfx::Range& range) {
-  gfx::Rect rect;
-  WebLocalFrameClient* client = WebLocalFrameImpl::FromFrame(this)->Client();
-  if (!client)
-    return;
-
-  if (!client->GetCaretBoundsFromFocusedPlugin(rect)) {
-    // When request range is invalid we will try to obtain it from current
-    // frame selection. The fallback value will be 0.
-    uint32_t start =
-        range.IsValid() ? range.start() : GetCurrentCursorPositionInFrame(this);
-
-    WebLocalFrameImpl::FromFrame(this)->FirstRectForCharacterRange(
-        start, range.length(), rect);
-  }
-
-  GetTextInputHost().GotFirstRectForRange(rect);
-}
-
-void LocalFrame::GetStringForRange(const gfx::Range& range,
-                                   GetStringForRangeCallback callback) {
-  gfx::Point baseline_point;
-  ui::mojom::blink::AttributedStringPtr attributed_string = nullptr;
-  NSAttributedString* string = SubstringUtil::AttributedSubstringInRange(
-      this, range.start(), range.length(), &baseline_point);
-  if (string)
-    attributed_string = ui::mojom::blink::AttributedString::From(string);
-
-  std::move(callback).Run(std::move(attributed_string), baseline_point);
-}
 #endif
 
 void LocalFrame::UpdateWindowControlsOverlay(
@@ -3055,41 +2848,6 @@ LocalFrame::GetBackForwardCacheControllerHostRemote() {
   return *back_forward_cache_controller_host_remote_.get();
 }
 
-void LocalFrame::GetTextSurroundingSelection(
-    uint32_t max_length,
-    GetTextSurroundingSelectionCallback callback) {
-  blink::SurroundingText surrounding_text(this, max_length);
-
-  // |surrounding_text| might not be correctly initialized, for example if
-  // |frame_->SelectionRange().IsNull()|, in other words, if there was no
-  // selection.
-  if (surrounding_text.IsEmpty()) {
-    // Don't use WTF::String's default constructor so that we make sure that we
-    // always send a valid empty string over the wire instead of a null pointer.
-    std::move(callback).Run(g_empty_string, 0, 0);
-    return;
-  }
-
-  std::move(callback).Run(surrounding_text.TextContent(),
-                          surrounding_text.StartOffsetInTextContent(),
-                          surrounding_text.EndOffsetInTextContent());
-}
-
-void LocalFrame::SendInterventionReport(const String& id,
-                                        const String& message) {
-  Intervention::GenerateReport(this, id, message);
-}
-
-void LocalFrame::SetFrameOwnerProperties(
-    mojom::blink::FrameOwnerPropertiesPtr properties) {
-  GetDocument()->WillChangeFrameOwnerProperties(
-      properties->margin_width, properties->margin_height,
-      properties->scrollbar_mode, properties->is_display_none,
-      properties->color_scheme);
-
-  Frame::ApplyFrameOwnerProperties(std::move(properties));
-}
-
 void LocalFrame::NotifyUserActivation(
     mojom::blink::UserActivationNotificationType notification_type) {
   NotifyUserActivation(notification_type, false);
@@ -3108,120 +2866,11 @@ void LocalFrame::NotifyVirtualKeyboardOverlayRectObservers(
     observer->VirtualKeyboardOverlayChanged(rect);
 }
 
-void LocalFrame::NotifyVirtualKeyboardOverlayRect(
-    const gfx::Rect& keyboard_rect) {
-  Page* page = GetPage();
-  if (!page)
-    return;
-
-  // The rect passed to us from content is in DIP, relative to the main frame.
-  // This doesn't take the page's zoom factor into account so we must scale by
-  // the inverse of the page zoom in order to get correct client coordinates.
-  // Note that when use-zoom-for-dsf is enabled, WindowToViewportScalar will
-  // be the true device scale factor, and PageZoomFactor will be the combination
-  // of the device scale factor and the zoom percent of the page.
-  LocalFrame& local_frame_root = LocalFrameRoot();
-  const float window_to_viewport_factor =
-      page->GetChromeClient().WindowToViewportScalar(&local_frame_root, 1.0f);
-  const float zoom_factor = local_frame_root.PageZoomFactor();
-  const float scale_factor = zoom_factor / window_to_viewport_factor;
-  gfx::Rect scaled_rect(keyboard_rect.x() / scale_factor,
-                        keyboard_rect.y() / scale_factor,
-                        keyboard_rect.width() / scale_factor,
-                        keyboard_rect.height() / scale_factor);
-
-  NotifyVirtualKeyboardOverlayRectObservers(scaled_rect);
-}
-
-void LocalFrame::AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
-                                     const WTF::String& message,
-                                     bool discard_duplicates) {
-  GetDocument()->AddConsoleMessage(
-      MakeGarbageCollected<ConsoleMessage>(mojom::ConsoleMessageSource::kOther,
-                                           level, message),
-      discard_duplicates);
-}
-
 void LocalFrame::AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr info) {
   if (GetPage()) {
     GetPage()->GetInspectorIssueStorage().AddInspectorIssue(DomWindow(),
                                                             std::move(info));
   }
-}
-
-void LocalFrame::SwapInImmediately() {
-  SwapIn();
-  // Normally, this happens as part of committing a cross-Document navigation.
-  // However, there is no navigation being committed here. Instead, the browser
-  // navigation code is optimistically early-swapping in this frame to replace a
-  // crashed subframe after starting a navigation.
-  //
-  // While the provisional frame has a unique opaque origin, the Blink bindings
-  // code still expects the WindowProxy to be initialized for the access check
-  // failed callbacks.
-  DomWindow()->GetScriptController().UpdateDocument();
-}
-
-void LocalFrame::StopLoading() {
-  Loader().StopAllLoaders(/*abort_client=*/true);
-
-  // The stopLoading handler may run script, which may cause this frame to be
-  // detached/deleted. If that happens, return immediately.
-  if (!IsAttached())
-    return;
-
-  // Notify RenderFrame observers.
-  WebLocalFrameClient* client = Client()->GetWebFrame()->Client();
-  if (client)
-    client->OnStopLoading();
-}
-
-void LocalFrame::Collapse(bool collapsed) {
-  FrameOwner* owner = Owner();
-  To<HTMLFrameOwnerElement>(owner)->SetCollapsed(collapsed);
-}
-
-void LocalFrame::EnableViewSourceMode() {
-  DCHECK(!Tree().Parent());
-  SetInViewSourceMode(true);
-}
-
-void LocalFrame::Focus() {
-  FocusImpl();
-}
-
-void LocalFrame::ClearFocusedElement() {
-  Document* document = GetDocument();
-  Element* old_focused_element = document->FocusedElement();
-  document->ClearFocusedElement();
-  if (!old_focused_element)
-    return;
-
-  // If a text field has focus, we need to make sure the selection controller
-  // knows to remove selection from it. Otherwise, the text field is still
-  // processing keyboard events even though focus has been moved to the page and
-  // keystrokes get eaten as a result.
-  document->UpdateStyleAndLayoutTree();
-  if (HasEditableStyle(*old_focused_element) ||
-      old_focused_element->IsTextControl())
-    Selection().Clear();
-}
-
-void LocalFrame::GetResourceSnapshotForWebBundle(
-    mojo::PendingReceiver<
-        data_decoder::mojom::blink::ResourceSnapshotForWebBundle> receiver) {
-  Deque<SerializedResource> resources;
-
-  HeapHashSet<WeakMember<const Element>> shadow_template_elements;
-  WebBundleGenerationDelegate web_delegate;
-  FrameSerializerDelegateImpl core_delegate(web_delegate,
-                                            shadow_template_elements);
-  FrameSerializer serializer(resources, core_delegate);
-  serializer.SerializeFrame(*this);
-
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ResourceSnapshotForWebBundleImpl>(std::move(resources)),
-      std::move(receiver));
 }
 
 void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
@@ -3245,12 +2894,6 @@ void LocalFrame::CopyImageAtViewportPoint(const IntPoint& viewport_point) {
   GetEditor().CopyImage(result);
 }
 
-void LocalFrame::CopyImageAt(const gfx::Point& window_point) {
-  gfx::Point viewport_position =
-      GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  CopyImageAtViewportPoint(IntPoint(viewport_position));
-}
-
 void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
   gfx::Point viewport_position =
       GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
@@ -3268,43 +2911,6 @@ void LocalFrame::SaveImageAt(const gfx::Point& window_point) {
   params->is_context_menu_save = true;
   params->data_url_blob = DataURLToBlob(url);
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
-}
-
-void LocalFrame::ReportBlinkFeatureUsage(
-    const Vector<mojom::blink::WebFeature>& features) {
-  DCHECK(!features.IsEmpty());
-
-  // Assimilate all features used/performed by the browser into UseCounter.
-  auto* document = GetDocument();
-  DCHECK(document);
-  for (const auto& feature : features)
-    document->CountUse(feature);
-}
-
-void LocalFrame::RenderFallbackContent() {
-  Frame::RenderFallbackContent();
-}
-
-void LocalFrame::RenderFallbackContentWithResourceTiming(
-    mojom::blink::ResourceTimingInfoPtr timing,
-    const String& server_timing_value) {
-  Frame::RenderFallbackContentWithResourceTiming(std::move(timing),
-                                                 server_timing_value);
-}
-
-void LocalFrame::BeforeUnload(bool is_reload, BeforeUnloadCallback callback) {
-  base::TimeTicks before_unload_start_time = base::TimeTicks::Now();
-
-  // This will execute the BeforeUnload event in this frame and all of its
-  // local descendant frames, including children of remote frames.  The browser
-  // process will send separate IPCs to dispatch beforeunload in any
-  // out-of-process child frames.
-  bool proceed = Loader().ShouldClose(is_reload);
-
-  DCHECK(!callback.is_null());
-  base::TimeTicks before_unload_end_time = base::TimeTicks::Now();
-  std::move(callback).Run(proceed, before_unload_start_time,
-                          before_unload_end_time);
 }
 
 void LocalFrame::MediaPlayerActionAtViewportPoint(
@@ -3391,29 +2997,6 @@ void LocalFrame::DownloadURL(
   GetLocalFrameHostRemote().DownloadURL(std::move(params));
 }
 
-void LocalFrame::MediaPlayerActionAt(
-    const gfx::Point& window_point,
-    blink::mojom::blink::MediaPlayerActionPtr action) {
-  gfx::Point viewport_position =
-      GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
-  IntPoint location(viewport_position);
-
-  MediaPlayerActionAtViewportPoint(location, action->type, action->enable);
-}
-
-void LocalFrame::AdvanceFocusInFrame(
-    mojom::blink::FocusType focus_type,
-    const absl::optional<RemoteFrameToken>& source_frame_token) {
-  RemoteFrame* source_frame = SourceFrameForOptionalToken(source_frame_token);
-  if (!source_frame) {
-    SetInitialFocus(focus_type == mojom::blink::FocusType::kBackward);
-    return;
-  }
-
-  GetPage()->GetFocusController().AdvanceFocusAcrossFrames(focus_type,
-                                                           source_frame, this);
-}
-
 void LocalFrame::AdvanceFocusInForm(mojom::blink::FocusType focus_type) {
   auto* focused_frame = GetPage()->GetFocusController().FocusedFrame();
   if (focused_frame != this)
@@ -3432,49 +3015,6 @@ void LocalFrame::AdvanceFocusInForm(mojom::blink::FocusType focus_type) {
 
   next_element->scrollIntoViewIfNeeded(true /*centerIfNeeded*/);
   next_element->focus();
-}
-
-void LocalFrame::ReportContentSecurityPolicyViolation(
-    network::mojom::blink::CSPViolationPtr violation) {
-  auto source_location = std::make_unique<SourceLocation>(
-      violation->source_location->url, violation->source_location->line,
-      violation->source_location->column, nullptr);
-
-  console_->AddMessage(MakeGarbageCollected<ConsoleMessage>(
-      mojom::ConsoleMessageSource::kSecurity,
-      mojom::ConsoleMessageLevel::kError, violation->console_message,
-      source_location->Clone()));
-
-  auto directive_type =
-      ContentSecurityPolicy::GetDirectiveType(violation->effective_directive);
-  LocalFrame* context_frame =
-      directive_type == network::mojom::blink::CSPDirectiveName::FrameAncestors
-          ? this
-          : nullptr;
-
-  DomWindow()->GetContentSecurityPolicy()->ReportViolation(
-      violation->directive, directive_type, violation->console_message,
-      violation->blocked_url, violation->report_endpoints,
-      violation->use_reporting_api, violation->header, violation->type,
-      ContentSecurityPolicy::ContentSecurityPolicyViolationType::kURLViolation,
-      std::move(source_location), context_frame,
-      violation->after_redirect ? RedirectStatus::kFollowedRedirect
-                                : RedirectStatus::kNoRedirect,
-      nullptr /* Element */);
-}
-
-void LocalFrame::DidUpdateFramePolicy(const FramePolicy& frame_policy) {
-  // At the moment, this is only used to replicate sandbox flags and container
-  // policy for frames with a remote owner.
-  SECURITY_CHECK(IsA<RemoteFrameOwner>(Owner()));
-  To<RemoteFrameOwner>(Owner())->SetFramePolicy(frame_policy);
-}
-
-void LocalFrame::OnScreensChange() {
-  if (RuntimeEnabledFeatures::WindowPlacementEnabled(DomWindow())) {
-    // Allow fullscreen requests shortly after user-generated screens changes.
-    transient_allow_fullscreen_.Activate();
-  }
 }
 
 void LocalFrame::PostMessageEvent(
@@ -3530,255 +3070,6 @@ void LocalFrame::PostMessageEvent(
       std::make_unique<SourceLocation>(String(), 0, 0, nullptr),
       message.locked_agent_cluster_id ? message.locked_agent_cluster_id.value()
                                       : base::UnguessableToken());
-}
-
-void LocalFrame::JavaScriptMethodExecuteRequest(
-    const String& object_name,
-    const String& method_name,
-    base::Value arguments,
-    bool wants_result,
-    JavaScriptMethodExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptMethodExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  std::unique_ptr<WebV8ValueConverter> converter =
-      Platform::Current()->CreateWebV8ValueConverter();
-  converter->SetDateAllowed(true);
-  converter->SetRegExpAllowed(true);
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  v8::Local<v8::Value> result;
-  if (!CallMethodOnFrame(this, object_name, method_name, std::move(arguments),
-                         converter.get())
-           .ToLocal(&result)) {
-    std::move(callback).Run({});
-    return;
-  }
-
-  if (wants_result) {
-    std::move(callback).Run(
-        GetJavaScriptExecutionResult(result, this, converter.get()));
-  } else {
-    std::move(callback).Run({});
-  }
-}
-
-void LocalFrame::JavaScriptExecuteRequest(
-    const String& javascript,
-    bool wants_result,
-    JavaScriptExecuteRequestCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  v8::Local<v8::Value> result =
-      ClassicScript::CreateUnspecifiedScript(javascript)
-          ->RunScriptAndReturnValue(DomWindow());
-
-  if (wants_result) {
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
-    converter->SetDateAllowed(true);
-    converter->SetRegExpAllowed(true);
-
-    std::move(callback).Run(
-        GetJavaScriptExecutionResult(result, this, converter.get()));
-  } else {
-    std::move(callback).Run({});
-  }
-}
-
-void LocalFrame::JavaScriptExecuteRequestForTests(
-    const String& javascript,
-    bool wants_result,
-    bool has_user_gesture,
-    int32_t world_id,
-    JavaScriptExecuteRequestForTestsCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequestForTests",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  // A bunch of tests expect to run code in the context of a user gesture, which
-  // can grant additional privileges (e.g. the ability to create popups).
-  if (has_user_gesture)
-    NotifyUserActivation(mojom::blink::UserActivationNotificationType::kTest);
-
-  v8::HandleScope handle_scope(V8PerIsolateData::MainThreadIsolate());
-  v8::Local<v8::Value> result;
-  if (world_id == DOMWrapperWorld::kMainWorldId) {
-    result = ClassicScript::CreateUnspecifiedScript(javascript)
-                 ->RunScriptAndReturnValue(DomWindow());
-  } else {
-    CHECK_GT(world_id, DOMWrapperWorld::kMainWorldId);
-    CHECK_LT(world_id, DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit);
-    // Note: An error event in an isolated world will never be dispatched to
-    // a foreign world.
-    result =
-        ClassicScript::CreateUnspecifiedScript(
-            javascript, SanitizeScriptErrors::kDoNotSanitize)
-            ->RunScriptInIsolatedWorldAndReturnValue(DomWindow(), world_id);
-  }
-
-  if (wants_result) {
-    std::unique_ptr<WebV8ValueConverter> converter =
-        Platform::Current()->CreateWebV8ValueConverter();
-    converter->SetDateAllowed(true);
-    converter->SetRegExpAllowed(true);
-
-    std::move(callback).Run(
-        GetJavaScriptExecutionResult(result, this, converter.get()));
-  } else {
-    std::move(callback).Run({});
-  }
-}
-
-void LocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
-    const String& javascript,
-    bool wants_result,
-    int32_t world_id,
-    JavaScriptExecuteRequestInIsolatedWorldCallback callback) {
-  TRACE_EVENT_INSTANT0("test_tracing",
-                       "JavaScriptExecuteRequestInIsolatedWorld",
-                       TRACE_EVENT_SCOPE_THREAD);
-
-  if (world_id <= DOMWrapperWorld::kMainWorldId ||
-      world_id > DOMWrapperWorld::kDOMWrapperWorldEmbedderWorldIdLimit) {
-    // Returns if the world_id is not valid. world_id is passed as a plain int
-    // over IPC and needs to be verified here, in the IPC endpoint.
-    std::move(callback).Run(base::Value());
-    mojo::ReportBadMessage(kInvalidWorldID);
-    return;
-  }
-
-  v8::HandleScope handle_scope(v8::Isolate::GetCurrent());
-  scoped_refptr<DOMWrapperWorld> isolated_world =
-      DOMWrapperWorld::EnsureIsolatedWorld(ToIsolate(this), world_id);
-  ScriptSourceCode source_code = ScriptSourceCode(javascript);
-  HeapVector<ScriptSourceCode> sources;
-  sources.Append(&source_code, 1);
-  auto* executor = MakeGarbageCollected<PausableScriptExecutor>(
-      DomWindow(), std::move(isolated_world), sources, false /* user_gesture */,
-      MakeGarbageCollected<JavaScriptIsolatedWorldRequest>(
-          this, wants_result, std::move(callback)));
-  executor->Run();
-}
-
-void LocalFrame::BindReportingObserver(
-    mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) {
-  ReportingContext::From(DomWindow())->Bind(std::move(receiver));
-}
-
-void LocalFrame::UpdateOpener(
-    const absl::optional<blink::FrameToken>& opener_frame_token) {
-  if (auto* web_frame = WebFrame::FromCoreFrame(this)) {
-    Frame* opener_frame = nullptr;
-    if (opener_frame_token)
-      opener_frame = Frame::ResolveFrame(opener_frame_token.value());
-    SetOpenerDoNotNotify(opener_frame);
-  }
-}
-
-void LocalFrame::GetSavableResourceLinks(
-    GetSavableResourceLinksCallback callback) {
-  Vector<KURL> resources_list;
-  Vector<mojom::blink::SavableSubframePtr> subframes;
-  SavableResources::Result result(&resources_list, &subframes);
-
-  if (!SavableResources::GetSavableResourceLinksForFrame(this, &result)) {
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  auto referrer = mojom::blink::Referrer::New(GetDocument()->Url(),
-                                              DomWindow()->GetReferrerPolicy());
-
-  auto reply = mojom::blink::GetSavableResourceLinksReply::New();
-  reply->resources_list = std::move(resources_list);
-  reply->referrer = std::move(referrer);
-  reply->subframes = std::move(subframes);
-
-  std::move(callback).Run(std::move(reply));
-}
-
-void LocalFrame::MixedContentFound(
-    const KURL& main_resource_url,
-    const KURL& mixed_content_url,
-    mojom::blink::RequestContextType request_context,
-    bool was_allowed,
-    const KURL& url_before_redirects,
-    bool had_redirect,
-    network::mojom::blink::SourceLocationPtr source_location) {
-  std::unique_ptr<SourceLocation> source;
-  if (source_location) {
-    source = std::make_unique<SourceLocation>(source_location->url,
-                                              source_location->line,
-                                              source_location->column, nullptr);
-  }
-  MixedContentChecker::MixedContentFound(
-      this, main_resource_url, mixed_content_url, request_context, was_allowed,
-      url_before_redirects, had_redirect, std::move(source));
-}
-
-void LocalFrame::ActivateForPrerendering(base::TimeTicks activation_start) {
-  DCHECK(features::IsPrerender2Enabled());
-
-  // https://jeremyroman.github.io/alternate-loading-modes/#prerendering-browsing-context-activate
-  // Step 8.2. "Let inclusiveDescendants be successorBC extended with
-  // successorBC's active document's list of the descendant browsing contexts."
-  // Step 8.3. "For each bc of inclusiveDescendants, queue a global task on the
-  // networking task source, given bc's active window, to perform the following
-  // steps:"
-  GetTaskRunner(TaskType::kNetworking)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&Document::ActivateForPrerendering,
-                           WrapPersistent(GetDocument()), activation_start));
-}
-
-void LocalFrame::BindDevToolsAgent(
-    mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
-    mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
-  DCHECK(Client());
-  Client()->BindDevToolsAgent(std::move(host), std::move(receiver));
-}
-
-#if defined(OS_ANDROID)
-void LocalFrame::ExtractSmartClipData(const gfx::Rect& rect,
-                                      ExtractSmartClipDataCallback callback) {
-  String clip_text;
-  String clip_html;
-  gfx::Rect clip_rect;
-  ExtractSmartClipDataInternal(rect, clip_text, clip_html, clip_rect);
-  std::move(callback).Run(clip_text.IsNull() ? g_empty_string : clip_text,
-                          clip_html.IsNull() ? g_empty_string : clip_html,
-                          clip_rect);
-}
-#endif  // defined(OS_ANDROID)
-
-void LocalFrame::HandleRendererDebugURL(const KURL& url) {
-  DCHECK(IsRendererDebugURL(url));
-  if (url.ProtocolIs("javascript")) {
-    // JavaScript URLs should be sent to Blink for handling.
-    LoadJavaScriptURL(url);
-  } else {
-    // This is a Chrome Debug URL. Handle it.
-    HandleChromeDebugURL(url);
-  }
-
-  // The browser sets its status as loading before calling this IPC. Inform it
-  // that the load stopped if needed, while leaving the debug URL visible in the
-  // address bar.
-  if (!IsLoading())
-    Client()->DidStopLoading();
-}
-
-void LocalFrame::GetCanonicalUrlForSharing(
-    GetCanonicalUrlForSharingCallback callback) {
-  KURL canonical_url;
-  HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
-  if (link_element)
-    canonical_url = link_element->Href();
-  std::move(callback).Run(canonical_url.IsNull()
-                              ? absl::nullopt
-                              : absl::make_optional(canonical_url));
 }
 
 bool LocalFrame::ShouldThrottleDownload() {
@@ -3862,19 +3153,6 @@ void LocalFrame::ExtractSmartClipDataInternal(const gfx::Rect& rect_in_viewport,
                      rect_in_viewport.y() + rect_in_viewport.height());
   clip_html = CreateMarkupInRect(this, View()->ViewportToFrame(start_point),
                                  View()->ViewportToFrame(end_point));
-}
-
-void LocalFrame::BindToReceiver(
-    blink::LocalFrame* frame,
-    mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver) {
-  DCHECK(frame);
-  if (frame->IsDetached())
-    return;
-
-  frame->receiver_.Bind(
-      std::move(receiver),
-      frame->GetTaskRunner(blink::TaskType::kInternalDefault));
-  frame->receiver_.SetFilter(std::make_unique<ActiveURLMessageFilter>(frame));
 }
 
 void LocalFrame::BindTextFragmentReceiver(

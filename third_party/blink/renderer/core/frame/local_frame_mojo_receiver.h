@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
 
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -13,7 +14,10 @@
 
 namespace blink {
 
+class Document;
+class LocalDOMWindow;
 class LocalFrame;
+class Page;
 
 // LocalFrameMojoReceiver is responsible for providing Mojo receivers
 // associated to blink::LocalFrame.
@@ -21,11 +25,12 @@ class LocalFrame;
 // A single LocalFrame instance owns a single LocalFrameMojoReceiver instance.
 class LocalFrameMojoReceiver
     : public GarbageCollected<LocalFrameMojoReceiver>,
+      public mojom::blink::LocalFrame,
       public mojom::blink::LocalMainFrame,
       public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler {
  public:
-  explicit LocalFrameMojoReceiver(LocalFrame& frame);
+  explicit LocalFrameMojoReceiver(blink::LocalFrame& frame);
   void Trace(Visitor* visitor) const;
 
   void WasAttachedAsLocalMainFrame();
@@ -34,6 +39,12 @@ class LocalFrameMojoReceiver
   void ClosePageForTesting();
 
  private:
+  Page* GetPage() const;
+  LocalDOMWindow* DomWindow() const;
+  Document* GetDocument() const;
+
+  void BindToLocalFrameReceiver(
+      mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver);
   void BindToMainFrameReceiver(
       mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver);
   void BindToHighPriorityReceiver(
@@ -41,6 +52,113 @@ class LocalFrameMojoReceiver
   void BindFullscreenVideoElementReceiver(
       mojo::PendingAssociatedReceiver<
           mojom::blink::FullscreenVideoElementHandler> receiver);
+
+  // blink::mojom::LocalFrame overrides:
+  void GetTextSurroundingSelection(
+      uint32_t max_length,
+      GetTextSurroundingSelectionCallback callback) final;
+  void SendInterventionReport(const String& id, const String& message) final;
+  void SetFrameOwnerProperties(
+      mojom::blink::FrameOwnerPropertiesPtr properties) final;
+  void NotifyUserActivation(
+      mojom::blink::UserActivationNotificationType notification_type) final;
+  void NotifyVirtualKeyboardOverlayRect(const gfx::Rect& keyboard_rect) final;
+  void AddMessageToConsole(mojom::blink::ConsoleMessageLevel level,
+                           const WTF::String& message,
+                           bool discard_duplicates) final;
+  void AddInspectorIssue(mojom::blink::InspectorIssueInfoPtr) final;
+  void SwapInImmediately() final;
+  void CheckCompleted() final;
+  void StopLoading() final;
+  void Collapse(bool collapsed) final;
+  void EnableViewSourceMode() final;
+  void Focus() final;
+  void ClearFocusedElement() final;
+  void GetResourceSnapshotForWebBundle(
+      mojo::PendingReceiver<
+          data_decoder::mojom::blink::ResourceSnapshotForWebBundle> receiver)
+      final;
+  void CopyImageAt(const gfx::Point& window_point) final;
+  void SaveImageAt(const gfx::Point& window_point) final;
+  void ReportBlinkFeatureUsage(const Vector<mojom::blink::WebFeature>&) final;
+  void RenderFallbackContent() final;
+  void RenderFallbackContentWithResourceTiming(
+      mojom::blink::ResourceTimingInfoPtr timing,
+      const String& server_timing_values) final;
+  void BeforeUnload(bool is_reload, BeforeUnloadCallback callback) final;
+  void MediaPlayerActionAt(
+      const gfx::Point& window_point,
+      blink::mojom::blink::MediaPlayerActionPtr action) final;
+  void AdvanceFocusInFrame(
+      mojom::blink::FocusType focus_type,
+      const absl::optional<RemoteFrameToken>& source_frame_token) final;
+  void AdvanceFocusInForm(mojom::blink::FocusType focus_type) final;
+  void ReportContentSecurityPolicyViolation(
+      network::mojom::blink::CSPViolationPtr csp_violation) final;
+  // Updates the snapshotted policy attributes (sandbox flags and permissions
+  // policy container policy) in the frame's FrameOwner. This is used when this
+  // frame's parent is in another process and it dynamically updates this
+  // frame's sandbox flags or container policy. The new policy won't take effect
+  // until the next navigation.
+  void DidUpdateFramePolicy(const FramePolicy& frame_policy) final;
+  void OnScreensChange() final;
+  void PostMessageEvent(
+      const absl::optional<RemoteFrameToken>& source_frame_token,
+      const String& source_origin,
+      const String& target_origin,
+      BlinkTransferableMessage message) final;
+  void JavaScriptMethodExecuteRequest(
+      const String& object_name,
+      const String& method_name,
+      base::Value arguments,
+      bool wants_result,
+      JavaScriptMethodExecuteRequestCallback callback) final;
+  void JavaScriptExecuteRequest(
+      const String& javascript,
+      bool wants_result,
+      JavaScriptExecuteRequestCallback callback) final;
+  void JavaScriptExecuteRequestForTests(
+      const String& javascript,
+      bool wants_result,
+      bool has_user_gesture,
+      int32_t world_id,
+      JavaScriptExecuteRequestForTestsCallback callback) final;
+  void JavaScriptExecuteRequestInIsolatedWorld(
+      const String& javascript,
+      bool wants_result,
+      int32_t world_id,
+      JavaScriptExecuteRequestInIsolatedWorldCallback callback) final;
+#if defined(OS_MAC)
+  void GetCharacterIndexAtPoint(const gfx::Point& point) final;
+  void GetFirstRectForRange(const gfx::Range& range) final;
+  void GetStringForRange(const gfx::Range& range,
+                         GetStringForRangeCallback callback) final;
+#endif
+  void BindReportingObserver(
+      mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) final;
+  void UpdateOpener(
+      const absl::optional<blink::FrameToken>& opener_routing_id) final;
+  void GetSavableResourceLinks(GetSavableResourceLinksCallback callback) final;
+  void MixedContentFound(
+      const KURL& main_resource_url,
+      const KURL& mixed_content_url,
+      mojom::blink::RequestContextType request_context,
+      bool was_allowed,
+      const KURL& url_before_redirects,
+      bool had_redirect,
+      network::mojom::blink::SourceLocationPtr source_location) final;
+  void ActivateForPrerendering(base::TimeTicks activation_start) final;
+  void BindDevToolsAgent(
+      mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
+      mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver)
+      final;
+#if defined(OS_ANDROID)
+  void ExtractSmartClipData(const gfx::Rect& rect,
+                            ExtractSmartClipDataCallback callback) final;
+#endif
+  void HandleRendererDebugURL(const KURL& url) final;
+  void GetCanonicalUrlForSharing(
+      GetCanonicalUrlForSharingCallback callback) final;
 
   // blink::mojom::LocalMainFrame overrides:
   void AnimateDoubleTapZoom(const gfx::Point& point,
@@ -82,8 +200,11 @@ class LocalFrameMojoReceiver
   // mojom::FullscreenVideoElementHandler implementation:
   void RequestFullscreenVideoElement() final;
 
-  Member<LocalFrame> frame_;
+  Member<blink::LocalFrame> frame_;
 
+  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
+  HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrameMojoReceiver>
+      local_frame_receiver_{this, nullptr};
   // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame,
                              LocalFrameMojoReceiver>
