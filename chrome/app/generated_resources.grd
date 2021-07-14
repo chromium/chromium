@@ -5814,7 +5814,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
         Up to <ph name="DISCOUNT_UP_TO_AMOUNT">$1<ex>15%</ex></ph> off
       </message>
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT" desc="Text shown on the consent card for rule-based discount asking if users would like to give their consent to the feature.">
-        Allow Google to find discounts on what you add to your carts?
+        Let Google find personalized discounts on your carts?
       </message>
       <message name="IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_ACCEPT" desc="Text shown on the accept button of the consent card for rule-based discount. By clicking this button, users have chosen to opt in the feature and let Google get discounts for them. See consent request in IDS_NTP_MODULES_CART_DISCOUNT_CONSENT_CONTENT.">
         Get discounts
