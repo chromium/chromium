@@ -27,6 +27,7 @@
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 #include "chrome/browser/password_manager/password_manager_test_base.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -35,6 +36,8 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/browser/safe_browsing/user_interaction_observer.h"
@@ -358,6 +361,13 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 manager),
             display_options,
             should_trigger_reporting,
+            HistoryServiceFactory::GetForProfile(
+                Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+                ServiceAccessType::EXPLICIT_ACCESS),
+            SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+                web_contents->GetBrowserContext()),
+            SafeBrowsingMetricsCollectorFactory::GetForProfile(
+                Profile::FromBrowserContext(web_contents->GetBrowserContext())),
             g_browser_process->safe_browsing_service()->trigger_manager()),
         wait_for_delete_(false) {
     // Don't wait the whole 3 seconds for the browser test.

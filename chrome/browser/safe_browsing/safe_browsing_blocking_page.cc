@@ -11,10 +11,6 @@
 #include "base/feature_list.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
-#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
@@ -78,6 +74,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
         controller_client,
     const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
     bool should_trigger_reporting,
+    history::HistoryService* history_service,
+    SafeBrowsingNavigationObserverManager* navigation_observer_manager,
+    SafeBrowsingMetricsCollector* metrics_collector,
     TriggerManager* trigger_manager,
     network::SharedURLLoaderFactory* url_loader_for_testing)
     : BaseBlockingPage(ui_manager,
@@ -88,6 +87,9 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
                        display_options),
       threat_details_in_progress_(false),
       threat_source_(unsafe_resources[0].threat_source),
+      history_service_(history_service),
+      navigation_observer_manager_(navigation_observer_manager),
+      metrics_collector_(metrics_collector),
       trigger_manager_(trigger_manager) {
   if (!trigger_manager_)
     return;
@@ -108,21 +110,17 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
   // through the first warning, so we don't prepare additional reports.
   if (unsafe_resources.size() == 1 &&
       ShouldReportThreatDetails(unsafe_resources[0].threat_type)) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents->GetBrowserContext());
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
         url_loader_for_testing ? url_loader_for_testing
-                               : profile->GetDefaultStoragePartition()
+                               : web_contents->GetBrowserContext()
+                                     ->GetDefaultStoragePartition()
                                      ->GetURLLoaderFactoryForBrowserProcess();
     if (should_trigger_reporting) {
       threat_details_in_progress_ =
           trigger_manager_->StartCollectingThreatDetails(
               TriggerType::SECURITY_INTERSTITIAL, web_contents,
-              unsafe_resources[0], url_loader_factory,
-              HistoryServiceFactory::GetForProfile(
-                  profile, ServiceAccessType::EXPLICIT_ACCESS),
-              SafeBrowsingNavigationObserverManagerFactory::
-                  GetForBrowserContext(web_contents->GetBrowserContext()),
+              unsafe_resources[0], url_loader_factory, history_service_,
+              navigation_observer_manager_,
               sb_error_ui()->get_error_display_options());
     }
   }
@@ -146,12 +144,8 @@ void SafeBrowsingBlockingPage::OnInterstitialClosing() {
   if (!proceeded()) {
     OnDontProceedDone();
   } else {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents()->GetBrowserContext());
-    auto* metrics_collector =
-        SafeBrowsingMetricsCollectorFactory::GetForProfile(profile);
-    if (metrics_collector) {
-      metrics_collector->AddSafeBrowsingEventToPref(
+    if (metrics_collector_) {
+      metrics_collector_->AddSafeBrowsingEventToPref(
           GetEventTypeFromThreatSource(threat_source_));
     }
   }

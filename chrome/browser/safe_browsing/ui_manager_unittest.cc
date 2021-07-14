@@ -8,11 +8,14 @@
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/values.h"
+#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
+#include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -124,6 +127,13 @@ class TestSafeBrowsingBlockingPage : public SafeBrowsingBlockingPage {
                 false,                 // is_safe_browsing_managed
                 "cpn_safe_browsing"),  // help_center_article_link
             true,                      // should_trigger_reporting
+            HistoryServiceFactory::GetForProfile(
+                Profile::FromBrowserContext(web_contents->GetBrowserContext()),
+                ServiceAccessType::EXPLICIT_ACCESS),
+            SafeBrowsingNavigationObserverManagerFactory::GetForBrowserContext(
+                web_contents->GetBrowserContext()),
+            SafeBrowsingMetricsCollectorFactory::GetForProfile(
+                Profile::FromBrowserContext(web_contents->GetBrowserContext())),
             g_browser_process->safe_browsing_service()->trigger_manager()) {
     // Don't delay details at all for the unittest.
     SetThreatDetailsProceedDelayForTesting(0);

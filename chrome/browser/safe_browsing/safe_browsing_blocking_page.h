@@ -36,12 +36,18 @@
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 
+namespace history {
+class HistoryService;
+}
+
 namespace network {
 class SharedURLLoaderFactory;
 }
 
 namespace safe_browsing {
 
+class SafeBrowsingNavigationObserverManager;
+class SafeBrowsingMetricsCollector;
 class ThreatDetails;
 class TriggerManager;
 
@@ -97,6 +103,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
           controller_client,
       const BaseSafeBrowsingErrorUI::SBErrorDisplayOptions& display_options,
       bool should_trigger_reporting,
+      history::HistoryService* history_service,
+      SafeBrowsingNavigationObserverManager* navigation_observer_manager,
+      SafeBrowsingMetricsCollector* metrics_collector,
       TriggerManager* trigger_manager,
       network::SharedURLLoaderFactory* url_loader_for_testing = nullptr);
 
@@ -119,6 +128,9 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
  private:
+  history::HistoryService* history_service_ = nullptr;
+  SafeBrowsingNavigationObserverManager* navigation_observer_manager_ = nullptr;
+  SafeBrowsingMetricsCollector* metrics_collector_ = nullptr;
   TriggerManager* trigger_manager_ = nullptr;
 
   DISALLOW_COPY_AND_ASSIGN(SafeBrowsingBlockingPage);
