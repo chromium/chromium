@@ -55,6 +55,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   // BluetoothDevice override
   uint32_t GetBluetoothClass() const override;
   device::BluetoothTransport GetType() const override;
+  std::string GetIdentifier() const override;
   std::string GetAddress() const override;
   AddressType GetAddressType() const override;
   VendorIDSource GetVendorIDSource() const override;

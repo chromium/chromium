@@ -293,6 +293,13 @@ void BluetoothDeviceBlueZ::OnDisconnectLEError(
 }
 #endif
 
+std::string BluetoothDeviceBlueZ::GetIdentifier() const {
+  // The D-Bus object path is the original Bluetooth device address. If the
+  // device uses a resolvable address that rotates over time, BlueZ will resolve
+  // it back to its original address used for the D-Bus object path.
+  return object_path_.value();
+}
+
 std::string BluetoothDeviceBlueZ::GetAddress() const {
   bluez::BluetoothDeviceClient::Properties* properties =
       bluez::BluezDBusManager::Get()->GetBluetoothDeviceClient()->GetProperties(
