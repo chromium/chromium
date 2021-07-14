@@ -39,7 +39,7 @@ js_library("add_languages_dialog") {
 js_library("edit_dictionary_page") {
   deps = [
     ":languages_browser_proxy",
-    "..:global_scroll_target_behavior",
+    "..:global_scroll_target_mixin",
     "..:route",
     "../prefs:prefs",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",

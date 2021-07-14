@@ -108,12 +108,12 @@ suite('settings-edit-dictionary-page', function() {
           flush();
 
           assertFalse(editDictPage.$.noWordsLabel.hidden);
-          assertFalse(!!editDictPage.$$('#list'));
+          assertFalse(!!editDictPage.shadowRoot.querySelector('#list'));
         });
   });
 
   test('spellcheck edit dictionary page list has words', function() {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     editDictPage.$.newWord.value = 'valid word2';
@@ -121,21 +121,24 @@ suite('settings-edit-dictionary-page', function() {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(2, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        2, editDictPage.shadowRoot.querySelector('#list').items.length);
   });
 
   test('spellcheck edit dictionary page remove is in tab order', function() {
-    const addWordButton = editDictPage.$$('#addWord');
+    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
 
-    const removeWordButton = editDictPage.$$('cr-icon-button');
+    const removeWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', removeWordButton.getAttribute('tabindex'));
     removeWordButton.click();
@@ -148,9 +151,11 @@ suite('settings-edit-dictionary-page', function() {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.$$('#list'));
-    assertEquals(1, editDictPage.$$('#list').items.length);
-    const newRemoveWordButton = editDictPage.$$('cr-icon-button');
+    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertEquals(
+        1, editDictPage.shadowRoot.querySelector('#list').items.length);
+    const newRemoveWordButton =
+        editDictPage.shadowRoot.querySelector('cr-icon-button');
     // Button should be reachable in the tab order.
     assertEquals('0', newRemoveWordButton.getAttribute('tabindex'));
   });

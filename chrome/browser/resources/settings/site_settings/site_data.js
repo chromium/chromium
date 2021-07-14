@@ -25,7 +25,7 @@ import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://re
 import {html, microTask, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin, BaseMixinInterface} from '../base_mixin.js';
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {MetricsBrowserProxyImpl, PrivacyElementInteractions} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
@@ -50,11 +50,8 @@ let CookieRemovePacket;
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SiteDataElementBase = mixinBehaviors(
-    [
-      ListPropertyUpdateBehavior, GlobalScrollTargetBehavior,
-      WebUIListenerBehavior
-    ],
-    BaseMixin(PolymerElement));
+    [ListPropertyUpdateBehavior, WebUIListenerBehavior],
+    GlobalScrollTargetMixin(BaseMixin(PolymerElement)));
 
 /** @polymer */
 class SiteDataElement extends SiteDataElementBase {
@@ -94,7 +91,7 @@ class SiteDataElement extends SiteDataElementBase {
       },
 
       /**
-       * GlobalScrollTargetBehavior
+       * GlobalScrollTargetMixin
        * @override
        */
       subpageRoute: {
@@ -142,7 +139,7 @@ class SiteDataElement extends SiteDataElementBase {
    * @protected
    */
   currentRouteChanged(currentRoute, previousRoute) {
-    GlobalScrollTargetBehaviorImpl.currentRouteChanged.call(this, currentRoute);
+    super.currentRouteChanged(currentRoute);
     // Reload cookies on navigation to the site data page from a different
     // page. Avoid reloading on repeated navigations to the same page, as these
     // are likely search queries.

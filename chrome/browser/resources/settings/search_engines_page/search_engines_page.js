@@ -24,7 +24,7 @@ import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.j
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 
@@ -45,7 +45,7 @@ let SearchEngineEditEvent;
  * @implements {WebUIListenerBehaviorInterface}
  */
 const SettingsSearchEnginesPageElementBase = mixinBehaviors(
-    [GlobalScrollTargetBehavior, WebUIListenerBehavior], PolymerElement);
+    [WebUIListenerBehavior], GlobalScrollTargetMixin(PolymerElement));
 
 /** @polymer */
 class SettingsSearchEnginesPageElement extends
@@ -81,7 +81,7 @@ class SettingsSearchEnginesPageElement extends
       extensions: Array,
 
       /**
-       * Needed by GlobalScrollTargetBehavior.
+       * Needed by GlobalScrollTargetMixin.
        * @override
        */
       subpageRoute: {

@@ -24,10 +24,10 @@ import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_be
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {afterNextRender, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior, GlobalScrollTargetBehaviorImpl} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {ALL_SITES_DIALOG, AllSitesAction2, ContentSetting, ContentSettingsTypes, SortMethod} from './constants.js';
 import {LocalDataBrowserProxy, LocalDataBrowserProxyImpl} from './local_data_browser_proxy.js';
@@ -57,10 +57,9 @@ const AllSitesElementBase = mixinBehaviors(
     [
       I18nBehavior,
       WebUIListenerBehavior,
-      RouteObserverBehavior,
-      GlobalScrollTargetBehavior,
     ],
-    SiteSettingsMixin(PolymerElement));
+    GlobalScrollTargetMixin(
+        RouteObserverMixin(SiteSettingsMixin(PolymerElement))));
 
 /** @polymer */
 class AllSitesElement extends AllSitesElementBase {
@@ -101,7 +100,7 @@ class AllSitesElement extends AllSitesElementBase {
       },
 
       /**
-       * Needed by GlobalScrollTargetBehavior.
+       * Needed by GlobalScrollTargetMixin.
        * @override
        */
       subpageRoute: {
@@ -240,7 +239,7 @@ class AllSitesElement extends AllSitesElementBase {
    * @protected
    */
   currentRouteChanged(currentRoute) {
-    GlobalScrollTargetBehaviorImpl.currentRouteChanged.call(this, currentRoute);
+    super.currentRouteChanged(currentRoute);
     if (currentRoute === routes.SITE_SETTINGS_ALL) {
       this.populateList_();
     }

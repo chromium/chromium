@@ -17,9 +17,9 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
-import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsBehavior} from '../prefs/prefs_behavior.js';
 import {routes} from '../route.js';
@@ -36,7 +36,7 @@ const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
  * @extends {PolymerElement}
  */
 const SettingsEditDictionaryPageElementBase =
-    mixinBehaviors([GlobalScrollTargetBehavior], PolymerElement);
+    GlobalScrollTargetMixin(PolymerElement);
 
 /** @polymer */
 class SettingsEditDictionaryPageElement extends
@@ -58,7 +58,7 @@ class SettingsEditDictionaryPageElement extends
       },
 
       /**
-       * Needed by GlobalScrollTargetBehavior.
+       * Needed by GlobalScrollTargetMixin.
        * @override
        */
       subpageRoute: {

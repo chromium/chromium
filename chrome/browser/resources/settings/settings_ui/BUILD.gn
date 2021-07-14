@@ -14,7 +14,7 @@ js_type_check("closure_compile") {
 
 js_library("settings_ui") {
   deps = [
-    "..:global_scroll_target_behavior",
+    "..:global_scroll_target_mixin",
     "..:page_visibility",
     "..:route",
     "..:router",

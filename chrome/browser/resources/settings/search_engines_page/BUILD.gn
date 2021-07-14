@@ -64,7 +64,7 @@ js_library("search_engines_list") {
 js_library("search_engines_page") {
   deps = [
     ":search_engines_browser_proxy",
-    "..:global_scroll_target_behavior",
+    "..:global_scroll_target_mixin",
     "..:settings_routes",
     "//third_party/polymer/v3_0/components-chromium/iron-list",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

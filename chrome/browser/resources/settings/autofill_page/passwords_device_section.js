@@ -27,12 +27,12 @@ import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerBehavior, WebUIListenerBehaviorInterface} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
 import {StoredAccount, SyncBrowserProxyImpl} from '../people_page/sync_browser_proxy.js';
 import {routes} from '../route.js';
-import {Route, RouteObserverBehavior, Router} from '../router.js';
+import {Route, RouteObserverMixin, Router} from '../router.js';
 
 import {MergePasswordsStoreCopiesBehavior, MergePasswordsStoreCopiesBehaviorInterface} from './merge_passwords_store_copies_behavior.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
@@ -62,11 +62,9 @@ function isEditable(element) {
 const PasswordsDeviceSectionElementBase = mixinBehaviors(
     [
       MergePasswordsStoreCopiesBehavior,
-      GlobalScrollTargetBehavior,
       WebUIListenerBehavior,
-      RouteObserverBehavior,
     ],
-    PolymerElement);
+    GlobalScrollTargetMixin(RouteObserverMixin(PolymerElement)));
 
 /** @polymer */
 class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
@@ -337,11 +335,12 @@ class PasswordsDeviceSectionElement extends PasswordsDeviceSectionElementBase {
   }
 
   /**
-   * From RouteObserverBehavior.
+   * From RouteObserverMixin.
    * @param {!Route|undefined} route
    * @protected
    */
   currentRouteChanged(route) {
+    super.currentRouteChanged(route);
     this.currentRoute_ = route || null;
   }
 

@@ -31,7 +31,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
 import '../controls/extension_controlled_indicator.js';
 import '../controls/settings_toggle_button.js';
-import {GlobalScrollTargetBehavior} from '../global_scroll_target_behavior.js';
+import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
@@ -86,10 +86,9 @@ const PasswordsSectionElementBase = mixinBehaviors(
       WebUIListenerBehavior,
       MergeExceptionsStoreCopiesBehavior,
       MergePasswordsStoreCopiesBehavior,
-      GlobalScrollTargetBehavior,
       PrefsBehavior,
     ],
-    PasswordCheckMixin(PolymerElement));
+    PasswordCheckMixin(GlobalScrollTargetMixin(PolymerElement)));
 
 /** @polymer */
 class PasswordsSectionElement extends PasswordsSectionElementBase {

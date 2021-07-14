@@ -30,7 +30,7 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {Debouncer, html, mixinBehaviors, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
+import {resetGlobalScrollTargetForTesting, setGlobalScrollTarget} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility, pageVisibility} from '../page_visibility.js';
 import {SettingsPrefsElement} from '../prefs/prefs.js';
