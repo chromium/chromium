@@ -3441,6 +3441,15 @@ if (enable_java_templates) {
                         invoker.type == "java_library"
       _build_device_jar =
           invoker.type != "system_java_library" && _supports_android
+
+      _jacoco_instrument =
+          use_jacoco_coverage && _chromium_code && _java_files != [] &&
+          _build_device_jar && (!defined(invoker.testonly) || !invoker.testonly)
+      if (defined(invoker.jacoco_never_instrument)) {
+        _jacoco_instrument =
+            !invoker.jacoco_never_instrument && _jacoco_instrument
+      }
+
       if (_build_host_jar) {
         # Jar files can be needed at runtime (by Robolectric tests or java binaries),
         # so do not put them under obj/.
@@ -3451,13 +3460,25 @@ if (enable_java_templates) {
             "$root_out_dir/lib.java$_target_dir_name/$_output_name.jar"
       }
       if (_build_device_jar) {
-        _device_processed_jar_path =
-            "$target_out_dir/$_output_name.processed.jar"
         _dex_path = "$target_out_dir/$_main_target_name.dex.jar"
         _enable_desugar =
             !defined(invoker.enable_desugar) || invoker.enable_desugar
         _use_classic_desugar =
             defined(invoker.use_classic_desugar) && invoker.use_classic_desugar
+
+        # Build speed optimization: Skip "process device" step if the step
+        # would be just a copy and avoid the copy.
+        _process_device_jar =
+            defined(invoker.bytecode_rewriter_target) || _jacoco_instrument ||
+            (_enable_desugar && _use_classic_desugar) ||
+            defined(invoker.jar_excluded_patterns) ||
+            defined(invoker.jar_included_patterns)
+        if (!_process_device_jar && _is_prebuilt) {
+          _device_processed_jar_path = invoker.jar_path
+        } else {
+          _device_processed_jar_path =
+              "$target_out_dir/$_output_name.processed.jar"
+        }
       }
 
       # For static libraries, the javac jar output is created at the intermediate
@@ -3472,7 +3493,11 @@ if (enable_java_templates) {
       }
 
       if (_has_sources) {
-        _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
+        if (_build_device_jar && !_process_device_jar) {
+          _javac_jar_path = _device_processed_jar_path
+        } else {
+          _javac_jar_path = "$target_out_dir/$_main_target_name.javac.jar"
+        }
         _generated_jar_path =
             "$target_gen_dir/$_main_target_name.generated.srcjar"
       }
@@ -3518,13 +3543,6 @@ if (enable_java_templates) {
       }
 
       _extra_java_deps = []
-      _jacoco_instrument =
-          use_jacoco_coverage && _chromium_code && _java_files != [] &&
-          _build_device_jar && (!defined(invoker.testonly) || !invoker.testonly)
-      if (defined(invoker.jacoco_never_instrument)) {
-        _jacoco_instrument =
-            !invoker.jacoco_never_instrument && _jacoco_instrument
-      }
       if (_jacoco_instrument) {
         _extra_java_deps += [ "//third_party/jacoco:jacocoagent_java" ]
       }
@@ -3940,30 +3958,37 @@ if (enable_java_templates) {
       }
 
       if (_build_device_jar) {
-        _process_device_jar_target_name = "${target_name}__process_device"
-        process_java_library(_process_device_jar_target_name) {
-          forward_variables_from(invoker,
-                                 [
-                                   "jar_excluded_patterns",
-                                   "jar_included_patterns",
-                                 ])
-          input_jar_path = _unprocessed_jar_path
-          jar_deps = _unprocessed_jar_deps + _full_classpath_deps
-          is_device_jar = true
-          output_jar_path = _device_processed_jar_path
-          jacoco_instrument = _jacoco_instrument
-          if (_jacoco_instrument) {
-            java_files = _java_files
-            java_sources_file = _java_sources_file
+        if (_process_device_jar) {
+          _process_device_jar_target_name = "${target_name}__process_device"
+          process_java_library(_process_device_jar_target_name) {
+            forward_variables_from(invoker,
+                                   [
+                                     "jar_excluded_patterns",
+                                     "jar_included_patterns",
+                                   ])
+            input_jar_path = _unprocessed_jar_path
+            jar_deps = _unprocessed_jar_deps + _full_classpath_deps
+            is_device_jar = true
+            output_jar_path = _device_processed_jar_path
+            jacoco_instrument = _jacoco_instrument
+            if (_jacoco_instrument) {
+              java_files = _java_files
+              java_sources_file = _java_sources_file
+            }
+            enable_desugar = _enable_desugar && _use_classic_desugar
+            if (enable_desugar) {
+              build_config = _build_config
+              classpath_deps = _classpath_deps
+              forward_variables_from(invoker, [ "desugar_jars_paths" ])
+            }
           }
-          enable_desugar = _enable_desugar && _use_classic_desugar
-          if (enable_desugar) {
-            build_config = _build_config
-            classpath_deps = _classpath_deps
-            forward_variables_from(invoker, [ "desugar_jars_paths" ])
-          }
+          _process_device_jar_deps = [ ":${_process_device_jar_target_name}" ]
+          _public_deps += _process_device_jar_deps
+        } else {
+          assert(_unprocessed_jar_path == _device_processed_jar_path)
+          _process_device_jar_deps =
+              _unprocessed_jar_deps + _full_classpath_deps
         }
-        _public_deps += [ ":${_process_device_jar_target_name}" ]
 
         dex("${target_name}__dex") {
           forward_variables_from(invoker,
@@ -3980,7 +4005,7 @@ if (enable_java_templates) {
           # change just one class at a time.
           disable_incremental = _is_prebuilt
           output = _dex_path
-          deps = [ ":${_process_device_jar_target_name}" ]
+          deps = _process_device_jar_deps
 
           if (enable_desugar && !_use_classic_desugar) {
             # Desugaring with D8 requires full classpath.
