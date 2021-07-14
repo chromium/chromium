@@ -87,7 +87,7 @@ std::unique_ptr<ConversionManagerImpl> ConversionManagerImpl::CreateForTesting(
 }
 
 ConversionManagerImpl::ConversionManagerImpl(
-    StoragePartition* storage_partition,
+    StoragePartitionImpl* storage_partition,
     const base::FilePath& user_data_directory,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : ConversionManagerImpl(

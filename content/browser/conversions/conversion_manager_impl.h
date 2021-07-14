@@ -38,7 +38,7 @@ namespace content {
 extern CONTENT_EXPORT const base::TimeDelta
     kConversionManagerQueueReportsInterval;
 
-class StoragePartition;
+class StoragePartitionImpl;
 
 // Provides access to the manager owned by the default StoragePartition.
 class ConversionManagerProviderImpl : public ConversionManager::Provider {
@@ -87,7 +87,7 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       size_t max_sent_reports_to_store) WARN_UNUSED_RESULT;
 
   ConversionManagerImpl(
-      StoragePartition* storage_partition,
+      StoragePartitionImpl* storage_partition,
       const base::FilePath& user_data_directory,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
   ConversionManagerImpl(const ConversionManagerImpl& other) = delete;

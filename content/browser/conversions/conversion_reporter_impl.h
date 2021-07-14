@@ -25,7 +25,6 @@ class Clock;
 
 namespace content {
 
-class StoragePartition;
 class StoragePartitionImpl;
 
 // This class is responsible for managing the dispatch of conversion reports to
@@ -51,7 +50,7 @@ class CONTENT_EXPORT ConversionReporterImpl
                             ReportSentCallback sent_callback) = 0;
   };
 
-  ConversionReporterImpl(StoragePartition* storage_partition,
+  ConversionReporterImpl(StoragePartitionImpl* storage_partition,
                          const base::Clock* clock);
   ConversionReporterImpl(const ConversionReporterImpl&) = delete;
   ConversionReporterImpl& operator=(const ConversionReporterImpl&) = delete;

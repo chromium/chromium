@@ -17,12 +17,15 @@
 namespace content {
 
 ConversionReporterImpl::ConversionReporterImpl(
-    StoragePartition* storage_partition,
+    StoragePartitionImpl* storage_partition,
     const base::Clock* clock)
     : clock_(clock),
-      partition_(static_cast<StoragePartitionImpl*>(storage_partition)),
+      partition_(storage_partition),
       network_sender_(
-          std::make_unique<ConversionNetworkSenderImpl>(storage_partition)) {}
+          std::make_unique<ConversionNetworkSenderImpl>(storage_partition)) {
+  DCHECK(clock_);
+  DCHECK(partition_);
+}
 
 ConversionReporterImpl::~ConversionReporterImpl() = default;
 

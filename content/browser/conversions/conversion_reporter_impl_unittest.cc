@@ -16,8 +16,8 @@
 #include "content/browser/conversions/conversion_manager.h"
 #include "content/browser/conversions/conversion_test_utils.h"
 #include "content/browser/conversions/sent_report_info.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
-#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -73,7 +73,8 @@ class ConversionReporterImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
         browser_context_(std::make_unique<TestBrowserContext>()),
         reporter_(std::make_unique<ConversionReporterImpl>(
-            browser_context_->GetDefaultStoragePartition(),
+            static_cast<StoragePartitionImpl*>(
+                browser_context_->GetDefaultStoragePartition()),
             task_environment_.GetMockClock())) {
     auto network_sender = std::make_unique<MockNetworkSender>();
     sender_ = network_sender.get();
