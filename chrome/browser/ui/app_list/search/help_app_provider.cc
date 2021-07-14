@@ -34,6 +34,7 @@
 #include "chromeos/components/help_app_ui/url_constants.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/prefs/pref_service.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
@@ -373,8 +374,10 @@ void HelpAppProvider::LoadIcon() {
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
+  apps::mojom::AppType app_type =
+      app_service_proxy_->AppRegistryCache().GetAppType(web_app::kHelpAppId);
   app_service_proxy_->LoadIcon(
-      apps::mojom::AppType::kWeb, web_app::kHelpAppId, icon_type,
+      app_type, web_app::kHelpAppId, icon_type,
       ash::SharedAppListConfig::instance().suggestion_chip_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&HelpAppProvider::OnLoadIcon, weak_factory_.GetWeakPtr()));

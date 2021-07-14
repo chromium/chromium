@@ -27,6 +27,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/search/search_handler.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
@@ -197,8 +198,11 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
       (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon))
           ? apps::mojom::IconType::kStandard
           : apps::mojom::IconType::kUncompressed;
+  apps::mojom::AppType app_type =
+      app_service_proxy_->AppRegistryCache().GetAppType(
+          web_app::kOsSettingsAppId);
   app_service_proxy_->LoadIcon(
-      apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
+      app_type, web_app::kOsSettingsAppId, icon_type,
       ash::SharedAppListConfig::instance().search_list_icon_dimension(),
       /*allow_placeholder_icon=*/false,
       base::BindOnce(&OsSettingsProvider::OnLoadIcon,
@@ -303,7 +307,7 @@ void OsSettingsProvider::OnAppUpdate(const apps::AppUpdate& update) {
             ? apps::mojom::IconType::kStandard
             : apps::mojom::IconType::kUncompressed;
     app_service_proxy_->LoadIcon(
-        apps::mojom::AppType::kWeb, web_app::kOsSettingsAppId, icon_type,
+        update.AppType(), web_app::kOsSettingsAppId, icon_type,
         ash::SharedAppListConfig::instance().search_list_icon_dimension(),
         /*allow_placeholder_icon=*/false,
         base::BindOnce(&OsSettingsProvider::OnLoadIcon,
