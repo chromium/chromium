@@ -314,6 +314,11 @@ bool NGFragmentItem::IsGeneratedText() const {
   return IsLayoutGeneratedText() || IsStyleGeneratedText();
 }
 
+bool NGFragmentItem::IsFormattingContextRoot() const {
+  const NGPhysicalBoxFragment* box = BoxFragment();
+  return box && box->IsFormattingContextRoot();
+}
+
 bool NGFragmentItem::IsListMarker() const {
   return layout_object_ && layout_object_->IsLayoutNGOutsideListMarker();
 }

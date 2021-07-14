@@ -347,12 +347,10 @@ class CORE_EXPORT NGFragmentItem {
   bool IsStyleGeneratedText() const;
   bool IsGeneratedText() const;
 
+  bool IsFormattingContextRoot() const;
+
   bool IsSymbolMarker() const {
     return TextType() == NGTextType::kSymbolMarker;
-  }
-
-  bool IsFormattingContextRoot() const {
-    return BoxFragment() && !IsInlineBox();
   }
 
   const ShapeResultView* TextShapeResult() const;
