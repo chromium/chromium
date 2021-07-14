@@ -16,7 +16,7 @@ namespace {
 media::VideoCodecProfile ToVideoDecoderConfigCodecProfile(
     openscreen::cast::VideoCodec codec) {
   switch (codec) {
-    // TODO(b/186875732): Determine the values for Hevc and Vp9 experimentally.
+    // TODO(b/186875732): Determine values for Hevc, Vp9, Av1 experimentally.
     case openscreen::cast::VideoCodec::kH264:
       return media::VideoCodecProfile::H264PROFILE_BASELINE;
     case openscreen::cast::VideoCodec::kHevc:
@@ -25,6 +25,8 @@ media::VideoCodecProfile ToVideoDecoderConfigCodecProfile(
       return media::VideoCodecProfile::VP8PROFILE_MIN;
     case openscreen::cast::VideoCodec::kVp9:
       return media::VideoCodecProfile::VP9PROFILE_PROFILE0;
+    case openscreen::cast::VideoCodec::kAv1:
+      return media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN;
     case openscreen::cast::VideoCodec::kNotSpecified:
       break;
   }
@@ -59,6 +61,8 @@ media::VideoCodec ToVideoDecoderConfigCodec(
       return media::VideoCodec::kCodecHEVC;
     case openscreen::cast::VideoCodec::kVp9:
       return media::VideoCodec::kCodecVP9;
+    case openscreen::cast::VideoCodec::kAv1:
+      return media::VideoCodec::kCodecAV1;
     case openscreen::cast::VideoCodec::kNotSpecified:
       break;
   }
