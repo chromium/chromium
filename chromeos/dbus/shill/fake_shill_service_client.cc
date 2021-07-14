@@ -525,10 +525,10 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
   ShillProfileClient::TestInterface* profile_test =
       ShillProfileClient::Get()->GetTestInterface();
   if (property == shill::kProfileProperty) {
-    std::string profile_path;
-    if (value.GetAsString(&profile_path)) {
-      if (!profile_path.empty())
-        profile_test->AddService(profile_path, service_path);
+    const std::string* profile_path = value.GetIfString();
+    if (profile_path) {
+      if (!profile_path->empty())
+        profile_test->AddService(*profile_path, service_path);
     } else {
       LOG(ERROR) << "Profile value is not a String!";
     }
@@ -541,10 +541,8 @@ bool FakeShillServiceClient::SetServiceProperty(const std::string& service_path,
 
   // Notify the Manager if the state changed (affects DefaultService).
   if (property == shill::kStateProperty) {
-    std::string state;
-    value.GetAsString(&state);
     ShillManagerClient::Get()->GetTestInterface()->ServiceStateChanged(
-        service_path, state);
+        service_path, value.is_string() ? value.GetString() : std::string());
   }
 
   // If the State or Visibility changes, the sort order of service lists may

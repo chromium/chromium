@@ -69,9 +69,10 @@ bool GetString(const base::Value& dict, const char* key, std::string* result) {
   // Note: FindPath uses path expansion which is currently required for the
   // fake shill implementations.
   const base::Value* v = dict.FindPathOfType(key, base::Value::Type::STRING);
-  if (!v)
+  if (!v || !v->is_string())
     return false;
-  return v->GetAsString(result);
+  *result = v->GetString();
+  return true;
 }
 
 std::string GetStringValue(const base::Value& dict, const char* key) {

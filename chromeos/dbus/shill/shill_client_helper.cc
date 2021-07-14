@@ -385,8 +385,11 @@ void AppendStringDictionary(const base::Value& dictionary,
     entry_writer.AppendString(it.first);
     const base::Value& value = it.second;
     std::string value_string;
-    if (!value.GetAsString(&value_string))
+    if (value.is_string()) {
+      value_string = value.GetString();
+    } else {
       NET_LOG(ERROR) << "Dictionary value not a string: " << it.first;
+    }
     entry_writer.AppendString(value_string);
     array_writer.CloseContainer(&entry_writer);
   }
@@ -421,8 +424,11 @@ void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
       variant_writer.OpenArray("s", &array_writer);
       for (const auto& value : list->GetList()) {
         std::string value_string;
-        if (!value.GetAsString(&value_string))
+        if (value.is_string()) {
+          value_string = value.GetString();
+        } else {
           NET_LOG(ERROR) << "List value not a string: " << value;
+        }
         array_writer.AppendString(value_string);
       }
       variant_writer.CloseContainer(&array_writer);

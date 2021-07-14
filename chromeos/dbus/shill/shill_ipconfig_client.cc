@@ -113,9 +113,8 @@ void ShillIPConfigClientImpl::SetProperty(const dbus::ObjectPath& ipconfig_path,
       for (const auto& entry : list_value->GetList()) {
         DLOG_IF(ERROR, !entry.is_string())
             << "Unexpected type " << entry.type();
-        std::string str;
-        entry.GetAsString(&str);
-        array_writer.AppendString(str);
+        array_writer.AppendString(entry.is_string() ? entry.GetString()
+                                                    : std::string());
       }
       variant_writer.CloseContainer(&array_writer);
       writer.CloseContainer(&variant_writer);
