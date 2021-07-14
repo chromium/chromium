@@ -115,23 +115,24 @@ PowerHandler::TestAPI::TestAPI(PowerHandler* handler) : handler_(handler) {}
 PowerHandler::TestAPI::~TestAPI() = default;
 
 void PowerHandler::TestAPI::RequestPowerManagementSettings() {
-  base::ListValue args;
-  handler_->HandleRequestPowerManagementSettings(&args);
+  base::Value args(base::Value::Type::LIST);
+  handler_->HandleRequestPowerManagementSettings(
+      &base::Value::AsListValue(args));
 }
 
 void PowerHandler::TestAPI::SetIdleBehavior(IdleBehavior behavior,
                                             bool when_on_ac) {
-  base::ListValue args;
-  args.AppendInteger(static_cast<int>(behavior));
-  args.AppendBoolean(when_on_ac);
-  handler_->HandleSetIdleBehavior(&args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(static_cast<int>(behavior));
+  args.Append(when_on_ac);
+  handler_->HandleSetIdleBehavior(&base::Value::AsListValue(args));
 }
 
 void PowerHandler::TestAPI::SetLidClosedBehavior(
     PowerPolicyController::Action behavior) {
-  base::ListValue args;
-  args.AppendInteger(behavior);
-  handler_->HandleSetLidClosedBehavior(&args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(behavior);
+  handler_->HandleSetLidClosedBehavior(&base::Value::AsListValue(args));
 }
 
 PowerHandler::PowerHandler(PrefService* prefs) : prefs_(prefs) {}

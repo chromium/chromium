@@ -152,7 +152,7 @@ void FingerprintHandler::OnAuthScanDone(
     auto path_it = std::find(fingerprints_paths_.begin(),
                              fingerprints_paths_.end(), matched_path);
     DCHECK(path_it != fingerprints_paths_.end());
-    fingerprint_ids.AppendInteger(
+    fingerprint_ids.Append(
         static_cast<int>(path_it - fingerprints_paths_.begin()));
   }
 

@@ -62,9 +62,9 @@ class DeviceNameHandlerTest : public testing::Test {
 };
 
 TEST_F(DeviceNameHandlerTest, DeviceNameMetadata_DeviceName) {
-  base::ListValue args;
-  args.AppendString("callback-id");
-  handler()->HandleGetDeviceNameMetadata(&args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append("callback-id");
+  handler()->HandleGetDeviceNameMetadata(&base::Value::AsListValue(args));
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());

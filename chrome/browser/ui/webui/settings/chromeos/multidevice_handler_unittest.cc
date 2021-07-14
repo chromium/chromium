@@ -206,9 +206,10 @@ class MultideviceHandlerTest : public testing::Test {
   void CallGetPageContentData() {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    base::ListValue args;
-    args.AppendString("handlerFunctionName");
-    test_web_ui()->HandleReceivedMessage("getPageContentData", &args);
+    base::Value args(base::Value::Type::LIST);
+    args.Append("handlerFunctionName");
+    test_web_ui()->HandleReceivedMessage("getPageContentData",
+                                         &base::Value::AsListValue(args));
 
     EXPECT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -234,8 +235,9 @@ class MultideviceHandlerTest : public testing::Test {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
     base::ListValue args;
-    args.AppendString("handlerFunctionName");
-    test_web_ui()->HandleReceivedMessage("getAndroidSmsInfo", &args);
+    args.Append("handlerFunctionName");
+    test_web_ui()->HandleReceivedMessage("getAndroidSmsInfo",
+                                         &base::Value::AsListValue(args));
 
     ASSERT_EQ(call_data_count_before_call + 1u,
               test_web_ui()->call_data().size());
@@ -383,15 +385,16 @@ class MultideviceHandlerTest : public testing::Test {
                                   bool success) {
     size_t call_data_count_before_call = test_web_ui()->call_data().size();
 
-    base::ListValue args;
-    args.AppendString("handlerFunctionName");
-    args.AppendInteger(static_cast<int>(feature));
-    args.AppendBoolean(enabled);
+    base::Value args(base::Value::Type::LIST);
+    args.Append("handlerFunctionName");
+    args.Append(static_cast<int>(feature));
+    args.Append(enabled);
     if (auth_token)
-      args.AppendString(*auth_token);
+      args.Append(*auth_token);
 
     base::ListValue empty_args;
-    test_web_ui()->HandleReceivedMessage("setFeatureEnabledState", &args);
+    test_web_ui()->HandleReceivedMessage("setFeatureEnabledState",
+                                         &base::Value::AsListValue(args));
     fake_multidevice_setup_client()
         ->InvokePendingSetFeatureEnabledStateCallback(
             feature /* expected_feature */, enabled /* expected_enabled */,

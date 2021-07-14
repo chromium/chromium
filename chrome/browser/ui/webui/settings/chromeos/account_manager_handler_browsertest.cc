@@ -267,9 +267,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   ASSERT_EQ(1UL, account_manager_accounts.size());
 
   // Call "getAccounts".
-  base::ListValue args;
-  args.AppendString(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage, &args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
+                                  &base::Value::AsListValue(args));
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());
@@ -315,9 +316,10 @@ IN_PROC_BROWSER_TEST_P(AccountManagerUIHandlerTest,
   base::RunLoop().RunUntilIdle();
 
   // Call "getAccounts".
-  base::ListValue args;
-  args.AppendString(kHandleFunctionName);
-  web_ui()->HandleReceivedMessage(kGetAccountsMessage, &args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kHandleFunctionName);
+  web_ui()->HandleReceivedMessage(kGetAccountsMessage,
+                                  &base::Value::AsListValue(args));
 
   const content::TestWebUI::CallData& call_data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIResponse", call_data.function_name());

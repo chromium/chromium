@@ -921,7 +921,7 @@ void CupsPrintersHandler::ResolvePrintersDone(
   if (result_code == PpdProvider::SUCCESS) {
     resolved_printers_[manufacturer] = printers;
     for (const auto& printer : printers) {
-      printers_value.AppendString(printer.name);
+      printers_value.Append(printer.name);
     }
   }
   base::DictionaryValue response;
