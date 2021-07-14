@@ -78887,7 +78887,7 @@ would be helpful to identify which type is being sent.
 <enum name="SyncErrorInfoBarAction">
   <int value="0" label="Shown"/>
   <int value="1" label="Dismissed"/>
-  <int value="2" label="Open settings clicked"/>
+  <int value="2" label="Button clicked"/>
 </enum>
 
 <enum name="SyncErrorInfobarTypes">

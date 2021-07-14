@@ -35,6 +35,7 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError.State;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.sync.PassphraseType;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 /**
  * {@link SyncErrorNotifier} displays Android notifications regarding sync errors.
@@ -245,7 +246,9 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
                 .then((realIntent)
                                 -> showNotification(notificationTitle, notificationTextBody,
                                         TrustedVaultKeyRetrievalProxyActivity
-                                                .createKeyRetrievalProxyIntent(realIntent)),
+                                                .createKeyRetrievalProxyIntent(realIntent,
+                                                        TrustedVaultUserActionTriggerForUMA
+                                                                .NOTIFICATION)),
                         (exception)
                                 -> Log.w(TAG, "Error creating key retrieval intent: ", exception));
     }
