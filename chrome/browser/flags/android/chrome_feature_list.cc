@@ -145,9 +145,11 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAndroidLayoutChangeTabReparenting,
     &kAndroidPartnerCustomizationPhenotype,
     &kAndroidSearchEngineChoiceNotification,
+    &kAssistantExplicitVoiceConsent,
     &kAssistantIntentExperimentId,
     &kAssistantIntentPageUrl,
     &kAssistantIntentTranslateInfo,
+    &kAssistantVoiceConsentTapsCounter,
     &kAppLaunchpad,
     &kAppMenuMobileSiteOption,
     &kAppToWebAttribution,
@@ -373,6 +375,9 @@ const base::Feature kAndroidPartnerCustomizationPhenotype{
 const base::Feature kAndroidSearchEngineChoiceNotification{
     "AndroidSearchEngineChoiceNotification", base::FEATURE_ENABLED_BY_DEFAULT};
 
+const base::Feature kAssistantExplicitVoiceConsent{
+    "AssistantExplicitVoiceConsent", base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kAssistantIntentExperimentId{
     "AssistantIntentExperimentId", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -381,6 +386,9 @@ const base::Feature kAssistantIntentPageUrl{"AssistantIntentPageUrl",
 
 const base::Feature kAssistantIntentTranslateInfo{
     "AssistantIntentTranslateInfo", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAssistantVoiceConsentTapsCounter{
+    "AssistantVoiceConsentTapsCounter", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kAppLaunchpad{"AppLaunchpad",
                                   base::FEATURE_DISABLED_BY_DEFAULT};

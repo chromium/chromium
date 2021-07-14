@@ -247,6 +247,19 @@ const char kDnsOverHttpsDescription[] =
     "try to use a secure HTTPS connection to look up the addresses of websites "
     "and other web resources.";
 
+extern const char kAssistantExplicitVoiceConsentName[] =
+    "AssistantExplicitVoiceConsent";
+extern const char kAssistantExplicitVoiceConsentDescription[] =
+    "When enabled, backing off from the consent screen by tapping outside of "
+    "it or pressing the back button are not treated as rejection";
+
+extern const char kAssistantVoiceConstentTapsCounterName[] =
+    "AssistantVoiceConsentTapsCounter";
+extern const char kAssistantVoiceConstentTapsCounterDescription[] =
+    "When enabled, a specified (by a feature param) number of taps outside of "
+    "the consent screen or back button presses will be ignored, but the next "
+    "one will be treated as rejection";
+
 const char kAutofillAlwaysReturnCloudTokenizedCardName[] =
     "Return cloud token details for server credit cards when possible";
 const char kAutofillAlwaysReturnCloudTokenizedCardDescription[] =

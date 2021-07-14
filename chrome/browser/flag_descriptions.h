@@ -157,6 +157,12 @@ extern const char kAndroidPictureInPictureAPIDescription[];
 extern const char kAppCacheName[];
 extern const char kAppCacheDescription[];
 
+extern const char kAssistantExplicitVoiceConsentName[];
+extern const char kAssistantExplicitVoiceConsentDescription[];
+
+extern const char kAssistantVoiceConstentTapsCounterName[];
+extern const char kAssistantVoiceConstentTapsCounterDescription[];
+
 extern const char kAutofillAlwaysReturnCloudTokenizedCardName[];
 extern const char kAutofillAlwaysReturnCloudTokenizedCardDescription[];
 

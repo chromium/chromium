@@ -296,14 +296,33 @@
     "expiry_milestone": 96
   },
   {
+    "name": "assistant-explicit-voice-consent",
+    "owners": [
+      "basiaz",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 96
+  },
+  {
     "name": "assistant-intent-page-url",
-    "owners": [ "jds", "chrome-language@google.com" ],
+    "owners": [
+      "jds",
+      "chrome-language@google.com"
+    ],
     "expiry_milestone": 94
   },
   {
     "name": "assistant-intent-translate-info",
     "owners": [ "jds", "chrome-language@google.com" ],
     "expiry_milestone": 94
+  },
+  {
+    "name": "assistant-voice-consent-taps-counter",
+    "owners": [
+      "basiaz",
+      "chrome-voice@google.com"
+    ],
+    "expiry_milestone": 96
   },
   {
     "name": "auto-screen-brightness",
