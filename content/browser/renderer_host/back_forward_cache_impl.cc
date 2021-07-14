@@ -649,7 +649,7 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   if (!Intersection(rfh->scheduler_tracked_features(),
                     cache_control_no_store_feature)
            .Empty()) {
-    if (!ShouldCacheControlNoStoreEnterBackForwardCache()) {
+    if (!AllowStoringPagesWithCacheControlNoStore()) {
       // Block pages with cache-control: no-store only when
       // |should_cache_control_no_store_enter| flag is false. If true, put the
       // page in and evict later.
@@ -885,6 +885,9 @@ void BackForwardCacheImpl::MaybeEvictDueToCacheControlNoStoreBeforeRestore(
         BackForwardCacheMetrics::NotRestoredReason::
             kCacheControlNoStoreCookieModified);
   } else {
+    // Do not evict if the flag is on when cookies do not change.
+    if (AllowRestoringPagesWithCacheControlNoStore())
+      return;
     entry->render_frame_host->EvictFromBackForwardCacheWithReason(
         BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
   }
@@ -1018,7 +1021,7 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
   if (matching_entry == entries_.end())
     return nullptr;
 
-  if (ShouldCacheControlNoStoreEnterBackForwardCache() &&
+  if (AllowStoringPagesWithCacheControlNoStore() &&
       (*matching_entry)
           ->render_frame_host->scheduler_tracked_features()
           .Has(WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
@@ -1150,12 +1153,21 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   }
 }
 
-bool BackForwardCacheImpl::ShouldCacheControlNoStoreEnterBackForwardCache() {
+bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
   if (!IsBackForwardCacheEnabled())
     return false;
 
   return base::FeatureList::IsEnabled(
       features::kCacheControlNoStoreEnterBackForwardCache);
+}
+
+bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {
+  if (!IsBackForwardCacheEnabled() ||
+      !AllowStoringPagesWithCacheControlNoStore())
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange);
 }
 
 bool BackForwardCache::DisabledReason::operator<(

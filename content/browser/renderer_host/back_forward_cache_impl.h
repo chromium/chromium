@@ -53,6 +53,14 @@ constexpr base::Feature kRecordBackForwardCacheMetricsWithoutEnabling{
 constexpr base::Feature kBackForwardCacheNoTimeEviction{
     "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Restore pages with cache-control:no-store from back/forward cache if there is
+// no cookie change while the page is in cache.
+// TODO(crbug.com/1228611): Enable this feature.
+const base::Feature
+    kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange{
+        "CacheControlNoStoreRestoreFromBackForwardCache",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 // BackForwardCache:
 //
 // After the user navigates away from a document, the old one goes into the
@@ -330,8 +338,12 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void MaybeEvictDueToCacheControlNoStoreBeforeRestore(Entry* rfh);
 
   // Returns true if the flag is on for pages with cache-control:no-store to
+  // get restored from back/forward cache unless cookies change.
+  bool AllowStoringPagesWithCacheControlNoStore();
+
+  // Returns true if the flag is on for pages with cache-control:no-store to
   // temporarily enter back/forward cache.
-  bool ShouldCacheControlNoStoreEnterBackForwardCache();
+  bool AllowRestoringPagesWithCacheControlNoStore();
 
   // Contains the set of stored Entries.
   // Invariant:
