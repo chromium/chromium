@@ -10,6 +10,7 @@ export interface LauncherResultsTableElement {
   $: {
     'headerRow': HTMLTableRowElement,
     'resultsSection': HTMLTableSectionElement,
+    'scoreHeader': HTMLTableCellElement,
   };
 }
 
@@ -29,6 +30,16 @@ export class LauncherResultsTableElement extends PolymerElement {
   // header row in insertion order.
   private headerCells: Map<string, HTMLTableCellElement> = new Map();
 
+  // The result property used to sort the table. 'Score' is the default key, and
+  // this will change whenever the user clicks on a new header to sort by.
+  private sortKey: string = 'Score';
+
+  connectedCallback() {
+    super.connectedCallback();
+    this.$.scoreHeader.addEventListener(
+        'click', () => this.sortTable('Score', /*resultsChanged=*/ false));
+  }
+
   clearResults() {
     this.results.clear();
     this.$.resultsSection.innerHTML = '';
@@ -43,11 +54,45 @@ export class LauncherResultsTableElement extends PolymerElement {
       this.results.set(result.id, result);
       this.addHeaders(Object.keys(result.rankerScores));
     }
+    this.sortTable(this.sortKey, /*resultsChanged=*/ true);
+  }
 
-    // Clear and repopulate the table, sorted by descending score.
-    // TODO(crbug.com/1211232): Allow sorting by other ranking methods.
+  // Appends any new headers to the end of the header row. All new headers
+  // should support sort-on-click.
+  private addHeaders(newHeaders: Array<string>) {
+    for (const header of newHeaders) {
+      if (this.headerCells.has(header)) {
+        continue;
+      }
+      const newCell = this.$.headerRow.insertCell();
+      newCell.textContent = header;
+      newCell.className = 'sort-header';
+      newCell.addEventListener(
+          'click', () => this.sortTable(header, /*resultsChanged=*/ false));
+      this.headerCells.set(header, newCell);
+    }
+  }
+
+  // Repopulates the table with results sorted by the current key in descending
+  // order.
+  private sortTable(sortKey: string, resultsChanged: boolean) {
+    if (!resultsChanged && this.sortKey === sortKey) {
+      return;
+    }
+    this.sortKey = sortKey;
+
     let sortedResults = Array.from(this.results.values());
-    sortedResults.sort((a, b) => b.score - a.score);
+    if (this.sortKey === 'Score') {
+      sortedResults.sort((a, b) => b.score - a.score);
+    } else {
+      const getSortValue = (result: Result): number => {
+        const value = result.rankerScores[this.sortKey];
+        return value === undefined ? 0 : value;
+      };
+      sortedResults.sort((a, b) => getSortValue(b) - getSortValue(a));
+    }
+
+    // Clear and repopulate the results table.
     this.$.resultsSection.innerHTML = '';
     for (const result of sortedResults) {
       const newRow = this.$.resultsSection.insertRow();
@@ -62,18 +107,6 @@ export class LauncherResultsTableElement extends PolymerElement {
         const newCell = newRow.insertCell();
         newCell.textContent = field;
       });
-    }
-  }
-
-  // Appends any new headers to the end of the header row.
-  private addHeaders(newHeaders: Array<string>) {
-    for (const header of newHeaders) {
-      if (this.headerCells.has(header)) {
-        continue;
-      }
-      const newCell = this.$.headerRow.insertCell();
-      newCell.textContent = header;
-      this.headerCells.set(header, newCell);
     }
   }
 
