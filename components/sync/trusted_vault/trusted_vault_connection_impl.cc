@@ -131,7 +131,7 @@ void ProcessJoinSecurityDomainsResponse(
                               /*last_key_version=*/0);
       return;
     case TrustedVaultRequest::HttpStatus::kNotFound:
-    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
       // Local trusted vault keys are outdated.
       std::move(callback).Run(
           TrustedVaultRegistrationStatus::kLocalDataObsolete,
@@ -180,7 +180,7 @@ void ProcessRetrieveIsRecoverabilityDegradedResponse(
       break;
     case TrustedVaultRequest::HttpStatus::kOtherError:
     case TrustedVaultRequest::HttpStatus::kNotFound:
-    case TrustedVaultRequest::HttpStatus::kFailedPrecondition:
+    case TrustedVaultRequest::HttpStatus::kBadRequest:
       std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
       return;
   }

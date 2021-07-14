@@ -132,16 +132,17 @@ void TrustedVaultRequest::OnURLLoadComplete(
       "Sync.TrustedVaultURLFetchResponse",
       http_response_code == 0 ? net_error : http_response_code);
 
+  if (http_response_code == net::HTTP_BAD_REQUEST) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
+                                             std::string());
+    return;
+  }
   if (http_response_code == net::HTTP_NOT_FOUND) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNotFound,
                                              std::string());
     return;
   }
-  if (http_response_code == net::HTTP_PRECONDITION_FAILED) {
-    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kFailedPrecondition,
-                                             std::string());
-    return;
-  }
+
   if (http_response_code != net::HTTP_OK &&
       http_response_code != net::HTTP_NO_CONTENT) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,

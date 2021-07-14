@@ -305,7 +305,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   if (state_.public_key_to_shared_keys.count(member.public_key()) != 0) {
     // Member already exists.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_PRECONDITION_FAILED);
+    response->set_code(net::HTTP_BAD_REQUEST);
     return response;
   }
 
@@ -314,7 +314,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
   if (last_shared_key.epoch() != 0 &&
       last_shared_key.epoch() != state_.current_epoch) {
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_PRECONDITION_FAILED);
+    response->set_code(net::HTTP_BAD_REQUEST);
     return response;
   }
 
@@ -338,7 +338,7 @@ FakeSecurityDomainsServer::HandleJoinSecurityDomainsRequest(
     // Either constant key is not allowed, or request uses the real key without
     // populating the epoch.
     auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_PRECONDITION_FAILED);
+    response->set_code(net::HTTP_BAD_REQUEST);
     return response;
   }
 

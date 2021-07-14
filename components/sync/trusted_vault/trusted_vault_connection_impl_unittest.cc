@@ -479,9 +479,8 @@ TEST_F(TrustedVaultConnectionImplTest,
                                           /*response_content=*/std::string()));
 }
 
-TEST_F(
-    TrustedVaultConnectionImplTest,
-    ShouldHandleFailedJoinSecurityDomainsRequestWithPreconditionFailedStatus) {
+TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleFailedJoinSecurityDomainsRequestWithBadRequestStatus) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());
 
@@ -497,13 +496,13 @@ TEST_F(
           /*authentication_factor_type_hint=*/absl::nullopt, callback.Get());
   ASSERT_THAT(request, NotNull());
 
-  // In particular, HTTP_PRECONDITION_FAILED indicates that
+  // In particular, HTTP_BAD_REQUEST indicates that
   // |last_trusted_vault_key_and_version| is not actually the last on the server
   // side.
   EXPECT_CALL(callback,
               Run(Eq(TrustedVaultRegistrationStatus::kLocalDataObsolete)));
   EXPECT_TRUE(
-      RespondToJoinSecurityDomainsRequest(net::HTTP_PRECONDITION_FAILED,
+      RespondToJoinSecurityDomainsRequest(net::HTTP_BAD_REQUEST,
                                           /*response_content=*/std::string()));
 }
 

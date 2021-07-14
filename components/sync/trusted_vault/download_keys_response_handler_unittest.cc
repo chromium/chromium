@@ -108,13 +108,13 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
               /*response_body=*/std::string())
           .status,
       Eq(TrustedVaultDownloadKeysStatus::kMemberNotFoundOrCorrupted));
-  EXPECT_THAT(handler()
-                  .ProcessResponse(
-                      /*http_status=*/TrustedVaultRequest::HttpStatus::
-                          kFailedPrecondition,
-                      /*response_body=*/std::string())
-                  .status,
-              Eq(TrustedVaultDownloadKeysStatus::kOtherError));
+  EXPECT_THAT(
+      handler()
+          .ProcessResponse(
+              /*http_status=*/TrustedVaultRequest::HttpStatus::kBadRequest,
+              /*response_body=*/std::string())
+          .status,
+      Eq(TrustedVaultDownloadKeysStatus::kOtherError));
   EXPECT_THAT(
       handler()
           .ProcessResponse(
