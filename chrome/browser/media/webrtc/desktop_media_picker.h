@@ -59,8 +59,10 @@ class DesktopMediaPicker {
     std::u16string target_name;
     // Whether audio capture should be shown as an option in the picker.
     bool request_audio = false;
-    // Whether audio capture option should be approved by default if shown.
-    bool approve_audio_by_default = true;
+    // Normally, the media-picker sets the default states for the audio
+    // checkboxes. If |force_audio_checkboxes_to_default_checked| is |true|,
+    // it sets them all to |checked|.
+    bool force_audio_checkboxes_to_default_checked = false;
     // This flag controls the behvior in the case where the picker is invoked to
     // select a screen and there is only one screen available.  If true, the
     // dialog is bypassed entirely and the screen is automatically selected.

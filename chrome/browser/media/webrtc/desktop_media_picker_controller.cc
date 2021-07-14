@@ -90,8 +90,7 @@ void DesktopMediaPickerController::OnInitialMediaListFound() {
     content::DesktopMediaID media_id = source_list->GetSource(0).id;
     DCHECK_EQ(media_id.type, content::DesktopMediaID::TYPE_SCREEN);
 #if defined(USE_CRAS) || defined(OS_WIN)
-    media_id.audio_share =
-        params_.request_audio && params_.approve_audio_by_default;
+    media_id.audio_share = params_.request_audio;
 #else
     media_id.audio_share = false;
 #endif

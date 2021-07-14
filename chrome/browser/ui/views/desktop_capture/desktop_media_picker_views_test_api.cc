@@ -38,6 +38,11 @@ void DesktopMediaPickerViewsTestApi::FocusSourceAtIndex(size_t index,
   }
 }
 
+bool DesktopMediaPickerViewsTestApi::AudioSupported(
+    DesktopMediaList::Type type) const {
+  return DesktopMediaPickerDialogView::AudioSupported(type);
+}
+
 void DesktopMediaPickerViewsTestApi::FocusAudioCheckbox() {
   picker_->dialog_->audio_share_checkbox_->RequestFocus();
 }

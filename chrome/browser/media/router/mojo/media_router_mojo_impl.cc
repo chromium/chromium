@@ -99,7 +99,7 @@ DesktopMediaPickerController::Params MakeDesktopPickerParams(
   params.target_name = params.app_name;
   params.select_only_screen = true;
   params.request_audio = true;
-  params.approve_audio_by_default = true;
+  params.force_audio_checkboxes_to_default_checked = true;
 
   return params;
 }

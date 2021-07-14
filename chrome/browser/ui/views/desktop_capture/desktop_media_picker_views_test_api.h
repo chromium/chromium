@@ -32,6 +32,8 @@ class DesktopMediaPickerViewsTestApi {
 
   void set_picker(DesktopMediaPickerViews* picker) { picker_ = picker; }
 
+  bool AudioSupported(DesktopMediaList::Type type) const;
+
   void FocusAudioCheckbox();
   void PressMouseOnSourceAtIndex(size_t index, bool double_click = false);
   void PressKeyOnSourceAtIndex(size_t index, const ui::KeyEvent& event);

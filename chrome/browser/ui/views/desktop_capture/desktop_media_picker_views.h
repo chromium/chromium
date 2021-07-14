@@ -71,7 +71,8 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   struct DisplaySurfaceCategory {
     DisplaySurfaceCategory(
         DesktopMediaList::Type type,
-        std::unique_ptr<DesktopMediaListController> controller);
+        std::unique_ptr<DesktopMediaListController> controller,
+        bool audio_checked);
 
     DisplaySurfaceCategory(DisplaySurfaceCategory&& other);
 
@@ -79,7 +80,12 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
     DesktopMediaList::Type type;
     std::unique_ptr<DesktopMediaListController> controller;
+    bool audio_checked;
   };
+
+  static bool AudioSupported(DesktopMediaList::Type type);
+
+  void SetAudioCheckboxAt(int index);
 
   void OnSourceTypeSwitched(int index);
 
@@ -91,6 +97,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
   DesktopMediaList::Type GetSelectedSourceListType() const;
 
   content::WebContents* const web_contents_;
+  const bool audio_requested_;
 
   DesktopMediaPickerViews* parent_;
 
@@ -100,6 +107,7 @@ class DesktopMediaPickerDialogView : public views::DialogDelegateView,
 
   views::TabbedPane* tabbed_pane_ = nullptr;
   std::vector<DisplaySurfaceCategory> categories_;
+  int previously_selected_category_ = 0;
 
   DialogSource dialog_source_;
 
