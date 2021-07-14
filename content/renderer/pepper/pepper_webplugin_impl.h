@@ -81,7 +81,7 @@ class PepperWebPluginImpl : public blink::WebPlugin {
   void PrintEnd() override;
 
   bool CanRotateView() override;
-  void RotateView(RotationType type) override;
+  void RotateView(blink::WebPlugin::RotationType type) override;
   bool IsPlaceholder() override;
   void DidLoseMouseLock() override;
   void DidReceiveMouseLockResult(bool success) override;

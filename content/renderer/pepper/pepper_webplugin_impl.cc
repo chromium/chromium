@@ -461,7 +461,7 @@ bool PepperWebPluginImpl::CanRotateView() {
   return instance_->CanRotateView();
 }
 
-void PepperWebPluginImpl::RotateView(RotationType type) {
+void PepperWebPluginImpl::RotateView(blink::WebPlugin::RotationType type) {
   // Re-entrancy may cause JS to try to execute script on the plugin before it
   // is fully initialized. See: crbug.com/715747.
   if (instance_)

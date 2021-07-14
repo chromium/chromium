@@ -167,6 +167,8 @@ class PdfViewWebPlugin final : public PdfViewPluginBase,
                  int identifier) override;
   void SelectFindResult(bool forward, int identifier) override;
   void StopFind() override;
+  bool CanRotateView() override;
+  void RotateView(blink::WebPlugin::RotationType type) override;
   blink::WebTextInputType GetPluginTextInputType() override;
 
   // PdfViewPluginBase:

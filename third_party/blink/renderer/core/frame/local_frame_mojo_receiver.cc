@@ -205,11 +205,11 @@ void LocalFrameMojoReceiver::PluginActionAt(
 
   switch (action) {
     case mojom::blink::PluginActionType::kRotate90Clockwise:
-      plugin_view->Plugin()->RotateView(WebPlugin::kRotationType90Clockwise);
+      plugin_view->Plugin()->RotateView(WebPlugin::RotationType::k90Clockwise);
       return;
     case mojom::blink::PluginActionType::kRotate90Counterclockwise:
       plugin_view->Plugin()->RotateView(
-          WebPlugin::kRotationType90Counterclockwise);
+          WebPlugin::RotationType::k90Counterclockwise);
       return;
   }
   NOTREACHED();

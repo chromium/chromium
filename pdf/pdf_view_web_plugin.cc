@@ -496,6 +496,23 @@ void PdfViewWebPlugin::StopFind() {
   // dismissed.
 }
 
+bool PdfViewWebPlugin::CanRotateView() {
+  return !IsPrintPreview();
+}
+
+void PdfViewWebPlugin::RotateView(blink::WebPlugin::RotationType type) {
+  DCHECK(CanRotateView());
+
+  switch (type) {
+    case blink::WebPlugin::RotationType::k90Clockwise:
+      engine()->RotateClockwise();
+      break;
+    case blink::WebPlugin::RotationType::k90Counterclockwise:
+      engine()->RotateCounterclockwise();
+      break;
+  }
+}
+
 blink::WebTextInputType PdfViewWebPlugin::GetPluginTextInputType() {
   return text_input_type_;
 }

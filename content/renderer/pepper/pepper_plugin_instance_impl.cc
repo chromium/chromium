@@ -1945,7 +1945,7 @@ void PepperPluginInstanceImpl::RotateView(WebPlugin::RotationType type) {
   if (!LoadPdfInterface())
     return;
   PP_PrivatePageTransformType transform_type =
-      type == WebPlugin::kRotationType90Clockwise
+      type == WebPlugin::RotationType::k90Clockwise
           ? PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CW
           : PP_PRIVATEPAGETRANSFORMTYPE_ROTATE_90_CCW;
   plugin_pdf_interface_->Transform(pp_instance(), transform_type);
