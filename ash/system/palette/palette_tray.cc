@@ -126,6 +126,7 @@ class BatteryView : public views::View {
 
     icon_->SetImage(stylus_battery_delegate_.GetBatteryImage());
     label_->SetVisible(stylus_battery_delegate_.IsBatteryLevelLow() &&
+                       stylus_battery_delegate_.IsBatteryStatusEligible() &&
                        !stylus_battery_delegate_.IsBatteryStatusStale() &&
                        !stylus_battery_delegate_.IsBatteryCharging());
   }

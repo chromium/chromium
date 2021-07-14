@@ -89,7 +89,7 @@ bool StylusBatteryDelegate::IsBatteryLevelLow() const {
 }
 
 bool StylusBatteryDelegate::ShouldShowBatteryStatus() const {
-  return last_update_timestamp_.has_value();
+  return last_update_timestamp_.has_value() && last_update_eligible_;
 }
 
 bool StylusBatteryDelegate::IsBatteryStatusStale() const {
@@ -98,6 +98,10 @@ bool StylusBatteryDelegate::IsBatteryStatusStale() const {
 
   return (base::TimeTicks::Now() - last_update_timestamp_.value()) >
          kStylusBatteryStatusStaleThreshold;
+}
+
+bool StylusBatteryDelegate::IsBatteryStatusEligible() const {
+  return last_update_eligible_;
 }
 
 bool StylusBatteryDelegate::IsBatteryInfoValid(
@@ -136,6 +140,7 @@ void StylusBatteryDelegate::OnUpdatedBatteryLevel(
   battery_level_ = battery.level;
   battery_charge_status_ = battery.charge_status;
   last_update_timestamp_ = battery.last_active_update_timestamp;
+  last_update_eligible_ = battery.battery_report_eligible;
   if (battery_update_callback_)
     battery_update_callback_.Run();
 }

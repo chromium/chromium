@@ -31,6 +31,7 @@ class ASH_EXPORT StylusBatteryDelegate
   bool IsBatteryCharging() const;
   bool IsBatteryLevelLow() const;
   bool IsBatteryStatusStale() const;
+  bool IsBatteryStatusEligible() const;
   bool ShouldShowBatteryStatus() const;
 
   absl::optional<uint8_t> battery_level() const { return battery_level_; }
@@ -51,6 +52,7 @@ class ASH_EXPORT StylusBatteryDelegate
       PeripheralBatteryListener::BatteryInfo::ChargeStatus::kUnknown;
   absl::optional<uint8_t> battery_level_;
   absl::optional<base::TimeTicks> last_update_timestamp_;
+  bool last_update_eligible_ = false;
 
   Callback battery_update_callback_;
   base::ScopedObservation<PeripheralBatteryListener,

@@ -726,7 +726,7 @@ const base::Feature kMultilingualTyping{"MultilingualTyping",
 // also making the Nearby Connections WebRTC defaults longer.
 const base::Feature kNearbyKeepAliveFix{"NearbyKeepAliveFix",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
-                                        
+
 // Controls whether new Lockscreen reauth layout is shown or not.
 const base::Feature kNewLockScreenReauthLayout{
     "NewLockScreenReauthLayout", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -997,7 +997,7 @@ const base::Feature kSyncConsentOptional{"SyncConsentOptional",
 
 // Enables battery indicator for styluses in the palette tray
 const base::Feature kStylusBatteryStatus{"StylusBatteryStatus",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Enables or disables using the system input engine for physical typing in
 // languages based on latin script.

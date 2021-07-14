@@ -154,7 +154,7 @@ void PeripheralBatteryNotifier::OnRemovingBattery(
 
 void PeripheralBatteryNotifier::UpdateBattery(
     const PeripheralBatteryListener::BatteryInfo& battery_info) {
-  if (!battery_info.level) {
+  if (!battery_info.level || !battery_info.battery_report_eligible) {
     CancelNotification(battery_info);
     return;
   }
