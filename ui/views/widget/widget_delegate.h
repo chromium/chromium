@@ -142,10 +142,6 @@ class VIEWS_EXPORT WidgetDelegate {
   // menu bars, etc.) changes in size.
   virtual void OnWorkAreaChanged();
 
-  // Called when the widget's initialization is beginning, right after the
-  // ViewsDelegate decides to use this WidgetDelegate for a Widget.
-  virtual void OnWidgetInitializing() {}
-
   // Called when the widget's initialization is complete.
   virtual void OnWidgetInitialized() {}
 
@@ -373,7 +369,6 @@ class VIEWS_EXPORT WidgetDelegate {
   // SetCanMinimize, and SetCanResize.
   void SetHasWindowSizeControls(bool has_controls);
 
-  void RegisterWidgetInitializingCallback(base::OnceClosure callback);
   void RegisterWidgetInitializedCallback(base::OnceClosure callback);
   void RegisterWindowWillCloseCallback(base::OnceClosure callback);
   void RegisterWindowClosingCallback(base::OnceClosure callback);
@@ -431,10 +426,9 @@ class VIEWS_EXPORT WidgetDelegate {
   // WidgetDelegate if the client has given ownership to the Widget.
   bool* destructor_ran_ = nullptr;
 
-  // The first two are stored as unique_ptrs to make it easier to check in the
+  // This is stored as a unique_ptr to make it easier to check in the
   // registration methods whether a callback is being registered too late in the
   // WidgetDelegate's lifecycle.
-  std::unique_ptr<ClosureVector> widget_initializing_callbacks_;
   std::unique_ptr<ClosureVector> widget_initialized_callbacks_;
   ClosureVector window_will_close_callbacks_;
   ClosureVector window_closing_callbacks_;
