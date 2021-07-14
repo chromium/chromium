@@ -16,11 +16,14 @@
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -343,7 +346,8 @@ class TestContentAutofillDriver : public ContentAutofillDriver {
   using ContentAutofillDriver::DidNavigateFrame;
 };
 
-class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
+class ContentAutofillDriverTest : public content::RenderViewHostTestHarness,
+                                  public ::testing::WithParamInterface<bool> {
  public:
   enum class NavigationType {
     kNormal,
@@ -351,6 +355,15 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
     kServedFromBackForwardCache,
     kPrerenderedPageActivation,
   };
+
+  ContentAutofillDriverTest() : autofill_across_iframes_(GetParam()) {
+    std::vector<base::Feature> enabled;
+    std::vector<base::Feature> disabled;
+    (autofill_across_iframes_ ? enabled : disabled)
+        .push_back(features::kAutofillAcrossIframes);
+    scoped_feature_list_.InitWithFeatures(enabled, disabled);
+  }
+
   void SetUp() override {
     content::RenderViewHostTestHarness::SetUp();
     // This needed to keep the WebContentsObserverConsistencyChecker checks
@@ -398,6 +411,19 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
+  FormData SeeAddressFormData() {
+    FormData form;
+    test::CreateTestAddressFormData(&form);
+    std::vector<FormData> augmented_forms;
+    EXPECT_CALL(*driver_->mock_browser_autofill_manager(), ShouldParseForms(_))
+        .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
+    driver_->FormsSeen({form});
+    return augmented_forms.front();
+  }
+
+  bool autofill_across_iframes_ = false;
+  base::test::ScopedFeatureList scoped_feature_list_;
+
   std::unique_ptr<MockAutofillClient> test_autofill_client_;
   std::unique_ptr<ContentAutofillRouter> router_;
   std::unique_ptr<TestContentAutofillDriver> driver_;
@@ -405,27 +431,27 @@ class ContentAutofillDriverTest : public content::RenderViewHostTestHarness {
   FakeAutofillAgent fake_agent_;
 };
 
-TEST_F(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
+TEST_P(ContentAutofillDriverTest, NavigatedMainFrameDifferentDocument) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset());
   Navigate(NavigationType::kNormal);
 }
 
-TEST_F(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
+TEST_P(ContentAutofillDriverTest, NavigatedMainFrameSameDocument) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(NavigationType::kSameDocument);
 }
 
-TEST_F(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
+TEST_P(ContentAutofillDriverTest, NavigatedMainFrameFromBackForwardCache) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(NavigationType::kServedFromBackForwardCache);
 }
 
-TEST_F(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
+TEST_P(ContentAutofillDriverTest, NavigatedMainFramePrerenderedPageActivation) {
   EXPECT_CALL(*driver_->mock_browser_autofill_manager(), Reset()).Times(0);
   Navigate(NavigationType::kPrerenderedPageActivation);
 }
 
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
+TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
   form.fields.push_back(FormFieldData());
@@ -455,7 +481,7 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   EXPECT_EQ(form2.fields.front().host_frame, form2.fields.front().host_frame);
 }
 
-TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
+TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
   FormData form;
   FormFieldData field;
@@ -471,10 +497,9 @@ TEST_F(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   EXPECT_EQ(field2.host_frame, field.host_frame);
 }
 
-TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
-  int input_page_id = 42;
-  FormData input_form_data;
-  test::CreateTestAddressFormData(&input_form_data);
+TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
+  int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  FormData input_form_data = SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->SendFormDataToRenderer(input_page_id,
@@ -494,10 +519,9 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
                   .SameFormAs(output_form_data));
 }
 
-TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
-  int input_page_id = 42;
-  FormData input_form_data;
-  test::CreateTestAddressFormData(&input_form_data);
+TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
+  int input_page_id = autofill_across_iframes_ ? kCrossFrameFill : 42;
+  FormData input_form_data = SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->SendFormDataToRenderer(input_page_id,
@@ -516,7 +540,7 @@ TEST_F(ContentAutofillDriverTest, FormDataSentToRenderer_PreviewForm) {
   EXPECT_TRUE(input_form_data.SameFormAs(output_form_data));
 }
 
-TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
+TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       switches::kShowAutofillTypePredictions);
 
@@ -548,8 +572,8 @@ TEST_F(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
   EXPECT_EQ(expected_type_predictions, output_type_predictions);
 }
 
-TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
-  FieldGlobalId field = test::MakeFieldGlobalId();
+TEST_P(ContentAutofillDriverTest, AcceptDataListSuggestion) {
+  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barfoo");
   std::u16string output_value;
 
@@ -563,7 +587,8 @@ TEST_F(ContentAutofillDriverTest, AcceptDataListSuggestion) {
   EXPECT_EQ(input_value, output_value);
 }
 
-TEST_F(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
+TEST_P(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
+  SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->RendererShouldClearFilledSection();
@@ -572,7 +597,8 @@ TEST_F(ContentAutofillDriverTest, ClearFilledSectionSentToRenderer) {
   EXPECT_TRUE(fake_agent_.GetCalledClearSection());
 }
 
-TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
+TEST_P(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
+  SeeAddressFormData();
   base::RunLoop run_loop;
   fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
   driver_->RendererShouldClearPreviewedForm();
@@ -581,8 +607,8 @@ TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
   EXPECT_TRUE(fake_agent_.GetCalledClearPreviewedForm());
 }
 
-TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
-  FieldGlobalId field = test::MakeFieldGlobalId();
+TEST_P(ContentAutofillDriverTest, FillFieldWithValue) {
+  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
   std::u16string output_value;
 
@@ -595,8 +621,8 @@ TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {
   EXPECT_EQ(input_value, output_value);
 }
 
-TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
-  FieldGlobalId field = test::MakeFieldGlobalId();
+TEST_P(ContentAutofillDriverTest, PreviewFieldWithValue) {
+  FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
   std::u16string input_value(u"barqux");
   std::u16string output_value;
 
@@ -610,7 +636,7 @@ TEST_F(ContentAutofillDriverTest, PreviewFieldWithValue) {
   EXPECT_EQ(input_value, output_value);
 }
 
-TEST_F(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
+TEST_P(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
   struct TestCase {
     version_info::Channel channel;
     bool heavy_scraping_enabled;
@@ -636,5 +662,9 @@ TEST_F(ContentAutofillDriverTest, EnableHeavyFormDataScraping) {
     testing::Mock::VerifyAndClearExpectations(&fake_agent_);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(ContentAutofillDriverTest,
+                         ContentAutofillDriverTest,
+                         testing::Bool());
 
 }  // namespace autofill

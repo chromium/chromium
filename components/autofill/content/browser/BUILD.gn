@@ -14,6 +14,8 @@ static_library("browser") {
     "content_autofill_driver_factory.h",
     "content_autofill_router.cc",
     "content_autofill_router.h",
+    "form_forest.cc",
+    "form_forest.h",
     "risk/fingerprint.cc",
     "risk/fingerprint.h",
   ]
@@ -71,6 +73,8 @@ source_set("test_support") {
   sources = [
     "content_autofill_driver_test_api.h",
     "content_autofill_router_test_api.h",
+    "form_forest_test_api.cc",
+    "form_forest_test_api.h",
   ]
 
   public_deps = [ ":browser" ]
@@ -83,6 +87,7 @@ source_set("unit_tests") {
   sources = [
     "autofill_internals_log_router_unittest.cc",
     "content_autofill_driver_unittest.cc",
+    "form_forest_unittest.cc",
   ]
 
   deps = [

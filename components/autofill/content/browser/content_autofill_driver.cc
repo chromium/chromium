@@ -99,7 +99,10 @@ ContentAutofillDriver::ContentAutofillDriver(
   }
 }
 
-ContentAutofillDriver::~ContentAutofillDriver() = default;
+ContentAutofillDriver::~ContentAutofillDriver() {
+  if (autofill_router_)  // Can be nullptr only in tests.
+    autofill_router_->UnregisterDriver(this);
+}
 
 void ContentAutofillDriver::TriggerReparse() {
   GetAutofillAgent()->TriggerReparse();
@@ -247,11 +250,11 @@ void ContentAutofillDriver::SendFieldsEligibleForManualFillingToRendererImpl(
 }
 
 void ContentAutofillDriver::RendererShouldAcceptDataListSuggestionImpl(
-    const FieldGlobalId& field,
+    const FieldRendererId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->AcceptDataListSuggestion(field.renderer_id, value);
+  GetAutofillAgent()->AcceptDataListSuggestion(field, value);
 }
 
 void ContentAutofillDriver::RendererShouldClearFilledSectionImpl() {
@@ -267,27 +270,27 @@ void ContentAutofillDriver::RendererShouldClearPreviewedFormImpl() {
 }
 
 void ContentAutofillDriver::RendererShouldFillFieldWithValueImpl(
-    const FieldGlobalId& field,
+    const FieldRendererId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->FillFieldWithValue(field.renderer_id, value);
+  GetAutofillAgent()->FillFieldWithValue(field, value);
 }
 
 void ContentAutofillDriver::RendererShouldPreviewFieldWithValueImpl(
-    const FieldGlobalId& field,
+    const FieldRendererId& field,
     const std::u16string& value) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->PreviewFieldWithValue(field.renderer_id, value);
+  GetAutofillAgent()->PreviewFieldWithValue(field, value);
 }
 
 void ContentAutofillDriver::RendererShouldSetSuggestionAvailabilityImpl(
-    const FieldGlobalId& field,
+    const FieldRendererId& field,
     const mojom::AutofillState state) {
   if (!RendererIsAvailable())
     return;
-  GetAutofillAgent()->SetSuggestionAvailability(field.renderer_id, state);
+  GetAutofillAgent()->SetSuggestionAvailability(field, state);
 }
 
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(

@@ -185,16 +185,16 @@ class ContentAutofillDriver : public AutofillDriver,
                                   const FormData& data);
   void SendAutofillTypePredictionsToRendererImpl(
       const std::vector<FormDataPredictions>& forms);
-  void RendererShouldAcceptDataListSuggestionImpl(const FieldGlobalId& field,
+  void RendererShouldAcceptDataListSuggestionImpl(const FieldRendererId& field,
                                                   const std::u16string& value);
   void RendererShouldClearFilledSectionImpl();
   void RendererShouldClearPreviewedFormImpl();
-  void RendererShouldFillFieldWithValueImpl(const FieldGlobalId& field,
+  void RendererShouldFillFieldWithValueImpl(const FieldRendererId& field,
                                             const std::u16string& value);
-  void RendererShouldPreviewFieldWithValueImpl(const FieldGlobalId& field,
+  void RendererShouldPreviewFieldWithValueImpl(const FieldRendererId& field,
                                                const std::u16string& value);
   void RendererShouldSetSuggestionAvailabilityImpl(
-      const FieldGlobalId& field,
+      const FieldRendererId& field,
       const mojom::AutofillState state);
   void SendFieldsEligibleForManualFillingToRendererImpl(
       const std::vector<FieldRendererId>& fields);

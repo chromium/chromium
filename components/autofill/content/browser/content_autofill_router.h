@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/containers/flat_map.h"
+#include "components/autofill/content/browser/form_forest.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -25,119 +26,114 @@ class AutofillableData;
 class ContentAutofillDriver;
 
 // ContentAutofillRouter routes events between ContentAutofillDriver objects in
-// order to handle frame-transcending forms. The precise definition follows, but
-// essentially a frame-transcending form is a <form> which contain <iframe>s
-// with form controls that logically belong to the <form>. For example in credit
-// card forms, it is common that the credit card number is entered into an
-// <iframe> that is hosted on a different server than the one that hosts the
-// main page.
+// order to handle frame-transcending forms.
 //
+// A *frame-transcending* form is a form whose logical fields live in different
+// frames. For example, credit card forms often have the credit card number
+// field in an iframe hosted by a payment service provider.
 //
-// Each form control element belongs to one (synthetic or real) form. The *host
-// frame* of a form is the frame whose DOM contains the form.
-// A form is a *child form* of its host frame.
+// A frame-transcending form therefore consists of multiple *renderer forms*.
+// ContentAutofillRouter *flattens* these forms into a single *browser form*,
+// and maps all events concerning the renderer forms to that browser form, and
+// vice versa.
 //
-// A form can contain nested <iframe>s. The *host form* of a frame is the
-// (synthetic or real) form that contains the <iframe> that embeds the frame: if
-// the <iframe> is a descendant of a <form>, that form is the host form;
-// otherwise, the synthetic form is the host form.
-// A frame is a *child frame* of its host form.
+// That way, the collection of renderer forms appears as one ordinary form to
+// the browser.
 //
-// The described host-to-child relationship induces a forest of trees whose
-// nodes are forms and frames. Every tree with forms from different frames (<=>
-// with at least two forms) is called a *frame-transcending form*.
-//
-// *Flattening* refers to the process of collapsing the non-root forms of such a
-// tree into the root form. That is, flattening maps a hierarchy of forms to a
-// single form. This is done by inserting the non-root forms' fields into the
-// root form according to the cross-frame DOM order.
-//
-// The intention is that the browser shall only work with flattened forms. We
-// refer to the forms of the form tree as the *renderer forms*, and to the
-// flattened forms as *browser forms*. The inverse of flattening,
-// *unflattening*, is the process of determining from a browser form the
-// renderer forms that constitute that flattened form.
-//
-// For example, for the following pseudo HTML code,
+// For example, consider the following pseudo HTML code:
 //   <html>
-//   <form id="form1">
-//     <input id="field1">
-//     <iframe id="frame1">
-//       <input id="field2">
+//   <form id="Form-1">
+//     <input id="Field-1">
+//     <iframe id="Frame-1">
+//       <input id="Field-2">
 //     </iframe>
-//     <iframe id="frame2">
-//       <iframe id="frame3">
-//         <form id="form2">
-//           <input id="field3">
+//     <iframe id="Frame-2">
+//       <iframe id="Frame-3">
+//         <form id="Form-2">
+//           <input id="Field-3">
 //         </form>
-//         <form id="form3">
-//           <input id="field4">
+//         <form id="Form-3">
+//           <input id="Field-4">
 //         </form>
 //       </iframe>
 //     </iframe>
-//     <input id="field5">
+//     <input id="Field-5">
 //   </form>
-// the renderer forms will be in pseudo C++ code
-//   FormData{  // form1 in main frame.
-//     .name = "form1",
-//     .fields = { "field1", "field5" },
-//     .child_frames = { "frame1", "frame2" }
-//   }
-//   FormData{  // Synthetic form in frame1.
-//     .fields = { "field2" },
-//     .child_frames = { }
-//   }
-//   FormData{  // Synthetic form in frame2.
-//     .fields = { },
-//     .child_frames = { "frame3" }
-//   }
-//   FormData{  // form2 in frame3.
-//     .fields = { "field3" },
-//     .child_frames = { }
-//   }
-//   FormData{  // form3 in frame3.
-//     .fields = { "field4" },
-//     .child_frames = { }
-//   }
-// which by flattening are turned into one form
+//
+// Forms can be actual <form> elements or synthetic forms: <input>, <select>,
+// and <iframe> elements that are not in the scope of any <form> belong to the
+// enclosing frame's synthetic form.
+//
+// The five renderer forms are therefore, in pseudo C++ code:
 //   FormData{
-//     .name = "form1",
-//     .fields = { "field1", "field2", "field3", "field4", "field5" }
+//     .host_frame = "Frame-0",  // The main frame.
+//     .name = "Form-1",
+//     .fields = { "Field-1", "Field-5" },
+//     .child_frames = { "Frame-1", "Frame-2" }
 //   }
-// Unflattening the flattened form produces the above renderer forms.
+//   FormData{
+//     .host_frame = "Frame-1",
+//     .name = "synthetic",
+//     .fields = { "Field-2" },
+//     .child_frames = { }
+//   }
+//   FormData{
+//     .host_frame = "Frame-2",
+//     .name = "synthetic",
+//     .fields = { },
+//     .child_frames = { "Frame-3" }
+//   }
+//   FormData{
+//     .host_frame = "Frame-3",
+//     .name = "Form-2",
+//     .fields = { "Field-3" },
+//     .child_frames = { }
+//   }
+//   FormData{
+//     .host_frame = "Frame-3",
+//     .name = "Form-3",
+//     .fields = { "Field-4" },
+//     .child_frames = { }
+//   }
 //
+// The browser form of these renderer forms is obtained by flattening the fields
+// into the root form:
+//   FormData{
+//     .name = "Form-1",
+//     .fields = { "Field-1", "Field-2", "Field-3", "Field-4", "Field-5" }
+//   }
 //
-// ContentAutofillRouter's job is to
-// 1. flatten renderer forms and/or unflatten flattened forms, and
-// 2. route the communication between the renderer forms on the one hand and the
-//    flattened form on the other hand.
-//
-// The routing is necessary because after flattening,
-// 1. events coming from an AutofillAgent concerning a renderer form need to be
-//    routed to the flattened form's AutofillManager, and
-// 2. events coming from an AutofillManager concerning a flattened form need to
-//    be routed to the AutofillAgents whose forms constitute the flattened form.
-//
-// ContentAutofillRouter carries out this routing at a ContentAutofillDriver
-// level: each event in ContentAutofillDriver calls the identically-named
-// function of ContentAutofillRouter, which then routes the call back to one or
-// multiple ContentAutofillDrivers.
-//
-// For example, an event coming from AutofillAgent 1 might be routed from
-// ContentAutofillDriver 1 to ContentAutofillDriver 2 and then be handled by
-// AutofillManager 2:
+// Let AutofillAgent-N, ContentAutofillRouter-N, and AutofillManager-N
+// correspond to the Frame-N. ContentAutofillRouter would route an event
+// concerning any of the forms in Frame-3 from ContentAutofillDriver-3 to
+// ContentAutofillDriver-0:
 //
 //   +---Tab---+            +---Tab----+            +----Tab----+
-//   | Agent 1 | ---------> | Driver 1 | -----+     | Manager 1 |
-//   |         |            |          |      |     |           |
-//   | Agent 2 |      +---> | Driver 2 | -----|---> | Manager 2 |
+//   | Agent-0 |      +---> | Driver-0 | ---------> | Manager-0 |
+//   |         |      |     |          |            |           |
+//   | Agent-1 |      |     | Driver-1 |            | Manager-1 |
+//   |         |      |     |          |            |           |
+//   | Agent-2 |      |     | Driver-2 |            | Manager-2 |
+//   |         |      |     |          |            |           |
+//   | Agent-3 | -----|---> | Driver-3 | -----+     | Manager-3 |
 //   +---------+      |     +----------+      |     +-----------+
 //                    |                       |
 //                    |      +--Tab---+       |
 //                    +----- | Router | <-----+
 //                           +--------+
 //
+// If the event name is `f`, the control flow is as follows:
+//   Driver-3's ContentAutofillDriver::f(args...) calls
+//   Router's   ContentAutofillRouter::f(this, args...) calls
+//   Driver-0's ContentAutofillDriver::fImpl(args...).
+//
+// Every function in ContentAutofillRouter takes a |source_driver| parameter,
+// which points to the ContentAutofillDriver that triggered the event. In events
+// triggered by the renderer, the source driver is the driver the associated
+// renderer form originates from.
+//
 // See ContentAutofillDriver for details on the naming pattern and an example.
+//
 // See FormForest for details on (un)flattening.
 class ContentAutofillRouter {
  public:
@@ -147,15 +143,20 @@ class ContentAutofillRouter {
   ~ContentAutofillRouter();
 
   // Deletes all forms and fields related to |driver| (and this driver only).
-  // Should be called whenever |driver| is destroyed.
+  // Must be called whenever |driver| is destroyed.
   void UnregisterDriver(ContentAutofillDriver* driver);
 
-  void Reset() {}
+  // Resets the object to the initial state.
+  void Reset();
 
   // Returns the ContentAutofillDriver* for which QueryFormFieldAutofill() was
   // called last.
-  ContentAutofillDriver* last_queried_source() const { return nullptr; }
+  ContentAutofillDriver* last_queried_source() const {
+    return last_queried_source_;
+  }
 
+  // Registers the key-press handler with the driver that last called
+  // QueryFormFieldAutofill(), that is, |last_queried_source_|.
   void SetKeyPressHandler(
       ContentAutofillDriver* source_driver,
       const content::RenderWidgetHost::KeyPressEventCallback& handler);
@@ -220,7 +221,7 @@ class ContentAutofillRouter {
       const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map);
   void SendAutofillTypePredictionsToRenderer(
       ContentAutofillDriver* source_driver,
-      const std::vector<FormDataPredictions> type_predictions);
+      const std::vector<FormDataPredictions>& type_predictions);
   void SendFieldsEligibleForManualFillingToRenderer(
       ContentAutofillDriver* source_driver,
       const std::vector<FieldGlobalId>& fields);
@@ -240,6 +241,36 @@ class ContentAutofillRouter {
       ContentAutofillDriver* source_driver,
       const FieldGlobalId& field,
       const mojom::AutofillState state);
+
+ private:
+  friend class ContentAutofillRouterTestApi;
+
+  // Returns the driver of |frame| stored in |form_forest_|.
+  ContentAutofillDriver* DriverOfFrame(LocalFrameToken frame);
+
+  // Calls ContentAutofillDriver::TriggerReparse() for all drivers in
+  // |form_forest_| except for |exception|.
+  void TriggerReparseExcept(ContentAutofillDriver* exception);
+
+  // Update the last queried and source and do cleanup work.
+  void SetLastQueriedSource(ContentAutofillDriver* source);
+  void SetLastQueriedTarget(ContentAutofillDriver* target);
+
+  // The forest of forms. See its documentation for the usage protocol.
+  internal::FormForest form_forest_;
+
+  // The driver that triggered the last QueryFormFieldAutofill() call.
+  // Update with SetLastQueriedSource().
+  ContentAutofillDriver* last_queried_source_ = nullptr;
+  // The driver to which the last QueryFormFieldAutofill() call was routed.
+  // Update with SetLastQueriedTarget().
+  ContentAutofillDriver* last_queried_target_ = nullptr;
+
+  // When the focus moves to a different frame, the order of the events
+  // FocusNoLongerOnForm() and FocusOnFormField() may be reversed due to race
+  // conditions. We use these members to correct the order of the events.
+  LocalFrameToken focused_frame_;
+  bool focus_no_longer_on_form_has_fired_ = true;
 };
 
 }  // namespace autofill

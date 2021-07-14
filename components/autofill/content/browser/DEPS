@@ -9,6 +9,7 @@ include_rules = [
   "+services/device/public",
   "+services/service_manager/public/mojom",
   "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom/permissions_policy",
 ]
 
 specific_include_rules = {

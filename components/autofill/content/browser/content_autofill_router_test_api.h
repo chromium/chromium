@@ -18,11 +18,11 @@ class ContentAutofillRouterTestApi {
   }
 
   void set_last_queried_source(ContentAutofillDriver* driver) {
-    // No-op before http://crrev.com/c/2531999.
+    router_->last_queried_source_ = driver;
   }
 
   void set_last_queried_target(ContentAutofillDriver* driver) {
-    // No-op before http://crrev.com/c/2531999.
+    router_->last_queried_target_ = driver;
   }
 
  private:

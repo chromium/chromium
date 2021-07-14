@@ -403,10 +403,21 @@ void AutofillAgent::TriggerRefillIfNeeded(const FormData& form) {
 
 // mojom::AutofillAgent:
 void AutofillAgent::FillForm(int32_t id, const FormData& form) {
+  // If |element_| is null or not focused, a Autofill was triggered from another
+  // frame. In this case, set |element_| to some form field as if Autofill had
+  // been triggered from that field. This is necessary because currently
+  // AutofillAgent's relies on |elemet_| in many places.
+  if (id == kCrossFrameFill && !form.fields.empty() &&
+      (element_.IsNull() || !element_.Focused())) {
+    WebDocument document = render_frame()->GetWebFrame()->GetDocument();
+    element_ = form_util::FindFormControlElementByUniqueRendererId(
+        document, form.fields.front().unique_renderer_id);
+  }
+
   if (element_.IsNull())
     return;
 
-  if (id != autofill_query_id_ && id != kNoQueryId)
+  if (id != autofill_query_id_ && id != kNoQueryId && id != kCrossFrameFill)
     return;
 
   was_last_action_fill_ = true;
@@ -431,10 +442,21 @@ void AutofillAgent::FillForm(int32_t id, const FormData& form) {
 }
 
 void AutofillAgent::PreviewForm(int32_t id, const FormData& form) {
+  // If |element_| is null or not focused, a Autofill was triggered from another
+  // frame. In this case, set |element_| to some form field as if Autofill had
+  // been triggered from that field. This is necessary because currently
+  // AutofillAgent's relies on |elemet_| in many places.
+  if (id == kCrossFrameFill && !form.fields.empty() &&
+      (element_.IsNull() || !element_.Focused())) {
+    WebDocument document = render_frame()->GetWebFrame()->GetDocument();
+    element_ = form_util::FindFormControlElementByUniqueRendererId(
+        document, form.fields.front().unique_renderer_id);
+  }
+
   if (element_.IsNull())
     return;
 
-  if (id != autofill_query_id_)
+  if (id != autofill_query_id_ && id != kCrossFrameFill)
     return;
 
   ClearPreviewedForm();
