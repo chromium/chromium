@@ -25,6 +25,20 @@
     assert_throws_js(TypeError, _ => div.setHTML("abc", null));
   }, "Sanitizer: Element.setHTML throws with insufficient arguments.");
 
+  for (const context of ["script", "iframe", "object", "div"]) {
+    const should_fail = context != "div";
+    test(t => {
+      let elem = document.createElement(context);
+      let probe_fn = _ => elem.setHTML("<div>Hello!</div>", new Sanitizer());
+      if (should_fail) {
+        assert_throws_js(TypeError, probe_fn);
+      } else {
+        probe_fn();
+      }
+      assert_equals(should_fail, !elem.firstChild);
+    }, `${context}.setHTML should ${should_fail ? "fail" : "pass"}.`);
+  }
+
   for(const context of ["div", "template", "table"]) {
     const elem1 = document.createElement(context);
     const elem2 = document.createElement(context);

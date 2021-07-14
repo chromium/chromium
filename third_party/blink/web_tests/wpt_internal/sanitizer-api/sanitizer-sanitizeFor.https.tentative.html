@@ -30,6 +30,18 @@
       assert_throws_js(TypeError, _ => s.sanitizeFor("xxx"));
     }, "Sanitizer.sanitizeFor() with one argument should throw.");
 
+    for (const context of ["script", "iframe", "object", "div"]) {
+      const should_fail = context != "div";
+      test(t => {
+        let result = new Sanitizer().sanitizeFor(context, "<div>Hello!</div>");
+        if (should_fail) {
+          assert_equals(null, result);
+        } else {
+          assert_true(result instanceof HTMLElement);
+        }
+      }, `Sanitizer.sanitizeFor("${context}", ...) should ${should_fail ? "fail" : "pass"}.`);
+    }
+
     test(t => {
       const probe = `<a href="about:blank">hello</a><script>con` +
           `sole.log("world!");<` + `/script>`;
@@ -43,7 +55,7 @@
       }
     }, `Sanitizer.sanitizeFor(element, ..)`);
 
-    for(const context of ["div", "template", "table"]) {
+    for (const context of ["div", "template", "table"]) {
       for (const probe of ["<em>Hello</em>", "<td>data</td>"]) {
         test(t => {
           assert_node_equals(

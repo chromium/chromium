@@ -135,6 +135,8 @@ Element* Sanitizer::sanitizeFor(ScriptState* script_state,
                                 const String& local_name,
                                 const String& markup,
                                 ExceptionState& exception_state) {
+  if (baseline_drop_elements_.Contains(local_name.UpperASCII()))
+    return nullptr;
   LocalDOMWindow* window = LocalDOMWindow::From(script_state);
   Element* element = window->document()->CreateElementForBinding(
       AtomicString(local_name), exception_state);
@@ -161,8 +163,12 @@ void Sanitizer::ElementSetHTML(ScriptState* script_state,
                                ExceptionState& exception_state) {
   Element* new_element =
       sanitizeFor(script_state, element.localName(), markup, exception_state);
-  if (!new_element || exception_state.HadException())
+  if (exception_state.HadException())
     return;
+  if (!new_element) {
+    exception_state.ThrowTypeError("setHTML not allowed on this element type.");
+    return;
+  }
   element.RemoveChildren();
   while (Node* to_be_moved = new_element->firstChild())
     element.AppendChild(to_be_moved);
