@@ -100,6 +100,9 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   bool FirePageFlipTimerForTest();
   bool cardified_state_for_testing() const { return cardified_state_; }
   int BackgroundCardCountForTesting() const { return background_cards_.size(); }
+  // Returns bounds within the apps grid view for the background card layer
+  // with provided card index.
+  gfx::Rect GetBackgroundCardBoundsForTesting(size_t card_index);
   void set_page_flip_delay_for_testing(base::TimeDelta page_flip_delay) {
     page_flip_delay_ = page_flip_delay;
   }

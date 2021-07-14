@@ -468,11 +468,15 @@ void PagedAppsGridView::Layout() {
   }
   if (cardified_state_) {
     DCHECK(!background_cards_.empty());
-    MaybeCreateGradientMask();
     // Make sure that the background cards render behind everything
     // else in the items container.
-    for (auto& background_card : background_cards_)
-      items_container()->layer()->StackAtBottom(background_card.get());
+    for (size_t i = 0; i < background_cards_.size(); ++i) {
+      ui::Layer* const background_card = background_cards_[i].get();
+      background_card->SetBounds(BackgroundCardBounds(i));
+      items_container()->layer()->StackAtBottom(background_card);
+    }
+    MaskContainerToBackgroundBounds();
+    MaybeCreateGradientMask();
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
 }
@@ -742,6 +746,16 @@ bool PagedAppsGridView::FirePageFlipTimerForTest() {
     return false;
   page_flip_timer_.FireNow();
   return true;
+}
+
+gfx::Rect PagedAppsGridView::GetBackgroundCardBoundsForTesting(
+    size_t card_index) {
+  DCHECK_LT(card_index, background_cards_.size());
+  gfx::Rect bounds_in_items_container = background_cards_[card_index]->bounds();
+  gfx::Point origin_in_apps_grid = bounds_in_items_container.origin();
+  views::View::ConvertPointToTarget(items_container(), this,
+                                    &origin_in_apps_grid);
+  return gfx::Rect(origin_in_apps_grid, bounds_in_items_container.size());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

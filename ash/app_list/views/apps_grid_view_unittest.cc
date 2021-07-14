@@ -3002,6 +3002,156 @@ TEST_P(AppsGridViewCardifiedStateTest, PeekingCardOnLastPage) {
   EndDrag(apps_grid_view_, false /*cancel*/);
 }
 
+TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBounds) {
+  model_->PopulateApps(30);
+
+  gfx::NativeView parent = GetContext();
+  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(1024, 768)));
+  app_list_view_->OnParentWindowBoundsChanged();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Enter cardified state.
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+  ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
+
+  // Verify that all items in the current page fit within the background card.
+  gfx::Rect background_card_bounds =
+      apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
+  gfx::Rect clip_rect = apps_grid_view_->layer()->clip_rect();
+  gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+
+  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << first_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << first_item_bounds.ToString();
+
+  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(3, 4);
+  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << last_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << last_item_bounds.ToString();
+
+  // Simulate rotation by updating the bounds of the widget in which the app
+  // list was shown.
+  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(768, 1024)));
+  app_list_view_->OnParentWindowBoundsChanged();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
+
+  // Verify that all items in the current page fit within the background card.
+  background_card_bounds =
+      apps_grid_view_->GetBackgroundCardBoundsForTesting(0);
+  clip_rect = apps_grid_view_->layer()->clip_rect();
+  first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+
+  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << first_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << first_item_bounds.ToString();
+
+  last_item_bounds = GetItemRectOnCurrentPageAt(4, 3);
+  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << last_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << last_item_bounds.ToString();
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
+  EXPECT_EQ(gfx::Rect(), apps_grid_view_->layer()->clip_rect());
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+  EXPECT_EQ(0, apps_grid_view_->BackgroundCardCountForTesting());
+}
+
+TEST_P(AppsGridViewCardifiedStateTest, BackgroundCardBoundsOnSecondPage) {
+  model_->PopulateApps(30);
+
+  gfx::NativeView parent = GetContext();
+  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(1024, 768)));
+  app_list_view_->OnParentWindowBoundsChanged();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  // Enter cardified state, and drag the item to the second apps grid page.
+  const gfx::Point from = GetItemRectOnCurrentPageAt(0, 0).CenterPoint();
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+  const gfx::Point to_in_next_page =
+      test_api_->GetItemTileRectAtVisualIndex(1, 0).CenterPoint();
+  // Drag the first item to the next page to create another page.
+  UpdateDragToNeighborPage(true /* next_page */, to_in_next_page);
+
+  // Trigger cardified state again.
+  InitiateDrag(AppsGridView::MOUSE, from, apps_grid_view_);
+
+  ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
+
+  // Verify that all items in the current page fit within the background card.
+  gfx::Rect background_card_bounds =
+      apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
+  gfx::Rect clip_rect = apps_grid_view_->layer()->clip_rect();
+  gfx::Rect first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+
+  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << first_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << first_item_bounds.ToString();
+
+  gfx::Rect last_item_bounds = GetItemRectOnCurrentPageAt(3, 4);
+  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << last_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << last_item_bounds.ToString();
+
+  // Simulate rotation by updating the bounds of the widget in which the app
+  // list was shown.
+  parent->SetBounds(gfx::Rect(gfx::Point(0, 0), gfx::Size(768, 1024)));
+  app_list_view_->OnParentWindowBoundsChanged();
+  apps_grid_view_->GetWidget()->LayoutRootViewIfNecessary();
+
+  ASSERT_TRUE(apps_grid_view_->cardified_state_for_testing());
+  ASSERT_EQ(3, apps_grid_view_->BackgroundCardCountForTesting());
+
+  // Verify that all items in the current page fit within the background card.
+  background_card_bounds =
+      apps_grid_view_->GetBackgroundCardBoundsForTesting(1);
+  clip_rect = apps_grid_view_->layer()->clip_rect();
+  first_item_bounds = GetItemRectOnCurrentPageAt(0, 0);
+
+  EXPECT_TRUE(background_card_bounds.Contains(first_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << first_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(first_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << first_item_bounds.ToString();
+
+  last_item_bounds = GetItemRectOnCurrentPageAt(4, 3);
+  EXPECT_TRUE(background_card_bounds.Contains(last_item_bounds))
+      << " background card bounds " << background_card_bounds.ToString()
+      << " item bounds " << last_item_bounds.ToString();
+  EXPECT_TRUE(clip_rect.Contains(last_item_bounds))
+      << " clip rect " << clip_rect.ToString() << " item bounds "
+      << last_item_bounds.ToString();
+
+  EndDrag(apps_grid_view_, false /*cancel*/);
+  EXPECT_EQ(gfx::Rect(), apps_grid_view_->layer()->clip_rect());
+  EXPECT_FALSE(apps_grid_view_->cardified_state_for_testing());
+  EXPECT_EQ(0, apps_grid_view_->BackgroundCardCountForTesting());
+}
+
 TEST_P(AppsGridViewCardifiedStateTest,
        PeekingCardOnLastPageAfterCreatingNewPage) {
   // Create only one page with two apps.
