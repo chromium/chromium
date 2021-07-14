@@ -43,15 +43,15 @@ import {canEditNode, canReorderChildren, getDisplayedList} from './util.js';
 
 const BookmarksCommandManagerElementBase =
     mixinBehaviors([StoreClient], PolymerElement) as {
-  new (): PolymerElement & BookmarksStoreClientInterface &
-          StoreObserver<BookmarksPageState>
-}
+      new (): PolymerElement & BookmarksStoreClientInterface &
+      StoreObserver<BookmarksPageState>
+    };
 
 export interface BookmarksCommandManagerElement {
   $: {
-    dropdown: CrLazyRenderElement,
-    editDialog: CrLazyRenderElement,
-    openDialog: CrLazyRenderElement,
+    dropdown: CrLazyRenderElement<CrActionMenuElement>,
+    editDialog: CrLazyRenderElement<BookmarksEditDialogElement>,
+    openDialog: CrLazyRenderElement<CrDialogElement>,
   }
 }
 
@@ -177,7 +177,7 @@ export class BookmarksCommandManagerElement extends
     this.menuSource_ = source;
     this.menuIds_ = items || this.getState().selection.items;
 
-    const dropdown = (this.$.dropdown.get()) as CrActionMenuElement;
+    const dropdown = this.$.dropdown.get();
     // Ensure that the menu is fully rendered before trying to position it.
     flush();
     DialogFocusManager.getInstance().showDialog(
@@ -194,7 +194,7 @@ export class BookmarksCommandManagerElement extends
     this.menuSource_ = source;
     this.menuIds_ = this.getState().selection.items;
 
-    const dropdown = this.$.dropdown.get() as CrActionMenuElement;
+    const dropdown = this.$.dropdown.get();
     // Ensure that the menu is fully rendered before trying to position it.
     flush();
     DialogFocusManager.getInstance().showDialog(
@@ -206,7 +206,7 @@ export class BookmarksCommandManagerElement extends
   closeCommandMenu() {
     this.menuIds_ = new Set();
     this.menuSource_ = MenuSource.NONE;
-    (this.$.dropdown.get() as CrActionMenuElement).close();
+    this.$.dropdown.get().close();
   }
 
   ////////////////////////////////////////////////////////////////////////////
@@ -322,8 +322,7 @@ export class BookmarksCommandManagerElement extends
     switch (command) {
       case Command.EDIT: {
         const id = Array.from(itemIds)[0]!;
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
-            .showEditDialog(state.nodes[id]!);
+        this.$.editDialog.get().showEditDialog(state.nodes[id]!);
         break;
       }
       case Command.COPY_URL:
@@ -424,12 +423,12 @@ export class BookmarksCommandManagerElement extends
         getToastManager().show(loadTimeData.getString('toastFolderSorted'));
         break;
       case Command.ADD_BOOKMARK:
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
-            .showAddDialog(false, assert(state.selectedFolder));
+        this.$.editDialog.get().showAddDialog(
+            false, assert(state.selectedFolder));
         break;
       case Command.ADD_FOLDER:
-        (this.$.editDialog.get() as BookmarksEditDialogElement)
-            .showAddDialog(true, assert(state.selectedFolder));
+        this.$.editDialog.get().showAddDialog(
+            true, assert(state.selectedFolder));
         break;
       case Command.IMPORT:
         chrome.bookmarks.import();
@@ -536,8 +535,7 @@ export class BookmarksCommandManagerElement extends
     dialog.querySelector('[slot=body]')!.textContent =
         loadTimeData.getStringF('openDialogBody', urls.length);
 
-    DialogFocusManager.getInstance().showDialog(
-        this.$.openDialog.get() as CrDialogElement);
+    DialogFocusManager.getInstance().showDialog(this.$.openDialog.get());
   }
 
   /**
@@ -841,13 +839,13 @@ export class BookmarksCommandManagerElement extends
   }
 
   private onOpenCancelTap_() {
-    (this.$.openDialog.get() as CrDialogElement).cancel();
+    this.$.openDialog.get().cancel();
   }
 
   private onOpenConfirmTap_() {
     const confirmOpenCallback = assert(this.confirmOpenCallback_!);
     confirmOpenCallback();
-    (this.$.openDialog.get() as CrDialogElement).close();
+    this.$.openDialog.get().close();
   }
 
   static getInstance(): BookmarksCommandManagerElement {

@@ -116,7 +116,7 @@ declare global {
 
 export interface HistoryAppElement {
   $: {
-    'drawer': CrLazyRenderElement,
+    'drawer': CrLazyRenderElement<CrDrawerElement>,
     'history': HistoryListElement,
     'toolbar': HistoryToolbarElement,
   };
@@ -276,8 +276,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private onCrToolbarMenuTap_() {
-    const drawer = this.$.drawer.get() as CrDrawerElement;
-    drawer.toggle();
+    this.$.drawer.get().toggle();
   }
 
   /**
@@ -415,7 +414,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
   }
 
   private hasDrawerChanged_() {
-    const drawer = this.$.drawer.getIfExists() as CrDrawerElement;
+    const drawer = this.$.drawer.getIfExists();
     if (!this.hasDrawer_ && drawer && drawer.open) {
       drawer.cancel();
     }

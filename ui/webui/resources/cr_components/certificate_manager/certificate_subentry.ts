@@ -25,7 +25,7 @@ import {CertificatesBrowserProxy, CertificatesBrowserProxyImpl, CertificatesErro
 
 export interface CertificateSubentryElement {
   $: {
-    menu: CrLazyRenderElement,
+    menu: CrLazyRenderElement<CrActionMenuElement>,
     dots: HTMLElement,
   };
 }
@@ -148,8 +148,7 @@ export class CertificateSubentryElement extends CertificateSubentryElementBase {
   }
 
   private onDotsClick_() {
-    const actionMenu = this.$.menu.get() as CrActionMenuElement;
-    actionMenu.showAt(this.$.dots);
+    this.$.menu.get().showAt(this.$.dots);
   }
 
   private getPolicyIndicatorType_(model: CertificateSubnode):

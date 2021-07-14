@@ -24,7 +24,7 @@ import {CertificateProvisioningProcess} from './certificate_provisioning_browser
 export interface CertificateProvisioningEntryElement {
   $: {
     dots: HTMLElement,
-    menu: CrLazyRenderElement,
+    menu: CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
@@ -55,7 +55,7 @@ export class CertificateProvisioningEntryElement extends
   }
 
   private onDotsClick_() {
-    (this.$.menu.get() as CrActionMenuElement).showAt(this.$.dots);
+    this.$.menu.get().showAt(this.$.dots);
   }
 
   private onDetailsClick_() {

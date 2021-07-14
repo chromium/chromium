@@ -49,8 +49,8 @@ export interface HistoryListElement {
   $: {
     'infinite-list': IronListElement,
     'scroll-threshold': IronScrollThresholdElement,
-    'dialog': CrLazyRenderElement,
-    'sharedMenu': CrLazyRenderElement,
+    'dialog': CrLazyRenderElement<CrDialogElement>,
+    'sharedMenu': CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
@@ -269,7 +269,7 @@ export class HistoryListElement extends HistoryListElementBase {
     if (this.queryState.searchTerm !== '') {
       browserService.recordAction('SearchResultRemove');
     }
-    (this.$.dialog.get() as CrDialogElement).showModal();
+    this.$.dialog.get().showModal();
 
     // TODO(dbeam): remove focus flicker caused by showModal() + focus().
     (this.shadowRoot!.querySelector('.action-button') as HTMLElement).focus();
@@ -341,7 +341,7 @@ export class HistoryListElement extends HistoryListElementBase {
    * Closes the overflow menu.
    */
   private closeMenu_() {
-    const menu = this.$.sharedMenu.getIfExists() as CrActionMenuElement;
+    const menu = this.$.sharedMenu.getIfExists();
     if (menu && menu.open) {
       this.actionMenuModel_ = null;
       menu.close();
@@ -355,15 +355,15 @@ export class HistoryListElement extends HistoryListElementBase {
     BrowserService.getInstance().recordAction('ConfirmRemoveSelected');
 
     this.deleteSelected_();
-    const dialog = assert(this.$.dialog.getIfExists()) as CrDialogElement;
-    dialog.close();
+    const dialog = assert(this.$.dialog.getIfExists());
+    dialog!.close();
   }
 
   private onDialogCancelTap_() {
     BrowserService.getInstance().recordAction('CancelRemoveSelected');
 
-    const dialog = assert(this.$.dialog.getIfExists()) as CrDialogElement;
-    dialog.close();
+    const dialog = assert(this.$.dialog.getIfExists());
+    dialog!.close();
   }
 
   /**
@@ -408,14 +408,13 @@ export class HistoryListElement extends HistoryListElementBase {
 
     const target = e.detail.target;
     this.actionMenuModel_ = e.detail;
-    const menu = this.$.sharedMenu.get() as CrActionMenuElement;
-    menu.showAt(target);
+    this.$.sharedMenu.get().showAt(target);
   }
 
   private onMoreFromSiteTap_() {
     BrowserService.getInstance().recordAction('EntryMenuShowMoreFromSite');
 
-    const menu = assert(this.$.sharedMenu.getIfExists());
+    assert(this.$.sharedMenu.getIfExists());
     this.fire_('change-query', {search: this.actionMenuModel_!.item.domain});
     this.actionMenuModel_ = null;
     this.closeMenu_();
@@ -436,7 +435,7 @@ export class HistoryListElement extends HistoryListElementBase {
     browserService.recordAction('EntryMenuRemoveFromHistory');
 
     assert(!this.pendingDelete);
-    const menu = assert(this.$.sharedMenu.getIfExists());
+    assert(this.$.sharedMenu.getIfExists());
     const itemData = this.actionMenuModel_!;
 
     this.deleteItems_([itemData.item]).then(() => {

@@ -44,7 +44,7 @@ declare global {
 
 export interface HistorySyncedDeviceManagerElement {
   $: {
-    'menu': CrLazyRenderElement,
+    'menu': CrLazyRenderElement<CrActionMenuElement>,
   };
 }
 
@@ -177,16 +177,15 @@ export class HistorySyncedDeviceManagerElement extends PolymerElement {
   }
 
   private onOpenMenu_(e: CustomEvent<{tag: string, target: HTMLElement}>) {
-    const menu = this.$['menu'].get() as CrActionMenuElement;
     this.actionMenuModel_ = e.detail.tag;
-    menu.showAt(e.detail.target);
+    this.$['menu'].get().showAt(e.detail.target);
     BrowserService.getInstance().recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.SHOW_SESSION_MENU,
         SyncedTabsHistogram.LIMIT);
   }
 
   private onOpenAllTap_() {
-    const menu = assert(this.$['menu'].getIfExists()) as CrActionMenuElement;
+    const menu = assert(this.$['menu'].getIfExists());
     const browserService = BrowserService.getInstance();
     browserService.recordHistogram(
         SYNCED_TABS_HISTOGRAM_NAME, SyncedTabsHistogram.OPEN_ALL,
