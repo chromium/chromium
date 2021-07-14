@@ -18,6 +18,15 @@ extern const base::Feature kLensStandalone;
 // Enables Lens Region Search from the context menu.
 extern const base::Feature kLensRegionSearch;
 
+// Enables alternate option 1 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1;
+
+// Enables alternate option 2 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2;
+
+// Enables alternate option 3 for the Region Search context menu item text.
+extern const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3;
+
 // Returns the max pixel width/height for the image to be sent to Lens.
 extern int GetMaxPixels();
 

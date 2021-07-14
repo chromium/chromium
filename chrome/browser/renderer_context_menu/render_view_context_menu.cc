@@ -2041,8 +2041,16 @@ void RenderViewContextMenu::AppendSharedClipboardItem() {
 }
 
 void RenderViewContextMenu::AppendLensRegionSearchItem() {
+  int resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH;
+  if (lens::features::kRegionSearchUseMenuItemAltText1.Get()) {
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT1;
+  } else if (lens::features::kRegionSearchUseMenuItemAltText2.Get()) {
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT2;
+  } else if (lens::features::kRegionSearchUseMenuItemAltText3.Get()) {
+    resource_id = IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH_ALT3;
+  }
   menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH,
-                                  IDS_CONTENT_CONTEXT_LENS_REGION_SEARCH);
+                                  resource_id);
 }
 
 // Menu delegate functions -----------------------------------------------------

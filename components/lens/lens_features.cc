@@ -16,6 +16,15 @@ const base::Feature kLensStandalone{"LensStandalone",
 const base::Feature kLensRegionSearch{"LensRegionSearch",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText1{
+    &kLensRegionSearch, "use-menu-item-alt-text-1", false};
+
+const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText2{
+    &kLensRegionSearch, "use-menu-item-alt-text-2", false};
+
+const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText3{
+    &kLensRegionSearch, "use-menu-item-alt-text-3", false};
+
 constexpr base::FeatureParam<int> kMaxPixels{&kLensStandalone,
                                              "dimensions-max-pixels", 1000};
 
