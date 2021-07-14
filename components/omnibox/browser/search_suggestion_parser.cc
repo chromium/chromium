@@ -472,13 +472,14 @@ bool SearchSuggestionParser::ParseSuggestResults(
 
   // 5th element: Optional key-value pairs from the Suggest server.
   const base::ListValue* types = nullptr;
-  const base::ListValue* relevances = nullptr;
   const base::ListValue* experiment_stats = nullptr;
   const base::ListValue* suggestion_details = nullptr;
-  const base::ListValue* subtype_identifiers = nullptr;
   const base::DictionaryValue* extras = nullptr;
   const base::Value* suggestsubtypes = nullptr;
   int prefetch_index = -1;
+
+  absl::optional<base::Value::ConstListView> subtype_identifiers;
+  absl::optional<base::Value::ConstListView> relevances;
 
   if (root_list.size() > 4u && root_list[4].GetAsDictionary(&extras)) {
     extras->GetList("google:suggesttype", &types);
@@ -486,9 +487,12 @@ bool SearchSuggestionParser::ParseSuggestResults(
     suggestsubtypes = extras->FindPath("google:suggestsubtypes");
 
     // Discard this list if its size does not match that of the suggestions.
-    if (extras->GetList("google:suggestrelevance", &relevances) &&
-        (relevances->GetSize() != results_list.size()))
-      relevances = nullptr;
+    const base::Value* relevances_value =
+        extras->FindListKey("google:suggestrelevance");
+    if (relevances_value &&
+        relevances_value->GetList().size() == results_list.size()) {
+      relevances = relevances_value->GetList();
+    }
     extras->GetInteger("google:verbatimrelevance",
                        &results->verbatim_relevance);
 
@@ -540,9 +544,11 @@ bool SearchSuggestionParser::ParseSuggestResults(
       suggestion_details = nullptr;
 
     // Legacy code: Get subtype identifiers.
-    if (extras->GetList("google:subtypeid", &subtype_identifiers) &&
-        subtype_identifiers->GetSize() != results_list.size()) {
-      subtype_identifiers = nullptr;
+    const base::Value* subtype_identifiers_value =
+        extras->FindListKey("google:subtypeid");
+    if (subtype_identifiers_value &&
+        subtype_identifiers_value->GetList().size() == results_list.size()) {
+      subtype_identifiers = subtype_identifiers_value->GetList();
     }
 
     // Store the metadata that came with the response in case we need to pass it
@@ -577,16 +583,23 @@ bool SearchSuggestionParser::ParseSuggestResults(
       continue;
 
     // Apply valid suggested relevance scores; discard invalid lists.
-    if (relevances != nullptr && !relevances->GetInteger(index, &relevance))
-      relevances = nullptr;
+    if (relevances) {
+      const auto& val = (*relevances)[index];
+      if (!val.is_int()) {
+        relevances = absl::nullopt;
+      } else {
+        relevance = val.GetInt();
+      }
+    }
+
     AutocompleteMatchType::Type match_type =
         AutocompleteMatchType::SEARCH_SUGGEST;
 
     // Legacy code: if the server sends us a single subtype ID, place it beside
     // other subtypes.
     if (subtype_identifiers) {
-      int subtype_identifier = 0;
-      subtype_identifiers->GetInteger(index, &subtype_identifier);
+      int subtype_identifier =
+          (*subtype_identifiers)[index].GetIfInt().value_or(0);
 
       if (subtype_identifier != 0) {
         subtypes[index].emplace_back(subtype_identifier);
@@ -616,7 +629,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
         }
         results->navigation_results.push_back(NavigationResult(
             scheme_classifier, url, match_type, subtypes[index], title,
-            deletion_url, is_keyword_result, relevance, relevances != nullptr,
+            deletion_url, is_keyword_result, relevance, relevances.has_value(),
             input.text()));
       }
     } else {
@@ -685,7 +698,7 @@ bool SearchSuggestionParser::ParseSuggestResults(
           base::CollapseWhitespace(match_contents, false),
           match_contents_prefix, annotation, additional_query_params,
           deletion_url, image_dominant_color, image_url, is_keyword_result,
-          relevance, relevances != nullptr, should_prefetch, trimmed_input));
+          relevance, relevances.has_value(), should_prefetch, trimmed_input));
 
       if (suggestion_group_id) {
         results->suggest_results.back().set_suggestion_group_id(
@@ -695,6 +708,6 @@ bool SearchSuggestionParser::ParseSuggestResults(
         results->suggest_results.back().SetAnswer(answer);
     }
   }
-  results->relevances_from_server = relevances != nullptr;
+  results->relevances_from_server = relevances.has_value();
   return true;
 }
