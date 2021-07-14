@@ -4799,6 +4799,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"ntp-modules-redesigned", flag_descriptions::kNtpModulesRedesignedName,
      flag_descriptions::kNtpModulesRedesignedDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(ntp_features::kNtpModulesRedesigned)},
+
+    {"ntp-realbox-suggestion-answers",
+     flag_descriptions::kNtpRealboxSuggestionAnswersName,
+     flag_descriptions::kNtpRealboxSuggestionAnswersDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kNtpRealboxSuggestionAnswers)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(DCHECK_IS_CONFIGURABLE)

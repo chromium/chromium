@@ -254,6 +254,10 @@ extern const base::Feature kMostVisitedTiles{"OmniboxMostVisitedTiles",
 const base::Feature kRichAutocompletion{"OmniboxRichAutocompletion",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature used to enable Suggestion Answers in the NTP Realbox.
+const base::Feature kNtpRealboxSuggestionAnswers{
+    "NtpRealboxSuggestionAnswers", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Feature used to enable the second batch of Pedals (Safety Check, etc.).
 const base::Feature kOmniboxPedalsBatch2{"OmniboxPedalsBatch2",
                                          base::FEATURE_DISABLED_BY_DEFAULT};

@@ -47928,6 +47928,7 @@ from previous Chrome versions.
   <int value="-731502579" label="CupsPrintersUiOverhaul:disabled"/>
   <int value="-731133967" label="AutofillSettingsCardTypeSplit:disabled"/>
   <int value="-728461030" label="AutofillPruneSuggestions:disabled"/>
+  <int value="-728187009" label="NtpRealboxSuggestionAnswers:enabled"/>
   <int value="-727860269" label="WebAuthenticationBle:disabled"/>
   <int value="-726892130" label="AndroidMessagesIntegration:disabled"/>
   <int value="-726844226"
@@ -51306,6 +51307,7 @@ from previous Chrome versions.
   <int value="2072231406" label="SingleProcessMash:disabled"/>
   <int value="2073113207" label="SensorContentSetting:disabled"/>
   <int value="2075207488" label="AutomaticPasswordGeneration:disabled"/>
+  <int value="2075718434" label="NtpRealboxSuggestionAnswers:disabled"/>
   <int value="2076787478" label="OmniboxDisplayTitleForCurrentUrl:disabled"/>
   <int value="2076903744" label="progress-bar-animation"/>
   <int value="2077106718" label="EnableMessagesWebPush:enabled"/>

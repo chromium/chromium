@@ -3751,6 +3751,11 @@ const char kNtpModulesRedesignedName[] = "NTP Modules Redesigned";
 const char kNtpModulesRedesignedDescription[] =
     "Shows the redesigned modules on the New Tab Page.";
 
+const char kNtpRealboxSuggestionAnswersName[] =
+    "NTP Realbox Suggestion Answers";
+const char kNtpRealboxSuggestionAnswersDescription[] =
+    "Shows suggestion answers in the NTP Realbox when enabled.";
+
 const char kEnableReaderModeName[] = "Enable Reader Mode";
 const char kEnableReaderModeDescription[] =
     "Allows viewing of simplified web pages by selecting 'Customize and "

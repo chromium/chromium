@@ -2142,6 +2142,9 @@ extern const char kNtpModulesDragAndDropDescription[];
 extern const char kNtpModulesRedesignedName[];
 extern const char kNtpModulesRedesignedDescription[];
 
+extern const char kNtpRealboxSuggestionAnswersName[];
+extern const char kNtpRealboxSuggestionAnswersDescription[];
+
 extern const char kEnableReaderModeName[];
 extern const char kEnableReaderModeDescription[];
 

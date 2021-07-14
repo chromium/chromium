@@ -36,6 +36,7 @@
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/search_suggestion_parser.h"
 #include "components/omnibox/browser/vector_icons.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search/ntp_features.h"
@@ -159,7 +160,8 @@ std::vector<realbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
         match.swap_contents_and_description;
     mojom_match->type = AutocompleteMatchType::ToString(match.type);
     mojom_match->supports_deletion = match.SupportsDeletion();
-    if (match.answer.has_value()) {
+    if (match.answer.has_value() &&
+        base::FeatureList::IsEnabled(omnibox::kNtpRealboxSuggestionAnswers)) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
       mojom_match->answer = realbox::mojom::SuggestionAnswer::New(
