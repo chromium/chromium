@@ -18,6 +18,7 @@
 #endif
 
 #if defined(OS_WIN)
+#include "base/win/windows_types.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #endif
