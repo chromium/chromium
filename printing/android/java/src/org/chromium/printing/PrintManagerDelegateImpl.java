@@ -16,7 +16,6 @@ import android.print.PrintManager;
 import android.text.TextUtils;
 
 import org.chromium.base.Log;
-import org.chromium.base.annotations.RemovableInRelease;
 
 import java.util.List;
 
@@ -39,8 +38,9 @@ public class PrintManagerDelegateImpl implements PrintManagerDelegate {
         mPrintManager.print(printJobName, documentAdapter, attributes);
     }
 
-    @RemovableInRelease
     private void dumpJobStatesForDebug() {
+        if (!Log.isLoggable(TAG, Log.VERBOSE)) return;
+
         List<PrintJob> printJobs = mPrintManager.getPrintJobs();
         String[] states = new String[printJobs.size()];
 
