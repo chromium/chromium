@@ -5540,7 +5540,7 @@ LayoutUnit LayoutBox::AvailableLogicalHeightUsing(
       if (const auto* previous_result = GetCachedLayoutResult()) {
         const NGConstraintSpace& space =
             previous_result->GetConstraintSpaceForCaching();
-        if (space.IsFixedBlockSize() && !space.IsFixedBlockSizeIndefinite())
+        if (space.IsFixedBlockSize() && !space.IsInitialBlockSizeIndefinite())
           return space.AvailableSize().block_size;
       }
     }

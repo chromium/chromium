@@ -123,7 +123,7 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   builder.SetPercentageResolutionSize(percentage_size);
   builder.SetIsFixedInlineSize(fixed_inline);
   builder.SetIsFixedBlockSize(fixed_block);
-  builder.SetIsFixedBlockSizeIndefinite(!fixed_block_is_definite);
+  builder.SetIsInitialBlockSizeIndefinite(!fixed_block_is_definite);
   // HTML element with display:table is shrink-to-fit.
   bool shrink_to_fit =
       block.SizesLogicalWidthToFitContent(style.LogicalWidth()) ||

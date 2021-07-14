@@ -771,7 +771,7 @@ LayoutUnit ComputeInitialBlockSizeForFragment(
     LayoutUnit intrinsic_size,
     absl::optional<LayoutUnit> inline_size,
     LayoutUnit available_block_size_adjustment) {
-  if (space.IsFixedBlockSizeIndefinite())
+  if (space.IsInitialBlockSizeIndefinite())
     return intrinsic_size;
   return ComputeBlockSizeForFragment(space, style, border_padding,
                                      intrinsic_size, inline_size,
@@ -1573,14 +1573,6 @@ LogicalSize AdjustChildPercentageSize(const NGConstraintSpace& space,
                                       const NGBlockNode node,
                                       LogicalSize child_percentage_size,
                                       LayoutUnit parent_percentage_block_size) {
-  // Flex items may have a fixed block-size, but children shouldn't resolve
-  // their percentages against this.
-  if (space.IsFixedBlockSizeIndefinite()) {
-    DCHECK(node.IsFlexItem() || space.IsTableCell());
-    child_percentage_size.block_size = kIndefiniteSize;
-    return child_percentage_size;
-  }
-
   bool is_table_cell_in_measure_phase =
       space.IsTableCell() && !space.IsFixedBlockSize();
   // A table-cell during the "measure" phase forces its descendants to have an

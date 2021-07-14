@@ -143,9 +143,9 @@ class CORE_EXPORT NGConstraintSpaceBuilder final {
       space_.bitfields_.is_fixed_inline_size = b;
   }
 
-  void SetIsFixedBlockSizeIndefinite(bool b) {
+  void SetIsInitialBlockSizeIndefinite(bool b) {
     if (LIKELY(is_in_parallel_flow_ || !force_orthogonal_writing_mode_root_))
-      space_.bitfields_.is_fixed_block_size_indefinite = b;
+      space_.bitfields_.is_initial_block_size_indefinite = b;
   }
 
   void SetInlineAutoBehavior(NGAutoBehavior auto_behavior) {
@@ -546,8 +546,8 @@ class CORE_EXPORT NGMinMaxConstraintSpaceBuilder final {
     delegate_.SetBlockAutoBehavior(auto_behavior);
   }
 
-  void SetIsFixedBlockSizeIndefinite(bool b) {
-    delegate_.SetIsFixedBlockSizeIndefinite(b);
+  void SetIsInitialBlockSizeIndefinite(bool b) {
+    delegate_.SetIsInitialBlockSizeIndefinite(b);
   }
 
   const NGConstraintSpace ToConstraintSpace() {

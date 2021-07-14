@@ -76,8 +76,8 @@ bool BlockSizeMayChange(const NGBlockNode& node,
                         const NGConstraintSpace& old_space,
                         const NGLayoutResult& layout_result) {
   DCHECK_EQ(new_space.IsFixedBlockSize(), old_space.IsFixedBlockSize());
-  DCHECK_EQ(new_space.IsFixedBlockSizeIndefinite(),
-            old_space.IsFixedBlockSizeIndefinite());
+  DCHECK_EQ(new_space.IsInitialBlockSizeIndefinite(),
+            old_space.IsInitialBlockSizeIndefinite());
   DCHECK_EQ(new_space.BlockAutoBehavior(), old_space.BlockAutoBehavior());
   DCHECK_EQ(new_space.IsTableCellChild(), old_space.IsTableCellChild());
   DCHECK_EQ(new_space.IsRestrictedBlockSizeTableCellChild(),

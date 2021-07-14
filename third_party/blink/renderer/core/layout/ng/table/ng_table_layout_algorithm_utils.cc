@@ -197,7 +197,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         table_writing_direction, cell, cell_borders,
         {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
         /* alignment_baseline */ absl::nullopt, start_column,
-        /* is_fixed_block_size_indefinite */ false,
+        /* is_initial_block_size_indefinite */ false,
         is_table_block_size_specified,
         /* is_hidden_for_paint */ false, has_collapsed_borders,
         NGCacheSlot::kMeasure);
@@ -461,7 +461,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
     LayoutUnit percentage_inline_size,
     absl::optional<LayoutUnit> alignment_baseline,
     wtf_size_t column_index,
-    bool is_fixed_block_size_indefinite,
+    bool is_initial_block_size_indefinite,
     bool is_table_block_size_specified,
     bool is_hidden_for_paint,
     bool has_collapsed_borders,
@@ -484,7 +484,7 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
   builder.SetIsFixedInlineSize(true);
   if (cell_size.block_size != kIndefiniteSize) {
     builder.SetIsFixedBlockSize(true);
-    builder.SetIsFixedBlockSizeIndefinite(is_fixed_block_size_indefinite);
+    builder.SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
   }
 
   // Standard:

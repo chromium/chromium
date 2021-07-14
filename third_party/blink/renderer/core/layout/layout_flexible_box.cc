@@ -960,7 +960,7 @@ bool LayoutFlexibleBox::CanAvoidLayoutForNGChild(const LayoutBox& child) const {
     return false;
   if (old_space.IsFixedBlockSize() != child.HasOverrideLogicalHeight())
     return false;
-  if (!old_space.IsFixedBlockSizeIndefinite() !=
+  if (!old_space.IsInitialBlockSizeIndefinite() !=
       UseOverrideLogicalHeightForPerentageResolution(child))
     return false;
   if (child.HasOverrideLogicalWidth() &&

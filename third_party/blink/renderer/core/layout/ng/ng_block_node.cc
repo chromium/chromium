@@ -278,7 +278,7 @@ void SetupBoxLayoutExtraInput(const NGConstraintSpace& space,
   if (space.IsFixedBlockSize()) {
     input->override_block_size = space.AvailableSize().block_size;
     input->is_override_block_size_definite =
-        !space.IsFixedBlockSizeIndefinite();
+        !space.IsInitialBlockSizeIndefinite();
   }
   input->stretch_inline_size_if_auto = space.IsInlineAutoBehaviorStretch();
   input->stretch_block_size_if_auto =

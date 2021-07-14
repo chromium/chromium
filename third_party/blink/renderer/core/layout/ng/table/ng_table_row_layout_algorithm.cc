@@ -60,7 +60,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
 
     // Our initial block-size is definite if this cell has a fixed block-size,
     // or we have grown and the table has a specified block-size.
-    bool is_fixed_block_size_definite =
+    const bool is_initial_block_size_definite =
         cell_data.is_constrained ||
         (cell_data.has_grown && table_data.is_table_block_size_specified);
 
@@ -71,7 +71,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
         table_data.table_writing_direction, cell, cell_data.border_box_borders,
         {cell_inline_size, cell_block_size}, container_builder_.InlineSize(),
-        row_baseline, start_column, !is_fixed_block_size_definite,
+        row_baseline, start_column, !is_initial_block_size_definite,
         table_data.is_table_block_size_specified, is_hidden_for_paint,
         table_data.has_collapsed_borders, NGCacheSlot::kLayout);
   };

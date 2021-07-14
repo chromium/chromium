@@ -318,7 +318,7 @@ NGConstraintSpace NGFlexLayoutAlgorithm::BuildSpaceForIntrinsicBlockSize(
   LogicalSize child_percentage_size = child_percentage_size_;
   if (is_column_) {
     child_percentage_size.block_size = kIndefiniteSize;
-    space_builder.SetIsFixedBlockSizeIndefinite(true);
+    space_builder.SetIsInitialBlockSizeIndefinite(true);
   }
 
   space_builder.SetAvailableSize(ChildAvailableSize());
@@ -999,7 +999,7 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
         // rely on the indefinite sizes of any flex items in the same line.
         if (!IsColumnContainerMainSizeDefinite() &&
             !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
-          space_builder.SetIsFixedBlockSizeIndefinite(true);
+          space_builder.SetIsInitialBlockSizeIndefinite(true);
         }
       } else {
         available_size.inline_size = flex_item.flexed_content_size_ +
@@ -1133,7 +1133,7 @@ void NGFlexLayoutAlgorithm::ApplyStretchAlignmentToChild(FlexItem& flex_item) {
     available_size.Transpose();
     if (!IsColumnContainerMainSizeDefinite() &&
         !IsItemMainSizeDefinite(flex_item.ng_input_node_)) {
-      space_builder.SetIsFixedBlockSizeIndefinite(true);
+      space_builder.SetIsInitialBlockSizeIndefinite(true);
     }
   }
 
@@ -1380,7 +1380,7 @@ MinMaxSizesResult NGFlexLayoutAlgorithm::ComputeMinMaxSizes(
     builder.SetReplacedPercentageResolutionBlockSize(
         child_percentage_size_.block_size);
     if (is_column_)
-      builder.SetIsFixedBlockSizeIndefinite(true);
+      builder.SetIsInitialBlockSizeIndefinite(true);
     else if (WillChildCrossSizeBeContainerCrossSize(child))
       builder.SetBlockAutoBehavior(NGAutoBehavior::kStretchExplicit);
     const auto space = builder.ToConstraintSpace();

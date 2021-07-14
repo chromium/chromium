@@ -641,7 +641,7 @@ void NGTableLayoutAlgorithm::ComputeRows(
   }
 
   LayoutUnit css_table_block_size;
-  if (ConstraintSpace().IsFixedBlockSizeIndefinite() &&
+  if (ConstraintSpace().IsInitialBlockSizeIndefinite() &&
       !ConstraintSpace().IsFixedBlockSize()) {
     // We get here when a flexbox wants to use the table's intrinsic height as
     // an input to the flex algorithm.

@@ -793,7 +793,7 @@ bool LayoutBoxModelObject::HasAutoHeightOrContainingBlockWithAutoHeight(
       // BoxLayoutExtraInput that we could add a flag to.
       const NGConstraintSpace& space =
           this_box->GetCachedLayoutResult()->GetConstraintSpaceForCaching();
-      if (space.IsFixedBlockSize() && !space.IsFixedBlockSizeIndefinite())
+      if (space.IsFixedBlockSize() && !space.IsInitialBlockSizeIndefinite())
         return false;
     }
   }
