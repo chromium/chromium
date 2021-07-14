@@ -6,11 +6,15 @@ FROM ubuntu:trusty
 
 ENV DEBIAN_FRONTEND noninteractive
 
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
+
 # Don't gzip indexes. `apt-cache dumpavail` (used by install-build-deps.sh)
 # does not understand gzipped indexes.
 RUN echo "ACQUIRE { GzipIndexes \"false\"; }" > /etc/apt/apt.conf.d/no-gzip.conf
 
 RUN apt-get update && apt-get upgrade -y && \
+    apt-get install -y locales && \
+    locale-gen en_US.UTF-8 && \
     apt-get install -y curl build-essential python
 
 RUN echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | debconf-set-selections && \
