@@ -4,6 +4,7 @@
 
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 
+import {acceleratorViewTest} from './accelerator_view_test.js';
 import {shortcutCustomizationAppTest} from './shortcut_customization_test.js';
 
 window.test_suites_list = [];
@@ -14,3 +15,4 @@ function runSuite(suiteName, testFn) {
 }
 
 runSuite('ShortcutCustomizationApp', shortcutCustomizationAppTest);
+runSuite('AcceleratorViewTest', acceleratorViewTest);

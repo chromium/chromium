@@ -40,7 +40,10 @@ ShortcutCustomizationAppBrowserTest.prototype = {
 // List of names of suites in unified test to register for individual debugging.
 // You must register all suites in unified test here as well for consistency,
 // although technically is not necessary.
-const debug_suites_list = ['ShortcutCustomizationApp'];
+const debug_suites_list = [
+  'ShortcutCustomizationApp',
+  'AcceleratorViewTest',
+];
 
 TEST_F('ShortcutCustomizationAppBrowserTest', 'All', function() {
   assertDeepEquals(

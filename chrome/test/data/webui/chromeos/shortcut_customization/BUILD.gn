@@ -12,6 +12,7 @@ js_type_check("closure_compile") {
                     "js_module_root=./gen/chrome/test/data/webui/",
                   ]
   deps = [
+    ":accelerator_view_test",
     ":shortcut_customization_test",
     ":shortcut_customization_unified_test",
   ]
@@ -24,6 +25,14 @@ js_library("shortcut_customization_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shortcut_customization_ui/resources:shortcut_customization_app",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("accelerator_view_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shortcut_customization_ui/resources:accelerator_view",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

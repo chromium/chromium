@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import './shortcut_input.js';
+import './accelerator_view.js';
 
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
