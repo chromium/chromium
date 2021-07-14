@@ -57,6 +57,7 @@
 #include "chrome/browser/chromeos/policy/invalidation/affiliated_invalidation_service_provider_impl.h"
 #include "chrome/browser/chromeos/policy/networking/device_network_configuration_updater.h"
 #include "chrome/browser/chromeos/policy/remote_commands/affiliated_remote_commands_invalidator.h"
+#include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_reboot_handler.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/device_scheduled_update_checker.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/chromeos/policy/server_backed_state/device_cloud_state_keys_uploader.h"
@@ -313,6 +314,12 @@ void BrowserPolicyConnectorChromeOS::Init(
           ash::CrosSettings::Get(), local_state,
           chromeos::PowerManagerClient::Get(),
           new ash::AdbSideloadingPolicyChangeNotification());
+
+  device_scheduled_reboot_handler_ =
+      std::make_unique<DeviceScheduledRebootHandler>(
+          ash::CrosSettings::Get(),
+          std::make_unique<ScheduledTaskExecutorImpl>(
+              DeviceScheduledRebootHandler::kRebootTimerTag));
 }
 
 void BrowserPolicyConnectorChromeOS::PreShutdown() {

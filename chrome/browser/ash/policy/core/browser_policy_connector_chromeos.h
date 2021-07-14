@@ -60,6 +60,7 @@ class TPMAutoUpdateModePolicyHandler;
 class DeviceScheduledUpdateChecker;
 class DeviceCloudExternalDataPolicyHandler;
 class SystemProxyHandler;
+class DeviceScheduledRebootHandler;
 
 // Extends ChromeBrowserPolicyConnector with the setup specific to Chrome OS.
 class BrowserPolicyConnectorChromeOS
@@ -302,6 +303,8 @@ class BrowserPolicyConnectorChromeOS
   std::unique_ptr<SystemProxyHandler> system_proxy_handler_;
   std::unique_ptr<AdbSideloadingAllowanceModePolicyHandler>
       adb_sideloading_allowance_mode_policy_handler_;
+  std::unique_ptr<DeviceScheduledRebootHandler>
+      device_scheduled_reboot_handler_;
 
   // This policy provider is used on Chrome OS to feed user policy into the
   // global PolicyService instance. This works by installing the cloud policy
