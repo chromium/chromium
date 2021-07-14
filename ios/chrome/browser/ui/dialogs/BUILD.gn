@@ -42,8 +42,6 @@ source_set("constants") {
 source_set("dialogs_internal") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "java_script_dialog_metrics.cc",
-    "java_script_dialog_metrics.h",
     "nsurl_protection_space_util.h",
     "nsurl_protection_space_util.mm",
     "overlay_java_script_dialog_presenter.h",
