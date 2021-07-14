@@ -9,14 +9,19 @@
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/arc_resize_lock_type.h"
+#include "ash/public/cpp/resize_shadow_type.h"
 #include "ash/public/cpp/window_properties.h"
+#include "base/bind.h"
+#include "base/callback_forward.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/arc/compat_mode/metrics.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -51,6 +56,31 @@ class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
   base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
   int GetShowSplashScreenDialogCount() const override { return 1; }
   void SetShowSplashScreenDialogCount(int count) override {}
+};
+
+class ScopedWindowPropertyObserver : public aura::WindowObserver {
+ public:
+  using WindowPropertyChangedCallback =
+      base::RepeatingCallback<void(aura::Window*, const void*, intptr_t)>;
+
+  ScopedWindowPropertyObserver(aura::Window* window,
+                               WindowPropertyChangedCallback on_changed)
+      : on_changed_(std::move(on_changed)) {
+    observer_.Observe(window);
+  }
+  ~ScopedWindowPropertyObserver() override { observer_.Reset(); }
+
+  // aura::WindowObserver:
+  void OnWindowPropertyChanged(aura::Window* window,
+                               const void* key,
+                               intptr_t old) override {
+    on_changed_.Run(window, key, old);
+  }
+  void OnWindowDestroying(aura::Window* window) override { observer_.Reset(); }
+
+ private:
+  WindowPropertyChangedCallback on_changed_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
@@ -253,6 +283,57 @@ TEST_F(ArcResizeLockManagerTest, TestMetricsForInitialResizeLockState) {
   pref_delegate()->SetResizeLockState(app_id_resize_locked,
                                       mojom::ArcResizeLockState::OFF);
   histogram_tester.ExpectTotalCount(initial_state_histogram, 2);
+}
+
+// Tests that resize shadow type is properly updated according to the resize
+// lock type.
+TEST_F(ArcResizeLockManagerTest, TestShadowPropertyChange) {
+  auto* arc_window = CreateFakeWindow(true);
+  arc_window->SetProperty(ash::kAppIDKey, new std::string("app-id"));
+
+  bool resize_shadow_updated = false;
+  ScopedWindowPropertyObserver observer(
+      arc_window, base::BindLambdaForTesting(
+                      [&resize_shadow_updated](aura::Window* window,
+                                               const void* key, intptr_t old) {
+                        if (key != ash::kResizeShadowTypeKey)
+                          return;
+                        resize_shadow_updated = true;
+                      }));
+
+  // Unlocked by default.
+  EXPECT_EQ(arc_window->GetProperty(ash::kResizeShadowTypeKey),
+            ash::ResizeShadowType::kUnlock);
+
+  // Locked for resize locked windows.
+  resize_shadow_updated = false;
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
+  EXPECT_EQ(arc_window->GetProperty(ash::kResizeShadowTypeKey),
+            ash::ResizeShadowType::kLock);
+  EXPECT_TRUE(resize_shadow_updated);
+  // No redundant property update.
+  resize_shadow_updated = false;
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZE_LIMITED);
+  EXPECT_FALSE(resize_shadow_updated);
+  resize_shadow_updated = false;
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::FULLY_LOCKED);
+  EXPECT_FALSE(resize_shadow_updated);
+
+  // Unlocked for non-resize locked windows.
+  resize_shadow_updated = false;
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_EQ(arc_window->GetProperty(ash::kResizeShadowTypeKey),
+            ash::ResizeShadowType::kUnlock);
+  EXPECT_TRUE(resize_shadow_updated);
+  // No redundant property update.
+  resize_shadow_updated = false;
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_FALSE(resize_shadow_updated);
 }
 
 }  // namespace arc
