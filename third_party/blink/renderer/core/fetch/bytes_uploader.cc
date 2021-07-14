@@ -156,14 +156,21 @@ void BytesUploader::Close() {
   DVLOG(3) << this << " Close(). total_size=" << total_size_;
   DCHECK(get_size_callback_);
   std::move(get_size_callback_).Run(net::OK, total_size_);
+  consumer_->Cancel();
+  Dispose();
 }
 
 void BytesUploader::CloseOnError() {
   DVLOG(3) << this << " CloseOnError(). total_size=" << total_size_;
-  DCHECK(consumer_);
-  consumer_->Cancel();
   DCHECK(get_size_callback_);
   std::move(get_size_callback_).Run(net::ERR_FAILED, total_size_);
+  consumer_->Cancel();
+  Dispose();
+}
+
+void BytesUploader::Dispose() {
+  receiver_.reset();
+  upload_pipe_watcher_.Cancel();
 }
 
 }  // namespace blink
