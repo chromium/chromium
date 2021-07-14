@@ -36,7 +36,7 @@ LayoutNGTextCombine* LayoutNGTextCombine::CreateAnonymous(
       document.GetStyleResolver().CreateAnonymousStyleWithDisplay(
           text_child->StyleRef(), EDisplay::kInlineBlock);
   StyleAdjuster::AdjustStyleForTextCombine(*new_style);
-  layout_object->SetStyleInternal(std::move(new_style));
+  layout_object->SetStyle(std::move(new_style));
   layout_object->AddChild(text_child);
   LayoutNGTextCombine::AssertStyleIsValid(text_child->StyleRef());
   return layout_object;
