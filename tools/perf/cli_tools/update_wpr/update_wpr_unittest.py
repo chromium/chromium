@@ -378,12 +378,15 @@ class UpdateWprTest(unittest.TestCase):
         benchmark='system_health.common_desktop')
     self.assertEqual(new_job.call_count, 3)
 
+  @mock.patch(WPR_UPDATER + 'WprUpdater._GetTargetFromConfiguration',
+              return_value='performance_test_suite')
   @mock.patch(WPR_UPDATER + 'WprUpdater._GetBranchIssueUrl',
               return_value='<issue-url>')
   @mock.patch('core.services.pinpoint_service.NewJob',
               side_effect=request.ServerError(
                   mock.Mock(), mock.Mock(status=500), ''))
-  def testStartPinPointJobsMobileFail(self, new_job, get_branch_issue_url):
+  def testStartPinPointJobsMobileFail(self, new_job, get_branch_issue_url,
+                                      get_target):
     del get_branch_issue_url  # Unused.
     self.wpr_updater.device_id = '<serial>'
     self.assertEqual(
@@ -397,6 +400,15 @@ class UpdateWprTest(unittest.TestCase):
         extra_test_args='--pageset-repeat=1',
         configuration='<config>',
         benchmark='system_health.common_mobile')
+    get_target.assert_called_once_with('<config>')
+
+  @mock.patch('core.services.pinpoint_service.NewJob',
+              side_effect=request.ServerError(mock.Mock(),
+                                              mock.Mock(status=500), ''))
+  def testStartPinpointJobsInvalidConfig(self, new_job):
+    with self.assertRaises(RuntimeError):
+      self.wpr_updater.StartPinpointJobs(['<config>'])
+    new_job.assert_not_called()
 
 
 if __name__ == "__main__":

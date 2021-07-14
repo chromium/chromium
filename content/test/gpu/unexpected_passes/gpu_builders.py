@@ -5,12 +5,24 @@
 
 from __future__ import print_function
 
+import os
+import sys
+
 from unexpected_passes_common import builders
+
+CHROMIUM_SRC_DIR = os.path.realpath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..'))
+TOOLS_PERF_DIR = os.path.join(CHROMIUM_SRC_DIR, 'tools', 'perf')
+
+sys.path.append(TOOLS_PERF_DIR)
+from chrome_telemetry_build import android_browser_types as abt
+sys.path.remove(TOOLS_PERF_DIR)
 
 
 class GpuBuilders(builders.Builders):
   def __init__(self):
     super(GpuBuilders, self).__init__()
+    self._isolate_names = None
     self._fake_ci_builders = None
 
   def _BuilderRunsTestOfInterest(self, test_map, suite):
@@ -23,10 +35,16 @@ class GpuBuilders(builders.Builders):
     return False
 
   def GetIsolateNames(self):
-    return {
-        'fuchsia_telemetry_gpu_integration_test',
-        'telemetry_gpu_integration_test',
-    }
+    if self._isolate_names is None:
+      self._isolate_names = {
+          'fuchsia_telemetry_gpu_integration_test',
+          'telemetry_gpu_integration_test',
+      }
+      # Android targets are split based on binary type, so add those using the
+      # maintained list of suffixes.
+      for suffix in abt.TELEMETRY_ANDROID_BROWSER_TARGET_SUFFIXES:
+        self._isolate_names.add('telemetry_gpu_integration_test' + suffix)
+    return self._isolate_names
 
   def GetFakeCiBuilders(self):
     if self._fake_ci_builders is None:

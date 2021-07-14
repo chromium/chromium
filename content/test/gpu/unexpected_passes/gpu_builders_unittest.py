@@ -58,3 +58,11 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
     }
     self.assertFalse(
         self.instance._BuilderRunsTestOfInterest(test_map, 'webgl_conformance'))
+
+  def testAndroidSuffixes(self):
+    """Tests that Android-specific isolates are added."""
+    isolate_names = self.instance.GetIsolateNames()
+    for isolate in isolate_names:
+      if 'telemetry_gpu_integration_test' in isolate and 'android' in isolate:
+        return
+    self.fail('Did not find any Android-specific isolate names')

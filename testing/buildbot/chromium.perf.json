@@ -11,13 +11,13 @@
           "--test-shard-map-filename=android_nexus5_perf_map.json",
           "--assert-gpu-compositing"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_android_chrome",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite",
+        "name": "performance_test_suite_android_chrome",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_android_chrome"
         ],
         "resultdb": {
           "enable": true
@@ -407,7 +407,7 @@
           "--upload-results",
           "--test-shard-map-filename=android-go-perf_map.json"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_android_clank_chrome",
         "merge": {
           "args": [
             "--lightweight",
@@ -417,7 +417,7 @@
         },
         "name": "performance_test_suite",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_android_clank_chrome"
         ],
         "resultdb": {
           "enable": true
@@ -517,7 +517,7 @@
           "--upload-results",
           "--test-shard-map-filename=android-pixel2-perf_map.json"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_android_clank_monochrome_64_32_bundle",
         "merge": {
           "args": [
             "--lightweight",
@@ -525,9 +525,9 @@
           ],
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite",
+        "name": "performance_test_suite_android_clank_monochrome_64_32_bundle",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_android_clank_monochrome_64_32_bundle"
         ],
         "resultdb": {
           "enable": true
@@ -689,13 +689,13 @@
           "--upload-results",
           "--test-shard-map-filename=android-pixel4-perf_map.json"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_android_clank_trichrome_bundle",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite",
+        "name": "performance_test_suite_android_clank_trichrome_bundle",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_android_clank_trichrome_bundle"
         ],
         "resultdb": {
           "enable": true
@@ -837,13 +837,13 @@
           "--test-shard-map-filename=android-pixel4a_power-perf_map.json",
           "--experimental-tbmv3-metrics"
         ],
-        "isolate_name": "performance_test_suite",
+        "isolate_name": "performance_test_suite_android_clank_chrome",
         "merge": {
           "script": "//tools/perf/process_perf_results.py"
         },
-        "name": "performance_test_suite",
+        "name": "performance_test_suite_android_clank_chrome",
         "override_compile_targets": [
-          "performance_test_suite"
+          "performance_test_suite_android_clank_chrome"
         ],
         "resultdb": {
           "enable": true
