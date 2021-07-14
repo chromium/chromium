@@ -22,9 +22,9 @@ namespace reporting {
 template <typename QueueType>
 class SharedQueue : public base::RefCountedThreadSafe<SharedQueue<QueueType>> {
  public:
-  static scoped_refptr<SharedQueue<QueueType>> Create() {
-    scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner{
-        base::ThreadPool::CreateSequencedTaskRunner({})};
+  static scoped_refptr<SharedQueue<QueueType>> Create(
+      scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner =
+          base::ThreadPool::CreateSequencedTaskRunner({})) {
     return base::WrapRefCounted(
         new SharedQueue<QueueType>(sequenced_task_runner));
   }
