@@ -101,11 +101,13 @@ public class AccessibilityContentShellTestUtils {
                         case AccessibilityEvent.TYPE_VIEW_TEXT_SELECTION_CHANGED: {
                             data.setSelectionFromIndex(event.getFromIndex());
                             data.setSelectionToIndex(event.getToIndex());
+                            data.setReceivedSelectionEvent(true);
                             break;
                         }
                         case AccessibilityEvent.TYPE_VIEW_TEXT_TRAVERSED_AT_MOVEMENT_GRANULARITY: {
                             data.setTraverseFromIndex(event.getFromIndex());
                             data.setTraverseToIndex(event.getToIndex());
+                            data.setReceivedTraversalEvent(true);
                             break;
                         }
 
