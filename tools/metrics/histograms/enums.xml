@@ -49043,6 +49043,8 @@ from previous Chrome versions.
   <int value="224019823" label="CompositeAfterPaint:enabled"/>
   <int value="225610933" label="SystemLatinPhysicalTyping:enabled"/>
   <int value="226590039" label="OverviewButton:disabled"/>
+  <int value="228107154"
+      label="OmniboxUpdatedConnectionSecurityIndicators:enabled"/>
   <int value="229476202" label="CryptAuthV2Enrollment:enabled"/>
   <int value="229877058" label="ShelfScrollable:disabled"/>
   <int value="233721248" label="DownloadRename:disabled"/>
@@ -50924,6 +50926,8 @@ from previous Chrome versions.
   <int value="1777806335" label="UsePasswordSeparatedSigninFlow:disabled"/>
   <int value="1779530254"
       label="AccessibilityInternalsPageImprovements:disabled"/>
+  <int value="1780392521"
+      label="OmniboxUpdatedConnectionSecurityIndicators:disabled"/>
   <int value="1782210532" label="PerNavigationMojoInterface:disabled"/>
   <int value="1783293530" label="disallow-autofill-sync-credential"/>
   <int value="1783837132" label="enable-threaded-gpu-rasterization"/>

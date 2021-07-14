@@ -1077,6 +1077,9 @@ extern const char kOmniboxMaxZeroSuggestMatchesDescription[];
 extern const char kOmniboxUIMaxAutocompleteMatchesName[];
 extern const char kOmniboxUIMaxAutocompleteMatchesDescription[];
 
+extern const char kOmniboxUpdatedConnectionSecurityIndicatorsName[];
+extern const char kOmniboxUpdatedConnectionSecurityIndicatorsDescription[];
+
 extern const char kOmniboxMaxURLMatchesName[];
 extern const char kOmniboxMaxURLMatchesDescription[];
 
