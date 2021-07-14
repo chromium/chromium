@@ -312,21 +312,18 @@ void CollectInlinesInternal(ItemsBuilder* builder,
         builder->SetIsSymbolMarker();
 
       builder->ClearNeedsLayout(layout_text);
-
     } else if (node->IsFloating()) {
       builder->AppendFloating(node);
       if (builder->ShouldAbort())
         return;
 
       builder->ClearInlineFragment(node);
-
     } else if (node->IsOutOfFlowPositioned()) {
       builder->AppendOutOfFlowPositioned(node);
       if (builder->ShouldAbort())
         return;
 
       builder->ClearInlineFragment(node);
-
     } else if (node->IsAtomicInlineLevel()) {
       if (node->IsBoxListMarkerIncludingNG()) {
         // LayoutNGListItem produces the 'outside' list marker as an inline
@@ -340,13 +337,7 @@ void CollectInlinesInternal(ItemsBuilder* builder,
         builder->AppendAtomicInline(node);
       }
       builder->ClearInlineFragment(node);
-
-    } else {
-      // Because we're collecting from LayoutObject tree, block-level children
-      // should not appear. LayoutObject tree should have created an anonymous
-      // box to prevent having inline/block-mixed children.
-      DCHECK(node->IsInline());
-      auto* layout_inline = To<LayoutInline>(node);
+    } else if (auto* layout_inline = DynamicTo<LayoutInline>(node)) {
       builder->UpdateShouldCreateBoxFragment(layout_inline);
 
       builder->EnterInline(layout_inline);
@@ -360,6 +351,11 @@ void CollectInlinesInternal(ItemsBuilder* builder,
       // An empty inline node.
       builder->ExitInline(layout_inline);
       builder->ClearNeedsLayout(layout_inline);
+    } else {
+      DCHECK(!node->IsInline());
+      DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
+      builder->AppendBlockInInline(node);
+      builder->ClearInlineFragment(node);
     }
 
     // Find the next sibling, or parent, until we reach |block|.
