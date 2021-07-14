@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/singleton.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -30,6 +29,7 @@ namespace chromeos {
 class DeviceNameStore {
  public:
   // Returns a pointer to the singleton instance for the current process.
+  // Should only be called after Initialize().
   static DeviceNameStore* GetInstance();
 
   // Register the pref used to store the device name in the local state.
@@ -39,19 +39,19 @@ class DeviceNameStore {
   // creates a new device name and persists it. Must be called before any other
   // non-static method on DeviceNameStore.
   // |prefs| is the PrefService used to persist and read the device name value.
-  void Initialize(PrefService* prefs);
+  static void Initialize(PrefService* prefs);
+
+  // Shutdown() should be called to destroy the instance once its clients no
+  // longer need it.
+  static void Shutdown();
 
   std::string GetDeviceName() const;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(DeviceNameStoreTest, Initialize);
-  FRIEND_TEST_ALL_PREFIXES(DeviceNameStoreTest, GenerateDeviceName);
-
   friend class DeviceNameStoreTest;
-  friend struct base::DefaultSingletonTraits<DeviceNameStore>;
 
-  DeviceNameStore() = default;
-  ~DeviceNameStore() = default;
+  explicit DeviceNameStore(PrefService* prefs);
+  virtual ~DeviceNameStore();
   DeviceNameStore(const DeviceNameStore&) = delete;
   DeviceNameStore& operator=(const DeviceNameStore&) = delete;
 
