@@ -2014,6 +2014,7 @@ if __name__ == "__main__":
       action="store_true")
   args_parser.add_argument("--limit",
                            default=5,
+                           type=int,
                            help="Limit for the maximum number of returned "
                            " errors. Use 0 for unlimited.")
   args_parser.add_argument("--annotations-file",
