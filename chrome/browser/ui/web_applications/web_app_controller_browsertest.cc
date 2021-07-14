@@ -31,21 +31,25 @@
 
 namespace web_app {
 
-WebAppControllerBrowserTestBase::WebAppControllerBrowserTestBase() = default;
+WebAppControllerBrowserTest::WebAppControllerBrowserTest()
+    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+  scoped_feature_list_.InitAndDisableFeature(
+      predictors::kSpeculativePreconnectFeature);
+}
 
-WebAppControllerBrowserTestBase::~WebAppControllerBrowserTestBase() = default;
+WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
 
-WebAppProvider& WebAppControllerBrowserTestBase::provider() {
+WebAppProvider& WebAppControllerBrowserTest::provider() {
   auto* provider = WebAppProvider::Get(profile());
   DCHECK(provider);
   return *provider;
 }
 
-Profile* WebAppControllerBrowserTestBase::profile() {
+Profile* WebAppControllerBrowserTest::profile() {
   return browser()->profile();
 }
 
-AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
+AppId WebAppControllerBrowserTest::InstallPWA(const GURL& start_url) {
   auto web_app_info = std::make_unique<WebApplicationInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
@@ -54,23 +58,22 @@ AppId WebAppControllerBrowserTestBase::InstallPWA(const GURL& start_url) {
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
-AppId WebAppControllerBrowserTestBase::InstallWebApp(
+AppId WebAppControllerBrowserTest::InstallWebApp(
     std::unique_ptr<WebApplicationInfo> web_app_info) {
   return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
 }
 
-Browser* WebAppControllerBrowserTestBase::LaunchWebAppBrowser(
-    const AppId& app_id) {
+Browser* WebAppControllerBrowserTest::LaunchWebAppBrowser(const AppId& app_id) {
   return web_app::LaunchWebAppBrowser(profile(), app_id);
 }
 
-Browser* WebAppControllerBrowserTestBase::LaunchWebAppBrowserAndWait(
+Browser* WebAppControllerBrowserTest::LaunchWebAppBrowserAndWait(
     const AppId& app_id) {
   return web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
 }
 
 Browser*
-WebAppControllerBrowserTestBase::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
+WebAppControllerBrowserTest::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
     const AppId& app_id) {
   Browser* browser = web_app::LaunchWebAppBrowserAndWait(profile(), app_id);
   webapps::TestAppBannerManagerDesktop::FromWebContents(
@@ -79,12 +82,12 @@ WebAppControllerBrowserTestBase::LaunchWebAppBrowserAndAwaitInstallabilityCheck(
   return browser;
 }
 
-Browser* WebAppControllerBrowserTestBase::LaunchBrowserForWebAppInTab(
+Browser* WebAppControllerBrowserTest::LaunchBrowserForWebAppInTab(
     const AppId& app_id) {
   return web_app::LaunchBrowserForWebAppInTab(profile(), app_id);
 }
 
-content::WebContents* WebAppControllerBrowserTestBase::OpenWindow(
+content::WebContents* WebAppControllerBrowserTest::OpenWindow(
     content::WebContents* contents,
     const GURL& url) {
   content::WebContentsAddedObserver tab_added_observer;
@@ -104,7 +107,7 @@ content::WebContents* WebAppControllerBrowserTestBase::OpenWindow(
   return new_contents;
 }
 
-void WebAppControllerBrowserTestBase::NavigateInRenderer(
+void WebAppControllerBrowserTest::NavigateInRenderer(
     content::WebContents* contents,
     const GURL& url) {
   EXPECT_TRUE(content::ExecuteScript(
@@ -114,7 +117,7 @@ void WebAppControllerBrowserTestBase::NavigateInRenderer(
 }
 
 // static
-bool WebAppControllerBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
+bool WebAppControllerBrowserTest::NavigateAndAwaitInstallabilityCheck(
     Browser* browser,
     const GURL& url) {
   auto* manager = webapps::TestAppBannerManagerDesktop::FromWebContents(
@@ -124,7 +127,7 @@ bool WebAppControllerBrowserTestBase::NavigateAndAwaitInstallabilityCheck(
 }
 
 Browser*
-WebAppControllerBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
+WebAppControllerBrowserTest::NavigateInNewWindowAndAwaitInstallabilityCheck(
     const GURL& url) {
   Browser* new_browser = Browser::Create(
       Browser::CreateParams(Browser::TYPE_NORMAL, profile(), true));
@@ -133,18 +136,10 @@ WebAppControllerBrowserTestBase::NavigateInNewWindowAndAwaitInstallabilityCheck(
   return new_browser;
 }
 
-absl::optional<AppId> WebAppControllerBrowserTestBase::FindAppWithUrlInScope(
+absl::optional<AppId> WebAppControllerBrowserTest::FindAppWithUrlInScope(
     const GURL& url) {
   return provider().registrar().FindAppWithUrlInScope(url);
 }
-
-WebAppControllerBrowserTest::WebAppControllerBrowserTest()
-    : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
-  scoped_feature_list_.InitAndDisableFeature(
-      predictors::kSpeculativePreconnectFeature);
-}
-
-WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
 
 content::WebContents* WebAppControllerBrowserTest::OpenApplication(
     const AppId& app_id) {
