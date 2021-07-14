@@ -162,7 +162,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="services_http_server_error_response"/>
       <traffic_annotation unique_id="webrtc_peer_connection"/>
       <traffic_annotation unique_id="direct_sockets"/>
-      <traffic_annotation unique_id="gstatic_change_password_override_urls"/>
       <traffic_annotation unique_id="sanitized_image_source"/>
       <traffic_annotation unique_id="box_access_token_fetcher"/>
       <traffic_annotation unique_id="web_app_origin_association_download"/>
