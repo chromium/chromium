@@ -465,7 +465,7 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>
       <html>
-        </body>
+        <body>
           <div id="id"></div>
         </body>
       </html>
@@ -491,6 +491,50 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   EXPECT_HRESULT_SUCCEEDED(browser_accessibility_com_win->GetPropertyValue(
       UIA_AutomationIdPropertyId, scoped_variant.Receive()));
   EXPECT_EQ(0, expected_scoped_variant.Compare(scoped_variant));
+}
+
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIAScrollIntoView) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <div id="id" style="height: 20px; overflow: scroll;">
+            <ul>
+              <li>Item 1</li>
+              <li>Item 2</li>
+              <li>Item 3</li>
+              <li>Item 4</li>
+              <li>Item 5</li>
+              <li>Item 6</li>
+            </ul>
+          </div>
+        </body>
+      </html>
+  )HTML"));
+
+  BrowserAccessibility* root_browser_accessibility = GetRootAndAssertNonNull();
+  BrowserAccessibilityComWin* root_browser_accessibility_com_win =
+      ToBrowserAccessibilityWin(root_browser_accessibility)->GetCOM();
+  ASSERT_NE(nullptr, root_browser_accessibility_com_win);
+
+  BrowserAccessibility* browser_accessibility =
+      root_browser_accessibility->PlatformDeepestLastChild();
+  ASSERT_NE(nullptr, browser_accessibility);
+  ASSERT_EQ(ax::mojom::Role::kStaticText, browser_accessibility->GetRole());
+  BrowserAccessibilityComWin* browser_accessibility_com_win =
+      ToBrowserAccessibilityWin(browser_accessibility)->GetCOM();
+  ASSERT_NE(nullptr, browser_accessibility_com_win);
+
+  ui::AXPlatformNodeWin* platform_node = static_cast<ui::AXPlatformNodeWin*>(
+      ui::AXPlatformNode::FromNativeViewAccessible(
+          browser_accessibility->GetNativeViewAccessible()));
+  ASSERT_NE(nullptr, platform_node);
+
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLocationChanged);
+  EXPECT_HRESULT_SUCCEEDED(platform_node->ScrollIntoView());
+  waiter.WaitForNotification();
 }
 
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,

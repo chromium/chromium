@@ -2099,6 +2099,7 @@ IFACEMETHODIMP AXPlatformNodeWin::ScrollIntoView() {
   r -= r.OffsetFromOrigin();
 
   AXActionData action_data;
+  action_data.action = ax::mojom::Action::kScrollToMakeVisible;
   action_data.target_node_id = GetData().id;
   action_data.target_rect = r;
   action_data.horizontal_scroll_alignment =
