@@ -595,6 +595,7 @@
 <translation id="1627408615528139100">Už je stiahnutý</translation>
 <translation id="1628948239858170093">Chcete súbor pred otvorením skontrolovať?</translation>
 <translation id="1629314197035607094">Platnosť hesla vypršala</translation>
+<translation id="1629451755632656601">Chcete povoliť Googlu vyhľadávať prispôsobené zľavy na obsah vašich košíkov?</translation>
 <translation id="1629521517399325891">Certifikát používateľa nie je k dispozícii na overenie siete.</translation>
 <translation id="163072119192489970">Môže dokončiť odosielanie a prijímanie údajov</translation>
 <translation id="1630768113285622200">Reštartovať a pokračovať</translation>
@@ -5489,7 +5490,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – denník aktivít</translation>
 <translation id="6997707937646349884">V zariadeniach:</translation>
 <translation id="6998793565256476099">Zaregistrovať zariadenie na videokonferencie</translation>
-<translation id="6999640176621571692">Chcete povoliť Googlu vyhľadať zľavy na obsah, ktorý pridáte do košíkov?</translation>
 <translation id="6999956497249459195">Nová skupina</translation>
 <translation id="7000206553895739324">Tlačiareň <ph name="PRINTER_NAME" /> je pripojená, ale je potrebné ju nakonfigurovať</translation>
 <translation id="7000347579424117903">Použite Ctrl, Alt alebo kláves vyhľadávania</translation>

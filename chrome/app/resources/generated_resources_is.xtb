@@ -597,6 +597,7 @@
 <translation id="1627408615528139100">Þegar sótt</translation>
 <translation id="1628948239858170093">Viltu skanna skrána áður en hún er opnuð?</translation>
 <translation id="1629314197035607094">Útrunnið aðgangsorð</translation>
+<translation id="1629451755632656601">Leyfa Google að finna sérsniðna afslætti fyrir körfurnar þínar?</translation>
 <translation id="1629521517399325891">Notandavottorð er ekki í boði fyrir netauðkenningu.</translation>
 <translation id="163072119192489970">Mega ljúka við að senda og móttaka gögn</translation>
 <translation id="1630768113285622200">Endurræsa og halda áfram</translation>
@@ -5503,7 +5504,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – notkunarskrá</translation>
 <translation id="6997707937646349884">Í tækjunum þínum:</translation>
 <translation id="6998793565256476099">Skrá tæki í myndfundi</translation>
-<translation id="6999640176621571692">Heimila Google að finna afslætti á vörunum í körfunum þínum?</translation>
 <translation id="6999956497249459195">Nýr hópur</translation>
 <translation id="7000206553895739324">Prentarinn <ph name="PRINTER_NAME" /> er tengdur en hann þarfnast stillingar</translation>
 <translation id="7000347579424117903">Hafðu Ctrl, Alt eða Search með</translation>

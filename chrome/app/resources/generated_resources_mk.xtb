@@ -597,6 +597,7 @@
 <translation id="1627408615528139100">Веќе е преземена</translation>
 <translation id="1628948239858170093">Да се скенира датотеката пред отворање?</translation>
 <translation id="1629314197035607094">Лозинката е истечена</translation>
+<translation id="1629451755632656601">Дозволете Google да наоѓа персонализирани попусти во вашите кошнички?</translation>
 <translation id="1629521517399325891">Не е достапен кориснички сертификат за мрежна проверка.</translation>
 <translation id="163072119192489970">Дозволено им е да ги довршуваат испраќањето и примањето податоци</translation>
 <translation id="1630768113285622200">Рестартирај и продолжи</translation>
@@ -5504,7 +5505,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Евиденција на активности</translation>
 <translation id="6997707937646349884">На вашите уреди:</translation>
 <translation id="6998793565256476099">Запишете го уредот за видео конференции</translation>
-<translation id="6999640176621571692">Дали сакате Google да наоѓа попусти на ставките што ќе ги додадете во кошничките?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> е поврзан, но треба да се конфигурира</translation>
 <translation id="7000347579424117903">Опфатете Ctrl, Alt или Search</translation>

@@ -593,6 +593,7 @@
 <translation id="1627408615528139100">Al gedownload</translation>
 <translation id="1628948239858170093">Bestand scannen voordat het wordt geopend?</translation>
 <translation id="1629314197035607094">Wachtwoord verlopen</translation>
+<translation id="1629451755632656601">Google gepersonaliseerde kortingen laten vinden voor je winkelwagens?</translation>
 <translation id="1629521517399325891">Het gebruikerscertificaat is niet beschikbaar voor netwerkverificatie.</translation>
 <translation id="163072119192489970">Toestemming om het sturen en ontvangen van gegevens te voltooien</translation>
 <translation id="1630768113285622200">Opnieuw opstarten en doorgaan</translation>
@@ -5484,7 +5485,6 @@ Op <ph name="BEGIN_LINK" />policies.google.com<ph name="END_LINK" /> vind je mee
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Activiteitenlogboek</translation>
 <translation id="6997707937646349884">Op je apparaten:</translation>
 <translation id="6998793565256476099">Apparaat aanmelden voor videovergaderingen</translation>
-<translation id="6999640176621571692">Toestaan dat Google kortingen zoekt voor items die je toevoegt aan je winkelwagens?</translation>
 <translation id="6999956497249459195">Nieuwe groep</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is verbonden moet worden geconfigureerd</translation>
 <translation id="7000347579424117903">Neem Ctrl, Alt of de zoektoets op</translation>

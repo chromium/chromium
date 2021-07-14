@@ -599,6 +599,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.}}</transl
 <translation id="1627408615528139100">Že preneseno</translation>
 <translation id="1628948239858170093">Želite optično prebrati datoteko pred odpiranjem?</translation>
 <translation id="1629314197035607094">Geslo je poteklo</translation>
+<translation id="1629451755632656601">Želite omogočiti Googlu, da najde osebno prilagojene popuste za vsebino vaših vozičkov?</translation>
 <translation id="1629521517399325891">Uporabniško potrdilo ni na voljo za preverjanje pristnosti omrežja.</translation>
 <translation id="163072119192489970">Dovoljeno je dokončanje pošiljanja in prejemanja podatkov</translation>
 <translation id="1630768113285622200">Znova zaženi in nadaljuj</translation>
@@ -5508,7 +5509,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – dnevnik dejavnosti</translation>
 <translation id="6997707937646349884">V vaših napravah:</translation>
 <translation id="6998793565256476099">Včlanitev naprave za videokonference</translation>
-<translation id="6999640176621571692">Dovolite Googlu, da poišče popuste za izdelke, ki jih dodate v vozičke?</translation>
 <translation id="6999956497249459195">Nova skupina</translation>
 <translation id="7000206553895739324">Tiskalnik <ph name="PRINTER_NAME" /> je povezan, vendar ga je treba konfigurirati</translation>
 <translation id="7000347579424117903">Vključevati morajo Ctrl, Alt ali tipko za iskanje</translation>

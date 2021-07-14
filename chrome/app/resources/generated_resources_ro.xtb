@@ -594,6 +594,7 @@
 <translation id="1627408615528139100">Descărcat deja</translation>
 <translation id="1628948239858170093">Scanezi fișierul înainte să îl deschizi?</translation>
 <translation id="1629314197035607094">Parola a expirat</translation>
+<translation id="1629451755632656601">Permiți ca Google să găsească reduceri personalizate pentru coșul tău de cumpărături?</translation>
 <translation id="1629521517399325891">Certificatul de utilizator nu este disponibil pentru autentificarea în rețea.</translation>
 <translation id="163072119192489970">Au permisiunea de a finaliza trimiterea și primirea datelor</translation>
 <translation id="1630768113285622200">Repornește și continuă</translation>
@@ -5488,7 +5489,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Jurnalul de activități</translation>
 <translation id="6997707937646349884">Pe dispozitivele tale:</translation>
 <translation id="6998793565256476099">Înscrie dispozitivul pentru conferințe video</translation>
-<translation id="6999640176621571692">Permiți ca Google să găsească reduceri pentru articolele pe care le adaugi în coșuri?</translation>
 <translation id="6999956497249459195">Grup nou</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> este conectată, dar necesită configurare</translation>
 <translation id="7000347579424117903">Include Ctrl, Alt sau Căutare</translation>

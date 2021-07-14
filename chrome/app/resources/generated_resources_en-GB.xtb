@@ -596,6 +596,7 @@
 <translation id="1627408615528139100">Already downloaded</translation>
 <translation id="1628948239858170093">Scan file before opening?</translation>
 <translation id="1629314197035607094">Password expired</translation>
+<translation id="1629451755632656601">Let Google find personalised discounts on your baskets?</translation>
 <translation id="1629521517399325891">User certificate is not available for network authentication.</translation>
 <translation id="163072119192489970">Allowed to finish sending and receiving data</translation>
 <translation id="1630768113285622200">Restart and continue</translation>
@@ -5503,7 +5504,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Activity Log</translation>
 <translation id="6997707937646349884">On your devices:</translation>
 <translation id="6998793565256476099">Enrol device for video conferencing</translation>
-<translation id="6999640176621571692">Allow Google to find discounts on what you add to your baskets?</translation>
 <translation id="6999956497249459195">New group</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> is connected but needs configuration</translation>
 <translation id="7000347579424117903">Include Ctrl, Alt or Search</translation>

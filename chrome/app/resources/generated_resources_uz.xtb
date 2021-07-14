@@ -592,6 +592,7 @@ xizmatlarini sizga moslashtirish maqsadlarida foydalanishi mumkin. Bu ruxsatni m
 <translation id="1627408615528139100">Allaqachon yuklab olingan</translation>
 <translation id="1628948239858170093">Ochishdan oldin fayl tekshirilsinmi?</translation>
 <translation id="1629314197035607094">Parol eskirdi</translation>
+<translation id="1629451755632656601">Google xarid savatlaringiz uchun shaxsiy chegirmalar qidirishiga ruxsat berilsinmi?</translation>
 <translation id="1629521517399325891">Tarmoq autentifikatsiyasi uchun foydalanuvchi sertifikati mavjud emas</translation>
 <translation id="163072119192489970">Axborot yuborish va qabul qilishni yakunlashga ruxsat berilgan</translation>
 <translation id="1630768113285622200">Oʻchirib yoqish va davom etish</translation>
@@ -5491,7 +5492,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Faollik jurnali</translation>
 <translation id="6997707937646349884">Qurilmalaringizda:</translation>
 <translation id="6998793565256476099">Video konferensiyalar uchun mos qurilma sifatida ro‘yxatdan o‘tkazish</translation>
-<translation id="6999640176621571692">Google xarid qutingizdagi mahsulotlar uchun chegirmalar qidirishiga ruxsat berilsinmi?</translation>
 <translation id="6999956497249459195">Yangi guruh</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> ulangan, lekin sozlanmagan</translation>
 <translation id="7000347579424117903">Tugmalar birikmasi Ctrl, Alt yoki Search tugmasi bilan boshlanishi lozim</translation>

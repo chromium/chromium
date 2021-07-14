@@ -593,6 +593,7 @@
 <translation id="1627408615528139100">ダウンロード済み</translation>
 <translation id="1628948239858170093">ファイルを開く前にスキャンしますか？</translation>
 <translation id="1629314197035607094">パスワードの有効期限が切れています</translation>
+<translation id="1629451755632656601">カートに入れたアイテムの割引情報の検索を Google に許可しますか？</translation>
 <translation id="1629521517399325891">ユーザー証明書はネットワーク認証に使用できません。</translation>
 <translation id="163072119192489970">データの送受信の完了を許可するサイト</translation>
 <translation id="1630768113285622200">再起動して続行</translation>
@@ -5487,7 +5488,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - アクティビティ ログ</translation>
 <translation id="6997707937646349884">デバイスで次の操作を行います。</translation>
 <translation id="6998793565256476099">デバイスをビデオ会議用に登録</translation>
-<translation id="6999640176621571692">カートに追加した商品の割引情報を取得することを Google に許可しますか？</translation>
 <translation id="6999956497249459195">新しいグループ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> は接続していますが設定が必要です</translation>
 <translation id="7000347579424117903">Ctrl キー、Alt キー、検索キーのいずれかが必要です</translation>

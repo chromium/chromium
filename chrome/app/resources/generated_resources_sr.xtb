@@ -592,6 +592,7 @@
 <translation id="1627408615528139100">Већ је преузето</translation>
 <translation id="1628948239858170093">Желите ли да скенирате датотеку пре отварања?</translation>
 <translation id="1629314197035607094">Лозинка је истекла</translation>
+<translation id="1629451755632656601">Дозволићете Google-у да пронађе персонализоване попусте за ваше корпе?</translation>
 <translation id="1629521517399325891">Кориснички сертификат није доступан за потврду идентитета мреже.</translation>
 <translation id="163072119192489970">Дозвољено им је да довршавају слање и примање података</translation>
 <translation id="1630768113285622200">Рестартуј и настави</translation>
@@ -5484,7 +5485,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Евиденција активности</translation>
 <translation id="6997707937646349884">На уређајима:</translation>
 <translation id="6998793565256476099">Региструј уређај за видео конференције</translation>
-<translation id="6999640176621571692">Желите да дозволите Google-у да пронађе попусте на ставке које додајете у корпе?</translation>
 <translation id="6999956497249459195">Нова група</translation>
 <translation id="7000206553895739324">Штампач <ph name="PRINTER_NAME" /> је повезан, али треба да се конфигурише</translation>
 <translation id="7000347579424117903">Користите Ctrl, Alt или Search</translation>

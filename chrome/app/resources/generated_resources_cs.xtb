@@ -595,6 +595,7 @@
 <translation id="1627408615528139100">Již staženo</translation>
 <translation id="1628948239858170093">Zkontrolovat soubor před otevřením?</translation>
 <translation id="1629314197035607094">Platnost hesla vypršela</translation>
+<translation id="1629451755632656601">Umožnit Googlu vyhledávat u vašich košíků personalizované slevy?</translation>
 <translation id="1629521517399325891">Certifikát uživatele pro síťové ověření není k dispozici.</translation>
 <translation id="163072119192489970">Povolení dokončovat odeslání a příjem dat</translation>
 <translation id="1630768113285622200">Restartovat a pokračovat</translation>
@@ -5485,7 +5486,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – protokol aktivit</translation>
 <translation id="6997707937646349884">Ve vašich zařízeních:</translation>
 <translation id="6998793565256476099">Zaregistrovat zařízení pro videohovory</translation>
-<translation id="6999640176621571692">Povolit Googlu hledat slevy na položky přidané do košíků?</translation>
 <translation id="6999956497249459195">Nová skupina</translation>
 <translation id="7000206553895739324">Tiskárna <ph name="PRINTER_NAME" /> je připojená, ale je potřeba ji nakonfigurovat</translation>
 <translation id="7000347579424117903">Zahrňte klávesu Ctrl, Alt, nebo Hledat</translation>

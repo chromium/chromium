@@ -593,6 +593,7 @@
 <translation id="1627408615528139100">已下載</translation>
 <translation id="1628948239858170093">要先掃描檔案再開啟嗎？</translation>
 <translation id="1629314197035607094">密碼已過期</translation>
+<translation id="1629451755632656601">要讓 Google 根據購物車中的商品尋找個人專屬折扣嗎？</translation>
 <translation id="1629521517399325891">使用者憑證不適用於網路驗證。</translation>
 <translation id="163072119192489970">可以完成資料的傳送和接收</translation>
 <translation id="1630768113285622200">重新啟動並繼續</translation>
@@ -5486,7 +5487,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 活動記錄</translation>
 <translation id="6997707937646349884">在你的裝置上：</translation>
 <translation id="6998793565256476099">註冊視訊會議裝置</translation>
-<translation id="6999640176621571692">要允許 Google 針對你加入購物車的商品尋找折扣訊息嗎？</translation>
 <translation id="6999956497249459195">新群組</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> 已連接，請進行設定</translation>
 <translation id="7000347579424117903">必須包含 Ctrl、Alt 鍵或搜尋鍵</translation>

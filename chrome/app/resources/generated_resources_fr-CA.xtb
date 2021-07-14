@@ -594,6 +594,7 @@ Les signets, l'historique et les mots de passe enregistrés ne seront pas touch�
 <translation id="1627408615528139100">Déjà téléchargé</translation>
 <translation id="1628948239858170093">Analyser le fichier avant l'ouverture?</translation>
 <translation id="1629314197035607094">Le mot de passe a expiré</translation>
+<translation id="1629451755632656601">Laissez Google trouver des rabais personnalisés dans vos paniers?</translation>
 <translation id="1629521517399325891">Le certificat utilisateur n'est pas accessible pour l'authentification réseau.</translation>
 <translation id="163072119192489970">Autorisés à terminer l'envoi ou la réception de données</translation>
 <translation id="1630768113285622200">Redémarrer et continuer</translation>
@@ -5489,7 +5490,6 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - Journal d'activité</translation>
 <translation id="6997707937646349884">Sur vos appareils :</translation>
 <translation id="6998793565256476099">Inscrire un appareil pour la vidéoconférence</translation>
-<translation id="6999640176621571692">Autoriser Google à trouver des rabais sur les éléments que vous ajoutez dans vos paniers?</translation>
 <translation id="6999956497249459195">Nouveau groupe</translation>
 <translation id="7000206553895739324">L'imprimante <ph name="PRINTER_NAME" /> est connectée, mais elle doit être configurée</translation>
 <translation id="7000347579424117903">Incluez la touche Ctrl, Alt ou Recherche</translation>

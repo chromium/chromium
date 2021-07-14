@@ -590,6 +590,7 @@
 <translation id="1627408615528139100">Ya se descargó</translation>
 <translation id="1628948239858170093">¿Quieres analizar el archivo antes de abrirlo?</translation>
 <translation id="1629314197035607094">Caducó la contraseña</translation>
+<translation id="1629451755632656601">¿Deseas que Google busque descuentos personalizados en tus carritos?</translation>
 <translation id="1629521517399325891">El certificado del usuario no está disponible para realizar la autenticación de la red.</translation>
 <translation id="163072119192489970">Puede completar el envío y la recepción de datos</translation>
 <translation id="1630768113285622200">Restablecer y continuar</translation>
@@ -5484,7 +5485,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="6997642619627518301"><ph name="NAME_PH" />: Registro de actividad</translation>
 <translation id="6997707937646349884">En tus dispositivos:</translation>
 <translation id="6998793565256476099">Inscribe el dispositivo para realizar videoconferencias</translation>
-<translation id="6999640176621571692">¿Deseas permitir que Google busque descuentos para los productos que agregaste a tus carritos?</translation>
 <translation id="6999956497249459195">Grupo nuevo</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> está conectada, pero debe configurarse</translation>
 <translation id="7000347579424117903">Incluir Ctrl, Alt o el botón de búsqueda</translation>

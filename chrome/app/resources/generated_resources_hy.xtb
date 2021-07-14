@@ -595,6 +595,7 @@
 <translation id="1627408615528139100">Ֆայլն արդեն ներբեռնվել է</translation>
 <translation id="1628948239858170093">Բացելուց առաջ ստուգե՞լ ֆայլը</translation>
 <translation id="1629314197035607094">Գաղտնաբառի ժամկետը լրացել է</translation>
+<translation id="1629451755632656601">Թույլատրե՞լ Google-ին անհատականացված զեղչեր որոնել զամբյուղում։</translation>
 <translation id="1629521517399325891">Օգտատիրոջ հավաստագիրը հասանելի չէ ցանցային նույնականացման համար։</translation>
 <translation id="163072119192489970">Թույլատրվում է ավարտել տվյալների ուղարկումն ու ստացումը</translation>
 <translation id="1630768113285622200">Վերագործարկել և շարունակել</translation>
@@ -5491,7 +5492,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> – Գործողությունների մատյան</translation>
 <translation id="6997707937646349884">Ձեր սարքերում՝</translation>
 <translation id="6998793565256476099">Սարքը գրանցել տեսակոնֆերանսների համար</translation>
-<translation id="6999640176621571692">Թույլատրե՞լ Google-ին փնտրել զեղչեր ձեր զամբյուղներում ավելացված ապրանքների համար։</translation>
 <translation id="6999956497249459195">Նոր խումբ</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" /> տպիչը միացել է, բայց այն հարկավոր է կարգավորել</translation>
 <translation id="7000347579424117903">Սկզբում սեղմեք Ctrl, Alt, կամ Search</translation>

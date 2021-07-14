@@ -596,6 +596,7 @@
 <translation id="1627408615528139100">이미 다운로드됨</translation>
 <translation id="1628948239858170093">열기 전에 파일을 검사하시겠습니까?</translation>
 <translation id="1629314197035607094">비밀번호가 만료되었습니다.</translation>
+<translation id="1629451755632656601">Google에서 장바구니의 상품에 관한 맞춤형 할인을 찾도록 허용하시겠습니까?</translation>
 <translation id="1629521517399325891">사용자 인증서를 네트워크 인증에 사용할 수 없습니다.</translation>
 <translation id="163072119192489970">데이터 전송 및 수신 완료가 허용됨</translation>
 <translation id="1630768113285622200">다시 시작 및 계속</translation>
@@ -5500,7 +5501,6 @@
 <translation id="6997642619627518301"><ph name="NAME_PH" /> - 활동 로그</translation>
 <translation id="6997707937646349884">기기에서 다음과 같이 설정하세요.</translation>
 <translation id="6998793565256476099">화상회의용 기기 등록</translation>
-<translation id="6999640176621571692">Google이 장바구니 상품의 할인 가격을 찾을 수 있도록 허용하시겠습니까?</translation>
 <translation id="6999956497249459195">새 그룹</translation>
 <translation id="7000206553895739324"><ph name="PRINTER_NAME" />이(가) 연결되어 있으나 구성이 필요함</translation>
 <translation id="7000347579424117903">Ctrl, Alt, 검색 키가 포함되어야 합니다</translation>
