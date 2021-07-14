@@ -50,8 +50,7 @@ CanvasResourceParams::CanvasResourceParams(const SkImageInfo& info)
 }
 
 SkSurfaceProps CanvasResourceParams::GetSkSurfaceProps() const {
-  bool can_use_lcd_text = (alpha_type_ == kOpaque_SkAlphaType);
-  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(can_use_lcd_text);
+  return skia::LegacyDisplayGlobals::ComputeSurfaceProps(CanUseLcdText());
 }
 
 uint8_t CanvasResourceParams::BytesPerPixel() const {

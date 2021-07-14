@@ -1421,7 +1421,7 @@ void CanvasResourceProvider::RasterRecordOOP(
 
   ri->BeginRasterCHROMIUM(
       background_color, needs_clear, /*msaa_sample_count=*/0,
-      /*can_use_lcd_text=*/false, ColorParams().GetStorageGfxColorSpace(),
+      ColorParams().CanUseLcdText(), ColorParams().GetStorageGfxColorSpace(),
       mailbox.name);
 
   ri->RasterCHROMIUM(list.get(), GetOrCreateCanvasImageProvider(), size,
