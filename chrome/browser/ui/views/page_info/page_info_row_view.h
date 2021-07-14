@@ -15,6 +15,10 @@ class FlexLayout;
 class Label;
 }  // namespace views
 
+namespace test {
+class PageInfoBubbleViewTestApi;
+}  // namespace test
+
 // A view that contains basic layout for rows in page info.
 // *-------------------------------------------------------------------------*
 // | Icon | Title                                | Controls (buttons, icons) |
@@ -42,6 +46,8 @@ class PageInfoRowView : public views::View {
   gfx::Size CalculatePreferredSize() const override;
 
  private:
+  friend class test::PageInfoBubbleViewTestApi;
+
   views::ImageView* icon_ = nullptr;
   views::Label* title_ = nullptr;
   views::View* labels_wrapper_ = nullptr;

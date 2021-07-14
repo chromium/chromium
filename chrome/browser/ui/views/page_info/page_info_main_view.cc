@@ -76,6 +76,8 @@ PageInfoMainView::PageInfoMainView(
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
+  permissions_view_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   site_settings_view_ = layout->AddView(CreateContainerView());

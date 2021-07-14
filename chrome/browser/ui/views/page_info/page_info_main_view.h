@@ -27,6 +27,10 @@ class PageInfoNavigationHandler;
 class PageInfoSecurityContentView;
 class PermissionToggleRowView;
 
+namespace test {
+class PageInfoBubbleViewTestApi;
+}  // namespace test
+
 // The main view of the page info, contains security information, permissions
 // and  site-related settings. This is used in the experimental
 // PageInfoNewBubbleView (under a flag PageInfoV2Desktop).
@@ -65,6 +69,7 @@ class PageInfoMainView : public views::View,
 
  private:
   friend class PageInfoBubbleViewDialogBrowserTest;
+  friend class test::PageInfoBubbleViewTestApi;
 
   // Creates a view with vertical box layout that will used a container for
   // other views.

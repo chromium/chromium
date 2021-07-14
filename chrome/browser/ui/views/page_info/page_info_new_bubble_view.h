@@ -15,6 +15,10 @@ class PageInfoViewFactory;
 
 enum class ContentSettingsType;
 
+namespace test {
+class PageInfoBubbleViewTestApi;
+}  // namespace test
+
 // The experimental new implementation of the Views page info UI (under a flag
 // PageInfoV2Desktop). Current implementation (PageInfoBubbleView) will be
 // deprecated when the redesign is finished.
@@ -43,6 +47,7 @@ class PageInfoNewBubbleView : public PageInfoBubbleViewBase,
  private:
   friend class PageInfoBubbleViewBrowserTest;
   friend class PageInfoBubbleViewDialogBrowserTest;
+  friend class test::PageInfoBubbleViewTestApi;
 
   // PageInfoBubbleViewBase:
   gfx::Size CalculatePreferredSize() const override;

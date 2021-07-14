@@ -36,6 +36,8 @@ class PermissionToggleRowView : public views::View {
   void PermissionChanged();
   void ResetPermission();
 
+  PageInfoRowView* row_view_for_testing() { return row_view_; }
+
  private:
   void OnToggleButtonPressed();
   void InitForUserSource(bool should_show_spacer_view);

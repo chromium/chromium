@@ -304,6 +304,8 @@ PageInfoBubbleView::PageInfoBubbleView(
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   permissions_view_ = layout->AddView(std::make_unique<views::View>());
+  permissions_view_->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_PERMISSION_VIEW);
 
   layout->StartRow(views::GridLayout::kFixedSize, kColumnId);
   layout->AddView(std::make_unique<views::Separator>());
@@ -341,6 +343,8 @@ PageInfoBubbleView::PageInfoBubbleView(
   // CreateBubble() may not set our size synchronously so explicitly set it here
   // before PageInfo updates trigger child layouts.
   SetSize(GetPreferredSize());
+
+  SetID(PageInfoViewFactory::VIEW_ID_PAGE_INFO_CURRENT_VIEW);
 
   ui_delegate_ = std::make_unique<ChromePageInfoUiDelegate>(profile, url);
   presenter_ = std::make_unique<PageInfo>(

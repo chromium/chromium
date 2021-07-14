@@ -26,6 +26,8 @@ class PageInfoSecurityContentView : public views::View, public PageInfoUI {
   void SetIdentityInfo(const IdentityInfo& identity_info) override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(PageInfoBubbleViewTest, CheckHeaderInteractions);
+
   void ResetDecisionsClicked();
 
   void SecurityDetailsClicked(const ui::Event& event);

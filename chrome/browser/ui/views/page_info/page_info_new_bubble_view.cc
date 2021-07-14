@@ -51,6 +51,8 @@ PageInfoNewBubbleView::PageInfoNewBubbleView(
   view_factory_ = std::make_unique<PageInfoViewFactory>(
       presenter_.get(), ui_delegate_.get(), this);
 
+  SetTitle(presenter_->GetSimpleSiteName());
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   page_container_ = AddChildView(
