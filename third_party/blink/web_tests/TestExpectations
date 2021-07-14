@@ -2596,7 +2596,6 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac10.15 ] external/wpt/webrtc/simulcast/basic.https.html [ Timeout ]
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Timeout ]
 crbug.com/626703 [ Mac10.13 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Timeout ]
@@ -2848,8 +2847,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.h
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCSctpTransport-maxChannels.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/getstats.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/getstats.html [ Timeout ]
-crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/simulcast/basic.https.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/basic.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-ondatachannel.html [ Timeout ]
 # Conflict with looser exception for crbug.com/v8/11365
@@ -7329,3 +7326,5 @@ crbug.com/996511 virtual/plz-service-worker/http/tests/inspector-protocol/fetch/
 # Sheriff 2021-07-14
 crbug.com/1229039 [ Linux ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Timeout ]
 crbug.com/1229039 [ Mac ] external/wpt/webrtc/RTCDTMFSender-ontonechange.https.html [ Pass Timeout ]
+crbug.com/1225643 [ Linux ] external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
+crbug.com/1225643 [ Mac ] external/wpt/webrtc/simulcast/basic.https.html [ Pass Timeout ]
