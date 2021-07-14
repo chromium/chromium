@@ -89,6 +89,7 @@ chrome_ios_eg2_test("ios_chrome_integration_eg2tests_module") {
     "//ios/chrome/browser/ui/content_suggestions:eg2_tests",
     "//ios/chrome/browser/ui/default_promo:eg2_tests",
     "//ios/chrome/browser/ui/integration_tests:eg2_tests",
+    "//ios/chrome/browser/variations:eg2_tests",
   ]
   data_deps = [ ":ios_chrome_eg2tests" ]
 }

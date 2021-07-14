@@ -158,6 +158,7 @@ source_set("eg_app_support+eg2") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:eg_app_support+eg2",
     "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/variations:eg_app_support+eg2",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:eg_app_support+eg2",
     "//ios/chrome/browser/web:tab_id_tab_helper",

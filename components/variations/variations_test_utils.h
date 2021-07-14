@@ -14,12 +14,14 @@
 
 namespace variations {
 
-// The below seed and signature pair were generated using the server's private
-// key.
+// The test seed data is associated with a VariationsSeed with one study,
+// "UMA-Uniformity-Trial-10-Percent", and ten equally weighted groups: "default"
+// and "group_01" through "group_09". The study is not associated with channels,
+// platforms, or features.
 //
-// The seed contains one study, "UMA-Uniformity-Trial-10-Percent", and ten
-// equally weighted groups: "default" and "group_01" through "group_09".
+// The seed and signature pair were generated using the server's private key.
 extern const char kUncompressedBase64TestSeedData[];
+extern const char kCompressedBase64TestSeedData[];
 extern const char kBase64TestSeedSignature[];
 extern const char kTestSeedStudyName[];
 

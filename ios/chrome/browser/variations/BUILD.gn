@@ -42,3 +42,55 @@ generate_ui_string_overrider("ios_chrome_ui_string_overrider_factory") {
   header_filename = "ios_ui_string_overrider_factory.h"
   source_filename = "ios_ui_string_overrider_factory.cc"
 }
+
+source_set("eg_app_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [
+    "variations_app_interface.h",
+    "variations_app_interface.mm",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//components/metrics",
+    "//components/prefs",
+    "//components/variations",
+    "//components/variations:test_support",
+    "//ios/chrome/browser",
+    "//ios/chrome/test/app:test_support",
+  ]
+}
+
+source_set("eg_test_support+eg2") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "variations_app_interface.h" ]
+}
+
+source_set("eg2_tests") {
+  defines = [ "CHROME_EARL_GREY_2" ]
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "variations_safe_mode_egtest.mm" ]
+  deps = [
+    ":eg_test_support+eg2",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
