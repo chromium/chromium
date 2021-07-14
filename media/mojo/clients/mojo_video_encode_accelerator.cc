@@ -184,15 +184,13 @@ void MojoVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(vea_.is_bound());
 
-  media::VideoBitrateAllocation bitrate_allocation;
-  bitrate_allocation.SetBitrate(0, 0, bitrate);
-  vea_->RequestEncodingParametersChange(bitrate_allocation, framerate);
+  vea_->RequestEncodingParametersChangeWithBitrate(bitrate, framerate);
 }
 
 void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -202,7 +200,7 @@ void MojoVideoEncodeAccelerator::RequestEncodingParametersChange(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(vea_.is_bound());
 
-  vea_->RequestEncodingParametersChange(bitrate, framerate);
+  vea_->RequestEncodingParametersChangeWithLayers(bitrate, framerate);
 }
 
 bool MojoVideoEncodeAccelerator::IsFlushSupported() {

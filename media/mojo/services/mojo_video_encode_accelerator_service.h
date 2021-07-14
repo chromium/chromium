@@ -64,7 +64,10 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorService
               EncodeCallback callback) override;
   void UseOutputBitstreamBuffer(int32_t bitstream_buffer_id,
                                 mojo::ScopedSharedBufferHandle buffer) override;
-  void RequestEncodingParametersChange(
+  void RequestEncodingParametersChangeWithBitrate(
+      const media::Bitrate& bitrate_allocation,
+      uint32_t framerate) override;
+  void RequestEncodingParametersChangeWithLayers(
       const media::VideoBitrateAllocation& bitrate_allocation,
       uint32_t framerate) override;
   void IsFlushSupported(IsFlushSupportedCallback callback) override;

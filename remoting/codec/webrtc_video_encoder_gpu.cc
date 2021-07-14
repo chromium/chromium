@@ -145,7 +145,9 @@ void WebrtcVideoEncoderGpu::Encode(std::unique_ptr<webrtc::DesktopFrame> frame,
     // TODO(zijiehe): Forward frame_rate from FrameParams.
     bitrate_filter_.SetBandwidthEstimateKbps(params.bitrate_kbps);
     video_encode_accelerator_->RequestEncodingParametersChange(
-        bitrate_filter_.GetTargetBitrateKbps() * 1000, params.fps);
+        media::Bitrate::ConstantBitrate(bitrate_filter_.GetTargetBitrateKbps() *
+                                        1000),
+        params.fps);
   }
   video_encode_accelerator_->Encode(video_frame, params.key_frame);
 }

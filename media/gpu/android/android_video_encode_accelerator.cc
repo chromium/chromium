@@ -271,14 +271,18 @@ void AndroidVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void AndroidVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
-  DVLOG(3) << __PRETTY_FUNCTION__ << ": bitrate: " << bitrate
+  // If this is changed to use variable bitrate encoding, change the mode check
+  // to check that the mode matches the current mode.
+  RETURN_ON_FAILURE(bitrate.mode() == Bitrate::Mode::kConstant,
+                    "Unexpected bitrate mode", kInvalidArgumentError);
+  DVLOG(3) << __PRETTY_FUNCTION__ << ": bitrate: " << bitrate.ToString()
            << ", framerate: " << framerate;
   DCHECK(thread_checker_.CalledOnValidThread());
-  if (bitrate != last_set_bitrate_) {
-    last_set_bitrate_ = bitrate;
-    media_codec_->SetVideoBitrate(bitrate, framerate);
+  if (bitrate.target() != last_set_bitrate_) {
+    last_set_bitrate_ = bitrate.target();
+    media_codec_->SetVideoBitrate(bitrate.target(), framerate);
   }
   // Note: Android's MediaCodec doesn't allow mid-stream adjustments to
   // framerate, so we ignore that here.  This is OK because Android only uses

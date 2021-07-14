@@ -148,8 +148,28 @@ interface VideoEncodeAccelerator {
   UseOutputBitstreamBuffer(int32 bitstream_buffer_id,
                            handle<shared_buffer> buffer);
 
-  RequestEncodingParametersChange(
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is intended for use with
+  // spatial or temporal layers, and is implicitly a constant bitrate encoding.
+  // Parameters:
+  //  |bitrate_allocation| is the requested new bitrate, per spatial and
+  //                       temporal layer.
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithLayers(
     VideoBitrateAllocation bitrate_allocation,
+    uint32 framerate);
+
+  // Request a change to the encoding parameters. This is only a request,
+  // fulfilled on a best-effort basis. This method is for use with non-layered
+  // bitrates, and may make requests for constant or variable bitrates based on
+  // the initially-configured bitrate mode.
+  // Parameters:
+  //  |bitrate| is the requested new bitrate for non-layered encoding, which
+  //            may be constant or variable bitrate. This should not change the
+  //            encoding mode (constant -> variable or variable -> constant).
+  //  |framerate| is the requested new framerate, in frames per second.
+  RequestEncodingParametersChangeWithBitrate(
+    Bitrate bitrate,
     uint32 framerate);
 
   [Sync]

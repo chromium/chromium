@@ -153,7 +153,8 @@ class ExternalVideoEncoder::VEAClientImpl final
     requested_bit_rate_ = bit_rate;
     if (encoder_active_) {
       video_encode_accelerator_->RequestEncodingParametersChange(
-          bit_rate, static_cast<uint32_t>(max_frame_rate_ + 0.5));
+          Bitrate::ConstantBitrate(bit_rate),
+          static_cast<uint32_t>(max_frame_rate_ + 0.5));
     }
   }
 

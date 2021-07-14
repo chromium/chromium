@@ -17,6 +17,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "content/renderer/pepper/pepper_video_encoder_host.h"
 #include "content/renderer/render_thread_impl.h"
+#include "media/video/video_encode_accelerator.h"
 #include "third_party/libvpx/source/libvpx/vpx/vp8cx.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_encoder.h"
 #include "ui/gfx/geometry/size.h"
@@ -102,7 +103,8 @@ class VideoEncoderShim::EncoderImpl {
   void Initialize(const media::VideoEncodeAccelerator::Config& config);
   void Encode(scoped_refptr<media::VideoFrame> frame, bool force_keyframe);
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer, uint8_t* mem);
-  void RequestEncodingParametersChange(uint32_t bitrate, uint32_t framerate);
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
+                                       uint32_t framerate);
   void Stop();
 
  private:
@@ -252,11 +254,17 @@ void VideoEncoderShim::EncoderImpl::UseOutputBitstreamBuffer(
 }
 
 void VideoEncoderShim::EncoderImpl::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const media::Bitrate& bitrate,
     uint32_t framerate) {
+  // If this is changed to use variable bitrate encoding, change the mode check
+  // to check that the mode matches the current mode.
+  if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
+    NotifyError(media::VideoEncodeAccelerator::kInvalidArgumentError);
+    return;
+  }
   framerate_ = framerate;
 
-  uint32_t bitrate_kbit = bitrate / 1000;
+  uint32_t bitrate_kbit = bitrate.target() / 1000;
   if (config_.rc_target_bitrate == bitrate_kbit)
     return;
 
@@ -436,8 +444,9 @@ void VideoEncoderShim::UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) {
                      host_->ShmHandleToAddress(buffer.id())));
 }
 
-void VideoEncoderShim::RequestEncodingParametersChange(uint32_t bitrate,
-                                                       uint32_t framerate) {
+void VideoEncoderShim::RequestEncodingParametersChange(
+    const media::Bitrate& bitrate,
+    uint32_t framerate) {
   DCHECK(RenderThreadImpl::current());
 
   media_task_runner_->PostTask(

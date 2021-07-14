@@ -159,9 +159,10 @@ void MojoVideoEncodeAcceleratorService::UseOutputBitstreamBuffer(
       BitstreamBuffer(bitstream_buffer_id, std::move(region), memory_size));
 }
 
-void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(
-    const media::VideoBitrateAllocation& bitrate_allocation,
-    uint32_t framerate) {
+void MojoVideoEncodeAcceleratorService::
+    RequestEncodingParametersChangeWithLayers(
+        const media::VideoBitrateAllocation& bitrate_allocation,
+        uint32_t framerate) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!encoder_)
@@ -171,6 +172,20 @@ void MojoVideoEncodeAcceleratorService::RequestEncodingParametersChange(
            << " framerate=" << framerate;
 
   encoder_->RequestEncodingParametersChange(bitrate_allocation, framerate);
+}
+
+void MojoVideoEncodeAcceleratorService::
+    RequestEncodingParametersChangeWithBitrate(const media::Bitrate& bitrate,
+                                               uint32_t framerate) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!encoder_)
+    return;
+
+  DVLOG(2) << __func__ << " bitrate=" << bitrate.target()
+           << " framerate=" << framerate;
+
+  encoder_->RequestEncodingParametersChange(bitrate, framerate);
 }
 
 void MojoVideoEncodeAcceleratorService::IsFlushSupported(

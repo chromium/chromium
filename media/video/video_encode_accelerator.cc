@@ -183,7 +183,8 @@ bool VideoEncodeAccelerator::IsGpuFrameResizeSupported() {
 void VideoEncodeAccelerator::RequestEncodingParametersChange(
     const VideoBitrateAllocation& bitrate_allocation,
     uint32_t framerate) {
-  RequestEncodingParametersChange(bitrate_allocation.GetSumBps(), framerate);
+  RequestEncodingParametersChange(
+      Bitrate::ConstantBitrate(bitrate_allocation.GetSumBps()), framerate);
 }
 
 bool operator==(const Vp8Metadata& l, const Vp8Metadata& r) {

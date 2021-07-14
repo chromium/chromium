@@ -14,6 +14,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/bitrate.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/video/video_encode_accelerator.h"
 
@@ -37,14 +38,14 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void RequestEncodingParametersChange(const VideoBitrateAllocation& bitrate,
                                        uint32_t framerate) override;
   bool IsGpuFrameResizeSupported() override;
   void Destroy() override;
 
-  const std::vector<uint32_t>& stored_bitrates() const {
+  const std::vector<Bitrate>& stored_bitrates() const {
     return stored_bitrates_;
   }
   const std::vector<VideoBitrateAllocation>& stored_bitrate_allocations()
@@ -84,7 +85,7 @@ class FakeVideoEncodeAccelerator : public VideoEncodeAccelerator {
 
   // Our original (constructor) calling message loop used for all tasks.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  std::vector<uint32_t> stored_bitrates_;
+  std::vector<Bitrate> stored_bitrates_;
   std::vector<VideoBitrateAllocation> stored_bitrate_allocations_;
   bool will_initialization_succeed_;
   bool resize_supported_ = false;

@@ -11,6 +11,7 @@
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
 
 namespace media {
@@ -230,9 +231,9 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
-  DVLOG(3) << __func__ << ": bitrate=" << bitrate
+  DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate;
   DCHECK(thread_checker_.CalledOnValidThread());
 
@@ -333,9 +334,16 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 }
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+
+  // If this is changed to use variable bitrate encoding, change the mode check
+  // to check that the mode matches the current mode.
+  if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
+    NotifyError(kInvalidArgumentError);
+    return;
+  }
 
   if (!compression_session_) {
     NotifyError(kPlatformFailureError);
@@ -347,8 +355,9 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
       compression_session_);
   session_property_setter.Set(kVTCompressionPropertyKey_ExpectedFrameRate,
                               frame_rate_);
-  if (bitrate != static_cast<uint32_t>(target_bitrate_) && bitrate > 0) {
-    target_bitrate_ = bitrate;
+  if (bitrate.target() != static_cast<uint32_t>(target_bitrate_) &&
+      bitrate.target() > 0) {
+    target_bitrate_ = bitrate.target();
     bitrate_adjuster_.SetTargetBitrateBps(target_bitrate_);
     SetAdjustedBitrate(bitrate_adjuster_.GetAdjustedBitrateBps());
   }
@@ -504,7 +513,7 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
 
   const bool configure_rv = ConfigureCompressionSession();
   if (configure_rv)
-    RequestEncodingParametersChange(bitrate_.target(), frame_rate_);
+    RequestEncodingParametersChange(bitrate_, frame_rate_);
   return configure_rv;
 }
 

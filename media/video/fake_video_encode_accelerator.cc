@@ -80,9 +80,13 @@ void FakeVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
-  stored_bitrates_.push_back(bitrate);
+  // Reject bitrate mode changes.
+  if (stored_bitrates_.empty() ||
+      stored_bitrates_.back().mode() == bitrate.mode()) {
+    stored_bitrates_.push_back(bitrate);
+  }
 }
 
 void FakeVideoEncodeAccelerator::RequestEncodingParametersChange(

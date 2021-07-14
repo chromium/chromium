@@ -377,9 +377,9 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBuffer(
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const media::Bitrate& bitrate,
     uint32_t framerate) {
-  DVLOG(3) << __func__ << ": bitrate=" << bitrate
+  DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate;
   DCHECK(main_client_task_runner_->BelongsToCurrentThread());
 
@@ -1236,18 +1236,22 @@ void MediaFoundationVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 }
 
 void MediaFoundationVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
-    uint32_t bitrate,
+    const media::Bitrate& bitrate,
     uint32_t framerate) {
   DVLOG(3) << __func__;
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
+  // If this is changed to use variable bitrate encoding, change this mode check
+  // to check that the mode matches the current mode.
+  RETURN_ON_HR_FAILURE(bitrate.mode() == media::Bitrate::Mode::kConstant,
+                       "Invalid bitrate mode", );
 
   frame_rate_ =
       framerate
           ? std::min(framerate, static_cast<uint32_t>(kMaxFrameRateNumerator))
           : 1;
 
-  if (target_bitrate_ != bitrate) {
-    target_bitrate_ = bitrate ? bitrate : 1;
+  if (target_bitrate_ != bitrate.target()) {
+    target_bitrate_ = bitrate.target() ? bitrate.target() : 1;
     VARIANT var;
     var.vt = VT_UI4;
     var.ulVal = target_bitrate_;

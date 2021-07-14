@@ -91,8 +91,10 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   MOCK_METHOD2(DoUseOutputBitstreamBuffer,
                void(int32_t, mojo::ScopedSharedBufferHandle*));
 
-  MOCK_METHOD2(RequestEncodingParametersChange,
+  MOCK_METHOD2(RequestEncodingParametersChangeWithLayers,
                void(const media::VideoBitrateAllocation&, uint32_t));
+  MOCK_METHOD2(RequestEncodingParametersChangeWithBitrate,
+               void(const media::Bitrate&, uint32_t));
 
   void IsFlushSupported(IsFlushSupportedCallback callback) override {
     DoIsFlushSupported();
@@ -269,15 +271,14 @@ TEST_F(MojoVideoEncodeAcceleratorTest, EncodeOneFrame) {
 TEST_F(MojoVideoEncodeAcceleratorTest, EncodingParametersChange) {
   const uint32_t kNewFramerate = 321321u;
   const uint32_t kNewBitrate = 123123u;
-  VideoBitrateAllocation bitrate_allocation;
-  bitrate_allocation.SetBitrate(0, 0, kNewBitrate);
+  Bitrate bitrate = Bitrate::ConstantBitrate(kNewBitrate);
 
   // In a real world scenario, we should go through an Initialize() prologue,
   // but we can skip that in unit testing.
 
-  EXPECT_CALL(*mock_mojo_vea(), RequestEncodingParametersChange(
-                                    bitrate_allocation, kNewFramerate));
-  mojo_vea()->RequestEncodingParametersChange(kNewBitrate, kNewFramerate);
+  EXPECT_CALL(*mock_mojo_vea(), RequestEncodingParametersChangeWithBitrate(
+                                    bitrate, kNewFramerate));
+  mojo_vea()->RequestEncodingParametersChange(bitrate, kNewFramerate);
   base::RunLoop().RunUntilIdle();
 }
 
@@ -300,7 +301,7 @@ TEST_F(MojoVideoEncodeAcceleratorTest,
       bitrate_allocation.SetBitrate(si, ti, layer_bitrate);
     }
 
-    EXPECT_CALL(*mock_mojo_vea(), RequestEncodingParametersChange(
+    EXPECT_CALL(*mock_mojo_vea(), RequestEncodingParametersChangeWithLayers(
                                       bitrate_allocation, kNewFramerate));
     mojo_vea()->RequestEncodingParametersChange(bitrate_allocation,
                                                 kNewFramerate);

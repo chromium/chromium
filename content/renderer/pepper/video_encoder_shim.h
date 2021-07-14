@@ -13,6 +13,7 @@
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "media/base/bitrate.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace base {
@@ -44,7 +45,7 @@ class VideoEncoderShim : public media::VideoEncodeAccelerator {
   void Encode(scoped_refptr<media::VideoFrame> frame,
               bool force_keyframe) override;
   void UseOutputBitstreamBuffer(media::BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
 

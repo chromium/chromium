@@ -50,7 +50,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(uint32_t bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
   void Flush(FlushCallback flush_callback) override;
@@ -190,7 +190,7 @@ class MEDIA_GPU_EXPORT V4L2VideoEncodeAccelerator
   void MaybeFlushImageProcessor();
 
   // Change encoding parameters.
-  void RequestEncodingParametersChangeTask(uint32_t bitrate,
+  void RequestEncodingParametersChangeTask(const Bitrate& bitrate,
                                            uint32_t framerate);
 
   // Do several initializations (e.g. set up format) on |encoder_task_runner_|.

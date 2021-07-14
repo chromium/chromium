@@ -853,12 +853,19 @@ void VaapiVideoEncodeAccelerator::UseOutputBitstreamBufferTask(
 }
 
 void VaapiVideoEncodeAccelerator::RequestEncodingParametersChange(
-    uint32_t bitrate,
+    const Bitrate& bitrate,
     uint32_t framerate) {
+  // If this is changed to use variable bitrate encoding, change the mode check
+  // to check that the mode matches the current mode.
+  if (bitrate.mode() != Bitrate::Mode::kConstant) {
+    VLOGF(1) << "Failed to update rates due to invalid bitrate mode.";
+    return;
+  }
+
   DCHECK_CALLED_ON_VALID_SEQUENCE(child_sequence_checker_);
 
   VideoBitrateAllocation allocation;
-  allocation.SetBitrate(0, 0, bitrate);
+  allocation.SetBitrate(0, 0, bitrate.target());
   encoder_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(

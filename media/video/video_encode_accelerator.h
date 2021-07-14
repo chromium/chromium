@@ -340,9 +340,11 @@ class MEDIA_EXPORT VideoEncodeAccelerator {
   // Request a change to the encoding parameters. This is only a request,
   // fulfilled on a best-effort basis.
   // Parameters:
-  //  |bitrate| is the requested new bitrate, in bits per second.
-  //  |framerate| is the requested new framerate, in frames per second.
-  virtual void RequestEncodingParametersChange(uint32_t bitrate,
+  //  |bitrate| is the requested new bitrate. The bitrate mode cannot be changed
+  //  using this method and attempting to do so will result in an error.
+  //  Instead, re-create a VideoEncodeAccelerator. |framerate| is the requested
+  //  new framerate, in frames per second.
+  virtual void RequestEncodingParametersChange(const Bitrate& bitrate,
                                                uint32_t framerate) = 0;
 
   // Request a change to the encoding parameters. This is only a request,

@@ -341,11 +341,12 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
-  uint32_t bitrate =
+  uint32_t target_bitrate =
       std::min(options.bitrate.value_or(options.frame_size.width() *
                                         options.frame_size.height() *
                                         kVEADefaultBitratePerPixel),
                uint64_t{std::numeric_limits<uint32_t>::max()});
+  Bitrate bitrate = Bitrate::ConstantBitrate(target_bitrate);
 
   uint32_t framerate = base::ClampRound<uint32_t>(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
