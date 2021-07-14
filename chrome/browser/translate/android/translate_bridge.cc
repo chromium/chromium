@@ -92,8 +92,8 @@ static void JNI_TranslateBridge_TranslateToLanguage(
     // If the requested target language isn't supported, show the infobar but
     // don't start translating. If the infobar is already visible, this will
     // leave it in its current state.
-    manager->InitiateManualTranslation(/*auto_translate=*/false,
-                                       /*triggered_from_menu=*/false);
+    manager->ShowTranslateUI(/*auto_translate=*/false,
+                             /*triggered_from_menu=*/false);
   } else {
     // We don't check for source_language_code support because TranslatePage
     // handles that case already.

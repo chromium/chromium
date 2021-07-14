@@ -1236,7 +1236,7 @@ TEST_F(TranslateManagerTest, PredefinedTargetLanguage_HonourUserSettings) {
                   Bucket(metrics::INITIATION_STATUS_SHOW_ICON, 1)));
 }
 
-TEST_F(TranslateManagerTest, InitiateManualTranslation) {
+TEST_F(TranslateManagerTest, ShowTranslateUI) {
   manager_->set_application_locale("en");
   mock_language_model_.details = {
       MockLanguageModel::LanguageDetails("de", 1.0),
@@ -1256,9 +1256,10 @@ TEST_F(TranslateManagerTest, InitiateManualTranslation) {
   translate_manager_->GetLanguageState()->LanguageDetermined("de", true);
   network_notifier_.SimulateOnline();
 
-  translate_manager_->InitiateManualTranslation();
+  translate_manager_->ShowTranslateUI();
 
-  // InitiateManualTranslation should only ShowTranslateUI (not do translation).
+  // TranslateManager::ShowTranslateUI should only call
+  // TranslateClient::ShowTranslateUI (not do translation).
   histogram_tester.ExpectTotalCount(kInitiationStatusName, 0);
 }
 

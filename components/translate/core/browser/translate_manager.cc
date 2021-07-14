@@ -354,8 +354,8 @@ bool TranslateManager::IsMimeTypeSupported(const std::string& mime_type) {
   return true;
 }
 
-void TranslateManager::InitiateManualTranslation(bool auto_translate,
-                                                 bool triggered_from_menu) {
+void TranslateManager::ShowTranslateUI(bool auto_translate,
+                                       bool triggered_from_menu) {
   // If a translation is in progress, do nothing.
   if (language_state_.translation_pending()) {
     return;

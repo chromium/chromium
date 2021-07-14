@@ -231,8 +231,7 @@ bool ChromeOmniboxClient::ProcessExtensionKeyword(
   size_t prefix_length =
       std::min(match.keyword.length() + 1, match.fill_into_edit.length());
   extensions::ExtensionOmniboxEventRouter::OnInputEntered(
-      controller_->GetWebContents(),
-      template_url->GetExtensionId(),
+      controller_->GetWebContents(), template_url->GetExtensionId(),
       base::UTF16ToUTF8(match.fill_into_edit.substr(prefix_length)),
       disposition);
 
@@ -250,9 +249,8 @@ void ChromeOmniboxClient::OnInputStateChanged() {
   }
 }
 
-void ChromeOmniboxClient::OnFocusChanged(
-    OmniboxFocusState state,
-    OmniboxFocusChangeReason reason) {
+void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
+                                         OmniboxFocusChangeReason reason) {
   if (!controller_->GetWebContents())
     return;
   if (auto* helper =
@@ -418,7 +416,8 @@ void ChromeOmniboxClient::PromptPageTranslation() {
         ChromeTranslateClient::FromWebContents(contents);
     if (translate_client) {
       DCHECK_NE(nullptr, translate_client->GetTranslateManager());
-      translate_client->GetTranslateManager()->InitiateManualTranslation(true);
+      translate_client->GetTranslateManager()->ShowTranslateUI(
+          /*auto_translate=*/true);
     }
   }
 }
@@ -441,8 +440,7 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   }
 }
 
-void ChromeOmniboxClient::DoPrerender(
-    const AutocompleteMatch& match) {
+void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = controller_->GetWebContents();
 
   // Don't prerender when DevTools is open in this tab.

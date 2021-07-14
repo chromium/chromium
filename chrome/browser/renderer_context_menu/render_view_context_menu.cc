@@ -1103,7 +1103,7 @@ void RenderViewContextMenu::RecordUsedItem(int id) {
         GetUmaValueMax(UmaEnumIdLookupType::ContextSpecificEnumId));
   } else if ((!params_.selection_text.empty() ||
               params_.opened_from_highlight) &&
-              params_.media_type == ContextMenuDataMediaType::kNone) {
+             params_.media_type == ContextMenuDataMediaType::kNone) {
     // Probably just text.
     UMA_HISTOGRAM_EXACT_LINEAR(
         "ContextMenu.SelectedOptionDesktop.SelectedText", enum_id,
@@ -3347,7 +3347,8 @@ void RenderViewContextMenu::ExecTranslate() {
   translate::TranslateManager* manager =
       chrome_translate_client->GetTranslateManager();
   DCHECK(manager);
-  manager->InitiateManualTranslation(true, true);
+  manager->ShowTranslateUI(/*auto_translate=*/true,
+                           /*triggered_from_menu=*/true);
 }
 
 void RenderViewContextMenu::ExecLanguageSettings(int event_flags) {

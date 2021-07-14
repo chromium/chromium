@@ -838,7 +838,7 @@ jboolean TabImpl::CanTranslate(JNIEnv* env) {
 
 void TabImpl::ShowTranslateUi(JNIEnv* env) {
   TranslateClientImpl::FromWebContents(web_contents())
-      ->ManualTranslateWhenReady();
+      ->ShowTranslateUiWhenReady();
 }
 
 void TabImpl::RemoveTabFromBrowserBeforeDestroying(JNIEnv* env) {

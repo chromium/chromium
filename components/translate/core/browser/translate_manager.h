@@ -133,11 +133,10 @@ class TranslateManager {
   // Maybe initiates translation when Autofill Assistant has finished.
   void OnAutofillAssistantFinished();
 
-  // Initiate a manually triggered translation process for the current page.
-  // Collect source and target languages, and show translation UI. If
-  // |auto_translate| is true the page gets translated to the target language.
-  void InitiateManualTranslation(bool auto_translate = false,
-                                 bool triggered_from_menu = false);
+  // Show the translation UI. If |auto_translate| is true the page gets
+  // translated to the target language.
+  void ShowTranslateUI(bool auto_translate = false,
+                       bool triggered_from_menu = false);
 
   // Returns true iff the current page could be manually translated.
   // Logging should only be performed when this method is called to show the

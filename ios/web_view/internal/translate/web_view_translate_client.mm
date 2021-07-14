@@ -73,7 +73,7 @@ void WebViewTranslateClient::RevertTranslation() {
 
 bool WebViewTranslateClient::RequestTranslationOffer() {
   if (translate_manager_.CanManuallyTranslate()) {
-    translate_manager_.InitiateManualTranslation();
+    translate_manager_.ShowTranslateUI();
     return true;
   } else {
     return false;

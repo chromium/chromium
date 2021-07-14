@@ -145,17 +145,17 @@ void TranslateClientImpl::ShowReportLanguageDetectionErrorUI(
 
 void TranslateClientImpl::OnLanguageDetermined(
     const translate::LanguageDetectionDetails& details) {
-  if (manual_translate_on_ready_) {
-    GetTranslateManager()->InitiateManualTranslation();
-    manual_translate_on_ready_ = false;
+  if (show_translate_ui_on_ready_) {
+    GetTranslateManager()->ShowTranslateUI();
+    show_translate_ui_on_ready_ = false;
   }
 }
 
-void TranslateClientImpl::ManualTranslateWhenReady() {
+void TranslateClientImpl::ShowTranslateUiWhenReady() {
   if (GetLanguageState().source_language().empty()) {
-    manual_translate_on_ready_ = true;
+    show_translate_ui_on_ready_ = true;
   } else {
-    GetTranslateManager()->InitiateManualTranslation();
+    GetTranslateManager()->ShowTranslateUI();
   }
 }
 
