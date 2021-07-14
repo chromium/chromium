@@ -50,8 +50,6 @@ AccessibilityHandler::AccessibilityHandler(Profile* profile)
 AccessibilityHandler::~AccessibilityHandler() {
   if (a11y_nav_buttons_toggle_metrics_reporter_timer_.IsRunning())
     a11y_nav_buttons_toggle_metrics_reporter_timer_.FireNow();
-  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
-    speech::SodaInstaller::GetInstance()->RemoveObserver(this);
 }
 
 void AccessibilityHandler::RegisterMessages() {
@@ -118,13 +116,19 @@ void AccessibilityHandler::HandleRecordSelectedShowShelfNavigationButtonsValue(
 void AccessibilityHandler::HandleManageA11yPageReady(
     const base::ListValue* args) {
   AllowJavascript();
+}
 
+void AccessibilityHandler::OnJavascriptAllowed() {
   FireWebUIListener(
       "initial-data-ready",
       base::Value(AccessibilityManager::Get()->GetStartupSoundEnabled()));
-
   MaybeAddSodaInstallerObserver();
   MaybeAddDictationLocales();
+}
+
+void AccessibilityHandler::OnJavascriptDisallowed() {
+  if (features::IsExperimentalAccessibilityDictationOfflineEnabled())
+    soda_observation_.Reset();
 }
 
 void AccessibilityHandler::HandleShowChromeVoxTutorial(
@@ -147,10 +151,13 @@ void AccessibilityHandler::MaybeAddSodaInstallerObserver() {
   // TODO(crbug.com/1195916): Don't display SODA status if the Dictation
   // language is not a downloaded or available SODA language.
   if (features::IsExperimentalAccessibilityDictationOfflineEnabled()) {
-    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled())
+    if (speech::SodaInstaller::GetInstance()->IsSodaInstalled()) {
       OnSodaInstalled();
-    else
-      speech::SodaInstaller::GetInstance()->AddObserver(this);
+    } else {
+      // Add self as an observer. If this was a page refresh we don't want to
+      // get added twice.
+      soda_observation_.Observe(speech::SodaInstaller::GetInstance());
+    }
   }
 }
 

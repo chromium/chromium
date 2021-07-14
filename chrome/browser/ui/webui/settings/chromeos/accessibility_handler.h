@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_ACCESSIBILITY_HANDLER_H_
 
 #include "base/macros.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/soda/soda_installer.h"
@@ -27,8 +28,8 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
 
   // SettingsPageUIHandler implementation.
   void RegisterMessages() override;
-  void OnJavascriptAllowed() override {}
-  void OnJavascriptDisallowed() override {}
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
   // Callback which updates if startup sound is enabled. Visible for testing.
   void HandleManageA11yPageReady(const base::ListValue* args);
@@ -69,6 +70,10 @@ class AccessibilityHandler : public ::settings::SettingsPageUIHandler,
   // second delay to avoid overreporting when the user keeps toggling the
   // setting value in the screen UI.
   base::OneShotTimer a11y_nav_buttons_toggle_metrics_reporter_timer_;
+
+  base::ScopedObservation<speech::SodaInstaller,
+                          speech::SodaInstaller::Observer>
+      soda_observation_{this};
 
   base::WeakPtrFactory<AccessibilityHandler> weak_ptr_factory_{this};
 

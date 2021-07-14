@@ -58,7 +58,12 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
-  void TearDownOnMainThread() override { handler_.reset(); }
+  void TearDownOnMainThread() override {
+    handler_->DisallowJavascript();
+    handler_.reset();
+  }
+
+  size_t GetNumWebUICalls() { return web_ui_.call_data().size(); }
 
   void AssertWebUICalls(unsigned int num) {
     ASSERT_EQ(num, web_ui_.call_data().size());
@@ -106,8 +111,6 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
     return false;
   }
 
-  void AddSodaInstallerObserver() { handler_->MaybeAddSodaInstallerObserver(); }
-
   void OnSodaInstalled() { handler_->OnSodaInstalled(); }
 
   void OnSodaProgress(int progress) { handler_->OnSodaProgress(progress); }
@@ -130,18 +133,18 @@ class AccessibilityHandlerTest : public InProcessBrowserTest {
 // This also verifies that the correct string is sent to the JavaScript end
 // of the web UI.
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledTestApi) {
-  AssertWebUICalls(0);
+  size_t num_calls = GetNumWebUICalls();
   OnSodaInstalled();
-  AssertWebUICalls(1);
+  AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-setting-subtitle-changed", "Speech files downloaded"));
 }
 
 // Verifies that the correct string is sent to the JavaScript end of the web UI.
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaProgressTestApi) {
-  AssertWebUICalls(0);
+  size_t num_calls = GetNumWebUICalls();
   OnSodaProgress(50);
-  AssertWebUICalls(1);
+  AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-setting-subtitle-changed",
       "Downloading speech recognition files… 50%"));
@@ -149,9 +152,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaProgressTestApi) {
 
 // Verifies that the correct string is sent to the JavaScript end of the web UI.
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaErrorTestApi) {
-  AssertWebUICalls(0);
+  size_t num_calls = GetNumWebUICalls();
   OnSodaError();
-  AssertWebUICalls(1);
+  AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-setting-subtitle-changed",
       "Can't download speech files. Dictation will continue to work by sending "
@@ -161,10 +164,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaErrorTestApi) {
 // Ensures that AccessibilityHandler listens to SODA download state and fires
 // the correct listener when SODA is installed.
 IN_PROC_BROWSER_TEST_F(AccessibilityHandlerTest, OnSodaInstalledNotification) {
-  AssertWebUICalls(0);
-  AddSodaInstallerObserver();
+  size_t num_calls = GetNumWebUICalls();
   speech::SodaInstaller::GetInstance()->NotifySodaInstalledForTesting();
-  AssertWebUICalls(1);
+  AssertWebUICalls(num_calls + 1);
   ASSERT_TRUE(WasWebUIListenerCalledWithStringArgument(
       "dictation-setting-subtitle-changed", "Speech files downloaded"));
 }
