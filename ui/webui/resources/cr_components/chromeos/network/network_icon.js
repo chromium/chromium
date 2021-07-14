@@ -305,4 +305,17 @@ Polymer({
     return this.networkState.type === mojom.NetworkType.kWiFi &&
         this.networkState.typeState.wifi.security !== mojom.SecurityType.kNone;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showRoaming_() {
+    if (!this.networkState) {
+      return false;
+    }
+    const mojom = chromeos.networkConfig.mojom;
+    return this.networkState.type === mojom.NetworkType.kCellular &&
+        this.networkState.typeState.cellular.roaming;
+  },
 });

@@ -53,4 +53,26 @@ suite('NetworkIconTest', function() {
 
     assertTrue(networkIcon.$$('#icon').classList.contains('cellular-locked'));
   });
+
+  test('Display roaming badge', async function() {
+    const networkState = OncMojo.getDefaultNetworkState(
+      mojom.NetworkType.kCellular, 'cellular');
+    networkState.typeState.cellular.roaming = true;
+    networkIcon.networkState = networkState;
+
+    await flushAsync();
+
+    assertFalse(networkIcon.$$('#roaming').hidden);
+  });
+
+  test('Should not display roaming badge', async function() {
+    const networkState = OncMojo.getDefaultNetworkState(
+      mojom.NetworkType.kCellular, 'cellular');
+    networkState.typeState.cellular.roaming = false;
+    networkIcon.networkState = networkState;
+
+    await flushAsync();
+
+    assertTrue(networkIcon.$$('#roaming').hidden);
+  });
 });

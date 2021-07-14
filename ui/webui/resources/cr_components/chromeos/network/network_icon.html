@@ -53,6 +53,21 @@
         right: 0;
       }
 
+      /* Left middle between icon image and technology badge*/
+      #roaming {
+        --iron-icon-fill-color: #5a5a5a;
+        height: 5px;
+        left: 2px;
+        position: absolute;
+        top: 9px;
+        width: 5px;
+      }
+
+      :host-context([dir='rtl']) #roaming {
+        left: auto;
+        right: 16px;
+      }
+
       /* Images */
       #icon.ethernet {
         background: url(chrome://resources/cr_components/chromeos/network/ethernet.svg);
@@ -183,6 +198,9 @@
     </iron-icon>
     <iron-icon id="secure" hidden="[[!showSecure_(networkState)]]"
         icon="network8:badge-secure">
+    </iron-icon>
+    <iron-icon id="roaming" hidden="[[!showRoaming_(networkState)]]"
+        src="chrome://resources/cr_components/chromeos/network/globe_badge.svg">
     </iron-icon>
   </template>
   <script src="network_icon.js"></script>
