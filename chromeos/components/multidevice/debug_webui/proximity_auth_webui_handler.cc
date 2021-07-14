@@ -119,8 +119,8 @@ std::unique_ptr<base::DictionaryValue> CreateSyncStateDictionary(
     bool is_enrollment_in_progress) {
   std::unique_ptr<base::DictionaryValue> sync_state(
       new base::DictionaryValue());
-  sync_state->SetDouble(kSyncStateLastSuccessTime, last_success_time);
-  sync_state->SetDouble(kSyncStateNextRefreshTime, next_refresh_time);
+  sync_state->SetDoubleKey(kSyncStateLastSuccessTime, last_success_time);
+  sync_state->SetDoubleKey(kSyncStateNextRefreshTime, next_refresh_time);
   sync_state->SetBoolean(kSyncStateRecoveringFromFailure,
                          is_recovering_from_failure);
   sync_state->SetBoolean(kSyncStateOperationInProgress,
