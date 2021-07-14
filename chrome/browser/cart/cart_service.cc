@@ -782,7 +782,8 @@ void CartService::OnAddCart(const std::string& domain,
 }
 
 void CartService::UpdateDiscounts(const GURL& cart_url,
-                                  cart_db::ChromeCartContentProto new_proto) {
+                                  cart_db::ChromeCartContentProto new_proto,
+                                  const bool is_tester) {
   if (!cart_url.is_valid()) {
     VLOG(1) << __func__
             << "update discounts with invalid cart_url: " << cart_url;
@@ -795,7 +796,7 @@ void CartService::UpdateDiscounts(const GURL& cart_url,
     std::vector<cart_db::DiscountInfoProto> discount_info_protos;
     for (const cart_db::DiscountInfoProto& proto :
          new_proto.discount_info().discount_info()) {
-      if (!IsDiscountUsed(proto.rule_id())) {
+      if (is_tester || !IsDiscountUsed(proto.rule_id())) {
         discount_info_protos.emplace_back(proto);
       }
     }

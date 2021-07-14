@@ -31,7 +31,8 @@ class CartDiscountUpdater {
   explicit CartDiscountUpdater(Profile* profile);
   virtual ~CartDiscountUpdater();
   virtual void update(const std::string& cart_url,
-                      const cart_db::ChromeCartContentProto new_proto);
+                      const cart_db::ChromeCartContentProto new_proto,
+                      const bool is_tester);
 
  private:
   CartService* cart_service_;
@@ -79,7 +80,7 @@ class FetchDiscountWorker {
 
  private:
   using AfterFetchingCallback =
-      base::OnceCallback<void(CartDiscountFetcher::CartDiscountMap)>;
+      base::OnceCallback<void(CartDiscountFetcher::CartDiscountMap, bool)>;
   using ContinueToWorkCallback = base::OnceCallback<void()>;
 
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -113,16 +114,19 @@ class FetchDiscountWorker {
   // UI thread to process the fetched result.
   static void DoneFetchingInBackground(
       AfterFetchingCallback after_fetching_callback,
-      CartDiscountFetcher::CartDiscountMap discounts);
+      CartDiscountFetcher::CartDiscountMap discounts,
+      bool is_tester);
 
   // This is run in the UI thread, it loads all active carts to update its
   // discount.
-  void AfterDiscountFetched(CartDiscountFetcher::CartDiscountMap discounts);
+  void AfterDiscountFetched(CartDiscountFetcher::CartDiscountMap discounts,
+                            bool is_tester);
 
   // This is run in the UI thread, it updates discounts for all the active
   // carts. It also post PrepareToFetch() to continue fetching in the
   // background.
   void OnUpdatingDiscounts(CartDiscountFetcher::CartDiscountMap discounts,
+                           bool is_tester,
                            bool success,
                            std::vector<CartDB::KeyAndValue> proto_pairs);
 

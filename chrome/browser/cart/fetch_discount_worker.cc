@@ -38,9 +38,10 @@ CartDiscountUpdater::~CartDiscountUpdater() = default;
 
 void CartDiscountUpdater::update(
     const std::string& cart_url,
-    const cart_db::ChromeCartContentProto new_proto) {
+    const cart_db::ChromeCartContentProto new_proto,
+    const bool is_tester) {
   GURL url(cart_url);
-  cart_service_->UpdateDiscounts(url, std::move(new_proto));
+  cart_service_->UpdateDiscounts(url, std::move(new_proto), is_tester);
 }
 
 CartLoaderAndUpdaterFactory::CartLoaderAndUpdaterFactory(Profile* profile)
@@ -127,32 +128,36 @@ void FetchDiscountWorker::FetchInBackground(
 // TODO(meiliang): Follow up to use BindPostTask.
 void FetchDiscountWorker::DoneFetchingInBackground(
     AfterFetchingCallback after_fetching_callback,
-    CartDiscountFetcher::CartDiscountMap discounts) {
+    CartDiscountFetcher::CartDiscountMap discounts,
+    bool is_tester) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
       ->PostTask(FROM_HERE,
                  base::BindOnce(
                      [](AfterFetchingCallback callback,
-                        CartDiscountFetcher::CartDiscountMap map) {
-                       std::move(callback).Run(std::move(map));
+                        CartDiscountFetcher::CartDiscountMap map, bool tester) {
+                       std::move(callback).Run(std::move(map), tester);
                      },
-                     std::move(after_fetching_callback), std::move(discounts)));
+                     std::move(after_fetching_callback), std::move(discounts),
+                     is_tester));
 }
 
 void FetchDiscountWorker::AfterDiscountFetched(
-    CartDiscountFetcher::CartDiscountMap discounts) {
+    CartDiscountFetcher::CartDiscountMap discounts,
+    bool is_tester) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  auto update_discount_callback =
-      base::BindOnce(&FetchDiscountWorker::OnUpdatingDiscounts,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(discounts));
+  auto update_discount_callback = base::BindOnce(
+      &FetchDiscountWorker::OnUpdatingDiscounts, weak_ptr_factory_.GetWeakPtr(),
+      std::move(discounts), is_tester);
   auto loader = cart_loader_and_updater_factory_->createCartLoader();
   loader->LoadAllCarts(std::move(update_discount_callback));
 }
 
 void FetchDiscountWorker::OnUpdatingDiscounts(
     CartDiscountFetcher::CartDiscountMap discounts,
+    bool is_tester,
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -176,7 +181,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     if (!discounts.count(cart_url)) {
       cart_discount_proto->clear_discount_text();
       cart_discount_proto->clear_discount_info();
-      updater->update(cart_url, std::move(cart_proto));
+      updater->update(cart_url, std::move(cart_proto), is_tester);
       continue;
     }
 
@@ -191,7 +196,7 @@ void FetchDiscountWorker::OnUpdatingDiscounts(
     *cart_discount_proto->mutable_discount_info() = {discount_infos.begin(),
                                                      discount_infos.end()};
 
-    updater->update(cart_url, std::move(cart_proto));
+    updater->update(cart_url, std::move(cart_proto), is_tester);
   }
 
   if (base::GetFieldTrialParamByFeatureAsBool(

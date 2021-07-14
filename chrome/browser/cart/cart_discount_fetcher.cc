@@ -347,21 +347,21 @@ void CartDiscountFetcher::OnDiscountsAvailable(
   absl::optional<base::Value> value =
       base::JSONReader::Read(responses->response);
   if (!ValidateResponse(value)) {
-    std::move(callback).Run(std::move(cart_discount_map));
+    std::move(callback).Run(std::move(cart_discount_map), false);
     return;
   }
 
   const base::Value* error_value = value->FindKey("error");
   if (error_value) {
     NOTREACHED() << "Error: " << responses->response;
-    std::move(callback).Run(std::move(cart_discount_map));
+    std::move(callback).Run(std::move(cart_discount_map), false);
     return;
   }
 
   const base::Value* discounts_list = value->FindKey("discounts");
   if (!discounts_list || !discounts_list->is_list()) {
     NOTREACHED() << "Missing discounts or it is not a list";
-    std::move(callback).Run(std::move(cart_discount_map));
+    std::move(callback).Run(std::move(cart_discount_map), false);
     return;
   }
 
@@ -419,5 +419,11 @@ void CartDiscountFetcher::OnDiscountsAvailable(
                               std::move(merchant_id_and_discounts));
   }
 
-  std::move(callback).Run(std::move(cart_discount_map));
+  bool is_tester = false;
+  const base::Value* is_tester_value = value->FindKey("externalTester");
+  if (is_tester_value && is_tester_value->is_bool()) {
+    is_tester = is_tester_value->GetBool();
+  }
+
+  std::move(callback).Run(std::move(cart_discount_map), is_tester);
 }

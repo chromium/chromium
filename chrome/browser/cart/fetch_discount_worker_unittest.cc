@@ -82,7 +82,7 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
       CartDiscountFetcherCallback callback,
       std::vector<CartDB::KeyAndValue> proto_pairs) override {
     FakeCartDiscountFetcher::fetcher_fetch_count_++;
-    std::move(callback).Run(fake_result_);
+    std::move(callback).Run(fake_result_, is_tester_);
   }
 
   void SetFakeFetcherResult(CartDiscountFetcher::CartDiscountMap fake_result) {
@@ -96,6 +96,7 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
  private:
   CartDiscountFetcher::CartDiscountMap fake_result_;
   static int fetcher_fetch_count_;
+  bool is_tester_;
 };
 
 int FakeCartDiscountFetcher::fetcher_fetch_count_ = 0;
@@ -177,7 +178,8 @@ class FakeCartDiscountUpdater : public CartDiscountUpdater {
   }
 
   void update(const std::string& cart_url,
-              const cart_db::ChromeCartContentProto new_proto) override {
+              const cart_db::ChromeCartContentProto new_proto,
+              const bool is_tester) override {
     // Verify discount_info.
     int new_proto_discount_size =
         new_proto.discount_info().discount_info_size();

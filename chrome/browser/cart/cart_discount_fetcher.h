@@ -40,7 +40,8 @@ class CartDiscountFetcher {
   // gets larger.
   using CartDiscountMap = base::flat_map<std::string, MerchantIdAndDiscounts>;
 
-  using CartDiscountFetcherCallback = base::OnceCallback<void(CartDiscountMap)>;
+  using CartDiscountFetcherCallback =
+      base::OnceCallback<void(CartDiscountMap, bool)>;
 
   virtual ~CartDiscountFetcher();
 
