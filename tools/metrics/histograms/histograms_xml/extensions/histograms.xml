@@ -289,6 +289,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.Checkup.NtpPromoClicked"
     enum="ExtensionCheckupMessage" expires_after="M85">
+  <obsolete>
+    Code removed 2021/07.
+  </obsolete>
   <owner>archanasimha@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -304,6 +307,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Extensions.Checkup.NtpPromoShown"
     enum="ExtensionCheckupMessage" expires_after="M85">
+  <obsolete>
+    Code removed 2021/07.
+  </obsolete>
   <owner>archanasimha@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
@@ -318,6 +324,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Extensions.Checkup.TimeSpent" units="ms" expires_after="M85">
+  <obsolete>
+    Code removed 2021/07.
+  </obsolete>
   <owner>archanasimha@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

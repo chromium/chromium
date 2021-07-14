@@ -529,8 +529,6 @@ static_library("extensions") {
     "extension_assets_manager.h",
     "extension_browser_window_helper.cc",
     "extension_browser_window_helper.h",
-    "extension_checkup.cc",
-    "extension_checkup.h",
     "extension_commands_global_registry.cc",
     "extension_commands_global_registry.h",
     "extension_context_menu_model.cc",

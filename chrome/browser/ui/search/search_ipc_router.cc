@@ -361,18 +361,6 @@ void SearchIPCRouter::BlocklistPromo(const std::string& promo_id) {
   delegate_->BlocklistPromo(promo_id);
 }
 
-void SearchIPCRouter::OpenExtensionsPage(double button,
-                                         bool alt_key,
-                                         bool ctrl_key,
-                                         bool meta_key,
-                                         bool shift_key) {
-  if (!policy_->ShouldProcessOpenExtensionsPage()) {
-    return;
-  }
-
-  delegate_->OpenExtensionsPage(button, alt_key, ctrl_key, meta_key, shift_key);
-}
-
 void SearchIPCRouter::set_delegate_for_testing(Delegate* delegate) {
   DCHECK(delegate);
   delegate_ = delegate;

@@ -98,7 +98,3 @@ bool SearchIPCRouterPolicyImpl::ShouldProcessThemeChangeMessages() {
 bool SearchIPCRouterPolicyImpl::ShouldProcessBlocklistPromo() {
   return !is_incognito_ && search::IsInstantNTP(web_contents_);
 }
-
-bool SearchIPCRouterPolicyImpl::ShouldProcessOpenExtensionsPage() {
-  return !is_incognito_ && search::IsInstantNTP(web_contents_);
-}

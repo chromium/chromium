@@ -768,13 +768,6 @@ class ExtensionPrefs : public KeyedService {
 
   void ClearExternalUninstallForTesting(const ExtensionId& id);
 
-  // Returns whether the user has seen the extension checkup on startup.
-  bool HasUserSeenExtensionsCheckupOnStartup();
-
-  // Sets if the user has seen the extension checkup on startup.
-  void SetUserHasSeenExtensionsCheckupOnStartup(
-      bool has_seen_extensions_checkup_on_startup);
-
   static const char kFakeObsoletePrefForTesting[];
 
  private:

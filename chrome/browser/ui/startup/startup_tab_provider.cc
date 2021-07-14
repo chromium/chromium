@@ -138,11 +138,6 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabs(
   return GetPostCrashTabsForState(has_incompatible_applications);
 }
 
-StartupTabs StartupTabProviderImpl::GetExtensionCheckupTabs(
-    bool serve_extensions_page) const {
-  return GetExtensionCheckupTabsForState(serve_extensions_page);
-}
-
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
                                             bool is_supervised_user,
@@ -241,19 +236,6 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
   StartupTabs tabs;
   if (has_incompatible_applications)
     AddIncompatibleApplicationsUrl(&tabs);
-  return tabs;
-}
-
-// static
-StartupTabs StartupTabProviderImpl::GetExtensionCheckupTabsForState(
-    bool serve_extensions_page) {
-  StartupTabs tabs;
-  if (serve_extensions_page) {
-    tabs.emplace_back(
-        net::AppendQueryParameter(GURL(chrome::kChromeUIExtensionsURL),
-                                  "checkup", "shown"),
-        false);
-  }
   return tabs;
 }
 

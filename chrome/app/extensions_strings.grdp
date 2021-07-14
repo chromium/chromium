@@ -442,35 +442,6 @@
   Type a letter
 </message>
 
-<!-- Extensions Checkup Banner -->
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_TITLE" desc="Title of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a performance focus.">
-  A healthier, happier Chrome
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_BODY1" desc="First pargagraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a performance focus.">
-  Some extensions can slow you down - especially ones you didn't mean to install.
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PERFORMANCE_BODY2" desc="Second paragraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a performance focus.">
-  If you don’t recognize an extension, or if your browser isn’t working as expected, you can turn off or customize extensions here.
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_TITLE" desc="Title of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a privacy focus.">
-  Check your extensions
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_BODY1" desc="First pargagraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a privacy focus.">
-  Some extensions can see your browsing activity - including personal information.
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_PRIVACY_BODY2" desc="Second paragraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a privacy focus.">
-  If you don’t recognize an extension, or if your browser isn’t working as expected, you can turn off or customize extensions here.
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_TITLE" desc="Title of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a neutral focus.">
-  Manage your extensions
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_BODY1" desc="First paragraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a neutral focus.">
-  On this page you can see all the extensions installed in Chrome.
-</message>
-<message name="IDS_EXTENSIONS_CHECKUP_BANNER_NEUTRAL_BODY2" desc="Second paragraph of the extensions checkup flow shown in the chrome://extensions page, encouraging the user to audit their installed extensions with a neutral focus.">
-  If you don't recognize an extension, or if your browser isn't working as expected, you can turn off or customize extensions here.
-</message>
-
 <if expr="chromeos">
   <!-- Extensions Kiosk apps -->
   <message name="IDS_EXTENSIONS_MANAGE_KIOSK_APP" desc="Label of the button to bring up kiosk management overlay on chrome extensions page.">

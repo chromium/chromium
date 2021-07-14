@@ -46,7 +46,6 @@ class SearchIPCRouterPolicyImpl : public SearchIPCRouter::Policy {
   bool ShouldProcessOptOutOfSearchSuggestions() override;
   bool ShouldProcessThemeChangeMessages() override;
   bool ShouldProcessBlocklistPromo() override;
-  bool ShouldProcessOpenExtensionsPage() override;
 
   // Used by unit tests.
   void set_is_incognito(bool is_incognito) {

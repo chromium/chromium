@@ -37,11 +37,7 @@ if (optimize_webui) {
 generate_grd("build_grd") {
   grd_prefix = "extensions"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
-  input_files = [
-    "checkup_image_dark.svg",
-    "checkup_image.svg",
-    "extensions.html",
-  ]
+  input_files = [ "extensions.html" ]
   input_files_base_dir = rebase_path(".", "//")
 
   if (optimize_webui) {
@@ -78,7 +74,6 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = [
-    "checkup.ts",
     "code_section.ts",
     "activity_log/activity_log_history_item.ts",
     "activity_log/activity_log_history.ts",
@@ -123,7 +118,6 @@ group("web_components") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "checkup.ts",
     "code_section.ts",
     "detail_view.ts",
     "drop_overlay.ts",
@@ -181,7 +175,6 @@ ts_library("build_ts") {
     "activity_log/activity_log.ts",
     "activity_log/activity_log_stream_item.ts",
     "activity_log/activity_log_stream.ts",
-    "checkup.ts",
     "code_section.ts",
     "detail_view.ts",
     "drag_and_drop_handler.ts",

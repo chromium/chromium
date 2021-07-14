@@ -46,9 +46,6 @@ extern const char kBlockExternalExtensions[];
 // extension ids.
 extern const char kExtensions[];
 
-// A boolean indicating if the extensions checkup has been shown on startup.
-extern const char kExtensionCheckupOnStartup[];
-
 // Dictionary pref that manages extensions, controlled by policy.
 // Values are expected to conform to the schema of the ExtensionManagement
 // policy.

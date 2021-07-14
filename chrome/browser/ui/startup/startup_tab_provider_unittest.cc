@@ -244,13 +244,3 @@ TEST(StartupTabProviderTest, IncognitoProfile) {
   StartupTabs output = StartupTabProviderImpl().GetOnboardingTabs(incognito);
   EXPECT_TRUE(output.empty());
 }
-
-TEST(StartupTabProviderTest, GetNewTabPageTabsForState_ExtensionsCheckup) {
-  SessionStartupPref pref_default(SessionStartupPref::Type::DEFAULT);
-
-  StartupTabs output = StartupTabProviderImpl::GetExtensionCheckupTabsForState(
-      /*serve_extensions_page=*/true);
-
-  ASSERT_EQ(1U, output.size());
-  EXPECT_EQ("chrome://extensions/?checkup=shown", output[0].url);
-}

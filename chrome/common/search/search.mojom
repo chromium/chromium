@@ -109,14 +109,6 @@ interface EmbeddedSearch {
 
   // Called when a user dismisses a promo.
   BlocklistPromo(string promo_id);
-
-  // Handles navigation to chrome://extensions by calling the browser to
-  // complete the navigation for the extensions checkup middle slot promo.
-  OpenExtensionsPage(double button,
-                     bool alt_key,
-                     bool ctrl_key,
-                     bool meta_key,
-                     bool shift_key);
 };
 
 [Native]

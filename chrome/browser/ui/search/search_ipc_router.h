@@ -123,12 +123,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual void OnConfirmThemeChanges() = 0;
 
     virtual void BlocklistPromo(const std::string& promo_id) = 0;
-
-    virtual void OpenExtensionsPage(double button,
-                                    bool alt_key,
-                                    bool ctrl_key,
-                                    bool meta_key,
-                                    bool shift_key) = 0;
   };
 
   // An interface to be implemented by consumers of SearchIPCRouter objects to
@@ -159,7 +153,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
     virtual bool ShouldProcessOptOutOfSearchSuggestions() = 0;
     virtual bool ShouldProcessThemeChangeMessages() = 0;
     virtual bool ShouldProcessBlocklistPromo() = 0;
-    virtual bool ShouldProcessOpenExtensionsPage() = 0;
   };
 
   // Creates search::mojom::EmbeddedSearchClient connections on request.
@@ -245,11 +238,6 @@ class SearchIPCRouter : public content::WebContentsObserver,
   void RevertThemeChanges() override;
   void ConfirmThemeChanges() override;
   void BlocklistPromo(const std::string& promo_id) override;
-  void OpenExtensionsPage(double button,
-                          bool alt_key,
-                          bool ctrl_key,
-                          bool meta_key,
-                          bool shift_key) override;
   void set_embedded_search_client_factory_for_testing(
       std::unique_ptr<EmbeddedSearchClientFactory> factory) {
     embedded_search_client_factory_ = std::move(factory);

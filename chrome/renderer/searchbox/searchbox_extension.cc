@@ -630,11 +630,6 @@ class NewTabPageBindings : public gin::Wrappable<NewTabPageBindings> {
   static void RevertThemeChanges();
   static void ConfirmThemeChanges();
   static void BlocklistPromo(const std::string& promo_id);
-  static void OpenExtensionsPage(double button,
-                                 bool alt_key,
-                                 bool ctrl_key,
-                                 bool meta_key,
-                                 bool shift_key);
   static v8::Local<v8::Value> GetColorsInfo(v8::Isolate* isolate);
 
   DISALLOW_COPY_AND_ASSIGN(NewTabPageBindings);
@@ -701,8 +696,7 @@ gin::ObjectTemplateBuilder NewTabPageBindings::GetObjectTemplateBuilder(
       .SetMethod("confirmThemeChanges",
                  &NewTabPageBindings::ConfirmThemeChanges)
       .SetMethod("getColorsInfo", &NewTabPageBindings::GetColorsInfo)
-      .SetMethod("blocklistPromo", &NewTabPageBindings::BlocklistPromo)
-      .SetMethod("openExtensionsPage", &NewTabPageBindings::OpenExtensionsPage);
+      .SetMethod("blocklistPromo", &NewTabPageBindings::BlocklistPromo);
 }
 
 // static
@@ -1050,18 +1044,6 @@ void NewTabPageBindings::BlocklistPromo(const std::string& promo_id) {
   if (!search_box)
     return;
   search_box->BlocklistPromo(promo_id);
-}
-
-void NewTabPageBindings::OpenExtensionsPage(double button,
-                                            bool alt_key,
-                                            bool ctrl_key,
-                                            bool meta_key,
-                                            bool shift_key) {
-  SearchBox* search_box = GetSearchBoxForCurrentContext();
-  if (!search_box)
-    return;
-  search_box->OpenExtensionsPage(button, alt_key, ctrl_key, meta_key,
-                                 shift_key);
 }
 
 }  // namespace

@@ -15,7 +15,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/extensions/extension_checkup.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search/chrome_colors/chrome_colors_factory.h"
@@ -63,7 +62,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/common/extension_features.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -452,31 +450,6 @@ void SearchTabHelper::BlocklistPromo(const std::string& promo_id) {
   }
 
   promo_service->BlocklistPromo(promo_id);
-}
-
-void SearchTabHelper::OpenExtensionsPage(double button,
-                                         bool alt_key,
-                                         bool ctrl_key,
-                                         bool meta_key,
-                                         bool shift_key) {
-  if (!search::DefaultSearchProviderIsGoogle(profile()))
-    return;
-  base::RecordAction(base::UserMetricsAction("Extensions.NtpPromoClicked"));
-  UMA_HISTOGRAM_ENUMERATION(
-      "Extensions.Checkup.NtpPromoClicked",
-      static_cast<extensions::CheckupMessage>(
-          base::GetFieldTrialParamByFeatureAsInt(
-              extensions_features::kExtensionsCheckup,
-              extensions_features::kExtensionsCheckupBannerMessageParameter,
-              static_cast<int>(extensions::CheckupMessage::NEUTRAL))));
-
-  WindowOpenDisposition disposition =
-      (button > 1) ? WindowOpenDisposition::NEW_FOREGROUND_TAB
-                   : ui::DispositionFromClick((button == 1.0), alt_key,
-                                              ctrl_key, meta_key, shift_key);
-  web_contents_->OpenURL(content::OpenURLParams(
-      GURL(chrome::kChromeUIExtensionsURL), content::Referrer(), disposition,
-      ui::PAGE_TRANSITION_LINK, false));
 }
 
 Profile* SearchTabHelper::profile() const {

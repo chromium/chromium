@@ -5,10 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 
-#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/prefs/pref_member.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "ui/base/layout.h"
 
@@ -22,8 +20,7 @@ class PrefRegistrySyncable;
 
 namespace extensions {
 
-class ExtensionsUI : public content::WebContentsObserver,
-                     public content::WebUIController {
+class ExtensionsUI : public content::WebUIController {
  public:
   explicit ExtensionsUI(content::WebUI* web_ui);
   ExtensionsUI(const ExtensionsUI&) = delete;
@@ -36,9 +33,6 @@ class ExtensionsUI : public content::WebContentsObserver,
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
-  // content::WebContentsObserver:
-  void DidStopLoading() override;
-
   // Called when developer mode is toggled.
   void OnDevModeChanged();
 
@@ -46,9 +40,6 @@ class ExtensionsUI : public content::WebContentsObserver,
   BooleanPrefMember in_dev_mode_;
 
   WebuiLoadTimer webui_load_timer_;
-
-  // Time the chrome://extensions page has been open.
-  absl::optional<base::ElapsedTimer> timer_;
 };
 
 }  // namespace extensions

@@ -122,11 +122,6 @@ class SearchTabHelper : public content::WebContentsObserver,
   void OnRevertThemeChanges() override;
   void OnConfirmThemeChanges() override;
   void BlocklistPromo(const std::string& promo_id) override;
-  void OpenExtensionsPage(double button,
-                          bool alt_key,
-                          bool ctrl_key,
-                          bool meta_key,
-                          bool shift_key) override;
 
   // Overridden from InstantServiceObserver:
   void NtpThemeChanged(const NtpTheme& theme) override;

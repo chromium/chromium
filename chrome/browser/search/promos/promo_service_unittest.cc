@@ -11,8 +11,6 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/extensions/extension_service.h"
-#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/search/promos/promo_data.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
@@ -22,9 +20,6 @@
 #include "components/search/ntp_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
-#include "extensions/common/extension.h"
-#include "extensions/common/extension_builder.h"
-#include "extensions/common/extension_features.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -50,22 +45,6 @@ class PromoServiceTest : public testing::Test {
 
     service_ =
         std::make_unique<PromoService>(test_shared_loader_factory_, &profile_);
-  }
-
-  void SetUpExtensionTest() {
-    // Creates an extension system and adds one non policy-install extension.
-    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    extensions::TestExtensionSystem* test_ext_system =
-        static_cast<extensions::TestExtensionSystem*>(
-            extensions::ExtensionSystem::Get(&profile_));
-    extensions::ExtensionService* service =
-        test_ext_system->CreateExtensionService(&command_line, base::FilePath(),
-                                                false);
-    EXPECT_TRUE(service->extensions_enabled());
-    service->Init();
-    scoped_refptr<const extensions::Extension> extension =
-        extensions::ExtensionBuilder("foo").Build();
-    service->AddExtension(extension.get());
   }
 
   void SetUpResponseWithData(const GURL& load_url,
@@ -337,27 +316,4 @@ TEST_F(PromoServiceTest, BlocklistWrongExpiryType) {
 
   // All the invalid formats should've been removed from the pref.
   ASSERT_EQ(0u, prefs()->GetDictionary(prefs::kNtpPromoBlocklist)->DictSize());
-}
-
-TEST_F(PromoServiceTest, ServeExtensionsPromo) {
-  SetUpExtensionTest();
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeatureWithParameters(
-      extensions_features::kExtensionsCheckup,
-      {{extensions_features::kExtensionsCheckupEntryPointParameter,
-        extensions_features::kNtpPromoEntryPoint},
-       {extensions_features::kExtensionsCheckupBannerMessageParameter,
-        extensions_features::kPerformanceMessage}});
-
-  service()->Refresh();
-  base::RunLoop().RunUntilIdle();
-
-  PromoData promo;
-  promo.promo_html =
-      "<div>" + l10n_util::GetStringUTF8(IDS_EXTENSIONS_PROMO_PERFORMANCE) +
-      "</div>";
-  promo.can_open_extensions_page = true;
-
-  EXPECT_EQ(service()->promo_data(), promo);
-  EXPECT_EQ(service()->promo_status(), PromoService::Status::OK_WITH_PROMO);
 }

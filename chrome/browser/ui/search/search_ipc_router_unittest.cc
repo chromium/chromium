@@ -91,12 +91,6 @@ class MockSearchIPCRouterDelegate : public SearchIPCRouter::Delegate {
   MOCK_METHOD0(OnRevertThemeChanges, void());
   MOCK_METHOD0(OnConfirmThemeChanges, void());
   MOCK_METHOD1(BlocklistPromo, void(const std::string& promo_id));
-  MOCK_METHOD5(OpenExtensionsPage,
-               void(double button,
-                    bool alt_key,
-                    bool ctrl_key,
-                    bool meta_key,
-                    bool shift_key));
 };
 
 class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
@@ -123,7 +117,6 @@ class MockSearchIPCRouterPolicy : public SearchIPCRouter::Policy {
   MOCK_METHOD0(ShouldSendLocalBackgroundSelected, bool());
   MOCK_METHOD0(ShouldProcessThemeChangeMessages, bool());
   MOCK_METHOD0(ShouldProcessBlocklistPromo, bool());
-  MOCK_METHOD0(ShouldProcessOpenExtensionsPage, bool());
 };
 
 class MockEmbeddedSearchClientFactory

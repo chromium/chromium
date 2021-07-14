@@ -2260,16 +2260,6 @@ void ExtensionPrefs::ClearExternalUninstallForTesting(const ExtensionId& id) {
   ClearExternalUninstallBit(id);
 }
 
-bool ExtensionPrefs::HasUserSeenExtensionsCheckupOnStartup() {
-  return prefs_->GetBoolean(pref_names::kExtensionCheckupOnStartup);
-}
-
-void ExtensionPrefs::SetUserHasSeenExtensionsCheckupOnStartup(
-    bool has_seen_extensions_checkup_on_startup) {
-  prefs_->SetBoolean(pref_names::kExtensionCheckupOnStartup,
-                     has_seen_extensions_checkup_on_startup);
-}
-
 const char ExtensionPrefs::kFakeObsoletePrefForTesting[] =
     "__fake_obsolete_pref_for_testing";
 
@@ -2351,8 +2341,6 @@ void ExtensionPrefs::RegisterProfilePrefs(
 #endif
 
   registry->RegisterBooleanPref(pref_names::kBlockExternalExtensions, false);
-
-  registry->RegisterBooleanPref(pref_names::kExtensionCheckupOnStartup, false);
 }
 
 template <class ExtensionIdContainer>

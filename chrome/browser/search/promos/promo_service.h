@@ -88,10 +88,6 @@ class PromoService : public KeyedService {
   // been blocked by the user.
   bool IsBlockedAfterClearingExpired(const std::string& promo_id) const;
 
-  // Updates |promo_data_| with the extensions checkup tool promo
-  // information.
-  void ServeExtensionCheckupPromo();
-
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<network::SimpleURLLoader> simple_loader_;
 

@@ -1275,10 +1275,6 @@ const char kExtensionContentVerificationEnforce[] =
 const char kExtensionContentVerificationEnforceStrict[] =
     "Enforce strict (hard fail if we can't get hashes)";
 
-const char kExtensionsCheckupName[] = "Extensions Checkup";
-const char kExtensionsCheckupDescription[] =
-    "Enable the extensions checkup experiment";
-
 const char kExtensionsOnChromeUrlsName[] = "Extensions on chrome:// URLs";
 const char kExtensionsOnChromeUrlsDescription[] =
     "Enables running extensions on chrome:// URLs, where extensions explicitly "

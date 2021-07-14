@@ -3,13 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_components/managed_footnote/managed_footnote.js';
-import './checkup.js';
 import './item.js';
 import './shared_style.js';
 
 import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
-import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -53,12 +51,7 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
 
       maxColumns_: {
         type: Number,
-        value: () => loadTimeData.getBoolean('showCheckup') ? 2 : 3,
-      },
-
-      showCheckup_: {
-        type: Boolean,
-        value: () => loadTimeData.getBoolean('showCheckup'),
+        value: 3,
       },
 
       shownAppsCount_: {
@@ -80,7 +73,6 @@ class ExtensionsItemListElement extends ExtensionsItemListElementBase {
   filter: string;
   private computedFilter_: string;
   private maxColumns_: number;
-  private showCheckup_: boolean;
   private shownAppsCount_: number;
   private shownExtensionsCount_: number;
 
