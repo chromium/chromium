@@ -313,6 +313,7 @@ PaintPropertyChangeType VisualViewport::UpdatePaintPropertyNodesIfNeeded(
     bool needs_overscroll_effect_node = !MaximumScrollOffset().IsZero();
     if (needs_overscroll_effect_node && !overscroll_elasticity_effect_node_) {
       EffectPaintPropertyNode::State state;
+      state.output_clip = context.current.clip;
       state.local_transform_space = transform_parent;
       state.direct_compositing_reasons =
           CompositingReason::kActiveFilterAnimation;
