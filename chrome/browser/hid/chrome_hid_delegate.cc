@@ -13,14 +13,12 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/hid/hid_chooser.h"
 #include "chrome/browser/ui/hid/hid_chooser_controller.h"
-#include "content/public/browser/web_contents.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace {
 
 HidChooserContext* GetChooserContext(content::RenderFrameHost* frame) {
-  auto* web_contents = content::WebContents::FromRenderFrameHost(frame);
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  auto* profile = Profile::FromBrowserContext(frame->GetBrowserContext());
   return HidChooserContextFactory::GetForProfile(profile);
 }
 
