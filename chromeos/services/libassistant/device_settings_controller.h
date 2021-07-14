@@ -27,10 +27,6 @@ class GetDeviceSettingsArgs;
 }  // namespace api
 }  // namespace assistant
 
-namespace assistant_client {
-class AssistantManagerInternal;
-}  // namespace assistant_client
-
 namespace chromeos {
 namespace assistant {
 struct DeviceSetting;
@@ -40,6 +36,7 @@ struct DeviceSetting;
 namespace chromeos {
 namespace libassistant {
 
+class AssistantClient;
 class Setting;
 
 class DeviceSettingsController
@@ -75,8 +72,7 @@ class DeviceSettingsController
   void AddSetting(std::unique_ptr<Setting> setting);
 
   std::vector<std::unique_ptr<Setting>> settings_;
-  assistant_client::AssistantManagerInternal* assistant_manager_internal_ =
-      nullptr;
+  AssistantClient* assistant_client_ = nullptr;
   mojo::Remote<mojom::DeviceSettingsDelegate> remote_;
   scoped_refptr<base::SequencedTaskRunner> mojom_task_runner_;
   base::WeakPtrFactory<DeviceSettingsController> weak_factory_{this};

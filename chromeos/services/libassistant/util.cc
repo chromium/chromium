@@ -324,7 +324,7 @@ Interaction CreateVerifyProviderResponseInteraction(
       .Proto();
 }
 
-std::string CreateGetDeviceSettingInteraction(
+Interaction CreateGetDeviceSettingInteraction(
     int interaction_id,
     const std::vector<chromeos::assistant::DeviceSetting>& device_settings) {
   GetDeviceSettingsResult result_proto;
@@ -338,7 +338,7 @@ std::string CreateGetDeviceSettingInteraction(
       .SetInResponseTo(interaction_id)
       .SetStatusCode(ResponseCode::OK)
       .AddResult(/*key=*/assistant::kResultKeyGetDeviceSettings, result_proto)
-      .SerializeAsString();
+      .Proto();
 }
 
 }  // namespace libassistant

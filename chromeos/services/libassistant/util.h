@@ -41,7 +41,7 @@ base::FilePath GetBaseAssistantDir();
     const int interaction_id,
     const std::vector<chromeos::assistant::AndroidAppInfo>& apps_info);
 
-std::string CreateGetDeviceSettingInteraction(
+::assistant::api::Interaction CreateGetDeviceSettingInteraction(
     int interaction_id,
     const std::vector<chromeos::assistant::DeviceSetting>& device_settings);
 
