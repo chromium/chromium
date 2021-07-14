@@ -532,8 +532,6 @@ class BASE_EXPORT Value {
   // otherwise, false is returned and `out_value` is unchanged.
   // DEPRECATED, use `GetIfBool()` instead.
   bool GetAsBoolean(bool* out_value) const;
-  // DEPRECATED, use `GetIfInt()` instead.
-  bool GetAsInteger(int* out_value) const;
   // DEPRECATED, use `GetIfDouble()` instead.
   bool GetAsDouble(double* out_value) const;
   // DEPRECATED, use `GetIfString()` instead.

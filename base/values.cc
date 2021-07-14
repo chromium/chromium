@@ -817,14 +817,6 @@ bool Value::GetAsBoolean(bool* out_value) const {
   return is_bool();
 }
 
-bool Value::GetAsInteger(int* out_value) const {
-  if (out_value && is_int()) {
-    *out_value = GetInt();
-    return true;
-  }
-  return is_int();
-}
-
 bool Value::GetAsDouble(double* out_value) const {
   if (out_value && (is_double() || is_int())) {
     *out_value = GetDouble();
@@ -1235,7 +1227,10 @@ bool DictionaryValue::GetInteger(StringPiece path, int* out_value) const {
   if (!Get(path, &value))
     return false;
 
-  return value->GetAsInteger(out_value);
+  bool is_int = value->is_int();
+  if (is_int && out_value)
+    *out_value = value->GetInt();
+  return is_int;
 }
 
 bool DictionaryValue::GetDouble(StringPiece path, double* out_value) const {
@@ -1507,7 +1502,10 @@ bool ListValue::GetInteger(size_t index, int* out_value) const {
   if (!Get(index, &value))
     return false;
 
-  return value->GetAsInteger(out_value);
+  bool is_int = value->is_int();
+  if (is_int && out_value)
+    *out_value = value->GetInt();
+  return is_int;
 }
 
 bool ListValue::GetDouble(size_t index, double* out_value) const {
