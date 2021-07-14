@@ -22,25 +22,25 @@ namespace {
 
 // TODO(https://bugs.chromium.org/p/libyuv/issues/detail?id=840): Remove
 // this once libyuv implements NV12Rotate() and use the libyuv::NV12Rotate().
-bool NV12Rotate(uint8_t* tmp_buffer,
-                const uint8_t* src_y,
-                int src_stride_y,
-                const uint8_t* src_uv,
-                int src_stride_uv,
-                int src_width,
-                int src_height,
-                uint8_t* dst_y,
-                int dst_stride_y,
-                uint8_t* dst_uv,
-                int dst_stride_uv,
-                int dst_width,
-                int dst_height,
-                VideoRotation relative_rotation) {
+int NV12Rotate(uint8_t* tmp_buffer,
+               const uint8_t* src_y,
+               int src_stride_y,
+               const uint8_t* src_uv,
+               int src_stride_uv,
+               int src_width,
+               int src_height,
+               uint8_t* dst_y,
+               int dst_stride_y,
+               uint8_t* dst_uv,
+               int dst_stride_uv,
+               int dst_width,
+               int dst_height,
+               VideoRotation relative_rotation) {
   libyuv::RotationModeEnum rotation = libyuv::kRotate0;
   switch (relative_rotation) {
     case VIDEO_ROTATION_0:
       NOTREACHED() << "Unexpected rotation: " << rotation;
-      return false;
+      return -1;
     case VIDEO_ROTATION_90:
       rotation = libyuv::kRotate90;
       break;
@@ -63,12 +63,12 @@ bool NV12Rotate(uint8_t* tmp_buffer,
       src_y, src_stride_y, src_uv, src_stride_uv, dst_y, dst_stride_y, tmp_u,
       tmp_uv_width, tmp_v, tmp_uv_width, src_width, src_height, rotation);
   if (ret != 0)
-    return false;
+    return ret;
 
   // Merge the UV planes into the destination.
   libyuv::MergeUVPlane(tmp_u, tmp_uv_width, tmp_v, tmp_uv_width, dst_uv,
                        dst_stride_uv, tmp_uv_width, tmp_uv_height);
-  return true;
+  return 0;
 }
 
 enum class SupportResult {
