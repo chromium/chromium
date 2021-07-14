@@ -152,19 +152,42 @@ class NavigationControllerBrowserTestBase : public ContentBrowserTest {
   }
 };
 
+void InitBackForwardCacheFeature(base::test::ScopedFeatureList* feature_list,
+                                 bool enable_back_forward_cache) {
+  if (!enable_back_forward_cache)
+    return;
+
+  std::vector<base::test::ScopedFeatureList::FeatureAndParams> features;
+  features.push_back(
+      {features::kBackForwardCache, {{"enable_same_site", "true"}}});
+  features.push_back({kBackForwardCacheNoTimeEviction, {}});
+  features.push_back({features::kBackForwardCacheMemoryControls, {}});
+  feature_list->InitWithFeaturesAndParameters(features, {});
+}
+
 class NavigationControllerBrowserTest
     : public NavigationControllerBrowserTestBase,
-      public ::testing::WithParamInterface<std::string> {
+      public ::testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* enable_back_forward_cache*/>> {
  public:
   NavigationControllerBrowserTest() {
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
-                                       GetParam());
+                                       std::get<0>(GetParam()));
+    InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
+                                std::get<1>(GetParam()));
   }
 
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    return GetRenderDocumentLevelNameForTestParams(info.param);
+    std::string render_document_level;
+    bool enable_back_forward_cache;
+    std::tie(render_document_level, enable_back_forward_cache) = info.param;
+    return base::StringPrintf(
+        "%s_%s",
+        GetRenderDocumentLevelNameForTestParams(render_document_level).c_str(),
+        enable_back_forward_cache ? "BFCacheEnabled" : "BFCacheDisabled");
   }
 
  protected:
@@ -213,17 +236,22 @@ class NavigationControllerBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
 // Base class for tests that need to supply modifications to EmbeddedTestServer
 // which are required to be complete before it is started.
 class NavigationControllerBrowserTestNoServer
     : public ContentBrowserTest,
-      public ::testing::WithParamInterface<std::string> {
+      public ::testing::WithParamInterface<
+          std::tuple<std::string /* render_document_level */,
+                     bool /* enable_back_forward_cache*/>> {
  public:
   NavigationControllerBrowserTestNoServer() {
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
-                                       GetParam());
+                                       std::get<0>(GetParam()));
+    InitBackForwardCacheFeature(&feature_list_for_back_forward_cache_,
+                                std::get<1>(GetParam()));
   }
 
  protected:
@@ -238,6 +266,7 @@ class NavigationControllerBrowserTestNoServer
 
  private:
   base::test::ScopedFeatureList feature_list_for_render_document_;
+  base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
 };
 
 // Ensure that tests can navigate subframes cross-site in both default mode and
@@ -11669,13 +11698,9 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 namespace {
 
 class RequestMonitoringNavigationBrowserTest
-    : public ContentBrowserTest,
-      public ::testing::WithParamInterface<std::string> {
+    : public NavigationControllerBrowserTest {
  public:
-  RequestMonitoringNavigationBrowserTest() {
-    InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
-                                       GetParam());
-  }
+  RequestMonitoringNavigationBrowserTest() = default;
 
   const net::test_server::HttpRequest* FindAccumulatedRequest(
       const GURL& url_to_find) {
@@ -11724,7 +11749,6 @@ class RequestMonitoringNavigationBrowserTest
   }
 
   std::vector<net::test_server::HttpRequest> accumulated_requests_;
-  base::test::ScopedFeatureList feature_list_for_render_document_;
   // Must be last member.
   base::WeakPtrFactory<RequestMonitoringNavigationBrowserTest> weak_factory_{
       this};
@@ -18059,48 +18083,66 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FALSE(navigation);
 }
 
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationControllerAlertDialogBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationControllerBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationControllerBrowserTestNoServer,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerAlertDialogBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerBrowserTestNoServer,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerDebugHistoryInterventionNoUserActivation,
-    testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
     NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         NavigationControllerHistoryInterventionBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NavigationControllerHistoryInterventionBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerMainDocumentSequenceNumberBrowserTest,
-    testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
     NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         RequestMonitoringNavigationBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         SandboxedNavigationControllerBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         SandboxedNavigationControllerWithBfcacheBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
-INSTANTIATE_TEST_SUITE_P(All,
-                         SandboxedNavigationControllerPopupBrowserTest,
-                         testing::ValuesIn(RenderDocumentFeatureLevelValues()),
-                         NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    RequestMonitoringNavigationBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxedNavigationControllerBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxedNavigationControllerWithBfcacheBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    SandboxedNavigationControllerPopupBrowserTest,
+    testing::Combine(testing::ValuesIn(RenderDocumentFeatureLevelValues()),
+                     testing::Bool()),
+    NavigationControllerBrowserTest::DescribeParams);
 INSTANTIATE_TEST_SUITE_P(
     All,
     InitialEmptyDocNavigationControllerBrowserTest,
