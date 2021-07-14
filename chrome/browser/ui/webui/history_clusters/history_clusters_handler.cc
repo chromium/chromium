@@ -74,7 +74,7 @@ void HistoryClustersHandler::QueryClusters(
     history_clusters::mojom::QueryParamsPtr query_params) {
   const std::string& query = query_params->query;
   const size_t max_count = query_params->max_count;
-  base::Time max_time = query_params->max_time.value_or(base::Time::Now());
+  base::Time end_time = query_params->max_time.value_or(base::Time());
   auto result_callback =
       base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params));
@@ -85,9 +85,9 @@ void HistoryClustersHandler::QueryClusters(
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
     // TODO(crbug.com/1220765): Supply `continuation_max_time` in
-    // `result_callback` once the service supports paging.
+    //  `result_callback` once the service supports paging.
     history_clusters_service->QueryClusters(
-        query, max_time, max_count,
+        query, end_time, max_count,
         base::BindOnce(std::move(result_callback), absl::nullopt),
         &query_task_tracker_);
   } else {
@@ -99,7 +99,7 @@ void HistoryClustersHandler::QueryClusters(
     OnMemoriesDebugMessage("HistoryClustersHandler: Loading UI Mock clusters.");
     // Cancel pending tasks, if any.
     query_task_tracker_.TryCancelAll();
-    QueryHistoryService(query, max_time, max_count, {},
+    QueryHistoryService(query, end_time, max_count, {},
                         std::move(result_callback));
 #endif
   }

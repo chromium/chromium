@@ -75,14 +75,15 @@ class HistoryClustersService : public KeyedService {
   void CompleteVisitContextAnnotationsIfReady(int64_t nav_id);
 
   // Returns the freshest clusters created from the user visit history based on
-  // the parameters in `query_params`.
+  // `query`, `end_time`, and `max_count`. `end_time` is an exclusive upper
+  // bound, and should be set to `base::Time()` if the caller wants everything.
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
   using QueryClustersCallback =
       base::OnceCallback<void(std::vector<mojom::ClusterPtr>)>;
   void QueryClusters(const std::string& query,
-                     base::Time max_time,
+                     base::Time end_time,
                      size_t max_count,
                      QueryClustersCallback callback,
                      base::CancelableTaskTracker* task_tracker);

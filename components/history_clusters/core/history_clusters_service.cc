@@ -236,7 +236,7 @@ void HistoryClustersService::CompleteVisitContextAnnotationsIfReady(
 
 void HistoryClustersService::QueryClusters(
     const std::string& query,
-    const base::Time max_time,
+    base::Time end_time,
     const size_t max_count,
     QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
@@ -250,8 +250,8 @@ void HistoryClustersService::QueryClusters(
     return;
   }
 
-  // TODO(crbug.com/1220765): The service does not support paging at the moment.
-  // Thus `max_time` and `max_count` are ignored.
+  // TODO(crbug.com/1220765): Fully support pagination using `end_time` and
+  //  `max_count`.
   auto on_visits_callback = base::BindOnce(
       &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
       base::BindOnce(&FilterClustersMatchingQuery, query)
@@ -261,33 +261,39 @@ void HistoryClustersService::QueryClusters(
   history_service_->GetRecentClusterIdsAndAnnotatedVisits(
       base::Time::Min(), kMaxVisitsToCluster.Get(),
       base::BindOnce(
-          [](const IncompleteVisitMap& incomplete_visit_context_annotations,
+          [](const IncompleteVisitMap& incomplete_visits,
+             const base::Time& end_time,
              history::ClusterIdsAndAnnotatedVisitsResult result) {
             auto& visits = result.annotated_visits;
 
             // Append incomplete visits to `visits` too, as otherwise they will
             // be mysteriously missing from the Clusters UI. They haven't
             // recorded the page end metrics yet, but that's fine.
-            for (const auto& item : incomplete_visit_context_annotations) {
-              auto& incomplete_visit_context_annotation = item.second;
-              if (incomplete_visit_context_annotation.url_row.id() == 0 ||
-                  incomplete_visit_context_annotation.visit_row.visit_id == 0) {
+            for (const auto& item : incomplete_visits) {
+              auto& incomplete_visit = item.second;
+              if (incomplete_visit.url_row.id() == 0 ||
+                  incomplete_visit.visit_row.visit_id == 0) {
                 // Discard incomplete visits that don't have visit_ids yet.
                 continue;
               }
 
-              visits.push_back(
-                  {incomplete_visit_context_annotation.url_row,
-                   incomplete_visit_context_annotation.visit_row,
-                   incomplete_visit_context_annotation.context_annotations,
-                   // Content annotations not provided, but it's not provided
-                   // for complete visits either.
-                   {}});
+              if (!end_time.is_null() &&
+                  incomplete_visit.visit_row.visit_time >= end_time) {
+                // Discard incomplete visits are outside the `end_time` bound.
+                continue;
+              }
+
+              visits.push_back({incomplete_visit.url_row,
+                                incomplete_visit.visit_row,
+                                incomplete_visit.context_annotations,
+                                // Content annotations not provided, but it's
+                                // not provided for complete visits either.
+                                {}});
             }
 
             return visits;
           },
-          incomplete_visit_context_annotations_)
+          incomplete_visit_context_annotations_, end_time)
           .Then(std::move(on_visits_callback)),
       task_tracker);
 }
@@ -314,7 +320,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
     // TODO(tommycli): Make sure we are hitting the local database, and not the
     //  remote model service once cluster persistence is ready.
     QueryClusters(
-        /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+        /*query=*/"", /*end_time=*/base::Time(), /*max_count=*/0,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr()),
         &cache_query_task_tracker_);
