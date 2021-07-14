@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/libyuv/include/libyuv/planar_functions.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
+#include "v8/include/v8.h"
 
 namespace blink {
 
@@ -196,15 +197,33 @@ bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
 VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
                        ExecutionContext* context) {
   DCHECK(frame);
-  handle_ = base::MakeRefCounted<VideoFrameHandle>(std::move(frame), context);
+  handle_ = base::MakeRefCounted<VideoFrameHandle>(frame, context);
+
+  external_allocated_memory_ =
+      media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      external_allocated_memory_);
 }
 
 VideoFrame::VideoFrame(scoped_refptr<VideoFrameHandle> handle)
     : handle_(std::move(handle)) {
   DCHECK(handle_);
 
-  // Note: The provided |handle| may be invalid if close() has been called while
-  // a frame is in transit to another thread.
+  // The provided |handle| may be invalid if close() was called while
+  // it was being sent to another thread.
+  auto local_frame = handle_->frame();
+  if (!local_frame)
+    return;
+
+  external_allocated_memory_ = media::VideoFrame::AllocationSize(
+      local_frame->format(), local_frame->coded_size());
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      external_allocated_memory_);
+}
+
+VideoFrame::~VideoFrame() {
+  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+      -external_allocated_memory_);
 }
 
 // static

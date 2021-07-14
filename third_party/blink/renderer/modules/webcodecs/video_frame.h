@@ -55,6 +55,8 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   // the frames receives a call to close().
   explicit VideoFrame(scoped_refptr<VideoFrameHandle> handle);
 
+  ~VideoFrame() override;
+
   // video_frame.idl implementation.
   static VideoFrame* Create(ScriptState* script_state,
                             const V8CanvasImageSource* source,
@@ -129,6 +131,7 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   scoped_refptr<VideoFrameHandle> handle_;
 
   // Caches
+  int64_t external_allocated_memory_;
   Member<DOMRectReadOnly> coded_rect_;
   Member<DOMRectReadOnly> visible_rect_;
   Member<VideoColorSpace> color_space_;
