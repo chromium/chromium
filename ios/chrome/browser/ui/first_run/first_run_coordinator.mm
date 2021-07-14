@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/first_run/signin/signin_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/sync/sync_screen_coordinator.h"
 #import "ios/chrome/browser/ui/first_run/welcome/welcome_screen_coordinator.h"
-#import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -76,11 +75,6 @@
   void (^completion)(void) = ^{
     base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
     WriteFirstRunSentinel();
-    // Display the sync errors infobar.
-    web::WebState* webState =
-        self.browser->GetWebStateList()->GetActiveWebState();
-    DisplaySyncErrors(self.browser->GetBrowserState(), webState,
-                      self.presenter);
 
     // If the remaining screens have been skipped, additional actions will be
     // executed.

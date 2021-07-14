@@ -84,7 +84,6 @@ source_set("first_run") {
     "//ios/chrome/browser/ui/first_run/sync",
     "//ios/chrome/browser/ui/first_run/welcome",
     "//ios/chrome/browser/ui/settings/resources:enterprise_icon",
-    "//ios/chrome/browser/ui/settings/sync/utils",
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:terms_util",
