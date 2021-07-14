@@ -405,14 +405,29 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
     case ash::ArcResizeLockType::RESIZE_LIMITED:
     case ash::ArcResizeLockType::RESIZABLE:
       compat_mode_button->SetEnabled(true);
+      frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
+          &ArcResizeLockManager::ToggleResizeToggleMenu,
+          base::Unretained(this), frame_view->frame()));
       break;
     case ash::ArcResizeLockType::FULLY_LOCKED:
       compat_mode_button->SetEnabled(false);
+      frame_view->ClearToggleResizeLockMenuCallback();
       break;
   }
 }
 
-void ArcResizeLockManager::ToggleResizeToggleMenu(views::Widget* widget) {
+void ArcResizeLockManager::ToggleResizeToggleMenu(
+    views::Widget* widget) {
+  aura::Window* window = widget->GetNativeWindow();
+  if (!window || !ash::IsArcWindow(window))
+    return;
+
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(window);
+  DCHECK(frame_view);
+  const auto* compat_mode_button =
+      frame_view->GetHeaderView()->GetFrameHeader()->GetCenterButton();
+  if (!compat_mode_button || !compat_mode_button->GetEnabled())
+    return;
   resize_toggle_menu_.reset();
   resize_toggle_menu_ =
       std::make_unique<ResizeToggleMenu>(widget, pref_delegate_);

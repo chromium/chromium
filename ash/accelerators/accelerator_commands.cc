@@ -6,6 +6,7 @@
 
 #include "ash/display/display_configuration_controller.h"
 #include "ash/focus_cycler.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/media/media_controller_impl.h"
 #include "ash/public/cpp/new_window_delegate.h"
@@ -215,6 +216,12 @@ bool ToggleMinimized() {
     return false;
   window_state->Minimize();
   return true;
+}
+
+void ToggleResizeLockMenu() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(active_window);
+  frame_view->GetToggleResizeLockMenuCallback().Run();
 }
 
 void UnpinWindow() {

@@ -426,6 +426,20 @@ void NonClientFrameViewAsh::SetFrameEnabled(bool enabled) {
   InvalidateLayout();
 }
 
+void NonClientFrameViewAsh::SetToggleResizeLockMenuCallback(
+    base::RepeatingCallback<void()> callback) {
+  toggle_resize_lock_menu_callback_ = std::move(callback);
+}
+
+void NonClientFrameViewAsh::ClearToggleResizeLockMenuCallback() {
+  toggle_resize_lock_menu_callback_.Reset();
+}
+
+base::RepeatingCallback<void()>
+NonClientFrameViewAsh::GetToggleResizeLockMenuCallback() const {
+  return toggle_resize_lock_menu_callback_;
+}
+
 void NonClientFrameViewAsh::OnDidSchedulePaint(const gfx::Rect& r) {
   // We may end up here before |header_view_| has been added to the Widget.
   if (header_view_->GetWidget()) {

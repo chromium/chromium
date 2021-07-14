@@ -106,6 +106,10 @@ ASH_EXPORT void ToggleMaximized();
 // restored.
 ASH_EXPORT bool ToggleMinimized();
 
+// Toggles the resize lock mode menu for a focused ARC++ resize-locked app if
+// present.
+ASH_EXPORT void ToggleResizeLockMenu();
+
 // If a window is pinned (aka forced fullscreen), exit from pinned mode.
 ASH_EXPORT void UnpinWindow();
 

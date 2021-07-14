@@ -311,6 +311,9 @@
   <message name="IDS_KSV_DESCRIPTION_TOGGLE_OVERVIEW" desc="Description of the command in keyboard shortcut viewer.">
     Overview mode
   </message>
+  <message name="IDS_KSV_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU" desc="Description of the command in keyboard shortcut viewer.">
+    Toggle the menu for resize lock mode
+  </message>
   <message name="IDS_KSV_DESCRIPTION_KEYBOARD_BRIGHTNESS_DOWN" desc="Description of the command in keyboard shortcut viewer.">
     Dim keyboard (for backlit keyboards only)
   </message>

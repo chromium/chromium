@@ -33,6 +33,7 @@
 #include "ash/display/privacy_screen_controller.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/focus_cycler.h"
+#include "ash/frame/non_client_frame_view_ash.h"
 #include "ash/ime/ime_controller_impl.h"
 #include "ash/ime/ime_switch_type.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
@@ -743,6 +744,14 @@ bool CanHandleScreenshot(AcceleratorAction action) {
   if (!features::IsCaptureModeEnabled() || action == TAKE_SCREENSHOT)
     return true;
   return !Shell::Get()->session_controller()->IsUserSessionBlocked();
+}
+
+bool CanHandleToggleResizeLockMenu() {
+  aura::Window* active_window = window_util::GetActiveWindow();
+  if (!active_window)
+    return false;
+  auto* frame_view = ash::NonClientFrameViewAsh::Get(active_window);
+  return frame_view && frame_view->GetToggleResizeLockMenuCallback();
 }
 
 // Tries to enter capture mode image type with |source|. Returns false if
@@ -2056,6 +2065,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case TAKE_SCREENSHOT:
     case TAKE_WINDOW_SCREENSHOT:
       return CanHandleScreenshot(action);
+    case TOGGLE_RESIZE_LOCK_MENU:
+      return CanHandleToggleResizeLockMenu();
 
     // The following are always enabled.
     case BRIGHTNESS_DOWN:
@@ -2491,6 +2502,11 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_OVERVIEW:
       HandleToggleOverview();
+      break;
+    case TOGGLE_RESIZE_LOCK_MENU:
+      base::RecordAction(
+          base::UserMetricsAction("Accel_Toggle_Resize_Lock_Menu"));
+      accelerators::ToggleResizeLockMenu();
       break;
     case TOGGLE_SPOKEN_FEEDBACK:
       HandleToggleSpokenFeedback();

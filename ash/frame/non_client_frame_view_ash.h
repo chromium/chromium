@@ -121,6 +121,13 @@ class ASH_EXPORT NonClientFrameViewAsh
   bool GetFrameEnabled() const { return frame_enabled_; }
   virtual void SetFrameEnabled(bool enabled);
 
+  // Sets the callback to toggle the ARC++ resize-lock menu for this container
+  // if applicable, which will be invoked via the keyboard shortcut.
+  void SetToggleResizeLockMenuCallback(
+      base::RepeatingCallback<void()> callback);
+  base::RepeatingCallback<void()> GetToggleResizeLockMenuCallback() const;
+  void ClearToggleResizeLockMenuCallback();
+
  protected:
   // views::View:
   void OnDidSchedulePaint(const gfx::Rect& r) override;
@@ -161,6 +168,8 @@ class ASH_EXPORT NonClientFrameViewAsh
       frame_->RegisterPaintAsActiveChangedCallback(
           base::BindRepeating(&NonClientFrameViewAsh::PaintAsActiveChanged,
                               base::Unretained(this)));
+
+  base::RepeatingCallback<void()> toggle_resize_lock_menu_callback_;
 
   base::WeakPtrFactory<NonClientFrameViewAsh> weak_factory_{this};
 };

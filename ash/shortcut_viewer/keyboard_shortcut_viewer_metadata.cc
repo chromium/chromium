@@ -760,6 +760,13 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
        {{ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE}}},
 
       {// |categories|
+       {ShortcutCategory::kTabAndWindow},
+       IDS_KSV_DESCRIPTION_TOGGLE_RESIZE_LOCK_MENU,
+       {},
+       // |accelerator_ids|
+       {{ui::VKEY_C, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN}}},
+
+      {// |categories|
        {ShortcutCategory::kAccessibility},
        IDS_KSV_DESCRIPTION_TOGGLE_SPOKEN_FEEDBACK,
        {},
