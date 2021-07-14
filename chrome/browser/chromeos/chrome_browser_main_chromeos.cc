@@ -810,7 +810,8 @@ void ChromeBrowserMainPartsChromeos::PreProfileInit() {
   web_kiosk_app_manager_ = std::make_unique<WebKioskAppManager>();
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
-    DeviceNameStore::Initialize(g_browser_process->local_state());
+    DeviceNameStore::GetInstance()->Initialize(
+        g_browser_process->local_state());
   }
 
   if (base::FeatureList::IsEnabled(features::kEnableLocalSearchService)) {
@@ -1190,9 +1191,6 @@ void ChromeBrowserMainPartsChromeos::PostMainMessageLoopRun() {
   crostini_unsupported_action_notifier_.reset();
 
   BootTimesRecorder::Get()->AddLogoutTimeMarker("UIMessageLoopEnded", true);
-
-  if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting))
-    DeviceNameStore::Shutdown();
 
   // This needs to be called before the
   // ChromeBrowserMainPartsLinux::PostMainMessageLoopRun, because the

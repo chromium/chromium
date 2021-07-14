@@ -4,9 +4,7 @@
 
 #include "chrome/browser/chromeos/device_name_store.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/strings/string_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -18,25 +16,11 @@ class DeviceNameStoreTest : public ::testing::Test {
  public:
   DeviceNameStoreTest() {
     DeviceNameStore::RegisterLocalStatePrefs(local_state_.registry());
+    device_name_store_.Initialize(&local_state_);
   }
   ~DeviceNameStoreTest() override = default;
 
-  // testing::Test
-  void TearDown() override { DeviceNameStore::Shutdown(); }
-
-  void InitializeDeviceNameStore(bool is_hostname_setting_flag_enabled) {
-    if (is_hostname_setting_flag_enabled) {
-      feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
-    } else {
-      feature_list_.InitAndDisableFeature(
-          ash::features::kEnableHostnameSetting);
-    }
-    DeviceNameStore::Initialize(&local_state_);
-  }
-
-  std::string GetDeviceNameFromPrefs() const {
-    return local_state_.GetString(prefs::kDeviceName);
-  }
+  DeviceNameStore* device_name_store() { return &device_name_store_; }
 
  private:
   // Run on the UI thread.
@@ -45,33 +29,34 @@ class DeviceNameStoreTest : public ::testing::Test {
   // Test backing store for prefs.
   TestingPrefServiceSimple local_state_;
 
-  base::test::ScopedFeatureList feature_list_;
+  DeviceNameStore device_name_store_;
 };
 
-// Check that error is thrown if GetInstance() is called before
-// initialization.
-TEST_F(DeviceNameStoreTest, GetInstanceBeforeInitializeError) {
-  EXPECT_DEATH(DeviceNameStore::GetInstance(), "Check failed: g_instance");
-}
+TEST_F(DeviceNameStoreTest, Initialize) {
+  TestingPrefServiceSimple local_state;
+  DeviceNameStore device_name_store;
 
-// Check that error is thrown upon initialization if kEnableHostnameSetting
-// flag is off.
-TEST_F(DeviceNameStoreTest, EnableHostnameSettingFlagOff) {
-  EXPECT_DEATH(
-      InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/false),
-      "Check failed: base::FeatureList::IsEnabled");
-}
+  DeviceNameStore::RegisterLocalStatePrefs(local_state.registry());
 
-// Verifies the device name is set to 'ChromeOS' by default upon initialization
-// and that the device name is persisted to the local state.
-TEST_F(DeviceNameStoreTest, DefaultDeviceName) {
   // The device name is not set yet.
-  EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
+  EXPECT_TRUE(local_state.GetString(prefs::kDeviceName).empty());
 
-  InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/true);
-  DeviceNameStore* device_name_store_ = DeviceNameStore::GetInstance();
-  EXPECT_EQ(device_name_store_->GetDeviceName(), "ChromeOS");
-  EXPECT_EQ(GetDeviceNameFromPrefs(), "ChromeOS");
+  device_name_store.Initialize(&local_state);
+
+  // Initialize now set the device name and persisted it to the local state.
+  std::string device_name = device_name_store.GetDeviceName();
+  std::string persisted_device_name = local_state.GetString(prefs::kDeviceName);
+  EXPECT_FALSE(device_name.empty());
+  EXPECT_FALSE(persisted_device_name.empty());
+  EXPECT_EQ(device_name, persisted_device_name);
+}
+
+// Tests that the device name is set to 'ChromeOS' by default.
+TEST_F(DeviceNameStoreTest, DefaultDeviceName) {
+  // The device name is already set at this point because of the call to
+  // Initialize during test setup.
+  std::string device_name = device_name_store()->GetDeviceName();
+  EXPECT_EQ(device_name, "ChromeOS");
 }
 
 }  // namespace chromeos
