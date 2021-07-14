@@ -13,6 +13,11 @@ namespace pdf {
 PdfInternalPluginDelegate::PdfInternalPluginDelegate() = default;
 PdfInternalPluginDelegate::~PdfInternalPluginDelegate() = default;
 
+bool PdfInternalPluginDelegate::IsAllowedOrigin(
+    const url::Origin& origin) const {
+  return false;
+}
+
 std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
 PdfInternalPluginDelegate::CreatePrintClient() {
   return nullptr;

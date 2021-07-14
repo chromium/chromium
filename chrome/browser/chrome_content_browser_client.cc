@@ -620,6 +620,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/chrome_pdf_stream_delegate.h"
+#include "chrome/common/pdf_util.h"
 #include "components/pdf/browser/pdf_navigation_throttle.h"
 #include "components/pdf/browser/pdf_url_loader_request_interceptor.h"
 #include "components/pdf/common/internal_plugin_helpers.h"
@@ -5842,22 +5843,7 @@ bool ChromeContentBrowserClient::ShouldAllowPluginCreation(
     const content::PepperPluginInfo& plugin_info) {
 #if BUILDFLAG(ENABLE_PDF)
   if (plugin_info.name == ChromeContentClient::kPDFInternalPluginName) {
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-    // Allow embedding the internal PDF plugin in the built-in PDF extension.
-    if (embedder_origin.scheme() == extensions::kExtensionScheme &&
-        embedder_origin.host() == extension_misc::kPdfExtensionId) {
-      return true;
-    }
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
-
-    // Allow embedding the internal PDF plugin in chrome://print.
-    if (embedder_origin == url::Origin::Create(GURL(chrome::kChromeUIPrintURL)))
-      return true;
-
-    // Only allow the PDF plugin in the known, trustworthy origins that are
-    // allowlisted above.  See also https://crbug.com/520422 and
-    // https://crbug.com/1027173.
-    return false;
+    return IsPdfInternalPluginAllowedOrigin(embedder_origin);
   }
 #endif  // BUILDFLAG(ENABLE_PDF)
 

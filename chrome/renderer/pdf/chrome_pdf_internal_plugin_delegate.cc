@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/check.h"
+#include "chrome/common/pdf_util.h"
 #include "pdf/pdf_view_web_plugin.h"
 #include "printing/buildflags/buildflags.h"
 
@@ -21,6 +22,11 @@ ChromePdfInternalPluginDelegate::ChromePdfInternalPluginDelegate(
 }
 
 ChromePdfInternalPluginDelegate::~ChromePdfInternalPluginDelegate() = default;
+
+bool ChromePdfInternalPluginDelegate::IsAllowedOrigin(
+    const url::Origin& origin) const {
+  return IsPdfInternalPluginAllowedOrigin(origin);
+}
 
 std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
 ChromePdfInternalPluginDelegate::CreatePrintClient() {

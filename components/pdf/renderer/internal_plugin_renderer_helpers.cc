@@ -11,21 +11,25 @@
 #include "components/pdf/renderer/pdf_internal_plugin_delegate.h"
 #include "content/public/renderer/render_frame.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
-#include "pdf/buildflags.h"
 #include "pdf/mojom/pdf.mojom.h"
 #include "pdf/pdf_features.h"
 #include "pdf/pdf_view_web_plugin.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
+#include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/public/web/web_frame.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_plugin.h"
 #include "third_party/blink/public/web/web_plugin_params.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace pdf {
 
-blink::WebPlugin* MaybeCreateInternalPlugin(
+blink::WebPlugin* CreateInternalPlugin(
+    const content::WebPluginInfo& info,
+    blink::WebPluginParams params,
     content::RenderFrame* render_frame,
-    std::unique_ptr<PdfInternalPluginDelegate> delegate,
-    blink::WebPluginParams& params) {
+    std::unique_ptr<PdfInternalPluginDelegate> delegate) {
   // For a PDF plugin, `params.url` holds the plugin's stream URL. If `params`
   // contains an 'original-url' attribute, reset `params.url` with its original
   // URL value so that it can be used to determine the plugin's origin.
@@ -37,22 +41,24 @@ blink::WebPlugin* MaybeCreateInternalPlugin(
   }
 
   if (!base::FeatureList::IsEnabled(chrome_pdf::features::kPdfUnseasoned)) {
-    // Let the caller handle Pepper plugin creation.
-    return nullptr;
+    // Delegate Pepper plugin creation to `content::RenderFrame`.
+    return render_frame->CreatePlugin(info, params);
   }
 
-#if BUILDFLAG(ENABLE_PDF_UNSEASONED)
-  // Create unseasoned PDF plugin directly, for development purposes.
-  // TODO(crbug.com/1123621): Implement a more permanent solution once the new
-  // PDF viewer process model is approved and in place.
+  // The in-process plugin should only be created if the parent frame has an
+  // allowed origin.
+  blink::WebFrame* parent_frame = render_frame->GetWebFrame()->Parent();
+  if (!parent_frame)
+    return nullptr;
+
+  if (!delegate->IsAllowedOrigin(parent_frame->GetSecurityOrigin()))
+    return nullptr;
+
   mojo::AssociatedRemote<pdf::mojom::PdfService> pdf_service_remote;
   render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
       pdf_service_remote.BindNewEndpointAndPassReceiver());
   return new chrome_pdf::PdfViewWebPlugin(
       std::move(pdf_service_remote), delegate->CreatePrintClient(), params);
-#else   // !BUILDFLAG(ENABLE_PDF_UNSEASONED)
-  return nullptr;
-#endif  // BUILDFLAG(ENABLE_PDF_UNSEASONED)
 }
 
 }  // namespace pdf
