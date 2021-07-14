@@ -5,6 +5,7 @@
 module network.mojom;
 
 // Mirror of net::IPAddress.
+[Stable]
 struct IPAddress {
    // IP address as a numeric value from most to least significant byte.
    // Will be of length 4 for IPv4 addresses and 16 for IPv6.

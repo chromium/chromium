@@ -984,6 +984,8 @@ static_library("extensions") {
   if (is_chromeos) {
     sources += [
       "api/enterprise_device_attributes/enterprise_device_attributes_api.h",
+      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
+      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.cc",
       "api/enterprise_platform_keys/enterprise_platform_keys_api.h",
       "api/messaging/native_message_built_in_host.cc",
@@ -1042,8 +1044,6 @@ static_library("extensions") {
       "api/crash_report_private/crash_report_private_api.h",
       "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.cc",
       "api/enterprise_device_attributes/enterprise_device_attributes_api_ash.h",
-      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.cc",
-      "api/enterprise_networking_attributes/enterprise_networking_attributes_api.h",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.cc",
       "api/enterprise_platform_keys_private/enterprise_platform_keys_private_api.h",
       "api/file_handlers/non_native_file_system_delegate_chromeos.cc",

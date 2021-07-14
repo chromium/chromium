@@ -281,7 +281,7 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "location": "policy",
-    "platforms": ["chromeos"]
+    "platforms": ["chromeos", "lacros"]
   }, {
     "channel": "stable",
     "dependencies": ["behavior:imprivata_login_screen_extension"],

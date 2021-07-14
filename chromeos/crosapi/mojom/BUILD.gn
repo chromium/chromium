@@ -30,6 +30,7 @@ mojom("mojom") {
     "message_center.mojom",
     "metrics_reporting.mojom",
     "native_theme.mojom",
+    "networking_attributes.mojom",
     "notification.mojom",
     "power.mojom",
     "prefs.mojom",

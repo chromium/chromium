@@ -60,6 +60,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
+#include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
@@ -290,6 +291,7 @@ constexpr InterfaceVersionEntry kInterfaceVersionEntries[] = {
     MakeInterfaceVersionEntry<crosapi::mojom::MessageCenter>(),
     MakeInterfaceVersionEntry<crosapi::mojom::MetricsReporting>(),
     MakeInterfaceVersionEntry<crosapi::mojom::NativeThemeService>(),
+    MakeInterfaceVersionEntry<crosapi::mojom::NetworkingAttributes>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Power>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Prefs>(),
     MakeInterfaceVersionEntry<crosapi::mojom::Remoting>(),
@@ -354,7 +356,7 @@ bool IsDataWipeRequiredInternal(base::Version data_version,
 }
 
 static_assert(
-    crosapi::mojom::Crosapi::Version_ == 38,
+    crosapi::mojom::Crosapi::Version_ == 39,
     "if you add a new crosapi, please add it to kInterfaceVersionEntries");
 static_assert(!HasDuplicatedUuid(),
               "Each Crosapi Mojom interface should have unique UUID.");

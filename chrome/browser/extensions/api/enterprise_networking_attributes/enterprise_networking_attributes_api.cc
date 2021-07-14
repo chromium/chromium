@@ -4,45 +4,51 @@
 
 #include "chrome/browser/extensions/api/enterprise_networking_attributes/enterprise_networking_attributes_api.h"
 
-#include "base/values.h"
-#include "chrome/browser/ash/profiles/profile_helper.h"
+#include "base/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_networking_attributes.h"
-#include "chromeos/network/device_state.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/network_util.h"
-#include "components/user_manager/user.h"
-#include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
+#include "net/base/ip_address.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace extensions {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#else
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/networking_attributes_ash.h"
+#endif
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 namespace {
 
-const char kErrorUserNotAffiliated[] =
-    "Network attributes can only be read by an affiliated user.";
-const char kErrorNetworkNotConnected[] =
-    "Device is not connected to a network.";
+const char kUnsupportedByAsh[] = "Not implemented.";
+const char kUnsupportedProfile[] = "Not available for this profile.";
 
-// Checks for the current browser context if the user is affiliated or belongs
-// to the sign-in profile.
-bool CanGetNetworkAttributesForBrowserContext(
-    content::BrowserContext* context) {
-  const Profile* profile = Profile::FromBrowserContext(context);
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or empty string on success. |context| is the browser context in which
+// the extension is hosted.
+std::string ValidateCrosapi(content::BrowserContext* context) {
+  if (!chromeos::LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::NetworkingAttributes>()) {
+    return kUnsupportedByAsh;
+  }
 
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
-    return true;
+  // These APIs are used in security-sensitive contexts. We need to ensure that
+  // the user for ash is the same as the user for lacros. We do this by
+  // restricting the API to the default profile, which is guaranteed to be the
+  // same user.
+  if (!Profile::FromBrowserContext(context)->IsMainProfile())
+    return kUnsupportedProfile;
 
-  if (profile->IsOffTheRecord())
-    return false;
-
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
-  return user->IsAffiliated();
+  return "";
 }
 
-}  //  namespace
+}  // namespace
+#endif
+
+namespace extensions {
 
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
     EnterpriseNetworkingAttributesGetNetworkDetailsFunction() = default;
@@ -52,40 +58,57 @@ EnterpriseNetworkingAttributesGetNetworkDetailsFunction::
 
 ExtensionFunction::ResponseAction
 EnterpriseNetworkingAttributesGetNetworkDetailsFunction::Run() {
-  if (!CanGetNetworkAttributesForBrowserContext(browser_context())) {
-    return RespondNow(Error(kErrorUserNotAffiliated));
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::string error = ValidateCrosapi(browser_context());
+  if (!error.empty()) {
+    return RespondNow(Error(error));
   }
+#endif
+  auto callback = base::BindOnce(
+      &EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult, this);
 
-  chromeos::NetworkStateHandler* network_state_handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-  const chromeos::NetworkState* network =
-      network_state_handler->DefaultNetwork();
-  if (!network) {
-    // Not connected to a network.
-    return RespondNow(Error(kErrorNetworkNotConnected));
-  }
-  const chromeos::DeviceState* device =
-      network_state_handler->GetDeviceState(network->device_path());
-  if (!device) {
-    return RespondNow(Error(kErrorNetworkNotConnected));
-  }
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::NetworkingAttributes>()
+      ->GetNetworkDetails(std::move(callback));
+#else
+  crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->networking_attributes_ash()
+      ->GetNetworkDetails(std::move(callback));
+#endif
+  return RespondLater();
+}
 
-  const std::string mac_address =
-      chromeos::network_util::FormattedMacAddress(device->mac_address());
-  const std::string ipv4_address = device->GetIpAddressByType(shill::kTypeIPv4);
-  const std::string ipv6_address = device->GetIpAddressByType(shill::kTypeIPv6);
+void EnterpriseNetworkingAttributesGetNetworkDetailsFunction::OnResult(
+    crosapi::mojom::GetNetworkDetailsResultPtr result) {
+  using Result = crosapi::mojom::GetNetworkDetailsResult;
+  switch (result->which()) {
+    case Result::Tag::ERROR_MESSAGE:
+      Respond(Error(result->get_error_message()));
+      return;
+    case Result::Tag::NETWORK_DETAILS:
+      api::enterprise_networking_attributes::NetworkDetails network_details;
 
-  api::enterprise_networking_attributes::NetworkDetails details;
-  details.mac_address = mac_address;
-  if (!ipv4_address.empty()) {
-    details.ipv4 = std::make_unique<std::string>(ipv4_address);
-  }
-  if (!ipv6_address.empty()) {
-    details.ipv6 = std::make_unique<std::string>(ipv6_address);
-  }
+      absl::optional<net::IPAddress> ipv4_address =
+          result->get_network_details()->ipv4_address;
+      absl::optional<net::IPAddress> ipv6_address =
+          result->get_network_details()->ipv6_address;
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(details.ToValue())));
+      network_details.mac_address = result->get_network_details()->mac_address;
+      if (ipv4_address.has_value()) {
+        network_details.ipv4 =
+            std::make_unique<std::string>(ipv4_address->ToString());
+      }
+      if (ipv6_address.has_value()) {
+        network_details.ipv6 =
+            std::make_unique<std::string>(ipv6_address->ToString());
+      }
+
+      Respond(OneArgument(
+          base::Value::FromUniquePtrValue(network_details.ToValue())));
+      return;
+  }
 }
 
 }  // namespace extensions

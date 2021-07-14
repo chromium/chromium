@@ -25,6 +25,7 @@ import "chromeos/crosapi/mojom/local_printer.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
 import "chromeos/crosapi/mojom/metrics_reporting.mojom";
 import "chromeos/crosapi/mojom/native_theme.mojom";
+import "chromeos/crosapi/mojom/networking_attributes.mojom";
 import "chromeos/crosapi/mojom/power.mojom";
 import "chromeos/crosapi/mojom/prefs.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
@@ -66,8 +67,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 39
-// Next method id: 44
+// Next version: 40
+// Next method id: 45
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -187,6 +188,11 @@ interface Crosapi {
   // Added in M89.
   [MinVersion=8]
   BindMetricsReporting@13(pending_receiver<MetricsReporting> receiver);
+
+  // Binds the networking attributes service which is used by enterprise
+  // extension APIs to query details about the network.
+  [MinVersion=39]
+  BindNetworkingAttributes@44(pending_receiver<NetworkingAttributes> receiver);
 
   // Binds the prefs service which allows get, set, and notify update of prefs.
   // Added in M89.

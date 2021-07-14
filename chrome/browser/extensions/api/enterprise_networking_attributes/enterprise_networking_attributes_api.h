@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_NETWORKING_ATTRIBUTES_ENTERPRISE_NETWORKING_ATTRIBUTES_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_NETWORKING_ATTRIBUTES_ENTERPRISE_NETWORKING_ATTRIBUTES_API_H_
 
+#include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -21,10 +22,12 @@ class EnterpriseNetworkingAttributesGetNetworkDetailsFunction
   ResponseAction Run() override;
 
  private:
+  void OnResult(crosapi::mojom::GetNetworkDetailsResultPtr result);
   DECLARE_EXTENSION_FUNCTION(
       "enterprise.networkingAttributes.getNetworkDetails",
       ENTERPRISE_NETWORKINGATTRIBUTES_GETNETWORKDETAILS)
 };
 
 }  //  namespace extensions
+
 #endif  // CHROME_BROWSER_EXTENSIONS_API_ENTERPRISE_NETWORKING_ATTRIBUTES_ENTERPRISE_NETWORKING_ATTRIBUTES_API_H_

@@ -32,6 +32,7 @@
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
 #include "chromeos/crosapi/mojom/message_center.mojom.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
+#include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
 #include "chromeos/crosapi/mojom/power.mojom.h"
 #include "chromeos/crosapi/mojom/prefs.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
@@ -251,6 +252,9 @@ LacrosChromeServiceImpl::LacrosChromeServiceImpl()
       Crosapi::MethodMinVersions::kBindNativeThemeServiceMinVersion>();
   ConstructRemote<crosapi::mojom::Power, &crosapi::mojom::Crosapi::BindPower,
                   Crosapi::MethodMinVersions::kBindPowerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::NetworkingAttributes, &Crosapi::BindNetworkingAttributes,
+      Crosapi::MethodMinVersions::kBindNetworkingAttributesMinVersion>();
   ConstructRemote<crosapi::mojom::Prefs, &crosapi::mojom::Crosapi::BindPrefs,
                   Crosapi::MethodMinVersions::kBindPrefsMinVersion>();
   ConstructRemote<crosapi::mojom::Remoting,
