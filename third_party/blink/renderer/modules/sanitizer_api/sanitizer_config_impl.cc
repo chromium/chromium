@@ -261,7 +261,7 @@ const char* kDefaultAllowAttributes[] = {"abbr",
 void ElementFormatter(HashSet<String>& element_set,
                       const Vector<String>& elements) {
   for (const String& s : elements) {
-    element_set.insert(s.UpperASCII());
+    element_set.insert(s.LowerASCII());
   }
 }
 
@@ -275,7 +275,7 @@ void AttrFormatter(HashMap<String, Vector<String>>& attr_map,
     } else {
       Vector<String> elements;
       for (const String& s : pair.second) {
-        elements.push_back(s.UpperASCII());
+        elements.push_back(s.LowerASCII());
       }
       attr_map.insert(lower_attr, elements);
     }
@@ -312,6 +312,21 @@ SanitizerConfigImpl GetDefaultConfigImpl() {
   return config_;
 }
 
+Vector<String> Copy(const HashSet<String>& set) {
+  Vector<String> result;
+  std::copy(std::cbegin(set), std::cend(set), std::back_inserter(result));
+  return result;
+}
+
+Vector<std::pair<String, Vector<String>>> Copy(
+    const HashMap<String, Vector<String>>& map) {
+  Vector<std::pair<String, Vector<String>>> result;
+  for (const auto& item : map) {
+    result.push_back(std::make_pair(item.key, item.value));
+  }
+  return result;
+}
+
 }  // anonymous namespace
 
 // Create a SanitizerConfigImpl from a SanitizerConfig.
@@ -331,17 +346,17 @@ SanitizerConfigImpl SanitizerConfigImpl::From(const SanitizerConfig* config) {
       config->hasAllowCustomElements() && config->allowCustomElements();
   impl.allow_comments_ = config->hasAllowComments() && config->allowComments();
 
-  // Format dropElements to uppercase.
+  // Format dropElements to lower case.
   if (config->hasDropElements()) {
     ElementFormatter(impl.drop_elements_, config->dropElements());
   }
 
-  // Format blockElements to uppercase.
+  // Format blockElements to lower case.
   if (config->hasBlockElements()) {
     ElementFormatter(impl.block_elements_, config->blockElements());
   }
 
-  // Format allowElements to uppercase.
+  // Format allowElements to lower case.
   if (config->hasAllowElements()) {
     ElementFormatter(impl.allow_elements_, config->allowElements());
   } else {
@@ -360,10 +375,42 @@ SanitizerConfigImpl SanitizerConfigImpl::From(const SanitizerConfig* config) {
     impl.allow_attributes_ = GetDefaultConfigImpl().allow_attributes_;
   }
 
+  impl.had_allow_elements_ = config->hasAllowElements();
+  impl.had_allow_attributes_ = config->hasAllowAttributes();
+  impl.had_allow_custom_elements_ = config->hasAllowCustomElements();
+
   return impl;
 }
 
-SanitizerConfig* SanitizerConfigImpl::defaultConfig() {
+SanitizerConfig* SanitizerConfigImpl::ToAPI(const SanitizerConfigImpl& impl) {
+  SanitizerConfig* config = SanitizerConfig::Create();
+
+  if (impl.had_allow_elements_) {
+    config->setAllowElements(Copy(impl.allow_elements_));
+  }
+
+  if (!impl.drop_elements_.IsEmpty()) {
+    config->setDropElements(Copy(impl.drop_elements_));
+  }
+
+  if (!impl.block_elements_.IsEmpty()) {
+    config->setBlockElements(Copy(impl.block_elements_));
+  }
+
+  if (impl.had_allow_attributes_) {
+    config->setAllowAttributes(Copy(impl.allow_attributes_));
+  }
+
+  if (!impl.drop_attributes_.IsEmpty()) {
+    config->setDropAttributes(Copy(impl.drop_attributes_));
+  }
+
+  if (impl.had_allow_custom_elements_)
+    config->setAllowCustomElements(impl.allow_custom_elements_);
+  return config;
+}
+
+SanitizerConfig* SanitizerConfigImpl::DefaultConfig() {
   return GetDefaultConfig();
 }
 
