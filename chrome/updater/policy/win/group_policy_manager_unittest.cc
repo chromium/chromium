@@ -38,14 +38,6 @@ void GroupPolicyManagerTests::DeletePolicyKey() {
   base::win::RegKey key(HKEY_LOCAL_MACHINE);
   LONG result = key.DeleteKey(UPDATER_POLICIES_KEY);
   ASSERT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-
-  // We leaked HKLM\Software\Policies\Chromium\Software registry key previously
-  // with the incorrect definition of `UPDATER_POLICIES_KEY`. This fails
-  // some external tests which checks that no Chromium policy keys are set.
-  // Temporarily add this cleanup code so bots can be back to clean state.
-  // TODO(crbug.com/1225678): We need to remove this piece of code when we
-  // believe all bots are in clean state again.
-  key.DeleteKey(COMPANY_POLICIES_KEY L"Software");
 }
 
 TEST_F(GroupPolicyManagerTests, NoPolicySet) {
