@@ -10,6 +10,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -143,6 +144,9 @@ class TabDragController : public views::WidgetObserver {
 
   // Complete the current drag session.
   void EndDrag(EndDragReason reason);
+
+  // Set a callback to be called when the nested drag loop finishes.
+  void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
  private:
   friend class TabDragControllerTest;
@@ -704,6 +708,9 @@ class TabDragController : public views::WidgetObserver {
   // See comment around use for more details.
   int attach_x_;
   int attach_index_;
+
+  // Called when the loop in RunMoveLoop finishes. Only for tests.
+  base::OnceClosure drag_loop_done_callback_;
 
   std::unique_ptr<KeyEventTracker> key_event_tracker_;
 

@@ -19,7 +19,6 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -40,8 +39,6 @@
 #include "chrome/browser/ui/views/tabs/tab_style_views.h"
 #include "chrome/browser/ui/views/tabs/window_finder.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -657,6 +654,11 @@ void TabDragController::EndDrag(EndDragReason reason) {
 
   EndDragImpl(reason != END_DRAG_COMPLETE && source_context_ ? CANCELED
                                                              : NORMAL);
+}
+
+void TabDragController::SetDragLoopDoneCallbackForTesting(
+    base::OnceClosure callback) {
+  drag_loop_done_callback_ = std::move(callback);
 }
 
 void TabDragController::InitDragData(TabSlotView* view,
@@ -1489,6 +1491,10 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
           ? views::Widget::MoveLoopEscapeBehavior::kHide
           : views::Widget::MoveLoopEscapeBehavior::kDontHide;
 
+  // Pull into a local to avoid use-after-free if RunMoveLoop deletes |this|.
+  base::OnceClosure drag_loop_done_callback =
+      std::move(drag_loop_done_callback_);
+
   // This code isn't set up to handle nested run loops. Nested run loops may
   // lead to all sorts of interesting crashes, and generally indicate a bug
   // lower in the stack. This is a CHECK() as there may be security
@@ -1497,10 +1503,10 @@ void TabDragController::RunMoveLoop(const gfx::Vector2d& drag_offset) {
   in_move_loop_ = true;
   views::Widget::MoveLoopResult result = move_loop_widget_->RunMoveLoop(
       drag_offset, move_loop_source, escape_behavior);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_TAB_DRAG_LOOP_DONE,
-      content::NotificationService::AllBrowserContextsAndSources(),
-      content::NotificationService::NoDetails());
+  // Note: |this| can be deleted here!
+
+  if (drag_loop_done_callback)
+    std::move(drag_loop_done_callback).Run();
 
   if (!ref)
     return;

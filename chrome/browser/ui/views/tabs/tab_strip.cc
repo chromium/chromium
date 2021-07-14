@@ -444,6 +444,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     drag_controller_->Init(this, source, dragging_views, gfx::Point(x, y),
                            event.x(), std::move(selection_model), move_behavior,
                            EventSourceFromEvent(event));
+    if (drag_controller_set_callback_)
+      std::move(drag_controller_set_callback_).Run(drag_controller_.get());
   }
 
   void ContinueDrag(views::View* view, const ui::LocatedEvent& event) {
@@ -521,6 +523,8 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
     DCHECK(controller);
     DCHECK(!drag_controller_);
     drag_controller_ = std::move(controller);
+    if (drag_controller_set_callback_)
+      std::move(drag_controller_set_callback_).Run(drag_controller_.get());
   }
 
   void DestroyDragController() override {
@@ -529,6 +533,11 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
 
   std::unique_ptr<TabDragController> ReleaseDragController() override {
     return std::move(drag_controller_);
+  }
+
+  void SetDragControllerCallbackForTesting(
+      base::OnceCallback<void(TabDragController*)> callback) override {
+    drag_controller_set_callback_ = std::move(callback);
   }
 
   bool IsDragSessionActive() const override {
@@ -1102,6 +1111,9 @@ class TabStrip::TabDragContextImpl : public TabDragContext {
   // The controller for a drag initiated from a Tab. Valid for the lifetime of
   // the drag session.
   std::unique_ptr<TabDragController> drag_controller_;
+
+  // Only used in tests.
+  base::OnceCallback<void(TabDragController*)> drag_controller_set_callback_;
 
   base::WeakPtrFactory<TabDragContext> weak_factory_{this};
 };

@@ -164,30 +164,33 @@ gfx::Point GetRightCenterInScreenCoordinates(const views::View* view) {
 
 }  // namespace
 
-class QuitDraggingObserver : public content::NotificationObserver {
+class QuitDraggingObserver {
  public:
-  QuitDraggingObserver() {
-    registrar_.Add(this, chrome::NOTIFICATION_TAB_DRAG_LOOP_DONE,
-                   content::NotificationService::AllSources());
+  explicit QuitDraggingObserver(TabStrip* tab_strip) {
+    tab_strip->GetDragContext()->SetDragControllerCallbackForTesting(
+        base::BindOnce(&QuitDraggingObserver::OnDragControllerSet,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
+
   QuitDraggingObserver(const QuitDraggingObserver&) = delete;
   QuitDraggingObserver& operator=(const QuitDraggingObserver&) = delete;
-  ~QuitDraggingObserver() override = default;
-
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override {
-    DCHECK_EQ(chrome::NOTIFICATION_TAB_DRAG_LOOP_DONE, type);
-    run_loop_.QuitWhenIdle();
-  }
+  ~QuitDraggingObserver() = default;
 
   // The observer should be constructed prior to initiating the drag. To prevent
   // misuse via constructing a temporary object, Wait is marked lvalue-only.
   void Wait() & { run_loop_.Run(); }
 
  private:
-  content::NotificationRegistrar registrar_;
+  void OnDragControllerSet(TabDragController* controller) {
+    controller->SetDragLoopDoneCallbackForTesting(base::BindOnce(
+        &QuitDraggingObserver::Quit, weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void Quit() { run_loop_.QuitWhenIdle(); }
+
   base::RunLoop run_loop_;
+
+  base::WeakPtrFactory<QuitDraggingObserver> weak_ptr_factory_{this};
 };
 
 void SetID(WebContents* web_contents, int id) {
@@ -646,7 +649,7 @@ class DetachToBrowserTabDragControllerTest
                         base::OnceClosure task,
                         int tab = 0,
                         int drag_x_offset = 0) {
-    test::QuitDraggingObserver observer;
+    test::QuitDraggingObserver observer(tab_strip);
     // Move to the tab and drag it enough so that it detaches.
     const gfx::Point tab_0_center =
         GetCenterInScreenCoordinates(tab_strip->tab_at(tab));
@@ -661,7 +664,7 @@ class DetachToBrowserTabDragControllerTest
                                   base::OnceClosure task,
                                   tab_groups::TabGroupId group,
                                   int drag_x_offset = 0) {
-    test::QuitDraggingObserver observer;
+    test::QuitDraggingObserver observer(tab_strip);
     // Move to the tab and drag it enough so that it detaches.
     const gfx::Point group_header_center =
         GetCenterInScreenCoordinates(tab_strip->group_header(group));
@@ -2863,7 +2866,7 @@ TabStrip* GetAttachedTabstrip() {
 void DragWindowAndVerifyOffset(DetachToBrowserTabDragControllerTest* test,
                                TabStrip* tab_strip,
                                int tab_index) {
-  test::QuitDraggingObserver observer;
+  test::QuitDraggingObserver observer(tab_strip);
   // Move to the tab and drag it enough so that it detaches.
   const gfx::Point tab_center =
       GetCenterInScreenCoordinates(tab_strip->tab_at(tab_index));
@@ -4485,8 +4488,8 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
   // minimizing the window. See https://crbug.com/902897 for the details.
   ui::GestureConfiguration::GetInstance()->set_min_fling_velocity(1);
 
-  test::QuitDraggingObserver observer;
   TabStrip* tab_strip = GetTabStripForBrowser(browser());
+  test::QuitDraggingObserver observer(tab_strip);
   const gfx::Point tab_0_center =
       GetCenterInScreenCoordinates(tab_strip->tab_at(0));
   const gfx::Vector2d detach(0, GetDetachY(tab_strip));
@@ -4525,7 +4528,7 @@ IN_PROC_BROWSER_TEST_P(DetachToBrowserTabDragControllerTestTouch,
 
   // Sends events to the server without waiting for its reply, which will cause
   // extra touch events before PerformWindowMove starts handling events.
-  test::QuitDraggingObserver observer;
+  test::QuitDraggingObserver observer(tab_strip);
   base::SimpleTestTickClock clock;
   clock.SetNowTicks(base::TimeTicks::Now());
   ui::SetEventTickClockForTesting(&clock);

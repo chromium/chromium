@@ -132,13 +132,6 @@ enum NotificationType {
   NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
 #endif
 
-#if defined(TOOLKIT_VIEWS)
-  // Notification that the nested loop using during tab dragging has returned.
-  // Used for testing.
-  // TODO(https://crbug.com/1174797): Remove.
-  NOTIFICATION_TAB_DRAG_LOOP_DONE,
-#endif
-
   // Sent when the applications in the NTP app launcher have been reordered.
   // The details, if not NoDetails, is the std::string ID of the extension that
   // was moved.
