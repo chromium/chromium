@@ -298,8 +298,8 @@ void NetworkConnectImpl::SetPropertiesToClear(
   // Move empty string properties to properties_to_clear.
   for (base::DictionaryValue::Iterator iter(*properties_to_set);
        !iter.IsAtEnd(); iter.Advance()) {
-    std::string value_str;
-    if (iter.value().GetAsString(&value_str) && value_str.empty())
+    const std::string* value_str = iter.value().GetIfString();
+    if (value_str && (*value_str).empty())
       properties_to_clear->push_back(iter.key());
   }
   // Remove cleared properties from properties_to_set.

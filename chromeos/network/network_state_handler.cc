@@ -1265,24 +1265,25 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   // Updates managed_list and request updates for new entries.
   std::set<std::string> list_entries;
   for (const auto& iter : entries.GetList()) {
-    std::string path;
-    iter.GetAsString(&path);
-    if (path.empty() || path == shill::kFlimflamServicePath) {
-      NET_LOG(ERROR) << "Bad path in type " << type << " Path: " << path;
+    const std::string* path = iter.GetIfString();
+    if (!path)
+      continue;
+    if (!path || (*path).empty() || *path == shill::kFlimflamServicePath) {
+      NET_LOG(ERROR) << "Bad path in type " << type << " Path: " << *path;
       continue;
     }
-    auto found = managed_map.find(path);
+    auto found = managed_map.find(*path);
     if (found == managed_map.end()) {
-      if (list_entries.count(path) != 0) {
-        NET_LOG(ERROR) << "Duplicate entry in list for " << path;
+      if (list_entries.count(*path) != 0) {
+        NET_LOG(ERROR) << "Duplicate entry in list for " << *path;
         continue;
       }
-      managed_list->push_back(ManagedState::Create(type, path));
+      managed_list->push_back(ManagedState::Create(type, *path));
     } else {
       managed_list->push_back(std::move(found->second));
       managed_map.erase(found);
     }
-    list_entries.insert(path);
+    list_entries.insert(*path);
   }
 
   if (type == ManagedState::ManagedType::MANAGED_TYPE_DEVICE) {
@@ -1484,13 +1485,12 @@ void NetworkStateHandler::UpdateNetworkServiceProperty(
     notify_default = false;  // Notify will occur when properties are received.
   }
 
-  std::string value_str;
-  value.GetAsString(&value_str);
+  const std::string* value_str = value.GetIfString();
   if (key == shill::kSignalStrengthProperty || key == shill::kWifiBSsid ||
       key == shill::kWifiFrequency ||
       key == shill::kWifiFrequencyListProperty ||
       key == shill::kNetworkTechnologyProperty ||
-      (key == shill::kDeviceProperty && value_str == "/")) {
+      (key == shill::kDeviceProperty && value_str && *value_str == "/")) {
     // Uninteresting update. This includes 'Device' property changes to "/"
     // (occurs just before a service is removed).
     // For non active networks do not log or send any notifications.

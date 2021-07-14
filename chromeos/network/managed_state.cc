@@ -124,15 +124,14 @@ bool ManagedState::GetIntegerValue(const std::string& key,
 bool ManagedState::GetStringValue(const std::string& key,
                                   const base::Value& value,
                                   std::string* out_value) {
-  std::string new_value;
-  if (!value.GetAsString(&new_value)) {
+  if (!value.is_string()) {
     NET_LOG(ERROR) << "Error parsing state value: " << NetworkPathId(path_)
                    << "." << key;
     return false;
   }
-  if (*out_value == new_value)
+  if (*out_value == value.GetString())
     return false;
-  *out_value = new_value;
+  *out_value = value.GetString();
   return true;
 }
 

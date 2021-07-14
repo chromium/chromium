@@ -66,11 +66,8 @@ void ProhibitedTechnologiesHandler::SetProhibitedTechnologies(
   // enforced
   session_prohibited_technologies_.clear();
   for (const auto& item : prohibited_list->GetList()) {
-    std::string prohibited_technology;
-    bool item_is_string = item.GetAsString(&prohibited_technology);
-    DCHECK(item_is_string);
     std::string translated_tech =
-        network_util::TranslateONCTypeToShill(prohibited_technology);
+        network_util::TranslateONCTypeToShill(item.GetString());
     if (!translated_tech.empty())
       session_prohibited_technologies_.push_back(translated_tech);
   }

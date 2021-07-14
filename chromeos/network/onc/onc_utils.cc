@@ -269,12 +269,8 @@ bool ResolveCertRefList(const CertPEMsByGUIDMap& certs_by_guid,
 
   base::Value pem_list(base::Value::Type::LIST);
   for (const auto& entry : guid_ref_list->GetList()) {
-    std::string guid_ref;
-    bool entry_is_string = entry.GetAsString(&guid_ref);
-    DCHECK(entry_is_string);
-
     std::string pem_encoded;
-    if (!GUIDRefToPEMEncoding(certs_by_guid, guid_ref, &pem_encoded))
+    if (!GUIDRefToPEMEncoding(certs_by_guid, entry.GetString(), &pem_encoded))
       return false;
 
     pem_list.Append(pem_encoded);

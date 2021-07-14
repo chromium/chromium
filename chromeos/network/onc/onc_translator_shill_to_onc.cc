@@ -291,12 +291,11 @@ void ShillToONCTranslator::TranslateOpenVPN() {
       continue;
     }
 
-    std::string shill_str;
-    if (shill_value->GetAsString(&shill_str)) {
+    if (shill_value->is_string()) {
       // Shill wants all Provider/VPN fields to be strings. Translates these
       // strings back to the correct ONC type.
       base::Value translated = ConvertVpnStringToValue(
-          shill_str, field_signature->value_signature->onc_type);
+          shill_value->GetString(), field_signature->value_signature->onc_type);
 
       if (translated.is_none()) {
         NET_LOG(ERROR) << "Shill property '" << shill_property_name

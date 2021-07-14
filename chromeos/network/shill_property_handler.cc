@@ -370,7 +370,8 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
                                                   const base::Value& value) {
   if (key == shill::kDefaultServiceProperty) {
     std::string service_path;
-    value.GetAsString(&service_path);
+    if (value.is_string())
+      service_path = value.GetString();
     NET_LOG(EVENT) << "Manager.DefaultService = "
                    << NetworkPathId(service_path);
     listener_->DefaultNetworkServiceChanged(service_path);
@@ -403,20 +404,15 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
     const base::ListValue* vlist = GetListValue(key, value);
     if (vlist)
       UpdateUninitializedTechnologies(*vlist);
-  } else if (key == shill::kProhibitedTechnologiesProperty) {
-    std::string prohibited_technologies;
-    if (value.GetAsString(&prohibited_technologies))
-      UpdateProhibitedTechnologies(prohibited_technologies);
+  } else if (key == shill::kProhibitedTechnologiesProperty &&
+             value.is_string()) {
+    UpdateProhibitedTechnologies(value.GetString());
   } else if (key == shill::kProfilesProperty) {
     listener_->ProfileListChanged(value);
-  } else if (key == shill::kCheckPortalListProperty) {
-    std::string check_portal_list;
-    if (value.GetAsString(&check_portal_list))
-      listener_->CheckPortalListChanged(check_portal_list);
-  } else if (key == shill::kDhcpPropertyHostnameProperty) {
-    std::string hostname;
-    if (value.GetAsString(&hostname))
-      listener_->HostnameChanged(hostname);
+  } else if (key == shill::kCheckPortalListProperty && value.is_string()) {
+    listener_->CheckPortalListChanged(value.GetString());
+  } else if (key == shill::kDhcpPropertyHostnameProperty && value.is_string()) {
+    listener_->HostnameChanged(value.GetString());
   } else {
     VLOG(2) << "Ignored Manager Property: " << key;
   }
@@ -429,19 +425,18 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
   NET_LOG(DEBUG) << "UpdateProperties: " << ManagedState::TypeToString(type)
                  << ": " << entries.GetSize();
   for (const auto& entry : entries.GetList()) {
-    std::string path;
-    entry.GetAsString(&path);
-    if (path.empty())
+    const std::string* path = entry.GetIfString();
+    if (!path || (*path).empty())
       continue;
 
     // We add a special case for devices here to work around an issue in shill
     // that prevents it from sending property changed signals for cellular
     // devices (see crbug.com/321854).
     if (type == ManagedState::MANAGED_TYPE_DEVICE ||
-        requested_updates.find(path) == requested_updates.end()) {
-      RequestProperties(type, path);
+        requested_updates.find(*path) == requested_updates.end()) {
+      RequestProperties(type, *path);
     }
-    new_requested_updates.insert(path);
+    new_requested_updates.insert(*path);
   }
   requested_updates.swap(new_requested_updates);
 }
@@ -453,27 +448,26 @@ void ShillPropertyHandler::UpdateObserved(ManagedState::ManagedType type,
                                                    : observed_devices_;
   ShillPropertyObserverMap new_observed;
   for (const auto& entry : entries.GetList()) {
-    std::string path;
-    entry.GetAsString(&path);
-    if (path.empty())
+    const std::string* path = entry.GetIfString();
+    if (!path || (*path).empty())
       continue;
-    auto iter = observer_map.find(path);
+    auto iter = observer_map.find(*path);
     std::unique_ptr<ShillPropertyObserver> observer;
     if (iter != observer_map.end()) {
       observer = std::move(iter->second);
     } else {
       // Create an observer for future updates.
       observer = std::make_unique<ShillPropertyObserver>(
-          type, path,
+          type, *path,
           base::BindRepeating(&ShillPropertyHandler::PropertyChangedCallback,
                               AsWeakPtr()));
     }
     auto result =
-        new_observed.insert(std::make_pair(path, std::move(observer)));
+        new_observed.insert(std::make_pair(*path, std::move(observer)));
     if (!result.second) {
-      NET_LOG(ERROR) << path << " is duplicated in the list.";
+      NET_LOG(ERROR) << *path << " is duplicated in the list.";
     }
-    observer_map.erase(path);
+    observer_map.erase(*path);
     // Limit the number of observed services.
     if (new_observed.size() >= kMaxObserved)
       break;
@@ -641,16 +635,15 @@ void ShillPropertyHandler::RequestIPConfig(
     ManagedState::ManagedType type,
     const std::string& path,
     const base::Value& ip_config_path_value) {
-  std::string ip_config_path;
-  if (!ip_config_path_value.GetAsString(&ip_config_path) ||
-      ip_config_path.empty()) {
+  const std::string* ip_config_path = ip_config_path_value.GetIfString();
+  if (!ip_config_path || (*ip_config_path).empty()) {
     NET_LOG(ERROR) << "Invalid IPConfig: " << path;
     return;
   }
   ShillIPConfigClient::Get()->GetProperties(
-      dbus::ObjectPath(ip_config_path),
+      dbus::ObjectPath(*ip_config_path),
       base::BindOnce(&ShillPropertyHandler::GetIPConfigCallback, AsWeakPtr(),
-                     type, path, ip_config_path));
+                     type, path, *ip_config_path));
 }
 
 void ShillPropertyHandler::RequestIPConfigsList(

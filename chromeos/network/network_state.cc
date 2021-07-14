@@ -147,17 +147,17 @@ bool NetworkState::PropertyChanged(const std::string& key,
   } else if (key == shill::kEidProperty) {
     return GetStringValue(key, value, &eid_);
   } else if (key == shill::kProxyConfigProperty) {
-    std::string proxy_config_str;
-    if (!value.GetAsString(&proxy_config_str)) {
+    const std::string* proxy_config_str = value.GetIfString();
+    if (!proxy_config_str) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
       return false;
     }
 
-    if (proxy_config_str.empty()) {
+    if ((*proxy_config_str).empty()) {
       proxy_config_ = base::Value();
       return true;
     }
-    base::Value proxy_config = onc::ReadDictionaryFromJson(proxy_config_str);
+    base::Value proxy_config = onc::ReadDictionaryFromJson(*proxy_config_str);
     if (!proxy_config.is_dict()) {
       NET_LOG(ERROR) << "Failed to parse " << path() << "." << key;
       proxy_config_ = base::Value();

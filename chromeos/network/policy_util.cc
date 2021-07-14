@@ -61,10 +61,8 @@ void RemoveFakeCredentials(const onc::OncValueSignature& signature,
     }
 
     // If |value| is a string, check if it is a fake credential.
-    std::string string_value;
-    if (value->GetAsString(&string_value) &&
-        onc::FieldIsCredential(signature, field_name)) {
-      if (string_value == kFakeCredential) {
+    if (value->is_string() && onc::FieldIsCredential(signature, field_name)) {
+      if (value->GetString() == kFakeCredential) {
         // The value wasn't modified by the UI, thus we remove the field to keep
         // the existing value that is stored in Shill.
         entries_to_remove.push_back(field_name);

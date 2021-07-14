@@ -190,12 +190,13 @@ std::string GetNameFromProperties(const std::string& service_path,
 
 std::unique_ptr<NetworkUIData> GetUIDataFromValue(
     const base::Value& ui_data_value) {
-  std::string ui_data_str;
-  if (!ui_data_value.GetAsString(&ui_data_str))
+  const std::string* ui_data_str = ui_data_value.GetIfString();
+  if (!ui_data_str)
     return nullptr;
-  if (ui_data_str.empty())
+  if ((*ui_data_str).empty())
     return std::make_unique<NetworkUIData>();
-  base::Value ui_data_dict = chromeos::onc::ReadDictionaryFromJson(ui_data_str);
+  base::Value ui_data_dict =
+      chromeos::onc::ReadDictionaryFromJson(*ui_data_str);
   if (!ui_data_dict.is_dict())
     return nullptr;
   return std::make_unique<NetworkUIData>(ui_data_dict);

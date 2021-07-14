@@ -55,9 +55,8 @@ void MarkRecommendedFieldnames(const base::DictionaryValue& policy,
                                           &recommended_value))
     return;
   for (const auto& value : recommended_value->GetList()) {
-    std::string entry;
-    if (value.GetAsString(&entry))
-      result->SetKey(entry, base::Value(true));
+    if (value.is_string())
+      result->SetKey(value.GetString(), base::Value(true));
   }
 }
 

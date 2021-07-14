@@ -293,14 +293,14 @@ bool Validator::ValidateRecommendedField(
 
   base::ListValue repaired_recommended;
   for (const auto& entry : recommended_list->GetList()) {
-    std::string field_name;
-    if (!entry.GetAsString(&field_name)) {
+    const std::string* field_name = entry.GetIfString();
+    if (!field_name) {
       NOTREACHED();  // The types of field values are already verified.
       continue;
     }
 
     const OncFieldSignature* field_signature =
-        GetFieldSignature(object_signature, field_name);
+        GetFieldSignature(object_signature, *field_name);
 
     bool found_error = false;
     std::string error_cause;
@@ -316,7 +316,7 @@ bool Validator::ValidateRecommendedField(
     if (found_error) {
       path_.push_back(::onc::kRecommended);
       std::ostringstream msg;
-      msg << "The " << error_cause << " field '" << field_name
+      msg << "The " << error_cause << " field '" << *field_name
           << "' cannot be recommended.";
       AddValidationIssue(error_on_wrong_recommended_, msg.str());
       path_.pop_back();
@@ -325,7 +325,7 @@ bool Validator::ValidateRecommendedField(
       continue;
     }
 
-    repaired_recommended.AppendString(field_name);
+    repaired_recommended.AppendString(*field_name);
   }
 
   result->SetKey(::onc::kRecommended, std::move(repaired_recommended));
@@ -447,10 +447,10 @@ bool Validator::FieldExistsAndIsEmpty(const base::DictionaryValue& object,
   if (!value)
     return false;
 
-  std::string str;
+  const std::string* str = value->GetIfString();
   const base::ListValue* list = NULL;
-  if (value->GetAsString(&str)) {
-    if (!str.empty())
+  if (str) {
+    if (!(*str).empty())
       return false;
   } else if (value->GetAsList(&list)) {
     if (!list->GetList().empty())
@@ -502,12 +502,12 @@ bool Validator::ListFieldContainsValidValues(
   if (object.GetListWithoutPathExpansion(field_name, &list)) {
     path_.push_back(field_name);
     for (const auto& entry : list->GetList()) {
-      std::string value;
-      if (!entry.GetAsString(&value)) {
+      const std::string* value = entry.GetIfString();
+      if (!value) {
         NOTREACHED();  // The types of field values are already verified.
         continue;
       }
-      if (!IsValidValue(value, valid_values)) {
+      if (!IsValidValue(*value, valid_values)) {
         path_.pop_back();
         return false;
       }
