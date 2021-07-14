@@ -75,11 +75,11 @@ UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
   DCHECK(skbitmap.isImmutable());
 
   const SkBitmap* target = &skbitmap;
-  if (features::IsDrDcEnabled()) {
 #if defined(OS_ANDROID)
+  SkBitmap copy;
+  if (features::IsDrDcEnabled()) {
     // TODO(vikassoni): Forcing everything to N32 while android backing cannot
     // support some other formats.
-    SkBitmap copy;
     if (skbitmap.colorType() != kN32_SkColorType) {
       SkImageInfo new_info = skbitmap.info().makeColorType(kN32_SkColorType);
       copy.allocPixels(new_info, new_info.minRowBytes());
@@ -91,9 +91,8 @@ UIResourceBitmap::UIResourceBitmap(const SkBitmap& skbitmap) {
     }
     DCHECK_EQ(target->width(), target->rowBytesAsPixels());
     DCHECK(target->isImmutable());
-#endif
   }
-
+#endif
   sk_sp<SkPixelRef> pixel_ref = sk_ref_sp(target->pixelRef());
   Create(std::move(pixel_ref), target->info(),
          SkColorTypeToUIResourceFormat(target->colorType()));
