@@ -820,7 +820,7 @@ base::Value ManagementUIHandler::GetThreatProtectionInfo(Profile* profile) {
   if (enterprise_manager.empty())
     enterprise_manager = GetAccountManager(profile);
 #else
-  std::string enterprise_manager = GetAccountManager(profile);
+  std::string enterprise_manager = connectors_service->GetManagementDomain();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::Value result(base::Value::Type::DICTIONARY);

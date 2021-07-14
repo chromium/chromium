@@ -52,6 +52,10 @@ constexpr char kFakeBrowserClientId[] = "fake-browser-client-id";
 constexpr char kFakeProfileClientId[] = "fake-profile-client-id";
 constexpr char kAffiliationId1[] = "affiliation-id-1";
 constexpr char kAffiliationId2[] = "affiliation-id-2";
+constexpr char kUsername1[] = "user@domain1.com";
+constexpr char kUsername2[] = "admin@domain2.com";
+constexpr char kDomain1[] = "domain1.com";
+constexpr char kDomain2[] = "domain2.com";
 #endif
 
 constexpr char kFakeBrowserDMToken[] = "fake-browser-dm-token";
@@ -117,6 +121,7 @@ class ConnectorsServiceProfileBrowserTest
     auto profile_policy_data =
         std::make_unique<enterprise_management::PolicyData>();
     profile_policy_data->add_user_affiliation_ids(kAffiliationId1);
+    profile_policy_data->set_managed_by(kDomain1);
     profile_policy_data->set_device_id(kFakeProfileClientId);
     profile_policy_manager->core()->store()->set_policy_data_for_testing(
         std::move(profile_policy_data));
@@ -131,6 +136,9 @@ class ConnectorsServiceProfileBrowserTest
           management_status() == ManagementStatus::AFFILIATED
               ? kAffiliationId1
               : kAffiliationId2);
+      browser_policy_data->set_username(
+          management_status() == ManagementStatus::AFFILIATED ? kUsername1
+                                                              : kUsername2);
       browser_policy_manager->core()->store()->set_policy_data_for_testing(
           std::move(browser_policy_data));
     }
@@ -206,19 +214,25 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceReportingProfileBrowserTest, Test) {
     ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
   }
 #else
+  std::string management_domain =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNAFFILIATED:
       EXPECT_FALSE(settings.has_value());
+      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
   }
 #endif
@@ -282,7 +296,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
   auto settings =
       ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
           ->GetAnalysisSettings(GURL(kTestUrl), connector());
-
   if (management_status() == ManagementStatus::UNMANAGED) {
     ASSERT_FALSE(settings.has_value());
   } else {
@@ -292,6 +305,13 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ValidateClientMetadata(*settings.value().client_metadata,
                            /*profile_reporting*/ false);
   }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  ASSERT_EQ((management_status() == ManagementStatus::UNAFFILIATED) ? kDomain2
+                                                                    : kDomain1,
+            ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+                ->GetManagementDomain());
+#endif
 }
 
 IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
@@ -316,6 +336,9 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
                            /*profile_reporting*/ false);
   }
 #else
+  std::string management_domain =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
@@ -323,9 +346,11 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ASSERT_TRUE(settings.value().per_profile);
       ValidateClientMetadata(*settings.value().client_metadata,
                              /*profile_reporting*/ true);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNAFFILIATED:
       EXPECT_FALSE(settings.has_value());
+      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
@@ -334,6 +359,7 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
       ASSERT_TRUE(settings.value().client_metadata);
       ValidateClientMetadata(*settings.value().client_metadata,
                              /*profile_reporting*/ true);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
   }
 #endif
@@ -357,21 +383,27 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceAnalysisProfileBrowserTest,
     ASSERT_FALSE(settings.value().client_metadata);
   }
 #else
+  std::string management_domain =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNAFFILIATED:
       EXPECT_FALSE(settings.has_value());
+      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::UNMANAGED:
       EXPECT_TRUE(settings.has_value());
       ASSERT_EQ(kFakeProfileDMToken, settings.value().dm_token);
       ASSERT_TRUE(settings.value().per_profile);
       ASSERT_FALSE(settings.value().client_metadata);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
   }
 #endif
@@ -413,22 +445,28 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
               url_check_pref);
   }
 #else
+  std::string management_domain =
+      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
+          ->GetManagementDomain();
   switch (management_status()) {
     case ManagementStatus::AFFILIATED:
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
       ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
                 url_check_pref);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
     case ManagementStatus::UNAFFILIATED:
       ASSERT_FALSE(maybe_dm_token.has_value());
       ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
+      ASSERT_TRUE(management_domain.empty());
       break;
     case ManagementStatus::UNMANAGED:
       ASSERT_TRUE(maybe_dm_token.has_value());
       ASSERT_EQ(kFakeProfileDMToken, maybe_dm_token.value());
       ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
                 url_check_pref);
+      ASSERT_EQ(kDomain1, management_domain);
       break;
   }
 #endif

@@ -86,6 +86,13 @@ class ConnectorsService : public KeyedService {
   safe_browsing::EnterpriseRealTimeUrlCheckMode GetAppliedRealTimeUrlCheck()
       const;
 
+  // Returns the CBCM domain or profile domain that enables connector policies.
+  // If both set Connector policies, the CBCM domain is returned as it has
+  // precedence.
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::string GetManagementDomain();
+#endif
+
   // Testing functions.
   ConnectorsManager* ConnectorsManagerForTesting();
 

@@ -23,13 +23,16 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/managed_ui.h"
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
+#include "components/policy/core/common/cloud/machine_level_user_cloud_policy_store.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/policy_types.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -39,6 +42,7 @@
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "device_management_backend.pb.h"
+#include "google_apis/gaia/gaia_auth_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/policy/core/user_cloud_policy_manager_chromeos.h"
@@ -366,6 +370,51 @@ std::vector<std::string> ConnectorsService::GetAnalysisServiceProviderNames(
 
   return connectors_manager_->GetAnalysisServiceProviderNames(connector);
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+std::string ConnectorsService::GetManagementDomain() {
+  if (!ConnectorsEnabled())
+    return std::string();
+
+  absl::optional<policy::PolicyScope> scope = absl::nullopt;
+  for (const char* scope_pref :
+       {prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope,
+        ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
+        ConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
+        ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
+        ConnectorScopePref(ReportingConnector::SECURITY_EVENT)}) {
+    absl::optional<DmToken> dm_token = GetDmToken(scope_pref);
+    if (dm_token.has_value()) {
+      scope = dm_token.value().scope;
+
+      // Having one CBCM Connector policy set implies that profile ones will be
+      // ignored for another domain, so the loop can stop immediately.
+      if (scope == policy::PolicyScope::POLICY_SCOPE_MACHINE)
+        break;
+    }
+  }
+
+  if (!scope.has_value())
+    return std::string();
+
+  if (scope.value() == policy::PolicyScope::POLICY_SCOPE_USER) {
+    return chrome::GetAccountManagerIdentity(
+               Profile::FromBrowserContext(context_))
+        .value_or(std::string());
+  }
+
+  policy::MachineLevelUserCloudPolicyManager* manager =
+      g_browser_process->browser_policy_connector()
+          ->machine_level_user_cloud_policy_manager();
+  if (!manager)
+    return std::string();
+
+  policy::CloudPolicyStore* store = manager->store();
+  return (store && store->has_policy())
+             ? gaia::ExtractDomainName(store->policy()->username())
+             : std::string();
+}
+#endif
 
 absl::optional<std::string> ConnectorsService::GetDMTokenForRealTimeUrlCheck()
     const {
