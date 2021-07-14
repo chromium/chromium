@@ -13,12 +13,22 @@
         }
       };
 
+      function capabilitiesToString(array) {
+        var result = [];
+        array.forEach(function(v) {
+          result.push(v.contentType);
+        });
+        return '[ ' + result.join(', ') + ' ]';
+      }
+
       // Compares 2 arrays of MediaKeySystemMediaCapability, comparing only
       // |contentType|. This assumes the order is the same. Returns "success"
       // if they match, an error message if they don't.
       function verifyCapabilitiesAreEqual(actual, expected) {
         if (actual.length != expected.length)
-          return "mismatched lengths; not all capabilities are supported";
+          return 'mismatched lengths; not all capabilities are supported. Got ' +
+              capabilitiesToString(actual) + ', expected ' +
+              capabilitiesToString(expected);
         for (var i = 0; i < actual.length; i++) {
           // Only compare |contentType|. Other properties are ignored.
           if (actual[i].contentType !== expected[i].contentType)
@@ -68,7 +78,9 @@
                   return;
                 }
               } else if (allowedConfig.audioCapabilities.length > 0) {
-                setResultInTitle("audioCapabilities set when none expected");
+                setResultInTitle(
+                    'audioCapabilities set when none expected, got ' +
+                    capabilitiesToString(allowedConfig.audioCapabilities));
                 return;
               }
               if (videoCapabilities !== null) {
@@ -77,7 +89,9 @@
                                             configuration.videoCapabilities));
                 return;
               } else if (allowedConfig.videoCapabilities.length > 0) {
-                setResultInTitle("videoCapabilities set when none expected");
+                setResultInTitle(
+                    'videoCapabilities set when none expected, got ' +
+                    capabilitiesToString(allowedConfig.videoCapabilities));
                 return;
               }
               setResultInTitle("success");
