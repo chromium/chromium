@@ -161,8 +161,12 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
   std::unique_ptr<EventTiming> eventTiming;
   LocalFrame* frame = node_->GetDocument().GetFrame();
-  if (frame && frame->DomWindow())
+  if (frame && frame->DomWindow()) {
     eventTiming = EventTiming::Create(frame->DomWindow(), *event_);
+    // TODO(hbsong): Calculate First Input Delay for filtered events.
+    EventTiming::HandleInputDelay(frame->DomWindow(), *event_);
+  }
+
   if (event_->type() == event_type_names::kChange && event_->isTrusted() &&
       view_) {
     view_->GetLayoutShiftTracker().NotifyChangeEvent();
@@ -226,8 +230,6 @@ DispatchEventResult EventDispatcher::Dispatch() {
   }
   DispatchEventPostProcess(activation_target,
                            pre_dispatch_event_handler_result);
-  if (eventTiming)
-    eventTiming->DidDispatchEvent(*event_, node_->GetDocument());
 
   return EventTarget::GetDispatchEventResult(*event_);
 }

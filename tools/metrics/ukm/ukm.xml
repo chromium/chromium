@@ -14161,6 +14161,40 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Responsiveness.UserInteraction">
+  <owner>hbsong@chromium.org</owner>
+  <summary>
+    Metrics that are associated with user interactions and recorded when users
+    interact with web pages. Currently we are interested in keyboard, tap, click
+    and drag. A user interaction often encompasses multiple input events. For
+    keyboard interactions, we only care about keydown and keyup. For tap, click
+    and drag, we only measure pointerdown, pointerup and click.
+  </summary>
+  <metric name="InteractionType" enum="UserInteractionType">
+    <summary>
+      The type of the user interaction that triggered input event sequence, not
+      the input event type. It can be keyboard, tap, click or drag.
+    </summary>
+  </metric>
+  <metric name="MaxEventDuration">
+    <summary>
+      The longest input event duration within the user interaction. The unit of
+      duration is ms. For example, if a user pressed a key, we can get a keydown
+      and a keyup. If the duration(keydown) &gt; duration(keyup), the value of
+      this metric will be duration(keydown).
+    </summary>
+  </metric>
+  <metric name="TotalEventDuration">
+    <summary>
+      The sum of input event durations within the user interaction without
+      double counting the overlap. The unit of duration is ms. For example, if a
+      user pressed a key, we can get a keydown and a keyup. The value of this
+      metric will be duration(keydown) + duration(keyup) -
+      duration(intersection(keydown, keyup)).
+    </summary>
+  </metric>
+</event>
+
 <event name="ResponsivenessMeasurement">
   <owner>npm@chromium.org</owner>
   <owner>tdresser@chromium.org</owner>

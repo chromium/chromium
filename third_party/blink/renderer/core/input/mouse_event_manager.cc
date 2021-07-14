@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-blink.h"
 #include "ui/display/screen_info.h"
@@ -296,8 +297,9 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
          mouse_event_type == event_type_names::kClick ||
          mouse_event_type == event_type_names::kAuxclick);
 
-  if (target && target->ToNode() &&
-      (!check_for_listener || target->HasEventListeners(mouse_event_type))) {
+  WebInputEventResult input_event_result = WebInputEventResult::kNotHandled;
+
+  if (target && target->ToNode()) {
     Node* target_node = target->ToNode();
     int click_count = 0;
     if (mouse_event_type == event_type_names::kMouseup ||
@@ -306,9 +308,9 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
         mouse_event_type == event_type_names::kAuxclick) {
       click_count = click_count_;
     }
-
-    DispatchEventResult dispatch_result;
-
+    std::unique_ptr<EventTiming> event_timing;
+    bool should_dispatch =
+        !check_for_listener || target->HasEventListeners(mouse_event_type);
     if (RuntimeEnabledFeatures::ClickPointerEventEnabled() &&
         (mouse_event_type == event_type_names::kContextmenu ||
          mouse_event_type == event_type_names::kClick ||
@@ -324,7 +326,12 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-      dispatch_result = target->DispatchEvent(*event);
+      if (frame_ && frame_->DomWindow())
+        event_timing = EventTiming::Create(frame_->DomWindow(), *event);
+      if (should_dispatch) {
+        input_event_result = event_handling_util::ToWebInputEventResult(
+            target->DispatchEvent(*event));
+      }
     } else {
       MouseEventInit* initializer = MouseEventInit::Create();
       SetMouseEventAttributes(initializer, target_node, mouse_event_type,
@@ -335,13 +342,16 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
           mouse_event.FromTouch() ? MouseEvent::kFromTouch
                                   : MouseEvent::kRealOrIndistinguishable,
           mouse_event.menu_source_type);
-
-      dispatch_result = target->DispatchEvent(*event);
+      if (frame_ && frame_->DomWindow())
+        event_timing = EventTiming::Create(frame_->DomWindow(), *event);
+      if (should_dispatch) {
+        input_event_result = event_handling_util::ToWebInputEventResult(
+            target->DispatchEvent(*event));
+      }
     }
-
-    return event_handling_util::ToWebInputEventResult(dispatch_result);
   }
-  return WebInputEventResult::kNotHandled;
+
+  return input_event_result;
 }
 
 WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(

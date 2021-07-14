@@ -26,18 +26,19 @@ class CORE_EXPORT EventTiming final {
   // Processes an event that will be dispatched. Notifies the
   // InteractiveDetector if it needs to be logged into input delay histograms.
   // Returns an object only if the event is relevant for the EventTiming API.
+  // This object should be constructed before the event is dispatched and
+  // destructed after dispatch so that we can calculate the input delay and
+  // other latency values correctly.
   static std::unique_ptr<EventTiming> Create(LocalDOMWindow*, const Event&);
 
   explicit EventTiming(base::TimeTicks processing_start,
-                       base::TimeTicks event_timestamp,
                        WindowPerformance* performance,
-                       bool should_log);
+                       const Event& event);
+  ~EventTiming();
   EventTiming(const EventTiming&) = delete;
   EventTiming& operator=(const EventTiming&) = delete;
 
-  // Notifies the Performance object that the event has been dispatched.
-  void DidDispatchEvent(const Event&, Document& document);
-
+  static void HandleInputDelay(LocalDOMWindow* window, const Event& event);
   // The caller owns the |clock| which must outlive the EventTiming.
   static void SetTickClockForTesting(const base::TickClock* clock);
 
@@ -52,7 +53,7 @@ class CORE_EXPORT EventTiming final {
 
   Persistent<WindowPerformance> performance_;
 
-  bool should_log_event_;
+  Persistent<const Event> event_;
 };
 
 }  // namespace blink

@@ -82651,6 +82651,12 @@ Full version information for the fingerprint enum values:
   <int value="0" label="WiFi Scan"/>
 </enum>
 
+<enum name="UserInteractionType">
+  <int value="0" label="keyboard"/>
+  <int value="1" label="tap or click"/>
+  <int value="2" label="drag"/>
+</enum>
+
 <enum name="UsernameDetectionMethod">
   <int value="0" label="No username detected"/>
   <int value="1" label="Base heuristic"/>

@@ -49,13 +49,31 @@ bool ShouldReportForEventTiming(WindowPerformance* performance) {
 }  // namespace
 
 EventTiming::EventTiming(base::TimeTicks processing_start,
-                         base::TimeTicks event_timestamp,
                          WindowPerformance* performance,
-                         bool should_log_event)
+                         const Event& event)
     : processing_start_(processing_start),
-      event_timestamp_(event_timestamp),
       performance_(performance),
-      should_log_event_(should_log_event) {}
+      event_(&event) {
+  performance_->SetCurrentEventTimingEvent(&event);
+}
+
+// static
+void EventTiming::HandleInputDelay(LocalDOMWindow* window, const Event& event) {
+  auto* pointer_event = DynamicTo<PointerEvent>(&event);
+  base::TimeTicks event_timestamp =
+      pointer_event ? pointer_event->OldestPlatformTimeStamp()
+                    : event.PlatformTimeStamp();
+
+  base::TimeTicks processing_start = Now();
+  if (ShouldLogEvent(event) && event.isTrusted()) {
+    InteractiveDetector* interactive_detector =
+        InteractiveDetector::From(*window->document());
+    if (interactive_detector) {
+      interactive_detector->HandleForInputDelay(event, event_timestamp,
+                                                processing_start);
+    }
+  }
+}
 
 // static
 bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
@@ -81,7 +99,16 @@ bool EventTiming::IsEventTypeForEventTiming(const Event& event) {
 std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
                                                  const Event& event) {
   auto* performance = DOMWindowPerformance::performance(*window);
-  if (!performance || !IsEventTypeForEventTiming(event))
+  if (!performance || !event.isTrusted() ||
+      (!IsEventTypeForEventTiming(event) &&
+       event.type() != event_type_names::kPointermove))
+    return nullptr;
+
+  // Most events track their performance in EventDispatcher::Dispatch but
+  // some event types which can be filtered are tracked at the point
+  // where they may be filtered. This condition check ensures we don't create
+  // two EventTiming objects for the same Event.
+  if (performance->GetCurrentEventTimingEvent() == &event)
     return nullptr;
 
   bool should_report_for_event_timing = ShouldReportForEventTiming(performance);
@@ -90,39 +117,38 @@ std::unique_ptr<EventTiming> EventTiming::Create(LocalDOMWindow* window,
   if (!should_report_for_event_timing && !should_log_event)
     return nullptr;
 
-  auto* pointer_event = DynamicTo<PointerEvent>(&event);
-  base::TimeTicks event_timestamp =
-      pointer_event ? pointer_event->OldestPlatformTimeStamp()
-                    : event.PlatformTimeStamp();
-
   base::TimeTicks processing_start = Now();
-
-  if (should_log_event) {
-    InteractiveDetector* interactive_detector =
-        InteractiveDetector::From(*window->document());
-    if (interactive_detector) {
-      interactive_detector->HandleForInputDelay(event, event_timestamp,
-                                                processing_start);
-    }
-  }
-
   return should_report_for_event_timing
-             ? std::make_unique<EventTiming>(processing_start, event_timestamp,
-                                             performance, should_log_event)
+             ? std::make_unique<EventTiming>(processing_start, performance,
+                                             event)
              : nullptr;
-}
-
-void EventTiming::DidDispatchEvent(const Event& event, Document& document) {
-  Node* target = event.target() ? event.target()->ToNode() : nullptr;
-  base::TimeTicks processing_end = Now();
-  performance_->RegisterEventTiming(event.type(), event_timestamp_,
-                                    processing_start_, processing_end,
-                                    event.cancelable(), target);
 }
 
 // static
 void EventTiming::SetTickClockForTesting(const base::TickClock* clock) {
   g_clock_for_testing = clock;
+}
+
+EventTiming::~EventTiming() {
+  absl::optional<int> key_code = absl::nullopt;
+  if (event_->IsKeyboardEvent())
+    key_code = DynamicTo<KeyboardEvent>(event_.Get())->keyCode();
+
+  absl::optional<PointerId> pointer_id = absl::nullopt;
+  const PointerEvent* pointer_event = DynamicTo<PointerEvent>(event_.Get());
+  if (pointer_event)
+    pointer_id = pointer_event->pointerId();
+
+  base::TimeTicks event_timestamp =
+      pointer_event ? pointer_event->OldestPlatformTimeStamp()
+                    : event_->PlatformTimeStamp();
+
+  // Register Event Timing for the event.
+  performance_->RegisterEventTiming(
+      event_->type(), event_timestamp, processing_start_, Now(),
+      event_->cancelable(),
+      event_->target() ? event_->target()->ToNode() : nullptr, key_code,
+      pointer_id);
 }
 
 }  // namespace blink

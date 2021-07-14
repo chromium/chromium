@@ -35,14 +35,17 @@
 #include "base/rand_util.h"
 #include "third_party/blink/public/web/web_swap_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/timing/event_counts.h"
+#include "third_party/blink/renderer/core/timing/event_timing.h"
 #include "third_party/blink/renderer/core/timing/memory_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
 #include "third_party/blink/renderer/core/timing/performance_navigation.h"
 #include "third_party/blink/renderer/core/timing/performance_timing.h"
+#include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
 namespace blink {
@@ -54,6 +57,52 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                                             public ExecutionContextClient,
                                             public PageVisibilityObserver {
   friend class WindowPerformanceTest;
+
+  class EventData : public GarbageCollected<EventData> {
+   public:
+    EventData(PerformanceEventTiming* event_timing,
+              uint64_t frame,
+              base::TimeTicks event_timestamp,
+              absl::optional<int> key_code,
+              absl::optional<PointerId> pointer_id)
+        : event_timing_(event_timing),
+          frame_(frame),
+          event_timestamp_(event_timestamp),
+          key_code_(key_code),
+          pointer_id_(pointer_id) {}
+
+    static EventData* Create(PerformanceEventTiming* event_timing,
+                             uint64_t frame,
+                             base::TimeTicks event_timestamp,
+                             absl::optional<int> key_code,
+                             absl::optional<PointerId> pointer_id) {
+      return MakeGarbageCollected<EventData>(
+          event_timing, frame, event_timestamp, key_code, pointer_id);
+    }
+    ~EventData() = default;
+    void Trace(Visitor*) const;
+    PerformanceEventTiming* GetEventTiming() { return event_timing_; }
+    uint64_t GetFrameIndex() { return frame_; }
+    base::TimeTicks GetEventTimestamp() { return event_timestamp_; }
+    absl::optional<int> GetKeyCode() { return key_code_; }
+    absl::optional<PointerId> GetPointerId() { return pointer_id_; }
+
+   private:
+    // Event PerformanceEventTiming entry that has not been sent to observers
+    // yet: the event dispatch has been completed but the presentation promise
+    // used to determine |duration| has not yet been resolved.
+    Member<PerformanceEventTiming> event_timing_;
+    // Frame index in which the entry in |event_timing_| were added.
+    uint64_t frame_;
+    // The event creation timestamp.
+    base::TimeTicks event_timestamp_;
+    // Keycode for the event. If the event is not a keyboard event, the keycode
+    // wouldn't be set.
+    absl::optional<int> key_code_;
+    // PointerId for the event. If the event is not a pointer event, the
+    // PointerId wouldn't be set.
+    absl::optional<PointerId> pointer_id_;
+  };
 
  public:
   explicit WindowPerformance(LocalDOMWindow*);
@@ -78,7 +127,9 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                            base::TimeTicks processing_start,
                            base::TimeTicks processing_end,
                            bool cancelable,
-                           Node*);
+                           Node*,
+                           absl::optional<int> key_code,
+                           absl::optional<PointerId> pointer_id);
 
   void OnPaintFinished();
 
@@ -107,6 +158,17 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void Trace(Visitor*) const override;
 
+  ResponsivenessMetrics& GetResponsivenessMetrics() {
+    return responsiveness_metrics_;
+  }
+
+  void NotifyPotentialDrag();
+
+  void SetCurrentEventTimingEvent(const Event* event) {
+    current_event_ = event;
+  }
+  const Event* GetCurrentEventTimingEvent() { return current_event_; }
+
  private:
   PerformanceNavigationTiming* CreateNavigationTimingInstance() override;
 
@@ -123,11 +185,12 @@ class CORE_EXPORT WindowPerformance final : public Performance,
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
 
-  // Method called once presentation promise is resolved. It will add all event
-  // timings that have not been added since the last presentation promise.
+  // Method called once presentation promise for a frame is resolved. It will
+  // add all event timings that have not been added since the last presentation
+  // promise.
   void ReportEventTimings(uint64_t frame_index,
                           WebSwapResult result,
-                          base::TimeTicks timestamp);
+                          base::TimeTicks presentation_timestamp);
 
   void DispatchFirstInputTiming(PerformanceEventTiming* entry);
 
@@ -138,19 +201,10 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   uint64_t last_registered_frame_index_ = 0;
   // Number of pending presentation promises.
   uint16_t pending_presentation_promise_count_ = 0;
-  // PerformanceEventTiming entries that have not been sent to observers yet:
-  // the event dispatch has been completed but the presentation promise used to
-  // determine |duration| has not yet been resolved. It is handled as a queue:
-  // FIFO.
-  HeapDeque<Member<PerformanceEventTiming>> event_timings_;
-  // Entries corresponding to frame indices in which the entries in
-  // |event_timings_| were added. This could be combined with |event_timings_|
-  // into a single deque, but PerformanceEventTiming is GarbageCollected so it
-  // would need to be a HeapDeque. HeapDeque does not allow std::pair as its
-  // type, so we would have to add a new wrapper GarbageCollected class that
-  // contains the PerformanceEventTiming object as well as the frame index. This
-  // is more work than having two separate deques.
-  Deque<uint64_t> event_frames_;
+  // Store all event timing and latency related data, including
+  // PerformanceEventTiming, frame_index, keycode and pointerId. We use the data
+  // to calculate events latencies.
+  HeapDeque<Member<EventData>> events_data_;
   Member<PerformanceEventTiming> first_pointer_down_event_timing_;
   Member<EventCounts> event_counts_;
   mutable Member<PerformanceNavigation> navigation_;
@@ -158,6 +212,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
   absl::optional<base::TimeDelta> pending_pointer_down_input_delay_;
   absl::optional<base::TimeDelta> pending_pointer_down_processing_time_;
   absl::optional<base::TimeDelta> pending_pointer_down_time_to_next_paint_;
+
+  // Calculate responsiveness metrics and record UKM for them.
+  ResponsivenessMetrics responsiveness_metrics_;
+  // The event we are currently processing.
+  WeakMember<const Event> current_event_;
 };
 
 }  // namespace blink

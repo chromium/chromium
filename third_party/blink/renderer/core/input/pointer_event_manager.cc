@@ -183,14 +183,9 @@ WebInputEventResult PointerEventManager::DispatchPointerEvent(
   bool should_filter = ShouldFilterEvent(pointer_event);
   // We are about to dispatch this event. It has to be trusted at this point.
   pointer_event->SetTrusted(true);
-
-  if (frame_ && frame_->DomWindow()) {
-    WindowPerformance* performance =
-        DOMWindowPerformance::performance(*(frame_->DomWindow()));
-    if (performance && EventTiming::IsEventTypeForEventTiming(*pointer_event)) {
-      performance->eventCounts()->Add(event_type);
-    }
-  }
+  std::unique_ptr<EventTiming> event_timing;
+  if (frame_ && frame_->DomWindow())
+    event_timing = EventTiming::Create(frame_->DomWindow(), *pointer_event);
 
   if (should_filter &&
       !HasPointerEventListener(frame_->GetEventHandlerRegistry()))
