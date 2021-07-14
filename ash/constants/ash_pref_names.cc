@@ -445,7 +445,7 @@ const char kAmbientColorEnabled[] = "ash.ambient_color.enabled";
 const char kColorModeThemed[] = "ash.dark_mode.color_mode_themed";
 
 // A boolean pref that indicates whether dark mode is enabled.
-const char kDarkModeEnabled[] = "ash.dark_mode_enabled";
+const char kDarkModeEnabled[] = "ash.dark_mode.enabled";
 
 // A boolean pref storing the enabled status of the NightLight feature.
 const char kNightLightEnabled[] = "ash.night_light.enabled";

@@ -151,7 +151,7 @@ base::Time NightLightClient::GetNow() const {
 
 void NightLightClient::SendCurrentGeoposition() {
   night_light_controller_->SetCurrentGeoposition(
-      ash::NightLightController::SimpleGeoposition{latitude_, longitude_});
+      ash::SimpleGeoposition{latitude_, longitude_});
 }
 
 void NightLightClient::ScheduleNextRequest(base::TimeDelta delay) {

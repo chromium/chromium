@@ -19,7 +19,7 @@
 namespace {
 
 using ScheduleType = ash::NightLightController::ScheduleType;
-using SimpleGeoposition = ash::NightLightController::SimpleGeoposition;
+using SimpleGeoposition = ash::SimpleGeoposition;
 
 // Constructs a TimeZone object from the given |timezone_id|.
 std::unique_ptr<icu::TimeZone> CreateTimezone(const char* timezone_id) {
