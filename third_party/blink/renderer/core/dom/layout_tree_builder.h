@@ -91,7 +91,7 @@ class LayoutTreeBuilder {
     auto* const text_combine_parent = parent->Parent();
     if (IsAnonymousInline(text_combine_parent))
       return text_combine_parent;
-    return next;
+    return parent;
   }
 
   static bool IsAnonymousInline(const LayoutObject* layout_object) {

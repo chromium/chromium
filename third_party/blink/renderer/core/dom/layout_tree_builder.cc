@@ -39,7 +39,6 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 
@@ -147,11 +146,6 @@ void LayoutTreeBuilderForText::CreateLayoutObject() {
   if (LayoutObject* wrapper = CreateInlineWrapperForDisplayContentsIfNeeded()) {
     layout_object_parent = wrapper;
     next_layout_object = nullptr;
-  } else if (next_layout_object) {
-    auto* const text_combine =
-        DynamicTo<LayoutNGTextCombine>(next_layout_object->Parent());
-    if (UNLIKELY(text_combine))
-      layout_object_parent = text_combine;
   }
 
   LegacyLayout legacy_layout = layout_object_parent->ForceLegacyLayout()

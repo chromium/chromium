@@ -3858,21 +3858,6 @@ void LayoutObject::WillBeRemovedFromTree() {
 
   if (LocalFrameView* frame_view = GetFrameView())
     frame_view->GetPaintTimingDetector().LayoutObjectWillBeDestroyed(*this);
-
-  // Merge |next_text_combine| into |previous_text_combine| if needed.
-  // See http:://crbug.com/1227066
-  auto* const previous_text_combine =
-      DynamicTo<LayoutNGTextCombine>(PreviousSibling());
-  if (LIKELY(!previous_text_combine))
-    return;
-  auto* const next_text_combine = DynamicTo<LayoutNGTextCombine>(NextSibling());
-  if (LIKELY(!next_text_combine))
-    return;
-  while (auto* child = next_text_combine->FirstChild()) {
-    next_text_combine->RemoveChild(child);
-    previous_text_combine->AddChild(child);
-  }
-  Parent()->RemoveChild(next_text_combine);
 }
 
 void LayoutObject::SetNeedsPaintPropertyUpdate() {
