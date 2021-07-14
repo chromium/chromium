@@ -8,6 +8,8 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -31,6 +33,7 @@ import java.util.Locale;
  * component that needs to interact with another component does that through this controller.
  */
 public class SecurePaymentConfirmationAuthnController {
+    private final WebContents mWebContents;
     private Runnable mHider;
     private Callback<Boolean> mResponseCallback;
     private SecurePaymentConfirmationAuthnView mView;
@@ -116,23 +119,33 @@ public class SecurePaymentConfirmationAuthnController {
         }
     };
 
-    /** Constructs the SPC Authn UI component controller. */
-    public SecurePaymentConfirmationAuthnController() {}
+    /**
+     * Constructs the SPC Authn UI component controller.
+     *
+     * @param webContents The WebContents of the merchant.
+     */
+    public static SecurePaymentConfirmationAuthnController create(WebContents webContents) {
+        return webContents != null ? new SecurePaymentConfirmationAuthnController(webContents)
+                                   : null;
+    }
+
+    private SecurePaymentConfirmationAuthnController(WebContents webContents) {
+        mWebContents = webContents;
+    }
 
     /**
      * Shows the SPC Authn UI.
      *
-     * @param webContents The WebContents of the merchant.
      * @param paymentIcon The icon of the payment instrument.
      * @param paymentInstrumentLabel The label to display for the payment instrument.
      * @param total The total amount of the transaction.
      * @param callback The function to call on sheet dismiss; false if it failed.
      */
-    public boolean show(WebContents webContents, Drawable paymentIcon,
-            String paymentInstrumentLabel, PaymentItem total, Callback<Boolean> callback) {
-        if (mHider != null || webContents == null) return false;
+    public boolean show(Drawable paymentIcon, String paymentInstrumentLabel, PaymentItem total,
+            Callback<Boolean> callback) {
+        if (mHider != null) return false;
 
-        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return false;
         Context context = windowAndroid.getContext().get();
         if (context == null) return false;
@@ -143,7 +156,7 @@ public class SecurePaymentConfirmationAuthnController {
         PropertyModel model =
                 new PropertyModel.Builder(SecurePaymentConfirmationAuthnProperties.ALL_KEYS)
                         .with(SecurePaymentConfirmationAuthnProperties.STORE_ORIGIN,
-                                webContents.getVisibleUrl().getOrigin())
+                                mWebContents.getVisibleUrl().getOrigin())
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_ICON, paymentIcon)
                         .with(SecurePaymentConfirmationAuthnProperties.PAYMENT_INSTRUMENT_LABEL,
                                 paymentInstrumentLabel)
@@ -173,6 +186,7 @@ public class SecurePaymentConfirmationAuthnController {
 
         boolean isShowSuccess =
                 bottomSheet.requestShowContent(mBottomSheetContent, /*animate=*/true);
+
         if (!isShowSuccess) {
             hide();
             return false;
@@ -186,6 +200,16 @@ public class SecurePaymentConfirmationAuthnController {
         if (mHider == null) return;
         mHider.run();
         mHider = null;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public SecurePaymentConfirmationAuthnView getView() {
+        return mView;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isHidden() {
+        return mHider == null;
     }
 
     private String formatPaymentItem(PaymentItem paymentItem) {

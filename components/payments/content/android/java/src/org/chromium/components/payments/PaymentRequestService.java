@@ -869,8 +869,8 @@ public class PaymentRequestService
             assert mBrowserPaymentRequest.getSelectedPaymentApp() != null;
             assert mSpcAuthnUiController == null;
 
-            mSpcAuthnUiController = new SecurePaymentConfirmationAuthnController();
-            boolean success = mSpcAuthnUiController.show(mWebContents,
+            mSpcAuthnUiController = SecurePaymentConfirmationAuthnController.create(mWebContents);
+            boolean success = mSpcAuthnUiController.show(
                     mBrowserPaymentRequest.getSelectedPaymentApp().getDrawableIcon(),
                     mBrowserPaymentRequest.getSelectedPaymentApp().getLabel(), getRawTotal(),
                     (response) -> {
