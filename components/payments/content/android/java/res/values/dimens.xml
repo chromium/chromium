@@ -20,13 +20,13 @@
     <dimen name="payments_request_bottom_bar_vertical_padding">10dp</dimen>
     <dimen name="payments_request_bottom_bar_horizontal_padding">16dp</dimen>
 
-    <!-- TODO(crbug.com/1227823): Clean up spacing between continue and cancel buttons.-->
     <!-- Secure Payment Confirmation UI spacing -->
     <dimen name="secure_payment_confirmation_ui_large_padding">24dp</dimen>
     <dimen name="secure_payment_confirmation_ui_medium_padding">16dp</dimen>
     <dimen name="secure_payment_confirmation_ui_small_padding">8dp</dimen>
-    <dimen name="secure_payment_confirmation_ui_button_spacing">12dp</dimen>
     <dimen name="secure_payment_confirmation_ui_drag_handle_spacing">6dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_icon_width">20dp</dimen>
+    <dimen name="secure_payment_confirmation_ui_icon_height">32dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_label_size">60dp</dimen>
     <dimen name="secure_payment_confirmation_authn_ui_amount_currency_spacing">4dp</dimen>
 

@@ -10,6 +10,7 @@
 
     <!-- Drag handlebar -->
     <ImageView
+        android:id="@+id/handlebar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
@@ -20,6 +21,7 @@
 
     <ScrollView
         android:id="@+id/scroll_view"
+        android:layout_below="@id/handlebar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent">
 
@@ -28,7 +30,8 @@
             android:layout_width="match_parent"
             android:textDirection="locale"
             android:paddingHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
-            android:paddingVertical="@dimen/secure_payment_confirmation_ui_medium_padding">
+            android:paddingTop="@dimen/secure_payment_confirmation_ui_small_padding"
+            android:paddingBottom="@dimen/secure_payment_confirmation_ui_large_padding">
 
             <!-- Shopping cart image -->
             <ImageView
@@ -96,9 +99,9 @@
                 <ImageView
                     android:id="@+id/payment_icon"
                     android:importantForAccessibility="no"
-                    android:layout_height="@dimen/secure_payment_confirmation_ui_medium_padding"
-                    android:layout_width="@dimen/secure_payment_confirmation_ui_medium_padding"
-                    android:scaleType="centerCrop"/>
+                    android:layout_height="@dimen/secure_payment_confirmation_ui_icon_width"
+                    android:layout_width="@dimen/secure_payment_confirmation_ui_icon_height"
+                    android:scaleType="centerInside"/>
 
                 <TextView
                     android:id="@+id/payment"
@@ -153,15 +156,12 @@
                 android:layout_below="@id/total_label"
                 android:layout_marginVertical="@dimen/secure_payment_confirmation_ui_medium_padding"/>
 
-            <!-- TODO(crbug.com/1227823): Clean up spacing between continue and cancel buttons.-->
             <!-- "Continue" button -->
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/continue_button"
                 android:layout_below="@id/total_divider"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_button_spacing"
-                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:text="@string/payments_continue_button"
                 style="@style/FilledButton.Flat"/>
 
@@ -171,8 +171,6 @@
                 android:layout_below="@id/continue_button"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:layout_marginBottom="@dimen/secure_payment_confirmation_ui_large_padding"
-                android:layout_marginHorizontal="@dimen/secure_payment_confirmation_ui_large_padding"
                 android:text="@string/cancel"
                 style="@style/TextButton"/>
 
