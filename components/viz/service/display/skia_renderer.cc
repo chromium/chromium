@@ -2822,10 +2822,14 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   auto* shared_quad_state =
       const_cast<SharedQuadState*>(quad->shared_quad_state);
 
-  gfx::Transform quad_to_target_transform_inverse(
-      gfx::Transform::kSkipInitialization);
+  absl::optional<gfx::Transform> quad_to_target_transform_inverse;
   if (shared_quad_state->clip_rect ||
       !shared_quad_state->mask_filter_info.IsEmpty()) {
+    // We cannot handle rotation with clip rect or mask filter.
+    DCHECK(
+        shared_quad_state->quad_to_target_transform.Preserves2dAxisAlignment());
+    quad_to_target_transform_inverse.emplace(
+        gfx::Transform::kSkipInitialization);
     // Flatten before inverting, since we're interested in how points
     // with z=0 in local space map to the clip rect, not in how the clip
     // rect at z=0 in device space maps to some other z in local space.
@@ -2833,7 +2837,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
         shared_quad_state->quad_to_target_transform);
     flat_quad_to_target_transform.FlattenTo2d();
     bool result = flat_quad_to_target_transform.GetInverse(
-        &quad_to_target_transform_inverse);
+        &*quad_to_target_transform_inverse);
     DCHECK(result) << "flat_quad_to_target_transform.GetInverse() failed";
   }
 
@@ -2844,7 +2848,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
     // TODO(dbaron): This operation is likely not to be valid if
     // quad_to_target_transform_inverse.HasPerspective().
     gfx::RectF clip_rect(*shared_quad_state->clip_rect);
-    quad_to_target_transform_inverse.TransformRect(&clip_rect);
+    quad_to_target_transform_inverse->TransformRect(&clip_rect);
     auto_reset_clip_rect.emplace(&shared_quad_state->clip_rect.value(),
                                  gfx::ToEnclosedRect(clip_rect));
   }
@@ -2853,7 +2857,7 @@ void SkiaRenderer::PrepareRenderPassOverlay(
   // (translation, scaling, rotation, etc), so remove them.
   if (!shared_quad_state->mask_filter_info.IsEmpty()) {
     auto result = shared_quad_state->mask_filter_info.Transform(
-        quad_to_target_transform_inverse);
+        *quad_to_target_transform_inverse);
     DCHECK(result) << "shared_quad_state->mask_filter_info.Transform() failed.";
   }
 
