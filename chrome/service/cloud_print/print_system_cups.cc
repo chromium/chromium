@@ -547,7 +547,7 @@ bool PrintSystemCUPS::ParsePrintTicket(
     return false;
 
   options->clear();
-  for (const auto& it : ticket.value().DictItems()) {
+  for (const auto it : ticket.value().DictItems()) {
     if (it.second.is_string())
       (*options)[it.first] = it.second.GetString();
   }

@@ -187,7 +187,7 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
   for (const AssignmentInfo& info : *kAssignmentInfo) {
     auto* keycodes = prefs_->GetDictionary(info.pref_name);
     base::ListValue keys;
-    for (const auto& item : keycodes->DictItems()) {
+    for (const auto item : keycodes->DictItems()) {
       int key_code;
       if (!base::StringToInt(item.first, &key_code)) {
         NOTREACHED();

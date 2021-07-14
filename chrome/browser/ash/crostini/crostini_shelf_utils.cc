@@ -69,7 +69,7 @@ FindAppIdResult FindAppId(const base::DictionaryValue* prefs,
                           bool need_display = false,
                           bool ignore_space = false) {
   result->clear();
-  for (const auto& item : prefs->DictItems()) {
+  for (const auto item : prefs->DictItems()) {
     if (item.first == kCrostiniTerminalSystemAppId)
       continue;
 

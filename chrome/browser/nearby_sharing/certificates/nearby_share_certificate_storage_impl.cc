@@ -626,8 +626,7 @@ bool NearbyShareCertificateStorageImpl::FetchPublicCertificateExpirations() {
   }
 
   public_certificate_expirations_.reserve(dict->DictSize());
-  for (const std::pair<const std::string&, const base::Value&>& pair :
-       dict->DictItems()) {
+  for (const auto pair : dict->DictItems()) {
     absl::optional<std::string> id = DecodeString(pair.first);
     absl::optional<base::Time> expiration = util::ValueToTime(pair.second);
     if (!id || !expiration)

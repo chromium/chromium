@@ -441,7 +441,7 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
 
   std::vector<std::string> versions;
   versions.reserve(extension_info->DictSize());
-  for (const auto& kv : extension_info->DictItems()) {
+  for (const auto kv : extension_info->DictItems()) {
     versions.push_back(kv.first);
   }
 

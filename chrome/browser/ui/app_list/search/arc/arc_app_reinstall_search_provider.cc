@@ -162,7 +162,7 @@ bool GetKnownPackageNames(Profile* profile,
                           std::unordered_set<std::string>* package_names) {
   const base::DictionaryValue* dictionary = profile->GetPrefs()->GetDictionary(
       app_list::ArcAppReinstallSearchProvider::kAppState);
-  for (const auto& it : dictionary->DictItems()) {
+  for (const auto it : dictionary->DictItems()) {
     if (it.second.is_dict()) {
       package_names->insert(it.first);
     }

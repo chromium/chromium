@@ -172,7 +172,7 @@ bool ValidateConfiguration(const base::Value& configuration) {
       clone.RemoveKey(key.key);
     }
   }
-  for (const auto& item : clone.DictItems())
+  for (const auto item : clone.DictItems())
     LOG(WARNING) << "Unknown configuration key " << item.first;
   return valid;
 }

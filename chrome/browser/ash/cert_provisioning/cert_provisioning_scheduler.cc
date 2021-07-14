@@ -307,7 +307,7 @@ void CertProvisioningSchedulerImpl::DeserializeWorkers() {
     return;
   }
 
-  for (const auto& kv : saved_workers->DictItems()) {
+  for (const auto kv : saved_workers->DictItems()) {
     const base::Value& saved_worker = kv.second;
 
     std::unique_ptr<CertProvisioningWorker> worker =

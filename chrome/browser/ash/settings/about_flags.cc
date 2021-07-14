@@ -68,7 +68,7 @@ std::map<std::string, std::string> ParseOriginListFlagsFromCommmandLine(
     return origin_list_flags;
   }
 
-  for (const auto& entry : origin_list_flags_dict->DictItems()) {
+  for (const auto entry : origin_list_flags_dict->DictItems()) {
     if (!entry.second.is_string()) {
       LOG(WARNING) << "Invalid entry in encoded origin list flags";
       continue;

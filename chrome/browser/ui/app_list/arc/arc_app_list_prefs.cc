@@ -347,7 +347,7 @@ std::string ArcAppListPrefs::GetAppIdByPackageName(
   if (!apps)
     return std::string();
 
-  for (const auto& it : apps->DictItems()) {
+  for (const auto it : apps->DictItems()) {
     const base::Value& value = it.second;
     const base::Value* installed_package_name =
         value.FindKeyOfType(kPackageName, base::Value::Type::STRING);

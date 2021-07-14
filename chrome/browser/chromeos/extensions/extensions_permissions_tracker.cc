@@ -50,7 +50,7 @@ void ExtensionsPermissionsTracker::OnForcedExtensionsPrefChanged() {
   extension_safety_ratings_.clear();
   pending_forced_extensions_.clear();
 
-  for (const auto& entry : value->DictItems()) {
+  for (const auto entry : value->DictItems()) {
     const ExtensionId& extension_id = entry.first;
     // By default the extension permissions are assumed to trigger full warning
     // (false). When the extension is loaded, if all of its permissions is safe,

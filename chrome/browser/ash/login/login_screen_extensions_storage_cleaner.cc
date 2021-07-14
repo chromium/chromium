@@ -48,7 +48,7 @@ void LoginScreenExtensionsStorageCleaner::
   if (pref && pref->IsManaged() &&
       pref->GetType() == base::Value::Type::DICTIONARY) {
     // Each `item` contains a pair of extension ID and update URL.
-    for (const auto& item : pref->GetValue()->DictItems())
+    for (const auto item : pref->GetValue()->DictItems())
       installed_extension_ids.push_back(item.first);
   }
   SessionManagerClient::Get()->LoginScreenStorageListKeys(base::BindOnce(

@@ -61,7 +61,7 @@ base::flat_set<std::string> GetLoginScreenPolicyExtensionIds() {
     return {};
 
   base::flat_set<std::string> extension_ids;
-  for (const auto& item : pref->GetValue()->DictItems())
+  for (const auto item : pref->GetValue()->DictItems())
     extension_ids.insert(item.first);
   return extension_ids;
 }

@@ -397,7 +397,7 @@ ExtensionKeyPermissionsService::GetCorporateKeyUsageAllowedAppIds(
   if (!key_permissions_service_map)
     return permissions;
 
-  for (const auto& item : key_permissions_service_map->DictItems()) {
+  for (const auto item : key_permissions_service_map->DictItems()) {
     const auto& app_id = item.first;
     const auto& key_permission = item.second;
     const base::DictionaryValue* key_permissions_service_for_app = nullptr;

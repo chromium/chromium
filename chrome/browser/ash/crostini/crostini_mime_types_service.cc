@@ -74,7 +74,7 @@ void CrostiniMimeTypesService::ClearMimeTypes(
   DictionaryPrefUpdate update(prefs_, prefs::kCrostiniMimeTypes);
   base::DictionaryValue* mime_type_mappings = update.Get();
   std::vector<std::string> removed_ids;
-  for (const auto& item : mime_type_mappings->DictItems()) {
+  for (const auto item : mime_type_mappings->DictItems()) {
     if (item.second.FindKey(kAppVmNameKey)->GetString() == vm_name &&
         (container_name.empty() ||
          item.second.FindKey(kAppContainerNameKey)->GetString() ==
@@ -128,7 +128,7 @@ void CrostiniMimeTypesService::UpdateMimeTypes(
     extensions->SetKey(extension_id, std::move(pref_mapping));
   }
 
-  for (const auto& item : extensions->DictItems()) {
+  for (const auto item : extensions->DictItems()) {
     if (item.second.FindKey(kAppVmNameKey)->GetString() ==
             mime_type_mappings.vm_name() &&
         item.second.FindKey(kAppContainerNameKey)->GetString() ==

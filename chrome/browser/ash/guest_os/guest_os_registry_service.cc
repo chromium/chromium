@@ -563,7 +563,7 @@ GuestOsRegistryService::GetAllRegisteredApps() const {
                  GetTerminalRegistration(
                      apps->FindKeyOfType(crostini::kCrostiniTerminalSystemAppId,
                                          base::Value::Type::DICTIONARY)));
-  for (const auto& item : apps->DictItems()) {
+  for (const auto item : apps->DictItems()) {
     if (item.first != crostini::kCrostiniTerminalSystemAppId) {
       result.emplace(item.first, Registration(item.first, item.second.Clone()));
     }
@@ -656,7 +656,7 @@ void GuestOsRegistryService::RecordStartupMetrics() {
   int num_crostini_apps = 0;
   int num_plugin_vm_apps = 0;
 
-  for (const auto& item : apps->DictItems()) {
+  for (const auto item : apps->DictItems()) {
     if (item.first == crostini::kCrostiniTerminalSystemAppId)
       continue;
 
@@ -826,7 +826,7 @@ void GuestOsRegistryService::ClearApplicationList(
     DictionaryPrefUpdate update(prefs_, guest_os::prefs::kGuestOsRegistry);
     base::DictionaryValue* apps = update.Get();
 
-    for (const auto& item : apps->DictItems()) {
+    for (const auto item : apps->DictItems()) {
       if (item.first == crostini::kCrostiniTerminalSystemAppId)
         continue;
       Registration registration(item.first, item.second.Clone());
@@ -934,7 +934,7 @@ void GuestOsRegistryService::UpdateApplicationList(
       apps->SetKey(app_id, std::move(pref_registration));
     }
 
-    for (const auto& item : apps->DictItems()) {
+    for (const auto item : apps->DictItems()) {
       if (item.first == crostini::kCrostiniTerminalSystemAppId)
         continue;
       if (item.second.FindKey(guest_os::prefs::kAppVmNameKey)->GetString() ==

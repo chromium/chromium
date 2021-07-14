@@ -187,7 +187,7 @@ void AppLaunchEventLogger::EnforceLoggingPolicy() {
   // Store all Arc apps.
   // arc_apps_ and arc_packages_ can be nullptr in tests.
   if (arc_apps_ && arc_packages_) {
-    for (const auto& app : arc_apps_->DictItems()) {
+    for (const auto app : arc_apps_->DictItems()) {
       const base::Value* package_name_value = app.second.FindKey(kPackageName);
       if (!package_name_value) {
         continue;

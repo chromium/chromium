@@ -219,7 +219,7 @@ void RecordTerminalSettingsChangesUMAs(Profile* profile) {
 
   const base::DictionaryValue* settings = profile->GetPrefs()->GetDictionary(
       crostini::prefs::kCrostiniTerminalSettings);
-  for (const auto& item : settings->DictItems()) {
+  for (const auto item : settings->DictItems()) {
     // Only record settings for /hterm/profiles/default/.
     if (!base::StartsWith(item.first, kSettingPrefix,
                           base::CompareCase::SENSITIVE)) {

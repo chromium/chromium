@@ -270,7 +270,7 @@ void ApkWebAppService::OnPackageInstalled(
   // Search the pref dict for any |web_app_id| that has a value matching the
   // provided package name.
   std::string web_app_id;
-  for (const auto& it : web_apps_to_apks->DictItems()) {
+  for (const auto it : web_apps_to_apks->DictItems()) {
     const base::Value* v =
         it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
 
@@ -347,7 +347,7 @@ void ApkWebAppService::OnPackageRemoved(const std::string& package_name,
   // Search the pref dict for any |web_app_id| that has a value matching the
   // provided package name. We need to uninstall that |web_app_id|.
   std::string web_app_id;
-  for (const auto& it : web_apps_to_apks->DictItems()) {
+  for (const auto it : web_apps_to_apks->DictItems()) {
     const base::Value* v =
         it.second.FindKeyOfType(kPackageNameKey, base::Value::Type::STRING);
 
@@ -381,7 +381,7 @@ void ApkWebAppService::OnPackageListInitialRefreshed() {
   if (!instance)
     return;
 
-  for (const auto& it : web_apps_to_apks->DictItems()) {
+  for (const auto it : web_apps_to_apks->DictItems()) {
     const base::Value* v =
         it.second.FindKeyOfType(kShouldRemoveKey, base::Value::Type::BOOLEAN);
 

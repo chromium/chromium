@@ -101,7 +101,7 @@ void SetupMockCertProvisioningWorker(
 void FormatDictRecurse(base::Value* value,
                        const std::vector<std::string>& messages) {
   if (value->is_dict()) {
-    for (const auto& child : value->DictItems())
+    for (const auto child : value->DictItems())
       FormatDictRecurse(&child.second, messages);
     return;
   }

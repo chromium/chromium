@@ -88,7 +88,7 @@ void InputMethodEngineBase::OnInputMethodOptionsChanged() {
           prefs::kLanguageInputMethodSpecificSettings);
   const base::DictionaryValue& old_settings =
       base::Value::AsDictionaryValue(input_method_settings_snapshot_);
-  for (const auto& it : new_settings->DictItems()) {
+  for (const auto it : new_settings->DictItems()) {
     if (old_settings.HasKey(it.first)) {
       if (*(old_settings.FindPath(it.first)) !=
           *(new_settings->FindPath(it.first))) {

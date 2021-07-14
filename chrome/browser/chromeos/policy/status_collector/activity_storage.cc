@@ -254,7 +254,7 @@ void ActivityStorage::ForEachActivityPeriodFromPref(
         void(const int64_t, const int64_t, const std::string&)>& f) const {
   const base::DictionaryValue* stored_activity_periods =
       pref_service_->GetDictionary(pref_name_);
-  for (const auto& item : stored_activity_periods->DictItems()) {
+  for (const auto item : stored_activity_periods->DictItems()) {
     int64_t timestamp;
     std::string activity_id;
     if (!ParseActivityPeriodPrefKey(item.first, &timestamp, &activity_id)) {

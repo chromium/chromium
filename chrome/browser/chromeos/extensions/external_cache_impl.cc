@@ -248,7 +248,7 @@ void ExternalCacheImpl::CheckCache() {
   }
 
   cached_extensions_->Clear();
-  for (const auto& entry : extensions_->DictItems()) {
+  for (const auto entry : extensions_->DictItems()) {
     if (!entry.second.is_dict()) {
       LOG(ERROR) << "ExternalCacheImpl found bad entry with type "
                  << entry.second.type();

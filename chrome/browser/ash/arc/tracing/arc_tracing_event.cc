@@ -255,7 +255,7 @@ std::string ArcTracingEvent::ToString() const {
   const base::DictionaryValue* args = GetArgs();
   if (args) {
     bool first_arg = true;
-    for (const auto& arg : args->DictItems()) {
+    for (const auto arg : args->DictItems()) {
       if (first_arg) {
         result += "|";
         first_arg = false;
