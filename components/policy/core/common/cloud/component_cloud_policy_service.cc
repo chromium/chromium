@@ -253,8 +253,10 @@ void ComponentCloudPolicyService::Backend::UpdateWithLastFetchedPolicy() {
            << last_fetched_policy_->size() << ")";
 
   // Purge any components that don't have a policy configured at the server.
-  // TODO(emaxx): This is insecure, as it happens before the policy validation:
-  // see crbug.com/668733.
+  // Note that this is less secure than the data integrity validation, since
+  // at this point we can only rely on the TLS to prevent the tampering. The
+  // MITM attacker can trick the client into dropping policies for extensions
+  // (even though they can't inject malicious policies). See crbug.com/668733.
   store_.Purge(
       base::BindRepeating(&NotInResponseMap, std::cref(*last_fetched_policy_)));
 
