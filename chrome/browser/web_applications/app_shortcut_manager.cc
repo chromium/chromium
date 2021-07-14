@@ -12,7 +12,6 @@
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
@@ -92,7 +91,7 @@ void AppShortcutManager::SetShortcutUpdateCallbackForTesting(
 }
 
 bool AppShortcutManager::CanCreateShortcuts() const {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
   return false;
 #else
   return true;
