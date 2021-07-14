@@ -978,6 +978,11 @@ void EventTarget::DispatchEnqueuedEvent(Event* event,
   DispatchEvent(*event);
 }
 
+void EventTargetWithInlineData::Trace(Visitor* visitor) const {
+  EventTargetData::Trace(visitor);
+  EventTarget::Trace(visitor);
+}
+
 STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kFalse,
                    PassiveListenerDefault::kFalse);
 STATIC_ASSERT_ENUM(WebSettings::PassiveEventListenerDefault::kTrue,

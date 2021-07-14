@@ -75,15 +75,14 @@ struct FiringEventIterator {
 };
 using FiringEventIteratorVector = Vector<FiringEventIterator, 1>;
 
-class CORE_EXPORT EventTargetData final
-    : public GarbageCollected<EventTargetData> {
+class CORE_EXPORT EventTargetData : public GarbageCollectedMixin {
  public:
   EventTargetData();
   EventTargetData(const EventTargetData&) = delete;
   EventTargetData& operator=(const EventTargetData&) = delete;
   ~EventTargetData();
 
-  void Trace(Visitor*) const;
+  void Trace(Visitor*) const override;
 
   EventListenerMap event_listener_map;
   std::unique_ptr<FiringEventIteratorVector> firing_event_iterators;
@@ -240,25 +239,21 @@ class CORE_EXPORT EventTarget : public ScriptWrappable {
   friend class EventListenerIterator;
 };
 
-class CORE_EXPORT EventTargetWithInlineData : public EventTarget {
+// Provide EventTarget with inlined EventTargetData for improved performance.
+class CORE_EXPORT EventTargetWithInlineData : public EventTarget,
+                                              private EventTargetData {
  public:
   ~EventTargetWithInlineData() override = default;
 
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(event_target_data_);
-    EventTarget::Trace(visitor);
-  }
+  void Trace(Visitor* visitor) const override;
 
  protected:
-  EventTargetData* GetEventTargetData() final { return &event_target_data_; }
-  EventTargetData& EnsureEventTargetData() final { return event_target_data_; }
-
- private:
-  // EventTargetData is a GCed object, so it should not be used as a part of
-  // object. However, we intentionally use it as a part of object for
-  // performance, assuming that no one extracts a pointer of
-  // EventTargetWithInlineData::event_target_data_ and store it to a Member etc.
-  GC_PLUGIN_IGNORE("513199") EventTargetData event_target_data_;
+  EventTargetData* GetEventTargetData() final {
+    return static_cast<EventTargetData*>(this);
+  }
+  EventTargetData& EnsureEventTargetData() final {
+    return *static_cast<EventTargetData*>(this);
+  }
 };
 
 // Macros to define an attribute event listener.

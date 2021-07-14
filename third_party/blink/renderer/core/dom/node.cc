@@ -2702,11 +2702,24 @@ EventTargetData* Node::GetEventTargetData() {
   return HasEventTargetData() ? GetEventTargetDataMap().at(this) : nullptr;
 }
 
+namespace {
+
+// Helper object to allocate EventTargetData which is otherwise only used
+// through EventTargetWithInlineData.
+class EventTargetDataObject final
+    : public GarbageCollected<EventTargetDataObject>,
+      public EventTargetData {
+ public:
+  void Trace(Visitor* visitor) const final { EventTargetData::Trace(visitor); }
+};
+
+}  // namespace
+
 EventTargetData& Node::EnsureEventTargetData() {
   if (HasEventTargetData())
     return *GetEventTargetDataMap().at(this);
   DCHECK(!GetEventTargetDataMap().Contains(this));
-  EventTargetData* data = MakeGarbageCollected<EventTargetData>();
+  auto* data = MakeGarbageCollected<EventTargetDataObject>();
   GetEventTargetDataMap().Set(this, data);
   SetHasEventTargetData(true);
   return *data;
