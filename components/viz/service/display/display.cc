@@ -1065,13 +1065,13 @@ void Display::DidReceivePresentationFeedback(
     DLOG(ERROR) << "Received unexpected PresentationFeedback";
     return;
   }
-  ++last_presented_trace_id_;
-  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
-      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
-      last_presented_trace_id_, feedback.timestamp);
   auto& presentation_group_timing = pending_presentation_group_timings_.front();
   auto copy_feedback = SanitizePresentationFeedback(
       feedback, presentation_group_timing.draw_start_timestamp());
+  ++last_presented_trace_id_;
+  TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
+      "viz,benchmark", "Graphics.Pipeline.DrawAndSwap",
+      last_presented_trace_id_, copy_feedback.timestamp);
   TRACE_EVENT_INSTANT_WITH_TIMESTAMP0(
       "benchmark,viz", "Display::FrameDisplayed", TRACE_EVENT_SCOPE_THREAD,
       copy_feedback.timestamp);
