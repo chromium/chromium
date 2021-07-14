@@ -9,6 +9,7 @@ source_set("background_service") {
   ]
 
   deps = [
+    "//components/download/internal/background_service:common",
     "//components/download/internal/background_service:storage",
     "//components/download/internal/background_service/ios:background_service",
     "//components/download/internal/background_service/proto",

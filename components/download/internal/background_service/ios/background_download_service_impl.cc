@@ -9,9 +9,11 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/config.h"
 #include "components/download/internal/background_service/entry.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
+#include "components/download/internal/background_service/ios/entry_utils.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/download/public/background_service/download_params.h"
@@ -31,7 +33,7 @@ void InvokeStartCallback(const std::string& guid,
 }  // namespace
 
 BackgroundDownloadServiceImpl::BackgroundDownloadServiceImpl(
-    std::unique_ptr<DownloadClientMap> clients,
+    std::unique_ptr<ClientSet> clients,
     std::unique_ptr<Model> model,
     std::unique_ptr<BackgroundDownloadTaskHelper> download_helper)
     : config_(std::make_unique<Configuration>()),
@@ -119,15 +121,18 @@ Logger* BackgroundDownloadServiceImpl::GetLogger() {
 void BackgroundDownloadServiceImpl::OnModelReady(bool success) {
   init_success_ = success;
   if (!success) {
-    for (const auto& client_it : *clients_.get())
-
-      client_it.second->OnServiceUnavailable();
+    // Report service failure to clients.
+    for (DownloadClient client_id : clients_->GetRegisteredClients())
+      clients_->GetClient(client_id)->OnServiceUnavailable();
     return;
   }
 
-  // TODO(xingliu): Create list of metadata and call OnServiceInitialized().
-  for (const auto& client_it : *clients_.get())
-    client_it.second->OnServiceUnavailable();
+  // Report download metadata to clients.
+  auto metadata_map = util::MapEntriesToMetadataForClients(
+      clients_->GetRegisteredClients(), model_->PeekEntries());
+  for (DownloadClient client_id : clients_->GetRegisteredClients())
+    clients_->GetClient(client_id)->OnServiceInitialized(
+        /*state_lost=*/false, metadata_map[client_id]);
 }
 
 void BackgroundDownloadServiceImpl::OnModelHardRecoverComplete(bool success) {}
@@ -171,13 +176,12 @@ void BackgroundDownloadServiceImpl::OnDownloadFinished(
     const std::string& guid,
     bool success,
     const base::FilePath& file_path) {
-  auto it = clients_->find(download_client);
-  if (it == clients_->end())
+  download::Client* client = clients_->GetClient(download_client);
+  if (!client)
     return;
 
   // TODO(xingliu): Plumb more details from platform api for failure reasons and
   // bytes downloaded.
-  download::Client* client = it->second.get();
   if (!success) {
     model_->Remove(guid);
     client->OnDownloadFailed(guid, CompletionInfo(),
@@ -194,10 +198,10 @@ void BackgroundDownloadServiceImpl::OnDownloadUpdated(
     DownloadClient download_client,
     const std::string& guid,
     int64_t bytes_downloaded) {
-  auto it = clients_->find(download_client);
-  if (it == clients_->end())
+  download::Client* client = clients_->GetClient(download_client);
+  if (!client)
     return;
-  download::Client* client = it->second.get();
+
   client->OnDownloadUpdated(guid, /*bytes_uploaded*/ 0u,
                             static_cast<uint64_t>(bytes_downloaded));
 }

@@ -123,6 +123,8 @@ source_set("common") {
     ":*",
     "//components/download/content/factory",
     "//components/download/internal/background_service/ios:background_service",
+    "//components/download/internal/background_service/ios:unit_tests",
+    "//ios/chrome/browser/download/background_service:background_service",
   ]
 
   deps = [

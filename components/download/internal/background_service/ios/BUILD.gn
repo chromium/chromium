@@ -9,6 +9,8 @@ source_set("background_service") {
     "background_download_service_impl.h",
     "background_download_task_helper.h",
     "background_download_task_helper.mm",
+    "entry_utils.cc",
+    "entry_utils.h",
   ]
 
   visibility = [
@@ -33,6 +35,7 @@ source_set("unit_tests") {
     ":background_service",
     "//base",
     "//base/test:test_support",
+    "//components/download/internal/background_service:common",
     "//components/download/internal/background_service/test:test_support",
     "//components/download/public/background_service/test:test_support",
     "//net",
@@ -44,5 +47,6 @@ source_set("unit_tests") {
   sources = [
     "background_download_service_impl_unittest.cc",
     "background_download_task_helper_unittest.mm",
+    "entry_utils_unittest.cc",
   ]
 }

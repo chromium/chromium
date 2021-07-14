@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
 #include "components/download/internal/background_service/test/test_store.h"
 #include "components/download/public/background_service/test/mock_client.h"
@@ -63,10 +64,11 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
     client_ = client.get();
     auto clients = std::make_unique<DownloadClientMap>();
     clients->insert(std::make_pair(DownloadClient::TEST, std::move(client)));
+    auto client_set = std::make_unique<ClientSet>(std::move(clients));
     auto download_helper = std::make_unique<MockBackgroundDownloadTaskHelper>();
     download_helper_ = download_helper.get();
     service_ = std::make_unique<BackgroundDownloadServiceImpl>(
-        std::move(clients), std::move(model), std::move(download_helper));
+        std::move(client_set), std::move(model), std::move(download_helper));
   }
 
   BackgroundDownloadService* service() { return service_.get(); }
@@ -94,6 +96,7 @@ class BackgroundDownloadServiceImplTest : public PlatformTest {
 
 TEST_F(BackgroundDownloadServiceImplTest, InitSuccess) {
   EXPECT_EQ(ServiceStatus::STARTING_UP, service()->GetStatus());
+  EXPECT_CALL(*client_, OnServiceInitialized(false, _));
   store_->TriggerInit(/*success=*/true, empty_entries());
   EXPECT_EQ(ServiceStatus::READY, service()->GetStatus());
 }

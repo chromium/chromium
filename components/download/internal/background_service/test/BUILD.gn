@@ -13,6 +13,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "entry_utils.cc",
+    "entry_utils.h",
     "test_store.cc",
     "test_store.h",
   ]
@@ -23,8 +25,6 @@ source_set("test_support") {
       "black_hole_log_sink.h",
       "download_params_utils.cc",
       "download_params_utils.h",
-      "entry_utils.cc",
-      "entry_utils.h",
       "mock_controller.cc",
       "mock_controller.h",
       "mock_download_driver_client.cc",
@@ -46,9 +46,7 @@ source_set("test_support") {
     "//testing/gmock",
   ]
 
-  if (!is_ios) {
-    public_deps += [ "//net:test_support" ]
-  }
+  public_deps += [ "//net:test_support" ]
 
   deps = [ "//components/download/internal/background_service:storage" ]
   if (!is_ios) {

@@ -8,6 +8,7 @@
 
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "components/download/internal/background_service/client_set.h"
 #include "components/download/internal/background_service/download_store.h"
 #include "components/download/internal/background_service/ios/background_download_service_impl.h"
 #include "components/download/internal/background_service/ios/background_download_task_helper.h"
@@ -57,6 +58,7 @@ std::unique_ptr<KeyedService>
 BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
   auto clients = std::make_unique<download::DownloadClientMap>();
+  auto client_set = std::make_unique<download::ClientSet>(std::move(clients));
   base::FilePath storage_dir =
       context->GetStatePath().Append(kDownloadServiceStorageDir);
   scoped_refptr<base::SequencedTaskRunner> background_task_runner =
@@ -68,7 +70,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
   auto store = std::make_unique<download::DownloadStore>(std::move(entry_db));
   auto model = std::make_unique<download::ModelImpl>(std::move(store));
   return std::make_unique<download::BackgroundDownloadServiceImpl>(
-      std::move(clients), std::move(model),
+      std::move(client_set), std::move(model),
       download::BackgroundDownloadTaskHelper::Create(
           storage_dir.Append(kFilesStorageDir)));
 }

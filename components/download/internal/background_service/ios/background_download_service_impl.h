@@ -19,6 +19,7 @@
 namespace download {
 
 class BackgroundDownloadTaskHelper;
+class ClientSet;
 class Model;
 struct Configuration;
 struct DownloadParams;
@@ -28,7 +29,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
                                       public Model::Client {
  public:
   BackgroundDownloadServiceImpl(
-      std::unique_ptr<DownloadClientMap> clients,
+      std::unique_ptr<ClientSet> clients,
       std::unique_ptr<Model> model,
       std::unique_ptr<BackgroundDownloadTaskHelper> download_helper);
   ~BackgroundDownloadServiceImpl() override;
@@ -72,8 +73,7 @@ class BackgroundDownloadServiceImpl : public BackgroundDownloadService,
 
   std::unique_ptr<Configuration> config_;
   ServiceConfigImpl service_config_;
-  // TODO(xingliu): Ping clients for all events.
-  std::unique_ptr<DownloadClientMap> clients_;
+  std::unique_ptr<ClientSet> clients_;
   std::unique_ptr<Model> model_;
   std::unique_ptr<BackgroundDownloadTaskHelper> download_helper_;
   absl::optional<bool> init_success_;
