@@ -15,6 +15,7 @@
 #include "base/callback_helpers.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -536,6 +537,8 @@ class NearbySharingServiceImpl
   // remote devices that are attempting to share.
   std::unique_ptr<device::BluetoothLowEnergyScanSession>
       background_scan_session_ = nullptr;
+  // Set of remote devices that are emitting fast init advertisements.
+  base::flat_set<std::string> devices_attempting_to_share_;
 
   int recent_nearby_process_unexpected_shutdown_count_ = 0;
   base::OneShotTimer clear_recent_nearby_process_shutdown_count_timer_;

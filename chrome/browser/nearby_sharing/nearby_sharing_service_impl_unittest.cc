@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -374,7 +375,8 @@ class NearbySharingServiceImplTest : public testing::Test {
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{features::kNearbySharing,
-                              features::kNearbySharingBackgroundScanning},
+                              features::kNearbySharingBackgroundScanning,
+                              ash::features::kBluetoothAdvertisementMonitoring},
         /*disabled_features=*/{});
     RegisterNearbySharingPrefs(prefs_.registry());
   }

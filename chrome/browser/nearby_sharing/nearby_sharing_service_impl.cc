@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -97,6 +98,12 @@ constexpr int kHashBaseMultiplier = 31;
 // process stops unexpectedly.
 constexpr base::TimeDelta kClearNearbyProcessUnexpectedShutdownCountDelay =
     base::TimeDelta::FromMinutes(1);
+
+bool IsBackgroundScanningFeatureEnabled() {
+  return base::FeatureList::IsEnabled(
+             features::kNearbySharingBackgroundScanning) &&
+         chromeos::features::IsBluetoothAdvertisementMonitoringEnabled();
+}
 
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
@@ -349,8 +356,7 @@ void NearbySharingServiceImpl::Shutdown() {
   observers_.Clear();
 
   StopAdvertising();
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingBackgroundScanning)) {
+  if (IsBackgroundScanningFeatureEnabled()) {
     StopBackgroundScanning();
   }
   StopFastInitiationAdvertising();
@@ -1295,6 +1301,7 @@ void NearbySharingServiceImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
   NS_LOG(VERBOSE) << __func__;
 
+  devices_attempting_to_share_.insert(device->GetAddress());
   // This shows a notification indicating that a device nearby is attempting to
   // share. When the notification is clicked it will take the user through the
   // onboarding flow if needed and then enable high visibility mode.
@@ -1305,6 +1312,10 @@ void NearbySharingServiceImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
   NS_LOG(VERBOSE) << __func__;
+  devices_attempting_to_share_.erase(device->GetAddress());
+  if (devices_attempting_to_share_.size() != 0) {
+    return;
+  }
 
   // This will just dismiss the "onboarding" notification, it does not have any
   // effect on the actual onboarding or high visibility UI.
@@ -1851,8 +1862,7 @@ void NearbySharingServiceImpl::InvalidateFastInitiationAdvertising() {
 
 void NearbySharingServiceImpl::InvalidateReceiveSurfaceState() {
   InvalidateAdvertisingState();
-  if (base::FeatureList::IsEnabled(
-          features::kNearbySharingBackgroundScanning)) {
+  if (IsBackgroundScanningFeatureEnabled()) {
     InvalidateBackgroundScanning();
   }
 }
@@ -2119,10 +2129,10 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
     return;
   }
 
-  if (!HasAvailableConnectionMediums()) {
-    NS_LOG(VERBOSE) << __func__
-                    << ": Stopping background scanning because both bluetooth "
-                       "and wifi are disabled.";
+  if (!IsBluetoothPowered()) {
+    NS_LOG(VERBOSE)
+        << __func__
+        << ": Stopping background scanning because bluetooth is powered down.";
     StopBackgroundScanning();
     return;
   }
@@ -2192,7 +2202,8 @@ void NearbySharingServiceImpl::StopBackgroundScanning() {
     NS_LOG(VERBOSE) << __func__ << ": Ignoring, not background scanning.";
     return;
   }
-
+  devices_attempting_to_share_.clear();
+  nearby_notification_manager_->CloseOnboarding();
   background_scan_session_.reset();
   NS_LOG(VERBOSE) << __func__ << ": Stopped background scanning.";
 }
