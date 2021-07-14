@@ -45,24 +45,6 @@ class DawnClientMemoryTransferService::ReadHandleImpl
     return true;
   }
 
-  // TODO(dawn:773): remove after main update on dawn side.
-  bool DeserializeInitialData(const void* deserialize_pointer,
-                              size_t deserialize_size,
-                              const void** data,
-                              size_t* data_length) override {
-    // No data is deserialized because we're using shared memory.
-    DCHECK_EQ(deserialize_size, 0u);
-    DCHECK(data);
-    DCHECK(data_length);
-
-    // Write the pointer and size of the shared memory allocation.
-    // |data| and |data_length| are provided by the dawn_wire client.
-    *data = ptr_;
-    *data_length = handle_.size;
-
-    return true;
-  }
-
  private:
   void* ptr_;  // Pointer to client-side shared memory.
   MemoryTransferHandle handle_;
@@ -102,22 +84,6 @@ class DawnClientMemoryTransferService::WriteHandleImpl
   void SerializeDataUpdate(void* serialize_pointer,
                            size_t offset,
                            size_t size) override {
-    // No data is serialized because we're using shared memory.
-  }
-
-  // TODO(dawn:773): remove after main update on dawn side.
-  std::pair<void*, size_t> Open() override {
-    return std::make_pair(ptr_, handle_.size);
-  }
-
-  // TODO(dawn:773): remove after main update on dawn side.
-  size_t SerializeFlushSize() override {
-    // No data is serialized because we're using shared memory.
-    return 0;
-  }
-
-  // TODO(dawn:773): remove after main update on dawn side.
-  void SerializeFlush(void* serialize_pointer) override {
     // No data is serialized because we're using shared memory.
   }
 
