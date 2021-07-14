@@ -49,10 +49,7 @@ class FrameQueueUnderlyingSource
   // Must be called on |realm_task_runner_|.
   void Close();
 
-  bool IsClosed() {
-    DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-    return is_closed_;
-  }
+  bool IsClosed() { return is_closed_; }
 
   // Start or stop the delivery of frames via QueueFrame().
   // Must be called on |realm_task_runner_|.
@@ -97,7 +94,6 @@ class FrameQueueUnderlyingSource
   ScriptWrappable* MakeBlinkFrame(NativeFrameType media_frame);
 
   bool is_closed_ = false;
-  bool is_pending_close_ = false;
 
   // Main task runner for the window or worker context this source runs on.
   const scoped_refptr<base::SequencedTaskRunner> realm_task_runner_;

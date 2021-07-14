@@ -213,4 +213,36 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, PlatformSourceAliveAfterGC) {
   blink::WebHeap::CollectAllGarbageForTesting();
 }
 
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, CloseOnContextDestroyed) {
+  MediaStreamVideoTrackUnderlyingSource* source = nullptr;
+  {
+    V8TestingScope v8_scope;
+    ScriptState* script_state = v8_scope.GetScriptState();
+    auto* track = CreateTrack(v8_scope.GetExecutionContext());
+    source = CreateSource(script_state, track, 0u);
+    EXPECT_FALSE(source->IsClosed());
+    // Create a stream so that |source| starts.
+    auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+        v8_scope.GetScriptState(), source, 0);
+    EXPECT_FALSE(source->IsClosed());
+    EXPECT_FALSE(stream->IsClosed());
+  }
+  EXPECT_TRUE(source->IsClosed());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, CloseBeforeStart) {
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = CreateTrack(v8_scope.GetExecutionContext());
+  auto* source = CreateSource(script_state, track, 0u);
+  EXPECT_FALSE(source->IsClosed());
+  source->Close();
+  EXPECT_TRUE(source->IsClosed());
+  // Create a stream so that the start method of |source| runs.
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      v8_scope.GetScriptState(), source, 0);
+  EXPECT_TRUE(source->IsClosed());
+  EXPECT_TRUE(stream->IsClosed());
+}
+
 }  // namespace blink

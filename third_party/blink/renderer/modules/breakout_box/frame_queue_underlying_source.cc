@@ -68,20 +68,19 @@ template <typename NativeFrameType>
 ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Start(
     ScriptState* script_state) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
-  if (!StartFrameDelivery()) {
-    // There is only one way in which this can fail for now. Perhaps
-    // implementations should return their own failure messages.
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        DOMException::Create(
-            "Invalid track",
-            DOMException::GetErrorName(DOMExceptionCode::kInvalidStateError)));
-  }
-  if (is_pending_close_) {
-    realm_task_runner_->PostTask(
-        FROM_HERE,
-        WTF::Bind(&FrameQueueUnderlyingSource<NativeFrameType>::Close,
-                  WrapWeakPersistent(this)));
+  if (is_closed_) {
+    // This was intended to be closed before Start() was called.
+    CloseController();
+  } else {
+    if (!StartFrameDelivery()) {
+      // There is only one way in which this can fail for now. Perhaps
+      // implementations should return their own failure messages.
+      return ScriptPromise::RejectWithDOMException(
+          script_state,
+          DOMException::Create("Invalid track",
+                               DOMException::GetErrorName(
+                                   DOMExceptionCode::kInvalidStateError)));
+    }
   }
 
   return ScriptPromise::CastUndefined(script_state);
@@ -105,8 +104,8 @@ bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::ContextDestroyed() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  Close();
   UnderlyingSourceBase::ContextDestroyed();
-  frame_queue_handle_.Invalidate();
 }
 
 template <typename NativeFrameType>
@@ -121,16 +120,11 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
   if (is_closed_)
     return;
 
-  // The source has not started. Postpone close until it starts.
-  if (!Controller()) {
-    is_pending_close_ = true;
-    return;
-  }
-
-  StopFrameDelivery();
-  CloseController();
-  frame_queue_handle_.Invalidate();
   is_closed_ = true;
+  if (Controller()) {
+    StopFrameDelivery();
+    CloseController();
+  }
   {
     MutexLocker locker(mutex_);
     num_pending_pulls_ = 0;
@@ -143,6 +137,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     }
     transferred_source_.Clear();
   }
+  frame_queue_handle_.Invalidate();
 }
 
 template <typename NativeFrameType>
