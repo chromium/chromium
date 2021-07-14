@@ -73,7 +73,6 @@ declare_args() {
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
   #   opposed to the beginning of the slot.
-  # - enable_brp_directmap_support: enable BRP direct map support
   # - use_brp_pool_blocklist: ensure that a non-BRP memory region can't be
   #   reused for the BRP pool while associated CheckedPtr instances exist
   # - never_remove_from_brp_pool_blocklist: never remove super-pages from the
@@ -83,7 +82,6 @@ declare_args() {
   enable_runtime_backup_ref_ptr_control = false
   enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
-  enable_brp_directmap_support = false
   use_brp_pool_blocklist = false
   never_remove_from_brp_pool_blocklist = false
   enable_backup_ref_ptr_slow_checks = false
@@ -140,12 +138,6 @@ assert(
 assert(
     use_backup_ref_ptr || !put_ref_count_in_previous_slot,
     "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
-
-# !enable_brp_directmap_support can only be used if use_backup_ref_ptr
-# is true.
-assert(
-    use_backup_ref_ptr || !enable_brp_directmap_support,
-    "Can't enable BackupRefPtr directmap support if BackupRefPtr isn't enabled at all")
 
 # use_brp_pool_blocklist can only be used if use_backup_ref_ptr
 # is true.

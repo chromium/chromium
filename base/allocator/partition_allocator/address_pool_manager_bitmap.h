@@ -43,11 +43,10 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   //   on an invalid address. (Note, 64-bit systems don't have this problem as
   //   the upper half of the address space always belongs to the OS.)
   //
-  // Note, direct map allocations may also belong to this pool (depending on the
-  // ENABLE_BRP_DIRECTMAP_SUPPORT setting). The same logic as above applies. It
-  // is important to note, however, that the granularity used here has to be a
-  // minimum of partition page size and direct map allocation granularity. Since
-  // DirectMapAllocationGranularity() is no smaller than
+  // Note, direct map allocations also belong to this pool. The same logic as
+  // above applies. It is important to note, however, that the granularity used
+  // here has to be a minimum of partition page size and direct map allocation
+  // granularity. Since DirectMapAllocationGranularity() is no smaller than
   // PageAllocationGranularity(), we don't need to decrease the bitmap
   // granularity any further.
   static constexpr size_t kBitShiftOfBRPPoolBitmap = PartitionPageShift();

@@ -255,12 +255,10 @@ SlotSpanMetadata<thread_safe>* PartitionDirectMap(
         reservation_start + PartitionPageSize() + padding_for_alignment;
     RecommitSystemPages(
         reservation_start + SystemPageSize(),
-#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && \
-    BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-        // If ENABLE_BRP_DIRECTMAP_SUPPORT and PUT_REF_COUNT_IN_PREVIOUS_SLOT
-        // are on, and if the BRP pool is used, allocate 2 SystemPages, one for
-        // SuperPage metadata and the other for RefCount "bitmap" (only one of
-        // its elements will be used).
+#if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT)
+        // If PUT_REF_COUNT_IN_PREVIOUS_SLOT is on, and if the BRP pool is used,
+        // allocate 2 SystemPages, one for SuperPage metadata and the other for
+        // RefCount "bitmap" (only one of its elements will be used).
         (pool == GetBRPPool()) ? SystemPageSize() * 2 : SystemPageSize(),
 #else
         SystemPageSize(),

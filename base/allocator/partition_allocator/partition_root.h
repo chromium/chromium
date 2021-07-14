@@ -371,21 +371,12 @@ struct BASE_EXPORT PartitionRoot {
   }
 
   internal::pool_handle ChooseGigaCagePool(bool is_direct_map) const {
-#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-    // If this is a direct map request and BRP support for direct map isn't on,
-    // use non-BRP pool. This is true regardless of BRP support.
-    if (is_direct_map) {
-      return internal::GetNonBRPPool();
-    }
-#endif
-
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     return allow_ref_count ? internal::GetBRPPool() : internal::GetNonBRPPool();
 #else
-    // This is counterintuitive, but when BRP isn't used, make all allocations
-    // fall into the same pool, and BRP pool is a good place for that. PCScan
-    // requires this.
-    return internal::GetBRPPool();
+    // When BRP isn't used, all normal bucket allocations belong to the BRP pool
+    // and direct map allocations belong to non-BRP pool. PCScan requires this.
+    return is_direct_map ? internal::GetNonBRPPool() : internal::GetBRPPool();
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   }
 
@@ -410,7 +401,7 @@ struct BASE_EXPORT PartitionRoot {
     // - The first few system pages are the partition page in which the super
     // page metadata is stored.
     // - We add a trailing guard page (one system page will suffice).
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
     // On 32-bit systems, we need PartitionPageSize() guard pages at both the
     // beginning and the end of each direct-map allocated memory. This is needed
     // for the BRP pool bitmap which excludes guard pages and operates at
@@ -684,12 +675,7 @@ ALWAYS_INLINE void* PartitionAllocGetSlotStart(void* ptr) {
   ptr = reinterpret_cast<char*>(ptr) - kPartitionPastAllocationAdjustment;
 
   PA_DCHECK(IsManagedByNormalBucketsOrDirectMap(ptr));
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
   DCheckIfManagedByPartitionAllocBRPPool(ptr);
-#else
-  if (IsManagedByNormalBuckets(ptr))
-    DCheckIfManagedByPartitionAllocBRPPool(ptr);
-#endif
 
   void* directmap_slot_start = PartitionAllocGetDirectMapSlotStart(ptr);
   if (UNLIKELY(directmap_slot_start))
@@ -977,21 +963,15 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (allow_ref_count) {
-#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-    if (LIKELY(!IsDirectMappedBucket(slot_span->bucket))) {
-#endif  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-      auto* ref_count = internal::PartitionRefCountPointer(slot_start);
-      // If there are no more references to the allocation, it can be freed
-      // immediately. Otherwise, defer the operation and zap the memory to turn
-      // potential use-after-free issues into unexploitable crashes.
-      if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
-        internal::SecureMemset(ptr, kQuarantinedByte, usable_size);
+    auto* ref_count = internal::PartitionRefCountPointer(slot_start);
+    // If there are no more references to the allocation, it can be freed
+    // immediately. Otherwise, defer the operation and zap the memory to turn
+    // potential use-after-free issues into unexploitable crashes.
+    if (UNLIKELY(!ref_count->IsAliveWithNoKnownRefs()))
+      internal::SecureMemset(ptr, kQuarantinedByte, usable_size);
 
-      if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))
-        return;
-#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-    }
-#endif  // !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+    if (UNLIKELY(!(ref_count->ReleaseFromAllocator())))
+      return;
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1404,13 +1384,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   }
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
-  bool should_init_ref_count = allow_ref_count
-#if !BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
-                               && !(raw_size > kMaxBucketed)
-#endif
-      ;
-  // LIKELY: Direct mapped allocations are large and rare.
-  if (LIKELY(should_init_ref_count)) {
+  // LIKELY: |allow_ref_count| is false only for the aligned partition.
+  if (LIKELY(allow_ref_count)) {
     new (internal::PartitionRefCountPointer(slot_start))
         internal::PartitionRefCount();
   }

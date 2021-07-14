@@ -380,9 +380,9 @@ void AddressPoolManager::MarkUnused(pool_handle handle,
   AutoLock guard(AddressPoolManagerBitmap::GetLock());
   // Address regions allocated for normal buckets are never freed, so frequency
   // of codepaths taken depends solely on which pool direct map allocations go
-  // to. In the ENABLE_BRP_DIRECTMAP_SUPPORT case, they usually go to BRP pool,
-  // and non-BRP pool otherwise.
-#if BUILDFLAG(ENABLE_BRP_DIRECTMAP_SUPPORT)
+  // to. In the USE_BACKUP_REF_PTR case, they usually go to BRP pool (except for
+  // aligned partition). Otherwise, they always go to non-BRP pool.
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   if (UNLIKELY(handle == kNonBRPPoolHandle)) {
 #else
   if (LIKELY(handle == kNonBRPPoolHandle)) {
