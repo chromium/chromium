@@ -370,7 +370,8 @@ std::vector<FormSignature> GetEncodedSignatures(
 void GenerateTestAutofillPopup(
     AutofillExternalDelegate* autofill_external_delegate);
 
-std::string ObfuscatedCardDigitsAsUTF8(const std::string& str);
+std::string ObfuscatedCardDigitsAsUTF8(const std::string& str,
+                                       int obfuscation_length = 4);
 
 // Returns 2-digit month string, like "02", "10".
 std::string NextMonth();

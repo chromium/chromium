@@ -27,7 +27,8 @@ AutofillCreditCardFillingInfoBarDelegateMobile::
 #if defined(OS_IOS)
       card_label_(card.NetworkAndLastFourDigits()),
 #else
-      card_label_(std::u16string(kMidlineEllipsis) + card.LastFourDigits()),
+      card_label_(std::u16string(kMidlineEllipsis4Dots) +
+                  card.LastFourDigits()),
 #endif
       card_sub_label_(card.AbbreviatedExpirationDateForDisplay(false)) {
 }

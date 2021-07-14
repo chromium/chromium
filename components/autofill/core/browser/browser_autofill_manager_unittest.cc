@@ -1634,13 +1634,18 @@ TEST_P(CreditCardSuggestionTest, GetCreditCardSuggestions_CCNumber) {
 
   const FormFieldData& credit_card_number_field = form.fields[1];
   GetAutofillSuggestions(form, credit_card_number_field);
-
+  int obfuscation_length = base::FeatureList::IsEnabled(
+                               autofill::features::kAutofillKeyboardAccessory)
+                               ? 2
+                               : 4;
   const std::string visa_value =
-      std::string("Visa  ") + test::ObfuscatedCardDigitsAsUTF8("3456");
+      std::string("Visa  ") +
+      test::ObfuscatedCardDigitsAsUTF8("3456", obfuscation_length);
   // Mastercard has a valid nickname. Display nickname + last four in the
   // suggestion title.
   const std::string master_card_value =
-      kArbitraryNickname + "  " + test::ObfuscatedCardDigitsAsUTF8("8765");
+      kArbitraryNickname + "  " +
+      test::ObfuscatedCardDigitsAsUTF8("8765", obfuscation_length);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
   const std::string visa_label = std::string("04/99");

@@ -50,9 +50,12 @@ using structured_address::VerificationStatus;
 //  - \u2022 - Bullet.
 //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
 //  - \u2060 - WORD-JOINER (makes obfuscated string undivisible).
-constexpr char16_t kMidlineEllipsis[] =
+constexpr char16_t kMidlineEllipsis4Dots[] =
     u"\u2022\u2060\u2006\u2060"
     u"\u2022\u2060\u2006\u2060"
+    u"\u2022\u2060\u2006\u2060"
+    u"\u2022\u2060\u2006\u2060";
+constexpr char16_t kMidlineEllipsis2Dots[] =
     u"\u2022\u2060\u2006\u2060"
     u"\u2022\u2060\u2006\u2060";
 
@@ -136,8 +139,13 @@ std::u16string AddWhiteSpaceSeparatorForNumber(const std::u16string& number,
 
 namespace internal {
 
-std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits) {
-  std::u16string obfuscated_string = std::u16string(kMidlineEllipsis) + digits;
+std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
+                                                int obfuscation_length) {
+  DCHECK(obfuscation_length == 2 || obfuscation_length == 4);
+  std::u16string obfuscated_string =
+      std::u16string(obfuscation_length == 2 ? kMidlineEllipsis2Dots
+                                             : kMidlineEllipsis4Dots) +
+      digits;
   base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
   return obfuscated_string;
 }
@@ -898,7 +906,8 @@ std::u16string CreditCard::NetworkForDisplay() const {
 }
 
 std::u16string CreditCard::ObfuscatedLastFourDigits() const {
-  return internal::GetObfuscatedStringForCardDigits(LastFourDigits());
+  return internal::GetObfuscatedStringForCardDigits(LastFourDigits(),
+                                                    /*obfuscation_length=*/4);
 }
 
 std::string CreditCard::CardIconStringForAutofillSuggestion() const {
@@ -909,7 +918,8 @@ std::string CreditCard::CardIconStringForAutofillSuggestion() const {
   return network_;
 }
 
-std::u16string CreditCard::NetworkAndLastFourDigits() const {
+std::u16string CreditCard::NetworkAndLastFourDigits(
+    int obfuscation_length) const {
   const std::u16string network = NetworkForDisplay();
   // TODO(crbug.com/734197): truncate network.
 
@@ -919,17 +929,19 @@ std::u16string CreditCard::NetworkAndLastFourDigits() const {
 
   // TODO(estade): i18n?
   const std::u16string obfuscated_string =
-      internal::GetObfuscatedStringForCardDigits(digits);
+      internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
   return network.empty() ? obfuscated_string
                          : network + u"  " + obfuscated_string;
 }
 
 std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
-    std::u16string customized_nickname) const {
+    std::u16string customized_nickname,
+    int obfuscation_length) const {
   if (HasNonEmptyValidNickname() || !customized_nickname.empty()) {
-    return NicknameAndLastFourDigits(customized_nickname);
+    return NicknameAndLastFourDigits(customized_nickname, obfuscation_length);
   }
-  std::u16string networkAndLastFourDigits = NetworkAndLastFourDigits();
+  std::u16string networkAndLastFourDigits =
+      NetworkAndLastFourDigits(obfuscation_length);
   // Add Plex before the network and last four digits to identify it as a Google
   // Plex card.
   if (base::FeatureList::IsEnabled(features::kAutofillEnableGoogleIssuedCard) &&
@@ -1085,7 +1097,8 @@ std::u16string CreditCard::NetworkForFill() const {
 }
 
 std::u16string CreditCard::NicknameAndLastFourDigits(
-    std::u16string customized_nickname) const {
+    std::u16string customized_nickname,
+    int obfuscation_length) const {
   // Should call HasNonEmptyValidNickname() to check valid nickname before
   // calling this.
   DCHECK(HasNonEmptyValidNickname() || !customized_nickname.empty());
@@ -1095,7 +1108,8 @@ std::u16string CreditCard::NicknameAndLastFourDigits(
     return customized_nickname.empty() ? nickname_ : customized_nickname;
 
   return (customized_nickname.empty() ? nickname_ : customized_nickname) +
-         u"  " + internal::GetObfuscatedStringForCardDigits(digits);
+         u"  " +
+         internal::GetObfuscatedStringForCardDigits(digits, obfuscation_length);
 }
 
 void CreditCard::SetNumber(const std::u16string& number) {

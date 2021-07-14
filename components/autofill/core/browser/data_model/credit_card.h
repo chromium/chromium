@@ -22,7 +22,8 @@ namespace autofill {
 struct AutofillMetadata;
 
 // A midline horizontal ellipsis (U+22EF).
-extern const char16_t kMidlineEllipsis[];
+extern const char16_t kMidlineEllipsis4Dots[];
+extern const char16_t kMidlineEllipsis2Dots[];
 
 namespace internal {
 
@@ -30,8 +31,10 @@ namespace internal {
 // digits. To ensure that the obfuscation is placed at the left of the last four
 // digits, even for RTL languages, inserts a Left-To-Right Embedding mark at the
 // beginning and a Pop Directional Formatting mark at the end.
-// Exposed for testing.
-std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits);
+// `obfuscation_length` determines the number of dots to placed before the
+// digits. Exposed for testing.
+std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
+                                                int obfuscation_length);
 
 }  // namespace internal
 
@@ -285,18 +288,24 @@ class CreditCard : public AutofillDataModel {
   // The string used to represent the icon to be used for the autofill
   // suggestion. For ex: visaCC, googleIssuedCC, americanExpressCC, etc.
   std::string CardIconStringForAutofillSuggestion() const;
-  // A label for this card formatted as 'IssuerNetwork - ****2345'.
-  std::u16string NetworkAndLastFourDigits() const;
+  // A label for this card formatted as 'IssuerNetwork - ****2345'. By default,
+  // the `obfuscation_length` is set to 4 which would add **** to the last four
+  // digits of the card.
+  std::u16string NetworkAndLastFourDigits(int obfuscation_length = 4) const;
   // A label for this card formatted as 'Nickname - ****2345' if nickname is
   // available and valid;  otherwise, formatted as 'IssuerNetwork - ****2345'.
   // Google-issued cards have their own specific identifier, instead of
-  // displaying the issuer network name.
+  // displaying the issuer network name. By default, the `obfuscation_length` is
+  // set to 4 which would add **** to the last four digits of the card.
   std::u16string CardIdentifierStringForAutofillDisplay(
-      std::u16string customized_nickname = std::u16string()) const;
+      std::u16string customized_nickname = std::u16string(),
+      int obfuscation_length = 4) const;
+
 #if defined(OS_ANDROID)
   // Label for the card to be displayed in the manual filling view on Android.
   std::u16string CardIdentifierStringForManualFilling() const;
 #endif  // OS_ANDROID
+
   // A label for this card formatted as 'Nickname - ****2345, expires on MM/YY'
   // if nickname experiment is turned on and nickname is available; otherwise,
   // formatted as 'IssuerNetwork - ****2345, expires on MM/YY'.
@@ -370,9 +379,12 @@ class CreditCard : public AutofillDataModel {
   std::u16string NetworkForFill() const;
 
   // A label for this card formatted as 'Nickname - ****2345'. Always call
-  // HasNonEmptyValidNickname() before calling this.
+  // HasNonEmptyValidNickname() before calling this. By default,
+  // the `obfuscation_length` is set to 4 which would add **** to the last four
+  // digits of the card.
   std::u16string NicknameAndLastFourDigits(
-      std::u16string customized_nickname = std::u16string()) const;
+      std::u16string customized_nickname = std::u16string(),
+      int obfuscation_length = 4) const;
 
   // Sets the name_on_card_ value based on the saved name parts.
   void SetNameOnCardFromSeparateParts();

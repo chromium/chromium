@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/validation.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/grit/components_scaled_resources.h"
@@ -93,8 +94,9 @@ TEST(CreditCardTest, GetObfuscatedStringForCardDigits) {
   const std::u16string digits = u"1235";
   const std::u16string expected =
       std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
-      kMidlineEllipsis + digits + base::i18n::kPopDirectionalFormatting;
-  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(digits));
+      kMidlineEllipsis4Dots + digits + base::i18n::kPopDirectionalFormatting;
+  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
+                          digits, /*obfuscation_length=*/4));
 }
 
 // Tests credit card summary string generation.  This test simulates a variety
@@ -1715,23 +1717,27 @@ INSTANTIATE_TEST_SUITE_P(
 TEST(CreditCardTest, LastFourDigits) {
   CreditCard card(base::GenerateGUID(), "https://www.example.com/");
   ASSERT_EQ(std::u16string(), card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(std::u16string()),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                std::u16string(), /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   test::SetCreditCardInfo(&card, "Baby Face Nelson", "5212341234123489", "01",
                           "2010", "1");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"3489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"3489");
   ASSERT_EQ(u"3489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"3489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"3489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 
   card.SetRawInfo(CREDIT_CARD_NUMBER, u"489");
   ASSERT_EQ(u"489", card.LastFourDigits());
-  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(u"489"),
+  ASSERT_EQ(internal::GetObfuscatedStringForCardDigits(
+                u"489", /*obfuscation_length=*/4),
             card.ObfuscatedLastFourDigits());
 }
 
@@ -1900,5 +1906,28 @@ INSTANTIATE_TEST_SUITE_P(
         ShouldUpdateExpirationTestCase{
             true, testingTimes.next_year_.month, testingTimes.next_year_.year,
             CreditCard::FULL_SERVER_CARD, CreditCard::EXPIRED}));
+
+#if defined(OS_ANDROID)
+class CreditCardTestForKeyboardAccessory : public testing::Test {
+ public:
+  void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        autofill::features::kAutofillKeyboardAccessory);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(CreditCardTestForKeyboardAccessory, GetObfuscatedStringForCardDigits) {
+  const std::u16string digits = u"1235";
+  const std::u16string expected =
+      std::u16string() + base::i18n::kLeftToRightEmbeddingMark +
+      kMidlineEllipsis2Dots + digits + base::i18n::kPopDirectionalFormatting;
+
+  EXPECT_EQ(expected, internal::GetObfuscatedStringForCardDigits(
+                          digits, /*obfuscation_length=*/2));
+}
+#endif  // OS_ANDROID
 
 }  // namespace autofill

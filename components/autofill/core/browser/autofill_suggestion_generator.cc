@@ -193,8 +193,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
   // Otherwise the label is the card number, or if that is empty the
   // cardholder name. The label should never repeat the value.
   if (type.GetStorableType() == CREDIT_CARD_NUMBER) {
-    suggestion.value =
-        credit_card.CardIdentifierStringForAutofillDisplay(suggestion_nickname);
+    int obfuscation_length = base::FeatureList::IsEnabled(
+                                 autofill::features::kAutofillKeyboardAccessory)
+                                 ? 2
+                                 : 4;
+    suggestion.value = credit_card.CardIdentifierStringForAutofillDisplay(
+        suggestion_nickname, obfuscation_length);
 
 #if defined(OS_ANDROID) || defined(OS_IOS)
     suggestion.label = credit_card.GetInfo(
