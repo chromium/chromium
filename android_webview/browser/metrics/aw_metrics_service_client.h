@@ -128,6 +128,19 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
     virtual bool HasAwContentsEverCreated() const = 0;
   };
 
+  // An enum to track the status of AppPackageNameLoggingRule used in
+  // ShouldRecordPackageName. These values are persisted to logs. Entries should
+  // not be renumbered and numeric values should never be reused.
+  enum class AppPackageNameLoggingRuleStatus {
+    kNotLoadedNoCache = 0,
+    kNotLoadedUseCache = 1,
+    kNewVersionFailedNoCache = 2,
+    kNewVersionFailedUseCache = 3,
+    kNewVersionLoaded = 4,
+    kSameVersionAsCache = 5,
+    kMaxValue = kSameVersionAsCache,
+  };
+
   static AwMetricsServiceClient* GetInstance();
   static void SetInstance(
       std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client);
@@ -187,6 +200,8 @@ class AwMetricsServiceClient : public ::metrics::AndroidMetricsServiceClient,
   std::unique_ptr<Delegate> delegate_;
 
   absl::optional<AppPackageNameLoggingRule> cached_package_name_record_;
+  AppPackageNameLoggingRuleStatus package_name_record_status_ =
+      AppPackageNameLoggingRuleStatus::kNotLoadedNoCache;
 
   DISALLOW_COPY_AND_ASSIGN(AwMetricsServiceClient);
 };

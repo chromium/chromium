@@ -104,20 +104,29 @@ bool AwMetricsServiceClient::ShouldRecordPackageName() {
     return ::metrics::AndroidMetricsServiceClient::ShouldRecordPackageName();
   }
 
+  base::UmaHistogramEnumeration(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      package_name_record_status_);
   return cached_package_name_record_.has_value() &&
          cached_package_name_record_.value().IsAppPackageNameAllowed();
 }
 
 void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
     absl::optional<AppPackageNameLoggingRule> record) {
-  if (!record.has_value())
-    return;
-
   absl::optional<AppPackageNameLoggingRule> cached_record =
       GetCachedAppPackageNameLoggingRule();
+  if (!record.has_value()) {
+    package_name_record_status_ =
+        cached_record.has_value()
+            ? AppPackageNameLoggingRuleStatus::kNewVersionFailedUseCache
+            : AppPackageNameLoggingRuleStatus::kNewVersionFailedNoCache;
+    return;
+  }
 
   if (cached_record.has_value() &&
       record.value().IsSameAs(cached_package_name_record_.value())) {
+    package_name_record_status_ =
+        AppPackageNameLoggingRuleStatus::kSameVersionAsCache;
     return;
   }
 
@@ -126,6 +135,8 @@ void AwMetricsServiceClient::SetAppPackageNameLoggingRule(
   local_state->Set(prefs::kMetricsAppPackageNameLoggingRule,
                    record.value().ToDictionary());
   cached_package_name_record_ = record;
+  package_name_record_status_ =
+      AppPackageNameLoggingRuleStatus::kNewVersionLoaded;
 
   UmaHistogramTimes(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay",
@@ -142,6 +153,10 @@ AwMetricsServiceClient::GetCachedAppPackageNameLoggingRule() {
   DCHECK(local_state);
   cached_package_name_record_ = AppPackageNameLoggingRule::FromDictionary(
       *(local_state->Get(prefs::kMetricsAppPackageNameLoggingRule)));
+  if (cached_package_name_record_.has_value()) {
+    package_name_record_status_ =
+        AppPackageNameLoggingRuleStatus::kNotLoadedUseCache;
+  }
   return cached_package_name_record_;
 }
 

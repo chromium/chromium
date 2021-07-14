@@ -19,6 +19,9 @@
 
 namespace android_webview {
 
+using AppPackageNameLoggingRuleStatus =
+    AwMetricsServiceClient::AppPackageNameLoggingRuleStatus;
+
 namespace {
 
 constexpr char kTestAllowlistVersion[] = "123.456.789.10";
@@ -72,6 +75,11 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_CacheNotSet) {
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNotLoadedNoCache, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
@@ -97,6 +105,11 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_WithCache) {
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNotLoadedUseCache, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest,
@@ -119,6 +132,11 @@ TEST_F(AwMetricsServiceClientTest,
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 1);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNewVersionLoaded, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest,
@@ -143,6 +161,11 @@ TEST_F(AwMetricsServiceClientTest,
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 1);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNewVersionLoaded, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest,
@@ -169,6 +192,11 @@ TEST_F(AwMetricsServiceClientTest,
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 1);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNewVersionFailedUseCache, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
@@ -185,6 +213,11 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_FailedResult) {
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kNewVersionFailedNoCache, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
@@ -206,6 +239,11 @@ TEST_F(AwMetricsServiceClientTest, TestShouldRecordPackageName_SameAsCache) {
 
   histogram_tester.ExpectTotalCount(
       "Android.WebView.Metrics.PackagesAllowList.ResultReceivingDelay", 0);
+  histogram_tester.ExpectBucketCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus",
+      AppPackageNameLoggingRuleStatus::kSameVersionAsCache, 1);
+  histogram_tester.ExpectTotalCount(
+      "Android.WebView.Metrics.PackagesAllowList.RecordStatus", 1);
 }
 
 }  // namespace android_webview
