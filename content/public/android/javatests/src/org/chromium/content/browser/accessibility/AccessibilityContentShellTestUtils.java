@@ -20,6 +20,8 @@ public class AccessibilityContentShellTestUtils {
             "Could not find specified node before polling timeout.";
     public static final String END_OF_TEST_ERROR =
             "Did not receive kEndOfTest signal before polling timeout.";
+    public static final String READY_FOR_TEST_ERROR =
+            "Did not receive kReadyForTest signal before polling timeout.";
 
     /**
      * Basic interface to define a way to match |AccessibilityNodeInfo| objects based on the

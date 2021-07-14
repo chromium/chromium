@@ -7,6 +7,7 @@ package org.chromium.content.browser.accessibility;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.ANP_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.END_OF_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.NODE_TIMEOUT_ERROR;
+import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.READY_FOR_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.sContentShellDelegate;
 
 import android.annotation.SuppressLint;
@@ -201,6 +202,17 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     public void setAccessibilityDelegate() {
         ((ViewGroup) getContainerView().getParent())
                 .setAccessibilityDelegate(sContentShellDelegate);
+    }
+
+    /**
+     * Call through the WebContentsAccessibilityImpl to send a signal that we are ready to begin
+     * a test (using the kEndOfTest signal for simplicity). Poll until we receive the generated
+     * Blink event in response, then reset the tracker.
+     */
+    public void sendReadyForTestSignal() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> mWcax.signalEndOfTestForTesting());
+        CriteriaHelper.pollUiThread(() -> mTracker.testComplete(), READY_FOR_TEST_ERROR);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mTracker.signalReadyForTest());
     }
 
     /**

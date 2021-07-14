@@ -44,6 +44,13 @@ public class AccessibilityActionAndEventTracker {
     }
 
     /**
+     * Helper method to signal the beginning of a given unit test.
+     */
+    public void signalReadyForTest() {
+        mTestComplete = false;
+    }
+
+    /**
      * Helper method to signal the end of a given unit test.
      */
     public void signalEndOfTest() {

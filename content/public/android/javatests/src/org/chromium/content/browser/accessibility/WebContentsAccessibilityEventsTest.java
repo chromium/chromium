@@ -66,6 +66,7 @@ public class WebContentsAccessibilityEventsTest {
         mActivityTestRule.waitForActiveShellToBeDoneLoading();
         mActivityTestRule.setupTestFramework();
         mActivityTestRule.setAccessibilityDelegate();
+        mActivityTestRule.sendReadyForTestSignal();
     }
 
     /**

@@ -127,6 +127,7 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setAccessibilityDelegate();
 
         mTestData = AccessibilityContentShellTestData.getInstance();
+        mActivityTestRule.sendReadyForTestSignal();
     }
 
     /* @Before */
@@ -137,6 +138,7 @@ public class WebContentsAccessibilityTest {
         mActivityTestRule.setAccessibilityDelegate();
 
         mTestData = AccessibilityContentShellTestData.getInstance();
+        mActivityTestRule.sendReadyForTestSignal();
     }
 
     /**
