@@ -39,7 +39,7 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/command_updater_impl.h"
 #include "chrome/browser/download/download_core_service.h"
 #include "chrome/browser/download/download_core_service_factory.h"
@@ -48,6 +48,7 @@
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/mac/auth_session_request.h"
+#include "chrome/browser/mac/key_window_notifier.h"
 #include "chrome/browser/mac/mac_startup_profiler.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
@@ -110,8 +111,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/plugin_service.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -850,10 +849,7 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if ([NSApp keyWindow])
     return;
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_NO_KEY_WINDOW,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
+  g_browser_process->platform_part()->key_window_notifier().NotifyNoKeyWindow();
 }
 
 // If the auto-update interval is not set, make it 5 hours.

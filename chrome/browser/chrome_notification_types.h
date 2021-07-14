@@ -47,14 +47,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174781): Remove.
   NOTIFICATION_APP_TERMINATING = NOTIFICATION_CHROME_START,
 
-#if defined(OS_MAC)
-  // This notification is sent when the app has no key window, such as when
-  // all windows are closed but the app is still active. No source or details
-  // are provided.
-  // TODO(https://crbug.com/1174783): Remove.
-  NOTIFICATION_NO_KEY_WINDOW,
-#endif
-
   // Authentication ----------------------------------------------------------
 
   // This is sent when a login prompt is shown.  The source is the

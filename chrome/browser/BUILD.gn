@@ -5161,6 +5161,8 @@ static_library("browser") {
       "mac/initial_prefs.mm",
       "mac/install_from_dmg.h",
       "mac/install_from_dmg.mm",
+      "mac/key_window_notifier.cc",
+      "mac/key_window_notifier.h",
       "mac/keystone_glue.h",
       "mac/keystone_glue.mm",
       "mac/keystone_registration.h",

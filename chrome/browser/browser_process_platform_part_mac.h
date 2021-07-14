@@ -11,6 +11,7 @@
 #include "base/macros.h"
 #include "chrome/browser/apps/app_shim/app_shim_listener.h"
 #include "chrome/browser/browser_process_platform_part_base.h"
+#include "chrome/browser/mac/key_window_notifier.h"
 
 namespace apps {
 class AppShimManager;
@@ -35,6 +36,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
   apps::AppShimManager* app_shim_manager();
   device::GeolocationManager* geolocation_manager();
 
+  KeyWindowNotifier& key_window_notifier() { return key_window_notifier_; }
+
   void SetGeolocationManagerForTesting(
       std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
 
@@ -46,6 +49,8 @@ class BrowserProcessPlatformPart : public BrowserProcessPlatformPartBase {
 
   // Hosts the IPC channel factory that App Shims connect to on Mac.
   scoped_refptr<AppShimListener> app_shim_listener_;
+
+  KeyWindowNotifier key_window_notifier_;
 
   DISALLOW_COPY_AND_ASSIGN(BrowserProcessPlatformPart);
 };
