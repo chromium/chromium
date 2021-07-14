@@ -13,11 +13,15 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "google_apis/drive/auth_service_interface.h"
+#include "google_apis/gaia/core_account_id.h"
 
 namespace network {
 class SharedURLLoaderFactory;
+}
+
+namespace signin {
+class IdentityManager;
 }
 
 namespace google_apis {
@@ -28,8 +32,7 @@ class AuthServiceObserver;
 // It integrates specific service integration with the Identity service
 // (IdentityManager) and provides OAuth2 token refresh infrastructure.
 // All public functions must be called on UI thread.
-class AuthService : public AuthServiceInterface,
-                    public signin::IdentityManager::Observer {
+class AuthService : public AuthServiceInterface {
  public:
   // |url_loader_factory| is used to perform authentication with
   // SimpleURLLoader.
@@ -51,15 +54,12 @@ class AuthService : public AuthServiceInterface,
   void ClearAccessToken() override;
   void ClearRefreshToken() override;
 
-  // Overridden from IdentityManager::Observer
-  void OnRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info) override;
-  void OnRefreshTokenRemovedForAccount(
-      const CoreAccountId& account_id) override;
-
  private:
+  class IdentityManagerObserver;
+
   // Called when the state of the refresh token changes.
-  void OnHandleRefreshToken(bool has_refresh_token);
+  void OnHandleRefreshToken(const CoreAccountId& account_id,
+                            bool has_refresh_token);
 
   // Called when authentication request from StartAuthentication() is
   // completed.
@@ -68,6 +68,7 @@ class AuthService : public AuthServiceInterface,
                        const std::string& access_token);
 
   signin::IdentityManager* identity_manager_;
+  std::unique_ptr<IdentityManagerObserver> identity_manager_observer_;
   CoreAccountId account_id_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   bool has_refresh_token_;

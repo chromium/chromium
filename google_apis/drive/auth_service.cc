@@ -11,10 +11,12 @@
 #include "base/location.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "google_apis/drive/auth_service_observer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -111,25 +113,53 @@ void AuthRequest::OnAccessTokenFetchComplete(
 
 }  // namespace
 
+// This class is separate from AuthService itself so that AuthService doesn't
+// need a public dependency on signin::IdentityManager::Observer, and therefore
+// doesn't need to pull that dependency into all of its client classes.
+class AuthService::IdentityManagerObserver
+    : public signin::IdentityManager::Observer {
+ public:
+  explicit IdentityManagerObserver(AuthService* service) : service_(service) {
+    manager_observation_.Observe(service->identity_manager_);
+  }
+  ~IdentityManagerObserver() override = default;
+
+  // signin::IdentityManager::Observer:
+  void OnRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info) override {
+    service_->OnHandleRefreshToken(account_info.account_id, true);
+  }
+
+  void OnRefreshTokenRemovedForAccount(
+      const CoreAccountId& account_id) override {
+    service_->OnHandleRefreshToken(account_id, false);
+  }
+
+ private:
+  AuthService* service_ = nullptr;
+  base::ScopedObservation<signin::IdentityManager,
+                          signin::IdentityManager::Observer>
+      manager_observation_{this};
+};
+
 AuthService::AuthService(
     signin::IdentityManager* identity_manager,
     const CoreAccountId& account_id,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::vector<std::string>& scopes)
     : identity_manager_(identity_manager),
+      identity_manager_observer_(
+          std::make_unique<IdentityManagerObserver>(this)),
       account_id_(account_id),
       url_loader_factory_(url_loader_factory),
       scopes_(scopes) {
   DCHECK(identity_manager_);
 
-  identity_manager_->AddObserver(this);
   has_refresh_token_ =
       identity_manager_->HasAccountWithRefreshToken(account_id_);
 }
 
-AuthService::~AuthService() {
-  identity_manager_->RemoveObserver(this);
-}
+AuthService::~AuthService() = default;
 
 void AuthService::StartAuthentication(AuthStatusCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -170,7 +200,7 @@ void AuthService::ClearAccessToken() {
 }
 
 void AuthService::ClearRefreshToken() {
-  OnHandleRefreshToken(false);
+  OnHandleRefreshToken(account_id_, false);
 }
 
 void AuthService::OnAuthCompleted(AuthStatusCallback callback,
@@ -203,19 +233,11 @@ void AuthService::RemoveObserver(AuthServiceObserver* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void AuthService::OnRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info) {
-  if (account_info.account_id == account_id_)
-    OnHandleRefreshToken(true);
-}
+void AuthService::OnHandleRefreshToken(const CoreAccountId& account_id,
+                                       bool has_refresh_token) {
+  if (account_id != account_id_)
+    return;
 
-void AuthService::OnRefreshTokenRemovedForAccount(
-    const CoreAccountId& account_id) {
-  if (account_id == account_id_)
-    OnHandleRefreshToken(false);
-}
-
-void AuthService::OnHandleRefreshToken(bool has_refresh_token) {
   access_token_.clear();
   has_refresh_token_ = has_refresh_token;
 
