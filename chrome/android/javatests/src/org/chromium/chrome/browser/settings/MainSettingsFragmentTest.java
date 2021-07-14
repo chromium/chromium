@@ -166,11 +166,19 @@ public class MainSettingsFragmentTest {
         Mockito.doReturn(SEARCH_ENGINE_SHORT_NAME).when(mMockSearchEngine).getShortName();
     }
 
+    private void waitForOptionsMenu() {
+        CriteriaHelper.pollUiThread(() -> {
+            return mSettingsActivityTestRule.getActivity().findViewById(R.id.menu_id_general_help)
+                    != null;
+        });
+    }
+
     @Test
     @LargeTest
     @Feature({"RenderTest"})
     public void testRenderDifferentSignedInStates() throws IOException {
         launchSettingsActivity();
+        waitForOptionsMenu();
         View view = mSettingsActivityTestRule.getActivity()
                             .findViewById(android.R.id.content)
                             .getRootView();
@@ -179,6 +187,7 @@ public class MainSettingsFragmentTest {
         // Sign in and render changes.
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         SyncTestUtil.waitForSyncFeatureActive();
+        waitForOptionsMenu();
         // Waiting for sync to become active might take some time, so the scrollbar on the settings
         // view starts to fade, making the test flaky due to differences in the rendered image.
         // Sanitize the view to hide scrollbars (see https://crbug.com/1204117 for details).
