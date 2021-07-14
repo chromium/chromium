@@ -6,8 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_LAYOUT_NG_FLEXIBLE_BOX_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block.h"
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 
 namespace blink {
 
@@ -27,7 +26,7 @@ struct DevtoolsFlexInfo {
   Vector<Line> lines;
 };
 
-class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGMixin<LayoutBlock> {
+class CORE_EXPORT LayoutNGFlexibleBox : public LayoutNGBlock {
  public:
   explicit LayoutNGFlexibleBox(Element*);
 

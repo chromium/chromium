@@ -8,16 +8,9 @@
 #include <type_traits>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_progress.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby.h"
-#include "third_party/blink/renderer/core/layout/layout_ruby_run.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
-#include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
 namespace blink {
 
@@ -25,6 +18,22 @@ enum class NGBaselineAlgorithmType;
 struct NGInlineNodeData;
 
 // This mixin holds code shared between LayoutNG subclasses of LayoutBlockFlow.
+//
+// If you'd like to make a LayoutNGFoo class inheriting from
+// LayoutNGBlockFlowMixin<LayoutBar>, you need to do:
+//  * Add the following to the header for LayoutNGFoo.
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGBlockFlowMixin<LayoutBar>;
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGMixin<LayoutBar>;
+//  * Add |#include "header for LayoutNGFoo"| to layout_ng_block_flow_mixin.cc
+//    and layout_ng_mixin.cc.
+//    It's the header for LayoutNGFoo, not for LayoutBar. The purpose is to
+//    include the above |extern template| declarations.
+//  * Add |template class CORE_TEMPLATE_EXPORT
+//    LayoutNGBlockFlowMixin<LayoutBar>;| to layout_ng_block_flow_mixin.cc.
+//  * Add |template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBar>;| to
+//    layout_ng_mixin.cc.
 template <typename Base>
 class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  public:
@@ -72,27 +81,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  private:
   void AddScrollingOverflowFromChildren();
 };
-
-// If you edit these export templates, also update templates in
-// layout_ng_mixin.h.
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutProgress>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyAsBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyBase>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyRun>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutRubyText>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutSVGBlock>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCaption>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCell>;
 
 }  // namespace blink
 

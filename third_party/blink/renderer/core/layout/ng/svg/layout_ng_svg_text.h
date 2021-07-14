@@ -6,8 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_SVG_LAYOUT_NG_SVG_TEXT_H_
 
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow_mixin.h"
+#include "third_party/blink/renderer/core/layout/svg/layout_svg_block.h"
 
 namespace blink {
+
+extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutSVGBlock>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutSVGBlock>;
 
 // The LayoutNG representation of SVG <text>.
 class LayoutNGSVGText final : public LayoutNGBlockFlowMixin<LayoutSVGBlock> {

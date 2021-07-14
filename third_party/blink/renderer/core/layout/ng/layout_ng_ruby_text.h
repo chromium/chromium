@@ -11,6 +11,10 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutRubyText>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutRubyText>;
+
 // A LayoutNG version of LayoutRubyText.
 class CORE_EXPORT LayoutNGRubyText final
     : public LayoutNGBlockFlowMixin<LayoutRubyText> {

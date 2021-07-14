@@ -11,6 +11,11 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGMixin<LayoutBlockFlow>;
+
 // This overrides the default layout block algorithm to use Layout NG.
 class CORE_EXPORT LayoutNGBlockFlow
     : public LayoutNGBlockFlowMixin<LayoutBlockFlow> {

@@ -11,6 +11,10 @@
 
 namespace blink {
 
+extern template class CORE_EXTERN_TEMPLATE_EXPORT
+    LayoutNGBlockFlowMixin<LayoutProgress>;
+extern template class CORE_EXTERN_TEMPLATE_EXPORT LayoutNGMixin<LayoutProgress>;
+
 class CORE_EXPORT LayoutNGProgress
     : public LayoutNGBlockFlowMixin<LayoutProgress> {
  public:
