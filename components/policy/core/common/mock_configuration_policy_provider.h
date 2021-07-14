@@ -50,6 +50,15 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
     ConfigurationPolicyProvider::Init(&registry_);
   }
 
+  // Utility testing method used to set up boilerplate |ON_CALL| defaults.
+  void SetDefaultReturns(bool is_initialization_complete_return,
+                         bool is_first_policy_load_complete_return) {
+    ON_CALL(*this, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(is_initialization_complete_return));
+    ON_CALL(*this, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(is_first_policy_load_complete_return));
+  }
+
   // Convenience method that installs an expectation on RefreshPolicies that
   // just notifies the observers and serves the same policies.
   void SetAutoRefresh();

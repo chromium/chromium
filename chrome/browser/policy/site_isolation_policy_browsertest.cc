@@ -77,10 +77,9 @@ class SitePerProcessPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;
@@ -115,10 +114,9 @@ class IsolateOriginsPolicyBrowserTest : public SiteIsolationPolicyBrowserTest {
     // to the renderer via a command-line. Setting the policy in the test
     // itself or in SetUpOnMainThread works for update-able policies, but
     // is too late for this one.
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     policy::PolicyMap values;

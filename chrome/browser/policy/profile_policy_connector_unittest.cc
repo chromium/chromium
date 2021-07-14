@@ -224,11 +224,10 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
-  MockConfigurationPolicyProvider mock_platform_provider;
-  EXPECT_CALL(mock_platform_provider, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(mock_platform_provider, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(true));
+  testing::NiceMock<MockConfigurationPolicyProvider> mock_platform_provider;
+  mock_platform_provider.SetDefaultReturns(
+      true /* is_initialization_complete_return */,
+      true /* is_first_policy_load_complete_return */);
 
   ProfilePolicyConnector connector;
   connector.SetPlatformPolicyProviderForTesting(&mock_platform_provider);

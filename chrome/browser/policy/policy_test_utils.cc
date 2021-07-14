@@ -101,10 +101,8 @@ void PolicyTest::CheckURLIsBlocked(Browser* browser, const std::string& spec) {
 
 void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
-  EXPECT_CALL(provider_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
-  EXPECT_CALL(provider_, IsFirstPolicyLoadComplete(_))
-      .WillRepeatedly(Return(true));
+  provider_.SetDefaultReturns(true /* is_initialization_complete_return */,
+                              true /* is_first_policy_load_complete_return */);
   BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 

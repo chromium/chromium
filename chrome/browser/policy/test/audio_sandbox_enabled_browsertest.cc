@@ -26,8 +26,9 @@ class AudioSandboxEnabledTest
  public:
   // InProcessBrowserTest implementation:
   void SetUp() override {
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    policy_provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     policy::PolicyMap values;
     if (GetParam().has_value()) {
       values.Set(policy::key::kAudioSandboxEnabled,
@@ -43,7 +44,7 @@ class AudioSandboxEnabledTest
   }
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(AudioSandboxEnabledTest, IsRespected) {

@@ -7,13 +7,11 @@
 #include "base/no_destructor.h"
 
 policy::MockConfigurationPolicyProvider* GetTestPlatformPolicyProvider() {
-  static base::NoDestructor<policy::MockConfigurationPolicyProvider> provider;
+  static base::NoDestructor<
+      testing::NiceMock<policy::MockConfigurationPolicyProvider>>
+      provider;
   provider->SetAutoRefresh();
-  EXPECT_CALL(*provider.get(), IsInitializationComplete(testing::_))
-      .Times(testing::AnyNumber())
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(*provider.get(), IsFirstPolicyLoadComplete(testing::_))
-      .Times(testing::AnyNumber())
-      .WillRepeatedly(testing::Return(true));
+  provider->SetDefaultReturns(true /* is_initialization_complete_return */,
+                              true /* is_first_policy_load_complete_return */);
   return provider.get();
 }

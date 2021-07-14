@@ -27,10 +27,10 @@ ConfigurationPolicyPrefStoreTest::ConfigurationPolicyPrefStoreTest()
                                         base::Unretained(this)),
                     GetChromePolicyDetailsCallback(),
                     /* allow_all_future_policies*/ true) {
+  provider_.SetDefaultReturns(false /* is_initialization_complete_return */,
+                              false /* is_first_policy_load_complete_return */);
   EXPECT_CALL(provider_, IsInitializationComplete(_))
       .WillRepeatedly(Return(false));
-  ON_CALL(provider_, IsFirstPolicyLoadComplete(_)).WillByDefault(Return(false));
-
   provider_.Init();
   providers_.push_back(&provider_);
   policy_service_ = std::make_unique<PolicyServiceImpl>(providers_);

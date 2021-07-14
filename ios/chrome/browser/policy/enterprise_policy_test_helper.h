@@ -36,7 +36,7 @@ class EnterprisePolicyTestHelper {
 
  private:
   // The enterprise configuration policy provider.
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   // The application-level policy connector. Must outlive |local_state_|.
   std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
   // The local state PrefService managed by policy.

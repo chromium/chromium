@@ -113,7 +113,7 @@ class PolicyTest : public InProcessBrowserTest {
 
   void FlushBlacklistPolicy();
 
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 };
 
 }  // namespace policy

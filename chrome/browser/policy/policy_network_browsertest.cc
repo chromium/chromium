@@ -148,10 +148,9 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
   void SetUpInProcessBrowserTestFixture() override {
     QuicTestBase::SetUpInProcessBrowserTestFixture();
     base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kEnableQuic);
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
 
     BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     PolicyMap values;
@@ -168,7 +167,7 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
   }
 
  private:
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
   DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyTestBase);
 };
 

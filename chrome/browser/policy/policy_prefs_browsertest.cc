@@ -72,10 +72,9 @@ class PolicyPrefsTest : public PlatformBrowserTest {
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(*GetMockPolicyProvider(), IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(*GetMockPolicyProvider(), IsFirstPolicyLoadComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    GetMockPolicyProvider()->SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
     BrowserPolicyConnector::SetPolicyProviderForTesting(
         GetMockPolicyProvider());
   }
@@ -96,7 +95,9 @@ class PolicyPrefsTest : public PlatformBrowserTest {
     // On Desktop, removal of observers from those lists is triggered by the
     // destructors of the classes above, but those same destructors are never
     // invoked on Android.
-    static base::NoDestructor<MockConfigurationPolicyProvider> provider;
+    static base::NoDestructor<
+        testing::NiceMock<MockConfigurationPolicyProvider>>
+        provider;
     return provider.get();
 #else
     // On non-Android platforms, the mock provider cleanup will be triggered
@@ -107,7 +108,7 @@ class PolicyPrefsTest : public PlatformBrowserTest {
   }
 
 #if !defined(OS_ANDROID)
-  MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<MockConfigurationPolicyProvider> provider_;
 #endif  // !defined(OS_ANDROID)
 };
 
