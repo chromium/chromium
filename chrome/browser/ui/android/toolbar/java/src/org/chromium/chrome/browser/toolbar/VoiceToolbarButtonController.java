@@ -228,18 +228,9 @@ public class VoiceToolbarButtonController
     /** Returns whether the feature flags allow showing the mic icon in the toolbar. */
     public static boolean isToolbarMicEnabled() {
         if (!FeatureList.isInitialized()) return false;
-        if (AdaptiveToolbarFeatures.isSingleVariantModeEnabled()) {
-            return AdaptiveToolbarFeatures.getSingleVariantMode()
-                    == AdaptiveToolbarButtonVariant.VOICE;
-        } else {
-            // For customization, we do not check the variant here, AdaptiveToolbarButtonController
-            // will check it by AdaptiveToolbarStatePredictor#recomputeUiState. We do not check here
-            // because AdaptiveToolbarStatePredictor#recomputeUiState depends on native
-            // initialization, to avoid race condition, we only check at one place, which is
-            // AdaptiveToolbarButtonController.
-            return ChromeFeatureList.isEnabled(ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR)
-                    || AdaptiveToolbarFeatures.isCustomizationEnabled();
-        }
+        return AdaptiveToolbarFeatures.isSingleVariantModeEnabled()
+                && AdaptiveToolbarFeatures.getSingleVariantMode()
+                == AdaptiveToolbarButtonVariant.VOICE;
     }
 
     private void notifyObservers(boolean hint) {

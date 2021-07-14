@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.ReturnToChromeExperimentsUtil;
 import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
-import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 
 import java.util.ArrayList;
@@ -66,7 +65,6 @@ public class ChromeCachedFlags {
 
         // clang-format off
         List<String> featuresToCache = Arrays.asList(
-                ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
                 ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE,
                 ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION,
                 ChromeFeatureList.APP_TO_WEB_ATTRIBUTION,
@@ -109,7 +107,6 @@ public class ChromeCachedFlags {
 
         // clang-format off
         List<CachedFieldTrialParameter> fieldTrialsToCache = Arrays.asList(
-                AdaptiveToolbarFeatures.MODE_PARAM,
                 ChimeFeatures.ALWAYS_REGISTER,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_LIMIT,
                 ConditionalTabStripUtils.CONDITIONAL_TAB_STRIP_INFOBAR_PERIOD,

@@ -712,8 +712,7 @@ public class RootUiCoordinator
             adaptiveToolbarButtonController.addButtonVariant(
                     AdaptiveToolbarButtonVariant.VOICE, voiceToolbarButtonController);
             mButtonDataProviders =
-                    Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController,
-                            shareButtonController, voiceToolbarButtonController);
+                    Arrays.asList(mIdentityDiscController, adaptiveToolbarButtonController);
             mToolbarManager = new ToolbarManager(mActivity, mBrowserControlsManager,
                     mActivity.getFullscreenManager(), toolbarContainer,
                     mActivity.getCompositorViewHolder(), urlFocusChangedCallback,

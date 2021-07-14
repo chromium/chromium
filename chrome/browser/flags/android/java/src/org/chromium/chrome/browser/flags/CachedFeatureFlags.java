@@ -47,7 +47,6 @@ public class CachedFeatureFlags {
      */
     private static Map<String, Boolean> sDefaults = new HashMap<String, Boolean>() {
         {
-            put(ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR, false);
             put(ChromeFeatureList.ANDROID_PARTNER_CUSTOMIZATION_PHENOTYPE, true);
             put(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET, false);
             put(ChromeFeatureList.CHROME_STARTUP_DELEGATE, false);

@@ -16,6 +16,8 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.Implementation;
+import org.robolectric.annotation.Implements;
 
 import org.chromium.base.Callback;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,16 +29,40 @@ import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /** Unit tests for the {@code AdaptiveToolbarStatePredictor} */
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE,
+        shadows = {AdaptiveToolbarStatePredictorTest.ShadowChromeFeatureList.class})
 @RunWith(BaseRobolectricTestRunner.class)
+@DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR,
+        ChromeFeatureList.SHARE_BUTTON_IN_TOP_TOOLBAR,
+        ChromeFeatureList.VOICE_BUTTON_IN_TOP_TOOLBAR})
 @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
 public class AdaptiveToolbarStatePredictorTest {
+    // TODO(crbug.com/1199025): Remove this shadow.
+    @Implements(ChromeFeatureList.class)
+    static class ShadowChromeFeatureList {
+        static final Map<String, String> sParamValues = new HashMap<>();
+
+        @Implementation
+        public static String getFieldTrialParamByFeature(String feature, String paramKey) {
+            Assert.assertTrue(ChromeFeatureList.isEnabled(feature));
+            return sParamValues.getOrDefault(paramKey, "");
+        }
+
+        public static void reset() {
+            sParamValues.clear();
+        }
+    }
+
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
 
     @Before
     public void setUp() {
+        ShadowChromeFeatureList.reset();
         AdaptiveToolbarFeatures.clearParsedParamsForTesting();
     }
 
@@ -51,7 +77,6 @@ public class AdaptiveToolbarStatePredictorTest {
     public void testDisableFeature() {
         AdaptiveToolbarFeatures.setDefaultSegmentForTesting(AdaptiveToolbarFeatures.SHARE);
         AdaptiveToolbarFeatures.setIgnoreSegmentationResultsForTesting(false);
-
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
                 true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
         UiState expected = new UiState(false, AdaptiveToolbarButtonVariant.UNKNOWN,
@@ -64,8 +89,7 @@ public class AdaptiveToolbarStatePredictorTest {
     @EnableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR})
     @DisableFeatures({ChromeFeatureList.ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_CUSTOMIZATION})
     public void testWorksWithDataCollectionFeatureFlag() {
-        AdaptiveToolbarFeatures.MODE_PARAM.setForTesting(AdaptiveToolbarFeatures.ALWAYS_VOICE);
-
+        ShadowChromeFeatureList.sParamValues.put("mode", "always-voice");
         AdaptiveToolbarStatePredictor statePredictor = buildStatePredictor(
                 true, AdaptiveToolbarButtonVariant.VOICE, true, AdaptiveToolbarButtonVariant.SHARE);
         UiState expected = new UiState(true, AdaptiveToolbarButtonVariant.VOICE,
