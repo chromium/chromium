@@ -52,4 +52,9 @@ public class LensFeature {
     public static final BooleanCachedFieldTrialParameter SKIP_AGSA_VERSION_CHECK =
             new BooleanCachedFieldTrialParameter(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
                     SKIP_AGSA_VERSION_CHECK_PARAM_NAME, false);
+    private static final String SKIP_LENS_ELIGIBILITY_CHECKS_PARAM_NAME =
+            "skipLensEligibilityChecks";
+    public static final BooleanCachedFieldTrialParameter SKIP_LENS_ELIGIBILITY_CHECKS =
+            new BooleanCachedFieldTrialParameter(ChromeFeatureList.LENS_CAMERA_ASSISTED_SEARCH,
+                    SKIP_LENS_ELIGIBILITY_CHECKS_PARAM_NAME, false);
 }
