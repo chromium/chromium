@@ -110,7 +110,7 @@ const char* RenderingContextDescriptionCodec::GetContextTypeName() const {
       return kContextTypeName_WebGL;
     case CanvasRenderingContext::kContextWebgl2:
       return kContextTypeName_WebGL2;
-    case CanvasRenderingContext::kContextGPUPresent:
+    case CanvasRenderingContext::kContextWebGPU:
       return kContextTypeName_WebGPU;
     case CanvasRenderingContext::kContextImageBitmap:
       return kContextTypeName_ImageBitmap;

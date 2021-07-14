@@ -132,9 +132,10 @@ CanvasRenderingContext::ContextType CanvasRenderingContext::ContextTypeFromId(
     return kContextWebgl2;
   if (id == "bitmaprenderer")
     return kContextImageBitmap;
-  if (id == "gpupresent" &&
+  // TODO(crbug.com/1229274): Remove 'gpupresent' type after deprecation period.
+  if ((id == "webgpu" || id == "gpupresent") &&
       RuntimeEnabledFeatures::WebGPUEnabled(execution_context))
-    return kContextGPUPresent;
+    return kContextWebGPU;
   return kContextTypeUnknown;
 }
 

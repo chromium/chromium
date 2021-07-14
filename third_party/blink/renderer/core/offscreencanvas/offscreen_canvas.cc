@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/html/canvas/ukm_parameters.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
@@ -300,6 +301,15 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
       (context_type == CanvasRenderingContext::kContextXRPresent &&
        !RuntimeEnabledFeatures::WebXREnabled(execution_context))) {
     return nullptr;
+  }
+
+  // TODO(crbug.com/1229274): Remove 'gpupresent' type after deprecation period.
+  if (id == "gpupresent") {
+    auto* console_message = MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kRendering,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "The context type 'gpupresent' is deprecated. Use 'webgpu' instead.");
+    execution_context->AddConsoleMessage(console_message);
   }
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {

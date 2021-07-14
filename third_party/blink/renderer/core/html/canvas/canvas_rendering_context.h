@@ -75,7 +75,7 @@ class CORE_EXPORT CanvasRenderingContext
     kContextImageBitmap = 5,
     kContextXRPresent = 6,
     // WebGL2Compute used to be 7.
-    kContextGPUPresent = 8,  // WebGPU
+    kContextWebGPU = 8,  // WebGPU
     kContextTypeUnknown = 9,
     kMaxValue = kContextTypeUnknown,
   };

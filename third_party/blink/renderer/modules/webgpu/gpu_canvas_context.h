@@ -15,8 +15,8 @@
 namespace blink {
 
 class GPUAdapter;
+class GPUCanvasConfiguration;
 class GPUSwapChain;
-class GPUSwapChainDescriptor;
 class GPUTexture;
 class V8UnionHTMLCanvasElementOrOffscreenCanvas;
 
@@ -79,13 +79,13 @@ class GPUCanvasContext : public CanvasRenderingContext {
   // gpu_presentation_context.idl
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
-  void configure(const GPUSwapChainDescriptor* descriptor, ExceptionState&);
+  void configure(const GPUCanvasConfiguration* descriptor, ExceptionState&);
   void unconfigure();
   String getPreferredFormat(const GPUAdapter* adapter);
   GPUTexture* getCurrentTexture(ExceptionState&);
 
   // gpu_canvas_context.idl (Deprecated)
-  GPUSwapChain* configureSwapChain(const GPUSwapChainDescriptor* descriptor,
+  GPUSwapChain* configureSwapChain(const GPUCanvasConfiguration* descriptor,
                                    ExceptionState&);
   String getSwapChainPreferredFormat(ExecutionContext* execution_context,
                                      GPUAdapter* adapter);
@@ -93,7 +93,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
  private:
   DISALLOW_COPY_AND_ASSIGN(GPUCanvasContext);
 
-  void ConfigureInternal(const GPUSwapChainDescriptor* descriptor,
+  void ConfigureInternal(const GPUCanvasConfiguration* descriptor,
                          ExceptionState&,
                          bool deprecated_resize_behavior = false);
 

@@ -6,7 +6,7 @@
 
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_htmlcanvaselement_offscreencanvas.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_swap_chain_descriptor.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_gpu_canvas_configuration.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_canvasrenderingcontext2d_gpucanvascontext_imagebitmaprenderingcontext_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_union_gpucanvascontext_imagebitmaprenderingcontext_offscreencanvasrenderingcontext2d_webgl2renderingcontext_webglrenderingcontext.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
@@ -31,7 +31,7 @@ CanvasRenderingContext* GPUCanvasContext::Factory::Create(
 
 CanvasRenderingContext::ContextType GPUCanvasContext::Factory::GetContextType()
     const {
-  return CanvasRenderingContext::kContextGPUPresent;
+  return CanvasRenderingContext::kContextWebGPU;
 }
 
 GPUCanvasContext::GPUCanvasContext(
@@ -53,7 +53,7 @@ const IntSize& GPUCanvasContext::CanvasSize() const {
 
 // CanvasRenderingContext implementation
 CanvasRenderingContext::ContextType GPUCanvasContext::GetContextType() const {
-  return CanvasRenderingContext::kContextGPUPresent;
+  return CanvasRenderingContext::kContextWebGPU;
 }
 
 V8RenderingContext* GPUCanvasContext::AsV8RenderingContext() {
@@ -165,7 +165,7 @@ GPUCanvasContext::getHTMLOrOffscreenCanvas() const {
       static_cast<HTMLCanvasElement*>(Host()));
 }
 
-void GPUCanvasContext::configure(const GPUSwapChainDescriptor* descriptor,
+void GPUCanvasContext::configure(const GPUCanvasConfiguration* descriptor,
                                  ExceptionState& exception_state) {
   ConfigureInternal(descriptor, exception_state);
 }
@@ -207,7 +207,7 @@ GPUTexture* GPUCanvasContext::getCurrentTexture(
 
 // gpu_canvas_context.idl (Deprecated)
 GPUSwapChain* GPUCanvasContext::configureSwapChain(
-    const GPUSwapChainDescriptor* descriptor,
+    const GPUCanvasConfiguration* descriptor,
     ExceptionState& exception_state) {
   descriptor->device()->AddConsoleWarning(
       "configureSwapChain() is deprecated. Use configure() instead and call "
@@ -229,7 +229,7 @@ String GPUCanvasContext::getSwapChainPreferredFormat(
 }
 
 void GPUCanvasContext::ConfigureInternal(
-    const GPUSwapChainDescriptor* descriptor,
+    const GPUCanvasConfiguration* descriptor,
     ExceptionState& exception_state,
     bool deprecated_resize_behavior) {
   DCHECK(descriptor);
