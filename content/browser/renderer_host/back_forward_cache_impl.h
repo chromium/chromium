@@ -24,7 +24,10 @@
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_features.h"
+#include "net/cookies/canonical_cookie.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/page/page.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
@@ -69,6 +72,34 @@ class CONTENT_EXPORT BackForwardCacheImpl
   static MessageHandlingPolicyWhenCached
   GetChannelAssociatedMessageHandlingPolicy();
 
+  // For each BackForwardCacheImpl::Entry, |CookieMonitor| monitors cookie
+  // changes on the entry and records them. Owned by the entry.
+  class CookieMonitor : public ::network::mojom::CookieChangeListener {
+   public:
+    CookieMonitor(RenderFrameHostImpl* rfh);
+    ~CookieMonitor() override;
+    // Returns whether or not any cookie on the bfcache entry has been modified
+    // while the page is in bfcache.
+    bool CookieModified();
+    // Returns whether or not HTTPOnly cookie on the bfcache entry has been
+    // modified while the page is in bfcache.
+    bool HTTPOnlyCookieModified();
+
+   private:
+    // ::network::mojom::CookieChangeListener
+    void OnCookieChange(const net::CookieChangeInfo& change) override;
+
+    mojo::Receiver<::network::mojom::CookieChangeListener>
+        cookie_listener_receiver_{this};
+
+    // Indicates whether or not cookie on the bfcache entry has been modified
+    // while the entry is in bfcache.
+    bool cookie_modified_ = false;
+    // Indicates whether or not HTTPOnly cookie on the bfcache entry has been
+    // modified while the entry is in bfcache.
+    bool http_only_cookie_modified_ = false;
+  };
+
   struct CONTENT_EXPORT Entry {
     using RenderFrameProxyHostMap =
         std::unordered_map<int32_t /* SiteInstance ID */,
@@ -84,6 +115,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // received the acknowledgement from renderer that it finished running
     // handlers.
     bool AllRenderViewHostsReceivedAckFromRenderer();
+
+    // Starts monitoring the cookie change in this entry.
+    void StartMonitoringCookieChange();
 
     // The main document being stored.
     std::unique_ptr<RenderFrameHostImpl> render_frame_host;
@@ -108,6 +142,9 @@ class CONTENT_EXPORT BackForwardCacheImpl
     // Additional parameters to send with SetPageLifecycleState calls when we're
     // restoring a page from the back-forward cache.
     blink::mojom::PageRestoreParamsPtr page_restore_params;
+
+    // Only populated if we are monitoring cookies for this entry.
+    std::unique_ptr<CookieMonitor> cookie_monitor;
 
     DISALLOW_COPY_AND_ASSIGN(Entry);
   };
@@ -287,6 +324,14 @@ class CONTENT_EXPORT BackForwardCacheImpl
   // be called after adding or removing an entry in |entries_|.
   void AddProcessesForEntry(Entry& entry);
   void RemoveProcessesForEntry(Entry& entry);
+
+  // Maybe evict the entry before restoring it. Evict if an entry had
+  // cache-control:no-store header.
+  void MaybeEvictDueToCacheControlNoStoreBeforeRestore(Entry* rfh);
+
+  // Returns true if the flag is on for pages with cache-control:no-store to
+  // temporarily enter back/forward cache.
+  bool ShouldCacheControlNoStoreEnterBackForwardCache();
 
   // Contains the set of stored Entries.
   // Invariant:

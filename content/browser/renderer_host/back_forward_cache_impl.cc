@@ -439,6 +439,41 @@ void BackForwardCacheImpl::Entry::WriteIntoTrace(
   dict.Add("render_frame_host", render_frame_host);
 }
 
+void BackForwardCacheImpl::Entry::StartMonitoringCookieChange() {
+  cookie_monitor = std::make_unique<CookieMonitor>(render_frame_host.get());
+}
+
+BackForwardCacheImpl::CookieMonitor::CookieMonitor(RenderFrameHostImpl* rfh) {
+  StoragePartition* storage_partition = rfh->GetStoragePartition();
+  auto* cookie_manager = storage_partition->GetCookieManagerForBrowserProcess();
+  if (!cookie_listener_receiver_.is_bound()) {
+    // Listening only to the main document's URL, not the documents inside the
+    // subframes.
+    cookie_manager->AddCookieChangeListener(
+        rfh->GetLastCommittedURL(), absl::nullopt,
+        cookie_listener_receiver_.BindNewPipeAndPassRemote());
+  }
+  // Initialize the member values to report.
+  cookie_modified_ = false;
+  http_only_cookie_modified_ = false;
+}
+
+BackForwardCacheImpl::CookieMonitor::~CookieMonitor() = default;
+
+void BackForwardCacheImpl::CookieMonitor::OnCookieChange(
+    const net::CookieChangeInfo& change) {
+  http_only_cookie_modified_ = change.cookie.IsHttpOnly();
+  cookie_modified_ = true;
+}
+
+bool BackForwardCacheImpl::CookieMonitor::CookieModified() {
+  return cookie_modified_;
+}
+
+bool BackForwardCacheImpl::CookieMonitor::HTTPOnlyCookieModified() {
+  return http_only_cookie_modified_;
+}
+
 void BackForwardCacheImpl::RenderProcessBackgroundedChanged(
     RenderProcessHostImpl* host) {
   EnforceCacheSizeLimit();
@@ -614,7 +649,12 @@ BackForwardCacheImpl::CanPotentiallyStorePageLater(RenderFrameHostImpl* rfh) {
   if (!Intersection(rfh->scheduler_tracked_features(),
                     cache_control_no_store_feature)
            .Empty()) {
-    result.NoDueToFeatures(cache_control_no_store_feature);
+    if (!ShouldCacheControlNoStoreEnterBackForwardCache()) {
+      // Block pages with cache-control: no-store only when
+      // |should_cache_control_no_store_enter| flag is false. If true, put the
+      // page in and evict later.
+      result.NoDueToFeatures(cache_control_no_store_feature);
+    }
   }
 
   // Only store documents that have URLs allowed through experiment.
@@ -773,6 +813,12 @@ void BackForwardCacheImpl::StoreEntry(
 #endif
 
   entry->render_frame_host->DidEnterBackForwardCache();
+  if (entry->render_frame_host->scheduler_tracked_features().Has(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore)) {
+    // Start monitoring the cookie change only when cache-control:no-store
+    // header is present.
+    entry->StartMonitoringCookieChange();
+  }
   entries_.push_front(std::move(entry));
   AddProcessesForEntry(*entries_.front());
   EnforceCacheSizeLimit();
@@ -822,6 +868,26 @@ size_t BackForwardCacheImpl::EnforceCacheSizeLimitInternal(
       "CountEntriesWithoutRendererAck",
       not_received_ack_count);
   return count;
+}
+
+void BackForwardCacheImpl::MaybeEvictDueToCacheControlNoStoreBeforeRestore(
+    Entry* entry) {
+  if (!entry->render_frame_host->scheduler_tracked_features().Has(
+          WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
+    return;
+
+  if (entry->cookie_monitor->HTTPOnlyCookieModified()) {
+    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::
+            kCacheControlNoStoreHTTPOnlyCookieModified);
+  } else if (entry->cookie_monitor->CookieModified()) {
+    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::
+            kCacheControlNoStoreCookieModified);
+  } else {
+    entry->render_frame_host->EvictFromBackForwardCacheWithReason(
+        BackForwardCacheMetrics::NotRestoredReason::kCacheControlNoStore);
+  }
 }
 
 std::unique_ptr<BackForwardCacheImpl::Entry> BackForwardCacheImpl::RestoreEntry(
@@ -952,6 +1018,12 @@ BackForwardCacheImpl::Entry* BackForwardCacheImpl::GetEntry(
   if (matching_entry == entries_.end())
     return nullptr;
 
+  if (ShouldCacheControlNoStoreEnterBackForwardCache() &&
+      (*matching_entry)
+          ->render_frame_host->scheduler_tracked_features()
+          .Has(WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore))
+    MaybeEvictDueToCacheControlNoStoreBeforeRestore((*matching_entry).get());
+
   // Don't return the frame if it is evicted.
   if ((*matching_entry)
           ->render_frame_host->is_evicted_from_back_forward_cache())
@@ -1076,6 +1148,14 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   for (auto* rvh : bfcache_entry.render_view_hosts) {
     rvh->PrepareToLeaveBackForwardCache(cb);
   }
+}
+
+bool BackForwardCacheImpl::ShouldCacheControlNoStoreEnterBackForwardCache() {
+  if (!IsBackForwardCacheEnabled())
+    return false;
+
+  return base::FeatureList::IsEnabled(
+      features::kCacheControlNoStoreEnterBackForwardCache);
 }
 
 bool BackForwardCache::DisabledReason::operator<(

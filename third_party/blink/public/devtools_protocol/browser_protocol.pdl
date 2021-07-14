@@ -7742,6 +7742,9 @@ domain Page
       OptInUnloadHeaderNotPresent
       UnloadHandlerExistsInSubFrame
       ServiceWorkerUnregistration
+      CacheControlNoStore
+      CacheControlNoStoreCookieModified
+      CacheControlNoStoreHTTPOnlyCookieModified
       #Blocklisted features
       WebSocket
       WebRTC

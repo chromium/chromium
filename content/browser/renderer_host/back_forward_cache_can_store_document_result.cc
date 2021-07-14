@@ -224,6 +224,17 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
     case Reason::kServiceWorkerUnregistration:
       return "ServiceWorker is unregistered while the controllee page is in "
              "bfcache.";
+    case Reason::kCacheControlNoStore:
+      return "Pages with cache-control:no-store went into bfcache temporarily "
+             "because of the flag, and there was no cookie change.";
+    case Reason::kCacheControlNoStoreCookieModified:
+      return "Pages with cache-control:no-store went into bfcache temporarily "
+             "because of the flag, and while in bfcache the cookie was "
+             "modified or deleted and thus evicted.";
+    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+      return "Pages with cache-control:no-store went into bfcache temporarily "
+             "because of the flag, and while in bfcache the HTTP-only cookie"
+             "was modified or deleted and thus evicted.";
   }
 }
 

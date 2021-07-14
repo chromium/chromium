@@ -86,6 +86,12 @@ const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Allows pages with cache-control:no-store to enter the back/forward cache.
+// TODO(crbug.com/1228611): Enable this feature.
+const base::Feature kCacheControlNoStoreEnterBackForwardCache{
+    "CacheControlNoStoreEnterBackForwardCache",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // BackForwardCache is disabled on low memory devices. The threshold is defined
 // via a field trial param: "memory_threshold_for_back_forward_cache_in_mb"
 // It is compared against base::SysInfo::AmountOfPhysicalMemoryMB().

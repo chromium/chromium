@@ -1401,6 +1401,14 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kServiceWorkerUnregistration:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           ServiceWorkerUnregistration;
+    case Reason::kCacheControlNoStore:
+      return Page::BackForwardCacheNotRestoredReasonEnum::CacheControlNoStore;
+    case Reason::kCacheControlNoStoreCookieModified:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheControlNoStoreCookieModified;
+    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
+      return Page::BackForwardCacheNotRestoredReasonEnum::
+          CacheControlNoStoreHTTPOnlyCookieModified;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1569,6 +1577,9 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kBackForwardCacheDisabledForDelegate:
     case Reason::kBackForwardCacheDisabledForPrerender:
     case Reason::kServiceWorkerUnregistration:
+    case Reason::kCacheControlNoStore:
+    case Reason::kCacheControlNoStoreCookieModified:
+    case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kOptInUnloadHeaderNotPresent:
     case Reason::kUnloadHandlerExistsInSubFrame:

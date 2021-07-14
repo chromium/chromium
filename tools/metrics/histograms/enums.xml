@@ -48228,6 +48228,8 @@ from previous Chrome versions.
   <int value="-468697885" label="ArcInputMethod:enabled"/>
   <int value="-467792766" label="ReengagementNotification:enabled"/>
   <int value="-466704882" label="webview-log-js-console-messages"/>
+  <int value="-466164593"
+      label="CacheControlNoStoreEnterBackForwardCache:disabled"/>
   <int value="-465381408" label="Sharesheet:disabled"/>
   <int value="-462554210"
       label="OminboxUIExperimentUseGenericSearchEngineIcon:enabled"/>
@@ -50499,6 +50501,8 @@ from previous Chrome versions.
   <int value="1421620678" label="simple-clear-browsing-data-support-string"/>
   <int value="1424775876" label="ToolbarIphAndroid:enabled"/>
   <int value="1425103276" label="SharedHighlightingV2:enabled"/>
+  <int value="1427427985"
+      label="CacheControlNoStoreEnterBackForwardCache:enabled"/>
   <int value="1427905064" label="CreditCardAutofillTouchBar:enabled"/>
   <int value="1428004502" label="PaymentRequestOptionalTotal:enabled"/>
   <int value="1428221397" label="QueryTilesInNTP:enabled"/>
