@@ -163,9 +163,6 @@ config("ios_dynamic_flags") {
   ldflags = [
     # Always load Objective-C categories and class.
     "-Wl,-ObjC",
-
-    # Uses version 2 of Objective-C ABI.
-    "-Wl,-objc_abi_version,2",
   ]
 
   # The path to the Swift compatibility libraries (required to run code built
