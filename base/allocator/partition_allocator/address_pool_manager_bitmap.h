@@ -33,9 +33,15 @@ class BASE_EXPORT AddressPoolManagerBitmap {
   static constexpr uint64_t kAddressSpaceSize = 4ull * kGiB;
 
   // For BRP pool, we use partition page granularity to eliminate the guard
-  // pages at the ends. This is needed so that pointers to the end of an
-  // allocation that immediately precede a super page in BRP pool don't
-  // accidentally fall into that pool.
+  // pages from the bitmap at the ends:
+  // - Eliminating the guard page at the beginning is needed so that pointers
+  //   to the end of an allocation that immediately precede a super page in BRP
+  //   pool don't accidentally fall into that pool.
+  // - Eliminating the guard page at the end is to ensure that the last page
+  //   of the address space isn't in the BRP pool. This allows using sentinels
+  //   like reinterpret_cast<void*>(-1) without a risk of triggering BRP logic
+  //   on an invalid address. (Note, 64-bit systems don't have this problem as
+  //   the upper half of the address space always belongs to the OS.)
   //
   // Note, direct map allocations may also belong to this pool (depending on the
   // ENABLE_BRP_DIRECTMAP_SUPPORT setting). The same logic as above applies. It
