@@ -574,7 +574,8 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the manual fallback view is not duplicated after incognito.
-- (void)testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
+// TODO(crbug.com/1228283): Disabled due to flakiness.
+- (void)DISABLED_testReturningFromIncognitoDoesNotDuplicatesManualFallbackMenu {
   // Add the profile to use for verification.
   [AutofillAppInterface saveExampleProfile];
 
