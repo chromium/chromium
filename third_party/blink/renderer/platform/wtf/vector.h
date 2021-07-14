@@ -615,14 +615,22 @@ class VectorBuffer<T, 0, Allocator> : protected VectorBufferBase<T, Allocator> {
   }
 
   inline bool ShrinkBuffer(wtf_size_t new_capacity) {
+    DCHECK(buffer_);
     DCHECK_LT(new_capacity, capacity());
     size_t size_to_allocate = AllocationSize(new_capacity);
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+    ANNOTATE_DELETE_BUFFER(buffer_, capacity_, size_);
+#endif
+    bool succeeded = false;
     if (Allocator::ShrinkVectorBacking(buffer_, AllocationSize(capacity()),
                                        size_to_allocate)) {
       capacity_ = static_cast<wtf_size_t>(size_to_allocate / sizeof(T));
-      return true;
+      succeeded = true;
     }
-    return false;
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+#endif
+    return succeeded;
   }
 
   void ResetBufferPointer() {
@@ -729,6 +737,7 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
   }
 
   inline bool ShrinkBuffer(wtf_size_t new_capacity) {
+    DCHECK(buffer_);
     DCHECK_LT(new_capacity, capacity());
     if (new_capacity <= inlineCapacity) {
       // We need to switch to inlineBuffer.  Vector::ShrinkCapacity will
@@ -737,11 +746,19 @@ class VectorBuffer : protected VectorBufferBase<T, Allocator> {
     }
     DCHECK_NE(buffer_, InlineBuffer());
     size_t new_size = AllocationSize(new_capacity);
-    if (!Allocator::ShrinkVectorBacking(buffer_, AllocationSize(capacity()),
-                                        new_size))
-      return false;
-    capacity_ = static_cast<wtf_size_t>(new_size / sizeof(T));
-    return true;
+    bool succeeded = false;
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+    ANNOTATE_DELETE_BUFFER(buffer_, capacity_, size_);
+#endif
+    if (Allocator::ShrinkVectorBacking(buffer_, AllocationSize(capacity()),
+                                       new_size)) {
+      capacity_ = static_cast<wtf_size_t>(new_size / sizeof(T));
+      succeeded = true;
+    }
+#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
+    ANNOTATE_NEW_BUFFER(buffer_, capacity_, size_);
+#endif
+    return succeeded;
   }
 
   void ResetBufferPointer() {
@@ -1794,13 +1811,12 @@ void Vector<T, inlineCapacity, Allocator>::ReserveCapacity(
     Base::AllocateBuffer(new_capacity);
     return;
   }
-#ifdef ANNOTATE_CONTIGUOUS_CONTAINER
   wtf_size_t old_capacity = capacity();
-#endif
   // The Allocator::isGarbageCollected check is not needed.  The check is just
   // a static hint for a compiler to indicate that Base::expandBuffer returns
   // false if Allocator is a PartitionAllocator.
   if (Allocator::kIsGarbageCollected && Base::ExpandBuffer(new_capacity)) {
+    DCHECK_LE(old_capacity, capacity());
     ANNOTATE_CHANGE_CAPACITY(begin(), old_capacity, size_, capacity());
     return;
   }
@@ -1837,7 +1853,6 @@ void Vector<T, inlineCapacity, Allocator>::ShrinkCapacity(
 #endif
   if (new_capacity > 0) {
     if (Base::ShrinkBuffer(new_capacity)) {
-      ANNOTATE_CHANGE_CAPACITY(begin(), old_capacity, size_, capacity());
       return;
     }
 
