@@ -175,3 +175,7 @@ crbug.com/976497 [ android ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] TraceTest_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] TraceTest_WebGPU* [ Skip ]
+
+#######################################################################
+# Automated Entries After This Point - Do Not Manually Add Below Here #
+#######################################################################

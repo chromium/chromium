@@ -797,3 +797,7 @@ crbug.com/1037958 [ mac amd-0x679e ] conformance2/transform_feedback/switching-o
 # Conflicts if between a generic os condition and a specific version
 #[ sierra nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
 #[ mac nvidia debug angle-opengl ] WebglExtension_test_10 [ Failure ]
+
+#######################################################################
+# Automated Entries After This Point - Do Not Manually Add Below Here #
+#######################################################################

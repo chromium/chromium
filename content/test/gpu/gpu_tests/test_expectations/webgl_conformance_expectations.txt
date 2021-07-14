@@ -860,3 +860,7 @@ crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/textures/mis
 crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/misc/uninitialized-test.html [ Failure ]
 crbug.com/1134756 [ mac angle-swiftshader passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
 crbug.com/1190853 [ mac angle-swiftshader passthrough ] conformance/textures/misc/video-rotation.html [ Failure ]
+
+#######################################################################
+# Automated Entries After This Point - Do Not Manually Add Below Here #
+#######################################################################

@@ -62,3 +62,6 @@ crbug.com/1208827 [ chromeos-board-amd64-generic ] WebCodecs_Encode_capture_avc1
 
 crbug.com/1207682 [ android ] WebCodecs_* [ RetryOnFailure ]
 
+#######################################################################
+# Automated Entries After This Point - Do Not Manually Add Below Here #
+#######################################################################
