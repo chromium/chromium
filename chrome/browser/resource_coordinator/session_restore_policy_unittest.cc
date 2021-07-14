@@ -460,12 +460,10 @@ TEST_F(SessionRestorePolicyTest, NotificationPermissionSetUsedInBgBit) {
 
   // Allow |contents1_| to display notifications, this should cause the
   // |used_in_bg| bit to change to true.
-
-  const GURL kTestURL("https://foo.com/");
-  NotificationPermissionContext::UpdatePermission(profile(), kTestURL,
-                                                  CONTENT_SETTING_ALLOW);
-  content::WebContentsTester::For(contents1_.get())
-      ->SetLastCommittedURL(kTestURL);
+  NotificationPermissionContext::UpdatePermission(
+      profile(),
+      contents1_.get()->GetMainFrame()->GetLastCommittedOrigin().GetURL(),
+      CONTENT_SETTING_ALLOW);
 
   // Adding/Removing the tab for scoring will cause the callback to be called a
   // few times, ignore this.
@@ -479,9 +477,6 @@ TEST_F(SessionRestorePolicyTest, NotificationPermissionSetUsedInBgBit) {
   iter = policy_->tab_data_.find(contents1_.get());
   EXPECT_TRUE(iter != policy_->tab_data_.end());
   EXPECT_TRUE(iter->second->UsedInBg());
-
-  NotificationPermissionContext::UpdatePermission(profile(), kTestURL,
-                                                  CONTENT_SETTING_DEFAULT);
 }
 
 TEST_F(SessionRestorePolicyTest, MultipleAllTabsDoneCallbacks) {
@@ -635,20 +630,20 @@ TEST_F(SessionRestorePolicyTest, FeatureUsageSetUsedInBgBit) {
 
   base::RunLoop run_loop;
   performance_manager::PerformanceManager::CallOnGraph(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::WeakPtr<performance_manager::PageNode> page_node,
-             base::OnceClosure closure) {
-            EXPECT_TRUE(page_node);
-            auto* impl = performance_manager::GetSiteDataImplForPageNode(
-                page_node.get());
-            EXPECT_TRUE(impl);
-            impl->NotifyUpdatesTitleInBackground();
-            std::move(closure).Run();
-          },
-          performance_manager::PerformanceManager::
-              GetPrimaryPageNodeForWebContents(contents1_.get()),
-          run_loop.QuitClosure()));
+      FROM_HERE, base::BindOnce(
+                     [](base::WeakPtr<performance_manager::PageNode> page_node,
+                        base::OnceClosure closure) {
+                       EXPECT_TRUE(page_node);
+                       auto* impl =
+                           performance_manager::GetSiteDataImplForPageNode(
+                               page_node.get());
+                       EXPECT_TRUE(impl);
+                       impl->NotifyUpdatesTitleInBackground();
+                       std::move(closure).Run();
+                     },
+                     performance_manager::PerformanceManager::
+                         GetPrimaryPageNodeForWebContents(contents1_.get()),
+                     run_loop.QuitClosure()));
   run_loop.Run();
 
   // Adding/Removing the tab for scoring will cause the callback to be called a

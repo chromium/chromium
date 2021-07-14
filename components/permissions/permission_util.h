@@ -16,6 +16,7 @@
 namespace content {
 enum class PermissionType;
 class WebContents;
+class RenderFrameHost;
 }  // namespace content
 
 class GURL;
@@ -72,6 +73,8 @@ class PermissionUtil {
   // ultimately all call sites should be migrated to determine the authoritative
   // security origin based on the requesting RenderFrameHost.
   static GURL GetLastCommittedOriginAsURL(content::WebContents* web_contents);
+  static GURL GetLastCommittedOriginAsURL(
+      content::RenderFrameHost* render_frame_host);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(PermissionUtil);

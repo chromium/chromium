@@ -252,13 +252,19 @@ bool PermissionUtil::CanPermissionBeAllowedOnce(ContentSettingsType type) {
 GURL PermissionUtil::GetLastCommittedOriginAsURL(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
+  return GetLastCommittedOriginAsURL(web_contents->GetMainFrame());
+}
+
+GURL PermissionUtil::GetLastCommittedOriginAsURL(
+    content::RenderFrameHost* render_frame_host) {
+  DCHECK(render_frame_host);
   if (base::FeatureList::IsEnabled(features::kRevisedOriginHandling)) {
-    if (web_contents->GetLastCommittedURL().IsAboutBlank()) {
-      return web_contents->GetMainFrame()->GetLastCommittedOrigin().GetURL();
+    if (render_frame_host->GetLastCommittedURL().IsAboutBlank()) {
+      return render_frame_host->GetLastCommittedOrigin().GetURL();
     }
   }
 
-  return web_contents->GetLastCommittedURL().GetOrigin();
+  return render_frame_host->GetLastCommittedURL().GetOrigin();
 }
 
 }  // namespace permissions

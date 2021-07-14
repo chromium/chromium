@@ -61,16 +61,30 @@ class PermissionManager : public KeyedService,
   // ContentSettingsType enum. The methods which take PermissionType values
   // are for the content::PermissionControllerDelegate overrides and shouldn't
   // be used from chrome/.
-
+  // Deprecated. Use `RequestPermissionFromCurrentDocument` instead.
   void RequestPermission(ContentSettingsType permission,
                          content::RenderFrameHost* render_frame_host,
                          const GURL& requesting_origin,
                          bool user_gesture,
                          base::OnceCallback<void(ContentSetting)> callback);
+  // Deprecated. Use `RequestPermissionsFromCurrentDocument` instead.
   void RequestPermissions(
       const std::vector<ContentSettingsType>& permissions,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
+  void RequestPermissionFromCurrentDocument(
+      ContentSettingsType permission,
+      content::RenderFrameHost* render_frame_host,
+      bool user_gesture,
+      base::OnceCallback<void(ContentSetting)> callback);
+  // Requests the given `permission` on behalf of the last committed document in
+  // `render_frame_host`, also performing additional checks such as Permission
+  // Policy.
+  void RequestPermissionsFromCurrentDocument(
+      const std::vector<ContentSettingsType>& permissions,
+      content::RenderFrameHost* render_frame_host,
       bool user_gesture,
       base::OnceCallback<void(const std::vector<ContentSetting>&)> callback);
 
@@ -84,10 +98,18 @@ class PermissionManager : public KeyedService,
   // TODO(raymes): Currently we still pass the |requesting_origin| as a separate
   // parameter because we can't yet guarantee that it matches the last committed
   // origin of the RenderFrameHost. See crbug.com/698985.
+  // Deprecated. Use `GetPermissionStatusForCurrentDocument` instead.
   PermissionResult GetPermissionStatusForFrame(
       ContentSettingsType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin);
+
+  // Returns the status for the given `permission` on behalf of the last
+  // committed document in `render_frame_host`, also performing additional
+  // checks such as Permission Policy.
+  PermissionResult GetPermissionStatusForCurrentDocument(
+      ContentSettingsType permission,
+      content::RenderFrameHost* render_frame_host);
 
   // content::PermissionControllerDelegate implementation.
   void RequestPermission(

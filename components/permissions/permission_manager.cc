@@ -393,6 +393,28 @@ void PermissionManager::RequestPermissions(
   }
 }
 
+void PermissionManager::RequestPermissionFromCurrentDocument(
+    ContentSettingsType content_settings_type,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(ContentSetting)> callback) {
+  RequestPermissionsFromCurrentDocument(
+      std::vector<ContentSettingsType>(1, content_settings_type),
+      render_frame_host, user_gesture,
+      base::BindOnce(&ContentSettingCallbackWrapper, std::move(callback)));
+}
+
+void PermissionManager::RequestPermissionsFromCurrentDocument(
+    const std::vector<ContentSettingsType>& permissions,
+    content::RenderFrameHost* render_frame_host,
+    bool user_gesture,
+    base::OnceCallback<void(const std::vector<ContentSetting>&)> callback) {
+  RequestPermissions(
+      permissions, render_frame_host,
+      PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host),
+      user_gesture, std::move(callback));
+}
+
 PermissionResult PermissionManager::GetPermissionStatus(
     ContentSettingsType permission,
     const GURL& requesting_origin,
@@ -417,6 +439,14 @@ PermissionResult PermissionManager::GetPermissionStatusForFrame(
       PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   return GetPermissionStatusHelper(permission, render_frame_host,
                                    requesting_origin, embedding_origin);
+}
+
+PermissionResult PermissionManager::GetPermissionStatusForCurrentDocument(
+    ContentSettingsType permission,
+    content::RenderFrameHost* render_frame_host) {
+  GURL origin = PermissionUtil::GetLastCommittedOriginAsURL(render_frame_host);
+  return GetPermissionStatusHelper(permission, render_frame_host, origin,
+                                   origin);
 }
 
 void PermissionManager::RequestPermission(
