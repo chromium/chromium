@@ -24,11 +24,14 @@ class TabbedPane;
 class Widget;
 }  // namespace views
 
+namespace ash {
+enum class ShortcutCategory;
+}  // namespace ash
+
 namespace keyboard_shortcut_viewer {
 
 class KeyboardShortcutItemView;
 class KSVSearchBoxView;
-enum class ShortcutCategory;
 
 // The UI container for Ash and Chrome keyboard shortcuts.
 class KeyboardShortcutView : public views::WidgetDelegateView,
@@ -74,7 +77,7 @@ class KeyboardShortcutView : public views::WidgetDelegateView,
   // If |initial_category| has value, we will initialize the specified category,
   // otherwise all the categories will be intialized.
   void InitCategoriesTabbedPane(
-      absl::optional<ShortcutCategory> initial_category);
+      absl::optional<ash::ShortcutCategory> initial_category);
 
   // Update views' layout based on search box status.
   void UpdateViewsLayout(bool is_search_box_active);

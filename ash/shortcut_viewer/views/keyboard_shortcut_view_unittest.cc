@@ -132,9 +132,9 @@ TEST_F(KeyboardShortcutViewTest, SideTabsCount) {
   views::Widget* widget = Toggle();
 
   size_t category_number = 0;
-  ShortcutCategory current_category = ShortcutCategory::kUnknown;
+  ash::ShortcutCategory current_category = ash::ShortcutCategory::kUnknown;
   for (const auto& item_view : GetShortcutViews()) {
-    const ShortcutCategory category = item_view->category();
+    const ash::ShortcutCategory category = item_view->category();
     if (current_category != category) {
       DCHECK(current_category < category);
       ++category_number;
@@ -155,7 +155,7 @@ TEST_F(KeyboardShortcutViewTest, TopLineCenterAlignedInItemView) {
   for (const auto& item_view : GetShortcutViews()) {
     // We only initialize the first visible category and other non-visible panes
     // are deferred initialized.
-    if (item_view->category() != ShortcutCategory::kPopular)
+    if (item_view->category() != ash::ShortcutCategory::kPopular)
       continue;
 
     ASSERT_EQ(2u, item_view->children().size());

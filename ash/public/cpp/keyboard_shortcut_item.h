@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_SHORTCUT_VIEWER_KEYBOARD_SHORTCUT_ITEM_H_
-#define ASH_SHORTCUT_VIEWER_KEYBOARD_SHORTCUT_ITEM_H_
+#ifndef ASH_PUBLIC_CPP_KEYBOARD_SHORTCUT_ITEM_H_
+#define ASH_PUBLIC_CPP_KEYBOARD_SHORTCUT_ITEM_H_
 
 #include <vector>
 
-#include "ash/shortcut_viewer/ksv_export.h"
+#include "ash/public/cpp/ash_public_export.h"
 #include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
-namespace keyboard_shortcut_viewer {
+namespace ash {
 
 // The categories the shortcut belongs to. Used to group shortcuts in the
 // viewer. This order is significant as it determines the order in which the
@@ -32,7 +32,7 @@ enum class ShortcutCategory {
 // we cannot depend on them here. The key + modifiers are also used to populate
 // the values of |shortcut_key_codes| field in KeyboardShortcutItem, in order to
 // show the key and modifiers in the viewer with different styles.
-struct KSV_EXPORT AcceleratorId {
+struct ASH_PUBLIC_EXPORT AcceleratorId {
   bool operator<(const AcceleratorId& other) const;
 
   ui::KeyboardCode keycode = ui::VKEY_UNKNOWN;
@@ -53,7 +53,7 @@ struct KSV_EXPORT AcceleratorId {
 // (key) will be replaced by text "left arrow" so that users can search by
 // "left" and/or "arrow". But the UI representation of the key is an icon of
 // "left arrow".
-struct KSV_EXPORT KeyboardShortcutItem {
+struct ASH_PUBLIC_EXPORT KeyboardShortcutItem {
   KeyboardShortcutItem(
       const std::vector<ShortcutCategory>& categories,
       int description_message_id,
@@ -105,6 +105,6 @@ struct KSV_EXPORT KeyboardShortcutItem {
   std::vector<ui::KeyboardCode> shortcut_key_codes;
 };
 
-}  // namespace keyboard_shortcut_viewer
+}  // namespace ash
 
-#endif  // ASH_SHORTCUT_VIEWER_KEYBOARD_SHORTCUT_ITEM_H_
+#endif  // ASH_PUBLIC_CPP_KEYBOARD_SHORTCUT_ITEM_H_

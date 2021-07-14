@@ -5,7 +5,7 @@
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/shortcut_viewer/keyboard_shortcut_item.h"
+#include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "base/check.h"
@@ -30,6 +30,8 @@
 #include "ui/gfx/vector_icon_types.h"
 
 namespace keyboard_shortcut_viewer {
+
+using ash::ShortcutCategory;
 
 namespace {
 
@@ -282,8 +284,8 @@ const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
   }
 }
 
-const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
-  static base::NoDestructor<std::vector<KeyboardShortcutItem>> item_list({
+const std::vector<ash::KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
+  static base::NoDestructor<std::vector<ash::KeyboardShortcutItem>> item_list({
       {// |categories|
        {ShortcutCategory::kAccessibility},
        IDS_KSV_DESCRIPTION_TOGGLE_DOCKED_MAGNIFIER,
@@ -1541,7 +1543,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
 
     // Include diagnostics shortcuts only when experiment flag is enabled.
     if (base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp)) {
-      const KeyboardShortcutItem diagnostics_shortcut = {
+      const ash::KeyboardShortcutItem diagnostics_shortcut = {
           // |categories|
           {ShortcutCategory::kSystemAndDisplay},
           IDS_KSV_DESCRIPTION_OPEN_DIAGNOSTICS,
@@ -1575,7 +1577,7 @@ const std::vector<KeyboardShortcutItem>& GetKeyboardShortcutItemList() {
       if (item.shortcut_key_codes.empty() && !item.accelerator_ids.empty()) {
         // Only use the first |accelerator_id| because the modifiers are the
         // same even if it is a grouped accelerators.
-        const AcceleratorId& accelerator_id = item.accelerator_ids[0];
+        const ash::AcceleratorId& accelerator_id = item.accelerator_ids[0];
         // Insert |shortcut_key_codes| by the order of CTRL, ALT, SHIFT, SEARCH,
         // and then key, to be consistent with how we describe it in the
         // |shortcut_message_id| associated string template.

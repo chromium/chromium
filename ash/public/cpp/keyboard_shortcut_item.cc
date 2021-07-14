@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/shortcut_viewer/keyboard_shortcut_item.h"
+#include "ash/public/cpp/keyboard_shortcut_item.h"
 
 #include <tuple>
 
 #include "base/check.h"
 
-namespace keyboard_shortcut_viewer {
+namespace ash {
 
 bool AcceleratorId::operator<(const AcceleratorId& other) const {
   return std::tie(keycode, modifiers) <
@@ -34,4 +34,4 @@ KeyboardShortcutItem::KeyboardShortcutItem(const KeyboardShortcutItem& other) =
 
 KeyboardShortcutItem::~KeyboardShortcutItem() = default;
 
-}  // namespace keyboard_shortcut_viewer
+}  // namespace ash

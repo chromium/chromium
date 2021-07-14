@@ -7,7 +7,7 @@
 #include <memory>
 #include <vector>
 
-#include "ash/shortcut_viewer/keyboard_shortcut_item.h"
+#include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
 #include "ash/shortcut_viewer/vector_icons/vector_icons.h"
@@ -57,8 +57,8 @@ std::unique_ptr<views::View> CreateBubbleView(const std::u16string& bubble_text,
 }  // namespace
 
 KeyboardShortcutItemView::KeyboardShortcutItemView(
-    const KeyboardShortcutItem& item,
-    ShortcutCategory category)
+    const ash::KeyboardShortcutItem& item,
+    ash::ShortcutCategory category)
     : shortcut_item_(&item), category_(category) {
   description_label_view_ =
       AddChildView(std::make_unique<views::StyledLabel>());

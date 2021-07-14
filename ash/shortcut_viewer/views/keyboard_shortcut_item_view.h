@@ -5,7 +5,7 @@
 #ifndef ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_VIEW_H_
 #define ASH_SHORTCUT_VIEWER_VIEWS_KEYBOARD_SHORTCUT_ITEM_VIEW_H_
 
-#include "ash/shortcut_viewer/keyboard_shortcut_item.h"
+#include "ash/public/cpp/keyboard_shortcut_item.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -14,14 +14,11 @@ class StyledLabel;
 
 namespace keyboard_shortcut_viewer {
 
-struct KeyboardShortcutItem;
-enum class ShortcutCategory;
-
 // A view that displays a shortcut metadata.
 class KeyboardShortcutItemView : public views::View {
  public:
-  KeyboardShortcutItemView(const KeyboardShortcutItem& item,
-                           ShortcutCategory category);
+  KeyboardShortcutItemView(const ash::KeyboardShortcutItem& item,
+                           ash::ShortcutCategory category);
   ~KeyboardShortcutItemView() override = default;
 
   // views::View:
@@ -35,9 +32,11 @@ class KeyboardShortcutItemView : public views::View {
 
   views::StyledLabel* shortcut_label_view() { return shortcut_label_view_; }
 
-  ShortcutCategory category() const { return category_; }
+  ash::ShortcutCategory category() const { return category_; }
 
-  const KeyboardShortcutItem* shortcut_item() const { return shortcut_item_; }
+  const ash::KeyboardShortcutItem* shortcut_item() const {
+    return shortcut_item_;
+  }
 
   // Clear the cache.
   static void ClearKeycodeToString16Cache();
@@ -56,9 +55,9 @@ class KeyboardShortcutItemView : public views::View {
   void CalculateLayout(int width) const;
 
   // Not owned. Pointer to the keyboard shortcut item.
-  const KeyboardShortcutItem* shortcut_item_;
+  const ash::KeyboardShortcutItem* shortcut_item_;
 
-  const ShortcutCategory category_;
+  const ash::ShortcutCategory category_;
 
   // View of the text describing what action the shortcut performs.
   views::StyledLabel* description_label_view_;

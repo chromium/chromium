@@ -5,8 +5,6 @@
 # KSV: Keyboard Shortcut Viewer
 source_set("shortcut_viewer") {
   sources = [
-    "keyboard_shortcut_item.cc",
-    "keyboard_shortcut_item.h",
     "keyboard_shortcut_viewer_metadata.cc",
     "keyboard_shortcut_viewer_metadata.h",
     "ksv_export.h",
