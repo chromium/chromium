@@ -134,6 +134,14 @@ IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, PRE_DownloadedIconPersists) {
 
   EXPECT_EQ(app_data.status(), WebKioskAppData::Status::kLoaded);
   EXPECT_EQ(app_data.name(), kAppTitle);
+  const std::string* icon_url_string =
+      g_browser_process->local_state()
+          ->GetDictionary(WebKioskAppManager::kWebKioskDictionaryName)
+          ->FindDictKey(KioskAppDataBase::kKeyApps)
+          ->FindDictKey(kAppId)
+          ->FindStringKey(kLastIconUrlKey);
+  ASSERT_TRUE(icon_url_string);
+  ASSERT_EQ(*icon_url_string, test_server.GetURL(kIconUrl).spec());
 }
 
 IN_PROC_BROWSER_TEST_F(WebKioskAppDataTest, DownloadedIconPersists) {

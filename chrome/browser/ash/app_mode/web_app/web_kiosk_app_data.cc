@@ -289,7 +289,7 @@ void WebKioskAppData::OnDidDownloadIcon(const SkBitmap& icon) {
 
   dict_update->FindDictKey(KioskAppDataBase::kKeyApps)
       ->FindDictKey(app_id())
-      ->SetStringKey(kKeyLastIconUrl, launch_url_.spec());
+      ->SetStringKey(kKeyLastIconUrl, icon_url_.spec());
 
   SetStatus(Status::kLoaded);
 }
