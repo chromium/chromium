@@ -97,6 +97,7 @@ OobeTypes.OobeConfiguration;
  * Parameters passed to show PIN setup screen
  * @typedef {{
  *   auth_token: string,
+ *   is_child_account: boolean,
  * }}
  */
 OobeTypes.PinSetupScreenParameters;

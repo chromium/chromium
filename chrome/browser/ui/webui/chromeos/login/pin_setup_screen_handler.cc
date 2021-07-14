@@ -32,14 +32,26 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
   builder->Add("discoverPinSetupDone", IDS_DISCOVER_PIN_SETUP_DONE);
 
   builder->Add("discoverPinSetupTitle1", IDS_DISCOVER_PIN_SETUP_TITLE1);
+  builder->Add("discoverPinSetupTitle1ForChild",
+               IDS_DISCOVER_PIN_SETUP_TITLE1_CHILD);
   builder->Add("discoverPinSetupSubtitle1", IDS_DISCOVER_PIN_SETUP_SUBTITLE1);
+  builder->Add("discoverPinSetupSubtitle1ForChild",
+               IDS_DISCOVER_PIN_SETUP_SUBTITLE1_CHILD);
   builder->Add("discoverPinSetupSkip", IDS_DISCOVER_PIN_SETUP_SKIP);
   builder->Add("discoverPinSetupTitle2", IDS_DISCOVER_PIN_SETUP_TITLE2);
+  builder->Add("discoverPinSetupTitle2ForChild",
+               IDS_DISCOVER_PIN_SETUP_TITLE2_CHILD);
   builder->Add("discoverPinSetupTitle3", IDS_DISCOVER_PIN_SETUP_TITLE3);
+  builder->Add("discoverPinSetupTitle3ForChild",
+               IDS_DISCOVER_PIN_SETUP_TITLE3_CHILD);
   builder->Add("discoverPinSetupSubtitle3NoLogin",
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_NO_LOGIN);
+  builder->Add("discoverPinSetupSubtitle3NoLoginForChild",
+               IDS_DISCOVER_PIN_SETUP_SUBTITLE3_NO_LOGIN_CHILD);
   builder->Add("discoverPinSetupSubtitle3WithLogin",
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN);
+  builder->Add("discoverPinSetupSubtitle3WithLoginForChild",
+               IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN_CHILD);
 
   // Format numbers to be used on the pin keyboard.
   for (int j = 0; j <= 9; j++) {
@@ -80,9 +92,11 @@ void PinSetupScreenHandler::Hide() {}
 void PinSetupScreenHandler::Initialize() {
 }
 
-void PinSetupScreenHandler::Show(const std::string& token) {
+void PinSetupScreenHandler::Show(const std::string& token,
+                                 bool is_child_account) {
   base::DictionaryValue data;
   data.SetKey("auth_token", base::Value(token));
+  data.SetBoolean("is_child_account", is_child_account);
   ShowScreenWithData(kScreenId, &data);
 }
 

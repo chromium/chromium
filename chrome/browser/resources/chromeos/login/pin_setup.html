@@ -32,13 +32,28 @@
     <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
       <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
       <h1 slot="title" for-step="start">
-        [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+        <div hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupTitle1')]]
+        </div>
+        <div hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupTitle1ForChild')]]
+        </div>
       </h1>
       <h1 slot="title" for-step="confirm">
-        [[i18nDynamic(locale, 'discoverPinSetupTitle2')]]
+        <div hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupTitle2')]]
+        </div>
+        <div hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupTitle2ForChild')]]
+        </div>
       </h1>
       <div slot="subtitle" for-step="start">
-        [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+        <div hidden="[[isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle1')]]
+        </div>
+        <div hidden="[[!isChildAccount_]]">
+          [[i18nDynamic(locale, 'discoverPinSetupSubtitle1ForChild')]]
+        </div>
       </div>
       <div slot="content" class="flex-grow layout vertical center
           center-justified">
@@ -73,15 +88,29 @@
     <oobe-adaptive-dialog id="setup" role="dialog" for-step="done"
         footer-shrinkable>
       <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-      <h1 slot="title">
+      <h1 slot="title" hidden="[[isChildAccount_]]">
         [[i18nDynamic(locale, 'discoverPinSetupTitle3')]]
+      </h1>
+      <h1 slot="title" hidden="[[!isChildAccount_]]">
+        [[i18nDynamic(locale, 'discoverPinSetupTitle3ForChild')]]
       </h1>
       <div slot="subtitle">
         <div hidden="[[hasLoginSupport_]]">
-          [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLogin')]]
+          <div hidden="[[isChildAccount_]]">
+            [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLogin')]]
+          </div>
+          <div hidden="[[!isChildAccount_]]">
+            [[i18nDynamic(locale, 'discoverPinSetupSubtitle3NoLoginForChild')]]
+          </div>
         </div>
         <div hidden="[[!hasLoginSupport_]]">
-          [[i18nDynamic(locale, 'discoverPinSetupSubtitle3WithLogin')]]
+          <div hidden="[[isChildAccount_]]">
+            [[i18nDynamic(locale, 'discoverPinSetupSubtitle3WithLogin')]]
+          </div>
+          <div hidden="[[!isChildAccount_]]">
+            [[i18nDynamic(locale,
+                'discoverPinSetupSubtitle3WithLoginForChild')]]
+          </div>
         </div>
       </div>
       <div slot="content" class="flex layout vertical center

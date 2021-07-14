@@ -25,6 +25,7 @@
 #include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
+#include "components/user_manager/user_manager.h"
 
 namespace ash {
 namespace {
@@ -191,9 +192,11 @@ void PinSetupScreen::ShowImpl() {
 
   const std::string token =
       quick_unlock_storage->CreateAuthToken(*user_context);
+  bool is_child_account =
+      user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   if (view_)
-    view_->Show(token);
+    view_->Show(token, is_child_account);
 
   chromeos::quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
       base::BindOnce(&PinSetupScreen::OnHasLoginSupport,

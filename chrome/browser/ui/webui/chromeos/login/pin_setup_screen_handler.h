@@ -26,7 +26,7 @@ class PinSetupScreenView {
   virtual void Bind(ash::PinSetupScreen* screen) = 0;
 
   // Shows the contents of the screen, using |token| to access QuickUnlock API.
-  virtual void Show(const std::string& token) = 0;
+  virtual void Show(const std::string& token, bool is_child_account) = 0;
 
   // Hides the contents of the screen.
   virtual void Hide() = 0;
@@ -53,7 +53,7 @@ class PinSetupScreenHandler : public BaseScreenHandler,
   void Bind(ash::PinSetupScreen* screen) override;
   void Hide() override;
   void Initialize() override;
-  void Show(const std::string& token) override;
+  void Show(const std::string& token, bool is_child_account) override;
   void SetLoginSupportAvailable(bool available) override;
 
  private:
