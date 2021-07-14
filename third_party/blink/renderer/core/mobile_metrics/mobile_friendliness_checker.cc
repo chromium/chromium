@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/viewport_description.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
 
@@ -168,13 +169,14 @@ int ExtractAndCountAllTapTargets(
         object = object->NextInPreOrder();
         continue;
       }
-      const int top = rect.Y() - finger_radius;
-      const int bottom = rect.MaxY() + finger_radius;
-      const int left = rect.X() - finger_radius;
-      const int right = rect.MaxX() + finger_radius;
-      const int center = (left + right) / 2;
+      const int top = clampTo<int>(rect.Y() - finger_radius);
+      const int bottom = clampTo<int>(rect.MaxY() + finger_radius);
+      const int left = clampTo<int>(rect.X() - finger_radius);
+      const int right = clampTo<int>(rect.MaxX() + finger_radius);
+      const int center = left + (right - left) / 2;
       vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
-      vertices.emplace_back((top + bottom) / 2, EdgeOrCenter::Center(center));
+      vertices.emplace_back(top + (bottom - top) / 2,
+                            EdgeOrCenter::Center(center));
       vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
       x_positions.push_back(left);
       x_positions.push_back(right);
