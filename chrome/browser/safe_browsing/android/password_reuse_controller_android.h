@@ -41,13 +41,24 @@ class PasswordReuseControllerAndroid
   // Called by |ChromePasswordProtectionService| when modal dialog needs to be
   // shown.
   void ShowDialog();
-  // Called by |PasswordReuseDialogViewAndroid| when the dialog is closed from
-  // Java side.
+
+  // Called by |PasswordReuseDialogViewAndroid| when the option to open the
+  // CheckPasswords page is selected by the user and needs to be shown.
+  void ShowCheckPasswords();
+
+  // Called by |PasswordReuseDialogViewAndroid| when the option to ignore the
+  // modal dialog is selected by the user.
+  void IgnoreDialog();
+
+  // Called by |PasswordReuseDialogViewAndroid| when the dialog is closed
+  // through some other means than the modal dialog Ignore button.
   void CloseDialog();
 
   // The following functions are called from |PasswordReuseDialogViewAndroid|,
   // to get text shown on the dialog.
-  std::u16string GetButtonText() const;
+  std::u16string GetPrimaryButtonText() const;
+  std::u16string GetSecondaryButtonText() const;
+
   // Get the detailed warning text that should show in the modal warning dialog.
   // |placeholder_offsets| are the start points/indices of the placeholders that
   // are passed into the resource string.

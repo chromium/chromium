@@ -7,9 +7,13 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/feature_list.h"
+#include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/ui/android/safe_browsing/password_reuse_dialog_view_android.h"
 #include "components/safe_browsing/core/browser/password_protection/metrics_util.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/strings/grit/components_strings.h"
+#include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace safe_browsing {
@@ -25,29 +29,68 @@ PasswordReuseControllerAndroid::PasswordReuseControllerAndroid(
       window_android_(web_contents->GetTopLevelNativeWindow()),
       done_callback_(std::move(done_callback)) {
   modal_construction_start_time_ = base::TimeTicks::Now();
-  service_->AddObserver(this);
+
+  // |service| can be nullptr in tests
+  if (service)
+    service_->AddObserver(this);
 }
 
 PasswordReuseControllerAndroid::~PasswordReuseControllerAndroid() {
-  service_->RemoveObserver(this);
+  if (service_)
+    service_->RemoveObserver(this);
+
   dialog_view_.reset();
   LogModalWarningDialogLifetime(modal_construction_start_time_);
 }
 
 void PasswordReuseControllerAndroid::ShowDialog() {
   dialog_view_ = std::make_unique<PasswordReuseDialogViewAndroid>(this);
+
   DCHECK(window_android_);
   dialog_view_->Show(window_android_);
+}
+
+void PasswordReuseControllerAndroid::ShowCheckPasswords() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+
+  PasswordCheckupLauncherHelper::LaunchLocalCheckup(
+      env, window_android_->GetJavaObject());
+
+  if (done_callback_)
+    std::move(done_callback_).Run(WarningAction::CHANGE_PASSWORD);
+
+  delete this;
+}
+
+void PasswordReuseControllerAndroid::IgnoreDialog() {
+  if (done_callback_)
+    std::move(done_callback_).Run(WarningAction::IGNORE_WARNING);
+
+  delete this;
 }
 
 void PasswordReuseControllerAndroid::CloseDialog() {
   if (done_callback_)
     std::move(done_callback_).Run(WarningAction::CLOSE);
+
   delete this;
 }
 
-std::u16string PasswordReuseControllerAndroid::GetButtonText() const {
-  return l10n_util::GetStringUTF16(IDS_CLOSE);
+std::u16string PasswordReuseControllerAndroid::GetPrimaryButtonText() const {
+  return base::FeatureList::IsEnabled(
+             safe_browsing::
+                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
+             ? l10n_util::GetStringUTF16(IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON)
+             : l10n_util::GetStringUTF16(IDS_CLOSE);
+}
+
+std::u16string PasswordReuseControllerAndroid::GetSecondaryButtonText() const {
+  return base::FeatureList::IsEnabled(
+             safe_browsing::
+                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)
+             ? l10n_util::GetStringUTF16(
+                   IDS_PAGE_INFO_IGNORE_PASSWORD_WARNING_BUTTON)
+             : std::u16string();
 }
 
 std::u16string PasswordReuseControllerAndroid::GetWarningDetailText(

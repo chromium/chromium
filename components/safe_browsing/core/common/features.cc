@@ -99,6 +99,11 @@ const base::Feature kRealTimeUrlLookupReferrerChain{
     "SafeBrowsingRealTimeUrlLookupReferrerChain",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
+const base::Feature
+    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid{
+        "SafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid",
+        base::FEATURE_DISABLED_BY_DEFAULT};
+
 const base::Feature kSafeBrowsingSeparateNetworkContexts {
   "SafeBrowsingSeparateNetworkContexts",
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
@@ -158,6 +163,7 @@ constexpr struct {
     {&kClientSideDetectionReferrerChain, true},
     {&kClientSideDetectionWithToken, true},
     {&kDelayedWarnings, true},
+    {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kPasswordProtectionForSignedInUsers, true},
     {&kPasswordProtectionWithToken, true},
     {&kRealTimeUrlLookupReferrerChain, true},

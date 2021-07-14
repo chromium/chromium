@@ -5821,6 +5821,16 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kEnhancedProtectionPromoAndroidName,
      flag_descriptions::kEnhancedProtectionPromoAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kEnhancedProtectionPromoCard)},
+
+    {"safe-browsing-passwordcheck-integration-for-saved-passwords-android",
+     flag_descriptions::
+         kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidName,
+     flag_descriptions::
+         kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         safe_browsing::
+             kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

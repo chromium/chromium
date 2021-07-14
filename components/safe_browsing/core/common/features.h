@@ -93,6 +93,11 @@ extern const base::Feature kSafeBrowsingEnterpriseCsd;
 // the enterprise download checks.
 extern const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise;
 
+// Controls whether Safe Browsing password reuse warnings are updated with
+// a "Check passwords" button integrated with the CheckPasswords page.
+extern const base::Feature
+    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid;
+
 // Controls whether Safe Browsing uses separate NetworkContexts for each
 // profile.
 extern const base::Feature kSafeBrowsingSeparateNetworkContexts;

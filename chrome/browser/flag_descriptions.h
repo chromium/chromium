@@ -1984,6 +1984,11 @@ extern const char kRequestDesktopSiteForTabletsDescription[];
 extern const char kSafeBrowsingClientSideDetectionAndroidName[];
 extern const char kSafeBrowsingClientSideDetectionAndroidDescription[];
 
+extern const char
+    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidName[];
+extern const char
+    kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroidDescription[];
+
 extern const char kEnhancedProtectionPromoAndroidName[];
 extern const char kEnhancedProtectionPromoAndroidDescription[];
 
