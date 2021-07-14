@@ -19,8 +19,6 @@ let lastChanged = null;
 let lastFocused = null;
 const restartButton = $('experiment-restart-button');
 
-let pageLoadOnResetAllFlags = false;
-
 /** @type {?function():void} */
 let experimentalFeaturesResolver = null;
 
@@ -154,16 +152,6 @@ function registerFocusEvents(el) {
 }
 
 /**
- * Set focus on the element associated with the page's location's hash.
- */
-function setFocusOnReferencedFlag() {
-  const anchor = window.location.hash;
-  if (anchor != '') {
-    $(anchor.substr(1) + '_name').focus();
-  }
-}
-
-/**
  * Highlight an element associated with the page's location's hash. We need to
  * fake fragment navigation with '.scrollIntoView()', since the fragment IDs
  * don't actually exist until after the template code runs; normal navigation
@@ -224,7 +212,6 @@ function resetAllFlags() {
   announceStatus(loadTimeData.getString("reset-acknowledged"));
   showRestartToast(true);
   requestExperimentalFeaturesData();
-  pageLoadOnResetAllFlags = true;
 }
 
 /**
@@ -324,10 +311,6 @@ function returnExperimentalFeatures(experimentalFeaturesData) {
   const ownerWarningDiv = $('owner-warning');
   if (ownerWarningDiv) {
     ownerWarningDiv.hidden = !experimentalFeaturesData.showOwnerWarning;
-  }
-
-  if (!pageLoadOnResetAllFlags) {
-    setFocusOnReferencedFlag();
   }
 
   experimentalFeaturesResolver();
@@ -696,5 +679,3 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Update the highlighted flag when the hash changes.
 window.addEventListener('hashchange', highlightReferencedFlag);
-// Set focus on referenced flag when the hash changes.
-window.addEventListener('hashchange', setFocusOnReferencedFlag);

@@ -83,7 +83,7 @@
               <div class="flex">
                 <h3 class="experiment-name" jscontent="name"
                     jsvalues="title: is_default ? '' : '$i18n{experiment-enabled}';
-                        id:internal_name + '_name'" tabindex="-1"></h3>
+                        id:internal_name + '_name'"></h3>
                 <p>
                   <span jsvalues=".textContent:description"></span> –
                   <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
@@ -130,7 +130,7 @@
               <div class="flex">
                 <h3 class="experiment-name" jscontent="name"
                     jsvalues="title: is_default ? '' : '$i18n{experiment-enabled}';
-                        id:internal_name + '_name'" tabindex="-1"></h3>
+                        id:internal_name + '_name'"></h3>
                 <p>
                   <span jsvalues=".textContent:description"></span> –
                   <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
@@ -186,9 +186,8 @@
                 jsvalues="class: is_default ? 'experiment-default flex-container'
                     : 'experiment-switched flex-container'">
               <div class="flex">
-                <h3 class="experiment-name" jscontent="name"
-                  jsvalues="id:internal_name + '_name'" tabindex="-1">
-                </h3>
+                <h3 class="experiment-name"
+                    jscontent="name"></h3>
                 <p>
                   <span jsvalues=".textContent:description"></span>
                   <span class="platforms" jscontent="supported_platforms.join(', ')"></span>
