@@ -22,6 +22,9 @@ namespace {
 
 using Result = blink::mojom::DeviceAttributeResult;
 
+const char kNotAffiliatedErrorMessage[] =
+    "This web API is not allowed if the current profile is not affiliated.";
+
 const char kNotAllowedOriginErrorMessage[] =
     "The current origin cannot use this web API because it is not allowed by "
     "the DeviceAttributesAllowedForOrigins policy.";
@@ -49,6 +52,11 @@ void AdaptLacrosResult(
 #endif
 
 }  // namespace
+
+void ReportNotAffiliatedError(
+    base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
+  std::move(callback).Run(Result::NewErrorMessage(kNotAffiliatedErrorMessage));
+}
 
 void ReportNotAllowedError(
     base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {

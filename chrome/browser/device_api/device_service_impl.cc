@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
+#include "components/user_manager/user_manager.h"
 #endif
 
 namespace {
@@ -72,8 +73,22 @@ bool IsForceInstalledOrigin(const PrefService* prefs,
   });
 }
 
+const Profile* GetProfile(content::RenderFrameHost* host) {
+  return Profile::FromBrowserContext(host->GetBrowserContext());
+}
+
 const PrefService* GetPrefs(content::RenderFrameHost* host) {
-  return Profile::FromBrowserContext(host->GetBrowserContext())->GetPrefs();
+  return GetProfile(host)->GetPrefs();
+}
+
+bool IsAffiliatedUser() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  return user && user->IsAffiliated();
+#else
+  return false;
+#endif
 }
 
 bool IsTrustedContext(content::RenderFrameHost* host,
@@ -81,6 +96,10 @@ bool IsTrustedContext(content::RenderFrameHost* host,
   // TODO(anqing): This feature flag is turned on by default for origin trial.
   // The flag will be removed when permission policies are ready.
   if (!base::FeatureList::IsEnabled(features::kEnableRestrictedWebApis))
+    return false;
+
+  // Do not create the service for the incognito mode.
+  if (GetProfile(host)->IsIncognitoProfile())
     return false;
 
   if (chrome::IsRunningInAppMode()) {
@@ -170,6 +189,11 @@ void DeviceServiceImpl::GetAnnotatedLocation(
 void DeviceServiceImpl::GetDeviceAttribute(
     base::OnceCallback<void(DeviceAttributeCallback)> handler,
     DeviceAttributeCallback callback) {
+  if (!IsAffiliatedUser()) {
+    device_attribute_api::ReportNotAffiliatedError(std::move(callback));
+    return;
+  }
+
   if (!CanAccessDeviceAttributes(GetPrefs(host_), origin())) {
     device_attribute_api::ReportNotAllowedError(std::move(callback));
     return;
