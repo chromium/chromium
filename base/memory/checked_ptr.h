@@ -156,7 +156,7 @@ struct BackupRefPtrImpl {
       DCHECK(ptr != nullptr);
       AcquireInternal(ptr);
     }
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if !defined(PA_HAS_64_BITS_POINTERS)
     else
       AddressPoolManagerBitmap::IncrementOutsideOfBRPPoolPtrRefCount(ptr);
 #endif
@@ -170,7 +170,7 @@ struct BackupRefPtrImpl {
       DCHECK(wrapped_ptr != nullptr);
       ReleaseInternal(wrapped_ptr);
     }
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if !defined(PA_HAS_64_BITS_POINTERS)
     else
       AddressPoolManagerBitmap::DecrementOutsideOfBRPPoolPtrRefCount(
           wrapped_ptr);

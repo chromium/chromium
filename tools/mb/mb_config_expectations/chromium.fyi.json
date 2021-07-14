@@ -439,7 +439,6 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_brp_pool_blocklist": true,
       "use_goma": true
     }
   },
@@ -459,7 +458,6 @@
       "target_os": "android",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_brp_pool_blocklist": true,
       "use_goma": true
     }
   },
@@ -803,7 +801,6 @@
       "target_cpu": "x64",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_brp_pool_blocklist": true,
       "use_goma": true
     }
   },
@@ -1086,7 +1083,6 @@
       "target_cpu": "x64",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_brp_pool_blocklist": true,
       "use_goma": true
     }
   },
@@ -1103,7 +1099,6 @@
       "target_cpu": "x86",
       "use_allocator": "partition",
       "use_backup_ref_ptr": true,
-      "use_brp_pool_blocklist": true,
       "use_goma": true
     }
   },

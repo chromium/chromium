@@ -73,16 +73,13 @@ declare_args() {
   # - put_ref_count_in_previous_slot: place the ref-count at the end of the
   #   previous slot (or in metadata if a slot starts on the page boundary), as
   #   opposed to the beginning of the slot.
-  # - use_brp_pool_blocklist: ensure that a non-BRP memory region can't be
-  #   reused for the BRP pool while associated CheckedPtr instances exist
   # - never_remove_from_brp_pool_blocklist: never remove super-pages from the
-  #   BRP-pool block list (use only if use_brp_pool_blocklist is on)
+  #   BRP-pool block list
   # - enable_backup_ref_ptr_slow_checks: enable additional safety checks that
   #   are too expensive to have on by default.
   enable_runtime_backup_ref_ptr_control = false
   enable_backup_ref_ptr_in_renderer_process = false
   put_ref_count_in_previous_slot = false
-  use_brp_pool_blocklist = false
   never_remove_from_brp_pool_blocklist = false
   enable_backup_ref_ptr_slow_checks = false
 }
@@ -139,16 +136,11 @@ assert(
     use_backup_ref_ptr || !put_ref_count_in_previous_slot,
     "Can't put ref count in the previous slot if BackupRefPtr isn't enabled at all")
 
-# use_brp_pool_blocklist can only be used if use_backup_ref_ptr
-# is true.
-assert(use_backup_ref_ptr || !use_brp_pool_blocklist,
-       "The BRP pool blocklist is a BackupRefPtr-specific feature")
-
-# never_remove_from_brp_pool_blocklist can only be used if use_brp_pool_blocklist
+# never_remove_from_brp_pool_blocklist can only be used if use_backup_ref_ptr
 # is true.
 assert(
-    use_brp_pool_blocklist || !never_remove_from_brp_pool_blocklist,
-    "never_remove_from_brp_pool_blocklist requires the BRP pool block-list to be enabled")
+    use_backup_ref_ptr || !never_remove_from_brp_pool_blocklist,
+    "never_remove_from_brp_pool_blocklist requires BackupRefPtr to be enabled")
 
 # enable_backup_ref_ptr_slow_checks can only be used if use_backup_ref_ptr
 # is true.

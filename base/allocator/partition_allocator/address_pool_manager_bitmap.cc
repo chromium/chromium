@@ -26,7 +26,7 @@ std::bitset<AddressPoolManagerBitmap::kNonBRPPoolBits>
     AddressPoolManagerBitmap::non_brp_pool_bits_;  // GUARDED_BY(GetLock())
 std::bitset<AddressPoolManagerBitmap::kBRPPoolBits>
     AddressPoolManagerBitmap::brp_pool_bits_;  // GUARDED_BY(GetLock())
-#if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
 std::array<std::atomic_bool,
            AddressPoolManagerBitmap::kAddressSpaceSize / kSuperPageSize>
@@ -35,7 +35,7 @@ std::array<std::atomic_bool,
 std::array<std::atomic_uint32_t,
            AddressPoolManagerBitmap::kAddressSpaceSize / kSuperPageSize>
     AddressPoolManagerBitmap::super_page_refcount_map_;
-#endif  // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 }  // namespace internal
 }  // namespace base
 

@@ -303,7 +303,6 @@ buildflag_header("buildflags") {
       enable_backup_ref_ptr_in_renderer_process && _use_backup_ref_ptr
   _put_ref_count_in_previous_slot =
       put_ref_count_in_previous_slot && _use_backup_ref_ptr
-  _use_brp_pool_blocklist = use_brp_pool_blocklist && _use_backup_ref_ptr
   _never_remove_from_brp_pool_from_blocklist =
       never_remove_from_brp_pool_blocklist && _use_backup_ref_ptr
   _enable_backup_ref_ptr_slow_checks =
@@ -332,7 +331,6 @@ buildflag_header("buildflags") {
     "ENABLE_BACKUP_REF_PTR_IN_RENDERER_PROCESS=$_enable_backup_ref_ptr_in_renderer_process",
     "ENABLE_BACKUP_REF_PTR_SLOW_CHECKS=$_enable_backup_ref_ptr_slow_checks",
     "PUT_REF_COUNT_IN_PREVIOUS_SLOT=$_put_ref_count_in_previous_slot",
-    "USE_BRP_POOL_BLOCKLIST=$_use_brp_pool_blocklist",
     "NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST=$_never_remove_from_brp_pool_from_blocklist",
     "USE_DEDICATED_PARTITION_FOR_ALIGNED_ALLOC=$_use_dedicated_partition_for_aligned_alloc",
   ]

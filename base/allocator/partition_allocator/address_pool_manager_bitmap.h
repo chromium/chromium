@@ -102,7 +102,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
         brp_pool_bits_)[address_as_uintptr >> kBitShiftOfBRPPoolBitmap];
   }
 
-#if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
   static void IncrementOutsideOfBRPPoolPtrRefCount(const void* address) {
     uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
 
@@ -153,7 +153,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
                std::memory_order_relaxed) == 0;
 #endif
   }
-#endif  // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
  private:
   friend class AddressPoolManager;
@@ -162,14 +162,14 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 
   static std::bitset<kNonBRPPoolBits> non_brp_pool_bits_ GUARDED_BY(GetLock());
   static std::bitset<kBRPPoolBits> brp_pool_bits_ GUARDED_BY(GetLock());
-#if BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   static std::array<std::atomic_bool, kAddressSpaceSize / kSuperPageSize>
       brp_forbidden_super_page_map_;
 #endif
   static std::array<std::atomic_uint32_t, kAddressSpaceSize / kSuperPageSize>
       super_page_refcount_map_;
-#endif  // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 };
 
 }  // namespace internal

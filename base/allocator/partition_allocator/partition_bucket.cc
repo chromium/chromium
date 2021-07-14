@@ -47,7 +47,7 @@ template <bool thread_safe>
   IMMEDIATE_CRASH();  // Not required, kept as documentation.
 }
 
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
 // |start| has to be aligned to kSuperPageSize, but |end| doesn't. This means
 // that a partial super page is allowed at the end. Since the block list uses
 // kSuperPageSize granularity, a partial super page is considered blocked if
@@ -64,8 +64,7 @@ bool AreAllowedSuperPagesForBRPPool(const char* start, const char* end) {
   }
   return true;
 }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
-        // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
 
 // Reserves |requested_size| worth of super pages from the specified pool of the
 // GigaCage. If BRP pool is requested this function will honor BRP block list.
@@ -94,7 +93,7 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
 
   // In 32-bit mode, when allocating from BRP pool, verify that the requested
   // allocation honors the block list. Find a better address otherwise.
-#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#if !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
   if (pool == GetBRPPool()) {
     constexpr int kMaxRandomAddressTries = 10;
     for (int i = 0; i < kMaxRandomAddressTries; ++i) {
@@ -135,8 +134,7 @@ char* ReserveMemoryFromGigaCage(pool_handle pool,
       ptr = nullptr;
     }
   }
-#endif  // !defined(PA_HAS_64_BITS_POINTERS) &&
-        // BUILDFLAG(USE_BRP_POOL_BLOCKLIST)
+#endif  // !defined(PA_HAS_64_BITS_POINTERS) && BUILDFLAG(USE_BACKUP_REF_PTR)
 
 #if !defined(PA_HAS_64_BITS_POINTERS)
   // Only mark the region as belonging to the pool after it has passed the
