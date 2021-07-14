@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.toolbar.adaptive;
 
+import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED;
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS;
 
 import android.content.Context;
@@ -251,7 +252,8 @@ public class AdaptiveToolbarButtonController implements ButtonDataProvider, Butt
 
     @Override
     public void onPreferenceChanged(String key) {
-        if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)) {
+        if (ADAPTIVE_TOOLBAR_CUSTOMIZATION_SETTINGS.equals(key)
+                || ADAPTIVE_TOOLBAR_CUSTOMIZATION_ENABLED.equals(key)) {
             assert AdaptiveToolbarFeatures.isCustomizationEnabled();
             new AdaptiveToolbarStatePredictor().recomputeUiState(uiState -> {
                 setSingleProvider(uiState.canShowUi
