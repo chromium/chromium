@@ -335,11 +335,6 @@ KeyframeEffect::CheckCanStartAnimationOnCompositor(
         effect_target_->GetComputedStyle()->HasOffset())
       reasons |= CompositorAnimations::kTargetHasCSSOffset;
 
-    // Do not put transforms on compositor if more than one of them are defined
-    // in computed style because they need to be explicitly ordered
-    if (HasMultipleTransformProperties())
-      reasons |= CompositorAnimations::kTargetHasMultipleTransformProperties;
-
     reasons |= CompositorAnimations::CheckCanStartAnimationOnCompositor(
         SpecifiedTiming(), *effect_target_, GetAnimation(), *Model(),
         paint_artifact_compositor, animation_playback_rate,
@@ -721,26 +716,9 @@ bool KeyframeEffect::HasIncompatibleStyle() const {
           return true;
       }
     }
-    return HasMultipleTransformProperties();
   }
 
   return false;
-}
-
-bool KeyframeEffect::HasMultipleTransformProperties() const {
-  if (!effect_target_->GetComputedStyle())
-    return false;
-
-  unsigned transform_property_count = 0;
-  if (effect_target_->GetComputedStyle()->HasTransformOperations())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Rotate())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Scale())
-    transform_property_count++;
-  if (effect_target_->GetComputedStyle()->Translate())
-    transform_property_count++;
-  return transform_property_count > 1;
 }
 
 ActiveInterpolationsMap KeyframeEffect::InterpolationsForCommitStyles() {

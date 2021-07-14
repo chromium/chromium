@@ -458,6 +458,10 @@ float KeyframeEffect::MaximumScale(ElementListType list_type) const {
 bool KeyframeEffect::IsPotentiallyAnimatingProperty(
     TargetProperty::Type target_property,
     ElementListType list_type) const {
+  // For transform related properties, call
+  // IsPotentiallyAnimatingTransformRelatedProperty instead.
+  DCHECK(target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
+         target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY);
   for (const auto& keyframe_model : keyframe_models()) {
     if (!keyframe_model->is_finished() &&
         keyframe_model->TargetProperty() == target_property) {
@@ -473,9 +477,36 @@ bool KeyframeEffect::IsPotentiallyAnimatingProperty(
   return false;
 }
 
+bool KeyframeEffect::IsPotentiallyAnimatingTransformRelatedProperty(
+    ElementListType list_type) const {
+  for (const auto& keyframe_model : keyframe_models()) {
+    if (keyframe_model->is_finished())
+      continue;
+
+    int target_property = keyframe_model->TargetProperty();
+
+    if (target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
+        target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY)
+      continue;
+
+    auto* cc_keyframe_model =
+        KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+    if ((list_type == ElementListType::ACTIVE &&
+         cc_keyframe_model->affects_active_elements()) ||
+        (list_type == ElementListType::PENDING &&
+         cc_keyframe_model->affects_pending_elements()))
+      return true;
+  }
+  return false;
+}
+
 bool KeyframeEffect::IsCurrentlyAnimatingProperty(
     TargetProperty::Type target_property,
     ElementListType list_type) const {
+  // For transform related properties, call
+  // IsCurrentlyAnimatingTransformRelatedProperty instead.
+  DCHECK(target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
+         target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY);
   for (const auto& keyframe_model : keyframe_models()) {
     auto* cc_keyframe_model =
         KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
@@ -489,6 +520,30 @@ bool KeyframeEffect::IsCurrentlyAnimatingProperty(
            cc_keyframe_model->affects_pending_elements()))
         return true;
     }
+  }
+  return false;
+}
+
+bool KeyframeEffect::IsCurrentlyAnimatingTransformRelatedProperty(
+    ElementListType list_type) const {
+  for (const auto& keyframe_model : keyframe_models()) {
+    auto* cc_keyframe_model =
+        KeyframeModel::ToCcKeyframeModel(keyframe_model.get());
+    if (keyframe_model->is_finished() ||
+        !cc_keyframe_model->InEffect(
+            last_tick_time_.value_or(base::TimeTicks())))
+      continue;
+
+    int target_property = keyframe_model->TargetProperty();
+    if (target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
+        target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY)
+      continue;
+
+    if ((list_type == ElementListType::ACTIVE &&
+         cc_keyframe_model->affects_active_elements()) ||
+        (list_type == ElementListType::PENDING &&
+         cc_keyframe_model->affects_pending_elements()))
+      return true;
   }
   return false;
 }

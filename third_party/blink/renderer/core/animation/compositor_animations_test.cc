@@ -1117,25 +1117,6 @@ TEST_P(AnimationCompositorAnimationsTest,
                                               animation1, *effect1) &
               CompositorAnimations::
                   kTransformRelatedPropertyCannotBeAcceleratedOnTarget);
-
-  StringKeyframeEffectModel* effect2 = CreateKeyframeEffectModel(
-      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(-45px)",
-                              0),
-      CreateReplaceOpKeyframe(CSSPropertyID::kRotate, "none", 0),
-      CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateX(45px)",
-                              1.0),
-      CreateReplaceOpKeyframe(CSSPropertyID::kRotate, "45deg", 1.0));
-
-  auto* keyframe_effect2 =
-      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
-
-  Animation* animation2 = timeline_->Play(keyframe_effect2);
-  effect2->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
-                                                     nullptr);
-
-  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
-                                              animation2, *effect2) &
-              CompositorAnimations::kMultipleTransformAnimationsOnSameTarget);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

@@ -63,21 +63,21 @@ assertAnimationComposited('translate', 'translate', true);
 assertAnimationComposited('rotate', 'rotate', true);
 assertAnimationComposited('scale', 'scale', true);
 
-assertAnimationComposited('transform', 'translate', false);
-assertAnimationComposited('transform', 'rotate', false);
-assertAnimationComposited('transform', 'scale', false);
+assertAnimationComposited('transform', 'translate', true);
+assertAnimationComposited('transform', 'rotate', true);
+assertAnimationComposited('transform', 'scale', true);
 
-assertAnimationComposited('translate', 'transform', false);
-assertAnimationComposited('translate', 'rotate', false);
-assertAnimationComposited('translate', 'scale', false);
+assertAnimationComposited('translate', 'transform', true);
+assertAnimationComposited('translate', 'rotate', true);
+assertAnimationComposited('translate', 'scale', true);
 
-assertAnimationComposited('rotate', 'transform', false);
-assertAnimationComposited('rotate', 'scale', false);
-assertAnimationComposited('rotate', 'translate', false);
+assertAnimationComposited('rotate', 'transform', true);
+assertAnimationComposited('rotate', 'scale', true);
+assertAnimationComposited('rotate', 'translate', true);
 
-assertAnimationComposited('scale', 'transform', false);
-assertAnimationComposited('scale', 'rotate', false);
-assertAnimationComposited('scale', 'translate', false);
+assertAnimationComposited('scale', 'transform', true);
+assertAnimationComposited('scale', 'rotate', true);
+assertAnimationComposited('scale', 'translate', true);
 
 assertAnimationComposited('opacity', 'transform', true);
 assertAnimationComposited('opacity', 'translate', true);

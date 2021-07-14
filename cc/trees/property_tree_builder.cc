@@ -225,8 +225,15 @@ bool PropertyTreeBuilderContext::AddTransformNodeIfNeeded(
   // in the timing of animation state updates can mean that an animation that's
   // in the Finished state at tree-building time on the main thread is still in
   // the Running state right after commit on the compositor thread.
-  const bool has_any_transform_animation = HasAnyAnimationTargetingProperty(
-      mutator_host_, layer, TargetProperty::TRANSFORM);
+  const bool has_any_transform_animation =
+      HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                       TargetProperty::TRANSFORM) ||
+      HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                       TargetProperty::TRANSLATE) ||
+      HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                       TargetProperty::ROTATE) ||
+      HasAnyAnimationTargetingProperty(mutator_host_, layer,
+                                       TargetProperty::SCALE);
 
   const bool has_surface = created_render_surface;
 

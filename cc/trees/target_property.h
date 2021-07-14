@@ -13,7 +13,14 @@ namespace TargetProperty {
 
 // Must be zero-based as this will be stored in a bitset.
 enum Type {
-  TRANSFORM = 0,
+  // Transform related properties must be sequentiallyenumerated in the same
+  // order in which they should be applied.
+  TRANSLATE = 0,
+  FIRST_TRANSFORM_PROPERTY = TRANSLATE,
+  ROTATE,
+  SCALE,
+  TRANSFORM,
+  LAST_TRANSFORM_PROPERTY = TRANSFORM,
   OPACITY,
   FILTER,
   SCROLL_OFFSET,
@@ -25,7 +32,7 @@ enum Type {
   NATIVE_PROPERTY,
   BACKDROP_FILTER,
   // These sentinels must be last
-  FIRST_TARGET_PROPERTY = TRANSFORM,
+  FIRST_TARGET_PROPERTY = TRANSLATE,
   LAST_TARGET_PROPERTY = BACKDROP_FILTER
 };
 

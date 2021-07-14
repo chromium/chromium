@@ -28,6 +28,7 @@
               "external/wpt/css/css-animations",
               "external/wpt/css/css-scroll-snap",
               "external/wpt/css/css-transforms/animation",
+              "external/wpt/css/css-transforms/individual-transform/animation",
               "external/wpt/feature-policy/experimental-features",
               "external/wpt/permissions-policy/experimental-features",
               "external/wpt/html/canvas/offscreen/manual/convert-to-blob",
