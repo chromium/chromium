@@ -11,11 +11,12 @@ of this feature, as well as [Samples](https://github.com/GoogleChromeLabs/houdin
 ## Workflow
 
 Historically the CSS Paint API (PaintWorklet) implementation ran on the main
-thread, but is currently being optimized to run on the compositor thread. We
-will use an example to show the workflow of both cases.
+thread. It has been optimized to run on the compositor thread. We will use an
+example to show the workflow of both cases.
 
 Here is a simple example of using PaintWorklet to draw something on the screen.
 
+``` html
 <style>
 #demo {
   background-image: paint(foo);
@@ -23,7 +24,7 @@ Here is a simple example of using PaintWorklet to draw something on the screen.
   height: 200px;
 }
 </style>
-<script>
+<script id="code" type="text/worklet">
 registerPaint('foo', class {
   paint(ctx, size) {
     ctx.fillStyle = 'green';
@@ -31,20 +32,47 @@ registerPaint('foo', class {
   }
 });
 </script>
+<script>
+var code = document.getElementById('code').textContent;
+var blob = new Blob([code], {type : 'text/javascript'});
+CSS.paintWorklet.addModule(URL.createObjectURL(blob));
+</script>
+```
 
 In our implementation, there is one [PaintWorklet](paint_worklet.h) instance
-created from the frame. There are two
-[PaintWorkletGlobalScope](paint_worklet_global_scope.h) created to enforce
-stateless. The number of global scopes can be arbitrary, and our implementation
-chose two.
+created from the frame.
 
-During `PaintWorkletGlobalScope#registerPaint`, the Javascript inside the paint
+### Main thread workflow
+
+Let's start with the two web-exposed APIs and dive into the main thread
+workflow. Specifically the two APIs are `addModule` and `registerPaint`.
+
+When `addModule` is executed, `Worklet::addModule` is called. There are two
+[PaintWorkletGlobalScope](paint_worklet_global_scope.h) created, and the
+[PaintWorkletGlobalScopeProxy](paint_worklet_global_scope_proxy.h) serves as the
+proxy when other classes need to communicate with PaintWorkletGlobalScope. We
+create two PaintWorkletGlobalScope to enforce stateless. The number of global
+scopes can be arbitrary as long as it is >= 2, and we chose two in our
+implementation.
+
+`registerPaint` is executed on each PaintWorkletGlobalScope. When the
+`PaintWorkletGlobalScope::registerPaint` is called, it creates a
+[CSSPaintDefinition](css_paint_definition.h) and PaintWorkletGlobalScope owns
+it. Besides that, it creates
+[DocumentPaintDefinition](document_paint_definition.h) which is owned by
+PaintWorklet. It then registers the CSSPaintDefinition to the
+DocumentPaintDefinition.
+
+Below is a diagram that shows what happens when `addModule` and `registerPaint`
+are called:
+
+![addModule and registerPaint call](images/addModule_registerPaint.png)
+
+During `PaintWorkletGlobalScope::registerPaint`, the Javascript inside the paint
 function is turned into a V8 paint callback. We randomly choose one of the two
 global scopes to execute the callback. The execution of the callback
 produces a PaintRecord, which contains a set of skia draw commands. The V8 paint
 callback is executed on a shared V8 isolate.
-
-### Main thread workflow
 
 During the main thread paint, the `PaintWorklet::Paint` is called, which
 executes the V8 paint callback synchronously. A PaintRecord is produced and
@@ -52,6 +80,10 @@ passed to the compositor thread to raster.
 
 When animation is involved, the main thread animation system updates the value
 of the animated properties, which are used by the `PaintWorklet::Paint`.
+
+Below is a diagram that shows what happens when `PaintWorklet::Paint` is called.
+
+![PaintWorklet::Paint](images/PaintWorklet_Paint.png)
 
 ### Off main thread workflow
 
