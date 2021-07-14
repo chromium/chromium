@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
+import org.chromium.components.version_info.VersionConstants;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 /**
@@ -125,5 +126,15 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
     @Override
     public String getGoogleApiKey() {
         return GoogleAPIKeys.GOOGLE_API_KEY;
+    }
+
+    @Override
+    public String getChromeVersion() {
+        return VersionConstants.PRODUCT_VERSION;
+    }
+
+    @Override
+    public int getChromeChannel() {
+        return VersionConstants.CHANNEL;
     }
 }

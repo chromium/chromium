@@ -104,4 +104,14 @@ public interface ProcessScopeDependencyProvider {
     default String getGoogleApiKey() {
         return null;
     }
+
+    /** Returns Chrome's version string. */
+    default String getChromeVersion() {
+        return "";
+    }
+
+    /** Returns Chrome's channel as enumerated in components/version_info/channel.h. */
+    default int getChromeChannel() {
+        return 0;
+    }
 }
