@@ -191,7 +191,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
 
  protected:
   chrome_pdf::AccessibilityViewportInfo viewport_info_;
-  PP_PrivateAccessibilityDocInfo doc_info_;
+  chrome_pdf::AccessibilityDocInfo doc_info_;
   PP_PrivateAccessibilityPageInfo page_info_;
   std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs_;
   std::vector<PP_PrivateAccessibilityCharInfo> chars_;

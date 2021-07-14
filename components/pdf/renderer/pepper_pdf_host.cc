@@ -13,6 +13,7 @@
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "pdf/accessibility_structs.h"
+#include "ppapi/c/pp_bool.h"
 #include "ppapi/host/dispatch_host_message.h"
 #include "ppapi/host/host_message_context.h"
 #include "ppapi/host/ppapi_host.h"
@@ -271,10 +272,13 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityViewportInfo(
 
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityDocInfo(
     ppapi::host::HostMessageContext* context,
-    const PP_PrivateAccessibilityDocInfo& doc_info) {
+    const PP_PrivateAccessibilityDocInfo& pp_doc_info) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
   CreatePdfAccessibilityTreeIfNeeded();
+  chrome_pdf::AccessibilityDocInfo doc_info = {
+      pp_doc_info.page_count, PP_ToBool(pp_doc_info.text_accessible),
+      PP_ToBool(pp_doc_info.text_copyable)};
   pdf_accessibility_tree_->SetAccessibilityDocInfo(doc_info);
   return PP_OK;
 }

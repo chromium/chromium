@@ -1297,7 +1297,7 @@ void PdfAccessibilityTree::SetAccessibilityViewportInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityDocInfo(
-    const PP_PrivateAccessibilityDocInfo& doc_info) {
+    const chrome_pdf::AccessibilityDocInfo& doc_info) {
   content::RenderAccessibility* render_accessibility =
       GetRenderAccessibilityIfEnabled();
   if (!render_accessibility)

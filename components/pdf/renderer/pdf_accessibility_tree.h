@@ -21,14 +21,15 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
+namespace chrome_pdf {
+struct AccessibilityDocInfo;
+struct AccessibilityViewportInfo;
+}  // namespace chrome_pdf
+
 namespace content {
 class RenderAccessibility;
 class RendererPpapiHost;
 }
-
-namespace chrome_pdf {
-struct AccessibilityViewportInfo;
-}  // namespace chrome_pdf
 
 namespace gfx {
 class Transform;
@@ -60,7 +61,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   void SetAccessibilityViewportInfo(
       const chrome_pdf::AccessibilityViewportInfo& viewport_info);
   void SetAccessibilityDocInfo(
-      const PP_PrivateAccessibilityDocInfo& doc_info);
+      const chrome_pdf::AccessibilityDocInfo& doc_info);
   void SetAccessibilityPageInfo(
       const PP_PrivateAccessibilityPageInfo& page_info,
       const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
