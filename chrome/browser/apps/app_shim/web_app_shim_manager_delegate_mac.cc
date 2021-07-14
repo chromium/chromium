@@ -10,9 +10,13 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_shortcut_mac.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_switches.h"
 #include "net/base/filename_util.h"
 #include "third_party/blink/public/common/custom_handlers/protocol_handler_utils.h"
@@ -176,26 +180,46 @@ void WebAppShimManagerDelegate::LaunchApp(
   if (params.protocol_handler_launch_url.has_value()) {
     GURL protocol_url = params.protocol_handler_launch_url.value();
 
-    auto launch_callback = base::BindOnce(
-        [](apps::AppLaunchParams params, Profile* profile, bool accepted) {
-          if (accepted) {
-            apps::AppServiceProxyFactory::GetForProfile(profile)
-                ->BrowserAppLauncher()
-                ->LaunchAppWithParams(std::move(params));
-          }
-        },
-        std::move(params), profile);
+    // Protocol handlers should prompt the user before launching the app,
+    // unless the user has granted permission to this protocol scheme
+    // previously.
+    if (!WebAppProvider::Get(profile)->registrar().IsApprovedLaunchProtocol(
+            app_id, protocol_url.scheme())) {
+      auto launch_callback = base::BindOnce(
+          [](apps::AppLaunchParams params, Profile* profile, bool accepted) {
+            if (accepted) {
+              web_app::WebAppProvider* provider =
+                  web_app::WebAppProvider::GetForWebApps(profile);
+              {
+                web_app::ScopedRegistryUpdate update(
+                    provider->registry_controller().AsWebAppSyncBridge());
+                web_app::WebApp* app_to_update =
+                    update->UpdateApp(params.app_id);
+                std::vector<std::string> protocol_handlers(
+                    app_to_update->approved_launch_protocols());
+                protocol_handlers.push_back(
+                    params.protocol_handler_launch_url.value().scheme());
+                app_to_update->SetApprovedLaunchProtocols(
+                    std::move(protocol_handlers));
+              }
+              apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->BrowserAppLauncher()
+                  ->LaunchAppWithParams(std::move(params));
+            }
+          },
+          std::move(params), profile);
 
-    // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
-    // running of `launch_callback`.
-    chrome::ShowWebAppProtocolHandlerIntentPicker(
-        std::move(protocol_url), profile, app_id, std::move(launch_callback));
-
-  } else {
-    apps::AppServiceProxyFactory::GetForProfile(profile)
-        ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+      // ShowWebAppProtocolHandlerIntentPicker keeps the `profile` alive through
+      // running of `launch_callback`.
+      chrome::ShowWebAppProtocolHandlerIntentPicker(
+          std::move(protocol_url), profile, app_id, std::move(launch_callback));
+      return;
+    }
   }
+
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->BrowserAppLauncher()
+      ->LaunchAppWithParams(std::move(params));
 }
 
 void WebAppShimManagerDelegate::LaunchShim(
