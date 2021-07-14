@@ -10,7 +10,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "mojo/public/c/system/types.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -27,11 +27,22 @@ namespace pdf {
 namespace {
 
 std::string GenerateResponse(const GURL& source_url, const GURL& original_url) {
-  return base::StrCat({R"(<!DOCTYPE html>
-<html style="height:100%; width:100%">
-<embed type="application/x-google-chrome-pdf" width="100%" height="100%")",
-                       " src=\"", source_url.spec(), "\" original-url=\"",
-                       original_url.spec(), "\">"});
+  static constexpr char kResponseTemplate[] = R"(<!DOCTYPE html>
+<style>
+body,
+embed,
+html {
+  height: 100%;
+  margin: 0;
+  width: 100%;
+}
+</style>
+<embed type="application/x-google-chrome-pdf" src="$1" original-url="$2">
+)";
+
+  return base::ReplaceStringPlaceholders(
+      kResponseTemplate, {source_url.spec(), original_url.spec()},
+      /*offsets=*/nullptr);
 }
 
 }  // namespace
