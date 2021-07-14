@@ -685,6 +685,10 @@ static_library("test_support") {
 if (is_fuchsia) {
   group("fuchsia_telemetry_gpu_integration_test") {
     testonly = true
+    data = [
+      "//content/test/gpu/fuchsia_util.py",
+      "//content/test/gpu/run_gpu_integration_test_fuchsia.py",
+    ]
     data_deps = [
       ":telemetry_gpu_integration_test_scripts_only",
       ":telemetry_gpu_integration_test_support",
@@ -694,11 +698,9 @@ if (is_fuchsia) {
   }
   group("performance_web_engine_test_suite") {
     testonly = true
-    data = [
-      "//content/test/gpu/run_telemetry_benchmark_fuchsia.py",
-      "//content/test/gpu/",
-    ]
+    data = [ "//content/test/gpu/run_telemetry_benchmark_fuchsia.py" ]
     data_deps = [
+      ":telemetry_gpu_integration_test_data",
       "//fuchsia/engine:web_engine_shell",
       "//fuchsia/engine:web_engine_with_webui",
       "//testing:run_perf_test",
@@ -713,19 +715,16 @@ group("telemetry_gpu_integration_test_scripts_only") {
     "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome",
   ]
 
-  data = [
-    "//content/test/gpu/",
-    "//testing/scripts/run_isolated_script_test.py",
+  data = [ "//testing/scripts/run_isolated_script_test.py" ]
+  data_deps = [
+    ":telemetry_gpu_integration_test_data",
+    "//testing:test_scripts_shared",
   ]
-  data_deps = [ "//testing:test_scripts_shared" ]
 }
 
 group("telemetry_gpu_integration_test_support") {
   testonly = true
   data = [
-    "//content/test/gpu/",
-    "//content/test/data/gpu/",
-
     # For the Maps performance test. Include the entire directory to
     # avoid having to update this BUILD.gn file if more files are
     # added in the future.
@@ -741,7 +740,6 @@ group("telemetry_gpu_integration_test_support") {
 
     # For webgl_conformance
     "//third_party/webgl/",
-    "//content/test/gpu/run_gpu_integration_test.py",
 
     # For pixel_test and trace_test
     "//media/test/data/four-colors.mp4",
@@ -762,17 +760,41 @@ group("telemetry_gpu_integration_test_support") {
     # For isolate contract.
     "//testing/scripts/gpu_integration_test_adapter.py",
     "//testing/scripts/run_gpu_integration_test_as_googletest.py",
-
-    # Not actually needed, but the way Telemetry looks for tests ends up looking
-    # in the unexpected_passes directory, which has a dependency on this.
-    # TODO(crbug.com/1227899): Remove this dependency once this target only
-    # includes the things it needs instead of all of //content/test/gpu/.
-    "//testing/unexpected_passes_common/",
   ]
 
   data_deps = [
+    ":telemetry_gpu_integration_test_data",
+
     # For anything using Skia Gold (pixel, maps).
     "//ui/base:goldctl",
+  ]
+}
+
+group("telemetry_gpu_unittest_data") {
+  testonly = true
+  data = [
+    "//content/test/data/gpu/",
+    "//content/test/gpu/gpu_tests/",
+    "//content/test/gpu/unittest_data/",
+
+    "//content/test/gpu/gpu_project_config.py",
+    "//content/test/gpu/run_gpu_integration_test.py",
+    "//content/test/gpu/run_unittests.py",
+  ]
+}
+
+group("telemetry_gpu_integration_test_data") {
+  testonly = true
+  data = [
+    "//content/test/data/gpu/",
+    "//content/test/gpu/gold_inexact_matching/",
+    "//content/test/gpu/gpu_tests/",
+    "//content/test/gpu/power_measurement_results/",
+    "//content/test/gpu/unittest_data/",
+
+    "//content/test/gpu/gpu_project_config.py",
+    "//content/test/gpu/measure_power_intel.py",
+    "//content/test/gpu/run_gpu_integration_test.py",
   ]
 }
 

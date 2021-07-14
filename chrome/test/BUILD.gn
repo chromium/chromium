@@ -8872,10 +8872,6 @@ if (!is_android) {
     testonly = true
     deps = [ "//tools/perf/chrome_telemetry_build:telemetry_chrome_test_without_chrome" ]
     data = [
-      # TODO(kbr): refactor the telemetry dependencies more cleanly.
-      "//content/test/gpu/",
-      "//content/test/data/gpu/",
-
       # For GpuProcess.video
       "//content/test/data/media/bear.ogv",
 
@@ -8893,16 +8889,12 @@ if (!is_android) {
 
       # For Skia Gold code, which has some GPU-specific unittests.
       "//build/skia_gold_common/",
-
-      # Not actually needed, but the way Telemetry looks for tests ends up
-      # looking in the unexpected_passes directory, which has a dependency on
-      # this.
-      # TODO(crbug.com/1227899): Remove this dependency once this target only
-      # includes the things it needs instead of all of //content/test/gpu/.
-      "//testing/unexpected_passes_common/",
     ]
 
-    data_deps = [ "//testing:test_scripts_shared" ]
+    data_deps = [
+      "//content/test:telemetry_gpu_unittest_data",
+      "//testing:test_scripts_shared",
+    ]
   }
 }
 
