@@ -4,9 +4,16 @@
 
 module blink.mojom;
 
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "url/mojom/origin.mojom";
 
 // Represents a blink::StorageKey (third_party/blink/common/storage_key).
 struct StorageKey {
+  // The origin of the context using this storage key.
   url.mojom.Origin origin;
+
+  // An optional nonce, forcing a partitioned storage from anything else. Used
+  // by anonymous iframes:
+  // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
+  mojo_base.mojom.UnguessableToken? nonce;
 };

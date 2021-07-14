@@ -8,6 +8,7 @@
 #include <iosfwd>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -37,14 +38,26 @@ class PLATFORM_EXPORT BlinkStorageKey {
   BlinkStorageKey(BlinkStorageKey&& other) = default;
   BlinkStorageKey& operator=(BlinkStorageKey&& other) = default;
 
+  static BlinkStorageKey CreateWithNonce(
+      scoped_refptr<const SecurityOrigin> origin,
+      const base::UnguessableToken& nonce);
+
   const scoped_refptr<const SecurityOrigin>& GetSecurityOrigin() const {
     return origin_;
+  }
+
+  const absl::optional<base::UnguessableToken>& GetNonce() const {
+    return nonce_;
   }
 
   String ToDebugString() const;
 
  private:
+  BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                  const base::UnguessableToken* nonce);
+
   scoped_refptr<const SecurityOrigin> origin_;
+  absl::optional<base::UnguessableToken> nonce_;
 };
 
 PLATFORM_EXPORT

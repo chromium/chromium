@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key_mojom_traits.h"
 
+#include "base/unguessable_token.h"
 #include "third_party/blink/renderer/platform/mojo/security_origin_mojom_traits.h"
+#include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
 namespace mojo {
 
@@ -16,7 +18,17 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::BlinkStorageKey>::
     return false;
   DCHECK(origin);
 
-  *out = blink::BlinkStorageKey(std::move(origin));
+  absl::optional<base::UnguessableToken> nonce;
+  if (!data.ReadNonce(&nonce))
+    return false;
+
+  if (nonce.has_value()) {
+    *out = blink::BlinkStorageKey::CreateWithNonce(std::move(origin),
+                                                   nonce.value());
+  } else {
+    *out = blink::BlinkStorageKey(std::move(origin));
+  }
+
   return true;
 }
 

@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -43,12 +44,15 @@ TEST(StorageKeyTest, ConstructionValidity) {
 }
 
 // Test that StorageKeys are/aren't equivalent as expected.
-TEST(StorageKeyTest, Equivalance) {
+TEST(StorageKeyTest, Equivalence) {
   url::Origin origin1 = url::Origin::Create(GURL("https://example.com"));
   url::Origin origin2 = url::Origin::Create(GURL("https://test.example"));
   url::Origin origin3 = url::Origin();
   url::Origin origin4 =
       url::Origin();  // Creates a different opaque origin than origin3.
+
+  base::UnguessableToken nonce1 = base::UnguessableToken::Create();
+  base::UnguessableToken nonce2 = base::UnguessableToken::Create();
 
   StorageKey key1_origin1 = StorageKey(origin1);
   StorageKey key2_origin1 = StorageKey(origin1);
@@ -61,6 +65,12 @@ TEST(StorageKeyTest, Equivalance) {
   EXPECT_TRUE(IsOpaque(key5_origin3));
   EXPECT_TRUE(IsOpaque(key6_origin4));
 
+  StorageKey key7_origin1_nonce1 = StorageKey::CreateWithNonce(origin1, nonce1);
+  StorageKey key8_origin1_nonce1 = StorageKey::CreateWithNonce(origin1, nonce1);
+  StorageKey key9_origin1_nonce2 = StorageKey::CreateWithNonce(origin1, nonce2);
+  StorageKey key10_origin2_nonce1 =
+      StorageKey::CreateWithNonce(origin2, nonce1);
+
   // All are equivalent to themselves
   EXPECT_EQ(key1_origin1, key1_origin1);
   EXPECT_EQ(key2_origin1, key2_origin1);
@@ -68,6 +78,10 @@ TEST(StorageKeyTest, Equivalance) {
   EXPECT_EQ(key4_origin3, key4_origin3);
   EXPECT_EQ(key5_origin3, key5_origin3);
   EXPECT_EQ(key6_origin4, key6_origin4);
+  EXPECT_EQ(key7_origin1_nonce1, key7_origin1_nonce1);
+  EXPECT_EQ(key8_origin1_nonce1, key8_origin1_nonce1);
+  EXPECT_EQ(key9_origin1_nonce2, key9_origin1_nonce2);
+  EXPECT_EQ(key10_origin2_nonce1, key10_origin2_nonce1);
 
   // StorageKeys created from the same origins are equivalent.
   EXPECT_EQ(key1_origin1, key2_origin1);
@@ -76,6 +90,17 @@ TEST(StorageKeyTest, Equivalance) {
   // StorageKeys created from different origins are not equivalent.
   EXPECT_NE(key1_origin1, key3_origin2);
   EXPECT_NE(key4_origin3, key6_origin4);
+  EXPECT_NE(key7_origin1_nonce1, key10_origin2_nonce1);
+
+  // StorageKeys created from the same origins and nonces are equivalent.
+  EXPECT_EQ(key7_origin1_nonce1, key8_origin1_nonce1);
+
+  // StorageKeys created from different nonces are not equivalent.
+  EXPECT_NE(key7_origin1_nonce1, key9_origin1_nonce2);
+
+  // StorageKeys created from different origin and different nonces are not
+  // equivalent.
+  EXPECT_NE(key9_origin1_nonce2, key10_origin2_nonce1);
 }
 
 // Test that StorageKeys Serialize to the expected value.

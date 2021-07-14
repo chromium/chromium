@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/strings/string_piece.h"
+#include "base/unguessable_token.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "url/origin.h"
@@ -17,14 +18,20 @@ namespace blink {
 
 // A class representing the key that Storage APIs use to key their storage on.
 //
-// At the moment, while we are migrating the code, StorageKey is just a wrapper
-// around an origin. More fields will be added later in order to implement a
-// finer storage partitioning. For more details, see
+// At the moment, StorageKey contains an origin and an optional nonce. The
+// top-frame site will be added later in order to implement a finer storage
+// partitioning. Using the nonce is still unsupported since serialization and
+// deserialization don't take it into account. For more details on the overall
+// design, see
 // https://docs.google.com/document/d/1xd6MXcUhfnZqIe5dt2CTyCn6gEZ7nOezAEWS0W9hwbQ/edit.
 class BLINK_COMMON_EXPORT StorageKey {
  public:
   StorageKey() = default;
-  explicit StorageKey(const url::Origin& origin) : origin_(origin) {}
+  explicit StorageKey(const url::Origin& origin)
+      : StorageKey(origin, nullptr) {}
+
+  static StorageKey CreateWithNonce(const url::Origin& origin,
+                                    const base::UnguessableToken& nonce);
 
   // Copyable and Moveable.
   StorageKey(const StorageKey& other) = default;
@@ -64,6 +71,8 @@ class BLINK_COMMON_EXPORT StorageKey {
 
   const url::Origin& origin() const { return origin_; }
 
+  const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
+
   std::string GetDebugString() const;
 
   // Provides a concise string representation suitable for memory dumps.
@@ -71,6 +80,10 @@ class BLINK_COMMON_EXPORT StorageKey {
   std::string GetMemoryDumpString(size_t max_length) const;
 
  private:
+  StorageKey(const url::Origin& origin, const base::UnguessableToken* nonce)
+      : origin_(origin),
+        nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {}
+
   BLINK_COMMON_EXPORT
   friend bool operator==(const StorageKey& lhs, const StorageKey& rhs);
 
@@ -83,6 +96,11 @@ class BLINK_COMMON_EXPORT StorageKey {
   friend bool operator<(const StorageKey& lhs, const StorageKey& rhs);
 
   url::Origin origin_;
+
+  // An optional nonce, forcing a partitioned storage from anything else. Used
+  // by anonymous iframes:
+  // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
+  absl::optional<base::UnguessableToken> nonce_;
 };
 
 BLINK_COMMON_EXPORT

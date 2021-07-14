@@ -6,6 +6,7 @@
 
 #include <cctype>
 #include <ostream>
+#include <tuple>
 
 #include "base/feature_list.h"
 #include "base/ranges/algorithm.h"
@@ -17,6 +18,8 @@ namespace blink {
 
 // static
 absl::optional<StorageKey> StorageKey::Deserialize(base::StringPiece in) {
+  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
+  // serialization.
   StorageKey result(url::Origin::Create(GURL(in)));
   return result.origin_.opaque() ? absl::nullopt
                                  : absl::make_optional(std::move(result));
@@ -33,18 +36,31 @@ bool StorageKey::IsThirdPartyStoragePartitioningEnabled() {
   return base::FeatureList::IsEnabled(features::kThirdPartyStoragePartitioning);
 }
 
+// static
+StorageKey StorageKey::CreateWithNonce(const url::Origin& origin,
+                                       const base::UnguessableToken& nonce) {
+  DCHECK(!nonce.is_empty());
+  return StorageKey(origin, &nonce);
+}
+
 std::string StorageKey::Serialize() const {
+  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
+  // serialization.
   DCHECK(!origin_.opaque());
   return origin_.GetURL().spec();
 }
 
 std::string StorageKey::SerializeForLocalStorage() const {
+  // TODO(https://crbug.com/1199077): Figure out how to include `nonce_` in the
+  // serialization.
   DCHECK(!origin_.opaque());
   return origin_.Serialize();
 }
 
 std::string StorageKey::GetDebugString() const {
-  return base::StrCat({"{ origin: ", origin_.GetDebugString(), " }"});
+  return base::StrCat(
+      {"{ origin: ", origin_.GetDebugString(),
+       ", nonce: ", nonce_.has_value() ? nonce_->ToString() : "<null>", " }"});
 }
 
 std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
@@ -56,7 +72,7 @@ std::string StorageKey::GetMemoryDumpString(size_t max_length) const {
 }
 
 bool operator==(const StorageKey& lhs, const StorageKey& rhs) {
-  return lhs.origin_ == rhs.origin_;
+  return std::tie(lhs.origin_, lhs.nonce_) == std::tie(rhs.origin_, rhs.nonce_);
 }
 
 bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
@@ -64,7 +80,7 @@ bool operator!=(const StorageKey& lhs, const StorageKey& rhs) {
 }
 
 bool operator<(const StorageKey& lhs, const StorageKey& rhs) {
-  return lhs.origin_ < rhs.origin_;
+  return std::tie(lhs.origin_, lhs.nonce_) < std::tie(rhs.origin_, rhs.nonce_);
 }
 
 std::ostream& operator<<(std::ostream& ostream, const StorageKey& sk) {

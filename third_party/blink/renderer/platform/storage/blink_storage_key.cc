@@ -9,22 +9,39 @@
 namespace blink {
 
 BlinkStorageKey::BlinkStorageKey()
-    : origin_(SecurityOrigin::CreateUniqueOpaque()) {}
+    : BlinkStorageKey(SecurityOrigin::CreateUniqueOpaque(), nullptr) {}
 
 BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin)
-    : origin_(std::move(origin)) {
+    : BlinkStorageKey(std::move(origin), nullptr) {}
+
+BlinkStorageKey::BlinkStorageKey(scoped_refptr<const SecurityOrigin> origin,
+                                 const base::UnguessableToken* nonce)
+    : origin_(std::move(origin)),
+      nonce_(nonce ? absl::make_optional(*nonce) : absl::nullopt) {
   DCHECK(origin_);
 }
 
+// static
+BlinkStorageKey BlinkStorageKey::CreateWithNonce(
+    scoped_refptr<const SecurityOrigin> origin,
+    const base::UnguessableToken& nonce) {
+  DCHECK(!nonce.is_empty());
+  return BlinkStorageKey(std::move(origin), &nonce);
+}
+
 String BlinkStorageKey::ToDebugString() const {
-  return "{ origin: " + GetSecurityOrigin()->ToString() + " }";
+  return "{ origin: " + GetSecurityOrigin()->ToString() + ", nonce: " +
+         (GetNonce().has_value() ? String::FromUTF8(GetNonce()->ToString())
+                                 : "<null>") +
+         " }";
 }
 
 bool operator==(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {
   DCHECK(lhs.GetSecurityOrigin());
   DCHECK(rhs.GetSecurityOrigin());
   return lhs.GetSecurityOrigin()->IsSameOriginWith(
-      rhs.GetSecurityOrigin().get());
+             rhs.GetSecurityOrigin().get()) &&
+         lhs.GetNonce() == rhs.GetNonce();
 }
 
 bool operator!=(const BlinkStorageKey& lhs, const BlinkStorageKey& rhs) {

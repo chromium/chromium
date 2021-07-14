@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/storage/blink_storage_key.h"
 
+#include "base/memory/scoped_refptr.h"
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -18,6 +20,27 @@ TEST(BlinkStorageKeyTest, OpaqueOriginsDistinct) {
   EXPECT_FALSE(unique_opaque2.GetSecurityOrigin()->IsSameOriginWith(
       unique_opaque1.GetSecurityOrigin().get()));
   EXPECT_NE(unique_opaque1, unique_opaque2);
+}
+
+TEST(BlinkStorageKeyTest, EqualityWithNonce) {
+  // Test that BlinkStorageKeys with different nonces are different.
+  scoped_refptr<const SecurityOrigin> origin =
+      SecurityOrigin::CreateFromString("https://example.com");
+  base::UnguessableToken token1 = base::UnguessableToken::Create();
+  base::UnguessableToken token2 = base::UnguessableToken::Create();
+  BlinkStorageKey key1 = BlinkStorageKey::CreateWithNonce(origin, token1);
+  BlinkStorageKey key2 = BlinkStorageKey::CreateWithNonce(origin, token1);
+  BlinkStorageKey key3 = BlinkStorageKey::CreateWithNonce(origin, token2);
+
+  EXPECT_TRUE(key1.GetSecurityOrigin()->IsSameOriginWith(
+      key2.GetSecurityOrigin().get()));
+  EXPECT_TRUE(key1.GetSecurityOrigin()->IsSameOriginWith(
+      key3.GetSecurityOrigin().get()));
+  EXPECT_TRUE(key2.GetSecurityOrigin()->IsSameOriginWith(
+      key3.GetSecurityOrigin().get()));
+
+  EXPECT_EQ(key1, key2);
+  EXPECT_NE(key1, key3);
 }
 
 TEST(BlinkStorageKeyTest, OpaqueOriginRetained) {

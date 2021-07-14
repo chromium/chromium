@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/storage_key/storage_key_mojom_traits.h"
 
+#include "base/unguessable_token.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -22,6 +23,11 @@ TEST(StorageKeyMojomTraitsTest, SerializeAndDeserialize) {
       StorageKey(url::Origin::Create(GURL("https://sub.example.com"))),
       StorageKey(url::Origin::Create(GURL("http://sub2.example.com"))),
       StorageKey(url::Origin()),
+      StorageKey::CreateWithNonce(
+          url::Origin::Create(GURL("https://.example.com")),
+          base::UnguessableToken::Create()),
+      StorageKey::CreateWithNonce(url::Origin(),
+                                  base::UnguessableToken::Create()),
   };
 
   for (auto& original : test_keys) {

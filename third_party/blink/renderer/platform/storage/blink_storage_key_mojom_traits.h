@@ -19,6 +19,11 @@ struct PLATFORM_EXPORT
     return input.GetSecurityOrigin();
   }
 
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const blink::BlinkStorageKey& input) {
+    return input.GetNonce();
+  }
+
   static bool Read(blink::mojom::StorageKeyDataView data,
                    blink::BlinkStorageKey* out);
 };

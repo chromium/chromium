@@ -9,6 +9,10 @@
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/storage_key/storage_key.mojom.h"
 
+namespace base {
+class UnguessableToken;
+}  // namespace base
+
 namespace url {
 class Origin;
 }  // namespace url
@@ -21,6 +25,11 @@ class BLINK_COMMON_EXPORT
  public:
   static const url::Origin& origin(const blink::StorageKey& key) {
     return key.origin();
+  }
+
+  static const absl::optional<base::UnguessableToken>& nonce(
+      const blink::StorageKey& key) {
+    return key.nonce();
   }
 
   static bool Read(blink::mojom::StorageKeyDataView data,

@@ -17,7 +17,14 @@ bool StructTraits<blink::mojom::StorageKeyDataView, blink::StorageKey>::Read(
   if (!data.ReadOrigin(&origin))
     return false;
 
-  *out = blink::StorageKey(origin);
+  absl::optional<base::UnguessableToken> nonce;
+  if (!data.ReadNonce(&nonce))
+    return false;
+
+  if (nonce.has_value())
+    *out = blink::StorageKey::CreateWithNonce(origin, *nonce);
+  else
+    *out = blink::StorageKey(origin);
   return true;
 }
 
