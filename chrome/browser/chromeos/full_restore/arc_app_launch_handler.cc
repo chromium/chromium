@@ -264,7 +264,19 @@ void ArcAppLaunchHandler::OnWindowDestroying(aura::Window* window) {
   if (!session_id.has_value())
     return;
 
+  auto it = session_id_to_window_id_.find(session_id.value());
+  if (it == session_id_to_window_id_.end())
+    return;
+
+  auto window_id = it->second;
   session_id_to_window_id_.erase(session_id.value());
+
+  const std::string* arc_app_id =
+      window->GetProperty(::full_restore::kAppIdKey);
+  if (!arc_app_id || arc_app_id->empty())
+    return;
+
+  RemoveWindow(*arc_app_id, window_id);
 }
 
 void ArcAppLaunchHandler::LoadRestoreData() {
