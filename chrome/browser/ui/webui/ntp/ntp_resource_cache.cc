@@ -153,17 +153,9 @@ NTPResourceCache::NTPResourceCache(Profile* profile)
 
 NTPResourceCache::~NTPResourceCache() = default;
 
-NTPResourceCache::WindowType NTPResourceCache::GetWindowType(
-    Profile* profile,
-    content::RenderProcessHost* render_host) {
+NTPResourceCache::WindowType NTPResourceCache::GetWindowType(Profile* profile) {
   if (profile->IsGuestSession())
     return GUEST;
-
-  // Sometimes the |profile| is the parent (non-incognito) version of the user
-  // so we check the |render_host| if it is provided.
-  if (render_host && render_host->GetBrowserContext()->IsOffTheRecord())
-    profile = Profile::FromBrowserContext(render_host->GetBrowserContext());
-
   if (profile->IsIncognitoProfile())
     return INCOGNITO;
   if (profile->IsOffTheRecord())

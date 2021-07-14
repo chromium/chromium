@@ -91,7 +91,7 @@ void ThemeSource::StartDataRequest(
   if (IsNewTabCssPath(parsed_path)) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     NTPResourceCache::WindowType type =
-        NTPResourceCache::GetWindowType(profile_, /*render_host=*/nullptr);
+        NTPResourceCache::GetWindowType(profile_);
     NTPResourceCache* cache = NTPResourceCacheFactory::GetForProfile(profile_);
     std::move(callback).Run(cache->GetNewTabCSS(type, wc_getter));
     return;

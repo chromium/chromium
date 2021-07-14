@@ -27,10 +27,6 @@ class RefCountedMemory;
 class Value;
 }  // namespace base
 
-namespace content {
-class RenderProcessHost;
-}
-
 namespace policy {
 class PolicyChangeRegistrar;
 }
@@ -75,8 +71,7 @@ class NTPResourceCache : public ThemeServiceObserver,
   // ThemeServiceObserver:
   void OnThemeChanged() override;
 
-  static WindowType GetWindowType(Profile* profile,
-                                  content::RenderProcessHost* render_host);
+  static WindowType GetWindowType(Profile* profile);
 
  private:
   // KeyedService:

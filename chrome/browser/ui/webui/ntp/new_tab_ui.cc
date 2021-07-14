@@ -164,11 +164,16 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
     return;
   }
 
+  // Sometimes the |profile_| is the parent (non-incognito) version of the user
+  // so we check the |web_contents| if it is provided.
   content::WebContents* web_contents = wc_getter.Run();
-  content::RenderProcessHost* render_host =
-      web_contents ? web_contents->GetMainFrame()->GetProcess() : nullptr;
+  Profile* profile_for_window_type =
+      web_contents
+          ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
+          : profile_;
+
   NTPResourceCache::WindowType win_type =
-      NTPResourceCache::GetWindowType(profile_, render_host);
+      NTPResourceCache::GetWindowType(profile_for_window_type);
   scoped_refptr<base::RefCountedMemory> html_bytes(
       NTPResourceCacheFactory::GetForProfile(profile_)->GetNewTabHTML(
           win_type));
