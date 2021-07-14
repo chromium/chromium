@@ -100,10 +100,11 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
     config.features_enabled.push_back(
         password_manager::features::kEnableManualPasswordGeneration);
   }
-  if ([self isRunningTest:@selector(testPasswordControllerKeepsRightSize)]) {
-    config.features_disabled.push_back(
-        password_manager::features::kEnableManualPasswordGeneration);
-  }
+  // TODO(crbug.com/1226894): Uncomment this once the test is fixed.
+  // if ([self isRunningTest:@selector(testPasswordControllerKeepsRightSize)]) {
+  //   config.features_disabled.push_back(
+  //       password_manager::features::kEnableManualPasswordGeneration);
+  // }
   return config;
 }
 
@@ -510,7 +511,8 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
 
 // Tests that after switching fields the content size of the table view didn't
 // grow.
-- (void)testPasswordControllerKeepsRightSize {
+// TODO(crbug.com/1226894): Disabled due to flakiness.
+- (void)DISABLED_testPasswordControllerKeepsRightSize {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:TapWebElementWithId(kFormElementUsername)];
