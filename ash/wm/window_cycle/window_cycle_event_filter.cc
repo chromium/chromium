@@ -388,6 +388,7 @@ void WindowCycleEventFilter::AltReleaseHandler::OnKeyEvent(
   // Views uses VKEY_MENU for both left and right Alt keys.
   if (event->key_code() == ui::VKEY_MENU &&
       event->type() == ui::ET_KEY_RELEASED) {
+    event->StopPropagation();
     Shell::Get()->window_cycle_controller()->CompleteCycling();
     // Warning: |this| will be deleted from here on.
   }
