@@ -4,9 +4,12 @@
 
 package org.chromium.chrome.browser.content_creation.notes;
 
+import android.content.ComponentName;
+
 import androidx.annotation.IntDef;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.share.share_sheet.ChromeProvidedSharingOptionsProvider;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -42,6 +45,15 @@ public final class NoteCreationMetrics {
         int BOLD = 9;
         int DREAMY = 10;
         int NUM_ENTRIES = 11;
+    }
+
+    // Constants used to log the share destination for the created note.
+    // Constants used to log the Note Creation Funnel enum histogram.
+    @IntDef({NoteShareDestination.FIRST_PARTY, NoteShareDestination.THIRD_PARTY})
+    private @interface NoteShareDestination {
+        int FIRST_PARTY = 0;
+        int THIRD_PARTY = 1;
+        int NUM_ENTRIES = 2;
     }
 
     /**
@@ -85,14 +97,24 @@ public final class NoteCreationMetrics {
      *
      * @param duration The time elapsed between the start of the creation flow and when the user
      *         shared their created note.
+     * @param chosenComponent The component that was picked as a share desitination.
      */
-    public static void recordNoteShared(long duration) {
+    public static void recordNoteShared(long duration, ComponentName chosenComponent) {
         RecordHistogram.recordEnumeratedHistogram("NoteCreation.Funnel",
                 NoteCreationFunnel.NOTE_SHARED, NoteCreationFunnel.NUM_ENTRIES);
 
         RecordHistogram.recordBooleanHistogram("NoteCreation.NoteShared", true);
 
         RecordHistogram.recordMediumTimesHistogram("NoteCreation.TimeTo.ShareCreation", duration);
+
+        if (chosenComponent.equals(
+                    ChromeProvidedSharingOptionsProvider.CHROME_PROVIDED_FEATURE_COMPONENT_NAME)) {
+            RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
+                    NoteShareDestination.FIRST_PARTY, NoteShareDestination.NUM_ENTRIES);
+        } else {
+            RecordHistogram.recordEnumeratedHistogram("NoteCreation.ShareDestination",
+                    NoteShareDestination.THIRD_PARTY, NoteShareDestination.NUM_ENTRIES);
+        }
     }
 
     /**

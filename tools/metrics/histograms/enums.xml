@@ -58571,6 +58571,11 @@ Called by update_net_trust_anchors.py.-->
   <int value="2" label="NoteShared"/>
 </enum>
 
+<enum name="NoteShareDestination">
+  <int value="0" label="First Party"/>
+  <int value="1" label="Third Party"/>
+</enum>
+
 <enum name="NoteTakingAppLaunchResult">
   <int value="0" label="Chrome app launched successfully"/>
   <int value="1" label="Chrome app missing"/>

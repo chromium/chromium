@@ -141,7 +141,8 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                         @Override
                                         public void onTargetChosen(ComponentName chosenComponent) {
                                             NoteCreationMetrics.recordNoteShared(
-                                                    getTimeElapsedSinceCreationStart());
+                                                    getTimeElapsedSinceCreationStart(),
+                                                    chosenComponent);
                                         }
 
                                         @Override
