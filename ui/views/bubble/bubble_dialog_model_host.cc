@@ -223,7 +223,7 @@ BubbleDialogModelHost::BubbleDialogModelHost(
 
   // TODO(pbos): Consider refactoring ::SetExtraView() so it can be called after
   // the Widget is created and still be picked up. Moving this to
-  // OnDialogInitialized() will not work until then.
+  // OnWidgetInitialized() will not work until then.
   auto* extra_button = model_->extra_button(GetPassKey());
   if (extra_button) {
     SetExtraView(std::make_unique<MdTextButton>(
@@ -293,7 +293,7 @@ View* BubbleDialogModelHost::GetInitiallyFocusedView() {
       FindDialogModelHostField(model_->GetFieldByUniqueId(unique_id.value())));
 }
 
-void BubbleDialogModelHost::OnDialogInitialized() {
+void BubbleDialogModelHost::OnWidgetInitialized() {
   // Dialog buttons are added on dialog initialization.
   if (GetOkButton()) {
     AddDialogModelHostFieldForExistingView(

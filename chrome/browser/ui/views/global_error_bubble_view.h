@@ -28,11 +28,11 @@ class GlobalErrorBubbleView : public views::BubbleDialogDelegateView,
   GlobalErrorBubbleView& operator=(const GlobalErrorBubbleView&) = delete;
   ~GlobalErrorBubbleView() override;
 
-  // views::BubbleDialogDelegateView implementation.
+  // views::BubbleDialogDelegateView:
   void Init() override;
-  void OnDialogInitialized() override;
+  void OnWidgetInitialized() override;
 
-  // GlobalErrorBubbleViewBase implementation.
+  // GlobalErrorBubbleViewBase:
   void CloseBubbleView() override;
 
  private:

@@ -37,12 +37,10 @@ class ConfirmBubbleViews : public views::DialogDelegateView {
  protected:
   ~ConfirmBubbleViews() override;
 
-  // views::WidgetDelegate implementation.
+  // views::DialogDelegateView:
   std::u16string GetWindowTitle() const override;
   bool ShouldShowCloseButton() const override;
-
-  // views::DialogDelegateView implementation.
-  void OnDialogInitialized() override;
+  void OnWidgetInitialized() override;
 
  private:
   // The model to customize this bubble view.

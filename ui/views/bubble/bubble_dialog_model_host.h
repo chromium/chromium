@@ -47,7 +47,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegateView,
   // TODO(pbos): Populate initparams with initial view instead of overriding
   // GetInitiallyFocusedView().
   View* GetInitiallyFocusedView() override;
-  void OnDialogInitialized() override;
+  void OnWidgetInitialized() override;
 
   // ui::DialogModelHost:
   void Close() override;

@@ -136,7 +136,7 @@ void GlobalErrorBubbleView::Init() {
   set_close_on_deactivate(error_->ShouldCloseOnDeactivate());
 }
 
-void GlobalErrorBubbleView::OnDialogInitialized() {
+void GlobalErrorBubbleView::OnWidgetInitialized() {
   views::LabelButton* ok_button = GetOkButton();
   if (ok_button && error_ && error_->ShouldAddElevationIconToAcceptButton()) {
     elevation_icon_setter_ = std::make_unique<ElevationIconSetter>(

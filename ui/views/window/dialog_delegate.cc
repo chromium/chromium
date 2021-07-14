@@ -286,19 +286,19 @@ BubbleFrameView* DialogDelegate::GetBubbleFrameView() const {
 }
 
 views::LabelButton* DialogDelegate::GetOkButton() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->ok_button() : nullptr;
 }
 
 views::LabelButton* DialogDelegate::GetCancelButton() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->cancel_button() : nullptr;
 }
 
 views::View* DialogDelegate::GetExtraView() const {
-  DCHECK(GetWidget()) << "Don't call this before OnDialogInitialized";
+  DCHECK(GetWidget()) << "Don't call this before OnWidgetInitialized";
   auto* client = GetDialogClientView();
   return client ? client->extra_view() : nullptr;
 }
@@ -451,10 +451,6 @@ int DialogDelegate::GetCornerRadius() const {
 
 std::unique_ptr<View> DialogDelegate::DisownFootnoteView() {
   return std::move(footnote_view_);
-}
-
-void DialogDelegate::OnWidgetInitialized() {
-  OnDialogInitialized();
 }
 
 ////////////////////////////////////////////////////////////////////////////////

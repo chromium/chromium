@@ -86,7 +86,7 @@ bool ConfirmBubbleViews::ShouldShowCloseButton() const {
   return false;
 }
 
-void ConfirmBubbleViews::OnDialogInitialized() {
+void ConfirmBubbleViews::OnWidgetInitialized() {
   GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescribedBy(
       label_);
 }
