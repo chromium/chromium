@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/html/html_table_element.h"
 #include "third_party/blink/renderer/core/html/image_document.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
+#include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/core/layout/geometry/transform_state.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -4952,6 +4953,19 @@ LayoutUnit LayoutObject::FlipForWritingModeInternal(
     return position;
   return (box_for_flipping ? box_for_flipping : ContainingBlock())
       ->FlipForWritingMode(position, width);
+}
+
+void LayoutObject::MarkForLayout(LayoutInvalidationReasonForTracing reason,
+                                 MarkingBehavior mark_parents,
+                                 SubtreeLayoutScope* layouter) {
+  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
+      "LayoutInvalidationTracking",
+      inspector_layout_invalidation_tracking_event::Data, this, reason);
+  if (mark_parents == kMarkContainerChain &&
+      (!layouter || layouter->Root() != this)) {
+    MarkContainerChainForLayout(!layouter, layouter);
+  }
 }
 
 bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {

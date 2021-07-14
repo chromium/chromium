@@ -3723,6 +3723,9 @@ class CORE_EXPORT LayoutObject : public ImageResourceObserver,
   void SetScrollAnchorDisablingStyleChangedOnAncestor();
 
   bool SelfPaintingLayerNeedsVisualOverflowRecalc() const;
+  void MarkForLayout(LayoutInvalidationReasonForTracing,
+                     MarkingBehavior,
+                     SubtreeLayoutScope*);
   inline void MarkContainerChainForOverflowRecalcIfNeeded(
       bool mark_container_chain_layout_overflow_recalc);
 
@@ -4434,13 +4437,7 @@ inline void LayoutObject::SetNeedsLayout(
   SetNeedsOverflowRecalc();
   SetTableColumnConstraintDirty(true);
   if (!already_needed_layout) {
-    DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-        TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-        "LayoutInvalidationTracking",
-        inspector_layout_invalidation_tracking_event::Data, this, reason);
-    if (mark_parents == kMarkContainerChain &&
-        (!layouter || layouter->Root() != this))
-      MarkContainerChainForLayout(!layouter, layouter);
+    MarkForLayout(reason, mark_parents, layouter);
   }
 }
 
