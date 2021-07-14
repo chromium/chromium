@@ -221,21 +221,6 @@ bool TimeZoneResolverManager::TimeZoneResolverShouldBeRunning() {
 
 void TimeZoneResolverManager::OnLocalStateInitialized(bool initialized) {
   local_state_initialized_ = initialized;
-  if (initialized) {
-    const PrefService::Preference* device_pref =
-        g_browser_process->local_state()->FindPreference(
-            prefs::kResolveDeviceTimezoneByGeolocation);
-    // Migrate old kResolveDeviceTimezoneByGeolocation system preference.
-    if (device_pref && !device_pref->IsDefaultValue()) {
-      const bool enabled = device_pref->GetValue()->GetBool();
-      g_browser_process->local_state()->SetInteger(
-          prefs::kResolveDeviceTimezoneByGeolocationMethod,
-          enabled ? static_cast<int>(TimeZoneResolveMethod::IP_ONLY)
-                  : static_cast<int>(TimeZoneResolveMethod::DISABLED));
-      g_browser_process->local_state()->ClearPref(
-          prefs::kResolveDeviceTimezoneByGeolocation);
-    }
-  }
   if (initialized_)
     UpdateTimezoneResolver();
 }

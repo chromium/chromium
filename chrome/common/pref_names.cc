@@ -546,7 +546,7 @@ const char kUserTimezone[] = "settings.timezone";
 // This setting disables manual timezone selection and starts periodic timezone
 // refresh.
 // Deprecated. Replaced with kResolveTimezoneByGeolocationMethod.
-// TODO(alemate): https://crbug.com/783367 Remove outdated prefs.
+// TODO(https://crbug.com/783367) Remove outdated prefs.
 const char kResolveTimezoneByGeolocation[] =
     "settings.resolve_timezone_by_geolocation";
 
@@ -2442,15 +2442,6 @@ const char kEnableAdbSideloadingRequested[] = "EnableAdbSideloadingRequested";
 // This setting controls initial device timezone that is used before user
 // session started. It is controlled by device owner.
 const char kSigninScreenTimezone[] = "settings.signin_screen_timezone";
-
-// This setting starts periodic timezone refresh when not in user session.
-// (user session is controlled by user profile preference
-// kResolveTimezoneByGeolocation)
-//
-// Deprecated. Superseded by kResolveDeviceTimezoneByGeolocationMethod.
-// TODO(alemate): https://crbug.com/783367 Remove outdated prefs.
-const char kResolveDeviceTimezoneByGeolocation[] =
-    "settings.resolve_device_timezone_by_geolocation";
 
 // This setting controls what information is sent to the server to get
 // device location to resolve time zone outside of user session. Values must

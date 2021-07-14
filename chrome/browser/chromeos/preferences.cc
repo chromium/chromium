@@ -95,43 +95,6 @@ const char* const kLanguageRemapPrefs[] = {
     ::prefs::kLanguageRemapExternalCommandKeyTo,
     ::prefs::kLanguageRemapExternalMetaKeyTo};
 
-// Migrates kResolveTimezoneByGeolocation value to
-// kResolveTimezoneByGeolocationMethod.
-// Default preference value will become another default value.
-// TODO(alemate): https://crbug.com/783367 Remove outdated prefs.
-void TryMigrateToResolveTimezoneByGeolocationMethod(
-    sync_preferences::PrefServiceSyncable* prefs) {
-  if (prefs->GetBoolean(::prefs::kResolveTimezoneByGeolocationMigratedToMethod))
-    return;
-
-  // Timezone resolution method is a non-priority pref. Wait to migrate until
-  // that type of pref has synced.
-  bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
-                        ? prefs->AreOsPrefsSyncing()
-                        : prefs->IsSyncing();
-  if (!is_syncing)
-    return;
-
-  prefs->SetBoolean(::prefs::kResolveTimezoneByGeolocationMigratedToMethod,
-                    true);
-  const PrefService::Preference* old_preference =
-      prefs->FindPreference(::prefs::kResolveTimezoneByGeolocation);
-  if (old_preference->IsDefaultValue())
-    return;
-
-  const PrefService::Preference* new_preference =
-      prefs->FindPreference(::prefs::kResolveTimezoneByGeolocationMethod);
-  if (!new_preference->IsDefaultValue())
-    return;
-
-  const system::TimeZoneResolverManager::TimeZoneResolveMethod method(
-      old_preference->GetValue()->GetBool()
-          ? system::TimeZoneResolverManager::TimeZoneResolveMethod::IP_ONLY
-          : system::TimeZoneResolverManager::TimeZoneResolveMethod::DISABLED);
-  prefs->SetInteger(::prefs::kResolveTimezoneByGeolocationMethod,
-                    static_cast<int>(method));
-}
-
 bool AreScrollSettingsAllowed() {
   return base::FeatureList::IsEnabled(features::kAllowScrollSettings);
 }
@@ -164,8 +127,6 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
   // TODO(jamescook): Move ownership and registration into ash.
   registry->RegisterStringPref(::prefs::kLogoutStartedLast, std::string());
   registry->RegisterStringPref(::prefs::kSigninScreenTimezone, std::string());
-  registry->RegisterBooleanPref(::prefs::kResolveDeviceTimezoneByGeolocation,
-                                true);
   registry->RegisterIntegerPref(
       ::prefs::kResolveDeviceTimezoneByGeolocationMethod,
       static_cast<int>(
@@ -593,13 +554,16 @@ void Preferences::InitUserPrefs(sync_preferences::PrefServiceSyncable* prefs) {
 
   pref_change_registrar_.Init(prefs);
   pref_change_registrar_.Add(::prefs::kUserTimezone, callback);
-  pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocation, callback);
   pref_change_registrar_.Add(::prefs::kResolveTimezoneByGeolocationMethod,
                              callback);
   pref_change_registrar_.Add(::prefs::kUse24HourClock, callback);
   pref_change_registrar_.Add(::prefs::kParentAccessCodeConfig, callback);
   for (auto* remap_pref : kLanguageRemapPrefs)
     pref_change_registrar_.Add(remap_pref, callback);
+
+  // Deprecated 7/2021
+  // TODO(https://crbug.com/783367) Remove outdated prefs.
+  prefs->ClearPref(::prefs::kResolveTimezoneByGeolocation);
 }
 
 void Preferences::Init(Profile* profile, const user_manager::User* user) {
@@ -1011,8 +975,7 @@ void Preferences::ApplyPreferences(ApplyReason reason,
     system::UpdateSystemTimezone(ProfileHelper::Get()->GetProfileByUser(user_));
   }
 
-  if ((pref_name == ::prefs::kResolveTimezoneByGeolocation ||
-       pref_name == ::prefs::kResolveTimezoneByGeolocationMethod) &&
+  if (pref_name == ::prefs::kResolveTimezoneByGeolocationMethod &&
       reason != REASON_ACTIVE_USER_CHANGED) {
     if (pref_name == ::prefs::kResolveTimezoneByGeolocationMethod &&
         !prefs_->FindPreference(::prefs::kResolveTimezoneByGeolocationMethod)
@@ -1099,7 +1062,6 @@ void Preferences::ApplyPreferences(ApplyReason reason,
 
 void Preferences::OnIsSyncingChanged() {
   DVLOG(1) << "OnIsSyncingChanged";
-  TryMigrateToResolveTimezoneByGeolocationMethod(prefs_);
   ForceNaturalScrollDefault();
 }
 
