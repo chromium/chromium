@@ -22,12 +22,4 @@ declare_args() {
   # being deprecated, to Fuchsia. Once the PDF Viewer no longer uses PPAPI, the
   # PDF Viewer should be enabled on Fuchsia, like on other desktop platforms.
   enable_pdf = !is_android && !is_ios && !is_chromecast && !is_fuchsia
-
-  # Enable additional code for the Pepper-free PDF viewer.
-  #
-  # This argument enables additional code paths that are only useful during the
-  # PDF viewer's migration from Pepper. This argument is intended to guard code
-  # meant only for developers, and will be phased out before launch in favor of
-  # a run-time feature flag.
-  enable_pdf_unseasoned = false
 }

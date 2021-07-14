@@ -17,7 +17,6 @@ buildflag_header("buildflags") {
   flags = [
     "ENABLE_INK=$enable_ink",
     "ENABLE_PDF=$enable_pdf",
-    "ENABLE_PDF_UNSEASONED=$enable_pdf_unseasoned",
   ]
 }
 

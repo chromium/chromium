@@ -22,9 +22,6 @@ const base::Feature kPdfIncrementalLoading = {
 const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This feature eventually will replace the ENABLE_PDF_UNSEASONED build flag.
-// Code paths should be guarded by this feature or the build flag, not both.
-// TODO(crbug.com/1141953): Use this to back a chrome://flags entry when ready.
 // TODO(crbug.com/702993): Remove this once the PDF viewer is Pepper-free.
 const base::Feature kPdfUnseasoned = {"PdfUnseasoned",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
