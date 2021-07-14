@@ -6,6 +6,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/enterprise_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -16,6 +17,8 @@
 #include "chrome/browser/net/dns_probe_test_util.h"
 #include "chrome/browser/net/net_error_tab_helper.h"
 #include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -27,9 +30,13 @@
 #include "components/embedder_support/pref_names.h"
 #include "components/error_page/common/net_error_info.h"
 #include "components/google/core/common/google_util.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -384,13 +391,41 @@ class DnsProbeCurrentConfigFailingProbesTest : public DnsProbeBrowserTest {
 class DnsProbeCurrentSecureConfigFailingProbesTest
     : public DnsProbeBrowserTest {
  protected:
+  void SetUpInProcessBrowserTestFixture() override {
+    // Normal boilerplate to setup a MockConfigurationPolicyProvider.
+    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(true));
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+  }
+
   void SetUpOnMainThread() override {
 #if defined(OS_WIN)
     // Mark as not enterprise managed to prevent the secure DNS mode from
     // being downgraded to off.
     base::win::ScopedDomainStateForTesting scoped_domain(false);
+    EXPECT_FALSE(base::IsMachineExternallyManaged());
 #endif
 
+    // Set the mocked policy provider to act as if no policies are in use by
+    // updating to an empty PolicyMap. Done to prevent potential unintended
+    // Secure DNS downgrade.
+    policy_provider_.UpdateChromePolicy(policy::PolicyMap());
+
+    // Override parental-controls detection to not detect anything, to prevent a
+    // potential Secure DNS downgrade of off. Trigger an update to network
+    // service to ensure the override takes effect if parental controls have
+    // already been read.
+    StubResolverConfigReader* config_reader =
+        SystemNetworkContextManager::GetStubResolverConfigReader();
+    config_reader->OverrideParentalControlsForTesting(
+        /*parental_controls_override=*/false);
+    config_reader->UpdateNetworkService(/*record_metrics=*/false);
+    content::FlushNetworkServiceInstanceForTesting();
+
+    // Update prefs to enable Secure DNS in secure mode.
     PrefService* local_state = g_browser_process->local_state();
     local_state->SetString(prefs::kDnsOverHttpsMode,
                            SecureDnsConfig::kModeSecure);
@@ -405,6 +440,8 @@ class DnsProbeCurrentSecureConfigFailingProbesTest
           FakeHostResolver::kOneAddressResponse}});
     DnsProbeBrowserTest::SetUpOnMainThread();
   }
+
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 // Test Fixture for tests where the DNS probes should fail to connect to a DNS
@@ -446,14 +483,8 @@ IN_PROC_BROWSER_TEST_F(DnsProbeCurrentConfigFailingProbesTest, BadConfig) {
   ExpectDisplayingErrorPage("DNS_PROBE_FINISHED_BAD_CONFIG");
 }
 
-#if defined(OS_WIN)
-// https://crbug.com/1226818 Test is flaky on WIN builders.
-#define MAYBE_BadSecureConfig DISABLED_BadSecureConfig
-#else
-#define MAYBE_BadSecureConfig BadSecureConfig
-#endif
 IN_PROC_BROWSER_TEST_F(DnsProbeCurrentSecureConfigFailingProbesTest,
-                       MAYBE_BadSecureConfig) {
+                       BadSecureConfig) {
   NavigateToDnsError();
 
   EXPECT_EQ(error_page::DNS_PROBE_STARTED, WaitForSentStatus());
