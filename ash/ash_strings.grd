@@ -3249,6 +3249,12 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_QUICK_ANSWERS_VIEW_A11Y_RETRY_LABEL_NAME_TEMPLATE" desc="A11y retry label name template for the Quick Answers view.">
         <ph name="DESC_TEXT">$1<ex>Cannot connect to the internet. Click to try again.</ex></ph>: Retry
       </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_IMPROVE_LABEL" desc="Description text of the report query button for the Quick Answers view.">
+        We want to improve this!
+      </message>
+      <message name="IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL" desc="Description text of the report query button for the Quick Answers view.">
+        Report this query
+      </message>
 
       <!-- Media Notification -->
       <message name="IDS_ASH_MEDIA_NOTIFICATION_ACTION_PREVIOUS_TRACK" desc="The button to trigger media playback to go to the previous track.">

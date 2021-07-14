@@ -122,6 +122,9 @@ struct DeviceProperties {
 
   // List (separated by comma) of user preferred languages.
   std::string preferred_languages;
+
+  // Whether the request is send by an internal user.
+  bool is_internal = false;
 };
 
 struct IntentInfo {

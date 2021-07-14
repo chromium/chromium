@@ -50,7 +50,8 @@ class QuickAnswersUiControllerTest : public AshTestBase {
 TEST_F(QuickAnswersUiControllerTest, TearDownWhileQuickAnswersViewShowing) {
   EXPECT_FALSE(ui_controller()->is_showing_quick_answers_view());
   ui_controller()->CreateQuickAnswersView(kDefaultAnchorBoundsInScreen,
-                                          "default_title", "default_query");
+                                          "default_title", "default_query",
+                                          /*is_internal=*/false);
   EXPECT_TRUE(ui_controller()->is_showing_quick_answers_view());
 }
 

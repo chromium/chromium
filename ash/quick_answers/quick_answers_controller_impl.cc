@@ -116,8 +116,9 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
   } else {
     visibility_ = QuickAnswersVisibility::kVisible;
-    quick_answers_ui_controller_->CreateQuickAnswersView(anchor_bounds_, title_,
-                                                         query_);
+    quick_answers_ui_controller_->CreateQuickAnswersView(
+        anchor_bounds_, title_, query_,
+        request.context.device_properties.is_internal);
 
     if (IsProcessedRequest(request))
       quick_answers_client_->FetchQuickAnswers(request);

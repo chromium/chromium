@@ -38,7 +38,8 @@ class ASH_EXPORT QuickAnswersUiController {
   // Constructs/resets |quick_answers_view_|.
   void CreateQuickAnswersView(const gfx::Rect& anchor_bounds,
                               const std::string& title,
-                              const std::string& query);
+                              const std::string& query,
+                              bool is_internal);
 
   // Returns true if there was a QuickAnswersView to close.
   bool CloseQuickAnswersView();
@@ -106,6 +107,9 @@ class ASH_EXPORT QuickAnswersUiController {
   // Invoked when user clicks the settings button on Quick-Answers related
   // views.
   void OnSettingsButtonPressed();
+
+  // Invoked when user clicks the report query button on Quick Answers view.
+  void OnReportQueryButtonPressed();
 
   // Handle consent result from user consent view.
   void OnUserConsentResult(bool consented);

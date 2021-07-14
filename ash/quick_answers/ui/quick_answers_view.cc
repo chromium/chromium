@@ -16,6 +16,8 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/background.h"
@@ -60,6 +62,10 @@ constexpr gfx::Insets kAssistantIconInsets(10, 10, 0, 8);
 constexpr int kGoogleIconSizeDip = 16;
 constexpr gfx::Insets kGoogleIconInsets(10, 10, 0, 8);
 
+// Info icon.
+constexpr int kFeedbackIconSizeDip = 16;
+constexpr gfx::Insets kFeedbackIconInsets(8, 10, 8, 8);
+
 // Spacing between lines in the main view.
 constexpr int kLineSpacingDip = 4;
 constexpr int kLineHeightDip = 20;
@@ -76,6 +82,11 @@ constexpr SkColor kDogfoodButtonColor = gfx::kGoogleGrey500;
 constexpr int kSettingsButtonMarginDip = 8;
 constexpr int kSettingsButtonSizeDip = 14;
 constexpr SkColor kSettingsButtonColor = gfx::kGoogleGrey500;
+
+// ReportQueryView.
+constexpr char kGoogleSansFont[] = "Google Sans";
+constexpr int kReportQueryButtonMarginDip = 12;
+constexpr int kReportQueryViewFontSize = 10;
 
 // Maximum height QuickAnswersView can expand to.
 int MaximumViewHeight() {
@@ -123,18 +134,73 @@ View* AddHorizontalUiElements(
   return labels_container;
 }
 
+class ReportQueryView : public views::Button {
+ public:
+  METADATA_HEADER(ReportQueryView);
+
+  ReportQueryView(PressedCallback callback) : Button(std::move(callback)) {
+    auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+    layout->SetOrientation(views::LayoutOrientation::kHorizontal)
+        .SetMainAxisAlignment(views::LayoutAlignment::kStart);
+    SetBackground(views::CreateSolidBackground(gfx::kGoogleBlue050));
+
+    auto* feedback_icon = AddChildView(std::make_unique<views::ImageView>());
+    feedback_icon->SetBorder(views::CreateEmptyBorder(kFeedbackIconInsets));
+    feedback_icon->SetImage(
+        gfx::CreateVectorIcon(kPersistentDesksBarFeedbackIcon,
+                              kFeedbackIconSizeDip, gfx::kGoogleBlue600));
+
+    auto* description_label = AddChildView(std::make_unique<Label>(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_IMPROVE_LABEL),
+        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                        kReportQueryViewFontSize,
+                                        gfx::Font::Weight::MEDIUM)}));
+    description_label->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_LEFT);
+    description_label->SetEnabledColor(gfx::kGoogleBlue600);
+
+    auto* report_label = AddChildView(std::make_unique<Label>(
+        l10n_util::GetStringUTF16(
+            IDS_ASH_QUICK_ANSWERS_VIEW_REPORT_QUERY_REPORT_LABEL),
+        Label::CustomFont{gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
+                                        kReportQueryViewFontSize,
+                                        gfx::Font::Weight::SEMIBOLD)}));
+    report_label->SetProperty(
+        views::kFlexBehaviorKey,
+        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                                 views::MaximumFlexSizeRule::kUnbounded)
+            .WithAlignment(views::LayoutAlignment::kEnd));
+    report_label->SetProperty(
+        views::kMarginsKey, gfx::Insets(/*top=*/0, /*left=*/0, /*bottom=*/0,
+                                        /*right=*/kReportQueryButtonMarginDip));
+    report_label->SetEnabledColor(gfx::kGoogleBlue600);
+  }
+
+  // Disallow copy and assign.
+  ReportQueryView(const ReportQueryView&) = delete;
+  ReportQueryView& operator=(const ReportQueryView&) = delete;
+
+  ~ReportQueryView() override = default;
+};
+
+BEGIN_METADATA(ReportQueryView, views::Button)
+END_METADATA
+
 }  // namespace
 
 // QuickAnswersView -----------------------------------------------------------
 
 QuickAnswersView::QuickAnswersView(const gfx::Rect& anchor_view_bounds,
                                    const std::string& title,
+                                   bool is_internal,
                                    QuickAnswersUiController* controller)
     : Button(base::BindRepeating(&QuickAnswersView::SendQuickAnswersQuery,
                                  base::Unretained(this))),
       anchor_view_bounds_(anchor_view_bounds),
       controller_(controller),
       title_(title),
+      is_internal_(is_internal),
       quick_answers_view_handler_(
           std::make_unique<QuickAnswersPreTargetHandler>(this)),
       focus_search_(std::make_unique<QuickAnswersFocusSearch>(
@@ -267,7 +333,13 @@ void QuickAnswersView::InitLayout() {
   SetLayoutManager(std::make_unique<views::FillLayout>());
   SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
 
-  main_view_ = AddChildView(std::make_unique<View>());
+  base_view_ = AddChildView(std::make_unique<View>());
+  auto* base_layout =
+      base_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
+  base_layout->SetOrientation(views::LayoutOrientation::kVertical)
+      .SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
+
+  main_view_ = base_view_->AddChildView(std::make_unique<View>());
   auto* layout =
       main_view_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -282,6 +354,13 @@ void QuickAnswersView::InitLayout() {
   }
 
   AddContentView();
+
+  if (chromeos::features::IsQuickAnswersV2Enabled() && is_internal_) {
+    base_view_->AddChildView(
+        std::make_unique<ReportQueryView>(base::BindRepeating(
+            &QuickAnswersUiController::OnReportQueryButtonPressed,
+            base::Unretained(controller_))));
+  }
 
   if (chromeos::features::IsQuickAnswersV2Enabled()) {
     AddSettingsButton();

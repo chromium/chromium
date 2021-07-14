@@ -79,7 +79,7 @@ class QuickAnswersViewsTest : public AshTestBase {
         static_cast<QuickAnswersControllerImpl*>(QuickAnswersController::Get())
             ->quick_answers_ui_controller();
     quick_answers_view_ = std::make_unique<QuickAnswersView>(
-        anchor_bounds_, title, ui_controller);
+        anchor_bounds_, title, /*is_internal=*/false, ui_controller);
   }
 
   void CreateAndShowBasicMenu() {
