@@ -29,6 +29,24 @@
 
 namespace content {
 
+class ConversionHostTestPeer {
+ public:
+  static std::unique_ptr<ConversionHost> CreateConversionHost(
+      WebContents* web_contents,
+      std::unique_ptr<ConversionManager::Provider>
+          conversion_manager_provider) {
+    return base::WrapUnique(new ConversionHost(
+        web_contents, std::move(conversion_manager_provider)));
+  }
+
+  static void SetCurrentTargetFrameForTesting(
+      ConversionHost* conversion_host,
+      RenderFrameHost* render_frame_host) {
+    conversion_host->receiver_.SetCurrentTargetFrameForTesting(
+        render_frame_host);
+  }
+};
+
 namespace {
 
 const char kConversionUrl[] = "https://b.com";
@@ -42,8 +60,6 @@ blink::Impression CreateValidImpression() {
   return result;
 }
 
-}  // namespace
-
 class ConversionHostTest : public RenderViewHostTestHarness {
  public:
   ConversionHostTest() = default;
@@ -53,7 +69,7 @@ class ConversionHostTest : public RenderViewHostTestHarness {
     static_cast<WebContentsImpl*>(web_contents())
         ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
 
-    conversion_host_ = ConversionHost::CreateForTesting(
+    conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
         web_contents(), std::make_unique<TestManagerProvider>(&test_manager_));
     contents()->GetMainFrame()->InitializeRenderFrameIfNeeded();
   }
@@ -62,12 +78,17 @@ class ConversionHostTest : public RenderViewHostTestHarness {
     return static_cast<TestWebContents*>(web_contents());
   }
 
-  ConversionHost* conversion_host() { return conversion_host_.get(); }
+  blink::mojom::ConversionHost* conversion_host() {
+    return conversion_host_.get();
+  }
+
+  void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host) {
+    ConversionHostTestPeer::SetCurrentTargetFrameForTesting(
+        conversion_host_.get(), render_frame_host);
+  }
 
  protected:
   TestConversionManager test_manager_;
-
- private:
   std::unique_ptr<ConversionHost> conversion_host_;
 };
 
@@ -79,7 +100,7 @@ TEST_F(ConversionHostTest, ValidConversionInSubframe_NoBadMessage) {
   content::RenderFrameHostTester* rfh_tester =
       content::RenderFrameHostTester::For(main_rfh());
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
-  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+  SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -111,7 +132,7 @@ TEST_F(ConversionHostTest,
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
   subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://www.conversion.com"), subframe);
-  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+  SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -142,7 +163,7 @@ TEST_F(ConversionHostTest, ConversionInSubframeOnInsecurePage_BadMessage) {
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
   subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://www.example.com"), subframe);
-  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+  SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -196,7 +217,7 @@ TEST_F(ConversionHostTest,
     content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
     subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
         GURL("https://www.another.com"), subframe);
-    conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+    SetCurrentTargetFrameForTesting(subframe);
 
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
@@ -217,7 +238,7 @@ TEST_F(ConversionHostTest,
 TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
   // Create a page with an insecure origin.
   contents()->NavigateAndCommit(GURL("http://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
@@ -236,7 +257,7 @@ TEST_F(ConversionHostTest, ConversionOnInsecurePage_BadMessage) {
 
 TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   FakeMojoMessageDispatchContext fake_dispatch_context;
   mojo::test::BadMessageObserver bad_message_observer;
@@ -256,7 +277,7 @@ TEST_F(ConversionHostTest, ConversionWithInsecureReportingOrigin_BadMessage) {
 TEST_F(ConversionHostTest, ValidConversion_NoBadMessage) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   // Create a fake dispatch context to listen for bad messages.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -281,7 +302,7 @@ TEST_F(ConversionHostTest, ValidConversionWithEmbedderDisable_NoConversion) {
 
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
@@ -314,7 +335,7 @@ TEST_F(ConversionHostTest, EmbedderDisabledContext_ConversionDisallowed) {
 
   for (const auto& test_case : kTestCases) {
     contents()->NavigateAndCommit(test_case.top_frame_url);
-    conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+    SetCurrentTargetFrameForTesting(main_rfh());
 
     blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
     conversion->reporting_origin =
@@ -398,7 +419,7 @@ TEST_F(ConversionHostTest, ValidImpressionWithEmbedderDisable_NoImpression) {
 TEST_F(ConversionHostTest, Conversion_AssociatedWithConversionSite) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://sub.conversion.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
@@ -420,7 +441,7 @@ TEST_F(ConversionHostTest, PerPageConversionMetrics) {
   // Initial document should not log metrics.
   histograms.ExpectTotalCount("Conversions.RegisteredConversionsPerPage", 0);
 
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
@@ -454,16 +475,16 @@ TEST_F(ConversionHostTest, NoManager_NoPerPageConversionMetrics) {
   // null ConversionManager.
   static_cast<WebContentsImpl*>(web_contents())
       ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
-  auto conversion_host = ConversionHost::CreateForTesting(
+  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
 
   base::HistogramTester histograms;
-  conversion_host->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
   blink::mojom::ConversionPtr conversion = blink::mojom::Conversion::New();
   conversion->reporting_origin =
       url::Origin::Create(GURL("https://secure.com"));
-  conversion_host->RegisterConversion(std::move(conversion));
+  conversion_host()->RegisterConversion(std::move(conversion));
 
   // Navigate again to trigger histogram code.
   contents()->NavigateAndCommit(GURL("https://www.example-next.com"));
@@ -496,7 +517,7 @@ TEST_F(ConversionHostTest, ImpressionWithNoManagerAvilable_NoCrash) {
   // null ConversionManager.
   static_cast<WebContentsImpl*>(web_contents())
       ->RemoveReceiverSetForTesting(blink::mojom::ConversionHost::Name_);
-  auto conversion_host = ConversionHost::CreateForTesting(
+  conversion_host_ = ConversionHostTestPeer::CreateConversionHost(
       web_contents(), std::make_unique<TestManagerProvider>(nullptr));
 
   auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
@@ -651,7 +672,7 @@ TEST_F(ConversionHostTest,
   content::RenderFrameHost* subframe = rfh_tester->AppendChild("subframe");
   subframe = NavigationSimulatorImpl::NavigateAndCommitFromDocument(
       GURL("https://www.impression.com"), subframe);
-  conversion_host()->SetCurrentTargetFrameForTesting(subframe);
+  SetCurrentTargetFrameForTesting(subframe);
 
   // Create a fake dispatch context to trigger a bad message in.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -673,7 +694,7 @@ TEST_F(ConversionHostTest,
 TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   // Create a fake dispatch context to listen for bad messages.
   FakeMojoMessageDispatchContext fake_dispatch_context;
@@ -695,7 +716,7 @@ TEST_F(ConversionHostTest, ValidImpression_NoBadMessage) {
 TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   ConversionDisallowingContentBrowserClient disallowed_browser_client;
   ConfigurableConversionTestBrowserClient allowed_browser_client;
@@ -724,7 +745,7 @@ TEST_F(ConversionHostTest, RegisterImpression_RecordsAllowedMetric) {
 TEST_F(ConversionHostTest, RegisterConversion_RecordsAllowedMetric) {
   // Create a page with a secure origin.
   contents()->NavigateAndCommit(GURL("https://www.example.com"));
-  conversion_host()->SetCurrentTargetFrameForTesting(main_rfh());
+  SetCurrentTargetFrameForTesting(main_rfh());
 
   ConversionDisallowingContentBrowserClient disallowed_browser_client;
   ConfigurableConversionTestBrowserClient allowed_browser_client;
@@ -818,4 +839,5 @@ TEST(ConversionHostNoInitTest, AppImpression_Invalid_EventId) {
                                "-12345", "https://example.com", "", 0));
 }
 
+}  // namespace
 }  // namespace content

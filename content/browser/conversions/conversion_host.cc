@@ -80,14 +80,6 @@ bool IsAndroidAppOrigin(absl::optional<url::Origin> origin) {
 
 }  // namespace
 
-// static
-std::unique_ptr<ConversionHost> ConversionHost::CreateForTesting(
-    WebContents* web_contents,
-    std::unique_ptr<ConversionManager::Provider> conversion_manager_provider) {
-  return base::WrapUnique(
-      new ConversionHost(web_contents, std::move(conversion_manager_provider)));
-}
-
 ConversionHost::ConversionHost(WebContents* web_contents)
     : ConversionHost(web_contents,
                      std::make_unique<ConversionManagerProviderImpl>()) {}
@@ -339,11 +331,6 @@ void ConversionHost::RegisterImpression(const blink::Impression& impression) {
                                              ->GetLastCommittedOrigin();
   VerifyAndStoreImpression(StorableImpression::SourceType::kEvent,
                            impression_origin, impression, *conversion_manager);
-}
-
-void ConversionHost::SetCurrentTargetFrameForTesting(
-    RenderFrameHost* render_frame_host) {
-  receiver_.SetCurrentTargetFrameForTesting(render_frame_host);
 }
 
 // static

@@ -21,7 +21,6 @@
 namespace content {
 
 class ConversionPageMetrics;
-class RenderFrameHost;
 class WebContents;
 
 // Class responsible for listening to conversion events originating from blink,
@@ -32,10 +31,6 @@ class CONTENT_EXPORT ConversionHost
       public WebContentsUserData<ConversionHost>,
       public blink::mojom::ConversionHost {
  public:
-  static std::unique_ptr<ConversionHost> CreateForTesting(
-      WebContents* web_contents,
-      std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
-
   explicit ConversionHost(WebContents* web_contents);
   ConversionHost(const ConversionHost& other) = delete;
   ConversionHost& operator=(const ConversionHost& other) = delete;
@@ -51,43 +46,10 @@ class CONTENT_EXPORT ConversionHost
       const blink::Impression& impression) WARN_UNUSED_RESULT;
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ValidConversionInSubframe_NoBadMessage);
-  FRIEND_TEST_ALL_PREFIXES(
-      ConversionHostTest,
-      ConversionInSubframe_ConversionDestinationMatchesMainFrame);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ConversionInSubframeOnInsecurePage_BadMessage);
-  FRIEND_TEST_ALL_PREFIXES(
-      ConversionHostTest,
-      ConversionInSubframe_EmbeddedDisabledContextOnMainFrame);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ConversionOnInsecurePage_BadMessage);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ConversionWithInsecureReportingOrigin_BadMessage);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidConversion_NoBadMessage);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           Conversion_AssociatedWithConversionSite);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           Conversion_EventSourceTriggerDataPropagated);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, PerPageConversionMetrics);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           NoManager_NoPerPageConversionMetrics);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           ValidConversionWithEmbedderDisable_NoConversion);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           EmbedderDisabledContext_ConversionDisallowed);
-  FRIEND_TEST_ALL_PREFIXES(
-      ConversionHostTest,
-      ImpressionInSubframe_ImpressionOriginMatchesTopPageOrigin);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest, ValidImpression_NoBadMessage);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           RegisterImpression_RecordsAllowedMetric);
-  FRIEND_TEST_ALL_PREFIXES(ConversionHostTest,
-                           RegisterConversion_RecordsAllowedMetric);
-
+  friend class ConversionHostTestPeer;
   friend class WebContentsUserData<ConversionHost>;
 
+  // Private constructor exposed to `ConversionHostTestPeer` for testing.
   ConversionHost(
       WebContents* web_contents,
       std::unique_ptr<ConversionManager::Provider> conversion_manager_provider);
@@ -102,9 +64,6 @@ class CONTENT_EXPORT ConversionHost
 
   // Notifies an impression for a navigation.
   void NotifyImpressionNavigationInitiatedByPage();
-
-  // Sets the target frame on |receiver_|.
-  void SetCurrentTargetFrameForTesting(RenderFrameHost* render_frame_host);
 
   // Stores the impression if conversion measurement is allowed for the
   // impression origin and reporting origin and the impressionorigin, reporting
