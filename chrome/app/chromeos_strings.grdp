@@ -1056,6 +1056,12 @@
     <ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
     <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>View logs for additional details.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
+  <message name="IDS_OS_INSTALL_SCREEN_ERROR_SERVICE_LOGS_LINK_TEXT" desc="Text of the link to service logs dialog of the OS install screen">
+    Show service logs
+  </message>
+  <message name="IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE" desc="Title of service logs dialog of the OS install screen">
+    Service logs
+  </message>
   <message name="IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE" desc="Title of the success page of the OS install screen">
     Installation complete
   </message>

@@ -68,6 +68,10 @@ void OsInstallScreenHandler::DeclareLocalizedValues(
                IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_SUBTITLE);
   builder->Add("osInstallDialogErrorNoDestContent",
                IDS_OS_INSTALL_SCREEN_ERROR_NO_DEST_CONTENT);
+  builder->Add("osInstallDialogErrorServiceLogsLink",
+               IDS_OS_INSTALL_SCREEN_ERROR_SERVICE_LOGS_LINK_TEXT);
+  builder->Add("osInstallDialogServiceLogsTitle",
+               IDS_OS_INSTALL_SCREEN_SERVICE_LOGS_TITLE);
 
   builder->Add("osInstallDialogSuccessTitle",
                IDS_OS_INSTALL_SCREEN_SUCCESS_TITLE);
@@ -126,6 +130,7 @@ void OsInstallScreenHandler::StatusChanged(OsInstallClient::Status status,
       ShowStep(kNoDestinationDeviceFoundStep);
       break;
   }
+  CallJS("login.OsInstallScreen.setServiceLogs", service_log);
 }
 
 void OsInstallScreenHandler::OsInstallStarted(

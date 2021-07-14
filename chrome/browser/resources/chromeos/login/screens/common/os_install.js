@@ -28,6 +28,7 @@ Polymer({
 
   EXTERNAL_API: [
     'showStep',
+    'setServiceLogs',
   ],
 
   UI_STEPS: UIState,
@@ -110,6 +111,61 @@ Polymer({
   getErrorFailedSubtitleHtml_(locale) {
     return this.i18nAdvanced(
         'osInstallDialogErrorFailedSubtitle', {tags: ['p']});
+  },
+
+  /**
+   * Shows service logs.
+   * @private
+   */
+  onServiceLogsLinkClicked_() {
+    this.$.serviceLogsDialog.showDialog();
+    this.$.closeServiceLogsDialog.focus();
+  },
+
+  /**
+   * On-click event handler for close button of the service logs dialog.
+   * @private
+   */
+  hideServiceLogsDialog_() {
+    this.$.serviceLogsDialog.hideDialog();
+    this.focusServiceLogsLink_();
+  },
+
+  /**
+   * @private
+   */
+  focusServiceLogsLink_() {
+    Polymer.RenderStatus.afterNextRender(
+        this, () => this.$.serviceLogsLink.focus());
+  },
+
+  /**
+   * @param {string} serviceLogs Logs to show as plain text.
+   */
+  setServiceLogs(serviceLogs) {
+    this.$.serviceLogsFrame.src = 'data:text/html;charset=utf-8,' +
+        encodeURIComponent('<style>' +
+                           'body {' +
+                           '  font-family: Roboto, sans-serif;' +
+                           '  color: RGBA(0,0,0,.87);' +
+                           '  font-size: 14sp;' +
+                           '  margin : 0;' +
+                           '  padding : 0;' +
+                           '  white-space: pre-wrap;' +
+                           '}' +
+                           '#logsContainer {' +
+                           '  overflow: auto;' +
+                           '  height: 99%;' +
+                           '  padding-left: 16px;' +
+                           '  padding-right: 16px;' +
+                           '}' +
+                           '#logsContainer::-webkit-scrollbar-thumb {' +
+                           '  border-radius: 10px;' +
+                           '}' +
+                           '</style>' +
+                           '<body><div id="logsContainer">' + serviceLogs +
+                           '</div>' +
+                           '</body>');
   },
 });
 })();

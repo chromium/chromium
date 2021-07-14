@@ -15,6 +15,7 @@ found in the LICENSE file. -->
 <link rel="import" href="/components/common_styles/common_styles.html">
 <link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
 <link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="/components/dialogs/oobe_modal_dialog.html">
 
 <dom-module id="os-install-element">
   <template>
@@ -29,6 +30,17 @@ found in the LICENSE file. -->
       }
       li:not(:last-child) {
         margin-bottom: 14px;
+      }
+      #serviceLogsDialog {
+        --oobe-modal-dialog-content-slot-padding-bottom: 0;
+        --oobe-modal-dialog-content-slot-padding-end: 0;
+        --oobe-modal-dialog-content-slot-padding-start: 0;
+        --oobe-modal-dialog-title-slot-padding-bottom: 16px;
+        --oobe-modal-dialog-width: 512px;
+      }
+      #serviceLogsFrame {
+        padding-inline-end: 20px;
+        padding-inline-start: 20px;
       }
     </style>
 
@@ -92,6 +104,10 @@ found in the LICENSE file. -->
       <html-echo slot="subtitle" for-step="failed"
           content="[[getErrorFailedSubtitleHtml_(locale)]]">
       </html-echo>
+      <a slot="subtitle" id="serviceLogsLink" class="oobe-local-link"
+          on-click="onServiceLogsLinkClicked_" is="action-link">
+        [[i18nDynamic(locale, 'osInstallDialogErrorServiceLogsLink')]]
+      </a>
       </div>
       <div slot="content" for-step="failed"
           class="flex layout vertical center center-justified">
@@ -123,5 +139,19 @@ found in the LICENSE file. -->
         </oobe-next-button>
       </div>
     </oobe-adaptive-dialog>
+
+    <oobe-modal-dialog id="serviceLogsDialog" ignore-popstate
+        on-close="focusServiceLogsLink_"
+        on-cancel="focusServiceLogsLink_">
+      <div slot="title">
+        [[i18nDynamic(locale, 'osInstallDialogServiceLogsTitle')]]
+      </div>
+      <webview slot="content" id="serviceLogsFrame" role="document"
+          allowTransparency class="focus-on-show flex oobe-tos-webview">
+      </webview>
+      <oobe-text-button id="closeServiceLogsDialog" slot="buttons" inverse
+          on-click="hideServiceLogsDialog_" text-key="oobeModalDialogClose">
+      </oobe-text-button>
+    </oobe-modal-dialog>
   </template>
 </dom-module>
