@@ -75,7 +75,13 @@ class BackgroundModeManager : public content::NotificationObserver,
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
-  virtual void RegisterProfile(Profile* profile);
+  // Adds an entry for |profile| to |background_mode_data_|, and starts tracking
+  // events for this profile.
+  void RegisterProfile(Profile* profile);
+
+  // Removes the entry for |profile| from |background_mode_data_|, if present.
+  // Returns true if a removal was performed.
+  bool UnregisterProfile(Profile* profile);
 
   static void LaunchBackgroundApplication(
       Profile* profile,

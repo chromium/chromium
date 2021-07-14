@@ -155,6 +155,9 @@ void BackgroundModeManager::BackgroundModeData::OnProfileWillBeDestroyed(
   force_installed_tracker_observation_.Reset();
   DCHECK(!profile_keep_alive_);
   profile_ = nullptr;
+  // Remove this Profile* from |background_mode_data|.
+  bool did_unregister = manager_->UnregisterProfile(profile);
+  DCHECK(did_unregister);
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -408,6 +411,26 @@ void BackgroundModeManager::RegisterProfile(Profile* profile) {
     UpdateStatusTrayIconContextMenu();
 }
 
+bool BackgroundModeManager::UnregisterProfile(Profile* profile) {
+  // Remove the profile from our map of profiles.
+  auto it = background_mode_data_.find(profile);
+  // If a profile isn't running a background app, it may not be in the map.
+  if (it == background_mode_data_.end())
+    return false;
+
+  it->second->applications()->RemoveObserver(this);
+  background_mode_data_.erase(it);
+  // If there are no background mode profiles any longer, then turn off
+  // background mode.
+  UpdateEnableLaunchOnStartup();
+  if (!ShouldBeInBackgroundMode()) {
+    EndBackgroundMode();
+  }
+  UpdateStatusTrayIconContextMenu();
+
+  return true;
+}
+
 // static
 void BackgroundModeManager::LaunchBackgroundApplication(
     Profile* profile,
@@ -548,24 +571,10 @@ void BackgroundModeManager::OnProfileAdded(const base::FilePath& profile_path) {
 
 void BackgroundModeManager::OnProfileWillBeRemoved(
     const base::FilePath& profile_path) {
-  ProfileAttributesEntry* entry =
-      profile_storage_->GetProfileAttributesWithPath(profile_path);
-  DCHECK(entry);
-  std::u16string profile_name = entry->GetName();
-  // Remove the profile from our map of profiles.
-  auto it = GetBackgroundModeIterator(profile_name);
-  // If a profile isn't running a background app, it may not be in the map.
-  if (it != background_mode_data_.end()) {
-    it->second->applications()->RemoveObserver(this);
-    background_mode_data_.erase(it);
-    // If there are no background mode profiles any longer, then turn off
-    // background mode.
-    UpdateEnableLaunchOnStartup();
-    if (!ShouldBeInBackgroundMode()) {
-      EndBackgroundMode();
-    }
-    UpdateStatusTrayIconContextMenu();
-  }
+  Profile* profile =
+      g_browser_process->profile_manager()->GetProfileByPath(profile_path);
+  DCHECK(profile);
+  UnregisterProfile(profile);
 }
 
 void BackgroundModeManager::OnProfileNameChanged(
