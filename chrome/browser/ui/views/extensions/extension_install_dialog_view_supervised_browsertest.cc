@@ -126,7 +126,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised, AskAParent) {
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::ACCEPTED, helper.result());
-  helper.ClearResultForTesting();
+  helper.ClearPayloadForTesting();
 
   histogram_tester.ExpectUniqueSample(SupervisedUserExtensionsMetricsRecorder::
                                           kExtensionInstallDialogHistogramName,
@@ -178,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewTestSupervised,
       ExtensionInstallPrompt::GetDefaultShowDialogCallback());
   run_loop.Run();
   EXPECT_EQ(ExtensionInstallPrompt::Result::USER_CANCELED, helper.result());
-  helper.ClearResultForTesting();
+  helper.ClearPayloadForTesting();
 
   histogram_tester.ExpectUniqueSample(SupervisedUserExtensionsMetricsRecorder::
                                           kExtensionInstallDialogHistogramName,

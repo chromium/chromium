@@ -9,7 +9,7 @@
 #include "chrome/browser/extensions/extension_install_prompt.h"
 
 // A helper class to be used with ExtensionInstallPrompt that keeps track of the
-// result. Note that this class does no lifetime management.
+// payload. Note that this class does no lifetime management.
 class ExtensionInstallPromptTestHelper {
  public:
   ExtensionInstallPromptTestHelper();
@@ -19,21 +19,27 @@ class ExtensionInstallPromptTestHelper {
   // Returns a callback to be used with the ExtensionInstallPrompt.
   ExtensionInstallPrompt::DoneCallback GetCallback();
 
-  // Note: This ADD_FAILURE()s if result_ has not been set.
+  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  ExtensionInstallPrompt::DoneCallbackPayload payload() const;
+
+  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
   ExtensionInstallPrompt::Result result() const;
 
-  bool has_result() const { return result_ != nullptr; }
+  // Note: This causes |ADD_FAILURE()| if |payload_| has not been set.
+  std::string justification() const;
 
-  // Clears the result to re-use this test helper.
-  // Note: This ADD_FAILURE()s if the result_ has not been set.
-  void ClearResultForTesting();
+  bool has_payload() const { return payload_ != nullptr; }
+
+  // Clears the payload to re-use this test helper.
+  // Note: This ADD_FAILURE()s if the payload_ has not been set.
+  void ClearPayloadForTesting();
 
  private:
-  void HandleResult(ExtensionInstallPrompt::DoneCallbackPayload payload);
+  void HandlePayload(ExtensionInstallPrompt::DoneCallbackPayload payload);
 
-  std::unique_ptr<ExtensionInstallPrompt::Result> result_;
+  std::unique_ptr<ExtensionInstallPrompt::DoneCallbackPayload> payload_;
 
-  // A closure to run once HandleResult() has been called; used for exiting
+  // A closure to run once HandlePayload() has been called; used for exiting
   // run loops in tests.
   base::OnceClosure quit_closure_;
 

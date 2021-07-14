@@ -22,6 +22,7 @@
 #include "chrome/browser/ui/views/extensions/expandable_container_view.h"
 #include "chrome/browser/ui/views/extensions/extension_permissions_view.h"
 #include "chrome/common/buildflags.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -30,6 +31,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_urls.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -44,6 +46,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/separator.h"
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
@@ -339,6 +342,10 @@ void ExtensionInstallDialogView::SetInstallButtonDelayForTesting(
   g_install_delay_in_ms = delay_in_ms;
 }
 
+bool ExtensionInstallDialogView::IsJustificationFieldVisibleForTesting() {
+  return justification_view_ != nullptr;
+}
+
 void ExtensionInstallDialogView::ResizeWidget() {
   GetWidget()->SetSize(GetWidget()->non_client_view()->GetPreferredSize());
 }
@@ -451,6 +458,11 @@ void ExtensionInstallDialogView::OnDialogCanceled() {
 
 void ExtensionInstallDialogView::OnDialogAccepted() {
   DCHECK(done_callback_);
+  bool expect_justification =
+      prompt_->type() ==
+          ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT &&
+      base::FeatureList::IsEnabled(features::kExtensionWorkflowJustification);
+  DCHECK(expect_justification == !!justification_view_);
 
   UpdateInstallResultHistogram(true);
   prompt_->OnDialogAccepted();
@@ -461,8 +473,13 @@ void ExtensionInstallDialogView::OnDialogAccepted() {
               withhold_permissions_checkbox_->GetChecked()
           ? ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED
           : ExtensionInstallPrompt::Result::ACCEPTED;
+
   std::move(done_callback_)
-      .Run(ExtensionInstallPrompt::DoneCallbackPayload(result));
+      .Run(ExtensionInstallPrompt::DoneCallbackPayload(
+          result,
+          justification_view_
+              ? base::UTF16ToUTF8(justification_view_->GetJustificationText())
+              : std::string()));
 }
 
 bool ExtensionInstallDialogView::IsDialogButtonEnabled(
@@ -564,7 +581,11 @@ void ExtensionInstallDialogView::CreateContents() {
          std::make_unique<ExpandableContainerView>(details, content_width)});
   }
 
-  if (sections.empty()) {
+  const bool is_justification_field_enabled =
+      prompt_->type() ==
+          ExtensionInstallPrompt::PromptType::EXTENSION_REQUEST_PROMPT &&
+      base::FeatureList::IsEnabled(features::kExtensionWorkflowJustification);
+  if (sections.empty() && !is_justification_field_enabled) {
     // Use a smaller margin between the title area and buttons, since there
     // isn't any content.
     set_margins(gfx::Insets(ChromeLayoutProvider::Get()->GetDistanceMetric(
@@ -585,6 +606,19 @@ void ExtensionInstallDialogView::CreateContents() {
 
     if (section.contents_view)
       extension_info_container->AddChildView(section.contents_view.release());
+  }
+
+  // Add separate section for user justification. This section isn't added to
+  // the |sections| vector since it is later referenced to extract the textfield
+  // string.
+  if (is_justification_field_enabled) {
+    std::unique_ptr<views::Separator> separator =
+        std::make_unique<views::Separator>();
+    separator->SetColor(SK_ColorTRANSPARENT);
+    extension_info_container->AddChildView(std::move(separator));
+
+    justification_view_ = extension_info_container->AddChildView(
+        std::make_unique<ExtensionJustificationView>());
   }
 
   scroll_view_ = new views::ScrollView();

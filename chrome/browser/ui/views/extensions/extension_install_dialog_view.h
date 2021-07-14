@@ -21,7 +21,6 @@
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/view.h"
 
-// Forward-declarations
 class Profile;
 
 // Modal dialog that shows when the user attempts to install an extension. Also
@@ -62,6 +61,8 @@ class ExtensionInstallDialogView
 
   ExtensionInstallPromptShowParams* GetShowParamsForTesting();
   void ClickLinkForTesting();
+
+  bool IsJustificationFieldVisibleForTesting();
 
  private:
   // Forward-declaration.
@@ -114,6 +115,10 @@ class ExtensionInstallDialogView
 
   // Checkbox used to indicate if permissions should be withheld on install.
   views::Checkbox* withhold_permissions_checkbox_;
+
+  // The justification text field view where users enter their justification for
+  // requesting an extension.
+  ExtensionJustificationView* justification_view_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_INSTALL_DIALOG_VIEW_H_
