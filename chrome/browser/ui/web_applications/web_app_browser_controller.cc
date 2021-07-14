@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -255,12 +256,13 @@ const WebAppRegistrar& WebAppBrowserController::registrar() const {
 }
 
 void WebAppBrowserController::LoadAppIcon(bool allow_placeholder_icon) const {
-  apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
-      ->LoadIcon(apps::mojom::AppType::kWeb, GetAppId(),
-                 apps::mojom::IconType::kStandard, web_app::kWebAppIconSmall,
-                 allow_placeholder_icon,
-                 base::BindOnce(&WebAppBrowserController::OnLoadIcon,
-                                weak_ptr_factory_.GetWeakPtr()));
+  apps::AppServiceProxy* proxy =
+      apps::AppServiceProxyFactory::GetForProfile(browser()->profile());
+  proxy->LoadIcon(proxy->AppRegistryCache().GetAppType(GetAppId()), GetAppId(),
+                  apps::mojom::IconType::kStandard, web_app::kWebAppIconSmall,
+                  allow_placeholder_icon,
+                  base::BindOnce(&WebAppBrowserController::OnLoadIcon,
+                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
 void WebAppBrowserController::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
