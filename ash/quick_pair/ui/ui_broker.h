@@ -29,6 +29,8 @@ class UIBroker {
                                           AssociateAccountAction action) = 0;
   };
 
+  virtual ~UIBroker() = default;
+
   virtual void AddObserver(Observer* observer) = 0;
   virtual void RemoveObserver(Observer* observer) = 0;
   virtual void ShowDiscovery(const Device& device) = 0;

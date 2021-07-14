@@ -40,3 +40,22 @@ component("ui") {
     "//url",
   ]
 }
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "actions.cc",
+    "actions.h",
+    "mock_ui_broker.cc",
+    "mock_ui_broker.h",
+    "ui_broker.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -4,12 +4,32 @@
 
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 
+#include "ash/quick_pair/common/device.h"
+
 namespace ash {
 namespace quick_pair {
 
 MockScannerBroker::MockScannerBroker() = default;
 
 MockScannerBroker::~MockScannerBroker() = default;
+
+void MockScannerBroker::AddObserver(Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void MockScannerBroker::RemoveObserver(Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+void MockScannerBroker::NotifyDeviceFound(const Device& device) {
+  for (auto& obs : observers_)
+    obs.OnDeviceFound(device);
+}
+
+void MockScannerBroker::NotifyDeviceLost(const Device& device) {
+  for (auto& obs : observers_)
+    obs.OnDeviceLost(device);
+}
 
 }  // namespace quick_pair
 }  // namespace ash

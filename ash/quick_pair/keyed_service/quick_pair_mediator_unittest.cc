@@ -29,14 +29,8 @@ class MediatorTest : public testing::Test {
     mock_scanner_broker_ =
         static_cast<MockScannerBroker*>(scanner_broker.get());
 
-    EXPECT_CALL(*mock_scanner_broker_, AddObserver);
-
     mediator_ = std::make_unique<Mediator>(std::move(tracker),
                                            std::move(scanner_broker));
-  }
-
-  void TearDown() override {
-    EXPECT_CALL(*mock_scanner_broker_, RemoveObserver(mediator_.get()));
   }
 
  protected:

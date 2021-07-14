@@ -7,10 +7,13 @@
 
 #include "ash/quick_pair/common/protocol.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
+#include "base/observer_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace ash {
 namespace quick_pair {
+
+struct Device;
 
 class MockScannerBroker : public ScannerBroker {
  public:
@@ -19,10 +22,16 @@ class MockScannerBroker : public ScannerBroker {
   MockScannerBroker& operator=(const MockScannerBroker&) = delete;
   ~MockScannerBroker() override;
 
-  MOCK_METHOD(void, AddObserver, (Observer*), (override));
-  MOCK_METHOD(void, RemoveObserver, (Observer*), (override));
   MOCK_METHOD(void, StartScanning, (Protocol), (override));
   MOCK_METHOD(void, StopScanning, (Protocol), (override));
+
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+  void NotifyDeviceFound(const Device& device);
+  void NotifyDeviceLost(const Device& device);
+
+ private:
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace quick_pair

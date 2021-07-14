@@ -22,7 +22,7 @@ class UIBrokerImpl : public UIBroker {
   UIBrokerImpl();
   UIBrokerImpl(const UIBrokerImpl&) = delete;
   UIBrokerImpl& operator=(const UIBrokerImpl&) = delete;
-  ~UIBrokerImpl();
+  ~UIBrokerImpl() final;
 
   // UIBroker:
   void AddObserver(Observer* observer) override;
