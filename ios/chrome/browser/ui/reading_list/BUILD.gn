@@ -90,6 +90,7 @@ source_set("reading_list_javascript_feature") {
     "//base",
     "//components/dom_distiller/core",
     "//components/infobars/core",
+    "//components/prefs",
     "//components/reading_list/core",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
@@ -120,8 +121,10 @@ source_set("infobar") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//components/infobars/core",
+    "//components/prefs",
     "//components/reading_list/core",
     "//components/ukm/ios:ukm_url_recorder",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui/reading_list:reading_list_constants",
     "//ios/web/public",
     "//services/metrics/public/cpp:ukm_builders",
@@ -175,6 +178,7 @@ source_set("reading_list_ui") {
     "resources:reading_list_tools_icon",
     "//base",
     "//base:i18n",
+    "//components/prefs",
     "//components/reading_list/core",
     "//components/strings",
     "//components/url_formatter",

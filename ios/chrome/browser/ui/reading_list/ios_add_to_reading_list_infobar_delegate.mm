@@ -9,8 +9,10 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/infobars/core/infobar.h"
+#include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/ukm/ios/ukm_url_recorder.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_constants.h"
 #import "ios/web/public/web_state.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -69,4 +71,11 @@ bool IOSAddToReadingListInfobarDelegate::Accept() {
       setBool:YES
        forKey:kLastReadingListEntryAddedFromMessages];
   return true;
+}
+
+void IOSAddToReadingListInfobarDelegate::NeverShow() {
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState());
+  PrefService* user_prefs = browser_state->GetPrefs();
+  user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, true);
 }

@@ -33,3 +33,6 @@ NSString* const kShouldAnimateReadingListNTPUnreadCountBadge =
 NSString* const kShouldAnimateReadingListOverflowMenuUnreadCountBadge =
     @"ShouldAnimateReadingListOverflowMenuUnreadCountBadge";
 CGFloat const kReadingListUnreadCountBadgeAnimationDuration = 0.3;
+
+const char kPrefReadingListMessagesNeverShow[] =
+    "reading_list_message_never_show";

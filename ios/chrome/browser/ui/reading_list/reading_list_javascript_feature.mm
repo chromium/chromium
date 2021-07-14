@@ -11,6 +11,7 @@
 #include "components/dom_distiller/core/distillable_page_detector.h"
 #include "components/dom_distiller/core/page_features.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "components/prefs/pref_service.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/chrome_url_util.h"
@@ -172,6 +173,15 @@ void ReadingListJavaScriptFeature::ScriptMessageReceived(
     // Do not show the Messages banner if the WebState is not visible, but delay
     // this check in case the estimated read time can be set for an existing
     // entry.
+    return;
+  }
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
+  PrefService* user_prefs = browser_state->GetPrefs();
+  bool neverShowPrefSet =
+      user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
+  if (neverShowPrefSet) {
+    // Do not show prompt if user explicitly selected to never show it.
     return;
   }
 

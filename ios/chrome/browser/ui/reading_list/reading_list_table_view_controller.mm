@@ -11,8 +11,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/drag_and_drop/drag_item_util.h"
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
@@ -258,6 +260,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     DCHECK(IsReadingListMessagesEnabled());
     SettingsSwitchCell* switchCell =
         base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
+    BOOL neverShowPrefSet =
+        user_prefs->GetBoolean(kPrefReadingListMessagesNeverShow);
+    switchCell.switchView.on = !neverShowPrefSet;
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -299,8 +305,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
 #pragma mark - SettingsSwitchCell action
 
 - (void)switchAction:(UISwitch*)sender {
-  // TODO(crbug.com/1195978): Log metric to indicate toggle. Toggle Reading List
-  // Browser Pref.
+  // TODO(crbug.com/1195978): Log metric to indicate toggle.
+  PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
+  BOOL neverShowPrompt = ![sender isOn];
+  user_prefs->SetBoolean(kPrefReadingListMessagesNeverShow, neverShowPrompt);
 }
 
 #pragma mark - UITableViewDelegate

@@ -23,7 +23,8 @@ ReadingListInfobarModalInteractionHandler::
 #pragma mark - Public
 
 void ReadingListInfobarModalInteractionHandler::NeverAsk(InfoBarIOS* infobar) {
-  // TODO(crbug.com/1195978): Save Never Ask pref.
+  IOSAddToReadingListInfobarDelegate* delegate = GetDelegate(infobar);
+  delegate->NeverShow();
 
   // Remove infobar.
   infobar->RemoveSelf();
