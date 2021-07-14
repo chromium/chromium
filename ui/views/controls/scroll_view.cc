@@ -262,26 +262,13 @@ void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
   // Protect against clients passing a contents view that has its own Layer.
   DCHECK(!a_view->layer());
   if (ScrollsWithLayers()) {
-    bool fills_opaquely = true;
-    if (!a_view->background()) {
-      // Contents views may not be aware they need to fill their entire bounds -
-      // play it safe here to avoid graphical glitches
-      // (https://crbug.com/826472). If there's no solid background, mark the
-      // view as not filling its bounds opaquely.
-      if (GetBackgroundColor()) {
-        a_view->SetBackground(
-            CreateSolidBackground(GetBackgroundColor().value()));
-      } else {
-        fills_opaquely = false;
-      }
-    }
     a_view->SetPaintToLayer();
     a_view->layer()->SetDidScrollCallback(base::BindRepeating(
         &ScrollView::OnLayerScrolled, base::Unretained(this)));
     a_view->layer()->SetScrollable(contents_viewport_->bounds().size());
-    a_view->layer()->SetFillsBoundsOpaquely(fills_opaquely);
   }
   SetHeaderOrContents(contents_viewport_, std::move(a_view), &contents_);
+  UpdateBackground();
 }
 
 void ScrollView::SetContents(std::nullptr_t) {
@@ -1124,8 +1111,14 @@ void ScrollView::UpdateBackground() {
   // the viewport as well. This way if the viewport has a layer
   // SetFillsBoundsOpaquely() is honored.
   contents_viewport_->SetBackground(create_background());
-  if (contents_ && ScrollsWithLayers())
+  if (contents_ && ScrollsWithLayers()) {
     contents_->SetBackground(create_background());
+    // Contents views may not be aware they need to fill their entire bounds -
+    // play it safe here to avoid graphical glitches (https://crbug.com/826472).
+    // If there's no solid background, mark the contents view as not filling its
+    // bounds opaquely.
+    contents_->layer()->SetFillsBoundsOpaquely(!!background_color);
+  }
   if (contents_viewport_->layer()) {
     contents_viewport_->layer()->SetFillsBoundsOpaquely(!!background_color);
   }
