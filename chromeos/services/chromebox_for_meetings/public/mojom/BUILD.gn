@@ -7,6 +7,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [
     "cfm_browser.mojom",
+    "cfm_network_settings.mojom",
     "cfm_service_manager.mojom",
     "meet_devices_diagnostics.mojom",
     "meet_devices_info.mojom",
