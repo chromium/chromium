@@ -6,7 +6,6 @@
 #define NET_BASE_NET_ERRORS_H__
 
 #include <string>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/logging.h"

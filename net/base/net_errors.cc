@@ -4,7 +4,11 @@
 
 #include "net/base/net_errors.h"
 
+#include <string>
+
 #include "base/check_op.h"
+#include "base/files/file.h"
+#include "base/logging.h"
 #include "base/notreached.h"
 #include "net/third_party/quiche/src/quic/core/quic_error_codes.h"
 
