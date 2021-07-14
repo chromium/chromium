@@ -79,6 +79,13 @@ void SharesheetService::ShowBubble(content::WebContents* web_contents,
       std::move(delivered_callback), std::move(close_callback));
 }
 
+void SharesheetService::CloseBubble(gfx::NativeWindow native_window) {
+  SharesheetServiceDelegate* delegate = GetDelegate(native_window);
+  if (delegate == nullptr)
+    return;
+  delegate->CloseSharesheet();
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SharesheetService::ShowNearbyShareBubble(
     gfx::NativeWindow native_window,
