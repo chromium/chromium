@@ -230,10 +230,6 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // which we won't attempt to use decode swap chain again.
   bool failed_to_present_decode_swapchain_ = false;
 
-  // Number of frames since we switched from YUV to BGRA swap chain, or
-  // vice-versa.
-  int frames_since_color_space_change_ = 0;
-
   // This struct is used to cache information about what visuals are currently
   // being presented so that properties that aren't changed aren't sent to
   // DirectComposition.

@@ -852,14 +852,6 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
   }
 
   swap_chain_size_ = swap_chain_size;
-  if (swap_chain_format_ == DXGI_FORMAT_NV12) {
-    frames_since_color_space_change_++;
-  } else {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "GPU.DirectComposition.FramesSinceColorSpaceChange",
-        frames_since_color_space_change_);
-    frames_since_color_space_change_ = 0;
-  }
   swap_chain_format_ = DXGI_FORMAT_NV12;
   RecordPresentationStatistics();
   return true;
@@ -1105,7 +1097,6 @@ bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
     return false;
   }
   last_presented_images_ = params.images;
-  frames_since_color_space_change_++;
   RecordPresentationStatistics();
   return true;
 }
@@ -1356,15 +1347,7 @@ bool SwapChainPresenter::ReallocateSwapChain(
 
   DCHECK(!swap_chain_size.IsEmpty());
   swap_chain_size_ = swap_chain_size;
-
   protected_video_type_ = protected_video_type;
-
-  if (swap_chain_format_ != swap_chain_format) {
-    UMA_HISTOGRAM_COUNTS_1000(
-        "GPU.DirectComposition.FramesSinceColorSpaceChange",
-        frames_since_color_space_change_);
-    frames_since_color_space_change_ = 0;
-  }
 
   ReleaseSwapChainResources();
 

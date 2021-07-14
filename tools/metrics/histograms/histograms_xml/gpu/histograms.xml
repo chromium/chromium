@@ -528,6 +528,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="GPU.DirectComposition.FramesSinceColorSpaceChange"
     units="frames" expires_after="2021-06-15">
+  <obsolete>
+    Removed 07/2021.
+  </obsolete>
   <owner>sunnyps@chromium.org</owner>
   <owner>zmo@chromium.org</owner>
   <summary>
