@@ -186,13 +186,11 @@ void LoginPerformer::LoginOffTheRecord() {
       base::BindOnce(&Authenticator::LoginOffTheRecord, authenticator_.get()));
 }
 
-void LoginPerformer::LoginAsKioskAccount(const AccountId& app_account_id,
-                                         bool use_guest_mount) {
+void LoginPerformer::LoginAsKioskAccount(const AccountId& app_account_id) {
   EnsureAuthenticator();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&Authenticator::LoginAsKioskAccount, authenticator_.get(),
-                     app_account_id, use_guest_mount));
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&Authenticator::LoginAsKioskAccount,
+                                        authenticator_.get(), app_account_id));
 }
 
 void LoginPerformer::LoginAsArcKioskAccount(

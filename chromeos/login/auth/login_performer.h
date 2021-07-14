@@ -77,8 +77,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) LoginPerformer
   void LoginAsPublicSession(const UserContext& user_context);
 
   // Performs a login into the kiosk mode account with |app_account_id|.
-  void LoginAsKioskAccount(const AccountId& app_account_id,
-                           bool use_guest_mount);
+  void LoginAsKioskAccount(const AccountId& app_account_id);
 
   // Performs a login into the ARC kiosk mode account with |arc_app_account_id|.
   void LoginAsArcKioskAccount(const AccountId& arc_app_account_id);

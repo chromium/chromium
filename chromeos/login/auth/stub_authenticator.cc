@@ -91,8 +91,7 @@ void StubAuthenticator::LoginAsPublicSession(const UserContext& user_context) {
 }
 
 void StubAuthenticator::LoginAsKioskAccount(
-    const AccountId& /* app_account_id */,
-    bool use_guest_mount) {
+    const AccountId& /* app_account_id */) {
   UserContext user_context(user_manager::UserType::USER_TYPE_KIOSK_APP,
                            expected_user_context_.GetAccountId());
   user_context.SetIsUsingOAuth(false);

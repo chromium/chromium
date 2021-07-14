@@ -198,8 +198,7 @@ void KioskLaunchController::Start(const KioskAppId& kiosk_app_id,
                                           weak_ptr_factory_.GetWeakPtr()));
 
   kiosk_profile_loader_ = std::make_unique<KioskProfileLoader>(
-      *kiosk_app_id_.account_id, kiosk_app_id_.type,
-      /*use_guest_mount=*/false, /*delegate=*/this);
+      *kiosk_app_id_.account_id, kiosk_app_id_.type, /*delegate=*/this);
   kiosk_profile_loader_->Start();
 }
 

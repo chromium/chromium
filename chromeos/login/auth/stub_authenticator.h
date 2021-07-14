@@ -42,8 +42,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
   void AuthenticateToLogin(const UserContext& user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
-  void LoginAsKioskAccount(const AccountId& app_account_id,
-                           bool use_guest_mount) override;
+  void LoginAsKioskAccount(const AccountId& app_account_id) override;
   void LoginAsArcKioskAccount(const AccountId& app_account_id) override;
   void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
   void OnAuthSuccess() override;

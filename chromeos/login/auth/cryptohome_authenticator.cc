@@ -680,26 +680,16 @@ void CryptohomeAuthenticator::LoginAsPublicSession(
 }
 
 void CryptohomeAuthenticator::LoginAsKioskAccount(
-    const AccountId& app_account_id,
-    bool use_guest_mount) {
+    const AccountId& app_account_id) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
-
-  const AccountId& account_id =
-      use_guest_mount ? user_manager::GuestAccountId() : app_account_id;
   current_state_ = std::make_unique<AuthAttemptState>(
-      UserContext(user_manager::USER_TYPE_KIOSK_APP, account_id),
+      UserContext(user_manager::USER_TYPE_KIOSK_APP, app_account_id),
       false /* unlock */);
 
   remove_user_data_on_failure_ = true;
-  if (!use_guest_mount) {
-    MountPublic(current_state_->AsWeakPtr(),
-                scoped_refptr<CryptohomeAuthenticator>(this),
-                false);  // force_dircrypto_if_available
-  } else {
-    ephemeral_mount_attempted_ = true;
-    MountGuestAndGetHash(current_state_->AsWeakPtr(),
-                         scoped_refptr<CryptohomeAuthenticator>(this));
-  }
+  MountPublic(current_state_->AsWeakPtr(),
+              scoped_refptr<CryptohomeAuthenticator>(this),
+              false);  // force_dircrypto_if_available
 }
 
 void CryptohomeAuthenticator::LoginAsArcKioskAccount(

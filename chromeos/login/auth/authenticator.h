@@ -46,10 +46,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) Authenticator
 
   // Initiates login into kiosk mode account identified by |app_account_id|.
   // The |app_account_id| is a generated account id for the account.
-  // |use_guest_mount| specifies whether to force the session to use a
-  // guest mount. If this is false, we use mount a public cryptohome.
-  virtual void LoginAsKioskAccount(const AccountId& app_account_id,
-                                   bool use_guest_mount) = 0;
+  // So called Public mount is used to mount cryptohome.
+  virtual void LoginAsKioskAccount(const AccountId& app_account_id) = 0;
 
   // Initiates login into ARC kiosk mode account identified by |app_account_id|.
   // The |app_account_id| is a generated account id for the account.

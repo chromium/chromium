@@ -138,11 +138,9 @@ class KioskProfileLoader::CryptohomedChecker
 
 KioskProfileLoader::KioskProfileLoader(const AccountId& app_account_id,
                                        KioskAppType app_type,
-                                       bool use_guest_mount,
                                        Delegate* delegate)
     : account_id_(app_account_id),
       app_type_(app_type),
-      use_guest_mount_(use_guest_mount),
       delegate_(delegate),
       failed_mount_attempts_(0) {}
 
@@ -159,16 +157,12 @@ void KioskProfileLoader::LoginAsKioskAccount() {
   login_performer_ = std::make_unique<ChromeLoginPerformer>(this);
   switch (app_type_) {
     case KioskAppType::kArcApp:
-      // Arc kiosks do not support ephemeral mount.
-      DCHECK(!use_guest_mount_);
       login_performer_->LoginAsArcKioskAccount(account_id_);
       return;
     case KioskAppType::kChromeApp:
-      login_performer_->LoginAsKioskAccount(account_id_, use_guest_mount_);
+      login_performer_->LoginAsKioskAccount(account_id_);
       return;
     case KioskAppType::kWebApp:
-      // Web kiosks do not support ephemeral mount.
-      DCHECK(!use_guest_mount_);
       login_performer_->LoginAsWebKioskAccount(account_id_);
       return;
   }

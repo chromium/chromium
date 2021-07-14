@@ -42,7 +42,6 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
 
   KioskProfileLoader(const AccountId& app_account_id,
                      KioskAppType app_type,
-                     bool use_guest_mount,
                      Delegate* delegate);
 
   ~KioskProfileLoader() override;
@@ -69,7 +68,6 @@ class KioskProfileLoader : public LoginPerformer::Delegate,
 
   const AccountId account_id_;
   const KioskAppType app_type_;
-  bool use_guest_mount_;
   Delegate* delegate_;
   int failed_mount_attempts_;
   std::unique_ptr<CryptohomedChecker> cryptohomed_checker_;
