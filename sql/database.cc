@@ -9,6 +9,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <algorithm>
 #include <memory>
 
 #include "base/feature_list.h"
@@ -19,6 +20,7 @@
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -109,17 +111,14 @@ int BackupDatabase(sqlite3* src, sqlite3* dst, const char* db_name) {
   return rc;
 }
 
-// Be very strict on attachment point.  SQLite can handle a much wider
-// character set with appropriate quoting, but Chromium code should
-// just use clean names to start with.
 bool ValidAttachmentPoint(base::StringPiece attachment_point) {
-  for (char attachment_char : attachment_point) {
-    if (!(base::IsAsciiDigit(attachment_char) ||
-          base::IsAsciiAlpha(attachment_char) || attachment_char == '_')) {
-      return false;
-    }
-  }
-  return true;
+  // SQLite could handle a much wider character set, with appropriate quoting.
+  //
+  // Chrome's constraint is easy to remember, and sufficient for the few
+  // existing use cases. ATTACH is a discouraged feature, so no new use cases
+  // are expected.
+  return base::ranges::all_of(attachment_point,
+                              [](char ch) { return base::IsAsciiLower(ch); });
 }
 
 // Helper to get the sqlite3_file* associated with the "main" database.
@@ -1079,16 +1078,14 @@ bool Database::AttachDatabase(const base::FilePath& other_db_path,
 
   DCHECK(ValidAttachmentPoint(attachment_point));
 
-  Statement s(GetUniqueStatement("ATTACH DATABASE ? AS ?"));
+  Statement statement(GetUniqueStatement("ATTACH ? AS ?"));
 #if OS_WIN
-  s.BindString16(0, base::AsStringPiece16(other_db_path.value()));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  s.BindString(0, other_db_path.value());
+  statement.BindString16(0, base::AsStringPiece16(other_db_path.value()));
 #else
-#error Unsupported platform
+  statement.BindString(0, other_db_path.value());
 #endif
-  s.BindString(1, attachment_point);
-  return s.Run();
+  statement.BindString(1, attachment_point);
+  return statement.Run();
 }
 
 bool Database::DetachDatabase(base::StringPiece attachment_point,
@@ -1097,9 +1094,9 @@ bool Database::DetachDatabase(base::StringPiece attachment_point,
 
   DCHECK(ValidAttachmentPoint(attachment_point));
 
-  Statement s(GetUniqueStatement("DETACH DATABASE ?"));
-  s.BindString(0, attachment_point);
-  return s.Run();
+  Statement statement(GetUniqueStatement("DETACH ?"));
+  statement.BindString(0, attachment_point);
+  return statement.Run();
 }
 
 // TODO(shess): Consider changing this to execute exactly one statement.  If a

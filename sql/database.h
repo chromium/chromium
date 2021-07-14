@@ -352,21 +352,27 @@ class COMPONENT_EXPORT(SQL) Database {
 
   // Attached databases---------------------------------------------------------
 
-  // SQLite supports attaching multiple database files to a single connection.
+  // Attaches an existing database to this connection.
   //
-  // Attach the database in |other_db_path| to the current connection under
-  // |attachment_point|. |attachment_point| must only contain characters from
-  // [a-zA-Z0-9_].
+  // `attachment_point` must only contain lowercase letters.
+  //
+  // Attachment APIs are only exposed for use in recovery. General use is
+  // discouraged in Chrome. The README has more details.
   //
   // On the SQLite version shipped with Chrome (3.21+, Oct 2017), databases can
   // be attached while a transaction is opened. However, these databases cannot
   // be detached until the transaction is committed or aborted.
-  //
-  // These APIs are only exposed for use in recovery. They are extremely subtle
-  // and are not useful for features built on top of //sql.
   bool AttachDatabase(const base::FilePath& other_db_path,
                       base::StringPiece attachment_point,
                       InternalApiToken);
+
+  // Detaches a database that was previously attached with AttachDatabase().
+  //
+  // `attachment_point` must match the argument of a previously successsful
+  // AttachDatabase() call.
+  //
+  // Attachment APIs are only exposed for use in recovery. General use is
+  // discouraged in Chrome. The README has more details.
   bool DetachDatabase(base::StringPiece attachment_point, InternalApiToken);
 
   // Statements ----------------------------------------------------------------
