@@ -5769,6 +5769,152 @@ TEST_F(UVTokenAuthenticatorImplTest, MakeCredentialUvBlockedFallBackToPin) {
   EXPECT_EQ(5, virtual_device_factory_->mutable_state()->uv_retries);
 }
 
+class BlockingAuthenticatorRequestDelegate
+    : public AuthenticatorRequestClientDelegate {
+ public:
+  explicit BlockingAuthenticatorRequestDelegate(
+      base::OnceClosure* const callback)
+      : callback_(callback) {}
+
+  void RegisterActionCallbacks(
+      base::OnceClosure cancel_callback,
+      base::RepeatingClosure start_over_callback,
+      device::FidoRequestHandlerBase::RequestCallback request_callback,
+      base::RepeatingClosure bluetooth_adapter_power_on_callback) override {
+    cancel_callback_ = std::move(cancel_callback);
+  }
+
+  bool DoesBlockRequestOnFailure(InterestingFailureReason reason) override {
+    if (callback_ && *callback_) {
+      std::move(*callback_).Run();
+    }
+    return true;
+  }
+
+  void Cancel() { std::move(cancel_callback_).Run(); }
+
+ private:
+  base::OnceClosure* const callback_;
+  base::OnceClosure cancel_callback_;
+};
+
+class BlockingDelegateContentBrowserClient : public ContentBrowserClient {
+ public:
+  explicit BlockingDelegateContentBrowserClient(
+      base::OnceClosure* const callback)
+      : callback_(callback) {}
+
+  WebAuthenticationDelegate* GetWebAuthenticationDelegate() override {
+    return &web_authentication_delegate_;
+  }
+
+  std::unique_ptr<AuthenticatorRequestClientDelegate>
+  GetWebAuthenticationRequestDelegate(
+      RenderFrameHost* render_frame_host) override {
+    auto ret =
+        std::make_unique<BlockingAuthenticatorRequestDelegate>(callback_);
+    delegate_ = ret.get();
+    return ret;
+  }
+
+  void Cancel() { delegate_->Cancel(); }
+
+ private:
+  TestWebAuthenticationDelegate web_authentication_delegate_;
+  base::OnceClosure* const callback_;
+  BlockingAuthenticatorRequestDelegate* delegate_ = nullptr;
+};
+
+class BlockingDelegateAuthenticatorImplTest : public AuthenticatorImplTest {
+ public:
+  BlockingDelegateAuthenticatorImplTest() = default;
+
+  BlockingDelegateAuthenticatorImplTest(
+      const BlockingDelegateAuthenticatorImplTest&) = delete;
+  BlockingDelegateAuthenticatorImplTest& operator=(
+      const BlockingDelegateAuthenticatorImplTest&) = delete;
+
+  void SetUp() override {
+    AuthenticatorImplTest::SetUp();
+    old_client_ = SetBrowserClientForTesting(&test_client_);
+    NavigateAndCommit(GURL(kTestOrigin1));
+  }
+
+  void TearDown() override {
+    SetBrowserClientForTesting(old_client_);
+    AuthenticatorImplTest::TearDown();
+  }
+
+ protected:
+  base::OnceClosure blocked_on_error_callback_;
+  BlockingDelegateContentBrowserClient test_client_{
+      &blocked_on_error_callback_};
+
+ private:
+  ContentBrowserClient* old_client_ = nullptr;
+};
+
+TEST_F(BlockingDelegateAuthenticatorImplTest, PostCancelMessage) {
+  // Create a fingerprint-reading device and a UP-only device. Advance the
+  // first till it's waiting for a fingerprint then simulate a touch on the
+  // UP device that claims that it failed due to an excluded credential.
+  // When the error is showing in the UI, have the fingerprint device resolve
+  // the UV with an error. Don't crash (crbug.com/1225899).
+
+  PublicKeyCredentialCreationOptionsPtr options =
+      GetTestPublicKeyCredentialCreationOptions();
+  options->exclude_credentials = GetTestCredentials();
+
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_1;
+  scoped_refptr<VirtualFidoDevice::State> state_1 = device_1.state;
+  device_1.state->simulate_press_callback =
+      base::BindLambdaForTesting([&](VirtualFidoDevice* _) -> bool {
+        // Drop all makeCredential requests. The reply will be sent when
+        // the second authenticator is asked for a fingerprint.
+        return false;
+      });
+
+  device::test::MultipleVirtualFidoDeviceFactory::DeviceDetails device_2;
+  scoped_refptr<VirtualFidoDevice::State> state_2 = device_2.state;
+  device_2.config.internal_uv_support = true;
+  device_2.config.pin_support = true;
+  device_2.config.pin_uv_auth_token_support = true;
+  device_2.config.ctap2_versions = {device::Ctap2Version::kCtap2_1};
+  device_2.state->pin = kTestPIN;
+  device_2.state->fingerprints_enrolled = true;
+  device_2.state->uv_retries = 8;
+  device_2.state->simulate_press_callback =
+      base::BindLambdaForTesting([&](VirtualFidoDevice* _) -> bool {
+        // If asked for a fingerprint, fail the makeCredential request by
+        // simulating a matched excluded credential by the other authenticator.
+        base::SequencedTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE, base::BindOnce(std::move(state_1->transact_callback),
+                                      std::vector<uint8_t>{static_cast<uint8_t>(
+                                          device::CtapDeviceResponseCode::
+                                              kCtap2ErrCredentialExcluded)}));
+        return false;
+      });
+
+  auto discovery =
+      std::make_unique<device::test::MultipleVirtualFidoDeviceFactory>();
+  discovery->AddDevice(std::move(device_1));
+  discovery->AddDevice(std::move(device_2));
+  AuthenticatorEnvironmentImpl::GetInstance()
+      ->ReplaceDefaultDiscoveryFactoryForTesting(std::move(discovery));
+
+  blocked_on_error_callback_ = base::BindLambdaForTesting([&]() {
+    // When the UI should show an error, have the second authenticator reply
+    // to the fingerprint touch and cancel the transaction.
+    std::move(state_2->transact_callback)
+        .Run(std::vector<uint8_t>{static_cast<uint8_t>(
+            device::CtapDeviceResponseCode::kCtap2ErrOperationDenied)});
+    test_client_.Cancel();
+  });
+
+  EXPECT_EQ(AuthenticatorMakeCredential(std::move(options)).status,
+            AuthenticatorStatus::CREDENTIAL_EXCLUDED);
+}
+
 // ResidentKeyTestAuthenticatorRequestDelegate is a delegate that:
 //   a) always returns |kTestPIN| when asked for a PIN.
 //   b) sorts potential resident-key accounts by user ID, maps them to a string

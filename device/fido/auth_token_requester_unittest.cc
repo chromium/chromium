@@ -64,12 +64,17 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
   bool internal_uv_was_retried() { return internal_uv_num_retries_ > 0u; }
   size_t internal_uv_num_retries() { return internal_uv_num_retries_; }
   std::list<TestExpectation> expectations() { return expectations_; }
+  void set_selectable(bool selectable) { selectable_ = selectable; }
 
  private:
   // AuthTokenRequester::Delegate:
-  void AuthenticatorSelectedForPINUVAuthToken(
+  bool AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override {
-    authenticator_selected_ = true;
+    DCHECK(!authenticator_selected_);
+    if (selectable_) {
+      authenticator_selected_ = true;
+    }
+    return selectable_;
   }
   void CollectPIN(pin::PINEntryReason reason,
                   pin::PINEntryError error,
@@ -117,6 +122,7 @@ class TestAuthTokenRequesterDelegate : public AuthTokenRequester::Delegate {
 
   bool authenticator_selected_ = false;
   size_t internal_uv_num_retries_ = 0u;
+  bool selectable_ = true;
 
   base::RunLoop wait_for_result_loop_;
 };
@@ -173,7 +179,11 @@ class AuthTokenRequesterTest : public ::testing::Test {
     delegate_->WaitForResult();
   }
 
-  void TearDown() override { EXPECT_EQ(delegate_->expectations().size(), 0u); }
+  void TearDown() override {
+    if (delegate_) {
+      EXPECT_EQ(delegate_->expectations().size(), 0u);
+    }
+  }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
@@ -506,6 +516,35 @@ TEST_F(AuthTokenRequesterTest, ForcePINChangeSameAsCurrent) {
 
   EXPECT_EQ(*delegate_->result(), AuthTokenRequester::Result::kSuccess);
   EXPECT_TRUE(delegate_->response());
+}
+
+TEST_F(AuthTokenRequesterTest, NoCallsIfNotSelected) {
+  // Test that a failure to select an authenticator stops processing.
+
+  auto state = base::MakeRefCounted<VirtualFidoDevice::State>();
+  VirtualCtap2Device::Config config;
+
+  config.pin_support = true;
+  state->pin = kTestPIN;
+  config.internal_uv_support = true;
+  state->fingerprints_enrolled = true;
+
+  auto authenticator = std::make_unique<FidoDeviceAuthenticator>(
+      std::make_unique<VirtualCtap2Device>(state, std::move(config)));
+
+  base::RunLoop init_loop;
+  authenticator->InitializeAuthenticator(init_loop.QuitClosure());
+  init_loop.Run();
+
+  auto delegate = std::make_unique<TestAuthTokenRequesterDelegate>(
+      std::list<TestExpectation>());
+  delegate->set_selectable(false);
+  AuthTokenRequester::Options options;
+  options.token_permissions = {pin::Permissions::kMakeCredential};
+  options.rp_id = "foobar.com";
+  AuthTokenRequester requester(delegate.get(), authenticator.get(),
+                               std::move(options));
+  requester.ObtainPINUVAuthToken();
 }
 
 }  // namespace

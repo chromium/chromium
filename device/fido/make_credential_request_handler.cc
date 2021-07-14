@@ -565,9 +565,15 @@ void MakeCredentialRequestHandler::AuthenticatorRemoved(
   }
 }
 
-void MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
+bool MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
     FidoAuthenticator* authenticator) {
-  DCHECK_EQ(state_, State::kWaitingForTouch);
+  if (state_ != State::kWaitingForTouch) {
+    // Some other authenticator was selected in the meantime.
+    FIDO_LOG(DEBUG) << "Rejecting select request from AuthTokenRequester "
+                       "because another authenticator was already selected.";
+    return false;
+  }
+
   state_ = State::kWaitingForToken;
   selected_authenticator_for_pin_uv_auth_token_ = authenticator;
 
@@ -575,6 +581,7 @@ void MakeCredentialRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
     return entry.first != authenticator;
   });
   CancelActiveAuthenticators(authenticator->GetId());
+  return true;
 }
 
 void MakeCredentialRequestHandler::CollectPIN(
@@ -592,8 +599,10 @@ void MakeCredentialRequestHandler::CollectPIN(
 }
 
 void MakeCredentialRequestHandler::PromptForInternalUVRetry(int attempts) {
-  DCHECK(state_ == State::kWaitingForTouch ||
-         state_ == State::kWaitingForToken);
+  if (state_ != State::kWaitingForTouch && state_ != State::kWaitingForToken) {
+    // Some other authenticator was touched in the meantime.
+    return;
+  }
   observer()->OnRetryUserVerification(attempts);
 }
 

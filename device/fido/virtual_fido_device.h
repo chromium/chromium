@@ -233,6 +233,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualFidoDevice : public FidoDevice {
     FidoTransportProtocol transport =
         FidoTransportProtocol::kUsbHumanInterfaceDevice;
 
+    // transact_callback contains the outstanding callback in the event that
+    // |simulate_press_callback| returned false. This can be used to inject a
+    // response after simulating an unsatisfied touch for CTAP2 authenticators.
+    FidoDevice::DeviceCallback transact_callback;
+
     // Adds a new credential to the authenticator. Returns true on success,
     // false if there already exists a credential with the given ID.
     bool InjectRegistration(base::span<const uint8_t> credential_id,

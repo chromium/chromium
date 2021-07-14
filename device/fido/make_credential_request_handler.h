@@ -95,7 +95,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialRequestHandler
                             FidoAuthenticator* authenticator) override;
 
   // AuthTokenRequester::Delegate:
-  void AuthenticatorSelectedForPINUVAuthToken(
+  bool AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override;
   void CollectPIN(pin::PINEntryReason reason,
                   pin::PINEntryError error,

@@ -90,7 +90,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
       FidoAuthenticator* platform_authenticator) override;
 
   // AuthTokenRequester::Delegate:
-  void AuthenticatorSelectedForPINUVAuthToken(
+  bool AuthenticatorSelectedForPINUVAuthToken(
       FidoAuthenticator* authenticator) override;
   void CollectPIN(pin::PINEntryReason reason,
                   pin::PINEntryError error,

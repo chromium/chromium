@@ -171,7 +171,9 @@ void AuthTokenRequester::OnGetUVToken(
     return;
   }
 
-  NotifyAuthenticatorSelected();
+  if (!NotifyAuthenticatorSelected()) {
+    return;
+  }
 
   if (status == CtapDeviceResponseCode::kCtap2ErrOperationDenied) {
     // The user explicitly denied to the operation on an authenticator with
@@ -213,9 +215,10 @@ void AuthTokenRequester::OnGetUVToken(
 }
 
 void AuthTokenRequester::ObtainTokenFromPIN() {
-  NotifyAuthenticatorSelected();
-  authenticator_->GetPinRetries(base::BindOnce(
-      &AuthTokenRequester::OnGetPINRetries, weak_factory_.GetWeakPtr()));
+  if (NotifyAuthenticatorSelected()) {
+    authenticator_->GetPinRetries(base::BindOnce(
+        &AuthTokenRequester::OnGetPINRetries, weak_factory_.GetWeakPtr()));
+  }
 }
 
 void AuthTokenRequester::OnGetPINRetries(
@@ -313,12 +316,14 @@ void AuthTokenRequester::OnGetPINToken(
 }
 
 void AuthTokenRequester::ObtainTokenFromNewPIN() {
-  NotifyAuthenticatorSelected();
-  delegate_->CollectPIN(pin::PINEntryReason::kSet, pin::PINEntryError::kNoError,
-                        authenticator_->NewMinPINLength(),
-                        /*attempts=*/0,
-                        base::BindOnce(&AuthTokenRequester::HaveNewPIN,
-                                       weak_factory_.GetWeakPtr()));
+  if (NotifyAuthenticatorSelected()) {
+    delegate_->CollectPIN(pin::PINEntryReason::kSet,
+                          pin::PINEntryError::kNoError,
+                          authenticator_->NewMinPINLength(),
+                          /*attempts=*/0,
+                          base::BindOnce(&AuthTokenRequester::HaveNewPIN,
+                                         weak_factory_.GetWeakPtr()));
+  }
 }
 
 void AuthTokenRequester::HaveNewPIN(std::u16string pin16) {
@@ -366,19 +371,20 @@ void AuthTokenRequester::OnSetPIN(std::string pin,
                                              weak_factory_.GetWeakPtr(), pin));
 }
 
-void AuthTokenRequester::NotifyAuthenticatorSelected() {
-  if (authenticator_was_selected_) {
-    return;
+bool AuthTokenRequester::NotifyAuthenticatorSelected() {
+  if (!authenticator_selected_result_.has_value()) {
+    authenticator_selected_result_ =
+        delegate_->AuthenticatorSelectedForPINUVAuthToken(authenticator_);
   }
-  authenticator_was_selected_ = true;
-  delegate_->AuthenticatorSelectedForPINUVAuthToken(authenticator_);
+  return *authenticator_selected_result_;
 }
 
 void AuthTokenRequester::NotifyAuthenticatorSelectedAndFailWithResult(
     Result result) {
-  NotifyAuthenticatorSelected();
-  delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, result,
-                                                      absl::nullopt);
+  if (NotifyAuthenticatorSelected()) {
+    delegate_->HavePINUVAuthTokenResultForAuthenticator(authenticator_, result,
+                                                        absl::nullopt);
+  }
 }
 
 }  // namespace device

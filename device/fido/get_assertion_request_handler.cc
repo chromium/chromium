@@ -443,9 +443,15 @@ void GetAssertionRequestHandler::GetPlatformCredentialStatus(
 #endif
 }
 
-void GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
+bool GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
     FidoAuthenticator* authenticator) {
-  DCHECK_EQ(state_, State::kWaitingForTouch);
+  if (state_ != State::kWaitingForTouch) {
+    // Some other authenticator was selected in the meantime.
+    FIDO_LOG(DEBUG) << "Rejecting select request from AuthTokenRequester "
+                       "because another authenticator was already selected.";
+    return false;
+  }
+
   state_ = State::kWaitingForToken;
   selected_authenticator_for_pin_uv_auth_token_ = authenticator;
 
@@ -453,6 +459,7 @@ void GetAssertionRequestHandler::AuthenticatorSelectedForPINUVAuthToken(
     return entry.first != authenticator;
   });
   CancelActiveAuthenticators(authenticator->GetId());
+  return true;
 }
 
 void GetAssertionRequestHandler::CollectPIN(pin::PINEntryReason reason,
