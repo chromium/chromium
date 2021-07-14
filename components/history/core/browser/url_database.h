@@ -183,14 +183,14 @@ class URLDatabase {
 
   // Performs a brute force search over the database to find any URLs or titles
   // which match the `query` string, using the default text matching algorithm.
-  // Returns any matches in `results`.
-  bool GetTextMatches(const std::u16string& query, URLRows* results);
+  // Returns any matches.
+  URLRows GetTextMatches(const std::u16string& query);
 
   // Same as GetTextMatches, using `algorithm` as the text matching
   // algorithm.
-  bool GetTextMatchesWithAlgorithm(const std::u16string& query,
-                                   query_parser::MatchingAlgorithm algorithm,
-                                   URLRows* results);
+  URLRows GetTextMatchesWithAlgorithm(
+      const std::u16string& query,
+      query_parser::MatchingAlgorithm algorithm);
 
   // Keyword Search Terms ------------------------------------------------------
 

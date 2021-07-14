@@ -52,6 +52,13 @@ public interface HistoryProvider {
      */
     void queryHistory(String query);
 
+    /**
+     * Query browsing history for a particular host. Only one query may be in-flight at any time.
+     * See BrowsingHistoryService::QueryHistory.
+     * @param hostName The host name.
+     */
+    void queryHistoryForHost(String hostName);
+
     /*
      * Fetches more results using the previous query's text, only valid to call
      * after queryHistory is called.

@@ -41,6 +41,9 @@ const char kUrl4[] = "http://www.four.com";
 const char kUrl5[] = "http://www.five.com";
 const char kUrl6[] = "http://www.six.com";
 const char kUrl7[] = "http://www.seven.com";
+const char kUrl8[] = "http://eight.com";
+const char kUrl9[] = "http://nine.com/eight.com";
+const char kUrl10[] = "http://ten.com/eight";
 const char kIconUrl1[] = "http://www.one.com/favicon.ico";
 
 const HistoryEntry::EntryType kLocal = HistoryEntry::LOCAL_ENTRY;
@@ -253,8 +256,14 @@ class BrowsingHistoryServiceTest : public ::testing::Test {
 
   TestBrowsingHistoryDriver::QueryResult QueryHistory(
       const QueryOptions& options) {
+    return QueryHistory(std::u16string(), options);
+  }
+
+  TestBrowsingHistoryDriver::QueryResult QueryHistory(
+      const std::u16string& query_text,
+      const QueryOptions& options) {
     size_t previous_results_count = driver()->GetQueryResults().size();
-    service()->QueryHistory(std::u16string(), options);
+    service()->QueryHistory(query_text, options);
     BlockUntilHistoryProcessesPendingRequests();
     const std::vector<TestBrowsingHistoryDriver::QueryResult> all_results =
         driver()->GetQueryResults();
@@ -403,6 +412,23 @@ TEST_F(BrowsingHistoryServiceTest, QueryHistoryRemoteTimeRanges) {
   VerifyQueryResult(
       /*reached_beginning*/ true, /*has_synced_results*/ true,
       {{kUrl3, 3, kRemote}, {kUrl2, 2, kRemote}}, QueryHistory(options));
+}
+
+TEST_F(BrowsingHistoryServiceTest, QueryHistoryHostOnlyRemote) {
+  AddHistory({{kUrl8, 1, kRemote}, {kUrl9, 2, kRemote}, {kUrl10, 3, kRemote}});
+
+  QueryOptions options;
+  options.max_count = 0;
+  options.host_only = false;
+  VerifyQueryResult(
+      /*reached_beginning*/ true,
+      /*has_synced_results*/ true,
+      {{kUrl10, 3, kRemote}, {kUrl9, 2, kRemote}, {kUrl8, 1, kRemote}},
+      QueryHistory(u"eight.com", options));
+  options.host_only = true;
+  VerifyQueryResult(/*reached_beginning*/ true,
+                    /*has_synced_results*/ true, {{kUrl8, 1, kRemote}},
+                    QueryHistory(u"eight.com", options));
 }
 
 TEST_F(BrowsingHistoryServiceTest, QueryHistoryLocalPagingPartial) {

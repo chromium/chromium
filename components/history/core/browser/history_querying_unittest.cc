@@ -34,23 +34,36 @@ struct TestEntry {
   const int days_ago;
   base::Time time;  // Filled by SetUp.
 } test_entries[] = {
-  // This one is visited super long ago so it will be in a different database
-  // from the next appearance of it at the end.
-  {"http://example.com/", "Other", 180},
+    // This one is visited super long ago so it will be in a different database
+    // from the next appearance of it at the end.
+    {"http://example.com/", "Other", 180},
 
-  // These are deliberately added out of chronological order. The history
-  // service should sort them by visit time when returning query results.
-  // The correct index sort order is 4 2 3 1 7 6 5 0.
-  {"http://www.google.com/1", "Title PAGEONE FOO some text", 10},
-  {"http://www.google.com/3", "Title PAGETHREE BAR some hello world", 8},
-  {"http://www.google.com/2", "Title PAGETWO FOO some more blah blah blah", 9},
+    // These are deliberately added out of chronological order. The history
+    // service should sort them by visit time when returning query results.
+    // The correct index sort order is 4 2 3 1 7 6 5 0.
+    {"http://www.google.com/1", "Title PAGEONE FOO some text", 10},
+    {"http://www.google.com/3", "Title PAGETHREE BAR some hello world", 8},
+    {"http://www.google.com/2", "Title PAGETWO FOO some more blah blah blah",
+     9},
 
-  // A more recent visit of the first one.
-  {"http://example.com/", "Other", 6},
+    // A more recent visit of the first one.
+    {"http://example.com/", "Other", 6},
 
-  {"http://www.google.com/6", "Title I'm the second oldest", 13},
-  {"http://www.google.com/4", "Title four", 12},
-  {"http://www.google.com/5", "Title five", 11},
+    {"http://www.google.com/6", "Title I'm the second oldest", 13},
+    {"http://www.google.com/4", "Title four", 12},
+    {"http://www.google.com/5", "Title five", 11},
+
+    // Tricky URLs to test query history by hostname. Will be sorted by visit
+    // order.
+    // These URLs should all match the hostname example.test.
+    {"http://example.test/", "Host Normal HTTP", 14},
+    {"http://example.test/page_1", "Host HTTP path1", 15},
+    {"https://example.test/page_2", "Host HTTPS path2", 16},
+    {"http://example.test:8080/page_3", "Host HTTP port", 17},
+    // These URLs should not match the hostname.
+    {"http://evil.test/example", "Host Evil domain", 18},
+    {"http://evil.com/example.test", "Host Evil path", 19},
+    {"https://random.test/", "Host random example.test", 20},
 };
 
 // Returns true if the nth result in the given results set matches. It will
@@ -214,7 +227,7 @@ TEST_F(HistoryQueryTest, Basic) {
   // Test duplicate collapsing. 0 is an older duplicate of 4, and should not
   // appear in the result set.
   QueryHistory(std::string(), options, &results);
-  EXPECT_EQ(7U, results.size());
+  EXPECT_EQ(14U, results.size());
 
   EXPECT_TRUE(NthResultIs(results, 0, 4));
   EXPECT_TRUE(NthResultIs(results, 1, 2));
@@ -223,6 +236,13 @@ TEST_F(HistoryQueryTest, Basic) {
   EXPECT_TRUE(NthResultIs(results, 4, 7));
   EXPECT_TRUE(NthResultIs(results, 5, 6));
   EXPECT_TRUE(NthResultIs(results, 6, 5));
+  EXPECT_TRUE(NthResultIs(results, 7, 8));
+  EXPECT_TRUE(NthResultIs(results, 8, 9));
+  EXPECT_TRUE(NthResultIs(results, 9, 10));
+  EXPECT_TRUE(NthResultIs(results, 10, 11));
+  EXPECT_TRUE(NthResultIs(results, 11, 12));
+  EXPECT_TRUE(NthResultIs(results, 12, 13));
+  EXPECT_TRUE(NthResultIs(results, 13, 14));
 
   // Next query a time range. The beginning should be inclusive, the ending
   // should be exclusive.
@@ -360,6 +380,34 @@ TEST_F(HistoryQueryTest, TextSearchPrefix) {
   EXPECT_TRUE(NthResultIs(results, 1, 3));
 }
 
+TEST_F(HistoryQueryTest, HostSearch) {
+  ASSERT_TRUE(history_.get());
+
+  QueryOptions options;
+  QueryResults results;
+
+  // Query all normal search to make sure all entries appear.
+  options.host_only = false;
+  QueryHistory("example.test", options, &results);
+  EXPECT_EQ(7U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+  EXPECT_TRUE(NthResultIs(results, 4, 12));
+  EXPECT_TRUE(NthResultIs(results, 5, 13));
+  EXPECT_TRUE(NthResultIs(results, 6, 14));
+
+  // Query with host_only = true to make sure only the host entries show up.
+  options.host_only = true;
+  QueryHistory("example.test", options, &results);
+  EXPECT_EQ(4U, results.size());
+  EXPECT_TRUE(NthResultIs(results, 0, 8));
+  EXPECT_TRUE(NthResultIs(results, 1, 9));
+  EXPECT_TRUE(NthResultIs(results, 2, 10));
+  EXPECT_TRUE(NthResultIs(results, 3, 11));
+}
+
 // Tests max_count feature for text search queries.
 TEST_F(HistoryQueryTest, TextSearchCount) {
   ASSERT_TRUE(history_.get());
@@ -414,7 +462,7 @@ TEST_F(HistoryQueryTest, TextSearchIDN) {
 TEST_F(HistoryQueryTest, Paging) {
   // Since results are fetched 1 and 2 at a time, entry #0 and #6 will not
   // be de-duplicated.
-  int expected_results[] = { 4, 2, 3, 1, 7, 6, 5, 0 };
+  int expected_results[] = {4, 2, 3, 1, 7, 6, 5, 8, 9, 10, 11, 12, 13, 14, 0};
   TestPaging(std::string(), expected_results, base::size(expected_results));
 }
 

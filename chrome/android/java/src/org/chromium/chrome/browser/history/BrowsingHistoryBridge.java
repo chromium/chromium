@@ -41,7 +41,13 @@ public class BrowsingHistoryBridge implements HistoryProvider {
     @Override
     public void queryHistory(String query) {
         BrowsingHistoryBridgeJni.get().queryHistory(mNativeHistoryBridge,
-                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), query);
+                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), query, false);
+    }
+
+    @Override
+    public void queryHistoryForHost(String hostName) {
+        BrowsingHistoryBridgeJni.get().queryHistory(mNativeHistoryBridge,
+                BrowsingHistoryBridge.this, new ArrayList<HistoryItem>(), hostName, true);
     }
 
     @Override
@@ -113,7 +119,7 @@ public class BrowsingHistoryBridge implements HistoryProvider {
         long init(BrowsingHistoryBridge caller, Profile profile);
         void destroy(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller);
         void queryHistory(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
-                List<HistoryItem> historyItems, String query);
+                List<HistoryItem> historyItems, String query, boolean hostOnly);
         void queryHistoryContinuation(long nativeBrowsingHistoryBridge,
                 BrowsingHistoryBridge caller, List<HistoryItem> historyItems);
         void markItemForRemoval(long nativeBrowsingHistoryBridge, BrowsingHistoryBridge caller,
