@@ -15163,7 +15163,7 @@
           'type': 'object',
           'properties': {
             'allowCorporateKeyUsage': {
-              'description': '''If set to true, this extension can use all keys that are designated for corporate usage to sign arbitrary data. If set to false, it cannot access any such keys and the user cannot grant such permission either.''',
+              'description': '''If set to true, this extension can use all keys that are designated for corporate usage to sign arbitrary data. If set to false, it cannot access any such keys and the user cannot grant such permission either. As an exception, an extension can access such a key exactly once if the same extension generated that key.''',
               'type': 'boolean',
             },
           },
