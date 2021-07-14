@@ -13,6 +13,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/rand_util.h"
+#include "build/build_config.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "media/base/limits.h"
@@ -41,8 +42,14 @@ namespace blink {
 
 namespace {
 
-const base::Feature kOneCopyCanvasCapture{"OneCopyCanvasCapture",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kOneCopyCanvasCapture {
+  "OneCopyCanvasCapture",
+#if defined(OS_MAC)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 // Return the gfx::ColorSpace that the pixels resulting from calling
 // ConvertToYUVFrame on |image| will be in.
