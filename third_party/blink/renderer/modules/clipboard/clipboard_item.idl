@@ -5,6 +5,7 @@
 // https://w3c.github.io/clipboard-apis/#clipboard-interface
 
 [
+  SecureContext,
   Exposed=Window
 ] interface ClipboardItem {
   [RaisesException] constructor(record<DOMString, Blob> items,
