@@ -12,6 +12,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/dcheck_is_on.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
@@ -228,13 +229,14 @@ class COMPONENT_EXPORT(SQL) Statement {
   // guaranteed non-null.
   scoped_refptr<Database::StatementRef> ref_;
 
-  // Set after Step() or Run() are called, reset by Reset().  Used to
-  // prevent accidental calls to API functions which would not work
-  // correctly after stepping has started.
-  bool stepped_ = false;
-
   // See Succeeded() for what this holds.
   bool succeeded_ = false;
+
+#if DCHECK_IS_ON()
+  // Used to DCHECK() that Bind*() is called before Step() or Run() are called.
+  bool step_called_ = false;
+  bool run_called_ = false;
+#endif  // DCHECK_IS_ON()
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
