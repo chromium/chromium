@@ -4,9 +4,7 @@
 
 package org.chromium.components.policy;
 
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -72,7 +70,6 @@ public class AbstractAppRestrictionsProviderTest {
 
         // Mock out the histogram functions, since they call statics.
         AbstractAppRestrictionsProvider provider = spy(new DummyAppRestrictionsProvider(context));
-        doNothing().when(provider).recordStartTimeHistogram(anyLong());
 
         // Set up the buffer to be returned by getApplicationRestrictions.
         when(provider.getApplicationRestrictions(anyString())).thenReturn(b1);
@@ -83,7 +80,6 @@ public class AbstractAppRestrictionsProviderTest {
 
         provider.refresh();
         verify(provider).getApplicationRestrictions(anyString());
-        verify(provider).recordStartTimeHistogram(anyLong());
         verify(combinedProvider).onSettingsAvailable(0, b1);
     }
 

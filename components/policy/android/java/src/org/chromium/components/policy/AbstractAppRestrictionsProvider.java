@@ -86,7 +86,6 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         StrictMode.ThreadPolicy policy = StrictMode.allowThreadDiskReads();
         long startTime = System.currentTimeMillis();
         final Bundle bundle = getApplicationRestrictions(mContext.getPackageName());
-        recordStartTimeHistogram(startTime);
         StrictMode.setThreadPolicy(policy);
 
         notifySettingsAvailable(bundle);
@@ -106,13 +105,6 @@ public abstract class AbstractAppRestrictionsProvider extends PolicyProvider {
         if (getRestrictionChangeIntentAction() != null) {
             mContext.unregisterReceiver(mAppRestrictionsChangedReceiver);
         }
-    }
-
-    // Extracted to allow stubbing, since it calls a static that can't easily be stubbed
-    @VisibleForTesting
-    protected void recordStartTimeHistogram(long startTime) {
-        // TODO(aberent): Re-implement once we understand why the previous implementation was giving
-        // random crashes (https://crbug.com/535043)
     }
 
     /**
