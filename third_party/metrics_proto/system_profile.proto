@@ -995,6 +995,7 @@ message SystemProfileProto {
     CROS_SMART_DIM = 26;
     ZXCVBN_DATA = 27;
     AUTOFILL_REGEX_CONSTANTS = 28;
+    WEBVIEW_APPS_PACKAGE_NAMES_ALLOWLIST = 29;
   }
 
   // Information about what Chrome components are registered and at which
