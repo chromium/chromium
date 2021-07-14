@@ -68,7 +68,8 @@ class Tokenizer {
       // level of the pattern.
       if (codepoint_ == '\\') {
         if (index_ == (pattern_.size() - 1)) {
-          Error(absl::StrFormat("Trailing escape character at %d.", index_));
+          Error(absl::StrFormat("Trailing escape character at index %d.",
+                                index_));
           continue;
         }
         size_t escaped_i = next_index_;
@@ -100,7 +101,7 @@ class Tokenizer {
         }
 
         if (pos <= name_start) {
-          Error(absl::StrFormat("Missing parameter name at %d.", index_),
+          Error(absl::StrFormat("Missing parameter name at index %d.", index_),
                 name_start, index_);
           continue;
         }
@@ -119,14 +120,15 @@ class Tokenizer {
           NextAt(j);
 
           if (!IsASCII(codepoint_)) {
-            Error(absl::StrFormat("Invalid character 0x%02x at %d.", codepoint_,
-                                  j),
+            Error(absl::StrFormat(
+                      "Invalid non-ASCII character 0x%02x at index %d.",
+                      codepoint_, j),
                   regex_start, index_);
             error = true;
             break;
           }
           if (j == regex_start && codepoint_ == '?') {
-            Error(absl::StrFormat("Regex cannot start with '?' at %d", j),
+            Error(absl::StrFormat("Regex cannot start with '?' at index %d", j),
                   regex_start, index_);
             error = true;
             break;
@@ -140,16 +142,18 @@ class Tokenizer {
           // propagated on subsequent loop iterations.
           if (codepoint_ == '\\') {
             if (j == (pattern_.size() - 1)) {
-              Error(absl::StrFormat("Trailing escape character at %d.", j),
-                    regex_start, index_);
+              Error(
+                  absl::StrFormat("Trailing escape character at index %d.", j),
+                  regex_start, index_);
               error = true;
               break;
             }
             size_t escaped_j = next_index_;
             Next();
             if (!IsASCII(codepoint_)) {
-              Error(absl::StrFormat("Invalid character 0x%02x at %d.",
-                                    codepoint_, escaped_j),
+              Error(absl::StrFormat(
+                        "Invalid non-ASCII character 0x%02x at index %d.",
+                        codepoint_, escaped_j),
                     regex_start, index_);
               error = true;
               break;
@@ -167,8 +171,8 @@ class Tokenizer {
           } else if (codepoint_ == '(') {
             paren_nesting += 1;
             if (j == (pattern_.size() - 1)) {
-              Error(absl::StrFormat("Unbalanced regex at %d.", j), regex_start,
-                    index_);
+              Error(absl::StrFormat("Unbalanced regex at index %d.", j),
+                    regex_start, index_);
               error = true;
               break;
             }
@@ -178,10 +182,10 @@ class Tokenizer {
             // permits assertions, named capture groups, and non-capturing
             // groups. It blocks, however, unnamed capture groups.
             if (codepoint_ != '?') {
-              Error(
-                  absl::StrFormat(
-                      "Unnamed capturing groups are not allowed at %d.", tmp_j),
-                  regex_start, index_);
+              Error(absl::StrFormat(
+                        "Unnamed capturing groups are not allowed at index %d.",
+                        tmp_j),
+                    regex_start, index_);
               error = true;
               break;
             }
@@ -195,15 +199,15 @@ class Tokenizer {
           continue;
 
         if (paren_nesting) {
-          Error(absl::StrFormat("Unbalanced regex at %d.", index_), regex_start,
-                index_);
+          Error(absl::StrFormat("Unbalanced regex at index %d.", index_),
+                regex_start, index_);
           continue;
         }
 
         const size_t regex_length = j - regex_start - 1;
         if (regex_length == 0) {
-          Error(absl::StrFormat("Missing regex at %d.", index_), regex_start,
-                index_);
+          Error(absl::StrFormat("Missing regex at index %d.", index_),
+                regex_start, index_);
           continue;
         }
 
@@ -298,25 +302,25 @@ class Tokenizer {
 const char* TokenTypeToString(TokenType type) {
   switch (type) {
     case TokenType::kOpen:
-      return "OPEN";
+      return "'{'";
     case TokenType::kClose:
-      return "CLOSE";
+      return "'}'";
     case TokenType::kRegex:
-      return "REGEX";
+      return "regex group";
     case TokenType::kName:
-      return "NAME";
+      return "named group";
     case TokenType::kChar:
-      return "CHAR";
+      return "character";
     case TokenType::kEscapedChar:
-      return "ESCAPED_CHAR";
+      return "escaped character";
     case TokenType::kOtherModifier:
-      return "OTHER_MODIFIER";
+      return "modifier";
     case TokenType::kAsterisk:
-      return "ASTERISK";
+      return "asterisk";
     case TokenType::kEnd:
-      return "END";
+      return "end of pattern";
     case TokenType::kInvalidChar:
-      return "INVALID_CHAR";
+      return "invalid character";
   }
 }
 

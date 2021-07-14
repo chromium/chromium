@@ -159,8 +159,10 @@ Component* Component::Compile(const String& pattern,
       absl::string_view(utf8.data(), utf8.size()),
       GetEncodeCallback(type, protocol_component), options);
   if (!parse_result.ok()) {
-    exception_state.ThrowTypeError("Invalid " + TypeToString(type) +
-                                   " pattern '" + pattern + "'.");
+    exception_state.ThrowTypeError(
+        "Invalid " + TypeToString(type) + " pattern '" + pattern + "'. " +
+        String::FromUTF8(parse_result.status().message().data(),
+                         parse_result.status().message().size()));
     return nullptr;
   }
 

@@ -11,8 +11,6 @@
 #include "base/component_export.h"
 #include "third_party/liburlpattern/options.h"
 
-// NOTE: This code is a work-in-progress.  It is not ready for production use.
-
 namespace liburlpattern {
 
 enum class PartType {

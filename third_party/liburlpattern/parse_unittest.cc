@@ -106,16 +106,15 @@ TEST(ParseTest, FixedInGroupWithOneOrMoreModifier) {
 }
 
 TEST(ParseTest, FixedInEarlyTerminatedGroup) {
-  RunParseTest("{/foo", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("{/foo", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, FixedInUnbalancedGroup) {
-  RunParseTest("{/foo?", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("{/foo?", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, FixedWithModifier) {
-  RunParseTest("/foo?",
-               absl::InvalidArgumentError("Unexpected OTHER_MODIFIER"));
+  RunParseTest("/foo?", absl::InvalidArgumentError("Unexpected modifier"));
 }
 
 TEST(ParseTest, Regex) {
@@ -146,7 +145,7 @@ TEST(ParseTest, RegexWithPrefixAndSuffixInGroup) {
 }
 
 TEST(ParseTest, RegexAndRegexInGroup) {
-  RunParseTest("/f{(o)(o)}", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("/f{(o)(o)}", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, RegexWithPrefix) {
@@ -234,11 +233,11 @@ TEST(ParseTest, WildcardFollowingWildcardWithModifierStart) {
 }
 
 TEST(ParseTest, WildcardWithMultipleModifiersPlus) {
-  RunParseTest("/**+", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/**+", absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, WildcardWithMultipleModifiersQuestion) {
-  RunParseTest("/**?", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/**?", absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, WildcardInGroup) {
@@ -282,7 +281,7 @@ TEST(ParseTest, NameInGroup) {
 }
 
 TEST(ParseTest, NameAndNameInGroup) {
-  RunParseTest("/foo{:bar:baz}", absl::InvalidArgumentError("expected CLOSE"));
+  RunParseTest("/foo{:bar:baz}", absl::InvalidArgumentError("expected '}'"));
 }
 
 TEST(ParseTest, NameWithPrefixAndSuffixInGroup) {
@@ -340,11 +339,13 @@ TEST(ParseTest, NameWithModifierStarAndWildcard) {
 }
 
 TEST(ParseTest, NameWithModifierStarAndModifierQuestion) {
-  RunParseTest("/:foo*?", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/:foo*?",
+               absl::InvalidArgumentError("expected end of pattern"));
 }
 
 TEST(ParseTest, NameWithModifierStarAndModifierPlus) {
-  RunParseTest("/:foo*+", absl::InvalidArgumentError("expected END"));
+  RunParseTest("/:foo*+",
+               absl::InvalidArgumentError("expected end of pattern"));
 }
 
 }  // namespace liburlpattern

@@ -229,7 +229,8 @@ TEST(TokenizeTest, RegexWithZeroLength) {
 }
 
 TEST(TokenizeTest, RegexWithInvalidChar) {
-  RunTokenizeTest("(ßar)", absl::InvalidArgumentError("Invalid character"));
+  RunTokenizeTest("(ßar)",
+                  absl::InvalidArgumentError("Invalid non-ASCII character"));
 }
 
 TEST(TokenizeTest, RegexWithoutClosingParen) {
@@ -289,7 +290,8 @@ TEST(TokenizeTest, RegexWithTrailingEscapedChar) {
 TEST(TokenizeTest, RegexWithEscapedInvalidChar) {
   // Use a single byte invalid character since the escape only applies to the
   // next byte character.
-  RunTokenizeTest("(\\\xff)", absl::InvalidArgumentError("Invalid character"));
+  RunTokenizeTest("(\\\xff)",
+                  absl::InvalidArgumentError("Invalid non-ASCII character"));
 }
 
 TEST(TokenizeTest, RegexWithLeadingQuestion) {

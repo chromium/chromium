@@ -56,10 +56,10 @@ class State {
     ABSL_ASSERT(index_ < token_list_.size());
     if (const Token* token = TryConsume(type))
       return token;
-    return absl::InvalidArgumentError(
-        absl::StrFormat("Unexpected %s at %d, expected %s",
-                        TokenTypeToString(token_list_[index_].type), index_,
-                        TokenTypeToString(type)));
+    return absl::InvalidArgumentError(absl::StrFormat(
+        "Unexpected %s '%s' at index %d, expected %s.",
+        TokenTypeToString(token_list_[index_].type), token_list_[index_].value,
+        token_list_[index_].index, TokenTypeToString(type)));
   }
 
   const Token* TryConsumeModifier() {
