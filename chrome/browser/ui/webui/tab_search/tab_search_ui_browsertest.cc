@@ -58,15 +58,22 @@ class TabSearchUIBrowserTest : public InProcessBrowserTest {
 // JS code below.
 
 IN_PROC_BROWSER_TEST_F(TabSearchUIBrowserTest, InitialTabItemsListed) {
-  const std::string tab_items_js =
-      "const tabItems = document.querySelector('tab-search-app').shadowRoot"
-      "    .getElementById('tabsList')"
-      "    .querySelectorAll('tab-search-item');";
-  int tab_item_count =
-      content::EvalJs(webui_contents_.get(), tab_items_js + "tabItems.length",
-                      content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
-                      ISOLATED_WORLD_ID_CHROME_INTERNAL)
-          .ExtractInt();
+  const std::string tab_item_count_js =
+      "new Promise((resolve) => {"
+      "  const interval = setInterval(() => {"
+      "    const tabItems = document.querySelector('tab-search-app').shadowRoot"
+      "        .getElementById('tabsList')"
+      "        .querySelectorAll('tab-search-item');"
+      "    if (tabItems) {"
+      "      resolve(tabItems.length);"
+      "      clearInterval(interval);"
+      "    }"
+      "  }, 100);"
+      "});";
+  int tab_item_count = content::EvalJs(webui_contents_.get(), tab_item_count_js,
+                                       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS,
+                                       ISOLATED_WORLD_ID_CHROME_INTERNAL)
+                           .ExtractInt();
   ASSERT_EQ(4, tab_item_count);
 }
 
