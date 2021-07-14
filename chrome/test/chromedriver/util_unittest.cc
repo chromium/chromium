@@ -86,7 +86,7 @@ class DictInitDouble {
  public:
   explicit DictInitDouble(double v) : init_value(v) {}
   void operator()(base::DictionaryValue* dict) {
-    dict->SetDouble(key, init_value);
+    dict->SetDoubleKey(key, init_value);
   }
 };
 

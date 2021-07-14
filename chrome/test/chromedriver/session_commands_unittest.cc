@@ -75,7 +75,7 @@ TEST(SessionCommandsTest, ExecuteSetTimeouts) {
 
   // Old pre-W3C format.
   params.Clear();
-  params.SetDouble("ms", 5000.0);
+  params.SetDoubleKey("ms", 5000.0);
   params.SetString("type", "page load");
   status = ExecuteSetTimeouts(&session, params, &value);
   ASSERT_EQ(kOk, status.code());

@@ -394,13 +394,13 @@ class StorePrintParamsWebView : public StubWebView {
 base::DictionaryValue getDefaultPrintParams() {
   base::DictionaryValue printParams;
   printParams.SetBoolean("landscape", false);
-  printParams.SetDouble("scale", 1.0);
-  printParams.SetDouble("marginBottom", ConvertCentimeterToInch(1.0));
-  printParams.SetDouble("marginLeft", ConvertCentimeterToInch(1.0));
-  printParams.SetDouble("marginRight", ConvertCentimeterToInch(1.0));
-  printParams.SetDouble("marginTop", ConvertCentimeterToInch(1.0));
-  printParams.SetDouble("paperHeight", ConvertCentimeterToInch(27.94));
-  printParams.SetDouble("paperWidth", ConvertCentimeterToInch(21.59));
+  printParams.SetDoubleKey("scale", 1.0);
+  printParams.SetDoubleKey("marginBottom", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginLeft", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginRight", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginTop", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("paperHeight", ConvertCentimeterToInch(27.94));
+  printParams.SetDoubleKey("paperWidth", ConvertCentimeterToInch(21.59));
   printParams.SetString("pageRanges", "");
   printParams.SetBoolean("preferCSSPageSize", false);
   printParams.SetBoolean("printBackground", false);
@@ -453,25 +453,25 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyScale) {
   base::DictionaryValue params;
   std::unique_ptr<base::Value> result_value;
 
-  params.SetDouble("scale", 1.0);
+  params.SetDoubleKey("scale", 1.0);
   Status status =
       CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   base::DictionaryValue printParams = getDefaultPrintParams();
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
-  params.SetDouble("scale", 2.0);
+  params.SetDoubleKey("scale", 2.0);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("scale", 2.0);
+  printParams.SetDoubleKey("scale", 2.0);
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
-  params.SetDouble("scale", 0.05);
+  params.SetDoubleKey("scale", 0.05);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
-  params.SetDouble("scale", 2.1);
+  params.SetDoubleKey("scale", 2.1);
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
@@ -610,21 +610,21 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("width", 21.59);
+  dv->SetDoubleKey("width", 21.59);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("paperWidth", ConvertCentimeterToInch(21.59));
+  printParams.SetDoubleKey("paperWidth", ConvertCentimeterToInch(21.59));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("width", 33);
+  dv->SetDoubleKey("width", 33);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("paperWidth", ConvertCentimeterToInch(33));
+  printParams.SetDoubleKey("paperWidth", ConvertCentimeterToInch(33));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -634,27 +634,27 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("width", -3.0);
+  dv->SetDoubleKey("width", -3.0);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("height", 20);
+  dv->SetDoubleKey("height", 20);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("paperHeight", ConvertCentimeterToInch(20));
+  printParams.SetDoubleKey("paperHeight", ConvertCentimeterToInch(20));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("height", 27.94);
+  dv->SetDoubleKey("height", 27.94);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("paperHeight", ConvertCentimeterToInch(27.94));
+  printParams.SetDoubleKey("paperHeight", ConvertCentimeterToInch(27.94));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -664,7 +664,7 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyPage) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("height", -3.0);
+  dv->SetDoubleKey("height", -3.0);
   params.SetDictionary("page", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
@@ -684,21 +684,21 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("top", 1.0);
+  dv->SetDoubleKey("top", 1.0);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginTop", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginTop", ConvertCentimeterToInch(1.0));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("top", 10.2);
+  dv->SetDoubleKey("top", 10.2);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginTop", ConvertCentimeterToInch(10.2));
+  printParams.SetDoubleKey("marginTop", ConvertCentimeterToInch(10.2));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -708,27 +708,27 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("top", -0.1);
+  dv->SetDoubleKey("top", -0.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("bottom", 1.0);
+  dv->SetDoubleKey("bottom", 1.0);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginBottom", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginBottom", ConvertCentimeterToInch(1.0));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("bottom", 5.3);
+  dv->SetDoubleKey("bottom", 5.3);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginBottom", ConvertCentimeterToInch(5.3));
+  printParams.SetDoubleKey("marginBottom", ConvertCentimeterToInch(5.3));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -738,27 +738,27 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("bottom", -0.1);
+  dv->SetDoubleKey("bottom", -0.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("left", 1.0);
+  dv->SetDoubleKey("left", 1.0);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginLeft", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginLeft", ConvertCentimeterToInch(1.0));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("left", 9.1);
+  dv->SetDoubleKey("left", 9.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginLeft", ConvertCentimeterToInch(9.1));
+  printParams.SetDoubleKey("marginLeft", ConvertCentimeterToInch(9.1));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -768,27 +768,27 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("left", -0.1);
+  dv->SetDoubleKey("left", -0.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("right", 1.0);
+  dv->SetDoubleKey("right", 1.0);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginRight", ConvertCentimeterToInch(1.0));
+  printParams.SetDoubleKey("marginRight", ConvertCentimeterToInch(1.0));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("right", 8.1);
+  dv->SetDoubleKey("right", 8.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kOk, status.code()) << status.message();
   printParams = getDefaultPrintParams();
-  printParams.SetDouble("marginRight", ConvertCentimeterToInch(8.1));
+  printParams.SetDoubleKey("marginRight", ConvertCentimeterToInch(8.1));
   ASSERT_EQ(static_cast<const base::Value&>(printParams), webview.getParams());
 
   dv = std::make_unique<base::DictionaryValue>();
@@ -798,7 +798,7 @@ TEST(WindowCommandsTest, ExecutePrintSpecifyMargin) {
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
 
   dv = std::make_unique<base::DictionaryValue>();
-  dv->SetDouble("right", -0.1);
+  dv->SetDoubleKey("right", -0.1);
   params.SetDictionary("margin", std::move(dv));
   status = CallWindowCommand(ExecutePrint, &webview, params, &result_value);
   ASSERT_EQ(kInvalidArgument, status.code()) << status.message();
@@ -827,8 +827,8 @@ class StoreScreenshotParamsWebView : public StubWebView {
           std::make_unique<base::DictionaryValue>();
       std::unique_ptr<base::DictionaryValue> d =
           std::make_unique<base::DictionaryValue>();
-      d->SetDouble("width", wd);
-      d->SetDouble("height", hd);
+      d->SetDoubleKey("width", wd);
+      d->SetDoubleKey("height", hd);
       res->SetDictionary("contentSize", std::move(d));
       *value = std::move(res);
     } else if (cmd == "Emulation.setDeviceMetricsOverride") {

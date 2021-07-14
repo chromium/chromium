@@ -46,8 +46,8 @@ Status GeolocationOverrideManager::ApplyOverrideIfNeeded() {
     return Status(kOk);
 
   base::DictionaryValue params;
-  params.SetDouble("latitude", overridden_geoposition_->latitude);
-  params.SetDouble("longitude", overridden_geoposition_->longitude);
-  params.SetDouble("accuracy", overridden_geoposition_->accuracy);
+  params.SetDoubleKey("latitude", overridden_geoposition_->latitude);
+  params.SetDoubleKey("longitude", overridden_geoposition_->longitude);
+  params.SetDoubleKey("accuracy", overridden_geoposition_->accuracy);
   return client_->SendCommand("Page.setGeolocationOverride", params);
 }

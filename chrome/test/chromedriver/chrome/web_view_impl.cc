@@ -145,11 +145,11 @@ std::unique_ptr<base::DictionaryValue> GenerateTouchPoint(
   std::unique_ptr<base::DictionaryValue> point(new base::DictionaryValue());
   point->SetInteger("x", event.x);
   point->SetInteger("y", event.y);
-  point->SetDouble("radiusX", event.radiusX);
-  point->SetDouble("radiusY", event.radiusY);
-  point->SetDouble("rotationAngle", event.rotationAngle);
-  point->SetDouble("force", event.force);
-  point->SetDouble("tangentialPressure", event.tangentialPressure);
+  point->SetDoubleKey("radiusX", event.radiusX);
+  point->SetDoubleKey("radiusY", event.radiusY);
+  point->SetDoubleKey("rotationAngle", event.rotationAngle);
+  point->SetDoubleKey("force", event.force);
+  point->SetDoubleKey("tangentialPressure", event.tangentialPressure);
   point->SetInteger("tiltX", event.tiltX);
   point->SetInteger("tiltY", event.tiltY);
   point->SetInteger("twist", event.twist);
@@ -603,8 +603,8 @@ Status WebViewImpl::DispatchMouseEvents(const std::vector<MouseEvent>& events,
     params.SetString("button", GetAsString(it->button));
     params.SetInteger("buttons", it->buttons);
     params.SetInteger("clickCount", it->click_count);
-    params.SetDouble("force", it->force);
-    params.SetDouble("tangentialPressure", it->tangentialPressure);
+    params.SetDoubleKey("force", it->force);
+    params.SetDoubleKey("tangentialPressure", it->tangentialPressure);
     params.SetInteger("tiltX", it->tiltX);
     params.SetInteger("tiltY", it->tiltY);
     params.SetInteger("twist", it->twist);
@@ -848,7 +848,7 @@ Status WebViewImpl::AddCookie(const std::string& name,
   if (!sameSite.empty())
     params.SetString("sameSite", sameSite);
   if (expiry >= 0)
-    params.SetDouble("expires", expiry);
+    params.SetDoubleKey("expires", expiry);
 
   std::unique_ptr<base::DictionaryValue> result;
   Status status =

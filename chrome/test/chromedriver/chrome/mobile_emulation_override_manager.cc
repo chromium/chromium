@@ -60,14 +60,14 @@ Status MobileEmulationOverrideManager::ApplyOverrideIfNeeded() {
   base::DictionaryValue params;
   params.SetInteger("width", overridden_device_metrics_->width);
   params.SetInteger("height", overridden_device_metrics_->height);
-  params.SetDouble("deviceScaleFactor",
-                   overridden_device_metrics_->device_scale_factor);
+  params.SetDoubleKey("deviceScaleFactor",
+                      overridden_device_metrics_->device_scale_factor);
   params.SetBoolean("mobile", overridden_device_metrics_->mobile);
   params.SetBoolean("fitWindow", overridden_device_metrics_->fit_window);
   params.SetBoolean("textAutosizing",
                     overridden_device_metrics_->text_autosizing);
-  params.SetDouble("fontScaleFactor",
-                   overridden_device_metrics_->font_scale_factor);
+  params.SetDoubleKey("fontScaleFactor",
+                      overridden_device_metrics_->font_scale_factor);
   Status status = client_->SendCommand("Page.setDeviceMetricsOverride", params);
   if (status.IsError())
     return status;

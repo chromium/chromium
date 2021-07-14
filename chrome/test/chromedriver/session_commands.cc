@@ -1003,12 +1003,13 @@ Status ExecuteGetLocation(Session* session,
                   "Location must be set before it can be retrieved");
   }
   base::DictionaryValue location;
-  location.SetDouble("latitude", session->overridden_geoposition->latitude);
-  location.SetDouble("longitude", session->overridden_geoposition->longitude);
-  location.SetDouble("accuracy", session->overridden_geoposition->accuracy);
+  location.SetDoubleKey("latitude", session->overridden_geoposition->latitude);
+  location.SetDoubleKey("longitude",
+                        session->overridden_geoposition->longitude);
+  location.SetDoubleKey("accuracy", session->overridden_geoposition->accuracy);
   // Set a dummy altitude to make WebDriver clients happy.
   // https://code.google.com/p/chromedriver/issues/detail?id=281
-  location.SetDouble("altitude", 0);
+  location.SetDoubleKey("altitude", 0);
   value->reset(location.DeepCopy());
   return Status(kOk);
 }

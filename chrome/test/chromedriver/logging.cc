@@ -244,8 +244,8 @@ void WebDriverLog::AddEntryTimestamped(const base::Time& timestamp,
 
   std::unique_ptr<base::DictionaryValue> log_entry_dict(
       new base::DictionaryValue());
-  log_entry_dict->SetDouble("timestamp",
-                            static_cast<int64_t>(timestamp.ToJsTime()));
+  log_entry_dict->SetDoubleKey("timestamp",
+                               static_cast<int64_t>(timestamp.ToJsTime()));
   log_entry_dict->SetString("level", LevelToName(level));
   if (!source.empty())
     log_entry_dict->SetString("source", source);

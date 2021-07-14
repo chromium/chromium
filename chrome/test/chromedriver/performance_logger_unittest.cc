@@ -380,7 +380,7 @@ TEST(PerformanceLogger, WarnWhenTraceBufferFull) {
   client.AddListener(&logger);
   logger.OnConnected(&client);
   base::DictionaryValue params;
-  params.SetDouble("percentFull", 1.0);
+  params.SetDoubleKey("percentFull", 1.0);
   ASSERT_EQ(kOk, client.TriggerEvent("Tracing.bufferUsage", params).code());
 
   ASSERT_EQ(1u, log.GetEntries().size());

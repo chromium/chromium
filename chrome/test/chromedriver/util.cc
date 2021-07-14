@@ -599,7 +599,7 @@ bool SetSafeInt(base::DictionaryValue* dict,
   if (in_value_64 == int_value)
     return dict->SetInteger(path, in_value_64);
   else
-    return dict->SetDouble(path, in_value_64);
+    return dict->SetDoublePath(path, in_value_64);
 }
 
 std::string WebViewIdToWindowHandle(const std::string& web_view_id) {

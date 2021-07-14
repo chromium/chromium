@@ -931,10 +931,10 @@ Status ExecuteGetElementRect(Session* session,
     return Status(kUnknownError, "width is missing in element size");
 
   base::DictionaryValue ret;
-  ret.SetDouble("x", maybe_x.value());
-  ret.SetDouble("y", maybe_y.value());
-  ret.SetDouble("width", maybe_width.value());
-  ret.SetDouble("height", maybe_height.value());
+  ret.SetDoubleKey("x", maybe_x.value());
+  ret.SetDoubleKey("y", maybe_y.value());
+  ret.SetDoubleKey("width", maybe_width.value());
+  ret.SetDoubleKey("height", maybe_height.value());
   value->reset(ret.DeepCopy());
   return Status(kOk);
 }
@@ -1098,16 +1098,16 @@ Status ExecuteElementScreenshot(Session* session,
   // element, but its x and y are relative to containing frame. We replace them
   // with the x and y relative to top-level document origin, as expected by
   // CaptureScreenshot.
-  clip_dict->SetDouble("x", location.x + scroll_left);
-  clip_dict->SetDouble("y", location.y + scroll_top);
-  clip_dict->SetDouble("scale", 1 / device_pixel_ratio);
+  clip_dict->SetDoubleKey("x", location.x + scroll_left);
+  clip_dict->SetDoubleKey("y", location.y + scroll_top);
+  clip_dict->SetDoubleKey("scale", 1 / device_pixel_ratio);
   // Crop screenshot by viewport if element is larger than viewport
-  clip_dict->SetDouble("height",
-                       std::min(viewport_height - location.y,
-                                clip_dict->FindKey("height")->GetDouble()));
-  clip_dict->SetDouble("width",
-                       std::min(viewport_width - location.x,
-                                clip_dict->FindKey("width")->GetDouble()));
+  clip_dict->SetDoubleKey("height",
+                          std::min(viewport_height - location.y,
+                                   clip_dict->FindKey("height")->GetDouble()));
+  clip_dict->SetDoubleKey("width",
+                          std::min(viewport_width - location.x,
+                                   clip_dict->FindKey("width")->GetDouble()));
   base::DictionaryValue screenshot_params;
   screenshot_params.SetDictionary("clip", std::move(clip_dict));
 

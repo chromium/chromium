@@ -568,7 +568,7 @@ TEST(ParseCapabilities, MobileEmulationDeviceMetrics) {
   base::DictionaryValue mobile_emulation;
   mobile_emulation.SetInteger("deviceMetrics.width", 360);
   mobile_emulation.SetInteger("deviceMetrics.height", 640);
-  mobile_emulation.SetDouble("deviceMetrics.pixelRatio", 3.0);
+  mobile_emulation.SetDoublePath("deviceMetrics.pixelRatio", 3.0);
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "mobileEmulation"},
                std::move(mobile_emulation));
@@ -641,7 +641,7 @@ TEST(ParseCapabilities, MobileEmulationBadDict) {
   mobile_emulation.SetString("deviceName", "Google Nexus 5");
   mobile_emulation.SetInteger("deviceMetrics.width", 360);
   mobile_emulation.SetInteger("deviceMetrics.height", 640);
-  mobile_emulation.SetDouble("deviceMetrics.pixelRatio", 3.0);
+  mobile_emulation.SetDoublePath("deviceMetrics.pixelRatio", 3.0);
   base::DictionaryValue caps;
   caps.SetPath({"goog:chromeOptions", "mobileEmulation"},
                std::move(mobile_emulation));

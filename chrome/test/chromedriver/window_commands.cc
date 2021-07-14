@@ -1503,13 +1503,13 @@ Status ProcessInputActionSequence(
       if (!maybe_double_value.has_value() || maybe_double_value.value() < 0)
         return Status(kInvalidArgument,
                       "'width' must be a non-negative number");
-      action->SetDouble("width", maybe_double_value.value());
+      action->SetDoubleKey("width", maybe_double_value.value());
 
       maybe_double_value = ParseDoubleIfInDictionary(action_item, "height", 1);
       if (!maybe_double_value.has_value() || maybe_double_value.value() < 0)
         return Status(kInvalidArgument,
                       "'height' must be a non-negative number");
-      action->SetDouble("height", maybe_double_value.value());
+      action->SetDoubleKey("height", maybe_double_value.value());
 
       maybe_double_value =
           ParseDoubleIfInDictionary(action_item, "pressure", 0.5);
@@ -1518,7 +1518,7 @@ Status ProcessInputActionSequence(
         return Status(
             kInvalidArgument,
             "'pressure' must be a non-negative number in the range of [0,1]");
-      action->SetDouble("pressure", maybe_double_value.value());
+      action->SetDoubleKey("pressure", maybe_double_value.value());
 
       maybe_double_value =
           ParseDoubleIfInDictionary(action_item, "tangentialPressure", 0);
@@ -1527,7 +1527,7 @@ Status ProcessInputActionSequence(
         return Status(
             kInvalidArgument,
             "'tangentialPressure' must be a number in the range of [-1,1]");
-      action->SetDouble("tangentialPressure", maybe_double_value.value());
+      action->SetDoubleKey("tangentialPressure", maybe_double_value.value());
 
       maybe_int_value = ParseIntIfInDictionary(action_item, "tiltX", 0);
       if (!maybe_int_value.has_value() || maybe_int_value.value() < -90 ||
@@ -2271,14 +2271,14 @@ Status ExecutePrint(Session* session,
 
   base::DictionaryValue printParams;
   printParams.SetBoolean(kLandscape, orientation == kLandscape);
-  printParams.SetDouble("scale", scale);
+  printParams.SetDoubleKey("scale", scale);
   printParams.SetBoolean("printBackground", background);
-  printParams.SetDouble("paperWidth", page.width);
-  printParams.SetDouble("paperHeight", page.height);
-  printParams.SetDouble("marginTop", margin.top);
-  printParams.SetDouble("marginBottom", margin.bottom);
-  printParams.SetDouble("marginLeft", margin.left);
-  printParams.SetDouble("marginRight", margin.right);
+  printParams.SetDoubleKey("paperWidth", page.width);
+  printParams.SetDoubleKey("paperHeight", page.height);
+  printParams.SetDoubleKey("marginTop", margin.top);
+  printParams.SetDoubleKey("marginBottom", margin.bottom);
+  printParams.SetDoubleKey("marginLeft", margin.left);
+  printParams.SetDoubleKey("marginRight", margin.right);
   printParams.SetBoolean("preferCSSPageSize", !shrinkToFit);
   printParams.SetString("pageRanges", pageRanges);
   printParams.SetString("transferMode", "ReturnAsBase64");
