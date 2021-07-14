@@ -178,7 +178,7 @@ void IncrementErrorCounter(const webrtc::RTCError& error) {
   } else {
     uma_code = static_cast<DataChannelSctpErrorCode>(*code);
   }
-  base::UmaHistogramEnumeration("WebRTC.DataChannelSctpError", uma_code);
+  base::UmaHistogramEnumeration("WebRTC.DataChannelSctpErrorCode", uma_code);
 }
 
 void SendOnSignalingThread(
