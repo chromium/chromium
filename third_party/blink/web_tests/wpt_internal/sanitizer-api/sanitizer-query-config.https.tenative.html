@@ -12,9 +12,12 @@
       assert_equals(obj1, obj2);
     } else if (typeof obj1 == "boolean") {
       assert_true(obj1 == obj2);
+    } else if (Array.isArray(obj1)) {
+      assert_equals(obj1.length, obj2.length);
+      assert_array_equals(obj1.sort(), obj2.sort());
     } else if (typeof obj1 == "object") {
       assert_array_equals(Object.keys(obj1).sort(), Object.keys(obj2).sort());
-      for (const k in Object.keys(obj1))
+      for (const k of Object.keys(obj1))
         assert_deep_equals(obj1[k], obj2[k]);
     }
   }
@@ -41,7 +44,7 @@
 
   test(t => {
     const configs = [{
-      allowElements: ["div", "sPAn", "helloworld"],
+      allowElements: ["div", "span", "helloworld"],
       dropElements: ["xxx"],
       allowAttributes: { "class": ["*"], "color": ["span", "div"],
                          "onclick": ["*"] },
@@ -53,7 +56,19 @@
     }];
     for (const config of configs)
       assert_deep_equals(config, new Sanitizer(config).getConfiguration());
+
+    // Also test a mixed case variant:
+    const config_0_mixed = {
+      allowElements: ["div", "sPAn", "HelloWorld"],
+      dropElements: ["XXX"],
+      allowAttributes: { "class": ["*"], "color": ["sPAn", "div"],
+                         "onclick": ["*"] },
+      allowCustomElements: true,
+    };
+    assert_deep_equals(configs[0],
+                       new Sanitizer(config_0_mixed).getConfiguration());
   }, "SanitizerAPI getConfiguration() reflects creation config.");
+
 </script>
 </body>
 </html>
