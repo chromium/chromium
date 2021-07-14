@@ -164,12 +164,12 @@ class COMPONENT_EXPORT(SQL) Statement {
   ColumnType GetColumnType(int col) const;
 
   // These all take a 0-based argument index.
-  bool ColumnBool(int col) const;
-  int ColumnInt(int col) const;
-  int64_t ColumnInt64(int col) const;
-  double ColumnDouble(int col) const;
-  std::string ColumnString(int col) const;
-  std::u16string ColumnString16(int col) const;
+  bool ColumnBool(int column_index) const;
+  int ColumnInt(int column_index) const;
+  int64_t ColumnInt64(int column_index) const;
+  double ColumnDouble(int column_index) const;
+  std::string ColumnString(int column_index) const;
+  std::u16string ColumnString16(int column_index) const;
 
   // Conforms with base::Time serialization recommendations.
   //
@@ -180,16 +180,16 @@ class COMPONENT_EXPORT(SQL) Statement {
   //
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.
-  base::Time ColumnTime(int col) const;
+  base::Time ColumnTime(int column_index) const;
 
   // When reading a blob, you can get a raw pointer to the underlying data,
   // along with the length, or you can just ask us to copy the blob into a
   // vector. Danger! ColumnBlob may return nullptr if there is no data!
-  int ColumnByteLength(int col) const;
-  const void* ColumnBlob(int col) const;
-  bool ColumnBlobAsString(int col, std::string* blob) const;
-  bool ColumnBlobAsVector(int col, std::vector<char>* val) const;
-  bool ColumnBlobAsVector(int col, std::vector<uint8_t>* val) const;
+  int ColumnByteLength(int column_index) const;
+  const void* ColumnBlob(int column_index) const;
+  bool ColumnBlobAsString(int column_index, std::string* result) const;
+  bool ColumnBlobAsVector(int column_index, std::vector<char>* result) const;
+  bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result) const;
 
   // Diagnostics --------------------------------------------------------------
 
