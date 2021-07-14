@@ -36,7 +36,6 @@ import sys
 import unittest
 from collections import defaultdict
 from datetime import datetime
-from multiprocessing import Pool
 
 
 def parse_build(build_log):
@@ -378,16 +377,14 @@ def analyze(target, revision, build_log_file, json_file):
       augmented_includes[(src, dst)] = {dst}
 
   added_sizes = {node: 0 for node in augmented_includes}
-
-  with Pool(4) as p:
-    for doms in p.starmap(compute_doms,
-                          [(r, augmented_includes) for r in roots]):
-      for node in doms:
-        if not node in sizes:
-          # Skip the (src,dst) pseudo nodes.
-          continue
-        for dom in doms[node]:
-          added_sizes[dom] += sizes[node]
+  for r in roots:
+    doms = compute_doms(r, augmented_includes)
+    for node in doms:
+      if not node in sizes:
+        # Skip the (src,dst) pseudo nodes.
+        continue
+      for dom in doms[node]:
+        added_sizes[dom] += sizes[node]
 
 
   # Assign a number to each filename for tighter JSON representation.
@@ -414,7 +411,7 @@ def analyze(target, revision, build_log_file, json_file):
           'files': names,
           'roots': [nr(x) for x in sorted(roots)],
           'includes': [[nr(x) for x in sorted(includes[n])] for n in names],
-          'included_by': [sorted([nr(x) for x in included_by[n]]) for n in names],
+          'included_by': [[nr(x) for x in included_by[n]] for n in names],
           'sizes': [sizes[n] for n in names],
           'tsizes': [trans_sizes[n] for n in names],
           'asizes': [added_sizes[n] for n in names],
