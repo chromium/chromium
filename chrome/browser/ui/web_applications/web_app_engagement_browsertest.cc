@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
 #include "chrome/browser/web_applications/components/external_install_options.h"
 #include "chrome/browser/web_applications/components/externally_managed_app_manager.h"
-#include "chrome/browser/web_applications/components/os_integration_manager.h"
 #include "chrome/browser/web_applications/components/web_app_constants.h"
 #include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
@@ -153,19 +152,13 @@ void ExpectLaunchCounts(const base::HistogramTester& tester,
 
 namespace web_app {
 
-class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
+class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
  public:
   WebAppEngagementBrowserTest() = default;
   WebAppEngagementBrowserTest(const WebAppEngagementBrowserTest&) = delete;
   WebAppEngagementBrowserTest& operator=(const WebAppEngagementBrowserTest&) =
       delete;
   ~WebAppEngagementBrowserTest() override = default;
-
-  void SetUpOnMainThread() override {
-    WebAppControllerBrowserTestBase::SetUpOnMainThread();
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-  }
 
   void TestEngagementEventWebAppLaunch(const base::HistogramTester& tester,
                                        const Histograms& histograms) {
@@ -227,9 +220,6 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTestBase {
   }
 
   absl::optional<InstallResultCode> result_code_;
-
- private:
-  ScopedOsHooksSuppress os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {

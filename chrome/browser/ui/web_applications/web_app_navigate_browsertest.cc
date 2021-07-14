@@ -19,7 +19,7 @@
 
 namespace web_app {
 
-class WebAppNavigateBrowserTest : public WebAppControllerBrowserTestBase {
+class WebAppNavigateBrowserTest : public WebAppControllerBrowserTest {
  public:
   static GURL GetGoogleURL() { return GURL("http://www.google.com/"); }
 
