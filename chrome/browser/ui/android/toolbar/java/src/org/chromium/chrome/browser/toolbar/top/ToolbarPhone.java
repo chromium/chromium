@@ -1102,7 +1102,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
             if (mHomeButton != null) mHomeButton.setTranslationY(0);
         }
 
-        if (!mUrlFocusChangeInProgress) {
+        if (!mUrlFocusChangeInProgress && mToolbarShadow != null) {
             mToolbarShadow.setAlpha(mUrlBar.hasFocus() ? 0.f : 1.f);
         }
 
@@ -1857,6 +1857,8 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @Override
     void onStartSurfaceStateChanged(boolean shouldBeVisible, boolean isShowingStartSurface) {
         super.onStartSurfaceStateChanged(shouldBeVisible, isShowingStartSurface);
+
+        updateVisualsForLocationBarState();
 
         // Update visibilities of toolbar layout, progress bar and shadow. When |shouldBeVisible| is
         // false, set INVISIBLE instead of Gone here because of re-inflation issue. See
