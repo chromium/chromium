@@ -735,6 +735,7 @@ if (is_android) {
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest.cc",
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate.h",
       "../browser/policy/cloud/chrome_browser_cloud_management_browsertest_delegate_android.cc",
+      "../browser/policy/cloud/cloud_policy_manager_browsertest.cc",
       "../browser/policy/policy_prefs_browsertest.cc",
       "../browser/profiles/profile_browsertest_android.cc",
       "../browser/safe_browsing/test_safe_browsing_database_helper.cc",
