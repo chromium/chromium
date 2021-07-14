@@ -117,25 +117,23 @@ class COMPONENT_EXPORT(SQL) Statement {
 
   // Binding -------------------------------------------------------------------
 
-  // These all take a 0-based parameter index and return true on success. You
-  // may not always care about the return value (they'll DCHECK if they fail).
-  // The main thing you may want to check is when binding large blobs or
+  // These all take a 0-based parameter index and return true on success.
   // strings there may be out of memory.
-  bool BindNull(int param_index);
-  bool BindBool(int param_index, bool val);
-  bool BindInt(int param_index, int val);
-  bool BindInt(int param_index,
+  void BindNull(int param_index);
+  void BindBool(int param_index, bool val);
+  void BindInt(int param_index, int val);
+  void BindInt(int param_index,
                int64_t val) = delete;  // Call BindInt64() instead.
-  bool BindInt64(int param_index, int64_t val);
-  bool BindDouble(int param_index, double val);
-  bool BindCString(int param_index, const char* val);
-  bool BindString(int param_index, base::StringPiece val);
-  bool BindString16(int param_index, base::StringPiece16 value);
-  bool BindBlob(int param_index, base::span<const uint8_t> value);
+  void BindInt64(int param_index, int64_t val);
+  void BindDouble(int param_index, double val);
+  void BindCString(int param_index, const char* val);
+  void BindString(int param_index, base::StringPiece val);
+  void BindString16(int param_index, base::StringPiece16 value);
+  void BindBlob(int param_index, base::span<const uint8_t> value);
 
   // Overload that makes it easy to pass in std::string values.
-  bool BindBlob(int param_index, base::span<const char> value) {
-    return BindBlob(param_index, base::as_bytes(base::make_span(value)));
+  void BindBlob(int param_index, base::span<const char> value) {
+    BindBlob(param_index, base::as_bytes(base::make_span(value)));
   }
 
   // Conforms with base::Time serialization recommendations.
@@ -150,7 +148,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   //
   // TODO(crbug.com/1195962): Migrate all time serialization to this method, and
   //                          then remove the migration details above.
-  bool BindTime(int param_index, base::Time time);
+  void BindTime(int param_index, base::Time time);
 
   // Retrieving ----------------------------------------------------------------
 

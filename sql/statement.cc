@@ -139,21 +139,22 @@ bool Statement::Succeeded() const {
   return is_valid() && succeeded_;
 }
 
-bool Statement::BindNull(int param_index) {
+void Statement::BindNull(int param_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  return sqlite3_bind_null(ref_->stmt(), param_index + 1) == SQLITE_OK;
+  int sqlite_error_code = sqlite3_bind_null(ref_->stmt(), param_index + 1);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindBool(int param_index, bool val) {
+void Statement::BindBool(int param_index, bool val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -161,87 +162,102 @@ bool Statement::BindBool(int param_index, bool val) {
   return BindInt64(param_index, val ? 1 : 0);
 }
 
-bool Statement::BindInt(int param_index, int val) {
+void Statement::BindInt(int param_index, int val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  return sqlite3_bind_int(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
+  int sqlite_error_code = sqlite3_bind_int(ref_->stmt(), param_index + 1, val);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindInt64(int param_index, int64_t val) {
+void Statement::BindInt64(int param_index, int64_t val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  return sqlite3_bind_int64(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
+  int sqlite_error_code =
+      sqlite3_bind_int64(ref_->stmt(), param_index + 1, val);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindDouble(int param_index, double val) {
+void Statement::BindDouble(int param_index, double val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  return sqlite3_bind_double(ref_->stmt(), param_index + 1, val) == SQLITE_OK;
+  int sqlite_error_code =
+      sqlite3_bind_double(ref_->stmt(), param_index + 1, val);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindTime(int param_index, base::Time val) {
+void Statement::BindTime(int param_index, base::Time val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
   int64_t int_value = val.ToDeltaSinceWindowsEpoch().InMicroseconds();
-  return sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value) ==
-         SQLITE_OK;
+  int sqlite_error_code =
+      sqlite3_bind_int64(ref_->stmt(), param_index + 1, int_value);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindCString(int param_index, const char* val) {
+void Statement::BindCString(int param_index, const char* val) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   DCHECK(val);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
       << "Invalid parameter index";
-  return sqlite3_bind_text(ref_->stmt(), param_index + 1, val, -1,
-                           SQLITE_TRANSIENT) == SQLITE_OK;
+
+  // If the string length is more than SQLITE_MAX_LENGTH (or the per-database
+  // SQLITE_LIMIT_LENGTH limit), sqlite3_bind_text() fails with SQLITE_TOOBIG.
+  //
+  // We're not currently handling this error. SQLITE_MAX_LENGTH is set to the
+  // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
+  // issue.
+
+  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, val,
+                                            -1, SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindString(int param_index, base::StringPiece value) {
+void Statement::BindString(int param_index, base::StringPiece value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
@@ -256,11 +272,19 @@ bool Statement::BindString(int param_index, base::StringPiece value) {
   static constexpr char kEmptyPlaceholder[] = {0x00};
   const char* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
 
-  return sqlite3_bind_text(ref_->stmt(), param_index + 1, data, value.size(),
-                           SQLITE_TRANSIENT) == SQLITE_OK;
+  // If the string length is more than SQLITE_MAX_LENGTH (or the per-database
+  // SQLITE_LIMIT_LENGTH limit), sqlite3_bind_text() fails with SQLITE_TOOBIG.
+  //
+  // We're not currently handling this error. SQLITE_MAX_LENGTH is set to the
+  // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
+  // issue.
+
+  int sqlite_error_code = sqlite3_bind_text(ref_->stmt(), param_index + 1, data,
+                                            value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
-bool Statement::BindString16(int param_index, base::StringPiece16 value) {
+void Statement::BindString16(int param_index, base::StringPiece16 value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -268,13 +292,13 @@ bool Statement::BindString16(int param_index, base::StringPiece16 value) {
   return BindString(param_index, base::UTF16ToUTF8(value));
 }
 
-bool Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
+void Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   DCHECK(!stepped_);
   if (!is_valid())
-    return false;
+    return;
 
   DCHECK_GE(param_index, 0);
   DCHECK_LT(param_index, sqlite3_bind_parameter_count(ref_->stmt()))
@@ -293,8 +317,16 @@ bool Statement::BindBlob(int param_index, base::span<const uint8_t> value) {
   static constexpr uint8_t kEmptyPlaceholder[] = {0x00};
   const uint8_t* data = (value.size() > 0) ? value.data() : kEmptyPlaceholder;
 
-  return sqlite3_bind_blob(ref_->stmt(), param_index + 1, data, value.size(),
-                           SQLITE_TRANSIENT) == SQLITE_OK;
+  // If the string length is more than SQLITE_MAX_LENGTH (or the per-database
+  // SQLITE_LIMIT_LENGTH limit), sqlite3_bind_text() fails with SQLITE_TOOBIG.
+  //
+  // We're not currently handling this error. SQLITE_MAX_LENGTH is set to the
+  // default (1 billion bytes) in Chrome's SQLite build, so this is an unlilely
+  // issue.
+
+  int sqlite_error_code = sqlite3_bind_blob(ref_->stmt(), param_index + 1, data,
+                                            value.size(), SQLITE_TRANSIENT);
+  DCHECK_EQ(sqlite_error_code, SQLITE_OK);
 }
 
 int Statement::ColumnCount() const {
