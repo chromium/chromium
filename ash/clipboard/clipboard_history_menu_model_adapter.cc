@@ -107,7 +107,7 @@ void ClipboardHistoryMenuModelAdapter::Run(
                       views::MenuRunner::FIXED_ANCHOR);
   menu_runner_->RunMenuAt(
       /*widget_owner=*/nullptr, /*menu_button_controller=*/nullptr, anchor_rect,
-      views::MenuAnchorPosition::kBubbleBelow, source_type);
+      views::MenuAnchorPosition::kBubbleBottomRight, source_type);
 }
 
 bool ClipboardHistoryMenuModelAdapter::IsRunning() const {

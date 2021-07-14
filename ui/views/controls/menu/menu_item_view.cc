@@ -300,7 +300,8 @@ bool MenuItemView::IsBubble(MenuAnchorPosition anchor) {
     case MenuAnchorPosition::kBubbleTopRight:
     case MenuAnchorPosition::kBubbleLeft:
     case MenuAnchorPosition::kBubbleRight:
-    case MenuAnchorPosition::kBubbleBelow:
+    case MenuAnchorPosition::kBubbleBottomLeft:
+    case MenuAnchorPosition::kBubbleBottomRight:
       return true;
   }
 }

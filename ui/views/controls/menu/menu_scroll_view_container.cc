@@ -418,7 +418,8 @@ BubbleBorder::Arrow MenuScrollViewContainer::BubbleBorderTypeFromAnchor(
     case MenuAnchorPosition::kBubbleTopRight:
     case MenuAnchorPosition::kBubbleLeft:
     case MenuAnchorPosition::kBubbleRight:
-    case MenuAnchorPosition::kBubbleBelow:
+    case MenuAnchorPosition::kBubbleBottomLeft:
+    case MenuAnchorPosition::kBubbleBottomRight:
       return BubbleBorder::FLOAT;
   }
 }

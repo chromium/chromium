@@ -437,8 +437,8 @@ void HoldingSpaceViewDelegate::ShowContextMenuForViewImpl(
 
   context_menu_runner_->RunMenuAt(
       source->GetWidget(), nullptr /*button_controller*/,
-      source->GetBoundsInScreen(), views::MenuAnchorPosition::kBubbleBelow,
-      source_type);
+      source->GetBoundsInScreen(),
+      views::MenuAnchorPosition::kBubbleBottomRight, source_type);
 }
 
 bool HoldingSpaceViewDelegate::CanStartDragForView(

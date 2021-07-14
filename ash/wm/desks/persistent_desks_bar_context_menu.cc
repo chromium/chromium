@@ -34,7 +34,7 @@ void PersistentDesksBarContextMenu::ShowContextMenuForViewImpl(
   context_menu_runner_->RunMenuAt(
       source->GetWidget(), /*button_controller=*/nullptr,
       gfx::Rect(source->GetBoundsInScreen().bottom_right(), gfx::Size()),
-      views::MenuAnchorPosition::kBubbleBelow, source_type);
+      views::MenuAnchorPosition::kBubbleBottomRight, source_type);
 }
 
 void PersistentDesksBarContextMenu::ExecuteCommand(int command_id,

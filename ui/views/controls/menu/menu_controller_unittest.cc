@@ -1083,10 +1083,11 @@ TEST_F(MenuControllerTest, VerifyMenuBubblePositionAfterSizeChanges) {
   }
 }
 
-// Verifies that the context menu bubble position, MenuPosition::kBubbleBelow,
-// does not shift as items are removed. The menu position will shift it items
-// are added and the menu no longer fits in its previous position.
-TEST_F(MenuControllerTest, VerifyMenuBubbleBelowPositionAfterSizeChanges) {
+// Verifies that the context menu bubble position,
+// MenuAnchorPosition::kBubbleBottomRight, does not shift as items are removed.
+// The menu position will shift if items are added and the menu no longer fits
+// in its previous position.
+TEST_F(MenuControllerTest, VerifyContextMenuBubblePositionAfterSizeChanges) {
   constexpr gfx::Rect kMonitorBounds(0, 0, 500, 500);
   constexpr gfx::Size kMenuSize(100, 200);
   const gfx::Insets border_and_shadow_insets =
@@ -1103,7 +1104,7 @@ TEST_F(MenuControllerTest, VerifyMenuBubbleBelowPositionAfterSizeChanges) {
                                     border_and_shadow_insets.top());
 
   MenuBoundsOptions options;
-  options.menu_anchor = MenuAnchorPosition::kBubbleBelow;
+  options.menu_anchor = MenuAnchorPosition::kBubbleBottomRight;
   options.monitor_bounds = kMonitorBounds;
   options.anchor_bounds = gfx::Rect(anchor_point, gfx::Size());
 
@@ -1143,6 +1144,15 @@ TEST_F(MenuControllerTest, VerifyMenuBubbleBelowPositionAfterSizeChanges) {
     options.menu_position = MenuItemView::MenuPosition::kAboveBounds;
     CalculateBubbleMenuBounds(options);
     EXPECT_EQ(MenuItemView::MenuPosition::kAboveBounds,
+              menu_item()->ActualMenuPosition());
+  }
+
+  // Case 4: There is enough space for the menu below `anchor_point`. The cached
+  // menu position is below the anchor. The menu should show below the anchor.
+  {
+    options.menu_position = MenuItemView::MenuPosition::kBelowBounds;
+    CalculateBubbleMenuBounds(options);
+    EXPECT_EQ(MenuItemView::MenuPosition::kBelowBounds,
               menu_item()->ActualMenuPosition());
   }
 }
@@ -2207,10 +2217,18 @@ TEST_F(MenuControllerTest, MenuAnchorPositionFlippedInRtl) {
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopLeft));
   EXPECT_EQ(MenuAnchorPosition::kTopRight,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleTopLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleTopLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleTopRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleTopRight));
   EXPECT_EQ(MenuAnchorPosition::kBubbleLeft,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleLeft));
   EXPECT_EQ(MenuAnchorPosition::kBubbleRight,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleBottomLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleBottomLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleBottomRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleBottomRight));
 
   base::i18n::SetRTLForTesting(true);
 
@@ -2219,10 +2237,18 @@ TEST_F(MenuControllerTest, MenuAnchorPositionFlippedInRtl) {
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopRight));
   EXPECT_EQ(MenuAnchorPosition::kTopRight,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kTopLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleTopLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleTopRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleTopRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleTopLeft));
   EXPECT_EQ(MenuAnchorPosition::kBubbleLeft,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleRight));
   EXPECT_EQ(MenuAnchorPosition::kBubbleRight,
             AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleLeft));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleBottomLeft,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleBottomRight));
+  EXPECT_EQ(MenuAnchorPosition::kBubbleBottomRight,
+            AdjustAnchorPositionForRtl(MenuAnchorPosition::kBubbleBottomLeft));
 
   base::i18n::SetRTLForTesting(false);
 }
@@ -2259,7 +2285,7 @@ TEST_F(MenuControllerTest, CalculateMenuBoundsMonitorFitTest) {
 TEST_P(MenuControllerTest, TestMenuFitsOnScreen) {
   const int display_size = 500;
   // Simulate multiple display layouts.
-  for (int x = -1; x <= 1; x++)
+  for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
@@ -2267,14 +2293,19 @@ TEST_P(MenuControllerTest, TestMenuFitsOnScreen) {
       TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleTopRight, monitor_bounds);
       TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleLeft, monitor_bounds);
       TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleRight, monitor_bounds);
+      TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleBottomLeft,
+                           monitor_bounds);
+      TestMenuFitsOnScreen(MenuAnchorPosition::kBubbleBottomRight,
+                           monitor_bounds);
     }
+  }
 }
 
 // Test that menus show up on screen with zero sized anchors.
 TEST_P(MenuControllerTest, TestMenuFitsOnScreenSmallAnchor) {
   const int display_size = 500;
   // Simulate multiple display layouts.
-  for (int x = -1; x <= 1; x++)
+  for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
@@ -2286,7 +2317,12 @@ TEST_P(MenuControllerTest, TestMenuFitsOnScreenSmallAnchor) {
                                       monitor_bounds);
       TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleRight,
                                       monitor_bounds);
+      TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleBottomLeft,
+                                      monitor_bounds);
+      TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition::kBubbleBottomRight,
+                                      monitor_bounds);
     }
+  }
 }
 
 // Test that menus fit a small screen.
@@ -2294,7 +2330,7 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
   const int display_size = 500;
 
   // Simulate multiple display layouts.
-  for (int x = -1; x <= 1; x++)
+  for (int x = -1; x <= 1; x++) {
     for (int y = -1; y <= 1; y++) {
       const gfx::Rect monitor_bounds(x * display_size, y * display_size,
                                      display_size, display_size);
@@ -2306,7 +2342,12 @@ TEST_P(MenuControllerTest, TestMenuFitsOnSmallScreen) {
                                 monitor_bounds);
       TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleRight,
                                 monitor_bounds);
+      TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleBottomLeft,
+                                monitor_bounds);
+      TestMenuFitsOnSmallScreen(MenuAnchorPosition::kBubbleBottomRight,
+                                monitor_bounds);
     }
+  }
 }
 
 // Test that submenus are displayed within the screen bounds on smaller screens.
@@ -2326,7 +2367,7 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
   for (auto menu_position : {MenuAnchorPosition::kBubbleTopLeft,
                              MenuAnchorPosition::kBubbleTopRight}) {
     // Simulate multiple display layouts.
-    for (int x = -1; x <= 1; x++)
+    for (int x = -1; x <= 1; x++) {
       for (int y = -1; y <= 1; y++) {
         const gfx::Rect monitor_bounds(x * kDisplayWidth, y * kDisplayHeight,
                                        kDisplayWidth, kDisplayHeight);
@@ -2362,6 +2403,7 @@ TEST_P(MenuControllerTest, TestSubmenuFitsOnScreen) {
             gfx::Rect(gfx::Point(x_qtr, y_min), parent_size_wide),
             menu_position);
       }
+    }
   }
 }
 
