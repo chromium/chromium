@@ -660,7 +660,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     return SBOX_ERROR_UNSUPPORTED;
 
   DCHECK(sandbox_type != SandboxType::kNetwork ||
-         base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC));
+         sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
 
   if (sandbox_type == SandboxType::kGpu &&
       !container->AddImpersonationCapability(L"chromeInstallFiles")) {
@@ -923,7 +923,7 @@ bool SandboxWin::IsAppContainerEnabledForSandbox(
     return base::FeatureList::IsEnabled(features::kGpuAppContainer);
 
   if (sandbox_type == SandboxType::kNetwork)
-    return base::FeatureList::IsEnabled(features::kNetworkServiceSandboxLPAC);
+    return sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled();
 
   return false;
 }

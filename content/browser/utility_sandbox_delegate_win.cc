@@ -16,6 +16,7 @@
 #include "sandbox/policy/features.h"
 #include "sandbox/policy/sandbox_type.h"
 #include "sandbox/policy/win/sandbox_win.h"
+#include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_policy.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -63,14 +64,25 @@ bool AudioPreSpawnTarget(sandbox::TargetPolicy* policy) {
 
 // Sets the sandbox policy for the network service process.
 bool NetworkPreSpawnTarget(sandbox::TargetPolicy* policy) {
-  if (base::FeatureList::IsEnabled(
-          sandbox::policy::features::kNetworkServiceSandboxLPAC)) {
+  if (sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled()) {
     // LPAC sandbox is enabled, so do not use a restricted token.
     if (sandbox::SBOX_ALL_OK !=
         policy->SetTokenLevel(sandbox::USER_UNPROTECTED,
                               sandbox::USER_UNPROTECTED)) {
       return false;
     }
+
+    // Network Sandbox in LPAC sandbox needs access to its data files. These
+    // files are marked on disk with an ACE that permits this access.
+    auto lpacCapability =
+        GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
+    if (lpacCapability.empty())
+      return false;
+    auto app_container = policy->GetAppContainer();
+    if (!app_container)
+      return false;
+    app_container->AddCapability(lpacCapability.c_str());
+
     // All other app container policies are set in
     // SandboxWin::StartSandboxedProcess.
     return true;
@@ -130,8 +142,7 @@ bool PrintBackendPreSpawnTarget(sandbox::TargetPolicy* policy) {
 bool UtilitySandboxedProcessLauncherDelegate::GetAppContainerId(
     std::string* appcontainer_id) {
   if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
-    DCHECK(base::FeatureList::IsEnabled(
-        sandbox::policy::features::kNetworkServiceSandboxLPAC));
+    DCHECK(sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled());
     *appcontainer_id = base::WideToUTF8(cmd_line_.GetProgram().value());
     return true;
   }
@@ -161,8 +172,7 @@ bool UtilitySandboxedProcessLauncherDelegate::DisableDefaultPolicy() {
     case sandbox::policy::SandboxType::kNetwork:
       // If LPAC is enabled for network sandbox then LPAC-specific policy is set
       // elsewhere.
-      return base::FeatureList::IsEnabled(
-          sandbox::policy::features::kNetworkServiceSandboxLPAC);
+      return sandbox::policy::features::IsNetworkServiceSandboxLPACEnabled();
     default:
       return false;
   }
@@ -175,8 +185,10 @@ bool UtilitySandboxedProcessLauncherDelegate::ShouldLaunchElevated() {
 
 bool UtilitySandboxedProcessLauncherDelegate::PreSpawnTarget(
     sandbox::TargetPolicy* policy) {
-  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork)
-    return NetworkPreSpawnTarget(policy);
+  if (sandbox_type_ == sandbox::policy::SandboxType::kNetwork) {
+    if (!NetworkPreSpawnTarget(policy))
+      return false;
+  }
 
   if (sandbox_type_ == sandbox::policy::SandboxType::kAudio) {
     if (!AudioPreSpawnTarget(policy))

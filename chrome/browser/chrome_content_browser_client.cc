@@ -3789,6 +3789,11 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
   }
 }
 
+std::wstring
+ChromeContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
+  return std::wstring(L"lpacChromeNetworkSandbox");
+}
+
 // Note: Only use sparingly to add Chrome specific sandbox functionality here.
 // Other code should reside in the content layer. Changes to this function
 // should be reviewed by the security team.

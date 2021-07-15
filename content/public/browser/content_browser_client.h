@@ -1230,6 +1230,12 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual std::wstring GetAppContainerSidForSandboxType(
       sandbox::policy::SandboxType sandbox_type);
 
+  // Returns the LPAC capability name to use for file data that the network
+  // service needs to access to when running within LPAC sandbox. Embedders
+  // should override this with their own unique name to ensure security of the
+  // network service data.
+  virtual std::wstring GetLPACCapabilityNameForNetworkService();
+
   // Returns whether renderer code integrity is enabled.
   // This is called on the UI thread.
   virtual bool IsRendererCodeIntegrityEnabled();

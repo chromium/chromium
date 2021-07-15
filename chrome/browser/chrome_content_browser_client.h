@@ -412,6 +412,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                      ChildSpawnFlags flags) override;
   std::wstring GetAppContainerSidForSandboxType(
       sandbox::policy::SandboxType sandbox_type) override;
+  std::wstring GetLPACCapabilityNameForNetworkService() override;
   bool IsUtilityCetCompatible(const std::string& utility_sub_type) override;
   bool IsRendererCodeIntegrityEnabled() override;
   void SessionEnding() override;

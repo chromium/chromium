@@ -739,6 +739,13 @@ std::wstring ContentBrowserClient::GetAppContainerSidForSandboxType(
       L"924012148-129201922");
 }
 
+std::wstring ContentBrowserClient::GetLPACCapabilityNameForNetworkService() {
+  // Embedders should override this method and return different LPAC capability
+  // name. This will be used to secure the user data files required for the
+  // network service.
+  return std::wstring(L"lpacContentNetworkService");
+}
+
 bool ContentBrowserClient::IsRendererCodeIntegrityEnabled() {
   return false;
 }
