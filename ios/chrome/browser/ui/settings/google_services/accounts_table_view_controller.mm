@@ -601,6 +601,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
                             view:itemView];
   __weak AccountsTableViewController* weakSelf = self;
   self.signoutCoordinator.completion = ^(BOOL success) {
+    if (success) {
+      // Allow user interaction only didn't cancel the dialog.
+      // if -[<SignoutActionSheetCoordinatorDelegate>
+      // didSelectSignoutDataRetentionStrategy] has been called.
+      [weakSelf allowUserInteraction];
+    }
     [weakSelf.signoutCoordinator stop];
     weakSelf.signoutCoordinator = nil;
     if (success) {
@@ -827,6 +833,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)didSelectSignoutDataRetentionStrategy {
   _authenticationOperationInProgress = YES;
+  [self preventUserInteraction];
 }
 
 @end
