@@ -5,11 +5,11 @@
         "fuchsia.net.NameLookup": "fuchsia-pkg://fuchsia.com/dns-resolver#meta/dns-resolver.cmx",
         "fuchsia.net.interfaces.State": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx",
         "fuchsia.posix.socket.Provider": "fuchsia-pkg://fuchsia.com/netstack#meta/netstack.cmx"
-      }
+      },
+      "system-services": [
+        "fuchsia.device.NameProvider"
+      ],
     },
-    "system-services": [
-      "fuchsia.device.NameProvider"
-    ]
   },
   "sandbox": {
     "features": [
