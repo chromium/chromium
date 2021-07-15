@@ -66,7 +66,7 @@ void FakeChromeTrustedVaultService::FixDegradedRecoverability(
     UIViewController* presentingViewController,
     void (^callback)(BOOL success, NSError* error)) {}
 
-void FakeChromeTrustedVaultService::ReauthenticationForFetchKeys(
+void FakeChromeTrustedVaultService::Reauthentication(
     ChromeIdentity* chrome_identity,
     UIViewController* presenting_view_controller,
     void (^callback)(BOOL success, NSError* error)) {

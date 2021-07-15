@@ -120,8 +120,8 @@ using l10n_util::GetNSStringF;
       };
   switch (self.intent) {
     case SigninTrustedVaultDialogIntentFetchKeys:
-      trustedVaultService->ReauthenticationForFetchKeys(
-          self.identity, self.baseViewController, callback);
+      trustedVaultService->Reauthentication(self.identity,
+                                            self.baseViewController, callback);
       break;
     case SigninTrustedVaultDialogIntentDegradedRecoverability:
       trustedVaultService->FixDegradedRecoverability(

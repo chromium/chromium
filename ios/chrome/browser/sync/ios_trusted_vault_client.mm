@@ -64,7 +64,15 @@ void IOSTrustedVaultClient::MarkLocalKeysAsStale(
 
   ios::GetChromeBrowserProvider()
       .GetChromeTrustedVaultService()
-      ->MarkLocalKeysAsStale(identity, std::move(callback));
+      ->MarkLocalKeysAsStale(identity,
+                             base::BindOnce(
+                                 [](base::OnceCallback<void(bool)> callback) {
+                                   // Since false positives are allowed in the
+                                   // API, always return true, indicating that
+                                   // something may have changed.
+                                   std::move(callback).Run(true);
+                                 },
+                                 std::move(callback)));
 }
 
 void IOSTrustedVaultClient::GetIsRecoverabilityDegraded(
