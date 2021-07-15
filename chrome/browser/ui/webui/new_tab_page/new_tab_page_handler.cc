@@ -352,8 +352,9 @@ NewTabPageHandler::~NewTabPageHandler() {
 
 // static
 void NewTabPageHandler::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
   registry->RegisterListPref(prefs::kNtpDisabledModules, true);
+  registry->RegisterListPref(prefs::kNtpModulesOrder, true);
+  registry->RegisterBooleanPref(prefs::kNtpModulesVisible, true);
 }
 
 void NewTabPageHandler::SetMostVisitedSettings(bool custom_links_enabled,
