@@ -409,7 +409,7 @@
     Spelling and grammar check
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_AND_GRAMMAR_CHECK_DESCRIPTION" desc="Description for the spell and grammar check section.">
-    Grammar check currently avaiable for English only
+    Grammar check currently available for English only
   </message>
   <message name="IDS_OS_SETTINGS_LANGUAGES_SPELL_CHECK_ENHANCED_LABEL" desc="Label for enhanced spell check toggle, the type of spell check that sends the text the user types to Google spelling service. It is important that it is communicated that the text the user types will be sent to Google.">
     Enhanced spell check in Chrome browser (text is sent to Google for spelling suggestions)
