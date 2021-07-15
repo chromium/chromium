@@ -540,16 +540,12 @@ void SimpleSynchronousEntry::ReadData(const ReadRequest& in_entry_op,
       if (in_entry_op.request_verify_crc &&
           in_entry_op.offset + bytes_read ==
               entry_stat->data_size(in_entry_op.index)) {
-        out_result->crc_performed_verify = true;
         int checksum_result =
             CheckEOFRecord(file.get(), in_entry_op.index, *entry_stat,
                            out_result->updated_crc32);
         if (checksum_result < 0) {
-          out_result->crc_verify_ok = false;
           out_result->result = checksum_result;
           return;
-        } else {
-          out_result->crc_verify_ok = true;
         }
       }
     }

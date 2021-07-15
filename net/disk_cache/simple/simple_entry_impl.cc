@@ -163,9 +163,6 @@ SimpleEntryImpl::SimpleEntryImpl(
   static_assert(std::extent<decltype(data_size_)>() ==
                     std::extent<decltype(have_written_)>(),
                 "arrays should be the same size");
-  static_assert(std::extent<decltype(data_size_)>() ==
-                    std::extent<decltype(crc_check_state_)>(),
-                "arrays should be the same size");
   ResetEntry();
   NetLogSimpleEntryConstruction(net_log_,
                                 net::NetLogEventType::SIMPLE_CACHE_ENTRY,
@@ -670,9 +667,6 @@ void SimpleEntryImpl::ResetEntry() {
   std::memset(crc32s_, 0, sizeof(crc32s_));
   std::memset(have_written_, 0, sizeof(have_written_));
   std::memset(data_size_, 0, sizeof(data_size_));
-  for (size_t i = 0; i < base::size(crc_check_state_); ++i) {
-    crc_check_state_[i] = CRC_CHECK_NEVER_READ_AT_ALL;
-  }
 }
 
 void SimpleEntryImpl::ReturnEntryToCaller() {
@@ -989,14 +983,6 @@ void SimpleEntryImpl::CloseInternal() {
     synchronous_entry_ = nullptr;
     prioritized_task_runner_->PostTaskAndReply(
         FROM_HERE, std::move(task), std::move(reply), entry_priority_);
-
-    for (int i = 0; i < kSimpleEntryStreamCount; ++i) {
-      if (!have_written_[i]) {
-        SIMPLE_CACHE_UMA(ENUMERATION,
-                         "CheckCRCResult", cache_type_,
-                         crc_check_state_[i], CRC_CHECK_MAX);
-      }
-    }
   } else {
     CloseOperationComplete(std::move(results));
   }
@@ -1452,7 +1438,6 @@ void SimpleEntryImpl::CreationOperationComplete(
         stream_1_prefetch_data_ = prefetched.data;
 
       // The crc was read in SimpleSynchronousEntry.
-      crc_check_state_[stream] = CRC_CHECK_DONE;
       crc32s_[stream] = prefetched.stream_crc32;
       crc32s_end_offset_[stream] = in_results->entry_stat.data_size(stream);
     }
@@ -1529,29 +1514,16 @@ void SimpleEntryImpl::ReadOperationComplete(
   DCHECK(read_result);
   int result = read_result->result;
 
-  if (result > 0 &&
-      crc_check_state_[stream_index] == CRC_CHECK_NEVER_READ_AT_ALL) {
-    crc_check_state_[stream_index] = CRC_CHECK_NEVER_READ_TO_END;
-  }
-
   if (read_result->crc_updated) {
     if (result > 0) {
       DCHECK_EQ(crc32s_end_offset_[stream_index], offset);
       crc32s_end_offset_[stream_index] += result;
       crc32s_[stream_index] = read_result->updated_crc32;
     }
-
-    if (read_result->crc_performed_verify)
-      crc_check_state_[stream_index] = CRC_CHECK_DONE;
   }
 
   if (result < 0) {
     crc32s_end_offset_[stream_index] = 0;
-  } else {
-    if (crc_check_state_[stream_index] == CRC_CHECK_NEVER_READ_TO_END &&
-        offset + result == GetDataSize(stream_index)) {
-      crc_check_state_[stream_index] = CRC_CHECK_NOT_DONE;
-    }
   }
 
   if (net_log_.IsCapturing()) {

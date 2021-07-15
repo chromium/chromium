@@ -32,6 +32,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.CheckCRCResult" enum="CheckCRCResult"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

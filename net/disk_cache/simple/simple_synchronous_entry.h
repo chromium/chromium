@@ -143,15 +143,10 @@ class SimpleSynchronousEntry {
   };
 
   struct ReadResult {
-    ReadResult()
-        : crc_updated(false),
-          crc_performed_verify(false),
-          crc_verify_ok(false) {}
+    ReadResult() : crc_updated(false) {}
     int result;
     uint32_t updated_crc32;  // only relevant if crc_updated set
     bool crc_updated;
-    bool crc_performed_verify;  // only relevant if crc_updated set
-    bool crc_verify_ok;         // only relevant if crc_updated set
   };
 
   struct WriteRequest {

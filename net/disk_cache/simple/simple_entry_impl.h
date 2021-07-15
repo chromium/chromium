@@ -183,15 +183,6 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
     DOOM_COMPLETED,
   };
 
-  // Used in histograms, please only add entries at the end.
-  enum CheckCrcResult {
-    CRC_CHECK_NEVER_READ_TO_END = 0,
-    CRC_CHECK_NOT_DONE = 1,
-    CRC_CHECK_DONE = 2,
-    CRC_CHECK_NEVER_READ_AT_ALL = 3,
-    CRC_CHECK_MAX = 4,
-  };
-
   ~SimpleEntryImpl() override;
 
   // Must be used to invoke a client-provided completion callback for an
@@ -419,10 +410,6 @@ class NET_EXPORT_PRIVATE SimpleEntryImpl : public Entry,
   // If |have_written_[index]| is true, we have written to the file that
   // contains stream |index|.
   bool have_written_[kSimpleEntryStreamCount];
-
-  // Reflects how much CRC checking has been done with the entry. This state is
-  // reported on closing each entry stream.
-  CheckCrcResult crc_check_state_[kSimpleEntryStreamCount];
 
   // The |synchronous_entry_| is the worker thread object that performs IO on
   // entries. It's owned by this SimpleEntryImpl whenever |executing_operation_|
