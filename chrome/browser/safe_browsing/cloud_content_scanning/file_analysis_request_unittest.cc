@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
@@ -212,7 +213,14 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
       << data.mime_type << " is not an expected mimetype";
 }
 
-TEST_F(FileAnalysisRequestTest, LargeFiles) {
+// Disabled due to flakiness on Mac https://crbug.com/1229051
+#if defined(OS_MAC)
+#define MAYBE_LargeFiles DISABLED_LargeFiles
+#else
+#define MAYBE_LargeFiles LargeFiles
+#endif
+
+TEST_F(FileAnalysisRequestTest, MAYBE_LargeFiles) {
   base::test::TaskEnvironment task_environment;
 
   BinaryUploadService::Result result;
