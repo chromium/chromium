@@ -142,8 +142,7 @@ class TestAutocompleteProviderClient : public ChromeAutocompleteProviderClient {
 
 class SearchProviderFeatureTestComponent {
  public:
-  SearchProviderFeatureTestComponent(
-      const absl::optional<bool> warm_up_on_focus,
+  explicit SearchProviderFeatureTestComponent(
       const bool command_line_overrides);
 
   ~SearchProviderFeatureTestComponent() {
@@ -155,16 +154,7 @@ class SearchProviderFeatureTestComponent {
 };
 
 SearchProviderFeatureTestComponent::SearchProviderFeatureTestComponent(
-    const absl::optional<bool> warm_up_on_focus,
     const bool command_line_overrides) {
-  if (warm_up_on_focus.has_value()) {
-    if (warm_up_on_focus.value())
-      feature_list_.InitAndEnableFeature(omnibox::kSearchProviderWarmUpOnFocus);
-    else
-      feature_list_.InitAndDisableFeature(
-          omnibox::kSearchProviderWarmUpOnFocus);
-  }
-
   if (command_line_overrides) {
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kGoogleBaseURL, "http://www.bar.com/");
@@ -220,10 +210,8 @@ class BaseSearchProviderTest : public testing::Test,
     bool allowed_to_be_default_match;
   };
 
-  BaseSearchProviderTest(
-      const absl::optional<bool> warm_up_on_focus = absl::nullopt,
-      const bool command_line_overrides = false)
-      : feature_test_component_(warm_up_on_focus, command_line_overrides) {
+  explicit BaseSearchProviderTest(const bool command_line_overrides = false)
+      : feature_test_component_(command_line_overrides) {
     // We need both the history service and template url model loaded.
     TestingProfile::Builder profile_builder;
     profile_builder.AddTestingFactory(
@@ -343,10 +331,8 @@ class BaseSearchProviderTest : public testing::Test,
 // Test environment with valid suggest and search URL.
 class SearchProviderTest : public BaseSearchProviderTest {
  public:
-  SearchProviderTest(
-      const absl::optional<bool> warm_up_on_focus = absl::nullopt,
-      const bool command_line_overrides = false)
-      : BaseSearchProviderTest(warm_up_on_focus, command_line_overrides) {}
+  explicit SearchProviderTest(const bool command_line_overrides = false)
+      : BaseSearchProviderTest(command_line_overrides) {}
 
   void SetUp() override {
     CustomizableSetUp(
@@ -3727,56 +3713,28 @@ TEST_F(InvalidSearchProviderTest, DoesNotSendSuggestRequests) {
   EXPECT_FALSE(test_url_loader_factory_.IsPending("http://defaulturl/query"));
 }
 
-// SearchProviderWarmUpTest --------------------------------------------------
-//
-// Like SearchProviderTest.  The only addition is that it's a
-// TestWithParam<bool>, where the boolean parameter represents whether the
-// omnibox::kSearchProviderWarmUpOnFocus feature flag should be enabled.
-class SearchProviderWarmUpTest : public SearchProviderTest,
-                                 public testing::WithParamInterface<bool> {
- public:
-  SearchProviderWarmUpTest() : SearchProviderTest(GetParam(), false) {}
-
-  SearchProviderWarmUpTest(SearchProviderWarmUpTest const&) = delete;
-  SearchProviderWarmUpTest& operator=(SearchProviderWarmUpTest const&) = delete;
-};
-
-TEST_P(SearchProviderWarmUpTest, SendsWarmUpRequestOnFocus) {
+TEST_F(SearchProviderTest, SendsWarmUpRequestOnFocus) {
   AutocompleteInput input(u"f", metrics::OmniboxEventProto::OTHER,
                           ChromeAutocompleteSchemeClassifier(profile_.get()));
   input.set_prefer_keyword(true);
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
 
-  if (!GetParam()) {  // The warm-up feature ought to be disabled.
-    // The provider immediately terminates with no matches.
-    provider_->Start(input, false);
-    // RunUntilIdle so that SearchProvider has a chance to create the
-    // URLFetchers (if it wants to, which it shouldn't in this case).
-    base::RunLoop().RunUntilIdle();
-    EXPECT_TRUE(provider_->done());
-    EXPECT_TRUE(provider_->matches().empty());
-  } else {  // The warm-up feature ought to be enabled.
-    provider_->Start(input, false);
-    // RunUntilIdle so that SearchProvider create the URLFetcher.
-    base::RunLoop().RunUntilIdle();
-    EXPECT_FALSE(provider_->done());
-    EXPECT_TRUE(provider_->matches().empty());
-    // Make sure the default provider's suggest service was queried with an
-    // empty query.
-    EXPECT_TRUE(test_url_loader_factory_.IsPending("http://defaultturl2/"));
-    // Even if the fetcher returns results, we should still have no suggestions
-    // (though the provider should now be done).
-    test_url_loader_factory_.AddResponse("http://defaultturl2/",
-                                         R"(["",["a", "b"],[],[],{}])");
-    RunTillProviderDone();
-    EXPECT_TRUE(provider_->done());
-    EXPECT_TRUE(provider_->matches().empty());
-  }
+  provider_->Start(input, false);
+  // RunUntilIdle so that SearchProvider create the URLFetcher.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_FALSE(provider_->done());
+  EXPECT_TRUE(provider_->matches().empty());
+  // Make sure the default provider's suggest service was queried with an
+  // empty query.
+  EXPECT_TRUE(test_url_loader_factory_.IsPending("http://defaultturl2/"));
+  // Even if the fetcher returns results, we should still have no suggestions
+  // (though the provider should now be done).
+  test_url_loader_factory_.AddResponse("http://defaultturl2/",
+                                       R"(["",["a", "b"],[],[],{}])");
+  RunTillProviderDone();
+  EXPECT_TRUE(provider_->done());
+  EXPECT_TRUE(provider_->matches().empty());
 }
-
-INSTANTIATE_TEST_CASE_P(SearchProviderTest,
-                        SearchProviderWarmUpTest,
-                        testing::Values(false, true));
 
 // SearchProviderCommandLineOverrideTest -------------------------------------
 //
@@ -3784,8 +3742,7 @@ INSTANTIATE_TEST_CASE_P(SearchProviderTest,
 // command line flags in SearchProviderFeatureTestComponent.
 class SearchProviderCommandLineOverrideTest : public SearchProviderTest {
  public:
-  SearchProviderCommandLineOverrideTest()
-      : SearchProviderTest(absl::nullopt, true) {}
+  SearchProviderCommandLineOverrideTest() : SearchProviderTest(true) {}
 
   SearchProviderCommandLineOverrideTest(
       SearchProviderCommandLineOverrideTest const&) = delete;

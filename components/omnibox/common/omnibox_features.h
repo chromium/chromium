@@ -15,7 +15,6 @@ namespace omnibox {
 extern const base::Feature kOmniboxTabSwitchSuggestions;
 extern const base::Feature kExperimentalKeywordMode;
 extern const base::Feature kImageSearchSuggestionThumbnail;
-extern const base::Feature kSearchProviderWarmUpOnFocus;
 extern const base::Feature kDisplayTitleForCurrentUrl;
 extern const base::Feature kOmniboxRemoveSuggestionsFromClipboard;
 

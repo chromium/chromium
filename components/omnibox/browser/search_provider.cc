@@ -233,14 +233,17 @@ void SearchProvider::Start(const AutocompleteInput& input,
   matches_.clear();
   set_field_trial_triggered(false);
 
-  // Unless warming up the suggest server on focus, SearchProvider doesn't do
-  // do anything useful for on-focus inputs or empty inputs.  Exit early.
-  if (!base::FeatureList::IsEnabled(omnibox::kSearchProviderWarmUpOnFocus) &&
-      (input.focus_type() != OmniboxFocusType::DEFAULT ||
-       input.type() == metrics::OmniboxInputType::EMPTY)) {
-    Stop(true, false);
-    return;
-  }
+  // At this point, we could exit early if the input is on-focus or empty,
+  // because offering suggestions in those scenarios is handled by
+  // ZeroSuggestProvider. But we continue here anyway in order to send a request
+  // to warm up the suggest server. It's possible this warmup request could be
+  // combined or deduped with the request from ZeroSuggestProvider but that
+  // provider doesn't always run, based on a variety of factors (sign in state,
+  // experiments, input type (on-focus vs. on-clobber)). Ensuring that we always
+  // send a request here allows the suggest server to, for example, load
+  // per-user models into memory.  Having a per-user model in memory allows the
+  // suggest server to respond more quickly with personalized suggestions as the
+  // user types.
 
   keyword_input_ = input;
   const TemplateURL* keyword_provider =
