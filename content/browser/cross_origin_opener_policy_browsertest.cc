@@ -1207,8 +1207,12 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
 // Try to host into the same cross-origin isolated process, two cross-origin
 // documents. The second's response sets CSP:sandbox, so its origin is opaque
 // and derived from the first.
+//
+// Variants:
+// 1. CrossOriginIsolatedOpeneeCspSandbox
+// 2. CrossOriginIsolatedOpeneeOpenerSandbox
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
-                       CrossOriginIsolatedWithDifferentOrigin) {
+                       CrossOriginIsolatedWithOpeneeCspSandbox) {
   GURL opener_url =
       https_server()->GetURL("a.com",
                              "/set-header?"
@@ -1244,18 +1248,70 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_EQ(opener_current_main_document->last_http_status_code(), 200);
   EXPECT_EQ(openee_current_main_document->last_http_status_code(), 200);
 
-  // We have two main documents in the same cross-origin isolated process from a
-  // different origin.
-  // TODO(https://crbug.com/1115426): Investigate what needs to be done.
+  // We have two main documents in different cross-origin isolated process.
   EXPECT_NE(opener_current_main_document->GetLastCommittedOrigin(),
             openee_current_main_document->GetLastCommittedOrigin());
-  EXPECT_EQ(opener_current_main_document->GetProcess(),
+  EXPECT_NE(opener_current_main_document->GetProcess(),
             openee_current_main_document->GetProcess());
-  EXPECT_EQ(opener_current_main_document->GetSiteInstance(),
+  EXPECT_NE(opener_current_main_document->GetSiteInstance(),
             openee_current_main_document->GetSiteInstance());
 
-  // TODO(arthursonzogni): Check whether the processes are marked as
-  // cross-origin isolated or not.
+  EXPECT_TRUE(
+      opener_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
+  EXPECT_TRUE(
+      openee_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
+}
+
+// Variants:
+// 1. CrossOriginIsolatedOpeneeCspSandbox
+// 2. CrossOriginIsolatedOpeneeOpenerSandbox
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       CrossOriginIsolatedOpeneeOpenerSandbox) {
+  // The URL used by both the openee and the opener.
+  GURL url = https_server()->GetURL(
+      "a.com",
+      "/set-header?"
+      "Cross-Origin-Opener-Policy: same-origin&"
+      "Cross-Origin-Embedder-Policy: require-corp&"
+      "Content-Security-Policy: sandbox allow-scripts allow-popups");
+
+  // Load the first window.
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  RenderFrameHostImpl* opener_current_main_document = current_frame_host();
+
+  // Load the second window.
+  ShellAddedObserver shell_observer;
+  EXPECT_TRUE(ExecJs(current_frame_host(), JsReplace("window.open($1)", url)));
+  WebContents* popup = shell_observer.GetShell()->web_contents();
+  WaitForLoadStop(popup);
+
+  RenderFrameHostImpl* openee_current_main_document =
+      static_cast<WebContentsImpl*>(popup)
+          ->GetFrameTree()
+          ->root()
+          ->current_frame_host();
+
+  // Popups with a sandboxing flag, inherited from their opener, are not
+  // allowed to navigate to a document with a Cross-Origin-Opener-Policy that
+  // is not "unsafe-none". As a result, the navigation in the popup ended up
+  // loading an error document.
+
+  EXPECT_EQ(opener_current_main_document->GetLastCommittedURL(), url);
+  EXPECT_EQ(openee_current_main_document->GetLastCommittedURL(), url);
+  EXPECT_EQ(opener_current_main_document->last_http_status_code(), 200);
+  EXPECT_EQ(openee_current_main_document->last_http_status_code(), 0);
+
+  EXPECT_NE(opener_current_main_document->GetLastCommittedOrigin(),
+            openee_current_main_document->GetLastCommittedOrigin());
+  EXPECT_NE(opener_current_main_document->GetProcess(),
+            openee_current_main_document->GetProcess());
+  EXPECT_NE(opener_current_main_document->GetSiteInstance(),
+            openee_current_main_document->GetSiteInstance());
+
+  EXPECT_TRUE(
+      opener_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
+  EXPECT_FALSE(
+      openee_current_main_document->GetSiteInstance()->IsCrossOriginIsolated());
 }
 
 // Navigate in between two documents. Check the virtual browsing context group

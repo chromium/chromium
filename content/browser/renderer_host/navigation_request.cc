@@ -1818,12 +1818,10 @@ void NavigationRequest::BeginNavigationImpl() {
       // Enforce cross-origin-opener-policy for about:blank, about:srcdoc and
       // MHTML iframe, before selecting the RenderFrameHost.
       const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-      const absl::optional<network::mojom::BlockedByResponseReason>
-          coop_requires_blocking = coop_status_.EnforceCOOP(
-              policy_container_navigation_bundle_->FinalPolicies()
-                  .cross_origin_opener_policy,
-              origin, net::NetworkIsolationKey(origin, origin));
-      DCHECK(!coop_requires_blocking);
+      coop_status_.EnforceCOOP(
+          policy_container_navigation_bundle_->FinalPolicies()
+              .cross_origin_opener_policy,
+          origin, net::NetworkIsolationKey(origin, origin));
 
       // Select an appropriate RenderFrameHost.
       std::string frame_host_choice_reason;
@@ -2315,11 +2313,9 @@ void NavigationRequest::OnRequestRedirected(
     return;
   }
 
-  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
   const absl::optional<network::mojom::BlockedByResponseReason>
-      coop_requires_blocking = coop_status_.EnforceCOOP(
-          coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
-          origin, network_isolation_key);
+      coop_requires_blocking =
+          coop_status_.SanitizeResponse(response_head_.get());
   if (coop_requires_blocking) {
     OnRequestFailedInternal(
         network::URLLoaderCompletionStatus(*coop_requires_blocking),
@@ -2329,6 +2325,10 @@ void NavigationRequest::OnRequestRedirected(
     // OnRequestFailedInternal has destroyed the NavigationRequest.
     return;
   }
+  const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
+  coop_status_.EnforceCOOP(
+      response()->parsed_headers->cross_origin_opener_policy, origin,
+      network_isolation_key);
 
   const absl::optional<network::mojom::BlockedByResponseReason>
       coep_requires_blocking = EnforceCOEP();
@@ -2800,16 +2800,9 @@ void NavigationRequest::OnResponseStarted(
   }
 
   {
-    const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-    policy_container_navigation_bundle_->SetCrossOriginOpenerPolicy(
-        coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin));
-
-    ComputePoliciesToCommit();
     const absl::optional<network::mojom::BlockedByResponseReason>
-        coop_requires_blocking = coop_status_.EnforceCOOP(
-            policy_container_navigation_bundle_->FinalPolicies()
-                .cross_origin_opener_policy,
-            origin, network_isolation_key);
+        coop_requires_blocking =
+            coop_status_.SanitizeResponse(response_head_.get());
     if (coop_requires_blocking) {
       // TODO(https://crbug.com/1172169): Investigate what must be done in case
       // of a download.
@@ -2821,8 +2814,22 @@ void NavigationRequest::OnResponseStarted(
       // OnRequestFailedInternal has destroyed the NavigationRequest.
       return;
     }
+    policy_container_navigation_bundle_->SetCrossOriginOpenerPolicy(
+        response_head_->parsed_headers->cross_origin_opener_policy);
   }
 
+  ComputePoliciesToCommit();
+  // After this line. The sandbox flags to commit have been computed. The origin
+  // can be determined. This is needed for enforcing COOP below.
+
+  {
+    const url::Origin origin =
+        GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+    const PolicyContainerPolicies& policies =
+        policy_container_navigation_bundle_->FinalPolicies();
+    coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
+                             network_isolation_key);
+  }
 
   // The navigation may have encountered a header that requests isolation for
   // the url's origin. Before we pick the renderer, make sure we update the

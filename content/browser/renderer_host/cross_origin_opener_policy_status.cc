@@ -114,41 +114,21 @@ CrossOriginOpenerPolicyStatus::CrossOriginOpenerPolicyStatus(
 
 CrossOriginOpenerPolicyStatus::~CrossOriginOpenerPolicyStatus() = default;
 
-network::CrossOriginOpenerPolicy&
-CrossOriginOpenerPolicyStatus::RetrieveCOOPFromResponse(
-    network::mojom::URLResponseHead* response_head,
-    const url::Origin& response_origin) {
-  const GURL& response_url = navigation_request_->common_params().url;
-
-  SanitizeCoopHeaders(response_url, response_origin, response_head);
-
-  network::mojom::ParsedHeaders* parsed_headers =
-      response_head->parsed_headers.get();
-
-  return parsed_headers->cross_origin_opener_policy;
-}
-
 absl::optional<network::mojom::BlockedByResponseReason>
-CrossOriginOpenerPolicyStatus::EnforceCOOP(
-    const network::CrossOriginOpenerPolicy& response_coop,
-    const url::Origin& response_origin,
-    const net::NetworkIsolationKey& network_isolation_key) {
-  // COOP only applies to top level browsing contexts.
-  if (!frame_tree_node_->IsMainFrame()) {
-    return absl::nullopt;
-  }
-
+CrossOriginOpenerPolicyStatus::SanitizeResponse(
+    network::mojom::URLResponseHead* response) const {
   const GURL& response_url = navigation_request_->common_params().url;
-  const GURL& response_referrer_url =
-      navigation_request_->common_params().referrer->url;
+  SanitizeCoopHeaders(response_url, response);
+
+  network::CrossOriginOpenerPolicy& coop =
+      response->parsed_headers->cross_origin_opener_policy;
 
   // Popups with a sandboxing flag, inherited from their opener, are not
   // allowed to navigate to a document with a Cross-Origin-Opener-Policy that
   // is not "unsafe-none". This ensures a COOP document does not inherit any
   // property from an opener.
   // https://gist.github.com/annevk/6f2dd8c79c77123f39797f6bdac43f3e
-  if (response_coop.value !=
-          network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
+  if (coop.value != network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
       (frame_tree_node_->pending_frame_policy().sandbox_flags !=
        network::mojom::WebSandboxFlags::kNone)) {
     // Blob and Filesystem documents' cross-origin-opener-policy values are
@@ -161,6 +141,21 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
     return network::mojom::BlockedByResponseReason::
         kCoopSandboxedIFrameCannotNavigateToCoopPage;
   }
+
+  return absl::nullopt;
+}
+
+void CrossOriginOpenerPolicyStatus::EnforceCOOP(
+    const network::CrossOriginOpenerPolicy& response_coop,
+    const url::Origin& response_origin,
+    const net::NetworkIsolationKey& network_isolation_key) {
+  // COOP only applies to top level browsing contexts.
+  if (!frame_tree_node_->IsMainFrame())
+    return;
+
+  const GURL& response_url = navigation_request_->common_params().url;
+  const GURL& response_referrer_url =
+      navigation_request_->common_params().referrer->url;
 
   StoragePartition* storage_partition = frame_tree_node_->current_frame_host()
                                             ->GetProcess()
@@ -269,8 +264,6 @@ CrossOriginOpenerPolicyStatus::EnforceCOOP(
   // Any subsequent response means this response was a redirect, and the source
   // of the navigation to the subsequent response.
   is_navigation_source_ = true;
-
-  return absl::nullopt;
 }
 
 std::unique_ptr<CrossOriginOpenerPolicyReporter>
@@ -289,11 +282,10 @@ void CrossOriginOpenerPolicyStatus::UpdateReporterStoragePartition(
 // - For subframes.
 // - When the feature is disabled.
 // We also strip the "reporting" parts when the reporting feature is disabled
-// for the |response_origin|.
+// for the |response_url|.
 void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
     const GURL& response_url,
-    const url::Origin& response_origin,
-    network::mojom::URLResponseHead* response_head) {
+    network::mojom::URLResponseHead* response_head) const {
   network::CrossOriginOpenerPolicy& coop =
       response_head->parsed_headers->cross_origin_opener_policy;
   if (coop == network::CrossOriginOpenerPolicy())
@@ -306,19 +298,26 @@ void CrossOriginOpenerPolicyStatus::SanitizeCoopHeaders(
       // 1. If reservedEnvironment is a non-secure context, then return
       //    "unsafe-none".
       // ```
-      !network::IsOriginPotentiallyTrustworthy(response_origin) ||
+      //
+      // https://html.spec.whatwg.org/multipage/webappapis.html#secure-contexts
+      // ```
+      // 2. If the result of Is url potentially trustworthy? given environment's
+      // top-level creation URL is "Potentially Trustworthy", then return true.
+      // ```
+      !network::IsUrlPotentiallyTrustworthy(response_url) ||
       // The COOP header must be ignored outside of the top-level context. It is
       // removed as a defensive measure.
       !frame_tree_node_->IsMainFrame()) {
     coop = network::CrossOriginOpenerPolicy();
 
-    if (!network::IsOriginPotentiallyTrustworthy(response_origin)) {
+    if (!network::IsUrlPotentiallyTrustworthy(response_url)) {
       navigation_request_->AddDeferredConsoleMessage(
           blink::mojom::ConsoleMessageLevel::kError,
-          "The Cross-Origin-Opener-Policy header has been ignored, because the "
-          "origin was untrustworthy. It was defined either in the final "
-          "response or a redirect. Please deliver the response using the HTTPS "
-          "protocol. You can also use the 'localhost' origin instead. See "
+          "The Cross-Origin-Opener-Policy header has been ignored, because "
+          "the URL's origin was untrustworthy. It was defined either in the "
+          "final response or a redirect. Please deliver the response using "
+          "the HTTPS protocol. You can also use the 'localhost' origin "
+          "instead. See "
           "https://www.w3.org/TR/powerful-features/"
           "#potentially-trustworthy-origin and "
           "https://html.spec.whatwg.org/"
