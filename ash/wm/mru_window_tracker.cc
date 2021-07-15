@@ -197,6 +197,11 @@ MruWindowTracker::WindowList BuildWindowListInternal(
 }  // namespace
 
 bool CanIncludeWindowInMruList(aura::Window* window) {
+  // If `window` was launched from Full Restore it won't be activatable
+  // temporarily, but it should still be included in the MRU list.
+  if (window->GetProperty(full_restore::kLaunchedFromFullRestoreKey))
+    return true;
+
   return wm::CanActivateWindow(window) &&
          !window->GetProperty(ash::kExcludeInMruKey);
 }

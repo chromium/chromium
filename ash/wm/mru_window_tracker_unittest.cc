@@ -17,6 +17,7 @@
 #include "ui/base/hit_test.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/wm/core/window_util.h"
 
 namespace ash {
 
@@ -224,6 +225,25 @@ TEST_F(MruWindowTrackerFullRestoreTest, RestoreMruOrder) {
   auto w1 = CreateTestFullRestoredWindow(/*activation_index=*/1);
   VerifyMruWindowsOrder({w5.get(), w4.get(), w3.get(), w2.get(), w1.get(),
                          user_created_window.get()});
+}
+
+// Tests that Full Restore'd windows are included in the MRU window list. See
+// crbug.com/1229260.
+TEST_F(MruWindowTrackerFullRestoreTest, FullRestoredWindowsInMRUWindowList) {
+  // Create an `aura::Window` using `CreateTestWindow()` so that the window is
+  // parented to something. Then set its
+  // `full_restore::kLaunchedFromFullRestoreKey` to simulate it being Full
+  // Restore'd. `w1` should not be activatable.
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  w1.get()->SetProperty(full_restore::kLaunchedFromFullRestoreKey, true);
+  ASSERT_FALSE(wm::CanActivateWindow(w1.get()));
+
+  // Build the MRU window list. `w1` should be included despite not being
+  // activatable.
+  MruWindowTracker::WindowList window_list =
+      mru_window_tracker()->BuildMruWindowList(kAllDesks);
+  EXPECT_EQ(1u, window_list.size());
+  EXPECT_EQ(w1.get(), window_list[0]);
 }
 
 INSTANTIATE_TEST_SUITE_P(MruWindowTrackerOrder,
