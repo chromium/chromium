@@ -2319,11 +2319,8 @@ PP_Var PepperPluginInstanceImpl::ExecuteScript(PP_Instance instance,
   blink::WebScriptSource script(
       blink::WebString::FromUTF8(script_string.c_str()));
   v8::Local<v8::Value> result;
-  if (HasTransientUserActivation()) {
-    result = frame->ExecuteScriptAndReturnValue(script);
-  } else {
-    result = frame->ExecuteScriptAndReturnValue(script);
-  }
+
+  result = frame->ExecuteScriptAndReturnValue(script);
 
   ScopedPPVar var_result = try_catch.FromV8(result);
   if (try_catch.HasException())
