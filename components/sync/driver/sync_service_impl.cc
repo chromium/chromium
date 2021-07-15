@@ -40,6 +40,7 @@
 #include "components/sync/engine/engine_components_factory_impl.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/net/http_post_provider_factory.h"
+#include "components/sync/engine/shutdown_reason.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
@@ -237,7 +238,7 @@ void SyncServiceImpl::Initialize() {
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY) ||
       (HasDisableReason(DISABLE_REASON_NOT_SIGNED_IN) &&
        auth_manager_->IsActiveAccountInfoFullyLoaded())) {
-    StopImpl(CLEAR_DATA);
+    StopAndClearImpl();
   }
 
   // Note: We need to record the initial state *after* calling
@@ -351,7 +352,7 @@ void SyncServiceImpl::AccountStateChanged() {
   if (!IsSignedIn()) {
     // The account was signed out, so shut down.
     sync_disabled_by_admin_ = false;
-    StopImpl(CLEAR_DATA);
+    StopAndClearImpl();
     DCHECK(!engine_);
   } else {
     // Either a new account was signed in, or the existing account's
@@ -382,14 +383,14 @@ void SyncServiceImpl::CredentialsChanged() {
   // then shut down. This happens when the user signs out on the web, i.e. we're
   // in the "Sync paused" state.
   if (!IsEngineAllowedToRun()) {
-    // If the engine currently exists, then StopImpl() will notify observers
+    // If the engine currently exists, then ShutdownImpl() will notify observers
     // anyway. Otherwise, notify them here. (One relevant case is when entering
     // the PAUSED state before the engine was created, e.g. during deferred
     // startup.)
     if (!engine_) {
       NotifyObservers();
     }
-    StopImpl(KEEP_DATA);
+    ShutdownImpl(ShutdownReason::STOP_SYNC);
     return;
   }
 
@@ -513,7 +514,7 @@ void SyncServiceImpl::Shutdown() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   NotifyShutdown();
-  ShutdownImpl(BROWSER_SHUTDOWN);
+  ShutdownImpl(ShutdownReason::BROWSER_SHUTDOWN);
 
   DCHECK(!data_type_manager_);
   data_type_controllers_.clear();
@@ -590,30 +591,23 @@ void SyncServiceImpl::ShutdownImpl(ShutdownReason reason) {
   NotifyObservers();
 }
 
-void SyncServiceImpl::StopImpl(SyncStopDataFate data_fate) {
-  switch (data_fate) {
-    case KEEP_DATA:
-      ShutdownImpl(STOP_SYNC);
-      break;
-    case CLEAR_DATA:
-      ClearUnrecoverableError();
-      ShutdownImpl(DISABLE_SYNC);
-      // Note: ShutdownImpl(DISABLE_SYNC) does *not* clear prefs which are
-      // directly user-controlled such as the set of selected types here, so
-      // that if the user ever chooses to enable Sync again, they start off
-      // with their previous settings by default. We do however require going
-      // through first-time setup again and set SyncRequested to false.
-      sync_prefs_.ClearFirstSetupComplete();
-      sync_prefs_.ClearPassphrasePromptMutedProductVersion();
-      // For explicit passphrase users, clear the encryption key, such that they
-      // will need to reenter it if sync gets re-enabled.
-      sync_prefs_.ClearEncryptionBootstrapToken();
-      SetSyncRequestedAndIgnoreNotification(false);
-      // Also let observers know that Sync-the-feature is now fully disabled
-      // (before it possibly starts up again in transport-only mode).
-      NotifyObservers();
-      break;
-  }
+void SyncServiceImpl::StopAndClearImpl() {
+  ClearUnrecoverableError();
+  ShutdownImpl(ShutdownReason::DISABLE_SYNC);
+  // Note: ShutdownImpl(DISABLE_SYNC) does *not* clear prefs which are
+  // directly user-controlled such as the set of selected types here, so
+  // that if the user ever chooses to enable Sync again, they start off
+  // with their previous settings by default. We do however require going
+  // through first-time setup again and set SyncRequested to false.
+  sync_prefs_.ClearFirstSetupComplete();
+  sync_prefs_.ClearPassphrasePromptMutedProductVersion();
+  // For explicit passphrase users, clear the encryption key, such that they
+  // will need to reenter it if sync gets re-enabled.
+  sync_prefs_.ClearEncryptionBootstrapToken();
+  SetSyncRequestedAndIgnoreNotification(false);
+  // Also let observers know that Sync-the-feature is now fully disabled
+  // (before it possibly starts up again in transport-only mode).
+  NotifyObservers();
 }
 
 SyncUserSettings* SyncServiceImpl::GetUserSettings() {
@@ -744,8 +738,7 @@ void SyncServiceImpl::OnUnrecoverableErrorImpl(
   LOG(ERROR) << "Unrecoverable error detected at " << from_here.ToString()
              << " -- SyncServiceImpl unusable: " << message;
 
-  // Shut all data types down.
-  ShutdownImpl(DISABLE_SYNC);
+  ShutdownImpl(ShutdownReason::DISABLE_SYNC);
 }
 
 void SyncServiceImpl::DataTypePreconditionChanged(ModelType type) {
@@ -874,7 +867,7 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
       // actions in the popup. The current experience might not be optimal for
       // the user. We just dismiss the dialog.
       if (IsSetupInProgress()) {
-        StopImpl(CLEAR_DATA);
+        StopAndClearImpl();
         expect_sync_configuration_aborted_ = true;
       }
       // Trigger an unrecoverable error to stop syncing.
@@ -887,9 +880,9 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
         UMA_HISTOGRAM_ENUMERATION("Sync.StopSource", BIRTHDAY_ERROR,
                                   STOP_SOURCE_LIMIT);
       }
-      // Note: Here we explicitly want StopAndClear (rather than StopImpl), so
-      // that IsSyncRequested gets set to false, and Sync won't start again on
-      // the next browser startup.
+      // Note: Here we explicitly want StopAndClear (rather than
+      // StopAndClearImpl), so that IsSyncRequested gets set to false, and Sync
+      // won't start again on the next browser startup.
       StopAndClear();
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
       // On every platform except ChromeOS, revoke the Sync consent in
@@ -910,13 +903,12 @@ void SyncServiceImpl::OnActionableError(const SyncProtocolError& error) {
 #endif
       break;
     case STOP_SYNC_FOR_DISABLED_ACCOUNT:
-      // Sync disabled by domain admin. we should stop syncing until next
-      // restart.
+      // Sync disabled by domain admin. Stop syncing until next restart.
       sync_disabled_by_admin_ = true;
-      ShutdownImpl(DISABLE_SYNC);
+      ShutdownImpl(ShutdownReason::DISABLE_SYNC);
       break;
     case RESET_LOCAL_SYNC_DATA:
-      ShutdownImpl(DISABLE_SYNC);
+      ShutdownImpl(ShutdownReason::DISABLE_SYNC);
       startup_controller_->TryStart(/*force_immediate=*/true);
       break;
     case UNKNOWN_ACTION:
@@ -1421,7 +1413,7 @@ void SyncServiceImpl::OnSyncManagedPrefChange(bool is_sync_managed) {
   }
 
   if (is_sync_managed) {
-    StopImpl(CLEAR_DATA);
+    StopAndClearImpl();
   } else {
     // Sync is no longer disabled by policy. Try starting it up if appropriate.
     DCHECK(!engine_);
@@ -1459,7 +1451,7 @@ void SyncServiceImpl::OnSyncRequestedPrefChange(bool is_sync_requested) {
     // This will notify the observers.
     // TODO(crbug.com/856179): Evaluate whether we can get away without a
     // full restart in this case (i.e. just reconfigure).
-    StopImpl(KEEP_DATA);
+    ShutdownImpl(ShutdownReason::STOP_SYNC);
 
     // Try to start up again (in transport-only mode).
     startup_controller_->TryStart(/*force_immediate=*/true);
@@ -1672,7 +1664,7 @@ void SyncServiceImpl::StopAndClear() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   SetSyncRequestedAndIgnoreNotification(false);
-  StopImpl(CLEAR_DATA);
+  StopAndClearImpl();
   // Try to start up again (in transport-only mode).
   startup_controller_->TryStart(/*force_immediate=*/true);
 }
@@ -1685,7 +1677,7 @@ void SyncServiceImpl::SetSyncAllowedByPlatform(bool allowed) {
 
   sync_allowed_by_platform_ = allowed;
   if (!sync_allowed_by_platform_) {
-    StopImpl(KEEP_DATA);
+    ShutdownImpl(ShutdownReason::STOP_SYNC);
     // Try to start up again (in transport-only mode).
     // TODO(crbug.com/856179): Evaluate whether we can get away without a full
     // restart (i.e. just reconfigure). See also similar comment in
@@ -1750,7 +1742,7 @@ void SyncServiceImpl::OverrideNetworkForTest(
   // callback in the ctor instead of adding it retroactively.
   bool restart = false;
   if (engine_) {
-    StopImpl(KEEP_DATA);
+    ShutdownImpl(ShutdownReason::STOP_SYNC);
     restart = true;
   }
   DCHECK(!engine_);

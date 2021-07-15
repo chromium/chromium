@@ -252,14 +252,6 @@ class SyncServiceImpl : public SyncService,
   SyncClient* GetSyncClientForTest();
 
  private:
-  // Passed as an argument to StopImpl to control whether or not the sync
-  // engine should clear its data when it shuts down. See StopImpl for more
-  // information.
-  enum SyncStopDataFate {
-    KEEP_DATA,
-    CLEAR_DATA,
-  };
-
   enum UnrecoverableErrorReason {
     ERROR_REASON_ENGINE_INIT_FAILURE,
     ERROR_REASON_ACTIONABLE_ERROR,
@@ -312,11 +304,12 @@ class SyncServiceImpl : public SyncService,
                                 const std::string& message,
                                 UnrecoverableErrorReason reason);
 
-  // Stops the sync engine. |data_fate| controls whether the local sync data is
-  // deleted or kept when the engine shuts down.
+  // Stops the sync engine and clears the local sync data.
   // Does NOT set IsSyncRequested to false, use StopAndClear() or
   // SyncUserSettings::SetSyncRequested() for that.
-  void StopImpl(SyncStopDataFate data_fate);
+  // TODO(crbug.com/1229171): Either rename this method, or merge it with
+  // StopAndClear.
+  void StopAndClearImpl();
 
   // Puts the engine's sync scheduler into NORMAL mode.
   // Called when configuration is complete.
