@@ -7,11 +7,10 @@
 
 #include <string>
 
-
 class GURL;
 
 namespace base {
-class ListValue;
+class Value;
 }
 
 namespace web {
@@ -22,7 +21,7 @@ class WebUIIOS;
 // manages the data source and message handlers.
 class WebUIIOSController {
  public:
-  explicit WebUIIOSController(WebUIIOS* web_ui, const std::string& host)
+  WebUIIOSController(WebUIIOS* web_ui, const std::string& host)
       : web_ui_(web_ui), host_(host) {}
   virtual ~WebUIIOSController() {}
 
@@ -30,7 +29,7 @@ class WebUIIOSController {
   // Return true if the message handling was overridden.
   virtual bool OverrideHandleWebUIIOSMessage(const GURL& source_url,
                                              const std::string& message,
-                                             const base::ListValue& args);
+                                             const base::Value& args);
 
   WebUIIOS* web_ui() const { return web_ui_; }
 

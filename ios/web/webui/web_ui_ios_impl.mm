@@ -135,14 +135,14 @@ void WebUIIOSImpl::OnJsMessage(const base::Value& message,
       DLOG(WARNING) << "JS message parameter not found: arguments";
       return;
     }
-    ProcessWebUIIOSMessage(current_url, *message_content,
-                           base::Value::AsListValue(*arguments));
+    ProcessWebUIIOSMessage(current_url, *message_content, *arguments);
   }
 }
 
 void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
                                           const std::string& message,
-                                          const base::ListValue& args) {
+                                          const base::Value& args) {
+  DCHECK(args.is_list());
   if (controller_->OverrideHandleWebUIIOSMessage(source_url, message, args))
     return;
 
@@ -151,7 +151,7 @@ void WebUIIOSImpl::ProcessWebUIIOSMessage(const GURL& source_url,
       message_callbacks_.find(message);
   if (callback != message_callbacks_.end()) {
     // Forward this message and content on.
-    callback->second.Run(&args);
+    callback->second.Run(&base::Value::AsListValue(args));
   }
 }
 

@@ -325,6 +325,7 @@ source_set("web_view_sources") {
     "//net:extras",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/network:network_service",
+    "//third_party/abseil-cpp:absl",
     "//ui/base",
     "//url",
   ]

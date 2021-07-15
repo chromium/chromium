@@ -57,7 +57,7 @@ class WebUIIOS {
   // object.
   virtual void ProcessWebUIIOSMessage(const GURL& source_url,
                                       const std::string& message,
-                                      const base::ListValue& args) = 0;
+                                      const base::Value& args) = 0;
 
   // Call a Javascript function.  This is asynchronous; there's no way to get
   // the result of the call, and should be thought of more like sending a
