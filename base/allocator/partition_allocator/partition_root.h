@@ -1009,6 +1009,38 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start) {
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start,
                                                        SlotSpan* slot_span) {
+  // At this point we are about to acquire the lock, so we try to minimize the
+  // risk of blocking inside the locked section.
+  //
+  // For allocations that are not direct-mapped, there will always be a store at
+  // the beginning of |*slot_start|, to link the freelist. This is why there is
+  // a prefetch of it at the beginning of the free() path.
+  //
+  // However, the memory which is being freed can be very cold (for instance
+  // during browser shutdown, when various caches are finally completely freed),
+  // and so moved to either compressed memory or swap. This means that touching
+  // it here can cause a major page fault. This is in turn will cause
+  // descheduling of the thread *while locked*. Since we don't have priority
+  // inheritance locks on most platforms, avoiding long locked periods relies on
+  // the OS having proper priority boosting. There is evidence
+  // (crbug.com/1228523) that this is not always the case on Windows, and a very
+  // low priority background thread can block the main one for a long time,
+  // leading to hangs.
+  //
+  // To mitigate that, make sure that we fault *before* locking. Note that this
+  // is useless for direct-mapped allocations (which are very rare anyway), and
+  // that this path is *not* taken for thread cache bucket purge (since it calls
+  // RawFreeLocked()). This is intentional, as the thread cache is purged often,
+  // and the memory has a consequence the memory has already been touched
+  // recently (to link the thread cache freelist).
+  *reinterpret_cast<volatile uintptr_t*>(slot_start) = 0;
+  // Note: even though we write to slot_start + sizeof(void*) as well, due to
+  // alignment constraints, the two locations are always going to be in the same
+  // OS page. No need to write to the second one as well.
+  //
+  // Do not move the store above inside the locked section.
+  __asm__ __volatile__("" : : "r"(slot_start) : "memory");
+
   internal::DeferredUnmap deferred_unmap;
   {
     ScopedGuard guard{lock_};
