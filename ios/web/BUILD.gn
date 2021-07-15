@@ -585,6 +585,8 @@ test("ios_web_inttests") {
     "//mojo/core/embedder",
     "//net:test_support",
     "//services/network/public/cpp",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
     "//ui/base:test_support",
     "//ui/resources",

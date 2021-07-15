@@ -52,6 +52,8 @@ source_set("reading_list") {
     "//ios/web/public/deprecated",
     "//ios/web/public/security",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//ui/base",
     "//url",
   ]
