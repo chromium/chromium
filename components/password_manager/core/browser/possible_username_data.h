@@ -17,8 +17,8 @@ namespace password_manager {
 
 // The maximum time between the user typed in a text field and subsequent
 // submission of the password form, such that the typed value is considered to
-// be possible to be username.
-constexpr auto kMaxDelayBetweenTypingUsernameAndSubmission =
+// be a possible username.
+constexpr auto kPossibleUsernameExpirationTimeout =
     base::TimeDelta::FromMinutes(1);
 
 // Contains information that the user typed in a text field. It might be the
@@ -47,16 +47,9 @@ struct PossibleUsernameData {
   absl::optional<FormPredictions> form_predictions;
 };
 
-// Checks that |possible_username| might represent an username:
-// 1.|possible_username.signon_realm| == |submitted_signon_realm|
-// 2.|possible_username.value| is contained in |possible_usernames| after
-//   canonicalization.
-// 3.|possible_username.value.last_change| was not more than
-//   |kMaxDelayBetweenTypingUsernameAndSubmission| ago.
-bool IsPossibleUsernameValid(
-    const PossibleUsernameData& possible_username,
-    const std::string& submitted_signon_realm,
-    const std::vector<std::u16string>& possible_usernames);
+// Returns whether |possible_username| was last edited too far in the past and
+// should not be considered as a possible single username.
+bool IsPossibleUsernameStale(const PossibleUsernameData& possible_username);
 
 }  // namespace password_manager
 

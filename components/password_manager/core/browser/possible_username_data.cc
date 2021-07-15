@@ -32,30 +32,9 @@ PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =
     default;
 PossibleUsernameData::~PossibleUsernameData() = default;
 
-bool IsPossibleUsernameValid(
-    const PossibleUsernameData& possible_username,
-    const std::string& submitted_signon_realm,
-    const std::vector<std::u16string>& possible_usernames) {
-  if (submitted_signon_realm != possible_username.signon_realm)
-    return false;
-
-  // The goal is to avoid false positives in considering which strings might be
-  // username. In the initial version of the username first flow it is better to
-  // be conservative in that. This check only allows usernames that match
-  // existing usernames after canonicalization.
-
-  // This line is a workaround to pass the method to overloaded base::Contains
-  // as a projection that will be moved and applied to all container methods.
-  std::u16string (*Canonicalize)(base::StringPiece16) = &CanonicalizeUsername;
-  std::u16string canonicalized_username = Canonicalize(possible_username.value);
-  if (canonicalized_username.empty() ||
-      !base::Contains(possible_usernames, canonicalized_username,
-                      Canonicalize)) {
-    return false;
-  }
-
-  return base::Time::Now() - possible_username.last_change <=
-         kMaxDelayBetweenTypingUsernameAndSubmission;
+bool IsPossibleUsernameStale(const PossibleUsernameData& possible_username) {
+  return base::Time::Now() - possible_username.last_change >
+         kPossibleUsernameExpirationTimeout;
 }
 
 }  // namespace password_manager

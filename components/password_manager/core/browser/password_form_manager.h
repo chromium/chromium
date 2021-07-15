@@ -313,9 +313,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   // Returns whether |possible_username| should be used for offering the
   // username to save on username first flow. The decision is based on server
-  // predictions, data from FieldInfoManager and whether |possible_username|
-  // looks valid.
-  bool UsePossibleUsername(const PossibleUsernameData* possible_username);
+  // predictions, and whether |possible_username| has a non empty value and is
+  // not expired yet.
+  bool UsePossibleUsernameToBuildCredential(
+      const PossibleUsernameData* possible_username);
 
   // Updates the predictions stored in |parser_| with predictions relevant for
   // |observed_form_or_digest_|.

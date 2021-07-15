@@ -2123,19 +2123,21 @@ TEST_P(PasswordFormManagerTest, iOSUsingFieldDataManagerData) {
 
 #endif  // defined(OS_IOS)
 
-// Tests that username is taken during username first flow.
-TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
+// Tests provisional saving of credentials during username first flow.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
   CreateFormManager(observed_form_only_password_fields_);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  // Create possible username data.
+  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   const std::u16string username_field_name = u"username_field";
   const std::u16string possible_username = u"test@example.com";
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(2),
-      username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      saved_match_.signon_realm, kUsernameFieldRendererId, username_field_name,
+      possible_username, base::Time::Now(), 0 /* driver_id */);
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -2143,16 +2145,22 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                &possible_username_data));
 
-#if !defined(OS_ANDROID)
-  // Check that a username is chosen from |possible_username_data|.
-  EXPECT_EQ(possible_username,
-            form_manager_->GetPendingCredentials().username_value);
-#else
-  // Local heuristics on Android for username first flow are not supported, so
-  // the username should not be taken from the username form.
+  // Without server predictions the username should not be taken from the
+  // single username form.
   EXPECT_EQ(saved_match_.username_value,
             form_manager_->GetPendingCredentials().username_value);
-#endif  // !defined(OS_ANDROID)
+
+  // Create form predictions and set them to |possible_username_data|.
+  constexpr autofill::FormSignature kUsernameFormSignature(1000);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kUsernameFormSignature, kUsernameFieldRendererId);
+
+  ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
+                                               &possible_username_data));
+
+  // Check that a username is chosen from |possible_username_data| now.
+  EXPECT_EQ(possible_username,
+            form_manager_->GetPendingCredentials().username_value);
 }
 
 // Tests that username is not taken when a possible username is not valid.
@@ -2162,12 +2170,18 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
+  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   const std::u16string username_field_name = u"username_field";
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
-      "https://another.domain.com", autofill::FieldRendererId(2u),
+      "https://another.domain.com", kUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
       0 /* driver_id */);
+  constexpr autofill::FormSignature kUsernameFormSignature(1000);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kUsernameFormSignature, kUsernameFieldRendererId);
 
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
@@ -2180,9 +2194,9 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 }
 
-// Tests that username is taken during username first flow both on password
-// saving and updating.
-TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotes) {
+// Tests that username is taken and votes are uploaded during username first
+// flow both on password saving and updating.
+TEST_P(PasswordFormManagerTest, UsernameFirstFlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
 
@@ -2194,14 +2208,13 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotes) {
       SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
     }
 
+    // Create possible username data.
     const std::u16string possible_username = u"possible_username";
     constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
     const std::u16string field_name = u"username_field";
     PossibleUsernameData possible_username_data(
         saved_match_.signon_realm, kUsernameFieldRendererId, field_name,
         possible_username, base::Time::Now(), 0 /* driver_id */);
-
-    // Create form predictions and set them to |possible_username_data|.
     constexpr autofill::FormSignature kUsernameFormSignature(1000);
     possible_username_data.form_predictions = MakeSingleUsernamePredictions(
         kUsernameFormSignature, kUsernameFieldRendererId);
@@ -2273,11 +2286,11 @@ TEST_P(PasswordFormManagerTest, NegativeUsernameFirstFlowVotes) {
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, kUsernameFieldName,
       kPossibleUsername, base::Time::Now(), 0 /* driver_id */);
-
-  // Create form predictions and set them to |possible_username_data|.
   FormPredictions predictions;
   predictions.form_signature = kUsernameFormSignature;
   predictions.fields.push_back({
@@ -2321,14 +2334,14 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowVotesNamelessField) {
 
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
   const std::u16string possible_username = u"possible_username";
   constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   const std::u16string field_name = u"";
   PossibleUsernameData possible_username_data(
       saved_match_.signon_realm, kUsernameFieldRendererId, field_name,
       possible_username, base::Time::Now(), 0 /* driver_id */);
-
-  // Create form predictions and set them to |possible_username_data|.
   constexpr autofill::FormSignature kUsernameFormSignature(1000);
   possible_username_data.form_predictions = MakeSingleUsernamePredictions(
       kUsernameFormSignature, kUsernameFieldRendererId);
@@ -2446,65 +2459,6 @@ TEST_P(PasswordFormManagerTest, ChangePasswordFormWithUsernameSubmitted) {
       form_manager_->ProvisionallySave(submitted_form, &driver_, nullptr));
   EXPECT_FALSE(form_manager_->HasLikelyChangePasswordFormSubmitted());
 }
-
-#if !defined(OS_ANDROID)
-// Tests that data from FieldInfoManager is taken into consideration for
-// offering username on username first flow.
-// Local heuristics on Android for username first flow is not supported.
-TEST_P(PasswordFormManagerTest, PossibleUsernameFieldManager) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
-
-  const std::u16string username_field_name = u"username_field";
-  const std::u16string possible_username = u"possible_username";
-  PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(102u),
-      username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
-
-  FormData submitted_form = observed_form_only_password_fields_;
-  submitted_form.fields[0].value = u"strongpassword";
-
-  for (ServerFieldType prediction : {SINGLE_USERNAME, NOT_USERNAME}) {
-    SCOPED_TRACE(testing::Message("prediction=") << prediction);
-
-    constexpr autofill::FormSignature kFormSignature(1234);
-    constexpr autofill::FieldSignature kFieldSignature(12);
-    FormPredictions form_predictions;
-    form_predictions.form_signature = kFormSignature;
-    // Simulate that the server knows nothing about username field.
-    form_predictions.fields.push_back(
-        {.renderer_id = possible_username_data.renderer_id,
-         .signature = kFieldSignature,
-         .type = autofill::UNKNOWN_TYPE});
-    possible_username_data.form_predictions = form_predictions;
-
-    MockFieldInfoManager mock_field_manager;
-    EXPECT_CALL(client_, GetFieldInfoManager())
-        .WillOnce(Return(&mock_field_manager));
-    EXPECT_CALL(mock_field_manager,
-                GetFieldType(kFormSignature, kFieldSignature))
-        .WillOnce(Return(prediction));
-
-    CreateFormManager(observed_form_only_password_fields_);
-    fetcher_->NotifyFetchCompleted();
-
-    ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
-                                                 &possible_username_data));
-
-    if (prediction == SINGLE_USERNAME) {
-      // Check that a username is chosen from |possible_username_data|.
-      EXPECT_EQ(possible_username,
-                form_manager_->GetPendingCredentials().username_value);
-    } else {
-      // Check that a username is not chosen from |possible_username_data|.
-      EXPECT_TRUE(
-          form_manager_->GetPendingCredentials().username_value.empty());
-    }
-    Mock::VerifyAndClearExpectations(&client_);
-  }
-}
-#endif  //  !defined(OS_ANDROID)
 
 // Tests that the a form with the username field but without a password field is
 // not provisionally saved.
@@ -3010,7 +2964,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, HTTPAuthAlreadySaved) {
   form_manager_->Save();
 }
 
-#if !defined(OS_ANDROID)
 // Tests that username is taken during username first flow.
 // Local heuristics on Android for username first flow is not supported.
 TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
@@ -3018,12 +2971,18 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   CreateFormManager(observed_form_only_password_fields_);
   SetNonFederatedAndNotifyFetchCompleted({&saved_match_});
+
+  // Create possible username data.
   const std::u16string username_field_name = u"username_field";
   const std::u16string possible_username = u"test@example.org";
+  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   PossibleUsernameData possible_username_data(
-      saved_match_.signon_realm, autofill::FieldRendererId(2u),
-      username_field_name, possible_username, base::Time::Now(),
-      0 /* driver_id */);
+      saved_match_.signon_realm, kUsernameFieldRendererId, username_field_name,
+      possible_username, base::Time::Now(), 0 /* driver_id */);
+  constexpr autofill::FormSignature kUsernameFormSignature(1000);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kUsernameFormSignature, kUsernameFieldRendererId);
+
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
   // Check that a username is chosen from |possible_username_data|.
@@ -3033,7 +2992,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                &possible_username_data));
 }
-#endif  // !defined(OS_ANDROID)
 
 // Tests that username is not taken when a possible username is not valid.
 TEST_F(PasswordFormManagerTestWithMockedSaver,
@@ -3042,12 +3000,19 @@ TEST_F(PasswordFormManagerTestWithMockedSaver,
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
   CreateFormManager(observed_form_only_password_fields_);
   fetcher_->NotifyFetchCompleted();
+
+  // Create possible username data.
+  constexpr autofill::FieldRendererId kUsernameFieldRendererId(101);
   std::u16string username_field_name = u"username_field";
   std::u16string possible_username = u"possible_username";
   PossibleUsernameData possible_username_data(
-      "https://another.domain.com", autofill::FieldRendererId(2u),
+      "https://another.domain.com", kUsernameFieldRendererId,
       username_field_name, possible_username, base::Time::Now(),
       0 /* driver_id */);
+  constexpr autofill::FormSignature kUsernameFormSignature(1000);
+  possible_username_data.form_predictions = MakeSingleUsernamePredictions(
+      kUsernameFormSignature, kUsernameFieldRendererId);
+
   FormData submitted_form = observed_form_only_password_fields_;
   submitted_form.fields[0].value = u"strongpassword";
   PasswordForm parsed_submitted_form;

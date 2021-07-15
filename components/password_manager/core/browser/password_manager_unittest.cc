@@ -3493,64 +3493,118 @@ TEST_P(PasswordManagerTest,
   EXPECT_EQ(password_field_id, form_generation_data.new_password_renderer_id);
 }
 
-// Checks that username is saved on username first flow.
-TEST_P(PasswordManagerTest, UsernameFirstFlow) {
+// Checks that username is suggested in the save prompt and saved on username
+// first flow if SINGLE_USERNAME server prediction is available.
+TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+
+  PasswordForm saved_form(MakeSavedForm());
   EXPECT_CALL(*store_, GetLogins(_, _))
-      .WillRepeatedly(
-          WithArg<1>(InvokeConsumer(store_.get(), MakeSavedForm())));
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
 
-  PasswordForm form(MakeSimpleFormWithOnlyPasswordField());
-  // Simulate the user typed a username in username form.
-  const std::u16string username = u"googleuser@gmail.com";
-  EXPECT_CALL(driver_, GetLastCommittedURL()).WillOnce(ReturnRef(form.url));
-  manager()->OnUserModifiedNonPasswordField(&driver_, FieldRendererId(1001),
-                                            u"username", username /* value */);
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  // Simulate the user typed a previously not saved username in the username
+  // form.
+  const std::u16string username = u"newusername@gmail.com";
+  ASSERT_TRUE(saved_form.username_value != username);
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillOnce(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      u"username", username /* value */);
 
-  // Simulate that a form which contains only 1 field which is password is added
+  // Setup a server prediction for the single username field.
+  FormStructure form_structure(username_form.form_data);
+  FieldPrediction prediction;
+  prediction.set_type(SINGLE_USERNAME);
+  form_structure.field(0)->set_server_predictions({prediction});
+  manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
+
+  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
+  // Simulate that a form which contains only 1 password field is added
   // to the page.
-  manager()->OnPasswordFormsParsed(&driver_, {form.form_data} /* observed */);
+  manager()->OnPasswordFormsParsed(&driver_,
+                                   {password_form.form_data} /* observed */);
 
-  EXPECT_CALL(client_, IsSavingAndFillingEnabled(form.url))
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
       .WillRepeatedly(Return(true));
 
-  // Simulate that the user typed password and submitted the password form.
-  const std::u16string password = u"uniquepassword";
-  form.form_data.fields[0].value = password;
-  OnPasswordFormSubmitted(form.form_data);
+  // Simulate that the user typed a password and submitted the password form.
+  const std::u16string password = u"newpassword";
+  password_form.form_data.fields[0].value = password;
+  OnPasswordFormSubmitted(password_form.form_data);
 
-  std::unique_ptr<PasswordFormManagerForUI> form_manager_to_save;
+  // Simulate successful submission and expect a save prompt.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
-      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager_to_save)));
-
-  // Simulates successful submission.
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager)));
   manager()->OnPasswordFormsRendered(&driver_, {} /* observed */, true);
+  ASSERT_TRUE(form_manager);
 
-  ASSERT_TRUE(form_manager_to_save);
-#if !defined(OS_ANDROID)
+  // Simulate accepting the prompt and expect saving the new credential.
   EXPECT_CALL(*store_,
               AddLogin(AllOf(Field(&PasswordForm::username_value, username),
                              Field(&PasswordForm::password_value, password))));
-#else
-  // Local heuristics on Android for username first flow are not supported, so
-  // the username should not be taken from the username form. Furthermore, since
-  // there is no change to the already saved username, this should trigger an
-  // update flow, rather than a save flow.
+  form_manager->Save();
+}
+
+// Checks that possible single username value is not suggested in the save
+// prompt if SINGLE_USERNAME server prediction is not available.
+TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
+
+  PasswordForm saved_form(MakeSavedForm());
+  EXPECT_CALL(*store_, GetLogins(_, _))
+      .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
+
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
+  // Simulate the user typed a previously not saved username in username form.
+  const std::u16string username = u"newusername@gmail.com";
+  ASSERT_TRUE(saved_form.username_value != username);
+  EXPECT_CALL(driver_, GetLastCommittedURL())
+      .WillOnce(ReturnRef(username_form.url));
+  manager()->OnUserModifiedNonPasswordField(
+      &driver_, username_form.form_data.fields[0].unique_renderer_id,
+      u"username", username /* value */);
+
+  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
+  // Simulate that a form which contains only 1 field which is password is added
+  // to the page.
+  manager()->OnPasswordFormsParsed(&driver_,
+                                   {password_form.form_data} /* observed */);
+
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
+      .WillRepeatedly(Return(true));
+
+  // Simulate that the user typed previously not saved password and submitted
+  // the password form.
+  const std::u16string password = u"newpassword";
+  ASSERT_TRUE(saved_form.password_value != password);
+  password_form.form_data.fields[0].value = password;
+  OnPasswordFormSubmitted(password_form.form_data);
+
+  // Simulate successful submission and expect an update prompt.
+  std::unique_ptr<PasswordFormManagerForUI> form_manager;
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
+      .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager)));
+  manager()->OnPasswordFormsRendered(&driver_, {} /* observed */, true);
+  ASSERT_TRUE(form_manager);
+
+  // Simulate accepting the prompt and expect updating the credential.
   EXPECT_CALL(
       *store_,
       UpdateLogin(AllOf(
           Field(&PasswordForm::username_value, MakeSavedForm().username_value),
           Field(&PasswordForm::password_value, password))));
-#endif  // defined(OS_ANDROID)
-  // Simulate saving the form, as if the info bar was accepted.
-  form_manager_to_save->Save();
+  form_manager->Save();
 }
 
 #if !defined(OS_IOS)
 //  Checks that username is filled on username first flow based on server and
 //  local predictions.
-TEST_P(PasswordManagerTest, UsernameFirstFlowFillingServerAndLocalPredictions) {
+TEST_P(PasswordManagerTest, UsernameFirstFlowFilling) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlowFilling);
   EXPECT_CALL(*store_, GetLogins(_, _))

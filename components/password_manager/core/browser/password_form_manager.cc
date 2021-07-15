@@ -719,7 +719,7 @@ bool PasswordFormManager::ProvisionallySave(
 
   if (IsUsernameFirstFlowFeatureEnabled() &&
       parsed_submitted_form_->username_value.empty() &&
-      UsePossibleUsername(possible_username)) {
+      UsePossibleUsernameToBuildCredential(possible_username)) {
     parsed_submitted_form_->username_value = possible_username->value;
     metrics_recorder_->set_possible_username_used(true);
     // PasswordManager does not upload votes for fields that have no names or
@@ -992,7 +992,7 @@ void PasswordFormManager::CalculateFillingAssistanceMetric(
           ->ComputePasswordAccountStorageUsageLevel());
 }
 
-bool PasswordFormManager::UsePossibleUsername(
+bool PasswordFormManager::UsePossibleUsernameToBuildCredential(
     const PossibleUsernameData* possible_username) {
   if (!possible_username) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Null");
@@ -1000,8 +1000,20 @@ bool PasswordFormManager::UsePossibleUsername(
   }
 
   // The username form and password forms signon realms must be the same.
-  if (GetSignonRealm(observed_form()->url) != possible_username->signon_realm) {
+  if (parsed_submitted_form_->signon_realm != possible_username->signon_realm) {
     LogUsingPossibleUsername(client_, /*is_used*/ false, "Different domains");
+    return false;
+  }
+
+  if (possible_username->value.empty()) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "Empty possible username value");
+    return false;
+  }
+
+  if (IsPossibleUsernameStale(*possible_username)) {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "Possible username data expired");
     return false;
   }
 
@@ -1016,59 +1028,17 @@ bool PasswordFormManager::UsePossibleUsername(
     }
   }
 
-  // Check whether server predictions have a definite answer.
+  // Check if there is a server prediction.
   const PasswordFieldPrediction* field_prediction = FindFieldPrediction(
       possible_username->form_predictions, possible_username->renderer_id);
-  if (field_prediction) {
-    if (field_prediction->type == SINGLE_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ true, "Server predictions");
-      return true;
-    }
-    if (field_prediction->type == NOT_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ false,
-                               "Server predictions");
-      return false;
-    }
+  if (field_prediction && field_prediction->type == SINGLE_USERNAME) {
+    LogUsingPossibleUsername(client_, /*is_used*/ true, "Server predictions");
+    return true;
+  } else {
+    LogUsingPossibleUsername(client_, /*is_used*/ false,
+                             "No server predictions");
+    return false;
   }
-
-#if defined(OS_ANDROID)
-  // Do not trust local heuristics on Android.
-  // TODO(https://crbug.com/1051914): Make local heuristics more reliable.
-  return false;
-#else
-  // Check whether it is already learned from previous user actions whether
-  // |possible_username| corresponds to the valid username form.
-  const FieldInfoManager* field_info_manager = client_->GetFieldInfoManager();
-  if (field_info_manager && field_prediction) {
-    auto form_signature = possible_username->form_predictions->form_signature;
-    auto field_signature = field_prediction->signature;
-    autofill::ServerFieldType type =
-        field_info_manager->GetFieldType(form_signature, field_signature);
-    if (type == SINGLE_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ true, "Local prediction");
-      return true;
-    }
-    if (type == NOT_USERNAME) {
-      LogUsingPossibleUsername(client_, /*is_used*/ false, "Local prediction");
-      return false;
-    }
-  }
-
-  // TODO(crbug.com/959776): This currently only considers a possible username
-  // valid if a credential with the same username already exists for the same
-  // site. This is too conservative, and we should allow any possible username
-  // that matches a credential on any site in the user's password store.
-  std::vector<std::u16string> usernames;
-  usernames.reserve(GetBestMatches().size());
-  base::ranges::transform(GetBestMatches(), std::back_inserter(usernames),
-                          &PasswordForm::username_value);
-
-  bool is_possible_username_valid = IsPossibleUsernameValid(
-      *possible_username, parsed_submitted_form_->signon_realm, usernames);
-  LogUsingPossibleUsername(client_, /*is_used*/ is_possible_username_valid,
-                           "Local heuristics");
-  return is_possible_username_valid;
-#endif  // defined(OS_ANDROID)
 }
 
 void PasswordFormManager::UpdatePredictionsForObservedForm(
