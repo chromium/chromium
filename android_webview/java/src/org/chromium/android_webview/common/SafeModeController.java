@@ -37,12 +37,25 @@ public class SafeModeController {
 
     private SafeModeController() {}
 
+    private static SafeModeController sInstanceForTests;
+
     private static class LazyHolder {
         static final SafeModeController INSTANCE = new SafeModeController();
     }
 
+    /**
+     * Sets the singleton instance for testing. Not thread safe, must only be called from single
+     * threaded tests.
+     * @param controller The SafeModeController object to return from getInstance(). Passing in a
+     * null value resets this.
+     */
+    @VisibleForTesting
+    public static void setInstanceForTests(SafeModeController controller) {
+        sInstanceForTests = controller;
+    }
+
     public static SafeModeController getInstance() {
-        return LazyHolder.INSTANCE;
+        return sInstanceForTests == null ? LazyHolder.INSTANCE : sInstanceForTests;
     }
 
     /**

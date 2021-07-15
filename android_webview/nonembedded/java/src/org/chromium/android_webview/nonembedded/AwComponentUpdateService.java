@@ -10,6 +10,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.SystemClock;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.android_webview.services.ComponentUpdaterSafeModeUtils;
 import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.base.Callback;
@@ -114,7 +116,8 @@ public class AwComponentUpdateService extends JobService {
      * @return {@code true} if it successfully triggers component updates or if component are
      *         already updating, {@code false} if it fails to trigger the updates.
      */
-    private boolean maybeStartUpdates() {
+    @VisibleForTesting
+    boolean maybeStartUpdates() {
         if (mIsUpdating) {
             return true;
         }
