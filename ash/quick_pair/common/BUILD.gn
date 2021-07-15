@@ -13,6 +13,8 @@ component("common") {
   defines = [ "IS_QUICK_PAIR_COMMON_IMPL" ]
 
   sources = [
+    "account_key_failure.cc",
+    "account_key_failure.h",
     "constants.h",
     "device.cc",
     "device.h",
