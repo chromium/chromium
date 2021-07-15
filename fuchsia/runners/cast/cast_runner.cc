@@ -625,8 +625,6 @@ CastRunner::GetIsolatedContextParamsForCastStreaming() {
 absl::optional<fuchsia::web::CreateContextParams>
 CastRunner::GetContextParamsForAppConfig(
     chromium::cast::ApplicationConfig* app_config) {
-  absl::optional<fuchsia::web::CreateContextParams> params;
-
   if (IsAppConfigForCastStreaming(*app_config)) {
     // TODO(crbug.com/1082821): Remove this once the CastStreamingReceiver
     // Component has been implemented.
