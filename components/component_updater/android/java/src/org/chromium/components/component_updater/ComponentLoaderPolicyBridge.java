@@ -6,6 +6,8 @@ package org.chromium.components.component_updater;
 
 import android.os.ParcelFileDescriptor;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -24,6 +26,26 @@ public class ComponentLoaderPolicyBridge {
     private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
 
     private long mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
+
+    // These values maybe persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused. They have to be kept in synce with the native enum
+    // class component_updater::ComponentLoadError.
+    @IntDef({
+            ComponentLoadError.FAILED_TO_CONNECT_TO_COMPONENTS_PROVIDER_SERVICE,
+            ComponentLoadError.REMOTE_EXCEPTION,
+            ComponentLoadError.COMPONENTS_PROVIDER_SERVICE_ERROR,
+            ComponentLoadError.MISSING_MANIFEST,
+            ComponentLoadError.MALFORMED_MANIFEST,
+            ComponentLoadError.INVALID_VERSION,
+    })
+    /* package */ static @interface ComponentLoadError {
+        int FAILED_TO_CONNECT_TO_COMPONENTS_PROVIDER_SERVICE = 0;
+        int REMOTE_EXCEPTION = 1;
+        int COMPONENTS_PROVIDER_SERVICE_ERROR = 2;
+        int MISSING_MANIFEST = 3;
+        int MALFORMED_MANIFEST = 4;
+        int INVALID_VERSION = 5;
+    }
 
     @CalledByNative
     private ComponentLoaderPolicyBridge(long nativeAndroidComponentLoaderPolicy) {
@@ -69,13 +91,15 @@ public class ComponentLoaderPolicyBridge {
      * file is missing or invalid. Can be called on a background thread.
      *
      * Exactly one of componentLoaded or componentLoadFailed should be called exactly once.
+     *
+     * @param errorCode the code of the error that caused the failure.
      */
-    public void componentLoadFailed() {
+    public void componentLoadFailed(@ComponentLoadError int errorCode) {
         ThreadUtils.assertOnUiThread();
         assert mNativeAndroidComponentLoaderPolicy != NATIVE_NULL;
 
         ComponentLoaderPolicyBridgeJni.get().componentLoadFailed(
-                mNativeAndroidComponentLoaderPolicy);
+                mNativeAndroidComponentLoaderPolicy, errorCode);
         // Setting it to null, because it is deleted after componentLoadFailed is called.
         mNativeAndroidComponentLoaderPolicy = NATIVE_NULL;
 
@@ -111,7 +135,7 @@ public class ComponentLoaderPolicyBridge {
     interface Natives {
         void componentLoaded(
                 long nativeAndroidComponentLoaderPolicy, String[] fileNames, int[] fds);
-        void componentLoadFailed(long nativeAndroidComponentLoaderPolicy);
+        void componentLoadFailed(long nativeAndroidComponentLoaderPolicy, int errorCode);
         String getComponentId(long nativeAndroidComponentLoaderPolicy);
     }
 }

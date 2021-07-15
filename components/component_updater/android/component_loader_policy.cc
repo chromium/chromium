@@ -115,7 +115,7 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
   }
 
   if (manifest_fd == -1) {
-    loader_policy_->ComponentLoadFailed();
+    loader_policy_->ComponentLoadFailed(ComponentLoadError::kMissingManifest);
     return;
   }
 
@@ -127,9 +127,15 @@ void AndroidComponentLoaderPolicy::ComponentLoaded(
                      base::Owned(this), base::OwnedRef(std::move(fd_map))));
 }
 
-void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env) {
+void AndroidComponentLoaderPolicy::ComponentLoadFailed(JNIEnv* env,
+                                                       jint error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  loader_policy_->ComponentLoadFailed();
+  DCHECK(error_code >=
+         static_cast<int>(
+             ComponentLoadError::kFailedToConnectToComponentsProviderService));
+  DCHECK(error_code <= static_cast<int>(ComponentLoadError::kMaxValue));
+  loader_policy_->ComponentLoadFailed(
+      static_cast<ComponentLoadError>(error_code));
   delete this;
 }
 
@@ -147,16 +153,17 @@ void AndroidComponentLoaderPolicy::NotifyNewVersion(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!manifest) {
-    loader_policy_->ComponentLoadFailed();
+    loader_policy_->ComponentLoadFailed(ComponentLoadError::kMalformedManifest);
     return;
   }
   std::string version_ascii;
   manifest->GetStringASCII("version", &version_ascii);
   base::Version version(version_ascii);
   if (!version.IsValid()) {
-    loader_policy_->ComponentLoadFailed();
+    loader_policy_->ComponentLoadFailed(ComponentLoadError::kInvalidVersion);
     return;
   }
+
   loader_policy_->ComponentLoaded(version, fd_map, std::move(manifest));
 }
 

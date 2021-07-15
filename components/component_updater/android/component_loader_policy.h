@@ -26,6 +26,20 @@ class DictionaryValue;
 
 namespace component_updater {
 
+// Errors that causes failure when loading a component. These values may be
+// persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused. Should be kept synced with its Java counterpart in
+// ComponentLoaderPolicyBridge.
+enum class ComponentLoadError {
+  kFailedToConnectToComponentsProviderService = 0,
+  kRemoteException = 1,
+  kComponentsProviderServiceError = 2,
+  kMissingManifest = 3,
+  kMalformedManifest = 4,
+  kInvalidVersion = 5,
+  kMaxValue = kInvalidVersion,
+};
+
 // Components should use `AndroidComponentLoaderPolicy` by defining a class that
 // implements the members of `ComponentLoaderPolicy`, and then registering a
 // `AndroidComponentLoaderPolicy` that has been constructed with an instance of
@@ -67,9 +81,7 @@ class ComponentLoaderPolicy {
   //
   // Will be called at most once. This is mutually exclusive with
   // ComponentLoaded; if this is called then ComponentLoaded won't be called.
-  //
-  // TODO(crbug.com/1180966) accept error code for different types of errors.
-  virtual void ComponentLoadFailed() = 0;
+  virtual void ComponentLoadFailed(ComponentLoadError error) = 0;
 
   // Returns the component's SHA2 hash as raw bytes, the hash value is used as
   // the unique id of the component and will be used to request components files
@@ -106,7 +118,7 @@ class AndroidComponentLoaderPolicy {
   void ComponentLoaded(JNIEnv* env,
                        const base::android::JavaRef<jobjectArray>& jfile_names,
                        const base::android::JavaRef<jintArray>& jfds);
-  void ComponentLoadFailed(JNIEnv* env);
+  void ComponentLoadFailed(JNIEnv* env, jint error_code);
   base::android::ScopedJavaLocalRef<jstring> GetComponentId(JNIEnv* env);
 
  private:

@@ -16,6 +16,7 @@
 #include "base/files/scoped_file.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 #include "components/embedder_support/origin_trials/component_updater_utils.h"
 
@@ -40,7 +41,8 @@ void OriginTrialsComponentLoaderPolicy::ComponentLoaded(
       std::move(manifest));
 }
 
-void OriginTrialsComponentLoaderPolicy::ComponentLoadFailed() {}
+void OriginTrialsComponentLoaderPolicy::ComponentLoadFailed(
+    component_updater::ComponentLoadError /*error*/) {}
 
 void OriginTrialsComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {

@@ -30,6 +30,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -155,7 +156,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
   // date is absent.
   if (!expiry_date_ms.has_value() || !num_hash.has_value() ||
       !num_bits.has_value() || num_hash.value() <= 0 || num_bits.value() <= 0) {
-    ComponentLoadFailed();
+    ComponentLoadFailedInternal();
     return;
   }
 
@@ -163,7 +164,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
       base::Time::UnixEpoch() +
       base::TimeDelta::FromMillisecondsD(expiry_date_ms.value_or(0.0));
   if (expiry_date <= base::Time::Now()) {
-    ComponentLoadFailed();
+    ComponentLoadFailedInternal();
     return;
   }
 
@@ -176,7 +177,7 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
 
   auto allowlist_iterator = fd_map.find(kAllowlistBloomFilterFileName);
   if (allowlist_iterator == fd_map.end()) {
-    ComponentLoadFailed();
+    ComponentLoadFailedInternal();
     return;
   }
 
@@ -189,7 +190,13 @@ void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoaded(
       std::move(lookup_callback_));
 }
 
-void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed() {
+void AwAppsPackageNamesAllowlistComponentLoaderPolicy::ComponentLoadFailed(
+    component_updater::ComponentLoadError /*error*/) {
+  ComponentLoadFailedInternal();
+}
+
+void AwAppsPackageNamesAllowlistComponentLoaderPolicy::
+    ComponentLoadFailedInternal() {
   DCHECK(lookup_callback_);
   std::move(lookup_callback_).Run(absl::optional<AppPackageNameLoggingRule>());
 }

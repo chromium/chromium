@@ -46,7 +46,7 @@ class TrustTokenKeyCommitmentsComponentLoaderPolicy
       const base::Version& version,
       base::flat_map<std::string, base::ScopedFD>& fd_map,
       std::unique_ptr<base::DictionaryValue> manifest) override;
-  void ComponentLoadFailed() override;
+  void ComponentLoadFailed(ComponentLoadError error) override;
   void GetHash(std::vector<uint8_t>* hash) const override;
 
   base::RepeatingCallback<void(const std::string&)> on_commitments_ready_;

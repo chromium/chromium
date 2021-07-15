@@ -20,6 +20,7 @@
 #include "base/logging.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -61,7 +62,6 @@ void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
   if (keys_fd_iterator == fd_map.end()) {
     VLOG(1) << "TrustTokenKeyCommitmentsComponentLoaderPolicy#ComponentLoaded "
                "failed because keys.json is not found in the fd map";
-    ComponentLoadFailed();
     return;
   }
   component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy::
@@ -71,7 +71,8 @@ void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
           on_commitments_ready_);
 }
 
-void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoadFailed() {}
+void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoadFailed(
+    ComponentLoadError /*error*/) {}
 
 void TrustTokenKeyCommitmentsComponentLoaderPolicy::GetHash(
     std::vector<uint8_t>* hash) const {

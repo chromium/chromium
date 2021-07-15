@@ -490,6 +490,7 @@ test("android_webview_unittests") {
     "//base/test:test_support",
     "//components/autofill/core/browser",
     "//components/component_updater",
+    "//components/component_updater/android:embedded_component_loader",
     "//components/embedder_support/android:util",
     "//components/metrics",
     "//components/optimization_guide/core:bloomfilter",

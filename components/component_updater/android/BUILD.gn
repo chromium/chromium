@@ -56,6 +56,7 @@ android_library("embedded_component_loader_java") {
     ":component_provider_service_aidl_java",
     ":embedded_component_loader_jni_headers",
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }

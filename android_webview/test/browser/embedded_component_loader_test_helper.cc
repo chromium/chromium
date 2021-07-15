@@ -66,7 +66,7 @@ class AvailableComponentLoaderPolicy : public ComponentLoaderPolicy {
         base::android::AttachCurrentThread());
   }
 
-  void ComponentLoadFailed() override {
+  void ComponentLoadFailed(ComponentLoadError /*error*/) override {
     ExpectTrueToJava(
         false, "AvailableComponentLoaderPolicy#ComponentLoadFailed is called");
   }
@@ -90,7 +90,7 @@ class UnavailableComponentLoaderPolicy : public ComponentLoaderPolicy {
         false, "UnavailableComponentLoaderPolicy#ComponentLoaded is called");
   }
 
-  void ComponentLoadFailed() override {
+  void ComponentLoadFailed(ComponentLoadError /*error*/) override {
     Java_EmbeddedComponentLoaderTest_onComponentLoadFailed(
         base::android::AttachCurrentThread());
   }

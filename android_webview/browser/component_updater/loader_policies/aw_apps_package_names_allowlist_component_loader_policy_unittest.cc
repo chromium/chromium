@@ -23,6 +23,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
 #include "components/optimization_guide/core/bloom_filter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
