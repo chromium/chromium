@@ -307,19 +307,17 @@ void AudioEncoder::CallOutputCallback(
   DCHECK(active_config);
   if (!script_state_->ContextIsValid() || !output_callback_ ||
       state_.AsEnum() != V8CodecState::Enum::kConfigured ||
-      reset_count != reset_count_)
+      reset_count != reset_count_) {
     return;
+  }
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto timestamp = encoded_buffer.timestamp - base::TimeTicks();
-  auto deleter = [](void* data, size_t length, void*) {
-    delete[] static_cast<uint8_t*>(data);
-  };
-  ArrayBufferContents data(encoded_buffer.encoded_data.release(),
-                           encoded_buffer.encoded_data_size, deleter);
-  auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
-  auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(
-      timestamp, /*key_frame=*/true, dom_array);
+
+  auto buffer = media::DecoderBuffer::FromArray(
+      std::move(encoded_buffer.encoded_data), encoded_buffer.encoded_data_size);
+  buffer->set_timestamp(encoded_buffer.timestamp - base::TimeTicks());
+  buffer->set_is_key_frame(true);
+  auto* chunk = MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 
   auto* metadata = MakeGarbageCollected<EncodedAudioChunkMetadata>();
   if (first_output_after_configure_ || codec_desc.has_value()) {

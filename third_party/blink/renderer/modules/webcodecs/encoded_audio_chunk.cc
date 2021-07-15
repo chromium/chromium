@@ -15,32 +15,40 @@ namespace blink {
 
 EncodedAudioChunk* EncodedAudioChunk::Create(
     const EncodedAudioChunkInit* init) {
-  auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
-  bool key_frame = (init->type() == "key");
   DOMArrayPiece piece(init->data());
+  auto buffer =
+      piece.ByteLength()
+          ? media::DecoderBuffer::CopyFrom(
+                reinterpret_cast<uint8_t*>(piece.Data()), piece.ByteLength())
+          : base::MakeRefCounted<media::DecoderBuffer>(0);
 
-  // A full copy of the data happens here.
-  auto* buffer = piece.IsNull()
-                     ? nullptr
-                     : DOMArrayBuffer::Create(piece.Data(), piece.ByteLength());
-  return MakeGarbageCollected<EncodedAudioChunk>(timestamp, key_frame, buffer);
+  // Clamp within bounds of our internal TimeDelta-based duration. See
+  // media/base/timestamp_constants.h
+  auto timestamp = base::TimeDelta::FromMicroseconds(init->timestamp());
+  if (timestamp == media::kNoTimestamp)
+    timestamp = base::TimeDelta::FiniteMin();
+  else if (timestamp == media::kInfiniteDuration)
+    timestamp = base::TimeDelta::FiniteMax();
+  buffer->set_timestamp(timestamp);
+
+  buffer->set_duration(media::kNoTimestamp);
+  buffer->set_is_key_frame(init->type() == "key");
+  return MakeGarbageCollected<EncodedAudioChunk>(std::move(buffer));
 }
 
-EncodedAudioChunk::EncodedAudioChunk(base::TimeDelta timestamp,
-                                     bool key_frame,
-                                     DOMArrayBuffer* buffer)
-    : timestamp_(timestamp), key_frame_(key_frame), buffer_(buffer) {}
+EncodedAudioChunk::EncodedAudioChunk(scoped_refptr<media::DecoderBuffer> buffer)
+    : buffer_(std::move(buffer)) {}
 
 String EncodedAudioChunk::type() const {
-  return key_frame_ ? "key" : "delta";
+  return buffer_->is_key_frame() ? "key" : "delta";
 }
 
 int64_t EncodedAudioChunk::timestamp() const {
-  return timestamp_.InMicroseconds();
+  return buffer_->timestamp().InMicroseconds();
 }
 
 uint64_t EncodedAudioChunk::byteLength() const {
-  return buffer_->ByteLength();
+  return buffer_->data_size();
 }
 
 void EncodedAudioChunk::copyTo(const V8BufferSource* destination,
@@ -51,17 +59,13 @@ void EncodedAudioChunk::copyTo(const V8BufferSource* destination,
     exception_state.ThrowTypeError("destination is detached.");
     return;
   }
-  if (dest_wrapper.ByteLength() < buffer_->ByteLength()) {
+  if (dest_wrapper.ByteLength() < buffer_->data_size()) {
     exception_state.ThrowTypeError("destination is not large enough.");
     return;
   }
 
   // Copy data.
-  memcpy(dest_wrapper.Bytes(), buffer_->Data(), buffer_->ByteLength());
-}
-
-DOMArrayBuffer* EncodedAudioChunk::data() const {
-  return buffer_;
+  memcpy(dest_wrapper.Bytes(), buffer_->data(), buffer_->data_size());
 }
 
 }  // namespace blink

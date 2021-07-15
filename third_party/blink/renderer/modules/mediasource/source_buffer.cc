@@ -140,22 +140,19 @@ scoped_refptr<media::StreamParserBuffer> MakeAudioStreamParserBuffer(
     const EncodedAudioChunk& audio_chunk) {
   // TODO(crbug.com/1144908): DecoderBuffer takes size_t size, but
   // StreamParserBuffer takes int. Fix this. For now, checked_cast is used.
+  // TODO(crbug.com/1144908): Add a way for StreamParserBuffer to share the
+  // same underlying DecoderBuffer.
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
-      static_cast<uint8_t*>(audio_chunk.data()->Data()),
-      base::checked_cast<int>(audio_chunk.data()->ByteLength()),
-      audio_chunk.type() == "key", media::DemuxerStream::AUDIO,
+      audio_chunk.buffer()->data(),
+      base::checked_cast<int>(audio_chunk.buffer()->data_size()),
+      audio_chunk.buffer()->is_key_frame(), media::DemuxerStream::AUDIO,
       kWebCodecsAudioTrackId);
-
-  // TODO(crbug.com/1144908): Remove or change the following to DCHECK once
-  // StreamParserBuffer::CopyFrom takes size_t, not int.
-  CHECK_EQ(audio_chunk.data()->ByteLength(), stream_parser_buffer->data_size());
 
   // Currently, we do not populate any side_data in these converters.
   DCHECK_EQ(0U, stream_parser_buffer->side_data_size());
   DCHECK_EQ(nullptr, stream_parser_buffer->side_data());
 
-  stream_parser_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(audio_chunk.timestamp()));
+  stream_parser_buffer->set_timestamp(audio_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedAudioChunk to have an optional duration
   // attribute, and require it to be populated for use by MSE-for-WebCodecs,
   // here. For initial prototype, hard-coded 22ms is used as estimated duration.
@@ -169,30 +166,26 @@ scoped_refptr<media::StreamParserBuffer> MakeVideoStreamParserBuffer(
     const EncodedVideoChunk& video_chunk) {
   // TODO(crbug.com/1144908): DecoderBuffer takes size_t size, but
   // StreamParserBuffer takes int. Fix this. For now, checked_cast is used.
+  // TODO(crbug.com/1144908): Add a way for StreamParserBuffer to share the
+  // same underlying DecoderBuffer.
   auto stream_parser_buffer = media::StreamParserBuffer::CopyFrom(
-      static_cast<uint8_t*>(video_chunk.data()->Data()),
-      base::checked_cast<int>(video_chunk.data()->ByteLength()),
-      video_chunk.type() == "key", media::DemuxerStream::VIDEO,
+      video_chunk.buffer()->data(),
+      base::checked_cast<int>(video_chunk.buffer()->data_size()),
+      video_chunk.buffer()->is_key_frame(), media::DemuxerStream::VIDEO,
       kWebCodecsVideoTrackId);
-
-  // TODO(crbug.com/1144908): Remove or change the following to DCHECK once
-  // StreamParserBuffer::CopyFrom takes size_t, not int.
-  CHECK_EQ(video_chunk.data()->ByteLength(), stream_parser_buffer->data_size());
 
   // Currently, we do not populate any side_data in these converters.
   DCHECK_EQ(0U, stream_parser_buffer->side_data_size());
   DCHECK_EQ(nullptr, stream_parser_buffer->side_data());
 
-  stream_parser_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(video_chunk.timestamp()));
+  stream_parser_buffer->set_timestamp(video_chunk.buffer()->timestamp());
   // TODO(crbug.com/1144908): Get EncodedVideoChunk to have an optional decode
   // timestamp attribute. If it is populated, use it for the DTS of the
   // StreamParserBuffer, here. For initial prototype, only in-order PTS==DTS
   // chunks are supported. Out-of-order chunks may result in buffered range gaps
   // or decode errors.
   DCHECK(video_chunk.duration().has_value());
-  stream_parser_buffer->set_duration(
-      base::TimeDelta::FromMicroseconds(video_chunk.duration().value()));
+  stream_parser_buffer->set_duration(video_chunk.buffer()->duration());
   return stream_parser_buffer;
 }
 

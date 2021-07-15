@@ -179,15 +179,15 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 
   if (status_or_buffer.has_value()) {
     request->decoder_buffer = std::move(status_or_buffer).value();
-    if (require_key_frame_ && !request->decoder_buffer->is_key_frame()) {
+    require_key_frame_ = false;
+  } else {
+    request->status = std::move(status_or_buffer).error();
+    if (request->status.code() == media::StatusCode::kKeyFrameRequired) {
       exception_state.ThrowDOMException(
           DOMExceptionCode::kDataError,
           "A key frame is required after configure() or flush().");
       return;
     }
-    require_key_frame_ = false;
-  } else {
-    request->status = std::move(status_or_buffer).error();
   }
 
   requests_.push_back(request);

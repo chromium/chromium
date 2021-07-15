@@ -30,6 +30,7 @@ enum class StatusCode : StatusCodeType {
   // General errors: 0x00
   kAborted = 0x00000001,
   kInvalidArgument = 0x00000002,
+  kKeyFrameRequired = 0x00000003,
 
   // Decoder Errors: 0x01
   kDecoderInitializeNeverCompleted = 0x00000101,

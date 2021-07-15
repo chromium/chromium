@@ -715,13 +715,11 @@ void VideoEncoder::CallOutputCallback(
     return;
   }
 
-  auto deleter = [](void* data, size_t length, void*) {
-    delete[] static_cast<uint8_t*>(data);
-  };
-  ArrayBufferContents data(output.data.release(), output.size, deleter);
-  auto* dom_array = MakeGarbageCollected<DOMArrayBuffer>(std::move(data));
-  auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(
-      output.timestamp, output.key_frame, dom_array);
+  auto buffer =
+      media::DecoderBuffer::FromArray(std::move(output.data), output.size);
+  buffer->set_timestamp(output.timestamp);
+  buffer->set_is_key_frame(output.key_frame);
+  auto* chunk = MakeGarbageCollected<EncodedVideoChunk>(std::move(buffer));
 
   auto* metadata = EncodedVideoChunkMetadata::Create();
   if (active_config->options.temporal_layers > 0)

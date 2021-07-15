@@ -496,12 +496,12 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
 
 media::StatusOr<scoped_refptr<media::DecoderBuffer>>
 VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
-  uint8_t* src = static_cast<uint8_t*>(chunk.data()->Data());
-  size_t src_size = chunk.data()->ByteLength();
-
-  scoped_refptr<media::DecoderBuffer> decoder_buffer;
+  scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
   if (h264_converter_) {
+    const uint8_t* src = chunk.buffer()->data();
+    size_t src_size = chunk.buffer()->data_size();
+
     // Note: this may not be safe if support for SharedArrayBuffers is added.
     uint32_t output_size = h264_converter_->CalculateNeededOutputBufferSize(
         src, static_cast<uint32_t>(src_size), h264_avcc_.get());
@@ -519,21 +519,10 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
     }
 
     decoder_buffer = media::DecoderBuffer::CopyFrom(buf.data(), output_size);
+    decoder_buffer->set_timestamp(chunk.buffer()->timestamp());
+    decoder_buffer->set_duration(chunk.buffer()->duration());
   }
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
-  if (!decoder_buffer)
-    decoder_buffer = media::DecoderBuffer::CopyFrom(src, src_size);
-
-  decoder_buffer->set_timestamp(
-      base::TimeDelta::FromMicroseconds(chunk.timestamp()));
-
-  if (chunk.duration()) {
-    // Clamp within bounds of our internal TimeDelta-based duration.
-    // See media/base/timestamp_constants.h
-    decoder_buffer->set_duration(base::TimeDelta::FromMicroseconds(
-        std::min(base::saturated_cast<int64_t>(chunk.duration().value()),
-                 std::numeric_limits<int64_t>::max() - 1)));
-  }
 
   bool is_key_frame = chunk.type() == "key";
   if (verify_key_frame) {
@@ -545,9 +534,10 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
     } else if (current_codec_ == media::kCodecH264) {
       ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
     }
-  }
 
-  decoder_buffer->set_is_key_frame(is_key_frame);
+    if (!is_key_frame)
+      return media::Status(media::StatusCode::kKeyFrameRequired);
+  }
 
   return decoder_buffer;
 }
