@@ -211,7 +211,7 @@ const base::Feature kDCompTripleBufferVideoSwapChain{
 // is large enough and allows DWM to consider the main backbuffer as an
 // an overlay candidate.
 const base::Feature kDirectCompositionForceFullDamage{
-    "DirectCompositionForceFullDamage", base::FEATURE_ENABLED_BY_DEFAULT};
+    "DirectCompositionForceFullDamage", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Use presentation feedback event queries (must be enabled) to limit latency.
 const base::Feature kDirectCompositionLowLatencyPresentation{
