@@ -2170,9 +2170,9 @@ const FeatureEntry::FeatureVariation kRequestDesktopSiteForTabletsVariations[] =
       base::size(kRequestDesktopSiteForTablets1920), nullptr}};
 #endif  // OS_ANDROID
 
+#if defined(OS_ANDROID)
 const FeatureEntry::FeatureVariation
     kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations[] = {
-#if defined(OS_ANDROID)
         {
             "relevance-1000",
             (FeatureEntry::FeatureParam[]){
@@ -2193,23 +2193,6 @@ const FeatureEntry::FeatureVariation
                 {OmniboxFieldTrial::kOnDeviceHeadSuggestDemoteMode,
                  "decrease-relevances"}},
             3,
-            nullptr,
-        }};
-#else   // !defined(OS_ANDROID)
-        {
-            "model-500k-queries",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint,
-                 "500000"}},
-            1,
-            nullptr,
-        },
-        {
-            "model-1m-queries",
-            (FeatureEntry::FeatureParam[]){
-                {OmniboxFieldTrial::kOnDeviceHeadModelLocaleConstraint,
-                 "1000000"}},
-            1,
             nullptr,
         }};
 #endif  // defined(OS_ANDROID)
@@ -4323,6 +4306,7 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsIncognitoDescription,
      kOsAll, FEATURE_VALUE_TYPE(omnibox::kOnDeviceHeadProviderIncognito)},
 
+#if defined(OS_ANDROID)
     {"omnibox-on-device-head-suggestions-non-incognito",
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsNonIncognitoName,
      flag_descriptions::kOmniboxOnDeviceHeadSuggestionsNonIncognitoDescription,
@@ -4330,12 +4314,8 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(
          omnibox::kOnDeviceHeadProviderNonIncognito,
          kOmniboxOnDeviceHeadSuggestNonIncognitoExperimentVariations,
-#if defined(OS_ANDROID)
-         "OmniboxOnDeviceHeadNonIncognitoTuningMobile"
-#else   // !defined(OS_ANDROID)
-         "OmniboxOnDeviceHeadSuggestBigModel"
+         "OmniboxOnDeviceHeadNonIncognitoTuningMobile")},
 #endif  // defined(OS_ANDROID)
-         )},
 
     {"omnibox-on-focus-suggestions-contextual-web",
      flag_descriptions::kOmniboxOnFocusSuggestionsContextualWebName,

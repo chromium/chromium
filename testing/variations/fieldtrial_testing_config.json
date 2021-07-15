@@ -5530,28 +5530,6 @@
             ]
         }
     ],
-    "OmniboxOnDeviceHeadSuggestBigModel": [
-        {
-            "platforms": [
-                "windows",
-                "mac",
-                "chromeos",
-                "chromeos_lacros",
-                "linux"
-            ],
-            "experiments": [
-                {
-                    "name": "500K",
-                    "params": {
-                        "ForceModelLocaleConstraint": "500000"
-                    },
-                    "enable_features": [
-                        "OmniboxOnDeviceHeadProviderIncognito"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPedalsBatch2": [
         {
             "platforms": [
