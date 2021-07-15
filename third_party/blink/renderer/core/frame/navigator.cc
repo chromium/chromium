@@ -59,7 +59,7 @@ String Navigator::vendorSub() const {
 String Navigator::platform() const {
   // TODO(955620): Consider changing devtools overrides to only allow overriding
   // the platform with a frozen platform to distinguish between
-  // mobile and desktop when FreezeUserAgent is enabled.
+  // mobile and desktop when ReduceUserAgent is enabled.
   if (!DomWindow())
     return NavigatorID::platform();
   const String& platform_override =

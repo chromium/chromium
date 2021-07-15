@@ -194,7 +194,7 @@ class SystemNetworkContextManagerFreezeQUICUaBrowsertest
       public testing::WithParamInterface<bool> {
  public:
   SystemNetworkContextManagerFreezeQUICUaBrowsertest() {
-    scoped_feature_list_.InitWithFeatureState(blink::features::kFreezeUserAgent,
+    scoped_feature_list_.InitWithFeatureState(blink::features::kReduceUserAgent,
                                               GetParam());
   }
   ~SystemNetworkContextManagerFreezeQUICUaBrowsertest() override {}

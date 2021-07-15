@@ -46329,6 +46329,7 @@ from previous Chrome versions.
   <int value="-2013551096" label="ViewsSimplifiedFullscreenUI:disabled"/>
   <int value="-2013124655" label="EnableEphemeralFlashPermission:disabled"/>
   <int value="-2012990889" label="SpannableInlineAutocomplete:enabled"/>
+  <int value="-2012779758" label="ReduceUserAgent:disabled"/>
   <int value="-2012449550" label="OmniboxMostVisitedTiles:enabled"/>
   <int value="-2012266745"
       label="OmniboxLocalZeroSuggestFrecencyRanking:disabled"/>
@@ -48783,6 +48784,7 @@ from previous Chrome versions.
   <int value="-17698200" label="DoubleTapToZoomInTabletMode:disabled"/>
   <int value="-17373827" label="SharingDeviceExpiration:enabled"/>
   <int value="-16824589" label="ash-shelf-color"/>
+  <int value="-16413037" label="ReduceUserAgent:enabled"/>
   <int value="-16086999" label="TrimOnFreeze:enabled"/>
   <int value="-15879016"
       label="OmniboxUIExperimentUnboldSuggestionText:disabled"/>

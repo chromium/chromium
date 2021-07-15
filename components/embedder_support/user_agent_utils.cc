@@ -35,7 +35,7 @@ std::string GetUserAgent() {
     LOG(WARNING) << "Ignored invalid value for flag --" << kUserAgent;
   }
 
-  if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
     return content::GetReducedUserAgent(
         command_line->HasSwitch(switches::kUseMobileUserAgent),
         version_info::GetMajorVersionNumber());

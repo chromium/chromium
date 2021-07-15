@@ -194,7 +194,7 @@ class ShellContentBrowserClient::ShellFieldTrials
 std::string GetShellUserAgent() {
   std::string product = "Chrome/" CONTENT_SHELL_VERSION;
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
     return content::GetReducedUserAgent(
         command_line->HasSwitch(switches::kUseMobileUserAgent),
         CONTENT_SHELL_MAJOR_VERSION);

@@ -76,7 +76,7 @@ const base::Feature kFreezePurgeMemoryAllPagesFrozen{
     "FreezePurgeMemoryAllPagesFrozen", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Freezes the user-agent as part of https://github.com/WICG/ua-client-hints.
-const base::Feature kFreezeUserAgent{"FreezeUserAgent",
+const base::Feature kReduceUserAgent{"ReduceUserAgent",
                                      base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Enables the frequency capping for detecting overlay popups. Overlay-popups

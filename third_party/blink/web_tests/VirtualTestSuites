@@ -661,7 +661,7 @@
     "prefix": "passive-fingerprinting",
     "bases": ["http/tests/navigation/frozen-useragent.html",
               "http/tests/navigation/useragent.php"],
-    "args": ["--enable-features=FreezeUserAgent"]
+    "args": ["--enable-features=ReduceUserAgent"]
   },
   {
     "prefix": "file-system-access-access-handle",

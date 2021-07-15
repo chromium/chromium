@@ -633,7 +633,7 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
 
   std::string quic_user_agent_id;
 
-  if (base::FeatureList::IsEnabled(blink::features::kFreezeUserAgent)) {
+  if (base::FeatureList::IsEnabled(blink::features::kReduceUserAgent)) {
     quic_user_agent_id = "";
   } else {
     // Extended stable reports as regular stable due to the similarity, and to

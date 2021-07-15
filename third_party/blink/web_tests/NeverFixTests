@@ -1811,7 +1811,7 @@ crbug.com/630342 virtual/mse-1mb-buffers/http/tests/media/media-source/stream_me
 crbug.com/630342 http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-1mb-buffers.html [ Skip ]
 virtual/mse-1mb-buffers/http/tests/media/media-source/stream_memory_tests/mediasource-appendbuffer-quota-exceeded-1mb-buffers.html [ Pass ]
 
-# Remove from virtual tests when FreezeUserAgent is turned on by default.
+# Remove from virtual tests when ReduceUserAgent is turned on by default.
 crbug.com/955620 http/tests/navigation/frozen-useragent.html [ Skip ]
 virtual/passive-fingerprinting/http/tests/navigation/frozen-useragent.html [ Pass ]
 

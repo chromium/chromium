@@ -6324,7 +6324,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"reduce-user-agent", flag_descriptions::kReduceUserAgentName,
      flag_descriptions::kReduceUserAgentDescription, kOsDesktop | kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kFreezeUserAgent)},
+     FEATURE_VALUE_TYPE(blink::features::kReduceUserAgent)},
 
 #if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-user-data-snapshot", flag_descriptions::kUserDataSnapshotName,

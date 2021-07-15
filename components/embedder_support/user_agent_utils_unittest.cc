@@ -212,7 +212,7 @@ TEST(UserAgentUtilsTest, UserAgentStringOrdering) {
 
 TEST(UserAgentUtilsTest, UserAgentStringFrozen) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(blink::features::kFreezeUserAgent);
+  scoped_feature_list.InitAndEnableFeature(blink::features::kReduceUserAgent);
 
 #if defined(OS_ANDROID)
   // Verify the correct user agent is returned when the UseMobileUserAgent
