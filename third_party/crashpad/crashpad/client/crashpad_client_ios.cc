@@ -55,6 +55,10 @@ class CrashHandler : public Thread, public UniversalMachExcServer::Interface {
   void ProcessIntermediateDumps(
       const std::map<std::string, std::string>& annotations = {}) {}
 
+  void ProcessIntermediateDump(
+      const base::FilePath& file,
+      const std::map<std::string, std::string>& annotations = {}) {}
+
   void DumpWithoutCrash(NativeCPUContext* context) {
     INITIALIZATION_STATE_DCHECK_VALID(initialized_);
     mach_exception_data_type_t code[2] = {};
@@ -220,7 +224,16 @@ void CrashpadClient::ProcessIntermediateDumps(
 }
 
 // static
-void CrashpadClient::StartProcesingPendingReports() {
+void CrashpadClient::ProcessIntermediateDump(
+    const base::FilePath& file,
+    const std::map<std::string, std::string>& annotations) {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  crash_handler->ProcessIntermediateDump(file, annotations);
+}
+
+// static
+void CrashpadClient::StartProcessingPendingReports() {
   // TODO(justincohen): Start the CrashReportUploadThread.
 }
 
@@ -239,6 +252,16 @@ void CrashpadClient::DumpWithoutCrashAndDeferProcessing(
     NativeCPUContext* context) {
   CrashHandler* crash_handler = CrashHandler::Get();
   DCHECK(crash_handler);
+  crash_handler->DumpWithoutCrash(context);
+}
+
+// static
+void CrashpadClient::DumpWithoutCrashAndDeferProcessingAtPath(
+    NativeCPUContext* context,
+    const base::FilePath path) {
+  CrashHandler* crash_handler = CrashHandler::Get();
+  DCHECK(crash_handler);
+  // TODO(justincohen): Change to DumpWithoutCrashAtPath(context, path).
   crash_handler->DumpWithoutCrash(context);
 }
 

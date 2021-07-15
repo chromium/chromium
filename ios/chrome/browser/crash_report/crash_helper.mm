@@ -60,7 +60,7 @@ void DeleteAllReportsInDirectory(base::FilePath directory) {
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
   crash_reporter::ProcessIntermediateDumps();
-  crash_reporter::StartProcesingPendingReports();
+  crash_reporter::StartProcessingPendingReports();
 }
 
 // Callback for logging::SetLogMessageHandler
@@ -335,7 +335,7 @@ void WillStartCrashRestoration() {
 
 void StartUploadingReportsInRecoveryMode() {
   if (crash_reporter::IsCrashpadRunning()) {
-    crash_reporter::StartProcesingPendingReports();
+    crash_reporter::StartProcessingPendingReports();
     return;
   }
 

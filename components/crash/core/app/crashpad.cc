@@ -279,6 +279,11 @@ void DumpWithoutCrashing() {
 void DumpWithoutCrashAndDeferProcessing() {
   CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING();
 }
+
+void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path) {
+  CRASHPAD_SIMULATE_CRASH_AND_DEFER_PROCESSING_AT_PATH(path);
+}
+
 #endif
 
 #endif

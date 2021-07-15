@@ -96,7 +96,7 @@ the next call to `ProcessIntermediateDumps`. Conversely,
 stability concerns. In this case, intermediate dumps are automatically
 converted to minidumps and immediately eligible for uploading.
 
-### `StartProcesingPendingReports`
+### `StartProcessingPendingReports`
 For similar reasons, applications may choose the correct time to begin uploading
 pending reports, such as when ideal network conditions exist. By default,
 clients start with uploading disabled. Applications should call this API when

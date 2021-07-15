@@ -148,6 +148,7 @@ void DumpWithoutCrashing();
 
 #if defined(OS_IOS)
 void DumpWithoutCrashAndDeferProcessing();
+void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path);
 #endif
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
@@ -181,15 +182,24 @@ void DumpProcessWithoutCrashing(task_t task_port);
 #endif
 
 #if defined(OS_IOS)
-// Convert intermediate dumps into minidumps and trigger an upload. Optional
-// |annotations| will be merged with any process annotations. These are useful
-// for adding annotations detected on the next run after a crash but before
-// upload.
+// Convert intermediate dumps into minidumps and trigger an upload if
+// StartProcessingPendingReports() has been called. Optional |annotations| will
+// merge with any process annotations. These are useful for adding annotations
+// detected on the next run after a crash but before upload.
 void ProcessIntermediateDumps(
     const std::map<std::string, std::string>& annotations = {});
 
+// Convert a single intermediate dump at |file| into a minidump and
+// trigger an upload if StartProcessingPendingReports() has been called.
+// Optional |annotations| will merge with any process annotations. These are
+// useful for adding annotations detected on the next run after a crash but
+// before upload.
+void ProcessIntermediateDump(
+    const base::FilePath& file,
+    const std::map<std::string, std::string>& annotations = {});
+
 // Requests that the handler begin in-process uploading of any pending reports.
-void StartProcesingPendingReports();
+void StartProcessingPendingReports();
 #endif
 
 #if defined(OS_ANDROID)
