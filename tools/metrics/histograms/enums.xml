@@ -62413,6 +62413,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="Password Settings"/>
   <int value="1" label="Safety Check"/>
   <int value="2" label="Password Breach Dialog"/>
+  <int value="3" label="PhishGuard Dialog"/>
 </enum>
 
 <enum name="PasswordCheckResolutionAction">

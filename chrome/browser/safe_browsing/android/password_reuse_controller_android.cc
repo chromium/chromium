@@ -53,7 +53,7 @@ void PasswordReuseControllerAndroid::ShowDialog() {
 void PasswordReuseControllerAndroid::ShowCheckPasswords() {
   JNIEnv* env = base::android::AttachCurrentThread();
 
-  PasswordCheckupLauncherHelper::LaunchLocalCheckup(
+  PasswordCheckupLauncherHelper::LaunchLocalCheckupFromPhishGuardWarningDialog(
       env, window_android_->GetJavaObject());
 
   if (done_callback_)

@@ -23,6 +23,12 @@ class PasswordCheckupLauncherHelper {
       JNIEnv* env,
       const base::android::JavaRef<jobject>& windowAndroid);
 
+  // Launch the bulk password check locally from a PhishGuard password reuse
+  // warning dialog
+  static void LaunchLocalCheckupFromPhishGuardWarningDialog(
+      JNIEnv* env,
+      const base::android::JavaRef<jobject>& windowAndroid);
+
   // Launch the bulk password check in the Google Account using an activity
   // rather than a WindowAndroid
   static void LaunchCheckupInAccountWithActivity(

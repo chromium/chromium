@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.password_manager;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
-
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
@@ -30,6 +29,14 @@ public class PasswordCheckupLauncher {
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
         PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
                 .showUi(windowAndroid.getContext().get(), PasswordCheckReferrer.LEAK_DIALOG);
+    }
+
+    @CalledByNative
+    private static void launchLocalCheckupFromPhishGuardWarningDialog(WindowAndroid windowAndroid) {
+        if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
+        PasswordCheckFactory.getOrCreate(new SettingsLauncherImpl())
+                .showUi(windowAndroid.getContext().get(),
+                        PasswordCheckReferrer.PHISHED_WARNING_DIALOG);
     }
 
     @CalledByNative
