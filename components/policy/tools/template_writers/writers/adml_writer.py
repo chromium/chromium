@@ -263,5 +263,4 @@ class ADMLWriter(xml_formatted_writer.XMLFormattedWriter,
     # (gpedit.msc) because it interprets whitespace characters in text between
     # the "string" tags. This prevents gpedit.msc from displaying the category
     # names correctly.
-    # TODO(markusheintz): Find a better formatting that works with gpedit.
     return self._doc.toxml()
