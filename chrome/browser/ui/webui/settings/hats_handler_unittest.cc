@@ -87,15 +87,17 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
                   kHatsSurveyTriggerSettingsPrivacy, web_contents(), 20000,
                   expected_product_specific_data))
       .Times(2);
-  base::ListValue args;
-  args.AppendInteger(
+  base::Value args(base::Value::Type::LIST);
+  args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
 
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
 
   testing::Mock::VerifyAndClearExpectations(mock_hats_service_);
@@ -114,7 +116,8 @@ TEST_F(HatsHandlerTest, PrivacySettingsHats) {
 
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
 
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
 }
 
@@ -130,10 +133,11 @@ TEST_F(HatsHandlerTest, PrivacySandboxHats) {
   EXPECT_CALL(*mock_hats_service_, LaunchDelayedSurveyForWebContents(
                                        kHatsSurveyTriggerPrivacySandbox,
                                        web_contents(), 20000, expected_product_specific_data));
-  base::ListValue args;
-  args.AppendInteger(static_cast<int>(
+  base::Value args(base::Value::Type::LIST);
+  args.Append(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PRIVACY_SANDBOX));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
   task_environment()->RunUntilIdle();
 }
 
@@ -143,15 +147,17 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
   EXPECT_CALL(*mock_sentiment_service_,
               InteractedWithPrivacySettings(web_contents()))
       .Times(1);
-  base::ListValue args;
-  args.AppendInteger(
+  base::Value args(base::Value::Type::LIST);
+  args.Append(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::USED_PRIVACY_CARD));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
 
   EXPECT_CALL(*mock_sentiment_service_, RanSafetyCheck()).Times(2);
   args.GetList()[0] = base::Value(
       static_cast<int>(HatsHandler::TrustSafetyInteraction::RAN_SAFETY_CHECK));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
 
   // A profile & feature state that would exclude the user from receiving the
   // Privacy Settings HaTS survey should not stop the sentiment service being
@@ -162,12 +168,14 @@ TEST_F(HatsHandlerTest, TrustSafetySentimentInteractions) {
       {{"no-sandbox", "true"}}};
   scoped_feature_list_.InitWithFeaturesAndParameters({feature_and_params}, {});
   profile()->GetPrefs()->SetBoolean(prefs::kPrivacySandboxPageViewed, true);
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
 
   EXPECT_CALL(*mock_sentiment_service_, OpenedPasswordManager(web_contents()));
   args.GetList()[0] = base::Value(static_cast<int>(
       HatsHandler::TrustSafetyInteraction::OPENED_PASSWORD_MANAGER));
-  handler()->HandleTrustSafetyInteractionOccurred(&args);
+  handler()->HandleTrustSafetyInteractionOccurred(
+      &base::Value::AsListValue(args));
 }
 
 }  // namespace settings

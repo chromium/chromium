@@ -150,19 +150,17 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   // types that the user cleared from the clear browsing data UI and time period
   // of the data to be cleared.
 
-  std::unique_ptr<base::ListValue> data_types =
-      std::make_unique<base::ListValue>();
-  data_types->AppendString("browser.clear_data.browsing_history");
+  base::Value data_types(base::Value::Type::LIST);
+  data_types.Append("browser.clear_data.browsing_history");
 
-  std::unique_ptr<base::ListValue> installed_apps =
-      std::make_unique<base::ListValue>();
+  base::Value installed_apps(base::Value::Type::LIST);
 
-  base::ListValue list_args;
-  list_args.AppendString("webui_callback_id");
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append("webui_callback_id");
   list_args.Append(std::move(data_types));
-  list_args.AppendInteger(1u);
+  list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(&list_args);
+  HandleClearBrowsingData(&base::Value::AsListValue(list_args));
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(

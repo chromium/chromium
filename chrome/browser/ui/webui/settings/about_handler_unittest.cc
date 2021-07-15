@@ -67,9 +67,10 @@ class AboutHandlerTest : public testing::Test {
   std::string CallGetEndOfLifeInfoAndReturnString(bool has_eol_passed) {
     size_t call_data_count_before_call = web_ui_.call_data().size();
 
-    base::ListValue args;
-    args.AppendString("handlerFunctionName");
-    web_ui_.HandleReceivedMessage("getEndOfLifeInfo", &args);
+    base::Value args(base::Value::Type::LIST);
+    args.Append("handlerFunctionName");
+    web_ui_.HandleReceivedMessage("getEndOfLifeInfo",
+                                  &base::Value::AsListValue(args));
     task_environment_.RunUntilIdle();
 
     EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());

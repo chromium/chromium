@@ -94,9 +94,9 @@ TEST_F(PrivacySandboxHandlerTest, GetFlocId) {
       /*sorting_lsh_version=*/0);
   floc_id.SaveToPrefs(profile()->GetTestingPrefService());
 
-  base::ListValue args;
-  args.AppendString(kCallbackId);
-  handler()->HandleGetFlocId(&args);
+  base::Value args(base::Value::Type::LIST);
+  args.Append(kCallbackId);
+  handler()->HandleGetFlocId(&base::Value::AsListValue(args));
 
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ(kCallbackId, data.arg1()->GetString());
@@ -117,8 +117,8 @@ TEST_F(PrivacySandboxHandlerTest, ResetFlocId) {
   privacy_sandbox_settings()->AddObserver(&observer);
   EXPECT_CALL(observer, OnFlocDataAccessibleSinceUpdated(true));
 
-  base::ListValue args;
-  handler()->HandleResetFlocId(&args);
+  base::Value args(base::Value::Type::LIST);
+  handler()->HandleResetFlocId(&base::Value::AsListValue(args));
 
   // Resetting the FLoC ID should also fire the appropriate WebUI listener.
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();

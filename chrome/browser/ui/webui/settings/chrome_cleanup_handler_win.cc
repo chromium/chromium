@@ -56,7 +56,7 @@ std::unique_ptr<base::ListValue> GetStringSetAsListStorage(
     const std::set<std::wstring>& string_set) {
   auto value = std::make_unique<base::ListValue>();
   for (const std::wstring& string : string_set)
-    value->AppendString(base::AsString16(string));
+    value->Append(base::AsString16(string));
 
   return value;
 }

@@ -386,8 +386,8 @@ TEST_F(PeopleHandlerTest, DisplayBasicLogin) {
       .WillByDefault(Return(false));
   // Ensure that the user is not signed in before calling |HandleStartSignin()|.
   identity_test_env()->ClearPrimaryAccount();
-  base::ListValue list_args;
-  handler_->HandleStartSignin(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  handler_->HandleStartSignin(&base::Value::AsListValue(list_args));
 
   // Sync setup hands off control to the gaia login tab.
   EXPECT_EQ(
@@ -645,9 +645,9 @@ TEST_F(PeopleHandlerTest, TestSyncEverything) {
   SigninUser();
   CreatePeopleHandler();
   std::string args = GetConfiguration(SYNC_ALL_DATA, GetAllTypes());
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString(args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append(args);
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsPassphraseRequiredForPreferredDataTypes())
       .WillByDefault(Return(false));
@@ -656,7 +656,7 @@ TEST_F(PeopleHandlerTest, TestSyncEverything) {
   SetupInitializedSyncService();
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(true, _));
-  handler_->HandleSetDatatypes(&list_args);
+  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
 
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
 }
@@ -682,10 +682,10 @@ TEST_F(PeopleHandlerTest, EnterCorrectExistingPassphrase) {
               SetDecryptionPassphrase("correct_passphrase"))
       .WillOnce(Return(true));
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("correct_passphrase");
-  handler_->HandleSetDecryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("correct_passphrase");
+  handler_->HandleSetDecryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(true);
 }
@@ -710,10 +710,10 @@ TEST_F(PeopleHandlerTest, SuccessfullyCreateCustomPassphrase) {
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetEncryptionPassphrase("custom_passphrase"));
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("custom_passphrase");
-  handler_->HandleSetEncryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("custom_passphrase");
+  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(true);
 }
@@ -739,10 +739,10 @@ TEST_F(PeopleHandlerTest, EnterWrongExistingPassphrase) {
               SetDecryptionPassphrase("invalid_passphrase"))
       .WillOnce(Return(false));
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("invalid_passphrase");
-  handler_->HandleSetDecryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("invalid_passphrase");
+  handler_->HandleSetDecryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -768,10 +768,10 @@ TEST_F(PeopleHandlerTest, CannotCreateBlankPassphrase) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("");
-  handler_->HandleSetEncryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("");
+  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -786,9 +786,9 @@ TEST_F(PeopleHandlerTest, TestSyncIndividualTypes) {
     syncer::UserSelectableTypeSet type_to_set;
     type_to_set.Put(type);
     std::string args = GetConfiguration(CHOOSE_WHAT_TO_SYNC, type_to_set);
-    base::ListValue list_args;
-    list_args.AppendString(kTestCallbackId);
-    list_args.AppendString(args);
+    base::Value list_args(base::Value::Type::LIST);
+    list_args.Append(kTestCallbackId);
+    list_args.Append(args);
     ON_CALL(*mock_sync_service_->GetMockUserSettings(),
             IsPassphraseRequiredForPreferredDataTypes())
         .WillByDefault(Return(false));
@@ -798,7 +798,7 @@ TEST_F(PeopleHandlerTest, TestSyncIndividualTypes) {
     EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
                 SetSelectedTypes(false, type_to_set));
 
-    handler_->HandleSetDatatypes(&list_args);
+    handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
     ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
     Mock::VerifyAndClearExpectations(mock_sync_service_);
   }
@@ -809,9 +809,9 @@ TEST_F(PeopleHandlerTest, TestSyncAllManually) {
   CreatePeopleHandler();
   SetDefaultExpectationsForConfigPage();
   std::string args = GetConfiguration(CHOOSE_WHAT_TO_SYNC, GetAllTypes());
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString(args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append(args);
   ON_CALL(*mock_sync_service_->GetMockUserSettings(),
           IsPassphraseRequiredForPreferredDataTypes())
       .WillByDefault(Return(false));
@@ -820,7 +820,7 @@ TEST_F(PeopleHandlerTest, TestSyncAllManually) {
   SetupInitializedSyncService();
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(false, GetAllTypes()));
-  handler_->HandleSetDatatypes(&list_args);
+  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
 
   ExpectPageStatusResponse(PeopleHandler::kConfigurePageStatus);
 }
@@ -841,14 +841,14 @@ TEST_F(PeopleHandlerTest, NonRegisteredType) {
   // Simulate "Sync everything" being turned off, but all individual
   // toggles left on.
   std::string config = GetConfiguration(CHOOSE_WHAT_TO_SYNC, GetAllTypes());
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString(config);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append(config);
 
   // Only the registered types are selected.
   EXPECT_CALL(*mock_sync_service_->GetMockUserSettings(),
               SetSelectedTypes(/*sync_everything=*/false, registered_types));
-  handler_->HandleSetDatatypes(&list_args);
+  handler_->HandleSetDatatypes(&base::Value::AsListValue(list_args));
 }
 
 TEST_F(PeopleHandlerTest, ShowSyncSetup) {
@@ -1082,10 +1082,10 @@ TEST_F(PeopleHandlerTest, CannotCreatePassphraseIfCustomPassphraseDisallowed) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("passphrase123");
-  handler_->HandleSetEncryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("passphrase123");
+  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(false);
 }
@@ -1111,10 +1111,10 @@ TEST_F(PeopleHandlerTest, CannotOverwritePassphraseWithNewOne) {
               SetEncryptionPassphrase)
       .Times(0);
 
-  base::ListValue list_args;
-  list_args.AppendString(kTestCallbackId);
-  list_args.AppendString("passphrase123");
-  handler_->HandleSetEncryptionPassphrase(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(kTestCallbackId);
+  list_args.Append("passphrase123");
+  handler_->HandleSetEncryptionPassphrase(&base::Value::AsListValue(list_args));
 
   ExpectSetPassphraseSuccess(false);
 }

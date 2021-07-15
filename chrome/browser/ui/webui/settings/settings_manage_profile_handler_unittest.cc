@@ -165,9 +165,10 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToGaiaAvatar) {
 }
 
 TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultCustomAvatar) {
-  base::ListValue list_args;
-  list_args.AppendInteger(15);
-  handler()->HandleSetProfileIconToDefaultAvatar(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(15);
+  handler()->HandleSetProfileIconToDefaultAvatar(
+      &base::Value::AsListValue(list_args));
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(15, pref_service->GetInteger(prefs::kProfileAvatarIndex));
@@ -177,9 +178,10 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultCustomAvatar) {
 
 TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
   int generic_avatar_index = profiles::GetPlaceholderAvatarIndex();
-  base::ListValue list_args;
-  list_args.AppendInteger(generic_avatar_index);
-  handler()->HandleSetProfileIconToDefaultAvatar(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append(generic_avatar_index);
+  handler()->HandleSetProfileIconToDefaultAvatar(
+      &base::Value::AsListValue(list_args));
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ(generic_avatar_index,
@@ -189,9 +191,9 @@ TEST_F(ManageProfileHandlerTest, HandleSetProfileIconToDefaultGenericAvatar) {
 }
 
 TEST_F(ManageProfileHandlerTest, HandleSetProfileName) {
-  base::ListValue list_args;
-  list_args.AppendString("New Profile Name");
-  handler()->HandleSetProfileName(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append("New Profile Name");
+  handler()->HandleSetProfileName(&base::Value::AsListValue(list_args));
 
   PrefService* pref_service = profile()->GetPrefs();
   EXPECT_EQ("New Profile Name", pref_service->GetString(prefs::kProfileName));
@@ -204,9 +206,9 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIcons) {
   EXPECT_EQ(1U, web_ui()->call_data().size());
   web_ui()->ClearTrackedCalls();
 
-  base::ListValue list_args_1;
-  list_args_1.AppendString("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&list_args_1);
+  base::Value list_args_1(base::Value::Type::LIST);
+  list_args_1.Append("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args_1));
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -223,9 +225,9 @@ TEST_F(ManageProfileHandlerTest, HandleGetAvailableIconsOldIconSelected) {
   EXPECT_EQ(1U, web_ui()->call_data().size());
   web_ui()->ClearTrackedCalls();
 
-  base::ListValue list_args;
-  list_args.AppendString("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -242,9 +244,9 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsSignedInProfile) {
   EXPECT_TRUE(entry()->IsUsingGAIAPicture());
   web_ui()->ClearTrackedCalls();
 
-  base::ListValue list_args;
-  list_args.AppendString("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
@@ -288,9 +290,9 @@ TEST_F(ManageProfileHandlerTest, GetAvailableIconsLocalProfile) {
   EXPECT_EQ(entry()->GetAvatarIconIndex(),
             profiles::GetPlaceholderAvatarIndex());
 
-  base::ListValue list_args;
-  list_args.AppendString("get-icons-callback-id");
-  handler()->HandleGetAvailableIcons(&list_args);
+  base::Value list_args(base::Value::Type::LIST);
+  list_args.Append("get-icons-callback-id");
+  handler()->HandleGetAvailableIcons(&base::Value::AsListValue(list_args));
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 
