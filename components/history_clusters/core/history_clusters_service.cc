@@ -267,7 +267,7 @@ void HistoryClustersService::QueryClusters(
       options,
       base::BindOnce(
           [](const IncompleteVisitMap& incomplete_visits,
-             const base::Time& end_time,
+             const history::QueryOptions& options,
              std::vector<history::AnnotatedVisit> visits) {
             // Append incomplete visits to `visits` too, as otherwise they will
             // be mysteriously missing from the Clusters UI. They haven't
@@ -280,9 +280,12 @@ void HistoryClustersService::QueryClusters(
                 continue;
               }
 
-              if (!end_time.is_null() &&
-                  incomplete_visit.visit_row.visit_time >= end_time) {
-                // Discard incomplete visits are outside the `end_time` bound.
+              const auto& visit_time = incomplete_visit.visit_row.visit_time;
+              if (visit_time < options.begin_time ||
+                  (!options.end_time.is_null() &&
+                   visit_time >= options.end_time)) {
+                // Discard incomplete visits outside the `options` time bounds.
+                // `begin_time` is inclusive, and `end_time` is exclusive.
                 continue;
               }
 
@@ -296,7 +299,7 @@ void HistoryClustersService::QueryClusters(
 
             return visits;
           },
-          incomplete_visit_context_annotations_, end_time)
+          incomplete_visit_context_annotations_, options)
           .Then(std::move(on_visits_callback)),
       task_tracker);
 }
