@@ -49,9 +49,18 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Obtains a fresh enrollment certificate and uploads it. If certificate has
   // already been uploaded - reports success immediately and does not upload
   // second time.
+  // If fails to fetch existing certificate, retries to fetch until success or
+  // |retry_limit_|.
+  // If fails to upload existing certificate, retries to fetch and upload a new
+  // one until success or |retry_limit_|.
   void ObtainAndUploadCertificate(UploadCallback callback) override;
 
  private:
+  enum class EnrollmentCertificateRequest {
+    kExistingCertificate,
+    kNewCertificate
+  };
+
   // Starts certificate obtention and upload.
   void Start();
 
@@ -59,7 +68,12 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   void RunCallbacks(Status status);
 
   // Gets a certificate.
-  void GetCertificate();
+  void GetCertificate(EnrollmentCertificateRequest certificate_request);
+
+  // Handles failure of getting a certificate.
+  void HandleGetCertificateFailure(
+      EnrollmentCertificateRequest certificate_request,
+      AttestationStatus status);
 
   // Called when a certificate upload operation completes. On success, |status|
   // will be true.
@@ -68,13 +82,12 @@ class EnrollmentCertificateUploaderImpl : public EnrollmentCertificateUploader {
   // Uploads an enterprise certificate to the policy server.
   void UploadCertificate(const std::string& pem_certificate_chain);
 
-  // Handles failure of getting a certificate.
-  void HandleGetCertificateFailure(AttestationStatus status);
-
-  // Reschedules a policy check (i.e. a call to Start) for a later time.
+  // Reschedules certificate upload from |GetCertificate()| checkpoint with
+  // given |certificate_request|  and returns true.
+  // If |retry_limit_| is exceeded, does not reschedule and returns false.
   // TODO(crbug.com/256845): A better solution would be to wait for a dbus
   // signal which indicates the system is ready to process this task.
-  void Reschedule();
+  bool Reschedule(EnrollmentCertificateRequest certificate_request);
 
   policy::CloudPolicyClient* policy_client_;
   AttestationFlow* attestation_flow_;

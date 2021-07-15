@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/location.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/attestation/attestation_ca_client.h"
@@ -33,14 +35,17 @@ void DBusPrivacyCACallback(
     const base::Location& from_here,
     chromeos::attestation::AttestationStatus status,
     const std::string& data) {
+  DCHECK(on_success);
+  DCHECK(on_failure);
+
   if (status == chromeos::attestation::ATTESTATION_SUCCESS) {
     on_success.Run(data);
     return;
   }
+
   LOG(ERROR) << "Attestation DBus method or server called failed with status: "
              << status << ": " << from_here.ToString();
-  if (!on_failure.is_null())
-    on_failure.Run(status);
+  on_failure.Run(status);
 }
 
 }  // namespace
@@ -87,8 +92,7 @@ void EnrollmentCertificateUploaderImpl::Start() {
 
   // We expect a registered CloudPolicyClient.
   if (!policy_client_->is_registered()) {
-    LOG(ERROR)
-        << "EnrollmentCertificateUploaderImpl: Invalid CloudPolicyClient.";
+    LOG(ERROR) << "CloudPolicyClient not registered.";
     RunCallbacks(Status::kFailedToFetch);
     return;
   }
@@ -101,7 +105,7 @@ void EnrollmentCertificateUploaderImpl::Start() {
     attestation_flow_ = default_attestation_flow_.get();
   }
 
-  GetCertificate();
+  GetCertificate(EnrollmentCertificateRequest::kExistingCertificate);
 }
 
 void EnrollmentCertificateUploaderImpl::RunCallbacks(Status status) {
@@ -109,14 +113,25 @@ void EnrollmentCertificateUploaderImpl::RunCallbacks(Status status) {
     std::move(callbacks_.front()).Run(status);
 }
 
-void EnrollmentCertificateUploaderImpl::GetCertificate() {
-  // We can reuse the dbus callback handler logic.
+void EnrollmentCertificateUploaderImpl::GetCertificate(
+    EnrollmentCertificateRequest certificate_request) {
+  bool force_new_key = false;
+  switch (certificate_request) {
+    case EnrollmentCertificateRequest::kExistingCertificate:
+      force_new_key = false;
+      break;
+    case EnrollmentCertificateRequest::kNewCertificate:
+      force_new_key = true;
+      break;
+  }
+
+  VLOG_IF(1, force_new_key) << "Fetching new certificate";
   attestation_flow_->GetCertificate(
       PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
       EmptyAccountId(),  // Not used.
       std::string(),     // Not used.
-      false,             // Do not force a new key to be generated.
-      std::string(),     // Leave key name empty to generate a default name.
+      force_new_key,
+      std::string(),  // Leave key name empty to generate a default name.
       base::BindOnce(
           [](const base::RepeatingCallback<void(const std::string&)> on_success,
              const base::RepeatingCallback<void(AttestationStatus)> on_failure,
@@ -130,8 +145,25 @@ void EnrollmentCertificateUploaderImpl::GetCertificate() {
               weak_factory_.GetWeakPtr()),
           base::BindRepeating(
               &EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure,
-              weak_factory_.GetWeakPtr()),
+              weak_factory_.GetWeakPtr(), certificate_request),
           FROM_HERE));
+}
+
+void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(
+    EnrollmentCertificateRequest certificate_request,
+    AttestationStatus status) {
+  if (status == ATTESTATION_SERVER_BAD_REQUEST_FAILURE) {
+    LOG(ERROR)
+        << "Failed to fetch Enterprise Enrollment Certificate: bad request.";
+    RunCallbacks(Status::kFailedToFetch);
+    return;
+  }
+
+  LOG(WARNING) << "Failed to fetch Enterprise Enrollment Certificate.";
+
+  if (!Reschedule(certificate_request)) {
+    RunCallbacks(Status::kFailedToFetch);
+  }
 }
 
 void EnrollmentCertificateUploaderImpl::UploadCertificate(
@@ -147,32 +179,32 @@ void EnrollmentCertificateUploaderImpl::OnUploadComplete(bool status) {
     has_already_uploaded_ = true;
     VLOG(1) << "Enterprise Enrollment Certificate uploaded to DMServer.";
     RunCallbacks(Status::kSuccess);
-  } else {
-    LOG(ERROR)
-        << "Failed to upload Enterprise Enrollment Certificate to DMServer.";
+    return;
+  }
+
+  LOG(WARNING)
+      << "Failed to upload Enterprise Enrollment Certificate to DMServer.";
+
+  if (!Reschedule(EnrollmentCertificateRequest::kNewCertificate)) {
     RunCallbacks(Status::kFailedToUpload);
   }
 }
 
-void EnrollmentCertificateUploaderImpl::HandleGetCertificateFailure(
-    AttestationStatus status) {
-  if (status != ATTESTATION_SERVER_BAD_REQUEST_FAILURE)
-    Reschedule();
-  else
-    RunCallbacks(Status::kFailedToFetch);
-}
-
-void EnrollmentCertificateUploaderImpl::Reschedule() {
-  if (++num_retries_ < retry_limit_) {
-    content::GetUIThreadTaskRunner({})->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&EnrollmentCertificateUploaderImpl::GetCertificate,
-                       weak_factory_.GetWeakPtr()),
-        retry_delay_);
-  } else {
-    LOG(WARNING) << "EnrollmentCertificateUploaderImpl: Retry limit exceeded.";
-    RunCallbacks(Status::kFailedToFetch);
+bool EnrollmentCertificateUploaderImpl::Reschedule(
+    EnrollmentCertificateRequest certificate_request) {
+  if (num_retries_ >= retry_limit_) {
+    LOG(ERROR) << "Retry limit exceeded to fetch enrollment certificate.";
+    return false;
   }
+
+  ++num_retries_;
+
+  content::GetUIThreadTaskRunner({})->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&EnrollmentCertificateUploaderImpl::GetCertificate,
+                     weak_factory_.GetWeakPtr(), certificate_request),
+      retry_delay_);
+  return true;
 }
 
 }  // namespace attestation
