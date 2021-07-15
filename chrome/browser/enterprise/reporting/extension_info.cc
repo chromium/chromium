@@ -110,6 +110,8 @@ em::Extension_ExtensionType ConvertExtensionTypeToProto(
       return em::Extension_ExtensionType_TYPE_PLATFORM_APP;
     case extensions::Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return em::Extension_ExtensionType_TYPE_LOGIN_SCREEN_EXTENSION;
+    case extensions::Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      return em::Extension_ExtensionType_TYPE_CHROMEOS_SYSTEM_EXTENSION;
     case extensions::Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
       return em::Extension_ExtensionType_TYPE_UNKNOWN;

@@ -90,6 +90,8 @@ std::string GetDisplayName(Manifest::Type type) {
       return "shared module";
     case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return "login screen extension";
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      return "chromeos system extension";
     case Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
   }

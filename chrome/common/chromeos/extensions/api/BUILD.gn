@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+import("//tools/json_schema_compiler/json_features.gni")
+
+assert(enable_extensions)
+
+################################################################################
+# Public Targets
+
+group("extensions_features") {
+  public_deps = [ ":manifest_features" ]
+}
+
+################################################################################
+# Private Targets
+
+json_features("manifest_features") {
+  feature_type = "ManifestFeature"
+  method_name = "AddChromeOSSystemExtensionsManifestFeatures"
+  sources = [ "_manifest_features.json" ]
+  visibility = [ ":extensions_features" ]
+}

@@ -150,6 +150,9 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       return ExtensionInstallProto::SHARED_MODULE;
     case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return ExtensionInstallProto::LOGIN_SCREEN_EXTENSION;
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
+      return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
       // Fall through.

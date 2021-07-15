@@ -60,6 +60,7 @@ bool IsSyncable(const Extension* extension) {
     case Manifest::TYPE_UNKNOWN:
     case Manifest::TYPE_SHARED_MODULE:
     case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
       return false;
 
     case Manifest::NUM_LOAD_TYPES:

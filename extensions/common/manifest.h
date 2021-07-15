@@ -38,6 +38,7 @@ class Manifest final {
     TYPE_PLATFORM_APP = 6,
     TYPE_SHARED_MODULE = 7,
     TYPE_LOGIN_SCREEN_EXTENSION = 8,
+    TYPE_CHROMEOS_SYSTEM_EXTENSION = 9,
 
     // New enum values must go above here.
     NUM_LOAD_TYPES
@@ -156,6 +157,9 @@ class Manifest final {
     return type_ == TYPE_LOGIN_SCREEN_EXTENSION;
   }
   bool is_shared_module() const { return type_ == TYPE_SHARED_MODULE; }
+  bool is_chromeos_system_extension() const {
+    return type_ == TYPE_CHROMEOS_SYSTEM_EXTENSION;
+  }
 
   // These access the wrapped manifest value, returning false when the property
   // does not exist or if the manifest type can't access it.

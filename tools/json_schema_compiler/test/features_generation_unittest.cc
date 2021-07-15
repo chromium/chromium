@@ -227,7 +227,8 @@ TEST(FeaturesGenerationTest, FeaturesTest) {
                                   Manifest::TYPE_PLATFORM_APP,
                                   Manifest::TYPE_SHARED_MODULE,
                                   Manifest::TYPE_THEME,
-                                  Manifest::TYPE_LOGIN_SCREEN_EXTENSION};
+                                  Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
+                                  Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION};
     comparator.channel = version_info::Channel::BETA;
     comparator.CompareFeature(feature);
   }

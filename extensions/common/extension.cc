@@ -547,6 +547,10 @@ bool Extension::is_login_screen_extension() const {
   return manifest()->is_login_screen_extension();
 }
 
+bool Extension::is_chromeos_system_extension() const {
+  return manifest()->is_chromeos_system_extension();
+}
+
 void Extension::AddWebExtentPattern(const URLPattern& pattern) {
   // Bookmark apps are permissionless.
   if (from_bookmark())

@@ -1,0 +1,26 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//extensions/buildflags/buildflags.gni")
+
+assert(enable_extensions)
+
+# Use a static library here because many test binaries depend on this but don't
+# require many files from it. This makes linking more efficient.
+static_library("extensions") {
+  sources = [
+    "chromeos_system_extensions_api_provider.cc",
+    "chromeos_system_extensions_api_provider.h",
+    "chromeos_system_extensions_manifest_constants.cc",
+    "chromeos_system_extensions_manifest_constants.h",
+    "chromeos_system_extensions_manifest_handler.cc",
+    "chromeos_system_extensions_manifest_handler.h",
+  ]
+
+  deps = [
+    "api:extensions_features",
+    "//base",
+    "//extensions/common",
+  ]
+}

@@ -100,6 +100,9 @@ developer::ExtensionType GetExtensionType(Manifest::Type manifest_type) {
     case Manifest::TYPE_SHARED_MODULE:
       type = developer::EXTENSION_TYPE_SHARED_MODULE;
       break;
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      type = developer::EXTENSION_TYPE_EXTENSION;
+      break;
     default:
       NOTREACHED();
   }

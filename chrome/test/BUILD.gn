@@ -6648,8 +6648,10 @@ test("unit_tests") {
         "../browser/extensions/external_provider_impl_chromeos_unittest.cc",
         "../browser/extensions/system_display/display_info_provider_chromeos_unittest.cc",
         "../browser/extensions/system_display/system_display_serialization_unittest.cc",
+        "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
         "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
       ]
+      deps += [ "../common/chromeos/extensions" ]
     }
 
     allow_circular_includes_from = [

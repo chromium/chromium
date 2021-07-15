@@ -47,6 +47,8 @@ class ManifestUnitTest : public testing::Test {
               manifest->is_shared_module());
     EXPECT_EQ(type == Manifest::TYPE_LOGIN_SCREEN_EXTENSION,
               manifest->is_login_screen_extension());
+    EXPECT_EQ(type == Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION,
+              manifest->is_chromeos_system_extension());
   }
 
   // Helper function that replaces the Manifest held by |manifest| with a copy

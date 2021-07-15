@@ -32,6 +32,7 @@ const char kBackgroundServiceWorkerType[] = "background.type";
 const char kBluetooth[] = "bluetooth";
 const char kBookmarkUI[] = "bookmarks_ui";
 const char kBrowserAction[] = "browser_action";
+const char kChromeOSSystemExtension[] = "chromeos_system_extension";
 const char kCommands[] = "commands";
 const char kContentCapabilities[] = "content_capabilities";
 const char kContentSecurityPolicy[] = "content_security_policy";

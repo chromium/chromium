@@ -210,6 +210,8 @@ FEATURE_GRAMMAR = ({
                 'theme': 'Manifest::TYPE_THEME',
                 'login_screen_extension':
                 'Manifest::TYPE_LOGIN_SCREEN_EXTENSION',
+                'chromeos_system_extension':
+                'Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION',
             },
             'allow_all': True
         },
