@@ -7,16 +7,19 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_radio_button/cr_radio_button.html">
 <link rel="import" href="chrome://resources/html/i18n_behavior.html">
 <link rel="import" href="../deep_linking_behavior.html">
+<link rel="import" href="../../router.html">
+<link rel="import" href="../os_route.html">
 
 <dom-module id="settings-dark-mode-subpage">
   <template>
     <style include="settings-shared"></style>
-    <div>
+    <div id="darkModeEnablerDiv">
       <settings-toggle-button
           id="darkModeToggleButton"
-          class="primary-toggle"
+          class="hr"
           pref="{{prefs.ash.dark_mode.enabled}}"
-          label="[[getDarkModeOnOffLabel_(prefs.ash.dark_mode.enabled.value)]]">
+          label="[[getDarkModeOnOffLabel_(prefs.ash.dark_mode.enabled.value)]]"
+          deep-link-focus-id$="[[Setting.kDarkModeOnOff]]">
       </settings-toggle-button>
     </div>
     <div id="darkModeThemedDiv">
@@ -33,7 +36,8 @@
       <div class="list-frame">
         <settings-radio-group id="darkModeThemedRadioGroup"
             pref="{{prefs.ash.dark_mode.color_mode_themed}}"
-            group-aria-label="$i18n{darkModeThemedRadioGroupTitle}">
+            group-aria-label="$i18n{darkModeThemedRadioGroupTitle}"
+            deep-link-focus-id$="[[Setting.kDarkModeThemed]]">
           <cr-radio-button id="darkModeThemedOn"
               name="true" class="list-item underbar"
               pref="[[prefs.ash.dark_mode.color_mode_themed]]"

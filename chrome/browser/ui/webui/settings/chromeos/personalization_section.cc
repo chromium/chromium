@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/settings/chromeos/personalization_section.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_prefs.h"
 #include "base/bind.h"
@@ -122,6 +123,63 @@ const std::vector<SearchConcept>& GetAmbientModeOffSearchConcepts() {
   return *tags;
 }
 
+const std::vector<SearchConcept>& GetDarkModeSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_DARK_MODE_SUBPAGE,
+       mojom::kDarkModeSubpagePath,
+       mojom::SearchResultIcon::kDarkMode,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSubpage,
+       {.subpage = mojom::Subpage::kDarkMode},
+       {IDS_OS_SETTINGS_TAG_DARK_MODE_SUBPAGE_ALT1,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_SUBPAGE_ALT2,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_SUBPAGE_ALT3, SearchConcept::kAltTagEnd}},
+      {IDS_OS_SETTINGS_TAG_DARK_MODE_THEMED,
+       mojom::kDarkModeSubpagePath,
+       mojom::SearchResultIcon::kDarkMode,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kDarkModeThemed},
+       {IDS_OS_SETTINGS_TAG_DARK_MODE_THEMED_ALT1,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_THEMED_ALT2, SearchConcept::kAltTagEnd}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetDarkModeOnSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF,
+       mojom::kDarkModeSubpagePath,
+       mojom::SearchResultIcon::kDarkMode,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kDarkModeOnOff},
+       {IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF_ALT1,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF_ALT2,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF_ALT3,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF_ALT4,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_OFF_ALT5}},
+  });
+  return *tags;
+}
+
+const std::vector<SearchConcept>& GetDarkModeOffSearchConcepts() {
+  static const base::NoDestructor<std::vector<SearchConcept>> tags({
+      {IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON,
+       mojom::kDarkModeSubpagePath,
+       mojom::SearchResultIcon::kDarkMode,
+       mojom::SearchResultDefaultRank::kMedium,
+       mojom::SearchResultType::kSetting,
+       {.setting = mojom::Setting::kDarkModeOnOff},
+       {IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON_ALT1,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON_ALT2,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON_ALT3,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON_ALT4,
+        IDS_OS_SETTINGS_TAG_DARK_MODE_TURN_ON_ALT5}},
+  });
+  return *tags;
+}
+
 bool IsAmbientModeAllowed() {
   // TODO(b/172029925): Set up to test this code.
   return chromeos::features::IsAmbientModeEnabled() &&
@@ -156,16 +214,28 @@ PersonalizationSection::PersonalizationSection(
   SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
   updater.AddSearchTags(GetPersonalizationSearchConcepts());
 
+  if (IsAmbientModeAllowed() || IsDarkModeAllowed())
+    pref_change_registrar_.Init(pref_service_);
+
   if (IsAmbientModeAllowed()) {
     updater.AddSearchTags(GetAmbientModeSearchConcepts());
-
-    pref_change_registrar_.Init(pref_service_);
     pref_change_registrar_.Add(
         ash::ambient::prefs::kAmbientModeEnabled,
         base::BindRepeating(
             &PersonalizationSection::OnAmbientModeEnabledStateChanged,
             base::Unretained(this)));
     OnAmbientModeEnabledStateChanged();
+  }
+
+  if (IsDarkModeAllowed()) {
+    updater.AddSearchTags(GetDarkModeSearchConcepts());
+
+    pref_change_registrar_.Add(
+        ash::prefs::kDarkModeEnabled,
+        base::BindRepeating(
+            &PersonalizationSection::OnDarkModeEnabledStateChanged,
+            base::Unretained(this)));
+    OnDarkModeEnabledStateChanged();
   }
 }
 
@@ -344,6 +414,7 @@ void PersonalizationSection::RegisterHierarchy(
       mojom::SearchResultDefaultRank::kMedium, mojom::kDarkModeSubpagePath);
   static constexpr mojom::Setting kDarkModeSettings[] = {
       mojom::Setting::kDarkModeOnOff,
+      mojom::Setting::kDarkModeThemed,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kDarkMode, kDarkModeSettings,
                             generator);
@@ -358,6 +429,18 @@ void PersonalizationSection::OnAmbientModeEnabledStateChanged() {
   } else {
     updater.RemoveSearchTags(GetAmbientModeOnSearchConcepts());
     updater.AddSearchTags(GetAmbientModeOffSearchConcepts());
+  }
+}
+
+void PersonalizationSection::OnDarkModeEnabledStateChanged() {
+  SearchTagRegistry::ScopedTagUpdater updater = registry()->StartUpdate();
+
+  if (pref_service_->GetBoolean(ash::prefs::kDarkModeEnabled)) {
+    updater.AddSearchTags(GetDarkModeOnSearchConcepts());
+    updater.RemoveSearchTags(GetDarkModeOffSearchConcepts());
+  } else {
+    updater.RemoveSearchTags(GetDarkModeOnSearchConcepts());
+    updater.AddSearchTags(GetDarkModeOffSearchConcepts());
   }
 }
 

@@ -119,4 +119,68 @@ suite('DarkModeHandler', function() {
     Polymer.dom.flush();
     assertFalse(getPrefValue());
   });
+
+  test('Deep link to dark mode toggle button', async () => {
+    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+    const params = new URLSearchParams;
+    params.append('settingId', '505');
+    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
+
+    Polymer.dom.flush();
+
+    const deepLinkElement =
+        darkModePage.$$('#darkModeToggleButton').$$('cr-toggle');
+
+    await test_util.waitAfterNextRender(deepLinkElement);
+
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Dark mode toggle should be focused for settingId=505.');
+  });
+
+
+  test('Deep link to dark mode theme radio group', async () => {
+    const darkModeThemedRadioGroup =
+        darkModePage.$$('#darkModeThemedRadioGroup');
+    assertTrue(!!darkModeThemedRadioGroup);
+    loadTimeData.overrideValues({isDeepLinkingEnabled: true});
+    assertTrue(loadTimeData.getBoolean('isDeepLinkingEnabled'));
+
+    const getPrefValue = () => {
+      return darkModePage.getPref('ash.dark_mode.color_mode_themed').value;
+    };
+
+    // Enable theming from pref and expect deep link to focus the themed-on
+    // radio button.
+    darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', true);
+    const params = new URLSearchParams;
+    params.append('settingId', '506');
+    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
+    Polymer.dom.flush();
+    let deepLinkElement = darkModePage.$$('#darkModeThemedOn').$$('#button');
+    await test_util.waitAfterNextRender(deepLinkElement);
+
+    assertEquals('true', darkModeThemedRadioGroup.selected);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Wallpaper (themed on) radio button should be focused for' +
+            ' settingId=506 when dark mode is themed.');
+
+    // Disable theming from pref and expect deep link to focus the themed-off
+    // radio button.
+    darkModePage.setPrefValue('ash.dark_mode.color_mode_themed', false);
+    settings.Router.getInstance().navigateTo(settings.routes.DARK_MODE, params);
+    Polymer.dom.flush();
+    deepLinkElement = darkModePage.$$('#darkModeThemedOff').$$('#button');
+    await test_util.waitAfterNextRender(deepLinkElement);
+
+    assertEquals('false', darkModeThemedRadioGroup.selected);
+    assertEquals(
+        deepLinkElement, getDeepActiveElement(),
+        'Neutral (themed off) radio button should be focused for' +
+            ' settingId=506 when dark mode is not themed.');
+  });
+
 });

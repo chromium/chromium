@@ -61049,6 +61049,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="503" label="Change Device Account Image"/>
   <int value="504" label="Ambient Mode Update Photos Containers (Deprecated)"/>
   <int value="505" label="Dark Mode: On/Off"/>
+  <int value="506" label="Dark Mode: Accent Color"/>
   <int value="600" label="Preferred Search Engine"/>
   <int value="601" label="Assistant: On/Off"/>
   <int value="602" label="Assistant: Related Info"/>

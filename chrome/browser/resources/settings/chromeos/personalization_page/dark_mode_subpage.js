@@ -11,7 +11,7 @@ Polymer({
   is: 'settings-dark-mode-subpage',
 
   behaviors: [
-    // TODO(crbug.com/1217436): add search to dark mode.
+    settings.RouteObserverBehavior,
     DeepLinkingBehavior,
     I18nBehavior,
     PrefsBehavior,
@@ -23,6 +23,32 @@ Polymer({
       type: Object,
       notify: true,
     },
+
+    /**
+     * Used by DeepLinkingBehavior to focus this page's deep links.
+     * @type {!Set<!chromeos.settings.mojom.Setting>}
+     */
+    supportedSettingIds: {
+      type: Object,
+      value: () => new Set([
+        chromeos.settings.mojom.Setting.kDarkModeOnOff,
+        chromeos.settings.mojom.Setting.kDarkModeThemed
+      ]),
+    },
+
+  },
+
+  /**
+   * settings.RouteObserverBehavior
+   * @param {!settings.Route} route
+   * @param {!settings.Route} oldRoute
+   * @protected
+   */
+  currentRouteChanged(route, oldRoute) {
+    if (route !== settings.routes.DARK_MODE) {
+      return;
+    }
+    this.attemptDeepLink();
   },
 
   /**
