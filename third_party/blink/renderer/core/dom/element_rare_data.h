@@ -51,7 +51,7 @@ class HTMLElement;
 class ResizeObservation;
 class ResizeObserver;
 
-class ElementRareData : public NodeRareData {
+class ElementRareData final : public NodeRareData {
  public:
   explicit ElementRareData(NodeRenderingData*);
   ~ElementRareData();

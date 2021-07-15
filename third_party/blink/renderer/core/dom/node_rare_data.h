@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/bit_field.h"
 #include "third_party/blink/renderer/platform/wtf/buildflags.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
@@ -34,10 +35,13 @@ namespace blink {
 class ComputedStyle;
 enum class DynamicRestyleFlags;
 enum class ElementFlags;
+class ElementRareData;
 class FlatTreeNodeData;
 class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
+class NodeRenderingData;
+class NodeRareData;
 class ScrollTimeline;
 
 class NodeMutationObserverData final
@@ -67,41 +71,75 @@ class NodeMutationObserverData final
   HeapHashSet<Member<MutationObserverRegistration>> transient_registry_;
 };
 
-class GC_PLUGIN_IGNORE(
-    "GC plugin reports that TraceAfterDispatch is not called but it is called "
-    "by both NodeRareDate::TraceAfterDispatch and "
-    "NodeRenderingData::TraceAfterDispatch.") NodeData
-    : public GarbageCollected<NodeData> {
+class NodeData : public GarbageCollected<NodeData> {
  public:
-  NodeData(bool is_rare_data, bool is_element_rare_data)
-      : connected_frame_count_(0),
-        element_flags_(0),
-        bit_field_(RestyleFlags::encode(0) |
-                   IsElementRareData::encode(is_element_rare_data) |
-                   IsRareData::encode(is_rare_data)) {
-    DCHECK(!is_element_rare_data || is_rare_data);
-  }
-  void Trace(Visitor*) const;
-  void TraceAfterDispatch(blink::Visitor*) const {}
-
   enum {
     kConnectedFrameCountBits = 10,  // Must fit Page::maxNumberOfFrames.
     kNumberOfElementFlags = 6,
     kNumberOfDynamicRestyleFlags = 14
   };
 
+  enum class ClassType : uint8_t {
+    kNodeRareData,
+    kElementRareData,
+    kNodeRenderingData,
+    kLastType = kNodeRenderingData
+  };
+
+  void Trace(Visitor*) const;
+  void TraceAfterDispatch(blink::Visitor*) const {}
+
  protected:
   using BitField = WTF::ConcurrentlyReadBitField<uint16_t>;
   using RestyleFlags =
       BitField::DefineFirstValue<uint16_t, kNumberOfDynamicRestyleFlags>;
-  using IsElementRareData = RestyleFlags::
-      DefineNextValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
-  using IsRareData = IsElementRareData::
-      DefineNextValue<bool, 1, WTF::BitFieldValueConstness::kConst>;
+  static constexpr size_t kClassTypeBits = 2;
+  static_assert(static_cast<size_t>(ClassType::kLastType) <
+                    ((size_t{1} << kClassTypeBits)),
+                "Too many subtypes to fit into bitfield.");
+  using ClassTypeData =
+      RestyleFlags::DefineNextValue<uint8_t,
+                                    kClassTypeBits,
+                                    WTF::BitFieldValueConstness::kConst>;
+
+  explicit NodeData(ClassType sub_type)
+      : connected_frame_count_(0),
+        element_flags_(0),
+        bit_field_(RestyleFlags::encode(0) |
+                   ClassTypeData::encode(static_cast<uint8_t>(sub_type))) {}
+
+  ClassType GetClassType() const {
+    return static_cast<ClassType>(bit_field_.get_concurrently<ClassTypeData>());
+  }
 
   uint16_t connected_frame_count_ : kConnectedFrameCountBits;
   uint16_t element_flags_ : kNumberOfElementFlags;
   BitField bit_field_;
+
+  friend struct DowncastTraits<NodeRareData>;
+  friend struct DowncastTraits<NodeRenderingData>;
+  friend struct DowncastTraits<ElementRareData>;
+};
+
+template <>
+struct DowncastTraits<NodeRenderingData> {
+  static bool AllowFrom(const NodeData& node_data) {
+    return node_data.GetClassType() == NodeData::ClassType::kNodeRenderingData;
+  }
+};
+
+template <>
+struct DowncastTraits<NodeRareData> {
+  static bool AllowFrom(const NodeData& node_data) {
+    return node_data.GetClassType() == NodeData::ClassType::kNodeRareData;
+  }
+};
+
+template <>
+struct DowncastTraits<ElementRareData> {
+  static bool AllowFrom(const NodeData& node_data) {
+    return node_data.GetClassType() == NodeData::ClassType::kElementRareData;
+  }
 };
 
 class NodeRenderingData final : public NodeData {
@@ -125,20 +163,17 @@ class NodeRenderingData final : public NodeData {
   static NodeRenderingData& SharedEmptyData();
   bool IsSharedEmptyData() { return this == &SharedEmptyData(); }
 
-  void TraceAfterDispatch(Visitor* visitor) const {
-    NodeData::TraceAfterDispatch(visitor);
-  }
+  void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
   LayoutObject* layout_object_;
   scoped_refptr<const ComputedStyle> computed_style_;
 };
 
-class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
-    : public NodeData {
+class NodeRareData : public NodeData {
  public:
   explicit NodeRareData(NodeRenderingData* node_layout_data)
-      : NodeRareData(node_layout_data, false) {}
+      : NodeRareData(ClassType::kNodeRareData, node_layout_data) {}
   NodeRareData(const NodeRareData&) = delete;
   NodeRareData& operator=(const NodeRareData&) = delete;
 
@@ -203,16 +238,14 @@ class GC_PLUGIN_IGNORE("Manual dispatch implemented in NodeData.") NodeRareData
   bool HasRestyleFlags() const { return bit_field_.get<RestyleFlags>(); }
   void ClearRestyleFlags() { bit_field_.set<RestyleFlags>(0); }
 
-  void TraceAfterDispatch(blink::Visitor*) const;
-  void FinalizeGarbageCollectedObject();
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
 
+  void TraceAfterDispatch(blink::Visitor*) const;
+
  protected:
-  explicit NodeRareData(NodeRenderingData* node_layout_data,
-                        bool is_element_rare_data)
-      : NodeData(true, is_element_rare_data),
-        node_layout_data_(node_layout_data) {
+  NodeRareData(ClassType class_type, NodeRenderingData* node_layout_data)
+      : NodeData(class_type), node_layout_data_(node_layout_data) {
     CHECK_NE(node_layout_data, nullptr);
   }
 

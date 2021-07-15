@@ -50,7 +50,8 @@ struct SameSizeAsElementRareData : NodeRareData {
 };
 
 ElementRareData::ElementRareData(NodeRenderingData* node_layout_data)
-    : NodeRareData(node_layout_data, true), class_list_(nullptr) {}
+    : NodeRareData(ClassType::kElementRareData, node_layout_data),
+      class_list_(nullptr) {}
 
 ElementRareData::~ElementRareData() {
   DCHECK(!pseudo_element_data_);
