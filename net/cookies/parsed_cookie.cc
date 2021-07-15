@@ -48,6 +48,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/cookie_inclusion_status.h"
 #include "net/http/http_util.h"
 
 namespace {
@@ -151,15 +152,34 @@ base::StringPiece ValidStringPieceForValue(const std::string& value) {
 
 namespace net {
 
-ParsedCookie::ParsedCookie(const std::string& cookie_line) {
+ParsedCookie::ParsedCookie(const std::string& cookie_line,
+                           CookieInclusionStatus* status_out) {
+  // Put a pointer on the stack so the rest of the function can assign to it if
+  // the default nullptr is passed in.
+  CookieInclusionStatus blank_status;
+  if (status_out == nullptr) {
+    status_out = &blank_status;
+  }
+
   if (cookie_line.size() > kMaxCookieSize) {
     DVLOG(1) << "Not parsing cookie, too large: " << cookie_line.size();
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    status_out->AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
     return;
   }
 
-  ParseTokenValuePairs(cookie_line);
-  if (!pairs_.empty())
+  ParseTokenValuePairs(cookie_line, *status_out);
+  if (IsValid()) {
     SetupAttributes();
+  } else if (status_out->IsInclude()) {
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    status_out->AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+  }
+
+  // Status should indicate exclusion if the resulting ParsedCookie is invalid.
+  DCHECK(IsValid() || !status_out->IsInclude());
 
   if (IsValid())
     RecordCookieAttributeValueLengthHistograms();
@@ -391,7 +411,8 @@ bool ParsedCookie::IsValidCookieAttributeValue(const std::string& value) {
 }
 
 // Parse all token/value pairs and populate pairs_.
-void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
+void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
+                                        CookieInclusionStatus& status_out) {
   pairs_.clear();
 
   // Ok, here we go.  We should be expecting to be starting somewhere
@@ -404,8 +425,12 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
   std::string::const_iterator end = FindFirstTerminator(cookie_line);
 
   // Exit early for an empty cookie string.
-  if (it == end)
+  if (it == end) {
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    status_out.AddExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
     return;
+  }
 
   for (int pair_num = 0; it != end; ++pair_num) {
     TokenValuePair pair;
@@ -452,6 +477,9 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
 
     // Ignore cookies with neither name nor value.
     if (pair_num == 0 && (pair.first.empty() && pair.second.empty())) {
+      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+      status_out.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
       pairs_.clear();
       break;
     }
@@ -464,6 +492,9 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line) {
     // http://crbug.com/238041.
     if (!IsValidCookieAttributeValue(pair.first) ||
         !IsValidCookieAttributeValue(pair.second)) {
+      // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+      status_out.AddExclusionReason(
+          CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
       pairs_.clear();
       break;
     }

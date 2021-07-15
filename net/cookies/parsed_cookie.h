@@ -16,6 +16,8 @@
 
 namespace net {
 
+class CookieInclusionStatus;
+
 class NET_EXPORT ParsedCookie {
  public:
   typedef std::pair<std::string, std::string> TokenValuePair;
@@ -27,7 +29,12 @@ class NET_EXPORT ParsedCookie {
   // Construct from a cookie string like "BLAH=1; path=/; domain=.google.com"
   // Format is according to RFC 6265. Cookies with both name and value empty
   // will be considered invalid.
-  ParsedCookie(const std::string& cookie_line);
+  // `status_out` is a nullable output param which will be populated with
+  // informative exclusion reasons if the resulting ParsedCookie is invalid.
+  // The CookieInclusionStatus will not be altered if the resulting ParsedCookie
+  // is valid.
+  explicit ParsedCookie(const std::string& cookie_line,
+                        CookieInclusionStatus* status_out = nullptr);
   ~ParsedCookie();
 
   // You should not call any other methods except for SetName/SetValue on the
@@ -123,7 +130,8 @@ class NET_EXPORT ParsedCookie {
   static bool IsValidCookieAttributeValue(const std::string& value);
 
  private:
-  void ParseTokenValuePairs(const std::string& cookie_line);
+  void ParseTokenValuePairs(const std::string& cookie_line,
+                            CookieInclusionStatus& status_out);
   void SetupAttributes();
 
   // Sets a key/value pair for a cookie. |index| has to point to one of the

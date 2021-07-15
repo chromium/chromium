@@ -424,12 +424,14 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   }
   *status = CookieInclusionStatus();
 
-  ParsedCookie parsed_cookie(cookie_line);
+  ParsedCookie parsed_cookie(cookie_line, status);
 
   if (!parsed_cookie.IsValid()) {
     DVLOG(net::cookie_util::kVlogSetCookies)
         << "WARNING: Couldn't parse cookie";
-    status->AddExclusionReason(CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE);
+    // TODO(crbug.com/1228815): Apply more specific exclusion reasons.
+    DCHECK(status->HasExclusionReason(
+        CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE));
     // Don't continue, because an invalid ParsedCookie doesn't have any
     // attributes.
     // TODO(chlily): Log metrics.

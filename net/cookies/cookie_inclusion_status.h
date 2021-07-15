@@ -59,7 +59,9 @@ class NET_EXPORT CookieInclusionStatus {
 
     // Statuses only applied when creating/setting cookies:
 
-    // Cookie was malformed and could not be stored.
+    // Cookie was malformed and could not be stored, due to problem(s) while
+    // parsing.
+    // TODO(crbug.com/1228815): Use more specific reasons for parsing errors.
     EXCLUDE_FAILURE_TO_STORE = 11,
     // Attempted to set a cookie from a scheme that does not support cookies.
     EXCLUDE_NONCOOKIEABLE_SCHEME = 12,
