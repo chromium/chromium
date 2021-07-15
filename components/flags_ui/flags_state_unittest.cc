@@ -244,16 +244,13 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
 
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
+  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
   ASSERT_TRUE(entries_list != nullptr);
 
-  ASSERT_EQ(2u, entries_list->GetSize());
+  ASSERT_EQ(2u, entries_list->GetList().size());
 
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
+  std::string s0 = entries_list->GetList()[0].GetString();
+  std::string s1 = entries_list->GetList()[1].GetString();
 
   EXPECT_TRUE(s0 == kFlags1 || s1 == kFlags1);
   EXPECT_TRUE(s0 == kFlags2 || s1 == kFlags2);
@@ -263,8 +260,8 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveOne) {
 
   entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
   ASSERT_TRUE(entries_list != nullptr);
-  ASSERT_EQ(1u, entries_list->GetSize());
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
+  ASSERT_EQ(1u, entries_list->GetList().size());
+  s0 = entries_list->GetList()[0].GetString();
   EXPECT_TRUE(s0 == kFlags1);
 }
 
@@ -272,15 +269,14 @@ TEST_F(FlagsStateTest, AddTwoFlagsRemoveBoth) {
   // Add two entries, check the pref exists.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, true);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, true);
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
+  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
   ASSERT_TRUE(entries_list != nullptr);
 
   // Remove both, the pref should have been removed completely.
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags1, false);
   flags_state_->SetFeatureEntryEnabled(&flags_storage_, kFlags2, false);
   entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
-  EXPECT_TRUE(entries_list == nullptr || entries_list->GetSize() == 0);
+  EXPECT_TRUE(entries_list == nullptr || entries_list->GetList().size() == 0);
 }
 
 TEST_F(FlagsStateTest, ConvertFlagsToSwitches) {
@@ -551,15 +547,12 @@ TEST_F(FlagsStateTest, PersistAndPrune) {
   EXPECT_FALSE(command_line.HasSwitch(kSwitch3));
 
   // FeatureEntry 3 should show still be persisted in preferences though.
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
+  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
   ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetSize());
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
+  EXPECT_EQ(2U, entries_list->GetList().size());
+  std::string s0 = entries_list->GetList()[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
+  std::string s1 = entries_list->GetList()[1].GetString();
   EXPECT_EQ(kFlags3, s1);
 }
 
@@ -606,15 +599,12 @@ TEST_F(FlagsStateTest, CheckValues) {
 #endif
 
   // And it should persist.
-  const base::ListValue* entries_list =
-      prefs_.GetList(prefs::kAboutFlagsEntries);
+  const base::Value* entries_list = prefs_.GetList(prefs::kAboutFlagsEntries);
   ASSERT_TRUE(entries_list);
-  EXPECT_EQ(2U, entries_list->GetSize());
-  std::string s0;
-  ASSERT_TRUE(entries_list->GetString(0, &s0));
+  EXPECT_EQ(2U, entries_list->GetList().size());
+  std::string s0 = entries_list->GetList()[0].GetString();
   EXPECT_EQ(kFlags1, s0);
-  std::string s1;
-  ASSERT_TRUE(entries_list->GetString(1, &s1));
+  std::string s1 = entries_list->GetList()[1].GetString();
   EXPECT_EQ(kFlags2, s1);
 }
 
@@ -819,16 +809,17 @@ TEST_F(FlagsStateTest, FeatureValues) {
 }
 
 TEST_F(FlagsStateTest, GetFlagFeatureEntries) {
-  base::ListValue supported_entries;
-  base::ListValue unsupported_entries;
+  base::Value::ListStorage supported_entries;
+  base::Value::ListStorage unsupported_entries;
   flags_state_->GetFlagFeatureEntries(&flags_storage_, kGeneralAccessFlagsOnly,
-                                      &supported_entries, &unsupported_entries,
+                                      supported_entries, unsupported_entries,
                                       base::BindRepeating(&SkipFeatureEntry));
   // All |kEntries| except for |kFlags3| should be supported.
-  EXPECT_EQ(11u, supported_entries.GetSize());
-  EXPECT_EQ(1u, unsupported_entries.GetSize());
-  EXPECT_EQ(base::size(kEntries),
-            supported_entries.GetSize() + unsupported_entries.GetSize());
+  auto supported_count = supported_entries.size();
+  auto unsupported_count = unsupported_entries.size();
+  EXPECT_EQ(11u, supported_count);
+  EXPECT_EQ(1u, unsupported_count);
+  EXPECT_EQ(base::size(kEntries), supported_count + unsupported_count);
 }
 
 }  // namespace flags_ui

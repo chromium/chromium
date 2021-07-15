@@ -12,11 +12,11 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/flags_ui/flags_state.h"
 
 namespace base {
 class CommandLine;
-class ListValue;
 }  // namespace base
 
 namespace flags_ui {
@@ -47,8 +47,8 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
 // to |unsupported_entries|.
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
-                           base::ListValue* supported_entries,
-                           base::ListValue* unsupported_entries);
+                           base::Value::ListStorage& supported_entries,
+                           base::Value::ListStorage& unsupported_entries);
 
 // Enables or disables the current with id |internal_name|.
 void SetFeatureEntryEnabled(flags_ui::FlagsStorage* flags_storage,

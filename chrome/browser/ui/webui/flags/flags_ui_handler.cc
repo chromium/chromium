@@ -76,21 +76,22 @@ void FlagsUIHandler::HandleRequestExperimentalFeatures(
 void FlagsUIHandler::SendExperimentalFeatures() {
   base::DictionaryValue results;
 
-  std::unique_ptr<base::ListValue> supported_features(new base::ListValue);
-  std::unique_ptr<base::ListValue> unsupported_features(new base::ListValue);
+  base::Value::ListStorage supported_features;
+  base::Value::ListStorage unsupported_features;
 
   if (deprecated_features_only_) {
     about_flags::GetFlagFeatureEntriesForDeprecatedPage(
-        flags_storage_.get(), access_, supported_features.get(),
-        unsupported_features.get());
+        flags_storage_.get(), access_, supported_features,
+        unsupported_features);
   } else {
     about_flags::GetFlagFeatureEntries(flags_storage_.get(), access_,
-                                       supported_features.get(),
-                                       unsupported_features.get());
+                                       supported_features,
+                                       unsupported_features);
   }
 
-  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
-  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
+  results.SetKey(flags_ui::kSupportedFeatures, base::Value(supported_features));
+  results.SetKey(flags_ui::kUnsupportedFeatures,
+                 base::Value(unsupported_features));
   results.SetBoolean(flags_ui::kNeedsRestart,
                      about_flags::IsRestartNeededToCommitChanges());
   results.SetBoolean(flags_ui::kShowOwnerWarning,

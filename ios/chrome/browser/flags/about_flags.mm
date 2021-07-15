@@ -1008,8 +1008,8 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
 
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
-                           base::ListValue* supported_entries,
-                           base::ListValue* unsupported_entries) {
+                           base::Value::ListStorage& supported_entries,
+                           base::Value::ListStorage& unsupported_entries) {
   GetGlobalFlagsState().GetFlagFeatureEntries(
       flags_storage, access, supported_entries, unsupported_entries,
       base::BindRepeating(&SkipConditionalFeatureEntry));

@@ -58,10 +58,10 @@ const struct {
 
 // Adds a |StringValue| to |list| for each platform where |bitmask| indicates
 // whether the entry is available on that platform.
-void AddOsStrings(unsigned bitmask, base::ListValue* list) {
-  for (size_t i = 0; i < base::size(kBitsToOs); ++i) {
-    if (bitmask & kBitsToOs[i].bit)
-      list->AppendString(kBitsToOs[i].name);
+void AddOsStrings(unsigned bitmask, base::Value* list) {
+  for (const auto& entry : kBitsToOs) {
+    if (bitmask & entry.bit)
+      list->Append(entry.name);
   }
 }
 
@@ -120,23 +120,22 @@ bool IsDefaultValue(const FeatureEntry& entry,
 }
 
 // Returns the Value representing the choice data in the specified entry.
-std::unique_ptr<base::Value> CreateOptionsData(
-    const FeatureEntry& entry,
-    const std::set<std::string>& enabled_entries) {
+base::Value CreateOptionsData(const FeatureEntry& entry,
+                              const std::set<std::string>& enabled_entries) {
   DCHECK(entry.type == FeatureEntry::MULTI_VALUE ||
          entry.type == FeatureEntry::ENABLE_DISABLE_VALUE ||
          entry.type == FeatureEntry::FEATURE_VALUE ||
          entry.type == FeatureEntry::FEATURE_WITH_PARAMS_VALUE);
-  auto result = std::make_unique<base::ListValue>();
+  base::Value result(base::Value::Type::LIST);
   for (int i = 0; i < entry.NumOptions(); ++i) {
-    auto value = std::make_unique<base::DictionaryValue>();
+    base::Value value(base::Value::Type::DICTIONARY);
     const std::string name = entry.NameForOption(i);
-    value->SetString("internal_name", name);
-    value->SetString("description", entry.DescriptionForOption(i));
-    value->SetBoolean("selected", enabled_entries.count(name) > 0);
-    result->Append(std::move(value));
+    value.SetStringKey("internal_name", name);
+    value.SetStringKey("description", entry.DescriptionForOption(i));
+    value.SetBoolKey("selected", enabled_entries.count(name) > 0);
+    result.Append(std::move(value));
   }
-  return std::move(result);
+  return result;
 }
 
 // Registers variation parameters specified by |feature_variation_params| for
@@ -557,8 +556,8 @@ std::vector<std::string> FlagsState::RegisterAllFeatureVariationParameters(
 void FlagsState::GetFlagFeatureEntries(
     FlagsStorage* flags_storage,
     FlagAccess access,
-    base::ListValue* supported_entries,
-    base::ListValue* unsupported_entries,
+    base::Value::ListStorage& supported_entries,
+    base::Value::ListStorage& unsupported_entries,
     base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry) {
   DCHECK(flags_storage);
   std::set<std::string> enabled_entries;
@@ -570,31 +569,31 @@ void FlagsState::GetFlagFeatureEntries(
     if (skip_feature_entry.Run(entry))
       continue;
 
-    std::unique_ptr<base::DictionaryValue> data(new base::DictionaryValue());
-    data->SetString("internal_name", entry.internal_name);
-    data->SetString("name", base::StringPiece(entry.visible_name));
-    data->SetString("description",
-                    base::StringPiece(entry.visible_description));
+    base::Value data(base::Value::Type::DICTIONARY);
+    data.SetStringKey("internal_name", entry.internal_name);
+    data.SetStringKey("name", base::StringPiece(entry.visible_name));
+    data.SetStringKey("description",
+                      base::StringPiece(entry.visible_description));
 
-    base::ListValue supported_platforms;
+    base::Value supported_platforms(base::Value::Type::LIST);
     AddOsStrings(entry.supported_platforms, &supported_platforms);
-    data->SetKey("supported_platforms", std::move(supported_platforms));
+    data.SetKey("supported_platforms", std::move(supported_platforms));
     // True if the switch is not currently passed.
     bool is_default_value = IsDefaultValue(entry, enabled_entries);
-    data->SetBoolean("is_default", is_default_value);
+    data.SetBoolKey("is_default", is_default_value);
 
     switch (entry.type) {
       case FeatureEntry::SINGLE_VALUE:
       case FeatureEntry::SINGLE_DISABLE_VALUE:
-        data->SetBoolean(
+        data.SetBoolKey(
             "enabled",
             (!is_default_value && entry.type == FeatureEntry::SINGLE_VALUE) ||
                 (is_default_value &&
                  entry.type == FeatureEntry::SINGLE_DISABLE_VALUE));
         break;
       case FeatureEntry::ORIGIN_LIST_VALUE:
-        data->SetBoolean("enabled", !is_default_value);
-        data->SetString(
+        data.SetBoolKey("enabled", !is_default_value);
+        data.SetStringKey(
             "origin_list_value",
             GetCombinedOriginListValue(*flags_storage, entry.internal_name,
                                        entry.switches.command_line_switch));
@@ -603,8 +602,7 @@ void FlagsState::GetFlagFeatureEntries(
       case FeatureEntry::ENABLE_DISABLE_VALUE:
       case FeatureEntry::FEATURE_VALUE:
       case FeatureEntry::FEATURE_WITH_PARAMS_VALUE:
-        data->SetKey("options", base::Value::FromUniquePtrValue(
-                                    CreateOptionsData(entry, enabled_entries)));
+        data.SetKey("options", CreateOptionsData(entry, enabled_entries));
         break;
     }
 
@@ -617,9 +615,9 @@ void FlagsState::GetFlagFeatureEntries(
 #endif
 
     if (supported)
-      supported_entries->Append(std::move(data));
+      supported_entries.push_back(std::move(data));
     else
-      unsupported_entries->Append(std::move(data));
+      unsupported_entries.push_back(std::move(data));
   }
 }
 

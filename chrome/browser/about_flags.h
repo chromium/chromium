@@ -15,12 +15,12 @@
 
 #include "base/command_line.h"
 #include "base/metrics/histogram_base.h"
+#include "base/values.h"
 #include "components/flags_ui/feature_entry.h"
 #include "components/flags_ui/flags_state.h"
 
 namespace base {
 class FeatureList;
-class ListValue;
 }
 
 namespace flags_ui {
@@ -54,8 +54,8 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
 // to |unsupported_entries|.
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
-                           base::ListValue* supported_entries,
-                           base::ListValue* unsupported_entries);
+                           base::Value::ListStorage& supported_entries,
+                           base::Value::ListStorage& unsupported_entries);
 
 // Gets the list of feature entries for the deprecated flags page. Entries that
 // are available for the current platform are appended to |supported_entries|;
@@ -63,8 +63,8 @@ void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
 void GetFlagFeatureEntriesForDeprecatedPage(
     flags_ui::FlagsStorage* flags_storage,
     flags_ui::FlagAccess access,
-    base::ListValue* supported_entries,
-    base::ListValue* unsupported_entries);
+    base::Value::ListStorage& supported_entries,
+    base::Value::ListStorage& unsupported_entries);
 
 // Gets the FlagsState used in about_flags.
 flags_ui::FlagsState* GetCurrentFlagsState();

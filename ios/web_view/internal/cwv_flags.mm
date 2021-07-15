@@ -113,16 +113,16 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
   BOOL usesSyncSandbox = NO;
   BOOL usesWalletSandbox = NO;
 
-  base::ListValue supportedFeatures;
-  base::ListValue unsupportedFeatures;
+  base::Value::ListStorage supportedFeatures;
+  base::Value::ListStorage unsupportedFeatures;
 
   _flagsState->GetFlagFeatureEntries(
-      _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly,
-      &supportedFeatures, &unsupportedFeatures,
+      _flagsStorage.get(), flags_ui::kGeneralAccessFlagsOnly, supportedFeatures,
+      unsupportedFeatures,
       base::BindRepeating(&ios_web_view::SkipConditionalFeatureEntry));
-  for (size_t i = 0; i < supportedFeatures.GetSize(); i++) {
+  for (size_t i = 0; i < supportedFeatures.size(); i++) {
     base::DictionaryValue* featureEntry;
-    if (!supportedFeatures.GetDictionary(i, &featureEntry)) {
+    if (!supportedFeatures[i].GetAsDictionary(&featureEntry)) {
       NOTREACHED();
     }
     std::string internalName;

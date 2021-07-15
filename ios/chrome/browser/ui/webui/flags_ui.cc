@@ -136,12 +136,14 @@ void FlagsDOMHandler::HandleRequestExperimentalFeatures(
 
   base::DictionaryValue results;
 
-  auto supported_features = std::make_unique<base::ListValue>();
-  auto unsupported_features = std::make_unique<base::ListValue>();
-  GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features.get(),
-                        unsupported_features.get());
-  results.Set(flags_ui::kSupportedFeatures, std::move(supported_features));
-  results.Set(flags_ui::kUnsupportedFeatures, std::move(unsupported_features));
+  std::vector<base::Value> supported_features;
+  std::vector<base::Value> unsupported_features;
+  GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features,
+                        unsupported_features);
+
+  results.SetKey(flags_ui::kSupportedFeatures, base::Value(supported_features));
+  results.SetKey(flags_ui::kUnsupportedFeatures,
+                 base::Value(unsupported_features));
   // Cannot restart the browser on iOS.
   results.SetBoolean(flags_ui::kNeedsRestart, false);
   results.SetBoolean(flags_ui::kShowOwnerWarning,

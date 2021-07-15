@@ -17,10 +17,7 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
-
-namespace base {
-class ListValue;
-}
+#include "base/values.h"
 
 namespace flags_ui {
 
@@ -151,8 +148,8 @@ class FlagsState {
   void GetFlagFeatureEntries(
       FlagsStorage* flags_storage,
       FlagAccess access,
-      base::ListValue* supported_entries,
-      base::ListValue* unsupported_entries,
+      base::Value::ListStorage& supported_entries,
+      base::Value::ListStorage& unsupported_entries,
       base::RepeatingCallback<bool(const FeatureEntry&)> skip_feature_entry);
 
   // Returns the value for the current platform. This is one of the values
