@@ -57,12 +57,15 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     private ContinuousNavigationUserDataImpl mCurrentUserData;
     private @PageCategory int mPageCategory;
     private boolean mVisible;
-    private boolean mScrolled;
     private boolean mDismissed;
+    private boolean mUiShown;
     // The navigation index when CSN metadata was retrieved.
     private int mStartNavigationIndex;
     private int mSrpVisits;
     private BrowserControlsStateProvider.Observer mScrollObserver;
+
+    private boolean mScrolled;
+    private boolean mProviderButtonClicked;
 
     @IntDef({TriggerMode.ALWAYS, TriggerMode.AFTER_SECOND_SRP, TriggerMode.ON_REVERSE_SCROLL})
     @Retention(RetentionPolicy.SOURCE)
@@ -105,9 +108,14 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void reset() {
+        // Only record the metrics if the UI was shown.
+        if (mUiShown) recordUiMetrics();
         mModelList.clear();
         mDismissed = false;
         mOnSrp = false;
+        mUiShown = false;
+        mScrolled = false;
+        mProviderButtonClicked = false;
         mSrpVisits = 0;
     }
 
@@ -272,6 +280,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
                     navigationController.goToNavigationIndex(mStartNavigationIndex);
                 }
             }
+            mProviderButtonClicked = true;
         } else if (mCurrentTab != null && url != null) {
             LoadUrlParams params = new LoadUrlParams(url.getSpec());
             params.setReferrer(
@@ -286,8 +295,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     private void setVisibility(boolean visibility, Runnable onHideFinished) {
-        if (mVisible && !visibility) recordListScrolled();
         mVisible = visibility;
+        if (mVisible) mUiShown = true;
         mSetLayoutVisibility.onResult(new VisibilitySettings(mVisible, onHideFinished));
     }
 
@@ -295,11 +304,16 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         mScrolled = true;
     }
 
-    private void recordListScrolled() {
-        RecordHistogram.recordBooleanHistogram("Browser.ContinuousSearch.UI.CarouselScrolled"
-                        + SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory),
-                mScrolled);
-        mScrolled = false;
+    private void recordUiMetrics() {
+        String histogramSuffix = SearchUrlHelper.getHistogramSuffixForPageCategory(mPageCategory);
+
+        RecordHistogram.recordBooleanHistogram(
+                "Browser.ContinuousSearch.UI.CarouselScrolled2" + histogramSuffix, mScrolled);
+        RecordHistogram.recordBooleanHistogram(
+                "Browser.ContinuousSearch.UI.ProviderButtonClicked" + histogramSuffix,
+                mProviderButtonClicked);
+        RecordHistogram.recordBooleanHistogram(
+                "Browser.ContinuousSearch.UI.DismissButtonClicked" + histogramSuffix, mDismissed);
     }
 
     private void initScrollObserver() {
@@ -365,6 +379,8 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
     }
 
     void destroy() {
+        reset();
+
         if (mCurrentUserData != null) mCurrentUserData.removeObserver(this);
         if (mThemeColorProvider != null) mThemeColorProvider.removeThemeColorObserver(this);
 

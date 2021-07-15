@@ -121,8 +121,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
+    name="Browser.ContinuousSearch.UI.CarouselScrolled2{ExperimentCategory}"
+    enum="Boolean" expires_after="2021-09-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records whether the UI was scrolled while being shown. It is emmited when
+    the CSN session is considered ended. Actions that can end the session
+    include closing the tab, navigating away from the CSN url list or dismissing
+    the UI.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
+</histogram>
+
+<histogram
     name="Browser.ContinuousSearch.UI.CarouselScrolled{ExperimentCategory}"
     enum="Boolean" expires_after="2021-09-20">
+  <obsolete>
+    Obsoleted as of 2021-07. It is replaced by
+    Browser.ContinuousSearch.UI.CarouselScrolled2 as the emission method has
+    changed.
+  </obsolete>
   <owner>ckitagawa@chromium.org</owner>
   <owner>fredmello@chromium.org</owner>
   <owner>yashard@chromium.org</owner>
@@ -142,6 +162,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the 0-indexed position of list item in the UI when the user clicks
     on the item.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
+</histogram>
+
+<histogram
+    name="Browser.ContinuousSearch.UI.DismissButtonClicked{ExperimentCategory}"
+    enum="Boolean" expires_after="2021-09-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records whether the UI dismiss button was pressed while UI was being shown.
+    It is emmited when the CSN session is considered ended. Actions that can end
+    the session include closing the tab, navigating away from the CSN url list
+    or dismissing the UI.
+  </summary>
+  <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
+</histogram>
+
+<histogram
+    name="Browser.ContinuousSearch.UI.ProviderButtonClicked{ExperimentCategory}"
+    enum="Boolean" expires_after="2021-09-20">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records whether the provider button was pressed while UI was being shown. It
+    is emmited when the CSN session is considered ended. Actions that can end
+    the session include closing the tab, navigating away from the CSN url list
+    or dismissing the UI.
   </summary>
   <token key="ExperimentCategory" variants="ContinuousSearchExperiment"/>
 </histogram>
