@@ -1633,6 +1633,11 @@
     "expiry_milestone": 95
   },
   {
+    "name": "enable-cros-ime-system-emoji-picker-clipboard",
+    "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-cros-language-settings-ime-options-in-settings",
     "owners": [ "jopalmer", "essential-inputs-team@google.com" ],
     "expiry_milestone": 97

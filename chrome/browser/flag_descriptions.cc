@@ -4837,6 +4837,12 @@ const char kImeSystemEmojiPickerDescription[] =
     "Controls whether a System emoji picker, or the virtual keyboard is used "
     "for inserting emoji.";
 
+const char kImeSystemEmojiPickerClipboardName[] =
+    "System emoji picker clipboard";
+const char kImeSystemEmojiPickerClipboardDescription[] =
+    "Emoji picker will insert emoji into clipboard if they can't be inserted "
+    "into a text field";
+
 const char kCrosLanguageSettingsImeOptionsInSettingsName[] =
     "Ime settings in settings";
 const char kCrosLanguageSettingsImeOptionsInSettingsDescription[] =

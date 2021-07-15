@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_page_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
+#include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/chromeos/ime_bridge.h"
 
 namespace chromeos {
@@ -34,6 +36,15 @@ void LogInsertEmoji(bool is_variant, int16_t search_length) {
 
 void LogInsertEmojiDelay(base::TimeDelta delay) {
   base::UmaHistogramMediumTimes("InputMethod.SystemEmojiPicker.Delay", delay);
+}
+
+void copyEmojiToClipboard(const std::string& emoji_to_copy) {
+  if (base::FeatureList::IsEnabled(
+          chromeos::features::kImeSystemEmojiPickerClipboard)) {
+    auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
+        ui::ClipboardBuffer::kCopyPaste, nullptr);
+    clipboard->WriteText(base::UTF8ToUTF16(emoji_to_copy));
+  }
 }
 
 EmojiPageHandler::EmojiPageHandler(
@@ -82,6 +93,7 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
       ui::IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   if (!input_method) {
     DLOG(WARNING) << "no input_method found";
+    copyEmojiToClipboard(emoji_to_insert);
     return;
   }
 
@@ -89,12 +101,14 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
 
   if (!input_client) {
     DLOG(WARNING) << "no input_client found";
+    copyEmojiToClipboard(emoji_to_insert);
     return;
   }
 
   if (input_client->GetTextInputType() ==
       ui::TextInputType::TEXT_INPUT_TYPE_NONE) {
     DLOG(WARNING) << "attempt to insert into input_client with type none";
+    copyEmojiToClipboard(emoji_to_insert);
     return;
   }
 

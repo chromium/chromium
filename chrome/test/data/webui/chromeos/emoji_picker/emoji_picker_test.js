@@ -11,7 +11,7 @@ import {EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN} from 'chrome://emoji-picker/eve
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertGT, assertLT, assertTrue} from '../../chai_assert.js';
 
 import {deepQuerySelector, dispatchMouseEvent, timeout, waitForCondition, waitForEvent, waitWithTimeout} from './emoji_picker_test_util.js';
 
@@ -139,6 +139,31 @@ suite('<emoji-picker>', () => {
         // check text is correct.
         const recentText = recentlyUsed.innerText;
         assertTrue(recentText.includes(String.fromCodePoint(128512)));
+      });
+
+  test(
+      'clicking an emoji with no text field should copy it to the clipboard',
+      async () => {
+        // Note: this whole test has no text field, so we should always copy to
+        // the clipboard.
+        EmojiPickerApiProxyImpl.getInstance().isIncognitoTextField = () =>
+            new Promise((resolve) => resolve({incognito: false}));
+        // yield to allow emoji-group and emoji buttons to render.
+        const emojiButton = await waitForCondition(
+            () => findInEmojiPicker(
+                '[data-group="0"] > emoji-group', 'emoji-button', 'button'));
+        emojiButton.click();
+
+        // wait until emoji exists in recently used section.
+        const recentlyUsed = await waitForCondition(
+            () => findInEmojiPicker(
+                '[data-group=history] > emoji-group', 'emoji-button',
+                'button'));
+
+        // check text is correct.
+        const recentText = recentlyUsed.innerText;
+        await navigator.clipboard.readText().then(
+            text => assertEquals(String.fromCodePoint(128512), text));
       });
 
   test('recently-used should have variants for variant emoji', async () => {

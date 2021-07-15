@@ -615,6 +615,10 @@ const base::Feature kImeOptionsInSettings{"ImeOptionsInSettings",
 const base::Feature kImeSystemEmojiPicker{"SystemEmojiPicker",
                                           base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable system emoji picker falling back to clipboard.
+const base::Feature kImeSystemEmojiPickerClipboard{
+    "SystemEmojiPickerClipboard", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables or disables Instant Tethering on Chrome OS.
 const base::Feature kInstantTethering{"InstantTethering",
                                       base::FEATURE_ENABLED_BY_DEFAULT};

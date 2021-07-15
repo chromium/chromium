@@ -2788,6 +2788,9 @@ extern const char kCrosLanguageSettingsImeOptionsInSettingsDescription[];
 extern const char kImeSystemEmojiPickerName[];
 extern const char kImeSystemEmojiPickerDescription[];
 
+extern const char kImeSystemEmojiPickerClipboardName[];
+extern const char kImeSystemEmojiPickerClipboardDescription[];
+
 extern const char kIntentHandlingSharingName[];
 extern const char kIntentHandlingSharingDescription[];
 
