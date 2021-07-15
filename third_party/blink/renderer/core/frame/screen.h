@@ -29,16 +29,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
-#include "third_party/blink/renderer/core/frame/web_feature_forward.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "ui/display/mojom/display.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
@@ -72,41 +68,10 @@ class CORE_EXPORT Screen : public EventTargetWithInlineData,
   virtual bool isExtended() const;
   // An event fired when Screen attributes change.
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
-  // TODO(crbug.com/1116528): Move permission-gated attributes to an interface
-  // that inherits from Screen: https://github.com/webscreens/window-placement
-  Screen(display::mojom::blink::DisplayPtr display,
-         bool internal,
-         bool primary,
-         const String& id);
-  virtual int left() const;
-  virtual int top() const;
-  virtual bool internal() const;
-  virtual bool primary() const;
-  virtual float scaleFactor() const;
-  virtual const String& id() const;
-  virtual bool touchSupport() const;
 
   // Not web-exposed; for internal usage only.
   static constexpr int64_t kInvalidDisplayId = -1;
   virtual int64_t DisplayId() const;
-
- private:
-  // A static snapshot of the display's information, provided upon construction.
-  // This member is only non-null for Screen objects obtained via the
-  // experimental Window Placement API.
-  const display::mojom::blink::DisplayPtr display_;
-  // True if this is an internal display of the device; it is a static value
-  // provided upon construction. This member is only valid for Screen objects
-  // obtained via the experimental Window Placement API.
-  const absl::optional<bool> internal_;
-  // True if this is the primary screen of the operating system; it is a static
-  // value provided upon construction. This member is only valid for Screen
-  // objects obtained via the experimental Window Placement API.
-  const absl::optional<bool> primary_;
-  // A web-exposed device id; it is a static value provided upon construction.
-  // This member is only valid for Screen objects obtained via the experimental
-  // Window Placement API.
-  const String id_;
 };
 
 }  // namespace blink

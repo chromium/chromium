@@ -8177,17 +8177,10 @@ interface Screen
     getter availWidth
     getter colorDepth
     getter height
-    getter id
-    getter internal
     getter isExtended
-    getter left
     getter onchange
     getter orientation
     getter pixelDepth
-    getter primary
-    getter scaleFactor
-    getter top
-    getter touchSupport
     getter width
     method addEventListener
     method constructor

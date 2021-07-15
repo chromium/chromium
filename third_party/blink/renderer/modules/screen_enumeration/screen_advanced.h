@@ -33,12 +33,12 @@ class MODULES_EXPORT ScreenAdvanced final : public Screen {
   bool isExtended() const override;
 
   // Web-exposed interface (additional per-screen information):
-  int left() const override;
-  int top() const override;
+  int left() const;
+  int top() const;
   bool isPrimary() const;
   bool isInternal() const;
   float devicePixelRatio() const;
-  const String& id() const override;
+  const String& id() const;
   Vector<String> pointerTypes() const;
   const String& label() const;
 

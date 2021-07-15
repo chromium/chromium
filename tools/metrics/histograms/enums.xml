@@ -33419,8 +33419,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3403" label="OBSOLETE_BluetoothRemoteGATTDescriptor_Uuid"/>
   <int value="3404" label="OBSOLETE_BluetoothRemoteGATTService_Uuid"/>
   <int value="3405" label="GPUAdapter_Name"/>
-  <int value="3406" label="WindowScreenInternal"/>
-  <int value="3407" label="WindowScreenPrimary"/>
+  <int value="3406" label="OBSOLETE_WindowScreenInternal"/>
+  <int value="3407" label="OBSOLETE_WindowScreenPrimary"/>
   <int value="3408" label="ThirdPartyCookieRead"/>
   <int value="3409" label="ThirdPartyCookieWrite"/>
   <int value="3410" label="RTCLegacyRtpDataChannelNegotiated"/>
@@ -33519,7 +33519,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3501" label="V8Document_ElementsFromPoint_Method"/>
   <int value="3502" label="V8ShadowRoot_ElementFromPoint_Method"/>
   <int value="3503" label="V8ShadowRoot_ElementsFromPoint_Method"/>
-  <int value="3504" label="WindowScreenTouchSupport"/>
+  <int value="3504" label="OBSOLETE_WindowScreenTouchSupport"/>
   <int value="3505" label="IdentifiabilityStudyReserved3505"/>
   <int value="3506" label="IdentifiabilityStudyReserved3506"/>
   <int value="3507"
@@ -33585,7 +33585,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3564" label="IdentifiabilityStudyReserved3564"/>
   <int value="3565" label="IdentifiabilityStudyReserved3565"/>
   <int value="3566" label="V8BaseAudioContext_SampleRate_AttributeGetter"/>
-  <int value="3567" label="WindowScreenId"/>
+  <int value="3567" label="OBSOLETE_WindowScreenId"/>
   <int value="3568" label="WebGLRenderingContextGetParameter"/>
   <int value="3569" label="WebGLRenderingContextGetRenderbufferParameter"/>
   <int value="3570" label="WebGLRenderingContextGetShaderPrecisionFormat"/>
