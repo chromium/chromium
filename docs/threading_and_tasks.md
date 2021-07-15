@@ -20,8 +20,8 @@ between threads. We discourage locking and thread-safe objects. Instead, objects
 live on only one (often virtual -- we'll get to that later!) thread and we pass
 messages between those threads for communication. Absent external requirements
 about latency or workload, Chrome attempts to be a [highly concurrent, but not
-necessarily parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.)
-, system.
+necessarily parallel](https://stackoverflow.com/questions/1050222/what-is-the-difference-between-concurrency-and-parallelism#:~:text=Concurrency%20is%20when%20two%20or,e.g.%2C%20on%20a%20multicore%20processor.),
+system.
 
 This documentation assumes familiarity with computer science
 [threading concepts](https://en.wikipedia.org/wiki/Thread_(computing)).
@@ -261,7 +261,7 @@ base::SequencedTaskRunnerHandle::Get()->PostTask(
     FROM_HERE, base::BindOnce(&Task);
 ```
 
-Note that SequencedTaskRunnerHandle::Get() returns the default queue for the
+Note that `SequencedTaskRunnerHandle::Get()` returns the default queue for the
 current virtual thread. On threads with multiple task queues (e.g.
 BrowserThread::UI) this can be a different queue than the one the current task
 belongs to. The "current" task runner is intentionally not exposed via a static
@@ -678,7 +678,7 @@ periodically invoked to conditionally exit and let the scheduler prioritize
 other work. This yield-semantic allows, for example, a user-visible job to use
 all cores but get out of the way when a user-blocking task comes in.
 
-### Adding additional work to a running job.
+### Adding additional work to a running job
 
 When new work items are added and the API user wants additional threads to
 invoke the worker task in parallel,
@@ -773,7 +773,7 @@ in the main function:
 // This initializes and starts ThreadPoolInstance with default params.
 base::ThreadPoolInstance::CreateAndStartWithDefaultParams(“process_name”);
 // The base/task/post_task.h API can now be used with base::ThreadPool trait.
-// Tasks will be // scheduled as they are posted.
+// Tasks will be scheduled as they are posted.
 
 // This initializes ThreadPoolInstance.
 base::ThreadPoolInstance::Create(“process_name”);
@@ -798,7 +798,7 @@ base::ThreadPoolInstance::Get()->Shutdown();
 ## TaskRunner ownership (encourage no dependency injection)
 
 TaskRunners shouldn't be passed through several components. Instead, the
-components that uses a TaskRunner should be the one that creates it.
+component that uses a TaskRunner should be the one that creates it.
 
 See [this example](https://codereview.chromium.org/2885173002/) of a
 refactoring where a TaskRunner was passed through a lot of components only to be
@@ -870,7 +870,7 @@ most common are:
 
 ### RunLoop
 
-RunLoop is s helper class to run the RunLoop::Delegate associated with the
+RunLoop is a helper class to run the RunLoop::Delegate associated with the
 current thread (usually a SequenceManager). Create a RunLoop on the stack and
 call Run/Quit to run a nested RunLoop but please avoid nested loops in
 production code!
@@ -928,6 +928,7 @@ which is highly configurable.
 
 You might come across references to MessageLoop or MessageLoopCurrent in the
 code or documentation. These classes no longer exist and we are in the process
-or getting rid of all references to them. base::MessageLoopCurrent was replaced
-by base::CurrentThread and the drop in replacements for base::MessageLoop are
-base::SingleThreadTaskExecutor and base::Test::TaskEnvironment.
+or getting rid of all references to them. `base::MessageLoopCurrent` was
+replaced by `base::CurrentThread` and the drop in replacements for
+`base::MessageLoop` are `base::SingleThreadTaskExecutor` and
+`base::Test::TaskEnvironment`.
