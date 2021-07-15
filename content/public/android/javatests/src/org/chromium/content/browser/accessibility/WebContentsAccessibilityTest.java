@@ -102,7 +102,7 @@ public class WebContentsAccessibilityTest {
             "Expected to receive both a traversal and selection text event";
 
     // Constant values for unit tests
-    private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
+    private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
 
     private AccessibilityNodeInfo mNodeInfo;
     private AccessibilityContentShellTestData mTestData;
@@ -371,6 +371,7 @@ public class WebContentsAccessibilityTest {
      * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
      */
     @Test
+    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
@@ -386,15 +387,16 @@ public class WebContentsAccessibilityTest {
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
 
-        // Verify number of events processed, allow for multiple atomic updates.
+        // Verify number of events processed
         int eventCount = mTestData.getTypeWindowContentChangedCount();
-        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= (maxEvents * 3));
+        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= maxEvents);
     }
 
     /**
      * Ensure we need to throttle TYPE_WINDOW_CONTENT_CHANGED events for some large tree updates.
      */
     @Test
+    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
