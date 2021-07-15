@@ -8,81 +8,11 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/i18n/icu_string_conversions.h"
-#include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/ime/constants.h"
-#include "chromeos/services/ime/decoder/proto_conversion.h"
 #include "chromeos/services/ime/public/cpp/buildflags.h"
-#include "chromeos/services/ime/public/proto/messages.pb.h"
 
 namespace chromeos {
 namespace ime {
-
-namespace {
-
-using ReplyCallback =
-    base::RepeatingCallback<void(const std::vector<uint8_t>&,
-                                 mojo::Remote<mojom::InputMethodHost>& host)>;
-
-// A client delegate passed to the shared library in order for the
-// shared library to send replies back to the engine.
-class ClientDelegate : public ImeClientDelegate {
- public:
-  // All replies from the shared library will be sent to |host| as
-  // well as |callback|.
-  ClientDelegate(const std::string& ime_spec,
-                 mojo::PendingRemote<mojom::InputMethodHost> host,
-                 ReplyCallback callback)
-      : ime_spec_(ime_spec), host_(std::move(host)), callback_(callback) {
-    host_.set_disconnect_handler(base::BindOnce(&ClientDelegate::OnDisconnected,
-                                                base::Unretained(this)));
-  }
-
-  ~ClientDelegate() override {}
-
-  const char* ImeSpec() override { return ime_spec_.c_str(); }
-
-  void Process(const uint8_t* data, size_t size) override {
-    if (host_.is_bound()) {
-      std::vector<uint8_t> msg(data, data + size);
-      callback_.Run(msg, host_);
-    }
-  }
-
-  void Destroy() override {}
-
- private:
-  void OnDisconnected() {
-    host_.reset();
-    LOG(ERROR) << "Client remote is disconnected." << ime_spec_;
-  }
-
-  // The ime specification which is unique in the scope of engine.
-  std::string ime_spec_;
-
-  mojo::Remote<mojom::InputMethodHost> host_;
-
-  ReplyCallback callback_;
-};
-
-std::vector<uint8_t> WrapAndSerializeMessage(PublicMessage message) {
-  Wrapper wrapper;
-  *wrapper.mutable_public_message() = std::move(message);
-  std::vector<uint8_t> output(wrapper.ByteSizeLong());
-  wrapper.SerializeToArray(output.data(), output.size());
-  return output;
-}
-
-std::u16string ConvertToUtf16AndNormalize(const std::string& str) {
-  // TODO(https://crbug.com/1185629): Add a new helper in
-  // base/i18n/icu_string_conversions.h that does the conversion directly
-  // without a redundant UTF16->UTF8 conversion.
-  std::string normalized_str;
-  base::ConvertToUtf8AndNormalize(str, base::kCodepageUTF8, &normalized_str);
-  return base::UTF8ToUTF16(normalized_str);
-}
-
-}  // namespace
 
 SystemEngine::SystemEngine(ImeCrosPlatform* platform) : platform_(platform) {
   if (!TryLoadDecoder()) {
@@ -106,194 +36,17 @@ bool SystemEngine::TryLoadDecoder() {
 bool SystemEngine::BindRequest(
     const std::string& ime_spec,
     mojo::PendingReceiver<mojom::InputMethod> receiver,
-    mojo::PendingRemote<ime::mojom::InputMethodHost> host) {
-  if (!IsImeSupportedByDecoder(ime_spec)) {
-    return false;
-  }
-
-  // Activates an IME engine via the shared library. Passing a
-  // |ClientDelegate| for engine instance created by the shared library to
-  // make safe calls on the client.
-  if (!decoder_entry_points_->activate_ime(
-          ime_spec.c_str(),
-          new ClientDelegate(ime_spec, std::move(host),
-                             base::BindRepeating(&SystemEngine::OnReply,
-                                                 base::Unretained(this))))) {
-    return false;
-  }
-
-  receiver_.Bind(std::move(receiver));
-
-  // Reset the receiver upon disconnection.
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
-                     base::Unretained(&receiver_)));
-
-  OnInputMethodChanged(ime_spec);
-  return true;
+    mojo::PendingRemote<mojom::InputMethodHost> host) {
+  auto receiver_pipe_handle = receiver.PassPipe().release().value();
+  auto host_pipe_version = host.version();
+  auto host_pipe_handle = host.PassPipe().release().value();
+  return decoder_entry_points_->connect_to_input_method(
+      ime_spec.c_str(), receiver_pipe_handle, host_pipe_handle,
+      host_pipe_version);
 }
 
 bool SystemEngine::IsConnected() {
-  // `receiver_` will reset upon disconnection, so bound state is equivalent to
-  // connected state.
-  return receiver_.is_bound();
-}
-
-bool SystemEngine::IsImeSupportedByDecoder(const std::string& ime_spec) {
-  return decoder_entry_points_ &&
-         decoder_entry_points_->supports(ime_spec.c_str());
-}
-
-void SystemEngine::OnFocus(mojom::InputFieldInfoPtr input_field_info) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(WrapAndSerializeMessage(
-      OnFocusToProto(seq_id, std::move(input_field_info))));
-}
-
-void SystemEngine::OnBlur() {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(WrapAndSerializeMessage(OnBlurToProto(seq_id)));
-}
-
-void SystemEngine::ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
-                                   ProcessKeyEventCallback callback) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  pending_key_event_callbacks_.emplace(seq_id, std::move(callback));
-  ProcessMessage(
-      WrapAndSerializeMessage(OnKeyEventToProto(seq_id, std::move(event))));
-}
-
-void SystemEngine::OnSurroundingTextChanged(
-    const std::string& text,
-    uint32_t offset,
-    mojom::SelectionRangePtr selection_range) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(WrapAndSerializeMessage(OnSurroundingTextChangedToProto(
-      seq_id, text, offset, std::move(selection_range))));
-}
-
-void SystemEngine::OnCompositionCanceledBySystem() {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(WrapAndSerializeMessage(OnCompositionCanceledToProto(seq_id)));
-}
-
-void SystemEngine::OnSuggestionsReturned(
-    mojom::SuggestionsResponsePtr response) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(WrapAndSerializeMessage(
-      SuggestionsResponseToProto(seq_id, std::move(response))));
-}
-
-void SystemEngine::ProcessMessage(const std::vector<uint8_t>& message) {
-  // Handle message via corresponding functions of loaded decoder.
-  if (decoder_entry_points_)
-    decoder_entry_points_->process(message.data(), message.size());
-}
-
-void SystemEngine::OnInputMethodChanged(const std::string& engine_id) {
-  const uint64_t seq_id = current_seq_id_;
-  ++current_seq_id_;
-
-  ProcessMessage(
-      WrapAndSerializeMessage(OnInputMethodChangedToProto(seq_id, engine_id)));
-}
-
-void SystemEngine::OnReply(const std::vector<uint8_t>& message,
-                           mojo::Remote<mojom::InputMethodHost>& host) {
-  ime::Wrapper wrapper;
-  if (!wrapper.ParseFromArray(message.data(), message.size()) ||
-      !wrapper.has_public_message()) {
-    return;
-  }
-
-  const ime::PublicMessage& reply = wrapper.public_message();
-  // TODO(crbug/1146266): Add case to handle request for suggestions.
-  switch (reply.param_case()) {
-    case ime::PublicMessage::kOnKeyEventReply: {
-      const auto it = pending_key_event_callbacks_.find(reply.seq_id());
-      CHECK(it != pending_key_event_callbacks_.end());
-      auto callback = std::move(it->second);
-      std::move(callback).Run(
-          reply.on_key_event_reply().consumed()
-              ? mojom::KeyEventResult::kConsumedByIme
-              : mojom::KeyEventResult::kNeedsHandlingBySystem);
-      pending_key_event_callbacks_.erase(it);
-      break;
-    }
-    case ime::PublicMessage::kSetComposition: {
-      std::u16string text =
-          ConvertToUtf16AndNormalize(reply.set_composition().text());
-      std::vector<ime::mojom::CompositionSpanPtr> spans;
-      spans.push_back(ime::mojom::CompositionSpan::New(
-          0, text.length(), ime::mojom::CompositionSpanStyle::kNone));
-      host->SetComposition(std::move(text), std::move(spans));
-      break;
-    }
-    case ime::PublicMessage::kSetCompositionRange: {
-      host->SetCompositionRange(
-          reply.set_composition_range().start_byte_index(),
-          reply.set_composition_range().end_byte_index());
-      break;
-    }
-    case ime::PublicMessage::kFinishComposition: {
-      host->FinishComposition();
-      break;
-    }
-    case ime::PublicMessage::kDeleteSurroundingText: {
-      host->DeleteSurroundingText(
-          reply.delete_surrounding_text().num_bytes_before_cursor(),
-          reply.delete_surrounding_text().num_bytes_after_cursor());
-      break;
-    }
-    case ime::PublicMessage::kCommitText: {
-      host->CommitText(
-          ConvertToUtf16AndNormalize(reply.commit_text().text()),
-          reply.commit_text().cursor_behavior() ==
-                  ime::CommitTextCursorBehavior::
-                      COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT
-              ? mojom::CommitTextCursorBehavior::kMoveCursorBeforeText
-              : mojom::CommitTextCursorBehavior::kMoveCursorAfterText);
-      break;
-    }
-    case ime::PublicMessage::kHandleAutocorrect: {
-      host->HandleAutocorrect(ProtoToAutocorrectSpan(
-          reply.handle_autocorrect().autocorrect_span()));
-      break;
-    }
-    case ime::PublicMessage::kSuggestionsRequest: {
-      host->RequestSuggestions(
-          ProtoToSuggestionsRequest(reply.suggestions_request()),
-          base::BindOnce(&SystemEngine::OnSuggestionsReturned,
-                         base::Unretained(this)));
-      break;
-    }
-    case ime::PublicMessage::kDisplaySuggestions: {
-      host->DisplaySuggestions(
-          ProtoToTextSuggestions(reply.display_suggestions()));
-      break;
-    }
-    case ime::PublicMessage::kRecordUkm: {
-      auto ukm = ProtoToUkmEntry(reply.record_ukm());
-      if (ukm)
-        host->RecordUkm(std::move(ukm));
-      break;
-    }
-    default:
-      NOTREACHED();
-      break;
-  }
+  return decoder_entry_points_->is_input_method_connected();
 }
 
 }  // namespace ime

@@ -8,66 +8,76 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chromeos/services/ime/decoder/proto_conversion.h"
-#include "chromeos/services/ime/public/proto/messages.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
 namespace ime {
 
-// EqualsProto must match against two arguments: a buffer containing the actual
-// serialized proto and a number indicating the size of the buffer.
-MATCHER_P(EqualsProto,
-          message,
-          "Match a proto Message equal to the matcher's argument.") {
-  std::string expected_serialized;
-  message.SerializeToString(&expected_serialized);
-
-  const char* bytes = reinterpret_cast<const char*>(std::get<0>(arg));
-  int size = std::get<1>(arg);
-  std::string actual_serialized(bytes, size);
-  return expected_serialized == actual_serialized;
-}
-
 constexpr char kImeSpec[] = "xkb:us::eng";
 
-class MockDecoderEntryPoints;
+class TestDecoderState;
 
-// The mock decoder entry points has to be available globally because
-// ImeDecoder::EntryPoints cannot contain member functions, so the only way to
-// have a stateful mock is to have a global reference to it.
-MockDecoderEntryPoints* g_mock_decoder_entry_points = nullptr;
+// The fake decoder state has to be available globally because
+// ImeDecoder::EntryPoints is a list of stateless C functions, so the only way
+// to have a stateful fake is to have a global reference to it.
+TestDecoderState* g_test_decoder_state = nullptr;
 
-class MockDecoderEntryPoints {
- public:
-  MockDecoderEntryPoints() { g_mock_decoder_entry_points = this; }
-  ~MockDecoderEntryPoints() { g_mock_decoder_entry_points = nullptr; }
+mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
+  return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(handle));
+}
 
-  bool ActivateIme(const char*, ImeClientDelegate* delegate) {
-    delegate_ = delegate;
-    return true;
-  }
-  MOCK_METHOD(void, Process, (const uint8_t* data, size_t size));
-
-  ImeClientDelegate* delegate() const { return delegate_; }
-
- private:
-  ImeClientDelegate* delegate_;
+struct MockInputMethod : public mojom::InputMethod {
+  MOCK_METHOD(void,
+              OnFocus,
+              (chromeos::ime::mojom::InputFieldInfoPtr input_field_info),
+              (override));
+  MOCK_METHOD(void, OnBlur, (), (override));
+  MOCK_METHOD(void,
+              OnSurroundingTextChanged,
+              (const std::string& text,
+               uint32_t offset,
+               chromeos::ime::mojom::SelectionRangePtr selection_range),
+              (override));
+  MOCK_METHOD(void, OnCompositionCanceledBySystem, (), (override));
+  MOCK_METHOD(void,
+              ProcessKeyEvent,
+              (chromeos::ime::mojom::PhysicalKeyEventPtr event,
+               ProcessKeyEventCallback callback),
+              (override));
 };
 
-ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
+class TestDecoderState {
+ public:
+  bool ConnectToInputMethod(const char* ime_spec,
+                            uint32_t receiver_pipe_handle,
+                            uint32_t host_pipe_handle,
+                            uint32_t host_pipe_version) {
+    receiver.Bind(mojo::PendingReceiver<mojom::InputMethod>(
+        MessagePipeHandleFromInt(receiver_pipe_handle)));
+    input_method_host.Bind(mojo::PendingRemote<mojom::InputMethodHost>(
+        MessagePipeHandleFromInt(host_pipe_handle), host_pipe_version));
+    return true;
+  }
+
+  MockInputMethod mock_input_method;
+  mojo::Receiver<mojom::InputMethod> receiver{&mock_input_method};
+  mojo::Remote<mojom::InputMethodHost> input_method_host;
+};
+
+ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
+  g_test_decoder_state = state;
+
   ImeDecoder::EntryPoints entry_points;
   entry_points.init_once = [](ImeCrosPlatform* platform) {};
-  entry_points.supports = [](const char* ime_spec) { return true; };
-  entry_points.activate_ime = [](const char* ime_spec,
-                                 ImeClientDelegate* delegate) {
-    return g_mock_decoder_entry_points->ActivateIme(ime_spec, delegate);
+  entry_points.connect_to_input_method = [](const char* ime_spec,
+                                            uint32_t receiver_pipe_handle,
+                                            uint32_t host_pipe_handle,
+                                            uint32_t host_pipe_version) {
+    return g_test_decoder_state->ConnectToInputMethod(
+        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
   };
-  entry_points.process = [](const uint8_t* data, size_t size) {
-    return g_mock_decoder_entry_points->Process(data, size);
-  };
-  entry_points.close = []() {};
+  entry_points.is_input_method_connected = []() { return false; };
   return entry_points;
 }
 
@@ -111,424 +121,68 @@ struct MockInputMethodHost : public ime::mojom::InputMethodHost {
 class SystemEngineTest : public testing::Test {
  protected:
   void SetUp() final {
-    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints());
     scoped_feature_list_.InitWithFeatures(
         {chromeos::features::kSystemLatinPhysicalTyping}, {});
   }
 
-  MockDecoderEntryPoints decoder_entry_points_;
-  MockInputMethodHost mock_host_;
-  mojo::Receiver<mojom::InputMethodHost> host_receiver_{&mock_host_};
-
  private:
   // Mojo calls need a SequencedTaskRunner.
   base::test::SingleThreadTaskEnvironment task_environment;
-
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(SystemEngineTest, BindRequestConnectsInputMethod) {
+  TestDecoderState state;
+  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
   SystemEngine engine(/*platform=*/nullptr);
 
   mojo::Remote<mojom::InputMethod> input_method;
+  MockInputMethodHost mock_host;
+  mojo::Receiver<mojom::InputMethodHost> receiver{&mock_host};
   EXPECT_TRUE(engine.BindRequest(kImeSpec,
                                  input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
+                                 receiver.BindNewPipeAndPassRemote()));
 
   ASSERT_TRUE(input_method.is_bound());
   EXPECT_TRUE(input_method.is_connected());
 }
 
-TEST_F(SystemEngineTest, BindRequestSendsMessageToSharedLib) {
+TEST_F(SystemEngineTest, CanSendMessagesAfterBinding) {
+  TestDecoderState state;
+  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
   SystemEngine engine(/*platform=*/nullptr);
+
   mojo::Remote<mojom::InputMethod> input_method;
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() =
-      OnInputMethodChangedToProto(/*seq_id=*/0, "xkb:us::eng");
-
-  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
-
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+  MockInputMethodHost mock_host;
+  mojo::Receiver<mojom::InputMethodHost> receiver{&mock_host};
+  EXPECT_TRUE(engine.BindRequest(kImeSpec,
                                  input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-}
+                                 receiver.BindNewPipeAndPassRemote()));
 
-TEST_F(SystemEngineTest, OnFocusSendsMessageToSharedLib) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
+  EXPECT_CALL(state.mock_input_method, OnBlur);
 
-  auto info = mojom::InputFieldInfo::New(mojom::InputFieldType::kNumber,
-                                         mojom::AutocorrectMode::kEnabled,
-                                         mojom::PersonalizationMode::kEnabled);
-
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() =
-      OnFocusToProto(/*seq_id=*/1, info.Clone());
-
-  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
-
-  input_method->OnFocus(info.Clone());
-  input_method.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, OnBlurSendsMessageToSharedLib) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() = OnBlurToProto(/*seq_id=*/1);
-
-  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
-
+  // Send any Mojo message to the input method.
   input_method->OnBlur();
   input_method.FlushForTesting();
 }
 
-TEST_F(SystemEngineTest, ProcessKeyEventRepliesWithCallback) {
+TEST_F(SystemEngineTest, CanReceiveMessagesAfterBinding) {
+  TestDecoderState state;
+  FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state));
   SystemEngine engine(/*platform=*/nullptr);
+
   mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
+  MockInputMethodHost mock_host;
+  mojo::Receiver<mojom::InputMethodHost> receiver{&mock_host};
+  EXPECT_TRUE(engine.BindRequest(kImeSpec,
                                  input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
+                                 receiver.BindNewPipeAndPassRemote()));
 
-  auto key_event = mojom::PhysicalKeyEvent::New(
-      mojom::KeyEventType::kKeyDown, mojom::DomKey::NewCodepoint('A'),
-      mojom::DomCode::kKeyA, mojom::ModifierState::New());
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() =
-      OnKeyEventToProto(/*seq_id=*/1, key_event.Clone());
+  EXPECT_CALL(mock_host, FinishComposition);
 
-  // Set up the mock shared library to reply to the key event.
-  EXPECT_CALL(decoder_entry_points_, Process)
-      .With(EqualsProto(expected_proto))
-      .WillOnce([this]() {
-        ime::Wrapper wrapper;
-        wrapper.mutable_public_message()->set_seq_id(1);
-        wrapper.mutable_public_message()
-            ->mutable_on_key_event_reply()
-            ->set_consumed(true);
-        std::vector<uint8_t> output(wrapper.ByteSizeLong());
-        wrapper.SerializeToArray(output.data(), output.size());
-        decoder_entry_points_.delegate()->Process(output.data(), output.size());
-      });
-
-  input_method->ProcessKeyEvent(
-      std::move(key_event),
-      base::BindLambdaForTesting([&](mojom::KeyEventResult result) {
-        EXPECT_EQ(result, mojom::KeyEventResult::kConsumedByIme);
-      }));
-  input_method.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, OnSurroundingTextChangedSendsMessageToSharedLib) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  const auto selection = mojom::SelectionRange::New(/*anchor=*/3, /*focus=*/2);
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() = OnSurroundingTextChangedToProto(
-      /*seq_id=*/1, "hello", /*offset=*/1, selection->Clone());
-
-  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
-
-  input_method->OnSurroundingTextChanged("hello", /*offset=*/1,
-                                         selection->Clone());
-  input_method.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, OnCompositionCanceledSendsMessageToSharedLib) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  ime::Wrapper expected_proto;
-  *expected_proto.mutable_public_message() =
-      OnCompositionCanceledToProto(/*seq_id=*/1);
-
-  EXPECT_CALL(decoder_entry_points_, Process).With(EqualsProto(expected_proto));
-
-  input_method->OnCompositionCanceledBySystem();
-  input_method.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, CommitTextSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  input_method.FlushForTesting();
-  ime::Wrapper proto;
-
-  proto.mutable_public_message()->mutable_commit_text()->set_text("hello");
-  proto.mutable_public_message()->mutable_commit_text()->set_cursor_behavior(
-      ime::CommitTextCursorBehavior::
-          COMMIT_TEXT_CURSOR_BEHAVIOR_MOVE_CURSOR_BEFORE_TEXT);
-
-  EXPECT_CALL(
-      mock_host_,
-      CommitText(std::u16string(u"hello"),
-                 mojom::CommitTextCursorBehavior::kMoveCursorBeforeText));
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, SetCompositionSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  ime::Wrapper proto;
-  proto.mutable_public_message()->mutable_set_composition()->set_text("hello");
-
-  EXPECT_CALL(mock_host_,
-              SetComposition(std::u16string(u"hello"), ::testing::_))
-      .WillOnce(
-          ::testing::Invoke([](const std::u16string& text,
-                               std::vector<mojom::CompositionSpanPtr> spans) {
-            ASSERT_EQ(spans.size(), 1U);
-            EXPECT_EQ(spans[0], mojom::CompositionSpan::New(
-                                    0, 5, mojom::CompositionSpanStyle::kNone));
-          }));
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, SetCompositionRangeSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  ime::Wrapper proto;
-  proto.mutable_public_message()
-      ->mutable_set_composition_range()
-      ->set_start_byte_index(2);
-  proto.mutable_public_message()
-      ->mutable_set_composition_range()
-      ->set_end_byte_index(6);
-
-  EXPECT_CALL(mock_host_, SetCompositionRange(2, 6));
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, FinishCompositionSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  ime::Wrapper proto;
-  *proto.mutable_public_message()->mutable_finish_composition() =
-      ime::FinishComposition();
-
-  EXPECT_CALL(mock_host_, FinishComposition());
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, DeleteSurroundingTextSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  ime::Wrapper proto;
-  proto.mutable_public_message()
-      ->mutable_delete_surrounding_text()
-      ->set_num_bytes_before_cursor(2);
-  proto.mutable_public_message()
-      ->mutable_delete_surrounding_text()
-      ->set_num_bytes_after_cursor(6);
-
-  EXPECT_CALL(mock_host_, DeleteSurroundingText(2, 6));
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
-}
-
-using RequestSuggestionsCallback =
-    base::OnceCallback<void(mojo::StructPtr<mojom::SuggestionsResponse>)>;
-
-TEST_F(SystemEngineTest, SuggestionsRequestSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-
-  ime::Wrapper proto;
-  auto* suggestions_request =
-      proto.mutable_public_message()->mutable_suggestions_request();
-  suggestions_request->set_text("hello there!");
-  suggestions_request->set_suggestion_mode(
-      ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
-  auto* candidate = suggestions_request->add_completion_candidates();
-  candidate->set_text("hello");
-  candidate->set_normalized_score(0.55);
-
-  mojom::SuggestionsRequestPtr request;
-  EXPECT_CALL(mock_host_, RequestSuggestions)
-      .WillOnce([&request](mojom::SuggestionsRequestPtr suggestions_request,
-                           RequestSuggestionsCallback callback) {
-        request = std::move(suggestions_request);
-        std::move(callback).Run(mojom::SuggestionsResponse::New());
-      });
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  input_method.FlushForTesting();
-
-  EXPECT_EQ(request->mode, TextSuggestionMode::kPrediction);
-  EXPECT_EQ(request->text, "hello there!");
-  EXPECT_EQ(static_cast<int>(request->completion_candidates.size()), 1);
-  EXPECT_EQ(request->completion_candidates[0].text, "hello");
-  EXPECT_FLOAT_EQ(request->completion_candidates[0].score, 0.55);
-}
-
-TEST_F(SystemEngineTest, SuggestionsRequestReturnsResponseToSharedLib) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-
-  ime::Wrapper expected_response_proto;
-  ime::PublicMessage* expected_message =
-      expected_response_proto.mutable_public_message();
-  expected_message->set_seq_id(1);
-  auto* candidate =
-      expected_message->mutable_suggestions_response()->add_candidates();
-  candidate->set_mode(ime::SuggestionMode::SUGGESTION_MODE_PREDICTION);
-  candidate->set_type(ime::SuggestionType::SUGGESTION_TYPE_MULTI_WORD);
-  candidate->set_text("gday");
-
-  {
-    testing::InSequence sequence;
-
-    EXPECT_CALL(mock_host_, RequestSuggestions)
-        .WillOnce([](mojom::SuggestionsRequestPtr suggestions_request,
-                     RequestSuggestionsCallback callback) {
-          auto response = mojom::SuggestionsResponse::New();
-          response->candidates.push_back(
-              ime::TextSuggestion{.mode = ime::TextSuggestionMode::kPrediction,
-                                  .type = ime::TextSuggestionType::kMultiWord,
-                                  .text = "gday"});
-          std::move(callback).Run(std::move(response));
-        });
-
-    EXPECT_CALL(decoder_entry_points_, Process)
-        .With(EqualsProto(expected_response_proto));
-  }
-
-  ime::Wrapper proto;
-  proto.mutable_public_message()->mutable_suggestions_request();
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-
-  // Ensure the first mojo call RequestSuggestions is flushed
-  input_method.FlushForTesting();
-  // Ensure the second mojo call RequestSuggestionsCallback is flushed
-  input_method.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, DisplaySuggestionsSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-
-  ime::Wrapper proto;
-  auto* candidate = proto.mutable_public_message()
-                        ->mutable_display_suggestions()
-                        ->add_candidates();
-  candidate->set_mode(SuggestionMode::SUGGESTION_MODE_PREDICTION);
-  candidate->set_type(SuggestionType::SUGGESTION_TYPE_MULTI_WORD);
-  candidate->set_text("gday mate");
-
-  std::vector<TextSuggestion> expected_suggestions = {
-      TextSuggestion{.mode = TextSuggestionMode::kPrediction,
-                     .type = TextSuggestionType::kMultiWord,
-                     .text = "gday mate"},
-  };
-
-  EXPECT_CALL(mock_host_,
-              DisplaySuggestions(testing::ContainerEq(expected_suggestions)));
-
-  const std::string serialized = proto.SerializeAsString();
-  base::span<const uint8_t> serialized_bytes =
-      base::as_bytes(base::make_span(serialized));
-  decoder_entry_points_.delegate()->Process(serialized_bytes.data(),
-                                            serialized_bytes.size());
-  host_receiver_.FlushForTesting();
-}
-
-TEST_F(SystemEngineTest, RecordUkmSendsMessageToReceiver) {
-  SystemEngine engine(/*platform=*/nullptr);
-  mojo::Remote<mojom::InputMethod> input_method;
-  ASSERT_TRUE(engine.BindRequest(kImeSpec,
-                                 input_method.BindNewPipeAndPassReceiver(),
-                                 host_receiver_.BindNewPipeAndPassRemote()));
-  input_method.FlushForTesting();
-  Wrapper proto;
-  proto.mutable_public_message()
-      ->mutable_record_ukm()
-      ->mutable_non_compliant_api()
-      ->set_non_compliant_operation(
-          NonCompliantApiMetric::OPERATION_SET_COMPOSITION_TEXT);
-
-  EXPECT_CALL(mock_host_, RecordUkm)
-      .WillOnce([proto](mojom::UkmEntryPtr entry) {
-        EXPECT_EQ(entry, ProtoToUkmEntry(proto.public_message().record_ukm()));
-      });
-
-  const std::string serialized = proto.SerializeAsString();
-  decoder_entry_points_.delegate()->Process(
-      reinterpret_cast<const uint8_t*>(serialized.data()), serialized.size());
-  host_receiver_.FlushForTesting();
+  // Send any Mojo message from the input method.
+  state.input_method_host->FinishComposition();
+  state.input_method_host.FlushForTesting();
 }
 
 }  // namespace ime

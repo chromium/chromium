@@ -23,7 +23,7 @@ namespace ime {
 
 // An enhanced implementation of the basic InputEngine that uses a built-in
 // shared library for handling key events.
-class SystemEngine : public InputEngine, public mojom::InputMethod {
+class SystemEngine : public InputEngine {
  public:
   explicit SystemEngine(ImeCrosPlatform* platform);
   SystemEngine(const SystemEngine&) = delete;
@@ -39,25 +39,7 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // InputEngine:
   bool IsConnected() override;
 
-  // mojom::InputChannel:
-  void OnFocus(mojom::InputFieldInfoPtr input_field_info) override;
-  void OnBlur() override;
-  void ProcessKeyEvent(mojom::PhysicalKeyEventPtr event,
-                       ProcessKeyEventCallback callback) override;
-  void OnSurroundingTextChanged(
-      const std::string& text,
-      uint32_t offset,
-      mojom::SelectionRangePtr selection_range) override;
-  void OnCompositionCanceledBySystem() override;
-
-  // Handle the suggestion response returned from a call to
-  // remote->RequestSuggestions().
-  void OnSuggestionsReturned(mojom::SuggestionsResponsePtr response);
-
  private:
-  void ProcessMessage(const std::vector<uint8_t>& message);
-  void OnInputMethodChanged(const std::string& engine_id);
-
   // Try to load the decoding functions from some decoder shared library.
   // Returns whether loading decoder is successful.
   bool TryLoadDecoder();
@@ -65,21 +47,9 @@ class SystemEngine : public InputEngine, public mojom::InputMethod {
   // Returns whether the decoder shared library supports this ime_spec.
   bool IsImeSupportedByDecoder(const std::string& ime_spec);
 
-  // Called when there's a reply from the shared library.
-  // Deserializes |message| and converts it into Mojo calls to the receiver.
-  void OnReply(const std::vector<uint8_t>& message,
-               mojo::Remote<mojom::InputMethodHost>& host);
-
   ImeCrosPlatform* platform_ = nullptr;
 
   absl::optional<ImeDecoder::EntryPoints> decoder_entry_points_;
-
-  mojo::Receiver<mojom::InputMethod> receiver_{this};
-
-  // Sequence ID for protobuf messages sent from the engine.
-  uint64_t current_seq_id_ = 0;
-
-  std::map<uint64_t, ProcessKeyEventCallback> pending_key_event_callbacks_;
 };
 
 }  // namespace ime

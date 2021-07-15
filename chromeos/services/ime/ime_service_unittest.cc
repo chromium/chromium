@@ -37,7 +37,61 @@ void ConnectCallback(bool* success, bool result) {
   *success = result;
 }
 
-ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
+class TestDecoderState;
+
+// The fake decoder state has to be available globally because
+// ImeDecoder::EntryPoints is a list of stateless C functions, so the only way
+// to have a stateful fake is to have a global reference to it.
+TestDecoderState* g_test_decoder_state = nullptr;
+
+mojo::ScopedMessagePipeHandle MessagePipeHandleFromInt(uint32_t handle) {
+  return mojo::ScopedMessagePipeHandle(mojo::MessagePipeHandle(handle));
+}
+
+class TestDecoderState : public mojom::InputMethod {
+ public:
+  bool ConnectToInputMethod(const char* ime_spec,
+                            uint32_t receiver_pipe_handle,
+                            uint32_t host_pipe_handle,
+                            uint32_t host_pipe_version) {
+    receiver_.reset();
+    receiver_.Bind(mojo::PendingReceiver<mojom::InputMethod>(
+        MessagePipeHandleFromInt(receiver_pipe_handle)));
+    receiver_.set_disconnect_handler(
+        base::BindOnce(&mojo::Receiver<mojom::InputMethod>::reset,
+                       base::Unretained(&receiver_)));
+
+    input_method_host_.reset();
+    input_method_host_.Bind(mojo::PendingRemote<mojom::InputMethodHost>(
+        MessagePipeHandleFromInt(host_pipe_handle), host_pipe_version));
+    return true;
+  }
+  bool IsInputMethodConnected() {
+    // The receiver resets upon disconnection, so we can just check whether it
+    // is bound.
+    return receiver_.is_bound();
+  }
+
+ private:
+  // mojom::InputMethod:
+  void OnFocus(
+      chromeos::ime::mojom::InputFieldInfoPtr input_field_info) override {}
+  void OnBlur() override {}
+  void OnSurroundingTextChanged(
+      const std::string& text,
+      uint32_t offset,
+      chromeos::ime::mojom::SelectionRangePtr selection_range) override {}
+  void OnCompositionCanceledBySystem() override {}
+  void ProcessKeyEvent(chromeos::ime::mojom::PhysicalKeyEventPtr event,
+                       ProcessKeyEventCallback callback) override {}
+
+  mojo::Receiver<mojom::InputMethod> receiver_{this};
+  mojo::Remote<mojom::InputMethodHost> input_method_host_;
+};
+
+ImeDecoder::EntryPoints CreateDecoderEntryPoints(TestDecoderState* state) {
+  g_test_decoder_state = state;
+
   ImeDecoder::EntryPoints entry_points;
   entry_points.init_once = [](ImeCrosPlatform* platform) {};
   entry_points.supports = [](const char* ime_spec) {
@@ -46,6 +100,16 @@ ImeDecoder::EntryPoints CreateDecoderEntryPoints() {
   entry_points.activate_ime = [](const char* ime_spec,
                                  ImeClientDelegate* delegate) { return true; };
   entry_points.process = [](const uint8_t* data, size_t size) {};
+  entry_points.connect_to_input_method = [](const char* ime_spec,
+                                            uint32_t receiver_pipe_handle,
+                                            uint32_t host_pipe_handle,
+                                            uint32_t host_pipe_version) {
+    return g_test_decoder_state->ConnectToInputMethod(
+        ime_spec, receiver_pipe_handle, host_pipe_handle, host_pipe_version);
+  };
+  entry_points.is_input_method_connected = []() {
+    return g_test_decoder_state->IsInputMethodConnected();
+  };
   entry_points.close = []() {};
   return entry_points;
 }
@@ -101,7 +165,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
                               features::kSystemLatinPhysicalTyping},
         /*disabled_features=*/{});
 
-    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints());
+    FakeDecoderEntryPointsForTesting(CreateDecoderEntryPoints(&state_));
     remote_service_->BindInputEngineManager(
         remote_manager_.BindNewPipeAndPassReceiver());
   }
@@ -113,6 +177,7 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
   ImeService service_;
+  TestDecoderState state_;
 
   DISALLOW_COPY_AND_ASSIGN(ImeServiceTest);
 };

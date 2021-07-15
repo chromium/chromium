@@ -36,6 +36,8 @@ class ImeDecoder {
     ImeDecoderActivateImeFn activate_ime;
     ImeDecoderProcessFn process;
     ImeDecoderCloseFn close;
+    ConnectToInputMethodFn connect_to_input_method;
+    IsInputMethodConnectedFn is_input_method_connected;
 
     // Whether the EntryPoints is ready to use.
     bool is_ready = false;

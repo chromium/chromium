@@ -93,6 +93,12 @@ ImeDecoder::ImeDecoder() : status_(Status::kUninitialized) {
       library.GetFunctionPointer("ImeDecoderProcess"));
   entry_points_.close = reinterpret_cast<ImeDecoderCloseFn>(
       library.GetFunctionPointer("ImeDecoderClose"));
+  entry_points_.connect_to_input_method =
+      reinterpret_cast<ConnectToInputMethodFn>(
+          library.GetFunctionPointer("ConnectToInputMethod"));
+  entry_points_.is_input_method_connected =
+      reinterpret_cast<IsInputMethodConnectedFn>(
+          library.GetFunctionPointer("IsInputMethodConnected"));
   if (!IsEntryPointsLoaded(entry_points_)) {
     status_ = Status::kFunctionMissing;
     return;

@@ -262,6 +262,15 @@ typedef void (*ImeDecoderProcessFn)(const uint8_t*, size_t);
 // Release resources used by the IME decoder.
 typedef void (*ImeDecoderCloseFn)();
 
+// Set up a direct connection with the shared library via Mojo.
+typedef bool (*ConnectToInputMethodFn)(const char*,
+                                       uint32_t,
+                                       uint32_t,
+                                       uint32_t);
+
+// Whether there's a direct connection with Mojo.
+typedef bool (*IsInputMethodConnectedFn)();
+
 }  // namespace ime
 }  // namespace chromeos
 
