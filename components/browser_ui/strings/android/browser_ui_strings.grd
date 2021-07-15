@@ -456,6 +456,18 @@
       <message name="IDS_PAGE_INFO_HISTORY_FORGET" desc="Label used in the Page Info dialog for clearing history information">
         Forget this site
       </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_TODAY" desc="Summary string for page info history row. The site was last visited today.">
+        Last visited today
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_YESTERDAY" desc="Summary string for page info history row. The site was last visited yesterday.">
+        Last visited yesterday
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DAYS" desc="Summary string for page info history row. The site was last visited NUM_DAYS days ago.">
+        Last visited <ph name="NUM_DAYS">%1$s<ex>2</ex></ph> days ago
+      </message>
+      <message name="IDS_PAGE_INFO_HISTORY_LAST_VISIT_DATE" desc="Summary string for page info history row. The site was last visited on a particular date.">
+        Last visited <ph name="DATE">%1$s<ex>Apr 4, 2021</ex></ph>
+      </message>
       <message name="IDS_PAGE_INFO_PERMISSIONS_TITLE" desc="Label used in the Page Info dialog above the permissions list.">
         Permissions
       </message>

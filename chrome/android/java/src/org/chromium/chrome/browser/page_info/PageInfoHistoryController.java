@@ -3,17 +3,22 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.page_info;
 
+import android.content.res.Resources;
+import android.text.format.DateUtils;
 import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.history.HistoryContentManager;
 import org.chromium.chrome.browser.history.HistoryItem;
+import org.chromium.components.browser_ui.util.date.StringUtils;
 import org.chromium.components.page_info.PageInfoAction;
 import org.chromium.components.page_info.PageInfoControllerDelegate;
 import org.chromium.components.page_info.PageInfoMainController;
 import org.chromium.components.page_info.PageInfoRowView;
 import org.chromium.components.page_info.PageInfoSubpageController;
+
+import java.util.Date;
 
 /**
  * Class for controlling the page info history section.
@@ -26,6 +31,7 @@ public class PageInfoHistoryController
     private final String mTitle;
     private final String mHost;
     private HistoryContentManager mContentManager;
+    private long mLastVisitedTimestamp;
 
     public PageInfoHistoryController(PageInfoMainController mainController, PageInfoRowView rowView,
             PageInfoControllerDelegate delegate, String host) {
@@ -72,7 +78,8 @@ public class PageInfoHistoryController
     private void setupHistoryRow() {
         PageInfoRowView.ViewParams rowParams = new PageInfoRowView.ViewParams();
         rowParams.title = getRowTitle();
-        rowParams.visible = mDelegate.isSiteSettingsAvailable() && !mDelegate.isIncognito();
+        rowParams.visible = rowParams.title != null && mDelegate.isSiteSettingsAvailable()
+                && !mDelegate.isIncognito();
         rowParams.iconResId = R.drawable.ic_history_googblue_24dp;
         rowParams.clickCallback = this::launchSubpage;
 
@@ -80,8 +87,24 @@ public class PageInfoHistoryController
     }
 
     private String getRowTitle() {
-        // TODO(crbug.com/1173154): This should return a string about how long since the last visit.
-        return mTitle;
+        if (mLastVisitedTimestamp == 0) {
+            return mTitle;
+        }
+        // TODO(crbug.com/1173154): Set last visit timestamp based on history query.
+        long difference = 0;
+        Resources resources = mRowView.getContext().getResources();
+        if (difference == 0) {
+            return resources.getString(R.string.page_info_history_last_visit_today);
+        } else if (difference == DateUtils.DAY_IN_MILLIS) {
+            return resources.getString(R.string.page_info_history_last_visit_yesterday);
+        } else if (difference > DateUtils.DAY_IN_MILLIS
+                && difference <= DateUtils.DAY_IN_MILLIS * 7) {
+            return resources.getString(R.string.page_info_history_last_visit_days,
+                    (int) (difference / DateUtils.DAY_IN_MILLIS));
+        } else {
+            return resources.getString(R.string.page_info_history_last_visit_date,
+                    StringUtils.dateToHeaderString(new Date(mLastVisitedTimestamp)));
+        }
     }
 
     @Override
