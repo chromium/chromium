@@ -28,6 +28,11 @@ UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithScrollDelegate(
   return nil;
 }
 
+UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
+    DiscoverFeedViewControllerConfiguration* configuration) {
+  return nil;
+}
+
 void DiscoverFeedProvider::RemoveFeedViewController(
     UIViewController* feedViewController) {}
 
