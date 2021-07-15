@@ -7004,6 +7004,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsLandingPageRedesignName,
      flag_descriptions::kSettingsLandingPageRedesignDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kSettingsLandingPageRedesign)},
+
+    {"webui-branding-update", flag_descriptions::kWebUIBrandingUpdateName,
+     flag_descriptions::kWebUIBrandingUpdateDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebUIBrandingUpdate)},
 #endif  // !defined(OS_ANDROID)
 
 #if defined(OS_ANDROID)

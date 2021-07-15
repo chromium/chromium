@@ -3067,6 +3067,9 @@ extern const char kInstallableInkDropDescription[];
 extern const char kEnableOopPrintDriversName[];
 extern const char kEnableOopPrintDriversDescription[];
 
+extern const char kWebUIBrandingUpdateName[];
+extern const char kWebUIBrandingUpdateDescription[];
+
 extern const char kWebuiFeedbackName[];
 extern const char kWebuiFeedbackDescription[];
 

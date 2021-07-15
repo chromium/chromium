@@ -5291,6 +5291,10 @@ const char kEnableOopPrintDriversDescription[] =
     "Enables printing interactions with the operating system to be performed "
     "out-of-process.";
 
+const char kWebUIBrandingUpdateName[] = "WebUI Branding Update";
+const char kWebUIBrandingUpdateDescription[] =
+    "Changes various UI components in WebUI pages to have a more modern look.";
+
 const char kWebuiFeedbackName[] = "WebUI Feedback";
 const char kWebuiFeedbackDescription[] =
     "If enabled, Chrome will show the Feedback WebUI, as opposed to Chrome "

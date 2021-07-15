@@ -46200,6 +46200,7 @@ from previous Chrome versions.
   <int value="-2119530966" label="enable-webrtc-dtls12"/>
   <int value="-2119493239" label="enable-app-info-dialog-mac"/>
   <int value="-2118893353" label="WebRtcRemoteEventLog:enabled"/>
+  <int value="-2118062187" label="WebUIBrandingUpdate:enabled"/>
   <int value="-2117621241" label="ExperimentalProductivityFeatures:enabled"/>
   <int value="-2117201726" label="disable-gpu-rasterization"/>
   <int value="-2117169027" label="UpdateHoverAtBeginFrame:enabled"/>
@@ -50130,6 +50131,7 @@ from previous Chrome versions.
   <int value="1106579567" label="ProfilesUIRevamp:enabled"/>
   <int value="1106890743"
       label="SafeBrowsingkRealTimeUrlLookupEnterpriseGaEndpoint:enabled"/>
+  <int value="1107293950" label="WebUIBrandingUpdate:disabled"/>
   <int value="1107543566" label="enable-one-copy"/>
   <int value="1108663108" label="disable-device-discovery-notifications"/>
   <int value="1109907837"
