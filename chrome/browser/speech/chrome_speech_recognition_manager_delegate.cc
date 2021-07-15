@@ -144,6 +144,20 @@ void ChromeSpeechRecognitionManagerDelegate::CheckRenderFrameType(
     return;
   }
 
+  if (render_frame_host->GetLifecycleState() ==
+      content::RenderFrameHost::LifecycleState::kPrerendering) {
+    // It's unclear whether we can reach this function during prerendering.
+    // The Mojo binding for blink.mojom.SpeechRecognizer is deferred until
+    // activation, but it's conceivable that callsites that do not originate
+    // from SpeechRecognizer can call this method.
+    allowed = false;
+    check_permission = false;
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(std::move(callback), check_permission, allowed));
+    return;
+  }
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host);
