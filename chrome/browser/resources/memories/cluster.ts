@@ -4,7 +4,6 @@
 
 import './page_favicon.js';
 import './shared_vars.js';
-import './strings.m.js';
 import './top_visit.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';

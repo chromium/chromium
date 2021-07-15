@@ -114,6 +114,7 @@ preprocess_if_expr("preprocess_generated") {
 
 generate_grd("build_grd") {
   grd_prefix = "history_clusters"
+  resource_path_prefix = "history_clusters"
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "history_clusters.html" ]
   input_files_base_dir = rebase_path(".", "//")
