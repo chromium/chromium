@@ -276,8 +276,16 @@ IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
 }
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+
+// Disabled due to flakiness on Linux Asan https://crbug.com/1229592
+#if defined(OS_LINUX) && defined(ADDRESS_SANITIZER)
+#define MAYBE_SavedPassword DISABLED_SavedPassword
+#else
+#define MAYBE_SavedPassword SavedPassword
+#endif
+
 IN_PROC_BROWSER_TEST_F(ChromePasswordProtectionServiceBrowserTest,
-                       SavedPassword) {
+                       MAYBE_SavedPassword) {
   base::HistogramTester histograms;
   SetUpPrimaryAccountWithHostedDomain(kNoHostedDomainFound);
   ChromePasswordProtectionService* service = GetService(/*is_incognito=*/false);
