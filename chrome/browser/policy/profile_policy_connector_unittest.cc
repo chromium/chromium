@@ -10,18 +10,23 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/browser/proxy_policy_handler.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/mock_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/core/common/policy_types.h"
+#include "components/policy/core/common/proxy_policy_provider.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -36,8 +41,9 @@
 #include "components/user_manager/scoped_user_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-using testing::Return;
 using testing::_;
+using testing::NiceMock;
+using testing::Return;
 
 namespace policy {
 namespace {
@@ -85,6 +91,22 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
 
   DISALLOW_COPY_AND_ASSIGN(PolicyServiceInitializedWaiter);
 };
+
+void UpdateChromePolicyToMockProviderAndVerify(
+    MockConfigurationPolicyProvider* mock_policy_provider,
+    const ProfilePolicyConnector& connector) {
+  PolicyMap map;
+  map.Set(key::kAutofillAddressEnabled, POLICY_LEVEL_MANDATORY,
+          POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
+  mock_policy_provider->UpdateChromePolicy(map);
+  EXPECT_FALSE(connector.IsProfilePolicy(key::kAutofillAddressEnabled));
+  const base::Value* value =
+      connector.policy_service()
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .GetValue(key::kAutofillAddressEnabled);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(true), *value);
+}
 
 }  // namespace
 
@@ -224,13 +246,22 @@ TEST_F(ProfilePolicyConnectorTest, PrimaryUserPoliciesProxied) {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
-  testing::NiceMock<MockConfigurationPolicyProvider> mock_platform_provider;
+  NiceMock<MockConfigurationPolicyProvider> mock_platform_provider;
+  NiceMock<MockPolicyService> mock_policy_service_;
   mock_platform_provider.SetDefaultReturns(
       true /* is_initialization_complete_return */,
       true /* is_first_policy_load_complete_return */);
 
+  g_browser_process->browser_policy_connector()->SetPolicyProviderForTesting(
+      &mock_platform_provider);
+  // We don't need browser level PolicyService for this test. Setting an empty
+  // mock class to prevent the real one being created which is going to observe
+  // the local policy provider but never get destroyed until the very end. This
+  // will cause DCHECK failure as the local policy provider observer list is not
+  // clear.
+  g_browser_process->browser_policy_connector()->SetPolicyServiceForTesting(
+      &mock_policy_service_);
   ProfilePolicyConnector connector;
-  connector.SetPlatformPolicyProviderForTesting(&mock_platform_provider);
   connector.Init(nullptr /* user */, &schema_registry_,
                  cloud_policy_manager_.get(), &cloud_policy_store_,
                  g_browser_process->browser_policy_connector(), false);
@@ -256,18 +287,41 @@ TEST_F(ProfilePolicyConnectorTest, IsProfilePolicy) {
   EXPECT_TRUE(base::Value(false).Equals(value));
 
   // Now test with a higher-priority provider also setting the policy.
-  PolicyMap map;
-  map.Set(key::kAutofillAddressEnabled, POLICY_LEVEL_MANDATORY,
-          POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
-  mock_platform_provider.UpdateChromePolicy(map);
-  EXPECT_FALSE(connector.IsProfilePolicy(key::kAutofillAddressEnabled));
-  value = connector.policy_service()->GetPolicies(chrome_ns).GetValue(
-      key::kAutofillAddressEnabled);
-  ASSERT_TRUE(value);
-  EXPECT_TRUE(base::Value(true).Equals(value));
+  UpdateChromePolicyToMockProviderAndVerify(&mock_platform_provider, connector);
 
   // Cleanup.
   connector.Shutdown();
+  g_browser_process->browser_policy_connector()->Shutdown();
 }
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(ProfilePolicyConnectorTest, MachineLevelUserCloudPolicyForProfile) {
+  // Setup mock MachineLevelUserCloudPolicyManager.
+  NiceMock<MockConfigurationPolicyProvider>
+      mock_machine_level_cloud_policy_provider;
+  mock_machine_level_cloud_policy_provider.SetDefaultReturns(
+      true /* is_initialization_complete_return */,
+      true /* is_first_policy_load_complete_return */);
+
+  // Init and set ProxyPolicyProvider
+  ProxyPolicyProvider proxy_policy_provider;
+  proxy_policy_provider.SetDelegate(&mock_machine_level_cloud_policy_provider);
+  proxy_policy_provider.Init(&schema_registry_);
+  g_browser_process->browser_policy_connector()
+      ->SetProxyPolicyProviderForTesting(&proxy_policy_provider);
+
+  ProfilePolicyConnector connector;
+  connector.Init(nullptr /* user */, &schema_registry_,
+                 cloud_policy_manager_.get(), &cloud_policy_store_,
+                 g_browser_process->browser_policy_connector(), false);
+
+  UpdateChromePolicyToMockProviderAndVerify(
+      &mock_machine_level_cloud_policy_provider, connector);
+
+  connector.Shutdown();
+  g_browser_process->browser_policy_connector()->Shutdown();
+  proxy_policy_provider.Shutdown();
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace policy

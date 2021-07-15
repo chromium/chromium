@@ -162,6 +162,11 @@ void ChromeBrowserPolicyConnector::InitCloudManagementController(
   chrome_browser_cloud_management_controller()->MaybeInit(local_state,
                                                           url_loader_factory);
 }
+
+void ChromeBrowserPolicyConnector::SetProxyPolicyProviderForTesting(
+    ProxyPolicyProvider* proxy_policy_provider) {
+  proxy_policy_provider_ = proxy_policy_provider;
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool ChromeBrowserPolicyConnector::IsCommandLineSwitchSupported() const {

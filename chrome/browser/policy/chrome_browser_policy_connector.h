@@ -76,17 +76,30 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
     return machine_level_user_cloud_policy_manager_.get();
   }
 
+  ProxyPolicyProvider* proxy_policy_provider() {
+    return proxy_policy_provider_;
+  }
+
+  ConfigurationPolicyProvider* command_line_policy_provider() {
+    return command_line_provider_;
+  }
+
   // On non-Android platforms, starts controller initialization right away.
   // On Android, delays controller initialization until platform policies have
   // been initialized, or starts controller initialization right away otherwise.
   void InitCloudManagementController(
       PrefService* local_state,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  // Set ProxyPolicyProvider for testing, caller needs to init and shutdown the
+  // provider.
+  void SetProxyPolicyProviderForTesting(
+      ProxyPolicyProvider* proxy_policy_provider);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
   // BrowserPolicyConnector:
-  // Command line switch only supports Dev and Canary channel, trunk and browser
-  // tests on Win, Mac, Linux and Android.
+  // Command line switch only supports Dev and Canary channel, trunk and
+  // browser tests on Win, Mac, Linux and Android.
   bool IsCommandLineSwitchSupported() const override;
 
   static void EnableCommandLineSupportForTesting();
