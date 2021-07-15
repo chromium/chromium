@@ -45,18 +45,17 @@ class DeviceNameStore {
   // longer need it.
   static void Shutdown();
 
-  std::string GetDeviceName() const;
+  virtual std::string GetDeviceName() const = 0;
 
- private:
+ protected:
   friend class DeviceNameStoreTest;
 
-  explicit DeviceNameStore(PrefService* prefs);
+  DeviceNameStore();
   virtual ~DeviceNameStore();
+
+ private:
   DeviceNameStore(const DeviceNameStore&) = delete;
   DeviceNameStore& operator=(const DeviceNameStore&) = delete;
-
-  // Provides access and persistence for the device name value.
-  PrefService* prefs_;
 };
 
 }  // namespace chromeos

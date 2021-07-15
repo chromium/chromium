@@ -14,12 +14,12 @@
 
 namespace chromeos {
 
-class DeviceNameStoreTest : public ::testing::Test {
+class DeviceNameStoreImplTest : public ::testing::Test {
  public:
-  DeviceNameStoreTest() {
+  DeviceNameStoreImplTest() {
     DeviceNameStore::RegisterLocalStatePrefs(local_state_.registry());
   }
-  ~DeviceNameStoreTest() override = default;
+  ~DeviceNameStoreImplTest() override = default;
 
   // testing::Test
   void TearDown() override { DeviceNameStore::Shutdown(); }
@@ -50,13 +50,13 @@ class DeviceNameStoreTest : public ::testing::Test {
 
 // Check that error is thrown if GetInstance() is called before
 // initialization.
-TEST_F(DeviceNameStoreTest, GetInstanceBeforeInitializeError) {
+TEST_F(DeviceNameStoreImplTest, GetInstanceBeforeInitializeError) {
   EXPECT_DEATH(DeviceNameStore::GetInstance(), "");
 }
 
 // Check that error is thrown upon initialization if kEnableHostnameSetting
 // flag is off.
-TEST_F(DeviceNameStoreTest, EnableHostnameSettingFlagOff) {
+TEST_F(DeviceNameStoreImplTest, EnableHostnameSettingFlagOff) {
   EXPECT_DEATH(
       InitializeDeviceNameStore(/*is_hostname_setting_flag_enabled=*/false),
       "");
@@ -64,7 +64,7 @@ TEST_F(DeviceNameStoreTest, EnableHostnameSettingFlagOff) {
 
 // Verifies the device name is set to 'ChromeOS' by default upon initialization
 // and that the device name is persisted to the local state.
-TEST_F(DeviceNameStoreTest, DefaultDeviceName) {
+TEST_F(DeviceNameStoreImplTest, DefaultDeviceName) {
   // The device name is not set yet.
   EXPECT_TRUE(GetDeviceNameFromPrefs().empty());
 
