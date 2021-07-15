@@ -6,11 +6,17 @@
 #define SQL_TRANSACTION_H_
 
 #include "base/component_export.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
 
 namespace sql {
 
 class Database;
 
+// Automatically rolls back uncommitted transactions when going out of scope.
+//
+// This class is not thread-safe. Each instance must be used from a single
+// sequence.
 class COMPONENT_EXPORT(SQL) Transaction {
  public:
   // Creates the scoped transaction object. You MUST call Begin() to begin the
@@ -26,7 +32,10 @@ class COMPONENT_EXPORT(SQL) Transaction {
   ~Transaction();
 
   // Returns true when there is a transaction that has been successfully begun.
-  bool is_open() const { return is_open_; }
+  bool is_open() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return is_open_;
+  }
 
   // Begins the transaction. This uses the default sqlite "deferred" transaction
   // type, which means that the DB lock is lazily acquired the next time the
@@ -47,11 +56,13 @@ class COMPONENT_EXPORT(SQL) Transaction {
   bool Commit();
 
  private:
-  Database* database_;
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  Database* const database_;
 
   // True when the transaction is open, false when it's already been committed
   // or rolled back.
-  bool is_open_ = false;
+  bool is_open_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 };
 
 }  // namespace sql
