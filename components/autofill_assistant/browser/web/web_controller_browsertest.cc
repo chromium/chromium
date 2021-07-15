@@ -1757,6 +1757,17 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOption) {
                          SelectOptionProto::VALUE, /* strict= */ true)
                 .proto_status());
   EXPECT_EQ("One", content::EvalJs(shell(), javascript));
+
+  // Ignore disabled options.
+  EXPECT_EQ(OPTION_VALUE_NOT_FOUND,
+            SelectOption(selector, "five", /* case_sensitive= */ true,
+                         SelectOptionProto::VALUE, /* strict= */ true)
+                .proto_status());
+  EXPECT_EQ(ACTION_APPLIED,
+            SelectOption(selector, "^\\w{4}$", /* case_sensitive= */ false,
+                         SelectOptionProto::VALUE, /* strict= */ true)
+                .proto_status());
+  EXPECT_EQ("Four", content::EvalJs(shell(), javascript));
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SelectOptionInIFrame) {

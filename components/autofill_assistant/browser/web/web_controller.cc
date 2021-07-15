@@ -131,7 +131,8 @@ const char* const kSelectOptionScript =
       let numResults = 0;
       let newIndex = -1;
       for (let i = 0; i < this.options.length; ++i) {
-        if (regexp.test(this.options[i][valueSourceAttribute])) {
+        if (!this.options[i].disabled &&
+            regexp.test(this.options[i][valueSourceAttribute])) {
           ++numResults;
           if (newIndex === -1) {
             newIndex = i;
