@@ -26,6 +26,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.omnibox.LocationBar;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.NewTabPageDelegate;
@@ -115,7 +116,7 @@ public abstract class ToolbarLayout
      * @param toolbarDataProvider The provider for toolbar data.
      * @param tabController       The controller that handles interactions with the tab.
      * @param menuButtonCoordinator Coordinator for interacting with the MenuButton.
-     * @param isInVrSupplier A supplier of the state of VR mode.
+     * @param isProgressBarVisibleSupplier A supplier of whether the progress bar should be visible.
      * @param historyDelegate Delegate used to display navigation history.
      * @param partnerHomepageEnabledSupplier A supplier of a boolean indicating that partner
      *        homepage is enabled.
@@ -124,13 +125,14 @@ public abstract class ToolbarLayout
     @CallSuper
     protected void initialize(ToolbarDataProvider toolbarDataProvider,
             ToolbarTabController tabController, MenuButtonCoordinator menuButtonCoordinator,
-            BooleanSupplier isInVrSupplier, HistoryDelegate historyDelegate,
-            BooleanSupplier partnerHomepageEnabledSupplier, OfflineDownloader offlineDownloader) {
+            ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
+            HistoryDelegate historyDelegate, BooleanSupplier partnerHomepageEnabledSupplier,
+            OfflineDownloader offlineDownloader) {
         mToolbarDataProvider = toolbarDataProvider;
         mToolbarTabController = tabController;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mPartnerHomepageEnabledSupplier = partnerHomepageEnabledSupplier;
-        mProgressBar = createProgressBar(isInVrSupplier);
+        mProgressBar = createProgressBar(isProgressBarVisibleSupplier);
     }
 
     /** @param overlay The coordinator for the texture version of the top toolbar. */
@@ -224,9 +226,10 @@ public abstract class ToolbarLayout
     /**
      * @return A progress bar for Chrome to use.
      */
-    private ToolbarProgressBar createProgressBar(BooleanSupplier isInVrSupplier) {
+    private ToolbarProgressBar createProgressBar(
+            ObservableSupplier<Boolean> isProgressBarVisibleSupplier) {
         return new ToolbarProgressBar(
-                getContext(), getProgressBarHeight(), this, false, isInVrSupplier);
+                getContext(), getProgressBarHeight(), this, false, isProgressBarVisibleSupplier);
     }
 
     /**

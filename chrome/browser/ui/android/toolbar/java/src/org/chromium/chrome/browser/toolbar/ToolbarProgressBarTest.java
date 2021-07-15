@@ -22,6 +22,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
+import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
@@ -62,7 +63,10 @@ public class ToolbarProgressBarTest extends DummyUiChromeActivityTestCase {
         view.addView(anchor,
                 new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, heightPx * 2));
 
-        mProgressBar = new ToolbarProgressBar(getActivity(), heightPx, anchor, false, () -> false);
+        ObservableSupplierImpl<Boolean> isVisibleSupplier = new ObservableSupplierImpl<>();
+        isVisibleSupplier.set(true);
+        mProgressBar =
+                new ToolbarProgressBar(getActivity(), heightPx, anchor, false, isVisibleSupplier);
         @ColorInt
         int toolbarColor = ApiCompatibilityUtils.getColor(res, R.color.toolbar_background_primary);
         mProgressBar.setThemeColor(toolbarColor, false);

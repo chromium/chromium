@@ -115,7 +115,7 @@ public class TopToolbarCoordinator implements Toolbar {
      *        for the {@link Invalidator} a chance to defer the actual invalidate to sync drawing.
      * @param identityDiscButtonSupplier Supplier of Identity Disc button.
      * @param resourceManagerSupplier A supplier of a resource manager for native textures.
-     * @param isInVrSupplier A supplier of the state of VR mode.
+     * @param isProgressBarVisibleSupplier A supplier of whether the progress bar is visible.
      * @param isInconitoModeEnabledSupplier A supplier of the incognito mode being enabled or not.
      * @param isGridTabSwitcherEnabled Whether grid tab switcher is enabled via a feature flag.
      * @param isTabToGtsAnimationEnabled Whether Tab-to-GTS animation is enabled via a feature flag.
@@ -139,7 +139,8 @@ public class TopToolbarCoordinator implements Toolbar {
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             ObservableSupplier<Boolean> identityDiscStateSupplier,
             Callback<Runnable> invalidatorCallback, Supplier<ButtonData> identityDiscButtonSupplier,
-            Supplier<ResourceManager> resourceManagerSupplier, BooleanSupplier isInVrSupplier,
+            Supplier<ResourceManager> resourceManagerSupplier,
+            ObservableSupplier<Boolean> isProgressBarVisibleSupplier,
             BooleanSupplier isIncognitoModeEnabledSupplier, boolean isGridTabSwitcherEnabled,
             boolean isTabToGtsAnimationEnabled, boolean isStartSurfaceEnabled,
             boolean isTabGroupsAndroidContinuationEnabled, HistoryDelegate historyDelegate,
@@ -179,7 +180,8 @@ public class TopToolbarCoordinator implements Toolbar {
         mIsGridTabSwitcherEnabled = isGridTabSwitcherEnabled;
         controlContainer.setToolbar(this);
         mToolbarLayout.initialize(toolbarDataProvider, tabController, mMenuButtonCoordinator,
-                isInVrSupplier, historyDelegate, partnerHomepageEnabledSupplier, offlineDownloader);
+                isProgressBarVisibleSupplier, historyDelegate, partnerHomepageEnabledSupplier,
+                offlineDownloader);
         mToolbarLayout.setThemeColorProvider(normalThemeColorProvider);
         mAppMenuButtonHelperSupplier = appMenuButtonHelperSupplier;
         new OneShotCallback<>(mAppMenuButtonHelperSupplier, this::setAppMenuButtonHelper);
@@ -617,13 +619,6 @@ public class TopToolbarCoordinator implements Toolbar {
      */
     public void onNavigatedToDifferentPage() {
         mToolbarLayout.onNavigatedToDifferentPage();
-    }
-
-    /**
-     * @param enabled Whether the progress bar is enabled.
-     */
-    public void setProgressBarEnabled(boolean enabled) {
-        getProgressBar().setVisibility(enabled ? View.VISIBLE : View.GONE);
     }
 
     /**

@@ -237,8 +237,6 @@ public class VrShell extends GvrLayout
             mPresentationView = surfaceView;
         }
 
-        mToolbarManager.setProgressBarEnabled(false);
-
         DisplayAndroid primaryDisplay = DisplayAndroid.getNonMultiDisplay(activity);
         mContentVirtualDisplay = VirtualDisplayAndroid.createVirtualDisplay();
         mContentVirtualDisplay.setTo(primaryDisplay);
@@ -859,10 +857,6 @@ public class VrShell extends GvrLayout
 
         mCompositorView.onExitVr(mWindowAndroid);
         mContentVrWindowAndroid.destroy();
-
-        if (mToolbarManager != null) {
-            mToolbarManager.setProgressBarEnabled(true);
-        }
 
         if (mNonVrUiWidgetFactory != null) UiWidgetFactory.setInstance(mNonVrUiWidgetFactory);
 

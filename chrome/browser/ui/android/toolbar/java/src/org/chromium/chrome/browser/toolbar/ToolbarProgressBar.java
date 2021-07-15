@@ -25,7 +25,7 @@ import androidx.core.view.ViewCompat;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.supplier.BooleanSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.widget.ClipDrawableProgressBar;
 import org.chromium.ui.UiUtils;
@@ -99,7 +99,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
     /** Whether or not to use the status bar color as the background of the toolbar. */
     private boolean mUseStatusBarColorAsBackground;
 
-    private BooleanSupplier mIsInVrSupplier;
+    /** A supplier of whether the prorgress bar should be visible. */
+    private ObservableSupplier<Boolean> mIsVisibleSupplier;
 
     /**
      * The indeterminate animating view for the progress bar. This will be null for Android
@@ -179,17 +180,19 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
      * @param anchor The view to use as an anchor.
      * @param useStatusBarColorAsBackground Whether or not to use the status bar color as the
      *                                      background of the toolbar.
-     * @param isInVrSupplier A supplier of the state of VR mode.
+     * @param isVisibleSupplier A supplier of the desired visibility of the progress bar.
      */
     public ToolbarProgressBar(Context context, int height, View anchor,
-            boolean useStatusBarColorAsBackground, BooleanSupplier isInVrSupplier) {
+            boolean useStatusBarColorAsBackground, ObservableSupplier<Boolean> isVisibleSupplier) {
         super(context, height);
         mProgressBarHeight = height;
-        mIsInVrSupplier = isInVrSupplier;
+        mIsVisibleSupplier = isVisibleSupplier;
         setAlpha(0.0f);
         setAnchorView(anchor);
         mUseStatusBarColorAsBackground = useStatusBarColorAsBackground;
         mAnimationLogic = new ProgressAnimationSmooth();
+
+        isVisibleSupplier.addObserver(visible -> setVisibility(visible ? View.VISIBLE : View.GONE));
 
         // This tells accessibility services that progress bar changes are important enough to
         // announce to the user even when not focused.
@@ -425,8 +428,8 @@ public class ToolbarProgressBar extends ClipDrawableProgressBar {
 
     @Override
     public void setVisibility(int visibility) {
-        // The progress bar should never show up while in VR.
-        if (mIsInVrSupplier.getAsBoolean()) visibility = GONE;
+        // Hide the progress bar if it is being forced externally.
+        if (!mIsVisibleSupplier.get()) visibility = GONE;
         super.setVisibility(visibility);
         if (mAnimatingView != null) mAnimatingView.setVisibility(visibility);
     }
