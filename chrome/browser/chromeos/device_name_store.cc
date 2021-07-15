@@ -4,26 +4,29 @@
 
 #include "chrome/browser/chromeos/device_name_store.h"
 
-#include <math.h>
-
-#include "base/rand_util.h"
-#include "base/strings/char_traits.h"
-#include "base/strings/string_number_conversions.h"
+#include "ash/constants/ash_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
-
 namespace {
+
 const char kDefaultDeviceName[] = "ChromeOS";
+
+// This will point to the singleton instance upon initialization.
+DeviceNameStore* g_instance = nullptr;
+
 }  // namespace
+
+DeviceNameStore::~DeviceNameStore() = default;
 
 // static
 DeviceNameStore* DeviceNameStore::GetInstance() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  return base::Singleton<DeviceNameStore>::get();
+  CHECK(g_instance);
+  return g_instance;
 }
 
 // static
@@ -32,13 +35,26 @@ void DeviceNameStore::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kDeviceName, "");
 }
 
+// static
 void DeviceNameStore::Initialize(PrefService* prefs) {
+  CHECK(base::FeatureList::IsEnabled(features::kEnableHostnameSetting));
+  CHECK(!g_instance);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(prefs);
-  prefs_ = prefs;
+  g_instance = new DeviceNameStore(prefs);
+}
 
-  const std::string device_name = prefs_->GetString(prefs::kDeviceName);
-  if (device_name.empty()) {
+// static
+void DeviceNameStore::Shutdown() {
+  if (g_instance) {
+    delete g_instance;
+    g_instance = nullptr;
+  }
+}
+
+DeviceNameStore::DeviceNameStore(PrefService* prefs) : prefs_(prefs) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(prefs_);
+  if (prefs_->GetString(prefs::kDeviceName).empty()) {
     prefs_->SetString(prefs::kDeviceName, kDefaultDeviceName);
   }
 }

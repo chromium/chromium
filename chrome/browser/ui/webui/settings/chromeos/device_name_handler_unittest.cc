@@ -7,6 +7,8 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_features.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/chromeos/device_name_store.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -43,8 +45,11 @@ class DeviceNameHandlerTest : public testing::Test {
     DeviceNameStore::RegisterLocalStatePrefs(local_state_.registry());
 
     local_state()->SetString(prefs::kDeviceName, "TestDeviceName");
-    DeviceNameStore::GetInstance()->Initialize(&local_state_);
+    feature_list_.InitAndEnableFeature(ash::features::kEnableHostnameSetting);
+    DeviceNameStore::Initialize(&local_state_);
   }
+
+  void TearDown() override { DeviceNameStore::Shutdown(); }
 
   TestDeviceNameHandler* handler() { return handler_.get(); }
   content::TestWebUI* web_ui() { return &web_ui_; }
@@ -59,6 +64,7 @@ class DeviceNameHandlerTest : public testing::Test {
 
   content::TestWebUI web_ui_;
   std::unique_ptr<TestDeviceNameHandler> handler_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 TEST_F(DeviceNameHandlerTest, DeviceNameMetadata_DeviceName) {
