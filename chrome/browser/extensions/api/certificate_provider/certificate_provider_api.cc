@@ -100,8 +100,9 @@ class RequestPinExceptFirstQuotaBucketMapper final
       const RequestPinExceptFirstQuotaBucketMapper&) = delete;
   ~RequestPinExceptFirstQuotaBucketMapper() override = default;
 
-  void GetBucketsForArgs(const base::ListValue* args,
+  void GetBucketsForArgs(const base::Value* args,
                          QuotaLimitHeuristic::BucketList* buckets) override {
+    DCHECK(args->is_list());
     if (args->GetList().empty())
       return;
     const base::Value& details = args->GetList()[0];
