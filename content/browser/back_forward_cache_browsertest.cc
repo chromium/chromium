@@ -25,6 +25,7 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
+#include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -11876,12 +11877,20 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
       {}, {}, FROM_HERE);
 }
 
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript \
+  DISABLED_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript
+#else
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript \
+  PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified while it is in bfcache via JavaScript, gets
 // evicted with cookie modified marked.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
-    PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript) {
+    MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScript) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
@@ -11933,12 +11942,22 @@ IN_PROC_BROWSER_TEST_F(
                     {}, {}, {}, FROM_HERE);
 }
 
+// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice \
+  DISABLED_PagesWithCacheControlNoStoreCookieModifiedBackTwice
+#else
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice \
+  PagesWithCacheControlNoStoreCookieModifiedBackTwice
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified, it gets evicted with cookie changed, but if
 // navigated away again and navigated back, it gets evicted without cookie
 // change marked.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
-                       PagesWithCacheControlNoStoreCookieModifiedBackTwice) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    MAYBE_PagesWithCacheControlNoStoreCookieModifiedBackTwice) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
@@ -12009,12 +12028,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
       {}, {}, FROM_HERE);
 }
 
+// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain \
+  DISABLED_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain
+#else
+#define MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain \
+  PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and even if a cookie is modified on a different domain than the entry, the
 // entry is not marked as cookie modified.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
-    PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain) {
+    MAYBE_PagesWithCacheControlNoStoreCookieModifiedThroughJavaScriptOnDifferentDomain) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
@@ -12091,11 +12119,21 @@ const char kResponseWithNoCacheWithHTTPOnlyCookie2[] =
     "The server speaks HTTP!";
 }  // namespace
 
+// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
+  DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeader
+#else
+#define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader \
+  PagesWithCacheControlNoStoreSetFromResponseHeader
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a cookie is modified while it is in bfcache via response header, gets
 // evicted with cookie modified marked.
-IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
-                       PagesWithCacheControlNoStoreSetFromResponseHeader) {
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheBrowserTestAllowCacheControlNoStore,
+    MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeader) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
@@ -12145,12 +12183,21 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestAllowCacheControlNoStore,
                     {}, {}, {}, FROM_HERE);
 }
 
+// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie \
+  DISABLED_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie
+#else
+#define MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie \
+  PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if HTTPOnly cookie is modified while it is in bfcache, gets evicted with
 // HTTPOnly cookie modified marked.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
-    PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie) {
+    MAYBE_PagesWithCacheControlNoStoreSetFromResponseHeaderHTTPOnlyCookie) {
   // HTTPOnly cookie can be only set over HTTPS.
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
@@ -12204,13 +12251,22 @@ IN_PROC_BROWSER_TEST_F(
                     {}, {}, {}, FROM_HERE);
 }
 
+// Disabled due to flakiness on Cast Audio Linux https://crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice \
+  DISABLED_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice
+#else
+#define MAYBE_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice \
+  PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice
+#endif
+
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // and if a HTTPOnly cookie is modified, it gets evicted with cookie changed,
 // but if navigated away again and navigated back, it gets evicted without
 // HTTPOnly cookie change marked.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestAllowCacheControlNoStore,
-    PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice) {
+    MAYBE_PagesWithCacheControlNoStoreHTTPOnlyCookieModifiedBackTwice) {
   CreateHttpsServer();
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       "/main_document");
