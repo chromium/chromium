@@ -275,8 +275,7 @@ wl::Object<wl_region> WaylandSurface::CreateAndAddRegion(
 zwp_linux_surface_synchronization_v1* WaylandSurface::GetSurfaceSync() {
   // The server needs to support the linux_explicit_synchronization protocol.
   if (!connection_->linux_explicit_synchronization_v1()) {
-    LOG(WARNING)
-        << "Server doesn't support zwp_linux_explicit_synchronization_v1.";
+    NOTIMPLEMENTED_LOG_ONCE();
     return nullptr;
   }
 
