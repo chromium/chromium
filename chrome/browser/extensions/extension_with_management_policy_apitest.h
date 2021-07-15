@@ -29,7 +29,7 @@ class ExtensionApiTestWithManagementPolicy
   void SetUpOnMainThread() override;
 
  protected:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   bool BrowsedTo(const std::string& test_host);
   void ClearRequestLog();
   void MonitorRequestHandler(const net::test_server::HttpRequest& request);

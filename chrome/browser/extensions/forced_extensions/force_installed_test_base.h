@@ -83,7 +83,7 @@ class ForceInstalledTestBase : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* profile_;
   sync_preferences::TestingPrefServiceSyncable* prefs_;

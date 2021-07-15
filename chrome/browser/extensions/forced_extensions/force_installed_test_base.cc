@@ -37,10 +37,9 @@ ForceInstalledTestBase::ForceInstalledTestBase() = default;
 ForceInstalledTestBase::~ForceInstalledTestBase() = default;
 
 void ForceInstalledTestBase::SetUp() {
-  ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(false));
-  ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(false));
+  policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/false,
+      /*is_first_policy_load_complete_return=*/false);
 
   auto policy_service = std::make_unique<policy::PolicyServiceImpl>(
       std::vector<policy::ConfigurationPolicyProvider*>{&policy_provider_});
