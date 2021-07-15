@@ -44848,6 +44848,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   </int>
 </enum>
 
+<enum name="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage">
+  <int value="0" label="Different base language"/>
+  <int value="1" label="Same base language"/>
+  <int value="2" label="Exact match"/>
+  <int value="3" label="No override"/>
+</enum>
+
 <enum name="LargestContentfulPaint.TerminationState">
   <summary>
     The state of the largest contentful paint algorithm at the time of

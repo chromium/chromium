@@ -9,9 +9,15 @@ import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.LocaleUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.language.AndroidLanguageMetricsBridge;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.Locale;
 
 /**
@@ -22,8 +28,28 @@ import java.util.Locale;
 public class GlobalAppLocaleController {
     private static final GlobalAppLocaleController INSTANCE = new GlobalAppLocaleController();
 
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static final String IS_SYSTEM_LANGUAGE_HISTOGRAM =
+            "LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage";
+
+    /**
+     * Annotation for the relationship between the override language and system language.
+     * Do not reorder or remove items, only add new items before NUM_ENTRIES.
+     * Keep in sync with LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage from enums.xml.
+     */
+    @IntDef({OverrideLanguageStatus.DIFFERENT, OverrideLanguageStatus.SAME_BASE,
+            OverrideLanguageStatus.EXACT_MATCH, OverrideLanguageStatus.NO_OVERRIDE})
+    @Retention(RetentionPolicy.SOURCE)
+    @interface OverrideLanguageStatus {
+        int DIFFERENT = 0;
+        int SAME_BASE = 1;
+        int EXACT_MATCH = 2;
+        int NO_OVERRIDE = 3;
+        int NUM_ENTRIES = 4;
+    }
+
     // Set the original system language before Locale.getDefault() is overridden.
-    private final Locale mOriginalSystemLocal = Locale.getDefault();
+    private final Locale mOriginalSystemLocale = Locale.getDefault();
     private String mOverrideLanguage;
     private boolean mIsOverridden;
 
@@ -38,8 +64,8 @@ public class GlobalAppLocaleController {
     public boolean init(Context base) {
         mOverrideLanguage = AppLocaleUtils.getAppLanguagePrefStartUp(base);
 
-        mIsOverridden = !TextUtils.isEmpty(mOverrideLanguage)
-                && !TextUtils.equals(mOriginalSystemLocal.toLanguageTag(), mOverrideLanguage);
+        mIsOverridden = shouldOverrideAppLocale(
+                mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
         return mIsOverridden;
     }
 
@@ -85,7 +111,7 @@ public class GlobalAppLocaleController {
      * @return Locale of the original system language.
      */
     public Locale getOriginalSystemLocale() {
-        return mOriginalSystemLocal;
+        return mOriginalSystemLocale;
     }
 
     /**
@@ -97,12 +123,51 @@ public class GlobalAppLocaleController {
     }
 
     /**
-     * Record the value of the override language if one is set. Otherwise
-     * record the empty string.
+     * Record the override language and it's status compared to the system locale. If no override
+     * language is set report it as the empty string.
      */
-    public void recordOverrideLangauge() {
-        String language = (mIsOverridden) ? mOverrideLanguage : "";
-        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(language);
+    public void recordOverrideLanguageMetrics() {
+        String overrideLanguage = TextUtils.isEmpty(mOverrideLanguage) ? "" : mOverrideLanguage;
+        AndroidLanguageMetricsBridge.reportAppOverrideLanguage(overrideLanguage);
+
+        int status = getOverrideVsSystemLanguageStatus(
+                mOverrideLanguage, LocaleUtils.toLanguageTag(mOriginalSystemLocale));
+        RecordHistogram.recordEnumeratedHistogram(
+                IS_SYSTEM_LANGUAGE_HISTOGRAM, status, OverrideLanguageStatus.NUM_ENTRIES);
+    }
+
+    /**
+     * Get the status of the override language compared to the system language. The value of the
+     * override language should not be the default system language.
+     * @return The {@link OverrideLanguageStatus} that describes the relationship between the system
+     * language and override language.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static @OverrideLanguageStatus int getOverrideVsSystemLanguageStatus(
+            String overrideLanguage, String systemLanguage) {
+        if (TextUtils.isEmpty(overrideLanguage)) {
+            return OverrideLanguageStatus.NO_OVERRIDE;
+        }
+        if (TextUtils.equals(overrideLanguage, systemLanguage)) {
+            return OverrideLanguageStatus.EXACT_MATCH;
+        }
+        if (LocaleUtils.isBaseLanguageEqual(overrideLanguage, systemLanguage)) {
+            return OverrideLanguageStatus.SAME_BASE;
+        }
+        return OverrideLanguageStatus.DIFFERENT;
+    }
+
+    /**
+     * Deterimine if the app locale should be overridden based on the override and system languages
+     * provided.
+     * @param overrideLanguage A BCP 47 tag representing which override language should be used.
+     * @param overrideLanguage A BCP 47 tag representing the original system language.
+     * @return Whether or not the app locale should be overridden.
+     */
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    static boolean shouldOverrideAppLocale(String overrideLanguage, String systemLanguage) {
+        return !TextUtils.isEmpty(overrideLanguage)
+                && !TextUtils.equals(systemLanguage, overrideLanguage);
     }
 
     /**

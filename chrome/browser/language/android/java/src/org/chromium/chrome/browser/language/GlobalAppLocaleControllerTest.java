@@ -45,6 +45,50 @@ public class GlobalAppLocaleControllerTest {
                     RecordHistogram.getHistogramValueCountForTesting(
                             AndroidLanguageMetricsBridge.OVERRIDE_LANGUAGE_HISTOGRAM,
                             EMPTY_STRING_HASH));
+            Assert.assertEquals(1,
+                    RecordHistogram.getHistogramValueCountForTesting(
+                            GlobalAppLocaleController.IS_SYSTEM_LANGUAGE_HISTOGRAM,
+                            GlobalAppLocaleController.OverrideLanguageStatus.NO_OVERRIDE));
         });
+    }
+
+    @Test
+    @SmallTest
+    public void testGetOverrideVsSystemLanguageStatus() {
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.NO_OVERRIDE,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus(null, "en-US"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.NO_OVERRIDE,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("", "en-US"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.EXACT_MATCH,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("en-US", "en-US"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.EXACT_MATCH,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("af", "af"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.SAME_BASE,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("en-US", "en"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.SAME_BASE,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("en-US", "en-GB"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.DIFFERENT,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("af", "en-US"));
+
+        Assert.assertEquals(GlobalAppLocaleController.OverrideLanguageStatus.DIFFERENT,
+                GlobalAppLocaleController.getOverrideVsSystemLanguageStatus("af-ZA", "zu-ZA"));
+    }
+
+    @Test
+    @SmallTest
+    public void testShouldOverrideAppLocale() {
+        Assert.assertFalse(GlobalAppLocaleController.shouldOverrideAppLocale("", "en-US"));
+        Assert.assertFalse(GlobalAppLocaleController.shouldOverrideAppLocale(null, "en-US"));
+        Assert.assertFalse(GlobalAppLocaleController.shouldOverrideAppLocale("en-US", "en-US"));
+
+        Assert.assertTrue(GlobalAppLocaleController.shouldOverrideAppLocale("en-GB", "en-US"));
+        Assert.assertTrue(GlobalAppLocaleController.shouldOverrideAppLocale("af", "en-US"));
+        Assert.assertTrue(GlobalAppLocaleController.shouldOverrideAppLocale("af", "af-ZA"));
     }
 }

@@ -8697,7 +8697,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>chrome-language@google.com</owner>
   <summary>
     The ISO-639 language code for the Android override language. If no override
-    is set the empty string is recorded.
+    is set the empty string is recorded. Before M93 the empty string was also
+    recorded if the overide language exactly matched the system language.
+
+    Reported once per application start on Android.
+  </summary>
+</histogram>
+
+<histogram name="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage"
+    enum="LanguageUsage.UI.Android.OverrideLanguage.IsSystemLanguage"
+    expires_after="2021-12-01">
+  <owner>perrier@chromium.org</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    Whether or not the Chrome override language matches the Android system
+    language. An exact match means that the full locale tag matches (e.g.
+    en-GB). The same base language means that only the language part of the
+    locale matches. Since Android requires a country in the locale but Chrome
+    only has country variants for a few languages an exact match is rare.
 
     Reported once per application start on Android.
   </summary>

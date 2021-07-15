@@ -422,7 +422,7 @@ public class ProcessInitializationHandler {
                         -> AssistantVoiceSearchService.reportStartupUserEligibility(
                                 ContextUtils.getApplicationContext()));
         deferredStartupHandler.addDeferredTask(
-                () -> GlobalAppLocaleController.getInstance().recordOverrideLangauge());
+                () -> GlobalAppLocaleController.getInstance().recordOverrideLanguageMetrics());
     }
 
     private void initChannelsAsync() {

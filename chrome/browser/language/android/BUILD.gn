@@ -15,6 +15,7 @@ android_library("base_module_java") {
     "//base:base_java",
     "//chrome/browser/preferences:java",
     "//components/language/android:language_bridge_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/google_android_play_core:com_google_android_play_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
