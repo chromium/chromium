@@ -177,7 +177,7 @@ class VIEWS_EXPORT Button : public View, public AnimationDelegateViews {
   void SetFocusPainter(std::unique_ptr<Painter> focus_painter);
 
   // Highlights the ink drop for the button.
-  void SetHighlighted(bool bubble_visible);
+  void SetHighlighted(bool highlighted);
 
   base::CallbackListSubscription AddStateChangedCallback(
       PropertyChangedCallback callback);

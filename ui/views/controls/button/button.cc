@@ -342,8 +342,8 @@ void Button::SetFocusPainter(std::unique_ptr<Painter> focus_painter) {
   focus_painter_ = std::move(focus_painter);
 }
 
-void Button::SetHighlighted(bool bubble_visible) {
-  InkDrop::Get(this)->AnimateToState(bubble_visible
+void Button::SetHighlighted(bool highlighted) {
+  InkDrop::Get(this)->AnimateToState(highlighted
                                          ? views::InkDropState::ACTIVATED
                                          : views::InkDropState::DEACTIVATED,
                                      nullptr);
