@@ -153,6 +153,13 @@ void LatencyTracker::ReportJankyFrame(base::TimeTicks original_timestamp,
                                  total_update_events_);
       UMA_HISTOGRAM_COUNTS_10000("Event.Latency.ScrollUpdate.JankyEvents",
                                  janky_update_events_);
+
+      if (!total_update_duration_.is_zero()) {
+        UMA_HISTOGRAM_PERCENTAGE(
+            "Event.Latency.ScrollUpdate.JankyDurationPercentage",
+            static_cast<int>(
+                100 * (janky_update_duration_ / total_update_duration_)));
+      }
     }
 
     total_update_events_ = 0;

@@ -1069,6 +1069,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Event.Latency.ScrollUpdate.JankyDurationPercentage" units="%"
+    expires_after="2022-07-15">
+  <owner>ddrone@google.com</owner>
+  <owner>chrometto-team@google.com</owner>
+  <summary>
+    Percentage of duration of scroll events that are detected as janky during a
+    particular scroll.
+  </summary>
+</histogram>
+
 <histogram name="Event.Latency.ScrollUpdate.JankyEvents" units="counts"
     expires_after="2022-05-20">
   <owner>ddrone@google.com</owner>
