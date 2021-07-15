@@ -718,6 +718,11 @@ void SyncServiceCrypto::UpdateRequiredUserActionAndNotify(
 }
 
 void SyncServiceCrypto::RefreshIsRecoverabilityDegraded() {
+  if (state_.cached_passphrase_type !=
+      PassphraseType::kTrustedVaultPassphrase) {
+    return;
+  }
+
   switch (state_.required_user_action) {
     case RequiredUserAction::kUnknownDuringInitialization:
     case RequiredUserAction::kFetchingTrustedVaultKeys:
