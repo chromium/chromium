@@ -25,6 +25,7 @@ polymer_element_files = [
   "onboarding_wp_disable_complete_page.js",
   "reimaging_firmware_update_page.js",
   "reimaging_provisioning_page.js",
+  "repair_component_chip.js",
   "shimless_rma.js",
   "shimless_rma_shared_css.js",
   "wrapup_repair_complete_page.js",
@@ -71,6 +72,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_wp_disable_complete_page",
     ":reimaging_firmware_update_page",
     ":reimaging_provisioning_page",
+    ":repair_component_chip",
     ":shimless_rma",
     ":shimless_rma_types",
     ":wrapup_repair_complete_page",
@@ -210,6 +212,12 @@ js_library("reimaging_provisioning_page") {
     ":base_page",
     ":mojo_interface_provider",
     ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("repair_component_chip") {
+  deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

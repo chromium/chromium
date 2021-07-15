@@ -22,6 +22,7 @@ js_type_check("closure_compile") {
     ":onboarding_wait_for_manual_wp_disable_page_test",
     ":reimaging_firmware_update_page_test",
     ":reimaging_provisioning_page_test",
+    ":repair_component_chip_test",
     ":shimless_rma_app_test",
     ":shimless_rma_unified_test",
     ":wrapup_repair_complete_page_test",
@@ -145,6 +146,15 @@ js_library("reimaging_provisioning_page_test") {
   deps = [
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:reimaging_provisioning_page",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("repair_component_chip_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/shimless_rma/resources:repair_component_chip",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

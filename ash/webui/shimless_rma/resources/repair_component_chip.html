@@ -1,0 +1,36 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    padding: 1px;
+  }
+
+  /* TODO(joonbug): update colors to CrOS */
+  :host([checked]) #containerButton {
+    background-color: lightskyblue;
+  }
+
+  #containerButton {
+    width:  180px;
+    height: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 2px 2px #bbb;
+  }
+
+  .checkedBox {
+    background-color: lightblue;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    width: 15px;
+    height:  15px;
+  }
+
+</style>
+
+<div>
+  <cr-button disabled$="[[disabled]]"
+      id="containerButton" on-click="onComponentButtonClicked_">
+    <span id="componentName">[[componentName]]</span>
+    <!-- TODO(joonbug): replace with iron-icon -->
+    <span hidden$="[[!checked]]" class="checkedBox"></span>
+  </cr-button>
+</div>
