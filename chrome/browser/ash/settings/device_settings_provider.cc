@@ -82,6 +82,7 @@ const char* const kKnownSettings[] = {
     kDeviceDisplayResolution,
     kDeviceDockMacAddressSource,
     kDeviceHostnameTemplate,
+    kDeviceHostnameUserConfigurable,
     kDeviceLoginScreenInputMethods,
     kDeviceLoginScreenLocales,
     kDeviceLoginScreenSystemInfoEnforced,
@@ -891,6 +892,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
         !container.device_hostname_template().empty()) {
       new_values_cache->SetString(kDeviceHostnameTemplate,
                                   container.device_hostname_template());
+    }
+  }
+
+  if (policy.has_hostname_user_configurable()) {
+    const em::HostnameUserConfigurableProto& container(
+        policy.hostname_user_configurable());
+    if (container.has_device_hostname_user_configurable()) {
+      new_values_cache->SetBoolean(
+          kDeviceHostnameUserConfigurable,
+          container.device_hostname_user_configurable());
     }
   }
 

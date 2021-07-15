@@ -951,6 +951,7 @@
         'DeviceDataRoamingEnabled',
         'NetworkThrottlingEnabled',
         'DeviceHostnameTemplate',
+        'DeviceHostnameUserConfigurable',
         'DeviceWiFiFastTransitionEnabled',
         'DeviceWiFiAllowed',
         'DeviceDockMacAddressSource',
@@ -18373,6 +18374,39 @@
       Leaving the policy unset or if the value after substitution isn't a valid hostname, no hostname is set in DHCP request.'''
     },
     {
+      'name': 'DeviceHostnameUserConfigurable',
+      'owners': ['khorimoto@google.com', 'cros-connectivity@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'device_only': True,
+      'features': {
+        'can_be_mandatory': True,
+        'dynamic_refresh': True,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Allow managed user to configure device hostname',
+        },
+        {
+          'value': False,
+          'caption': 'Prevent managed user from configuring device hostname',
+        },
+      ],
+      'example_value': True,
+      'default': False,
+      'id': 874,
+      'caption': '''Allow user to configure their device hostname''',
+      'tags': [],
+      'desc': '''Determine whether a user is allowed to configure the device hostname.
+
+      If <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME">DeviceHostnameTemplate</ph> is set, the admininistrator sets hostname and the user cannot choose regardless of what this policy is set to.
+      If this policy is set to True and <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME">DeviceHostnameTemplate</ph> is not set, the admininistrator does not set hostname and the user can choose one.
+      If this policy is set to False and <ph name="DEVICE_HOSTNAME_TEMPLATE_POLICY_NAME">DeviceHostnameTemplate</ph> is not set, the admininistrator does not set hostname and the user cannot choose one, hence the default name is used.'''
+    },
+    {
       'name': 'AbusiveExperienceInterventionEnforce',
       'owners': ['shivanisha@chromium.org', 'csharrison@chromium.org'],
       'type': 'main',
@@ -26787,6 +26821,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'DeviceTransferSAMLCookies': 'saml_settings.transfer_saml_cookies',
     'LoginVideoCaptureAllowedUrls': 'login_video_capture_allowed_urls.urls',
     'DeviceHostnameTemplate': 'network_hostname.device_hostname_template',
+    'DeviceHostnameUserConfigurable': 'hostname_user_configurable.device_hostname_user_configurable',
     'DeviceKerberosEncryptionTypes': 'device_kerberos_encryption_types.types',
     'LogUploadEnabled': 'device_log_upload_settings.system_log_upload_enabled',
     'DeviceVariationsRestrictParameter': 'variations_parameter.parameter',
@@ -27418,6 +27453,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 873,
+  'highest_id_currently_used': 874,
   'highest_atomic_group_id_currently_used': 40
 }

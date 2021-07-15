@@ -6245,6 +6245,10 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
+  "DeviceHostnameUserConfigurable": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+
   "ContextAwareAccessSignalsAllowlist": {
     "os": ["win", "linux", "mac", "chromeos"],
     "policy_pref_mapping_tests": [

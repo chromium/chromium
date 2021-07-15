@@ -18,12 +18,18 @@ class DeviceNamePolicyHandler {
  public:
   // Types of policies for device name functionality.
   enum class DeviceNamePolicy {
-    // No policy in place for administrator to choose a hostname.
+    // No device name policy in place.
     kNoPolicy,
 
     // Policy in place allowing administrator to specify a template
     // used to generate and format the hostname.
     kPolicyHostnameChosenByAdmin,
+
+    // Policy in place which allows managed users to configure the device name.
+    kPolicyHostnameConfigurableByManagedUser,
+
+    // Policy in place which prohibits users from configuring device name.
+    kPolicyHostnameNotConfigurable,
   };
 
   class Observer : public base::CheckedObserver {

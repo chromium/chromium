@@ -4,15 +4,13 @@
 
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler_name_generator.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/network/device_state.h"
-#include "chromeos/network/network_handler.h"
-#include "chromeos/network/network_state.h"
-#include "chromeos/network/network_state_handler.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "chromeos/settings/cros_settings_provider.h"
 
@@ -22,14 +20,23 @@ DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     ash::CrosSettings* cros_settings)
     : DeviceNamePolicyHandlerImpl(
           cros_settings,
-          chromeos::system::StatisticsProvider::GetInstance()) {}
+          chromeos::system::StatisticsProvider::GetInstance(),
+          chromeos::NetworkHandler::Get()->network_state_handler()) {}
 
 DeviceNamePolicyHandlerImpl::DeviceNamePolicyHandlerImpl(
     ash::CrosSettings* cros_settings,
-    chromeos::system::StatisticsProvider* statistics_provider)
-    : cros_settings_(cros_settings), statistics_provider_(statistics_provider) {
-  policy_subscription_ = cros_settings_->AddSettingsObserver(
+    chromeos::system::StatisticsProvider* statistics_provider,
+    chromeos::NetworkStateHandler* handler)
+    : cros_settings_(cros_settings),
+      statistics_provider_(statistics_provider),
+      handler_(handler) {
+  template_policy_subscription_ = cros_settings_->AddSettingsObserver(
       chromeos::kDeviceHostnameTemplate,
+      base::BindRepeating(
+          &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
+          weak_factory_.GetWeakPtr()));
+  configurable_policy_subscription_ = cros_settings_->AddSettingsObserver(
+      chromeos::kDeviceHostnameUserConfigurable,
       base::BindRepeating(
           &DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged,
           weak_factory_.GetWeakPtr()));
@@ -83,19 +90,41 @@ void DeviceNamePolicyHandlerImpl::OnDeviceHostnamePropertyChanged() {
 void DeviceNamePolicyHandlerImpl::
     OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded() {
   std::string hostname_template;
-  if (!cros_settings_->GetString(chromeos::kDeviceHostnameTemplate,
-                                 &hostname_template)) {
+  DeviceNamePolicy policy = ComputePolicy(&hostname_template);
+
+  std::string new_hostname;
+  if (policy == DeviceNamePolicy::kPolicyHostnameChosenByAdmin) {
+    new_hostname = GenerateHostname(hostname_template);
+  }
+
+  SetDeviceNamePolicy(policy, new_hostname);
+}
+
+DeviceNamePolicyHandler::DeviceNamePolicy
+DeviceNamePolicyHandlerImpl::ComputePolicy(std::string* hostname_template_out) {
+  if (cros_settings_->GetString(chromeos::kDeviceHostnameTemplate,
+                                hostname_template_out)) {
     // Do not set an empty hostname (which would overwrite any custom hostname
     // set) if DeviceHostnameTemplate is not specified by policy.
     // No policy is set for administrator to choose hostname.
-    SetDeviceNamePolicy(DeviceNamePolicy::kNoPolicy);
-    return;
+    return DeviceNamePolicy::kPolicyHostnameChosenByAdmin;
   }
 
-  // If we reach here, we know that the administrator specified a template
-  // to generate the hostname of the device.
-  device_name_policy_ = DeviceNamePolicy::kPolicyHostnameChosenByAdmin;
+  bool hostname_user_configurable;
+  if (ash::features::IsHostnameSettingEnabled() &&
+      cros_settings_->GetBoolean(chromeos::kDeviceHostnameUserConfigurable,
+                                 &hostname_user_configurable)) {
+    return hostname_user_configurable
+               ? DeviceNamePolicy::kPolicyHostnameConfigurableByManagedUser
+               : DeviceNamePolicy::kPolicyHostnameNotConfigurable;
+  }
 
+  // No policy set for managed user to choose hostname
+  return DeviceNamePolicy::kNoPolicy;
+}
+
+std::string DeviceNamePolicyHandlerImpl::GenerateHostname(
+    const std::string& hostname_template) const {
   const std::string serial = chromeos::system::StatisticsProvider::GetInstance()
                                  ->GetEnterpriseMachineID();
 
@@ -110,34 +139,39 @@ void DeviceNamePolicyHandlerImpl::
   const std::string location = g_browser_process->platform_part()
                                    ->browser_policy_connector_chromeos()
                                    ->GetDeviceAnnotatedLocation();
-
-  chromeos::NetworkStateHandler* handler =
-      chromeos::NetworkHandler::Get()->network_state_handler();
-
   std::string mac = "MAC_unknown";
-  const chromeos::NetworkState* network = handler->DefaultNetwork();
+  const chromeos::NetworkState* network = handler_->DefaultNetwork();
   if (network) {
     const chromeos::DeviceState* device =
-        handler->GetDeviceState(network->device_path());
+        handler_->GetDeviceState(network->device_path());
     if (device) {
       mac = device->mac_address();
       base::ReplaceSubstringsAfterOffset(&mac, 0, ":", "");
     }
   }
 
-  hostname_ = policy::FormatHostname(hostname_template, asset_id, serial, mac,
-                                     machine_name, location);
-  handler->SetHostname(hostname_);
-
-  // Notify at the end only after changing both policy and hostname.
-  NotifyHostnamePolicyChanged();
+  return policy::FormatHostname(hostname_template, asset_id, serial, mac,
+                                machine_name, location);
 }
 
-void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(DeviceNamePolicy policy) {
-  if (device_name_policy_ != policy) {
-    device_name_policy_ = policy;
-    NotifyHostnamePolicyChanged();
+void DeviceNamePolicyHandlerImpl::SetDeviceNamePolicy(
+    DeviceNamePolicy policy,
+    std::string& new_hostname) {
+  if (device_name_policy_ == policy && hostname_ == new_hostname)
+    return;
+
+  // If the hostname has changed, set it using NetworkStateHandler. Note that
+  // this process is skipped when the hostname settings flag is enabled since
+  // this is handled elsewhere. See https://crbug.com/126802.
+  if (!ash::features::IsHostnameSettingEnabled() &&
+      policy == DeviceNamePolicy::kPolicyHostnameChosenByAdmin &&
+      hostname_ != new_hostname) {
+    handler_->SetHostname(new_hostname);
   }
+
+  device_name_policy_ = policy;
+  hostname_ = new_hostname;
+  NotifyHostnamePolicyChanged();
 }
 
 std::ostream& operator<<(
@@ -150,6 +184,14 @@ std::ostream& operator<<(
     case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
         kPolicyHostnameChosenByAdmin:
       stream << "[Admin chooses hostname template]";
+      break;
+    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
+        kPolicyHostnameConfigurableByManagedUser:
+      stream << "[Managed user can choose hostname]";
+      break;
+    case DeviceNamePolicyHandlerImpl::DeviceNamePolicy::
+        kPolicyHostnameNotConfigurable:
+      stream << "[Managed user cannot choose hostname]";
       break;
   }
   return stream;

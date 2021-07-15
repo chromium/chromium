@@ -231,6 +231,9 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kUnaffiliatedArcAllowed[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kDeviceHostnameTemplate[];
 
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kDeviceHostnameUserConfigurable[];
+
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kVirtualMachinesAllowed[];
 
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
@@ -346,6 +349,7 @@ using ::chromeos::kDeviceDisabledMessage;
 using ::chromeos::kDeviceDisplayResolution;
 using ::chromeos::kDeviceDockMacAddressSource;
 using ::chromeos::kDeviceHostnameTemplate;
+using ::chromeos::kDeviceHostnameUserConfigurable;
 using ::chromeos::kDeviceLoginScreenInputMethods;
 using ::chromeos::kDeviceLoginScreenLocales;
 using ::chromeos::kDeviceLoginScreenSystemInfoEnforced;

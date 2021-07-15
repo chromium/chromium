@@ -412,6 +412,11 @@ const char kCastReceiverName[] = "cros.device.cast_receiver.name";
 // use ARC.
 const char kUnaffiliatedArcAllowed[] = "cros.device.unaffiliated_arc_allowed";
 
+// A boolean pref that indicates whether users are allowed to configure the
+// device hostname.
+const char kDeviceHostnameUserConfigurable[] =
+    "cros.device.hostname_user_configurable";
+
 // String that is used as a template for generating device hostname (that is
 // used in DHCP requests).
 // If the string contains either ASSET_ID, SERIAL_NUM or MAC_ADDR values,

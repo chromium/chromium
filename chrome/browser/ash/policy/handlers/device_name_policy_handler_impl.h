@@ -13,6 +13,9 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/policy/handlers/device_name_policy_handler.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_state.h"
+#include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/system/statistics_provider.h"
 
@@ -37,7 +40,8 @@ class DeviceNamePolicyHandlerImpl
 
   DeviceNamePolicyHandlerImpl(
       ash::CrosSettings* cros_settings,
-      chromeos::system::StatisticsProvider* statistics_provider);
+      chromeos::system::StatisticsProvider* statistics_provider,
+      chromeos::NetworkStateHandler* handler);
 
   // NetworkStateHandlerObserver overrides
   void DefaultNetworkChanged(const chromeos::NetworkState* network) override;
@@ -46,15 +50,27 @@ class DeviceNamePolicyHandlerImpl
 
   void OnDeviceHostnamePropertyChangedAndMachineStatisticsLoaded();
 
+  // Returns the device name policy to be used. If kPolicyHostnameChosenByAdmin
+  // is returned, |hostname_template_out| is set to the template chosen by the
+  // administrator; otherwise, |hostname_template_out| is left unchanged.
+  DeviceNamePolicyHandler::DeviceNamePolicy ComputePolicy(
+      std::string* hostname_template_out);
+
+  // Generates the hostname according to the template chosen by the
+  // administrator.
+  std::string GenerateHostname(const std::string& hostname_template) const;
+
   // Sets new device name policy value if different from the current policy
   // value .
-  void SetDeviceNamePolicy(DeviceNamePolicy policy);
+  void SetDeviceNamePolicy(DeviceNamePolicy policy, std::string& new_hostname);
 
   ash::CrosSettings* cros_settings_;
   chromeos::system::StatisticsProvider* statistics_provider_;
+  chromeos::NetworkStateHandler* handler_;
 
   DeviceNamePolicy device_name_policy_ = DeviceNamePolicy::kNoPolicy;
-  base::CallbackListSubscription policy_subscription_;
+  base::CallbackListSubscription template_policy_subscription_;
+  base::CallbackListSubscription configurable_policy_subscription_;
   std::string hostname_;
   base::WeakPtrFactory<DeviceNamePolicyHandlerImpl> weak_factory_{this};
 
