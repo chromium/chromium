@@ -1429,8 +1429,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   // This dispatch is necessary to give enough time for the tools menu to
   // disappear before taking a screenshot.
   dispatch_async(dispatch_get_main_queue(), ^{
-    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
-        NSStringFromClass(self.signinCoordinator.class));
+    DCHECK(!self.signinCoordinator)
+        << "self.signinCoordinator class: "
+        << base::SysNSStringToUTF8(
+               NSStringFromClass(self.signinCoordinator.class));
     if (self.settingsNavigationController)
       return;
     Browser* browser = self.mainInterface.browser;
@@ -2325,8 +2327,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   ProceduralBlock completionWithBVC = ^{
     DCHECK(self.currentInterface.viewController);
     DCHECK(!self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
-        NSStringFromClass(self.signinCoordinator.class));
+    DCHECK(!self.signinCoordinator)
+        << "self.signinCoordinator class: "
+        << base::SysNSStringToUTF8(
+               NSStringFromClass(self.signinCoordinator.class));
     // This will dismiss the SSO view controller.
     [self.interfaceProvider.currentInterface
         clearPresentedStateWithCompletion:completion
@@ -2336,8 +2340,10 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     // |self.currentInterface.bvc| may exist but tab switcher should be
     // active.
     DCHECK(self.mainCoordinator.isTabGridActive);
-    DCHECK(!self.signinCoordinator) << base::SysNSStringToUTF8(
-        NSStringFromClass(self.signinCoordinator.class));
+    DCHECK(!self.signinCoordinator)
+        << "self.signinCoordinator class: "
+        << base::SysNSStringToUTF8(
+               NSStringFromClass(self.signinCoordinator.class));
     // History coordinator can be started on top of the tab grid.
     // This is not true of the other tab switchers.
     DCHECK(self.mainCoordinator);
