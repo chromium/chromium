@@ -1611,10 +1611,11 @@ const WebVector<gfx::Rect>& WebFrameWidgetImpl::WindowSegments() const {
   return window_segments_;
 }
 
-void WebFrameWidgetImpl::StartDeferringCommits(base::TimeDelta timeout) {
+bool WebFrameWidgetImpl::StartDeferringCommits(base::TimeDelta timeout,
+                                               cc::PaintHoldingReason reason) {
   if (!View()->does_composite())
-    return;
-  widget_base_->LayerTreeHost()->StartDeferringCommits(timeout);
+    return false;
+  return widget_base_->LayerTreeHost()->StartDeferringCommits(timeout, reason);
 }
 
 void WebFrameWidgetImpl::StopDeferringCommits(

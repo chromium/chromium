@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/paint_holding_reason.h"
 
 namespace cc {
 class LayerTreeFrameSink;
@@ -40,7 +41,8 @@ class LayerTreeViewDelegate {
   virtual void BeginMainFrame(base::TimeTicks frame_time) = 0;
 
   virtual void OnDeferMainFrameUpdatesChanged(bool) = 0;
-  virtual void OnDeferCommitsChanged(bool) = 0;
+  virtual void OnDeferCommitsChanged(bool defer_status,
+                                     cc::PaintHoldingReason reason) = 0;
 
   // Notifies that the layer tree host has completed a call to
   // RequestMainFrameUpdate in response to a BeginMainFrame.

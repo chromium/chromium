@@ -31,6 +31,7 @@
 #include "cc/input/overscroll_behavior.h"
 #include "cc/paint/paint_image.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
@@ -198,8 +199,12 @@ class CORE_EXPORT ChromeClient : public GarbageCollected<ChromeClient> {
   // reference to make it clear that callers may only call this while a local
   // main frame is present and the state does not persist between instances of
   // local main frames.
-  virtual void StartDeferringCommits(LocalFrame& main_frame,
-                                     base::TimeDelta timeout) = 0;
+  //
+  // Returns false if commits were already deferred, indicating that the call
+  // was a no-op.
+  virtual bool StartDeferringCommits(LocalFrame& main_frame,
+                                     base::TimeDelta timeout,
+                                     cc::PaintHoldingReason reason) = 0;
   virtual void StopDeferringCommits(LocalFrame& main_frame,
                                     cc::PaintHoldingCommitTrigger) = 0;
 

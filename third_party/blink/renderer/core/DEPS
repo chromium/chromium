@@ -62,6 +62,7 @@ include_rules = [
     "+cc/trees/browser_controls_params.h",
     "+cc/trees/layer_tree_host.h",
     "+cc/trees/paint_holding_commit_trigger.h",
+    "+cc/trees/paint_holding_reason.h",
     "+cc/trees/ukm_manager.h",
     "+components/performance_manager/public/mojom/coordination_unit.mojom-blink.h",
     "+components/performance_manager/public/mojom/web_memory.mojom-blink.h",

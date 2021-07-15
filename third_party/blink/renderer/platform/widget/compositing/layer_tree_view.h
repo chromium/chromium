@@ -15,6 +15,7 @@
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_monitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
@@ -80,7 +81,8 @@ class PLATFORM_EXPORT LayerTreeView
   void DidUpdateLayers() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;
   void OnDeferMainFrameUpdatesChanged(bool) override;
-  void OnDeferCommitsChanged(bool) override;
+  void OnDeferCommitsChanged(bool defer_status,
+                             cc::PaintHoldingReason reason) override;
   void BeginMainFrameNotExpectedSoon() override;
   void BeginMainFrameNotExpectedUntil(base::TimeTicks time) override;
   void UpdateLayerTreeHost() override;

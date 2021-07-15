@@ -9,6 +9,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -35,8 +36,10 @@ class FakeProxy : public Proxy {
       const viz::LocalSurfaceId& target_local_surface_id) override {}
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override {}
-  void StartDeferringCommits(base::TimeDelta timeout) override {}
+  bool StartDeferringCommits(base::TimeDelta timeout,
+                             PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override {}
+  bool IsDeferringCommits() const override;
   bool CommitRequested() const override;
   void Start() override {}
   void Stop() override {}

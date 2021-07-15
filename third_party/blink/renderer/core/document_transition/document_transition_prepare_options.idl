@@ -20,4 +20,5 @@ enum RootTransitionType {
 dictionary DocumentTransitionPrepareOptions {
   RootTransitionType rootTransition;
   sequence<Element?> sharedElements;
+  AbortSignal abortSignal;
 };

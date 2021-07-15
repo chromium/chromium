@@ -352,6 +352,7 @@ _CONFIG = [
 
             # UMA Enums
             'cc::PaintHoldingCommitTrigger',
+            'cc::PaintHoldingReason',
 
             # Scrolling
             'cc::kManipulationInfoPinchZoom',

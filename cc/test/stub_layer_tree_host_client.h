@@ -9,6 +9,7 @@
 
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
+#include "cc/trees/paint_holding_reason.h"
 
 namespace cc {
 
@@ -23,7 +24,7 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void DidUpdateLayers() override {}
   void BeginMainFrame(const viz::BeginFrameArgs& args) override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool) override {}
+  void OnDeferCommitsChanged(bool, PaintHoldingReason) override {}
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,
                                ActiveFrameSequenceTrackers) override {}

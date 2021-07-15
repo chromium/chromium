@@ -36,6 +36,7 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy_impl.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/single_thread_proxy.h"
@@ -411,7 +412,7 @@ class LayerTreeHostClientForTesting : public LayerTreeHostClient,
   }
 
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool) override {}
+  void OnDeferCommitsChanged(bool, PaintHoldingReason) override {}
 
   void RecordStartOfFrameMetrics() override {}
   void RecordEndOfFrameMetrics(base::TimeTicks,

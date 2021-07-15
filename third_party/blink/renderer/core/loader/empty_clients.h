@@ -32,6 +32,7 @@
 #include <memory>
 
 #include "cc/paint/paint_canvas.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -108,8 +109,9 @@ class CORE_EXPORT EmptyChromeClient : public ChromeClient {
   void SetOverscrollBehavior(LocalFrame& frame,
                              const cc::OverscrollBehavior&) override {}
   void BeginLifecycleUpdates(LocalFrame& main_frame) override {}
-  void StartDeferringCommits(LocalFrame& main_frame,
-                             base::TimeDelta timeout) override {}
+  bool StartDeferringCommits(LocalFrame& main_frame,
+                             base::TimeDelta timeout,
+                             cc::PaintHoldingReason reason) override;
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override {}
   void StartDragging(LocalFrame*,

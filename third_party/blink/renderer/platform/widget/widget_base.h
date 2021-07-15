@@ -8,6 +8,7 @@
 #include "base/time/time.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/browser_controls_params.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -133,7 +134,8 @@ class PLATFORM_EXPORT WidgetBase : public mojom::blink::Widget,
       const cc::CompositorCommitData& commit_data) override;
   void BeginMainFrame(base::TimeTicks frame_time) override;
   void OnDeferMainFrameUpdatesChanged(bool) override;
-  void OnDeferCommitsChanged(bool) override;
+  void OnDeferCommitsChanged(bool defer_status,
+                             cc::PaintHoldingReason reason) override;
   void DidBeginMainFrame() override;
   void RequestNewLayerTreeFrameSink(
       LayerTreeFrameSinkCallback callback) override;

@@ -4601,7 +4601,6 @@ void LocalFrameView::BeginLifecycleUpdates() {
   if (!GetFrame().IsMainFrame())
     return;
 
-  Document* document = GetFrame().GetDocument();
   ChromeClient& chrome_client = GetFrame().GetPage()->GetChromeClient();
 
   // Determine if we want to defer commits to the compositor once lifecycle
@@ -4612,14 +4611,20 @@ void LocalFrameView::BeginLifecycleUpdates() {
   // over HTTP/HTTPs. And only defer commits once. This method gets called
   // multiple times, and we do not want to defer a second time if we have
   // already done so once and resumed commits already.
-  if (document && document->DeferredCompositorCommitIsAllowed() &&
-      !have_deferred_commits_) {
-    chrome_client.StartDeferringCommits(
-        GetFrame(), base::TimeDelta::FromMilliseconds(kCommitDelayDefaultInMs));
+  if (WillDoPaintHoldingForFCP()) {
     have_deferred_commits_ = true;
+    chrome_client.StartDeferringCommits(
+        GetFrame(), base::TimeDelta::FromMilliseconds(kCommitDelayDefaultInMs),
+        cc::PaintHoldingReason::kFirstContentfulPaint);
   }
 
   chrome_client.BeginLifecycleUpdates(GetFrame());
+}
+
+bool LocalFrameView::WillDoPaintHoldingForFCP() const {
+  Document* document = GetFrame().GetDocument();
+  return document && document->DeferredCompositorCommitIsAllowed() &&
+         !have_deferred_commits_;
 }
 
 void LocalFrameView::SetInitialViewportSize(const IntSize& viewport_size) {

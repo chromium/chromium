@@ -89,6 +89,12 @@ String EmptyChromeClient::AcceptLanguages() {
   return String();
 }
 
+bool EmptyChromeClient::StartDeferringCommits(LocalFrame& main_frame,
+                                              base::TimeDelta timeout,
+                                              cc::PaintHoldingReason reason) {
+  return false;
+}
+
 void EmptyLocalFrameClient::BeginNavigation(
     const ResourceRequest&,
     mojom::RequestContextFrameType,

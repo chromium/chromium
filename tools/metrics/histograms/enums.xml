@@ -62126,8 +62126,10 @@ Called by update_net_trust_anchors.py.-->
   <int value="0" label="Feature Disabled"/>
   <int value="1" label="Disallowed"/>
   <int value="2" label="First Contentful Paint"/>
-  <int value="3" label="Timeout"/>
+  <int value="3" label="FCP Timeout"/>
   <int value="4" label="Not Deferred"/>
+  <int value="5" label="Document Transition"/>
+  <int value="6" label="Document Transition Timeout"/>
 </enum>
 
 <enum name="PaintHoldingInputTiming">

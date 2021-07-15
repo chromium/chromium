@@ -185,6 +185,9 @@ class CORE_EXPORT LocalFrameView final
   void ScheduleOrthogonalWritingModeRootsForLayout();
   void MarkOrthogonalWritingModeRootsForLayout();
 
+  // Returns true if commits will be deferred for first contentful paint.
+  bool WillDoPaintHoldingForFCP() const;
+
   unsigned LayoutCountForTesting() const { return layout_count_for_testing_; }
   unsigned LifecycleUpdateCountForTesting() const {
     return lifecycle_update_count_for_testing_;

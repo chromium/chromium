@@ -15,6 +15,7 @@
 #include "cc/base/features.h"
 #include "cc/metrics/event_metrics.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/power_scheduler/power_mode.h"
 #include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/power_scheduler/power_mode_voter.h"
@@ -634,8 +635,10 @@ void WidgetInputHandlerManager::OnDeferMainFrameUpdatesChanged(bool status) {
   }
 }
 
-void WidgetInputHandlerManager::OnDeferCommitsChanged(bool status) {
-  if (status) {
+void WidgetInputHandlerManager::OnDeferCommitsChanged(
+    bool status,
+    cc::PaintHoldingReason reason) {
+  if (status && reason == cc::PaintHoldingReason::kFirstContentfulPaint) {
     renderer_deferral_state_ |=
         static_cast<uint16_t>(RenderingDeferralBits::kDeferCommits);
   } else {

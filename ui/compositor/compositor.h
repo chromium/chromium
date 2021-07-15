@@ -25,6 +25,7 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_host_single_thread_client.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/subtree_capture_id.h"
@@ -321,7 +322,7 @@ class COMPOSITOR_EXPORT Compositor : public cc::LayerTreeHostClient,
   void WillBeginMainFrame() override {}
   void DidBeginMainFrame() override {}
   void OnDeferMainFrameUpdatesChanged(bool) override {}
-  void OnDeferCommitsChanged(bool) override {}
+  void OnDeferCommitsChanged(bool, cc::PaintHoldingReason) override {}
   void WillUpdateLayers() override {}
   void DidUpdateLayers() override;
   void BeginMainFrame(const viz::BeginFrameArgs& args) override;

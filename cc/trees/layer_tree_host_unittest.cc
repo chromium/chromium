@@ -60,6 +60,7 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/single_thread_proxy.h"
 #include "cc/trees/swap_promise.h"
@@ -9498,7 +9499,9 @@ class LayerTreeHostTestKeepEventsMetricsForDeferredCommit
 
  private:
   void DeferCommitOnMain() {
-    layer_tree_host()->StartDeferringCommits(base::TimeDelta::FromDays(1));
+    layer_tree_host()->StartDeferringCommits(
+        base::TimeDelta::FromDays(1),
+        PaintHoldingReason::kFirstContentfulPaint);
   }
 
   void PostDeferCommit() {

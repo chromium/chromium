@@ -13,6 +13,7 @@
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_host.h"
 #include "cc/trees/layer_tree_settings.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/ukm_manager.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/switches.h"
@@ -490,10 +491,11 @@ void WidgetBase::OnDeferMainFrameUpdatesChanged(bool defer) {
   widget_input_handler_manager_->OnDeferMainFrameUpdatesChanged(defer);
 }
 
-void WidgetBase::OnDeferCommitsChanged(bool defer) {
+void WidgetBase::OnDeferCommitsChanged(bool defer,
+                                       cc::PaintHoldingReason reason) {
   // The input handler wants to know about the commit status for metric purposes
   // and to enable/disable input.
-  widget_input_handler_manager_->OnDeferCommitsChanged(defer);
+  widget_input_handler_manager_->OnDeferCommitsChanged(defer, reason);
 }
 
 void WidgetBase::DidBeginMainFrame() {

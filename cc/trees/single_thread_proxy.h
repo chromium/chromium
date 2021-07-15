@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "cc/scheduler/scheduler.h"
 #include "cc/trees/layer_tree_host_impl.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -58,8 +59,10 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
       const viz::LocalSurfaceId& target_local_surface_id) override;
   bool RequestedAnimatePending() override;
   void SetDeferMainFrameUpdate(bool defer_main_frame_update) override;
-  void StartDeferringCommits(base::TimeDelta timeout) override;
+  bool StartDeferringCommits(base::TimeDelta timeout,
+                             PaintHoldingReason reason) override;
   void StopDeferringCommits(PaintHoldingCommitTrigger) override;
+  bool IsDeferringCommits() const override;
   bool CommitRequested() const override;
   void Start() override;
   void Stop() override;
@@ -207,7 +210,7 @@ class CC_EXPORT SingleThreadProxy : public Proxy,
 #endif
   bool inside_draw_;
   bool defer_main_frame_update_;
-  bool defer_commits_;
+  absl::optional<PaintHoldingReason> paint_holding_reason_;
   bool animate_requested_;
   bool update_layers_requested_;
   bool commit_requested_;

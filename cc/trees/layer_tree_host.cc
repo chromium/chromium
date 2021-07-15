@@ -57,6 +57,7 @@
 #include "cc/trees/layer_tree_host_impl.h"
 #include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/property_tree_builder.h"
 #include "cc/trees/proxy_main.h"
 #include "cc/trees/render_frame_metadata_observer.h"
@@ -604,16 +605,22 @@ void LayerTreeHost::OnDeferMainFrameUpdatesChanged(bool defer_status) {
   client_->OnDeferMainFrameUpdatesChanged(defer_status);
 }
 
-void LayerTreeHost::StartDeferringCommits(base::TimeDelta timeout) {
-  proxy_->StartDeferringCommits(timeout);
+bool LayerTreeHost::StartDeferringCommits(base::TimeDelta timeout,
+                                          PaintHoldingReason reason) {
+  return proxy_->StartDeferringCommits(timeout, reason);
 }
 
 void LayerTreeHost::StopDeferringCommits(PaintHoldingCommitTrigger trigger) {
   proxy_->StopDeferringCommits(trigger);
 }
 
-void LayerTreeHost::OnDeferCommitsChanged(bool defer_status) {
-  client_->OnDeferCommitsChanged(defer_status);
+bool LayerTreeHost::IsDeferringCommits() const {
+  return proxy_->IsDeferringCommits();
+}
+
+void LayerTreeHost::OnDeferCommitsChanged(bool defer_status,
+                                          PaintHoldingReason reason) {
+  client_->OnDeferCommitsChanged(defer_status, reason);
 }
 
 DISABLE_CFI_PERF

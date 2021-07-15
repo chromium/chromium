@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_root_transition_type.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_state.h"
@@ -510,10 +511,16 @@ TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
       transition->prepare(script_state, &prepare_options, exception_state));
   EXPECT_EQ(GetState(transition), State::kPreparing);
 
+  // Visual updates are allows during prepare phase.
+  EXPECT_FALSE(LayerTreeHost()->IsDeferringCommits());
+
   UpdateAllLifecyclePhasesAndFinishDirectives();
   prepare_tester.WaitUntilSettled();
   EXPECT_TRUE(prepare_tester.IsFulfilled());
   EXPECT_EQ(GetState(transition), State::kPrepared);
+
+  // Visual updates are stalled between prepared and start.
+  EXPECT_TRUE(LayerTreeHost()->IsDeferringCommits());
 
   DocumentTransitionStartOptions start_options;
   ScriptPromiseTester start_tester(
@@ -523,8 +530,34 @@ TEST_P(DocumentTransitionTest, StartPromiseIsResolved) {
   EXPECT_EQ(GetState(transition), State::kStarted);
   UpdateAllLifecyclePhasesAndFinishDirectives();
 
+  // Visual updates are restored on start.
+  EXPECT_FALSE(LayerTreeHost()->IsDeferringCommits());
+
   start_tester.WaitUntilSettled();
   EXPECT_TRUE(start_tester.IsFulfilled());
+  EXPECT_EQ(GetState(transition), State::kIdle);
+}
+
+TEST_P(DocumentTransitionTest, AbortSignal) {
+  auto* transition =
+      DocumentTransitionSupplement::documentTransition(GetDocument());
+
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  ExceptionState& exception_state = v8_scope.GetExceptionState();
+
+  auto* abort_signal =
+      MakeGarbageCollected<AbortSignal>(v8_scope.GetExecutionContext());
+  DocumentTransitionPrepareOptions prepare_options;
+  prepare_options.setAbortSignal(abort_signal);
+  ScriptPromiseTester prepare_tester(
+      script_state,
+      transition->prepare(script_state, &prepare_options, exception_state));
+  EXPECT_EQ(GetState(transition), State::kPreparing);
+
+  abort_signal->SignalAbort();
+  prepare_tester.WaitUntilSettled();
+  EXPECT_TRUE(prepare_tester.IsRejected());
   EXPECT_EQ(GetState(transition), State::kIdle);
 }
 

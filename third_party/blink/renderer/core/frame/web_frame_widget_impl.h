@@ -39,6 +39,7 @@
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/trees/layer_tree_host.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h"
 #include "third_party/blink/public/common/input/web_coalesced_input_event.h"
 #include "third_party/blink/public/common/input/web_gesture_device.h"
@@ -446,7 +447,8 @@ class CORE_EXPORT WebFrameWidgetImpl
   // updates without committing the layer tree. Commits are deferred
   // until at most the given |timeout| has passed. If multiple calls are made
   // when deferral is active then the initial timeout applies.
-  void StartDeferringCommits(base::TimeDelta timeout);
+  bool StartDeferringCommits(base::TimeDelta timeout,
+                             cc::PaintHoldingReason reason);
   // Immediately stop deferring commits.
   void StopDeferringCommits(cc::PaintHoldingCommitTrigger);
 

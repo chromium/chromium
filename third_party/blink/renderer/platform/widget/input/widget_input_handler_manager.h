@@ -10,6 +10,7 @@
 
 #include "base/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -151,7 +152,7 @@ class PLATFORM_EXPORT WidgetInputHandlerManager final
   void OnDeferMainFrameUpdatesChanged(bool);
 
   // Called to inform us when the system starts or stops deferring commits.
-  void OnDeferCommitsChanged(bool);
+  void OnDeferCommitsChanged(bool defer_status, cc::PaintHoldingReason reason);
 
   // Allow tests, headless etc. to have input events processed before the
   // compositor is ready to commit frames.

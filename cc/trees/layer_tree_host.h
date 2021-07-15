@@ -48,6 +48,7 @@
 #include "cc/trees/layer_tree_host_client.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "cc/trees/mutator_host.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/proxy.h"
 #include "cc/trees/swap_promise.h"
 #include "cc/trees/swap_promise_manager.h"
@@ -274,13 +275,17 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   // is the interval after which commits will restart if nothing stops
   // deferring sooner. If multiple calls are made to StartDeferringCommits
   // while deferal is active, the first timeout continues to apply.
-  void StartDeferringCommits(base::TimeDelta timeout);
+  bool StartDeferringCommits(base::TimeDelta timeout,
+                             PaintHoldingReason reason);
 
   // Stop deferring commits immediately.
   void StopDeferringCommits(PaintHoldingCommitTrigger);
 
+  // Returns true if commits are currently deferred.
+  bool IsDeferringCommits() const;
+
   // Notification that the proxy started or stopped deferring commits.
-  void OnDeferCommitsChanged(bool);
+  void OnDeferCommitsChanged(bool defer_status, PaintHoldingReason reason);
 
   // Returns whether there are any outstanding ScopedDeferMainFrameUpdate,
   // though commits may be deferred also when the local_surface_id_from_parent()

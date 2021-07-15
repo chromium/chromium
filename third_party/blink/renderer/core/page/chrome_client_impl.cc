@@ -38,6 +38,7 @@
 #include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/picture_layer.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
@@ -983,12 +984,13 @@ void ChromeClientImpl::BeginLifecycleUpdates(LocalFrame& main_frame) {
   web_view_->StopDeferringMainFrameUpdate();
 }
 
-void ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
-                                             base::TimeDelta timeout) {
+bool ChromeClientImpl::StartDeferringCommits(LocalFrame& main_frame,
+                                             base::TimeDelta timeout,
+                                             cc::PaintHoldingReason reason) {
   DCHECK(main_frame.IsMainFrame());
-  WebLocalFrameImpl::FromFrame(main_frame)
+  return WebLocalFrameImpl::FromFrame(main_frame)
       ->FrameWidgetImpl()
-      ->StartDeferringCommits(timeout);
+      ->StartDeferringCommits(timeout, reason);
 }
 
 void ChromeClientImpl::StopDeferringCommits(

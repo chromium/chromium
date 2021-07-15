@@ -14,6 +14,7 @@
 #include "cc/cc_export.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/trees/paint_holding_commit_trigger.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -64,10 +65,13 @@ class CC_EXPORT Proxy {
   // but continues to update the document lifecycle in
   // LayerTreeHost::BeginMainFrameUpdate. If multiple calls are made when
   // deferal is active the first |timeout| continues to apply.
-  virtual void StartDeferringCommits(base::TimeDelta timeout) = 0;
+  virtual bool StartDeferringCommits(base::TimeDelta timeout,
+                                     PaintHoldingReason reason) = 0;
 
   // Immediately stop deferring commits.
   virtual void StopDeferringCommits(PaintHoldingCommitTrigger) = 0;
+
+  virtual bool IsDeferringCommits() const = 0;
 
   virtual bool CommitRequested() const = 0;
 

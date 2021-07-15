@@ -4,16 +4,20 @@
 
 #include "third_party/blink/renderer/core/document_transition/document_transition.h"
 
+#include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
+#include "cc/trees/paint_holding_reason.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -23,6 +27,9 @@
 
 namespace blink {
 namespace {
+
+const char kAbortedFromPrepare[] = "Aborted due to prepare() call";
+const char kAbortedFromSignal[] = "Aborted due to abortSignal";
 
 DocumentTransition::Request::Effect ParseEffect(const String& input) {
   using MapType = HashMap<String, DocumentTransition::Request::Effect>;
@@ -70,6 +77,7 @@ void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(prepare_promise_resolver_);
   visitor->Trace(start_promise_resolver_);
   visitor->Trace(active_shared_elements_);
+  visitor->Trace(signal_);
 
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
@@ -86,6 +94,8 @@ void DocumentTransition::ContextDestroyed() {
     start_promise_resolver_ = nullptr;
   }
   active_shared_elements_.clear();
+  signal_ = nullptr;
+  StopDeferringCommits();
 }
 
 bool DocumentTransition::HasPendingActivity() const {
@@ -100,12 +110,7 @@ ScriptPromise DocumentTransition::prepare(
     ExceptionState& exception_state) {
   // Reject any previous prepare promises.
   if (state_ == State::kPreparing || state_ == State::kPrepared) {
-    if (prepare_promise_resolver_) {
-      prepare_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kAbortError, "Aborted due to prepare() call"));
-      prepare_promise_resolver_ = nullptr;
-    }
-    state_ = State::kIdle;
+    CancelPendingTransition(kAbortedFromPrepare);
   }
 
   // Get the sequence id before any early outs so we will correctly process
@@ -128,6 +133,19 @@ ScriptPromise DocumentTransition::prepare(
     return ScriptPromise();
   }
 
+  if (options->hasAbortSignal()) {
+    if (options->abortSignal()->aborted()) {
+      exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
+                                        kAbortedFromSignal);
+      return ScriptPromise();
+    }
+
+    signal_ = options->abortSignal();
+    signal_->AddAlgorithm(WTF::Bind(&DocumentTransition::Abort,
+                                    WrapWeakPersistent(this),
+                                    WrapWeakPersistent(signal_.Get())));
+  }
+
   // We're going to be creating a new transition, parse the options.
   auto effect = ParseRootTransition(options);
   if (options->hasSharedElements())
@@ -148,6 +166,15 @@ ScriptPromise DocumentTransition::prepare(
   return prepare_promise_resolver_->Promise();
 }
 
+void DocumentTransition::Abort(AbortSignal* signal) {
+  // There is no RemoveAlgorithm() method on AbortSignal so compare the signal
+  // bound to this callback to the one last passed to start().
+  if (signal_ != signal)
+    return;
+
+  CancelPendingTransition(kAbortedFromSignal);
+}
+
 ScriptPromise DocumentTransition::start(
     ScriptState* script_state,
     const DocumentTransitionStartOptions* options,
@@ -159,6 +186,8 @@ ScriptPromise DocumentTransition::start(
     return ScriptPromise();
   }
 
+  signal_ = nullptr;
+  StopDeferringCommits();
   if (options->hasSharedElements())
     SetActiveSharedElements(options->sharedElements());
 
@@ -212,6 +241,9 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
   DCHECK(state_ == State::kPreparing);
   DCHECK(prepare_promise_resolver_);
 
+  // Defer commits before resolving the promise to ensure any updates made in
+  // the callback are deferred.
+  StartDeferringCommits();
   prepare_promise_resolver_->Resolve();
   prepare_promise_resolver_ = nullptr;
   state_ = State::kPrepared;
@@ -322,6 +354,56 @@ void DocumentTransition::InvalidateActiveElements() {
     // We might need to composite or decomposite this layer.
     box->Layer()->SetNeedsCompositingInputsUpdate();
   }
+}
+
+void DocumentTransition::StartDeferringCommits() {
+  DCHECK(!deferring_commits_);
+
+  if (!document_->GetPage() || !document_->View())
+    return;
+
+  // Don't do paint holding if it could already be in progress for first
+  // contentful paint.
+  if (document_->View()->WillDoPaintHoldingForFCP())
+    return;
+
+  // Based on the viz side timeout to hold snapshots for 5 seconds.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "blink", "DocumentTransition::DeferringCommits", this);
+  constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(4);
+  deferring_commits_ =
+      document_->GetPage()->GetChromeClient().StartDeferringCommits(
+          *document_->GetFrame(), kTimeout,
+          cc::PaintHoldingReason::kDocumentTransition);
+}
+
+void DocumentTransition::StopDeferringCommits() {
+  if (!deferring_commits_)
+    return;
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0("blink",
+                                  "DocumentTransition::DeferringCommits", this);
+  deferring_commits_ = false;
+  if (!document_->GetPage())
+    return;
+
+  document_->GetPage()->GetChromeClient().StopDeferringCommits(
+      *document_->GetFrame(),
+      cc::PaintHoldingCommitTrigger::kDocumentTransition);
+}
+
+void DocumentTransition::CancelPendingTransition(const char* abort_message) {
+  DCHECK(state_ == State::kPreparing || state_ == State::kPrepared)
+      << "Can not cancel transition at state : " << static_cast<int>(state_);
+
+  if (prepare_promise_resolver_) {
+    prepare_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, abort_message));
+    prepare_promise_resolver_ = nullptr;
+  }
+  StopDeferringCommits();
+  state_ = State::kIdle;
+  signal_ = nullptr;
 }
 
 }  // namespace blink

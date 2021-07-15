@@ -72,8 +72,9 @@ class CORE_EXPORT ChromeClientImpl final : public ChromeClient {
   void TakeFocus(mojom::blink::FocusType) override;
   void SetKeyboardFocusURL(Element* new_focus_element) override;
   void BeginLifecycleUpdates(LocalFrame& main_frame) override;
-  void StartDeferringCommits(LocalFrame& main_frame,
-                             base::TimeDelta timeout) override;
+  bool StartDeferringCommits(LocalFrame& main_frame,
+                             base::TimeDelta timeout,
+                             cc::PaintHoldingReason reason) override;
   void StopDeferringCommits(LocalFrame& main_frame,
                             cc::PaintHoldingCommitTrigger) override;
   void StartDragging(LocalFrame*,
