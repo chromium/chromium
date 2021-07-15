@@ -5,6 +5,7 @@
 
 from __future__ import print_function
 
+import collections
 import itertools
 import sys
 import tempfile
@@ -13,7 +14,6 @@ import unittest
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import data_types
-from unexpected_passes_common import expectations
 from unexpected_passes_common import result_output
 from unexpected_passes_common import unittest_utils as uu
 
@@ -377,7 +377,7 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
     self._filepath = self._file_handle.name
 
   def testRecursivePrintToFileExpectationMap(self):
-    """Tests _RecursivePrintToFile() with an expectation map as input."""
+    """Tests RecursivePrintToFile() with an expectation map as input."""
     expectation_map = {
         'foo': {
             '"RetryOnFailure" expectation on "win intel"': {
@@ -397,7 +397,7 @@ class PrintToFileUnittest(fake_filesystem_unittest.TestCase):
             },
         },
     }
-    result_output._RecursivePrintToFile(expectation_map, 0, self._file_handle)
+    result_output.RecursivePrintToFile(expectation_map, 0, self._file_handle)
     self._file_handle.close()
 
     # TODO(crbug.com/1198237): Keep the Python 3 version once we are fully
@@ -432,7 +432,7 @@ foo
       self.assertEqual(f.read(), expected_output)
 
   def testRecursivePrintToFileUnmatchedResults(self):
-    """Tests _RecursivePrintToFile() with unmatched results as input."""
+    """Tests RecursivePrintToFile() with unmatched results as input."""
     unmatched_results = {
         'foo': {
             'builder': {
@@ -448,7 +448,7 @@ foo
             },
         },
     }
-    result_output._RecursivePrintToFile(unmatched_results, 0, self._file_handle)
+    result_output.RecursivePrintToFile(unmatched_results, 0, self._file_handle)
     self._file_handle.close()
     # pylint: disable=line-too-long
     # Order is not guaranteed, so create permutations.
@@ -531,8 +531,7 @@ class OutputResultsUnittest(fake_filesystem_unittest.TestCase):
         data_types.Expectation('foo', ['linux'], 'RetryOnFailure')
     ]
 
-    stale, semi_stale, active = expectations.SplitExpectationsByStaleness(
-        expectation_map)
+    stale, semi_stale, active = expectation_map.SplitByStaleness()
 
     result_output.OutputResults(stale, semi_stale, active, {}, [], 'print',
                                 self._file_handle)
@@ -703,6 +702,73 @@ class OutputUrlsForClDescriptionUnittest(fake_filesystem_unittest.TestCase):
     with open(self._filepath) as f:
       self.assertEqual(f.read(), ('Affected bugs for CL description:\n'
                                   'Fixed: 1, 2\n'))
+
+
+class ConvertBuilderMapToPassOrderedStringDictUnittest(unittest.TestCase):
+  def testEmptyInput(self):
+    """Tests that an empty input doesn't cause breakage."""
+    output = result_output.ConvertBuilderMapToPassOrderedStringDict(
+        data_types.BuilderStepMap())
+    expected_output = collections.OrderedDict()
+    expected_output[result_output.FULL_PASS] = {}
+    expected_output[result_output.NEVER_PASS] = {}
+    expected_output[result_output.PARTIAL_PASS] = {}
+    self.assertEqual(output, expected_output)
+
+  def testBasic(self):
+    """Tests that a map is properly converted."""
+    builder_map = data_types.BuilderStepMap({
+        'fully pass':
+        data_types.StepBuildStatsMap({
+            'step1': uu.CreateStatsWithPassFails(1, 0),
+        }),
+        'never pass':
+        data_types.StepBuildStatsMap({
+            'step3': uu.CreateStatsWithPassFails(0, 1),
+        }),
+        'partial pass':
+        data_types.StepBuildStatsMap({
+            'step5': uu.CreateStatsWithPassFails(1, 1),
+        }),
+        'mixed':
+        data_types.StepBuildStatsMap({
+            'step7': uu.CreateStatsWithPassFails(1, 0),
+            'step8': uu.CreateStatsWithPassFails(0, 1),
+            'step9': uu.CreateStatsWithPassFails(1, 1),
+        }),
+    })
+    output = result_output.ConvertBuilderMapToPassOrderedStringDict(builder_map)
+
+    expected_output = collections.OrderedDict()
+    expected_output[result_output.FULL_PASS] = {
+        'fully pass': [
+            'step1 (1/1)',
+        ],
+        'mixed': [
+            'step7 (1/1)',
+        ],
+    }
+    expected_output[result_output.NEVER_PASS] = {
+        'never pass': [
+            'step3 (0/1)',
+        ],
+        'mixed': [
+            'step8 (0/1)',
+        ],
+    }
+    expected_output[result_output.PARTIAL_PASS] = {
+        'partial pass': {
+            'step5 (1/2)': [
+                'http://ci.chromium.org/b/build_id0',
+            ],
+        },
+        'mixed': {
+            'step9 (1/2)': [
+                'http://ci.chromium.org/b/build_id0',
+            ],
+        },
+    }
+    self.assertEqual(output, expected_output)
 
 
 def _Dedent(s):

@@ -6,6 +6,7 @@
 from __future__ import print_function
 
 from unexpected_passes_common import builders
+from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types
 from unexpected_passes_common import queries
 
@@ -114,3 +115,18 @@ class GenericBuilders(builders.Builders):
 
 def RegisterGenericBuildersImplementation():
   builders.RegisterInstance(GenericBuilders())
+
+
+class GenericExpectations(expectations.Expectations):
+  def _GetExpectationFilepaths(self):
+    return []
+
+  def _GetExpectationFileTagHeader(self):
+    return """\
+# tags: [ linux mac win ]
+# results: [ Failure RetryOnFailure Skip ]
+"""
+
+
+def CreateGenericExpectations():
+  return GenericExpectations()

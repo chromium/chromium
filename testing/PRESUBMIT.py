@@ -13,13 +13,8 @@ USE_PYTHON3 = True
 
 def CommonChecks(input_api, output_api):
   testing_env = dict(input_api.environ)
-  # TODO(crbug.com/1222826): Remove this path addition once all GPU-specific
-  # code is pulled out of the common code.
-  gpu_path = input_api.os_path.join(
-      input_api.PresubmitLocalPath(), '..', 'content', 'test', 'gpu')
   testing_env.update({
-      'PYTHONPATH': input_api.os_path.pathsep.join(
-          [input_api.PresubmitLocalPath(), gpu_path]),
+      'PYTHONPATH': input_api.PresubmitLocalPath(),
       'PYTHONDONTWRITEBYTECODE': '1',
   })
 

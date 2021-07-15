@@ -245,8 +245,7 @@ class BigQueryQuerier(object):
     all_unmatched_results = {}
 
     for (unmatched_results, prefixed_builder_name, merge_map) in results:
-      expectations.MergeExpectationMaps(tmp_expectation_map, merge_map,
-                                        expectation_map)
+      tmp_expectation_map.Merge(merge_map, expectation_map)
       if unmatched_results:
         all_unmatched_results[prefixed_builder_name] = unmatched_results
 
@@ -260,19 +259,18 @@ class BigQueryQuerier(object):
 
     Args:
       inputs: An iterable of inputs for QueryBuilder() and
-          expectations.AddResultListToMap(). Should be in the order:
+          data_types.TestExpectationMap.AddResultList(). Should be in the order:
           builder builder_type expectation_map
 
     Returns:
-      The output of expectations.AddResultListToMap().
+      The output of data_types.TestExpectationMap.AddResultList().
     """
     builder, builder_type, expectation_map = inputs
     results = self.QueryBuilder(builder, builder_type)
 
     prefixed_builder_name = '%s:%s' % (builder_type, builder)
-    unmatched_results = expectations.AddResultListToMap(expectation_map,
-                                                        prefixed_builder_name,
-                                                        results)
+    unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
+                                                      results)
 
     return unmatched_results, prefixed_builder_name, expectation_map
 

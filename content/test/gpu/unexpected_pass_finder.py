@@ -40,8 +40,8 @@ CHROMIUM_SRC_DIR = os.path.join(os.path.dirname(__file__), '..', '..', '..')
 sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
 from unexpected_passes import gpu_builders
+from unexpected_passes import gpu_expectations
 from unexpected_passes_common import builders
-from unexpected_passes_common import expectations
 from unexpected_passes_common import queries
 from unexpected_passes_common import result_output
 
@@ -178,8 +178,9 @@ def main():
 
   builders_instance = gpu_builders.GpuBuilders()
   builders.RegisterInstance(builders_instance)
+  expectations_instance = gpu_expectations.GpuExpectations()
 
-  test_expectation_map = expectations.CreateTestExpectationMap(
+  test_expectation_map = expectations_instance.CreateTestExpectationMap(
       args.expectation_file, args.tests)
   ci_builders = builders_instance.GetCiBuilders(
       SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite))
@@ -195,10 +196,8 @@ def main():
   unmatched.update(
       querier.FillExpectationMapForTryBuilders(test_expectation_map,
                                                try_builders))
-  unused_expectations = expectations.FilterOutUnusedExpectations(
-      test_expectation_map)
-  stale, semi_stale, active = expectations.SplitExpectationsByStaleness(
-      test_expectation_map)
+  unused_expectations = test_expectation_map.FilterOutUnusedExpectations()
+  stale, semi_stale, active = test_expectation_map.SplitByStaleness()
   result_output.OutputResults(stale, semi_stale, active, unmatched,
                               unused_expectations, args.output_format)
 
@@ -209,14 +208,14 @@ def main():
     for _, expectation_map in stale.iteritems():
       stale_expectations.extend(expectation_map.keys())
     stale_expectations.extend(unused_expectations)
-    affected_urls |= expectations.RemoveExpectationsFromFile(
+    affected_urls |= expectations_instance.RemoveExpectationsFromFile(
         stale_expectations, args.expectation_file)
     stale_message += ('Stale expectations removed from %s. Stale comments, '
                       'etc. may still need to be removed.\n' %
                       args.expectation_file)
 
   if args.modify_semi_stale_expectations:
-    affected_urls |= expectations.ModifySemiStaleExpectations(
+    affected_urls |= expectations_instance.ModifySemiStaleExpectations(
         semi_stale, args.expectation_file)
     stale_message += ('Semi-stale expectations modified in %s. Stale '
                       'comments, etc. may still need to be removed.\n' %
@@ -225,7 +224,7 @@ def main():
   if stale_message:
     print(stale_message)
   if affected_urls:
-    orphaned_urls = expectations.FindOrphanedBugs(affected_urls)
+    orphaned_urls = expectations_instance.FindOrphanedBugs(affected_urls)
     result_output.OutputAffectedUrls(affected_urls, orphaned_urls)
 
 

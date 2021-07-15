@@ -206,20 +206,20 @@ def OutputResults(stale_dict,
     file_handle = file_handle or sys.stdout
     if stale_dict:
       file_handle.write(SECTION_STALE + '\n')
-      _RecursivePrintToFile(stale_str_dict, 0, file_handle)
+      RecursivePrintToFile(stale_str_dict, 0, file_handle)
     if semi_stale_dict:
       file_handle.write(SECTION_SEMI_STALE + '\n')
-      _RecursivePrintToFile(semi_stale_str_dict, 0, file_handle)
+      RecursivePrintToFile(semi_stale_str_dict, 0, file_handle)
     if active_dict:
       file_handle.write(SECTION_ACTIVE + '\n')
-      _RecursivePrintToFile(active_str_dict, 0, file_handle)
+      RecursivePrintToFile(active_str_dict, 0, file_handle)
 
     if unused_expectations_str_list:
       file_handle.write('\n' + SECTION_UNUSED + '\n')
-      _RecursivePrintToFile(unused_expectations_str_list, 0, file_handle)
+      RecursivePrintToFile(unused_expectations_str_list, 0, file_handle)
     if unmatched_results_str_dict:
       file_handle.write('\n' + SECTION_UNMATCHED + '\n')
-      _RecursivePrintToFile(unmatched_results_str_dict, 0, file_handle)
+      RecursivePrintToFile(unmatched_results_str_dict, 0, file_handle)
 
   elif output_format == 'html':
     should_close_file = False
@@ -253,7 +253,7 @@ def OutputResults(stale_dict,
     raise RuntimeError('Unsupported output format %s' % output_format)
 
 
-def _RecursivePrintToFile(element, depth, file_handle):
+def RecursivePrintToFile(element, depth, file_handle):
   """Recursively prints |element| as text to |file_handle|.
 
   Args:
@@ -267,11 +267,11 @@ def _RecursivePrintToFile(element, depth, file_handle):
     file_handle.write(('  ' * depth) + element + '\n')
   elif isinstance(element, dict):
     for k, v in element.items():
-      _RecursivePrintToFile(k, depth, file_handle)
-      _RecursivePrintToFile(v, depth + 1, file_handle)
+      RecursivePrintToFile(k, depth, file_handle)
+      RecursivePrintToFile(v, depth + 1, file_handle)
   elif isinstance(element, list):
     for i in element:
-      _RecursivePrintToFile(i, depth, file_handle)
+      RecursivePrintToFile(i, depth, file_handle)
   else:
     raise RuntimeError('Given unhandled type %s' % type(element))
 
@@ -581,3 +581,54 @@ def _OutputUrlsForClDescription(affected_urls, orphaned_urls, file_handle=None):
     output_str += AddBugTypeToOutputString(orphaned_urls, 'Fixed:')
 
   file_handle.write('Affected bugs for CL description:\n%s' % output_str)
+
+
+def ConvertBuilderMapToPassOrderedStringDict(builder_map):
+  """Converts |builder_map| into an ordered dict split by pass type.
+
+  Args:
+    builder_map: A data_types.BuildStepMap.
+
+  Returns:
+    A collections.OrderedDict in the following format:
+    {
+      result_output.FULL_PASS: {
+        builder_name: [
+          step_name (total passes / total builds)
+        ],
+      },
+      result_output.NEVER_PASS: {
+        builder_name: [
+          step_name (total passes / total builds)
+        ],
+      },
+      result_output.PARTIAL_PASS: {
+        builder_name: [
+          step_name (total passes / total builds): [
+            failure links,
+          ],
+        ],
+      },
+    }
+
+    The ordering and presence of the top level keys is guaranteed.
+  """
+  # This is similar to what we do in
+  # result_output._ConvertTestExpectationMapToStringDict, but we want the
+  # top-level grouping to be by pass type rather than by builder, so we can't
+  # re-use the code from there.
+  # Ordered dict used to ensure that order is guaranteed when printing out.
+  str_dict = collections.OrderedDict()
+  str_dict[FULL_PASS] = {}
+  str_dict[NEVER_PASS] = {}
+  str_dict[PARTIAL_PASS] = {}
+  for builder_name, step_name, stats in builder_map.IterBuildStats():
+    step_str = AddStatsToStr(step_name, stats)
+    if stats.did_fully_pass:
+      str_dict[FULL_PASS].setdefault(builder_name, []).append(step_str)
+    elif stats.did_never_pass:
+      str_dict[NEVER_PASS].setdefault(builder_name, []).append(step_str)
+    else:
+      str_dict[PARTIAL_PASS].setdefault(builder_name, {})[step_str] = list(
+          stats.failure_links)
+  return str_dict
