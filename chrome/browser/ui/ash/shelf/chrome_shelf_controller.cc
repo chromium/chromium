@@ -772,6 +772,11 @@ void ChromeShelfController::SetProfileForTest(Profile* profile) {
   latest_active_profile_ = profile;
 }
 
+bool ChromeShelfController::AllowedToSetAppPinState(const std::string& app_id,
+                                                    bool target_pin) const {
+  return model_->AllowedToSetAppPinState(app_id, target_pin);
+}
+
 void ChromeShelfController::PinAppWithID(const std::string& app_id) {
   model_->PinAppWithID(app_id);
 }

@@ -1333,6 +1333,63 @@ var scrollableShelfTests = [
                 app.appId, chrome.test.callbackPass());
           });
         }));
+  },
+
+  async function unpinChromeBrowser() {
+    try {
+      await promisify(
+          chrome.autotestPrivate.setShelfIconPin,
+          [{appId: 'mgndgikekgjfcpckkfioiadnlibdjbkf', pinned: false}]);
+      chrome.test.fail();
+    } catch (error) {
+      // Unpinning an app which is unpinnable (such as the browser) should throw
+      // an error.
+      chrome.test.assertTrue(error.message.includes(
+          'Unable to update pin state: mgndgikekgjfcpckkfioiadnlibdjbkf'));
+      chrome.test.succeed();
+    }
+  },
+
+  async function pinInstalledApps() {
+    var installedApps =
+        await promisify(chrome.autotestPrivate.getAllInstalledApps);
+    var updateParams = [];
+    installedApps.forEach(app => {
+      obj = {appId: app.appId, pinned: true};
+      updateParams.push(obj);
+    });
+
+    var pinResults =
+        await promisify(chrome.autotestPrivate.setShelfIconPin, updateParams);
+    chrome.test.assertEq([], pinResults);
+    chrome.test.succeed();
+  },
+
+  async function pinThenUnpinFileApp() {
+    // Pin the File app.
+    var fileID = 'hhaomjibdihmijegdhdafkllkbggdgoj'
+    var pinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: true}]);
+
+    chrome.test.assertEq([fileID], pinResults);
+
+    // Unpin the File app.
+    var unpinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: false}]);
+
+    chrome.test.assertEq([fileID], unpinResults);
+
+    // Unpin the File app again.
+    unpinResults = await promisify(
+        chrome.autotestPrivate.setShelfIconPin,
+        [{appId: fileID, pinned: false}]);
+
+    // Because the File app has been unpinned, there is no update in pin state.
+    chrome.test.assertEq([], unpinResults);
+
+    chrome.test.succeed()
   }
 ];
 

@@ -1278,6 +1278,7 @@ class AutotestPrivateSetArcTouchModeFunction : public ExtensionFunction {
   ResponseAction Run() override;
 };
 
+// Deprecated. Use `AutotestPrivateSetShelfIconPinFunction` instead.
 class AutotestPrivatePinShelfIconFunction : public ExtensionFunction {
  public:
   AutotestPrivatePinShelfIconFunction();
@@ -1285,6 +1286,17 @@ class AutotestPrivatePinShelfIconFunction : public ExtensionFunction {
                              AUTOTESTPRIVATE_PINSHELFICON)
  private:
   ~AutotestPrivatePinShelfIconFunction() override;
+  ResponseAction Run() override;
+};
+
+class AutotestPrivateSetShelfIconPinFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateSetShelfIconPinFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.setShelfIconPin",
+                             AUTOTESTPRIVATE_SETSHELFICONPIN)
+
+ private:
+  ~AutotestPrivateSetShelfIconPinFunction() override;
   ResponseAction Run() override;
 };
 

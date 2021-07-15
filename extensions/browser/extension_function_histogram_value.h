@@ -1623,6 +1623,7 @@ enum HistogramValue {
   WMDESKSPRIVATE_GETSAVEDDESKTEMPLATES = 1560,
   WMDESKSPRIVATE_DELETEDESKTEMPLATE = 1561,
   WMDESKSPRIVATE_LAUNCHDESKTEMPLATE = 1562,
+  AUTOTESTPRIVATE_SETSHELFICONPIN = 1563,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

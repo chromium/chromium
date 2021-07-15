@@ -4686,6 +4686,64 @@ ExtensionFunction::ResponseAction AutotestPrivatePinShelfIconFunction::Run() {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateSetShelfIconPinFunction
+////////////////////////////////////////////////////////////////////////////////
+AutotestPrivateSetShelfIconPinFunction::
+    AutotestPrivateSetShelfIconPinFunction() = default;
+AutotestPrivateSetShelfIconPinFunction::
+    ~AutotestPrivateSetShelfIconPinFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateSetShelfIconPinFunction::Run() {
+  std::unique_ptr<api::autotest_private::SetShelfIconPin::Params> params(
+      api::autotest_private::SetShelfIconPin::Params::Create(*args_));
+
+  ChromeShelfController* const controller = ChromeShelfController::instance();
+  if (!controller)
+    return RespondNow(Error("Controller not available"));
+
+  const std::vector<api::autotest_private::ShelfIconPinUpdateParam>&
+      update_params = params->update_params;
+
+  // Save the app IDs causing errors.
+  std::vector<std::string> problematic_app_ids;
+
+  for (const auto& update_param : update_params) {
+    const std::string& app_id = update_param.app_id;
+    if (!controller->AllowedToSetAppPinState(app_id, update_param.pinned))
+      problematic_app_ids.push_back(app_id);
+  }
+
+  if (!problematic_app_ids.empty()) {
+    return RespondNow(
+        Error(base::StrCat({"Unable to update pin state: ",
+                            base::JoinString(problematic_app_ids, ",")})));
+  }
+
+  // Save the ids of the apps whose pin states are updated. Note that the apps
+  // which reach the target pin states before api function execution are not
+  // included in `updated_apps`.
+  std::vector<std::string> updated_apps;
+
+  for (const auto& update_param : update_params) {
+    const std::string& app_id = update_param.app_id;
+
+    // Already reach the target pin state. No op.
+    if (update_param.pinned == controller->IsAppPinned(app_id))
+      continue;
+
+    if (update_param.pinned)
+      controller->PinAppWithID(app_id);
+    else
+      controller->UnpinAppWithID(app_id);
+    updated_apps.push_back(app_id);
+  }
+
+  return RespondNow(ArgumentList(
+      api::autotest_private::SetShelfIconPin::Results::Create(updated_apps)));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateGetScrollableShelfInfoForStateFunction
 ////////////////////////////////////////////////////////////////////////////////
 AutotestPrivateGetScrollableShelfInfoForStateFunction::

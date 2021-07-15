@@ -60,7 +60,15 @@ class ASH_PUBLIC_EXPORT ShelfModel {
   void PinAppWithID(const std::string& app_id);
 
   // Checks if the app with |app_id_| is pinned to the shelf.
-  bool IsAppPinned(const std::string& app_id);
+  bool IsAppPinned(const std::string& app_id) const;
+
+  // Returns whether the app specified by `app_id` is allowed to be set with the
+  // target pin state. If `target_pin` is true, the target is to pin the item;
+  // otherwise, the target is to unpin the item.
+  // Returns true if the app's current pin state matches the target state, even
+  // if the app pin state is not modifiable (e.g. due to policy).
+  bool AllowedToSetAppPinState(const std::string& app_id,
+                               bool target_pin) const;
 
   // Unpins app item with |app_id|.
   void UnpinAppWithID(const std::string& app_id);

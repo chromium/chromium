@@ -78,11 +78,33 @@ void ShelfModel::PinAppWithID(const std::string& app_id) {
   }
 }
 
-bool ShelfModel::IsAppPinned(const std::string& app_id) {
+bool ShelfModel::IsAppPinned(const std::string& app_id) const {
   const int index = ItemIndexByID(ShelfID(app_id));
   if (index < 0)
     return false;
   return IsPinnedShelfItemType(items_[index].type);
+}
+
+bool ShelfModel::AllowedToSetAppPinState(const std::string& app_id,
+                                         bool target_pin) const {
+  if (IsAppPinned(app_id) == target_pin)
+    return true;
+
+  const ShelfID shelf_id(app_id);
+  const int index = ItemIndexByID(shelf_id);
+
+  if (index < 0) {
+    // Allow to pin an app which is not open.
+    return !shelf_id.IsNull() && target_pin;
+  }
+
+  const ShelfItem& item = items_[index];
+  if (item.pinned_by_policy)
+    return false;
+
+  // Allow to unpin a pinned app or pin a running app.
+  return (item.type == TYPE_PINNED_APP && !target_pin) ||
+         (item.type == TYPE_APP && target_pin);
 }
 
 void ShelfModel::UnpinAppWithID(const std::string& app_id) {

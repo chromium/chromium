@@ -310,6 +310,8 @@ namespace autotestPrivate {
 
   callback SetTabletModeEnabledCallback = void(boolean enabled);
 
+  callback SetShelfIconPinCallback = void(DOMString[] results);
+
   callback SetOverviewModeStateCallback = void(boolean finished);
 
   callback ArcAppTracingCallback = void(ArcAppTracingInfo info);
@@ -379,6 +381,15 @@ namespace autotestPrivate {
     Bounds bounds;
     // Whether an OverviewItem is being dragged in overview.
     boolean isDragged;
+  };
+
+  // Used to update an app's shelf pin state.
+  dictionary ShelfIconPinUpdateParam {
+    // The identifier of the target app.
+    DOMString appId;
+
+    // The target pin state for the app.
+    boolean pinned;
   };
 
   dictionary AppWindowInfo {
@@ -906,7 +917,14 @@ namespace autotestPrivate {
         ShelfAlignmentType alignment, VoidCallback callback);
 
     // Create a pin on shelf for the app specified by |appId|.
+    // Deprecated. Use setShelfIconPin() instead.
     static void pinShelfIcon(DOMString appId, VoidCallback callback);
+
+    // Update pin states of the shelf apps based on |updateParams|. Return a
+    // list of app ids whose pin state changed. Pin states will not be changed
+    // if the method fails.
+    static void setShelfIconPin(ShelfIconPinUpdateParam[] updateParams,
+                                optional SetShelfIconPinCallback callback);
 
     // Enter or exit the overview mode.
     // |start|: whether entering to or exiting from the overview mode.

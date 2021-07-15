@@ -46,7 +46,8 @@ struct ASH_PUBLIC_EXPORT ShelfItem {
   // Whether the tooltip should be shown on hover; generally true.
   bool shows_tooltip = true;
 
-  // Whether the item is pinned by a policy preference (ie. user cannot un-pin).
+  // Whether the item is pinned by a policy preference. If so, pin state should
+  // not be modifiable by user.
   bool pinned_by_policy = false;
 
   // Whether the item has a notification.

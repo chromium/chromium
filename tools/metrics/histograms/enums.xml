@@ -28791,6 +28791,7 @@ Called by update_extension_histograms.py.-->
   <int value="1560" label="WMDESKSPRIVATE_GETSAVEDDESKTEMPLATES"/>
   <int value="1561" label="WMDESKSPRIVATE_DELETEDESKTEMPLATE"/>
   <int value="1562" label="WMDESKSPRIVATE_LAUNCHDESKTEMPLATE"/>
+  <int value="1563" label="AUTOTESTPRIVATE_SETSHELFICONPIN"/>
 </enum>
 
 <enum name="ExtensionIconState">
