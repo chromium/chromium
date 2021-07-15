@@ -1131,7 +1131,7 @@
     Sync your Chrome browser bookmarks, passwords, history, and more
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_BROWSER_SYNC_DESCRIPTION" desc="Description of the 'Chrome browser sync' section of the sync confirmation dialog that is displayed on the first user log in.">
-    Google may use your history to personalize search and other Google services
+    Google may use your history to personalize Search and other Google services
   </message>
   <message name="IDS_LOGIN_SYNC_CONSENT_SCREEN_CHROME_SYNC_NAME" desc="Title of the 'Chrome sync' section of the sync confirmation dialog that is displayed on the first user log in.">
     Chrome sync
