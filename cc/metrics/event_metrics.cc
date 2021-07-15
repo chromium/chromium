@@ -20,6 +20,7 @@ constexpr struct {
   EventMetrics::EventType metrics_event_type;
   ui::EventType ui_event_type;
   const char* name;
+  absl::optional<bool> scroll_is_inertial = absl::nullopt;
   absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type =
       absl::nullopt;
 } kInterestingEvents[] = {
@@ -33,11 +34,12 @@ constexpr struct {
     EVENT_TYPE(TouchPressed, ui::ET_TOUCH_PRESSED),
     EVENT_TYPE(TouchReleased, ui::ET_TOUCH_RELEASED),
     EVENT_TYPE(TouchMoved, ui::ET_TOUCH_MOVED),
-    EVENT_TYPE(GestureScrollBegin, ui::ET_GESTURE_SCROLL_BEGIN),
+    EVENT_TYPE(GestureScrollBegin, ui::ET_GESTURE_SCROLL_BEGIN, false),
     EVENT_TYPE(GestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
+               false,
                EventMetrics::ScrollUpdateType::kContinued),
-    EVENT_TYPE(GestureScrollEnd, ui::ET_GESTURE_SCROLL_END),
+    EVENT_TYPE(GestureScrollEnd, ui::ET_GESTURE_SCROLL_END, false),
     EVENT_TYPE(GestureDoubleTap, ui::ET_GESTURE_DOUBLE_TAP),
     EVENT_TYPE(GestureLongPress, ui::ET_GESTURE_LONG_PRESS),
     EVENT_TYPE(GestureLongTap, ui::ET_GESTURE_LONG_TAP),
@@ -49,11 +51,16 @@ constexpr struct {
     EVENT_TYPE(GestureTwoFingerTap, ui::ET_GESTURE_TWO_FINGER_TAP),
     EVENT_TYPE(FirstGestureScrollUpdate,
                ui::ET_GESTURE_SCROLL_UPDATE,
+               false,
                EventMetrics::ScrollUpdateType::kStarted),
     EVENT_TYPE(MouseDragged, ui::ET_MOUSE_DRAGGED),
     EVENT_TYPE(GesturePinchBegin, ui::ET_GESTURE_PINCH_BEGIN),
     EVENT_TYPE(GesturePinchEnd, ui::ET_GESTURE_PINCH_END),
     EVENT_TYPE(GesturePinchUpdate, ui::ET_GESTURE_PINCH_UPDATE),
+    EVENT_TYPE(InertialGestureScrollUpdate,
+               ui::ET_GESTURE_SCROLL_UPDATE,
+               true,
+               EventMetrics::ScrollUpdateType::kContinued),
 #undef EVENT_TYPE
 };
 static_assert(base::size(kInterestingEvents) ==
@@ -65,12 +72,12 @@ constexpr struct {
   ui::ScrollInputType ui_scroll_type;
   const char* name;
 } kScrollTypes[] = {
-#define SCROLL_TYPE(name, ui_type) \
-  { EventMetrics::ScrollType::k##name, ui_type, #name }
-    SCROLL_TYPE(Autoscroll, ui::ScrollInputType::kAutoscroll),
-    SCROLL_TYPE(Scrollbar, ui::ScrollInputType::kScrollbar),
-    SCROLL_TYPE(Touchscreen, ui::ScrollInputType::kTouchscreen),
-    SCROLL_TYPE(Wheel, ui::ScrollInputType::kWheel),
+#define SCROLL_TYPE(name) \
+  { EventMetrics::ScrollType::k##name, ui::ScrollInputType::k##name, #name }
+    SCROLL_TYPE(Autoscroll),
+    SCROLL_TYPE(Scrollbar),
+    SCROLL_TYPE(Touchscreen),
+    SCROLL_TYPE(Wheel),
 #undef SCROLL_TYPE
 };
 static_assert(base::size(kScrollTypes) ==
@@ -79,11 +86,19 @@ static_assert(base::size(kScrollTypes) ==
 
 absl::optional<EventMetrics::EventType> ToInterestingEventType(
     ui::EventType ui_event_type,
-    absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type) {
+    const absl::optional<EventMetrics::ScrollParams>& scroll_params) {
+  absl::optional<EventMetrics::ScrollUpdateType> scroll_update_type;
+  absl::optional<bool> scroll_is_inertial;
+  if (scroll_params) {
+    scroll_update_type = scroll_params->update_type;
+    scroll_is_inertial = scroll_params->is_inertial;
+  }
+
   for (size_t i = 0; i < base::size(kInterestingEvents); i++) {
     const auto& interesting_event = kInterestingEvents[i];
     if (ui_event_type == interesting_event.ui_event_type &&
-        scroll_update_type == interesting_event.scroll_update_type) {
+        scroll_update_type == interesting_event.scroll_update_type &&
+        scroll_is_inertial == interesting_event.scroll_is_inertial) {
       EventMetrics::EventType metrics_event_type =
           static_cast<EventMetrics::EventType>(i);
       DCHECK_EQ(metrics_event_type, interesting_event.metrics_event_type);
@@ -94,12 +109,12 @@ absl::optional<EventMetrics::EventType> ToInterestingEventType(
 }
 
 absl::optional<EventMetrics::ScrollType> ToScrollType(
-    const absl::optional<ui::ScrollInputType>& scroll_input_type) {
-  if (!scroll_input_type)
+    const absl::optional<EventMetrics::ScrollParams>& scroll_params) {
+  if (!scroll_params)
     return absl::nullopt;
 
   for (size_t i = 0; i < base::size(kScrollTypes); i++) {
-    if (*scroll_input_type == kScrollTypes[i].ui_scroll_type) {
+    if (scroll_params->input_type == kScrollTypes[i].ui_scroll_type) {
       EventMetrics::ScrollType metrics_scroll_type =
           static_cast<EventMetrics::ScrollType>(i);
       DCHECK_EQ(metrics_scroll_type, kScrollTypes[i].metrics_scroll_type);
@@ -110,22 +125,49 @@ absl::optional<EventMetrics::ScrollType> ToScrollType(
   return absl::nullopt;
 }
 
+bool IsGestureScroll(ui::EventType type) {
+  return type == ui::ET_GESTURE_SCROLL_BEGIN ||
+         type == ui::ET_GESTURE_SCROLL_UPDATE ||
+         type == ui::ET_GESTURE_SCROLL_END;
+}
+
+bool IsGestureScrollUpdate(ui::EventType type) {
+  return type == ui::ET_GESTURE_SCROLL_UPDATE;
+}
+
 }  // namespace
+
+// EventMetrics::ScrollParams:
+
+EventMetrics::ScrollParams::ScrollParams(ui::ScrollInputType input_type,
+                                         bool is_inertial)
+    : input_type(input_type), is_inertial(is_inertial) {}
+
+EventMetrics::ScrollParams::ScrollParams(ui::ScrollInputType input_type,
+                                         bool is_inertial,
+                                         ScrollUpdateType update_type)
+    : input_type(input_type),
+      is_inertial(is_inertial),
+      update_type(update_type) {}
+
+EventMetrics::ScrollParams::ScrollParams(const ScrollParams&) = default;
+EventMetrics::ScrollParams& EventMetrics::ScrollParams::operator=(
+    const ScrollParams&) = default;
+
+// EventMetrics:
 
 // static
 std::unique_ptr<EventMetrics> EventMetrics::Create(
     ui::EventType type,
-    absl::optional<ScrollUpdateType> scroll_update_type,
-    absl::optional<ui::ScrollInputType> scroll_input_type,
+    absl::optional<ScrollParams> scroll_params,
     base::TimeTicks timestamp) {
   // TODO(crbug.com/1157090): We expect that `timestamp` is not null, but there
   // seems to be some tests that are emitting events with null timestamp. We
   // should investigate and try to fix those cases and add a `DCHECK` here to
   // assert `timestamp` is not null.
 
-  std::unique_ptr<EventMetrics> metrics =
-      CreateInternal(type, scroll_update_type, scroll_input_type, timestamp,
-                     base::DefaultTickClock::GetInstance());
+  std::unique_ptr<EventMetrics> metrics = CreateInternal(
+      type, scroll_params, timestamp, base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
 
@@ -137,14 +179,13 @@ std::unique_ptr<EventMetrics> EventMetrics::Create(
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
     ui::EventType type,
-    absl::optional<ScrollUpdateType> scroll_update_type,
-    absl::optional<ui::ScrollInputType> scroll_input_type,
+    absl::optional<ScrollParams> scroll_params,
     base::TimeTicks timestamp,
     const base::TickClock* tick_clock) {
   DCHECK(!timestamp.is_null());
 
-  std::unique_ptr<EventMetrics> metrics = CreateInternal(
-      type, scroll_update_type, scroll_input_type, timestamp, tick_clock);
+  std::unique_ptr<EventMetrics> metrics =
+      CreateInternal(type, scroll_params, timestamp, tick_clock);
   if (!metrics)
     return nullptr;
 
@@ -156,12 +197,11 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateForTesting(
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
     ui::EventType type,
-    absl::optional<ScrollUpdateType> scroll_update_type,
-    absl::optional<ui::ScrollInputType> scroll_input_type,
+    absl::optional<ScrollParams> scroll_params,
     DispatchStage last_dispatch_stage,
     const EventMetrics* existing) {
   std::unique_ptr<EventMetrics> metrics = CreateInternal(
-      type, scroll_update_type, scroll_input_type, base::TimeTicks(),
+      type, scroll_params, base::TimeTicks(),
       existing ? existing->tick_clock_ : base::DefaultTickClock::GetInstance());
   if (!metrics)
     return nullptr;
@@ -187,21 +227,27 @@ std::unique_ptr<EventMetrics> EventMetrics::CreateFromExisting(
 // static
 std::unique_ptr<EventMetrics> EventMetrics::CreateInternal(
     ui::EventType type,
-    absl::optional<ScrollUpdateType> scroll_update_type,
-    absl::optional<ui::ScrollInputType> scroll_input_type,
+    const absl::optional<ScrollParams>& scroll_params,
     base::TimeTicks timestamp,
     const base::TickClock* tick_clock) {
-  // `scroll_update_type` should be set for and only for
-  // `ui::ET_GESTURE_SCROLL_UPDATE`.
-  DCHECK(type == ui::ET_GESTURE_SCROLL_UPDATE && scroll_update_type ||
-         type != ui::ET_GESTURE_SCROLL_UPDATE && !scroll_update_type);
+  // `scroll_params` should be set if and only if the event is a gesture scroll
+  // event.
+  DCHECK(IsGestureScroll(type) && scroll_params ||
+         !IsGestureScroll(type) && !scroll_params);
+
+  // `scroll_params->update_type` should be set if and only if the event is a
+  // gesture scroll update event.
+  DCHECK(IsGestureScrollUpdate(type) && scroll_params &&
+             scroll_params->update_type ||
+         !IsGestureScrollUpdate(type) &&
+             (!scroll_params || !scroll_params->update_type));
+
   absl::optional<EventType> interesting_type =
-      ToInterestingEventType(type, scroll_update_type);
+      ToInterestingEventType(type, scroll_params);
   if (!interesting_type)
     return nullptr;
-  return base::WrapUnique(new EventMetrics(*interesting_type,
-                                           ToScrollType(scroll_input_type),
-                                           timestamp, tick_clock));
+  return base::WrapUnique(new EventMetrics(
+      *interesting_type, ToScrollType(scroll_params), timestamp, tick_clock));
 }
 
 EventMetrics::EventMetrics(EventType type,
@@ -249,6 +295,7 @@ bool EventMetrics::ShouldReportScrollingTotalLatency() const {
   return type_ == EventType::kGestureScrollBegin ||
          type_ == EventType::kGestureScrollEnd ||
          type_ == EventType::kFirstGestureScrollUpdate ||
+         type_ == EventType::kInertialGestureScrollUpdate ||
          type_ == EventType::kGestureScrollUpdate;
 }
 

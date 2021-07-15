@@ -54,7 +54,8 @@ class CC_EXPORT EventMetrics {
     kGesturePinchBegin,
     kGesturePinchEnd,
     kGesturePinchUpdate,
-    kMaxValue = kGesturePinchUpdate,
+    kInertialGestureScrollUpdate,
+    kMaxValue = kInertialGestureScrollUpdate,
   };
 
   // Type of scroll events. This list should be in the same order as values of
@@ -86,19 +87,32 @@ class CC_EXPORT EventMetrics {
     kMaxValue = kRendererMainFinished,
   };
 
+  // Parameters to initialize an `EventMetrics` object for a scroll event.
+  struct CC_EXPORT ScrollParams {
+    ScrollParams(ui::ScrollInputType input_type, bool is_inertial);
+    ScrollParams(ui::ScrollInputType input_type,
+                 bool is_inertial,
+                 ScrollUpdateType update_type);
+
+    ScrollParams(const ScrollParams&);
+    ScrollParams& operator=(const ScrollParams&);
+
+    ui::ScrollInputType input_type;
+    bool is_inertial;
+    absl::optional<ScrollUpdateType> update_type;
+  };
+
   // Returns a new instance if the event is of a type we are interested in.
   // Otherwise, returns nullptr.
   static std::unique_ptr<EventMetrics> Create(
       ui::EventType type,
-      absl::optional<ScrollUpdateType> scroll_update_type,
-      absl::optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollParams> scroll_params,
       base::TimeTicks timestamp);
 
   // Similar to `Create()` with an extra `base::TickClock` to use in tests.
   static std::unique_ptr<EventMetrics> CreateForTesting(
       ui::EventType type,
-      absl::optional<ScrollUpdateType> scroll_update_type,
-      absl::optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollParams> scroll_params,
       base::TimeTicks timestamp,
       const base::TickClock* tick_clock);
 
@@ -110,8 +124,7 @@ class CC_EXPORT EventMetrics {
   // new event is not an interesting one, return value would be nullptr.
   static std::unique_ptr<EventMetrics> CreateFromExisting(
       ui::EventType type,
-      absl::optional<ScrollUpdateType> scroll_update_type,
-      absl::optional<ui::ScrollInputType> scroll_input_type,
+      absl::optional<ScrollParams> scroll_params,
       DispatchStage last_dispatch_stage,
       const EventMetrics* existing);
 
@@ -152,8 +165,7 @@ class CC_EXPORT EventMetrics {
  private:
   static std::unique_ptr<EventMetrics> CreateInternal(
       ui::EventType type,
-      absl::optional<ScrollUpdateType> scroll_update_type,
-      absl::optional<ui::ScrollInputType> scroll_input_type,
+      const absl::optional<ScrollParams>& scroll_params,
       base::TimeTicks timestamp,
       const base::TickClock* tick_clock);
 

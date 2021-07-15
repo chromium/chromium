@@ -74,7 +74,6 @@ class QueuedWebInputEvent : public MainThreadEventQueueTask {
     std::unique_ptr<cc::EventMetrics> metrics =
         cc::EventMetrics::CreateFromExisting(
             raw_event->Event().GetTypeAsUiEventType(), absl::nullopt,
-            raw_event->Event().GetScrollInputType(),
             cc::EventMetrics::DispatchStage::kRendererCompositorFinished,
             original_metrics);
     return std::make_unique<QueuedWebInputEvent>(

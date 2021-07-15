@@ -14,6 +14,7 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/input/web_pointer_properties.h"
 #include "third_party/blink/public/mojom/input/gesture_event.mojom-shared.h"
+#include "ui/events/types/scroll_input_type.h"
 #include "ui/events/types/scroll_types.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size_f.h"
@@ -212,7 +213,10 @@ class BLINK_COMMON_EXPORT WebGestureEvent : public WebInputEvent {
   std::unique_ptr<WebInputEvent> Clone() const override;
   bool CanCoalesce(const WebInputEvent& event) const override;
   void Coalesce(const WebInputEvent& event) override;
-  absl::optional<ui::ScrollInputType> GetScrollInputType() const override;
+
+  // Returns the input type of a scroll event. Should not be called on
+  // non-scroll events.
+  ui::ScrollInputType GetScrollInputType() const;
 
   void SetPositionInWidget(const gfx::PointF& point) {
     position_in_widget_ = point;
