@@ -775,16 +775,6 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
       TerminatePrintJob(true);
       break;
     }
-    case JobEventDetails::USER_INIT_DONE:
-    case JobEventDetails::DEFAULT_INIT_DONE:
-    case JobEventDetails::USER_INIT_CANCELED: {
-      NOTREACHED();
-      break;
-    }
-    case JobEventDetails::ALL_PAGES_REQUESTED: {
-      ShouldQuitFromInnerMessageLoop();
-      break;
-    }
 #if defined(OS_WIN)
     case JobEventDetails::PAGE_DONE:
 #endif
@@ -850,11 +840,9 @@ bool PrintViewManagerBase::RenderAllMissingPagesNow() {
   // pages in an hurry if a print_job_ is still pending. No need to wait for it
   // to actually spool the pages, only to have the renderer generate them. Run
   // a message loop until we get our signal that the print job is satisfied.
-  // PrintJob will send a ALL_PAGES_REQUESTED after having received all the
-  // pages it needs. |quit_inner_loop_| will be called as soon as
-  // print_job_->document()->IsComplete() is true on either ALL_PAGES_REQUESTED
-  // or in DidPrintDocument(). The check is done in
-  // ShouldQuitFromInnerMessageLoop().
+  // |quit_inner_loop_| will be called as soon as
+  // print_job_->document()->IsComplete() is true in DidPrintDocument(). The
+  // check is done in ShouldQuitFromInnerMessageLoop().
   // BLOCKS until all the pages are received. (Need to enable recursive task)
   if (!RunInnerMessageLoop()) {
     // This function is always called from DisconnectFromCurrentPrintJob() so we

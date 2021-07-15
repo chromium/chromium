@@ -195,9 +195,8 @@ class PrintViewManagerBase : public content::NotificationObserver,
 
   // Quits the current message loop if these conditions hold true: a document is
   // loaded and is complete and waiting_for_pages_to_be_rendered_ is true. This
-  // function is called in DidPrintDocument() or on ALL_PAGES_REQUESTED
-  // notification. The inner message loop is created was created by
-  // RenderAllMissingPagesNow().
+  // function is called in DidPrintDocument(). The inner message loop was
+  // created by RenderAllMissingPagesNow().
   void ShouldQuitFromInnerMessageLoop();
 
   // Terminates the print job. No-op if no print job has been created. If

@@ -242,15 +242,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
  public:
   // Event type.
   enum Type {
-    // Print... dialog box has been closed with OK button.
-    USER_INIT_DONE,
-
-    // Print... dialog box has been closed with CANCEL button.
-    USER_INIT_CANCELED,
-
-    // An automated initialization has been done, e.g. Init(false, NULL).
-    DEFAULT_INIT_DONE,
-
     // A new document started printing.
     NEW_DOC,
 
@@ -261,9 +252,6 @@ class JobEventDetails : public base::RefCountedThreadSafe<JobEventDetails> {
     // The worker thread is finished. A good moment to release the handle to
     // PrintJob.
     JOB_DONE,
-
-    // All missing pages have been requested.
-    ALL_PAGES_REQUESTED,
 
     // An error occured. Printing is canceled.
     FAILED,

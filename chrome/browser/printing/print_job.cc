@@ -504,15 +504,8 @@ void PrintJob::OnNotifyPrintJobEvent(const JobEventDetails& event_details) {
       Stop();
       break;
     }
-    case JobEventDetails::USER_INIT_DONE:
-    case JobEventDetails::DEFAULT_INIT_DONE:
-    case JobEventDetails::USER_INIT_CANCELED: {
-      DCHECK_EQ(event_details.document(), document_.get());
-      break;
-    }
     case JobEventDetails::NEW_DOC:
-    case JobEventDetails::JOB_DONE:
-    case JobEventDetails::ALL_PAGES_REQUESTED: {
+    case JobEventDetails::JOB_DONE: {
       // Don't care.
       break;
     }

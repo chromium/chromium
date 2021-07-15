@@ -111,9 +111,8 @@ class PrintJobWorker {
  private:
   // The shared NotificationService service can only be accessed from the UI
   // thread, so this class encloses the necessary information to send the
-  // notification from the right thread. Most NOTIFY_PRINT_JOB_EVENT
-  // notifications are sent this way, except USER_INIT_DONE, USER_INIT_CANCELED
-  // and DEFAULT_INIT_DONE. These three are sent through PrintJob::InitDone().
+  // notification from the right thread. All NOTIFY_PRINT_JOB_EVENT
+  // notifications are sent this way.
   class NotificationTask;
 
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
