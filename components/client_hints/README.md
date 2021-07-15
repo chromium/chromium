@@ -89,8 +89,8 @@ The canonical enum for client hint tokens is [network::mojom::WebClientHintsType
 
 There should also be a new feature policy created:
 
-*   Define the permission policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5](/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5).
-*   Add an enum to [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom](/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom).
+*   Define the permission policy in [/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5].
+*   Add an enum to [/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom].
 *   Add the same enum to `kClientHintsPermissionsPolicyMapping` in [/third_party/blink/common/client_hints/client_hints.cc].
 *   Add the permission policy token to the `PermissionsPolicyFeature` enum in [/third_party/blink/public/devtools_protocol/browser_protocol.pdl], [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl], and [/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json].
 *   Add the permission policy token to [/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt] and [/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt].
@@ -118,3 +118,15 @@ Client Hints are populated in [BaseFetchContext::AddClientHintsIfNecessary](/thi
 [network::mojom::WebClientHintsType]: /services/network/public/mojom/web_client_hints_types.mojom
 [/services/network/public/cpp/client_hints.cc]: /services/network/public/cpp/client_hints.cc
 [/third_party/blink/common/client_hints/client_hints.cc]: /third_party/blink/common/client_hints/client_hints.cc
+[/third_party/blink/public/mojom/web_feature/web_feature.mojom]: /third_party/blink/public/mojom/web_feature/web_feature.mojom
+[/third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc]: /third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.cc
+[/chrome/test/data/client_hints/]: /chrome/test/data/client_hints/
+[/third_party/blink/web_tests/external/wpt/client-hints]: /third_party/blink/web_tests/external/wpt/client-hints
+[/chrome/browser/client_hints/client_hints_browsertest.cc]: /chrome/browser/client_hints/client_hints_browsertest.cc
+[/third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5]: /third_party/blink/renderer/core/permissions_policy/permissions_policy_features.json5
+[/third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom]: /third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom
+[/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: /third_party/blink/public/devtools_protocol/browser_protocol.pdl
+[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl]: /third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.pdl
+[/third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json]: /third_party/devtools-frontend/src/third_party/blink/public/devtools_protocol/browser_protocol.json
+[/third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/webexposed/feature-policy-features-expected.txt
+[/third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt]: /third_party/blink/web_tests/virtual/stable/webexposed/feature-policy-features-expected.txt
