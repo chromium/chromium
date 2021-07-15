@@ -40,6 +40,9 @@ export class MetricsUtils {
     chrome.metricsPrivate.recordBoolean(
         MetricsUtils.NAVIGATION_CONTROLS_METRIC,
         prefsManager.navigationControlsEnabled());
+    chrome.metricsPrivate.recordBoolean(
+        MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC,
+        prefsManager.enhancedNetworkVoicesEnabled());
   }
 
   /**
@@ -190,6 +193,13 @@ MetricsUtils.BACKGROUND_SHADING_METRIC =
  */
 MetricsUtils.NAVIGATION_CONTROLS_METRIC =
     'Accessibility.CrosSelectToSpeak.NavigationControls';
+
+/**
+ * The metric name for enhanced network TTS voices.
+ * @type {string}
+ */
+MetricsUtils.ENHANCED_NETWORK_VOICES_METRIC =
+    'Accessibility.CrosSelectToSpeak.EnhancedNetworkVoices';
 
 /**
  * The speech rate override histogram metric name.

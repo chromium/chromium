@@ -363,6 +363,15 @@ export class PrefsManager {
   navigationControlsEnabled() {
     return this.navigationControlsEnabled_;
   }
+
+  /**
+   * Gets the user's preference for whether enhanced network TTS voices are
+   * enabled.
+   * @return {boolean} True if enhanced TTS voices are enabled.
+   */
+  enhancedNetworkVoicesEnabled() {
+    return this.enhancedNetworkVoicesEnabled_;
+  }
 }
 
 /**
