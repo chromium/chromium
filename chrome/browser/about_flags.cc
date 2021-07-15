@@ -6994,12 +6994,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kSwipeToMoveCursor)},
 #endif  // defined(OS_ANDROID)
 
-    {"use-of-hash-affiliation-fetcher",
-     flag_descriptions::kUseOfHashAffiliationFetcherName,
-     flag_descriptions::kUseOfHashAffiliationFetcherDescription, kOsAll,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUseOfHashAffiliationFetcher)},
-
     {"safety-check-weak-passwords",
      flag_descriptions::kSafetyCheckWeakPasswordsName,
      flag_descriptions::kSafetyCheckWeakPasswordsDescription, kOsDesktop,

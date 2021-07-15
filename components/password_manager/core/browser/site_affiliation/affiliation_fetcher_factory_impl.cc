@@ -18,13 +18,8 @@ std::unique_ptr<AffiliationFetcherInterface>
 AffiliationFetcherFactoryImpl::CreateInstance(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUseOfHashAffiliationFetcher)) {
-    return std::make_unique<HashAffiliationFetcher>(
-        std::move(url_loader_factory), delegate);
-  }
-  return std::make_unique<AffiliationFetcher>(std::move(url_loader_factory),
-                                              delegate);
+  return std::make_unique<HashAffiliationFetcher>(std::move(url_loader_factory),
+                                                  delegate);
 }
 
 }  // namespace password_manager

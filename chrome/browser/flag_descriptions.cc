@@ -2727,12 +2727,6 @@ const char kUseFirstPartySetDescription[] =
     "Use the provided list of origins as a First-Party Set, with the first "
     "valid origin as the owner of the set.";
 
-const char kUseOfHashAffiliationFetcherName[] =
-    "Use of Hash Affiliation Fetcher";
-const char kUseOfHashAffiliationFetcherDescription[] =
-    "All requests to the affiliation fetcher are made through the hash prefix "
-    "lookup. Enables use of Hash Affiliation Service for non-synced users.";
-
 const char kUsernameFirstFlowName[] = "Username first flow voting";
 const char kUsernameFirstFlowDescription[] =
     "Support of sending votes on username first flow i.e. login "

@@ -646,12 +646,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kIOSPersistCrashRestoreName,
      flag_descriptions::kIOSPersistCrashRestoreDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kIOSPersistCrashRestore)},
-    {"use-of-hash-affiliation-fetcher",
-     flag_descriptions::kUseOfHashAffiliationFetcherName,
-     flag_descriptions::kUseOfHashAffiliationFetcherDescription,
-     flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUseOfHashAffiliationFetcher)},
     {"omnibox-new-textfield-implementation",
      flag_descriptions::kOmniboxNewImplementationName,
      flag_descriptions::kOmniboxNewImplementationDescription, flags_ui::kOsIos,

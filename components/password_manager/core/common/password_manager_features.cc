@@ -161,10 +161,6 @@ const base::Feature kUseNewHeaderForSavePasswordWithAccountStoreBubble{
     "UseNewHeaderForSavePasswordWithAccountStoreBubble",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables use of Hash Affiliation fetcher for all requests.
-const base::Feature kUseOfHashAffiliationFetcher = {
-    "UseOfHashAffiliationFetcher", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables support of sending votes on username first flow.
 const base::Feature kUsernameFirstFlow = {"UsernameFirstFlow",
                                           base::FEATURE_DISABLED_BY_DEFAULT};

@@ -510,12 +510,6 @@ const char kUseJSForErrorPageName[] = "Enable new error page workflow";
 const char kUseJSForErrorPageDescription[] =
     "Use JavaScript for the error pages";
 
-const char kUseOfHashAffiliationFetcherName[] =
-    "Use of Hash Affiliation Fetcher";
-const char kUseOfHashAffiliationFetcherDescription[] =
-    "All requests to the affiliation fetcher are made through the hash prefix "
-    "lookup. Enables use of Hash Affiliation Service for non-synced users.";
-
 const char kWalletServiceUseSandboxName[] = "Use Google Payments sandbox";
 const char kWalletServiceUseSandboxDescription[] =
     "Uses the sandbox service for Google Payments API calls.";

@@ -112,14 +112,7 @@ base::FilePath GetLoginDatabaseForAccountStoragePathForTesting(
 }
 
 bool ShouldAffiliationBasedMatchingBeActive(syncer::SyncService* sync_service) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUseOfHashAffiliationFetcher)) {
-    return true;
-  }
-  return sync_service && sync_service->IsSyncFeatureActive() &&
-         sync_service->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords) &&
-         !sync_service->GetUserSettings()->IsUsingExplicitPassphrase();
+  return true;
 }
 
 }  // namespace password_manager

@@ -943,9 +943,6 @@ extern const char kMouseSubframeNoImplicitCaptureDescription[];
 extern const char kMutingCompromisedCredentialsName[];
 extern const char kMutingCompromisedCredentialsDescription[];
 
-extern const char kUseOfHashAffiliationFetcherName[];
-extern const char kUseOfHashAffiliationFetcherDescription[];
-
 extern const char kUsernameFirstFlowName[];
 extern const char kUsernameFirstFlowDescription[];
 

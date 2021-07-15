@@ -447,10 +447,6 @@ extern const char kURLBlocklistIOSDescription[];
 extern const char kUseJSForErrorPageName[];
 extern const char kUseJSForErrorPageDescription[];
 
-// Title and description for the flag to enable use of hash affiliation service.
-extern const char kUseOfHashAffiliationFetcherName[];
-extern const char kUseOfHashAffiliationFetcherDescription[];
-
 // Title and description for the flag to control if Google Payments API calls
 // should use the sandbox servers.
 extern const char kWalletServiceUseSandboxName[];
