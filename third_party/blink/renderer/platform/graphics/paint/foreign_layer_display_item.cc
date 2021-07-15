@@ -46,6 +46,14 @@ void RecordForeignLayer(GraphicsContext& context,
                         const IntPoint& offset,
                         const PropertyTreeStateOrAlias* properties) {
   PaintController& paint_controller = context.GetPaintController();
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+    // Only record the first fragment's cc::Layer to prevent duplicate layers.
+    // This is not needed for link highlights which do support fragmentation.
+    if (type != DisplayItem::kForeignLayerLinkHighlight &&
+        paint_controller.CurrentFragment() != 0) {
+      return;
+    }
+  }
   // This is like ScopedPaintChunkProperties but uses null id because foreign
   // layer chunk doesn't need an id nor a client.
   absl::optional<PropertyTreeStateOrAlias> previous_properties;
