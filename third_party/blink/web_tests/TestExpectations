@@ -7360,5 +7360,4 @@ crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/
 # The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Pass Failure ]
-crbug.com/1229722 fast/block/float/4145535Crash.html [ Pass Failure ]
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Failure Crash ]
