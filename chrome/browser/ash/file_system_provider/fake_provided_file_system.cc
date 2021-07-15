@@ -13,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "net/base/io_buffer.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace file_system_provider {
@@ -54,7 +55,7 @@ FakeProvidedFileSystem::FakeProvidedFileSystem(
            "", "");
 
   base::Time modification_time;
-  DCHECK(
+  EXPECT_TRUE(
       base::Time::FromUTCString(kFakeFileModificationTime, &modification_time));
   AddEntry(base::FilePath(kFakeFilePath), false, kFakeFileName, kFakeFileSize,
            modification_time, kFakeFileMimeType, kFakeFileText);
