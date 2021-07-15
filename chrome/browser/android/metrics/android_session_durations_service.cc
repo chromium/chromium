@@ -167,7 +167,7 @@ JNI_AndroidSessionDurationsServiceState_GetAndroidSessionDurationsServiceState(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& j_profile) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  DCHECK(profile->IsIncognitoProfile());
+  CHECK(profile->IsIncognitoProfile());
 
   AndroidSessionDurationsService* duration_service =
       AndroidSessionDurationsServiceFactory::GetForProfile(profile);
@@ -188,7 +188,7 @@ void JNI_AndroidSessionDurationsServiceState_RestoreAndroidSessionDurationsServi
     const base::android::JavaParamRef<jobject>& j_profile,
     const base::android::JavaParamRef<jobject>& j_duration_service) {
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
-  DCHECK(profile->IsIncognitoProfile());
+  CHECK(profile->IsIncognitoProfile());
 
   AndroidSessionDurationsService* duration_service =
       AndroidSessionDurationsServiceFactory::GetForProfile(profile);

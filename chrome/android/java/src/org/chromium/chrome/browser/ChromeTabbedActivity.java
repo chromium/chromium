@@ -972,8 +972,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false)) {
             // This will be executed only once since SavedInstanceState will be reset a few lines
             // later.
-            AndroidSessionDurationsServiceState.restoreNativeFromSerialized(
-                    savedInstanceState, getCurrentTabModel().getProfile());
+            AndroidSessionDurationsServiceState.restoreNativeFromSerialized(savedInstanceState,
+                    getCurrentTabModel().getProfile().getPrimaryOTRProfile(
+                            /* createIfNeeded= */ true));
         }
 
         resetSavedInstanceState();
