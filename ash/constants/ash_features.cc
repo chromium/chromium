@@ -645,6 +645,11 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 // Enables or disables the second language settings update.
 const base::Feature kLanguageSettingsUpdate2{"LanguageSettingsUpdate2",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables or disables sorting app icons shown on the launcher.
+const base::Feature kLauncherAppSort{"LauncherAppSort",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables new flow for license packaged devices with enterprise license.
 const base::Feature kLicensePackagedOobeFlow{"LicensePackagedOobeFlow",
                                              base::FEATURE_DISABLED_BY_DEFAULT};
@@ -1334,6 +1339,10 @@ bool IsInstantTetheringBackgroundAdvertisingSupported() {
 bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {
   return base::FeatureList::IsEnabled(
       kKeyboardBasedDisplayArrangementInSettings);
+}
+
+bool IsLauncherAppSortEnabled() {
+  return base::FeatureList::IsEnabled(kLauncherAppSort);
 }
 
 bool IsLicensePackagedOobeFlowEnabled() {

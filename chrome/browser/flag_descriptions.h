@@ -108,6 +108,9 @@ extern const char kForceStartupSigninPromoDescription[];
 extern const char kDetectedSourceLanguageOptionName[];
 extern const char kDetectedSourceLanguageOptionDescription[];
 
+extern const char kLauncherAppSortName[];
+extern const char kLauncherAppSortDescription[];
+
 extern const char kDetectFormSubmissionOnFormClearName[];
 extern const char kDetectFormSubmissionOnFormClearDescription[];
 

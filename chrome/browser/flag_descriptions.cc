@@ -39,6 +39,11 @@ const char kAccountIdMigrationDescription[] =
     "Migrate to use Gaia ID instead of the email as the account identifer for "
     "the Identity Manager.";
 
+const char kLauncherAppSortName[] = "Productivity experiment: Reorder Apps";
+const char kLauncherAppSortDescription[] =
+    "To evaluate an enhanced Launcher experience that enables users to reorder "
+    "their apps in order to find them more easily.";
+
 const char kAlignFontDisplayAutoTimeoutWithLCPGoalName[] =
     "Align 'font-display: auto' timeout with LCP goal";
 const char kAlignFontDisplayAutoTimeoutWithLCPGoalDescription[] =

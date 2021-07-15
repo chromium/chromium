@@ -7250,6 +7250,12 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSanitizerAPI)},
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"productivity-reorder-apps", flag_descriptions::kLauncherAppSortName,
+     flag_descriptions::kLauncherAppSortDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(chromeos::features::kLauncherAppSort)},
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-desktop-pwas-app-icon-shortcuts-menu-ui",
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIName,
      flag_descriptions::kDesktopPWAsAppIconShortcutsMenuUIDescription, kOsCrOS,
