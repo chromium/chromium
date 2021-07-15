@@ -9,6 +9,8 @@
 
 namespace content {
 
+class RenderFrameHostImpl;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 // Note: Please update GetCancelledInterfaceType() in the corresponding .cc file
@@ -22,6 +24,8 @@ enum class PrerenderCancelledInterface {
 };
 
 void RecordPrerenderCancelledInterface(const std::string& interface_name);
+
+void RecordPrerenderTriggered(RenderFrameHostImpl& initiator_render_frame_host);
 
 }  // namespace content
 

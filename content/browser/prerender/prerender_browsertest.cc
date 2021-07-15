@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/services/storage/public/mojom/storage_service.mojom.h"
 #include "components/services/storage/public/mojom/test_api.test-mojom.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/browser/file_system_access/file_system_chooser_test_helpers.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/prerender/prerender_host_registry.h"
@@ -69,6 +70,7 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -3624,6 +3626,39 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, FrameOwnerPropertiesDisplayNone) {
 
   EXPECT_FALSE(prerender_frame_host->IsFrameDisplayNone());
   EXPECT_FALSE(iframe_host->IsFrameDisplayNone());
+}
+
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, TriggeredPrerenderUkm) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/empty.html?prerender");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+  ASSERT_EQ(web_contents()->GetURL(), kInitialUrl);
+
+  // PrerenderPageLoad metric should not be recorded yet.
+  EXPECT_EQ(0u,
+            ukm_recorder
+                .GetEntriesByName(ukm::builders::PrerenderPageLoad::kEntryName)
+                .size());
+
+  // Start a prerender.
+  ASSERT_NE(AddPrerender(kPrerenderingUrl),
+            RenderFrameHost::kNoFrameTreeNodeId);
+
+  // PrerenderPageLoad:TriggeredPrerender is recorded for the initiator page
+  // load.
+  const std::vector<const ukm::mojom::UkmEntry*> entries =
+      ukm_recorder.GetEntriesByName(
+          ukm::builders::PrerenderPageLoad::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  EXPECT_EQ(web_contents()->GetMainFrame()->GetPageUkmSourceId(),
+            entries.front()->source_id);
+  ukm_recorder.ExpectEntryMetric(
+      entries.front(),
+      ukm::builders::PrerenderPageLoad::kTriggeredPrerenderName, 1);
 }
 
 }  // namespace

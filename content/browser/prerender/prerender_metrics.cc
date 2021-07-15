@@ -5,6 +5,9 @@
 #include "content/browser/prerender/prerender_metrics.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 
 namespace content {
 
@@ -30,6 +33,14 @@ void RecordPrerenderCancelledInterface(const std::string& interface_name) {
       GetCancelledInterfaceType(interface_name);
   base::UmaHistogramEnumeration(
       "Prerender.Experimental.PrerenderCancelledInterface", interface_type);
+}
+
+void RecordPrerenderTriggered(
+    RenderFrameHostImpl& initiator_render_frame_host) {
+  ukm::builders::PrerenderPageLoad(
+      initiator_render_frame_host.GetPageUkmSourceId())
+      .SetTriggeredPrerender(true)
+      .Record(ukm::UkmRecorder::Get());
 }
 
 }  // namespace content

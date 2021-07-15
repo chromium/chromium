@@ -8,6 +8,7 @@
 #include "components/page_load_metrics/browser/observers/core/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
 #include "content/public/browser/web_contents.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 
 namespace internal {
 
@@ -50,9 +51,16 @@ void PrerenderPageLoadMetricsObserver::DidActivatePrerenderedPage(
   // |navigation_handle| here is for the activation navigation, while
   // |GetDelegate().GetNavigationStart()| is the start time of initial prerender
   // navigation.
+  base::TimeDelta navigation_to_activation =
+      navigation_handle->NavigationStart() - GetDelegate().GetNavigationStart();
   PAGE_LOAD_HISTOGRAM(internal::kHistogramPrerenderNavigationToActivation,
-                      navigation_handle->NavigationStart() -
-                          GetDelegate().GetNavigationStart());
+                      navigation_to_activation);
+
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetWasPrerendered(true)
+      .SetTiming_NavigationToActivation(
+          navigation_to_activation.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstPaintInPage(
@@ -72,10 +80,16 @@ void PrerenderPageLoadMetricsObserver::OnFirstContentfulPaintInPage(
           timing.paint_timing->first_contentful_paint, GetDelegate())) {
     return;
   }
+  base::TimeDelta activation_to_fcp =
+      timing.paint_timing->first_contentful_paint.value() -
+      timing.activation_start.value();
   PAGE_LOAD_HISTOGRAM(
       internal::kHistogramPrerenderActivationToFirstContentfulPaint,
-      timing.paint_timing->first_contentful_paint.value() -
-          timing.activation_start.value());
+      activation_to_fcp);
+  ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+      .SetTiming_ActivationToFirstContentfulPaint(
+          activation_to_fcp.InMilliseconds())
+      .Record(ukm::UkmRecorder::Get());
 }
 
 void PrerenderPageLoadMetricsObserver::OnFirstInputInPage(
@@ -115,10 +129,16 @@ void PrerenderPageLoadMetricsObserver::RecordSessionEndHistograms(
   if (largest_contentful_paint.ContainsValidTime() &&
       WasActivatedInForegroundOptionalEventInForeground(
           largest_contentful_paint.Time(), GetDelegate())) {
+    base::TimeDelta activation_to_lcp =
+        largest_contentful_paint.Time().value() -
+        main_frame_timing.activation_start.value();
     PAGE_LOAD_HISTOGRAM(
         internal::kHistogramPrerenderActivationToLargestContentfulPaint2,
-        largest_contentful_paint.Time().value() -
-            main_frame_timing.activation_start.value());
+        activation_to_lcp);
+    ukm::builders::PrerenderPageLoad(GetDelegate().GetPageUkmSourceId())
+        .SetTiming_ActivationToLargestContentfulPaint(
+            activation_to_lcp.InMilliseconds())
+        .Record(ukm::UkmRecorder::Get());
   }
 
   UMA_HISTOGRAM_COUNTS_100(

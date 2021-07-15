@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/containers/contains.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -9,7 +10,11 @@
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/prerender_test_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
+
+using PrerenderPageLoad = ukm::builders::PrerenderPageLoad;
 
 class PrerenderPageLoadMetricsObserverBrowserTest
     : public MetricIntegrationTest {
@@ -25,6 +30,31 @@ class PrerenderPageLoadMetricsObserverBrowserTest
   void SetUpOnMainThread() override {
     prerender_helper_.SetUpOnMainThread(embedded_test_server());
     MetricIntegrationTest::SetUpOnMainThread();
+  }
+
+  int GetUkmMetricEntryCount(const std::string& entry_name,
+                             const std::string& metric_name) {
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics>
+        metric_entries = ukm_recorder().GetMetrics(entry_name, {metric_name});
+    int count = 0;
+    for (const auto& entry : metric_entries) {
+      if (base::Contains(entry, metric_name))
+        count++;
+    }
+    return count;
+  }
+
+  std::vector<int64_t> GetUkmMetricEntryValues(const std::string& entry_name,
+                                               const std::string& metric_name) {
+    const std::vector<ukm::TestUkmRecorder::HumanReadableUkmMetrics>
+        metric_entries = ukm_recorder().GetMetrics(entry_name, {metric_name});
+    std::vector<int64_t> metrics;
+    for (const auto& entry : metric_entries) {
+      auto it = entry.find(metric_name);
+      if (it != entry.end())
+        metrics.push_back(it->second);
+    }
+    return metrics;
   }
 
  protected:
@@ -79,6 +109,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       internal::kHistogramPrerenderCumulativeShiftScore, 1);
   histogram_tester().ExpectTotalCount(
       internal::kHistogramPrerenderCumulativeShiftScoreMainFrame, 1);
+
+  ASSERT_THAT(GetUkmMetricEntryValues(PrerenderPageLoad::kEntryName,
+                                      PrerenderPageLoad::kWasPrerenderedName),
+              testing::ElementsAre(1));
+  EXPECT_EQ(GetUkmMetricEntryCount(
+                PrerenderPageLoad::kEntryName,
+                PrerenderPageLoad::kTiming_NavigationToActivationName),
+            1);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+      1);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -134,6 +182,24 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
       internal::kHistogramPrerenderCumulativeShiftScore, 0);
   histogram_tester().ExpectTotalCount(
       internal::kHistogramPrerenderCumulativeShiftScoreMainFrame, 0);
+
+  ASSERT_THAT(GetUkmMetricEntryValues(PrerenderPageLoad::kEntryName,
+                                      PrerenderPageLoad::kWasPrerenderedName),
+              testing::ElementsAre(1));
+  EXPECT_EQ(GetUkmMetricEntryCount(
+                PrerenderPageLoad::kEntryName,
+                PrerenderPageLoad::kTiming_NavigationToActivationName),
+            1);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+      0);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName),
+      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
@@ -165,4 +231,22 @@ IN_PROC_BROWSER_TEST_F(PrerenderPageLoadMetricsObserverBrowserTest,
   EXPECT_EQ(0u, histogram_tester()
                     .GetTotalCountsForPrefix("PageLoad.Clients.Prerender.")
                     .size());
+
+  EXPECT_EQ(GetUkmMetricEntryCount(PrerenderPageLoad::kEntryName,
+                                   PrerenderPageLoad::kWasPrerenderedName),
+            0);
+  EXPECT_EQ(GetUkmMetricEntryCount(
+                PrerenderPageLoad::kEntryName,
+                PrerenderPageLoad::kTiming_NavigationToActivationName),
+            0);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToFirstContentfulPaintName),
+      0);
+  EXPECT_EQ(
+      GetUkmMetricEntryCount(
+          PrerenderPageLoad::kEntryName,
+          PrerenderPageLoad::kTiming_ActivationToLargestContentfulPaintName),
+      0);
 }

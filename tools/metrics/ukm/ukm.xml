@@ -13572,6 +13572,50 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="PrerenderPageLoad" singular="True">
+  <owner>ksakamoto@chromium.org</owner>
+  <owner>falken@chromium.org</owner>
+  <summary>
+    Metrics related to Prerender2
+    (https://docs.google.com/document/d/1P2VKCLpmnNm_cRAjUeE-bqLL0bslL_zKqiNeCzNom_w/edit?usp=sharing).
+  </summary>
+  <metric name="Timing.ActivationToFirstContentfulPaint">
+    <summary>
+      The duration in milliseconds from time of activation navigation start to
+      the time when the page first paints content. A contentful paint includes a
+      paint of text, image, SVG, or canvas.
+    </summary>
+  </metric>
+  <metric name="Timing.ActivationToLargestContentfulPaint">
+    <summary>
+      The duration in milliseconds from time of activation navigation start to
+      the time when the page first paints the largest content (text or image)
+      within viewport, across all frames.
+    </summary>
+  </metric>
+  <metric name="Timing.NavigationToActivation">
+    <summary>
+      The duration in milliseconds from the start of initial prerendering
+      navigation to the start of activation navigation. This corresponds to the
+      activationStart attribute of PerformanceNavigationTiming.
+    </summary>
+  </metric>
+  <metric name="TriggeredPrerender" enum="Boolean">
+    <summary>
+      A boolean that is set to true if the page triggered prerendering.
+
+      Unlike other PrerenderPageLoad metrics, this is recorded not for
+      prerendered page loads, but for page loads that initiated prerender.
+    </summary>
+  </metric>
+  <metric name="WasPrerendered" enum="Boolean">
+    <summary>
+      A boolean that is set to true if the page was prerendered and later
+      activated. Cancelled prerender page loads are not logged.
+    </summary>
+  </metric>
+</event>
+
 <event name="Previews" singular="True">
   <owner>ryansturm@chromium.org</owner>
   <summary>

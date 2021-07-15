@@ -13,6 +13,7 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_conversion_helper.h"
+#include "content/browser/prerender/prerender_metrics.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -99,6 +100,8 @@ int PrerenderHostRegistry::CreateAndStartHost(
     CancelHost(frame_tree_node_id, PrerenderHost::FinalStatus::kDestroyed);
     return RenderFrameHost::kNoFrameTreeNodeId;
   }
+
+  RecordPrerenderTriggered(initiator_render_frame_host);
 
   return frame_tree_node_id;
 }
