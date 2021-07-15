@@ -58,6 +58,10 @@ extern const ui::ClassProperty<int32_t>* const kGhostWindowSessionIdKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<std::string*>* const kAppIdKey;
 
+// A property key to store the browser app name.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<std::string*>* const kBrowserAppNameKey;
+
 // A property key to indicate that the browser window type is an app type.
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<bool>* const kAppTypeBrowser;

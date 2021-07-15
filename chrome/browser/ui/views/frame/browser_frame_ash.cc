@@ -178,6 +178,9 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
       full_restore::kAppTypeBrowser,
       (browser->is_type_app() || browser->is_type_app_popup()) ? true : false);
 
+  params.init_properties_container.SetProperty(full_restore::kBrowserAppNameKey,
+                                               browser->app_name());
+
   // This is only needed for ash. For lacros, Exo tags the associated
   // ShellSurface as being of AppType::LACROS.
   params.init_properties_container.SetProperty(

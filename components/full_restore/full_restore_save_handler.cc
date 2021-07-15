@@ -18,6 +18,7 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/restore_data.h"
 #include "components/full_restore/window_info.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/sessions/core/session_id.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
@@ -30,6 +31,15 @@ namespace {
 // Delay between when an update is received, and when we save it to the
 // full restore file.
 constexpr base::TimeDelta kSaveDelay = base::TimeDelta::FromMilliseconds(2500);
+
+const char kCrxAppPrefix[] = "_crx_";
+
+std::string GetAppIdFromAppName(const std::string& app_name) {
+  std::string prefix(kCrxAppPrefix);
+  if (app_name.substr(0, prefix.length()) != prefix)
+    return std::string();
+  return app_name.substr(prefix.length());
+}
 
 }  // namespace
 
@@ -54,6 +64,15 @@ void FullRestoreSaveHandler::SetPrimaryProfilePath(
 void FullRestoreSaveHandler::SetActiveProfilePath(
     const base::FilePath& profile_path) {
   active_profile_path_ = profile_path;
+}
+
+void FullRestoreSaveHandler::SetAppRegistryCache(
+    const base::FilePath& profile_path,
+    apps::AppRegistryCache* app_registry_cache) {
+  if (app_registry_cache)
+    profile_path_to_app_registry_cache_[profile_path] = app_registry_cache;
+  else
+    profile_path_to_app_registry_cache_.erase(profile_path);
 }
 
 void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
@@ -104,8 +123,24 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     // If the window is an app type browser window, set `app_type_browser` as
     // true, to call the browser session restore to restore apps for the next
     // system startup.
-    if (window->GetProperty(full_restore::kAppTypeBrowser))
+    if (window->GetProperty(full_restore::kAppTypeBrowser)) {
       app_launch_info->app_type_browser = true;
+
+      std::string* browser_app_name =
+          window->GetProperty(full_restore::kBrowserAppNameKey);
+      if (browser_app_name) {
+        std::string app_id = GetAppIdFromAppName(*browser_app_name);
+        auto it =
+            profile_path_to_app_registry_cache_.find(active_profile_path_);
+        if (it != profile_path_to_app_registry_cache_.end() && it->second &&
+            it->second->GetAppType(app_id) == apps::mojom::AppType::kUnknown) {
+          // If the app doesn't exist in AppRegistryCache, this window is an
+          // extension window, and we don't need to save the launch info for the
+          // extension.
+          return;
+        }
+      }
+    }
   }
 
   AddAppLaunchInfo(active_profile_path_, std::move(app_launch_info));

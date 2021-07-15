@@ -25,6 +25,9 @@
 #include "chrome/browser/web_applications/app_service/web_apps_chromeos.h"
 #include "chrome/common/chrome_features.h"
 #include "components/account_id/account_id.h"
+#include "components/full_restore/features.h"
+#include "components/full_restore/full_restore_save_handler.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "components/services/app_service/app_service_impl.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache_wrapper.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
@@ -47,6 +50,11 @@ AppServiceProxyChromeOs::AppServiceProxyChromeOs(Profile* profile)
 }
 
 AppServiceProxyChromeOs::~AppServiceProxyChromeOs() {
+  if (IsValidProfile() && full_restore::features::IsFullRestoreEnabled()) {
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->SetAppRegistryCache(
+        profile_->GetPath(), nullptr);
+  }
+
   AppCapabilityAccessCacheWrapper::Get().RemoveAppCapabilityAccessCache(
       &app_capability_access_cache_);
   AppRegistryCacheWrapper::Get().RemoveAppRegistryCache(&app_registry_cache_);
@@ -67,6 +75,12 @@ void AppServiceProxyChromeOs::Initialize() {
     app_capability_access_cache_.SetAccountId(account_id);
     AppCapabilityAccessCacheWrapper::Get().AddAppCapabilityAccessCache(
         account_id, &app_capability_access_cache_);
+  }
+
+  if (full_restore::features::IsFullRestoreEnabled()) {
+    ::full_restore::SetActiveProfilePath(profile_->GetPath());
+    ::full_restore::FullRestoreSaveHandler::GetInstance()->SetAppRegistryCache(
+        profile_->GetPath(), &app_registry_cache_);
   }
 
   AppServiceProxyBase::Initialize();

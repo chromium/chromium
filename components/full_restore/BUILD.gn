@@ -38,6 +38,7 @@ component("full_restore") {
     "//base",
     "//chromeos/ui/base:base",
     "//components/account_id:account_id",
+    "//components/services/app_service/public/cpp:app_update",
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/mojom",
     "//components/sessions:session_id",
