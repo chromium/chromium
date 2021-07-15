@@ -36,6 +36,16 @@ export function convertFrequencyToChannel(frequency) {
 }
 
 /**
+ * Converts a KiB storage value to MiB.
+ * @param {number} value
+ * @return {number}
+ */
+export function convertKibToMib(value) {
+  // 1024 KiB is 1 MiB.
+  return value / (2 ** 10);
+}
+
+/**
  * Returns an icon from the diagnostics icon set.
  * @param {string} id
  * @return {string}

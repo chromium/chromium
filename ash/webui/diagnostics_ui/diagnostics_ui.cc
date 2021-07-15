@@ -117,6 +117,8 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},
+      {"notEnoughAvailableMemoryMessage",
+       IDS_DIAGNOSTICS_NOT_ENOUGH_AVAILABLE_MEMORY},
       {"overviewText", IDS_DIAGNOSTICS_OVERVIEW},
       {"percentageLabel", IDS_DIAGNOSTICS_PERCENTAGE_LABEL},
       {"remainingCharge", IDS_DIAGNOSTICS_REMAINING_CHARGE_LABEL},

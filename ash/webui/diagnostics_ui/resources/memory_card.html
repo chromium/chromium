@@ -14,6 +14,8 @@
     is-test-running="{{isTestRunning}}"
     run-tests-button-text="[[i18n('runMemoryTestText')]]"
     learn-more-link-section="memory"
-    is-active="[[isActive]]">
+    is-active="[[isActive]]"
+    additional-message="[[getRunTestsAdditionalMessage_(
+      memoryUsage_.availableMemoryKib)]]">
   </routine-section>
 </diagnostics-card>

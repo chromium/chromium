@@ -138,6 +138,30 @@ export const fakeCpuUsage = [
 /** @type {!Array<!MemoryUsage>} */
 export const fakeMemoryUsage = [
   {
+    availableMemoryKib: 570000,
+    freeMemoryKib: 150000,
+    totalMemoryKib: 1280000,
+  },
+  {
+    availableMemoryKib: 520000,
+    freeMemoryKib: 150000,
+    totalMemoryKib: 1280000,
+  },
+  {
+    availableMemoryKib: 530000,
+    freeMemoryKib: 150000,
+    totalMemoryKib: 1280000,
+  },
+  {
+    availableMemoryKib: 650000,
+    freeMemoryKib: 150000,
+    totalMemoryKib: 1280000,
+  }
+];
+
+/** @type {!Array<!MemoryUsage>} */
+export const fakeMemoryUsageLowAvailableMemory = [
+  {
     availableMemoryKib: 57000,
     freeMemoryKib: 15000,
     totalMemoryKib: 128000,

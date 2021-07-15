@@ -17,7 +17,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MemoryUsage, MemoryUsageObserverInterface, MemoryUsageObserverReceiver, RoutineType, SystemDataProviderInterface} from './diagnostics_types.js'
-import {convertKibToGibDecimalString} from './diagnostics_utils.js';
+import {convertKibToGibDecimalString, convertKibToMib} from './diagnostics_utils.js';
 import {getSystemDataProvider} from './mojo_interface_provider.js';
 
 /**
@@ -137,5 +137,15 @@ Polymer({
     return this.memoryUsage_ ?
         Math.ceil(this.memoryUsage_.totalMemoryKib / 300000) :
         0;
+  },
+
+  /**
+   * @return {string}
+   * @protected
+   */
+  getRunTestsAdditionalMessage_() {
+    return convertKibToMib(this.memoryUsage_.availableMemoryKib) >= 500 ?
+        '' :
+        loadTimeData.getString('notEnoughAvailableMemoryMessage');
   },
 });
