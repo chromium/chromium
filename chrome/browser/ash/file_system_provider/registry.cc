@@ -156,8 +156,10 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
       continue;
     }
 
-    std::string file_system_id;
-    std::string display_name;
+    const std::string* file_system_id =
+        file_system->FindStringKey(kPrefKeyFileSystemId);
+    const std::string* display_name =
+        file_system->FindStringKey(kPrefKeyDisplayName);
     absl::optional<bool> writable = file_system->FindBoolKey(kPrefKeyWritable);
     absl::optional<bool> supports_notify_tag =
         file_system->FindBoolKey(kPrefKeySupportsNotifyTag);
@@ -166,12 +168,9 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
 
     // TODO(mtomasz): Move opened files limit to the mandatory list above in
     // M42.
-    if ((!file_system->GetStringWithoutPathExpansion(kPrefKeyFileSystemId,
-                                                     &file_system_id) ||
-         !file_system->GetStringWithoutPathExpansion(kPrefKeyDisplayName,
-                                                     &display_name) ||
-         !writable || !supports_notify_tag || file_system_id.empty() ||
-         display_name.empty()) ||
+    if ((!file_system_id || !display_name || !writable ||
+         !supports_notify_tag || file_system_id->empty() ||
+         display_name->empty()) ||
         // Optional fields.
         (opened_files_limit.has_value() && opened_files_limit.value() < 0)) {
       LOG(ERROR)
@@ -180,8 +179,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     }
 
     MountOptions options;
-    options.file_system_id = file_system_id;
-    options.display_name = display_name;
+    options.file_system_id = *file_system_id;
+    options.display_name = *display_name;
     options.writable = writable.value();
     options.supports_notify_tag = supports_notify_tag.value();
     options.opened_files_limit = opened_files_limit.value_or(0);
@@ -205,31 +204,29 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
           continue;
         }
 
-        std::string entry_path;
+        const std::string* entry_path =
+            watcher->FindStringKey(kPrefKeyWatcherEntryPath);
         absl::optional<bool> recursive =
             watcher->FindBoolKey(kPrefKeyWatcherRecursive);
-        std::string last_tag;
+        const std::string* last_tag =
+            watcher->FindStringKey(kPrefKeyWatcherLastTag);
         const base::ListValue* persistent_origins = NULL;
 
-        if (!watcher->GetStringWithoutPathExpansion(kPrefKeyWatcherEntryPath,
-                                                    &entry_path) ||
-            !recursive ||
-            !watcher->GetStringWithoutPathExpansion(kPrefKeyWatcherLastTag,
-                                                    &last_tag) ||
+        if (!entry_path || !recursive || !last_tag ||
             !watcher->GetListWithoutPathExpansion(
                 kPrefKeyWatcherPersistentOrigins, &persistent_origins) ||
-            it.key() != entry_path || entry_path.empty() ||
+            it.key() != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
-             (!last_tag.empty() || persistent_origins->GetSize()))) {
+             (!last_tag->empty() || persistent_origins->GetSize()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
 
         Watcher restored_watcher;
         restored_watcher.entry_path =
-            base::FilePath::FromUTF8Unsafe(entry_path);
+            base::FilePath::FromUTF8Unsafe(*entry_path);
         restored_watcher.recursive = recursive.value();
-        restored_watcher.last_tag = last_tag;
+        restored_watcher.last_tag = *last_tag;
         for (const auto& persistent_origin : persistent_origins->GetList()) {
           if (!persistent_origin.is_string()) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
@@ -240,7 +237,7 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
           restored_watcher.subscribers[origin_as_gurl].persistent = true;
         }
         restored_file_system.watchers[WatcherKey(
-            base::FilePath::FromUTF8Unsafe(entry_path), recursive.value())] =
+            base::FilePath::FromUTF8Unsafe(*entry_path), recursive.value())] =
             restored_watcher;
       }
     }

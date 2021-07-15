@@ -494,11 +494,11 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
         if (entry.GetAsDictionary(&entry_dict)) {
           em::DeviceLocalAccountInfoProto* account =
               device_local_accounts->add_account();
-          std::string account_id;
-          if (entry_dict->GetStringWithoutPathExpansion(
-                  kAccountsPrefDeviceLocalAccountsKeyId, &account_id)) {
-            account->set_account_id(account_id);
-          }
+          const std::string* account_id =
+              entry_dict->FindStringKey(kAccountsPrefDeviceLocalAccountsKeyId);
+          if (account_id)
+            account->set_account_id(*account_id);
+
           absl::optional<int> type =
               entry_dict->FindIntKey(kAccountsPrefDeviceLocalAccountsKeyType);
           if (type.has_value()) {
@@ -506,18 +506,15 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
                 static_cast<em::DeviceLocalAccountInfoProto::AccountType>(
                     type.value()));
           }
-          std::string kiosk_app_id;
-          if (entry_dict->GetStringWithoutPathExpansion(
-                  kAccountsPrefDeviceLocalAccountsKeyKioskAppId,
-                  &kiosk_app_id)) {
-            account->mutable_kiosk_app()->set_app_id(kiosk_app_id);
-          }
-          std::string kiosk_app_update_url;
-          if (entry_dict->GetStringWithoutPathExpansion(
-                  kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL,
-                  &kiosk_app_update_url)) {
-            account->mutable_kiosk_app()->set_update_url(kiosk_app_update_url);
-          }
+          const std::string* kiosk_app_id = entry_dict->FindStringKey(
+              kAccountsPrefDeviceLocalAccountsKeyKioskAppId);
+          if (kiosk_app_id)
+            account->mutable_kiosk_app()->set_app_id(*kiosk_app_id);
+
+          const std::string* kiosk_app_update_url = entry_dict->FindStringKey(
+              kAccountsPrefDeviceLocalAccountsKeyKioskAppUpdateURL);
+          if (kiosk_app_update_url)
+            account->mutable_kiosk_app()->set_update_url(*kiosk_app_update_url);
         } else {
           NOTREACHED();
         }

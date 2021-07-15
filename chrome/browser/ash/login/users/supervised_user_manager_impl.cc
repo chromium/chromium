@@ -114,10 +114,9 @@ std::u16string SupervisedUserManagerImpl::GetManagerDisplayName(
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* manager_names =
       local_state->GetDictionary(kSupervisedUserManagerNames);
-  std::u16string result;
-  if (manager_names->GetStringWithoutPathExpansion(user_id, &result) &&
-      !result.empty())
-    return result;
+  const std::string* result = manager_names->FindStringKey(user_id);
+  if (result && !result->empty())
+    return base::UTF8ToUTF16(*result);
   return base::UTF8ToUTF16(GetManagerDisplayEmail(user_id));
 }
 
@@ -182,9 +181,9 @@ void SupervisedUserManagerImpl::SetPasswordInformation(
   if (flag.has_value())
     SetUserBooleanValue(user_id, kSupervisedUserIncompleteKey, flag.value());
 
-  std::string salt;
-  if (password_info->GetStringWithoutPathExpansion(kSalt, &salt))
-    SetUserStringValue(user_id, kSupervisedUserPasswordSalt, salt);
+  const std::string* salt = password_info->FindStringKey(kSalt);
+  if (salt)
+    SetUserStringValue(user_id, kSupervisedUserPasswordSalt, *salt);
   g_browser_process->local_state()->CommitPendingWrite();
 }
 
@@ -194,7 +193,12 @@ bool SupervisedUserManagerImpl::GetUserStringValue(
     std::string* out_value) const {
   PrefService* local_state = g_browser_process->local_state();
   const base::DictionaryValue* dictionary = local_state->GetDictionary(key);
-  return dictionary->GetStringWithoutPathExpansion(user_id, out_value);
+  const std::string* value = dictionary->FindStringKey(user_id);
+  if (!value)
+    return false;
+
+  *out_value = *value;
+  return true;
 }
 
 bool SupervisedUserManagerImpl::GetUserIntegerValue(const std::string& user_id,

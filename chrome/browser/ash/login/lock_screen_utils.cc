@@ -104,13 +104,14 @@ std::string GetUserLastInputMethod(const AccountId& account_id) {
     return std::string();
   }
 
-  if (!users_last_input_methods->GetStringWithoutPathExpansion(
-          account_id.GetUserEmail(), &input_method)) {
+  const std::string* input_method_str =
+      users_last_input_methods->FindStringKey(account_id.GetUserEmail());
+  if (!input_method_str) {
     DVLOG(0) << "GetUserLastInputMethod: no input method for this user";
     return std::string();
   }
 
-  return input_method;
+  return *input_method_str;
 }
 
 void EnforceDevicePolicyInputMethods(std::string user_input_method) {
