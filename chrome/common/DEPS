@@ -3,6 +3,7 @@ include_rules = [
   "+chrome/grit",
   "+chrome/install_static",
   "+chrome/services/file_util/public",
+  "+chromeos/components/chromebox_for_meetings/buildflags",
   "+chromeos/crosapi",
   "+components/autofill/content/common",
   "+components/autofill/core/common",

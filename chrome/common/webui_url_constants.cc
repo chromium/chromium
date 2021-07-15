@@ -222,6 +222,11 @@ const char kChromeUIReadLaterURL[] = "chrome://read-later.top-chrome/";
 const char kChromeUIWebAppInternalsHost[] = "web-app-internals";
 #endif
 
+#if BUILDFLAG(PLATFORM_CFM)
+const char kCfmNetworkSettingsHost[] = "cfm-network-settings";
+const char kCfmNetworkSettingsURL[] = "chrome://cfm-network-settings";
+#endif  // BUILDFLAG(PLATFORM_CFM)
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Keep alphabetized.
 const char kChromeUIAccountManagerErrorHost[] = "account-manager-error";
@@ -320,34 +325,37 @@ bool IsSystemWebUIHost(base::StringPiece host) {
   // Compares host instead of full URL for performance (the strings are
   // shorter).
   static const char* const kHosts[] = {
-      kChromeUIAccountManagerErrorHost,
-      kChromeUIAccountManagerWelcomeHost,
-      kChromeUIAccountMigrationWelcomeHost,
-      kChromeUIActivationMessageHost,
-      kChromeUIAddSupervisionHost,
-      kChromeUIAssistantOptInHost,
-      kChromeUIBluetoothPairingHost,
-      kChromeUICertificateManagerHost,
-      kChromeUICrostiniCreditsHost,
-      kChromeUICrostiniInstallerHost,
-      kChromeUICryptohomeHost,
-      kChromeUIDeviceEmulatorHost,
-      kChromeUIInternetConfigDialogHost,
-      kChromeUIInternetDetailDialogHost,
-      kChromeUILockScreenNetworkHost,
-      kChromeUILockScreenStartReauthHost,
-      kChromeUIMobileSetupHost,
-      kChromeUIMultiDeviceSetupHost,
-      kChromeUINetworkHost,
-      kChromeUIOobeHost,
-      kChromeUIOSCreditsHost,
-      kChromeUIOSSettingsHost,
-      kChromeUIPasswordChangeHost,
-      kChromeUIPowerHost,
-      kChromeUISetTimeHost,
-      kChromeUISmbCredentialsHost,
-      kChromeUISmbShareHost,
-      kChromeUIEmojiPickerHost,
+    kChromeUIAccountManagerErrorHost,
+    kChromeUIAccountManagerWelcomeHost,
+    kChromeUIAccountMigrationWelcomeHost,
+    kChromeUIActivationMessageHost,
+    kChromeUIAddSupervisionHost,
+    kChromeUIAssistantOptInHost,
+    kChromeUIBluetoothPairingHost,
+    kChromeUICertificateManagerHost,
+    kChromeUICrostiniCreditsHost,
+    kChromeUICrostiniInstallerHost,
+    kChromeUICryptohomeHost,
+    kChromeUIDeviceEmulatorHost,
+    kChromeUIInternetConfigDialogHost,
+    kChromeUIInternetDetailDialogHost,
+    kChromeUILockScreenNetworkHost,
+    kChromeUILockScreenStartReauthHost,
+    kChromeUIMobileSetupHost,
+    kChromeUIMultiDeviceSetupHost,
+    kChromeUINetworkHost,
+    kChromeUIOobeHost,
+    kChromeUIOSCreditsHost,
+    kChromeUIOSSettingsHost,
+    kChromeUIPasswordChangeHost,
+    kChromeUIPowerHost,
+    kChromeUISetTimeHost,
+    kChromeUISmbCredentialsHost,
+    kChromeUISmbShareHost,
+    kChromeUIEmojiPickerHost,
+#if BUILDFLAG(PLATFORM_CFM)
+    kCfmNetworkSettingsHost,
+#endif  // BUILDFLAG(PLATFORM_CFM)
   };
   for (const char* h : kHosts) {
     if (host == h)
@@ -619,6 +627,9 @@ const char* const kChromeHostURLs[] = {
     kChromeUIDevicesHost,
 #endif
     kChromeUIWebRtcLogsHost,
+#if BUILDFLAG(PLATFORM_CFM)
+    kCfmNetworkSettingsHost,
+#endif  // BUILDFLAG(PLATFORM_CFM)
 };
 const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 

@@ -169,6 +169,7 @@ static_library("common") {
     "//chrome/common/profiler",
     "//chrome/common/search:mojo_bindings",
     "//chrome/installer/util:with_no_strings",
+    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/cast_certificate",
     "//components/cdm/common",
     "//components/client_hints/common",
