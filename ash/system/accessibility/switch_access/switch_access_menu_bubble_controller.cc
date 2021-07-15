@@ -14,6 +14,7 @@
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/border.h"
 
 namespace ash {
 

@@ -18,6 +18,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/border.h"
 
 namespace ash {
 

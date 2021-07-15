@@ -30,6 +30,7 @@
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/views/border.h"
 
 #if defined(OS_WIN)
 #include "ui/views/widget/native_widget_aura.h"

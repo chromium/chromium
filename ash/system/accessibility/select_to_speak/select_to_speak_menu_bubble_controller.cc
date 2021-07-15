@@ -15,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/compositor/layer.h"
+#include "ui/views/border.h"
 #include "ui/wm/public/activation_client.h"
 
 namespace ash {

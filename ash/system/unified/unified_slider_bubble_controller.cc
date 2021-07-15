@@ -19,6 +19,7 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/views/border.h"
 
 namespace ash {
 

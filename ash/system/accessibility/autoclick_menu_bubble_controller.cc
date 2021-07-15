@@ -21,6 +21,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_border.h"
 
 namespace ash {

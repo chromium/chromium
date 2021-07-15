@@ -43,6 +43,7 @@
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/installable_ink_drop.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/controls/menu/menu_model_adapter.h"

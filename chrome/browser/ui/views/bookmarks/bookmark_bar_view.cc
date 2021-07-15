@@ -107,6 +107,7 @@
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/border.h"
 #include "ui/views/button_drag_utils.h"
 #include "ui/views/cascading_property.h"
 #include "ui/views/controls/button/label_button.h"

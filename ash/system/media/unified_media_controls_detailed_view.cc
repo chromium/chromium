@@ -8,6 +8,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/media/media_tray.h"
 #include "ash/system/tray/tri_view.h"
+#include "ui/views/border.h"
 
 namespace ash {
 

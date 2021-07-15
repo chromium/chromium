@@ -29,6 +29,7 @@
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/test/ink_drop_host_view_test_api.h"
 #include "ui/views/animation/test/test_ink_drop.h"
+#include "ui/views/border.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/platform_style.h"

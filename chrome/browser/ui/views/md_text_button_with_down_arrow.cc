@@ -8,6 +8,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/border.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/vector_icons.h"
 

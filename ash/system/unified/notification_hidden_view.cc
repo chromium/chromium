@@ -18,6 +18,7 @@
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/message_center_impl.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"

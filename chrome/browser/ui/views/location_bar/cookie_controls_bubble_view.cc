@@ -19,6 +19,7 @@
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/text_utils.h"
 #include "ui/views/background.h"
+#include "ui/views/border.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/link.h"
