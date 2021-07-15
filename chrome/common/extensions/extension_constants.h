@@ -266,6 +266,10 @@ extern const char kMediaFileSystemPathPart[];
 // The key name of extension request timestamp used by the
 // prefs::kCloudExtensionRequestIds preference.
 extern const char kExtensionRequestTimestamp[];
+
+// The key name of the extension workflow request justification used by the
+// prefs::kCloudExtensionRequestIds preference.
+extern const char kExtensionWorkflowJustification[];
 }  // namespace extension_misc
 
 #endif  // CHROME_COMMON_EXTENSIONS_EXTENSION_CONSTANTS_H_

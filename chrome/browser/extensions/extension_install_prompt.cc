@@ -690,15 +690,20 @@ bool ExtensionInstallPrompt::AutoConfirmPromptIfEnabled() {
           FROM_HERE,
           base::BindOnce(
               std::move(done_callback_),
-              DoneCallbackPayload(ExtensionInstallPrompt::Result::ACCEPTED)));
+              DoneCallbackPayload(ExtensionInstallPrompt::Result::ACCEPTED,
+                                  extensions::ScopedTestDialogAutoConfirm::
+                                      GetJustification())));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(std::move(done_callback_),
-                         DoneCallbackPayload(ExtensionInstallPrompt::Result::
-                                                 ACCEPTED_AND_OPTION_CHECKED)));
+          base::BindOnce(
+              std::move(done_callback_),
+              DoneCallbackPayload(
+                  ExtensionInstallPrompt::Result::ACCEPTED_AND_OPTION_CHECKED,
+                  extensions::ScopedTestDialogAutoConfirm::
+                      GetJustification())));
       return true;
     case extensions::ScopedTestDialogAutoConfirm::CANCEL:
       base::ThreadTaskRunnerHandle::Get()->PostTask(

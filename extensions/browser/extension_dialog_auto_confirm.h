@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_EXTENSION_DIALOG_AUTO_CONFIRM_H_
 #define EXTENSIONS_BROWSER_EXTENSION_DIALOG_AUTO_CONFIRM_H_
 
+#include <string>
+
 #include "base/auto_reset.h"
 #include "base/macros.h"
 
@@ -32,6 +34,7 @@ class ScopedTestDialogAutoConfirm {
   // |override_option_to_select|.
   ScopedTestDialogAutoConfirm(AutoConfirm override_confirm_value,
                               int override_option_to_select);
+
   ~ScopedTestDialogAutoConfirm();
 
   // Return whether the dialog should be showed, accepted, or cancelled.
@@ -39,6 +42,12 @@ class ScopedTestDialogAutoConfirm {
 
   // Return which option is selected for the dialog.
   static int GetOptionSelected();
+
+  // Return the stored string justification.
+  static std::string GetJustification();
+
+  // Store the provided string justification.
+  void set_justification(const std::string& justification);
 
  private:
   // Preserve the old auto confirm value so it can be reset when the dialog
@@ -48,6 +57,10 @@ class ScopedTestDialogAutoConfirm {
   // Preserve the old option to select so it can be reset when the dialog goes
   // out of scope.
   const int old_option_to_select_;
+
+  // Preserve the old justification so it can be reset when the dialog goes out
+  // of scope.
+  std::string old_justification_;
 
   DISALLOW_COPY_AND_ASSIGN(ScopedTestDialogAutoConfirm);
 };

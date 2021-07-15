@@ -133,4 +133,5 @@ const char kAppStateReadyToRun[] = "ready_to_run";
 
 const char kMediaFileSystemPathPart[] = "_";
 const char kExtensionRequestTimestamp[] = "timestamp";
+const char kExtensionWorkflowJustification[] = "justification";
 }  // namespace extension_misc

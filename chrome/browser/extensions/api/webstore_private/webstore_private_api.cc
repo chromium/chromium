@@ -278,8 +278,10 @@ ConvertExtensionInstallStatusForAPI(ExtensionInstallStatus status) {
 // Requests extension by adding the id into the pending list in Profile Prefs if
 // available. Returns |kRequestPending| if the request has been added
 // successfully. Otherwise, returns the initial extension install status.
-ExtensionInstallStatus AddExtensionToPendingList(const ExtensionId& id,
-                                                 Profile* profile) {
+ExtensionInstallStatus AddExtensionToPendingList(
+    const ExtensionId& id,
+    Profile* profile,
+    const std::string& justification) {
   // There is no need to check whether the extension's required permissions or
   // manifest type are blocked  by the enterprise policy because extensions
   // blocked by those are still requestable.
@@ -308,6 +310,10 @@ ExtensionInstallStatus AddExtensionToPendingList(const ExtensionId& id,
   base::Value request_data(base::Value::Type::DICTIONARY);
   request_data.SetKey(extension_misc::kExtensionRequestTimestamp,
                       ::util::TimeToValue(base::Time::Now()));
+  if (!justification.empty()) {
+    request_data.SetKey(extension_misc::kExtensionWorkflowJustification,
+                        base::Value(justification));
+  }
   pending_requests_update->SetKey(id, std::move(request_data));
   // Query the new extension install status again. It should be changed from
   // |kCanRequest| to |kRequestPending| if the id has been added into pending
@@ -729,7 +735,7 @@ void WebstorePrivateBeginInstallWithManifest3Function::OnRequestPromptDone(
     ExtensionInstallPrompt::DoneCallbackPayload payload) {
   switch (payload.result) {
     case ExtensionInstallPrompt::Result::ACCEPTED:
-      AddExtensionToPendingList(details().id, profile_);
+      AddExtensionToPendingList(details().id, profile_, payload.justification);
       break;
     case ExtensionInstallPrompt::Result::USER_CANCELED:
     case ExtensionInstallPrompt::Result::ABORTED:
@@ -1287,7 +1293,7 @@ WebstorePrivateRequestExtensionFunction::Run() {
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
   ExtensionInstallStatus status =
-      AddExtensionToPendingList(extension_id, profile);
+      AddExtensionToPendingList(extension_id, profile, std::string());
 
   api::webstore_private::ExtensionInstallStatus api_status =
       ConvertExtensionInstallStatusForAPI(status);

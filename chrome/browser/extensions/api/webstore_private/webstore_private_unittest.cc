@@ -33,6 +33,7 @@ namespace {
 constexpr char kInvalidId[] = "Invalid id";
 constexpr char kExtensionId[] = "abcdefghijklmnopabcdefghijklmnop";
 constexpr int kFakeTime = 12345;
+constexpr char kFakeJustification[] = "I need it!";
 constexpr char kExtensionManifest[] = R"({
   \"name\" : \"Extension\",
   \"manifest_version\": 3,
@@ -90,19 +91,47 @@ base::Time GetFaketime() {
   return base::Time::FromJavaTime(kFakeTime);
 }
 
+// Helper test struct used for holding data related to extension requests.
+struct ExtensionRequestData {
+  explicit ExtensionRequestData(base::Time timestamp)
+      : ExtensionRequestData(timestamp, std::string()) {}
+  ExtensionRequestData(base::Time timestamp, std::string justification_text)
+      : timestamp(timestamp),
+        justification_text(std::move(justification_text)) {}
+  ~ExtensionRequestData() = default;
+
+  base::Time timestamp;
+  std::string justification_text;
+};
+
 // Verifies that the extension request pending list in |profile| matches the
 // |expected_pending_requests|.
-void VerifyPendingList(
-    const std::map<ExtensionId, base::Time>& expected_pending_requests,
-    Profile* profile) {
+void VerifyPendingList(const std::map<ExtensionId, ExtensionRequestData>&
+                           expected_pending_requests,
+                       Profile* profile) {
   const base::DictionaryValue* actual_pending_requests =
       profile->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
   ASSERT_EQ(expected_pending_requests.size(),
             actual_pending_requests->DictSize());
   for (const auto& expected_request : expected_pending_requests) {
-    EXPECT_EQ(::util::TimeToValue(expected_request.second),
-              *actual_pending_requests->FindKey(expected_request.first)
-                   ->FindKey(extension_misc::kExtensionRequestTimestamp));
+    auto* actual_pending_request =
+        actual_pending_requests->FindKey(expected_request.first);
+    ASSERT_NE(nullptr, actual_pending_request);
+
+    // All extensions in the pending list are expected to have a timestamp.
+    EXPECT_EQ(::util::TimeToValue(expected_request.second.timestamp),
+              *actual_pending_request->FindKey(
+                  extension_misc::kExtensionRequestTimestamp));
+
+    // Extensions in the pending list may not have justification.
+    if (!expected_request.second.justification_text.empty()) {
+      EXPECT_EQ(expected_request.second.justification_text,
+                *actual_pending_request->FindStringKey(
+                    extension_misc::kExtensionWorkflowJustification));
+    } else {
+      EXPECT_EQ(nullptr, actual_pending_request->FindKey(
+                             extension_misc::kExtensionWorkflowJustification));
+    }
   }
 }
 
@@ -278,7 +307,8 @@ TEST_F(WebstorePrivateRequestExtensionTest, AlreadyApprovedExtension) {
       RunFunctionAndReturnValue(function.get(), GenerateArgs(kExtensionId));
   VerifyResponse(ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_INSTALLABLE,
                  response.get());
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 }
 
 TEST_F(WebstorePrivateRequestExtensionTest, AlreadyRejectedExtension) {
@@ -290,12 +320,14 @@ TEST_F(WebstorePrivateRequestExtensionTest, AlreadyRejectedExtension) {
   VerifyResponse(
       ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_BLOCKED_BY_POLICY,
       response.get());
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 }
 
 TEST_F(WebstorePrivateRequestExtensionTest, AlreadyPendingExtension) {
   SetPendingList({kExtensionId});
-  VerifyPendingList({{kExtensionId, GetFaketime()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(GetFaketime())}},
+                    profile());
   auto function =
       base::MakeRefCounted<WebstorePrivateRequestExtensionFunction>();
   std::unique_ptr<base::Value> response =
@@ -303,7 +335,8 @@ TEST_F(WebstorePrivateRequestExtensionTest, AlreadyPendingExtension) {
   VerifyResponse(
       ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_REQUEST_PENDING,
       response.get());
-  VerifyPendingList({{kExtensionId, GetFaketime()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(GetFaketime())}},
+                    profile());
 }
 
 TEST_F(WebstorePrivateRequestExtensionTest, RequestExtension) {
@@ -314,7 +347,8 @@ TEST_F(WebstorePrivateRequestExtensionTest, RequestExtension) {
   VerifyResponse(
       ExtensionInstallStatus::EXTENSION_INSTALL_STATUS_REQUEST_PENDING,
       response.get());
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 }
 
 class WebstorePrivateBeginInstallWithManifest3Test
@@ -402,7 +436,8 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                 profile());
   }
   VerifyUserCancelledFunctionResult(function.get());
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 
   // Show pending request dialog which can only be canceled.
   function =
@@ -416,7 +451,8 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                 profile());
   }
   VerifyUserCancelledFunctionResult(function.get());
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
@@ -439,6 +475,56 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
+       RequestExtensionWithJustification) {
+  EnableExtensionRequest(true);
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+
+  VerifyPendingList({}, profile());
+
+  auto function =
+      base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
+  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  {
+    ScopedTestDialogAutoConfirm auto_confirm(
+        ScopedTestDialogAutoConfirm::ACCEPT);
+    auto_confirm.set_justification(kFakeJustification);
+    api_test_utils::RunFunction(function.get(),
+                                GenerateArgs(kExtensionId, kExtensionManifest),
+                                profile());
+  }
+  // Even though the ACCEPT button was selected above, the extension request
+  // dialog results in user_cancelled.
+  VerifyUserCancelledFunctionResult(function.get());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now(),
+                                                         kFakeJustification)}},
+                    profile());
+}
+
+TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
+       RequestExtensionWithJustificationAndCancel) {
+  EnableExtensionRequest(true);
+  VerifyPendingList({}, profile());
+
+  std::unique_ptr<content::WebContents> web_contents =
+      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
+  auto function =
+      base::MakeRefCounted<WebstorePrivateBeginInstallWithManifest3Function>();
+  function->SetRenderFrameHost(web_contents->GetMainFrame());
+  {
+    ScopedTestDialogAutoConfirm auto_cancel(
+        ScopedTestDialogAutoConfirm::CANCEL);
+    auto_cancel.set_justification(kFakeJustification);
+
+    api_test_utils::RunFunction(function.get(),
+                                GenerateArgs(kExtensionId, kExtensionManifest),
+                                profile());
+  }
+  VerifyUserCancelledFunctionResult(function.get());
+  VerifyPendingList({}, profile());
+}
+
+TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
        NormalInstallIfRequestExtensionIsDisabled) {
   EnableExtensionRequest(true);
   VerifyPendingList({}, profile());
@@ -455,7 +541,8 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
                                 GenerateArgs(kExtensionId, kExtensionManifest),
                                 profile());
   }
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 
   // Show install prompt dialog if extension request feature is disabled.
   EnableExtensionRequest(false);
@@ -475,7 +562,8 @@ TEST_F(WebstorePrivateBeginInstallWithManifest3Test,
   }
 
   // Pending list is not changed.
-  VerifyPendingList({{kExtensionId, base::Time::Now()}}, profile());
+  VerifyPendingList({{kExtensionId, ExtensionRequestData(base::Time::Now())}},
+                    profile());
 }
 
 TEST_F(WebstorePrivateBeginInstallWithManifest3Test, BlockedByPolicy) {
