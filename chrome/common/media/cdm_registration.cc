@@ -265,28 +265,6 @@ void AddHardwareSecureWidevine(std::vector<content::CdmInfo>* cdms) {
 
   cdms->push_back(content::CdmInfo(
       kWidevineKeySystem, Robustness::kHardwareSecure, std::move(capability)));
-#elif defined(OS_WIN)
-  // TODO(alstonge): Remove this after the Windows CDM is component updated.
-  if (base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
-    base::FilePath install_dir;
-    if (!base::PathService::Get(chrome::DIR_BUNDLED_WIDEVINE_CDM, &install_dir))
-      return;
-
-    auto widevine_cdm_path = install_dir.AppendASCII(
-        base::GetNativeLibraryName(kMediaFoundationWidevineCdmLibraryName));
-    if (!base::PathExists(widevine_cdm_path))
-      return;
-
-    // Register Widevine hardware secure support for lazy initialization.
-    // TODO(xhwang): Get the version from the DLL.
-    VLOG(1) << "Registering " << kMediaFoundationWidevineCdmDisplayName;
-    cdms->push_back(content::CdmInfo(
-        kWidevineKeySystem, Robustness::kHardwareSecure, absl::nullopt,
-        /*supports_sub_key_systems=*/false,
-        kMediaFoundationWidevineCdmDisplayName, kMediaFoundationWidevineCdmGuid,
-        base::Version(), widevine_cdm_path,
-        /*file_system_id=*/""));
-  }
 #endif  // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
 }
 

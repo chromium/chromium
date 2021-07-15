@@ -83,6 +83,10 @@
 #include "chrome/browser/component_updater/vr_assets_component_installer.h"
 #endif
 
+#if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
+#include "chrome/browser/component_updater/media_foundation_widevine_cdm_component_installer.h"
+#endif
+
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
 #include "chrome/browser/component_updater/widevine_cdm_component_installer.h"
 #endif  // BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)
@@ -108,6 +112,10 @@ void RegisterComponentsForUpdate(bool is_off_the_record_profile,
 #if BUILDFLAG(ENABLE_PLUGINS)
   // TODO(crbug.com/1069814): Remove after 2021-10-01.
   CleanUpPepperFlashComponent(profile_path);
+#endif
+
+#if BUILDFLAG(ENABLE_MEDIA_FOUNDATION_WIDEVINE_CDM)
+  RegisterMediaFoundationWidevineCdmComponent(cus);
 #endif
 
 #if BUILDFLAG(ENABLE_WIDEVINE_CDM_COMPONENT)

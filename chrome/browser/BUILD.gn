@@ -6105,6 +6105,13 @@ static_library("browser") {
       "media/cdm_pref_service_helper.cc",
       "media/cdm_pref_service_helper.h",
     ]
+
+    if (enable_media_foundation_widevine_cdm) {
+      sources += [
+        "component_updater/media_foundation_widevine_cdm_component_installer.cc",
+        "component_updater/media_foundation_widevine_cdm_component_installer.h",
+      ]
+    }
   }
 
   if (enable_chrome_notifications) {

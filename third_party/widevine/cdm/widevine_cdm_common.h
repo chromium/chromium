@@ -18,6 +18,10 @@ const char kWidevineKeySystem[] = "com.widevine.alpha";
 // files as well.
 const char kWidevineCdmBaseDirectory[] = "WidevineCdm";
 
+// Media Foundation Widevine CDM files are in a directory with this name.
+const char kMediaFoundationWidevineCdmBaseDirection[] =
+    "MediaFoundationWidevineCdm";
+
 // This name is used by UMA. Do not change it!
 const char kWidevineKeySystemNameForUMA[] = "Widevine";
 
