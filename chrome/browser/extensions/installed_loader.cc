@@ -225,6 +225,38 @@ HostPermissionsAccess GetHostPermissionAccessLevelForExtension(
   return HostPermissionsAccess::kOnClick;
 }
 
+void LogHostPermissionsAccess(const Extension& extension) {
+  HostPermissionsAccess access_level =
+      GetHostPermissionAccessLevelForExtension(extension);
+  // Extensions.HostPermissions.GrantedAccess is emitted for every
+  // extension.
+  base::UmaHistogramEnumeration("Extensions.HostPermissions.GrantedAccess",
+                                access_level);
+
+  const PermissionSet& active_permissions =
+      extension.permissions_data()->active_permissions();
+  const PermissionSet& withheld_permissions =
+      extension.permissions_data()->withheld_permissions();
+
+  // Since we only care about host permissions here, we don't want to
+  // look at API permissions that might cause Chrome to warn about all hosts
+  // (like debugger or devtools).
+  static constexpr bool kIncludeApiPermissions = false;
+  if (active_permissions.ShouldWarnAllHosts(kIncludeApiPermissions) ||
+      withheld_permissions.ShouldWarnAllHosts(kIncludeApiPermissions)) {
+    // Extension requests access to at least one eTLD.
+    base::UmaHistogramEnumeration(
+        "Extensions.HostPermissions.GrantedAccessForBroadRequests",
+        access_level);
+  } else if (!active_permissions.effective_hosts().is_empty() ||
+             !withheld_permissions.effective_hosts().is_empty()) {
+    // Extension requests access to hosts, but not eTLD.
+    base::UmaHistogramEnumeration(
+        "Extensions.HostPermissions.GrantedAccessForTargetedRequests",
+        access_level);
+  }
+}
+
 }  // namespace
 
 InstalledLoader::InstalledLoader(ExtensionService* extension_service)
@@ -664,12 +696,7 @@ void InstalledLoader::RecordExtensionsMetrics() {
       }
     }
 
-    HostPermissionsAccess access_level =
-        GetHostPermissionAccessLevelForExtension(*extension);
-    // Extensions.HostPermissions.GrantedAccess is emitted for every
-    // extension.
-    base::UmaHistogramEnumeration("Extensions.HostPermissions.GrantedAccess",
-                                  access_level);
+    LogHostPermissionsAccess(*extension);
 
     if (extension_service_->allowlist()->GetExtensionAllowlistState(
             extension->id()) == ALLOWLIST_NOT_ALLOWLISTED) {

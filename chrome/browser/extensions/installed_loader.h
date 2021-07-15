@@ -16,7 +16,9 @@ class ExtensionRegistry;
 class ExtensionService;
 struct ExtensionInfo;
 
-// Used in histogram Extensions.HostPermissions.GrantedAccess .
+// Used in histogram Extensions.HostPermissions.GrantedAccess,
+// Extensions.HostPermissions.GrantedAccessForBroadRequests and
+// Extensions.HostPermissions.GrantedAccessForTargetedRequests.
 // Entries should not be renumbered and numeric values should never be reused.
 // If you are adding to this enum, update HostPermissionAccess enum in
 // tools/metrics/histograms/enums.xml.
