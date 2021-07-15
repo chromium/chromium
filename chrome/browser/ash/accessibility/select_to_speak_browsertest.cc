@@ -349,7 +349,15 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_SmoothlyReadsAcrossMultipleLines
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, SmoothlyReadsAcrossFormattedText) {
+// TODO(crbug.com/1225388): Flaky on ChromeOS MSAN bots
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_SmoothlyReadsAcrossFormattedText \
+  DISABLED_SmoothlyReadsAcrossFormattedText
+#else
+#define MAYBE_SmoothlyReadsAcrossFormattedText SmoothlyReadsAcrossFormattedText
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest,
+                       MAYBE_SmoothlyReadsAcrossFormattedText) {
   // Bold or formatted text
   ActivateSelectToSpeakInWindowBounds(
       "data:text/html;charset=utf-8,<p>This is some text <b>with a node"
