@@ -21,6 +21,7 @@
       "use_cfi_diag": true,
       "use_cfi_icall": true,
       "use_goma": true,
+      "use_goma_thin_lto": true,
       "use_thin_lto": true
     }
   },
