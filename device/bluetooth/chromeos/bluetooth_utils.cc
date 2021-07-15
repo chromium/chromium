@@ -314,4 +314,9 @@ void RecordDeviceSelectionDuration(base::TimeDelta duration,
     RecordDeviceSelectionDuration(transport_histogram_name, duration);
   }
 }
+
+void RecordPoweredState(bool is_powered) {
+  base::UmaHistogramBoolean("Bluetooth.ChromeOS.PoweredState", is_powered);
+}
+
 }  // namespace device

@@ -70,6 +70,9 @@ DEVICE_BLUETOOTH_EXPORT void RecordDeviceSelectionDuration(
     bool was_paired,
     BluetoothTransport transport);
 
+// Record each time the local device's Bluetooth is powered on or off.
+DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
+
 }  // namespace device
 
 #endif  // DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_

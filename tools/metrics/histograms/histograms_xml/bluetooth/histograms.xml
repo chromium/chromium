@@ -162,6 +162,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.PoweredState" enum="BooleanEnabled"
+    expires_after="2022-07-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Metric emitted when the user logs in on a device which supports Bluetooth as
+    well as when the Bluetooth adapter powered state changes (i.e., from off to
+    on or vice versa).
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{BluetoothUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">

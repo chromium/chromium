@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 
 namespace ash {
 
@@ -248,6 +249,7 @@ void BluetoothPowerController::SetBluetoothPowerOnAdapterReady() {
       &BluetoothPowerController::RunNextPendingBluetoothTask,
       weak_ptr_factory_.GetWeakPtr());
   bluetooth_adapter_->SetPowered(enabled, run_next_task, run_next_task);
+  device::RecordPoweredState(enabled);
 }
 
 void BluetoothPowerController::RunBluetoothTaskWhenAdapterReady(
