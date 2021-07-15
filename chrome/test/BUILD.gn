@@ -2867,7 +2867,6 @@ if (!is_android) {
         "../browser/ui/views/extensions/extension_install_friction_dialog_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_installed_bubble_view_browsertest.cc",
         "../browser/ui/views/extensions/extension_uninstall_dialog_view_browsertest.cc",
-        "../browser/ui/views/extensions/extensions_menu_view_browsertest.cc",
         "../browser/ui/views/extensions/extensions_side_panel_controller_browsertest.cc",
         "../browser/ui/views/extensions/extensions_toolbar_browsertest.cc",
         "../browser/ui/views/extensions/extensions_toolbar_browsertest.h",
@@ -7553,7 +7552,11 @@ if (!is_android) {
       "permissions/permission_request_manager_test_api.h",
     ]
     if (is_mac) {
-      sources += [ "base/in_process_browser_test_mac.mm" ]
+      sources += [
+        "../browser/ui/test/test_browser_dialog_mac.h",
+        "../browser/ui/test/test_browser_dialog_mac.mm",
+        "base/in_process_browser_test_mac.mm",
+      ]
     }
 
     configs += [ "//build/config:precompiled_headers" ]
@@ -7825,10 +7828,17 @@ if (!is_android) {
       "../browser/ui/signin_view_controller_interactive_uitest.cc",
       "../browser/ui/startup/invalid_user_data_dir_interactive_uitest.cc",
       "../browser/ui/startup/startup_browser_creator_interactive_uitest.cc",
+      "../browser/ui/test/test_browser_dialog.cc",
+      "../browser/ui/test/test_browser_dialog.h",
+      "../browser/ui/test/test_browser_ui.cc",
+      "../browser/ui/test/test_browser_ui.h",
       "../browser/ui/translate/translate_bubble_test_utils.h",
       "../browser/ui/views/accessibility/caption_bubble_controller_views_browsertest.cc",
       "../browser/ui/views/content_test_utils.cc",
       "../browser/ui/views/content_test_utils.h",
+      "../browser/ui/views/extensions/extensions_menu_view_interactive_uitest.cc",
+      "../browser/ui/views/extensions/extensions_toolbar_browsertest.cc",
+      "../browser/ui/views/extensions/extensions_toolbar_browsertest.h",
       "../browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_interactive_uitest.cc",
       "../browser/ui/views/web_dialog_view_browsertest.cc",
       "../browser/webauth_interactive_uitest.cc",
@@ -7954,6 +7964,7 @@ if (!is_android) {
       "//ui/base:base_interactive_ui_tests",
       "//ui/base:test_support",
       "//ui/base/clipboard:clipboard_test_support",
+      "//ui/compositor:test_support",
       "//ui/display:display_manager_test_api",
       "//ui/display:test_support",
       "//ui/display/manager",

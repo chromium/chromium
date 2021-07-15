@@ -49,7 +49,8 @@
 
 using ::testing::ElementsAre;
 
-class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
+class ExtensionsMenuViewInteractiveUITest
+    : public ExtensionsToolbarBrowserTest {
  public:
   enum class ExtensionRemovalMethod {
     kDisable,
@@ -312,29 +313,29 @@ class ExtensionsMenuViewBrowserTest : public ExtensionsToolbarBrowserTest {
   std::string ui_test_name_;
 };
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, InvokeUi_default) {
   LoadTestExtension("extensions/uitest/long_name");
   LoadTestExtension("extensions/uitest/window_open");
 
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        InvisibleWithoutExtension_Disable) {
   VerifyContainerVisibility(ExtensionRemovalMethod::kDisable, false);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        InvisibleWithoutExtension_Uninstall) {
   VerifyContainerVisibility(ExtensionRemovalMethod::kUninstall, false);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        InvisibleWithoutExtension_Blocklist) {
   VerifyContainerVisibility(ExtensionRemovalMethod::kBlocklist, false);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        InvisibleWithoutExtension_Terminate) {
   // TODO(pbos): Keep the container visible when extensions are terminated
   // (crash). This lets users find and restart them. Then update this test
@@ -352,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 #else
 #define MAYBE_InvokeUi_ReloadPageBubble InvokeUi_ReloadPageBubble
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        MAYBE_InvokeUi_ReloadPageBubble) {
   ASSERT_TRUE(embedded_test_server()->Start());
   extensions::TestExtensionDir test_dir;
@@ -395,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ExtensionsMenuButtonHighlight) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
@@ -407,7 +408,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
             views::InkDropState::ACTIVATED);
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, TriggerPopup) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest, TriggerPopup) {
   LoadTestExtension("extensions/simple_with_popup");
   ShowUi("");
   VerifyUi();
@@ -439,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, TriggerPopup) {
   EXPECT_TRUE(GetVisibleToolbarActionViews().empty());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ContextMenuKeepsExtensionPoppedOut) {
   LoadTestExtension("extensions/simple_with_popup");
   ShowUi("");
@@ -479,7 +480,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
             visible_icons[0]->view_controller()->GetId());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        RemoveExtensionShowingPopup) {
   LoadTestExtension("extensions/simple_with_popup");
   ShowUi("");
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 }
 
 // Test for crbug.com/1099456.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        RemoveMultipleExtensionsWhileShowingPopup) {
   auto& id1 = LoadTestExtension("extensions/simple_with_popup")->id();
   auto& id2 = LoadTestExtension("extensions/uitest/window_open")->id();
@@ -531,7 +532,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_EQ(nullptr, extensions_container->GetPoppedOutAction());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        TriggeringExtensionClosesMenu) {
   LoadTestExtension("extensions/trigger_actions/browser_action");
   ShowUi("");
@@ -557,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_FALSE(ExtensionsMenuView::IsShowing());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        CreatesOneMenuItemPerExtension) {
   LoadTestExtension("extensions/uitest/long_name");
   LoadTestExtension("extensions/uitest/window_open");
@@ -575,7 +576,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 #else
 #define MAYBE_PinningDisabledInIncognito PinningDisabledInIncognito
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        MAYBE_PinningDisabledInIncognito) {
   LoadTestExtension("extensions/uitest/window_open", true);
   SetUpIncognitoBrowser();
@@ -602,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   DismissUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        PinnedExtensionShowsCorrectContextMenuPinOption) {
   LoadTestExtension("extensions/simple_with_popup");
 
@@ -658,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Unpin");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        UnpinnedExtensionShowsCorrectContextMenuPinOption) {
   LoadTestExtension("extensions/simple_with_popup");
 
@@ -688,7 +689,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_EQ(base::UTF16ToUTF8(visibility_label), "Pin");
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ManageExtensionsOpensExtensionsPage) {
   // Ensure the menu is visible by adding an extension.
   LoadTestExtension("extensions/trigger_actions/browser_action");
@@ -712,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 
 // Tests that clicking on the context menu button of an extension item opens the
 // context menu.
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        ClickingContextMenuButton) {
   LoadTestExtension("extensions/uitest/window_open");
   ClickExtensionsMenuButton();
@@ -735,7 +736,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
   EXPECT_TRUE(item_view->IsContextMenuRunningForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvokeUi_InstallDialog) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
+                       InvokeUi_InstallDialog) {
   ShowAndVerifyUi();
 }
 
@@ -746,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvokeUi_InstallDialog) {
 #else
 #define MAYBE_InvokeUi_UninstallDialog_Accept InvokeUi_UninstallDialog_Accept
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        MAYBE_InvokeUi_UninstallDialog_Accept) {
   ShowAndVerifyUi();
 }
@@ -758,12 +760,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
 #else
 #define MAYBE_InvokeUi_UninstallDialog_Cancel InvokeUi_UninstallDialog_Cancel
 #endif
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest,
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
                        MAYBE_InvokeUi_UninstallDialog_Cancel) {
   ShowAndVerifyUi();
 }
 
-IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvocationSourceMetrics) {
+IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewInteractiveUITest,
+                       InvocationSourceMetrics) {
   base::HistogramTester histogram_tester;
   LoadTestExtension("extensions/uitest/extension_with_action_and_command");
   ClickExtensionsMenuButton();
@@ -781,11 +784,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionsMenuViewBrowserTest, InvocationSourceMetrics) {
   // https://crbug.com/1070305 is fixed.
 }
 
-class ActivateWithReloadExtensionsMenuBrowserTest
-    : public ExtensionsMenuViewBrowserTest,
+class ActivateWithReloadExtensionsMenuInteractiveUITest
+    : public ExtensionsMenuViewInteractiveUITest,
       public ::testing::WithParamInterface<bool> {};
 
-IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuBrowserTest,
+IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuInteractiveUITest,
                        ActivateWithReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
   LoadTestExtension("extensions/blocked_actions/content_scripts");
@@ -836,9 +839,9 @@ IN_PROC_BROWSER_TEST_P(ActivateWithReloadExtensionsMenuBrowserTest,
 }
 
 INSTANTIATE_TEST_SUITE_P(AcceptDialog,
-                         ActivateWithReloadExtensionsMenuBrowserTest,
+                         ActivateWithReloadExtensionsMenuInteractiveUITest,
                          testing::Values(true));
 
 INSTANTIATE_TEST_SUITE_P(CancelDialog,
-                         ActivateWithReloadExtensionsMenuBrowserTest,
+                         ActivateWithReloadExtensionsMenuInteractiveUITest,
                          testing::Values(false));

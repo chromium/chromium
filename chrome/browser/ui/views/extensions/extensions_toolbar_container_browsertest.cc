@@ -94,7 +94,7 @@ class ExtensionsToolbarContainerBrowserTest
 };
 
 // TODO(devlin): There are probably some tests from
-// ExtensionsMenuViewBrowserTest that should move here (if they test the
+// ExtensionsMenuViewInteractiveUITest that should move here (if they test the
 // toolbar container more than the menu).
 
 // Tests that invocation metrics are properly recorded when triggering
