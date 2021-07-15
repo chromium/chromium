@@ -171,7 +171,11 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
 #endif
 
   // V8 uses PKU (a.k.a. MPK / PKEY) for protecting code spaces.
-  if (sysno == __NR_pkey_alloc || sysno == __NR_pkey_free) {
+  if (sysno == __NR_pkey_alloc) {
+    return RestrictPkeyAllocFlags();
+  }
+
+  if (sysno == __NR_pkey_free) {
     return Allow();
   }
 

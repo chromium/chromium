@@ -462,4 +462,9 @@ ResultExpr RestrictPtrace() {
 }
 #endif  // defined(OS_NACL_NONSFI)
 
+ResultExpr RestrictPkeyAllocFlags() {
+  const Arg<int> flags(0);
+  return If(flags == 0, Allow()).Else(CrashSIGSYS());
+}
+
 }  // namespace sandbox.

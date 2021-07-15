@@ -114,6 +114,9 @@ SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPrlimitToGetrlimit(pid_t target_pid);
 // reporting. See https://crbug.com/933418 for details.
 SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPtrace();
 
+// Restrict the flags argument for pkey_alloc. It's specified to always be 0.
+SANDBOX_EXPORT bpf_dsl::ResultExpr RestrictPkeyAllocFlags();
+
 }  // namespace sandbox.
 
 #endif  // SANDBOX_LINUX_SECCOMP_BPF_HELPERS_SYSCALL_PARAMETERS_RESTRICTIONS_H_
