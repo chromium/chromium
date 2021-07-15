@@ -81,7 +81,7 @@ bool JavaScriptTabModalDialogManagerDelegateDesktop::IsWebContentsForemost() {
 
 bool JavaScriptTabModalDialogManagerDelegateDesktop::IsApp() {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  return browser && browser->deprecated_is_app();
+  return browser && (browser->is_type_app() || browser->is_type_app_popup());
 }
 
 void JavaScriptTabModalDialogManagerDelegateDesktop::OnBrowserSetLastActive(
