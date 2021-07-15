@@ -34,8 +34,8 @@ class BackgroundFetchRegistrationId;
 class BackgroundFetchRegistrationNotifier;
 class BackgroundFetchRequestMatchParams;
 class BackgroundFetchScheduler;
-class BrowserContext;
 class ServiceWorkerContextWrapper;
+class StoragePartitionImpl;
 
 // The BackgroundFetchContext is the central moderator of ongoing background
 // fetch requests from the Mojo service and from other callers.
@@ -51,8 +51,7 @@ class CONTENT_EXPORT BackgroundFetchContext
   // The BackgroundFetchContext will watch the ServiceWorkerContextWrapper so
   // that it can respond to service worker events such as unregister.
   BackgroundFetchContext(
-      BrowserContext* browser_context,
-      StoragePartition* storage_partition,
+      base::WeakPtr<StoragePartitionImpl> storage_partition,
       const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context);
@@ -194,9 +193,6 @@ class CONTENT_EXPORT BackgroundFetchContext
                         blink::mojom::BackgroundFetchUkmDataPtr ukm_data,
                         int frame_tree_node_id,
                         BackgroundFetchPermission permission);
-
-  // |this| is owned, indirectly, by the BrowserContext.
-  BrowserContext* browser_context_;
 
   std::unique_ptr<BackgroundFetchDataManager> data_manager_;
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;

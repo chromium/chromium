@@ -17,6 +17,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "content/browser/background_fetch/background_fetch.pb.h"
 #include "content/browser/background_fetch/background_fetch_registration_id.h"
@@ -38,10 +39,9 @@ namespace content {
 class BackgroundFetchDataManagerObserver;
 class BackgroundFetchRequestInfo;
 class BackgroundFetchRequestMatchParams;
-class BrowserContext;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
-class StoragePartition;
+class StoragePartitionImpl;
 
 // The BackgroundFetchDataManager is a wrapper around persistent storage (the
 // Service Worker database), exposing APIs for the read and write queries needed
@@ -84,8 +84,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
                               scoped_refptr<BackgroundFetchRequestInfo>)>;
 
   BackgroundFetchDataManager(
-      BrowserContext* browser_context,
-      StoragePartition* storage_partition,
+      base::WeakPtr<StoragePartitionImpl> storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
@@ -244,9 +243,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
 
   scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 
-  // BackgroundFetchDataManager is owned by BackgroundFetchContext which
-  // itself is owned by the StoragePartitionImpl.
-  StoragePartition* storage_partition_;
+  base::WeakPtr<StoragePartitionImpl> storage_partition_;
 
   scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
 
@@ -272,6 +269,7 @@ class CONTENT_EXPORT BackgroundFetchDataManager
   // TODO(crbug.com/711354): Possibly update key when CORS support is added.
   std::map<std::string, mojo::Remote<blink::mojom::CacheStorage>>
       cache_storage_remote_map_;
+  mojo::Remote<blink::mojom::CacheStorage> null_remote_;
 
   base::WeakPtrFactory<BackgroundFetchDataManager> weak_ptr_factory_{this};
 

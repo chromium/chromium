@@ -17,6 +17,7 @@
 #include "content/browser/background_fetch/background_fetch_request_match_params.h"
 #include "content/browser/background_fetch/background_fetch_scheduler.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/common/background_fetch/background_fetch_types.h"
 #include "content/public/browser/background_fetch_delegate.h"
 #include "content/public/browser/browser_context.h"
@@ -31,27 +32,25 @@ namespace content {
 using FailureReason = blink::mojom::BackgroundFetchFailureReason;
 
 BackgroundFetchContext::BackgroundFetchContext(
-    BrowserContext* browser_context,
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartitionImpl> storage_partition,
     const scoped_refptr<ServiceWorkerContextWrapper>& service_worker_context,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
     scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context)
     : base::RefCountedDeleteOnSequence<BackgroundFetchContext>(
           BrowserThread::GetTaskRunnerForThread(
               ServiceWorkerContext::GetCoreThreadId())),
-      browser_context_(browser_context),
       service_worker_context_(service_worker_context),
       devtools_context_(std::move(devtools_context)),
       registration_notifier_(
           std::make_unique<BackgroundFetchRegistrationNotifier>()),
-      delegate_proxy_(browser_context_) {
+      delegate_proxy_(storage_partition) {
   // Although this lives only on the service worker core thread, it is
   // constructed on UI thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(service_worker_context_);
 
   data_manager_ = std::make_unique<BackgroundFetchDataManager>(
-      browser_context_, storage_partition, service_worker_context,
+      storage_partition, service_worker_context,
       std::move(quota_manager_proxy));
   scheduler_ = std::make_unique<BackgroundFetchScheduler>(
       this, data_manager_.get(), registration_notifier_.get(), &delegate_proxy_,

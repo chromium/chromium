@@ -81,11 +81,10 @@ class BackgroundFetchSchedulerTest : public BackgroundFetchTestBase {
     data_manager_->InitializeOnCoreThread();
 
     delegate_proxy_ =
-        std::make_unique<BackgroundFetchDelegateProxy>(browser_context());
+        std::make_unique<BackgroundFetchDelegateProxy>(storage_partition());
 
     auto* background_fetch_context =
-        static_cast<StoragePartitionImpl*>(storage_partition())
-            ->GetBackgroundFetchContext();
+        storage_partition()->GetBackgroundFetchContext();
     scheduler_ = std::make_unique<BackgroundFetchScheduler>(
         background_fetch_context, data_manager_.get(), nullptr,
         delegate_proxy_.get(), devtools_context().get(),

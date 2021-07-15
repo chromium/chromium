@@ -10,9 +10,9 @@
 #include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
+#include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/storage_partition.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "storage/browser/blob/blob_storage_context.h"
 #include "storage/browser/test/mock_quota_manager.h"
@@ -62,10 +62,9 @@ class MockBGFQuotaManagerProxy : public storage::MockQuotaManagerProxy {
 
 BackgroundFetchTestDataManager::BackgroundFetchTestDataManager(
     BrowserContext* browser_context,
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartitionImpl> storage_partition,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context)
-    : BackgroundFetchDataManager(browser_context,
-                                 storage_partition,
+    : BackgroundFetchDataManager(storage_partition,
                                  service_worker_context,
                                  /* quota_manager_proxy= */ nullptr),
       browser_context_(browser_context),

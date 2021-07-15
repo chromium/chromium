@@ -82,7 +82,8 @@ BackgroundFetchTestBase::BackgroundFetchTestBase()
       delegate_(browser_context_.GetBackgroundFetchDelegate()),
       embedded_worker_test_helper_(base::FilePath()),
       storage_key_(blink::StorageKey(url::Origin::Create(GURL(kTestOrigin)))),
-      storage_partition_(browser_context()->GetDefaultStoragePartition()) {}
+      storage_partition_factory_(static_cast<StoragePartitionImpl*>(
+          browser_context()->GetDefaultStoragePartition())) {}
 
 BackgroundFetchTestBase::~BackgroundFetchTestBase() {
   DCHECK(set_up_called_);
@@ -199,10 +200,8 @@ BackgroundFetchTestBase::CreateBackgroundFetchRegistrationData(
 }
 
 scoped_refptr<DevToolsBackgroundServicesContextImpl>
-BackgroundFetchTestBase::devtools_context() const {
-  DCHECK(storage_partition_);
-  return static_cast<StoragePartitionImpl*>(storage_partition_)
-      ->GetDevToolsBackgroundServicesContext();
+BackgroundFetchTestBase::devtools_context() {
+  return storage_partition()->GetDevToolsBackgroundServicesContext();
 }
 
 }  // namespace content

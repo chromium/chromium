@@ -282,7 +282,7 @@ class BackgroundFetchServiceTest
     BackgroundFetchTestBase::SetUp();
 
     context_ = base::MakeRefCounted<BackgroundFetchContext>(
-        browser_context(), storage_partition(),
+        storage_partition(),
         base::WrapRefCounted(embedded_worker_test_helper()->context_wrapper()),
         /* quota_manager_proxy= */ nullptr, devtools_context());
     context_->SetDataManagerForTesting(

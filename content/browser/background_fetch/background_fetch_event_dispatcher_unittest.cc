@@ -35,8 +35,7 @@ class BackgroundFetchEventDispatcherTest : public BackgroundFetchTestBase {
   void SetUp() override {
     BackgroundFetchTestBase::SetUp();
     auto* background_fetch_context =
-        static_cast<StoragePartitionImpl*>(storage_partition())
-            ->GetBackgroundFetchContext();
+        storage_partition()->GetBackgroundFetchContext();
     event_dispatcher_ = std::make_unique<BackgroundFetchEventDispatcher>(
         background_fetch_context,
         embedded_worker_test_helper()->context_wrapper(),

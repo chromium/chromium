@@ -12,6 +12,7 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_test_browser_context.h"
 #include "content/browser/background_fetch/background_fetch_test_service_worker.h"
 #include "content/browser/devtools/devtools_background_services_context_impl.h"
@@ -24,7 +25,7 @@
 namespace content {
 
 class ServiceWorkerRegistration;
-class StoragePartition;
+class StoragePartitionImpl;
 
 // Base class containing common functionality needed in unit tests written for
 // the Background Fetch feature.
@@ -77,13 +78,15 @@ class BackgroundFetchTestBase : public ::testing::Test {
   TestBrowserContext* browser_context() { return &browser_context_; }
 
   // Returns the once-initialized default storage partition to be used in tests.
-  StoragePartition* storage_partition() { return storage_partition_; }
+  base::WeakPtr<StoragePartitionImpl> storage_partition() {
+    return storage_partition_factory_.GetWeakPtr();
+  }
 
   // Returns the storage key that should be used for Background Fetch tests.
   const blink::StorageKey& storage_key() const { return storage_key_; }
 
   // Returns the DevTools context for logging events.
-  scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context() const;
+  scoped_refptr<DevToolsBackgroundServicesContextImpl> devtools_context();
 
  protected:
   BrowserTaskEnvironment task_environment_;  // Must be first member.
@@ -97,7 +100,7 @@ class BackgroundFetchTestBase : public ::testing::Test {
 
   blink::StorageKey storage_key_;
 
-  StoragePartition* storage_partition_;
+  base::WeakPtrFactory<StoragePartitionImpl> storage_partition_factory_;
 
   int next_pattern_id_ = 0;
 

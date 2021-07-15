@@ -26,7 +26,7 @@ class SkBitmap;
 
 namespace content {
 
-class BrowserContext;
+class StoragePartitionImpl;
 
 // Proxy class for passing messages between BackgroundFetchJobControllers on the
 // service worker core thread and BackgroundFetchDelegate on the UI thread.
@@ -74,7 +74,8 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy {
     virtual ~Controller() = default;
   };
 
-  explicit BackgroundFetchDelegateProxy(BrowserContext* browser_context);
+  explicit BackgroundFetchDelegateProxy(
+      base::WeakPtr<StoragePartitionImpl> storage_partition);
 
   ~BackgroundFetchDelegateProxy();
 
@@ -128,6 +129,9 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy {
 
   // Called when the fetch associated |job_unique_id| is completed.
   void MarkJobComplete(const std::string& job_unique_id);
+
+  // Called when the shutdown flow has been initiated.
+  void Shutdown();
 
  private:
   class Core;

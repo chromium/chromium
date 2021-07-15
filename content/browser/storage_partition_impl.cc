@@ -1262,7 +1262,7 @@ void StoragePartitionImpl::Initialize(
       browser_context_, service_worker_context_);
 
   background_fetch_context_ = base::MakeRefCounted<BackgroundFetchContext>(
-      browser_context_, this, service_worker_context_, quota_manager_proxy,
+      weak_factory_.GetWeakPtr(), service_worker_context_, quota_manager_proxy,
       devtools_background_services_context_);
 
   background_sync_context_ = base::MakeRefCounted<BackgroundSyncContextImpl>();

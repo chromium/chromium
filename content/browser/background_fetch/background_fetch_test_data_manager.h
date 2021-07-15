@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_BACKGROUND_FETCH_BACKGROUND_FETCH_TEST_DATA_MANAGER_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/background_fetch/background_fetch_data_manager.h"
 #include "content/browser/background_fetch/background_fetch_request_info.h"
 
@@ -19,7 +20,7 @@ class BrowserContext;
 class CacheStorageManager;
 class ChromeBlobStorageContext;
 class ServiceWorkerContextWrapper;
-class StoragePartition;
+class StoragePartitionImpl;
 
 // Arbitrary quota that is large enough for test purposes.
 constexpr uint64_t kBackgroundFetchMaxQuotaBytes = 424242u;
@@ -31,7 +32,7 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
  public:
   BackgroundFetchTestDataManager(
       BrowserContext* browser_context,
-      StoragePartition* storage_partition,
+      base::WeakPtr<StoragePartitionImpl> storage_partition,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
 
   ~BackgroundFetchTestDataManager() override;
@@ -43,7 +44,7 @@ class BackgroundFetchTestDataManager : public BackgroundFetchDataManager {
 
   scoped_refptr<storage::MockQuotaManager> mock_quota_manager_;
   BrowserContext* browser_context_;
-  StoragePartition* storage_partition_;
+  base::WeakPtr<StoragePartition> storage_partition_;
   scoped_refptr<ChromeBlobStorageContext> blob_storage_context_;
 
   DISALLOW_COPY_AND_ASSIGN(BackgroundFetchTestDataManager);

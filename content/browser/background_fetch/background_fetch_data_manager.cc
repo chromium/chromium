@@ -38,20 +38,19 @@
 namespace content {
 
 BackgroundFetchDataManager::BackgroundFetchDataManager(
-    BrowserContext* browser_context,
-    StoragePartition* storage_partition,
+    base::WeakPtr<StoragePartitionImpl> storage_partition,
     scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
     scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
     : service_worker_context_(std::move(service_worker_context)),
-      storage_partition_(storage_partition),
+      storage_partition_(std::move(storage_partition)),
       quota_manager_proxy_(std::move(quota_manager_proxy)) {
   // Constructed on the UI thread, then used on the service worker core thread.
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(browser_context);
+  DCHECK(storage_partition_);
 
   // Store the blob storage context for the given |browser_context|.
-  blob_storage_context_ =
-      base::WrapRefCounted(ChromeBlobStorageContext::GetFor(browser_context));
+  blob_storage_context_ = base::WrapRefCounted(
+      ChromeBlobStorageContext::GetFor(storage_partition_->browser_context()));
   DCHECK(blob_storage_context_);
 }
 
@@ -89,6 +88,9 @@ BackgroundFetchDataManager::GetOrOpenCacheStorage(
     return it->second;
   }
 
+  if (!storage_partition_)
+    return null_remote_;
+
   // This storage key and unique_id has never been opened before.
   mojo::Remote<blink::mojom::CacheStorage> remote;
   network::CrossOriginEmbedderPolicy cross_origin_embedder_policy;
@@ -109,6 +111,9 @@ void BackgroundFetchDataManager::OpenCache(
     int64_t trace_id,
     blink::mojom::CacheStorage::OpenCallback callback) {
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
+  if (!cache_storage)
+    return;
+
   cache_storage->Open(base::UTF8ToUTF16(unique_id), trace_id,
                       std::move(callback));
 }
@@ -119,6 +124,8 @@ void BackgroundFetchDataManager::DeleteCache(
     int64_t trace_id,
     blink::mojom::CacheStorage::DeleteCallback callback) {
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
+  if (!cache_storage)
+    return;
   cache_storage->Delete(
       base::UTF8ToUTF16(unique_id), trace_id,
       base::BindOnce(&BackgroundFetchDataManager::DidDeleteCache,
@@ -142,6 +149,8 @@ void BackgroundFetchDataManager::HasCache(
     int64_t trace_id,
     blink::mojom::CacheStorage::HasCallback callback) {
   auto& cache_storage = GetOrOpenCacheStorage(storage_key, unique_id);
+  if (!cache_storage)
+    return;
   cache_storage->Has(base::UTF8ToUTF16(unique_id), trace_id,
                      std::move(callback));
 }
