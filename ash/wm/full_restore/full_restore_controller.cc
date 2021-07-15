@@ -48,7 +48,7 @@ FullRestoreController* g_instance = nullptr;
 FullRestoreController::SaveWindowCallback g_save_window_callback_for_testing;
 
 // The list of possible app window parents.
-constexpr ShellWindowId kAppParentContainers[9] = {
+constexpr ShellWindowId kAppParentContainers[10] = {
     kShellWindowId_DefaultContainerDeprecated,
     kShellWindowId_DeskContainerB,
     kShellWindowId_DeskContainerC,
@@ -58,6 +58,7 @@ constexpr ShellWindowId kAppParentContainers[9] = {
     kShellWindowId_DeskContainerG,
     kShellWindowId_DeskContainerH,
     kShellWindowId_AlwaysOnTopContainer,
+    kShellWindowId_UnparentedContainer,
 };
 
 // The types of apps currently supported by full restore.
@@ -161,6 +162,32 @@ void MaybeRestoreOutOfBoundsWindows(aura::Window* window) {
   }
 }
 
+// Self deleting class which watches a unparented window and deletes itself once
+// the window has a parent.
+class ParentChangeObserver : public aura::WindowObserver {
+ public:
+  ParentChangeObserver(aura::Window* window) {
+    DCHECK(!window->parent());
+    window_observation_.Observe(window);
+  }
+  ParentChangeObserver(const ParentChangeObserver&) = delete;
+  ParentChangeObserver& operator=(const ParentChangeObserver&) = delete;
+  ~ParentChangeObserver() override = default;
+
+  // aura::WindowObserver:
+  void OnWindowParentChanged(aura::Window* window,
+                             aura::Window* parent) override {
+    if (!parent)
+      return;
+    FullRestoreController::Get()->SaveAllWindows();
+    delete this;
+  }
+  void OnWindowDestroying(aura::Window* window) override { delete this; }
+
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
+};
+
 }  // namespace
 
 FullRestoreController::FullRestoreController() {
@@ -218,6 +245,18 @@ void FullRestoreController::SaveWindow(WindowState* window_state) {
   SaveWindowImpl(window_state, /*activation_index=*/absl::nullopt);
 }
 
+void FullRestoreController::SaveAllWindows() {
+  auto mru_windows =
+      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
+  for (int i = 0; i < static_cast<int>(mru_windows.size()); ++i) {
+    // Provide the activation index here since we need to loop through `windows`
+    // anyhow. Otherwise we need to loop again to get the same value in
+    // `SaveWindowImpl()`.
+    WindowState* window_state = WindowState::Get(mru_windows[i]);
+    SaveWindowImpl(window_state, /*activation_index=*/i);
+  }
+}
+
 void FullRestoreController::OnWindowActivated(aura::Window* gained_active) {
   DCHECK(gained_active);
 
@@ -244,6 +283,24 @@ void FullRestoreController::OnRestorePrefChanged(const AccountId& account_id,
                                                  bool could_restore) {
   if (could_restore)
     SaveAllWindows();
+}
+
+void FullRestoreController::OnAppLaunched(aura::Window* window) {
+  // Non ARC windows will already be saved as this point, as this is for cases
+  // where an ARC window is created without a task.
+  if (!IsArcWindow(window))
+    return;
+
+  // Save the window info once the app launched. If `window` does not have a
+  // parent yet, there won't be any window state, so create an observer that
+  // will save when `window` gets a parent. Save all windows since we need to
+  // update the activation index of the other windows.
+  if (window->parent()) {
+    SaveAllWindows();
+    return;
+  }
+
+  new ParentChangeObserver(window);
 }
 
 void FullRestoreController::OnWidgetInitialized(views::Widget* widget) {
@@ -410,18 +467,6 @@ void FullRestoreController::UpdateAndObserveWindow(aura::Window* window) {
   if (target_sibling) {
     base::AutoReset<bool> auto_reset_is_stacking(&is_stacking_, true);
     window->parent()->StackChildBelow(window, target_sibling);
-  }
-}
-
-void FullRestoreController::SaveAllWindows() {
-  auto mru_windows =
-      Shell::Get()->mru_window_tracker()->BuildMruWindowList(kAllDesks);
-  for (int i = 0; i < static_cast<int>(mru_windows.size()); ++i) {
-    // Provide the activation index here since we need to loop through |windows|
-    // anyhow. Otherwise we need to loop again to get the same value in
-    // SaveWindowImpl().
-    WindowState* window_state = WindowState::Get(mru_windows[i]);
-    SaveWindowImpl(window_state, /*activation_index=*/i);
   }
 }
 

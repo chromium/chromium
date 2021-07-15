@@ -60,6 +60,10 @@ class ASH_EXPORT FullRestoreController
   // calculated in SaveWindowImpl.
   void SaveWindow(WindowState* window_state);
 
+  // Gets all windows on all desk in the MRU window tracker and saves them to
+  // file.
+  void SaveAllWindows();
+
   // Called from MruWindowTracker when |gained_active| gets activation. This is
   // not done as an observer to ensure changes to the MRU list get handled first
   // before this is called.
@@ -73,6 +77,7 @@ class ASH_EXPORT FullRestoreController
   // full_restore::FullRestoreInfo::Observer:
   void OnRestorePrefChanged(const AccountId& account_id,
                             bool could_restore) override;
+  void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
   void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
 
@@ -93,10 +98,6 @@ class ASH_EXPORT FullRestoreController
   // observes `window` as we need to do further updates when the window is
   // shown.
   void UpdateAndObserveWindow(aura::Window* window);
-
-  // Gets all windows on all desk in the MRU window tracker and saves them to
-  // file.
-  void SaveAllWindows();
 
   // Calls full_restore::FullRestoreSaveHandler to save to file. The handler has
   // timer to prevent too many writes, but we should limit calls regardless if
@@ -120,6 +121,7 @@ class ASH_EXPORT FullRestoreController
   // Cancels and removes the Full Restore property clear callback for `window`
   // from `restore_property_clear_callbacks_`.
   void CancelAndRemoveRestorePropertyClearCallback(aura::Window* window);
+
   // Sets a callback for testing that will be fired immediately when
   // SaveWindowImpl is about to notify the full restore component we want to
   // write to file.
