@@ -28,7 +28,6 @@
 """Start and stop the Apache HTTP server as it is used by the web tests."""
 
 import logging
-import signal
 import socket
 
 from blinkpy.web_tests.servers import server_base
@@ -205,12 +204,6 @@ class ApacheHTTP(server_base.ServerBase):
             self._log_errors_from_subprocess()
             raise server_base.ServerError(
                 'Failed to start %s: no pid file found' % self._name)
-
-        if not self._is_win:
-            # Swarming sends SIGTERM when timeout happens, but apache uses
-            # different process group, so need to call stop() in that case to
-            # prevent process leak.
-            signal.signal(signal.SIGTERM, lambda _signum, _frame: self.stop())
 
         return int(self._filesystem.read_text_file(self._pid_file))
 
