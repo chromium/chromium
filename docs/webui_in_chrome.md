@@ -19,19 +19,14 @@ This guide is based on [Creating WebUI Interfaces in components](webui_in_compon
 WebUI pages live in `chrome/browser/resources`.  You should create a folder for your project `chrome/browser/resources/hello_world`.
 When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
 
-`chrome/browser/resources/hello_world/hello_world.html`
+`chrome/browser/resources/hello_world/hello_world_container.html`
 ```html
 <!DOCTYPE HTML>
 <html>
-<head>
- <meta charset="utf-8">
- <link rel="stylesheet" href="hello_world.css">
- <script type="module" src="hello_world.js"></script>
-</head>
-<body>
-  <h1>Hello World</h1>
-  <div id="example-div"></div>
-</body>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="hello_world.css">
+  <hello-world></hello-world>
+  <script type="module" src="hello_world.js"></script>
 </html>
 ```
 
@@ -42,27 +37,52 @@ body {
 }
 ```
 
+`chrome/browser/resources/hello_world/hello_world.html`
+```html
+<h1>Hello World</h1>
+<div id="example-div">[[message_]]</div>
+```
+
 `chrome/browser/resources/hello_world/hello_world.js`
 ```js
 import './strings.m.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-function initialize() {
-  const block = document.createElement('div');
-  block.innerText =  loadTimeData.getString('message');
-  $('example-div').appendChild(block);
+/** @polymer */
+export class HelloWorldElement extends PolymerElement {
+  static get is() {
+    return 'hello-world';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      message_: {
+        type: String,
+        value: () => loadTimeData.getString('message'),
+      },
+    };
+  }
 }
 
-document.addEventListener('DOMContentLoaded', initialize);
+customElements.define(HelloWorldElement.is, HelloWorldElement);
 ```
 
-Add a `BUILD.gn` file to get Javascript type checking:
+Add a `BUILD.gn` file to get Javascript type checking and Polymer compilation:
 
 `chrome/browser/resources/hello_world/BUILD.gn`
 ```
 import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [ "hello_world.js" ]
+}
 
 js_library("hello_world") {
   deps = [
@@ -76,7 +96,8 @@ js_type_check("closure_compile") {
 }
 ```
 
-Then refer to the new `:closure_compile` target from `chrome/browser/resources/BUILD.gn`:
+Add the new `:closure_compile` target to `chrome/browser/resources/BUILD.gn` to
+include it in coverage:
 
 ```
 group("closure_compile) {
@@ -90,24 +111,37 @@ group("closure_compile) {
 Finally, create an `OWNERS` file for the new folder.
 
 ## Adding the resources
-Resources for the browser are stored in `grd` files.  Current best practice is to autogenerate a grd file for your 
+Resources for the browser are stored in `grd` files.  Current best practice is to autogenerate a grd file for your
 component in the `BUILD` file we created earlier
 
 `chrome/browser/resources/hello_world/BUILD.gn`
 ```
 import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 resources_grd_file = "$target_gen_dir/resources.grd"
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "hello_world.js" ]
+}
+
 generate_grd("build_grd") {
   grd_prefix = "hello_world"
   out_grd = resources_grd_file
   input_files = [
     "hello_world.css",
-    "hello_world.html",
-    "hello_world.js",
+    "hello_world_container.html",
   ]
   input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
 }
 
 grit("resources") {
