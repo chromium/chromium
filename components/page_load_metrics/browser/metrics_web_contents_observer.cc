@@ -173,6 +173,14 @@ void MetricsWebContentsObserver::RenderFrameDeleted(
   if (PageLoadTracker* tracker = GetPageLoadTracker(rfh))
     tracker->RenderFrameDeleted(rfh);
 
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
+  auto new_end_it = std::remove_if(queued_memory_updates_.begin(),
+                                   queued_memory_updates_.end(),
+                                   [rfh_id](const MemoryUpdate& update) {
+                                     return update.routing_id == rfh_id;
+                                   });
+  queued_memory_updates_.erase(new_end_it, queued_memory_updates_.end());
+
   // PageLoadTracker and smoothness data can be associated only with a main
   // frame.
   if (rfh->GetParent())
@@ -566,13 +574,8 @@ void MetricsWebContentsObserver::DidFinishNavigation(
   }
 
   if (navigation_handle->HasCommitted()) {
-    if (navigation_handle->IsInPrerenderedMainFrame()) {
-      HandleCommittedNavigationForPrerendering(
-          navigation_handle, std::move(navigation_handle_tracker));
-    } else {
-      HandleCommittedNavigationForTrackedLoad(
-          navigation_handle, std::move(navigation_handle_tracker));
-    }
+    HandleCommittedNavigationForTrackedLoad(
+        navigation_handle, std::move(navigation_handle_tracker));
   } else {
     HandleFailedNavigationForTrackedLoad(navigation_handle,
                                          std::move(navigation_handle_tracker));
@@ -610,12 +613,18 @@ void MetricsWebContentsObserver::HandleFailedNavigationForTrackedLoad(
 void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
     content::NavigationHandle* navigation_handle,
     std::unique_ptr<PageLoadTracker> tracker) {
-  committed_load_ = std::move(tracker);
-  committed_load_->Commit(navigation_handle);
-  DCHECK(committed_load_->did_commit());
+  PageLoadTracker* raw_tracker = tracker.get();
+  if (navigation_handle->IsInPrerenderedMainFrame()) {
+    inactive_pages_.emplace(navigation_handle->GetRenderFrameHost(),
+                            std::move(tracker));
+  } else {
+    committed_load_ = std::move(tracker);
+  }
+  raw_tracker->Commit(navigation_handle);
+  DCHECK(raw_tracker->did_commit());
 
   for (auto& observer : testing_observers_)
-    observer.OnCommit(committed_load_.get());
+    observer.OnCommit(raw_tracker);
 
   auto* render_frame_host = navigation_handle->GetRenderFrameHost();
   const bool is_main_frame =
@@ -623,27 +632,25 @@ void MetricsWebContentsObserver::HandleCommittedNavigationForTrackedLoad(
   if (is_main_frame) {
     auto it = ukm_smoothness_data_.find(render_frame_host);
     if (it != ukm_smoothness_data_.end()) {
-      committed_load_->metrics_update_dispatcher()
-          ->SetUpSharedMemoryForSmoothness(render_frame_host,
-                                           std::move(it->second));
+      raw_tracker->metrics_update_dispatcher()->SetUpSharedMemoryForSmoothness(
+          render_frame_host, std::move(it->second));
       ukm_smoothness_data_.erase(it);
     }
   }
 
-  // Clear memory update queue, sending each queued update now that we have
-  // a `committed_load_`.
-  while (!queued_memory_updates_.empty()) {
-    committed_load_->OnV8MemoryChanged(queued_memory_updates_.front());
-    queued_memory_updates_.pop();
+  // Send queued memory updates for the tracker.
+  content::GlobalRenderFrameHostId rfh_id = render_frame_host->GetGlobalId();
+  auto first_update_for_rfh = std::partition(
+      queued_memory_updates_.begin(), queued_memory_updates_.end(),
+      [rfh_id](const MemoryUpdate& update) {
+        return update.routing_id != rfh_id;
+      });
+  if (first_update_for_rfh != queued_memory_updates_.end()) {
+    raw_tracker->OnV8MemoryChanged(std::vector<MemoryUpdate>(
+        first_update_for_rfh, queued_memory_updates_.end()));
+    queued_memory_updates_.erase(first_update_for_rfh,
+                                 queued_memory_updates_.end());
   }
-}
-
-void MetricsWebContentsObserver::HandleCommittedNavigationForPrerendering(
-    content::NavigationHandle* navigation_handle,
-    std::unique_ptr<PageLoadTracker> tracker) {
-  tracker->Commit(navigation_handle);
-  inactive_pages_.emplace(navigation_handle->GetRenderFrameHost(),
-                          std::move(tracker));
 }
 
 void MetricsWebContentsObserver::MaybeStorePageLoadTrackerForBackForwardCache(
@@ -1095,18 +1102,28 @@ void MetricsWebContentsObserver::BroadcastEventToObservers(
 
 void MetricsWebContentsObserver::OnV8MemoryChanged(
     const std::vector<MemoryUpdate>& memory_updates) {
-  // TODO(crbug.com/1190112): Support MPArch.
-  if (committed_load_) {
-    committed_load_->OnV8MemoryChanged(memory_updates);
-  } else {
-    // If the load hasn't committed yet, then memory updates can't be sent
-    // at this time, but will still need to be sent later. Queue the updates
-    // in case `committed_load_` is null due to the navigation having not yet
-    // completed, in which case the queued updates will be sent when
-    // HandleCommittedNavigationForTrackedLoad is called.  Otherwise, they will
-    // be ignored and destructed when the MWCO is destructed.
-    queued_memory_updates_.push(memory_updates);
+  std::map<PageLoadTracker*, std::vector<MemoryUpdate>> per_tracker_updates;
+  for (const MemoryUpdate& update : memory_updates) {
+    content::RenderFrameHost* rfh =
+        content::RenderFrameHost::FromID(update.routing_id);
+    if (!rfh)
+      continue;
+    PageLoadTracker* tracker = GetPageLoadTracker(rfh);
+    if (tracker) {
+      per_tracker_updates[tracker].push_back(update);
+    } else {
+      // If the load hasn't committed yet, then memory updates can't be sent
+      // at this time, but will still need to be sent later. Queue the updates
+      // in case `tracker` is null due to the navigation having not yet
+      // completed, in which case the queued updates will be sent when
+      // HandleCommittedNavigationForTrackedLoad is called.  Otherwise, they
+      // will be ignored and cleared when `rfh` is deleted.
+      queued_memory_updates_.push_back(update);
+    }
   }
+
+  for (const auto& map_pair : per_tracker_updates)
+    map_pair.first->OnV8MemoryChanged(map_pair.second);
 }
 
 PageLoadTracker* MetricsWebContentsObserver::GetPageLoadTracker(

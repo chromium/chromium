@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <queue>
 #include <set>
 #include <vector>
 
@@ -329,10 +328,11 @@ class MetricsWebContentsObserver
   // Direct usage of this is discouraged. Use GetPageLoadTracker() instead.
   std::unique_ptr<PageLoadTracker> committed_load_;
 
-  // Memory updates that are accumulated while there is no `committed_load_`.
-  // Will be sent in HandleCommittedNavigationForTrackedLoad, unless the
-  // render process is gone and/or web contents is destroyed.
-  std::queue<std::vector<MemoryUpdate>> queued_memory_updates_;
+  // Memory updates that are accumulated while there is no PageLoadTracker
+  // associated with RenderFrameHost. Will be sent in
+  // HandleCommittedNavigationForTrackedLoad, unless the RenderFrameHost is
+  // deleted and/or web contents is destroyed.
+  std::vector<MemoryUpdate> queued_memory_updates_;
 
   // This is currently set only for the main frame of each page associated with
   // the WebContents.
