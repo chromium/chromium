@@ -196,7 +196,7 @@ Vector<wtf_size_t> AdditiveAlgorithm(unsigned value,
   return result;
 }
 
-namespace list_marker_text {
+namespace {
 
 // TODO(xiaochengh): Reorganize these legacy implementations. Get rid of the
 // EListStyleType enum, and merge them into their callers if possible.
@@ -472,81 +472,12 @@ static String ToCJKIdeographic(int number,
   return String(characters, length);
 }
 
-String GetText(EListStyleType type, int count) {
-  switch (type) {
-    case EListStyleType::kKoreanHangulFormal: {
-      static const UChar kKoreanHangulFormalTable[26] = {
-          kKorean, 0xB9CC, 0x0000, 0xC5B5, 0x0000, 0xC870, 0x0000,
-          0xC2ED,  0xBC31, 0xCC9C, 0xC601, 0xC77C, 0xC774, 0xC0BC,
-          0xC0AC,  0xC624, 0xC721, 0xCE60, 0xD314, 0xAD6C, 0xB9C8,
-          0xC774,  0xB108, 0xC2A4, 0x0020, 0x0000};
-      return ToCJKIdeographic(count, kKoreanHangulFormalTable, kFormal);
-    }
-    case EListStyleType::kKoreanHanjaFormal: {
-      static const UChar kKoreanHanjaFormalTable[26] = {
-          kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
-          0x62FE,  0x767E, 0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3,
-          0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0xB9C8,
-          0xC774,  0xB108, 0xC2A4, 0x0020, 0x0000};
-      return ToCJKIdeographic(count, kKoreanHanjaFormalTable, kFormal);
-    }
-    case EListStyleType::kKoreanHanjaInformal: {
-      static const UChar kKoreanHanjaInformalTable[26] = {
-          kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000,
-          0x5341,  0x767E, 0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09,
-          0x56DB,  0x4E94, 0x516D, 0x4E03, 0x516B, 0x4E5D, 0xB9C8,
-          0xC774,  0xB108, 0xC2A4, 0x0020, 0x0000};
-      return ToCJKIdeographic(count, kKoreanHanjaInformalTable, kInformal);
-    }
-    case EListStyleType::kTradChineseInformal: {
-      static const UChar kTraditionalChineseInformalTable[22] = {
-          kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x5341,
-          0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
-          0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8CA0, 0x0000};
-      return ToCJKIdeographic(count, kTraditionalChineseInformalTable,
-                              kInformal);
-    }
-    case EListStyleType::kSimpChineseInformal: {
-      static const UChar kSimpleChineseInformalTable[22] = {
-          kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x5341,
-          0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
-          0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8D1F, 0x0000};
-      return ToCJKIdeographic(count, kSimpleChineseInformalTable, kInformal);
-    }
-    case EListStyleType::kTradChineseFormal: {
-      static const UChar kTraditionalChineseFormalTable[22] = {
-          kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x62FE,
-          0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3, 0x8086, 0x4F0D,
-          0x9678,   0x67D2, 0x634C, 0x7396, 0x8CA0, 0x0000};
-      return ToCJKIdeographic(count, kTraditionalChineseFormalTable, kFormal);
-    }
-    case EListStyleType::kSimpChineseFormal: {
-      static const UChar kSimpleChineseFormalTable[22] = {
-          kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x62FE,
-          0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8D30, 0x53C1, 0x8086, 0x4F0D,
-          0x9646,   0x67D2, 0x634C, 0x7396, 0x8D1F, 0x0000};
-      return ToCJKIdeographic(count, kSimpleChineseFormalTable, kFormal);
-    }
-
-    case EListStyleType::kUpperArmenian:
-      return ToArmenian(count, true);
-    case EListStyleType::kLowerArmenian:
-      return ToArmenian(count, false);
-    case EListStyleType::kHebrew:
-      return ToHebrew(count);
-
-    default:
-      NOTREACHED();
-      return "";
-  }
-}
-
-}  // namespace list_marker_text
+}  // namespace
 
 String HebrewAlgorithm(unsigned value) {
   if (value > 999999)
     return String();
-  return list_marker_text::GetText(EListStyleType::kHebrew, value);
+  return ToHebrew(value);
 }
 
 int AbsoluteValueForLegacyCJKAlgorithms(int value) {
@@ -560,50 +491,80 @@ int AbsoluteValueForLegacyCJKAlgorithms(int value) {
 }
 
 String SimpChineseInformalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kSimpChineseInformal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kSimpleChineseInformalTable[22] = {
+      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x5341,
+      0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
+      0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8D1F, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kSimpleChineseInformalTable, kInformal);
 }
 
 String SimpChineseFormalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kSimpChineseFormal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kSimpleChineseFormalTable[22] = {
+      kChinese, 0x4E07, 0x0000, 0x4EBF, 0x0000, 0x4E07, 0x4EBF, 0x62FE,
+      0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8D30, 0x53C1, 0x8086, 0x4F0D,
+      0x9646,   0x67D2, 0x634C, 0x7396, 0x8D1F, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kSimpleChineseFormalTable, kFormal);
 }
 
 String TradChineseInformalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kTradChineseInformal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kTraditionalChineseInformalTable[22] = {
+      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x5341,
+      0x767E,   0x5343, 0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94,
+      0x516D,   0x4E03, 0x516B, 0x4E5D, 0x8CA0, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kTraditionalChineseInformalTable, kInformal);
 }
 
 String TradChineseFormalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kTradChineseFormal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kTraditionalChineseFormalTable[22] = {
+      kChinese, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x62FE,
+      0x4F70,   0x4EDF, 0x96F6, 0x58F9, 0x8CB3, 0x53C3, 0x8086, 0x4F0D,
+      0x9678,   0x67D2, 0x634C, 0x7396, 0x8CA0, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kTraditionalChineseFormalTable, kFormal);
 }
 
 String KoreanHangulFormalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kKoreanHangulFormal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kKoreanHangulFormalTable[26] = {
+      kKorean, 0xB9CC, 0x0000, 0xC5B5, 0x0000, 0xC870, 0x0000, 0xC2ED, 0xBC31,
+      0xCC9C,  0xC601, 0xC77C, 0xC774, 0xC0BC, 0xC0AC, 0xC624, 0xC721, 0xCE60,
+      0xD314,  0xAD6C, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kKoreanHangulFormalTable, kFormal);
 }
 
 String KoreanHanjaInformalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaInformal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kKoreanHanjaInformalTable[26] = {
+      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x5341, 0x767E,
+      0x5343,  0x96F6, 0x4E00, 0x4E8C, 0x4E09, 0x56DB, 0x4E94, 0x516D, 0x4E03,
+      0x516B,  0x4E5D, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kKoreanHanjaInformalTable, kInformal);
 }
 
 String KoreanHanjaFormalAlgorithm(int value) {
-  return list_marker_text::GetText(EListStyleType::kKoreanHanjaFormal,
-                                   AbsoluteValueForLegacyCJKAlgorithms(value));
+  static const UChar kKoreanHanjaFormalTable[26] = {
+      kKorean, 0x842C, 0x0000, 0x5104, 0x0000, 0x5146, 0x0000, 0x62FE, 0x767E,
+      0x4EDF,  0x96F6, 0x58F9, 0x8CB3, 0x53C3, 0x56DB, 0x4E94, 0x516D, 0x4E03,
+      0x516B,  0x4E5D, 0xB9C8, 0xC774, 0xB108, 0xC2A4, 0x0020, 0x0000};
+  return ToCJKIdeographic(AbsoluteValueForLegacyCJKAlgorithms(value),
+                          kKoreanHanjaFormalTable, kFormal);
 }
 
 String LowerArmenianAlgorithm(unsigned value) {
   if (value > 99999999)
     return String();
-  return list_marker_text::GetText(EListStyleType::kLowerArmenian, value);
+  const bool lower_case = false;
+  return ToArmenian(value, lower_case);
 }
 
 String UpperArmenianAlgorithm(unsigned value) {
   if (value > 99999999)
     return String();
-  return list_marker_text::GetText(EListStyleType::kUpperArmenian, value);
+  const bool upper_case = true;
+  return ToArmenian(value, upper_case);
 }
 
 // https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
