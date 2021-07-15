@@ -645,7 +645,7 @@
     },
     {
       name: "CSSModules",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathRay",
