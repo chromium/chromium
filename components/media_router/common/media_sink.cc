@@ -13,7 +13,7 @@ namespace media_router {
 MediaSink::MediaSink(const MediaSink::Id& sink_id,
                      const std::string& name,
                      SinkIconType icon_type,
-                     MediaRouteProviderId provider_id)
+                     mojom::MediaRouteProviderId provider_id)
     : sink_id_(sink_id),
       name_(name),
       icon_type_(icon_type),

@@ -280,7 +280,7 @@ struct StructTraits<media_router::mojom::MediaSinkDataView,
     return sink_internal.sink().icon_type();
   }
 
-  static media_router::MediaRouteProviderId provider_id(
+  static media_router::mojom::MediaRouteProviderId provider_id(
       const media_router::MediaSinkInternal& sink_internal) {
     return sink_internal.sink().provider_id();
   }
@@ -478,53 +478,6 @@ struct EnumTraits<media_router::mojom::RouteRequestResultCode,
       case media_router::mojom::RouteRequestResultCode::
           ROUTE_ALREADY_TERMINATED:
         *output = media_router::RouteRequestResult::ROUTE_ALREADY_TERMINATED;
-        return true;
-    }
-    return false;
-  }
-};
-
-// MediaRouteProvider
-
-template <>
-struct EnumTraits<media_router::mojom::MediaRouteProvider_Id,
-                  media_router::MediaRouteProviderId> {
-  static media_router::mojom::MediaRouteProvider_Id ToMojom(
-      media_router::MediaRouteProviderId provider_id) {
-    switch (provider_id) {
-      case media_router::MediaRouteProviderId::WIRED_DISPLAY:
-        return media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY;
-      case media_router::MediaRouteProviderId::CAST:
-        return media_router::mojom::MediaRouteProvider_Id::CAST;
-      case media_router::MediaRouteProviderId::DIAL:
-        return media_router::mojom::MediaRouteProvider_Id::DIAL;
-      case media_router::MediaRouteProviderId::ANDROID_CAF:
-        return media_router::mojom::MediaRouteProvider_Id::ANDROID_CAF;
-      case media_router::MediaRouteProviderId::TEST:
-        return media_router::mojom::MediaRouteProvider_Id::TEST;
-    }
-    NOTREACHED() << "Invalid MediaRouteProvider_Id: "
-                 << static_cast<int>(provider_id);
-    return media_router::mojom::MediaRouteProvider_Id::CAST;
-  }
-
-  static bool FromMojom(media_router::mojom::MediaRouteProvider_Id input,
-                        media_router::MediaRouteProviderId* provider_id) {
-    switch (input) {
-      case media_router::mojom::MediaRouteProvider_Id::WIRED_DISPLAY:
-        *provider_id = media_router::MediaRouteProviderId::WIRED_DISPLAY;
-        return true;
-      case media_router::mojom::MediaRouteProvider_Id::CAST:
-        *provider_id = media_router::MediaRouteProviderId::CAST;
-        return true;
-      case media_router::mojom::MediaRouteProvider_Id::DIAL:
-        *provider_id = media_router::MediaRouteProviderId::DIAL;
-        return true;
-      case media_router::mojom::MediaRouteProvider_Id::ANDROID_CAF:
-        *provider_id = media_router::MediaRouteProviderId::ANDROID_CAF;
-        return true;
-      case media_router::mojom::MediaRouteProvider_Id::TEST:
-        *provider_id = media_router::MediaRouteProviderId::TEST;
         return true;
     }
     return false;

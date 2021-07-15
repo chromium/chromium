@@ -13,6 +13,7 @@
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/mdns/dns_sd_delegate.h"
 #include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/ip_address.h"
 #include "net/base/url_util.h"
@@ -72,7 +73,7 @@ CreateCastMediaSinkResult CreateCastMediaSink(const DnsSdService& service,
   std::string sink_id = base::StringPrintf("cast:<%s>", processed_uuid.c_str());
   MediaSink sink(sink_id, friendly_name,
                  GetCastSinkIconType(extra_data.capabilities),
-                 MediaRouteProviderId::CAST);
+                 mojom::MediaRouteProviderId::CAST);
 
   cast_sink->set_sink(sink);
   cast_sink->set_cast_data(extra_data);

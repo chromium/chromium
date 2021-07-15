@@ -24,6 +24,7 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_helper.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_router/common/issue.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/browser_thread.h"
@@ -89,7 +90,8 @@ std::unique_ptr<views::View> CreatePrimaryIconForSink(const UIMediaSink& sink) {
 }
 
 bool IsIncompatibleDialSink(const UIMediaSink& sink) {
-  return sink.provider == MediaRouteProviderId::DIAL && sink.cast_modes.empty();
+  return sink.provider == mojom::MediaRouteProviderId::DIAL &&
+         sink.cast_modes.empty();
 }
 
 std::u16string GetStatusTextForSink(const UIMediaSink& sink) {

@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,14 +29,14 @@ class CastDialogSinkButtonTest : public ChromeViewsTestBase {
 };
 
 TEST_F(CastDialogSinkButtonTest, SetTitleLabel) {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.friendly_name = u"sink name";
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
   EXPECT_EQ(sink.friendly_name, button.title()->GetText());
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForAvailableSink) {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.state = UIMediaSinkState::AVAILABLE;
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_AVAILABLE),
@@ -52,7 +53,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForAvailableSink) {
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.state = UIMediaSinkState::CONNECTING;
   CastDialogSinkButton button1(views::Button::PressedCallback(), sink);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_MEDIA_ROUTER_SINK_CONNECTING),
@@ -71,7 +72,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForActiveSink) {
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForSinkWithIssue) {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.issue = Issue(IssueInfo("issue", IssueInfo::Action::DISMISS,
                                IssueInfo::Severity::WARNING));
   // Issue info should be the status text regardless of the sink state.
@@ -86,7 +87,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForSinkWithIssue) {
 }
 
 TEST_F(CastDialogSinkButtonTest, SetStatusLabelForDialSinks) {
-  UIMediaSink sink{MediaRouteProviderId::DIAL};
+  UIMediaSink sink{mojom::MediaRouteProviderId::DIAL};
   sink.state = UIMediaSinkState::AVAILABLE;
   sink.cast_modes = {MediaCastMode::PRESENTATION};
   CastDialogSinkButton button1(views::Button::PressedCallback(), sink);
@@ -112,7 +113,7 @@ TEST_F(CastDialogSinkButtonTest, SetStatusLabelForDialSinks) {
 }
 
 TEST_F(CastDialogSinkButtonTest, OverrideStatusText) {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   CastDialogSinkButton button(views::Button::PressedCallback(), sink);
   std::u16string status0 = u"status0";
   std::u16string status1 = u"status1";

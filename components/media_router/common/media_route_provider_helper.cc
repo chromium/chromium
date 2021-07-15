@@ -8,6 +8,7 @@
 
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom.h"
 
 constexpr const char kWiredDisplay[] = "WIRED_DISPLAY";
 constexpr const char kDial[] = "DIAL";
@@ -17,17 +18,17 @@ constexpr const char kTest[] = "TEST";
 
 namespace media_router {
 
-const char* ProviderIdToString(MediaRouteProviderId provider_id) {
+const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id) {
   switch (provider_id) {
-    case WIRED_DISPLAY:
+    case mojom::MediaRouteProviderId::WIRED_DISPLAY:
       return kWiredDisplay;
-    case CAST:
+    case mojom::MediaRouteProviderId::CAST:
       return kCast;
-    case DIAL:
+    case mojom::MediaRouteProviderId::DIAL:
       return kDial;
-    case ANDROID_CAF:
+    case mojom::MediaRouteProviderId::ANDROID_CAF:
       return kAndroidCaf;
-    case TEST:
+    case mojom::MediaRouteProviderId::TEST:
       return kTest;
   }
 
@@ -35,18 +36,18 @@ const char* ProviderIdToString(MediaRouteProviderId provider_id) {
   return "Unknown provider_id";
 }
 
-absl::optional<MediaRouteProviderId> ProviderIdFromString(
+absl::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
     base::StringPiece provider_id) {
   if (provider_id == kWiredDisplay) {
-    return MediaRouteProviderId::WIRED_DISPLAY;
+    return mojom::MediaRouteProviderId::WIRED_DISPLAY;
   } else if (provider_id == kCast) {
-    return MediaRouteProviderId::CAST;
+    return mojom::MediaRouteProviderId::CAST;
   } else if (provider_id == kDial) {
-    return MediaRouteProviderId::DIAL;
+    return mojom::MediaRouteProviderId::DIAL;
   } else if (provider_id == kAndroidCaf) {
-    return MediaRouteProviderId::ANDROID_CAF;
+    return mojom::MediaRouteProviderId::ANDROID_CAF;
   } else if (provider_id == kTest) {
-    return MediaRouteProviderId::TEST;
+    return mojom::MediaRouteProviderId::TEST;
   } else {
     return absl::nullopt;
   }

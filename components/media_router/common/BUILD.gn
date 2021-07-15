@@ -31,7 +31,7 @@ static_library("common") {
     "route_request_result.h",
   ]
 
-  deps = []
+  deps = [ "mojom:media_route_provider_id" ]
 
   if (!is_android) {
     sources += [
@@ -55,6 +55,7 @@ static_library("test_support") {
     "//base",
     "//base/test:test_support",
     "//components/media_router/common/mojom:logger",
+    "//components/media_router/common/mojom:media_route_provider_id",
   ]
   public_deps = [ ":common" ]
   sources = [
@@ -78,6 +79,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/media_router/common/mojom:media_route_provider_id",
     "//testing/gmock",
     "//testing/gtest",
   ]

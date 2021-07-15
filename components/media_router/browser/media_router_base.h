@@ -53,7 +53,7 @@ class MediaRouterBase : public MediaRouter {
 #endif  // !defined(OS_ANDROID)
   base::Value GetState() const override;
   void GetProviderState(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const override;
 
  protected:

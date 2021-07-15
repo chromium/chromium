@@ -442,8 +442,8 @@ class CastActivityManagerTest : public testing::Test,
   void ExpectSingleRouteUpdate() {
     updated_route_ = absl::nullopt;
     EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(MediaRouteProviderId::CAST, ElementsAre(_),
-                                route_query_, IsEmpty()))
+                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
+                                ElementsAre(_), route_query_, IsEmpty()))
         .WillOnce(WithArg<1>(
             [this](const auto& routes) { updated_route_ = routes[0]; }));
   }
@@ -452,7 +452,7 @@ class CastActivityManagerTest : public testing::Test,
   void ExpectEmptyRouteUpdate() {
     updated_route_ = absl::nullopt;
     EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(MediaRouteProviderId::CAST, IsEmpty(),
+                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty(),
                                 route_query_, IsEmpty()))
         .Times(1);
   }

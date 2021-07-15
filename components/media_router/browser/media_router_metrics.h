@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/media_router.mojom-forward.h"
 #include "components/media_router/common/route_request_result.h"
 #include "media/base/container_names.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -216,18 +217,18 @@ class MediaRouterMetrics {
   // histograms.
   static void RecordCreateRouteResultCode(
       RouteRequestResult::ResultCode result_code,
-      absl::optional<MediaRouteProviderId> provider_id = absl::nullopt);
+      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a join route request to a Media Route Provider.
   static void RecordJoinRouteResultCode(
       RouteRequestResult::ResultCode result_code,
-      absl::optional<MediaRouteProviderId> provider_id = absl::nullopt);
+      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 
   // Records the outcome of a call to terminateRoute() on a Media Route
   // Provider.
   static void RecordMediaRouteProviderTerminateRoute(
       RouteRequestResult::ResultCode result_code,
-      absl::optional<MediaRouteProviderId> provider_id = absl::nullopt);
+      absl::optional<mojom::MediaRouteProviderId> provider_id = absl::nullopt);
 };
 
 }  // namespace media_router

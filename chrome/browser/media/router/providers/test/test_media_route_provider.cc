@@ -44,8 +44,8 @@ bool Is1UAPresentationSource(const std::string& source_urn) {
 
 }  // namespace
 
-const MediaRouteProviderId TestMediaRouteProvider::kProviderId =
-    MediaRouteProviderId::TEST;
+const mojom::MediaRouteProviderId TestMediaRouteProvider::kProviderId =
+    mojom::MediaRouteProviderId::TEST;
 
 TestMediaRouteProvider::TestMediaRouteProvider(
     mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,

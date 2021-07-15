@@ -64,9 +64,9 @@ base::Value MediaRouterDesktop::GetState() const {
 }
 
 void MediaRouterDesktop::GetProviderState(
-    MediaRouteProviderId provider_id,
+    mojom::MediaRouteProviderId provider_id,
     mojom::MediaRouteProvider::GetStateCallback callback) const {
-  if (provider_id == MediaRouteProviderId::CAST &&
+  if (provider_id == mojom::MediaRouteProviderId::CAST &&
       CastMediaRouteProviderEnabled()) {
     media_route_providers_.at(provider_id)->GetState(std::move(callback));
   } else {
@@ -74,7 +74,7 @@ void MediaRouterDesktop::GetProviderState(
   }
 }
 
-absl::optional<MediaRouteProviderId>
+absl::optional<mojom::MediaRouteProviderId>
 MediaRouterDesktop::GetProviderIdForPresentation(
     const std::string& presentation_id) {
   // TODO(takumif): Once the Android Media Router also uses MediaRouterMojoImpl,
@@ -82,7 +82,7 @@ MediaRouterDesktop::GetProviderIdForPresentation(
   if (presentation_id == kAutoJoinPresentationId ||
       base::StartsWith(presentation_id, kCastPresentationIdPrefix,
                        base::CompareCase::SENSITIVE)) {
-    return MediaRouteProviderId::CAST;
+    return mojom::MediaRouteProviderId::CAST;
   }
   return MediaRouterMojoImpl::GetProviderIdForPresentation(presentation_id);
 }
@@ -107,7 +107,7 @@ MediaRouterDesktop::MediaRouterDesktop(content::BrowserContext* context,
 }
 
 void MediaRouterDesktop::RegisterMediaRouteProvider(
-    MediaRouteProviderId provider_id,
+    mojom::MediaRouteProviderId provider_id,
     mojo::PendingRemote<mojom::MediaRouteProvider>
         media_route_provider_remote) {
   mojo::Remote<mojom::MediaRouteProvider> bound_remote(
@@ -121,7 +121,7 @@ void MediaRouterDesktop::RegisterMediaRouteProvider(
 }
 
 void MediaRouterDesktop::OnSinksReceived(
-    MediaRouteProviderId provider_id,
+    mojom::MediaRouteProviderId provider_id,
     const std::string& media_source,
     const std::vector<MediaSinkInternal>& internal_sinks,
     const std::vector<url::Origin>& origins) {
@@ -159,7 +159,7 @@ void MediaRouterDesktop::InitializeWiredDisplayMediaRouteProvider() {
   wired_display_provider_ = std::make_unique<WiredDisplayMediaRouteProvider>(
       wired_display_provider_remote.InitWithNewPipeAndPassReceiver(),
       std::move(media_router_remote), Profile::FromBrowserContext(context()));
-  RegisterMediaRouteProvider(MediaRouteProviderId::WIRED_DISPLAY,
+  RegisterMediaRouteProvider(mojom::MediaRouteProviderId::WIRED_DISPLAY,
                              std::move(wired_display_provider_remote));
 }
 
@@ -184,7 +184,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
               media_sink_service_->cast_app_discovery_service(),
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
-  RegisterMediaRouteProvider(MediaRouteProviderId::CAST,
+  RegisterMediaRouteProvider(mojom::MediaRouteProviderId::CAST,
                              std::move(cast_provider_remote));
 }
 
@@ -205,7 +205,7 @@ void MediaRouterDesktop::InitializeDialMediaRouteProvider() {
               std::move(media_router_remote), dial_media_sink_service,
               GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));
-  RegisterMediaRouteProvider(MediaRouteProviderId::DIAL,
+  RegisterMediaRouteProvider(mojom::MediaRouteProviderId::DIAL,
                              std::move(dial_provider_remote));
 }
 

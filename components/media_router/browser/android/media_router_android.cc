@@ -268,10 +268,10 @@ void MediaRouterAndroid::OnRouteCreated(const MediaRoute::Id& route_id,
     observer.OnRoutesUpdated(active_routes_, std::vector<MediaRoute::Id>());
   if (is_local) {
     MediaRouterMetrics::RecordCreateRouteResultCode(
-        result->result_code(), MediaRouteProviderId::ANDROID_CAF);
+        result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
   } else {
     MediaRouterMetrics::RecordJoinRouteResultCode(
-        result->result_code(), MediaRouteProviderId::ANDROID_CAF);
+        result->result_code(), mojom::MediaRouteProviderId::ANDROID_CAF);
   }
 }
 
@@ -304,7 +304,7 @@ void MediaRouterAndroid::OnRouteTerminated(const MediaRoute::Id& route_id) {
     }
   }
   MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
-      RouteRequestResult::OK, MediaRouteProviderId::ANDROID_CAF);
+      RouteRequestResult::OK, mojom::MediaRouteProviderId::ANDROID_CAF);
   RemoveRoute(route_id);
 }
 
@@ -369,7 +369,8 @@ void MediaRouterAndroid::OnRouteRequestError(
     const std::string& error_text,
     int route_request_id,
     base::OnceCallback<void(RouteRequestResult::ResultCode,
-                            absl::optional<MediaRouteProviderId>)> callback) {
+                            absl::optional<mojom::MediaRouteProviderId>)>
+        callback) {
   MediaRouteRequest* request = route_requests_.Lookup(route_request_id);
   if (!request)
     return;
@@ -381,7 +382,7 @@ void MediaRouterAndroid::OnRouteRequestError(
 
   route_requests_.Remove(route_request_id);
   std::move(callback).Run(result->result_code(),
-                          MediaRouteProviderId::ANDROID_CAF);
+                          mojom::MediaRouteProviderId::ANDROID_CAF);
 }
 
 }  // namespace media_router

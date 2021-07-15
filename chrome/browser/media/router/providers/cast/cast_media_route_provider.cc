@@ -97,7 +97,7 @@ void CastMediaRouteProvider::Init(
   // TODO(crbug.com/816702): This needs to be set properly according to sinks
   // discovered.
   media_router_->OnSinkAvailabilityUpdated(
-      MediaRouteProviderId::CAST,
+      mojom::MediaRouteProviderId::CAST,
       mojom::MediaRouter::SinkAvailability::PER_SOURCE);
 }
 
@@ -324,8 +324,8 @@ void CastMediaRouteProvider::GetState(GetStateCallback callback) {
 void CastMediaRouteProvider::OnSinkQueryUpdated(
     const MediaSource::Id& source_id,
     const std::vector<MediaSinkInternal>& sinks) {
-  media_router_->OnSinksReceived(MediaRouteProviderId::CAST, source_id, sinks,
-                                 GetOrigins(source_id));
+  media_router_->OnSinksReceived(mojom::MediaRouteProviderId::CAST, source_id,
+                                 sinks, GetOrigins(source_id));
 }
 
 void CastMediaRouteProvider::BroadcastMessageToSinks(

@@ -25,7 +25,7 @@ namespace media_router {
 // The Test MediaRouteProvider class is used for integration browser test.
 class TestMediaRouteProvider : public mojom::MediaRouteProvider {
  public:
-  static const MediaRouteProviderId kProviderId;
+  static const mojom::MediaRouteProviderId kProviderId;
   TestMediaRouteProvider(
       mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
       mojo::PendingRemote<mojom::MediaRouter> media_router);

@@ -44,7 +44,7 @@ constexpr char16_t kSinkFriendlyName16[] = u"Nest Hub";
 
 UIMediaSink CreateMediaSink(
     UIMediaSinkState state = UIMediaSinkState::AVAILABLE) {
-  UIMediaSink sink{media_router::MediaRouteProviderId::CAST};
+  UIMediaSink sink{media_router::mojom::MediaRouteProviderId::CAST};
   sink.friendly_name = kSinkFriendlyName16;
   sink.id = kSinkId;
   sink.state = state;
@@ -291,7 +291,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
 
   // Clicking on available or connected CAST sinks will start casting.
   auto cast_connected_sink = CreateMediaSink(UIMediaSinkState::CONNECTED);
-  cast_connected_sink.provider = media_router::MediaRouteProviderId::CAST;
+  cast_connected_sink.provider =
+      media_router::mojom::MediaRouteProviderId::CAST;
   view_->OnModelUpdated(
       CreateModelWithSinks({CreateMediaSink(), cast_connected_sink}));
   EXPECT_CALL(*cast_controller_ptr,
@@ -305,7 +306,8 @@ TEST_F(MediaNotificationDeviceSelectorViewTest,
   // TODO(crbug.com/1206830): change test cases after DIAL MRP supports
   // launching session on a connected sink.
   auto dial_connected_sink = CreateMediaSink(UIMediaSinkState::CONNECTED);
-  dial_connected_sink.provider = media_router::MediaRouteProviderId::DIAL;
+  dial_connected_sink.provider =
+      media_router::mojom::MediaRouteProviderId::DIAL;
   dial_connected_sink.route =
       media_router::MediaRoute("routeId1", media_router::MediaSource("source1"),
                                "sinkId1", "description", true, true);

@@ -19,6 +19,7 @@
 #include "components/cast_channel/logger.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/net_log/chrome_net_log.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/backoff_entry.h"
@@ -41,7 +42,7 @@ MediaSinkInternal CreateCastSinkFromDialSink(
   // Note that the real sink icon will be determined later using information
   // from the opened cast channel.
   MediaSink sink(sink_id, friendly_name, SinkIconType::CAST,
-                 MediaRouteProviderId::CAST);
+                 mojom::MediaRouteProviderId::CAST);
 
   CastSinkExtraData extra_data;
   extra_data.ip_endpoint =
@@ -638,12 +639,12 @@ void CastMediaSinkServiceImpl::OnChannelOpenFailed(
     return;
 
   if (logger_.is_bound()) {
-    logger_->LogError(mojom::LogCategory::kDiscovery, kLoggerComponent,
-                      base::StrCat({"Failed to open the channel. IP endpoint: ",
-                                    ip_endpoint.ToString(), ". channel_id: ",
-                                    base::NumberToString(
-                                        existing_sink->cast_channel_id())}),
-                      sink.sink().id(), "", "");
+    logger_->LogError(
+        mojom::LogCategory::kDiscovery, kLoggerComponent,
+        base::StrCat({"Failed to open the channel. IP endpoint: ",
+                      ip_endpoint.ToString(), ". channel_id: ",
+                      base::NumberToString(existing_sink->cast_channel_id())}),
+        sink.sink().id(), "", "");
   }
   RemoveSink(sink);
 }

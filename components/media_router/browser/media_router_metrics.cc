@@ -13,6 +13,7 @@
 #include "base/time/default_clock.h"
 #include "components/media_router/common/media_sink.h"
 #include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -29,21 +30,21 @@ constexpr char kHistogramProviderTerminateRouteResult[] =
 
 std::string GetHistogramNameForProvider(
     const std::string& base_name,
-    absl::optional<MediaRouteProviderId> provider_id) {
+    absl::optional<mojom::MediaRouteProviderId> provider_id) {
   if (!provider_id) {
     return base_name;
   }
   switch (*provider_id) {
-    case MediaRouteProviderId::CAST:
+    case mojom::MediaRouteProviderId::CAST:
       return base_name + ".Cast";
-    case MediaRouteProviderId::DIAL:
+    case mojom::MediaRouteProviderId::DIAL:
       return base_name + ".DIAL";
-    case MediaRouteProviderId::WIRED_DISPLAY:
+    case mojom::MediaRouteProviderId::WIRED_DISPLAY:
       return base_name + ".WiredDisplay";
-    case MediaRouteProviderId::ANDROID_CAF:
+    case mojom::MediaRouteProviderId::ANDROID_CAF:
       return base_name + ".AndroidCaf";
     // The rest use the base histogram name.
-    case MediaRouteProviderId::TEST:
+    case mojom::MediaRouteProviderId::TEST:
       return base_name;
   }
 }
@@ -243,7 +244,7 @@ void MediaRouterMetrics::RecordCloudPrefAtInit(bool enabled) {
 // static
 void MediaRouterMetrics::RecordCreateRouteResultCode(
     RouteRequestResult::ResultCode result_code,
-    absl::optional<MediaRouteProviderId> provider_id) {
+    absl::optional<mojom::MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderCreateRouteResult,
@@ -254,7 +255,7 @@ void MediaRouterMetrics::RecordCreateRouteResultCode(
 // static
 void MediaRouterMetrics::RecordJoinRouteResultCode(
     RouteRequestResult::ResultCode result_code,
-    absl::optional<MediaRouteProviderId> provider_id) {
+    absl::optional<mojom::MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderJoinRouteResult,
@@ -265,7 +266,7 @@ void MediaRouterMetrics::RecordJoinRouteResultCode(
 // static
 void MediaRouterMetrics::RecordMediaRouteProviderTerminateRoute(
     RouteRequestResult::ResultCode result_code,
-    absl::optional<MediaRouteProviderId> provider_id) {
+    absl::optional<mojom::MediaRouteProviderId> provider_id) {
   DCHECK_LT(result_code, RouteRequestResult::ResultCode::TOTAL_COUNT);
   base::UmaHistogramEnumeration(
       GetHistogramNameForProvider(kHistogramProviderTerminateRouteResult,

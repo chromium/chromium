@@ -59,11 +59,11 @@ void TestRecordBooleanMetric(base::RepeatingCallback<void(bool)> recording_cb,
 // histogram specific to the provider.
 void TestRouteResultCodeHistogramsWithProviders(
     base::RepeatingCallback<void(RouteRequestResult::ResultCode,
-                                 absl::optional<MediaRouteProviderId>)>
+                                 absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
-    MediaRouteProviderId provider1,
+    mojom::MediaRouteProviderId provider1,
     const std::string& histogram_provider1,
-    MediaRouteProviderId provider2,
+    mojom::MediaRouteProviderId provider2,
     const std::string& histogram_provider2) {
   base::HistogramTester tester;
   tester.ExpectTotalCount(histogram_provider1, 0);
@@ -92,17 +92,18 @@ void TestRouteResultCodeHistogramsWithProviders(
 
 void TestRouteResultCodeHistograms(
     base::RepeatingCallback<void(RouteRequestResult::ResultCode,
-                                 absl::optional<MediaRouteProviderId>)>
+                                 absl::optional<mojom::MediaRouteProviderId>)>
         record_cb,
     const std::string& base_histogram_name) {
   TestRouteResultCodeHistogramsWithProviders(
-      record_cb, MediaRouteProviderId::WIRED_DISPLAY,
-      base_histogram_name + ".WiredDisplay", MediaRouteProviderId::DIAL,
+      record_cb, mojom::MediaRouteProviderId::WIRED_DISPLAY,
+      base_histogram_name + ".WiredDisplay", mojom::MediaRouteProviderId::DIAL,
       base_histogram_name + ".DIAL");
 
   TestRouteResultCodeHistogramsWithProviders(
-      record_cb, MediaRouteProviderId::CAST, base_histogram_name + ".Cast",
-      MediaRouteProviderId::ANDROID_CAF, base_histogram_name + ".AndroidCaf");
+      record_cb, mojom::MediaRouteProviderId::CAST,
+      base_histogram_name + ".Cast", mojom::MediaRouteProviderId::ANDROID_CAF,
+      base_histogram_name + ".AndroidCaf");
 }
 
 }  // namespace

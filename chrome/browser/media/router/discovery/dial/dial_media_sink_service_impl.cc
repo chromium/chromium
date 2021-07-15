@@ -12,6 +12,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 
 namespace media_router {
 
@@ -218,7 +219,7 @@ void DialMediaSinkServiceImpl::OnDeviceDescriptionAvailable(
   MediaSink::Id sink_id =
       base::StringPrintf("dial:<%s>", processed_uuid.c_str());
   MediaSink sink(sink_id, description_data.friendly_name, SinkIconType::GENERIC,
-                 MediaRouteProviderId::DIAL);
+                 mojom::MediaRouteProviderId::DIAL);
   DialSinkExtraData extra_data;
   extra_data.app_url = description_data.app_url;
   extra_data.model_name = description_data.model_name;

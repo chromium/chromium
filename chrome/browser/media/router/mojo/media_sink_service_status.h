@@ -31,7 +31,7 @@ class MediaSinkServiceStatus {
 
   // Called when a media sink service reports available sinks for an app to MR.
   void UpdateAvailableSinks(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       const std::string& media_source,
       const std::vector<MediaSinkInternal>& available_sinks);
 

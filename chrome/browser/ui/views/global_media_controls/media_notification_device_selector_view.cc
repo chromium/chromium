@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_item.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
@@ -406,7 +407,7 @@ void MediaNotificationDeviceSelectorView::StartCastSession(
   if (sink.state == media_router::UIMediaSinkState::AVAILABLE) {
     DoStartCastSession(sink);
   } else if (sink.state == media_router::UIMediaSinkState::CONNECTED) {
-    if (sink.provider == media_router::MediaRouteProviderId::DIAL) {
+    if (sink.provider == media_router::mojom::MediaRouteProviderId::DIAL) {
       DCHECK(sink.route);
       cast_controller_->StopCasting(sink.route->media_route_id());
     } else {

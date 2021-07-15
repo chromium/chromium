@@ -176,7 +176,7 @@ base::Value MediaRouterBase::GetState() const {
 }
 
 void MediaRouterBase::GetProviderState(
-    MediaRouteProviderId provider_id,
+    mojom::MediaRouteProviderId provider_id,
     mojom::MediaRouteProvider::GetStateCallback callback) const {
   NOTREACHED() << "Should not invoke MediaRouterBase::GetProviderState()";
   std::move(callback).Run(mojom::ProviderStatePtr());

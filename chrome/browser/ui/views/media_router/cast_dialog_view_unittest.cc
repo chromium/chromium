@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -40,7 +41,7 @@ namespace media_router {
 namespace {
 
 UIMediaSink CreateAvailableSink() {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.id = "sink_available";
   sink.state = UIMediaSinkState::AVAILABLE;
   sink.cast_modes = {TAB_MIRROR};
@@ -48,7 +49,7 @@ UIMediaSink CreateAvailableSink() {
 }
 
 UIMediaSink CreateConnectedSink() {
-  UIMediaSink sink{MediaRouteProviderId::CAST};
+  UIMediaSink sink{mojom::MediaRouteProviderId::CAST};
   sink.id = "sink_connected";
   sink.state = UIMediaSinkState::CONNECTED;
   sink.cast_modes = {TAB_MIRROR};

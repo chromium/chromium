@@ -154,10 +154,10 @@ void MediaRouterAndroidBridge::OnSinksReceived(
     ScopedJavaLocalRef<jstring> jsink_name =
         Java_BrowserMediaRouter_getSinkName(env, java_media_router_,
                                             jsource_urn, i);
-    sinks_converted.push_back(
-        MediaSink(ConvertJavaStringToUTF8(env, jsink_urn.obj()),
-                  ConvertJavaStringToUTF8(env, jsink_name.obj()),
-                  SinkIconType::GENERIC, MediaRouteProviderId::ANDROID_CAF));
+    sinks_converted.push_back(MediaSink(
+        ConvertJavaStringToUTF8(env, jsink_urn.obj()),
+        ConvertJavaStringToUTF8(env, jsink_name.obj()), SinkIconType::GENERIC,
+        mojom::MediaRouteProviderId::ANDROID_CAF));
   }
   native_media_router_->OnSinksReceived(
       ConvertJavaStringToUTF8(env, jsource_urn), sinks_converted);

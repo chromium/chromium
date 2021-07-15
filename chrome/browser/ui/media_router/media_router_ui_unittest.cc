@@ -551,19 +551,19 @@ TEST_F(MediaRouterViewsUITest, SortedSinks) {
 TEST_F(MediaRouterViewsUITest, SortSinksByIconType) {
   NotifyUiOnResultsUpdated(
       {{MediaSink{"id1", "B sink", SinkIconType::CAST_AUDIO_GROUP,
-                  MediaRouteProviderId::CAST},
+                  mojom::MediaRouteProviderId::CAST},
         {}},
        {MediaSink{"id2", "sink", SinkIconType::GENERIC,
-                  MediaRouteProviderId::WIRED_DISPLAY},
+                  mojom::MediaRouteProviderId::WIRED_DISPLAY},
         {}},
        {MediaSink{"id3", "A sink", SinkIconType::CAST_AUDIO_GROUP,
-                  MediaRouteProviderId::CAST},
+                  mojom::MediaRouteProviderId::CAST},
         {}},
        {MediaSink{"id4", "sink", SinkIconType::CAST_AUDIO,
-                  MediaRouteProviderId::CAST},
+                  mojom::MediaRouteProviderId::CAST},
         {}},
        {MediaSink{"id5", "sink", SinkIconType::CAST,
-                  MediaRouteProviderId::CAST},
+                  mojom::MediaRouteProviderId::CAST},
         {}}});
 
   // The sorted order is CAST, CAST_AUDIO_GROUP "A", CAST_AUDIO_GROUP "B",

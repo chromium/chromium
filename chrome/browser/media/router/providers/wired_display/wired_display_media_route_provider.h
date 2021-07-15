@@ -37,7 +37,7 @@ class WiredDisplayPresentationReceiver;
 class WiredDisplayMediaRouteProvider : public mojom::MediaRouteProvider,
                                        public display::DisplayObserver {
  public:
-  static const MediaRouteProviderId kProviderId;
+  static const mojom::MediaRouteProviderId kProviderId;
 
   static std::string GetSinkIdForDisplay(const display::Display& display);
 

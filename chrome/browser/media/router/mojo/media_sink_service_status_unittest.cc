@@ -68,7 +68,7 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringEmptySinks) {
   std::vector<MediaSinkInternal> available_sinks = {dial_sink1, dial_sink2};
 
   MediaSinkServiceStatus status;
-  status.UpdateAvailableSinks(MediaRouteProviderId::DIAL, "dial:youtube",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::DIAL, "dial:youtube",
                               available_sinks);
 
   std::string str = status.GetStatusAsJSONString();
@@ -151,9 +151,9 @@ TEST(MediaSinkServiceStatusTest, TestGetStatusAsJSONStringMultipleProviders) {
   MediaSinkServiceStatus status;
   status.UpdateDiscoveredSinks("dial", sinks1);
   status.UpdateDiscoveredSinks("cast", sinks2);
-  status.UpdateAvailableSinks(MediaRouteProviderId::DIAL, "dial:youtube",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::DIAL, "dial:youtube",
                               sinks1);
-  status.UpdateAvailableSinks(MediaRouteProviderId::CAST, "cast:netflix",
+  status.UpdateAvailableSinks(mojom::MediaRouteProviderId::CAST, "cast:netflix",
                               sinks2);
 
   std::string str = status.GetStatusAsJSONString();

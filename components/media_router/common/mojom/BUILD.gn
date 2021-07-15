@@ -22,12 +22,17 @@ mojom("media_controller") {
   ]
 }
 
+mojom("media_route_provider_id") {
+  sources = [ "media_route_provider_id.mojom" ]
+}
+
 mojom("media_router") {
   sources = [ "media_router.mojom" ]
 
   public_deps = [
     ":logger",
     ":media_controller",
+    ":media_route_provider_id",
     "//components/mirroring/mojom:host",
     "//media/mojo/mojom:remoting",
     "//mojo/public/mojom/base",
@@ -65,7 +70,7 @@ mojom("media_router") {
         },
         {
           mojom = "media_router.mojom.MediaRouteProvider.Id"
-          cpp = "::media_router::MediaRouteProviderId"
+          cpp = "::media_router::mojom::MediaRouteProviderId"
         },
         {
           mojom = "media_router.mojom.MediaSink"

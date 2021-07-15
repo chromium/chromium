@@ -214,9 +214,9 @@ class MediaRouterMojoTest : public ::testing::Test {
 
   // Notify media router that the provider provides a route or a sink.
   // Need to be called after the provider is registered.
-  void ProvideTestRoute(MediaRouteProviderId provider_id,
+  void ProvideTestRoute(mojom::MediaRouteProviderId provider_id,
                         const MediaRoute::Id& route_id);
-  void ProvideTestSink(MediaRouteProviderId provider_id,
+  void ProvideTestSink(mojom::MediaRouteProviderId provider_id,
                        const MediaSink::Id& sink_id);
 
   // Register |mock_cast_provider_| or |mock_wired_display_provider_| with
@@ -246,7 +246,7 @@ class MediaRouterMojoTest : public ::testing::Test {
   // Helper method for RegisterCastProvider() and
   // RegisterWiredDisplayProvider().
   void RegisterMediaRouteProvider(mojom::MediaRouteProvider* provider,
-                                  MediaRouteProviderId provider_id);
+                                  mojom::MediaRouteProviderId provider_id);
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;

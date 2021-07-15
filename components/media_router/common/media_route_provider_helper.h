@@ -6,24 +6,13 @@
 #define COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_ROUTE_PROVIDER_HELPER_H_
 
 #include "base/strings/string_piece_forward.h"
+#include "components/media_router/common/mojom/media_route_provider_id.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media_router {
 
-// Each MediaRouteProvider is associated with a unique ID. This enum must be
-// kept in sync with mojom::MediaRouteProvider::Id, except for |UNKNOWN|, which
-// is not present in the Mojo enum.
-// FIXME: Can we just use the mojo enum instead?
-enum MediaRouteProviderId {
-  WIRED_DISPLAY,
-  CAST,
-  DIAL,
-  ANDROID_CAF,
-  TEST,
-};
-
-const char* ProviderIdToString(MediaRouteProviderId provider_id);
-absl::optional<MediaRouteProviderId> ProviderIdFromString(
+const char* ProviderIdToString(mojom::MediaRouteProviderId provider_id);
+absl::optional<mojom::MediaRouteProviderId> ProviderIdFromString(
     base::StringPiece provider_id);
 
 }  // namespace media_router

@@ -10,6 +10,7 @@
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/media_route_provider_helper.h"
 #include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,7 +33,7 @@ MATCHER_P(CastMediaSourcesEqual, expected, "") {
 
 MediaSinkInternal CreateSink(const std::string& id) {
   MediaSink sink{id, "Sink Name", SinkIconType::CAST,
-                 MediaRouteProviderId::CAST};
+                 mojom::MediaRouteProviderId::CAST};
   return MediaSinkInternal{sink, CastSinkExtraData{}};
 }
 

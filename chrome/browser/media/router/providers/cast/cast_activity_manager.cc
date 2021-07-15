@@ -771,8 +771,8 @@ void CastActivityManager::NotifyOnRoutesUpdated(
     const std::vector<MediaRoute>& routes) {
   // Note: joinable_route_ids is empty as we are deprecating the join feature
   // in the Harmony UI.
-  media_router_->OnRoutesUpdated(MediaRouteProviderId::CAST, routes, source_id,
-                                 std::vector<MediaRoute::Id>());
+  media_router_->OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, routes,
+                                 source_id, std::vector<MediaRoute::Id>());
 }
 
 void CastActivityManager::HandleLaunchSessionResponse(

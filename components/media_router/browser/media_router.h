@@ -202,7 +202,7 @@ class MediaRouter : public KeyedService {
   // Includes details about routes/sessions owned by the MRP.
   // Used by chrome://media-router-internals.
   virtual void GetProviderState(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const = 0;
 
  private:

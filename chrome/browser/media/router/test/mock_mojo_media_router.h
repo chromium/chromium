@@ -22,27 +22,27 @@ class MockMojoMediaRouter : public MockMediaRouter, public mojom::MediaRouter {
 
   // mojom::MediaRouter overrides:
   void RegisterMediaRouteProvider(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       mojo::PendingRemote<mojom::MediaRouteProvider> provider_remote) override {
     RegisterMediaRouteProviderInternal(provider_id, provider_remote);
   }
   MOCK_METHOD2(
       RegisterMediaRouteProviderInternal,
-      void(MediaRouteProviderId provider_id,
+      void(mojom::MediaRouteProviderId provider_id,
            mojo::PendingRemote<mojom::MediaRouteProvider>& provider_remote));
   MOCK_METHOD1(OnIssue, void(const IssueInfo& issue));
   MOCK_METHOD4(OnSinksReceived,
-               void(MediaRouteProviderId provider_id,
+               void(mojom::MediaRouteProviderId provider_id,
                     const std::string& media_source,
                     const std::vector<MediaSinkInternal>& internal_sinks,
                     const std::vector<url::Origin>& origins));
   MOCK_METHOD4(OnRoutesUpdated,
-               void(MediaRouteProviderId provider_id,
+               void(mojom::MediaRouteProviderId provider_id,
                     const std::vector<MediaRoute>& routes,
                     const std::string& media_source,
                     const std::vector<std::string>& joinable_route_ids));
   MOCK_METHOD2(OnSinkAvailabilityUpdated,
-               void(MediaRouteProviderId provider_id,
+               void(mojom::MediaRouteProviderId provider_id,
                     mojom::MediaRouter::SinkAvailability availability));
   MOCK_METHOD2(OnPresentationConnectionStateChanged,
                void(const std::string& route_id,

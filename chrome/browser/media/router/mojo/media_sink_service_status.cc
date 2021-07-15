@@ -128,9 +128,11 @@ void MediaSinkServiceStatus::UpdateDiscoveredSinks(
 }
 
 void MediaSinkServiceStatus::UpdateAvailableSinks(
-    MediaRouteProviderId provider_id,
+    mojom::MediaRouteProviderId provider_id,
     const std::string& media_source,
     const std::vector<MediaSinkInternal>& available_sinks) {
+  // TODO(takumif): It'd be safer and more efficient to make use
+  // pair<MediaRouteProviderId, string> than a serialized "id:name" string.
   std::string key =
       base::StrCat({ProviderIdToString(provider_id), ":", media_source});
   available_sinks_.Put(key, available_sinks);

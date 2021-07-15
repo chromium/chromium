@@ -442,7 +442,7 @@ TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   EXPECT_CALL(mock_sink_service_,
               DoStartMonitoringAvailableSinksForApp("YouTube"));
   EXPECT_CALL(mock_router_,
-              OnSinksReceived(MediaRouteProviderId::DIAL, youtube_source,
+              OnSinksReceived(mojom::MediaRouteProviderId::DIAL, youtube_source,
                               IsEmpty(), youtube_origins));
   provider_->StartObservingMediaSinks(youtube_source);
   base::RunLoop().RunUntilIdle();
@@ -452,8 +452,8 @@ TEST_F(DialMediaRouteProviderTest, AddRemoveSinkQuery) {
   mock_sink_service_.SetAvailableSinks("YouTube", sinks);
 
   EXPECT_CALL(mock_router_,
-              OnSinksReceived(MediaRouteProviderId::DIAL, youtube_source, sinks,
-                              youtube_origins));
+              OnSinksReceived(mojom::MediaRouteProviderId::DIAL, youtube_source,
+                              sinks, youtube_origins));
   mock_sink_service_.NotifyAvailableSinks("YouTube");
   base::RunLoop().RunUntilIdle();
 
@@ -467,7 +467,7 @@ TEST_F(DialMediaRouteProviderTest, AddSinkQuerySameMediaSource) {
   std::string youtube_source("cast-dial:YouTube");
   EXPECT_CALL(mock_sink_service_,
               DoStartMonitoringAvailableSinksForApp("YouTube"));
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source, IsEmpty(), _));
   provider_->StartObservingMediaSinks(youtube_source);
   base::RunLoop().RunUntilIdle();
@@ -475,7 +475,7 @@ TEST_F(DialMediaRouteProviderTest, AddSinkQuerySameMediaSource) {
   EXPECT_CALL(mock_sink_service_, DoStartMonitoringAvailableSinksForApp(_))
       .Times(0);
   EXPECT_CALL(mock_router_,
-              OnSinksReceived(MediaRouteProviderId::DIAL, _, _, _))
+              OnSinksReceived(mojom::MediaRouteProviderId::DIAL, _, _, _))
       .Times(0);
   provider_->StartObservingMediaSinks(youtube_source);
   base::RunLoop().RunUntilIdle();
@@ -493,7 +493,7 @@ TEST_F(DialMediaRouteProviderTest,
   std::string youtube_source2("cast-dial:YouTube?clientId=15178573373126446");
   EXPECT_CALL(mock_sink_service_,
               DoStartMonitoringAvailableSinksForApp("YouTube"));
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source1, IsEmpty(), _));
   provider_->StartObservingMediaSinks(youtube_source1);
   base::RunLoop().RunUntilIdle();
@@ -501,26 +501,26 @@ TEST_F(DialMediaRouteProviderTest,
   MediaSinkInternal sink = CreateDialSink(1);
   std::vector<MediaSinkInternal> sinks = {sink};
   mock_sink_service_.SetAvailableSinks("YouTube", sinks);
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source1, sinks, _));
   mock_sink_service_.NotifyAvailableSinks("YouTube");
 
   EXPECT_CALL(mock_sink_service_, DoStartMonitoringAvailableSinksForApp(_))
       .Times(0);
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source2, sinks, _));
   provider_->StartObservingMediaSinks(youtube_source2);
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source1, sinks, _));
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source2, sinks, _));
   mock_sink_service_.NotifyAvailableSinks("YouTube");
   base::RunLoop().RunUntilIdle();
 
   provider_->StopObservingMediaSinks(youtube_source1);
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source2, sinks, _));
   mock_sink_service_.NotifyAvailableSinks("YouTube");
   base::RunLoop().RunUntilIdle();
@@ -536,14 +536,14 @@ TEST_F(DialMediaRouteProviderTest, AddSinkQueryDifferentApps) {
   std::string netflix_source("cast-dial:Netflix");
   EXPECT_CALL(mock_sink_service_,
               DoStartMonitoringAvailableSinksForApp("YouTube"));
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source, IsEmpty(), _));
   provider_->StartObservingMediaSinks(youtube_source);
   base::RunLoop().RunUntilIdle();
 
   EXPECT_CALL(mock_sink_service_,
               DoStartMonitoringAvailableSinksForApp("Netflix"));
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             netflix_source, IsEmpty(), _));
   provider_->StartObservingMediaSinks(netflix_source);
   base::RunLoop().RunUntilIdle();
@@ -551,13 +551,13 @@ TEST_F(DialMediaRouteProviderTest, AddSinkQueryDifferentApps) {
   MediaSinkInternal sink = CreateDialSink(1);
   std::vector<MediaSinkInternal> sinks = {sink};
   mock_sink_service_.SetAvailableSinks("YouTube", sinks);
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             youtube_source, sinks, _));
   mock_sink_service_.NotifyAvailableSinks("YouTube");
   base::RunLoop().RunUntilIdle();
 
   mock_sink_service_.SetAvailableSinks("Netflix", sinks);
-  EXPECT_CALL(mock_router_, OnSinksReceived(MediaRouteProviderId::DIAL,
+  EXPECT_CALL(mock_router_, OnSinksReceived(mojom::MediaRouteProviderId::DIAL,
                                             netflix_source, sinks, _));
   mock_sink_service_.NotifyAvailableSinks("Netflix");
   base::RunLoop().RunUntilIdle();

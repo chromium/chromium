@@ -101,7 +101,7 @@ bool StructTraits<media_router::mojom::MediaSinkDataView,
 
   out->sink().set_icon_type(icon_type);
 
-  media_router::MediaRouteProviderId provider_id;
+  media_router::mojom::MediaRouteProviderId provider_id;
   if (!data.ReadProviderId(&provider_id))
     return false;
 

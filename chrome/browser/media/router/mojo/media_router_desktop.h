@@ -31,12 +31,12 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
   void OnUserGesture() override;
   base::Value GetState() const override;
   void GetProviderState(
-      MediaRouteProviderId provider_id,
+      mojom::MediaRouteProviderId provider_id,
       mojom::MediaRouteProvider::GetStateCallback callback) const override;
 
  protected:
   // MediaRouterMojoImpl override:
-  absl::optional<MediaRouteProviderId> GetProviderIdForPresentation(
+  absl::optional<mojom::MediaRouteProviderId> GetProviderIdForPresentation(
       const std::string& presentation_id) override;
 
  private:
@@ -48,10 +48,10 @@ class MediaRouterDesktop : public MediaRouterMojoImpl {
                      DualMediaSinkService* media_sink_service);
 
   // mojom::MediaRouter implementation.
-  void RegisterMediaRouteProvider(MediaRouteProviderId provider_id,
+  void RegisterMediaRouteProvider(mojom::MediaRouteProviderId provider_id,
                                   mojo::PendingRemote<mojom::MediaRouteProvider>
                                       media_route_provider_remote) override;
-  void OnSinksReceived(MediaRouteProviderId provider_id,
+  void OnSinksReceived(mojom::MediaRouteProviderId provider_id,
                        const std::string& media_source,
                        const std::vector<MediaSinkInternal>& internal_sinks,
                        const std::vector<url::Origin>& origins) override;
