@@ -49,6 +49,7 @@ source_set("browser") {
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 
   if (is_mac) {
