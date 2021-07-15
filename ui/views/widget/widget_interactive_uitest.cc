@@ -533,7 +533,13 @@ TEST_F(WidgetTestInteractive, ViewFocusOnWidgetActivationChanges) {
 }
 
 // Test z-order of child widgets relative to their parent.
-TEST_F(WidgetTestInteractive, ChildStackedRelativeToParent) {
+// TODO(crbug.com/1227009): Disabled on Mac due to flake
+#if defined(OS_MAC)
+#define MAYBE_ChildStackedRelativeToParent DISABLED_ChildStackedRelativeToParent
+#else
+#define MAYBE_ChildStackedRelativeToParent ChildStackedRelativeToParent
+#endif
+TEST_F(WidgetTestInteractive, MAYBE_ChildStackedRelativeToParent) {
   WidgetAutoclosePtr parent(CreateTopLevelPlatformWidget());
   Widget* child = CreateChildPlatformWidget(parent->GetNativeView());
 
