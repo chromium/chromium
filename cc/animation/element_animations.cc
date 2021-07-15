@@ -8,7 +8,6 @@
 
 #include <algorithm>
 #include <utility>
-#include <vector>
 
 #include "base/numerics/ranges.h"
 #include "cc/animation/animation_delegate.h"
@@ -16,7 +15,6 @@
 #include "cc/animation/animation_host.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/keyframe_model.h"
-#include "cc/animation/scoped_compound_transform_resolver.h"
 #include "cc/paint/filter_operations.h"
 #include "cc/trees/mutator_host_client.h"
 #include "ui/gfx/animation/keyframe/keyframed_animation_curve.h"
@@ -275,23 +273,11 @@ void ElementAnimations::OnTransformAnimated(
     const gfx::TransformOperations& operations,
     int target_property_id,
     gfx::KeyframeModel* keyframe_model) {
-  bool apply_active = KeyframeModelAffectsActiveElements(keyframe_model);
-  bool apply_pending = KeyframeModelAffectsPendingElements(keyframe_model);
-
-  if (apply_active || apply_pending) {
-    gfx::Transform transform = operations.Apply();
-    ElementId target_element_id =
-        CalculateTargetElementId(this, keyframe_model);
-    DCHECK(target_element_id);
-    DCHECK(animation_host_);
-    ScopedCompoundTransformResolver* compound_transform_resolver =
-        animation_host_->compound_transform_resolver();
-    DCHECK(compound_transform_resolver);
-    compound_transform_resolver->AddTransform(
-        target_element_id, transform,
-        static_cast<TargetProperty::Type>(target_property_id), apply_active,
-        apply_pending);
-  }
+  gfx::Transform transform = operations.Apply();
+  if (KeyframeModelAffectsActiveElements(keyframe_model))
+    OnTransformAnimated(ElementListType::ACTIVE, transform, keyframe_model);
+  if (KeyframeModelAffectsPendingElements(keyframe_model))
+    OnTransformAnimated(ElementListType::PENDING, transform, keyframe_model);
 }
 
 void ElementAnimations::OnScrollOffsetAnimated(
@@ -444,9 +430,6 @@ bool ElementAnimations::HasAnyAnimationTargetingProperty(
 bool ElementAnimations::IsPotentiallyAnimatingProperty(
     TargetProperty::Type target_property,
     ElementListType list_type) const {
-  // For transform related properties, call IsPotentiallyAnimatingTransform.
-  DCHECK(target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
-         target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY);
   for (auto& keyframe_effect : keyframe_effects_list_) {
     if (keyframe_effect.IsPotentiallyAnimatingProperty(target_property,
                                                        list_type))
@@ -456,36 +439,12 @@ bool ElementAnimations::IsPotentiallyAnimatingProperty(
   return false;
 }
 
-bool ElementAnimations::IsPotentiallyAnimatingTransform(
-    ElementListType list_type) const {
-  for (auto& keyframe_effect : keyframe_effects_list_) {
-    if (keyframe_effect.IsPotentiallyAnimatingTransformRelatedProperty(
-            list_type))
-      return true;
-  }
-  return false;
-}
-
 bool ElementAnimations::IsCurrentlyAnimatingProperty(
     TargetProperty::Type target_property,
     ElementListType list_type) const {
-  // For transform related properties, call
-  // IsCurrentlyAnimatingTransformRelatedProperty.
-  DCHECK(target_property < TargetProperty::Type::FIRST_TRANSFORM_PROPERTY ||
-         target_property > TargetProperty::Type::LAST_TRANSFORM_PROPERTY);
   for (auto& keyframe_effect : keyframe_effects_list_) {
     if (keyframe_effect.IsCurrentlyAnimatingProperty(target_property,
                                                      list_type))
-      return true;
-  }
-
-  return false;
-}
-
-bool ElementAnimations::IsCurrentlyAnimatingTransformRelatedProperty(
-    ElementListType list_type) const {
-  for (auto& keyframe_effect : keyframe_effects_list_) {
-    if (keyframe_effect.IsCurrentlyAnimatingTransformRelatedProperty(list_type))
       return true;
   }
 
@@ -546,6 +505,18 @@ void ElementAnimations::OnCustomPropertyAnimated(
                 keyframe_model->custom_property_name(), id);
   animation_host_->mutator_host_client()->OnCustomPropertyMutated(
       std::move(property_key), std::move(property_value));
+}
+
+void ElementAnimations::OnTransformAnimated(
+    ElementListType list_type,
+    const gfx::Transform& transform,
+    gfx::KeyframeModel* keyframe_model) {
+  ElementId target_element_id = CalculateTargetElementId(this, keyframe_model);
+  DCHECK(target_element_id);
+  DCHECK(animation_host_);
+  DCHECK(animation_host_->mutator_host_client());
+  animation_host_->mutator_host_client()->SetElementTransformMutated(
+      target_element_id, list_type, transform);
 }
 
 void ElementAnimations::OnScrollOffsetAnimated(

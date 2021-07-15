@@ -165,6 +165,7 @@ class CORE_EXPORT KeyframeEffect final : public AnimationEffect {
       absl::optional<AnimationTimeDelta> inherited_time,
       AnimationTimeDelta time_to_next_iteration) const override;
   bool HasIncompatibleStyle() const;
+  bool HasMultipleTransformProperties() const;
   void RestartRunningAnimationOnCompositor();
 
   Member<Element> effect_target_;

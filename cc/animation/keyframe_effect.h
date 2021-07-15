@@ -126,23 +126,10 @@ class CC_ANIMATION_EXPORT KeyframeEffect : public gfx::KeyframeEffect {
   bool IsPotentiallyAnimatingProperty(TargetProperty::Type target_property,
                                       ElementListType list_type) const;
 
-  // Returns true if there is a keyframe_model that is either currently
-  // animating a transform related property (TRANSLATE, ROTATE, SCALE,
-  // TRANSFORM) or scheduled to animate such a property in the future, and that
-  // affects the given tree type.
-  bool IsPotentiallyAnimatingTransformRelatedProperty(
-      ElementListType list_type) const;
-
   // Returns true if there is a keyframe_model that is currently animating the
   // given property and that affects the given tree type.
   bool IsCurrentlyAnimatingProperty(TargetProperty::Type target_property,
                                     ElementListType list_type) const;
-
-  // Returns true if there is a keyframe_model that is currently animating a
-  // transform related property (TRANSLATE, ROTATE, SCALE, TRANSFROM) and that
-  // affects the given tree type.
-  bool IsCurrentlyAnimatingTransformRelatedProperty(
-      ElementListType list_type) const;
 
   void GetPropertyAnimationState(PropertyAnimationState* pending_state,
                                  PropertyAnimationState* active_state) const;

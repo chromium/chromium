@@ -27,8 +27,6 @@ cc_component("animation") {
     "keyframe_effect.h",
     "keyframe_model.cc",
     "keyframe_model.h",
-    "scoped_compound_transform_resolver.cc",
-    "scoped_compound_transform_resolver.h",
     "scroll_offset_animation_curve.cc",
     "scroll_offset_animation_curve.h",
     "scroll_offset_animation_curve_factory.cc",

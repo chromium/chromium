@@ -91,22 +91,10 @@ class CC_ANIMATION_EXPORT ElementAnimations
   bool IsPotentiallyAnimatingProperty(TargetProperty::Type target_property,
                                       ElementListType list_type) const;
 
-  // Returns true if there is an animation that is either currently animating
-  // a transform related property (TRANSLATE, ROTATE, SCALE, TRANSFORM) or
-  // scheduled to animate this property in the future, and that affects the
-  // given tree type.
-  bool IsPotentiallyAnimatingTransform(ElementListType list_type) const;
-
   // Returns true if there is an animation that is currently animating the given
   // property and that affects the given tree type.
   bool IsCurrentlyAnimatingProperty(TargetProperty::Type target_property,
                                     ElementListType list_type) const;
-
-  // Returns true if there is an animation that is currently animating a
-  // transform related property (TRANSLATE, ROTOTATE, SCALE, TRANSFROM) and that
-  // affects the given tree type.
-  bool IsCurrentlyAnimatingTransformRelatedProperty(
-      ElementListType list_type) const;
 
   bool has_element_in_active_list() const {
     return has_element_in_active_list_;
@@ -210,6 +198,9 @@ class CC_ANIMATION_EXPORT ElementAnimations
   void OnCustomPropertyAnimated(PaintWorkletInput::PropertyValue property_value,
                                 KeyframeModel* keyframe_model,
                                 int target_property_id);
+  void OnTransformAnimated(ElementListType list_type,
+                           const gfx::Transform& transform,
+                           gfx::KeyframeModel* keyframe_model);
   void OnScrollOffsetAnimated(ElementListType list_type,
                               const gfx::ScrollOffset& scroll_offset,
                               gfx::KeyframeModel* keyframe_model);

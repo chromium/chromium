@@ -1387,10 +1387,10 @@ TEST(KeyframeModelTest, ToString) {
       std::make_unique<FakeFloatAnimationCurve>(15), 42, 73,
       KeyframeModel::TargetPropertyId(TargetProperty::OPACITY));
   EXPECT_EQ(base::StringPrintf(
-                "KeyframeModel{id=%d, group=73, target_property_type=%d, "
+                "KeyframeModel{id=%d, group=73, target_property_type=1, "
                 "custom_property_name=, native_property_type=1, "
                 "run_state=WAITING_FOR_TARGET_AVAILABILITY, element_id=(0)}",
-                keyframe_model->id(), TargetProperty::OPACITY),
+                keyframe_model->id()),
             keyframe_model->ToString());
 }
 

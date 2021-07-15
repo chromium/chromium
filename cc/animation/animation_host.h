@@ -29,7 +29,6 @@ class Animation;
 class AnimationTimeline;
 class ElementAnimations;
 class LayerTreeHost;
-class ScopedCompoundTransformResolver;
 class ScrollOffsetAnimations;
 class ScrollOffsetAnimationsImpl;
 class WorkletAnimation;
@@ -223,10 +222,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   void SetCurrentFrameHadRaf(bool current_frame_had_raf);
   void SetNextFrameHasPendingRaf(bool next_frame_has_pending_raf);
 
-  ScopedCompoundTransformResolver* compound_transform_resolver() {
-    return compound_transform_resolver_;
-  }
-
  private:
   explicit AnimationHost(ThreadInstance thread_instance);
 
@@ -250,12 +245,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   // Returns a pointer to a worklet animation by worklet animation id or null
   // if there is no match.
   WorkletAnimation* FindWorkletAnimation(WorkletAnimationId id);
-
-  friend class ScopedCompoundTransformResolver;
-  void set_compound_transform_resolver(
-      ScopedCompoundTransformResolver* resolver) {
-    compound_transform_resolver_ = resolver;
-  }
 
   ElementToAnimationsMap element_to_animations_map_;
   AnimationsList ticking_animations_;
@@ -288,8 +277,6 @@ class CC_ANIMATION_EXPORT AnimationHost : public MutatorHost,
   bool has_smil_animation_ = false;
 
   PendingThroughputTrackerInfos pending_throughput_tracker_infos_;
-
-  ScopedCompoundTransformResolver* compound_transform_resolver_ = nullptr;
 
   base::WeakPtrFactory<AnimationHost> weak_factory_{this};
 };

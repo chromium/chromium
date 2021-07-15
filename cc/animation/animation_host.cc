@@ -21,7 +21,6 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/element_animations.h"
 #include "cc/animation/keyframe_effect.h"
-#include "cc/animation/scoped_compound_transform_resolver.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animations.h"
 #include "cc/animation/scroll_offset_animations_impl.h"
@@ -453,8 +452,6 @@ bool AnimationHost::TickAnimations(base::TimeTicks monotonic_time,
 
   TRACE_EVENT_INSTANT0("cc", "NeedsTickAnimations", TRACE_EVENT_SCOPE_THREAD);
 
-  ScopedCompoundTransformResolver scoped_compound_transform_resolver(this);
-
   bool animated = false;
   for (auto& kv : id_to_timeline_map_) {
     AnimationTimeline* timeline = kv.second.get();
@@ -487,20 +484,9 @@ void AnimationHost::TickScrollAnimations(base::TimeTicks monotonic_time,
 }
 
 void AnimationHost::TickWorkletAnimations() {
-  bool has_worklet_animation = false;
   for (auto& animation : ticking_animations_) {
-    if (animation->IsWorkletAnimation()) {
-      has_worklet_animation = true;
-      break;
-    }
-  }
-  if (!has_worklet_animation)
-    return;
-
-  ScopedCompoundTransformResolver scoped_compound_transform_resolver(this);
-  for (auto& animation : ticking_animations_) {
-    // TODO(crbug.com/1228417): Only need to tick non-worklet animations that
-    // are potentially affected by a worklet animation.
+    if (!animation->IsWorkletAnimation())
+      continue;
     animation->Tick(base::TimeTicks());
   }
 }
@@ -620,11 +606,10 @@ bool AnimationHost::IsAnimatingTransformProperty(
     ElementId element_id,
     ElementListType list_type) const {
   auto element_animations = GetElementAnimationsForElementId(element_id);
-  if (!element_animations)
-    return false;
-
-  return element_animations->IsCurrentlyAnimatingTransformRelatedProperty(
-      list_type);
+  return element_animations
+             ? element_animations->IsCurrentlyAnimatingProperty(
+                   TargetProperty::TRANSFORM, list_type)
+             : false;
 }
 
 bool AnimationHost::HasPotentiallyRunningFilterAnimation(
@@ -662,7 +647,8 @@ bool AnimationHost::HasPotentiallyRunningTransformAnimation(
     ElementListType list_type) const {
   auto element_animations = GetElementAnimationsForElementId(element_id);
   return element_animations
-             ? element_animations->IsPotentiallyAnimatingTransform(list_type)
+             ? element_animations->IsPotentiallyAnimatingProperty(
+                   TargetProperty::TRANSFORM, list_type)
              : false;
 }
 
