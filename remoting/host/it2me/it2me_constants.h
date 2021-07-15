@@ -5,6 +5,8 @@
 #ifndef REMOTING_HOST_IT2ME_IT2ME_CONSTANTS_H_
 #define REMOTING_HOST_IT2ME_IT2ME_CONSTANTS_H_
 
+#include "remoting/host/native_messaging/native_messaging_constants.h"
+
 namespace remoting {
 
 // These state values are defined in the website client as well.  Remember to
@@ -27,23 +29,6 @@ extern const char kFeatureAccessTokenAuth[];
 // Indicates that the host supports delegated signaling (i.e. allow the client
 // to act as a signaling proxy).
 extern const char kFeatureDelegatedSignaling[];
-
-// ID used to identify the current message. Must be included in the response if
-// the sender includes it.
-extern const char kMessageId[];
-
-// The type of the message received. The type is used to retrieve and validate
-// the message payload.
-extern const char kMessageType[];
-
-// Initial message sent from the client to the host to request the host's
-// version and supported features. It has no parameters.
-extern const char kHelloMessage[];
-// Hello response parameters.
-extern const char kHostVersion[];
-extern const char kSupportedFeatures[];
-// Response sent back to the client after the Hello message has been handled.
-extern const char kHelloResponse[];
 
 // Sent from the client to the host to begin the connection process.
 extern const char kConnectMessage[];

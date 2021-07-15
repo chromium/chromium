@@ -28,32 +28,6 @@ const NameMapElement<It2MeHostState> kIt2MeHostStates[] = {
 
 }
 
-bool ParseIt2MeNativeMessageJson(const std::string& message,
-                                 std::string& message_type,
-                                 base::Value& dictionary_value) {
-  auto opt_message = base::JSONReader::Read(message);
-  if (!opt_message.has_value()) {
-    LOG(ERROR) << "Received a message that's not valid JSON.";
-    return false;
-  }
-
-  auto message_value = std::move(opt_message.value());
-  if (!message_value.is_dict()) {
-    LOG(ERROR) << "Received a message that's not a dictionary.";
-    return false;
-  }
-
-  const std::string* message_type_value =
-      message_value.FindStringPath(kMessageType);
-  if (message_type_value) {
-    message_type = *message_type_value;
-  }
-
-  dictionary_value = std::move(message_value);
-
-  return true;
-}
-
 std::string It2MeHostStateToString(It2MeHostState host_state) {
   return ValueToName(kIt2MeHostStates, host_state);
 }

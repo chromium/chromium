@@ -6,6 +6,10 @@ source_set("native_messaging") {
   sources = [
     "log_message_handler.cc",
     "log_message_handler.h",
+    "native_messaging_constants.cc",
+    "native_messaging_constants.h",
+    "native_messaging_helpers.cc",
+    "native_messaging_helpers.h",
     "native_messaging_pipe.cc",
     "native_messaging_pipe.h",
     "native_messaging_reader.cc",
@@ -16,7 +20,10 @@ source_set("native_messaging") {
     "pipe_messaging_channel.h",
   ]
 
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
+  configs += [
+    "//build/config/compiler:wexit_time_destructors",
+    "//remoting/build/config:version",
+  ]
 
   deps = [
     "//base",

@@ -14,8 +14,8 @@
 #include "base/values.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "remoting/host/chromoting_host_context.h"
-#include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/it2me/it2me_native_messaging_host.h"
+#include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 
 namespace remoting {
@@ -93,7 +93,7 @@ void It2MeNativeMessageHostAsh::PostMessageFromNativeHost(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string type;
   base::Value contents;
-  if (!ParseIt2MeNativeMessageJson(message, type, contents)) {
+  if (!ParseNativeMessageJson(message, type, contents)) {
     CloseChannel(std::string());
     return;
   }

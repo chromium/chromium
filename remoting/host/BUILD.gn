@@ -18,7 +18,10 @@ group("all") {
 
   deps = [ ":host" ]
   if (enable_me2me_host) {
-    deps += [ "//remoting/host:remoting_me2me_host" ]
+    deps += [
+      ":remote_auth",
+      "//remoting/host:remoting_me2me_host",
+    ]
   }
 
   if (is_chrome_branded) {
@@ -1054,6 +1057,24 @@ if (enable_me2me_host && is_linux) {
       "//remoting/host/mojom",
       "//ui/base",
       "//url",
+    ]
+  }
+}
+
+if (enable_me2me_host) {
+  executable("remote_auth") {
+    sources = [
+      "remote_auth_main.cc",
+      "remote_auth_native_messaging_host.cc",
+      "remote_auth_native_messaging_host.h",
+    ]
+
+    deps = [
+      ":logging",
+      "//base",
+      "//extensions/browser/api/messaging:native_messaging",
+      "//mojo/core/embedder:embedder",
+      "//remoting/host/native_messaging",
     ]
   }
 }

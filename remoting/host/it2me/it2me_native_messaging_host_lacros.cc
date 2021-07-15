@@ -27,8 +27,8 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/it2me/it2me_constants.h"
-#include "remoting/host/it2me/it2me_helpers.h"
 #include "remoting/host/mojom/remote_support.mojom.h"
+#include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/protocol/errors.h"
 
 namespace remoting {
@@ -127,7 +127,7 @@ void It2MeNativeMessagingHostLacros::OnMessage(const std::string& message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::string type;
   base::Value contents;
-  if (!ParseIt2MeNativeMessageJson(message, type, contents)) {
+  if (!ParseNativeMessageJson(message, type, contents)) {
     client_->CloseChannel(std::string());
     return;
   }

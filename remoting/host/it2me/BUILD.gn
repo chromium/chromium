@@ -22,6 +22,7 @@ source_set("constants") {
     "it2me_constants.cc",
     "it2me_constants.h",
   ]
+  deps = [ "//remoting/host/native_messaging" ]
 }
 
 source_set("helpers") {
@@ -131,6 +132,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
         "//extensions/browser/api/messaging:native_messaging",
+        "//remoting/host/native_messaging",
         "//remoting/protocol:errors",
       ]
     } else {
@@ -147,6 +149,7 @@ if (is_chromeos_ash || is_chromeos_lacros) {
         "//remoting/base:base",
         "//remoting/host:common",
         "//remoting/host/mojom:mojom",
+        "//remoting/host/native_messaging",
         "//skia",
       ]
 

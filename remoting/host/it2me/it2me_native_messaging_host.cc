@@ -10,12 +10,10 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringize_macros.h"
 #include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -32,6 +30,7 @@
 #include "remoting/host/it2me/it2me_confirmation_dialog.h"
 #include "remoting/host/it2me/it2me_constants.h"
 #include "remoting/host/it2me/it2me_helpers.h"
+#include "remoting/host/native_messaging/native_messaging_helpers.h"
 #include "remoting/host/policy_watcher.h"
 #include "remoting/host/remoting_register_support_host_request.h"
 #include "remoting/host/xmpp_register_support_host_request.h"
@@ -121,44 +120,40 @@ It2MeNativeMessagingHost::~It2MeNativeMessagingHost() {
 void It2MeNativeMessagingHost::OnMessage(const std::string& message) {
   DCHECK(task_runner()->BelongsToCurrentThread());
 
-  std::unique_ptr<base::DictionaryValue> response(new base::DictionaryValue());
-  std::unique_ptr<base::Value> message_value =
-      base::JSONReader::ReadDeprecated(message);
-  if (!message_value->is_dict()) {
-    LOG(ERROR) << "Received a message that's not a dictionary.";
+  std::string type;
+  base::Value request;
+  if (!ParseNativeMessageJson(message, type, request)) {
     client_->CloseChannel(std::string());
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> message_dict(
-      static_cast<base::DictionaryValue*>(message_value.release()));
-
-  // If the client supplies an ID, it will expect it in the response. This
-  // might be a string or a number, so cope with both.
-  const base::Value* id;
-  if (message_dict->Get(kMessageId, &id))
-    response->SetKey(kMessageId, id->Clone());
-
-  std::string type;
-  if (!message_dict->GetString(kMessageType, &type)) {
-    LOG(ERROR) << "'type' not found in request.";
-    SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+  base::Value response = CreateNativeMessageResponse(request);
+  if (response.is_none()) {
+    SendErrorAndExit(std::make_unique<base::DictionaryValue>(),
+                     ErrorCode::INCOMPATIBLE_PROTOCOL);
     return;
   }
 
-  response->SetString(kMessageType, type + "Response");
+  auto dictionary_request = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(request)));
+  auto dictionary_response = base::DictionaryValue::From(
+      base::Value::ToUniquePtrValue(std::move(response)));
 
   if (type == kHelloMessage) {
-    ProcessHello(std::move(message_dict), std::move(response));
+    ProcessHello(std::move(dictionary_request), std::move(dictionary_response));
   } else if (type == kConnectMessage) {
-    ProcessConnect(std::move(message_dict), std::move(response));
+    ProcessConnect(std::move(dictionary_request),
+                   std::move(dictionary_response));
   } else if (type == kDisconnectMessage) {
-    ProcessDisconnect(std::move(message_dict), std::move(response));
+    ProcessDisconnect(std::move(dictionary_request),
+                      std::move(dictionary_response));
   } else if (type == kIncomingIqMessage) {
-    ProcessIncomingIq(std::move(message_dict), std::move(response));
+    ProcessIncomingIq(std::move(dictionary_request),
+                      std::move(dictionary_response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
-    SendErrorAndExit(std::move(response), ErrorCode::INCOMPATIBLE_PROTOCOL);
+    SendErrorAndExit(std::move(dictionary_response),
+                     ErrorCode::INCOMPATIBLE_PROTOCOL);
   }
 }
 
@@ -187,12 +182,11 @@ void It2MeNativeMessagingHost::ProcessHello(
 
   // No need to forward to the elevated process since no internal state is set.
 
-  response->SetString(kHostVersion, STRINGIZE(VERSION));
-
   base::Value features(base::Value::Type::LIST);
   features.Append(kFeatureAccessTokenAuth);
   features.Append(kFeatureDelegatedSignaling);
-  response->SetKey(kSupportedFeatures, std::move(features));
+
+  ProcessNativeMessageHelloResponse(*response, std::move(features));
 
   SendMessageToClient(std::move(response));
 }
