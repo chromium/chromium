@@ -810,6 +810,7 @@ crbug.com/1050754 external/wpt/external/wpt/infrastructure/assumptions/non-local
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.serviceworker-module.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.sharedworker-module.html [ Failure ]
 crbug.com/1050754 external/wpt/external/wpt/infrastructure/server/context.any.sharedworker.html [ Failure ]
+crbug.com/1050754 external/wpt/external/wpt/selection/contenteditable/modifying-selection-with-primary-mouse-button.tentative.html [ Crash ]
 crbug.com/1050754 external/wpt/external/wpt/streams/readable-byte-streams/general.any.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/streams/readable-byte-streams/general.any.serviceworker.html [ Timeout ]
 crbug.com/1050754 external/wpt/external/wpt/streams/readable-byte-streams/general.any.sharedworker.html [ Failure ]
