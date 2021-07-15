@@ -149,6 +149,8 @@ message DeviceReportingProto {
   optional bool report_print_jobs = 26 [default = false];
   optional bool report_login_logout = 27 [default = false];
   optional bool report_audio_status = 28 [default = true];
+  optional bool report_network_configuration = 29 [default = true];
+  optional bool report_network_status = 30 [default = true];
 
   // Frequency to report device status, default to 3 hours.
   // If changed, the default value has to be updated in

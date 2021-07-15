@@ -25894,6 +25894,8 @@ Called by update_document_policy_enum.py.-->
   <int value="872" label="RestrictedManagedGuestSessionEnabled"/>
   <int value="873" label="ReportDeviceAudioStatus"/>
   <int value="874" label="DeviceHostnameUserConfigurable"/>
+  <int value="875" label="ReportDeviceNetworkConfiguration"/>
+  <int value="876" label="ReportDeviceNetworkStatus"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

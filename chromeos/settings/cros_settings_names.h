@@ -98,7 +98,11 @@ COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceBacklightInfo[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS) extern const char kReportDeviceLocation[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kReportDeviceNetworkConfiguration[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDeviceNetworkInterfaces[];
+COMPONENT_EXPORT(CHROMEOS_SETTINGS)
+extern const char kReportDeviceNetworkStatus[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
 extern const char kReportDevicePowerStatus[];
 COMPONENT_EXPORT(CHROMEOS_SETTINGS)
@@ -401,7 +405,9 @@ using ::chromeos::kReportDeviceHardwareStatus;
 using ::chromeos::kReportDeviceLocation;
 using ::chromeos::kReportDeviceLoginLogout;
 using ::chromeos::kReportDeviceMemoryInfo;
+using ::chromeos::kReportDeviceNetworkConfiguration;
 using ::chromeos::kReportDeviceNetworkInterfaces;
+using ::chromeos::kReportDeviceNetworkStatus;
 using ::chromeos::kReportDevicePowerStatus;
 using ::chromeos::kReportDevicePrintJobs;
 using ::chromeos::kReportDeviceSessionStatus;

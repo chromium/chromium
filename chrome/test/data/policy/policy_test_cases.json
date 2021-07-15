@@ -5594,7 +5594,15 @@
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 
+  "ReportDeviceNetworkConfiguration": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+
   "ReportDeviceNetworkInterfaces": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
+
+  "ReportDeviceNetworkStatus": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
 

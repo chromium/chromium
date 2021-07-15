@@ -138,10 +138,22 @@ const char kReportDeviceBacklightInfo[] =
 // along with device policy requests.
 const char kReportDeviceLocation[] = "cros.device_status.report_location";
 
+// Determines whether the device reports static network configuration info such
+// as MAC Address, MEID, and MEI in device status reports to the device
+// management server.
+const char kReportDeviceNetworkConfiguration[] =
+    "cros.device_status.report_network_configuration";
+
 // Determines whether the device reports network interface types and addresses
 // in device status reports to the device management server.
 const char kReportDeviceNetworkInterfaces[] =
     "cros.device_status.report_network_interfaces";
+
+// Determines whether the device reports dynamic network information such
+// connection state, signal strength, and IP Address in device status reports
+// and to management server.
+const char kReportDeviceNetworkStatus[] =
+    "cros.device_status.report_network_status";
 
 // A boolean pref that determines whether the device power status should be
 // included in status reports to the device management server.

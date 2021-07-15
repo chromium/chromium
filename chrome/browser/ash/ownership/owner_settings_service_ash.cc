@@ -662,6 +662,8 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceLocation
     //   kReportDeviceMemoryInfo
     //   kReportDeviceNetworkInterfaces
+    //   kReportDeviceNetworkConfiguration
+    //   kReportDeviceNetworkStatus
     //   kReportDevicePowerStatus
     //   kReportDeviceStorageStatus
     //   kReportDeviceSessionStatus

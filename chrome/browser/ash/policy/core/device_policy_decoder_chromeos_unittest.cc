@@ -222,6 +222,52 @@ TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceAudioStatus) {
   EXPECT_TRUE(report_device_audio_status_bool);
 }
 
+TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkConfiguration) {
+  PolicyBundle bundle;
+  PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
+
+  base::WeakPtr<ExternalDataManager> external_data_manager;
+
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_device_reporting()->set_report_network_configuration(true);
+
+  DecodeDevicePolicy(device_policy, external_data_manager, &policies);
+
+  const base::Value* report_device_network_configuration_value =
+      policies.GetValue(key::kReportDeviceNetworkConfiguration);
+  ASSERT_NE(report_device_network_configuration_value, nullptr);
+  ASSERT_TRUE(report_device_network_configuration_value->is_bool());
+
+  bool report_device_network_configuration_bool = false;
+  report_device_network_configuration_value->GetAsBoolean(
+      &report_device_network_configuration_bool);
+
+  EXPECT_TRUE(report_device_network_configuration_bool);
+}
+
+TEST_F(DevicePolicyDecoderChromeOSTest, ReportDeviceNetworkStatus) {
+  PolicyBundle bundle;
+  PolicyMap& policies = bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
+
+  base::WeakPtr<ExternalDataManager> external_data_manager;
+
+  em::ChromeDeviceSettingsProto device_policy;
+  device_policy.mutable_device_reporting()->set_report_network_status(true);
+
+  DecodeDevicePolicy(device_policy, external_data_manager, &policies);
+
+  const base::Value* report_device_network_status_value =
+      policies.GetValue(key::kReportDeviceNetworkStatus);
+  ASSERT_NE(report_device_network_status_value, nullptr);
+  ASSERT_TRUE(report_device_network_status_value->is_bool());
+
+  bool report_device_network_status_bool = false;
+  report_device_network_status_value->GetAsBoolean(
+      &report_device_network_status_bool);
+
+  EXPECT_TRUE(report_device_network_status_bool);
+}
+
 TEST_F(DevicePolicyDecoderChromeOSTest, DecodeServiceUUIDListSuccess) {
   std::string error;
   absl::optional<base::Value> decoded_json = DecodeJsonStringAndNormalize(

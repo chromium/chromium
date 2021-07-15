@@ -94,7 +94,9 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     proto->set_report_audio_status(enable_reporting);
     proto->set_report_boot_mode(enable_reporting);
     proto->set_report_location(enable_reporting);
+    proto->set_report_network_configuration(enable_reporting);
     proto->set_report_network_interfaces(enable_reporting);
+    proto->set_report_network_status(enable_reporting);
     proto->set_report_users(enable_reporting);
     proto->set_report_hardware_status(enable_reporting);
     proto->set_report_session_status(enable_reporting);
@@ -176,7 +178,9 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
         kReportDeviceBootMode,
         // Device location reporting is not currently supported.
         // kReportDeviceLocation,
+        kReportDeviceNetworkConfiguration,
         kReportDeviceNetworkInterfaces,
+        kReportDeviceNetworkStatus,
         kReportDeviceUsers,
         kReportDeviceHardwareStatus,
         kReportDevicePowerStatus,
