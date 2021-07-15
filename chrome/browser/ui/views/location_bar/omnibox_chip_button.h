@@ -49,13 +49,16 @@ class OmniboxChipButton : public views::MdTextButton {
   void SetTheme(Theme theme);
   void SetForceExpandedForTesting(bool force_expanded_for_testing);
 
+  void SetShowBlockedBadge(bool show_blocked_badge);
+
   Theme get_theme_for_testing() { return theme_; }
 
  private:
   int GetIconSize() const;
 
-  // Apply colors to text, icon and background of the button.
-  void UpdateColors();
+  // Updates the icon, and then updates text, icon, and background colors from
+  // the theme.
+  void UpdateIconAndColors();
 
   // Returns the primary theme color.
   SkColor GetMainColor();
@@ -83,6 +86,8 @@ class OmniboxChipButton : public views::MdTextButton {
   bool fully_collapsed_ = false;
 
   const gfx::VectorIcon& icon_;
+
+  bool show_blocked_badge_ = false;
 
   base::RepeatingCallback<void()> expand_animation_ended_callback_;
 

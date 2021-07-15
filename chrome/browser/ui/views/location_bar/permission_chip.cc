@@ -94,6 +94,19 @@ void PermissionChip::Reshow() {
   Show(/*always_open_bubble=*/false);
 }
 
+void PermissionChip::Collapse(bool allow_restart) {
+  if (allow_restart && (IsMouseHovered() || IsBubbleShowing())) {
+    StartCollapseTimer();
+  } else {
+    chip_button_->AnimateCollapse();
+    StartDismissTimer();
+  }
+}
+
+void PermissionChip::ShowBlockedBadge() {
+  chip_button_->SetShowBlockedBadge(true);
+}
+
 void PermissionChip::OnMouseEntered(const ui::MouseEvent& event) {
   if (!chip_button_->is_animating())
     RestartTimersOnInteraction();
@@ -156,15 +169,6 @@ void PermissionChip::StartCollapseTimer() {
       FROM_HERE, kDelayBeforeCollapsingChip,
       base::BindOnce(&PermissionChip::Collapse, base::Unretained(this),
                      /*allow_restart=*/true));
-}
-
-void PermissionChip::Collapse(bool allow_restart) {
-  if (allow_restart && (IsMouseHovered() || IsBubbleShowing())) {
-    StartCollapseTimer();
-  } else {
-    chip_button_->AnimateCollapse();
-    StartDismissTimer();
-  }
 }
 
 void PermissionChip::StartDismissTimer() {

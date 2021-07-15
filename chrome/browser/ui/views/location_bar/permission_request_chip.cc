@@ -116,7 +116,9 @@ PermissionRequestChip::PermissionRequestChip(
     : PermissionChip(
           delegate,
           {GetPermissionIconId(delegate), GetPermissionMessage(delegate),
-           ShouldBubbleStartOpen(delegate), /*is_prominent=*/true,
+           ShouldBubbleStartOpen(delegate),
+           base::FeatureList::IsEnabled(
+               permissions::features::kPermissionChipIsProminentStyle),
            OmniboxChipButton::Theme::kBlue, /*should_expand=*/true}),
       browser_(browser) {
   chip_shown_time_ = base::TimeTicks::Now();
@@ -158,6 +160,11 @@ void PermissionRequestChip::OnWidgetClosing(views::Widget* widget) {
 
 bool PermissionRequestChip::IsBubbleShowing() const {
   return prompt_bubble_;
+}
+
+void PermissionRequestChip::Collapse(bool allow_restart) {
+  PermissionChip::Collapse(allow_restart);
+  ShowBlockedBadge();
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {

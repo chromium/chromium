@@ -32,6 +32,9 @@ class PermissionRequestChip : public PermissionChip {
   bool IsBubbleShowing() const override;
 
  private:
+  // PermissionChip:
+  void Collapse(bool allow_restart) override;
+
   void RecordChipButtonPressed();
 
   Browser* browser_ = nullptr;

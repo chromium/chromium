@@ -227,7 +227,6 @@ class PermissionPromptBubbleViewBrowserTest
     ASSERT_TRUE(chip);
 
     EXPECT_FALSE(chip->should_expand_for_testing());
-    EXPECT_FALSE(chip->get_chip_button_for_testing()->GetProminent());
     EXPECT_FALSE(chip->get_chip_button_for_testing()->is_animating());
     EXPECT_EQ(OmniboxChipButton::Theme::kGray,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
@@ -242,7 +241,6 @@ class PermissionPromptBubbleViewBrowserTest
     ASSERT_TRUE(chip);
 
     EXPECT_TRUE(chip->should_expand_for_testing());
-    EXPECT_FALSE(chip->get_chip_button_for_testing()->GetProminent());
     EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
     EXPECT_EQ(OmniboxChipButton::Theme::kGray,
               chip->get_chip_button_for_testing()->get_theme_for_testing());
@@ -256,7 +254,6 @@ class PermissionPromptBubbleViewBrowserTest
       ASSERT_TRUE(chip);
 
       EXPECT_TRUE(chip->should_expand_for_testing());
-      EXPECT_TRUE(chip->get_chip_button_for_testing()->GetProminent());
       EXPECT_TRUE(chip->get_chip_button_for_testing()->is_animating());
       EXPECT_EQ(OmniboxChipButton::Theme::kBlue,
                 chip->get_chip_button_for_testing()->get_theme_for_testing());

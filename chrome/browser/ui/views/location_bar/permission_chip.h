@@ -78,13 +78,15 @@ class PermissionChip : public views::AccessiblePaneView,
     return delegate_;
   }
 
+  virtual void Collapse(bool allow_restart);
+  void ShowBlockedBadge();
+
  private:
   void Show(bool always_open_bubble);
   void ExpandAnimationEnded();
   void ChipButtonPressed();
   void RestartTimersOnInteraction();
   void StartCollapseTimer();
-  void Collapse(bool allow_restart);
   void StartDismissTimer();
   void Dismiss();
 
