@@ -282,8 +282,8 @@
           "url": "https://yeti2022.ct.digicert.com/log/",
           "mmd": 86400,
           "state": {
-            "usable": {
-              "timestamp": "2018-08-24T00:53:07Z"
+            "retired": {
+              "timestamp": "2021-07-21T00:00:00Z"
             }
           },
           "temporal_interval": {
