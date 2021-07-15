@@ -1105,7 +1105,7 @@ TEST_F(UkmPageLoadMetricsObserverTest, MobileFriendliness) {
   }
 }
 
-TEST_F(UkmPageLoadMetricsObserverTest, FirstScrollDelay) {
+TEST_F(UkmPageLoadMetricsObserverTest, FirstScrollDelayAndTimestamp) {
   page_load_metrics::mojom::PageLoadTiming timing;
   page_load_metrics::InitPageLoadTimingForTest(&timing);
   timing.navigation_start = base::Time::FromDoubleT(1);
@@ -1131,6 +1131,9 @@ TEST_F(UkmPageLoadMetricsObserverTest, FirstScrollDelay) {
                                                           GURL(kTestUrl1));
     tester()->test_ukm_recorder().ExpectEntryMetric(
         kv.second.get(), PageLoad::kInteractiveTiming_FirstScrollDelayName, 50);
+    tester()->test_ukm_recorder().ExpectEntryMetric(
+        kv.second.get(), PageLoad::kInteractiveTiming_FirstScrollTimestampName,
+        64);
   }
 }
 

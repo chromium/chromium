@@ -680,6 +680,16 @@ void UkmPageLoadMetricsObserver::RecordTimingMetrics(
     builder.SetInteractiveTiming_FirstScrollDelay(
         first_scroll_delay.InMilliseconds());
   }
+  if (timing.interactive_timing->first_scroll_timestamp &&
+      WasStartedInForegroundOptionalEventInForeground(
+          timing.interactive_timing->first_scroll_timestamp, GetDelegate())) {
+    base::TimeDelta first_scroll_timestamp =
+        timing.interactive_timing->first_scroll_timestamp.value();
+    builder.SetInteractiveTiming_FirstScrollTimestamp(
+        ukm::GetExponentialBucketMinForUserTiming(
+            first_scroll_timestamp.InMilliseconds()));
+  }
+
   if (timing.interactive_timing->first_input_processing_time &&
       WasStartedInForegroundOptionalEventInForeground(
           timing.interactive_timing->first_input_timestamp, GetDelegate())) {

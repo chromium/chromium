@@ -11232,6 +11232,13 @@ be describing additional metrics about the same event.
       </history>
     </aggregation>
   </metric>
+  <metric name="InteractiveTiming.FirstScrollTimestamp">
+    <summary>
+      The duration between navigation start and the timestamp of the first
+      scroll per navigation. In ms. This is rounded down to the nearest
+      exponential bucket.
+    </summary>
+  </metric>
   <metric name="InteractiveTiming.LongestInputDelay">
     <obsolete>
       Deprecated on January 2019 in favor of
