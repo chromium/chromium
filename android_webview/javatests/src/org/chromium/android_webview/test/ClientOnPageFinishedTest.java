@@ -616,4 +616,43 @@ public class ClientOnPageFinishedTest {
             webServer.shutdown();
         }
     }
+
+    /**
+     * Fragment navigation triggered by history APIs can trigger onPageFinished.
+     */
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
+    public void testCalledForHistoryApiFragmentNavigation() throws Throwable {
+        TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
+                mContentsClient.getOnPageFinishedHelper();
+        AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+        TestWebServer webServer = TestWebServer.start();
+        try {
+            final String testHtml = "<html><head>Header</head><body>Body</body></html>";
+            final String testPath = "/test.html";
+            final String fragmentPath = "/test.html#fragment";
+
+            final String testUrl = webServer.setResponse(testPath, testHtml, null);
+            final String fragmentUrl = webServer.getResponseUrl(fragmentPath);
+
+            int currentCallCount = onPageFinishedHelper.getCallCount();
+            mActivityTestRule.loadUrlSync(mAwContents, onPageFinishedHelper, testUrl);
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(testUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(1, onPageFinishedHelper.getCallCount());
+
+            currentCallCount = onPageFinishedHelper.getCallCount();
+            // History APIs can trigger fragment navigation, and this fragment navigation will
+            // trigger onPageFinished, the parameter url carried by onPageFinished will be the
+            // parameter url carried by history API.
+            mActivityTestRule.executeJavaScriptAndWaitForResult(mAwContents, mContentsClient,
+                    "history.pushState(null, null, '" + fragmentPath + "');");
+            onPageFinishedHelper.waitForCallback(currentCallCount);
+            Assert.assertEquals(fragmentUrl, onPageFinishedHelper.getUrl());
+            Assert.assertEquals(2, onPageFinishedHelper.getCallCount());
+        } finally {
+            webServer.shutdown();
+        }
+    }
 }
