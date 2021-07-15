@@ -2534,10 +2534,10 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Search your history
       </message>
       <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_TITLE" desc="Title that states history is not saved in Incognito mode.">
-        History isn’t saved in Incognito
+        Sites you visit aren’t saved in Incognito
       </message>
       <message name="IDS_INCOGNITO_HISTORY_PLACEHOLDER_DESCRIPTION" desc="Description that states history is not saved in Incognito mode.">
-        Chrome doesn’t save your browsing history when you choose to browse privately. You can still use bookmarks to access your favorite sites.
+        To clear Incognito browsing history from your device, close all tabs
       </message>
 
       <!-- Close Incognito tabs notification messages -->
