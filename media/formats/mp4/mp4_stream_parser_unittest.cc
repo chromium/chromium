@@ -718,23 +718,29 @@ TEST_F(MP4StreamParserTest, Vp9) {
   EXPECT_EQ(hdr_metadata.max_content_light_level, 1000u);
   EXPECT_EQ(hdr_metadata.max_frame_average_light_level, 640u);
 
-  const auto& mastering_metadata = hdr_metadata.mastering_metadata;
+  const auto& color_volume_metadata = hdr_metadata.color_volume_metadata;
 
   constexpr float kColorCoordinateUnit = 1 / 16.0f;
-  EXPECT_NEAR(mastering_metadata.primary_r.x(), 0.68, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.primary_r.y(), 0.31998, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.primary_g.x(), 0.26496, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.primary_g.y(), 0.68998, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.primary_b.x(), 0.15, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.primary_b.y(), 0.05998, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.white_point.x(), 0.314, kColorCoordinateUnit);
-  EXPECT_NEAR(mastering_metadata.white_point.y(), 0.351, kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_r.x(), 0.68, kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_r.y(), 0.31998,
+              kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_g.x(), 0.26496,
+              kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_g.y(), 0.68998,
+              kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_b.x(), 0.15, kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.primary_b.y(), 0.05998,
+              kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.white_point.x(), 0.314,
+              kColorCoordinateUnit);
+  EXPECT_NEAR(color_volume_metadata.white_point.y(), 0.351,
+              kColorCoordinateUnit);
 
   constexpr float kLuminanceMaxUnit = 1 / 8.0f;
-  EXPECT_NEAR(mastering_metadata.luminance_max, 1000.0f, kLuminanceMaxUnit);
+  EXPECT_NEAR(color_volume_metadata.luminance_max, 1000.0f, kLuminanceMaxUnit);
 
   constexpr float kLuminanceMinUnit = 1 / 14.0;
-  EXPECT_NEAR(mastering_metadata.luminance_min, 0.01f, kLuminanceMinUnit);
+  EXPECT_NEAR(color_volume_metadata.luminance_min, 0.01f, kLuminanceMinUnit);
 }
 
 TEST_F(MP4StreamParserTest, FourCCToString) {

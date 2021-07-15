@@ -208,10 +208,10 @@ static const ElementIdInfo kColourIds[] = {
     {UINT, kWebMIdPrimaries},
     {UINT, kWebMIdMaxCLL},
     {UINT, kWebMIdMaxFALL},
-    {LIST, kWebMIdMasteringMetadata},
+    {LIST, kWebMIdColorVolumeMetadata},
 };
 
-static const ElementIdInfo kMasteringMetadataIds[] = {
+static const ElementIdInfo kColorVolumeMetadataIds[] = {
     {FLOAT, kWebMIdPrimaryRChromaticityX},
     {FLOAT, kWebMIdPrimaryRChromaticityY},
     {FLOAT, kWebMIdPrimaryGChromaticityX},
@@ -432,7 +432,7 @@ static const ListElementInfo kListElementInfo[] = {
     LIST_ELEMENT_INFO(kWebMIdTargets, 3, kTargetsIds),
     LIST_ELEMENT_INFO(kWebMIdSimpleTag, 3, kSimpleTagIds),
     LIST_ELEMENT_INFO(kWebMIdColour, 4, kColourIds),
-    LIST_ELEMENT_INFO(kWebMIdMasteringMetadata, 5, kMasteringMetadataIds),
+    LIST_ELEMENT_INFO(kWebMIdColorVolumeMetadata, 5, kColorVolumeMetadataIds),
     LIST_ELEMENT_INFO(kWebMIdProjection, 4, kProjectionIds),
 };
 

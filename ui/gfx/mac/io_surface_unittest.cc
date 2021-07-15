@@ -14,12 +14,12 @@ namespace {
 // Check that empty NSBezierPath is returned for empty SkPath.
 TEST(IOSurface, HDRMetadata) {
   gfx::HDRMetadata in;
-  in.mastering_metadata.primary_r = PointF(1.0, 2.0);
-  in.mastering_metadata.primary_g = PointF(4.0, 5.0);
-  in.mastering_metadata.primary_b = PointF(7.0, 8.0);
-  in.mastering_metadata.white_point = PointF(10.0, 11.0);
-  in.mastering_metadata.luminance_max = 13;
-  in.mastering_metadata.luminance_min = 14;
+  in.color_volume_metadata.primary_r = PointF(1.0, 2.0);
+  in.color_volume_metadata.primary_g = PointF(4.0, 5.0);
+  in.color_volume_metadata.primary_b = PointF(7.0, 8.0);
+  in.color_volume_metadata.white_point = PointF(10.0, 11.0);
+  in.color_volume_metadata.luminance_max = 13;
+  in.color_volume_metadata.luminance_min = 14;
   in.max_content_light_level = 15;
   in.max_frame_average_light_level = 16;
 

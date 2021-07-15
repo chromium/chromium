@@ -149,7 +149,8 @@ bool AVSampleBufferDisplayLayerEnqueueIOSurface(
       // haven't been able to find a way.
       gfx::HDRMetadata hdr_metadata;
       if (IOSurfaceGetHDRMetadata(io_surface, hdr_metadata)) {
-        if (!(hdr_metadata.mastering_metadata == gfx::MasteringMetadata())) {
+        if (!(hdr_metadata.color_volume_metadata ==
+              gfx::ColorVolumeMetadata())) {
           CVBufferSetAttachment(
               cv_pixel_buffer, kCVImageBufferMasteringDisplayColorVolumeKey,
               media::GenerateMasteringDisplayColorVolume(hdr_metadata),

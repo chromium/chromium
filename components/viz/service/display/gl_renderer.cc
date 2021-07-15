@@ -3697,9 +3697,9 @@ void GLRenderer::SetUseProgram(const ProgramKey& program_key_no_color,
   if (adjust_src_white_level && src_color_space.IsHDR()) {
     // TODO(b/183236148): consider using the destination's HDR static metadata
     // in current_frame()->display_color_spaces.hdr_static_metadata() and the
-    // mastering metadata in |src_hdr_metadata| for the tone mapping; e.g. the
-    // content might be mastered in 0-1000 nits but the display only be able to
-    // represent 0 to 500.
+    // color volume metadata in |src_hdr_metadata| for the tone mapping; e.g.
+    // the content might be mastered in 0-1000 nits but the display only be able
+    // to represent 0 to 500.
     adjusted_src_color_space = src_color_space.GetWithSDRWhiteLevel(
         current_frame()->display_color_spaces.GetSDRWhiteLevel());
   }

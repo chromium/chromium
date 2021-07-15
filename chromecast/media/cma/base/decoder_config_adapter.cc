@@ -340,8 +340,8 @@ VideoConfig DecoderConfigAdapter::ToCastVideoConfig(
     video_config.hdr_metadata.max_frame_average_light_level =
         hdr_metadata->max_frame_average_light_level;
 
-    const auto& mm1 = hdr_metadata->mastering_metadata;
-    auto& mm2 = video_config.hdr_metadata.mastering_metadata;
+    const auto& mm1 = hdr_metadata->color_volume_metadata;
+    auto& mm2 = video_config.hdr_metadata.color_volume_metadata;
     mm2.primary_r_chromaticity_x = mm1.primary_r.x();
     mm2.primary_r_chromaticity_y = mm1.primary_r.y();
     mm2.primary_g_chromaticity_x = mm1.primary_g.x();

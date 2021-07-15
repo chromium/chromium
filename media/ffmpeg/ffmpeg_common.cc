@@ -672,22 +672,22 @@ bool AVStreamToVideoDecoderConfig(const AVStream* stream,
       AVMasteringDisplayMetadata* metadata =
           reinterpret_cast<AVMasteringDisplayMetadata*>(side_data.data);
       if (metadata->has_primaries) {
-        hdr_metadata.mastering_metadata.primary_r =
+        hdr_metadata.color_volume_metadata.primary_r =
             gfx::PointF(av_q2d(metadata->display_primaries[0][0]),
                         av_q2d(metadata->display_primaries[0][1]));
-        hdr_metadata.mastering_metadata.primary_g =
+        hdr_metadata.color_volume_metadata.primary_g =
             gfx::PointF(av_q2d(metadata->display_primaries[1][0]),
                         av_q2d(metadata->display_primaries[1][1]));
-        hdr_metadata.mastering_metadata.primary_b =
+        hdr_metadata.color_volume_metadata.primary_b =
             gfx::PointF(av_q2d(metadata->display_primaries[2][0]),
                         av_q2d(metadata->display_primaries[2][1]));
-        hdr_metadata.mastering_metadata.white_point = gfx::PointF(
+        hdr_metadata.color_volume_metadata.white_point = gfx::PointF(
             av_q2d(metadata->white_point[0]), av_q2d(metadata->white_point[1]));
       }
       if (metadata->has_luminance) {
-        hdr_metadata.mastering_metadata.luminance_max =
+        hdr_metadata.color_volume_metadata.luminance_max =
             av_q2d(metadata->max_luminance);
-        hdr_metadata.mastering_metadata.luminance_min =
+        hdr_metadata.color_volume_metadata.luminance_min =
             av_q2d(metadata->min_luminance);
       }
       config->set_hdr_metadata(hdr_metadata);

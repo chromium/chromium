@@ -6,10 +6,11 @@
 
 namespace gfx {
 
-MasteringMetadata::MasteringMetadata() = default;
-MasteringMetadata::MasteringMetadata(const MasteringMetadata& rhs) = default;
-MasteringMetadata& MasteringMetadata::operator=(const MasteringMetadata& rhs) =
+ColorVolumeMetadata::ColorVolumeMetadata() = default;
+ColorVolumeMetadata::ColorVolumeMetadata(const ColorVolumeMetadata& rhs) =
     default;
+ColorVolumeMetadata& ColorVolumeMetadata::operator=(
+    const ColorVolumeMetadata& rhs) = default;
 
 HDRMetadata::HDRMetadata() = default;
 HDRMetadata::HDRMetadata(const HDRMetadata& rhs) = default;

@@ -8,7 +8,7 @@ import "ui/gfx/geometry/mojom/geometry.mojom";
 
 // This defines a mojo transport format for gfx::HDRMetadata.
 // See ui/gl/hdr_metadata.h for description.
-struct MasteringMetadata {
+struct ColorVolumeMetadata {
     gfx.mojom.PointF primary_r;
     gfx.mojom.PointF primary_g;
     gfx.mojom.PointF primary_b;
@@ -18,7 +18,7 @@ struct MasteringMetadata {
   };
 
 struct HDRMetadata {
-    MasteringMetadata mastering_metadata;
+    ColorVolumeMetadata color_volume_metadata;
     uint32 max_content_light_level;
     uint32 max_frame_average_light_level;
   };

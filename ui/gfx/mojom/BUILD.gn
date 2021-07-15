@@ -230,8 +230,8 @@ mojom("mojom") {
     {
       types = [
         {
-          mojom = "gfx.mojom.MasteringMetadata"
-          cpp = "::gfx::MasteringMetadata"
+          mojom = "gfx.mojom.ColorVolumeMetadata"
+          cpp = "::gfx::ColorVolumeMetadata"
         },
         {
           mojom = "gfx.mojom.HDRMetadata"

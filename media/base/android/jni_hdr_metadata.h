@@ -46,10 +46,12 @@ class JniHdrMetadata {
   jfloat WhitePointChromaticityY(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj);
-  jfloat MaxMasteringLuminance(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
-  jfloat MinMasteringLuminance(JNIEnv* env,
-                               const base::android::JavaParamRef<jobject>& obj);
+  jfloat MaxColorVolumeLuminance(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
+  jfloat MinColorVolumeLuminance(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj);
   jint MaxContentLuminance(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
   jint MaxFrameAverageLuminance(

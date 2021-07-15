@@ -164,8 +164,8 @@ void SetContentLightLevelInfo(const gfx::HDRMetadata& hdr_metadata,
   }
 }
 
-void SetMasteringMetadata(const gfx::HDRMetadata& hdr_metadata,
-                          NSMutableDictionary<NSString*, id>* extensions) {
+void SetColorVolumeMetadata(const gfx::HDRMetadata& hdr_metadata,
+                            NSMutableDictionary<NSString*, id>* extensions) {
   if (@available(macos 10.13, *)) {
     SetDictionaryValue(
         extensions, kCMFormatDescriptionExtension_MasteringDisplayColorVolume,
@@ -262,7 +262,7 @@ CFMutableDictionaryRef CreateFormatExtensions(
 
   if (hdr_metadata) {
     SetContentLightLevelInfo(*hdr_metadata, extensions);
-    SetMasteringMetadata(*hdr_metadata, extensions);
+    SetColorVolumeMetadata(*hdr_metadata, extensions);
   }
 
   if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX)

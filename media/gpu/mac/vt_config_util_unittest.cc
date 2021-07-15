@@ -211,13 +211,13 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
   gfx::HDRMetadata hdr_meta;
   hdr_meta.max_content_light_level = 1000;
   hdr_meta.max_frame_average_light_level = 600;
-  auto& mastering = hdr_meta.mastering_metadata;
-  mastering.luminance_min = 0;
-  mastering.luminance_max = 1000;
-  mastering.primary_r = gfx::PointF(0.68, 0.32);
-  mastering.primary_g = gfx::PointF(0.2649, 0.69);
-  mastering.primary_b = gfx::PointF(0.15, 0.06);
-  mastering.white_point = gfx::PointF(0.3127, 0.3290);
+  auto& cv_metadata = hdr_meta.color_volume_metadata;
+  cv_metadata.luminance_min = 0;
+  cv_metadata.luminance_max = 1000;
+  cv_metadata.primary_r = gfx::PointF(0.68, 0.32);
+  cv_metadata.primary_g = gfx::PointF(0.2649, 0.69);
+  cv_metadata.primary_b = gfx::PointF(0.15, 0.06);
+  cv_metadata.white_point = gfx::PointF(0.3127, 0.3290);
 
   base::ScopedCFTypeRef<CFDictionaryRef> fmt(CreateFormatExtensions(
       kCMVideoCodecType_H264, H264PROFILE_MAIN,
@@ -236,18 +236,18 @@ TEST(VTConfigUtil, CreateFormatExtensions_HDRMetadata) {
                                                  nullptr));
       mp4::MasteringDisplayColorVolume mdcv_box;
       ASSERT_TRUE(mdcv_box.Parse(box_reader.get()));
-      EXPECT_EQ(mdcv_box.display_primaries_gx, mastering.primary_g.x());
-      EXPECT_EQ(mdcv_box.display_primaries_gy, mastering.primary_g.y());
-      EXPECT_EQ(mdcv_box.display_primaries_bx, mastering.primary_b.x());
-      EXPECT_EQ(mdcv_box.display_primaries_by, mastering.primary_b.y());
-      EXPECT_EQ(mdcv_box.display_primaries_rx, mastering.primary_r.x());
-      EXPECT_EQ(mdcv_box.display_primaries_ry, mastering.primary_r.y());
-      EXPECT_EQ(mdcv_box.white_point_x, mastering.white_point.x());
-      EXPECT_EQ(mdcv_box.white_point_y, mastering.white_point.y());
+      EXPECT_EQ(mdcv_box.display_primaries_gx, cv_metadata.primary_g.x());
+      EXPECT_EQ(mdcv_box.display_primaries_gy, cv_metadata.primary_g.y());
+      EXPECT_EQ(mdcv_box.display_primaries_bx, cv_metadata.primary_b.x());
+      EXPECT_EQ(mdcv_box.display_primaries_by, cv_metadata.primary_b.y());
+      EXPECT_EQ(mdcv_box.display_primaries_rx, cv_metadata.primary_r.x());
+      EXPECT_EQ(mdcv_box.display_primaries_ry, cv_metadata.primary_r.y());
+      EXPECT_EQ(mdcv_box.white_point_x, cv_metadata.white_point.x());
+      EXPECT_EQ(mdcv_box.white_point_y, cv_metadata.white_point.y());
       EXPECT_EQ(mdcv_box.max_display_mastering_luminance,
-                mastering.luminance_max);
+                cv_metadata.luminance_max);
       EXPECT_EQ(mdcv_box.min_display_mastering_luminance,
-                mastering.luminance_min);
+                cv_metadata.luminance_min);
     }
 
     {

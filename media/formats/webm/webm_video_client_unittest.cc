@@ -106,9 +106,9 @@ TEST_P(WebMVideoClientTest, AutodetectVp9Profile2HDRMetaData) {
   const bool has_valid_codec_private = GetParam().codec_private.size() > 3;
 
   auto* color_parser = OnListStart(kWebMIdColour);
-  auto* metadata_parser = color_parser->OnListStart(kWebMIdMasteringMetadata);
+  auto* metadata_parser = color_parser->OnListStart(kWebMIdColorVolumeMetadata);
   metadata_parser->OnFloat(kWebMIdPrimaryRChromaticityX, 1.0);
-  color_parser->OnListEnd(kWebMIdMasteringMetadata);
+  color_parser->OnListEnd(kWebMIdColorVolumeMetadata);
   OnListEnd(kWebMIdColour);
 
   VideoDecoderConfig config;

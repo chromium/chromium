@@ -234,21 +234,22 @@ struct MediaSerializer<gfx::HDRMetadata> {
   static base::Value Serialize(const gfx::HDRMetadata& value) {
     // TODO(tmathmeyer) serialize more fields here potentially.
     base::Value result(base::Value::Type::DICTIONARY);
-    FIELD_SERIALIZE("luminance range",
-                    base::StringPrintf("%.2f => %.2f",
-                                       value.mastering_metadata.luminance_min,
-                                       value.mastering_metadata.luminance_max));
+    FIELD_SERIALIZE(
+        "luminance range",
+        base::StringPrintf("%.2f => %.2f",
+                           value.color_volume_metadata.luminance_min,
+                           value.color_volume_metadata.luminance_max));
     FIELD_SERIALIZE("primaries",
                     base::StringPrintf(
                         "[r:%.4f,%.4f, g:%.4f,%.4f, b:%.4f,%.4f, wp:%.4f,%.4f]",
-                        value.mastering_metadata.primary_r.x(),
-                        value.mastering_metadata.primary_r.y(),
-                        value.mastering_metadata.primary_g.x(),
-                        value.mastering_metadata.primary_g.y(),
-                        value.mastering_metadata.primary_b.x(),
-                        value.mastering_metadata.primary_b.y(),
-                        value.mastering_metadata.white_point.x(),
-                        value.mastering_metadata.white_point.y()));
+                        value.color_volume_metadata.primary_r.x(),
+                        value.color_volume_metadata.primary_r.y(),
+                        value.color_volume_metadata.primary_g.x(),
+                        value.color_volume_metadata.primary_g.y(),
+                        value.color_volume_metadata.primary_b.x(),
+                        value.color_volume_metadata.primary_b.y(),
+                        value.color_volume_metadata.white_point.x(),
+                        value.color_volume_metadata.white_point.y()));
     return result;
   }
 };

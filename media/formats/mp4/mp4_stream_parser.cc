@@ -60,23 +60,23 @@ EncryptionScheme GetEncryptionScheme(const ProtectionSchemeInfo& sinf) {
   return EncryptionScheme::kUnencrypted;
 }
 
-gfx::MasteringMetadata ConvertMdcvToMasteringMetadata(
+gfx::ColorVolumeMetadata ConvertMdcvToColorVolumeMetadata(
     const MasteringDisplayColorVolume& mdcv) {
-  gfx::MasteringMetadata mastering_metadata;
+  gfx::ColorVolumeMetadata color_volume_metadata;
 
-  mastering_metadata.primary_r = gfx::MasteringMetadata::Chromaticity(
+  color_volume_metadata.primary_r = gfx::ColorVolumeMetadata::Chromaticity(
       mdcv.display_primaries_rx, mdcv.display_primaries_ry);
-  mastering_metadata.primary_g = gfx::MasteringMetadata::Chromaticity(
+  color_volume_metadata.primary_g = gfx::ColorVolumeMetadata::Chromaticity(
       mdcv.display_primaries_gx, mdcv.display_primaries_gy);
-  mastering_metadata.primary_b = gfx::MasteringMetadata::Chromaticity(
+  color_volume_metadata.primary_b = gfx::ColorVolumeMetadata::Chromaticity(
       mdcv.display_primaries_bx, mdcv.display_primaries_by);
-  mastering_metadata.white_point = gfx::MasteringMetadata::Chromaticity(
+  color_volume_metadata.white_point = gfx::ColorVolumeMetadata::Chromaticity(
       mdcv.white_point_x, mdcv.white_point_y);
 
-  mastering_metadata.luminance_max = mdcv.max_display_mastering_luminance;
-  mastering_metadata.luminance_min = mdcv.min_display_mastering_luminance;
+  color_volume_metadata.luminance_max = mdcv.max_display_mastering_luminance;
+  color_volume_metadata.luminance_min = mdcv.min_display_mastering_luminance;
 
-  return mastering_metadata;
+  return color_volume_metadata;
 }
 
 }  // namespace
@@ -547,7 +547,7 @@ bool MP4StreamParser::ParseMoov(BoxReader* reader) {
           entry.content_light_level_information) {
         gfx::HDRMetadata hdr_metadata;
         if (entry.mastering_display_color_volume) {
-          hdr_metadata.mastering_metadata = ConvertMdcvToMasteringMetadata(
+          hdr_metadata.color_volume_metadata = ConvertMdcvToColorVolumeMetadata(
               *entry.mastering_display_color_volume);
         }
 

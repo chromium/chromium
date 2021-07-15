@@ -181,7 +181,7 @@ TEST_F(WebMStreamParserTest, ColourElement) {
   EXPECT_EQ(hdr_metadata->max_content_light_level, 11u);
   EXPECT_EQ(hdr_metadata->max_frame_average_light_level, 12u);
 
-  const gfx::MasteringMetadata& mmdata = hdr_metadata->mastering_metadata;
+  const gfx::ColorVolumeMetadata& mmdata = hdr_metadata->color_volume_metadata;
   EXPECT_FLOAT_EQ(mmdata.primary_r.x(), 0.1f);
   EXPECT_FLOAT_EQ(mmdata.primary_r.y(), 0.2f);
   EXPECT_FLOAT_EQ(mmdata.primary_g.x(), 0.1f);

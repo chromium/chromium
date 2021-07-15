@@ -43,61 +43,61 @@ jint JniHdrMetadata::Range(JNIEnv* env,
 jfloat JniHdrMetadata::PrimaryRChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_r.x();
+  return hdr_metadata_.color_volume_metadata.primary_r.x();
 }
 
 jfloat JniHdrMetadata::PrimaryRChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_r.y();
+  return hdr_metadata_.color_volume_metadata.primary_r.y();
 }
 
 jfloat JniHdrMetadata::PrimaryGChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_g.x();
+  return hdr_metadata_.color_volume_metadata.primary_g.x();
 }
 
 jfloat JniHdrMetadata::PrimaryGChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_g.y();
+  return hdr_metadata_.color_volume_metadata.primary_g.y();
 }
 
 jfloat JniHdrMetadata::PrimaryBChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_b.x();
+  return hdr_metadata_.color_volume_metadata.primary_b.x();
 }
 
 jfloat JniHdrMetadata::PrimaryBChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.primary_b.y();
+  return hdr_metadata_.color_volume_metadata.primary_b.y();
 }
 
 jfloat JniHdrMetadata::WhitePointChromaticityX(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.white_point.x();
+  return hdr_metadata_.color_volume_metadata.white_point.x();
 }
 
 jfloat JniHdrMetadata::WhitePointChromaticityY(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.white_point.y();
+  return hdr_metadata_.color_volume_metadata.white_point.y();
 }
 
-jfloat JniHdrMetadata::MaxMasteringLuminance(
+jfloat JniHdrMetadata::MaxColorVolumeLuminance(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.luminance_max;
+  return hdr_metadata_.color_volume_metadata.luminance_max;
 }
 
-jfloat JniHdrMetadata::MinMasteringLuminance(
+jfloat JniHdrMetadata::MinColorVolumeLuminance(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& obj) {
-  return hdr_metadata_.mastering_metadata.luminance_min;
+  return hdr_metadata_.color_volume_metadata.luminance_min;
 }
 
 jint JniHdrMetadata::MaxContentLuminance(

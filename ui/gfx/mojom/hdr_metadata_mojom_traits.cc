@@ -6,10 +6,10 @@
 
 namespace mojo {
 
-bool StructTraits<
-    gfx::mojom::MasteringMetadataDataView,
-    gfx::MasteringMetadata>::Read(gfx::mojom::MasteringMetadataDataView data,
-                                  gfx::MasteringMetadata* output) {
+bool StructTraits<gfx::mojom::ColorVolumeMetadataDataView,
+                  gfx::ColorVolumeMetadata>::
+    Read(gfx::mojom::ColorVolumeMetadataDataView data,
+         gfx::ColorVolumeMetadata* output) {
   output->luminance_max = data.luminance_max();
   output->luminance_min = data.luminance_min();
   if (!data.ReadPrimaryR(&output->primary_r))
@@ -28,7 +28,7 @@ bool StructTraits<gfx::mojom::HDRMetadataDataView, gfx::HDRMetadata>::Read(
     gfx::HDRMetadata* output) {
   output->max_content_light_level = data.max_content_light_level();
   output->max_frame_average_light_level = data.max_frame_average_light_level();
-  if (!data.ReadMasteringMetadata(&output->mastering_metadata))
+  if (!data.ReadColorVolumeMetadata(&output->color_volume_metadata))
     return false;
   return true;
 }

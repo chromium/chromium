@@ -14,43 +14,43 @@ namespace media {
 WebMColorMetadata::WebMColorMetadata() = default;
 WebMColorMetadata::WebMColorMetadata(const WebMColorMetadata& rhs) = default;
 
-WebMMasteringMetadataParser::WebMMasteringMetadataParser() = default;
-WebMMasteringMetadataParser::~WebMMasteringMetadataParser() = default;
+WebMColorVolumeMetadataParser::WebMColorVolumeMetadataParser() = default;
+WebMColorVolumeMetadataParser::~WebMColorVolumeMetadataParser() = default;
 
-bool WebMMasteringMetadataParser::OnFloat(int id, double val) {
+bool WebMColorVolumeMetadataParser::OnFloat(int id, double val) {
   switch (id) {
     case kWebMIdPrimaryRChromaticityX:
-      mastering_metadata_.primary_r.set_x(val);
+      color_volume_metadata_.primary_r.set_x(val);
       break;
     case kWebMIdPrimaryRChromaticityY:
-      mastering_metadata_.primary_r.set_y(val);
+      color_volume_metadata_.primary_r.set_y(val);
       break;
     case kWebMIdPrimaryGChromaticityX:
-      mastering_metadata_.primary_g.set_x(val);
+      color_volume_metadata_.primary_g.set_x(val);
       break;
     case kWebMIdPrimaryGChromaticityY:
-      mastering_metadata_.primary_g.set_y(val);
+      color_volume_metadata_.primary_g.set_y(val);
       break;
     case kWebMIdPrimaryBChromaticityX:
-      mastering_metadata_.primary_b.set_x(val);
+      color_volume_metadata_.primary_b.set_x(val);
       break;
     case kWebMIdPrimaryBChromaticityY:
-      mastering_metadata_.primary_b.set_y(val);
+      color_volume_metadata_.primary_b.set_y(val);
       break;
     case kWebMIdWhitePointChromaticityX:
-      mastering_metadata_.white_point.set_x(val);
+      color_volume_metadata_.white_point.set_x(val);
       break;
     case kWebMIdWhitePointChromaticityY:
-      mastering_metadata_.white_point.set_y(val);
+      color_volume_metadata_.white_point.set_y(val);
       break;
     case kWebMIdLuminanceMax:
-      mastering_metadata_.luminance_max = val;
+      color_volume_metadata_.luminance_max = val;
       break;
     case kWebMIdLuminanceMin:
-      mastering_metadata_.luminance_min = val;
+      color_volume_metadata_.luminance_min = val;
       break;
     default:
-      DVLOG(1) << "Unexpected id in MasteringMetadata: 0x" << std::hex << id;
+      DVLOG(1) << "Unexpected id in ColorVolumeMetadata: 0x" << std::hex << id;
       return false;
   }
   return true;
@@ -79,17 +79,17 @@ void WebMColourParser::Reset() {
 }
 
 WebMParserClient* WebMColourParser::OnListStart(int id) {
-  if (id == kWebMIdMasteringMetadata) {
-    mastering_metadata_parsed_ = false;
-    return &mastering_metadata_parser_;
+  if (id == kWebMIdColorVolumeMetadata) {
+    color_volume_metadata_parsed_ = false;
+    return &color_volume_metadata_parser_;
   }
 
   return this;
 }
 
 bool WebMColourParser::OnListEnd(int id) {
-  if (id == kWebMIdMasteringMetadata)
-    mastering_metadata_parsed_ = true;
+  if (id == kWebMIdColorVolumeMetadata)
+    color_volume_metadata_parsed_ = true;
   return true;
 }
 
@@ -192,7 +192,7 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
       primaries_, transfer_characteristics_, matrix_coefficients_, range_id);
 
   if (max_content_light_level_ != -1 || max_frame_average_light_level_ != -1 ||
-      mastering_metadata_parsed_) {
+      color_volume_metadata_parsed_) {
     color_metadata.hdr_metadata = gfx::HDRMetadata();
 
     if (max_content_light_level_ != -1) {
@@ -205,9 +205,9 @@ WebMColorMetadata WebMColourParser::GetWebMColorMetadata() const {
           max_frame_average_light_level_;
     }
 
-    if (mastering_metadata_parsed_) {
-      color_metadata.hdr_metadata->mastering_metadata =
-          mastering_metadata_parser_.GetMasteringMetadata();
+    if (color_volume_metadata_parsed_) {
+      color_metadata.hdr_metadata->color_volume_metadata =
+          color_volume_metadata_parser_.GetColorVolumeMetadata();
     }
   }
 

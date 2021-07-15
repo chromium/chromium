@@ -259,16 +259,16 @@ TEST_P(D3D11CopyingTexture2DWrapperTest,
 
 TEST_P(D3D11CopyingTexture2DWrapperTest, HDRMetadataIsSentToVideoProcessor) {
   gfx::HDRMetadata metadata;
-  metadata.mastering_metadata.primary_r =
-      gfx::MasteringMetadata::Chromaticity(0.1, 0.2);
-  metadata.mastering_metadata.primary_g =
-      gfx::MasteringMetadata::Chromaticity(0.3, 0.4);
-  metadata.mastering_metadata.primary_b =
-      gfx::MasteringMetadata::Chromaticity(0.5, 0.6);
-  metadata.mastering_metadata.white_point =
-      gfx::MasteringMetadata::Chromaticity(0.7, 0.8);
-  metadata.mastering_metadata.luminance_max = 0.9;
-  metadata.mastering_metadata.luminance_min = 0.05;
+  metadata.color_volume_metadata.primary_r =
+      gfx::ColorVolumeMetadata::Chromaticity(0.1, 0.2);
+  metadata.color_volume_metadata.primary_g =
+      gfx::ColorVolumeMetadata::Chromaticity(0.3, 0.4);
+  metadata.color_volume_metadata.primary_b =
+      gfx::ColorVolumeMetadata::Chromaticity(0.5, 0.6);
+  metadata.color_volume_metadata.white_point =
+      gfx::ColorVolumeMetadata::Chromaticity(0.7, 0.8);
+  metadata.color_volume_metadata.luminance_max = 0.9;
+  metadata.color_volume_metadata.luminance_min = 0.05;
   metadata.max_content_light_level = 1000;
   metadata.max_frame_average_light_level = 10000;
 

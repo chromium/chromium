@@ -345,17 +345,17 @@ TEST_F(FFmpegCommonTest, VerifyHDRMetadataAndColorSpaceInfo) {
   EXPECT_TRUE(AVStreamToVideoDecoderConfig(stream, &video_config));
   ASSERT_TRUE(video_config.hdr_metadata().has_value());
   EXPECT_EQ(30.0,
-            video_config.hdr_metadata()->mastering_metadata.luminance_min);
+            video_config.hdr_metadata()->color_volume_metadata.luminance_min);
   EXPECT_EQ(40.0,
-            video_config.hdr_metadata()->mastering_metadata.luminance_max);
+            video_config.hdr_metadata()->color_volume_metadata.luminance_max);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_r);
+            video_config.hdr_metadata()->color_volume_metadata.primary_r);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_g);
+            video_config.hdr_metadata()->color_volume_metadata.primary_g);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.primary_b);
+            video_config.hdr_metadata()->color_volume_metadata.primary_b);
   EXPECT_EQ(gfx::PointF(0.1, 0.2),
-            video_config.hdr_metadata()->mastering_metadata.white_point);
+            video_config.hdr_metadata()->color_volume_metadata.white_point);
 
   EXPECT_EQ(VideoColorSpace(VideoColorSpace::PrimaryID::SMPTEST428_1,
                             VideoColorSpace::TransferID::LOG,
