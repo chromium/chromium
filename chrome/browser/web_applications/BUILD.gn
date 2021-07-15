@@ -201,6 +201,13 @@ source_set("web_applications_test_support_minimal") {
     "//content/public/browser",
     "//url",
   ]
+  if (is_chromeos_ash) {
+    sources += [
+      "test/with_crosapi_param.cc",
+      "test/with_crosapi_param.h",
+    ]
+    deps += [ "//ash/constants" ]
+  }
 }
 
 # This test_support library doesn't use extensions.

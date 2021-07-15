@@ -33,6 +33,7 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
+#include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
@@ -44,6 +45,9 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+
+using web_app::test::CrosapiParam;
+using web_app::test::WithCrosapiParam;
 
 namespace app_list {
 
@@ -362,8 +366,12 @@ IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest,
                                       -20424143, 1);
 }
 
+class AppListSearchSystemWebAppBrowserTest : public AppListSearchBrowserTest,
+                                             public WithCrosapiParam {};
+
 // Test that Help App shows up normally even when suggestion chip should show.
-IN_PROC_BROWSER_TEST_F(AppListSearchBrowserTest, AppListSearchHasApp) {
+IN_PROC_BROWSER_TEST_P(AppListSearchSystemWebAppBrowserTest,
+                       AppListSearchHasApp) {
   web_app::WebAppProvider::Get(GetProfile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
@@ -460,5 +468,11 @@ IN_PROC_BROWSER_TEST_F(AppListDriveSearchBrowserTest, DriveFolderTest) {
   ASSERT_TRUE(results[0]);
   EXPECT_EQ(base::UTF16ToASCII(results[0]->title()), "my_folder");
 }
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppListSearchSystemWebAppBrowserTest,
+                         ::testing::Values(CrosapiParam::kDisabled,
+                                           CrosapiParam::kEnabled),
+                         WithCrosapiParam::ParamToString);
 
 }  // namespace app_list

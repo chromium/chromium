@@ -31,8 +31,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
+#include "chrome/browser/web_applications/components/web_app_id_constants.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/test/with_crosapi_param.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/test/arc_util_test_support.h"
@@ -51,6 +55,8 @@
 
 using extensions::AppWindow;
 using extensions::Extension;
+using web_app::test::CrosapiParam;
+using web_app::test::WithCrosapiParam;
 
 namespace mojo {
 
@@ -834,3 +840,49 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppWindowArcAppBrowserTest, LogicalWindowId) {
   windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
   EXPECT_EQ(0u, windows.size());
 }
+
+class AppServiceAppWindowSystemWebAppBrowserTest
+    : public AppServiceAppWindowWebAppBrowserTest,
+      public WithCrosapiParam {};
+
+IN_PROC_BROWSER_TEST_P(AppServiceAppWindowSystemWebAppBrowserTest,
+                       SystemWebAppWindow) {
+  auto& system_web_app_manager =
+      web_app::WebAppProvider::Get(browser()->profile())
+          ->system_web_app_manager();
+  system_web_app_manager.InstallSystemAppsForTesting();
+
+  const std::string app_id = web_app::kOsSettingsAppId;
+  web_app::LaunchWebAppBrowser(browser()->profile(), app_id);
+
+  auto windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
+  EXPECT_EQ(1u, windows.size());
+  aura::Window* window = *windows.begin();
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app_id, window));
+
+  const ash::ShelfItem& item = GetLastShelfItem();
+  // Since it is already active, clicking it should minimize.
+  SelectItem(item.id);
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning,
+            GetAppInstanceState(app_id, window));
+
+  // Click the item again to activate the app.
+  SelectItem(item.id);
+  EXPECT_EQ(apps::InstanceState::kStarted | apps::InstanceState::kRunning |
+                apps::InstanceState::kActive | apps::InstanceState::kVisible,
+            GetAppInstanceState(app_id, window));
+
+  controller_->Close(item.id);
+  // Make sure that the window is closed.
+  base::RunLoop().RunUntilIdle();
+  windows = app_service_proxy_->InstanceRegistry().GetWindows(app_id);
+  EXPECT_EQ(0u, windows.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         AppServiceAppWindowSystemWebAppBrowserTest,
+                         ::testing::Values(CrosapiParam::kDisabled,
+                                           CrosapiParam::kEnabled),
+                         WithCrosapiParam::ParamToString);
