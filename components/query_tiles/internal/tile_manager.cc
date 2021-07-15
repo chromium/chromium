@@ -191,7 +191,8 @@ class TileManagerImpl : public TileManager {
       loaded_groups.erase(kTileStatsGroup);
       if (tile_group_) {
         SortTilesAndClearUnusedStats(&tile_group_->tiles,
-                                     &tile_stats_group_->tile_stats);
+                                     &tile_stats_group_->tile_stats,
+                                     TileShuffler());
       }
     }
     trending_tile_handler_.Reset();
