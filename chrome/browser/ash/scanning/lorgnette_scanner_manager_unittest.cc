@@ -80,6 +80,16 @@ Scanner CreateZeroconfScanner(bool usable = true) {
       .value();
 }
 
+// Returns a zeroconf Scanner with |scanner_name| and device name marked
+// |usable|.
+Scanner CreateScannerCustomName(const std::string& scanner_name,
+                                bool usable = true) {
+  return CreateSaneAirscanScanner(scanner_name,
+                                  ZeroconfScannerDetector::kEsclsServiceType,
+                                  "", net::IPAddress(192, 168, 0, 3), 5, usable)
+      .value();
+}
+
 class FakeZeroconfScannerDetector final : public ZeroconfScannerDetector {
  public:
   FakeZeroconfScannerDetector() = default;
@@ -168,6 +178,13 @@ class LorgnetteScannerManagerTest : public testing::Test {
         base::BindOnce(
             &LorgnetteScannerManagerTest::GetScannerCapabilitiesCallback,
             base::Unretained(this)));
+  }
+
+  // Calls LorgnetteScannerManager::IsRotateAlternate() and returns result.
+  bool GetRotateAlternate(const std::string& scanner_name,
+                          const std::string& source_name) {
+    return lorgnette_scanner_manager_->IsRotateAlternate(scanner_name,
+                                                         source_name);
   }
 
   // Calls LorgnetteScannerManager::Scan() and binds a callback to process the
@@ -499,6 +516,46 @@ TEST_F(LorgnetteScannerManagerTest, NoUsableDeviceName) {
   WaitForResult();
   EXPECT_EQ(scan_data().size(), 0);
   EXPECT_EQ(failure_mode(), lorgnette::SCAN_FAILURE_MODE_UNKNOWN);
+}
+
+// Test that images aren't rotated when scanner isn't an Epson scanner.
+TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonEpson) {
+  auto scanner = CreateZeroconfScanner();
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
+}
+
+// Test that images aren't rotated when scanner is a non-rotating Epson scanner.
+TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedEpsonException) {
+  auto scanner = CreateScannerCustomName("Epson WF-C579Ra");
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
+}
+
+// Test that images aren't rotated when scan request is non-ADF.
+TEST_F(LorgnetteScannerManagerTest, ScanNotRotatedNonADF) {
+  auto scanner = CreateScannerCustomName("Epson XP-7100");
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_FALSE(GetRotateAlternate(scanner.display_name, "Flatbed"));
+}
+
+// Test that scanned images are rotated when scanner setup requires it.
+TEST_F(LorgnetteScannerManagerTest, ScanRotated) {
+  auto scanner = CreateScannerCustomName("Epson XP-7100");
+  fake_zeroconf_scanner_detector()->AddDetections({scanner});
+  CompleteTasks();
+  GetScannerNames();
+  WaitForResult();
+  EXPECT_TRUE(GetRotateAlternate(scanner.display_name, "ADF Duplex"));
 }
 
 // Test that scanning succeeds with a valid scanner name.

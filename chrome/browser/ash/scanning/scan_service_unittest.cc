@@ -62,7 +62,8 @@ constexpr char kFirstTestScannerName[] = "Test Scanner 1";
 constexpr char16_t kFirstTestScannerName16[] = u"Test Scanner 1";
 constexpr char kSecondTestScannerName[] = "Test Scanner 2";
 constexpr char16_t kSecondTestScannerName16[] = u"Test Scanner 2";
-constexpr char kEpsonTestName[] = "Epson";
+constexpr char kEpsonTestName[] =
+    "airscan:escl:EPSON XP-7100 Series:http://100.107.108.190:443/eSCL/";
 
 // Document source name used for tests.
 constexpr char kDocumentSourceName[] = "Flatbed";
@@ -167,10 +168,12 @@ std::string CreatePng() {
 
 // Returns scan settings with the given path and file type.
 mojo_ipc::ScanSettings CreateScanSettings(const base::FilePath& scan_to_path,
-                                          const mojo_ipc::FileType& file_type) {
+                                          const mojo_ipc::FileType& file_type,
+                                          const std::string source = "") {
   mojo_ipc::ScanSettings settings;
   settings.scan_to_path = scan_to_path;
   settings.file_type = file_type;
+  settings.source_name = source;
   return settings;
 }
 
@@ -507,8 +510,9 @@ TEST_F(ScanServiceTest, RotateEpsonADF) {
   base::Time::Now().LocalExplode(&scan_time);
 
   scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
-  mojo_ipc::ScanSettings settings = CreateScanSettings(
-      scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPdf);
+  mojo_ipc::ScanSettings settings =
+      CreateScanSettings(scanned_files_mount_->GetRootPath(),
+                         mojo_ipc::FileType::kPdf, "ADF Duplex");
   const base::FilePath saved_scan_path =
       CreateSavedPdfScanPath(scanned_files_mount_->GetRootPath(), scan_time);
   EXPECT_FALSE(base::PathExists(saved_scan_path));

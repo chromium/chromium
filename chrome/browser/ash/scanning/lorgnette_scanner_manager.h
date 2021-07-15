@@ -52,6 +52,11 @@ class LorgnetteScannerManager : public KeyedService {
       const std::string& scanner_name,
       GetScannerCapabilitiesCallback callback) = 0;
 
+  // Returns whether or not an ADF scanner that flips alternate pages was
+  // selected based on |scanner_name| and |source_name|.
+  virtual bool IsRotateAlternate(const std::string& scanner_name,
+                                 const std::string& source_name) = 0;
+
   // Performs a scan with the scanner specified by |scanner_name| using the
   // given |scan_properties|. As each page is scanned, |progress_callback| is
   // called with the current progress percent from 0 to 100. As each scanned

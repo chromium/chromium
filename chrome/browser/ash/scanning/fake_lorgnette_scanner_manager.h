@@ -28,6 +28,8 @@ class FakeLorgnetteScannerManager final : public LorgnetteScannerManager {
   void GetScannerNames(GetScannerNamesCallback callback) override;
   void GetScannerCapabilities(const std::string& scanner_name,
                               GetScannerCapabilitiesCallback callback) override;
+  bool IsRotateAlternate(const std::string& scanner_name,
+                         const std::string& source_name) override;
   void Scan(const std::string& scanner_name,
             const lorgnette::ScanSettings& settings,
             ProgressCallback progress_callback,

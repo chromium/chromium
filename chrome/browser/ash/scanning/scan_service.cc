@@ -31,7 +31,6 @@
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
 #include "chromeos/utils/pdf_conversion.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
 
@@ -209,10 +208,8 @@ void ScanService::StartScan(
   }
 
   // Determine if an ADF scanner that flips alternate pages was selected.
-  rotate_alternate_pages_ =
-      RE2::PartialMatch(scanner_name, RE2("([Ee][Pp][Ss][Oo][Nn])(.*)")) &&
-      RE2::PartialMatch(settings->source_name,
-                        RE2("([Aa][Dd][Ff] [Dd][Uu][Pp][Ll][Ee][Xx])"));
+  rotate_alternate_pages_ = lorgnette_scanner_manager_->IsRotateAlternate(
+      scanner_name, settings->source_name);
 
   if (!FilePathSupported(settings->scan_to_path)) {
     std::move(callback).Run(false);
@@ -426,6 +423,7 @@ void ScanService::OnAllPagesSaved(lorgnette::ScanFailureMode failure_mode) {
 
 void ScanService::ClearScanState() {
   page_save_failed_ = false;
+  rotate_alternate_pages_ = false;
   scanned_file_paths_.clear();
   scanned_images_.clear();
   num_pages_scanned_ = 0;

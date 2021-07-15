@@ -10,8 +10,60 @@
 #include "base/location.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "third_party/re2/src/re2/re2.h"
 
 namespace ash {
+
+namespace {
+
+// A list of Epson models that do not rotate alternating ADF scanned pages
+// to be excluded in IsRotateAlternate().
+constexpr char kEpsonNoFlipModels[] =
+    "\\b("
+    "DS-790WN"
+    "|LP-M8180A"
+    "|LP-M8180F"
+    "|LX-10020M"
+    "|LX-10050KF"
+    "|LX-10050MF"
+    "|LX-6050MF"
+    "|LX-7550MF"
+    "|PX-M7070FX"
+    "|PX-M7080FX"
+    "|PX-M7090FX"
+    "|PX-M7110F"
+    "|PX-M7110FP"
+    "|PX-M860F"
+    "|PX-M880FX"
+    "|WF-6530"
+    "|WF-6590"
+    "|WF-6593"
+    "|WF-C20600"
+    "|WF-C20600a"
+    "|WF-C20600c"
+    "|WF-C20750"
+    "|WF-C20750a"
+    "|WF-C20750c"
+    "|WF-C21000"
+    "|WF-C21000a"
+    "|WF-C21000c"
+    "|WF-C579R"
+    "|WF-C579Ra"
+    "|WF-C8610"
+    "|WF-C8690"
+    "|WF-C8690a"
+    "|WF-C869R"
+    "|WF-C869Ra"
+    "|WF-C878R"
+    "|WF-C878Ra"
+    "|WF-C879R"
+    "|WF-C879Ra"
+    "|WF-M21000"
+    "|WF-M21000a"
+    "|WF-M21000c"
+    ")\\b";
+
+}  // namespace
 
 FakeLorgnetteScannerManager::FakeLorgnetteScannerManager() = default;
 
@@ -28,6 +80,25 @@ void FakeLorgnetteScannerManager::GetScannerCapabilities(
     GetScannerCapabilitiesCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), scanner_capabilities_));
+}
+
+bool FakeLorgnetteScannerManager::IsRotateAlternate(
+    const std::string& scanner_name,
+    const std::string& source_name) {
+  if (!RE2::PartialMatch(source_name, RE2("(?i)adf duplex"))) {
+    return false;
+  }
+
+  // No implementation of GetUsableDeviceNameAndProtocol() available
+  // so assume scanner name is formatted as device_name.
+  std::string exclude_regex = std::string("^(airscan|ippusb).*(EPSON\\s+)?") +
+                              std::string(kEpsonNoFlipModels);
+  if (RE2::PartialMatch(scanner_name, RE2("^(epsonds|epson2)")) ||
+      RE2::PartialMatch(scanner_name, RE2(exclude_regex))) {
+    return false;
+  }
+
+  return RE2::PartialMatch(scanner_name, RE2("(?i)epson"));
 }
 
 void FakeLorgnetteScannerManager::Scan(const std::string& scanner_name,
