@@ -1211,6 +1211,23 @@ void RasterImplementation::CopySubTexture(const gpu::Mailbox& source_mailbox,
                      << dest_mailbox.ToDebugString() << ", " << xoffset << ", "
                      << yoffset << ", " << x << ", " << y << ", " << width
                      << ", " << height << ")");
+  if (!source_mailbox.IsSharedImage()) {
+    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+               "source_mailbox is not a shared image.");
+    // TODO(crbug.com/1229479): This call to NOTREACHED is temporary while we
+    // investigate crbug.com/1229479. The failure with test
+    // WebRtcVideoCaptureServiceBrowserTest.
+    // FramesSentThroughTextureVirtualDeviceGetDisplayedOnPage when OOP-R
+    // Canvas is enabled does not repro on trybots, only on CI bots.
+    // Crashing here will allow us to get a client-side stack trace.
+    NOTREACHED();
+    return;
+  }
+  if (!dest_mailbox.IsSharedImage()) {
+    SetGLError(GL_INVALID_VALUE, "glCopySubTexture",
+               "dest_mailbox is not a shared image.");
+    return;
+  }
   if (width < 0) {
     SetGLError(GL_INVALID_VALUE, "glCopySubTexture", "width < 0");
     return;
