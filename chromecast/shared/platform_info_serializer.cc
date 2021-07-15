@@ -528,6 +528,12 @@ std::string PlatformInfoSerializer::ToJson() const {
   return json;
 }
 
+bool PlatformInfoSerializer::IsValid() const {
+  return MaxWidth() && MaxHeight() && MaxFrameRate() &&
+         SupportedCryptoBlockFormat() && MaxChannels() &&
+         PcmSurroundSoundSupported();
+}
+
 bool operator==(const PlatformInfoSerializer::AudioCodecInfo& first,
                 const PlatformInfoSerializer::AudioCodecInfo& second) {
   return first.codec == second.codec &&

@@ -49,6 +49,9 @@ class PlatformInfoSerializer {
   // Serializes |platform_info_| into json.
   std::string ToJson() const;
 
+  // Returns true if this object contains all "required fields" for the binding.
+  bool IsValid() const;
+
   // Setters for known valid properties.
   void SetMaxWidth(int max_width);
   void SetMaxHeight(int max_height);

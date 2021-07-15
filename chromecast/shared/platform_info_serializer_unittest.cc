@@ -253,6 +253,26 @@ TEST_F(PlatformInfoSerializerTest, MaxFillRate) {
   EXPECT_EQ(7, ConvertAndValidate(serializer_).MaxFillRate().value());
 }
 
+TEST_F(PlatformInfoSerializerTest, IsValid) {
+  serializer_.SetMaxWidth(0);
+  EXPECT_FALSE(serializer_.IsValid());
+
+  serializer_.SetMaxHeight(0);
+  EXPECT_FALSE(serializer_.IsValid());
+
+  serializer_.SetMaxFrameRate(0);
+  EXPECT_FALSE(serializer_.IsValid());
+
+  serializer_.SetSupportedCryptoBlockFormat("");
+  EXPECT_FALSE(serializer_.IsValid());
+
+  serializer_.SetMaxChannels(0);
+  EXPECT_FALSE(serializer_.IsValid());
+
+  serializer_.SetPcmSurroundSoundSupported(false);
+  EXPECT_TRUE(serializer_.IsValid());
+}
+
 TEST_F(PlatformInfoSerializerTest, AudioCodecInfo) {
   PlatformInfoSerializer::AudioCodecInfo first{
       media::AudioCodec::kCodecAAC, media::SampleFormat::kSampleFormatU8, 42,
