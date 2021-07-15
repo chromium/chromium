@@ -100,7 +100,7 @@ KURL ModuleScript::ResolveModuleSpecifier(const String& module_request,
 
 void ModuleScript::Trace(Visitor* visitor) const {
   visitor->Trace(settings_object_);
-  visitor->Trace(record_.UnsafeCast<v8::Value>());
+  visitor->Trace(record_);
   visitor->Trace(parse_error_);
   visitor->Trace(error_to_rethrow_);
   Script::Trace(visitor);

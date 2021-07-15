@@ -25,19 +25,13 @@ class CORE_EXPORT BoxedV8Module final : public GarbageCollected<BoxedV8Module> {
       : record_(isolate, module),
         identity_hash_(static_cast<unsigned>(module->GetIdentityHash())) {}
 
-  void Trace(Visitor* visitor) const {
-    // TODO(keishi): Remove UnsafeCast.
-    visitor->Trace(record_.UnsafeCast<v8::Value>());
-  }
+  void Trace(Visitor* visitor) const { visitor->Trace(record_); }
 
   v8::Local<v8::Module> NewLocal(v8::Isolate* isolate) const {
     return record_.NewLocal(isolate);
   }
 
  private:
-  // TODO(keishi): Visitor only defines a trace method for v8::Value so this
-  // needs to be cast.
-  GC_PLUGIN_IGNORE("757708")
   TraceWrapperV8Reference<v8::Module> record_;
   const unsigned identity_hash_;
   friend struct BoxedV8ModuleHash;

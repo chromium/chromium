@@ -50,10 +50,6 @@ class CORE_EXPORT ModuleRecordProduceCacheData final
  private:
   Member<SingleCachedMetadataHandler> cache_handler_;
   V8CodeCache::ProduceCacheOptions produce_cache_options_;
-
-  // TODO(keishi): Visitor only defines a trace method for v8::Value so this
-  // needs to be cast.
-  GC_PLUGIN_IGNORE("757708")
   TraceWrapperV8Reference<v8::UnboundModuleScript> unbound_script_;
 };
 

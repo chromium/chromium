@@ -44,7 +44,7 @@ ModuleRecordProduceCacheData::ModuleRecordProduceCacheData(
 
 void ModuleRecordProduceCacheData::Trace(Visitor* visitor) const {
   visitor->Trace(cache_handler_);
-  visitor->Trace(unbound_script_.UnsafeCast<v8::Value>());
+  visitor->Trace(unbound_script_);
 }
 
 v8::Local<v8::Module> ModuleRecord::Compile(

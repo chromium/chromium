@@ -213,7 +213,7 @@ class PLATFORM_EXPORT Visitor {
   // Cross-component tracing interface.
   template <typename V8Type>
   void Trace(const TraceWrapperV8Reference<V8Type>& v8reference) {
-    Visit(v8reference.template Cast<v8::Value>());
+    TraceV8ReferenceImpl(v8reference);
   }
 
   // Dynamic visitor interface.
@@ -300,6 +300,24 @@ class PLATFORM_EXPORT Visitor {
   }
 
  private:
+  template <typename V8Type>
+  void TraceV8ReferenceImpl(
+      const TraceWrapperV8Reference<V8Type>& v8reference,
+      std::enable_if_t<std::is_base_of<v8::Value, V8Type>::value>* = nullptr) {
+    Visit(v8reference.template Cast<v8::Value>());
+  }
+
+  template <typename V8Type>
+  void TraceV8ReferenceImpl(
+      const TraceWrapperV8Reference<V8Type>& v8reference,
+      std::enable_if_t<!std::is_base_of<v8::Value, V8Type>::value &&
+                       std::is_base_of<v8::Data, V8Type>::value>* = nullptr) {
+    // The following cast is technically unsafe but works as the memory layout
+    // for the references is the same and V8 only needs to know that the value
+    // is a heap object.
+    Visit(v8reference.template UnsafeCast<v8::Value>());
+  }
+
   template <typename T>
   static void HandleWeakCell(const LivenessBroker&, const void*);
 
