@@ -4811,6 +4811,7 @@ test("unit_tests") {
       "../browser/download/download_shelf_context_menu_unittest.cc",
       "../browser/enterprise/signals/client_certificate_fetcher_unittest.cc",
       "../browser/metrics/power/power_metrics_reporter_unittest.cc",
+      "../browser/metrics/usage_scenario/system_event_provider_unittest.cc",
       "../browser/metrics/usage_scenario/tab_usage_scenario_tracker_unittest.cc",
       "../browser/metrics/usage_scenario/usage_scenario_data_store_unittest.cc",
       "../browser/notifications/muted_notification_handler_unittest.cc",

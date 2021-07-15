@@ -241,7 +241,7 @@ void PowerMetricsReporter::ReportCPUHistograms(
     const UsageScenarioDataStore::IntervalData& interval_data,
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     const std::vector<const char*>& suffixes) {
-  for (const char* suffix : GetSuffixes(interval_data)) {
+  for (const char* suffix : suffixes) {
     std::string complete_suffix = base::JoinString({"Total", suffix}, "");
     performance_monitor::RecordProcessHistograms(complete_suffix.c_str(),
                                                  metrics);
@@ -326,6 +326,7 @@ void PowerMetricsReporter::ReportUKMs(
     builder.SetMainScreenBrightnessPercent(
         ukm::GetLinearBucketMin(main_screen_brightness.value(), 20));
   }
+  builder.SetDeviceSleptDuringInterval(interval_data.sleep_events);
 
   builder.Record(ukm_recorder);
 }

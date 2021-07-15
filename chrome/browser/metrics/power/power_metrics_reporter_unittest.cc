@@ -212,6 +212,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       base::TimeDelta::FromSeconds(++fake_value);
   fake_interval_data.longest_visible_origin_duration =
       base::TimeDelta::FromSeconds(++fake_value);
+  fake_interval_data.sleep_events = 0;
 
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   // Pretend that the battery has dropped by 50% in 2 minutes, for a rate of
@@ -315,6 +316,8 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
   EXPECT_EQ(nullptr,
             test_ukm_recorder_.GetEntryMetric(
                 entries[0], UkmEntry::kMainScreenBrightnessPercentName));
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kDeviceSleptDuringIntervalName, false);
 
   histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
                                        1);
@@ -714,6 +717,24 @@ TEST_F(PowerMetricsReporterUnitTest, UKMBrightnessLevel) {
   EXPECT_EQ(1u, entries.size());
   test_ukm_recorder_.ExpectEntryMetric(
       entries[0], UkmEntry::kMainScreenBrightnessPercentName, 60);
+}
+
+TEST_F(PowerMetricsReporterUnitTest, UKMsWithSleepEvent) {
+  UsageScenarioDataStore::IntervalData fake_interval_data = {};
+  fake_interval_data.sleep_events = 1;
+  task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
+  battery_states_.push(BatteryLevelProvider::BatteryState{
+      1, 1, 0.50, true, base::TimeTicks::Now()});
+  data_store_.SetIntervalDataToReturn(fake_interval_data);
+  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
+  WaitForNextSample(fake_metrics);
+
+  auto entries = test_ukm_recorder_.GetEntriesByName(
+      ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+
+  test_ukm_recorder_.ExpectEntryMetric(
+      entries[0], UkmEntry::kDeviceSleptDuringIntervalName, true);
 }
 
 TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {

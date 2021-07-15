@@ -13276,6 +13276,12 @@ be describing additional metrics about the same event.
       multi-core systems.
     </summary>
   </metric>
+  <metric name="DeviceSleptDuringInterval" enum="Boolean">
+    <summary>
+      Whether or not the device has been sleeping at any point during the
+      interval.
+    </summary>
+  </metric>
   <metric name="EnergyImpactScore">
     <summary>
       Sum of the energy impact score for all Chrome processes (Mac-only).

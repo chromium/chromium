@@ -3805,6 +3805,8 @@ static_library("browser") {
       "metrics/tab_stats/tab_stats_tracker.cc",
       "metrics/tab_stats/tab_stats_tracker.h",
       "metrics/tab_stats/tab_stats_tracker_delegate.h",
+      "metrics/usage_scenario/system_event_provider.cc",
+      "metrics/usage_scenario/system_event_provider.h",
       "metrics/usage_scenario/tab_usage_scenario_tracker.cc",
       "metrics/usage_scenario/tab_usage_scenario_tracker.h",
       "metrics/usage_scenario/usage_scenario_data_store.cc",

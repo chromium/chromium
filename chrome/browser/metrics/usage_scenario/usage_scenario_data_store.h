@@ -92,6 +92,9 @@ class UsageScenarioDataStore
     // |source_id_for_longest_visible_origin_duration| if there's multiple tabs
     // for the longest visible origin visible during the interval.
     base::TimeDelta longest_visible_origin_duration;
+
+    // The number of times the system has been put to sleep during the interval.
+    uint8_t sleep_events = 0;
   };
 
   // Reset the interval data with the current state information and returns the
@@ -137,6 +140,7 @@ class UsageScenarioDataStoreImpl : public UsageScenarioDataStore {
   void OnIsCapturingVideoEnded();
   void OnAudioStarts();
   void OnAudioStops();
+  void OnSleepEvent();
 
   // Should be called when a video starts in a visible tab or when a non visible
   // tab playing video becomes visible.

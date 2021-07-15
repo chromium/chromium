@@ -207,6 +207,11 @@ void UsageScenarioDataStoreImpl::OnAudioStops() {
   }
 }
 
+void UsageScenarioDataStoreImpl::OnSleepEvent() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  interval_data_.sleep_events++;
+}
+
 void UsageScenarioDataStoreImpl::OnVideoStartsInVisibleTab() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ++visible_tabs_playing_video_;

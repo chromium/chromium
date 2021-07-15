@@ -520,3 +520,27 @@ TEST_F(UsageScenarioDataStoreTest, PlayingAudio) {
   data = ResetIntervalData();
   EXPECT_EQ(base::TimeDelta(), data.time_playing_audio);
 }
+
+TEST_F(UsageScenarioDataStoreTest, SleepEvents) {
+  data_store()->OnTabAdded();
+
+  task_environment_.FastForwardBy(kShortDelay);
+
+  data_store()->OnSleepEvent();
+  task_environment_.FastForwardBy(kShortDelay);
+
+  auto data = ResetIntervalData();
+  EXPECT_EQ(1, data.sleep_events);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnSleepEvent();
+  task_environment_.FastForwardBy(kShortDelay);
+  data_store()->OnSleepEvent();
+
+  data = ResetIntervalData();
+  EXPECT_EQ(2, data.sleep_events);
+
+  task_environment_.FastForwardBy(kShortDelay);
+  data = ResetIntervalData();
+  EXPECT_EQ(0, data.sleep_events);
+}
