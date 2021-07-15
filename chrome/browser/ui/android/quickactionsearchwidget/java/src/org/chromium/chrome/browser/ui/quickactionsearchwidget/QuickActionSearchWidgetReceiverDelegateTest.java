@@ -76,6 +76,7 @@ public class QuickActionSearchWidgetReceiverDelegateTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1229132")
     public void testHandleStartVoiceQueryAction() {
         Intent startVoiceQueryIntent =
                 new Intent(QuickActionSearchWidgetReceiverDelegate.ACTION_START_VOICE_QUERY);
