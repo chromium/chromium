@@ -74,6 +74,7 @@ class CONTENT_EXPORT FrameTree {
     FrameTreeNode* operator*() { return current_node_; }
 
    private:
+    friend class FrameTreeTest;
     friend class NodeRange;
 
     NodeIterator(const std::vector<FrameTreeNode*>& starting_nodes,
@@ -85,7 +86,7 @@ class CONTENT_EXPORT FrameTree {
     FrameTreeNode* current_node_;
     const FrameTreeNode* const root_of_subtree_to_skip_;
     const bool should_descend_into_inner_trees_;
-    base::queue<FrameTreeNode*> queue_;
+    base::circular_deque<FrameTreeNode*> queue_;
   };
 
   class CONTENT_EXPORT NodeRange {
