@@ -20,9 +20,9 @@
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -162,7 +162,31 @@ class V8DetailedMemoryDecoratorSingleProcessModeTest
 
 using V8DetailedMemoryDecoratorDeathTest = V8DetailedMemoryDecoratorTest;
 
-using V8DetailedMemoryRequestAnySeqTest = V8MemoryPerformanceManagerTestHarness;
+// TODO(crbug.com/1212792):
+// V8DetailedMemoryRequestAnySeqTest.SingleProcessRequest is sometimes timing
+// out on Windows without any logs to diagnose why. This adds a shorter timeout
+// around the test harness setup and teardown functions so we can tell if any
+// of them are the slow step. Remove this once the cause is found.
+class V8DetailedMemoryRequestAnySeqTest
+    : public V8MemoryPerformanceManagerTestHarness {
+ public:
+  using Super = V8MemoryPerformanceManagerTestHarness;
+
+  V8DetailedMemoryRequestAnySeqTest() = default;
+  ~V8DetailedMemoryRequestAnySeqTest() override = default;
+
+  void SetUp() override {
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                             TestTimeouts::action_timeout());
+    Super::SetUp();
+  }
+
+  void TearDown() override {
+    base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                             TestTimeouts::action_timeout());
+    Super::TearDown();
+  }
+};
 
 TEST_F(V8DetailedMemoryDecoratorTest, InstantiateOnEmptyGraph) {
   V8DetailedMemoryRequest memory_request(kMinTimeBetweenRequests, graph());
@@ -1690,14 +1714,16 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
   run_loop2.Run();
 }
 
-// TODO(crbug.com/1203439) Sometimes timing out on Windows.
-#if defined(OS_WIN)
-#define MAYBE_SingleProcessRequest DISABLED_SingleProcessRequest
-#else
-#define MAYBE_SingleProcessRequest SingleProcessRequest
-#endif
-TEST_F(V8DetailedMemoryRequestAnySeqTest, MAYBE_SingleProcessRequest) {
-  CreateCrossProcessChildFrame();
+TEST_F(V8DetailedMemoryRequestAnySeqTest, SingleProcessRequest) {
+  {
+    // TODO(crbug.com/1212792): This test is sometimes timing out on Windows
+    // without any logs to diagnose why. This puts a shorter timeout around
+    // the NavigationSimulator in CreateCrossProcessChildFrame so we can tell
+    // if this is the slow step. Remove this once the cause is found.
+    base::test::ScopedRunLoopTimeout navigation_timeout(
+        FROM_HERE, TestTimeouts::action_timeout());
+    CreateCrossProcessChildFrame();
+  }
 
   V8DetailedMemoryProcessData expected_process_data1;
   expected_process_data1.set_shared_v8_bytes_used(1U);
@@ -1738,6 +1764,13 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, MAYBE_SingleProcessRequest) {
   MockV8DetailedMemoryObserverAnySeq single_process_observer;
   single_process_request.AddObserver(&single_process_observer);
 
+  // TODO(crbug.com/1212792): This test is sometimes timing out on Windows
+  // without any logs to diagnose why. This puts a shorter timeout around the
+  // RunLoop below so we can tell if this is the slow step. Remove this once
+  // the cause is found.
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE,
+                                           TestTimeouts::action_timeout());
+
   // When a measurement is available the all process observer should be invoked
   // for both processes, and the single process observer only for process 1.
   base::RunLoop run_loop;
@@ -1755,13 +1788,6 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, MAYBE_SingleProcessRequest) {
               OnV8MemoryMeasurementAvailable(main_process_id(),
                                              expected_process_data1, _))
       .WillOnce(base::test::RunClosure(barrier));
-
-  // If all measurements don't arrive in a reasonable period, cancel the
-  // run loop. This ensures the test will fail with errors from the unfulfilled
-  // EXPECT_CALL statements, as expected, instead of timing out.
-  base::OneShotTimer timeout;
-  timeout.Start(FROM_HERE, TestTimeouts::action_timeout(),
-                run_loop.QuitClosure());
 
   // Now execute all the above tasks.
   run_loop.Run();
