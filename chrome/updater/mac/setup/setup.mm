@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
+#include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -323,9 +324,30 @@ bool DeleteDataFolder(UpdaterScope scope) {
   return DeleteFolder(GetBaseDirectory(scope));
 }
 
-}  // namespace
+void CleanAfterInstallFailure(UpdaterScope scope) {
+  // If install fails at any point, attempt to clean the install.
+  DeleteCandidateInstallFolder(scope);
+  RemoveUpdateWakeJobFromLaunchd(scope);
+  RemoveUpdateServiceInternalJobFromLaunchd(scope);
+}
 
-int Setup(UpdaterScope scope) {
+bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
+                                const base::FilePath& updater_executable_path) {
+  if (!base::mac::RemoveQuarantineAttribute(updater_bundle_path)) {
+    VPLOG(1) << "Could not remove com.apple.quarantine for the bundle.";
+    return false;
+  }
+
+  if (!base::mac::RemoveQuarantineAttribute(updater_executable_path)) {
+    VPLOG(1) << "Could not remove com.apple.quarantine for the "
+                "executable.";
+    return false;
+  }
+
+  return true;
+}
+
+int DoSetup(UpdaterScope scope) {
   const absl::optional<base::FilePath> dest_path =
       GetVersionedUpdaterFolderPath(scope);
 
@@ -337,6 +359,14 @@ int Setup(UpdaterScope scope) {
   const base::FilePath updater_executable_path =
       dest_path->Append(GetUpdaterAppName())
           .Append(GetUpdaterAppExecutablePath());
+
+  // Quarantine attribute needs to be removed here as the copied bundle might be
+  // given com.apple.quarantine attribute, and the server is attempted to be
+  // launched below, Gatekeeper could prompt the user.
+  if (!RemoveQuarantineAttributes(*dest_path, updater_executable_path)) {
+    VLOG(1) << "Couldn't remove quarantine bits for updater. This will likely "
+               "cause Gatekeeper to show a prompt to the user.";
+  }
 
   if (!CreateWakeLaunchdJobPlist(scope, updater_executable_path))
     return setup_exit_codes::kFailedToCreateWakeLaunchdJobPlist;
@@ -353,6 +383,15 @@ int Setup(UpdaterScope scope) {
     return setup_exit_codes::kFailedToStartLaunchdWakeJob;
 
   return setup_exit_codes::kSuccess;
+}
+
+}  // namespace
+
+int Setup(UpdaterScope scope) {
+  int error = DoSetup(scope);
+  if (error)
+    CleanAfterInstallFailure(scope);
+  return error;
 }
 
 int PromoteCandidate(UpdaterScope scope) {
