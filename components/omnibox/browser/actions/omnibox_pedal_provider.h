@@ -56,10 +56,19 @@ class OmniboxPedalProvider {
   size_t EstimateMemoryUsage() const;
 
  protected:
+  // Befriending this test base class prevents duplication of a long exhaustive
+  // unit test (specifically the TestLiteralConceptExpressions method).
+  friend class OmniboxPedalImplementationsTest;
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            ProviderFiltersPedalUpdateChrome);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxPedalImplementationsWithoutTranslationConsoleTest,
+      ProviderFiltersPedalUpdateChrome);
   FRIEND_TEST_ALL_PREFIXES(OmniboxPedalImplementationsTest,
                            UnorderedSynonymExpressionsAreConceptMatches);
+  FRIEND_TEST_ALL_PREFIXES(
+      OmniboxPedalImplementationsWithoutTranslationConsoleTest,
+      UnorderedSynonymExpressionsAreConceptMatches);
 
   // Generate a token sequence for text using internal dictionary & delimiters.
   // Outputs empty sequence if any delimited part of text is not in dictionary.
