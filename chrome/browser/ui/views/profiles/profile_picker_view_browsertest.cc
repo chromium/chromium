@@ -45,6 +45,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/profile_deletion_observer.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
@@ -325,26 +326,16 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
   // opened.
   void OpenProfileFromPicker(const base::FilePath& profile_path,
                              bool open_settings) {
-    ProfilePickerHandler* handler = web_contents()
-                                        ->GetWebUI()
-                                        ->GetController()
-                                        ->GetAs<ProfilePickerUI>()
-                                        ->GetProfilePickerHandlerForTesting();
     base::ListValue args;
     args.Append(
         base::Value::ToUniquePtrValue(util::FilePathToValue(profile_path)));
-    handler->HandleLaunchSelectedProfile(open_settings, &args);
+    profile_picker_handler()->HandleLaunchSelectedProfile(open_settings, &args);
   }
 
   // Simulates a click on "Browse as Guest".
   void OpenGuestFromPicker() {
-    ProfilePickerHandler* handler = web_contents()
-                                        ->GetWebUI()
-                                        ->GetController()
-                                        ->GetAs<ProfilePickerUI>()
-                                        ->GetProfilePickerHandlerForTesting();
     base::ListValue args;
-    handler->HandleLaunchGuestProfile(&args);
+    profile_picker_handler()->HandleLaunchGuestProfile(&args);
   }
 
   // Creates a new profile without opening a browser.
@@ -365,6 +356,17 @@ class ProfilePickerCreationFlowBrowserTest : public ProfilePickerTestBase {
                   }));
     run_loop.Run();
     return path;
+  }
+
+  // Returns profile picker webUI handler. Profile picker must be opened before
+  // calling this function.
+  ProfilePickerHandler* profile_picker_handler() {
+    DCHECK(ProfilePicker::IsOpen());
+    return web_contents()
+        ->GetWebUI()
+        ->GetController()
+        ->GetAs<ProfilePickerUI>()
+        ->GetProfilePickerHandlerForTesting();
   }
 
  private:
@@ -893,6 +895,38 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   EXPECT_FALSE(ProfileSwitchPromoHasBeenShown(new_browser));
 }
 
+// Closes the default browser window before creating a new profile in the
+// profile picker.
+// Regression test for https://crbug.com/1144092.
+IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
+                       CloseBrowserBeforeCreatingNewProfile) {
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Open the picker.
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  WaitForLayoutWithoutToolbar();
+  WaitForLoadStop(web_contents(), GURL("chrome://profile-picker"));
+
+  // Close the browser window.
+  BrowserList::GetInstance()->CloseAllBrowsersWithProfile(browser()->profile());
+  ui_test_utils::WaitForBrowserToClose(browser());
+  base::RunLoop().RunUntilIdle();
+  ASSERT_EQ(0u, BrowserList::GetInstance()->size());
+
+  // Imitate creating a new profile through the profile picker.
+  ProfilePickerHandler* handler = profile_picker_handler();
+  base::ListValue args;
+  args.Append(u"My Profile");                    // Profile name.
+  args.Append(std::make_unique<base::Value>());  // Profile color.
+  args.Append(0);                                // Avatar index.
+  args.Append(false);                            // Create shortcut.
+  handler->HandleCreateProfile(&args);
+
+  BrowserAddedWaiter(1u).Wait();
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
+  WaitForPickerClosed();
+}
+
 class ProfilePickerEnterpriseCreationFlowBrowserTest
     : public ProfilePickerCreationFlowBrowserTest {
  public:
@@ -1355,11 +1389,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the confirm switch button.
-  ProfilePickerHandler* handler = web_contents()
-                                      ->GetWebUI()
-                                      ->GetController()
-                                      ->GetAs<ProfilePickerUI>()
-                                      ->GetProfilePickerHandlerForTesting();
+  ProfilePickerHandler* handler = profile_picker_handler();
   base::ListValue args;
   args.Append(base::Value::ToUniquePtrValue(util::FilePathToValue(other_path)));
   handler->HandleConfirmProfileSwitch(&args);
@@ -1408,11 +1438,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerIntegratedEnterpriseCreationFlowBrowserTest,
   EXPECT_EQ(ProfilePicker::GetSwitchProfilePath(), other_path);
 
   // Simulate clicking on the cancel button.
-  ProfilePickerHandler* handler = web_contents()
-                                      ->GetWebUI()
-                                      ->GetController()
-                                      ->GetAs<ProfilePickerUI>()
-                                      ->GetProfilePickerHandlerForTesting();
+  ProfilePickerHandler* handler = profile_picker_handler();
   base::ListValue args;
   handler->HandleCancelProfileSwitch(&args);
 
