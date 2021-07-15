@@ -783,7 +783,8 @@ void BrowserNonClientFrameViewChromeOS::OnUpdateFrameColor() {
     inactive_color = GetFrameColor(BrowserFrameActiveState::kInactive);
   } else if (browser_view()->GetIsWebAppType()) {
     active_color = browser_view()->browser()->app_controller()->GetThemeColor();
-  } else if (!browser_view()->browser()->deprecated_is_app()) {
+  } else if (!browser_view()->browser()->is_type_app() &&
+             !browser_view()->browser()->is_type_app_popup()) {
     // TODO(crbug.com/836128): Remove when System Web Apps flag is removed, as
     // the above web-app branch will render the theme color.
     active_color = SK_ColorWHITE;
