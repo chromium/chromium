@@ -11,6 +11,7 @@
 #include "chrome/test/base/chrome_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -20,17 +21,24 @@ namespace customtabs {
 namespace {
 
 constexpr char kHeaderValue[] = "TestApp";
+constexpr char kHeaderValue2[] = "TestApp2";
 
 class CustomTabsHeader : public AndroidBrowserTest {
  public:
+  explicit CustomTabsHeader(size_t expected_header_count = 5)
+      : expected_header_count_(expected_header_count) {}
+
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
 
     run_loop_ = std::make_unique<base::RunLoop>();
     embedded_test_server()->RegisterRequestMonitor(base::BindLambdaForTesting(
         [&](const net::test_server::HttpRequest& request) {
-          if (request.relative_url == "/favicon.ico")
+          if (request.relative_url == "/favicon.ico" ||
+              request.relative_url ==
+                  "/android/customtabs/test_window_open.html") {
             return;
+          }
 
           std::string value;
           auto it = request.headers.find("X-CCT-Client-Data");
@@ -46,7 +54,7 @@ class CustomTabsHeader : public AndroidBrowserTest {
           }
 
           url_header_values_[path] = value;
-          if (url_header_values_.size() == 5)
+          if (url_header_values_.size() == expected_header_count_)
             run_loop_->Quit();
         }));
 
@@ -76,9 +84,20 @@ class CustomTabsHeader : public AndroidBrowserTest {
     EXPECT_EQ(url_header_values_["google1.jpg"], kHeaderValue);
     EXPECT_EQ(url_header_values_["google2.jpg"], kHeaderValue);
     EXPECT_EQ(url_header_values_["non_google.jpg"], "");
+    if (expected_header_count_ > 5) {
+      EXPECT_EQ(url_header_values_["google3.jpg"], kHeaderValue2);
+    }
+  }
+
+  void AdjustHeaderValueAndMakeNewRequest(content::RenderFrameHost* host) {
+    auto* web_contents = content::WebContents::FromRenderFrameHost(host);
+    ClientDataHeaderWebContentsObserver::FromWebContents(web_contents)
+        ->SetHeader(kHeaderValue2);
+    ignore_result(ExecJs(host, "document.images[0].src = 'google3.jpg'"));
   }
 
  private:
+  const size_t expected_header_count_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::map<std::string, std::string> url_header_values_;
 };
@@ -93,6 +112,50 @@ IN_PROC_BROWSER_TEST_F(CustomTabsHeader, Popup) {
   auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
   EXPECT_TRUE(content::ExecJs(web_contents,
                               "window.open('" + CreateURL().spec() + "')"));
+  ExpectClientDataHeadersSet();
+}
+
+class CustomTabsHeaderPrendering : public CustomTabsHeader {
+ public:
+  CustomTabsHeaderPrendering()
+      : CustomTabsHeader(/*expected_header_count=*/6),
+        prerender_helper_(
+            base::BindRepeating(&CustomTabsHeaderPrendering::web_contents,
+                                base::Unretained(this))) {}
+  ~CustomTabsHeaderPrendering() override = default;
+
+  content::test::PrerenderTestHelper* prerender_helper() {
+    return &prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+    return web_contents;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_helper_;
+};
+
+// Tests that prerenders set the CCT header and that they react to when
+// a new header is applied as well.
+IN_PROC_BROWSER_TEST_F(CustomTabsHeaderPrendering, Prerender) {
+  auto* web_contents = chrome_test_utils::GetActiveWebContents(this);
+  const GURL main_url = embedded_test_server()->GetURL(
+      "www.google.com", "/android/customtabs/test_window_open.html");
+  EXPECT_TRUE(content::NavigateToURL(web_contents, main_url));
+
+  const GURL prerender_url = CreateURL();
+  // Loads a page in the prerender.
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::RenderFrameHost* prerender_rfh =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(WaitForRenderFrameReady(prerender_rfh));
+
+  // Now adjust the header and make a new request.
+  AdjustHeaderValueAndMakeNewRequest(prerender_rfh);
+
+  // Expect the headers are all sent.
   ExpectClientDataHeadersSet();
 }
 
