@@ -842,6 +842,10 @@
     "script": "//testing/scripts/run_flatbuffers_unittests.py",
     "type": "script",
   },
+  "fuchsia_mojo_unittests": {
+    "label": "//fuchsia/mojom:fuchsia_mojo_unittests",
+    "type": "console_test_launcher",
+  },
   "fuchsia_sizes": {
     "label": "//fuchsia/release:fuchsia_sizes",
     "type": "generated_script",

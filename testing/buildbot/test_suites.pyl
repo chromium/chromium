@@ -1599,6 +1599,63 @@
       },
     },
 
+    'fuchsia_experimental_gtests': {
+      'color_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'components_browsertests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'content_browsertests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'courgette_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'fuchsia_mojo_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'gcm_unit_tests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'gwp_asan_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'jingle_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'message_center_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'midi_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'ozone_gl_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+        'args': [
+          '--child-arg=--ozone-platform=headless',
+        ],
+      },
+      'ozone_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'ui_touch_selection_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'views_examples_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'views_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'wm_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+      'zlib_unittests': {
+        'mixins': ['fuchsia_runner_logs'],
+      },
+    },
+
     'fuchsia_gpu_telemetry_tests': {
       'context_lost_validating': {
         'isolate_name': 'fuchsia_telemetry_gpu_integration_test',
