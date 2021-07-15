@@ -21,7 +21,8 @@ namespace ui {
 namespace ime {
 
 namespace {
-constexpr SkColor kSecondaryIconColor = gfx::kGoogleGrey500;
+
+constexpr SkColor kGrammarColor = gfx::kGoogleGrey700;
 
 bool ShouldHighlight(const views::Button& button) {
   return button.GetState() == views::Button::STATE_HOVERED ||
@@ -95,7 +96,7 @@ void GrammarSuggestionWindow::OnThemeChanged() {
 
   ignore_button_->SetImage(
       views::Button::ButtonState::STATE_NORMAL,
-      gfx::CreateVectorIcon(views::kCloseIcon, kSecondaryIconColor));
+      gfx::CreateVectorIcon(views::kCloseIcon, kGrammarColor));
 
   BubbleDialogDelegateView::OnThemeChanged();
 }
@@ -121,7 +122,10 @@ void GrammarSuggestionWindow::Hide() {
 }
 
 void GrammarSuggestionWindow::SetSuggestion(const std::u16string& suggestion) {
-  suggestion_button_->SetView(SuggestionDetails{.text = suggestion});
+  suggestion_button_->SetView(SuggestionDetails{
+      .text = suggestion,
+      .text_color = kGrammarColor,
+  });
 }
 
 void GrammarSuggestionWindow::SetButtonHighlighted(

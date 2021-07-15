@@ -79,7 +79,8 @@ class UI_CHROMEOS_EXPORT SuggestionView : public views::Button {
   // child views will be deleted when |this| is deleted.
 
   void SetSuggestionText(const std::u16string& text,
-                         const size_t confirmed_length);
+                         const size_t confirmed_length,
+                         SkColor text_color);
 
   views::Label* index_label_ = nullptr;
   // The suggestion label renders suggestions.

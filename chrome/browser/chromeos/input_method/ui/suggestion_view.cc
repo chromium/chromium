@@ -164,7 +164,7 @@ std::unique_ptr<views::View> SuggestionView::CreateTabAnnotationLabel() {
 }
 
 void SuggestionView::SetView(const SuggestionDetails& details) {
-  SetSuggestionText(details.text, details.confirmed_length);
+  SetSuggestionText(details.text, details.confirmed_length, details.text_color);
   suggestion_width_ = suggestion_label_->GetPreferredSize().width();
   down_and_enter_annotation_label_->SetVisible(details.show_accept_annotation);
   tab_annotation_label_->SetVisible(details.show_quick_accept_annotation);
@@ -182,13 +182,15 @@ void SuggestionView::SetViewWithIndex(const std::u16string& index,
 }
 
 void SuggestionView::SetSuggestionText(const std::u16string& text,
-                                       const size_t confirmed_length) {
+                                       const size_t confirmed_length,
+                                       SkColor text_color) {
   // SetText clears the existing style only if the text to set is different from
   // the previous one.
   suggestion_label_->SetText(base::EmptyString16());
   suggestion_label_->SetText(text);
   gfx::FontList kSuggestionFont({kFontStyle}, gfx::Font::NORMAL,
                                 kSuggestionFontSize, gfx::Font::Weight::NORMAL);
+
   if (confirmed_length != 0) {
     views::StyledLabel::RangeStyleInfo confirmed_style;
     confirmed_style.custom_font = kSuggestionFont;
@@ -199,7 +201,7 @@ void SuggestionView::SetSuggestionText(const std::u16string& text,
 
   views::StyledLabel::RangeStyleInfo suggestion_style;
   suggestion_style.custom_font = kSuggestionFont;
-  suggestion_style.override_color = kSuggestionColor;
+  suggestion_style.override_color = text_color;
   suggestion_label_->AddStyleRange(gfx::Range(confirmed_length, text.length()),
                                    suggestion_style);
 
