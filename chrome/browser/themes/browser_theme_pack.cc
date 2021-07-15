@@ -1222,8 +1222,7 @@ void BrowserThemePack::SetTintsFromJSON(
   }
 }
 
-void BrowserThemePack::SetColorsFromJSON(
-    const base::DictionaryValue* colors_value) {
+void BrowserThemePack::SetColorsFromJSON(const base::Value* colors_value) {
   DCHECK(colors_);
 
   std::map<int, SkColor> temp_colors;
@@ -1240,15 +1239,15 @@ void BrowserThemePack::SetColorsFromJSON(
   }
 }
 
-void BrowserThemePack::ReadColorsFromJSON(
-    const base::DictionaryValue* colors_value,
-    std::map<int, SkColor>* temp_colors) {
+void BrowserThemePack::ReadColorsFromJSON(const base::Value* colors_value,
+                                          std::map<int, SkColor>* temp_colors) {
+  DCHECK(colors_value);
+  DCHECK(colors_value->is_dict());
   // Parse the incoming data from |colors_value| into an intermediary structure.
-  for (base::DictionaryValue::Iterator iter(*colors_value); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (!iter.value().is_list())
+  for (const auto& iter : colors_value->DictItems()) {
+    if (!iter.second.is_list())
       continue;
-    base::Value::ConstListView color_list = iter.value().GetList();
+    base::Value::ConstListView color_list = iter.second.GetList();
     if (!(color_list.size() == 3 || color_list.size() == 4))
       continue;
 
@@ -1285,14 +1284,14 @@ void BrowserThemePack::ReadColorsFromJSON(
       color = SkColorSetRGB(*r, *g, *b);
     }
 
-    if (iter.key() == "ntp_section") {
+    if (iter.first == "ntp_section") {
       // We no longer use ntp_section, but to support legacy
       // themes we still need to use it as a fallback for
       // ntp_header.
       if (!temp_colors->count(TP::COLOR_NTP_HEADER))
         (*temp_colors)[TP::COLOR_NTP_HEADER] = color;
     } else {
-      int id = GetIntForString(iter.key(), kOverwritableColorTable,
+      int id = GetIntForString(iter.first, kOverwritableColorTable,
                                kOverwritableColorTableLength);
       if (id != -1)
         (*temp_colors)[id] = color;

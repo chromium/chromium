@@ -180,10 +180,10 @@ class BrowserThemePack : public CustomThemeSupplier {
 
   // Transforms the JSON color values into their final versions in the
   // |colors_| array and also fills in unspecified colors based on tint values.
-  void SetColorsFromJSON(const base::DictionaryValue* color_value);
+  void SetColorsFromJSON(const base::Value* color_value);
 
   // Implementation details of BuildColorsFromJSON().
-  void ReadColorsFromJSON(const base::DictionaryValue* colors_value,
+  void ReadColorsFromJSON(const base::Value* colors_value,
                           std::map<int, SkColor>* temp_colors);
 
   // Transforms the JSON display properties into |display_properties_|.

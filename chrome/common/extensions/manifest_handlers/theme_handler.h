@@ -24,7 +24,7 @@ struct ThemeInfo : public Extension::ManifestData {
   ~ThemeInfo() override;
 
   static const base::DictionaryValue* GetImages(const Extension* extension);
-  static const base::DictionaryValue* GetColors(const Extension* extension);
+  static const base::Value* GetColors(const Extension* extension);
   static const base::DictionaryValue* GetTints(const Extension* extension);
   static const base::DictionaryValue* GetDisplayProperties(
       const Extension* extension);
@@ -33,7 +33,7 @@ struct ThemeInfo : public Extension::ManifestData {
   std::unique_ptr<base::DictionaryValue> theme_images_;
 
   // A map of color names to colors.
-  std::unique_ptr<base::DictionaryValue> theme_colors_;
+  std::unique_ptr<base::Value> theme_colors_;
 
   // A map of color names to colors.
   std::unique_ptr<base::DictionaryValue> theme_tints_;

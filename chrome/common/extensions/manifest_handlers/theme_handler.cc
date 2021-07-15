@@ -56,34 +56,45 @@ bool LoadImages(const base::DictionaryValue* theme_value,
   return true;
 }
 
-bool LoadColors(const base::DictionaryValue* theme_value,
+bool LoadColors(const base::Value* theme_value,
                 std::u16string* error,
                 ThemeInfo* theme_info) {
-  const base::DictionaryValue* colors_value = NULL;
-  if (theme_value->GetDictionary(keys::kThemeColors, &colors_value)) {
+  DCHECK(theme_value);
+  DCHECK(theme_value->is_dict());
+  const base::Value* colors_value =
+      theme_value->FindDictPath(keys::kThemeColors);
+  if (colors_value) {
     // Validate that the colors are RGB or RGBA lists.
-    for (base::DictionaryValue::Iterator iter(*colors_value); !iter.IsAtEnd();
-         iter.Advance()) {
-      const base::ListValue* color_list = NULL;
-      double alpha = 0.0;
-      int color = 0;
-      // The color must be a list...
-      if (!iter.value().GetAsList(&color_list) ||
-          // ... and either 3 items (RGB) or 4 (RGBA).
-          ((color_list->GetSize() != 3) &&
-           ((color_list->GetSize() != 4) ||
-            // For RGBA, the fourth item must be a real or int alpha value.
-            // Note that GetDouble() can get an integer value.
-            !color_list->GetDouble(3, &alpha))) ||
-          // For both RGB and RGBA, the first three items must be ints (R,G,B).
-          !color_list->GetInteger(0, &color) ||
-          !color_list->GetInteger(1, &color) ||
-          !color_list->GetInteger(2, &color)) {
+    for (const auto& it : colors_value->DictItems()) {
+      if (!it.second.is_list()) {
+        *error = base::ASCIIToUTF16(errors::kInvalidThemeColors);
+        return false;
+      }
+      base::Value::ConstListView color_list = it.second.GetList();
+
+      // There must be either 3 items (RGB), or 4 (RGBA).
+      if (!(color_list.size() == 3 || color_list.size() == 4)) {
+        *error = base::ASCIIToUTF16(errors::kInvalidThemeColors);
+        return false;
+      }
+
+      // The first three items (RGB), must be ints:
+      if (!(color_list[0].is_int() && color_list[1].is_int() &&
+            color_list[2].is_int())) {
+        *error = base::ASCIIToUTF16(errors::kInvalidThemeColors);
+        return false;
+      }
+
+      // If there is a 4th item (alpha), it may be either int or double:
+      if (color_list.size() == 4 &&
+          !(color_list[3].is_int() || color_list[3].is_double())) {
         *error = base::ASCIIToUTF16(errors::kInvalidThemeColors);
         return false;
       }
     }
-    theme_info->theme_colors_.reset(colors_value->DeepCopy());
+
+    theme_info->theme_colors_ =
+        base::Value::ToUniquePtrValue(colors_value->Clone());
   }
   return true;
 }
@@ -144,7 +155,7 @@ const base::DictionaryValue* ThemeInfo::GetImages(const Extension* extension) {
 }
 
 // static
-const base::DictionaryValue* ThemeInfo::GetColors(const Extension* extension) {
+const base::Value* ThemeInfo::GetColors(const Extension* extension) {
   const ThemeInfo* theme_info = GetInfo(extension);
   return theme_info ? theme_info->theme_colors_.get() : NULL;
 }
