@@ -8,10 +8,12 @@
 #include <vector>
 
 #include "ash/shell.h"
+#include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/cpu.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/apps/app_service/app_platform_metrics.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -111,16 +113,15 @@ void ArcAppLaunchHandler::RestoreArcApps(
   DCHECK(app_launch_handler);
   handler_ = app_launch_handler;
 
-  LoadRestoreData();
+  DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
+      handler_->profile_));
 
+  LoadRestoreData();
   if (!HasRestoreData())
     return;
 
   window_handler_ = FullRestoreArcTaskHandler::GetForProfile(handler_->profile_)
                         ->window_handler();
-
-  DCHECK(apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(
-      handler_->profile_));
 
   apps::AppRegistryCache& cache =
       apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
@@ -130,18 +131,8 @@ void ArcAppLaunchHandler::RestoreArcApps(
   if (!app_registry_cache_observer_.IsObserving())
     app_registry_cache_observer_.Observe(&cache);
 
-  // Add the app to `app_ids` if there is a launch list from the restore data
-  // for the app.
-  std::set<std::string> app_ids;
-  cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
-    if (update.Readiness() == apps::mojom::Readiness::kReady &&
-        app_ids_.find(update.AppId()) != app_ids_.end()) {
-      app_ids.insert(update.AppId());
-    }
-  });
-
-  for (const auto& app_id : app_ids)
-    PrepareAppLaunching(app_id);
+  if (is_shelf_ready_)
+    PrepareLaunchApps();
 }
 
 void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
@@ -157,7 +148,7 @@ void ArcAppLaunchHandler::OnAppUpdate(const apps::AppUpdate& update) {
   if (update.Readiness() != apps::mojom::Readiness::kReady)
     return;
 
-  if (base::Contains(app_ids_, update.AppId()))
+  if (is_shelf_ready_ && base::Contains(app_ids_, update.AppId()))
     PrepareAppLaunching(update.AppId());
 }
 
@@ -198,6 +189,12 @@ void ArcAppLaunchHandler::OnAppConnectionReady() {
                                base::BindOnce(&ArcAppLaunchHandler::StopRestore,
                                               weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void ArcAppLaunchHandler::OnShelfReady() {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(&ArcAppLaunchHandler::PrepareLaunchApps,
+                                weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ArcAppLaunchHandler::LaunchApp(const std::string& app_id) {
@@ -287,7 +284,15 @@ void ArcAppLaunchHandler::LoadRestoreData() {
           ->AppRegistryCache();
 
   for (const auto& it : handler_->restore_data_->app_id_to_launch_list()) {
-    if (cache.GetAppType(it.first) != apps::mojom::AppType::kArc)
+    bool should_restore = false;
+    cache.ForOneApp(it.first, [&should_restore](const apps::AppUpdate& update) {
+      if (update.AppType() == apps::mojom::AppType::kArc &&
+          apps_util::IsInstalled(update.Readiness())) {
+        should_restore = true;
+      }
+    });
+
+    if (!should_restore)
       continue;
 
     app_ids_.insert(it.first);
@@ -303,6 +308,30 @@ void ArcAppLaunchHandler::LoadRestoreData() {
 
   base::UmaHistogramCounts100(kRestoredAppWindowCountHistogram,
                               windows_.size() + no_stack_windows_.size());
+}
+
+void ArcAppLaunchHandler::PrepareLaunchApps() {
+  is_shelf_ready_ = true;
+
+  if (!HasRestoreData())
+    return;
+
+  apps::AppRegistryCache& cache =
+      apps::AppServiceProxyFactory::GetForProfile(handler_->profile_)
+          ->AppRegistryCache();
+
+  // Add the app to `app_ids` if there is a launch list from the restore data
+  // for the app.
+  std::set<std::string> app_ids;
+  cache.ForEachApp([&app_ids, this](const apps::AppUpdate& update) {
+    if (update.Readiness() == apps::mojom::Readiness::kReady &&
+        app_ids_.find(update.AppId()) != app_ids_.end()) {
+      app_ids.insert(update.AppId());
+    }
+  });
+
+  for (const auto& app_id : app_ids)
+    PrepareAppLaunching(app_id);
 }
 
 void ArcAppLaunchHandler::PrepareAppLaunching(const std::string& app_id) {

@@ -61,11 +61,6 @@ constexpr base::TimeDelta kStopRestoreDelay = base::TimeDelta::FromMinutes(1);
 
 // The ArcAppLaunchHandler class restores ARC apps during the system startup
 // phase.
-//
-// TODO(crbug.com/1146900):
-// 1. Add memory pressure checking before launch ARC apps.
-// 2. Add app launch policy.
-// 3. Check whether the ARC app is ready before launch the ARC apps.
 class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
                             public chromeos::ResourcedClient::Observer,
                             public wm::ActivationChangeObserver,
@@ -93,6 +88,9 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
 
   void OnAppConnectionReady();
 
+  // Invoked when ChromeShelfController is created.
+  void OnShelfReady();
+
   void LaunchApp(const std::string& app_id);
 
   // wm::ActivationChangeObserver:
@@ -114,6 +112,10 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // Reads the restore data, and add the ARC app windows to `windows_`,
   // `no_stack_windows_` and `app_ids_`.
   void LoadRestoreData();
+
+  // Creates ghost windows or displays spin icons for all ARC apps to be
+  // restored.
+  void PrepareLaunchApps();
 
   // Creates the ghost windows or displays the icon with an overlaid spinner to
   // provide visual feedback that the app cannot be launched immediately (due to
@@ -197,6 +199,11 @@ class ArcAppLaunchHandler : public apps::AppRegistryCache::Observer,
   // The number to record how many times the current top window has been
   // launched.
   int launch_count_ = 0;
+
+  // If ChromeShelfController has not been created, we can't create the spin
+  // icon on shelf. `is_shelf_ready_` is used to mark whether
+  // ChromeShelfController is created to prepare launching apps.
+  bool is_shelf_ready_ = false;
 
   // A repeating timer to check whether we can restore the ARC apps.
   std::unique_ptr<base::RepeatingTimer> app_launch_timer_;

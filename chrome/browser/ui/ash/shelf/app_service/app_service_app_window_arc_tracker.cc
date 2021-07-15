@@ -59,6 +59,12 @@ AppServiceAppWindowArcTracker::AppServiceAppWindowArcTracker(
   // arc::ArcSessionManager might not be set in tests.
   if (arc_session_manager)
     arc_session_manager->AddObserver(this);
+
+  auto* arc_handler =
+      chromeos::full_restore::FullRestoreArcTaskHandler::GetForProfile(
+          observed_profile_);
+  if (arc_handler)
+    arc_handler->OnShelfReady();
 }
 
 AppServiceAppWindowArcTracker::~AppServiceAppWindowArcTracker() {

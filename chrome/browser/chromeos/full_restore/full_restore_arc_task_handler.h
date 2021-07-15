@@ -60,6 +60,9 @@ class FullRestoreArcTaskHandler : public KeyedService,
                                 uint32_t status_bar_color) override;
   void OnAppConnectionReady() override;
 
+  // Invoked when ChromeShelfController is created.
+  void OnShelfReady();
+
  private:
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
