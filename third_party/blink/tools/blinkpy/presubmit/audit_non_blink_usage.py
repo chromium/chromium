@@ -1448,8 +1448,8 @@ _CONFIG = [
     },
     {
         'paths': [
-            'third_party/blink/renderer/core/frame/local_frame_mojo_receiver.cc',
-            'third_party/blink/renderer/core/frame/local_frame_mojo_receiver.h'
+            'third_party/blink/renderer/core/frame/local_frame_mojo_handler.cc',
+            'third_party/blink/renderer/core/frame/local_frame_mojo_handler.h'
         ],
         'allowed': ['base::Value'],
     },

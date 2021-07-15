@@ -120,7 +120,7 @@ class LayoutView;
 class LocalDOMWindow;
 class LocalWindowProxy;
 class LocalFrameClient;
-class LocalFrameMojoReceiver;
+class LocalFrameMojoHandler;
 class BackgroundColorPaintImageGenerator;
 class ClipPathPaintImageGenerator;
 class Node;
@@ -146,12 +146,13 @@ extern template class CORE_EXTERN_TEMPLATE_EXPORT Supplement<LocalFrame>;
 
 // A LocalFrame is a frame hosted inside this process.
 //
-// LocalFrame should not inherit from Mojo interfaces, and
-// LocalFrameMojoReceiver should do instead in order to avoid header size
-// bloat.
-// Blink code should not directly use LocalFrameMojoReceiver. If Blink code
+// LocalFrame should not inherit from Mojo interfaces, and should not have
+// data members for Mojo remotes in order to avoid including full mojom headers
+// from local_frame.h. LocalFrameMojoHandler should do them instead.
+//
+// Blink code should not directly use LocalFrameMojoHandler. If Blink code
 // needs to call a function that is exposed as a Mojo method, the function
-// implementation should be in LocalFrame, and LocalFrameMojoReceiver should
+// implementation should be in LocalFrame, and LocalFrameMojoHandler should
 // delegate to LocalFrame's implementation.
 class CORE_EXPORT LocalFrame final : public Frame,
                                      public FrameScheduler::Delegate,
@@ -719,8 +720,8 @@ class CORE_EXPORT LocalFrame final : public Frame,
 
  private:
   friend class FrameNavigationDisabler;
-  // LocalFrameMojoReceiver is a part of LocalFrame.
-  friend class LocalFrameMojoReceiver;
+  // LocalFrameMojoHandler is a part of LocalFrame.
+  friend class LocalFrameMojoHandler;
 
   FRIEND_TEST_ALL_PREFIXES(LocalFrameTest, CharacterIndexAtPointWithPinchZoom);
   FRIEND_TEST_ALL_PREFIXES(WebFrameTest, SmartClipData);
@@ -912,7 +913,7 @@ class CORE_EXPORT LocalFrame final : public Frame,
   // LocalFrame can be reused by multiple ExecutionContext.
   HeapMojoAssociatedRemote<mojom::blink::BackForwardCacheControllerHost>
       back_forward_cache_controller_host_remote_{nullptr};
-  Member<LocalFrameMojoReceiver> mojo_receiver_;
+  Member<LocalFrameMojoHandler> mojo_handler_;
 
   // Variable to control burst of download requests.
   int num_burst_download_requests_ = 0;

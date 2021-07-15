@@ -113,7 +113,7 @@
 #include "third_party/blink/renderer/core/frame/frame_serializer_delegate_impl.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/local_frame_mojo_receiver.h"
+#include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints_set.h"
 #include "third_party/blink/renderer/core/frame/pausable_script_executor.h"
@@ -332,8 +332,8 @@ void LocalFrame::Init(Frame* opener,
           GetTaskRunner(blink::TaskType::kInternalDefault)));
   GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
       &LocalFrame::BindTextFragmentReceiver, WrapWeakPersistent(this)));
-  DCHECK(!mojo_receiver_);
-  mojo_receiver_ = MakeGarbageCollected<LocalFrameMojoReceiver>(*this);
+  DCHECK(!mojo_handler_);
+  mojo_handler_ = MakeGarbageCollected<LocalFrameMojoHandler>(*this);
 
   SetOpenerDoNotNotify(opener);
   loader_.Init(std::move(policy_container));
@@ -428,7 +428,7 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(text_input_host_);
 #endif
   visitor->Trace(back_forward_cache_controller_host_remote_);
-  visitor->Trace(mojo_receiver_);
+  visitor->Trace(mojo_handler_);
   visitor->Trace(text_fragment_handler_);
   visitor->Trace(saved_scroll_offsets_);
   visitor->Trace(background_color_paint_image_generator_);
@@ -623,7 +623,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 
   supplements_.clear();
   frame_scheduler_.reset();
-  mojo_receiver_->DidDetachFrame();
+  mojo_handler_->DidDetachFrame();
   WeakIdentifierMap<LocalFrame>::NotifyObjectDestroyed(this);
 
   return true;
@@ -2674,7 +2674,7 @@ RawSystemClipboard* LocalFrame::GetRawSystemClipboard() {
 }
 
 void LocalFrame::WasAttachedAsLocalMainFrame() {
-  mojo_receiver_->WasAttachedAsLocalMainFrame();
+  mojo_handler_->WasAttachedAsLocalMainFrame();
 }
 
 void LocalFrame::EvictFromBackForwardCache(
@@ -2706,7 +2706,7 @@ void LocalFrame::SetScaleFactor(float scale_factor) {
 }
 
 void LocalFrame::ClosePageForTesting() {
-  mojo_receiver_->ClosePageForTesting();
+  mojo_handler_->ClosePageForTesting();
 }
 
 void LocalFrame::SetInitialFocus(bool reverse) {
@@ -2840,7 +2840,7 @@ void LocalFrame::SetPrescientNetworkingForTesting(
 }
 
 mojom::blink::LocalFrameHost& LocalFrame::GetLocalFrameHostRemote() const {
-  return mojo_receiver_->LocalFrameHostRemote();
+  return mojo_handler_->LocalFrameHostRemote();
 }
 
 mojom::blink::BackForwardCacheControllerHost&

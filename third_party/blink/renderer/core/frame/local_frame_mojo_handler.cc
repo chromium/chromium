@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/frame/local_frame_mojo_receiver.h"
+#include "third_party/blink/renderer/core/frame/local_frame_mojo_handler.h"
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
@@ -314,7 +314,7 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
   debug_url_set_ = false;
 }
 
-LocalFrameMojoReceiver::LocalFrameMojoReceiver(blink::LocalFrame& frame)
+LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
     : frame_(frame) {
   frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       local_frame_host_remote_.BindNewEndpointAndPassReceiver(
@@ -322,18 +322,18 @@ LocalFrameMojoReceiver::LocalFrameMojoReceiver(blink::LocalFrame& frame)
 
   auto* registry = frame.GetInterfaceRegistry();
   registry->AddAssociatedInterface(
-      WTF::BindRepeating(&LocalFrameMojoReceiver::BindToLocalFrameReceiver,
+      WTF::BindRepeating(&LocalFrameMojoHandler::BindToLocalFrameReceiver,
                          WrapWeakPersistent(this)));
   registry->AddInterface(
-      WTF::BindRepeating(&LocalFrameMojoReceiver::BindToHighPriorityReceiver,
+      WTF::BindRepeating(&LocalFrameMojoHandler::BindToHighPriorityReceiver,
                          WrapWeakPersistent(this)),
       frame.GetTaskRunner(TaskType::kInternalHighPriorityLocalFrame));
   registry->AddAssociatedInterface(WTF::BindRepeating(
-      &LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver,
+      &LocalFrameMojoHandler::BindFullscreenVideoElementReceiver,
       WrapWeakPersistent(this)));
 }
 
-void LocalFrameMojoReceiver::Trace(Visitor* visitor) const {
+void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
@@ -342,13 +342,13 @@ void LocalFrameMojoReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(fullscreen_video_receiver_);
 }
 
-void LocalFrameMojoReceiver::WasAttachedAsLocalMainFrame() {
+void LocalFrameMojoHandler::WasAttachedAsLocalMainFrame() {
   frame_->GetInterfaceRegistry()->AddAssociatedInterface(
-      WTF::BindRepeating(&LocalFrameMojoReceiver::BindToMainFrameReceiver,
+      WTF::BindRepeating(&LocalFrameMojoHandler::BindToMainFrameReceiver,
                          WrapWeakPersistent(this)));
 }
 
-void LocalFrameMojoReceiver::DidDetachFrame() {
+void LocalFrameMojoHandler::DidDetachFrame() {
   // We reset receivers explicitly because HeapMojoReceiver does not
   // automatically reset on context destruction.
   local_frame_receiver_.reset();
@@ -357,23 +357,23 @@ void LocalFrameMojoReceiver::DidDetachFrame() {
   // TODO(tkent): Should we reset other receivers?
 }
 
-void LocalFrameMojoReceiver::ClosePageForTesting() {
+void LocalFrameMojoHandler::ClosePageForTesting() {
   ClosePage(base::DoNothing());
 }
 
-Page* LocalFrameMojoReceiver::GetPage() const {
+Page* LocalFrameMojoHandler::GetPage() const {
   return frame_->GetPage();
 }
 
-LocalDOMWindow* LocalFrameMojoReceiver::DomWindow() const {
+LocalDOMWindow* LocalFrameMojoHandler::DomWindow() const {
   return frame_->DomWindow();
 }
 
-Document* LocalFrameMojoReceiver::GetDocument() const {
+Document* LocalFrameMojoHandler::GetDocument() const {
   return frame_->GetDocument();
 }
 
-void LocalFrameMojoReceiver::BindToLocalFrameReceiver(
+void LocalFrameMojoHandler::BindToLocalFrameReceiver(
     mojo::PendingAssociatedReceiver<mojom::blink::LocalFrame> receiver) {
   if (frame_->IsDetached())
     return;
@@ -384,7 +384,7 @@ void LocalFrameMojoReceiver::BindToLocalFrameReceiver(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
-void LocalFrameMojoReceiver::BindToMainFrameReceiver(
+void LocalFrameMojoHandler::BindToMainFrameReceiver(
     mojo::PendingAssociatedReceiver<mojom::blink::LocalMainFrame> receiver) {
   if (frame_->IsDetached())
     return;
@@ -395,7 +395,7 @@ void LocalFrameMojoReceiver::BindToMainFrameReceiver(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
-void LocalFrameMojoReceiver::BindToHighPriorityReceiver(
+void LocalFrameMojoHandler::BindToHighPriorityReceiver(
     mojo::PendingReceiver<mojom::blink::HighPriorityLocalFrame> receiver) {
   if (frame_->IsDetached())
     return;
@@ -407,7 +407,7 @@ void LocalFrameMojoReceiver::BindToHighPriorityReceiver(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
-void LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver(
+void LocalFrameMojoHandler::BindFullscreenVideoElementReceiver(
     mojo::PendingAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler>
         receiver) {
   if (frame_->IsDetached())
@@ -419,7 +419,7 @@ void LocalFrameMojoReceiver::BindFullscreenVideoElementReceiver(
       std::make_unique<ActiveURLMessageFilter>(frame_));
 }
 
-void LocalFrameMojoReceiver::GetTextSurroundingSelection(
+void LocalFrameMojoHandler::GetTextSurroundingSelection(
     uint32_t max_length,
     GetTextSurroundingSelectionCallback callback) {
   SurroundingText surrounding_text(frame_, max_length);
@@ -439,12 +439,12 @@ void LocalFrameMojoReceiver::GetTextSurroundingSelection(
                           surrounding_text.EndOffsetInTextContent());
 }
 
-void LocalFrameMojoReceiver::SendInterventionReport(const String& id,
-                                                    const String& message) {
+void LocalFrameMojoHandler::SendInterventionReport(const String& id,
+                                                   const String& message) {
   Intervention::GenerateReport(frame_, id, message);
 }
 
-void LocalFrameMojoReceiver::SetFrameOwnerProperties(
+void LocalFrameMojoHandler::SetFrameOwnerProperties(
     mojom::blink::FrameOwnerPropertiesPtr properties) {
   GetDocument()->WillChangeFrameOwnerProperties(
       properties->margin_width, properties->margin_height,
@@ -454,12 +454,12 @@ void LocalFrameMojoReceiver::SetFrameOwnerProperties(
   frame_->ApplyFrameOwnerProperties(std::move(properties));
 }
 
-void LocalFrameMojoReceiver::NotifyUserActivation(
+void LocalFrameMojoHandler::NotifyUserActivation(
     mojom::blink::UserActivationNotificationType notification_type) {
   frame_->NotifyUserActivation(notification_type);
 }
 
-void LocalFrameMojoReceiver::NotifyVirtualKeyboardOverlayRect(
+void LocalFrameMojoHandler::NotifyVirtualKeyboardOverlayRect(
     const gfx::Rect& keyboard_rect) {
   Page* page = GetPage();
   if (!page)
@@ -484,7 +484,7 @@ void LocalFrameMojoReceiver::NotifyVirtualKeyboardOverlayRect(
   frame_->NotifyVirtualKeyboardOverlayRectObservers(scaled_rect);
 }
 
-void LocalFrameMojoReceiver::AddMessageToConsole(
+void LocalFrameMojoHandler::AddMessageToConsole(
     mojom::blink::ConsoleMessageLevel level,
     const WTF::String& message,
     bool discard_duplicates) {
@@ -494,7 +494,7 @@ void LocalFrameMojoReceiver::AddMessageToConsole(
       discard_duplicates);
 }
 
-void LocalFrameMojoReceiver::AddInspectorIssue(
+void LocalFrameMojoHandler::AddInspectorIssue(
     mojom::blink::InspectorIssueInfoPtr info) {
   if (auto* page = GetPage()) {
     page->GetInspectorIssueStorage().AddInspectorIssue(DomWindow(),
@@ -502,7 +502,7 @@ void LocalFrameMojoReceiver::AddInspectorIssue(
   }
 }
 
-void LocalFrameMojoReceiver::SwapInImmediately() {
+void LocalFrameMojoHandler::SwapInImmediately() {
   frame_->SwapIn();
   // Normally, this happens as part of committing a cross-Document navigation.
   // However, there is no navigation being committed here. Instead, the browser
@@ -515,11 +515,11 @@ void LocalFrameMojoReceiver::SwapInImmediately() {
   DomWindow()->GetScriptController().UpdateDocument();
 }
 
-void LocalFrameMojoReceiver::CheckCompleted() {
+void LocalFrameMojoHandler::CheckCompleted() {
   frame_->CheckCompleted();
 }
 
-void LocalFrameMojoReceiver::StopLoading() {
+void LocalFrameMojoHandler::StopLoading() {
   frame_->Loader().StopAllLoaders(/*abort_client=*/true);
 
   // The stopLoading handler may run script, which may cause this frame to be
@@ -533,21 +533,21 @@ void LocalFrameMojoReceiver::StopLoading() {
     client->OnStopLoading();
 }
 
-void LocalFrameMojoReceiver::Collapse(bool collapsed) {
+void LocalFrameMojoHandler::Collapse(bool collapsed) {
   FrameOwner* owner = frame_->Owner();
   To<HTMLFrameOwnerElement>(owner)->SetCollapsed(collapsed);
 }
 
-void LocalFrameMojoReceiver::EnableViewSourceMode() {
+void LocalFrameMojoHandler::EnableViewSourceMode() {
   DCHECK(!frame_->Tree().Parent());
   frame_->SetInViewSourceMode(true);
 }
 
-void LocalFrameMojoReceiver::Focus() {
+void LocalFrameMojoHandler::Focus() {
   frame_->FocusImpl();
 }
 
-void LocalFrameMojoReceiver::ClearFocusedElement() {
+void LocalFrameMojoHandler::ClearFocusedElement() {
   Document* document = GetDocument();
   Element* old_focused_element = document->FocusedElement();
   document->ClearFocusedElement();
@@ -564,7 +564,7 @@ void LocalFrameMojoReceiver::ClearFocusedElement() {
     frame_->Selection().Clear();
 }
 
-void LocalFrameMojoReceiver::GetResourceSnapshotForWebBundle(
+void LocalFrameMojoHandler::GetResourceSnapshotForWebBundle(
     mojo::PendingReceiver<
         data_decoder::mojom::blink::ResourceSnapshotForWebBundle> receiver) {
   Deque<SerializedResource> resources;
@@ -581,17 +581,17 @@ void LocalFrameMojoReceiver::GetResourceSnapshotForWebBundle(
       std::move(receiver));
 }
 
-void LocalFrameMojoReceiver::CopyImageAt(const gfx::Point& window_point) {
+void LocalFrameMojoHandler::CopyImageAt(const gfx::Point& window_point) {
   gfx::Point viewport_position =
       frame_->GetWidgetForLocalRoot()->DIPsToRoundedBlinkSpace(window_point);
   frame_->CopyImageAtViewportPoint(IntPoint(viewport_position));
 }
 
-void LocalFrameMojoReceiver::SaveImageAt(const gfx::Point& window_point) {
+void LocalFrameMojoHandler::SaveImageAt(const gfx::Point& window_point) {
   frame_->SaveImageAt(window_point);
 }
 
-void LocalFrameMojoReceiver::ReportBlinkFeatureUsage(
+void LocalFrameMojoHandler::ReportBlinkFeatureUsage(
     const Vector<mojom::blink::WebFeature>& features) {
   DCHECK(!features.IsEmpty());
 
@@ -602,19 +602,19 @@ void LocalFrameMojoReceiver::ReportBlinkFeatureUsage(
     document->CountUse(feature);
 }
 
-void LocalFrameMojoReceiver::RenderFallbackContent() {
+void LocalFrameMojoHandler::RenderFallbackContent() {
   frame_->RenderFallbackContent();
 }
 
-void LocalFrameMojoReceiver::RenderFallbackContentWithResourceTiming(
+void LocalFrameMojoHandler::RenderFallbackContentWithResourceTiming(
     mojom::blink::ResourceTimingInfoPtr timing,
     const String& server_timing_value) {
   frame_->RenderFallbackContentWithResourceTiming(std::move(timing),
                                                   server_timing_value);
 }
 
-void LocalFrameMojoReceiver::BeforeUnload(bool is_reload,
-                                          BeforeUnloadCallback callback) {
+void LocalFrameMojoHandler::BeforeUnload(bool is_reload,
+                                         BeforeUnloadCallback callback) {
   base::TimeTicks before_unload_start_time = base::TimeTicks::Now();
 
   // This will execute the BeforeUnload event in this frame and all of its
@@ -629,7 +629,7 @@ void LocalFrameMojoReceiver::BeforeUnload(bool is_reload,
                           before_unload_end_time);
 }
 
-void LocalFrameMojoReceiver::MediaPlayerActionAt(
+void LocalFrameMojoHandler::MediaPlayerActionAt(
     const gfx::Point& window_point,
     blink::mojom::blink::MediaPlayerActionPtr action) {
   gfx::Point viewport_position =
@@ -640,7 +640,7 @@ void LocalFrameMojoReceiver::MediaPlayerActionAt(
                                            action->enable);
 }
 
-void LocalFrameMojoReceiver::AdvanceFocusInFrame(
+void LocalFrameMojoHandler::AdvanceFocusInFrame(
     mojom::blink::FocusType focus_type,
     const absl::optional<RemoteFrameToken>& source_frame_token) {
   RemoteFrame* source_frame =
@@ -655,7 +655,7 @@ void LocalFrameMojoReceiver::AdvanceFocusInFrame(
       focus_type, source_frame, frame_);
 }
 
-void LocalFrameMojoReceiver::AdvanceFocusInForm(
+void LocalFrameMojoHandler::AdvanceFocusInForm(
     mojom::blink::FocusType focus_type) {
   auto* focused_frame = GetPage()->GetFocusController().FocusedFrame();
   if (focused_frame != frame_)
@@ -676,7 +676,7 @@ void LocalFrameMojoReceiver::AdvanceFocusInForm(
   next_element->focus();
 }
 
-void LocalFrameMojoReceiver::ReportContentSecurityPolicyViolation(
+void LocalFrameMojoHandler::ReportContentSecurityPolicyViolation(
     network::mojom::blink::CSPViolationPtr violation) {
   auto source_location = std::make_unique<SourceLocation>(
       violation->source_location->url, violation->source_location->line,
@@ -705,7 +705,7 @@ void LocalFrameMojoReceiver::ReportContentSecurityPolicyViolation(
       nullptr /* Element */);
 }
 
-void LocalFrameMojoReceiver::DidUpdateFramePolicy(
+void LocalFrameMojoHandler::DidUpdateFramePolicy(
     const FramePolicy& frame_policy) {
   // At the moment, this is only used to replicate sandbox flags and container
   // policy for frames with a remote owner.
@@ -713,14 +713,14 @@ void LocalFrameMojoReceiver::DidUpdateFramePolicy(
   To<RemoteFrameOwner>(frame_->Owner())->SetFramePolicy(frame_policy);
 }
 
-void LocalFrameMojoReceiver::OnScreensChange() {
+void LocalFrameMojoHandler::OnScreensChange() {
   if (RuntimeEnabledFeatures::WindowPlacementEnabled(DomWindow())) {
     // Allow fullscreen requests shortly after user-generated screens changes.
     frame_->transient_allow_fullscreen_.Activate();
   }
 }
 
-void LocalFrameMojoReceiver::PostMessageEvent(
+void LocalFrameMojoHandler::PostMessageEvent(
     const absl::optional<RemoteFrameToken>& source_frame_token,
     const String& source_origin,
     const String& target_origin,
@@ -729,7 +729,7 @@ void LocalFrameMojoReceiver::PostMessageEvent(
                            std::move(message));
 }
 
-void LocalFrameMojoReceiver::JavaScriptMethodExecuteRequest(
+void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
     const String& object_name,
     const String& method_name,
     base::Value arguments,
@@ -760,7 +760,7 @@ void LocalFrameMojoReceiver::JavaScriptMethodExecuteRequest(
   }
 }
 
-void LocalFrameMojoReceiver::JavaScriptExecuteRequest(
+void LocalFrameMojoHandler::JavaScriptExecuteRequest(
     const String& javascript,
     bool wants_result,
     JavaScriptExecuteRequestCallback callback) {
@@ -785,7 +785,7 @@ void LocalFrameMojoReceiver::JavaScriptExecuteRequest(
   }
 }
 
-void LocalFrameMojoReceiver::JavaScriptExecuteRequestForTests(
+void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
     const String& javascript,
     bool wants_result,
     bool has_user_gesture,
@@ -828,7 +828,7 @@ void LocalFrameMojoReceiver::JavaScriptExecuteRequestForTests(
   }
 }
 
-void LocalFrameMojoReceiver::JavaScriptExecuteRequestInIsolatedWorld(
+void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
     const String& javascript,
     bool wants_result,
     int32_t world_id,
@@ -860,11 +860,11 @@ void LocalFrameMojoReceiver::JavaScriptExecuteRequestInIsolatedWorld(
 }
 
 #if defined(OS_MAC)
-void LocalFrameMojoReceiver::GetCharacterIndexAtPoint(const gfx::Point& point) {
+void LocalFrameMojoHandler::GetCharacterIndexAtPoint(const gfx::Point& point) {
   frame_->GetCharacterIndexAtPoint(point);
 }
 
-void LocalFrameMojoReceiver::GetFirstRectForRange(const gfx::Range& range) {
+void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
   gfx::Rect rect;
   WebLocalFrameClient* client = WebLocalFrameImpl::FromFrame(frame_)->Client();
   if (!client)
@@ -883,7 +883,7 @@ void LocalFrameMojoReceiver::GetFirstRectForRange(const gfx::Range& range) {
   frame_->GetTextInputHost().GotFirstRectForRange(rect);
 }
 
-void LocalFrameMojoReceiver::GetStringForRange(
+void LocalFrameMojoHandler::GetStringForRange(
     const gfx::Range& range,
     GetStringForRangeCallback callback) {
   gfx::Point baseline_point;
@@ -897,12 +897,12 @@ void LocalFrameMojoReceiver::GetStringForRange(
 }
 #endif
 
-void LocalFrameMojoReceiver::BindReportingObserver(
+void LocalFrameMojoHandler::BindReportingObserver(
     mojo::PendingReceiver<mojom::blink::ReportingObserver> receiver) {
   ReportingContext::From(DomWindow())->Bind(std::move(receiver));
 }
 
-void LocalFrameMojoReceiver::UpdateOpener(
+void LocalFrameMojoHandler::UpdateOpener(
     const absl::optional<blink::FrameToken>& opener_frame_token) {
   if (auto* web_frame = WebFrame::FromCoreFrame(frame_)) {
     Frame* opener_frame = nullptr;
@@ -912,7 +912,7 @@ void LocalFrameMojoReceiver::UpdateOpener(
   }
 }
 
-void LocalFrameMojoReceiver::GetSavableResourceLinks(
+void LocalFrameMojoHandler::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {
   Vector<KURL> resources_list;
   Vector<mojom::blink::SavableSubframePtr> subframes;
@@ -934,7 +934,7 @@ void LocalFrameMojoReceiver::GetSavableResourceLinks(
   std::move(callback).Run(std::move(reply));
 }
 
-void LocalFrameMojoReceiver::MixedContentFound(
+void LocalFrameMojoHandler::MixedContentFound(
     const KURL& main_resource_url,
     const KURL& mixed_content_url,
     mojom::blink::RequestContextType request_context,
@@ -953,7 +953,7 @@ void LocalFrameMojoReceiver::MixedContentFound(
       was_allowed, url_before_redirects, had_redirect, std::move(source));
 }
 
-void LocalFrameMojoReceiver::ActivateForPrerendering(
+void LocalFrameMojoHandler::ActivateForPrerendering(
     base::TimeTicks activation_start) {
   DCHECK(features::IsPrerender2Enabled());
 
@@ -969,7 +969,7 @@ void LocalFrameMojoReceiver::ActivateForPrerendering(
                            WrapPersistent(GetDocument()), activation_start));
 }
 
-void LocalFrameMojoReceiver::BindDevToolsAgent(
+void LocalFrameMojoHandler::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent> receiver) {
   DCHECK(frame_->Client());
@@ -977,7 +977,7 @@ void LocalFrameMojoReceiver::BindDevToolsAgent(
 }
 
 #if defined(OS_ANDROID)
-void LocalFrameMojoReceiver::ExtractSmartClipData(
+void LocalFrameMojoHandler::ExtractSmartClipData(
     const gfx::Rect& rect,
     ExtractSmartClipDataCallback callback) {
   String clip_text;
@@ -990,7 +990,7 @@ void LocalFrameMojoReceiver::ExtractSmartClipData(
 }
 #endif  // defined(OS_ANDROID)
 
-void LocalFrameMojoReceiver::HandleRendererDebugURL(const KURL& url) {
+void LocalFrameMojoHandler::HandleRendererDebugURL(const KURL& url) {
   DCHECK(IsRendererDebugURL(url));
   if (url.ProtocolIs("javascript")) {
     // JavaScript URLs should be sent to Blink for handling.
@@ -1007,7 +1007,7 @@ void LocalFrameMojoReceiver::HandleRendererDebugURL(const KURL& url) {
     frame_->Client()->DidStopLoading();
 }
 
-void LocalFrameMojoReceiver::GetCanonicalUrlForSharing(
+void LocalFrameMojoHandler::GetCanonicalUrlForSharing(
     GetCanonicalUrlForSharingCallback callback) {
   KURL canonical_url;
   HTMLLinkElement* link_element = GetDocument()->LinkCanonical();
@@ -1018,16 +1018,16 @@ void LocalFrameMojoReceiver::GetCanonicalUrlForSharing(
                               : absl::make_optional(canonical_url));
 }
 
-void LocalFrameMojoReceiver::AnimateDoubleTapZoom(const gfx::Point& point,
-                                                  const gfx::Rect& rect) {
+void LocalFrameMojoHandler::AnimateDoubleTapZoom(const gfx::Point& point,
+                                                 const gfx::Rect& rect) {
   frame_->GetPage()->GetChromeClient().AnimateDoubleTapZoom(point, rect);
 }
 
-void LocalFrameMojoReceiver::SetScaleFactor(float scale_factor) {
+void LocalFrameMojoHandler::SetScaleFactor(float scale_factor) {
   frame_->SetScaleFactor(scale_factor);
 }
 
-void LocalFrameMojoReceiver::ClosePage(
+void LocalFrameMojoHandler::ClosePage(
     mojom::blink::LocalMainFrame::ClosePageCallback completion_callback) {
   SECURITY_CHECK(frame_->IsMainFrame());
 
@@ -1056,7 +1056,7 @@ void LocalFrameMojoReceiver::ClosePage(
   std::move(completion_callback).Run();
 }
 
-void LocalFrameMojoReceiver::PluginActionAt(
+void LocalFrameMojoHandler::PluginActionAt(
     const gfx::Point& location,
     mojom::blink::PluginActionType action) {
   SECURITY_CHECK(frame_->IsMainFrame());
@@ -1088,20 +1088,20 @@ void LocalFrameMojoReceiver::PluginActionAt(
   NOTREACHED();
 }
 
-void LocalFrameMojoReceiver::SetInitialFocus(bool reverse) {
+void LocalFrameMojoHandler::SetInitialFocus(bool reverse) {
   frame_->SetInitialFocus(reverse);
 }
 
-void LocalFrameMojoReceiver::EnablePreferredSizeChangedMode() {
+void LocalFrameMojoHandler::EnablePreferredSizeChangedMode() {
   frame_->GetPage()->GetChromeClient().EnablePreferredSizeChangedMode();
 }
 
-void LocalFrameMojoReceiver::ZoomToFindInPageRect(
+void LocalFrameMojoHandler::ZoomToFindInPageRect(
     const gfx::Rect& rect_in_root_frame) {
   frame_->GetPage()->GetChromeClient().ZoomToFindInPageRect(rect_in_root_frame);
 }
 
-void LocalFrameMojoReceiver::InstallCoopAccessMonitor(
+void LocalFrameMojoHandler::InstallCoopAccessMonitor(
     network::mojom::blink::CoopAccessReportType report_type,
     const FrameToken& accessed_window,
     mojo::PendingRemote<network::mojom::blink::CrossOriginOpenerPolicyReporter>
@@ -1118,7 +1118,7 @@ void LocalFrameMojoReceiver::InstallCoopAccessMonitor(
       std::move(reported_window_url));
 }
 
-void LocalFrameMojoReceiver::OnPortalActivated(
+void LocalFrameMojoHandler::OnPortalActivated(
     const PortalToken& portal_token,
     mojo::PendingAssociatedRemote<mojom::blink::Portal> portal,
     mojo::PendingAssociatedReceiver<mojom::blink::PortalClient> portal_client,
@@ -1154,14 +1154,14 @@ void LocalFrameMojoReceiver::OnPortalActivated(
   event->ExpireAdoptionLifetime();
 }
 
-void LocalFrameMojoReceiver::ForwardMessageFromHost(
+void LocalFrameMojoHandler::ForwardMessageFromHost(
     BlinkTransferableMessage message,
     const scoped_refptr<const SecurityOrigin>& source_origin) {
   PortalHost::From(*frame_->DomWindow())
       .ReceiveMessage(std::move(message), source_origin);
 }
 
-void LocalFrameMojoReceiver::UpdateBrowserControlsState(
+void LocalFrameMojoHandler::UpdateBrowserControlsState(
     cc::BrowserControlsState constraints,
     cc::BrowserControlsState current,
     bool animate) {
@@ -1176,13 +1176,13 @@ void LocalFrameMojoReceiver::UpdateBrowserControlsState(
                                                               current, animate);
 }
 
-void LocalFrameMojoReceiver::DispatchBeforeUnload(
+void LocalFrameMojoHandler::DispatchBeforeUnload(
     bool is_reload,
     mojom::blink::LocalFrame::BeforeUnloadCallback callback) {
   BeforeUnload(is_reload, std::move(callback));
 }
 
-void LocalFrameMojoReceiver::RequestFullscreenVideoElement() {
+void LocalFrameMojoHandler::RequestFullscreenVideoElement() {
   // Find the first video element of the frame.
   for (auto* child = frame_->GetDocument()->documentElement(); child;
        child = Traversal<HTMLElement>::Next(*child)) {

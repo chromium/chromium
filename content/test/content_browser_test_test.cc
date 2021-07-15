@@ -141,7 +141,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
   // "#0 0x0000007ea911 (...content_browsertests+0x7ea910)"
   std::string crash_string =
 #if !USE_EXTERNAL_SYMBOLIZER
-      "blink::LocalFrameMojoReceiver::HandleRendererDebugURL";
+      "blink::LocalFrameMojoHandler::HandleRendererDebugURL";
 #else
       "#0 ";
 #endif

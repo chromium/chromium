@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
-#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
 
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
@@ -20,21 +20,18 @@ class LocalDOMWindow;
 class LocalFrame;
 class Page;
 
-// LocalFrameMojoReceiver is responsible for providing Mojo receivers and
+// LocalFrameMojoHandler is responsible for providing Mojo receivers and
 // remotes associated to blink::LocalFrame.
 //
-// A single LocalFrame instance owns a single LocalFrameMojoReceiver instance.
-//
-// TODO(tkent): Rename this class. This now has not only receivers but also
-// remotes.
-class LocalFrameMojoReceiver
-    : public GarbageCollected<LocalFrameMojoReceiver>,
+// A single LocalFrame instance owns a single LocalFrameMojoHandler instance.
+class LocalFrameMojoHandler
+    : public GarbageCollected<LocalFrameMojoHandler>,
       public mojom::blink::LocalFrame,
       public mojom::blink::LocalMainFrame,
       public mojom::blink::HighPriorityLocalFrame,
       public mojom::blink::FullscreenVideoElementHandler {
  public:
-  explicit LocalFrameMojoReceiver(blink::LocalFrame& frame);
+  explicit LocalFrameMojoHandler(blink::LocalFrame& frame);
   void Trace(Visitor* visitor) const;
 
   void WasAttachedAsLocalMainFrame();
@@ -213,19 +210,19 @@ class LocalFrameMojoReceiver
   HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
       local_frame_host_remote_{nullptr};
 
-  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
-  HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrameMojoReceiver>
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
+  HeapMojoAssociatedReceiver<mojom::blink::LocalFrame, LocalFrameMojoHandler>
       local_frame_receiver_{this, nullptr};
-  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::LocalMainFrame,
-                             LocalFrameMojoReceiver>
+                             LocalFrameMojoHandler>
       main_frame_receiver_{this, nullptr};
-  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
-  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame, LocalFrameMojoReceiver>
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
+  HeapMojoReceiver<mojom::blink::HighPriorityLocalFrame, LocalFrameMojoHandler>
       high_priority_frame_receiver_{this, nullptr};
-  // LocalFrameMojoReceiver can be reused by multiple ExecutionContext.
+  // LocalFrameMojoHandler can be reused by multiple ExecutionContext.
   HeapMojoAssociatedReceiver<mojom::blink::FullscreenVideoElementHandler,
-                             LocalFrameMojoReceiver>
+                             LocalFrameMojoHandler>
       fullscreen_video_receiver_{this, nullptr};
 };
 
@@ -247,4 +244,4 @@ class ActiveURLMessageFilter : public mojo::MessageFilter {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_RECEIVER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_LOCAL_FRAME_MOJO_HANDLER_H_
