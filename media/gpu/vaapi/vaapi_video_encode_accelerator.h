@@ -108,6 +108,22 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
       const gfx::Size& encode_size,
       size_t num_va_surfaces);
 
+  // Create input and reconstructed surfaces used in encoding whose sizes are
+  // |encode_size| from GpuMemoryBuffer-based VideoFrame |frame|. This must be
+  // called only in native input mode.
+  bool CreateSurfacesForGpuMemoryBufferEncoding(
+      const VideoFrame& frame,
+      const gfx::Size& encode_size,
+      scoped_refptr<VASurface>* input_surface,
+      scoped_refptr<VASurface>* reconstructed_surface);
+
+  // Create input and reconstructed surfaces used in encoding from SharedMemory
+  // VideoFrame |frame|. This must be called only in non native input mode.
+  bool CreateSurfacesForShmemEncoding(
+      const VideoFrame& frame,
+      scoped_refptr<VASurface>* input_surface,
+      scoped_refptr<VASurface>* reconstructed_surface);
+
   // Checks if sufficient resources for a new encode job with |frame| as input
   // are available, and if so, claims them by associating them with
   // a EncodeJob, and returns the newly-created job, nullptr otherwise.
@@ -162,9 +178,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // and will free them on destruction.
   scoped_refptr<VaapiWrapper> vaapi_wrapper_;
 
-  // The aligned size of the allocated physical buffer for input buffer.
-  gfx::Size aligned_va_surface_size_;
-
   // The expected coded size of incoming video frames when |native_input_mode_|
   // is false.
   gfx::Size expected_input_coded_size_;
@@ -211,9 +224,6 @@ class MEDIA_GPU_EXPORT VaapiVideoEncodeAccelerator
   // TODO(crbug.com/1186051): Use base::small_map.
   std::map<gfx::Size, std::vector<VASurfaceID>, SizeComparator>
       available_vpp_va_surface_ids_;
-
-  // VASurfaceIDs internal format.
-  static constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
 
   // VA buffers for coded frames.
   std::vector<VABufferID> available_va_buffer_ids_;

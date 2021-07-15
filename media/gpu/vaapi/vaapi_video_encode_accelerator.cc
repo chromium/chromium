@@ -64,6 +64,9 @@ namespace {
 // if encoder requests less.
 constexpr size_t kMinNumFramesInFlight = 4;
 
+// VASurfaceIDs internal format.
+constexpr unsigned int kVaSurfaceFormat = VA_RT_FORMAT_YUV420;
+
 void FillVAEncRateControlParams(
     uint32_t bps,
     uint32_t window_size,
@@ -90,31 +93,6 @@ void FillVAEncRateControlParams(
   hrd_param.buffer_size = buffer_size;
   hrd_param.initial_buffer_fullness = buffer_size / 2;
 }
-
-// Calculate the size of the allocated buffer aligned to hardware/driver
-// requirements.
-gfx::Size GetInputFrameSize(VideoPixelFormat format,
-                            const gfx::Size& visible_size) {
-  // Get a VideoFrameLayout of a graphic buffer with the same gfx::BufferUsage
-  // as camera stack.
-  absl::optional<VideoFrameLayout> layout = GetPlatformVideoFrameLayout(
-      /*gpu_memory_buffer_factory=*/nullptr, format, visible_size,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-  if (!layout || layout->planes().empty()) {
-    VLOGF(1) << "Failed to allocate VideoFrameLayout";
-    return gfx::Size();
-  }
-
-  int32_t stride = layout->planes()[0].stride;
-  size_t plane_size = layout->planes()[0].size;
-  if (stride == 0 || plane_size == 0) {
-    VLOGF(1) << "Unexpected stride=" << stride << ", plane_size=" << plane_size;
-    return gfx::Size();
-  }
-
-  return gfx::Size(stride, plane_size / stride);
-}
-
 }  // namespace
 
 struct VaapiVideoEncodeAccelerator::InputFrameRef {
@@ -383,19 +361,6 @@ void VaapiVideoEncodeAccelerator::InitializeTask(const Config& config) {
       expected_input_coded_size_.width() <= encoder_->GetCodedSize().width() &&
       expected_input_coded_size_.height() <= encoder_->GetCodedSize().height());
 
-  DCHECK_EQ(IsConfiguredForTesting(), !aligned_va_surface_size_.IsEmpty());
-  if (!IsConfiguredForTesting()) {
-    // The aligned VA surface size must be the same as a size of a native
-    // graphics buffer. Since the VA surface's format is NV12, we specify NV12
-    // to query the size of the native graphics buffer.
-    aligned_va_surface_size_ =
-        GetInputFrameSize(PIXEL_FORMAT_NV12, config.input_visible_size);
-    if (aligned_va_surface_size_.IsEmpty()) {
-      NOTIFY_ERROR(kPlatformFailureError, "Failed to get frame size");
-      return;
-    }
-  }
-
   va_surfaces_per_video_frame_ =
       native_input_mode_
           ?
@@ -616,32 +581,159 @@ VaapiVideoEncodeAccelerator::BlitSurfaceWithCreateVppIfNeeded(
   return blit_surface;
 }
 
+bool VaapiVideoEncodeAccelerator::CreateSurfacesForGpuMemoryBufferEncoding(
+    const VideoFrame& frame,
+    const gfx::Size& encode_size,
+    scoped_refptr<VASurface>* input_surface,
+    scoped_refptr<VASurface>* reconstructed_surface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK(native_input_mode_);
+
+  if (frame.storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
+    NOTIFY_ERROR(kPlatformFailureError,
+                 "Unexpected storage: "
+                     << VideoFrame::StorageTypeToString(frame.storage_type()));
+    return false;
+  }
+
+  if (frame.format() != PIXEL_FORMAT_NV12) {
+    NOTIFY_ERROR(
+        kPlatformFailureError,
+        "Expected NV12, got: " << VideoPixelFormatToString(frame.format()));
+    return false;
+  }
+
+  const bool do_vpp = frame.visible_rect() != gfx::Rect(encode_size);
+  if (do_vpp) {
+    constexpr size_t kNumSurfaces = 2;  // input and reconstructed surface.
+    if (base::Contains(available_vpp_va_surface_ids_, encode_size) &&
+        available_vpp_va_surface_ids_[encode_size].size() < kNumSurfaces) {
+      DVLOGF(4) << "Not enough surfaces available";
+      return false;
+    }
+  } else {
+    constexpr size_t kNumSurfaces = 1;  // reconstructed surface.
+    if (available_va_surface_ids_.size() < kNumSurfaces) {
+      DVLOGF(4) << "Not surface available";
+      return false;
+    }
+  }
+
+  // Create VASurface from GpuMemory-based VideoFrame.
+  scoped_refptr<gfx::NativePixmap> pixmap = CreateNativePixmapDmaBuf(&frame);
+  if (!pixmap) {
+    NOTIFY_ERROR(kPlatformFailureError,
+                 "Failed to create NativePixmap from VideoFrame");
+    return false;
+  }
+
+  *input_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
+  if (!input_surface) {
+    NOTIFY_ERROR(kPlatformFailureError, "Failed to create VASurface");
+    return false;
+  }
+
+  // Crop and Scale input surface to a surface whose size is |encode_size|.
+  // The size of a reconstructed surface is also |encode_size|.
+  if (do_vpp) {
+    // Create blit destination and reconstructed surfaces.
+    *input_surface = BlitSurfaceWithCreateVppIfNeeded(
+        *input_surface->get(), frame.visible_rect(), encode_size,
+        (num_frames_in_flight_ + 1) * 2);
+    DCHECK(input_surface);
+
+    // A reconstructed surface is fine to be created by VPP VaapiWrapper and
+    // encoder VaapiWrapper. Use one created by VPP VaapiWrapper when VPP is
+    // executed.
+    DCHECK(!available_vpp_va_surface_ids_[encode_size].empty());
+    *reconstructed_surface = base::MakeRefCounted<VASurface>(
+        available_vpp_va_surface_ids_[encode_size].back(), encode_size,
+        kVaSurfaceFormat,
+        base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
+
+    available_vpp_va_surface_ids_[encode_size].pop_back();
+  } else {
+    // TODO(crbug.com/1186051): Create VA Surface here for the first time, not
+    // in Initialize()
+    *reconstructed_surface = base::MakeRefCounted<VASurface>(
+        available_va_surface_ids_.back(), encoder_->GetCodedSize(),
+        kVaSurfaceFormat, base::BindOnce(va_surface_release_cb_));
+    available_va_surface_ids_.pop_back();
+  }
+
+  return true;
+}
+
+bool VaapiVideoEncodeAccelerator::CreateSurfacesForShmemEncoding(
+    const VideoFrame& frame,
+    scoped_refptr<VASurface>* input_surface,
+    scoped_refptr<VASurface>* reconstructed_surface) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK(!native_input_mode_);
+  DCHECK(frame.IsMappable());
+
+  if (expected_input_coded_size_ != frame.coded_size()) {
+    // In non-zero copy mode, the coded size of the incoming frame should be
+    // the same as the one we requested through
+    // Client::RequireBitstreamBuffers().
+    NOTIFY_ERROR(kPlatformFailureError,
+                 "Expected frame coded size: "
+                     << expected_input_coded_size_.ToString()
+                     << ", but got: " << frame.coded_size().ToString());
+    return false;
+  }
+
+  DCHECK_EQ(visible_rect_.origin(), gfx::Point(0, 0));
+  if (visible_rect_ != frame.visible_rect()) {
+    // In non-zero copy mode, the client is responsible for scaling and
+    // cropping.
+    NOTIFY_ERROR(kPlatformFailureError,
+                 "Expected frame visible rectangle: "
+                     << visible_rect_.ToString()
+                     << ", but got: " << frame.visible_rect().ToString());
+    return false;
+  }
+
+  constexpr size_t kNumSurfaces = 2;  // input and reconstructed surface.
+  if (available_va_surface_ids_.size() < kNumSurfaces) {
+    DVLOGF(4) << "Not enough surfaces available";
+    return false;
+  }
+
+  scoped_refptr<VASurface> surfaces[kNumSurfaces];
+  for (auto& surface : surfaces) {
+    surface = base::MakeRefCounted<VASurface>(
+        available_va_surface_ids_.back(), encoder_->GetCodedSize(),
+        kVaSurfaceFormat, base::BindOnce(va_surface_release_cb_));
+    available_va_surface_ids_.pop_back();
+  }
+
+  *input_surface = std::move(surfaces[0]);
+  *reconstructed_surface = std::move(surfaces[1]);
+  return true;
+}
+
 std::unique_ptr<VaapiVideoEncoderDelegate::EncodeJob>
 VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
                                              bool force_keyframe,
                                              const gfx::Size& encode_size) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(encoder_sequence_checker_);
+  DCHECK(frame);
 
-  if (native_input_mode_ &&
-      frame->storage_type() != VideoFrame::STORAGE_DMABUFS &&
-      frame->storage_type() != VideoFrame::STORAGE_GPU_MEMORY_BUFFER) {
-    NOTIFY_ERROR(kPlatformFailureError,
-                 "Unexpected storage: "
-                     << VideoFrame::StorageTypeToString(frame->storage_type()));
-    return nullptr;
-  }
-
-  if (available_va_surface_ids_.size() < va_surfaces_per_video_frame_) {
-    DVLOGF(4) << "Not enough surfaces available";
-    return nullptr;
-  }
-
-  if (base::Contains(available_vpp_va_surface_ids_, encode_size)) {
-    if (available_vpp_va_surface_ids_[encode_size].empty()) {
-      DVLOGF(4) << "Not enough vpp surfaces available";
+  scoped_refptr<VASurface> input_surface;
+  scoped_refptr<VASurface> reconstructed_surface;
+  if (native_input_mode_) {
+    if (!CreateSurfacesForGpuMemoryBufferEncoding(
+            *frame, encode_size, &input_surface, &reconstructed_surface)) {
+      return nullptr;
+    }
+  } else {
+    if (!CreateSurfacesForShmemEncoding(*frame, &input_surface,
+                                        &reconstructed_surface)) {
       return nullptr;
     }
   }
+  DCHECK(input_surface && reconstructed_surface);
 
   auto coded_buffer = vaapi_wrapper_->CreateVABuffer(VAEncCodedBufferType,
                                                      output_buffer_byte_size_);
@@ -649,90 +741,6 @@ VaapiVideoEncodeAccelerator::CreateEncodeJob(scoped_refptr<VideoFrame> frame,
     NOTIFY_ERROR(kPlatformFailureError, "Failed creating coded buffer");
     return nullptr;
   }
-
-  scoped_refptr<VASurface> input_surface;
-  if (native_input_mode_) {
-    if (frame->format() != PIXEL_FORMAT_NV12) {
-      NOTIFY_ERROR(
-          kPlatformFailureError,
-          "Expected NV12, got: " << VideoPixelFormatToString(frame->format()));
-      return nullptr;
-    }
-    DCHECK(frame);
-
-    scoped_refptr<gfx::NativePixmap> pixmap =
-        CreateNativePixmapDmaBuf(frame.get());
-    if (!pixmap) {
-      NOTIFY_ERROR(kPlatformFailureError,
-                   "Failed to create NativePixmap from VideoFrame");
-      return nullptr;
-    }
-    input_surface = vaapi_wrapper_->CreateVASurfaceForPixmap(std::move(pixmap));
-
-    if (!input_surface) {
-      NOTIFY_ERROR(kPlatformFailureError, "Failed to create VASurface");
-      return nullptr;
-    }
-  } else {
-    if (expected_input_coded_size_ != frame->coded_size()) {
-      // In non-zero copy mode, the coded size of the incoming frame should be
-      // the same as the one we requested through
-      // Client::RequireBitstreamBuffers().
-      NOTIFY_ERROR(kPlatformFailureError,
-                   "Expected frame coded size: "
-                       << expected_input_coded_size_.ToString()
-                       << ", but got: " << frame->coded_size().ToString());
-      return nullptr;
-    }
-
-    DCHECK_EQ(visible_rect_.origin(), gfx::Point(0, 0));
-    if (visible_rect_ != frame->visible_rect()) {
-      // In non-zero copy mode, the client is responsible for scaling and
-      // cropping.
-      NOTIFY_ERROR(kPlatformFailureError,
-                   "Expected frame visible rectangle: "
-                       << visible_rect_.ToString()
-                       << ", but got: " << frame->visible_rect().ToString());
-      return nullptr;
-    }
-    input_surface = new VASurface(available_va_surface_ids_.back(),
-                                  encoder_->GetCodedSize(), kVaSurfaceFormat,
-                                  base::BindOnce(va_surface_release_cb_));
-    available_va_surface_ids_.pop_back();
-  }
-
-  if (visible_rect_ != frame->visible_rect()) {
-    DCHECK(native_input_mode_);
-    // Simulcast mode, allocate the same number of surfaces as reconstructed
-    // surfaces when create vpp.
-    input_surface = BlitSurfaceWithCreateVppIfNeeded(
-        *input_surface, frame->visible_rect(), aligned_va_surface_size_,
-        num_frames_in_flight_ + 1);
-    DCHECK(input_surface);
-  }
-
-  scoped_refptr<VASurface> reconstructed_surface;
-  if (encode_size != visible_rect_.size()) {
-    DCHECK(native_input_mode_);
-    // K-SVC mode, allocate surfaces as input and reconstructed surfaces for
-    // lower layer when create vpp.
-    input_surface = BlitSurfaceWithCreateVppIfNeeded(
-        *input_surface, visible_rect_, encode_size,
-        (num_frames_in_flight_ + 1) * 2);
-    DCHECK(input_surface);
-
-    reconstructed_surface =
-        new VASurface(available_vpp_va_surface_ids_[encode_size].back(),
-                      encode_size, kVaSurfaceFormat,
-                      base::BindOnce(vpp_va_surface_release_cb_[encode_size]));
-    available_vpp_va_surface_ids_[encode_size].pop_back();
-  } else {
-    reconstructed_surface = new VASurface(
-        available_va_surface_ids_.back(), encoder_->GetCodedSize(),
-        kVaSurfaceFormat, base::BindOnce(va_surface_release_cb_));
-    available_va_surface_ids_.pop_back();
-  }
-
   scoped_refptr<CodecPicture> picture;
   switch (output_codec_) {
     case kCodecH264:

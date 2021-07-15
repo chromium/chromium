@@ -272,7 +272,6 @@ class VaapiVideoEncodeAcceleratorTest
     auto* vaapi_encoder =
         reinterpret_cast<VaapiVideoEncodeAccelerator*>(encoder_.get());
     vaapi_encoder->supported_profiles_for_testing_.push_back(profile);
-    vaapi_encoder->aligned_va_surface_size_ = config.input_visible_size;
     if (config.input_visible_size.IsEmpty())
       return false;
     return encoder_->Initialize(config, &client_);
@@ -452,13 +451,6 @@ class VaapiVideoEncodeAcceleratorTest
         GetDefaultSVCResolutions(num_spatial_layers);
     constexpr VABufferID kCodedBufferIds[] = {123, 124, 125};
     for (size_t i = 0; i < num_spatial_layers; ++i) {
-      const VABufferID kCodedBufferId = kCodedBufferIds[i];
-      EXPECT_CALL(*mock_vaapi_wrapper_,
-                  CreateVABuffer(VAEncCodedBufferType, output_buffer_size_))
-          .WillOnce(WithArgs<1>([kCodedBufferId](size_t buffer_size) {
-            return ScopedVABuffer::CreateForTesting(
-                kCodedBufferId, VAEncCodedBufferType, buffer_size);
-          }));
       const VASurfaceID kInputSurfaceId = va_surfaces_.back();
       const gfx::Size layer_size = svc_resolutions[i];
       EXPECT_CALL(*mock_vaapi_wrapper_, CreateVASurfaceForPixmap(_, _))
@@ -496,6 +488,14 @@ class VaapiVideoEncodeAcceleratorTest
                                 VideoRotation::VIDEO_ROTATION_0))
             .WillOnce(Return(true));
       }
+
+      const VABufferID kCodedBufferId = kCodedBufferIds[i];
+      EXPECT_CALL(*mock_vaapi_wrapper_,
+                  CreateVABuffer(VAEncCodedBufferType, output_buffer_size_))
+          .WillOnce(WithArgs<1>([kCodedBufferId](size_t buffer_size) {
+            return ScopedVABuffer::CreateForTesting(
+                kCodedBufferId, VAEncCodedBufferType, buffer_size);
+          }));
     }
 
     for (size_t i = 0; i < num_spatial_layers; ++i) {
