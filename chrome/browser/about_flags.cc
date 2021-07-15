@@ -440,59 +440,42 @@ const FeatureEntry::FeatureVariation kReaderModeDiscoverabilityVariations[] = {
 #endif  // OS_ANDROID
 
 #if defined(OS_ANDROID)
+const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysNone[] = {
+    {"mode", "always-none"}};
+const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysNewTab[] = {
+    {"mode", "always-new-tab"}};
+const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysShare[] = {
+    {"mode", "always-share"}};
+const FeatureEntry::FeatureParam kAdaptiveButton_AlwaysVoice[] = {
+    {"mode", "always-voice"}};
 const FeatureEntry::FeatureVariation kAdaptiveButtonInTopToolbarVariations[] = {
-    {
-        "Always None",
-        (FeatureEntry::FeatureParam[]){{"mode", "always-none"}},
-        1,
-        nullptr,
-    },
-    {
-        "Always New Tab",
-        (FeatureEntry::FeatureParam[]){{"mode", "always-new-tab"}},
-        1,
-        nullptr,
-    },
-    {
-        "Always Share",
-        (FeatureEntry::FeatureParam[]){{"mode", "always-share"}},
-        1,
-        nullptr,
-    },
-    {
-        "Always Voice",
-        (FeatureEntry::FeatureParam[]){{"mode", "always-voice"}},
-        1,
-        nullptr,
-    },
+    {"Always None", kAdaptiveButton_AlwaysNone,
+     base::size(kAdaptiveButton_AlwaysNone), nullptr},
+    {"Always New Tab", kAdaptiveButton_AlwaysNewTab,
+     base::size(kAdaptiveButton_AlwaysNewTab), nullptr},
+    {"Always Share", kAdaptiveButton_AlwaysShare,
+     base::size(kAdaptiveButton_AlwaysShare), nullptr},
+    {"Always Voice", kAdaptiveButton_AlwaysVoice,
+     base::size(kAdaptiveButton_AlwaysVoice), nullptr},
 };
 
+const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_NewTab[] = {
+    {"default_segment", "new-tab"},
+    {"ignore_segmentation_results", "true"}};
+const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Share[] = {
+    {"default_segment", "share"},
+    {"ignore_segmentation_results", "true"}};
+const FeatureEntry::FeatureParam kAdaptiveButtonCustomization_Voice[] = {
+    {"default_segment", "voice"},
+    {"ignore_segmentation_results", "true"}};
 const FeatureEntry::FeatureVariation
     kAdaptiveButtonInTopToolbarCustomizationVariations[] = {
-        {
-            "New Tab",
-            (FeatureEntry::FeatureParam[]){
-                {"default_segment", "new-tab"},
-                {"ignore_segmentation_results", "true"}},
-            1,
-            nullptr,
-        },
-        {
-            "Share",
-            (FeatureEntry::FeatureParam[]){
-                {"default_segment", "share"},
-                {"ignore_segmentation_results", "true"}},
-            1,
-            nullptr,
-        },
-        {
-            "Voice",
-            (FeatureEntry::FeatureParam[]){
-                {"default_segment", "voice"},
-                {"ignore_segmentation_results", "true"}},
-            1,
-            nullptr,
-        },
+        {"New Tab", kAdaptiveButtonCustomization_NewTab,
+         base::size(kAdaptiveButtonCustomization_NewTab), nullptr},
+        {"Share", kAdaptiveButtonCustomization_Share,
+         base::size(kAdaptiveButtonCustomization_Share), nullptr},
+        {"Voice", kAdaptiveButtonCustomization_Voice,
+         base::size(kAdaptiveButtonCustomization_Voice), nullptr},
 };
 #endif  // OS_ANDROID
 
