@@ -86,6 +86,12 @@ const base::Feature kBackForwardCache{"BackForwardCache",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
+// Enable same-site back-forward cache for trybots. This is here because of
+// https://crbug.com/1211818 and should only used for trybots. For normal use
+// cases, please set BackForwardCache's enable_same_site param to true.
+const base::Feature kBackForwardCacheSameSiteForBots{
+    "BackForwardCacheSameSiteForBots", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // BackForwardCache is disabled on low memory devices. The threshold is defined
 // via a field trial param: "memory_threshold_for_back_forward_cache_in_mb"
 // It is compared against base::SysInfo::AmountOfPhysicalMemoryMB().

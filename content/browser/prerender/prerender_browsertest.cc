@@ -3304,9 +3304,12 @@ class PrerenderWithBackForwardCacheBrowserTest
     base::FieldTrialParams feature_params;
     feature_params["TimeToLiveInBackForwardCacheInSeconds"] = "3600";
 
-    // Allow the BFCache for all devices regardless of their memory.
+    // Allow the BFCache for all devices regardless of their memory, and ensure
+    // bot flags won't enable BFCache (as we want to control BFCache
+    // enabling/disabling ourselves).
     std::vector<base::Feature> disabled_features{
-        features::kBackForwardCacheMemoryControls};
+        features::kBackForwardCacheMemoryControls,
+        features::kBackForwardCacheSameSiteForBots};
 
     switch (GetParam()) {
       case BackForwardCacheType::kDisabled:

@@ -85,6 +85,7 @@
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/page_type.h"
 #include "content/public/common/user_agent.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
@@ -1291,6 +1292,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ConnectProxyEndtoEnd)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   SetDataSaverEnabled(true);
   ui_test_utils::NavigateToURL(browser(), GetOriginServerURL("/simple.html"));
   WaitForUpdatedCustomProxyConfig();
@@ -1958,6 +1963,10 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(CookiesUsedAndCopied)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   GURL starting_page = GetOriginServerURL("/simple.html");
   SetDataSaverEnabled(true);
   ui_test_utils::NavigateToURL(browser(), starting_page);
@@ -2974,6 +2983,10 @@ class PrefetchProxyWithNSPBrowserTest : public PrefetchProxyBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(PrefetchProxyWithNSPBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(SuccessfulNSPEndToEnd)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   base::HistogramTester histogram_tester;
 
   SetDataSaverEnabled(true);
@@ -3890,6 +3903,10 @@ IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ProbingAndNSPEnabledPrefetchProxyBrowserTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(ProbeBad_NSPSuccess)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   SetDataSaverEnabled(true);
   GURL starting_page = GetOriginServerURL("/simple.html");
   ui_test_utils::NavigateToURL(browser(), starting_page);
@@ -4160,6 +4177,10 @@ class SpeculationPrefetchProxyTest : public PrefetchProxyBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(SpeculationPrefetchProxyTest,
                        DISABLE_ON_WIN_MAC_CHROMEOS(SuccessfulNSPEndToEnd)) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   base::HistogramTester histogram_tester;
 
   SetDataSaverEnabled(true);

@@ -5767,6 +5767,9 @@ class BackForwardCacheBrowserTestWithSameSiteDisabled
   void SetUpCommandLine(base::CommandLine* command_line) override {
     same_site_back_forward_cache_enabled_ = false;
     DisableFeature(features::kProactivelySwapBrowsingInstance);
+    // Ensure that the bot flags won't override the same-site back/forward cache
+    // disabling.
+    DisableFeature(features::kBackForwardCacheSameSiteForBots);
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };

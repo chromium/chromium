@@ -10,6 +10,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -122,10 +123,15 @@ IN_PROC_BROWSER_TEST_F(SubframeTaskBrowserTest, TaskManagerShowsSubframeTasks) {
   }
 
   // If we navigate to the simple page on a.com which doesn't have cross-site
-  // iframes, we expect not to have any SubframeTasks.
+  // iframes, we expect not to have any SubframeTasks, except if the previous
+  // page is saved in the back-forward cache.
   NavigateTo(kSimplePageUrl);
 
-  ASSERT_EQ(1U, task_manager.tasks().size());
+  ASSERT_EQ(
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 4U
+          : 1U,
+      task_manager.tasks().size());
   const Task* simple_page_task = task_manager.tasks().front();
   EXPECT_EQ(Task::RENDERER, simple_page_task->GetType());
   EXPECT_EQ(PrefixExpectedTabTitle("Title Of Awesomeness"),

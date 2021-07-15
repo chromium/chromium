@@ -886,7 +886,7 @@ void InactiveRenderFrameHostDeletionObserver::Wait() {
   for (RenderFrameHost* rfh : CollectAllRenderFrameHosts(web_contents())) {
     // Keep track of all currently inactive RenderFrameHosts so that we can wait
     // for all of them to be deleted.
-    if (!rfh->IsActive())
+    if (!rfh->IsActive() && rfh->IsRenderFrameLive())
       inactive_rfhs_.insert(rfh);
   }
   loop_ = std::make_unique<base::RunLoop>();

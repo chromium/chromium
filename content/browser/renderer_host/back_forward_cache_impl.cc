@@ -970,6 +970,11 @@ bool BackForwardCache::IsBackForwardCacheFeatureEnabled() {
 }
 
 // static
+bool BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled() {
+  return IsSameSiteBackForwardCacheEnabled();
+}
+
+// static
 void BackForwardCache::DisableForRenderFrameHost(
     RenderFrameHost* render_frame_host,
     BackForwardCache::DisabledReason reason) {

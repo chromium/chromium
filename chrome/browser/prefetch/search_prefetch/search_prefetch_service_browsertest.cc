@@ -44,6 +44,7 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -1229,6 +1230,11 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
 
+  // Disable back/forward cache to ensure that it doesn't get preserved in the
+  // back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
   EXPECT_TRUE(search_prefetch_service->MaybePrefetchURL(prefetch_url));
@@ -1291,6 +1297,11 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
+
+  // Disable back/forward cache to ensure that it doesn't get preserved in the
+  // back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");
@@ -1409,6 +1420,11 @@ IN_PROC_BROWSER_TEST_P(SearchPrefetchServiceEnabledBrowserTest,
   auto* search_prefetch_service =
       SearchPrefetchServiceFactory::GetForProfile(browser()->profile());
   EXPECT_NE(nullptr, search_prefetch_service);
+
+  // Disable back/forward cache to ensure that it doesn't get preserved in the
+  // back/forward cache.
+  content::DisableBackForwardCacheForTesting(
+      GetWebContents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   std::string search_terms = "prefetch_content";
   GURL prefetch_url = GetSearchServerQueryURL(search_terms + "&pf=cs");

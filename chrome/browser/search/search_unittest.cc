@@ -97,6 +97,39 @@ class SearchTest : public BrowserWithTestWindowTest {
     return instant_service->IsInstantProcess(
         contents->GetMainFrame()->GetProcess()->GetID());
   }
+
+  // Each test case represents a navigation to |start_url| followed by a
+  // navigation to |end_url|. We will check whether each navigation lands in an
+  // Instant process, and also whether the navigation from start to end re-uses
+  // the same SiteInstance (and hence the same RenderViewHost, etc.).
+  // Note that we need to define this here because the flags needed to check
+  // content::CanSameSiteMainFrameNavigationsChangeSiteInstances() might not
+  // be set yet if we define this immediately (e.g. outside of the test class).
+  const struct ProcessIsolationTestCase {
+    const char* description;
+    const char* start_url;
+    bool start_in_instant_process;
+    const char* end_url;
+    bool end_in_instant_process;
+    bool same_site_instance;
+    bool same_process;
+  } kProcessIsolationTestCases[5] = {
+      {"Remote NTP -> SRP", "https://foo.com/newtab", true,
+       "https://foo.com/url", false, false, false},
+      {"Remote NTP -> Regular", "https://foo.com/newtab", true,
+       "https://foo.com/other", false, false, false},
+      {"SRP -> SRP", "https://foo.com/url", false, "https://foo.com/url", false,
+       true, true},
+      // Same-site (but not same URL) navigations might switch site instances
+      // but keep the same process when ProactivelySwapBrowsingInstance is
+      // enabled on same-site navigations.
+      {"SRP -> Regular", "https://foo.com/url", false, "https://foo.com/other",
+       false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
+       true},
+      {"Regular -> SRP", "https://foo.com/other", false, "https://foo.com/url",
+       false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
+       true},
+  };
 };
 
 struct SearchTestCase {
@@ -150,36 +183,6 @@ TEST_F(SearchTest, ShouldUseProcessPerSiteForInstantSiteURL) {
         << test.url << " " << test.comment;
   }
 }
-
-// Each test case represents a navigation to |start_url| followed by a
-// navigation to |end_url|. We will check whether each navigation lands in an
-// Instant process, and also whether the navigation from start to end re-uses
-// the same SiteInstance (and hence the same RenderViewHost, etc.).
-const struct ProcessIsolationTestCase {
-  const char* description;
-  const char* start_url;
-  bool start_in_instant_process;
-  const char* end_url;
-  bool end_in_instant_process;
-  bool same_site_instance;
-  bool same_process;
-} kProcessIsolationTestCases[] = {
-    {"Remote NTP -> SRP", "https://foo.com/newtab", true, "https://foo.com/url",
-     false, false, false},
-    {"Remote NTP -> Regular", "https://foo.com/newtab", true,
-     "https://foo.com/other", false, false, false},
-    {"SRP -> SRP", "https://foo.com/url", false, "https://foo.com/url", false,
-     true, true},
-    // Same-site (but not same URL) navigations might switch site instances but
-    // keep the same process when ProactivelySwapBrowsingInstance is enabled on
-    // same-site navigations.
-    {"SRP -> Regular", "https://foo.com/url", false, "https://foo.com/other",
-     false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-     true},
-    {"Regular -> SRP", "https://foo.com/other", false, "https://foo.com/url",
-     false, !content::CanSameSiteMainFrameNavigationsChangeSiteInstances(),
-     true},
-};
 
 TEST_F(SearchTest, ProcessIsolation) {
   for (size_t i = 0; i < base::size(kProcessIsolationTestCases); ++i) {

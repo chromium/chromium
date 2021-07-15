@@ -21,6 +21,7 @@
 #include "chrome/browser/usb/usb_tab_helper.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "extensions/buildflags/buildflags.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -378,6 +379,15 @@ TEST_F(WebUsbServiceImplTest, OpenAndDisconnectDevice) {
 }
 
 TEST_F(WebUsbServiceImplTest, OpenAndNavigateCrossOrigin) {
+  // The test assumes the previous page gets deleted after navigation,
+  // disconnecting the device. Disable back/forward cache to ensure that it
+  // doesn't get preserved in the cache.
+  // TODO(https://crbug.com/1220314): WebUSB actually already disables
+  // back/forward cache in RenderFrameHostImpl::CreateWebUsbService(), but that
+  // path is not triggered in unit tests, so this test fails. Fix this.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   const auto origin = url::Origin::Create(GURL(kDefaultTestUrl));
 
   auto* context = GetChooserContext();

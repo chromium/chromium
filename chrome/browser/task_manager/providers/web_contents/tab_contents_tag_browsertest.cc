@@ -21,6 +21,7 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/test/browser_test.h"
@@ -319,9 +320,14 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
   if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
     // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
     // same-site main frame navigations, we'll get a new task because we are
-    // changing RenderFrameHosts.
-    ASSERT_EQ(1U, task_manager.tasks().size());
-    task = task_manager.tasks().back();
+    // changing RenderFrameHosts. Note that the previous page's task might still
+    // be around if the previous page is saved in the back-forward cache.
+    ASSERT_EQ(
+        content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+            ? 2U
+            : 1U,
+        task_manager.tasks().size());
+    task = task_manager.tasks().front();
   }
   ASSERT_EQ(GetDefaultTitleForUrl(no_favicon_page_url), task->title());
 

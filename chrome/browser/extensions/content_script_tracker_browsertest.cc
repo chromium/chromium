@@ -18,6 +18,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/commit_message_delayer.h"
@@ -214,8 +215,14 @@ IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
 // also the "RenderDocumentHostUserData race w/ Commit IPC" section in the
 // document here:
 // https://docs.google.com/document/d/1MFprp2ss2r9RNamJ7Jxva1bvRZvec3rzGceDGoJ6vW0/edit#heading=h.n2ppjzx4jpzt
+// TODO(crbug.com/936696): Remove the test after RenderDocument is shipped.
 IN_PROC_BROWSER_TEST_F(ContentScriptTrackerBrowserTest,
                        ProgrammaticInjectionRacingWithDidCommit) {
+  // The test assumes the RenderFrame stays the same after navigation. Disable
+  // back/forward cache to ensure that RenderFrame swap won't happen.
+  content::DisableBackForwardCacheForTesting(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
   // Install a test extension.
   TestExtensionDir dir;
   const char kManifestTemplate[] = R"(

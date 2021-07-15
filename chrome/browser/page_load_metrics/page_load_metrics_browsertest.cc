@@ -71,6 +71,7 @@
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -1649,6 +1650,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest,
                        UseCounterUkmFeaturesLogged) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(TimingField::kLoadEvent);
   GURL url = embedded_test_server()->GetURL(
@@ -1689,6 +1700,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTestWithAutoupgradesDisabled,
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_server.AddDefaultHandlers(GetChromeTestDataDir());
   ASSERT_TRUE(https_server.Start());
+
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   auto waiter = CreatePageLoadMetricsTestWaiter();
   waiter->AddPageExpectation(TimingField::kLoadEvent);

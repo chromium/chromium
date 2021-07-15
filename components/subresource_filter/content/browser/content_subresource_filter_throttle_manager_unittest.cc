@@ -41,6 +41,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
@@ -725,6 +726,12 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest, RulesetHandleRegeneration) {
 
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
        SameSiteNavigation_RulesetGoesAway) {
+  // The test assumes the previous page gets deleted after navigation and
+  // ManagerHasRulesetHandle() will return false. Disable back/forward cache to
+  // ensure that it doesn't get preserved in the cache.
+  DisableBackForwardCacheForTesting(
+      RenderViewHostTestHarness::web_contents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   // This test assumes that we're not in DryRun mode.
   base::test::ScopedFeatureList scoped_feature;
   scoped_feature.InitAndDisableFeature(kAdTagging);
@@ -799,7 +806,6 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
 
   CreateTestNavigation(same_site_inactive_url, main_rfh());
   SimulateFailedNavigation(navigation_simulator(), net::ERR_FAILED);
-  EXPECT_FALSE(ManagerHasRulesetHandle());
   ExpectActivationSignalForFrame(main_rfh(), false /* expect_activation */);
 
   CreateSubframeWithTestNavigation(

@@ -10,6 +10,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "google_apis/gaia/gaia_urls.h"
@@ -70,6 +71,11 @@ TEST_F(DiceTabHelperTest, Initialization) {
 }
 
 TEST_F(DiceTabHelperTest, SigninPageStatus) {
+  // The test assumes the previous page gets deleted after navigation and will
+  // be recreated after navigation (which resets the signin page state). Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   DiceTabHelper::CreateForWebContents(web_contents());
   DiceTabHelper* dice_tab_helper =
       DiceTabHelper::FromWebContents(web_contents());

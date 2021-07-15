@@ -58,6 +58,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
@@ -1100,6 +1101,11 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchMultipleRequest) {
 // Checks that a second prefetch request, started before the first stops,
 // succeeds.
 IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, PrefetchSimultaneous) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      GetActiveWebContents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   GURL first_url = src_server()->GetURL("/hung");
 
   // Start the first prefetch directly instead of via PrefetchFromFile for the
@@ -1900,6 +1906,11 @@ IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(SpeculationNoStatePrefetchBrowserTest,
                        HungSpeculationTimedOutByNavigation) {
+  // The test assumes the previous page gets deleted after navigation. Disable
+  // back/forward cache to ensure that it doesn't get preserved in the cache.
+  content::DisableBackForwardCacheForTesting(
+      browser()->tab_strip_model()->GetActiveWebContents(),
+      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
   UseHttpsSrcServer();
   GetNoStatePrefetchManager()->mutable_config().abandon_time_to_live =
       base::TimeDelta::FromMilliseconds(500);

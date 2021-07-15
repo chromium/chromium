@@ -40,6 +40,7 @@
 #include "components/security_interstitials/content/unsafe_resource_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"

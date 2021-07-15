@@ -7,6 +7,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -49,6 +50,17 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsFetchUse) {
   GURL start_url(server_.GetURL("/title1.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
 
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .DisableForTesting(
+          content::BackForwardCache::TEST_ASSUMES_NO_RENDER_FRAME_CHANGE);
+
   std::string cmd = R"(
   (async () => {
     await fetch("/page404.html", {trustToken: {type: 'token-request'}});
@@ -73,6 +85,16 @@ IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsFetchUse) {
 IN_PROC_BROWSER_TEST_F(TrustTokenUseCountersBrowsertest, CountsXhrUse) {
   GURL start_url(server_.GetURL("/title1.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), start_url));
+
+  // Ensure that the previous page won't be stored in the back/forward cache, so
+  // that the histogram will be recorded when the previous page is unloaded.
+  // TODO(https://crbug.com/1229122): Investigate if this needs further fix.
+  browser()
+      ->tab_strip_model()
+      ->GetActiveWebContents()
+      ->GetController()
+      .GetBackForwardCache()
+      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
 
   base::HistogramTester histograms;
 
