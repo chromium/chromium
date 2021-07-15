@@ -88,7 +88,7 @@ bool ClientSidePhishingModel::IsEnabled() const {
          visual_tflite_model_.IsValid();
 }
 
-std::string ClientSidePhishingModel::GetModelStr() const {
+const std::string& ClientSidePhishingModel::GetModelStr() const {
   DCHECK(model_type_ != CSDModelType::kFlatbuffer);
   return model_str_;
 }

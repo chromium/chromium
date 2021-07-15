@@ -431,7 +431,7 @@ GURL ClientSideDetectionService::GetClientReportUrl(
   return url;
 }
 
-std::string ClientSideDetectionService::GetModelStr() {
+const std::string& ClientSideDetectionService::GetModelStr() {
   return ClientSidePhishingModel::GetInstance()->GetModelStr();
 }
 
