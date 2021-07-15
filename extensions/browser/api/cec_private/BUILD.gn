@@ -15,6 +15,7 @@ source_set("cec_private") {
 
   deps = [
     "//chromeos/dbus",
+    "//chromeos/dbus/cec_service",
     "//extensions/common",
     "//extensions/common/api",
   ]

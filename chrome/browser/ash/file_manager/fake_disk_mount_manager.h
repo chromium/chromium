@@ -15,7 +15,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
 namespace file_manager {

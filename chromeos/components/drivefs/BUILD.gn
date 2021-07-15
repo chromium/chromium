@@ -44,6 +44,9 @@ component("drivefs") {
     "//net",
     "//services/network/public/cpp:cpp",
   ]
+  if (!use_real_dbus_clients) {
+    deps += [ "//chromeos/dbus/cros_disks" ]
+  }
   defines = [ "IS_DRIVEFS_IMPL" ]
 }
 
@@ -58,6 +61,7 @@ source_set("test_support") {
     "//base",
     "//chromeos/components/drivefs/mojom",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/cros_disks",
     "//net",
   ]
 }

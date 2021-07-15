@@ -11,7 +11,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "chromeos/network/network_handler_test_helper.h"

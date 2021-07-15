@@ -31,7 +31,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/drive/drive_pref_names.h"

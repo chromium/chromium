@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
 namespace chromeos {

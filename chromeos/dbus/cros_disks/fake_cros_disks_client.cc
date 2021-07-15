@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fake_cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 
 #include <utility>
 
@@ -45,8 +45,7 @@ MountError PerformFakeMount(const std::string& source_path,
   const int write_result = base::WriteFile(
       dummy_file_path, dummy_file_content.data(), dummy_file_content.size());
   if (write_result != static_cast<int>(dummy_file_content.size())) {
-    DLOG(ERROR) << "Failed to put a dummy file at "
-                << dummy_file_path.value();
+    DLOG(ERROR) << "Failed to put a dummy file at " << dummy_file_path.value();
     return MOUNT_ERROR_MOUNT_PROGRAM_FAILED;
   }
 
@@ -59,8 +58,7 @@ FakeCrosDisksClient::FakeCrosDisksClient() = default;
 
 FakeCrosDisksClient::~FakeCrosDisksClient() = default;
 
-void FakeCrosDisksClient::Init(dbus::Bus* bus) {
-}
+void FakeCrosDisksClient::Init(dbus::Bus* bus) {}
 
 void FakeCrosDisksClient::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

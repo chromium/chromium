@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_CEC_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_CEC_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
+#define CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/dbus/cec_service_client.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
 
 namespace chromeos {
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCecServiceClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) FakeCecServiceClient
     : public CecServiceClient {
  public:
   FakeCecServiceClient();
@@ -50,4 +51,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCecServiceClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_CEC_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CEC_SERVICE_FAKE_CEC_SERVICE_CLIENT_H_

@@ -25,7 +25,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_util.h"
-#include "chromeos/dbus/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/disks/disk.h"
 #include "chromeos/disks/suspend_unmount_manager.h"

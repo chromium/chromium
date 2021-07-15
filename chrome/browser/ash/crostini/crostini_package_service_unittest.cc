@@ -26,7 +26,7 @@
 #include "chromeos/dbus/cicerone/fake_cicerone_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/concierge/fake_concierge_client.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/seneschal/fake_seneschal_client.h"
 #include "chromeos/dbus/seneschal/seneschal_client.h"

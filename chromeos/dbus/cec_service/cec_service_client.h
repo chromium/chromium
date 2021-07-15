@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CEC_SERVICE_CLIENT_H_
-#define CHROMEOS_DBUS_CEC_SERVICE_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
+#define CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_
 
 #include <memory>
 #include <vector>
@@ -21,7 +21,8 @@ namespace chromeos {
 //
 // All methods should be called from the origin thread (UI thread)
 // which initializes the DBusThreadManager instance.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) CecServiceClient : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_CEC_SERVICE) CecServiceClient
+    : public DBusClient {
  public:
   ~CecServiceClient() override;
 
@@ -78,4 +79,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) CecServiceClient : public DBusClient {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_CEC_SERVICE_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CEC_SERVICE_CEC_SERVICE_CLIENT_H_

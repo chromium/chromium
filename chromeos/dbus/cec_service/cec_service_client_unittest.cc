@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cec_service_client.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
 
 #include <memory>
 #include <string>
@@ -15,7 +15,6 @@
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chromeos/dbus/dbus_client_implementation_type.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -25,10 +24,10 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using ::testing::_;
 using ::testing::ContainerEq;
 using ::testing::Invoke;
 using ::testing::Return;
-using ::testing::_;
 
 namespace chromeos {
 

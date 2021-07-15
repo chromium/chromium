@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -29,7 +29,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
-#include "chromeos/dbus/fake_cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/fake_cros_disks_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
@@ -63,17 +63,17 @@ DeviceType DeviceMediaTypeToDeviceType(uint32_t media_type_uint32) {
       cros_disks::DeviceMediaType(media_type_uint32);
 
   switch (media_type) {
-    case(cros_disks::DEVICE_MEDIA_UNKNOWN):
+    case (cros_disks::DEVICE_MEDIA_UNKNOWN):
       return DEVICE_TYPE_UNKNOWN;
-    case(cros_disks::DEVICE_MEDIA_USB):
+    case (cros_disks::DEVICE_MEDIA_USB):
       return DEVICE_TYPE_USB;
-    case(cros_disks::DEVICE_MEDIA_SD):
+    case (cros_disks::DEVICE_MEDIA_SD):
       return DEVICE_TYPE_SD;
-    case(cros_disks::DEVICE_MEDIA_OPTICAL_DISC):
+    case (cros_disks::DEVICE_MEDIA_OPTICAL_DISC):
       return DEVICE_TYPE_OPTICAL_DISC;
-    case(cros_disks::DEVICE_MEDIA_MOBILE):
+    case (cros_disks::DEVICE_MEDIA_MOBILE):
       return DEVICE_TYPE_MOBILE;
-    case(cros_disks::DEVICE_MEDIA_DVD):
+    case (cros_disks::DEVICE_MEDIA_DVD):
       return DEVICE_TYPE_DVD;
     default:
       return DEVICE_TYPE_UNKNOWN;
@@ -133,10 +133,8 @@ bool ReadMountEntryFromDbus(dbus::MessageReader* reader, MountEntry* entry) {
   std::string source_path;
   uint32_t mount_type = 0;
   std::string mount_path;
-  if (!reader->PopUint32(&error_code) ||
-      !reader->PopString(&source_path) ||
-      !reader->PopUint32(&mount_type) ||
-      !reader->PopString(&mount_path)) {
+  if (!reader->PopUint32(&error_code) || !reader->PopString(&source_path) ||
+      !reader->PopUint32(&mount_type) || !reader->PopString(&mount_path)) {
     return false;
   }
   *entry =
@@ -347,7 +345,7 @@ class CrosDisksClientImpl : public CrosDisksClient {
   // A struct to contain a pair of signal name and mount event type.
   // Used by SetMountEventHandler.
   struct SignalEventTuple {
-    const char *signal_name;
+    const char* signal_name;
     MountEventType event_type;
   };
 
@@ -562,8 +560,8 @@ class CrosDisksClientImpl : public CrosDisksClient {
   void OnSignalConnected(const std::string& interface,
                          const std::string& signal,
                          bool succeeded) {
-    LOG_IF(ERROR, !succeeded) << "Connect to " << interface << " " <<
-        signal << " failed.";
+    LOG_IF(ERROR, !succeeded)
+        << "Connect to " << interface << " " << signal << " failed.";
   }
 
   dbus::ObjectProxy* proxy_;
@@ -799,16 +797,17 @@ std::unique_ptr<CrosDisksClient> CrosDisksClient::Create() {
 
 // static
 base::FilePath CrosDisksClient::GetArchiveMountPoint() {
-  return base::FilePath(base::SysInfo::IsRunningOnChromeOS() ?
-                        FILE_PATH_LITERAL("/media/archive") :
-                        FILE_PATH_LITERAL("/tmp/chromeos/media/archive"));
+  return base::FilePath(base::SysInfo::IsRunningOnChromeOS()
+                            ? FILE_PATH_LITERAL("/media/archive")
+                            : FILE_PATH_LITERAL("/tmp/chromeos/media/archive"));
 }
 
 // static
 base::FilePath CrosDisksClient::GetRemovableDiskMountPoint() {
-  return base::FilePath(base::SysInfo::IsRunningOnChromeOS() ?
-                        FILE_PATH_LITERAL("/media/removable") :
-                        FILE_PATH_LITERAL("/tmp/chromeos/media/removable"));
+  return base::FilePath(
+      base::SysInfo::IsRunningOnChromeOS()
+          ? FILE_PATH_LITERAL("/media/removable")
+          : FILE_PATH_LITERAL("/tmp/chromeos/media/removable"));
 }
 
 // static

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_CROS_DISKS_CLIENT_H_
-#define CHROMEOS_DBUS_CROS_DISKS_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
+#define CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_
 
 #include <stdint.h>
 
@@ -43,11 +43,11 @@ enum MountType {
 // Type of device.
 enum DeviceType {
   DEVICE_TYPE_UNKNOWN,
-  DEVICE_TYPE_USB,  // USB stick.
-  DEVICE_TYPE_SD,  // SD card.
+  DEVICE_TYPE_USB,           // USB stick.
+  DEVICE_TYPE_SD,            // SD card.
   DEVICE_TYPE_OPTICAL_DISC,  // e.g. Optical disc excluding DVD.
-  DEVICE_TYPE_MOBILE,  // Storage on a mobile device (e.g. Android).
-  DEVICE_TYPE_DVD,  // DVD.
+  DEVICE_TYPE_MOBILE,        // Storage on a mobile device (e.g. Android).
+  DEVICE_TYPE_DVD,           // DVD.
 };
 
 // Mount error code used by cros-disks.
@@ -151,7 +151,7 @@ enum RemountOption {
 };
 
 // A class to represent information about a disk sent from cros-disks.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) DiskInfo {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) DiskInfo {
  public:
   DiskInfo(const std::string& device_path, dbus::Response* response);
   ~DiskInfo();
@@ -262,11 +262,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DiskInfo {
 };
 
 // A struct to represent information about a mount point sent from cros-disks.
-struct COMPONENT_EXPORT(CHROMEOS_DBUS) MountEntry {
+struct COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) MountEntry {
  public:
   MountEntry()
-      : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MOUNT_TYPE_INVALID) {
-  }
+      : error_code_(MOUNT_ERROR_UNKNOWN), mount_type_(MOUNT_TYPE_INVALID) {}
 
   MountEntry(MountError error_code,
              const std::string& source_path,
@@ -275,8 +274,7 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS) MountEntry {
       : error_code_(error_code),
         source_path_(source_path),
         mount_type_(mount_type),
-        mount_path_(mount_path) {
-  }
+        mount_path_(mount_path) {}
 
   MountError error_code() const { return error_code_; }
   const std::string& source_path() const { return source_path_; }
@@ -293,7 +291,8 @@ struct COMPONENT_EXPORT(CHROMEOS_DBUS) MountEntry {
 // A class to make the actual DBus calls for cros-disks service.
 // This class only makes calls, result/error handling should be done
 // by callbacks.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) CrosDisksClient : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) CrosDisksClient
+    : public DBusClient {
  public:
   // A callback to handle the result of EnumerateDevices.
   // The argument is the enumerated device paths.
@@ -435,4 +434,4 @@ using ::chromeos::MountError;
 using ::chromeos::MountType;
 }  // namespace ash
 
-#endif  // CHROMEOS_DBUS_CROS_DISKS_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CROS_DISKS_CROS_DISKS_CLIENT_H_

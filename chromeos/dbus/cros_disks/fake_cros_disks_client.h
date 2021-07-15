@@ -2,24 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_CROS_DISKS_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_CROS_DISKS_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
+#define CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_
 
 #include <set>
 #include <string>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chromeos/dbus/cros_disks_client.h"
+#include "chromeos/dbus/cros_disks/cros_disks_client.h"
 
 namespace chromeos {
 
 // A fake implementation of CrosDiskeClient. This class provides a fake behavior
 // and the user of this class can raise a fake mouse events.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
     : public CrosDisksClient {
  public:
   using CustomMountPointCallback =
@@ -84,9 +85,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
       CustomMountPointCallback custom_mount_point_callback);
 
   // Returns how many times Unmount() was called.
-  int unmount_call_count() const {
-    return unmount_call_count_;
-  }
+  int unmount_call_count() const { return unmount_call_count_; }
 
   // Returns the |device_path| parameter from the last invocation of Unmount().
   const std::string& last_unmount_device_path() const {
@@ -103,9 +102,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
   }
 
   // Returns how many times Format() was called.
-  int format_call_count() const {
-    return format_call_count_;
-  }
+  int format_call_count() const { return format_call_count_; }
 
   // Returns the |device_path| parameter from the last invocation of Format().
   const std::string& last_format_device_path() const {
@@ -121,9 +118,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
   const std::string& last_format_label() const { return last_format_label_; }
 
   // Makes the subsequent Format() calls fail. Format() succeeds by default.
-  void MakeFormatFail() {
-    format_success_ = false;
-  }
+  void MakeFormatFail() { format_success_ = false; }
 
   // Returns how many times Format() was called.
   int partition_call_count() const { return partition_call_count_; }
@@ -206,4 +201,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeCrosDisksClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_CROS_DISKS_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_

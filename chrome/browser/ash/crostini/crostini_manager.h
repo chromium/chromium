@@ -26,7 +26,7 @@
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/dbus/anomaly_detector/anomaly_detector.pb.h"
-#include "chromeos/dbus/anomaly_detector_client.h"
+#include "chromeos/dbus/anomaly_detector/anomaly_detector_client.h"
 #include "chromeos/dbus/cicerone/cicerone_client.h"
 #include "chromeos/dbus/cicerone/cicerone_service.pb.h"
 #include "chromeos/dbus/concierge/concierge_client.h"

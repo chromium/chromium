@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chromeos/dbus/cec_service_client.h"
+#include "chromeos/dbus/cec_service/cec_service_client.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
