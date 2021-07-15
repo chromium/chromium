@@ -11,10 +11,7 @@
 #include "components/arc/compat_mode/metrics.h"
 #include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/widget/widget_utils.h"
 
 namespace arc {
 namespace {
@@ -58,9 +55,7 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
 
   void ClickButton(ResizeCompatMode command_id) {
     const auto* button = GetButtonByCommandId(command_id);
-    ui::test::EventGenerator event_generator(GetRootWindow(widget_.get()));
-    event_generator.MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-    event_generator.ClickLeftButton();
+    LeftClickOnView(widget_.get(), button);
   }
 
   views::Widget* widget() { return widget_.get(); }

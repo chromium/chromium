@@ -347,6 +347,7 @@ static_library("compat_mode_test_support") {
     "//base",
     "//ui/aura",
     "//ui/display:test_support",
+    "//ui/events:test_support",
     "//ui/views",
     "//ui/views:test_support",
   ]
@@ -565,7 +566,6 @@ source_set("unit_tests") {
     "//ui/base/ime",
     "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:test_support",
     "//ui/ozone",
     "//ui/views",
     "//ui/views:test_support",

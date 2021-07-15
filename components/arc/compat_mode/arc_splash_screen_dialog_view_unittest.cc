@@ -8,29 +8,14 @@
 
 #include "base/callback_helpers.h"
 #include "base/test/bind.h"
+#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
-#include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/md_text_button.h"
-#include "ui/views/test/views_test_base.h"
 
 namespace arc {
-namespace {
 
-void ClickOnView(views::View* view) {
-  ui::MouseEvent click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
-                       ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                       ui::EF_LEFT_MOUSE_BUTTON);
-  view->OnMousePressed(click);
-  ui::MouseEvent release(ui::ET_MOUSE_RELEASED, gfx::Point(), gfx::Point(),
-                         ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
-                         ui::EF_LEFT_MOUSE_BUTTON);
-  view->OnMouseReleased(release);
-}
-
-}  // namespace
-
-class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
+class ArcSplashScreenDialogViewTest : public CompatModeTestBase {
  public:
   ArcSplashScreenDialogViewTest() = default;
   ArcSplashScreenDialogViewTest(const ArcSplashScreenDialogViewTest& other) =
@@ -39,11 +24,10 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
       const ArcSplashScreenDialogViewTest& other) = delete;
   ~ArcSplashScreenDialogViewTest() override = default;
 
-  // views::ViewsTestBase:
+  // CompatModeTestBase:
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    parent_widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-    parent_widget_->Show();
+    CompatModeTestBase::SetUp();
+    parent_widget_ = CreateWidget();
 
     anchor_ = parent_widget_->GetRootView()->AddChildView(
         std::make_unique<views::View>());
@@ -52,7 +36,7 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
   void TearDown() override {
     parent_widget_->CloseNow();
     parent_widget_.reset();
-    views::ViewsTestBase::TearDown();
+    CompatModeTestBase::TearDown();
   }
 
  protected:
@@ -63,6 +47,7 @@ class ArcSplashScreenDialogViewTest : public views::ViewsTestBase {
 
   views::View* anchor() { return anchor_; }
   aura::Window* parent_window() { return parent_widget_->GetNativeView(); }
+  views::Widget* parent_widget() { return parent_widget_.get(); }
 
  private:
   std::unique_ptr<views::Widget> parent_widget_;
@@ -79,7 +64,7 @@ TEST_F(ArcSplashScreenDialogViewTest, TestCloseButton) {
     ShowAsBubble(std::move(dialog_view));
     EXPECT_TRUE(dialog_view_test.close_button()->GetVisible());
     EXPECT_FALSE(on_close_callback_called);
-    ClickOnView(dialog_view_test.close_button());
+    LeftClickOnView(parent_widget(), dialog_view_test.close_button());
     EXPECT_TRUE(on_close_callback_called);
   }
 }
@@ -91,7 +76,7 @@ TEST_F(ArcSplashScreenDialogViewTest, TestAnchorHighlight) {
     ArcSplashScreenDialogView::TestApi dialog_view_test(dialog_view.get());
     ShowAsBubble(std::move(dialog_view));
     EXPECT_NE(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
-    ClickOnView(dialog_view_test.close_button());
+    LeftClickOnView(parent_widget(), dialog_view_test.close_button());
     EXPECT_EQ(-1, anchor()->GetIndexOf(dialog_view_test.highlight_border()));
   }
 }

@@ -12,6 +12,7 @@
 #include "ui/display/test/scoped_screen_override.h"
 #include "ui/display/test/test_screen.h"
 #include "ui/views/test/views_test_base.h"
+#include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace arc {
@@ -30,6 +31,9 @@ class CompatModeTestBase : public views::ViewsTestBase {
                                                  bool show = true);
 
   void SetDisplayWorkArea(const gfx::Rect& work_area);
+
+  void LeftClickOnView(const views::Widget* widget,
+                       const views::View* view) const;
 
   ArcResizeLockPrefDelegate* pref_delegate() { return pref_delegate_.get(); }
 

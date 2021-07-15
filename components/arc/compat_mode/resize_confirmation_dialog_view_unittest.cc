@@ -7,23 +7,20 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/widget_utils.h"
 
 namespace arc {
 namespace {
 
-class ResizeConfirmationDialogViewTest : public views::ViewsTestBase {
+class ResizeConfirmationDialogViewTest : public CompatModeTestBase {
  public:
-  // views::ViewsTestBase:
+  // CompatModeTestBase:
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
+    CompatModeTestBase::SetUp();
     widget_ = CreateTestWidget();
     widget_->SetBounds(gfx::Rect(800, 800));
     dialog_view_ =
@@ -36,7 +33,7 @@ class ResizeConfirmationDialogViewTest : public views::ViewsTestBase {
   void TearDown() override {
     widget_->Close();
     widget_.reset();
-    views::ViewsTestBase::TearDown();
+    CompatModeTestBase::TearDown();
   }
 
  protected:
@@ -48,10 +45,7 @@ class ResizeConfirmationDialogViewTest : public views::ViewsTestBase {
     auto* target_button = accept ? dialog_view_test.accept_button()
                                  : dialog_view_test.cancel_button();
 
-    ui::test::EventGenerator event_generator(GetRootWindow(widget_.get()));
-    event_generator.MoveMouseTo(
-        target_button->GetBoundsInScreen().CenterPoint());
-    event_generator.ClickLeftButton();
+    LeftClickOnView(widget_.get(), target_button);
   }
 
   bool callback_called() { return callback_called_; }

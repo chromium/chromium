@@ -8,6 +8,9 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget_utils.h"
 
 namespace arc {
 
@@ -99,6 +102,13 @@ void CompatModeTestBase::SetDisplayWorkArea(const gfx::Rect& work_area) {
   display::Display display = test_screen_.GetPrimaryDisplay();
   display.set_work_area(work_area);
   test_screen_.display_list().UpdateDisplay(display);
+}
+
+void CompatModeTestBase::LeftClickOnView(const views::Widget* widget,
+                                         const views::View* view) const {
+  ui::test::EventGenerator event_generator(GetRootWindow(widget));
+  event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
+  event_generator.ClickLeftButton();
 }
 
 }  // namespace arc

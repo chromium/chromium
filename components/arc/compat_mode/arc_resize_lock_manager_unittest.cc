@@ -4,7 +4,6 @@
 
 #include "components/arc/compat_mode/arc_resize_lock_manager.h"
 
-#include <set>
 #include <string>
 
 #include "ash/constants/app_types.h"
@@ -13,50 +12,18 @@
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
-#include "base/containers/contains.h"
-#include "base/containers/cxx20_erase.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "components/arc/compat_mode/metrics.h"
+#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/class_property.h"
-#include "ui/views/test/views_test_base.h"
-#include "ui/views/widget/widget.h"
 
 namespace arc {
 namespace {
-
-class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
- public:
-  ~TestArcResizeLockPrefDelegate() override = default;
-
-  // ArcResizeLockPrefDelegate:
-  mojom::ArcResizeLockState GetResizeLockState(
-      const std::string& app_id) const override {
-    auto it = resize_lock_states.find(app_id);
-    if (it == resize_lock_states.end())
-      return mojom::ArcResizeLockState::UNDEFINED;
-
-    return it->second;
-  }
-  void SetResizeLockState(const std::string& app_id,
-                          mojom::ArcResizeLockState state) override {
-    resize_lock_states[app_id] = state;
-  }
-  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
-    return false;
-  }
-  void SetResizeLockNeedsConfirmation(const std::string& app_id,
-                                      bool is_needed) override {}
-
- private:
-  base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
-  int GetShowSplashScreenDialogCount() const override { return 1; }
-  void SetShowSplashScreenDialogCount(int count) override {}
-};
 
 class ScopedWindowPropertyObserver : public aura::WindowObserver {
  public:
@@ -87,13 +54,12 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
 
 }  // namespace
 
-class ArcResizeLockManagerTest : public views::ViewsTestBase {
+class ArcResizeLockManagerTest : public CompatModeTestBase {
  public:
-  // views::ViewsTestBase:
+  // CompatModeTestBase:
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    arc_resize_lock_manager_.SetPrefDelegate(
-        &test_arc_resize_lock_pref_delegate);
+    CompatModeTestBase::SetUp();
+    arc_resize_lock_manager_.SetPrefDelegate(pref_delegate());
   }
 
   aura::Window* CreateFakeWindow(bool is_arc) {
@@ -113,13 +79,8 @@ class ArcResizeLockManagerTest : public views::ViewsTestBase {
         window);
   }
 
-  TestArcResizeLockPrefDelegate* pref_delegate() {
-    return &test_arc_resize_lock_pref_delegate;
-  }
-
  private:
   ArcResizeLockManager arc_resize_lock_manager_{nullptr, nullptr};
-  TestArcResizeLockPrefDelegate test_arc_resize_lock_pref_delegate;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}
