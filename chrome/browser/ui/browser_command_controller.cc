@@ -1086,7 +1086,8 @@ void BrowserCommandController::InitCommandState() {
 
   // Navigation commands
   command_updater_.UpdateCommandEnabled(
-      IDC_HOME, normal_window || browser_->deprecated_is_app());
+      IDC_HOME, normal_window || browser_->is_type_app() ||
+                    browser_->is_type_app_popup());
 
   const bool is_web_app_or_custom_tab =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1233,15 +1234,12 @@ void BrowserCommandController::UpdateCommandsForTabState() {
                                         CanReload(browser_));
 
   // Window management commands
-  command_updater_.UpdateCommandEnabled(
-      IDC_DUPLICATE_TAB,
-      !browser_->deprecated_is_app() && CanDuplicateTab(browser_));
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE,
-                                        !browser_->deprecated_is_app());
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB,
-                                        !browser_->deprecated_is_app());
-  command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB,
-                                        !browser_->deprecated_is_app());
+  bool is_app = browser_->is_type_app() || browser_->is_type_app_popup();
+  command_updater_.UpdateCommandEnabled(IDC_DUPLICATE_TAB,
+                                        !is_app && CanDuplicateTab(browser_));
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_MUTE_SITE, !is_app);
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_PIN_TAB, !is_app);
+  command_updater_.UpdateCommandEnabled(IDC_WINDOW_GROUP_TAB, !is_app);
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_TABS_TO_RIGHT,
                                         CanCloseTabsToRight(browser_));
   command_updater_.UpdateCommandEnabled(IDC_WINDOW_CLOSE_OTHER_TABS,
@@ -1585,7 +1583,8 @@ void BrowserCommandController::UpdateCommandsForMediaRouter() {
 void BrowserCommandController::UpdateCommandsForTabKeyboardFocus(
     absl::optional<int> target_index) {
   command_updater_.UpdateCommandEnabled(
-      IDC_DUPLICATE_TARGET_TAB, !browser_->deprecated_is_app() &&
+      IDC_DUPLICATE_TARGET_TAB, !browser_->is_type_app() &&
+                                    !browser_->is_type_app_popup() &&
                                     target_index.has_value() &&
                                     CanDuplicateTabAt(browser_, *target_index));
   const bool normal_window = browser_->is_type_normal();
