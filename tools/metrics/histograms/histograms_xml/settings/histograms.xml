@@ -21,6 +21,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<histogram name="Settings.AdvancedSpellcheck.OnStartup" enum="BooleanEnabled"
+    expires_after="M98">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the advanced spellcheck setting, recorded on profile startup.
+  </summary>
+</histogram>
+
+<histogram name="Settings.AutocompleteSearches.OnStartup" enum="BooleanEnabled"
+    expires_after="M98">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The state of the autocomplete searches setting, recorded on profile startup.
+  </summary>
+</histogram>
+
 <histogram name="Settings.FilterOnLoadTime" units="ms"
     expires_after="2018-08-30">
   <owner>gab@chromium.org</owner>
@@ -156,6 +174,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     The users progress through the pin unlock setup wizard. Each type
     corresponds to the user completeing a different stage of the setup wizard.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PreloadStatus.OnStartup" enum="BooleanEnabled"
+    expires_after="M98">
+  <owner>harrisonsean@chromium.org</owner>
+  <owner>chrome-friendly-settings@google.com</owner>
+  <summary>
+    The status of the preload setting, recorded on profile startup. Not recorded
+    for iOS where the setting does not exist.
   </summary>
 </histogram>
 
