@@ -30,9 +30,11 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/path_service.h"
+#include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/scoped_environment_variable_override.h"
 #include "base/test/test_file_util.h"
@@ -3563,6 +3565,39 @@ TEST_F(FileUtilTest, ReadStreamToString) {
   EXPECT_TRUE(ReadStreamToString(stream.get(), &contents));
   EXPECT_EQ(contents, std::string("there"));
 }
+
+#if defined(OS_POSIX)
+TEST_F(FileUtilTest, ReadStreamToString_ZeroLengthFile) {
+  Thread write_thread("write thread");
+  ASSERT_TRUE(write_thread.Start());
+
+  const size_t kSizes[] = {0, 1, 4095, 4096, 4097, 65535, 65536, 65537};
+
+  for (size_t size : kSizes) {
+    ScopedFD read_fd, write_fd;
+    // Pipes have a length of zero when stat()'d.
+    ASSERT_TRUE(CreatePipe(&read_fd, &write_fd, false /* non_blocking */));
+
+    std::string random_data;
+    if (size > 0) {
+      random_data = RandBytesAsString(size);
+    }
+    EXPECT_EQ(size, random_data.size());
+    write_thread.task_runner()->PostTask(
+        FROM_HERE,
+        BindLambdaForTesting([random_data, write_fd = std::move(write_fd)]() {
+          ASSERT_TRUE(WriteFileDescriptor(write_fd.get(), random_data));
+        }));
+
+    ScopedFILE read_file(fdopen(read_fd.release(), "r"));
+    ASSERT_TRUE(read_file);
+
+    std::string contents;
+    EXPECT_TRUE(ReadStreamToString(read_file.get(), &contents));
+    EXPECT_EQ(contents, random_data);
+  }
+}
+#endif
 
 TEST_F(FileUtilTest, ReadStreamToStringWithMaxSize) {
   ScopedFILE stream(

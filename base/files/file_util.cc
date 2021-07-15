@@ -214,6 +214,12 @@ bool ReadStreamToStringWithMaxSize(FILE* stream,
       chunk_size = size.QuadPart;
   }
 #else   // defined(OS_WIN)
+  // In cases where the reported file size is 0, use a smaller chunk size to
+  // minimize memory allocated and cost of string::resize() in case the read
+  // size is small (i.e. proc files). If the file is larger than this, the read
+  // loop will reset |chunk_size| to kDefaultChunkSize.
+  constexpr int64_t kSmallChunkSize = 4096;
+  chunk_size = kSmallChunkSize - 1;
   stat_wrapper_t file_info = {};
   if (!File::Fstat(fileno(stream), &file_info) && file_info.st_size > 0)
     chunk_size = file_info.st_size;
