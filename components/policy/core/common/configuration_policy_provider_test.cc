@@ -238,8 +238,6 @@ void ConfigurationPolicyProviderTest::CheckValue(
            test_harness_->policy_scope(), test_harness_->policy_source(),
            expected_value.Clone(), nullptr);
   EXPECT_TRUE(provider_->policies().Equals(expected_bundle));
-  // TODO(joaodasilva): set the policy in the POLICY_DOMAIN_EXTENSIONS too,
-  // and extend the |expected_bundle|, once all providers are ready.
 }
 
 TEST_P(ConfigurationPolicyProviderTest, Empty) {
