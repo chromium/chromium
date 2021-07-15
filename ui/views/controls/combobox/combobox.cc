@@ -82,7 +82,8 @@ class TransparentButton : public Button {
         },
         this));
   }
-
+  TransparentButton(const TransparentButton&) = delete;
+  TransparentButton& operator&=(const TransparentButton&) = delete;
   ~TransparentButton() override = default;
 
   bool OnMousePressed(const ui::MouseEvent& mouse_event) override {
@@ -97,9 +98,6 @@ class TransparentButton : public Button {
   double GetAnimationValue() const {
     return hover_animation().GetCurrentValue();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TransparentButton);
 };
 
 #if !defined(OS_MAC)
@@ -126,6 +124,8 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
  public:
   ComboboxMenuModel(Combobox* owner, ui::ComboboxModel* model)
       : owner_(owner), model_(model) {}
+  ComboboxMenuModel(const ComboboxMenuModel&) = delete;
+  ComboboxMenuModel& operator&(const ComboboxMenuModel&) = delete;
   ~ComboboxMenuModel() override = default;
 
  private:
@@ -214,8 +214,6 @@ class Combobox::ComboboxMenuModel : public ui::MenuModel {
 
   Combobox* owner_;           // Weak. Owns this.
   ui::ComboboxModel* model_;  // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(ComboboxMenuModel);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

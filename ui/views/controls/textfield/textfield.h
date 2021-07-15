@@ -13,15 +13,9 @@
 #include <string>
 #include <utility>
 
-#if defined(OS_WIN)
-#include <vector>
-#endif
-
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -40,7 +34,6 @@
 #include "ui/gfx/selection_model.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/context_menu_controller.h"
-#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/textfield/textfield_model.h"
 #include "ui/views/drag_controller.h"
 #include "ui/views/metadata/view_factory.h"
@@ -48,6 +41,10 @@
 #include "ui/views/selection_controller_delegate.h"
 #include "ui/views/view.h"
 #include "ui/views/word_lookup_client.h"
+
+#if defined(OS_WIN)
+#include <vector>
+#endif
 
 namespace base {
 class TimeDelta;
@@ -635,9 +632,6 @@ class VIEWS_EXPORT Textfield : public View,
   // Callback for the cursor blink timer. Called every
   // Textfield::GetCaretBlinkMs().
   void OnCursorBlinkTimerFired();
-
-  // Returns the color to use for the FocusRing, if one is present.
-  SkColor GetFocusRingColor() const;
 
   void OnEnabledChanged();
 

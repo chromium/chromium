@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "ui/base/models/combobox_model.h"
@@ -58,6 +57,8 @@ class VIEWS_EXPORT Combobox : public View,
   explicit Combobox(ui::ComboboxModel* model,
                     int text_context = kDefaultComboboxTextContext,
                     int text_style = kDefaultComboboxTextStyle);
+  Combobox(const Combobox&) = delete;
+  Combobox& operator=(const Combobox&) = delete;
   ~Combobox() override;
 
   const gfx::FontList& GetFontList() const;
@@ -161,9 +162,6 @@ class VIEWS_EXPORT Combobox : public View,
 
   PrefixSelector* GetPrefixSelector();
 
-  // Returns the color to use for the combobox's focus ring.
-  SkColor GetFocusRingColor() const;
-
   // Optionally used to tie the lifetime of the model to this combobox. See
   // constructor.
   std::unique_ptr<ui::ComboboxModel> owned_model_;
@@ -224,8 +222,6 @@ class VIEWS_EXPORT Combobox : public View,
 
   base::ScopedObservation<ui::ComboboxModel, ui::ComboboxModelObserver>
       observation_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Combobox);
 };
 
 BEGIN_VIEW_BUILDER(VIEWS_EXPORT, Combobox, View)

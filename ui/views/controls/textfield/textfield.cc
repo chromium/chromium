@@ -8,17 +8,12 @@
 #include <set>
 #include <string>
 #include <utility>
-#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
-#include "ui/events/gesture_event_details.h"
-
-#if defined(OS_WIN)
-#include <vector>
-#endif
 
 #include "base/auto_reset.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,6 +22,7 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/base/default_style.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -43,6 +39,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/gesture_event_details.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/insets.h"
@@ -55,7 +52,6 @@
 #include "ui/views/controls/focusable_border.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
-#include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/controls/views_text_services_context_menu.h"
 #include "ui/views/drag_utils.h"
