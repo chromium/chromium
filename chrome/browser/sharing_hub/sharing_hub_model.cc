@@ -5,6 +5,7 @@
 #include "chrome/browser/sharing_hub/sharing_hub_model.h"
 
 #include "base/base64.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -37,6 +38,10 @@ gfx::Image DecodeIcon(std::string str) {
   return gfx::Image::CreateFrom1xPNGBytes(
       reinterpret_cast<const unsigned char*>(icon_str.data()), icon_str.size());
 }
+
+const char kUrlReplace[] = "%(escaped_url)";
+const char kTitleReplace[] = "%(escaped_title)";
+
 }  // namespace
 
 SharingHubModel::SharingHubModel(content::BrowserContext* context)
@@ -76,12 +81,30 @@ void SharingHubModel::GetThirdPartyActionList(
   }
 }
 
-void SharingHubModel::ExecuteThirdPartyAction(Profile* profile, int id) {
+void SharingHubModel::ExecuteThirdPartyAction(Profile* profile,
+                                              int id,
+                                              const std::string& url,
+                                              const std::u16string& title) {
   auto url_it = third_party_action_urls_.find(id);
   if (url_it == third_party_action_urls_.end())
     return;
+  std::string url_found = url_it->second.spec();
+  size_t location_shared_url = url_found.find(kUrlReplace);
+  if (location_shared_url != std::string::npos) {
+    url_found.replace(location_shared_url, strlen(kUrlReplace), url);
+  } else {
+    LOG(ERROR) << "Third Party Share API did not contain URL param.";
+  }
 
-  NavigateParams params(profile, url_it->second, ui::PAGE_TRANSITION_LINK);
+  size_t location_title = url_found.find(kTitleReplace);
+  if (location_title != std::string::npos) {
+    std::string title_utf8 = base::UTF16ToUTF8(title);
+    url_found.replace(location_title, strlen(kTitleReplace), title_utf8);
+  }
+
+  // TODO (crbug.com/1229421) support descriptions in third party targets.
+
+  NavigateParams params(profile, GURL(url_found), ui::PAGE_TRANSITION_LINK);
   params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
   params.tabstrip_add_types = TabStripModel::ADD_ACTIVE;
   Navigate(&params);
@@ -125,7 +148,6 @@ void SharingHubModel::PopulateFirstPartyActions() {
 void SharingHubModel::PopulateThirdPartyActions() {
   // Note: The third party action id must be greater than 0, otherwise the
   // action will be disabled in the app menu.
-  std::string locale = "GLOBAL";
   int id = 1;
   if (third_party_targets_) {
     for (const sharing::mojom::ShareTarget& target :

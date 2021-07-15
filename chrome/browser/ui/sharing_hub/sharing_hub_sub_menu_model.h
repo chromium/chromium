@@ -30,6 +30,7 @@ class SharingHubSubMenuModel : public ui::SimpleMenuModel,
   bool IsThirdPartyAction(int id);
 
   Browser* browser_;
+  content::WebContents* web_contents_;
   std::vector<int> third_party_action_ids_;
 
   DISALLOW_COPY_AND_ASSIGN(SharingHubSubMenuModel);

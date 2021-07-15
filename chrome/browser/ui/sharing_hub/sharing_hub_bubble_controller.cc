@@ -157,7 +157,9 @@ void SharingHubBubbleController::OnActionSelected(int command_id,
   } else {
     SharingHubModel* model = GetSharingHubModel();
     DCHECK(model);
-    model->ExecuteThirdPartyAction(GetProfile(), command_id);
+    model->ExecuteThirdPartyAction(GetProfile(), command_id,
+                                   web_contents_->GetLastCommittedURL().spec(),
+                                   web_contents_->GetTitle());
   }
 }
 

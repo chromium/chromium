@@ -48,6 +48,8 @@ struct SharingHubAction {
 class SharingHubModel : public sharing::ShareTargetsObserver {
  public:
   explicit SharingHubModel(content::BrowserContext* context);
+  SharingHubModel(const SharingHubModel&) = delete;
+  SharingHubModel& operator=(const SharingHubModel&) = delete;
   ~SharingHubModel() override;
 
   // Populates the vector with first party Sharing Hub actions, ordered by
@@ -62,7 +64,10 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
 
   // Executes the third party action indicated by |id|, i.e. opens a new tab to
   // the corresponding webpage.
-  void ExecuteThirdPartyAction(Profile* profile, int id);
+  void ExecuteThirdPartyAction(Profile* profile,
+                               int id,
+                               const std::string& url,
+                               const std::u16string& title);
 
   // sharing::ShareTargetsObserver implementation.
   void OnShareTargetsUpdated(
@@ -85,8 +90,6 @@ class SharingHubModel : public sharing::ShareTargetsObserver {
   content::BrowserContext* context_;
 
   std::unique_ptr<sharing::mojom::ShareTargets> third_party_targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharingHubModel);
 };
 
 }  // namespace sharing_hub

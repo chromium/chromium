@@ -5,7 +5,7 @@
 ##
 ## Top level settings
 ##
-version_id: 2
+version_id: 3
 
 ##
 ## Share Targets
@@ -17,7 +17,7 @@ targets {
 
 targets {
   nickname: "reddit"
-  url: "http://reddit.com/submit?url=%(escaped_url)s&title=%(escaped_title)s"
+  url: "http://reddit.com/submit?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -151,7 +151,7 @@ targets {
 
 targets {
   nickname: "whatsapp"
-  url: "https://web.whatsapp.com/send?text=%(escpaed_url)"
+  url: "https://web.whatsapp.com/send?text=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -307,7 +307,7 @@ targets {
 
 targets {
   nickname: "facebook"
-  url: "http://www.facebook.com/dialog/share?app_id=966242223397117&href=%(escaped_url)s&"
+  url: "https://www.facebook.com/sharer/sharer.php?u=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -361,7 +361,7 @@ targets {
 
 targets {
   nickname: "linkedin"
-  url: "http://www.linkedin.com/shareArticle?url=%(escaped_url)s&title=%(escaped_title)s&summary=%(escaped_description)s"
+  url: "http://www.linkedin.com/shareArticle?url=%(escaped_url)&title=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -457,7 +457,7 @@ targets {
 
 targets {
   nickname: "pinterest"
-  url: "http://pinterest.com/pin/create/button/?url=%(escaped_url)s&description=%(escaped_title)s"
+  url: "http://pinterest.com/pin/create/button/?url=%(escaped_url)&description=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -611,7 +611,7 @@ targets {
 
 targets {
   nickname: "twitter"
-  url: "https://twitter.com/intent/tweet?url=%(escaped_shortened_url)s&text=%(escaped_title)s"
+  url: "https://twitter.com/intent/tweet?url=%(escaped_url)&text=%(escaped_title)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"
@@ -705,7 +705,7 @@ targets {
 
 targets {
   nickname: "vkontakte"
-  url: "http://vkontakte.ru/share.php?url=%(escaped_url)s"
+  url: "http://vkontakte.ru/share.php?url=%(escaped_url)"
   icon:
     "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAA"
     "AERlWElmTU0AKgAAAAgAAYdpAAQAAAABAAAAGgAAAAAAA6ABAAMAAAABAAEAAKAC"

@@ -37,7 +37,9 @@ void SharingHubSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
     SharingHubModel* const model = GetSharingHubModel();
     if (!model)
       return;
-    model->ExecuteThirdPartyAction(browser_->profile(), command_id);
+    model->ExecuteThirdPartyAction(browser_->profile(), command_id,
+                                   web_contents_->GetLastCommittedURL().spec(),
+                                   web_contents_->GetTitle());
   } else {
     GlobalError* error =
         GlobalErrorServiceFactory::GetForProfile(browser_->profile())
@@ -60,7 +62,7 @@ SharingHubModel* SharingHubSubMenuModel::GetSharingHubModel() const {
 void SharingHubSubMenuModel::Build(content::WebContents* web_contents) {
   if (!web_contents)
     return;
-
+  web_contents_ = web_contents;
   SharingHubModel* const model = GetSharingHubModel();
   if (!model)
     return;
