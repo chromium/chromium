@@ -245,7 +245,10 @@ void DecoderTemplate<Traits>::ProcessRequests() {
     // Skip processing for requests that are canceled by a recent reset().
     if (request->reset_generation != reset_generation_) {
       if (request->resolver) {
-        request->resolver.Release()->Reject();
+        // TODO(crbug.com/1229313): We might be in a Shutdown(), in which case
+        // this may actually be due to an error or close().
+        request->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
+            DOMExceptionCode::kAbortError, "Aborted due to reset()"));
       }
       requests_.pop_front();
       continue;
@@ -466,8 +469,12 @@ void DecoderTemplate<Traits>::Shutdown(DOMException* exception) {
 
   // Abort pending work (otherwise it will never complete)
   if (pending_request_) {
-    if (pending_request_->resolver)
-      pending_request_->resolver.Release()->Reject();
+    if (pending_request_->resolver) {
+      pending_request_->resolver.Release()->Reject(
+          MakeGarbageCollected<DOMException>(
+              DOMExceptionCode::kAbortError,
+              exception ? "Aborted due to error" : "Aborted due to close()"));
+    }
 
     pending_request_.Release()->EndTracing(/*shutting_down*/ true);
   }
@@ -562,8 +569,12 @@ void DecoderTemplate<Traits>::OnFlushDone(media::Status status) {
   if (is_flush && pending_request_->reset_generation != reset_generation_) {
     pending_request_->EndTracing();
 
-    // TODO(crbug.com/1201299): Emit an AbortError.
-    pending_request_.Release()->resolver.Release()->Reject();
+    // We must reject the Promise for consistency in the behavior of reset().
+    // It's also possible that we already dropped outputs, so the flush() may be
+    // incomplete despite finishing successfully.
+    pending_request_.Release()->resolver.Release()->Reject(
+        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                           "Aborted due to reset()"));
     ProcessRequests();
     return;
   }

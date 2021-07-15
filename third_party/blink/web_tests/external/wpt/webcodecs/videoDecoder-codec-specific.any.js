@@ -356,8 +356,7 @@ promise_test(async t => {
   decoder.decode(new EncodedVideoChunk(
       {type: 'key', timestamp: 1, data: new ArrayBuffer(0)}));
 
-  // TODO(sandersd): The promise should be rejected with an exception value.
-  await promise_rejects_exactly(t, undefined, decoder.flush());
+  await promise_rejects_dom(t, 'AbortError', decoder.flush());
 
   assert_equals(errors, 1, 'errors');
   assert_equals(decoder.state, 'closed', 'state');
@@ -381,8 +380,7 @@ promise_test(async t => {
   decoder.decode(CHUNKS[0]);  // Decode keyframe first.
   decoder.decode(createCorruptChunk(2));
 
-  // TODO(sandersd): The promise should be rejected with an exception value.
-  await promise_rejects_exactly(t, undefined, decoder.flush());
+  await promise_rejects_dom(t, 'AbortError', decoder.flush());
 
   assert_less_than_equal(outputs, 1);
   assert_equals(errors, 1, 'errors');
@@ -401,8 +399,7 @@ promise_test(async t => {
 
   // Flush should have been synchronously rejected, with no output() or error()
   // callbacks.
-  // TODO(sandersd): The promise should be rejected with AbortError.
-  await promise_rejects_exactly(t, undefined, flushDone);
+  await promise_rejects_dom(t, 'AbortError', flushDone);
 }, 'Close while decoding corrupt frame');
 
 promise_test(async t => {
@@ -467,8 +464,7 @@ promise_test(async t => {
   });
 
   // Flush should have been synchronously rejected.
-  // TODO(sandersd): The promise should be rejected with AbortError.
-  await promise_rejects_exactly(t, undefined, flushDone);
+  await promise_rejects_dom(t, 'AbortError', flushDone);
 
   assert_equals(outputs, 1, 'outputs');
 }, 'Test reset during flush');
