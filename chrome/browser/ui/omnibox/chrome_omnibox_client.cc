@@ -417,7 +417,7 @@ void ChromeOmniboxClient::PromptPageTranslation() {
     if (translate_client) {
       DCHECK_NE(nullptr, translate_client->GetTranslateManager());
       translate_client->GetTranslateManager()->ShowTranslateUI(
-          /*auto_translate=*/true);
+          /*auto_translate=*/true, /*triggered_from_menu=*/true);
     }
   }
 }
