@@ -1032,7 +1032,8 @@ bool PasswordFormManager::UsePossibleUsernameToBuildCredential(
   const PasswordFieldPrediction* field_prediction = FindFieldPrediction(
       possible_username->form_predictions, possible_username->renderer_id);
   if (field_prediction && field_prediction->type == SINGLE_USERNAME) {
-    LogUsingPossibleUsername(client_, /*is_used*/ true, "Server predictions");
+    LogUsingPossibleUsername(client_, /*is_used*/ true,
+                             "Server predictions available");
     return true;
   } else {
     LogUsingPossibleUsername(client_, /*is_used*/ false,

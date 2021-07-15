@@ -3503,9 +3503,9 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
 
-  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   // Simulate the user typed a previously not saved username in the username
   // form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string username = u"newusername@gmail.com";
   ASSERT_TRUE(saved_form.username_value != username);
   EXPECT_CALL(driver_, GetLastCommittedURL())
@@ -3521,12 +3521,11 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithServerPredictions) {
   form_structure.field(0)->set_server_predictions({prediction});
   manager()->ProcessAutofillPredictions(&driver_, {&form_structure});
 
-  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
   // Simulate that a form which contains only 1 password field is added
   // to the page.
+  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
   manager()->OnPasswordFormsParsed(&driver_,
                                    {password_form.form_data} /* observed */);
-
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
       .WillRepeatedly(Return(true));
 
@@ -3559,8 +3558,8 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   EXPECT_CALL(*store_, GetLogins(_, _))
       .WillRepeatedly(WithArg<1>(InvokeConsumer(store_.get(), saved_form)));
 
-  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   // Simulate the user typed a previously not saved username in username form.
+  PasswordForm username_form(MakeSimpleFormWithOnlyUsernameField());
   const std::u16string username = u"newusername@gmail.com";
   ASSERT_TRUE(saved_form.username_value != username);
   EXPECT_CALL(driver_, GetLastCommittedURL())
@@ -3569,12 +3568,11 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
       &driver_, username_form.form_data.fields[0].unique_renderer_id,
       u"username", username /* value */);
 
-  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
   // Simulate that a form which contains only 1 field which is password is added
   // to the page.
+  PasswordForm password_form(MakeSimpleFormWithOnlyPasswordField());
   manager()->OnPasswordFormsParsed(&driver_,
                                    {password_form.form_data} /* observed */);
-
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(password_form.url))
       .WillRepeatedly(Return(true));
 
@@ -3585,14 +3583,16 @@ TEST_P(PasswordManagerTest, UsernameFirstFlowSavingWithoutServerPredictions) {
   password_form.form_data.fields[0].value = password;
   OnPasswordFormSubmitted(password_form.form_data);
 
-  // Simulate successful submission and expect an update prompt.
+  // Simulate successful submission and expect a prompt.
   std::unique_ptr<PasswordFormManagerForUI> form_manager;
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr(_))
       .WillOnce(WithArg<0>(SaveToScopedPtr(&form_manager)));
   manager()->OnPasswordFormsRendered(&driver_, {} /* observed */, true);
   ASSERT_TRUE(form_manager);
 
-  // Simulate accepting the prompt and expect updating the credential.
+  // Simulate accepting the prompt and expect updating the credential (without
+  // a server prediction, the single |username| is ignored, so the new password
+  // is associated with the old username).
   EXPECT_CALL(
       *store_,
       UpdateLogin(AllOf(

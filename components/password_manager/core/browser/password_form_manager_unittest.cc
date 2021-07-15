@@ -2163,7 +2163,8 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowProvisionalSave) {
             form_manager_->GetPendingCredentials().username_value);
 }
 
-// Tests that username is not taken when a possible username is not valid.
+// Tests that username is not taken if domains of possible username field
+// and submitted password form are different.
 TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);
@@ -2189,7 +2190,7 @@ TEST_P(PasswordFormManagerTest, UsernameFirstFlowDifferentDomains) {
   ASSERT_TRUE(form_manager_->ProvisionallySave(submitted_form, &driver_,
                                                &possible_username_data));
 
-  // |possible_username_data| has different domain then |submitted_form|. Check
+  // |possible_username_data| has different domain than |submitted_form|. Check
   // that no username is chosen.
   EXPECT_TRUE(form_manager_->GetPendingCredentials().username_value.empty());
 }
@@ -2965,7 +2966,6 @@ TEST_F(PasswordFormManagerTestWithMockedSaver, HTTPAuthAlreadySaved) {
 }
 
 // Tests that username is taken during username first flow.
-// Local heuristics on Android for username first flow is not supported.
 TEST_F(PasswordFormManagerTestWithMockedSaver, UsernameFirstFlow) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(features::kUsernameFirstFlow);

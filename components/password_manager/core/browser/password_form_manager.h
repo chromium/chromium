@@ -311,10 +311,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   PasswordFormDigest ConstructObservedFormDigest() const;
 
-  // Returns whether |possible_username| should be used for offering the
-  // username to save on username first flow. The decision is based on server
-  // predictions, and whether |possible_username| has a non empty value and is
-  // not expired yet.
+  // Returns whether |possible_username| should be populated in a Save/Update
+  // prompt on username first flow. The decision is based on server predictions,
+  // and whether |possible_username| has a non empty value and is not expired
+  // yet.
   bool UsePossibleUsernameToBuildCredential(
       const PossibleUsernameData* possible_username);
 
