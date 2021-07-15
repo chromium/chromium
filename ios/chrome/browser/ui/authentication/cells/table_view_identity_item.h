@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
 // TableViewIdentityItem holds the model data for an identity.
@@ -22,6 +23,8 @@
 @property(nonatomic, strong) UIImage* avatar;
 // If YES, the identity is selected.
 @property(nonatomic, assign) BOOL selected;
+// Style for the IdentityView.
+@property(nonatomic, assign) IdentityViewStyle identityViewStyle;
 
 @end
 

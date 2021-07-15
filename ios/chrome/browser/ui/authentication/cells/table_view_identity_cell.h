@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 
 @class IdentityView;
@@ -27,7 +28,8 @@
 - (void)configureCellWithTitle:(NSString*)title
                       subtitle:(NSString*)subtitle
                          image:(UIImage*)image
-                       checked:(BOOL)checked;
+                       checked:(BOOL)checked
+             identityViewStyle:(IdentityViewStyle)identityViewStyle;
 
 @end
 

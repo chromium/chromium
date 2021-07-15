@@ -103,6 +103,7 @@
   for (ChromeIdentity* identity in identities) {
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:0];
+    item.identityViewStyle = IdentityViewStyleIdentityChooser;
     [self updateTableViewIdentityItem:item withChromeIdentity:identity];
     [items addObject:item];
   }

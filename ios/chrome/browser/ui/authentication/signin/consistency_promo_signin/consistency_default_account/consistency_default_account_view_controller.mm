@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
+#import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/button_util.h"
@@ -24,14 +25,8 @@ namespace {
 
 // Margins for |self.contentView| (top, bottom, leading and trailing).
 constexpr CGFloat kContentMargin = 16.;
-// Avatar height and width.
-constexpr CGFloat kAvatarSize = 30.;
 // Space between elements in |self.contentView|.
 constexpr CGFloat kContentSpacing = 16.;
-// Constants for IdentityButtonControl.
-constexpr CGFloat kMinimumTopMargin = 10.;
-constexpr CGFloat kMinimumBottomMargin = 8.;
-constexpr CGFloat kTitleSubtitleMargin = 0.;
 
 }
 
@@ -154,14 +149,7 @@ constexpr CGFloat kTitleSubtitleMargin = 0.;
   self.identityButtonControl.backgroundColor =
       [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
   self.identityButtonControl.arrowDirection = IdentityButtonControlArrowRight;
-  self.identityButtonControl.avatarSize = kAvatarSize;
-  self.identityButtonControl.minimumTopMargin = kMinimumTopMargin;
-  self.identityButtonControl.minimumBottomMargin = kMinimumBottomMargin;
-  self.identityButtonControl.titleSubtitleMargin = kTitleSubtitleMargin;
-  self.identityButtonControl.titleFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  self.identityButtonControl.subtitleFont =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+  self.identityButtonControl.identityViewStyle = IdentityViewStyleConsistency;
   [self.identityButtonControl addTarget:self
                                  action:@selector(identityButtonControlAction:
                                                                      forEvent:)

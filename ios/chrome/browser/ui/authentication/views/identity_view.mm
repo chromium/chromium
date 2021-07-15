@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/views/identity_view.h"
 
 #import "base/check.h"
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -15,12 +16,41 @@
 
 namespace {
 
-// Sizes.
-const CGFloat kAvatarSize = 40.;
+// List of constants related to the IdentityViewStyle.
+typedef struct {
+  const CGFloat avatarLeadingMargin;
+  const CGFloat avatarSize;
+  const CGFloat titleOffset;
+  const CGFloat minimumTopMargin;
+  const CGFloat minimumBottomMargin;
+} StyleValues;
+
+const StyleValues kDefaultStyle = {
+    16., /* avatarLeadingMargin */
+    40., /* avatarSize */
+    4.,  /* titleOffset */
+    12., /* minimumTopMargin */
+    12., /* minimumBottomMargin */
+};
+
+const StyleValues kSignInChooseryStyle = {
+    24., /* avatarLeadingMargin */
+    40., /* avatarSize */
+    4.,  /* titleOffset */
+    7.,  /* minimumTopMargin */
+    7.,  /* minimumBottomMargin */
+};
+
+const StyleValues kConsistencyStyle = {
+    16., /* avatarLeadingMargin */
+    30., /* avatarSize */
+    0.,  /* titleOffset */
+    10., /* minimumTopMargin */
+    8.,  /* minimumBottomMargin */
+};
+
 // Distances/margins.
-const CGFloat kTitleOffset = 4;
-const CGFloat kHorizontalAvatarMargin = 16.;
-const CGFloat kVerticalMargin = 12.;
+constexpr CGFloat kHorizontalAvatarLeadingMargin = 16.;
 
 }  // namespace
 
@@ -43,9 +73,8 @@ const CGFloat kVerticalMargin = 12.;
 // Constraints for the avatar size.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* avatarSizeConstraints;
-// Constraints to update when |self.avatarTitleMargin| is updated.
-@property(nonatomic, strong)
-    NSLayoutConstraint* avatarTitleHorizontalConstraint;
+// Leading margin constraint for the avatar.
+@property(nonatomic, strong) NSLayoutConstraint* avatarLeadingMarginConstraint;
 
 @end
 
@@ -84,18 +113,20 @@ const CGFloat kVerticalMargin = 12.;
     [self addLayoutGuide:textContainerGuide];
 
     // Layout constraints.
-    _avatarTitleHorizontalConstraint = [textContainerGuide.leadingAnchor
-        constraintEqualToAnchor:_avatarView.trailingAnchor
-                       constant:kHorizontalAvatarMargin];
+    _avatarLeadingMarginConstraint = [_avatarView.leadingAnchor
+        constraintEqualToAnchor:self.leadingAnchor
+                       constant:kDefaultStyle.avatarLeadingMargin];
     [NSLayoutConstraint activateConstraints:@[
-      _avatarTitleHorizontalConstraint,
-      [_avatarView.leadingAnchor
-          constraintEqualToAnchor:self.leadingAnchor
-                         constant:kHorizontalAvatarMargin]
+      [textContainerGuide.leadingAnchor
+          constraintEqualToAnchor:_avatarView.trailingAnchor
+                         constant:kHorizontalAvatarLeadingMargin],
+      _avatarLeadingMarginConstraint,
     ]];
     _avatarSizeConstraints = @[
-      [_avatarView.heightAnchor constraintEqualToConstant:kAvatarSize],
-      [_avatarView.widthAnchor constraintEqualToConstant:kAvatarSize],
+      [_avatarView.heightAnchor
+          constraintEqualToConstant:kDefaultStyle.avatarSize],
+      [_avatarView.widthAnchor
+          constraintEqualToConstant:kDefaultStyle.avatarSize],
     ];
     [NSLayoutConstraint activateConstraints:_avatarSizeConstraints];
     AddSameCenterYConstraint(self, _avatarView);
@@ -103,7 +134,7 @@ const CGFloat kVerticalMargin = 12.;
                               LayoutSides::kLeading | LayoutSides::kTrailing);
     _titleConstraintForNameAndEmail =
         [_subtitle.topAnchor constraintEqualToAnchor:_title.bottomAnchor
-                                            constant:kTitleOffset];
+                                            constant:kDefaultStyle.titleOffset];
     _titleConstraintForEmailOnly = [textContainerGuide.bottomAnchor
         constraintEqualToAnchor:_title.bottomAnchor];
 
@@ -126,18 +157,21 @@ const CGFloat kVerticalMargin = 12.;
     _topConstraints = @[
       [_avatarView.topAnchor
           constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                      constant:kVerticalMargin],
-      [_title.topAnchor constraintGreaterThanOrEqualToAnchor:self.topAnchor
-                                                    constant:kVerticalMargin],
+                                      constant:kDefaultStyle.minimumTopMargin],
+      [_title.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                      constant:kDefaultStyle.minimumTopMargin],
     ];
     [NSLayoutConstraint activateConstraints:_topConstraints];
     _bottomConstraints = @[
       [self.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_avatarView.bottomAnchor
-                                      constant:kVerticalMargin],
+                                      constant:kDefaultStyle
+                                                   .minimumBottomMargin],
       [self.bottomAnchor
           constraintGreaterThanOrEqualToAnchor:_subtitle.bottomAnchor
-                                      constant:kVerticalMargin],
+                                      constant:kDefaultStyle
+                                                   .minimumBottomMargin],
     ];
     [NSLayoutConstraint activateConstraints:_bottomConstraints];
   }
@@ -148,8 +182,9 @@ const CGFloat kVerticalMargin = 12.;
 
 - (void)setAvatar:(UIImage*)avatarImage {
   if (avatarImage) {
+    const StyleValues* style = [self styleValues];
     self.avatarView.image = avatarImage;
-    self.avatarView.layer.cornerRadius = self.avatarSize / 2.0;
+    self.avatarView.layer.cornerRadius = style->avatarSize / 2.0;
   } else {
     self.avatarView.image = nil;
   }
@@ -172,56 +207,6 @@ const CGFloat kVerticalMargin = 12.;
 
 #pragma mark - properties
 
-- (void)setMinimumTopMargin:(CGFloat)minimumTopMargin {
-  for (NSLayoutConstraint* constraint in self.topConstraints) {
-    constraint.constant = minimumTopMargin;
-  }
-}
-
-- (CGFloat)minimumTopMargin {
-  DCHECK(self.topConstraints.count);
-  return self.topConstraints[0].constant;
-}
-
-- (void)setMinimumBottomMargin:(CGFloat)minimumBottomMargin {
-  for (NSLayoutConstraint* constraint in self.bottomConstraints) {
-    constraint.constant = minimumBottomMargin;
-  }
-}
-
-- (CGFloat)minimumBottomMargin {
-  DCHECK(self.bottomConstraints.count);
-  return self.bottomConstraints[0].constant;
-}
-
-- (void)setAvatarSize:(CGFloat)avatarSize {
-  for (NSLayoutConstraint* constraint in self.avatarSizeConstraints) {
-    constraint.constant = avatarSize;
-  }
-  self.avatarView.layer.cornerRadius = avatarSize / 2.0;
-}
-
-- (CGFloat)avatarSize {
-  DCHECK(self.avatarSizeConstraints.count);
-  return self.avatarSizeConstraints[0].constant;
-}
-
-- (void)setAvatarTitleMargin:(CGFloat)avatarTitleMargin {
-  self.avatarTitleHorizontalConstraint.constant = avatarTitleMargin;
-}
-
-- (CGFloat)avatarTitleMargin {
-  return self.avatarTitleHorizontalConstraint.constant;
-}
-
-- (void)setTitleSubtitleMargin:(CGFloat)titleSubtitleMargin {
-  self.titleConstraintForNameAndEmail.constant = titleSubtitleMargin;
-}
-
-- (CGFloat)titleSubtitleMargin {
-  return self.titleConstraintForNameAndEmail.constant;
-}
-
 - (void)setTitleFont:(UIFont*)titleFont {
   self.title.font = titleFont;
 }
@@ -236,6 +221,66 @@ const CGFloat kVerticalMargin = 12.;
 
 - (UIFont*)subtitleFont {
   return self.subtitleFont;
+}
+
+- (void)setStyle:(IdentityViewStyle)style {
+  if (_style == style)
+    return;
+  _style = style;
+  [self updateStyle];
+}
+
+#pragma mark - private
+
+// Returns the default style values according to |self.style|.
+- (const StyleValues*)styleValues {
+  switch (self.style) {
+    case IdentityViewStyleDefault:
+      return &kDefaultStyle;
+    case IdentityViewStyleIdentityChooser:
+      return &kSignInChooseryStyle;
+    case IdentityViewStyleConsistency:
+      return &kConsistencyStyle;
+  }
+  NOTREACHED();
+  return nullptr;
+}
+
+// Updates the current view according the style.
+- (void)updateStyle {
+  const StyleValues* style = [self styleValues];
+  switch (self.style) {
+    case IdentityViewStyleDefault:
+      self.titleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+      self.subtitleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+      break;
+    case IdentityViewStyleIdentityChooser:
+      self.titleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+      self.subtitleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleCaption1];
+      break;
+    case IdentityViewStyleConsistency:
+      self.titleFont = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      self.subtitleFont =
+          [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
+      break;
+  }
+  DCHECK(style);
+  self.avatarLeadingMarginConstraint.constant = style->avatarLeadingMargin;
+  for (NSLayoutConstraint* constraint in self.avatarSizeConstraints) {
+    constraint.constant = style->avatarSize;
+  }
+  self.avatarView.layer.cornerRadius = style->avatarSize / 2.;
+  for (NSLayoutConstraint* constraint in self.topConstraints) {
+    constraint.constant = style->minimumTopMargin;
+  }
+  for (NSLayoutConstraint* constraint in self.bottomConstraints) {
+    constraint.constant = style->minimumBottomMargin;
+  }
+  self.titleConstraintForNameAndEmail.constant = style->titleOffset;
 }
 
 @end

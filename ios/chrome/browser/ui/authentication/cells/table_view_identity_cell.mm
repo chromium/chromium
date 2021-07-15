@@ -13,9 +13,6 @@
 #endif
 
 namespace {
-// Identity view.
-const CGFloat kLeadingMargin = 8.;
-const CGFloat kIdentityViewVerticalMargin = 7.;
 // Checkmark margin.
 const CGFloat kCheckmarkMagin = 26.;
 }  // namespace
@@ -26,23 +23,14 @@ const CGFloat kCheckmarkMagin = 26.;
 
 @implementation TableViewIdentityCell
 
-@synthesize identityView = _identityView;
-
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     _identityView = [[IdentityView alloc] initWithFrame:CGRectZero];
     _identityView.translatesAutoresizingMaskIntoConstraints = NO;
-    _identityView.minimumTopMargin = kIdentityViewVerticalMargin;
-    _identityView.minimumBottomMargin = kIdentityViewVerticalMargin;
     [self.contentView addSubview:_identityView];
-    LayoutSides sideFlags = LayoutSides::kLeading | LayoutSides::kTrailing |
-                            LayoutSides::kBottom | LayoutSides::kTop;
-    ChromeDirectionalEdgeInsets insets =
-        ChromeDirectionalEdgeInsetsMake(0, kLeadingMargin, 0, 0);
-    AddSameConstraintsToSidesWithInsets(_identityView, self.contentView,
-                                        sideFlags, insets);
+    AddSameConstraints(_identityView, self.contentView);
     if (@available(iOS 13.4, *)) {
       [self addInteraction:[[ViewPointerInteraction alloc] init]];
     }
@@ -53,9 +41,11 @@ const CGFloat kCheckmarkMagin = 26.;
 - (void)configureCellWithTitle:(NSString*)title
                       subtitle:(NSString*)subtitle
                          image:(UIImage*)image
-                       checked:(BOOL)checked {
+                       checked:(BOOL)checked
+             identityViewStyle:(IdentityViewStyle)identityViewStyle {
   [self.identityView setTitle:title subtitle:subtitle];
   [self.identityView setAvatar:image];
+  self.identityView.style = identityViewStyle;
   self.accessoryType = checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone;
   if (checked) {
@@ -69,6 +59,7 @@ const CGFloat kCheckmarkMagin = 26.;
 - (void)prepareForReuse {
   [super prepareForReuse];
   self.accessibilityIdentifier = nil;
+  self.identityView.style = IdentityViewStyleDefault;
 }
 
 @end

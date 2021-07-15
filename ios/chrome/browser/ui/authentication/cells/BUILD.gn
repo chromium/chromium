@@ -43,6 +43,7 @@ source_set("cells") {
   ]
   public_deps = [
     ":constants",
+    "//ios/chrome/browser/ui/authentication/views:views_constants",
     "//ios/chrome/browser/ui/table_view/cells",
   ]
   frameworks = [ "UIKit.framework" ]

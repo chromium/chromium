@@ -110,6 +110,7 @@ CGFloat kSectionFooterHeight = 8.;
            .sortedIdentityItemConfigurators) {
     TableViewIdentityItem* item =
         [[TableViewIdentityItem alloc] initWithType:IdentityItemType];
+    item.identityViewStyle = IdentityViewStyleConsistency;
     [configurator configureIdentityChooser:item];
     [model addItem:item toSectionWithIdentifier:IdentitySectionIdentifier];
   }

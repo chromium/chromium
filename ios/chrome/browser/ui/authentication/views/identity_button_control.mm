@@ -128,52 +128,12 @@ const CGFloat kArrowDownMargin = 12.;
   [self updateArrowDirection];
 }
 
-- (void)setMinimumTopMargin:(CGFloat)minimumTopMargin {
-  self.identityView.minimumTopMargin = minimumTopMargin;
+- (void)setIdentityViewStyle:(IdentityViewStyle)style {
+  self.identityView.style = style;
 }
 
-- (CGFloat)minimumTopMargin {
-  return self.identityView.minimumTopMargin;
-}
-
-- (void)setMinimumBottomMargin:(CGFloat)minimumBottomMargin {
-  self.identityView.minimumBottomMargin = minimumBottomMargin;
-}
-
-- (CGFloat)minimumBottomMargin {
-  return self.identityView.minimumBottomMargin;
-}
-
-- (void)setAvatarSize:(CGFloat)avatarSize {
-  self.identityView.avatarSize = avatarSize;
-}
-
-- (CGFloat)avatarSize {
-  return self.identityView.avatarSize;
-}
-
-- (void)setTitleSubtitleMargin:(CGFloat)titleSubtitleMargin {
-  self.identityView.titleSubtitleMargin = titleSubtitleMargin;
-}
-
-- (CGFloat)titleSubtitleMargin {
-  return self.identityView.titleSubtitleMargin;
-}
-
-- (void)setTitleFont:(UIFont*)titleFont {
-  self.identityView.titleFont = titleFont;
-}
-
-- (UIFont*)titleFont {
-  return self.identityView.titleFont;
-}
-
-- (void)setSubtitleFont:(UIFont*)subtitleFont {
-  self.identityView.subtitleFont = subtitleFont;
-}
-
-- (UIFont*)subtitleFont {
-  return self.identityView.subtitleFont;
+- (IdentityViewStyle)identityViewStyle {
+  return self.identityView.style;
 }
 
 #pragma mark - Private

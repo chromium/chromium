@@ -22,6 +22,7 @@
   self = [super initWithType:type];
   if (self) {
     self.cellClass = [TableViewIdentityCell class];
+    _identityViewStyle = IdentityViewStyleDefault;
   }
   return self;
 }
@@ -39,7 +40,8 @@
   [cell configureCellWithTitle:title
                       subtitle:subtitle
                          image:self.avatar
-                       checked:self.selected];
+                       checked:self.selected
+             identityViewStyle:self.identityViewStyle];
 }
 
 @end

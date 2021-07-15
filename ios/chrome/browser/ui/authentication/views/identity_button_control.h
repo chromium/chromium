@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/authentication/views/views_constants.h"
+
 // Enum to choose the arrow on the right of IdentityButtonControl.
 typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection) {
   // Adds a down arrow on the right of the view.
@@ -23,19 +25,9 @@ typedef NS_ENUM(NSInteger, IdentityButtonControlArrowDirection) {
 
 // Arrow direction, default value is IdentityButtonControlArrowDown.
 @property(nonatomic, assign) IdentityButtonControlArrowDirection arrowDirection;
-// Minimum vertical margin above the avatar image and title/subtitle, default
-// value is 12.
-@property(nonatomic, assign) CGFloat minimumTopMargin;
-// Minimum vertical margin below the avatar image and title/subtitle, default
-// value is 12.
-@property(nonatomic, assign) CGFloat minimumBottomMargin;
-// Avatar size, default value is 40.
-@property(nonatomic, assign) CGFloat avatarSize;
-// Vertical distance between the title and the subtitle., default
-// value is 4.
-@property(nonatomic, assign) CGFloat titleSubtitleMargin;
-@property(nonatomic, strong) UIFont* titleFont;
-@property(nonatomic, strong) UIFont* subtitleFont;
+
+// Style for the IdentityView.
+@property(nonatomic, assign) IdentityViewStyle identityViewStyle;
 
 // Initialises IdentityButtonControl.
 - (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
