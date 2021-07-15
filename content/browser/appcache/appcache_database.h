@@ -229,16 +229,15 @@ class CONTENT_EXPORT AppCacheDatabase {
                                      std::set<int64_t>* ids_set);
 
   // Record retrieval helpers
-  void ReadGroupRecord(const sql::Statement& statement, GroupRecord* record);
-  void ReadCacheRecord(const sql::Statement& statement, CacheRecord* record);
-  void ReadEntryRecord(const sql::Statement& statement, EntryRecord* record);
+  void ReadGroupRecord(sql::Statement& statement, GroupRecord* record);
+  void ReadCacheRecord(sql::Statement& statement, CacheRecord* record);
+  void ReadEntryRecord(sql::Statement& statement, EntryRecord* record);
   void ReadNamespaceRecords(
       sql::Statement* statement,
       NamespaceRecordVector* intercepts,
       NamespaceRecordVector* fallbacks);
-  void ReadNamespaceRecord(
-      const sql::Statement* statement, NamespaceRecord* record);
-  void ReadOnlineSafeListRecord(const sql::Statement& statement,
+  void ReadNamespaceRecord(sql::Statement* statement, NamespaceRecord* record);
+  void ReadOnlineSafeListRecord(sql::Statement& statement,
                                 OnlineSafeListRecord* record);
 
   // Database creation

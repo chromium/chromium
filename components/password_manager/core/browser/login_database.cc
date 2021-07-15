@@ -641,7 +641,7 @@ std::string GeneratePlaceholders(size_t count) {
 #if defined(OS_MAC)
 // Fills |form| with necessary data required to be removed from the database
 // and returns it.
-PasswordForm GetFormForRemoval(const sql::Statement& statement) {
+PasswordForm GetFormForRemoval(sql::Statement& statement) {
   PasswordForm form;
   form.url = GURL(statement.ColumnString(COLUMN_ORIGIN_URL));
   form.username_element = statement.ColumnString16(COLUMN_USERNAME_ELEMENT);
@@ -1474,7 +1474,7 @@ bool LoginDatabase::DisableAutoSignInForOrigin(const GURL& origin) {
 }
 
 LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
-    const sql::Statement& s,
+    sql::Statement& s,
     bool decrypt_and_fill_password_value,
     int* primary_key,
     PasswordForm* form) const {

@@ -142,8 +142,7 @@ VisitContextAnnotations ConstructContextAnnotationsWithFlags(
 
 // Convenience to construct a `AnnotatedVisitRow`. Assumes the visit values are
 // bound starting at index 0.
-AnnotatedVisitRow StatementToAnnotatedVisitRow(
-    const sql::Statement& statement) {
+AnnotatedVisitRow StatementToAnnotatedVisitRow(sql::Statement& statement) {
   return {statement.ColumnInt64(0),
           ConstructContextAnnotationsWithFlags(
               statement.ColumnInt64(1),

@@ -283,7 +283,7 @@ class LoginDatabase : public PasswordStoreSync::MetadataStore {
   // |decrypt_and_fill_password_value| is set to false, it always returns
   // ENCRYPTION_RESULT_SUCCESS.
   EncryptionResult InitPasswordFormFromStatement(
-      const sql::Statement& s,
+      sql::Statement& s,
       bool decrypt_and_fill_password_value,
       int* primary_key,
       PasswordForm* form) const WARN_UNUSED_RESULT;

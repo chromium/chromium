@@ -454,7 +454,7 @@ bool KeywordTable::MigrateToVersion82AddCreatedFromPlayApiColumn() {
 }
 
 // static
-bool KeywordTable::GetKeywordDataFromStatement(const sql::Statement& s,
+bool KeywordTable::GetKeywordDataFromStatement(sql::Statement& s,
                                                TemplateURLData* data) {
   DCHECK(data);
 

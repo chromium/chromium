@@ -48,7 +48,7 @@ URLDatabase::~URLDatabase() = default;
 
 // Convenience to fill a URLRow. Must be in sync with the fields in
 // kURLRowFields.
-void URLDatabase::FillURLRow(const sql::Statement& s, URLRow* i) {
+void URLDatabase::FillURLRow(sql::Statement& s, URLRow* i) {
   DCHECK(i);
   i->set_id(s.ColumnInt64(0));
   i->set_url(GURL(s.ColumnString(1)));

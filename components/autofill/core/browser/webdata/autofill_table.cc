@@ -109,7 +109,7 @@ void BindAutofillProfileToStatement(const AutofillProfile& profile,
   s->BindBool(index++, profile.disallow_settings_visible_updates());
 }
 
-void AddAutofillProfileDetailsFromStatement(const sql::Statement& s,
+void AddAutofillProfileDetailsFromStatement(sql::Statement& s,
                                             AutofillProfile* profile) {
   int index = 1;  // 0 is for the guid.
   profile->SetRawInfo(COMPANY_NAME, s.ColumnString16(index++));
@@ -164,7 +164,7 @@ void BindCreditCardToStatement(const CreditCard& credit_card,
 }
 
 std::u16string UnencryptedCardFromColumn(
-    const sql::Statement& s,
+    sql::Statement& s,
     int column_index,
     const AutofillTableEncryptor& encryptor) {
   std::u16string credit_card_number;
@@ -180,7 +180,7 @@ std::u16string UnencryptedCardFromColumn(
 }
 
 std::unique_ptr<CreditCard> CreditCardFromStatement(
-    const sql::Statement& s,
+    sql::Statement& s,
     const AutofillTableEncryptor& encryptor) {
   std::unique_ptr<CreditCard> credit_card(new CreditCard);
 

@@ -103,8 +103,8 @@ const int kCurrentVersionNumber = 8;
 const int kCompatibleVersionNumber = 8;
 const int kDeprecatedVersionNumber = 6;  // and earlier.
 
-void FillIconMapping(const sql::Statement& statement,
-                     const GURL& page_url,
+void FillIconMapping(const GURL& page_url,
+                     sql::Statement& statement,
                      IconMapping* icon_mapping) {
   icon_mapping->mapping_id = statement.ColumnInt64(0);
   icon_mapping->icon_id = statement.ColumnInt64(1);
@@ -241,7 +241,7 @@ bool FaviconDatabase::IconMappingEnumerator::GetNextIconMapping(
     IconMapping* icon_mapping) {
   if (!statement_.Step())
     return false;
-  FillIconMapping(statement_, GURL(statement_.ColumnString(4)), icon_mapping);
+  FillIconMapping(GURL(statement_.ColumnString(4)), statement_, icon_mapping);
   return true;
 }
 
@@ -778,7 +778,7 @@ bool FaviconDatabase::GetIconMappingsForPageURL(
       return result;
 
     IconMapping icon_mapping;
-    FillIconMapping(statement, page_url, &icon_mapping);
+    FillIconMapping(page_url, statement, &icon_mapping);
     mapping_data->push_back(icon_mapping);
   }
   return result;

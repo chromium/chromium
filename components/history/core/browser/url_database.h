@@ -293,7 +293,7 @@ class URLDatabase {
 
   // Convenience to fill a URLRow. Must be in sync with the fields in
   // kHistoryURLRowFields.
-  static void FillURLRow(const sql::Statement& s, URLRow* i);
+  static void FillURLRow(sql::Statement& s, URLRow* i);
 
   // Returns the database for the functions in this interface. The descendant of
   // this class implements these functions to return its objects.

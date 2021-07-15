@@ -126,8 +126,7 @@ bool VisitDatabase::DropVisitTable() {
 
 // Must be in sync with HISTORY_VISIT_ROW_FIELDS.
 // static
-void VisitDatabase::FillVisitRow(const sql::Statement& statement,
-                                 VisitRow* visit) {
+void VisitDatabase::FillVisitRow(sql::Statement& statement, VisitRow* visit) {
   visit->visit_id = statement.ColumnInt64(0);
   visit->url_id = statement.ColumnInt64(1);
   visit->visit_time = base::Time::FromInternalValue(statement.ColumnInt64(2));

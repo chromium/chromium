@@ -217,7 +217,7 @@ offline_items_collection::FailState ToFailState(int value) {
 // Create a save page request from the first row of an SQL result. The result
 // must have the exact columns from the |REQUEST_QUEUE_FIELDS| macro.
 std::unique_ptr<SavePageRequest> MakeSavePageRequest(
-    const sql::Statement& statement) {
+    sql::Statement& statement) {
   const int64_t id = statement.ColumnInt64(0);
   const base::Time creation_time =
       store_utils::FromDatabaseTime(statement.ColumnInt64(1));

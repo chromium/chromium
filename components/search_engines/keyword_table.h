@@ -144,7 +144,7 @@ class KeywordTable : public WebDatabaseTable {
   // Fills |data| with the data in |s|.  Returns false if we couldn't fill
   // |data| for some reason, e.g. |s| tried to set one of the fields to an
   // illegal value.
-  static bool GetKeywordDataFromStatement(const sql::Statement& s,
+  static bool GetKeywordDataFromStatement(sql::Statement& s,
                                           TemplateURLData* data);
 
   // Adds a new keyword, updating the id field on success.

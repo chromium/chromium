@@ -102,7 +102,7 @@ int CountPrefetchItemsSync(sql::Database* db) {
 
 // Populates the PrefetchItem with the data from the current row of the passed
 // in statement following the natural column ordering.
-absl::optional<PrefetchItem> ReadPrefetchItem(const sql::Statement& statement) {
+absl::optional<PrefetchItem> ReadPrefetchItem(sql::Statement& statement) {
   PrefetchItem item;
   DCHECK_EQ(23, statement.ColumnCount());
 

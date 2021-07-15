@@ -650,7 +650,7 @@ AccessContextAuditDatabase::GetCookieRecords() {
 namespace {
 
 AccessContextAuditDatabase::AccessRecord StorageAccessRecordFromStatement(
-    const sql::Statement& statement) {
+    sql::Statement& statement) {
   return AccessContextAuditDatabase::AccessRecord(
       // If the top-frame origin is empty string, that means we deleted the
       // top_frame_origin of a cross-site access record. In this case we set the

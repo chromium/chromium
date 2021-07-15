@@ -402,7 +402,7 @@ static_assert(static_cast<int>(ColumnType::kBlob) == SQLITE_BLOB,
 static_assert(static_cast<int>(ColumnType::kNull) == SQLITE_NULL,
               "NULL mismatch");
 
-ColumnType Statement::GetColumnType(int col) const {
+ColumnType Statement::GetColumnType(int col) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -415,14 +415,14 @@ ColumnType Statement::GetColumnType(int col) const {
   return static_cast<enum ColumnType>(sqlite3_column_type(ref_->stmt(), col));
 }
 
-bool Statement::ColumnBool(int column_index) const {
+bool Statement::ColumnBool(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
   return static_cast<bool>(ColumnInt64(column_index));
 }
 
-int Statement::ColumnInt(int column_index) const {
+int Statement::ColumnInt(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -441,7 +441,7 @@ int Statement::ColumnInt(int column_index) const {
   return sqlite3_column_int(ref_->stmt(), column_index);
 }
 
-int64_t Statement::ColumnInt64(int column_index) const {
+int64_t Statement::ColumnInt64(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -460,7 +460,7 @@ int64_t Statement::ColumnInt64(int column_index) const {
   return sqlite3_column_int64(ref_->stmt(), column_index);
 }
 
-double Statement::ColumnDouble(int column_index) const {
+double Statement::ColumnDouble(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -479,7 +479,7 @@ double Statement::ColumnDouble(int column_index) const {
   return sqlite3_column_double(ref_->stmt(), column_index);
 }
 
-base::Time Statement::ColumnTime(int column_index) const {
+base::Time Statement::ColumnTime(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -500,7 +500,7 @@ base::Time Statement::ColumnTime(int column_index) const {
       base::TimeDelta::FromMicroseconds(int_value));
 }
 
-std::string Statement::ColumnString(int column_index) const {
+std::string Statement::ColumnString(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -526,7 +526,7 @@ std::string Statement::ColumnString(int column_index) const {
   return result;
 }
 
-std::u16string Statement::ColumnString16(int column_index) const {
+std::u16string Statement::ColumnString16(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -546,7 +546,7 @@ std::u16string Statement::ColumnString16(int column_index) const {
   return string.empty() ? std::u16string() : base::UTF8ToUTF16(string);
 }
 
-int Statement::ColumnByteLength(int column_index) const {
+int Statement::ColumnByteLength(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -565,7 +565,7 @@ int Statement::ColumnByteLength(int column_index) const {
   return sqlite3_column_bytes(ref_->stmt(), column_index);
 }
 
-const void* Statement::ColumnBlob(int column_index) const {
+const void* Statement::ColumnBlob(int column_index) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -584,8 +584,7 @@ const void* Statement::ColumnBlob(int column_index) const {
   return sqlite3_column_blob(ref_->stmt(), column_index);
 }
 
-bool Statement::ColumnBlobAsString(int column_index,
-                                   std::string* result) const {
+bool Statement::ColumnBlobAsString(int column_index, std::string* result) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -612,7 +611,7 @@ bool Statement::ColumnBlobAsString(int column_index,
 }
 
 bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<char>* result) const {
+                                   std::vector<char>* result) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID
@@ -642,7 +641,7 @@ bool Statement::ColumnBlobAsVector(int column_index,
 }
 
 bool Statement::ColumnBlobAsVector(int column_index,
-                                   std::vector<uint8_t>* result) const {
+                                   std::vector<uint8_t>* result) {
 #if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #endif  // OS_ANDROID

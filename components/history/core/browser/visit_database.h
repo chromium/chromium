@@ -229,7 +229,7 @@ class VisitDatabase {
 
   // Convenience to fill a VisitRow. Assumes the visit values are bound starting
   // at index 0.
-  static void FillVisitRow(const sql::Statement& statement, VisitRow* visit);
+  static void FillVisitRow(sql::Statement& statement, VisitRow* visit);
 
   // Convenience to fill a VisitVector. Assumes that statement.step()
   // hasn't happened yet.
