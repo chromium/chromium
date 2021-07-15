@@ -1334,6 +1334,17 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
           full_context_.direct_compositing_reasons &
           CompositingReasonsForEffectProperty();
 
+      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+        // If an effect node exists, add an additional direct compositing reason
+        // for 3d transforms to ensure it is composited.
+        CompositingReasons additional_transform_compositing_trigger =
+            CompositingReason::k3DTransform |
+            CompositingReason::kTrivial3DTransform;
+        state.direct_compositing_reasons |=
+            (full_context_.direct_compositing_reasons &
+             additional_transform_compositing_trigger);
+      }
+
       if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
         state.direct_compositing_reasons |=
             full_context_.direct_compositing_reasons &
@@ -1583,6 +1594,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateFilter() {
       state.direct_compositing_reasons =
           full_context_.direct_compositing_reasons &
           CompositingReasonsForFilterProperty();
+
+      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
+        // If an effect node exists, add an additional direct compositing reason
+        // for 3d transforms to ensure it is composited.
+        CompositingReasons additional_transform_compositing_trigger =
+            CompositingReason::k3DTransform |
+            CompositingReason::kTrivial3DTransform;
+        state.direct_compositing_reasons |=
+            (full_context_.direct_compositing_reasons &
+             additional_transform_compositing_trigger);
+      }
+
       state.compositor_element_id =
           GetCompositorElementId(CompositorElementIdNamespace::kEffectFilter);
 

@@ -25,8 +25,8 @@ transform: translateZ(-100px) rotateY(45deg);
     {
       "name": "LayoutNGBlockFlow (positioned) DIV",
       "bounds": [200, 200],
-      "contentsOpaqueForText": true,
-      "backgroundColor": "#008000B3",
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
       "transform": 6
     }
   ],
