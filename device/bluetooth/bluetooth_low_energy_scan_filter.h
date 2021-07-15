@@ -8,6 +8,8 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <vector>
+
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_export.h"
 
 namespace device {
@@ -48,30 +50,39 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
     std::vector<uint8_t> value_;
   };
 
-  BluetoothLowEnergyScanFilter(int16_t device_found_threshold,
-                               uint16_t device_found_timeout,
-                               int16_t device_lost_threshold,
-                               uint16_t device_lost_timeout);
+  static std::unique_ptr<BluetoothLowEnergyScanFilter> Create(
+      int16_t device_found_rssi_threshold,
+      int16_t device_lost_rssi_threshold,
+      base::TimeDelta device_found_timeout,
+      base::TimeDelta device_lost_timeout,
+      const std::vector<Pattern>& patterns);
+
   BluetoothLowEnergyScanFilter(const BluetoothLowEnergyScanFilter&) = delete;
   BluetoothLowEnergyScanFilter& operator=(const BluetoothLowEnergyScanFilter&) =
       delete;
   ~BluetoothLowEnergyScanFilter();
 
-  void AddPattern(uint8_t start_position,
-                  AdvertisementDataType data_type,
-                  std::vector<uint8_t> value);
-
-  int16_t device_found_threshold() const { return device_found_threshold_; }
-  uint16_t device_found_timeout() const { return device_found_timeout_; }
-  int16_t device_lost_threshold() const { return device_lost_threshold_; }
-  uint16_t device_lost_timeout() const { return device_lost_timeout_; }
-  const std::vector<Pattern>& patterns() { return patterns_; }
+  int16_t device_found_rssi_threshold() const {
+    return device_found_rssi_threshold_;
+  }
+  int16_t device_lost_rssi_threshold() const {
+    return device_lost_rssi_threshold_;
+  }
+  base::TimeDelta device_found_timeout() const { return device_found_timeout_; }
+  base::TimeDelta device_lost_timeout() const { return device_lost_timeout_; }
+  const std::vector<Pattern>& patterns() const { return patterns_; }
 
  private:
-  int16_t device_found_threshold_;
-  uint16_t device_found_timeout_;
-  int16_t device_lost_threshold_;
-  uint16_t device_lost_timeout_;
+  BluetoothLowEnergyScanFilter(int16_t device_found_rssi_threshold,
+                               int16_t device_lost_rssi_threshold,
+                               base::TimeDelta device_found_timeout,
+                               base::TimeDelta device_lost_timeout,
+                               std::vector<Pattern> patterns);
+
+  int16_t device_found_rssi_threshold_;
+  int16_t device_lost_rssi_threshold_;
+  base::TimeDelta device_found_timeout_;
+  base::TimeDelta device_lost_timeout_;
   std::vector<Pattern> patterns_;
 };
 

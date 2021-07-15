@@ -7,15 +7,18 @@
 #include "ash/quick_pair/common/constants.h"
 #include "ash/quick_pair/common/logging.h"
 #include "base/containers/contains.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 
 namespace {
 
 constexpr int16_t kFilterDeviceFoundThreshold = -80;
-constexpr uint16_t kFilterDeviceFoundTimeout = 1;
+constexpr base::TimeDelta kFilterDeviceFoundTimeout =
+    base::TimeDelta::FromSeconds(1);
 constexpr int16_t kFilterDeviceLostThreshold = -100;
-constexpr uint16_t kFilterDeviceLostTimeout = 5;
+constexpr base::TimeDelta kFilterDeviceLostTimeout =
+    base::TimeDelta::FromSeconds(5);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 
@@ -46,14 +49,13 @@ void FastPairScannerImpl::OnGetAdapter(
   adapter_ = adapter;
   adapter_observation_.Observe(adapter_.get());
 
-  auto filter = std::make_unique<device::BluetoothLowEnergyScanFilter>(
-      kFilterDeviceFoundThreshold, kFilterDeviceFoundTimeout,
-      kFilterDeviceLostThreshold, kFilterDeviceLostTimeout);
-
-  filter->AddPattern(
+  device::BluetoothLowEnergyScanFilter::Pattern pattern(
       kFilterPatternStartPosition,
       device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
       kFastPairFilterPatternValue);
+  auto filter = device::BluetoothLowEnergyScanFilter::Create(
+      kFilterDeviceFoundThreshold, kFilterDeviceLostThreshold,
+      kFilterDeviceFoundTimeout, kFilterDeviceLostTimeout, {pattern});
 
   background_scan_session_ = adapter_->StartLowEnergyScanSession(
       std::move(filter), weak_ptr_factory_.GetWeakPtr());

@@ -4,6 +4,8 @@
 
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
 
+#include "base/memory/ptr_util.h"
+
 namespace device {
 
 BluetoothLowEnergyScanFilter::Pattern::Pattern(
@@ -17,22 +19,32 @@ BluetoothLowEnergyScanFilter::Pattern::Pattern(
 BluetoothLowEnergyScanFilter::Pattern::Pattern(const Pattern&) = default;
 BluetoothLowEnergyScanFilter::Pattern::~Pattern() = default;
 
+// static
+std::unique_ptr<BluetoothLowEnergyScanFilter>
+BluetoothLowEnergyScanFilter::Create(
+    int16_t device_found_rssi_threshold,
+    int16_t device_lost_rssi_threshold,
+    base::TimeDelta device_found_timeout,
+    base::TimeDelta device_lost_timeout,
+    const std::vector<BluetoothLowEnergyScanFilter::Pattern>& patterns) {
+  // We use WrapUnique() here so that we can call the private constructor.
+  return base::WrapUnique(new BluetoothLowEnergyScanFilter(
+      device_found_rssi_threshold, device_lost_rssi_threshold,
+      device_found_timeout, device_lost_timeout, patterns));
+}
+
 BluetoothLowEnergyScanFilter::BluetoothLowEnergyScanFilter(
-    int16_t device_found_threshold,
-    uint16_t device_found_timeout,
-    int16_t device_lost_threshold,
-    uint16_t device_lost_timeout)
-    : device_found_threshold_(device_found_threshold),
+    int16_t device_found_rssi_threshold,
+    int16_t device_lost_rssi_threshold,
+    base::TimeDelta device_found_timeout,
+    base::TimeDelta device_lost_timeout,
+    std::vector<Pattern> patterns)
+    : device_found_rssi_threshold_(device_found_rssi_threshold),
+      device_lost_rssi_threshold_(device_lost_rssi_threshold),
       device_found_timeout_(device_found_timeout),
-      device_lost_threshold_(device_lost_threshold),
-      device_lost_timeout_(device_lost_timeout) {}
+      device_lost_timeout_(device_lost_timeout),
+      patterns_(patterns) {}
 
 BluetoothLowEnergyScanFilter::~BluetoothLowEnergyScanFilter() = default;
-
-void BluetoothLowEnergyScanFilter::AddPattern(uint8_t start_position,
-                                              AdvertisementDataType data_type,
-                                              std::vector<uint8_t> value) {
-  patterns_.emplace_back(start_position, data_type, value);
-}
 
 }  // namespace device

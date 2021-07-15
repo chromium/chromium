@@ -105,6 +105,18 @@ bool IsBackgroundScanningFeatureEnabled() {
          chromeos::features::IsBluetoothAdvertisementMonitoringEnabled();
 }
 
+// Background scanning filter values.
+constexpr int16_t kBackgroundScanningDeviceFoundRSSIThreshold = -80;
+constexpr int16_t kBackgroundScanningDeviceLostRSSIThreshold = -100;
+constexpr base::TimeDelta kBackgroundScanningDeviceFoundTimeout =
+    base::TimeDelta::FromSeconds(1);
+constexpr base::TimeDelta kBackgroundScanningDeviceLostTimeout =
+    base::TimeDelta::FromSeconds(5);
+// This pattern value encodes the Fast Initiation service ID of 0xfe2c and the
+// model ID of 0xfc128e.
+constexpr uint8_t kBackgroundScanningFilterPatternValue[] = {0x2c, 0xfe, 0xfc,
+                                                             0x12, 0x8e};
+
 std::string ReceiveSurfaceStateToString(
     NearbySharingService::ReceiveSurfaceState state) {
   switch (state) {
@@ -2186,13 +2198,20 @@ void NearbySharingServiceImpl::InvalidateBackgroundScanning() {
 void NearbySharingServiceImpl::StartBackgroundScanning() {
   DCHECK(!background_scan_session_);
   NS_LOG(VERBOSE) << __func__ << ": Starting background scanning.";
-  auto filter = std::make_unique<device::BluetoothLowEnergyScanFilter>(
-      /*device_found_threshold=*/-80, /*device_found_timeout=*/1,
-      /*device_lost_threshold=*/-100, /*device_lost_timeout=*/5);
-  filter->AddPattern(
+
+  auto pattern_value =
+      std::vector<uint8_t>(std::begin(kBackgroundScanningFilterPatternValue),
+                           std::end(kBackgroundScanningFilterPatternValue));
+  device::BluetoothLowEnergyScanFilter::Pattern pattern(
       /*start_position=*/0,
       device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
-      /*value=*/std::vector<uint8_t>{0x2c, 0xfe, 0xfc, 0x12, 0x8e});
+      std::move(pattern_value));
+  auto filter = device::BluetoothLowEnergyScanFilter::Create(
+      kBackgroundScanningDeviceFoundRSSIThreshold,
+      kBackgroundScanningDeviceLostRSSIThreshold,
+      kBackgroundScanningDeviceFoundTimeout,
+      kBackgroundScanningDeviceLostTimeout, {pattern});
+
   background_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
       std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());
 }

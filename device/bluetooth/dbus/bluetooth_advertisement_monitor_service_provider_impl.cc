@@ -163,25 +163,28 @@ void BluetoothAdvertisementMonitorServiceProviderImpl::WriteProperties(
   array_writer.OpenDictEntry(&dict_entry_writer);
   dict_entry_writer.AppendString(
       bluetooth_advertisement_monitor::kRSSIHighThreshold);
-  dict_entry_writer.AppendVariantOfInt16(filter_->device_found_threshold());
+  dict_entry_writer.AppendVariantOfInt16(
+      filter_->device_found_rssi_threshold());
   array_writer.CloseContainer(&dict_entry_writer);
 
   array_writer.OpenDictEntry(&dict_entry_writer);
   dict_entry_writer.AppendString(
       bluetooth_advertisement_monitor::kRSSIHighTimeout);
-  dict_entry_writer.AppendVariantOfUint16(filter_->device_found_timeout());
+  dict_entry_writer.AppendVariantOfUint16(
+      filter_->device_found_timeout().InSeconds());
   array_writer.CloseContainer(&dict_entry_writer);
 
   array_writer.OpenDictEntry(&dict_entry_writer);
   dict_entry_writer.AppendString(
       bluetooth_advertisement_monitor::kRSSILowThreshold);
-  dict_entry_writer.AppendVariantOfInt16(filter_->device_lost_threshold());
+  dict_entry_writer.AppendVariantOfInt16(filter_->device_lost_rssi_threshold());
   array_writer.CloseContainer(&dict_entry_writer);
 
   array_writer.OpenDictEntry(&dict_entry_writer);
   dict_entry_writer.AppendString(
       bluetooth_advertisement_monitor::kRSSILowTimeout);
-  dict_entry_writer.AppendVariantOfUint16(filter_->device_lost_timeout());
+  dict_entry_writer.AppendVariantOfUint16(
+      filter_->device_lost_timeout().InSeconds());
   array_writer.CloseContainer(&dict_entry_writer);
 
   array_writer.OpenDictEntry(&dict_entry_writer);
