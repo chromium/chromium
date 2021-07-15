@@ -29,6 +29,7 @@ source_set("grid_ui") {
     "grid_layout.h",
     "grid_layout.mm",
     "grid_menu_actions_data_source.h",
+    "grid_shareable_items_provider.h",
     "grid_theme.h",
     "grid_view_controller.h",
     "grid_view_controller.mm",

@@ -479,10 +479,12 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
   __weak TabGridMediator* weakSelf = self;
   return @[
     [actionFactory actionToAddToReadingListWithBlock:^{
-      [weakSelf addItemsToReadingList:weakGrid.selectedItemIDsForEditing];
+      [weakSelf
+          addItemsToReadingList:weakGrid.selectedShareableItemIDsForEditing];
     }],
     [actionFactory actionToBookmarkWithBlock:^{
-      [weakSelf addItemsToBookmarks:weakGrid.selectedItemIDsForEditing];
+      [weakSelf
+          addItemsToBookmarks:weakGrid.selectedShareableItemIDsForEditing];
     }]
   ];
 }
@@ -676,6 +678,14 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
       ios::BookmarkModelFactory::GetForBrowserState(self.browserState);
   return item && bookmarkModel &&
          bookmarkModel->GetMostRecentlyAddedUserNodeForURL(item.URL);
+}
+
+#pragma mark - GridShareableItemsProvider
+
+- (BOOL)isItemWithIdentifierSharable:(NSString*)identifier {
+  web::WebState* webState = GetWebStateWithId(self.webStateList, identifier);
+  const GURL& URL = webState->GetVisibleURL();
+  return URL.is_valid() && URL.SchemeIsHTTPOrHTTPS();
 }
 
 #pragma mark - Private

@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_empty_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_layout.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/horizontal_layout.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/plus_sign_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/transitions/grid_transition_layout.h"
@@ -78,6 +79,9 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // Items selected for editing.
 @property(nonatomic, strong) NSMutableSet<NSString*>* selectedEditingItemIDs;
+// Items selected for editing which are shareable outside of the app.
+@property(nonatomic, strong)
+    NSMutableSet<NSString*>* selectedSharableEditingItemIDs;
 // ID of the last item to be inserted. This is used to track if the active tab
 // was newly created when building the animation layout for transitions.
 @property(nonatomic, copy) NSString* lastInsertedItemID;
@@ -120,6 +124,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   if (self = [super init]) {
     _items = [[NSMutableArray<TabSwitcherItem*> alloc] init];
     _selectedEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
+    _selectedSharableEditingItemIDs = [[NSMutableSet<NSString*> alloc] init];
     _showsSelectionUpdates = YES;
     _mode = TabGridModeNormal;
   }
@@ -237,6 +242,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   // Clear items when exiting selection mode.
   if (mode == TabGridModeNormal) {
     [self.selectedEditingItemIDs removeAllObjects];
+    [self.selectedSharableEditingItemIDs removeAllObjects];
   }
   [self.collectionView reloadData];
 }
@@ -664,6 +670,7 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   self.items = [items mutableCopy];
   self.selectedItemID = selectedItemID;
   [self.selectedEditingItemIDs removeAllObjects];
+  [self.selectedSharableEditingItemIDs removeAllObjects];
   [self.collectionView reloadData];
   [self.collectionView selectItemAtIndexPath:CreateIndexPath(self.selectedIndex)
                                     animated:YES
@@ -1144,6 +1151,10 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   return [self.selectedEditingItemIDs allObjects];
 }
 
+- (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
+  return [self.selectedSharableEditingItemIDs allObjects];
+}
+
 #pragma mark - Private Editing Mode Selection
 
 - (BOOL)isItemWithIDSelectedForEditing:(NSString*)identifier {
@@ -1152,10 +1163,14 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
 
 - (void)selectItemWithIDForEditing:(NSString*)identifier {
   [self.selectedEditingItemIDs addObject:identifier];
+  if ([self.shareableItemsProvider isItemWithIdentifierSharable:identifier]) {
+    [self.selectedSharableEditingItemIDs addObject:identifier];
+  }
 }
 
 - (void)deselectItemWithIDForEditing:(NSString*)identifier {
   [self.selectedEditingItemIDs removeObject:identifier];
+  [self.selectedSharableEditingItemIDs removeObject:identifier];
 }
 
 #pragma mark - ThumbStripSupporting

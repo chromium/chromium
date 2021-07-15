@@ -14,14 +14,15 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_paging.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
+@protocol GridContextMenuProvider;
 @protocol GridDragDropHandler;
 @protocol GridEmptyView;
 @protocol GridImageDataSource;
+@protocol GridShareableItemsProvider;
 @class GridTransitionLayout;
 @class GridViewController;
 @protocol IncognitoReauthCommands;
 @protocol ThumbStripCommands;
-@protocol GridContextMenuProvider;
 
 // Protocol used to relay relevant user interactions from a grid UI.
 @protocol GridViewControllerDelegate
@@ -101,9 +102,16 @@
 @property(nonatomic, assign) BOOL contentNeedsAuthentication;
 // Provider of context menu configurations for the tabs in the grid.
 @property(nonatomic, weak) id<GridContextMenuProvider> menuProvider;
+// Provider of shareable state for tabs in the grid.
+@property(nonatomic, weak) id<GridShareableItemsProvider>
+    shareableItemsProvider;
 
 // The item IDs of selected items for editing.
 @property(nonatomic, readonly) NSArray<NSString*>* selectedItemIDsForEditing;
+// The item IDs of selected items for editing which are shareable outside of the
+// application.
+@property(nonatomic, readonly)
+    NSArray<NSString*>* selectedShareableItemIDsForEditing;
 
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;

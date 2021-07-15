@@ -531,6 +531,18 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   return self.remoteTabsViewController;
 }
 
+- (void)setRegularTabsShareableItemsProvider:
+    (id<GridShareableItemsProvider>)provider {
+  self.regularTabsViewController.shareableItemsProvider = provider;
+  _regularTabsShareableItemsProvider = provider;
+}
+
+- (void)setIncognitoTabsShareableItemsProvider:
+    (id<GridShareableItemsProvider>)provider {
+  self.incognitoTabsViewController.shareableItemsProvider = provider;
+  _incognitoTabsShareableItemsProvider = provider;
+}
+
 - (void)setReauthHandler:(id<IncognitoReauthCommands>)reauthHandler {
   if (_reauthHandler == reauthHandler)
     return;
@@ -1500,9 +1512,14 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [self gridViewControllerForPage:self.currentPage];
   NSUInteger selectedItemsCount =
       [currentGridViewController.selectedItemIDsForEditing count];
+  NSUInteger sharableSelectedItemsCount =
+      [currentGridViewController.selectedShareableItemIDsForEditing count];
   self.topToolbar.selectedTabsCount = selectedItemsCount;
+
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
   [self.bottomToolbar setCloseAllButtonEnabled:selectedItemsCount > 0];
+  [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
+  [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
 }
 
 // Records when the user switches between incognito and regular pages in the tab
@@ -1959,7 +1976,8 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 - (void)shareSelectedTabs:(id)sender {
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
-  NSArray<NSString*>* items = gridViewController.selectedItemIDsForEditing;
+  NSArray<NSString*>* items =
+      gridViewController.selectedShareableItemIDsForEditing;
 
   switch (self.currentPage) {
     case TabGridPageIncognitoTabs:

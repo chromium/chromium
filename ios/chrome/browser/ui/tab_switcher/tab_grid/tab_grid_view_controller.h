@@ -18,6 +18,7 @@
 @protocol GridCommands;
 @protocol GridDragDropHandler;
 @protocol GridImageDataSource;
+@protocol GridShareableItemsProvider;
 class GURL;
 @protocol IncognitoReauthCommands;
 @protocol IncognitoReauthConsumer;
@@ -108,6 +109,11 @@ enum class TabGridPageConfiguration {
 // Data sources provide lazy access to heavy-weight resources.
 @property(nonatomic, weak) id<GridImageDataSource> regularTabsImageDataSource;
 @property(nonatomic, weak) id<GridImageDataSource> incognitoTabsImageDataSource;
+
+@property(nonatomic, weak) id<GridShareableItemsProvider>
+    regularTabsShareableItemsProvider;
+@property(nonatomic, weak) id<GridShareableItemsProvider>
+    incognitoTabsShareableItemsProvider;
 
 // An optional object to be notified whenever the trait collection of this view
 // controller changes.

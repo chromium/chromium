@@ -592,6 +592,10 @@
   baseViewController.incognitoTabsDragDropHandler = self.incognitoTabsMediator;
   baseViewController.regularTabsImageDataSource = self.regularTabsMediator;
   baseViewController.incognitoTabsImageDataSource = self.incognitoTabsMediator;
+  baseViewController.regularTabsShareableItemsProvider =
+      self.regularTabsMediator;
+  baseViewController.incognitoTabsShareableItemsProvider =
+      self.incognitoTabsMediator;
 
   self.incognitoAuthMediator = [[IncognitoReauthMediator alloc]
       initWithConsumer:self.baseViewController.incognitoTabsConsumer

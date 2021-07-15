@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_drag_drop_handler.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_image_data_source.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_menu_actions_data_source.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_shareable_items_provider.h"
 
 class Browser;
 @protocol GridConsumer;
@@ -53,7 +54,8 @@ class TabRestoreService;
 @interface TabGridMediator : NSObject <GridCommands,
                                        GridDragDropHandler,
                                        GridImageDataSource,
-                                       GridMenuActionsDataSource>
+                                       GridMenuActionsDataSource,
+                                       GridShareableItemsProvider>
 
 // The source browser.
 @property(nonatomic, assign) Browser* browser;
