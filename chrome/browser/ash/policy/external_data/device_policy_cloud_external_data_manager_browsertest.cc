@@ -17,6 +17,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_chromeos.h"
+#include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base.h"
 #include "chrome/browser/ash/policy/external_data/cloud_external_data_manager_base_test_util.h"
