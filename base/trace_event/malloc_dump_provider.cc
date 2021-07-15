@@ -37,6 +37,10 @@
 #include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #endif
 
+#if defined(PA_THREAD_CACHE_ALLOC_STATS)
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
+#endif
+
 namespace base {
 namespace trace_event {
 
@@ -391,9 +395,11 @@ void ReportPartitionAllocThreadCacheStats(ProcessMemoryDump* pmd,
     if (detailed) {
       std::string name = dump->absolute_name();
       for (size_t i = 0; i < kNumBuckets; i++) {
-        std::string dump_name =
-            base::StringPrintf("%s/buckets_alloc/%d", name.c_str(),
-                               static_cast<int>(stats.bucket_size_[i]));
+        size_t bucket_size = stats.bucket_size_[i];
+        if (bucket_size == kInvalidBucketSize)
+          continue;
+        std::string dump_name = base::StringPrintf(
+            "%s/buckets_alloc/%d", name.c_str(), static_cast<int>(bucket_size));
         auto* buckets_alloc_dump = pmd->CreateAllocatorDump(dump_name);
         buckets_alloc_dump->AddScalar("count", "objects",
                                       stats.allocs_per_bucket_[i]);

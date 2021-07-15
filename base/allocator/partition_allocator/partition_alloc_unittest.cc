@@ -3396,6 +3396,23 @@ TEST_F(PartitionAllocTest, DISABLED_PreforkHandler) {
         // defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) &&
         // !BUILDFLAG(IS_CHROMECAST)
 
+// Checks the bucket index logic.
+TEST_F(PartitionAllocTest, GetIndex) {
+  BucketIndexLookup lookup{};
+
+  for (size_t size = 0; size < kMaxBucketed; size++) {
+    size_t index = BucketIndexLookup::GetIndex(size);
+    ASSERT_GE(lookup.bucket_sizes()[index], size);
+  }
+
+  // Make sure that power-of-two have exactly matching buckets.
+  for (size_t size = (1 << (kMinBucketedOrder - 1)); size < kMaxBucketed;
+       size <<= 1) {
+    size_t index = BucketIndexLookup::GetIndex(size);
+    ASSERT_EQ(lookup.bucket_sizes()[index], size);
+  }
+}
+
 }  // namespace internal
 }  // namespace base
 

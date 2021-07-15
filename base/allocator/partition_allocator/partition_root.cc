@@ -552,30 +552,22 @@ void PartitionRoot<thread_safe>::Init(PartitionOptions opts) {
     inverted_self = ~reinterpret_cast<uintptr_t>(this);
 
     // Set up the actual usable buckets first.
-    // Note that typical values (i.e. min allocation size of 8) will result in
-    // pseudo buckets (size==9 etc. or more generally, size is not a multiple
-    // of the smallest allocation granularity).
-    // We avoid them in the bucket lookup map, but we tolerate them to keep the
-    // code simpler and the structures more generic.
-    size_t i, j;
-    size_t current_size = kSmallestBucket;
-    size_t current_increment = kSmallestBucket >> kNumBucketsPerOrderBits;
-    Bucket* bucket = &buckets[0];
-    for (i = 0; i < kNumBucketedOrders; ++i) {
-      for (j = 0; j < kNumBucketsPerOrder; ++j) {
-        bucket->Init(current_size);
-        // Disable pseudo buckets so that touching them faults.
-        if (current_size % kSmallestBucket) {
-          bucket->active_slot_spans_head = nullptr;
-          PA_DCHECK(!bucket->is_valid());
-        }
-        current_size += current_increment;
-        ++bucket;
-      }
-      current_increment <<= 1;
+    constexpr internal::BucketIndexLookup lookup{};
+    size_t bucket_index = 0;
+    while (lookup.bucket_sizes()[bucket_index]) {
+      buckets[bucket_index].Init(lookup.bucket_sizes()[bucket_index]);
+      bucket_index++;
     }
-    PA_DCHECK(current_size == 1 << kMaxBucketedOrder);
-    PA_DCHECK(bucket == &buckets[0] + kNumBuckets);
+    PA_DCHECK(bucket_index < kNumBuckets);
+
+    // Remaining buckets are not usable, and not real.
+    for (size_t index = bucket_index; index < kNumBuckets; index++) {
+      // Cannot init with size 0 since it computes 1 / size, but make sure the
+      // bucket is invalid.
+      buckets[index].Init(kInvalidBucketSize);
+      buckets[index].active_slot_spans_head = nullptr;
+      PA_DCHECK(!buckets[index].is_valid());
+    }
 
 #if !defined(PA_THREAD_CACHE_SUPPORTED)
     // TLS in ThreadCache not supported on other OSes.

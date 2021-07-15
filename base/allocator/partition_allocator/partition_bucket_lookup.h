@@ -107,7 +107,6 @@ class BucketIndexLookup final {
  public:
   ALWAYS_INLINE constexpr static size_t GetIndex(size_t size);
 
- private:
   constexpr BucketIndexLookup() {
     constexpr uint16_t sentinel_bucket_index = kNumBuckets;
 
@@ -116,40 +115,73 @@ class BucketIndexLookup final {
     uint16_t* bucket_index_ptr = &bucket_index_lookup_[0];
     uint16_t bucket_index = 0;
 
-    for (uint8_t order = 0; order <= kBitsPerSizeT; ++order) {
+    // Very small allocations, smaller than the first bucketed order ->
+    // everything goes to the first bucket.
+    for (uint8_t order = 0; order < kMinBucketedOrder; ++order) {
       for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
-        if (order < kMinBucketedOrder) {
-          // Use the bucket of the finest granularity for malloc(0) etc.
-          *bucket_index_ptr++ = 0;
-        } else if (order > kMaxBucketedOrder) {
-          *bucket_index_ptr++ = sentinel_bucket_index;
-        } else {
-          uint16_t valid_bucket_index = bucket_index;
-          while (bucket_sizes_[valid_bucket_index] % kSmallestBucket)
-            valid_bucket_index++;
-          *bucket_index_ptr++ = valid_bucket_index;
-          bucket_index++;
-        }
+        *bucket_index_ptr++ = 0;
       }
     }
-    PA_DCHECK(bucket_index == kNumBuckets);
+
+    // Normal buckets.
+    for (uint8_t order = kMinBucketedOrder; order <= kMaxBucketedOrder;
+         ++order) {
+      size_t size = static_cast<size_t>(1) << (order - 1);
+      size_t current_increment = size >> kNumBucketsPerOrderBits;
+      for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
+        *bucket_index_ptr++ = bucket_index;
+
+        // For small sizes, buckets are close together (current_increment is
+        // small). For instance, for:
+        // - kAlignment == 16 (which is the case on most 64 bit systems)
+        // - kNumBucketsPerOrder == 4
+        //
+        // The 3 next buckets after 16 are {20, 24, 28}. None of these are a
+        // multiple of kAlignment, so they use the next bucket, that is 32 here.
+        if (size % kAlignment != 0) {
+          PA_DCHECK(bucket_sizes_[bucket_index] > size);
+          // Do not increment bucket_index, since in the example above
+          // current_size may be 20, and bucket_sizes_[bucket_index] == 32.
+        } else {
+          PA_DCHECK(bucket_sizes_[bucket_index] == size);
+          bucket_index++;
+        }
+
+        size += current_increment;
+      }
+    }
+
+    // Direct-mapped, and overflow.
+    for (uint8_t order = kMaxBucketedOrder + 1; order <= kBitsPerSizeT;
+         ++order) {
+      for (uint16_t j = 0; j < kNumBucketsPerOrder; ++j) {
+        *bucket_index_ptr++ = sentinel_bucket_index;
+      }
+    }
+
+    // Smaller because some buckets are not valid due to alignment constraints.
+    PA_DCHECK(bucket_index < kNumBuckets);
     PA_DCHECK(bucket_index_ptr == bucket_index_lookup_ + ((kBitsPerSizeT + 1) *
                                                           kNumBucketsPerOrder));
     // And there's one last bucket lookup that will be hit for e.g. malloc(-1),
     // which tries to overflow to a non-existent order.
     *bucket_index_ptr = sentinel_bucket_index;
   }
+  constexpr const size_t* bucket_sizes() const { return &bucket_sizes_[0]; }
 
+ private:
   constexpr void InitBucketSizes() {
     size_t current_size = kSmallestBucket;
     size_t current_increment = kSmallestBucket >> kNumBucketsPerOrderBits;
     size_t* bucket_size = &bucket_sizes_[0];
     for (size_t i = 0; i < kNumBucketedOrders; ++i) {
       for (size_t j = 0; j < kNumBucketsPerOrder; ++j) {
-        *bucket_size = current_size;
-        // Disable pseudo buckets so that touching them faults.
+        // All bucket sizes have to be multiples of kAlignment, skip otherwise.
+        if (current_size % kAlignment == 0) {
+          *bucket_size = current_size;
+          ++bucket_size;
+        }
         current_size += current_increment;
-        ++bucket_size;
       }
       current_increment <<= 1;
     }

@@ -320,6 +320,11 @@ constexpr unsigned char kFreedByte = 0xCD;
 
 constexpr unsigned char kQuarantinedByte = 0xEF;
 
+// 1 is smaller than anything we can use, as it is not properly aligned. Not
+// using a large size, since PartitionBucket::slot_size is a uint32_t, and
+// static_cast<uint32_t>(-1) is too close to a "real" size.
+constexpr size_t kInvalidBucketSize = 1;
+
 // Flags for `PartitionAllocFlags`.
 enum PartitionAllocFlags {
   PartitionAllocReturnNull = 1 << 0,
