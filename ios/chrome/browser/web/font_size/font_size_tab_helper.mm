@@ -22,9 +22,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/web/features.h"
 #include "ios/components/ui_util/dynamic_type_util.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
-#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -139,8 +138,8 @@ void FontSizeTabHelper::SetPageFontSize(int size) {
   }
   tab_helper_has_zoomed_ = true;
 
-  ios::GetChromeBrowserProvider().GetTextZoomProvider()->SetPageFontSize(
-      web_state_, size);
+  DCHECK(ios::provider::IsTextZoomEnabled());
+  ios::provider::SetTextZoomForWebState(web_state_, size);
 }
 
 void FontSizeTabHelper::UserZoom(Zoom zoom) {

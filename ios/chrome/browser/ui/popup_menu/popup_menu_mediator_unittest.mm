@@ -45,7 +45,7 @@
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -307,9 +307,7 @@ TEST_F(PopupMenuMediatorTest, TestToolsMenuItemsCount) {
     number_of_action_items++;
   }
 
-  if (ios::GetChromeBrowserProvider()
-          .GetTextZoomProvider()
-          ->IsTextZoomEnabled()) {
+  if (ios::provider::IsTextZoomEnabled()) {
     number_of_action_items++;
   }
 

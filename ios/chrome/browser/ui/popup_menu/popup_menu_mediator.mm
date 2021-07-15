@@ -61,7 +61,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/components/webui/web_ui_url_constants.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/text_zoom_provider.h"
+#import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #import "ios/public/provider/chrome/browser/user_feedback/user_feedback_provider.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/user_agent.h"
@@ -1013,9 +1013,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
   [actionsArray addObject:self.findInPageItem];
 
   // Text Zoom
-  if (ios::GetChromeBrowserProvider()
-          .GetTextZoomProvider()
-          ->IsTextZoomEnabled()) {
+  if (ios::provider::IsTextZoomEnabled()) {
     self.textZoomItem = CreateTableViewItem(
         IDS_IOS_TOOLS_MENU_TEXT_ZOOM, PopupMenuActionTextZoom,
         @"popup_menu_text_zoom", kToolsMenuTextZoom);

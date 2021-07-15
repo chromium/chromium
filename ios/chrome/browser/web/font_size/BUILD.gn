@@ -22,8 +22,8 @@ source_set("font_size") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/web:feature_flags",
     "//ios/components/ui_util",
-    "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:font_size_java_script_feature",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//services/metrics/public/cpp:ukm_builders",
   ]
 }
