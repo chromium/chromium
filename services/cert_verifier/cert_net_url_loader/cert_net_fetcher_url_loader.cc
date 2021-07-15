@@ -84,6 +84,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 // TODO(eroman): Add support for POST parameters.
 // TODO(eroman): Add controls for bypassing the cache.
