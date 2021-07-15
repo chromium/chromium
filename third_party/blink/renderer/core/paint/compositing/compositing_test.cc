@@ -2393,4 +2393,35 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
   EXPECT_TRUE(snap_up->GetRecordingSourceForTesting()->is_solid_color());
 }
 
+// While not required for correctness, it is important for performance (e.g.,
+// the MotionMark Focus benchmark) that we do not decomposite effect nodes (see:
+// |PaintArtifactCompositor::DecompositeEffect|) when the author has specified
+// 3D transforms which are frequently used as a generic compositing trigger.
+TEST_P(CompositingSimTest, EffectCompositedWith3DTransform) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        div {
+          width: 100px;
+          height: 100px;
+          background: rebeccapurple;
+          transform: translate3d(1px, 1px, 0);
+        }
+      </style>
+      <div id="opacity" style="opacity: 0.5;"></div>
+      <div id="filter" style="filter: blur(1px);"></div>
+  )HTML");
+  Compositor().BeginFrame();
+
+  auto* opacity_effect = GetEffectNode(CcLayerByDOMElementId("opacity"));
+  EXPECT_TRUE(opacity_effect);
+  EXPECT_EQ(opacity_effect->opacity, 0.5f);
+  EXPECT_TRUE(opacity_effect->filters.IsEmpty());
+
+  auto* filter_effect = GetEffectNode(CcLayerByDOMElementId("filter"));
+  EXPECT_TRUE(filter_effect);
+  EXPECT_EQ(filter_effect->opacity, 1.f);
+  EXPECT_FALSE(filter_effect->filters.IsEmpty());
+}
+
 }  // namespace blink

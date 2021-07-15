@@ -6971,28 +6971,4 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
   EXPECT_EQ(FloatPoint3D(100, 100, 0), transform_node->Origin());
 }
 
-// While not required for correctness, it is important for performance (e.g.,
-// the MotionMark Focus benchmark) that we do not decomposite effect nodes when
-// the author has specified 3d transforms (see:
-// |PaintArtifactCompositor::DecompositeEffect|).
-TEST_P(PaintPropertyTreeBuilderTest, EffectDirectCompositingReasonWith3D) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-  SetBodyInnerHTML(R"HTML(
-    <style>
-      #target {
-        width: 100px;
-        height: 100px;
-        transform: translate3d(1px, 1px, 0);
-        opacity: 0.5;
-        filter: blur(1px);
-      }
-    </style>
-    <div id="target"></div>
-  )HTML");
-  const auto* properties = PaintPropertiesForElement("target");
-  EXPECT_TRUE(properties->Effect()->HasDirectCompositingReasons());
-  EXPECT_TRUE(properties->Filter()->HasDirectCompositingReasons());
-}
-
 }  // namespace blink
