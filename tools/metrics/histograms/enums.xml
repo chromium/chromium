@@ -45187,6 +45187,13 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
   <int value="11" label="Success: Image is translatable"/>
 </enum>
 
+<enum name="LensRegionSearchCaptureResult">
+  <summary>Result of Lens Region Search feature.</summary>
+  <int value="0" label="Success"/>
+  <int value="1" label="Failed to open results in a new tab"/>
+  <int value="2" label="Error capturing image from selected region"/>
+</enum>
+
 <enum name="LensSdkError">
   <int value="1" label="Internal Error"/>
   <int value="2" label="Session already started"/>

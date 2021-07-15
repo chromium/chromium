@@ -88,9 +88,41 @@ void CoreTabHelper::UpdateContentRestrictions(int content_restrictions) {
 void CoreTabHelper::SearchWithLensInNewTab(
     content::RenderFrameHost* render_frame_host,
     const GURL& src_url) {
-  SearchByImageInNewTabImpl(
-      render_frame_host, src_url, kImageSearchThumbnailMinSize,
-      lens::features::GetMaxPixels(), lens::features::GetMaxPixels());
+  SearchByImageInNewTabImpl(render_frame_host, src_url,
+                            kImageSearchThumbnailMinSize,
+                            lens::features::GetMaxPixelsForImageSearch(),
+                            lens::features::GetMaxPixelsForImageSearch());
+}
+
+void CoreTabHelper::SearchWithLensInNewTab(gfx::Image image) {
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
+
+  TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile);
+  if (!template_url_service)
+    return;
+  const TemplateURL* const default_provider =
+      template_url_service->GetDefaultSearchProvider();
+  if (!default_provider)
+    return;
+
+  TemplateURLRef::SearchTermsArgs search_args =
+      TemplateURLRef::SearchTermsArgs(std::u16string());
+
+  // Get the front and end of the image bytes in order to store them in the
+  // search_args to be sent as part of the PostContent in the request.
+  size_t image_bytes_size = image.As1xPNGBytes()->size();
+  const unsigned char* image_bytes_begin = image.As1xPNGBytes()->front();
+  const unsigned char* image_bytes_end = image_bytes_begin + image_bytes_size;
+
+  search_args.image_thumbnail_content.assign(image_bytes_begin,
+                                             image_bytes_end);
+  search_args.image_original_size = image.Size();
+  TemplateURLRef::PostContent post_content;
+  GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
+      search_args, template_url_service->search_terms_data(), &post_content));
+  PostContentToURL(post_content, result);
 }
 
 void CoreTabHelper::SearchByImageInNewTab(
@@ -317,11 +349,16 @@ void CoreTabHelper::DoSearchByImageInNewTab(
   TemplateURLRef::PostContent post_content;
   GURL result(default_provider->image_url_ref().ReplaceSearchTerms(
       search_args, template_url_service->search_terms_data(), &post_content));
-  if (!result.is_valid())
+  PostContentToURL(post_content, result);
+}
+
+void CoreTabHelper::PostContentToURL(TemplateURLRef::PostContent post_content,
+                                     GURL url) {
+  if (!url.is_valid())
     return;
 
   content::OpenURLParams open_url_params(
-      result, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      url, content::Referrer(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
       ui::PAGE_TRANSITION_LINK, false);
   const std::string& content_type = post_content.first;
   const std::string& post_data = post_content.second;

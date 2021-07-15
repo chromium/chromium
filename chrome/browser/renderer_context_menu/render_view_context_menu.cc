@@ -223,6 +223,10 @@
 #include "ui/base/resource/resource_bundle.h"
 #endif
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
+#include "chrome/browser/lens/region_search/lens_region_search_controller.h"
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
@@ -968,6 +972,7 @@ void RenderViewContextMenu::InitMenu() {
     AppendCurrentExtensionItems();
   }
 
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   if (content_type_->SupportsGroup(
           ContextMenuContentType::ITEM_GROUP_LENS_REGION_SEARCH)) {
     if (base::FeatureList::IsEnabled(lens::features::kLensRegionSearch)) {
@@ -975,6 +980,7 @@ void RenderViewContextMenu::InitMenu() {
       AppendLensRegionSearchItem();
     }
   }
+#endif
 
   // Accessibility label items are appended to all menus when a screen reader
   // is enabled. It can be difficult to open a specific context menu with a
@@ -3218,7 +3224,11 @@ void RenderViewContextMenu::ExecSearchLensForImage() {
 }
 
 void RenderViewContextMenu::ExecLensRegionSearch() {
-  // TODO(crbug.com/1222313): Add click and drag image selection functionality.
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
+  lens::LensRegionSearchController* controller =
+      new lens::LensRegionSearchController(source_web_contents_);
+  controller->Start();
+#endif
 }
 
 void RenderViewContextMenu::ExecSearchWebForImage() {

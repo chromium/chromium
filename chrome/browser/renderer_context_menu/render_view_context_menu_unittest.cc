@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/extensions/menu_manager.h"
@@ -25,8 +26,8 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_settings.h"
-#include "components/policy/core/common/policy_pref_names.h"
 #include "components/lens/lens_features.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
@@ -688,6 +689,8 @@ TEST_F(RenderViewContextMenuPrefsTest, ShowAllPasswordsIncognito) {
   EXPECT_TRUE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_SHOWALLSAVEDPASSWORDS));
 }
 
+// TODO(crbug/1229334): Add Mac support for Lens Region Search feature.
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Verify that the Lens Region Search menu item is displayed when the feature
 // is enabled.
 TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearch) {
@@ -707,6 +710,7 @@ TEST_F(RenderViewContextMenuPrefsTest, LensRegionSearchDisabled) {
 
   EXPECT_FALSE(menu->IsItemPresent(IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH));
 }
+#endif
 
 // Test FormatUrlForClipboard behavior
 // -------------------------------------------

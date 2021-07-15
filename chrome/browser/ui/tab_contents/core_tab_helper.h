@@ -12,9 +12,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
+#include "components/search_engines/template_url.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
 // Per-tab class to handle functionality that is core to the operation of tabs.
@@ -35,6 +37,10 @@ class CoreTabHelper : public content::WebContentsObserver,
   // context menu.
   void SearchWithLensInNewTab(content::RenderFrameHost* render_frame_host,
                               const GURL& src_url);
+
+  // Open the Lens experience for an image. Used for sending the bitmap selected
+  // via Lens Region Search.
+  void SearchWithLensInNewTab(gfx::Image image);
 
   // Perform an image search for the image that triggered the context menu.  The
   // |src_url| is passed to the search request and is not used directly to fetch
@@ -75,6 +81,9 @@ class CoreTabHelper : public content::WebContentsObserver,
       const std::vector<uint8_t>& thumbnail_data,
       const gfx::Size& original_size,
       const std::string& image_extension);
+
+  // Posts the bytes and content type to the specified URL.
+  void PostContentToURL(TemplateURLRef::PostContent post_content, GURL url);
 
   // Create a thumbnail to POST to search engine for the image that triggered
   // the context menu.  The |src_url| is passed to the search request and is
