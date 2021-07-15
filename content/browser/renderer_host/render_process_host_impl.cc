@@ -2213,14 +2213,14 @@ void RenderProcessHostImpl::BindFileSystemAccessManager(
 }
 
 void RenderProcessHostImpl::BindNativeIOHost(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   auto* storage_partition =
       static_cast<StoragePartitionImpl*>(GetStoragePartition());
   auto* native_io_context = static_cast<NativeIOContextImpl*>(
       storage_partition->GetNativeIOContext());
-  native_io_context->BindReceiver(origin, std::move(receiver));
+  native_io_context->BindReceiver(storage_key, std::move(receiver));
 }
 
 void RenderProcessHostImpl::BindRestrictedCookieManagerForServiceWorker(

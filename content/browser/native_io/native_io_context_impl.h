@@ -48,7 +48,7 @@ class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
   // Binds `receiver` to the NativeIOHost serving `origin`.
   //
   // Must be called on the UI thread.
-  void BindReceiver(const url::Origin& origin,
+  void BindReceiver(const blink::StorageKey& storage_key,
                     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
 
   // Deletes all data stored for storage key `storage_key`.
@@ -76,7 +76,7 @@ class CONTENT_EXPORT NativeIOContextImpl : public NativeIOContext {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy);
 
   void BindReceiverOnIOThread(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
       mojo::ReportBadMessageCallback bad_message_callback);
 

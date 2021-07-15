@@ -43,7 +43,7 @@ void NativeIOContextImpl::Initialize(
 }
 
 void NativeIOContextImpl::BindReceiver(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
@@ -52,7 +52,7 @@ void NativeIOContextImpl::BindReceiver(
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(&NativeIOContextImpl::BindReceiverOnIOThread,
-                     scoped_refptr<NativeIOContextImpl>(this), origin,
+                     scoped_refptr<NativeIOContextImpl>(this), storage_key,
                      std::move(receiver), mojo::GetBadMessageCallback()));
 }
 
@@ -121,13 +121,12 @@ void NativeIOContextImpl::InitializeOnIOThread(
 }
 
 void NativeIOContextImpl::BindReceiverOnIOThread(
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver,
     mojo::ReportBadMessageCallback bad_message_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  native_io_manager_->BindReceiver(blink::StorageKey(origin),
-                                   std::move(receiver),
+  native_io_manager_->BindReceiver(storage_key, std::move(receiver),
                                    std::move(bad_message_callback));
 }
 

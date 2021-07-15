@@ -333,7 +333,8 @@ void BindNativeIOHost(
     content::RenderFrameHost* host,
     mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver) {
   static_cast<RenderProcessHostImpl*>(host->GetProcess())
-      ->BindNativeIOHost(host->GetLastCommittedOrigin(), std::move(receiver));
+      ->BindNativeIOHost(static_cast<RenderFrameHostImpl*>(host)->storage_key(),
+                         std::move(receiver));
 }
 
 void BindSharedWorkerConnector(
@@ -1076,6 +1077,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
 
   map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindNativeIOHost, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1090,8 +1093,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindFileSystemManager, host));
   map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileSystemAccessManager, host));
-  map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
@@ -1166,6 +1167,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::BindVideoDecodePerfHistory, host));
   map->Add<blink::mojom::IDBFactory>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindIndexedDB, host));
+  map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindNativeIOHost, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1180,8 +1183,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::CreatePermissionService, host));
   map->Add<blink::mojom::FileSystemAccessManager>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::BindFileSystemAccessManager, host));
-  map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<blink::mojom::BucketManagerHost>(BindWorkerReceiverForOrigin(
@@ -1284,8 +1285,6 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::FileSystemAccessManager>(
       BindServiceWorkerReceiverForOrigin(
           &RenderProcessHostImpl::BindFileSystemAccessManager, host));
-  map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForOrigin(
-      &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::WebSocketConnector>(BindServiceWorkerReceiverForOrigin(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
   map->Add<network::mojom::RestrictedCookieManager>(
@@ -1296,6 +1295,8 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // render process host binders taking a storage key
+  map->Add<blink::mojom::NativeIOHost>(BindServiceWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::IDBFactory>(BindServiceWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindIndexedDB, host));
 

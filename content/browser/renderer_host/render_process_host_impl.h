@@ -591,7 +591,7 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Binds |receiver| to a NativeIOHost instance indirectly owned by the
   // StoragePartition. Used by frames and workers via BrowserInterfaceBroker.
   void BindNativeIOHost(
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::NativeIOHost> receiver);
 
   FileSystemManagerImpl* GetFileSystemManagerForTesting() {
