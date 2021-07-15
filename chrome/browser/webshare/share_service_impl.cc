@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "build/chromeos_buildflags.h"
@@ -148,6 +149,8 @@ void ShareServiceImpl::Share(const std::string& title,
                              const GURL& share_url,
                              std::vector<blink::mojom::SharedFilePtr> files,
                              ShareCallback callback) {
+  UMA_HISTOGRAM_ENUMERATION(kWebShareApiCountMetric, WebShareMethod::kShare);
+
   content::WebContents* const web_contents =
       content::WebContents::FromRenderFrameHost(render_frame_host_);
   if (!web_contents) {

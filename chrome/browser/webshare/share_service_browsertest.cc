@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/safe_browsing/test_safe_browsing_service.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -98,6 +100,9 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
     return;
 #endif
 
+  const int kRepeats = 4;
+
+  base::HistogramTester histogram_tester;
   ASSERT_TRUE(embedded_test_server()->Start());
   ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/webshare/index.html"));
@@ -105,9 +110,13 @@ IN_PROC_BROWSER_TEST_F(ShareServiceBrowserTest, Text) {
   content::WebContents* const contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   const std::string script = "share_text('hello')";
-  const content::EvalJsResult result = content::EvalJs(contents, script);
+  for (int index = 0; index < kRepeats; ++index) {
+    const content::EvalJsResult result = content::EvalJs(contents, script);
+    EXPECT_EQ("share succeeded", result);
+  }
 
-  EXPECT_EQ("share succeeded", result);
+  histogram_tester.ExpectBucketCount(kWebShareApiCountMetric,
+                                     WebShareMethod::kShare, kRepeats);
 }
 
 class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
