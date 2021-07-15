@@ -298,6 +298,9 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   SplitViewMetricsController* split_view_metrics_controller() {
     return split_view_metrics_controller_.get();
   }
+  aura::Window* to_be_activated_window() const {
+    return to_be_activated_window_;
+  }
 
  private:
   friend class SplitViewControllerTest;
