@@ -24,6 +24,7 @@ using text_utils::FindLastSentence;
 using text_utils::Sentence;
 
 constexpr base::TimeDelta kCheckDelay = base::TimeDelta::FromSeconds(2);
+const int HashMultiplier = 1024;
 
 void RecordGrammarAction(GrammarActions action) {
   base::UmaHistogramEnumeration("InputMethod.Assistive.Grammar.Actions",
@@ -33,10 +34,14 @@ void RecordGrammarAction(GrammarActions action) {
 bool IsValidSentence(const std::u16string& text, const Sentence& sentence) {
   uint32_t start = sentence.original_range.start();
   uint32_t end = sentence.original_range.end();
-  if (start >= text.size() || end > text.size())
+  if (start >= end || start >= text.size() || end > text.size())
     return false;
 
   return FindCurrentSentence(text, start) == sentence;
+}
+
+int RangeHash(const gfx::Range& range) {
+  return range.start() * HashMultiplier + range.end();
 }
 
 }  // namespace
@@ -67,9 +72,10 @@ bool GrammarManager::IsOnDeviceGrammarEnabled() {
 
 void GrammarManager::OnFocus(int context_id, int text_input_flags) {
   if (context_id != context_id_) {
-    last_text_ = u"";
+    current_text_ = u"";
     last_sentence_ = Sentence();
     new_to_context_ = true;
+    delay_timer_.Stop();
   }
   context_id_ = context_id;
   text_input_flags_ = text_input_flags;
@@ -131,8 +137,9 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
   if (suggestion_shown_)
     DismissSuggestion();
 
-  bool text_updated = text != last_text_;
-  last_text_ = text;
+  bool text_updated = text != current_text_;
+  current_text_ = text;
+  current_sentence_ = FindCurrentSentence(text, cursor_pos);
 
   if (new_to_context_) {
     new_to_context_ = false;
@@ -151,13 +158,12 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
       Check(last_sentence);
     }
 
-    Sentence current_sentence = FindCurrentSentence(text, cursor_pos);
-    input_context->ClearGrammarFragments(current_sentence.original_range);
+    input_context->ClearGrammarFragments(current_sentence_.original_range);
 
     delay_timer_.Start(
         FROM_HERE, kCheckDelay,
         base::BindOnce(&GrammarManager::Check, base::Unretained(this),
-                       current_sentence));
+                       current_sentence_));
     return;
   }
 
@@ -195,7 +201,7 @@ void GrammarManager::OnSurroundingTextChanged(const std::u16string& text,
 }
 
 void GrammarManager::Check(const Sentence& sentence) {
-  if (!IsValidSentence(last_text_, sentence))
+  if (!IsValidSentence(current_text_, sentence))
     return;
 
   grammar_client_->RequestTextCheck(
@@ -208,15 +214,19 @@ void GrammarManager::OnGrammarCheckDone(
     const Sentence& sentence,
     bool success,
     const std::vector<ui::GrammarFragment>& results) const {
-  if (!success || !IsValidSentence(last_text_, sentence) || results.empty())
+  if (!success || !IsValidSentence(current_text_, sentence) || results.empty())
     return;
 
   std::vector<ui::GrammarFragment> corrected_results;
+  auto it = ignored_markers_.find(sentence.text);
   for (const ui::GrammarFragment& fragment : results) {
-    corrected_results.emplace_back(
-        gfx::Range(fragment.range.start() + sentence.original_range.start(),
-                   fragment.range.end() + sentence.original_range.start()),
-        fragment.suggestion);
+    if (it == ignored_markers_.end() ||
+        it->second.find(RangeHash(fragment.range)) == it->second.end()) {
+      corrected_results.emplace_back(
+          gfx::Range(fragment.range.start() + sentence.original_range.start(),
+                     fragment.range.end() + sentence.original_range.start()),
+          fragment.suggestion);
+    }
   }
 
   ui::IMEInputContextHandlerInterface* input_context =
@@ -292,6 +302,14 @@ void GrammarManager::IgnoreSuggestion() {
     return;
 
   input_context->ClearGrammarFragments(current_fragment_.range);
+  if (ignored_markers_.find(current_sentence_.text) == ignored_markers_.end()) {
+    ignored_markers_[current_sentence_.text] = std::unordered_set<int>();
+  }
+  ignored_markers_[current_sentence_.text].insert(
+      RangeHash(gfx::Range(current_fragment_.range.start() -
+                               current_sentence_.original_range.start(),
+                           current_fragment_.range.end() -
+                               current_sentence_.original_range.start())));
 
   RecordGrammarAction(GrammarActions::kIgnored);
 }

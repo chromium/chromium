@@ -416,7 +416,11 @@ TEST_F(GrammarManagerTest, IgnoresGrammarSuggestion) {
       mock_ime_input_context_handler_.delete_surrounding_text_call_count(), 0);
   EXPECT_EQ(mock_ime_input_context_handler_.commit_text_call_count(), 0);
   histogram_tester.ExpectBucketCount("InputMethod.Assistive.Grammar.Actions",
-                                     3 /*GrammarAction::kIngored*/, 1);
+                                     3 /*GrammarAction::kIgnored*/, 1);
+
+  manager.OnSurroundingTextChanged(u"There is error. There is error.", 20, 20);
+  task_environment_.FastForwardBy(base::TimeDelta::FromMilliseconds(2500));
+  EXPECT_EQ(mock_ime_input_context_handler_.get_grammar_fragments().size(), 0);
 }
 
 }  // namespace

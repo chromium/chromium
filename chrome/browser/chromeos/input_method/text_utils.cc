@@ -141,7 +141,7 @@ Sentence FindLastSentence(const std::u16string& text, int pos) {
   } else {
     start = start + kGapBetweenSentenceEndAndNextStart;
   }
-  if (start >= end) {
+  if (start >= end || end - start > kMaxSearchRange) {
     return Sentence();
   }
   return Sentence(gfx::Range(start, end + 1),
@@ -161,7 +161,7 @@ Sentence FindCurrentSentence(const std::u16string& text, int pos) {
     end = text.length() - 1;
   }
 
-  if (start >= end)
+  if (start >= end || end - start > kMaxSearchRange)
     return Sentence();
 
   return Sentence(gfx::Range(start, end + 1),

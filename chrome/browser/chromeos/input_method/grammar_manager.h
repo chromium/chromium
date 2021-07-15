@@ -6,6 +6,8 @@
 #define CHROME_BROWSER_CHROMEOS_INPUT_METHOD_GRAMMAR_MANAGER_H_
 
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/input_method/grammar_service_client.h"
@@ -82,15 +84,17 @@ class GrammarManager {
   SuggestionHandlerInterface* suggestion_handler_;
   int context_id_ = 0;
   bool new_to_context_ = true;
-  std::u16string last_text_;
+  std::u16string current_text_;
   base::OneShotTimer delay_timer_;
   ui::GrammarFragment current_fragment_;
   const ui::ime::AssistiveWindowButton suggestion_button_;
   const ui::ime::AssistiveWindowButton ignore_button_;
   bool suggestion_shown_ = false;
   ui::ime::ButtonId highlighted_button_ = ui::ime::ButtonId::kNone;
+  text_utils::Sentence current_sentence_;
   text_utils::Sentence last_sentence_;
   int text_input_flags_ = 0;
+  std::unordered_map<std::u16string, std::unordered_set<int>> ignored_markers_;
 };
 
 }  // namespace chromeos
