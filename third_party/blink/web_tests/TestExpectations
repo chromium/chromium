@@ -1870,7 +1870,6 @@ crbug.com/346473 fast/events/drag-on-mouse-move-cancelled.html [ Failure ]
 
 # These tests are skipped as there is no touch support on Mac.
 crbug.com/613672 [ Mac ] fast/events/pointerevents/multi-pointer-event-in-slop-region.html [ Skip ]
-crbug.com/613672 [ Mac ] fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 
 # In addition to having no support on Mac, the following test times out
 # regularly on Windows.
@@ -4872,7 +4871,6 @@ crbug.com/1207342 http/tests/devtools/sources/debugger-pause/debugger-eval-while
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/debugger-mute-exception.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/debugger-change-variable.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/debugger-resume-button-in-overlay.js [ Failure Pass ]
-crbug.com/1207342 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/set-return-value.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/skip-pauses-until-reload.js [ Failure Pass ]
 crbug.com/1207342 http/tests/devtools/sources/debugger-pause/function-name-in-callstack.js [ Failure Pass ]
@@ -7091,7 +7089,6 @@ crbug.com/1201406 [ Mac11.0 ] external/wpt/webrtc-stats/supported-stats.html [ F
 crbug.com/1201406 [ Mac11.0 ] fast/events/touch/gesture/touch-gesture-scroll-listbox.html [ Failure ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/credentialmanager/credentialscontainer-create-from-nested-frame.html [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/credentialmanager/credentialscontainer-create-origins.html [ Crash Timeout ]
-crbug.com/1201406 [ Mac11.0 ] http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/credentialmanager/publickeycredential-same-origin-with-ancestors.html [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/credentialmanager/register-then-sign.html [ Crash Timeout ]
 crbug.com/1201406 [ Mac11.0 ] http/tests/inspector-protocol/webauthn/webauthn-add-virtual-authenticator.js [ Crash Timeout ]
@@ -7358,3 +7355,10 @@ crbug.com/1229439 [ Mac10.14 ] virtual/dark-color-scheme/media/audio-focus-ring.
 crbug.com/1229439 [ Mac10.14 ] media/audio-repaint.html [ Failure Pass ]
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
 crbug.com/1229666 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
+crbug.com/1093027 http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Pass Failure Crash Timeout ]
+crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Pass Timeout ]
+# The next test was originally skipped on mac for lack of support (crbug.com/613672). It is now skipped everywhere due to flakiness.
+crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
+crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Pass Failure ]
+crbug.com/1229722 fast/block/float/4145535Crash.html [ Pass Failure ]
+crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Failure Crash ]
