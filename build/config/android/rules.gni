@@ -2820,9 +2820,6 @@ if (enable_java_templates) {
         if (defined(invoker.proguard_configs)) {
           proguard_configs += invoker.proguard_configs
         }
-        if (_enable_main_dex_list) {
-          proguard_configs += [ "//build/android/multidex.flags" ]
-        }
         if (!enable_java_asserts && (!defined(testonly) || !testonly) &&
             # Injected JaCoCo code causes -checkdiscards to fail.
             !use_jacoco_coverage) {

@@ -19,5 +19,5 @@ import java.lang.annotation.Target;
  * causes classes to appear in the main dex file (for "Legacy multidex").
  */
 @Target(ElementType.TYPE)
-@Retention(RetentionPolicy.CLASS)
+@Retention(RetentionPolicy.RUNTIME)
 public @interface MainDex {}
