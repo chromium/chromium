@@ -350,8 +350,13 @@ IN_PROC_BROWSER_TEST_F(EulaTest, LearnMore) {
           1)));
 }
 
+#if defined(OS_CHROMEOS) && defined(NDEBUG)
+#define MAYBE_AdditionalToS DISABLED_AdditionalToS
+#else
+#define MAYBE_AdditionalToS AdditionalToS
+#endif
 // Tests that "Additional ToS" dialog could be opened and closed.
-IN_PROC_BROWSER_TEST_F(EulaTest, AdditionalToS) {
+IN_PROC_BROWSER_TEST_F(EulaTest, MAYBE_AdditionalToS) {
   base::HistogramTester histogram_tester;
   ShowEulaScreen();
 
@@ -369,8 +374,7 @@ IN_PROC_BROWSER_TEST_F(EulaTest, AdditionalToS) {
       .CreateWaiter(test::GetOobeElementPath(kAdditionalTermsDialog) +
                     ".open === false")
       ->Wait();
-
-  test::OobeJS().CreateFocusWaiter(kAdditionalTermsLink)->Wait();
+  test::OobeJS().ExpectFocused(kAdditionalTermsLink);
 
   EXPECT_THAT(
       histogram_tester.GetAllSamples("OOBE.EulaScreen.UserActions"),
