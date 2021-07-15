@@ -280,9 +280,9 @@ public class StartSurfaceCoordinator implements StartSurface {
 
     @Override
     public void destroy() {
+        onHide();
         if (mTasksSurface != null) {
             mTasksSurface.removeFakeSearchBoxShrinkAnimation();
-            mTasksSurface.onHide();
         }
         if (mOffsetChangedListenerToGenerateScrollEvents != null) {
             removeHeaderOffsetChangeListener(mOffsetChangedListenerToGenerateScrollEvents);
@@ -294,6 +294,10 @@ public class StartSurfaceCoordinator implements StartSurface {
     public void onHide() {
         if (mTasksSurface != null) {
             mTasksSurface.onHide();
+        }
+        if (mFeedPlaceholderCoordinator != null) {
+            mFeedPlaceholderCoordinator.destroy();
+            mFeedPlaceholderCoordinator = null;
         }
     }
 

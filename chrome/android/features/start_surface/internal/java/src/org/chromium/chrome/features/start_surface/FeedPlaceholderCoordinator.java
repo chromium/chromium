@@ -36,6 +36,14 @@ public class FeedPlaceholderCoordinator {
         mParentView.addView(mFeedPlaceholderView);
     }
 
+    public void destroy() {
+        if (mFeedPlaceholderView != null) {
+            assert mParentView != null;
+            mParentView.removeView(mFeedPlaceholderView);
+            mFeedPlaceholderView = null;
+        }
+    }
+
     void onOverviewShownAtLaunch(long activityCreationTimeMs) {
         long layoutInflationCompleteMs = mFeedPlaceholderView.getLayoutInflationCompleteMs();
         assert layoutInflationCompleteMs >= activityCreationTimeMs;
