@@ -43,6 +43,19 @@ void ArcSaveHandler::SaveAppLaunchInfo(AppLaunchInfoPtr app_launch_info) {
       app_launch_info->window_id = session_id;
       FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
           profile_path_, std::move(app_launch_info));
+
+      // Go through `arc_window_candidates_`. If the window for `session_id` has
+      // been created, call OnAppLaunched to save the window info.
+      auto window_it = std::find_if(
+          arc_window_candidates_.begin(), arc_window_candidates_.end(),
+          [session_id](aura::Window* window) {
+            return window->GetProperty(
+                       ::full_restore::kGhostWindowSessionIdKey) == session_id;
+          });
+      if (window_it != arc_window_candidates_.end()) {
+        FullRestoreInfo::GetInstance()->OnAppLaunched(*window_it);
+        arc_window_candidates_.erase(*window_it);
+      }
     }
     return;
   }
@@ -96,8 +109,10 @@ void ArcSaveHandler::OnWindowInitialized(aura::Window* window) {
     ghost_window_session_id_to_app_id_[session_id] = *app_id;
 
     auto it = session_id_to_app_launch_info_.find(session_id);
-    if (it == session_id_to_app_launch_info_.end())
+    if (it == session_id_to_app_launch_info_.end()) {
+      arc_window_candidates_.insert(window);
       return;
+    }
 
     // If there is `app_launch_info`, add it to the restore data using
     // `session_id` as `window_id`.
