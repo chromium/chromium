@@ -40,10 +40,12 @@ import org.chromium.components.metrics.StabilityEventType;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto;
 import org.chromium.components.metrics.SystemProfileProtos.SystemProfileProto.ChromeComponent;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Integration test to verify WebView's metrics implementation. This isn't a great spot to verify
@@ -333,6 +335,30 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
+    public void testMetadata_stability_rendererCrashCount() throws Throwable {
+        TestAwContentsClient.RenderProcessGoneHelper helper =
+                mContentsClient.getRenderProcessGoneHelper();
+        helper.setResponse(true); // Don't automatically kill the browser process.
+
+        // Ensure that the renderer has started.
+        mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(),
+                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+
+        // Crash the renderer and wait for onRenderProcessGone to be called.
+        int callCount = helper.getCallCount();
+        mRule.loadUrlAsync(mAwContents, "chrome://crash");
+        helper.waitForCallback(
+                callCount, 1, CallbackHelper.WAIT_TIMEOUT_SECONDS * 5, TimeUnit.SECONDS);
+
+        Assert.assertEquals("Should have correct stability histogram kRendererCrash count", 1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Stability.Counts2", StabilityEventType.RENDERER_CRASH));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"AndroidWebView"})
     public void testMetadata_stability_browserLaunchCount() throws Throwable {
         // This should be triggered simply by initializing the MetricsService. This should be logged
         // (and persisted) even before we start collecting the first metrics log.
@@ -468,7 +494,7 @@ public class AwMetricsIntegrationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @OnlyRunIn(MULTI_PROCESS) // This test is specific to the OOP-renderer
+    @OnlyRunIn(MULTI_PROCESS) // This functionality is specific to the OOP-renderer
     public void testRendererHistograms() throws Throwable {
         EmbeddedTestServer embeddedTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());

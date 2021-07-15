@@ -9,6 +9,7 @@ import android.graphics.Picture;
 import android.net.http.SslError;
 
 import org.chromium.android_webview.AwConsoleMessage;
+import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -55,6 +56,7 @@ public class TestAwContentsClient extends NullContentsClient {
     private final OnCreateWindowHelper mOnCreateWindowHelper;
     private final FaviconHelper mFaviconHelper;
     private final TouchIconHelper mTouchIconHelper;
+    private final RenderProcessGoneHelper mRenderProcessGoneHelper;
 
     public TestAwContentsClient() {
         super(ThreadUtils.getUiThreadLooper());
@@ -79,6 +81,7 @@ public class TestAwContentsClient extends NullContentsClient {
         mOnCreateWindowHelper = new OnCreateWindowHelper();
         mFaviconHelper = new FaviconHelper();
         mTouchIconHelper = new TouchIconHelper();
+        mRenderProcessGoneHelper = new RenderProcessGoneHelper();
         mAllowSslError = true;
     }
 
@@ -152,6 +155,10 @@ public class TestAwContentsClient extends NullContentsClient {
 
     public TouchIconHelper getTouchIconHelper() {
         return mTouchIconHelper;
+    }
+
+    public RenderProcessGoneHelper getRenderProcessGoneHelper() {
+        return mRenderProcessGoneHelper;
     }
 
     /**
@@ -781,5 +788,38 @@ public class TestAwContentsClient extends NullContentsClient {
     public void onReceivedTouchIconUrl(String url, boolean precomposed) {
         if (TRACE) Log.i(TAG, "onReceivedTouchIconUrl " + url);
         mTouchIconHelper.notifyTouchIcon(url, precomposed);
+    }
+
+    /**
+     * CallbackHelper for onRenderProcessGone.
+     */
+    public static class RenderProcessGoneHelper extends CallbackHelper {
+        private AwRenderProcessGoneDetail mDetail;
+        private boolean mResponse;
+
+        public AwRenderProcessGoneDetail getAwRenderProcessGoneDetail() {
+            assert getCallCount() > 0;
+            return mDetail;
+        }
+
+        public void setResponse(boolean response) {
+            mResponse = response;
+        }
+
+        /* package */ boolean getResponse() {
+            return mResponse;
+        }
+
+        public void notifyCalled(AwRenderProcessGoneDetail detail) {
+            mDetail = detail;
+            notifyCalled();
+        }
+    }
+
+    @Override
+    public boolean onRenderProcessGone(AwRenderProcessGoneDetail detail) {
+        if (TRACE) Log.i(TAG, "onRenderProcessGone");
+        mRenderProcessGoneHelper.notifyCalled(detail);
+        return mRenderProcessGoneHelper.getResponse();
     }
 }

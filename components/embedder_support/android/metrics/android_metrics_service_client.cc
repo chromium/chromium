@@ -27,6 +27,8 @@
 #include "components/metrics/android_metrics_provider.h"
 #include "components/metrics/call_stack_profile_metrics_provider.h"
 #include "components/metrics/content/accessibility_metrics_provider.h"
+#include "components/metrics/content/content_stability_metrics_provider.h"
+#include "components/metrics/content/extensions_helper.h"
 #include "components/metrics/content/gpu_metrics_provider.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/cpu_metrics_provider.h"
@@ -337,6 +339,9 @@ void AndroidMetricsServiceClient::RegisterMetricsProvidersAndInitState() {
           GetSampleRatePerMille()));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AccessibilityMetricsProvider>());
+  metrics_service_->RegisterMetricsProvider(
+      std::make_unique<ContentStabilityMetricsProvider>(
+          pref_service(), /*extensions_helper=*/nullptr));
   RegisterAdditionalMetricsProviders(metrics_service_.get());
 
   // The file metrics provider performs IO.

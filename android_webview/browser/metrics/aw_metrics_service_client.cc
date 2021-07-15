@@ -7,7 +7,6 @@
 #include <jni.h>
 #include <cstdint>
 
-#include "android_webview/browser/metrics/aw_stability_metrics_provider.h"
 #include "android_webview/browser_jni_headers/AwMetricsServiceClient_jni.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
@@ -203,9 +202,6 @@ void AwMetricsServiceClient::OnAppStateChanged(
 
 void AwMetricsServiceClient::RegisterAdditionalMetricsProviders(
     metrics::MetricsService* service) {
-  service->RegisterMetricsProvider(
-      std::make_unique<android_webview::AwStabilityMetricsProvider>(
-          pref_service()));
   delegate_->RegisterAdditionalMetricsProviders(service);
 }
 
