@@ -107,6 +107,3 @@
 
 # crbug.com/1180466
 -org.chromium.chrome.browser.autofill_assistant.AutofillAssistantOverlayIntegrationTest.testShowCastOnIFrameElement
-
-# crbug.com/1171637
--org.chromium.chrome.browser.autofill_assistant.AutofillAssistantAccessibilityIntegrationTest.testBottomSheetHasRestrictedFixedHeight
