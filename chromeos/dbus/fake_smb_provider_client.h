@@ -30,73 +30,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSmbProviderClient
   void Init(dbus::Bus* bus) override;
 
   // SmbProviderClient override.
-  void Mount(const base::FilePath& share_path,
-             const MountOptions& options,
-             base::ScopedFD password_fd,
-             MountCallback callback) override;
-
-  void Unmount(int32_t mount_id,
-               bool remove_password,
-               StatusCallback callback) override;
-  void ReadDirectory(int32_t mount_id,
-                     const base::FilePath& directory_path,
-                     ReadDirectoryCallback callback) override;
-  void GetMetadataEntry(int32_t mount_id,
-                        const base::FilePath& entry_path,
-                        GetMetdataEntryCallback callback) override;
-  void OpenFile(int32_t mount_id,
-                const base::FilePath& file_path,
-                bool writeable,
-                OpenFileCallback callback) override;
-  void CloseFile(int32_t mount_id,
-                 int32_t file_id,
-                 StatusCallback callback) override;
-  void ReadFile(int32_t mount_id,
-                int32_t file_id,
-                int64_t offset,
-                int32_t length,
-                ReadFileCallback callback) override;
-
-  void DeleteEntry(int32_t mount_id,
-                   const base::FilePath& entry_path,
-                   bool recursive,
-                   StatusCallback callback) override;
-
-  void CreateFile(int32_t mount_id,
-                  const base::FilePath& file_path,
-                  StatusCallback callback) override;
-
-  void Truncate(int32_t mount_id,
-                const base::FilePath& file_path,
-                int64_t length,
-                StatusCallback callback) override;
-
-  void WriteFile(int32_t mount_id,
-                 int32_t file_id,
-                 int64_t offset,
-                 int32_t length,
-                 base::ScopedFD temp_fd,
-                 StatusCallback callback) override;
-
-  void CreateDirectory(int32_t mount_id,
-                       const base::FilePath& directory_path,
-                       bool recursive,
-                       StatusCallback callback) override;
-
-  void MoveEntry(int32_t mount_id,
-                 const base::FilePath& source_path,
-                 const base::FilePath& target_path,
-                 StatusCallback callback) override;
-
-  void CopyEntry(int32_t mount_id,
-                 const base::FilePath& source_path,
-                 const base::FilePath& target_path,
-                 StatusCallback callback) override;
-
-  void GetDeleteList(int32_t mount_id,
-                     const base::FilePath& entry_path,
-                     GetDeleteListCallback callback) override;
-
   void GetShares(const base::FilePath& server_url,
                  ReadDirectoryCallback callback) override;
 
@@ -106,33 +39,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeSmbProviderClient
   void ParseNetBiosPacket(const std::vector<uint8_t>& packet,
                           uint16_t transaction_id,
                           ParseNetBiosPacketCallback callback) override;
-
-  void StartCopy(int32_t mount_id,
-                 const base::FilePath& source_path,
-                 const base::FilePath& target_path,
-                 StartCopyCallback callback) override;
-
-  void ContinueCopy(int32_t mount_id,
-                    int32_t copy_token,
-                    StatusCallback callback) override;
-
-  void StartReadDirectory(int32_t mount_id,
-                          const base::FilePath& directory_path,
-                          StartReadDirectoryCallback callback) override;
-
-  void ContinueReadDirectory(int32_t mount_id,
-                             int32_t read_dir_token,
-                             ReadDirectoryCallback callback) override;
-
-  void UpdateMountCredentials(int32_t mount_id,
-                              std::string workgroup,
-                              std::string username,
-                              base::ScopedFD password_fd,
-                              StatusCallback callback) override;
-
-  void UpdateSharePath(int32_t mount_id,
-                       const std::string& share_path,
-                       StatusCallback callback) override;
 
   // Adds |share| to the list of shares for |server_url| in |shares_|.
   void AddToShares(const std::string& server_url, const std::string& share);

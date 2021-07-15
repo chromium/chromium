@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/smb_client/smb_errors.h"
 #include "chrome/browser/ash/smb_client/smb_persisted_share_registry.h"
 #include "chrome/browser/ash/smb_client/smb_share_finder.h"
-#include "chrome/browser/ash/smb_client/smb_task_queue.h"
 #include "chrome/browser/ash/smb_client/smbfs_share.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/smb_provider_client.h"
