@@ -183,6 +183,14 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
     // Clear the guard to prevent this from crashing.
     tcache->is_in_thread_cache_ = false;
 #endif
+    // There is a PA_DCHECK() in code called from |Purge()| checking that thread
+    // cache memory accounting is correct. Since we are after fork() and the
+    // other threads got interrupted mid-flight, this guarantee does not hold,
+    // and we get inconsistent results.  Rather than giving up on checking this
+    // invariant in regular code, reset it here so that the PA_DCHECK()
+    // passes. See crbug.com/1216964.
+    tcache->cached_memory_ = tcache->CachedMemory();
+
     tcache->Purge();
     tcache = tcache->next_;
   }
