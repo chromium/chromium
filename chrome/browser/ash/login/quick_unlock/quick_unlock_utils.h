@@ -88,6 +88,7 @@ void AddFingerprintResources(content::WebUIDataSource* html_source);
 // source migration is finished.
 namespace ash {
 namespace quick_unlock {
+using ::chromeos::quick_unlock::DisablePinByPolicyForTesting;
 using ::chromeos::quick_unlock::EnabledForTesting;
 using ::chromeos::quick_unlock::IsPinDisabledByPolicy;
 using ::chromeos::quick_unlock::IsPinEnabled;

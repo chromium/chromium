@@ -63,4 +63,12 @@ class AuthToken {
 }  // namespace quick_unlock
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace quick_unlock {
+using ::chromeos::quick_unlock::AuthToken;
+}
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_AUTH_TOKEN_H_
