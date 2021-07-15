@@ -1,12 +1,4 @@
 {
-  "facets": {
-    "fuchsia.test": {
-      "system-services": [
-        "fuchsia.sys.Environment",
-        "fuchsia.sys.Loader"
-      ]
-    }
-  },
   "sandbox": {
     "services": [
       "fuchsia.sys.Environment",
