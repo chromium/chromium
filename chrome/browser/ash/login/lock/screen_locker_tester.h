@@ -7,17 +7,22 @@
 
 #include <string>
 
+#include "base/callback.h"
 #include "base/macros.h"
+#include "base/scoped_observation.h"
+#include "components/session_manager/core/session_manager.h"
+#include "components/session_manager/core/session_manager_observer.h"
 
 class AccountId;
 
 namespace ash {
 
 // ScreenLockerTester provides a high-level API to test the lock screen.
-class ScreenLockerTester {
+// Must be created after the SessionManager is initialized.
+class ScreenLockerTester : public session_manager::SessionManagerObserver {
  public:
   ScreenLockerTester();
-  ~ScreenLockerTester();
+  ~ScreenLockerTester() override;
 
   // Synchronously lock the device.
   void Lock();
@@ -46,6 +51,16 @@ class ScreenLockerTester {
                            const std::string& password);
 
  private:
+  // session_manager::SessionManagerObserver:
+  void OnSessionStateChanged() override;
+
+  base::ScopedObservation<session_manager::SessionManager,
+                          session_manager::SessionManagerObserver>
+      session_manager_observation_{this};
+
+  base::OnceClosure on_lock_callback_;
+  base::OnceClosure on_unlock_callback_;
+
   DISALLOW_COPY_AND_ASSIGN(ScreenLockerTester);
 };
 

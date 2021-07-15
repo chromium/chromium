@@ -1356,7 +1356,6 @@ class ExistingUserControllerProfileTest : public LoginManagerTest {
       AccountId::FromUserEmailGaiaId(kManagedUser, kManagedGaiaID)};
   UserPolicyMixin user_policy_mixin_{&mixin_host_, managed_user_.account_id};
   LoginManagerMixin login_manager_mixin_{&mixin_host_};
-  ScreenLockerTester screen_locker_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
@@ -1373,7 +1372,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest,
   EXPECT_EQ(manager, kManager);
 
   // Set the lock screen so that the managed warning can be queried.
-  screen_locker_tester_.Lock();
+  ScreenLockerTester().Lock();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
@@ -1397,7 +1396,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, ManagedUserDomain) {
   EXPECT_EQ(manager, kManagedDomain);
 
   // Set the lock screen so that the managed warning can be queried.
-  screen_locker_tester_.Lock();
+  ScreenLockerTester().Lock();
 
   EXPECT_TRUE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(
       managed_user_.account_id));
@@ -1418,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(ExistingUserControllerProfileTest, NotManagedUserLogin) {
   EXPECT_FALSE(user_manager::known_user::GetAccountManager(
       not_managed_user_.account_id, &manager));
 
-  screen_locker_tester_.Lock();
+  ScreenLockerTester().Lock();
 
   // Verify that no managed warning is shown for an unmanaged user.
   EXPECT_FALSE(ash::LoginScreenTestApi::IsManagedMessageInDialogShown(

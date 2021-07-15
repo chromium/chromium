@@ -10,6 +10,7 @@
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/login/lock/screen_locker.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -18,7 +19,6 @@
 #include "chromeos/login/auth/key.h"
 #include "chromeos/login/auth/stub_authenticator.h"
 #include "chromeos/login/auth/user_context.h"
-#include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/session_manager_types.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -78,17 +78,29 @@ class LoginAttemptObserver : public AuthStatusConsumer {
 
 }  // namespace
 
-ScreenLockerTester::ScreenLockerTester() = default;
+ScreenLockerTester::ScreenLockerTester() {
+  DCHECK(session_manager::SessionManager::Get());
+  session_manager_observation_.Observe(session_manager::SessionManager::Get());
+}
 
 ScreenLockerTester::~ScreenLockerTester() = default;
 
+void ScreenLockerTester::OnSessionStateChanged() {
+  if (IsLocked() && !on_lock_callback_.is_null()) {
+    std::move(on_lock_callback_).Run();
+  }
+  if (!IsLocked() && !on_unlock_callback_.is_null()) {
+    std::move(on_unlock_callback_).Run();
+  }
+}
+
 void ScreenLockerTester::Lock() {
-  content::WindowedNotificationObserver lock_state_observer(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::NotificationService::AllSources());
+  base::RunLoop run_loop;
+  on_lock_callback_ = run_loop.QuitClosure();
+
   ScreenLocker::Show();
   if (!IsLocked())
-    lock_state_observer.Wait();
+    run_loop.Run();
   ASSERT_TRUE(IsLocked());
   ASSERT_EQ(session_manager::SessionState::LOCKED,
             session_manager::SessionManager::Get()->session_state());
@@ -96,11 +108,11 @@ void ScreenLockerTester::Lock() {
 }
 
 void ScreenLockerTester::WaitForUnlock() {
-  content::WindowedNotificationObserver lock_state_observer(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::NotificationService::AllSources());
-  if (IsLocked())
-    lock_state_observer.Wait();
+  if (IsLocked()) {
+    base::RunLoop run_loop;
+    on_unlock_callback_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
   ASSERT_TRUE(!IsLocked());
   ASSERT_EQ(session_manager::SessionState::ACTIVE,
             session_manager::SessionManager::Get()->session_state());

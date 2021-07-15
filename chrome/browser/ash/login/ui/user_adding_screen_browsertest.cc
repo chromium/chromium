@@ -278,21 +278,10 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, ScreenVisibilityAfterLock) {
   const auto& users = login_mixin_.users();
   LoginUser(users[0].account_id);
 
-  {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-        content::NotificationService::AllSources());
-    ScreenLocker::Show();
-    observer.Wait();
-  }
-
-  {
-    content::WindowedNotificationObserver observer(
-        chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-        content::NotificationService::AllSources());
-    ScreenLocker::Hide();
-    observer.Wait();
-  }
+  ScreenLockerTester screen_locker_tester;
+  screen_locker_tester.Lock();
+  ScreenLocker::Hide();
+  screen_locker_tester.WaitForUnlock();
 
   UserAddingScreen::Get()->Start();
   EXPECT_EQ(user_adding_started(), 1);

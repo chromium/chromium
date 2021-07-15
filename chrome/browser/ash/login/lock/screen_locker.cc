@@ -713,11 +713,6 @@ ScreenLocker::~ScreenLocker() {
   ClearErrors();
 
   screen_locker_ = nullptr;
-  bool state = false;
-  VLOG(1) << "Emitting SCREEN_LOCK_STATE_CHANGED with state=" << state;
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::Source<ScreenLocker>(this), content::Details<bool>(&state));
 
   VLOG(1) << "Calling session manager's HandleLockScreenDismissed D-Bus method";
   SessionManagerClient::Get()->NotifyLockScreenDismissed();
@@ -734,11 +729,6 @@ void ScreenLocker::ScreenLockReady() {
           << " second(s)";
   UMA_HISTOGRAM_TIMES("ScreenLocker.ScreenLockTime", delta);
 
-  bool state = true;
-  VLOG(1) << "Emitting SCREEN_LOCK_STATE_CHANGED with state=" << state;
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_SCREEN_LOCK_STATE_CHANGED,
-      content::Source<ScreenLocker>(this), content::Details<bool>(&state));
   VLOG(1) << "Calling session manager's HandleLockScreenShown D-Bus method";
   SessionManagerClient::Get()->NotifyLockScreenShown();
 
