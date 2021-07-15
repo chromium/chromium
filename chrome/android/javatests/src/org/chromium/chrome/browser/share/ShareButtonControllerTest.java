@@ -78,7 +78,7 @@ public final class ShareButtonControllerTest {
         int deviceWidth =
                 mActivityTestRule.getActivity().getResources().getConfiguration().screenWidthDp;
 
-        mButtonExpected = deviceWidth > minimumWidthDp;
+        mButtonExpected = deviceWidth >= minimumWidthDp;
     }
 
     @Test
