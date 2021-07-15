@@ -270,7 +270,7 @@ INSTANTIATE_TEST_SUITE_P(
 //                | disabled  | enabled   | default   |
 // ---------------|-----------|-----------|-----------|
 //     | disabled | false     | false     | false     |
-// REF | enabled  | false     | true      | IsAndroid |
+// REF | enabled  | false     | true      | false     |
 //     | default  | false     | true      | false     |
 IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
   LoadPageWithoutTrialToken();
@@ -286,17 +286,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
       }
       break;
     case FeatureEnabledType::kDefault:
-      // Currently blink::features::kPrerender2 is default-enabled only on
-      // Android.
-#ifdef OS_ANDROID
-      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
-        CheckFeatureEnabled(true);
-      } else {
-        CheckFeatureDisabled();
-      }
-#else   // OS_ANDROID
       CheckFeatureDisabled();
-#endif  // OS_ANDROID
       break;
   }
 }
@@ -308,9 +298,9 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithoutTrialToken) {
 //                |    blink::features::kPrerender2   |
 //                | disabled  | enabled   | default   |
 // ---------------|-----------|-----------|-----------|
-//     | disabled | false     | IsAndroid | IsAndroid |
-// REF | enabled  | false     | true      | IsAndroid |
-//     | default  | false     | true      | IsAndroid |
+//     | disabled | false     | IsAndroid | false     |
+// REF | enabled  | false     | true      | false     |
+//     | default  | false     | true      | false     |
 IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
   LoadPageWithTrialToken();
   switch (testing::get<0>(GetParam())) {
@@ -330,16 +320,7 @@ IN_PROC_BROWSER_TEST_P(PrerenderOriginTrialBrowserTest, WithTrialToken) {
       }
       break;
     case FeatureEnabledType::kDefault:
-      // Currently Origin Trial for Prerender2 is available only on Android.
-#ifdef OS_ANDROID
-      if (testing::get<1>(GetParam()) == BlinkFeatureEnabledType::kEnabled) {
-        CheckFeatureEnabled(true);
-      } else {
-        CheckFeatureEnabled(false);
-      }
-#else   // OS_ANDROID
       CheckFeatureDisabled();
-#endif  // OS_ANDROID
       break;
   }
 }
