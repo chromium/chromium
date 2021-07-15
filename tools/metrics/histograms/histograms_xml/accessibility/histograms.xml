@@ -993,6 +993,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Accessibility.LiveCaption.WebsiteBlocked"
     enum="BooleanEnabled" expires_after="2021-12-26">
+  <obsolete>
+    No longer recorded after 2021-07 because the blocklist is no longer active.
+  </obsolete>
   <owner>katie@chromium.org</owner>
   <owner>abigailbklein@google.com</owner>
   <owner>evliu@google.com</owner>

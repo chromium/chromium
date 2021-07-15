@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -15,28 +14,14 @@
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bind_to_current_loop.h"
 #include "media/base/channel_mixer.h"
-#include "media/base/media_switches.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/platform/web_string.h"
-#include "third_party/blink/public/web/web_frame.h"
-#include "third_party/blink/public/web/web_local_frame.h"
-
-// Get the list of blocked URLs defined by the Finch experiment parameter. These
-// websites provide captions by default and thus do not require the live caption
-// feature.
-std::vector<std::string> GetBlockedURLs() {
-  return base::SplitString(base::GetFieldTrialParamValueByFeature(
-                               media::kLiveCaption, "blocked_websites"),
-                           ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-}
 
 ChromeSpeechRecognitionClient::ChromeSpeechRecognitionClient(
     content::RenderFrame* render_frame,
     media::SpeechRecognitionClient::OnReadyCallback callback)
     : content::RenderFrameObserver(render_frame),
-      on_ready_callback_(std::move(callback)),
-      blocked_urls_(GetBlockedURLs()) {
+      on_ready_callback_(std::move(callback)) {
   initialize_callback_ = media::BindToCurrentLoop(base::BindRepeating(
       &ChromeSpeechRecognitionClient::Initialize, weak_factory_.GetWeakPtr()));
 
@@ -76,7 +61,7 @@ void ChromeSpeechRecognitionClient::AddAudio(
 }
 
 bool ChromeSpeechRecognitionClient::IsSpeechRecognitionAvailable() {
-  return !is_website_blocked_ && is_recognizer_bound_;
+  return is_recognizer_bound_;
 }
 
 // The OnReadyCallback is set by the owner of |this| and is executed when speech
@@ -153,15 +138,6 @@ void ChromeSpeechRecognitionClient::Initialize() {
   render_frame()->GetBrowserInterfaceBroker()->GetInterface(
       std::move(speech_recognition_context_receiver));
 
-  if (base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
-    is_website_blocked_ = false;
-  } else {
-    is_website_blocked_ = IsUrlBlocked(
-        render_frame()->GetWebFrame()->GetSecurityOrigin().ToString().Utf8());
-    base::UmaHistogramBoolean("Accessibility.LiveCaption.WebsiteBlocked",
-                              is_website_blocked_);
-  }
-
   // Bind the call to Reset() to the Media thread.
   reset_callback_ = media::BindToCurrentLoop(base::BindRepeating(
       &ChromeSpeechRecognitionClient::Reset, weak_factory_.GetWeakPtr()));
@@ -185,10 +161,6 @@ void ChromeSpeechRecognitionClient::SendAudioToSpeechRecognitionService(
     speech_recognition_recognizer_->SendAudioToSpeechRecognitionService(
         std::move(audio_data));
   }
-}
-
-bool ChromeSpeechRecognitionClient::IsUrlBlocked(const std::string& url) const {
-  return blocked_urls_.find(url) != blocked_urls_.end();
 }
 
 void ChromeSpeechRecognitionClient::OnRecognizerDisconnected() {

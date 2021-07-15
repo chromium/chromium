@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "media/base/audio_buffer.h"
@@ -74,8 +73,6 @@ class ChromeSpeechRecognitionClient
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr audio_data);
 
-  bool IsUrlBlocked(const std::string& url) const;
-
   // Called when the speech recognition context or the speech recognition
   // recognizer is disconnected. Sends an error message to the UI and halts
   // future transcriptions.
@@ -99,9 +96,6 @@ class ChromeSpeechRecognitionClient
       speech_recognition_context_;
   mojo::Remote<media::mojom::SpeechRecognitionRecognizer>
       speech_recognition_recognizer_;
-
-  bool is_website_blocked_ = false;
-  const base::flat_set<std::string> blocked_urls_;
 
   // Whether all mojo pipes are bound to the speech recognition service.
   bool is_recognizer_bound_ = false;
