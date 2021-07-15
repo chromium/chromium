@@ -109,7 +109,7 @@ public abstract class SyncConsentFragmentBase
     protected @SigninAccessPoint int mSigninAccessPoint;
     private ModalDialogManager mModalDialogManager;
     private ConfirmSyncDataStateMachine mConfirmSyncDataStateMachine;
-    private AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
+    private @Nullable AccountPickerDialogCoordinator mAccountPickerDialogCoordinator;
 
     /**
      * Creates an argument bundle for the default {@link SyncConsentFragment} flow.
@@ -488,7 +488,9 @@ public abstract class SyncConsentFragmentBase
             if (addedAccountName == null) return;
 
             // Found the account name, dismiss the dialog if it is shown
-            mAccountPickerDialogCoordinator.dismissDialog();
+            if (mAccountPickerDialogCoordinator != null) {
+                mAccountPickerDialogCoordinator.dismissDialog();
+            }
 
             // Wait for the account cache to be updated and select newly-added account.
             mAccountSelectionPending = true;
