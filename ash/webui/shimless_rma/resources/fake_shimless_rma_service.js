@@ -5,6 +5,7 @@
 import {FakeMethodResolver} from 'chrome://resources/ash/common/fake_method_resolver.js';
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {CalibrationComponent, CalibrationObserverRemote, Component, ComponentRepairState, ComponentType, ErrorObserverRemote, HardwareWriteProtectionStateObserverRemote, PowerCableStateObserverRemote, ProvisioningObserverRemote, ProvisioningStep, RmadErrorCode, RmaState, ShimlessRmaServiceInterface, StateResult} from './shimless_rma_types.js';
 
@@ -138,6 +139,34 @@ export class FakeShimlessRmaService {
    */
   setAbortRmaResult(error) {
     this.methods_.setResult('abortRma', {error: error});
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
+  checkForNetworkConnection() {
+    const resolver = new PromiseResolver();
+    this.stateIndex_++;
+    this.methods_.resolveMethod('checkForNetworkConnection')
+        .then((nextState) => {
+          if (nextState.state === RmaState.kUpdateChrome) {
+            this.stateIndex_++;
+          }
+          resolver.resolve(nextState);
+        });
+    return resolver.promise;
+  }
+
+  /**
+   * Sets the return value of checkForNetworkConnection() which is the
+   * next state (either network selection page or the step afterwards).
+   * @param {!StateResult} nextState
+   */
+  setCheckForNetworkConnection(nextState) {
+    assert(
+        nextState.state === RmaState.kUpdateChrome ||
+        nextState.state === RmaState.kConfigureNetwork);
+    this.methods_.setResult('checkForNetworkConnection', nextState);
   }
 
   /**
@@ -615,6 +644,7 @@ export class FakeShimlessRmaService {
 
     this.methods_.register('abortRma');
 
+    this.methods_.register('checkForNetworkConnection');
     this.methods_.register('getCurrentChromeVersion');
     this.methods_.register('checkForChromeUpdates');
     this.methods_.register('updateChrome');

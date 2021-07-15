@@ -71,6 +71,12 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
+void ShimlessRmaService::CheckForNetworkConnection(
+    CheckForNetworkConnectionCallback callback) {
+  // TODO(joonbug): actually check for network
+  GetNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::GetCurrentChromeVersion(
     GetCurrentChromeVersionCallback callback) {
   // TODO(gavindodd): Get actual Chrome version.

@@ -257,6 +257,9 @@ interface ShimlessRmaService {
   // Attempts to abort the RMA.
   AbortRma() => (RmadErrorCode error);
 
+  // Checks for network connection and returns appropriate RMA state.
+  CheckForNetworkConnection() => (RmaState state, RmadErrorCode error);
+
   ///////////////////////////////////////
   // Methods for kUpdateChrome state.
   //

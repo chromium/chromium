@@ -27,6 +27,7 @@ function setupFakeShimlessRmaService_() {
   service.setCheckForChromeUpdatesResult(false);
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
+  service.setCheckForNetworkConnection(fakeStates[2]);
   service.automaticallyTriggerDisableWriteProtectionObservation();
   service.automaticallyTriggerProvisioningObservation();
 

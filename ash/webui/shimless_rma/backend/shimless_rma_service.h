@@ -33,6 +33,8 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
   void AbortRma(AbortRmaCallback callback) override;
 
+  void CheckForNetworkConnection(
+      CheckForNetworkConnectionCallback callback) override;
   void GetCurrentChromeVersion(
       GetCurrentChromeVersionCallback callback) override;
   void CheckForChromeUpdates(CheckForChromeUpdatesCallback callback) override;

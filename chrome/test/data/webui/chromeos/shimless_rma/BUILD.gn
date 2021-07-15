@@ -82,7 +82,6 @@ js_library("onboarding_enter_rsu_wp_disable_code_page_test") {
 
 js_library("onboarding_landing_page_test") {
   deps = [
-    "..:fake_network_config_mojom.m",
     "../..:chai_assert",
     "//ash/webui/shimless_rma/resources:mojo_interface_provider",
     "//ash/webui/shimless_rma/resources:onboarding_landing_page",
