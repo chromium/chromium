@@ -130,6 +130,7 @@
 #include "ui/resources/grit/webui_generated_resources.h"
 
 #if defined(OS_WIN)
+#include <combaseapi.h>
 #include <uiautomation.h>
 #include <wrl/client.h>
 #include "base/win/scoped_safearray.h"
