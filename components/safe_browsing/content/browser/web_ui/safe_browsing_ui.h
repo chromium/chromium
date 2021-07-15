@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
@@ -155,6 +156,10 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
   // Get the current referrer chain for a given URL.
   void GetReferrerChain(const base::ListValue* args);
+
+  // Get the referring app info that launches Chrome on Android. Always set to
+  // null if it's called from platforms other than Android.
+  void GetReferringAppInfo(const base::ListValue* args);
 
   // Get the list of log messages that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
@@ -502,6 +507,11 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   ReferrerChainProvider* GetReferrerChainProvider(
       content::BrowserContext* browser_context);
+
+#if defined(OS_ANDROID)
+  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+      content::WebContents* web_contents);
+#endif
 
   void set_safe_browsing_service(SafeBrowsingServiceInterface* sb_service) {
     sb_service_ = sb_service;

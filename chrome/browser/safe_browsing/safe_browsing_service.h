@@ -19,6 +19,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/sequenced_task_runner_helpers.h"
+#include "build/build_config.h"
 #include "chrome/browser/net/proxy_config_monitor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
@@ -146,6 +147,11 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
 
   ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) override;
+
+#if defined(OS_ANDROID)
+  LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
+      content::WebContents* web_contents) override;
+#endif
 
   // Called on UI thread.
   PingManager* ping_manager() const;

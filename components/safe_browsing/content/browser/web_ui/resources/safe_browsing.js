@@ -161,6 +161,10 @@ function initialize() {
     addDeepScan(result);
   });
 
+  sendWithPromise('getReferringAppInfo', []).then((info) => {
+    addReferringAppInfo(info);
+  });
+
   $('get-referrer-chain-form').addEventListener('submit', addReferrerChain);
 
   // Allow tabs to be navigated to by fragment. The fragment with be of the
@@ -395,6 +399,11 @@ function addReferrerChain(ev) {
         $('referrer-chain-content').innerHTML = trustedTypes.emptyHTML;
         $('referrer-chain-content').textContent = response;
       });
+}
+
+function addReferringAppInfo(info) {
+  $('referring-app-info').innerHTML = trustedTypes.emptyHTML;
+  $('referring-app-info').textContent = info;
 }
 
 function showTab(tabId) {

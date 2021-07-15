@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/grit/components_resources.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/password_manager/core/browser/hash_password_manager.h"
@@ -366,6 +367,14 @@ ReferrerChainProvider* WebUIInfoSingleton::GetReferrerChainProvider(
   return sb_service_->GetReferrerChainProviderFromBrowserContext(
       browser_context);
 }
+
+#if defined(OS_ANDROID)
+LoginReputationClientRequest::ReferringAppInfo
+WebUIInfoSingleton::GetReferringAppInfo(content::WebContents* web_contents) {
+  return sb_service_ ? sb_service_->GetReferringAppInfo(web_contents)
+                     : LoginReputationClientRequest::ReferringAppInfo();
+}
+#endif
 
 void WebUIInfoSingleton::ClearListenerForTesting() {
   has_test_listener_ = false;
@@ -2244,6 +2253,26 @@ void SafeBrowsingUIHandler::GetReferrerChain(const base::ListValue* args) {
                             base::Value(referrer_chain_serialized));
 }
 
+void SafeBrowsingUIHandler::GetReferringAppInfo(const base::ListValue* args) {
+  base::Value referring_app_value;
+#if defined(OS_ANDROID)
+  LoginReputationClientRequest::ReferringAppInfo info =
+      WebUIInfoSingleton::GetInstance()->GetReferringAppInfo(
+          web_ui()->GetWebContents());
+  referring_app_value = SerializeReferringAppInfo(info);
+#endif
+  std::string referring_app_serialized;
+  JSONStringValueSerializer serializer(&referring_app_serialized);
+  serializer.set_pretty_print(true);
+  serializer.Serialize(referring_app_value);
+
+  AllowJavascript();
+  std::string callback_id;
+  args->GetString(0, &callback_id);
+  ResolveJavascriptCallback(base::Value(callback_id),
+                            base::Value(referring_app_serialized));
+}
+
 void SafeBrowsingUIHandler::GetReportingEvents(const base::ListValue* args) {
   base::ListValue reporting_events;
   for (const auto& reporting_event :
@@ -2480,6 +2509,10 @@ void SafeBrowsingUIHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "getReferrerChain",
       base::BindRepeating(&SafeBrowsingUIHandler::GetReferrerChain,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getReferringAppInfo",
+      base::BindRepeating(&SafeBrowsingUIHandler::GetReferringAppInfo,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "getReportingEvents",

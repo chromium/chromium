@@ -19,6 +19,7 @@ source_set("safe_browsing_service") {
 
   deps = [
     "//base:base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
     "//content/public/browser",
   ]
 }
