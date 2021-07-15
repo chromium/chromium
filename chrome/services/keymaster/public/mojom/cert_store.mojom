@@ -33,10 +33,25 @@ enum SignatureResult {
   kUnsupportedAlgorithm,
 };
 
-// Metadata to uniquely identify a Chaps key.
+// The possible chaps slots relevant for arc-keymaster. Note this does NOT map
+// to the PKCS#11 CK_SLOT_ID, but rather to an abstract representation of the
+// value. The corresponding CK_SLOT_ID must be queried from cryptohome.
+[Extensible]
+enum ChapsSlot {
+  // The key is stored in the user slot.
+  [Default] kUser,
+  // The key is stored in the system slot.
+  kSystem,
+};
+
+// Metadata to uniquely identify a chaps key.
 struct ChapsKeyData {
+  // Maps to the CKA_LABEL of the CKO_PRIVATE_KEY in PKCS#11.
   string label;
+  // Maps to the CKA_ID of the CKO_PRIVATE_KEY in PKCS#11.
   string id;
+  // The slot where this key is stored. Does NOT map to the PKCS#11 CK_SLOT_ID.
+  [MinVersion=1] ChapsSlot slot;
 };
 
 // Union of Chrome OS keys from different sources.

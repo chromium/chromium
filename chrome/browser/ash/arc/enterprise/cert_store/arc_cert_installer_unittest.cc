@@ -50,6 +50,11 @@ constexpr char kFakeName1[] = "fake1";
 constexpr char kFakeName2[] = "fake2";
 constexpr char kFakeName3[] = "fake3";
 
+// Arbitrary label and ID. Note IDs can be any byte blob, not necessarily
+// human readable.
+constexpr char kLabel[] = "some label";
+constexpr char kId[] = "some ID";
+
 class MockRemoteCommandsQueueObserver
     : public StrictMock<policy::RemoteCommandsQueue::Observer> {
  public:
@@ -76,7 +81,8 @@ void AddCert(const std::string& cn, std::vector<CertDescription>* certs) {
   cert = net::x509_util::CreateCERTCertificateFromBytes(
       reinterpret_cast<const uint8_t*>(der_cert.data()), der_cert.size());
   ASSERT_TRUE(cert);
-  certs->push_back(CertDescription(key.release(), cert.release()));
+  certs->emplace_back(key.release(), cert.release(),
+                      keymaster::mojom::ChapsSlot::kUser, kLabel, kId);
 }
 
 }  // namespace

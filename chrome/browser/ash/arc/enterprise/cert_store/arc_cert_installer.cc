@@ -19,14 +19,22 @@
 #include "chrome/browser/net/nss_context.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/net/x509_certificate_model_nss.h"
+#include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_util_nss.h"
 
 namespace arc {
 
 CertDescription::CertDescription(crypto::RSAPrivateKey* placeholder_key,
-                                 CERTCertificate* nss_cert)
-    : placeholder_key(placeholder_key), nss_cert(nss_cert) {}
+                                 CERTCertificate* nss_cert,
+                                 keymaster::mojom::ChapsSlot slot,
+                                 std::string label,
+                                 std::string id)
+    : placeholder_key(placeholder_key),
+      nss_cert(nss_cert),
+      slot(slot),
+      label(label),
+      id(id) {}
 
 CertDescription::CertDescription(CertDescription&& other) = default;
 
