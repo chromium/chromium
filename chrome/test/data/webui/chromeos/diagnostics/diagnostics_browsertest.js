@@ -92,6 +92,7 @@ const debug_suites_list = [
   'FakeSystemDataProvider',
   'FakeSystemRoutineContoller',
   'InputList',
+  'IpConfigInfoDrawer',
   'MemoryCard',
   'NetworkCard',
   'NetworkInfo',

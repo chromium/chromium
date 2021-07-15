@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":fake_system_data_provider",
     ":fake_system_routine_controller",
     ":input_list",
+    ":ip_config_info_drawer",
     ":memory_card",
     ":mojo_interface_provider",
     ":mojo_utils",
@@ -167,6 +168,13 @@ js_library("icons") {
 
 js_library("input_list") {
   deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("ip_config_info_drawer") {
+  deps = [
+    ":diagnostics_types",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
@@ -324,6 +332,7 @@ html_to_js("web_components") {
     "ethernet_info.js",
     "icons.js",
     "input_list.js",
+    "ip_config_info_drawer.js",
     "memory_card.js",
     "network_card.js",
     "network_info.js",
