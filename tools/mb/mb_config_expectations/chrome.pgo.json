@@ -8,7 +8,7 @@
       "is_official_build": true,
       "proprietary_codecs": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "target_cpu": "arm",
       "target_os": "android",
       "use_goma": true
@@ -23,7 +23,7 @@
       "is_official_build": true,
       "proprietary_codecs": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 0,
+      "symbol_level": 1,
       "target_cpu": "arm64",
       "target_os": "android",
       "use_goma": true

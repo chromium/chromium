@@ -2468,11 +2468,11 @@
     ],
 
     'official_goma_android_arm32_pgo': [
-      'official', 'goma', 'android', 'arm', 'no_symbols', 'no_default_afdo', 'pgo_phase_1',
+      'official', 'goma', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_goma_android_arm64_pgo': [
-      'official', 'goma', 'android', 'arm64', 'no_symbols', 'no_default_afdo', 'pgo_phase_1',
+      'official', 'goma', 'android', 'arm64', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_goma_mac': [
