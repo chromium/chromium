@@ -923,6 +923,9 @@ Try tapping the mic to ask me anything.
       <message name="IDS_DIAGNOSTICS_CPU_BANNER_MESSAGE" desc="The text shown while a user is running their CPU test.">
         Running a CPU test may affect your system performance
       </message>
+      <message name="IDS_DIAGNOSTICS_MEMORY_BANNER_MESSAGE" desc="The text shown while a user is running their Memory test.">
+        For more accurate results, close all apps until the test is complete.
+      </message>
       <message name="IDS_DIAGNOSTICS_TROUBLE_CONNECTING" desc="The label for the text link that leads to a help support article to learn more about connecting to Ethernet networks.">
         Having trouble connecting?
       </message>

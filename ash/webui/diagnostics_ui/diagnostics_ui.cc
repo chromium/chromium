@@ -114,6 +114,7 @@ void AddDiagnosticsStrings(content::WebUIDataSource* html_source) {
       {"learnMore", IDS_DIANOSTICS_LEARN_MORE_LABEL},
       {"learnMoreShort", IDS_DIAGNOSTICS_LEARN_MORE_LABEL_SHORT},
       {"memoryAvailable", IDS_DIAGNOSTICS_MEMORY_AVAILABLE_TEXT},
+      {"memoryBannerMessage", IDS_DIAGNOSTICS_MEMORY_BANNER_MESSAGE},
       {"memoryRoutineText", IDS_DIAGNOSTICS_MEMORY_ROUTINE_TEXT},
       {"memoryTitle", IDS_DIAGNOSTICS_MEMORY_TITLE},
       {"noEthernet", IDS_DIAGNOSTICS_NO_ETHERNET},

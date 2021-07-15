@@ -155,10 +155,10 @@ Polymer({
       value: loadTimeData.getBoolean('isLoggedIn'),
     },
 
-    /** @type {boolean} */
-    shouldShowCautionBanner: {
+    /** @type {string} */
+    bannerMessage: {
       type: Boolean,
-      value: false,
+      value: '',
     },
 
     /** @type {boolean} */
@@ -241,8 +241,8 @@ Polymer({
         this.$.collapse.show();
       }
 
-      if (this.shouldShowCautionBanner) {
-        this.showCautionBanner_(loadTimeData.getString('cpuBannerMessage'));
+      if (this.bannerMessage) {
+        this.showCautionBanner_();
       }
 
       this.routineStartTimeMs_ = performance.now();
@@ -307,7 +307,7 @@ Polymer({
       this.executor_ = null;
     }
 
-    if (this.shouldShowCautionBanner) {
+    if (this.bannerMessage) {
       this.dismissCautionBanner_();
     }
 
@@ -495,12 +495,13 @@ Polymer({
 
   /**
    * @private
-   * @param {string} message
    */
-  showCautionBanner_(message) {
-    this.dispatchEvent(new CustomEvent(
-        'show-caution-banner',
-        {bubbles: true, composed: true, detail: {message}}));
+  showCautionBanner_() {
+    this.dispatchEvent(new CustomEvent('show-caution-banner', {
+      bubbles: true,
+      composed: true,
+      detail: {message: this.bannerMessage}
+    }));
   },
 
   /** @private */
