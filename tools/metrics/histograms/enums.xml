@@ -8368,6 +8368,11 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="Anchor element has same host as document host"/>
 </enum>
 
+<enum name="BooleanAnnotated">
+  <int value="0" label="Not Annotated"/>
+  <int value="1" label="Annotated"/>
+</enum>
+
 <enum name="BooleanAttached">
   <int value="0" label="Detached"/>
   <int value="1" label="Attached"/>
