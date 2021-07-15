@@ -289,19 +289,7 @@ TEST_F(SamplingHeapProfilerTest, StartStop) {
   EXPECT_EQ(0, GetRunningSessionsCount());
 }
 
-// TODO(crbug.com/1116543): When this was part of StartStop, the whole test was
-// flaky on Mac. If StartStop continues to flake, the problem is probably in
-// PoissonAllocationSampler::InstallAllocatorHooksOnce, which runs on the first
-// call to SamplingHeapProfiler::Start. Otherwise, try re-enabling this part
-// too to see if it's still flaky; if so, the problem is probably due to
-// `thread` and the main thread both calling RunStartStopLoop and contending
-// over some shared resource.
-#if defined(OS_MAC)
-#define MAYBE_ConcurrentStartStop DISABLED_ConcurrentStartStop
-#else
-#define MAYBE_ConcurrentStartStop ConcurrentStartStop
-#endif
-TEST_F(SamplingHeapProfilerTest, MAYBE_ConcurrentStartStop) {
+TEST_F(SamplingHeapProfilerTest, ConcurrentStartStop) {
   auto* profiler = SamplingHeapProfiler::Get();
   WaitableEvent event;
   StartStopThread thread(&event);
