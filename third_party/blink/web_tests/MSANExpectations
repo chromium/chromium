@@ -190,3 +190,6 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Pass Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Pass Timeout ]
+
+# Sheriff 2021-07-15
+crbug.com/1229588 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tentative.https.html [ Pass Timeout ]
