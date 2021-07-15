@@ -2542,7 +2542,7 @@ ci.dawn_mac_builder(
     name = "Dawn Mac x64 Builder",
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Builder",
-        short_name = "exp",
+        short_name = "x64",
     ),
 )
 
@@ -2587,7 +2587,7 @@ ci.dawn_thin_tester(
     name = "Dawn Mac x64 Experimental Release (AMD)",
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|AMD",
-        short_name = "x64",
+        short_name = "exp",
     ),
     triggered_by = ["Dawn Mac x64 Builder"],
 )
