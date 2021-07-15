@@ -149,7 +149,7 @@ $ adb logcat
 ```sh
 $ out/Default/bin/run_webview_instrumentation_test_apk \ # Any test runner
     --num_retries=0 \ # Tests normally retry-on-failure; disable for easier repo
-    --repeat=1000 \ # Repeat up to 1000 times for a failure
+    --repeat=100 \ # Repeat up to 100 times for a failure
     --break-on-failure \ # Stop repeating once we see the first failure
     -f=AwContentsTest#testClearCacheInQuickSuccession
 ```
