@@ -4,9 +4,11 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_table_view_controller.h"
 
+#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type.h"
@@ -178,9 +180,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   TableViewModel* model = self.tableViewModel;
   NSInteger itemType = [model itemTypeForIndexPath:indexPath];
-  if (itemType == ItemTypeSaveModalFields ||
-      itemType == ItemTypeUpdateModalFields) {
-    [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+  if (base::FeatureList::IsEnabled(
+          autofill::features::
+              kAutofillAddressProfileSavePromptAddressVerificationSupport)) {
+    if (itemType == ItemTypeSaveModalFields ||
+        itemType == ItemTypeUpdateModalFields) {
+      [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+    }
   }
 }
 
