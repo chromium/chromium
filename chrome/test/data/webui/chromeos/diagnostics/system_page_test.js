@@ -128,7 +128,7 @@ export function systemPageTestSuite() {
             document.createElement('system-page'));
     assertTrue(!!page);
     document.body.appendChild(page);
-
+    page.showSessionLogButton = true;
     return flushTasks();
   }
 

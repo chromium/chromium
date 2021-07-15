@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/ash/common/navigation_view_panel.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import './input_list.js';
 import './network_list.js';
 import './strings.m.js';
@@ -11,6 +12,8 @@ import './system_page.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {DiagnosticsBrowserProxy, DiagnosticsBrowserProxyImpl} from './diagnostics_browser_proxy.js';
 
 /**
  * @fileoverview
@@ -24,6 +27,9 @@ Polymer({
   _template: html`{__html_template__}`,
 
   behaviors: [I18nBehavior],
+
+  /** @private {?DiagnosticsBrowserProxy} */
+  browserProxy_: null,
 
   properties: {
     /** @private {boolean} */
@@ -43,6 +49,18 @@ Polymer({
       type: Boolean,
       value: loadTimeData.getBoolean('isInputEnabled'),
     },
+
+    /** @private {string} */
+    toastText_: {
+      type: String,
+      value: '',
+    },
+  },
+
+  /** @override */
+  created() {
+    this.browserProxy_ = DiagnosticsBrowserProxyImpl.getInstance();
+    this.browserProxy_.initialize();
   },
 
   /** @private */
@@ -67,5 +85,18 @@ Polymer({
         this.$$('#navigationPanel').addSelector('Input', 'input-list');
       }
     }
+  },
+
+  /** @protected */
+  onSessionLogClick_() {
+    this.browserProxy_.saveSessionLog()
+        .then(
+            /* @type {boolean} */ (success) => {
+              const result = success ? 'Success' : 'Failure';
+              this.toastText_ =
+                  loadTimeData.getString(`sessionLogToastText${result}`);
+              this.$.toast.show();
+            })
+        .catch(() => {/* File selection cancelled */});
   },
 });

@@ -99,6 +99,12 @@ Polymer({
       type: Boolean,
       value: true,
     },
+
+    /** @type {boolean} */
+    showSessionLogButton: {
+      type: Boolean,
+      value: !loadTimeData.getBoolean('isNetworkingEnabled'),
+    },
   },
 
   /** @override */

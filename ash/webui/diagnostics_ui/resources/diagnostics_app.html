@@ -1,8 +1,22 @@
 <style include="cr-shared-style diagnostics-shared diagnostics-fonts">
+  #toast {
+   bottom: 0;
+   left: 0;
+  }
 </style>
 <div id="diagnosticsAppContainer">
   <navigation-view-panel hidden$="[[!showNavPanel_]]" id="navigationPanel">
+    <div slot="bottom-nav-content" class="session-log-container">
+      <cr-button on-click="onSessionLogClick_" class="session-log-button"
+          hidden="[[!isLoggedIn_]]">
+        <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
+        <span>[[i18n('sessionLog')]]</span>
+      </cr-button>
+    </div>
   </navigation-view-panel>
   <system-page hidden$="[[showNavPanel_]]"></system-page>
+  <cr-toast id="toast" duration="2500">
+    <span>[[toastText_]]</span>
+  </cr-toast>
 </div>
 

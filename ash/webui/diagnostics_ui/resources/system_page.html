@@ -98,13 +98,15 @@
       </memory-card>
     </div>
   </div>
-  <div class="session-log-container">
-    <cr-button on-click="onSessionLogClick_" class="session-log-button"
-        hidden="[[!isLoggedIn_]]">
-      <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
-      <span>[[i18n('sessionLog')]]</span>
-    </cr-button>
-  </div>
+  <template is="dom-if" if="[[showSessionLogButton]]">
+    <div class="session-log-container">
+      <cr-button on-click="onSessionLogClick_" class="session-log-button"
+          hidden="[[!isLoggedIn_]]">
+        <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
+        <span>[[i18n('sessionLog')]]</span>
+      </cr-button>
+    </div>
+  </template>
   <cr-toast id="toast" duration="2500">
     <span>[[toastText_]]</span>
   </cr-toast>
