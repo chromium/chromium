@@ -27,8 +27,9 @@
   }
 </style>
 <clusters-router query="{{query_}}"></clusters-router>
-<cr-toolbar page-name="History Clusters" clear-label="$i18n{clearLabel}"
-    search-prompt="$i18n{searchPrompt}" on-search-changed="onSearchChanged_">
+<cr-toolbar id="toolbar" page-name="History Clusters"
+    clear-label="$i18n{clearLabel}" search-prompt="$i18n{searchPrompt}"
+    on-search-changed="onSearchChanged_">
 </cr-toolbar>
 <div id="container">
   <div id="header" hidden="[[!result_.query]]">
@@ -41,7 +42,7 @@
     </template>
   </div>
 </div>
-<iron-scroll-threshold id="scroll-threshold" scroll-target="container"
+<iron-scroll-threshold id="scrollThreshold" scroll-target="container"
     on-lower-threshold="onScrolledToBottom_">
 </iron-scroll-threshold>
 

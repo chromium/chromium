@@ -8,19 +8,23 @@ import './strings.m.js';
 import './top_visit.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
 import {PageCallbackRouter} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
 import {Cluster, URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
-import {getHostnameFromUrl} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a Cluster.
  */
 
-class ClusterCardElement extends PolymerElement {
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-cluster': HistoryClusterElement,
+  }
+}
+
+class HistoryClusterElement extends PolymerElement {
   static get is() {
     return 'history-cluster';
   }
@@ -31,27 +35,30 @@ class ClusterCardElement extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-
       /**
        * The Cluster displayed by this element.
-       * @type {!Cluster}
        */
       cluster: Object,
     };
   }
 
+  //============================================================================
+  // Properties
+  //============================================================================
+
+  cluster: Cluster = new Cluster();
+  private callbackRouter_: PageCallbackRouter;
+  private onVisitsRemovedListenerId_: number|null = null;
+
+  //============================================================================
+  // Overridden methods
+  //============================================================================
+
   constructor() {
     super();
-    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
-    /** @private {?number} */
-    this.onVisitsRemovedListenerId_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.onVisitsRemovedListenerId_ =
@@ -59,11 +66,10 @@ class ClusterCardElement extends PolymerElement {
             this.onVisitsRemoved_.bind(this));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
-        assert(this.onVisitsRemovedListenerId_));
+        assert(this.onVisitsRemovedListenerId_!));
     this.onVisitsRemovedListenerId_ = null;
   }
 
@@ -72,36 +78,15 @@ class ClusterCardElement extends PolymerElement {
   //============================================================================
 
   /**
-   * @param {!Array} array
-   * @param {number} num
-   * @return {!Array} Shallow copy of the first `num` items of the input array.
-   * @private
-   */
-  arrayItems_(array, num) {
-    return array.slice(0, num);
-  }
-
-  /**
-   * @param {!Url} url
-   * @return {string} The domain name of the URL without the leading 'www.'.
-   * @private
-   */
-  getHostnameFromUrl_(url) {
-    return getHostnameFromUrl(url);
-  }
-
-  /**
    * Called with the original remove params when the last accepted request to
    * browser to remove visits succeeds. Since the same visit may appear in
    * multiple Clusters, all Clusters receive this callback in order to get a
    * chance to remove their matching visits.
-   * @param {!Array<!URLVisit>} removedVisits
-   * @private
    */
-  onVisitsRemoved_(removedVisits) {
+  private onVisitsRemoved_(removedVisits: Array<URLVisit>) {
     // A matching visit is a visit to the removed visit's URL whose timespan
     // falls within that of the removed visit.
-    const matchingVisit = (visit) => {
+    const matchingVisit = (visit: URLVisit) => {
       return removedVisits.findIndex((removedVisit) => {
         return visit.normalizedUrl.url === removedVisit.normalizedUrl.url &&
             visit.lastVisitTime.internalValue <=
@@ -138,4 +123,4 @@ class ClusterCardElement extends PolymerElement {
   }
 }
 
-customElements.define(ClusterCardElement.is, ClusterCardElement);
+customElements.define(HistoryClusterElement.is, HistoryClusterElement);

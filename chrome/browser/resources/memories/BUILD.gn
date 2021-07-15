@@ -16,20 +16,19 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
   in_files = [
-    "app.js",
+    "app.ts",
     "browser_proxy.ts",
     "chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js",
-    "cluster.js",
+    "cluster.ts",
     "components/history_clusters/core/history_clusters.mojom-webui.js",
-    "history_clusters.js",
+    "history_clusters.ts",
     "page_favicon.ts",
-    "router.js",
-    "search_query.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "top_visit.js",
-    "utils.js",
-    "visit_row.js",
+    "router.ts",
+    "search_query.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "top_visit.ts",
+    "visit_row.ts",
   ]
   path_mappings = [
     "/chrome/browser/ui/webui/history_clusters/*|" +
@@ -69,15 +68,15 @@ copy("copy_history_clusters_definitions_mojom") {
 
 html_to_js("web_components_local") {
   js_files = [
-    "app.js",
-    "cluster.js",
+    "app.ts",
+    "cluster.ts",
     "page_favicon.ts",
-    "router.js",
-    "search_query.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "top_visit.js",
-    "visit_row.js",
+    "router.ts",
+    "search_query.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "top_visit.ts",
+    "visit_row.ts",
   ]
 }
 
@@ -91,8 +90,7 @@ preprocess_if_expr("preprocess") {
   out_folder = preprocess_folder
   in_files = [
     "browser_proxy.ts",
-    "history_clusters.js",
-    "utils.js",
+    "history_clusters.ts",
   ]
 }
 
@@ -101,15 +99,15 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = preprocess_folder
   in_files = [
-    "app.js",
-    "cluster.js",
+    "app.ts",
+    "cluster.ts",
     "page_favicon.ts",
-    "router.js",
-    "search_query.js",
-    "shared_style.js",
-    "shared_vars.js",
-    "top_visit.js",
-    "visit_row.js",
+    "router.ts",
+    "search_query.ts",
+    "shared_style.ts",
+    "shared_vars.ts",
+    "top_visit.ts",
+    "visit_row.ts",
   ]
   deps = [ ":web_components" ]
 }

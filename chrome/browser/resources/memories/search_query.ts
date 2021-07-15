@@ -12,6 +12,12 @@ import {SearchQuery} from './components/history_clusters/core/history_clusters.m
  * @fileoverview This file provides a custom element displaying a search query.
  */
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'search-query': SearchQueryElement,
+  }
+}
+
 class SearchQueryElement extends PolymerElement {
   static get is() {
     return 'search-query';
@@ -23,17 +29,18 @@ class SearchQueryElement extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-
       /**
        * The search query to display.
-       * @type {!SearchQuery}
        */
       searchQuery: Object,
     };
   }
+
+  //============================================================================
+  // Properties
+  //============================================================================
+
+  searchQuery: SearchQuery = new SearchQuery();
 }
 
 customElements.define(SearchQueryElement.is, SearchQueryElement);

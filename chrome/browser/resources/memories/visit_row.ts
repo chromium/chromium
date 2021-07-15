@@ -7,12 +7,13 @@ import './shared_style.js';
 import 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 
+import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {Annotation, URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
-import {getHostnameFromUrl} from './utils.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -22,12 +23,24 @@ import {getHostnameFromUrl} from './utils.js';
 
 /**
  * Maps supported annotations to localized string identifiers.
- * @type {Map<number,string>}
  */
-const annotationToStringId = new Map([
+const annotationToStringId: Map<number, string> = new Map([
   [Annotation.kBookmarked, 'bookmarked'],
   [Annotation.kTabGrouped, 'savedInTabGroup'],
 ]);
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'visit-row': VisitRowElement;
+  }
+}
+
+interface VisitRowElement {
+  $: {
+    actionMenu: CrLazyRenderElement<CrActionMenuElement>,
+    actionMenuButton: Element,
+  };
+}
 
 class VisitRowElement extends PolymerElement {
   static get is() {
@@ -40,19 +53,13 @@ class VisitRowElement extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-
       /**
        * The visit to display.
-       * @type {!URLVisit}
        */
       visit: Object,
 
       /**
        * Whether the visit is a top visit.
-       * @type {boolean}
        */
       isTopVisit: {
         type: Boolean,
@@ -60,13 +67,8 @@ class VisitRowElement extends PolymerElement {
         reflectToAttribute: true,
       },
 
-      //========================================================================
-      // Private properties
-      //========================================================================
-
       /**
        * Annotations to show for the visit (e.g., whether page was bookmarked).
-       * @private {!Array<string>}
        */
       annotations_: {
         type: Object,
@@ -75,7 +77,6 @@ class VisitRowElement extends PolymerElement {
 
       /**
        * Whether the visit has related visits, regardless of initial visibility.
-       * @private {boolean}
        */
       hasRelatedVisits_: {
         type: Boolean,
@@ -86,14 +87,19 @@ class VisitRowElement extends PolymerElement {
   }
 
   //============================================================================
+  // Properties
+  //============================================================================
+
+  isTopVisit: boolean = false;
+  visit: URLVisit = new URLVisit();
+  private annotations_: Array<string> = [];
+  private hasRelatedVisits_: boolean = false;
+
+  //============================================================================
   // Event handlers
   //============================================================================
 
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onActionMenuButtonClick_(event) {
+  private onActionMenuButtonClick_(event: MouseEvent) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
@@ -103,11 +109,7 @@ class VisitRowElement extends PolymerElement {
     this.$.actionMenu.get().showAt(this.$.actionMenuButton);
   }
 
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onRemoveAllButtonClick_(event) {
+  private onRemoveAllButtonClick_(event: MouseEvent) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
@@ -123,11 +125,7 @@ class VisitRowElement extends PolymerElement {
     this.$.actionMenu.get().close();
   }
 
-  /**
-   * @param {!MouseEvent} event
-   * @private
-   */
-  onRemoveSelfButtonClick_(event) {
+  private onRemoveSelfButtonClick_(event: MouseEvent) {
     // Only handle main (usually the left) and auxiliary (usually the wheel or
     // the middle) button presses.
     if (event.button > 1) {
@@ -147,31 +145,31 @@ class VisitRowElement extends PolymerElement {
   // Helper methods
   //============================================================================
 
-  /** @private */
-  computeAnnotations_() {
+  private computeAnnotations_(): Array<string> {
     return this.visit.annotations
-        .map(annotation => annotationToStringId.get(annotation))
-        .filter(id => !!id)
-        .map(id => loadTimeData.getString(id));
+        .map((annotation: number) => annotationToStringId.get(annotation))
+        .filter(
+            (id: string|undefined):
+                id is string => {
+                  return !!id;
+                })
+        .map((id: string) => loadTimeData.getString(id));
   }
 
-  /**
-   * @param {!Url} url
-   * @return {string} The domain name of the URL without the leading 'www.'.
-   * @private
-   */
-  getHostnameFromUrl_(url) {
-    return getHostnameFromUrl(url);
-  }
-
-  /** @private */
-  computeHasRelatedVisits_() {
+  private computeHasRelatedVisits_(): boolean {
     return this.visit.relatedVisits
                .filter(visit => {
                  // "Ghost" visits with scores of 0 (or below) are never shown.
                  return visit.score > 0;
                })
                .length > 0;
+  }
+
+  /**
+   * Returns the domain name of `url` without the leading 'www.'.
+   */
+  private getHostnameFromUrl_(url: Url): string {
+    return new URL(url.url).hostname.replace(/^(www\.)/, '');
   }
 }
 

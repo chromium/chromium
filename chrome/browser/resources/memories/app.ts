@@ -9,13 +9,17 @@ import './strings.m.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
@@ -27,8 +31,27 @@ import {URLVisit} from './components/history_clusters/core/history_clusters.mojo
  * landing page.
  */
 
-/** @type {number} */
-const RESULTS_PER_PAGE = 5;
+const RESULTS_PER_PAGE: number = 5;
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'clusters-app': HistoryClustersAppElement,
+  }
+
+  interface Window {
+    // https://github.com/microsoft/TypeScript/issues/40807
+    requestIdleCallback(callback: () => void): void;
+  }
+}
+
+interface HistoryClustersAppElement {
+  $: {
+    confirmationDialog: CrLazyRenderElement<CrDialogElement>,
+    scrollThreshold: IronScrollThresholdElement,
+    toolbar: CrToolbarElement,
+    container: Element,
+  };
+}
 
 class HistoryClustersAppElement extends PolymerElement {
   static get is() {
@@ -41,13 +64,8 @@ class HistoryClustersAppElement extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Private properties
-      //========================================================================
-
       /**
        * The current query for which related Clusters are requested and shown.
-       * @private {string}
        */
       query_: {
         type: String,
@@ -60,13 +78,11 @@ class HistoryClustersAppElement extends PolymerElement {
        * given time threshold and 2) the optional continuation query parameters
        * returned alongside the Clusters to be used in the follow-up request to
        * load older Clusters.
-       * @private {QueryResult}
        */
       result_: Object,
 
       /**
        * The title to show when the query is non-empty.
-       * @private {string}
        */
       title_: {
         type: String,
@@ -76,7 +92,6 @@ class HistoryClustersAppElement extends PolymerElement {
       /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
-       * @private {!Array<!URLVisit>}
        */
       visitsToBeRemoved_: {
         type: Object,
@@ -85,19 +100,29 @@ class HistoryClustersAppElement extends PolymerElement {
     };
   }
 
+  //============================================================================
+  // Properties
+  //============================================================================
+
+  private callbackRouter_: PageCallbackRouter;
+  private onClustersQueryResultListenerId_: number|null = null;
+  private onVisitsRemovedListenerId_: number|null = null;
+  private pageHandler_: PageHandlerRemote;
+  private query_: string = '';
+  private result_: QueryResult = new QueryResult();
+  private title_: string = '';
+  private visitsToBeRemoved_: Array<URLVisit> = [];
+
+  //============================================================================
+  // Overridden methods
+  //============================================================================
+
   constructor() {
     super();
-    /** @private {PageHandlerRemote} */
     this.pageHandler_ = BrowserProxy.getInstance().handler;
-    /** @private {!PageCallbackRouter} */
     this.callbackRouter_ = BrowserProxy.getInstance().callbackRouter;
-    /** @private {?number} */
-    this.onClustersQueryResultListenerId_ = null;
-    /** @private {?number} */
-    this.onVisitsRemovedListenerId_ = null;
   }
 
-  /** @override */
   connectedCallback() {
     super.connectedCallback();
     this.onClustersQueryResultListenerId_ =
@@ -108,14 +133,13 @@ class HistoryClustersAppElement extends PolymerElement {
             this.onVisitsRemoved_.bind(this));
   }
 
-  /** @override */
   disconnectedCallback() {
     super.disconnectedCallback();
     this.callbackRouter_.removeListener(
-        assert(this.onClustersQueryResultListenerId_));
+        assert(this.onClustersQueryResultListenerId_!));
     this.onClustersQueryResultListenerId_ = null;
     this.callbackRouter_.removeListener(
-        assert(this.onVisitsRemovedListenerId_));
+        assert(this.onVisitsRemovedListenerId_!));
     this.onVisitsRemovedListenerId_ = null;
   }
 
@@ -123,36 +147,34 @@ class HistoryClustersAppElement extends PolymerElement {
   // Event handlers
   //============================================================================
 
-  /** @private */
-  onCancelButtonClick_() {
+  private onCancelButtonClick_() {
     this.visitsToBeRemoved_ = [];
     this.$.confirmationDialog.get().close();
   }
 
   /**
-   * @param {CustomEvent<bigint>} event Event received when a cluster should be
-   *     removed or restructures due to all its visits or its top visit having
-   *     been removed. Contains the id of the Cluster in question.
+   * Called with `event` received from a cluster that should be removed or
+   * restructured due to all its visits or its top visit having been removed.
+   * Contains the id of the Cluster in question.
    * @private
    */
-  onClusterChangedOrRemoved_(event) {
+  private onClusterChangedOrRemoved_(event: CustomEvent<bigint>) {
     // Request up to as many of the freshest clusters as currently shown until
     // now.
     this.onBrowserIdle_().then(() => {
       this.queryClusters_({
         query: this.query_.trim(),
+        maxTime: undefined,
         maxCount: this.result_.clusters.length,
       });
     });
   }
 
-  /** @private */
-  onConfirmationDialogCancel_() {
+  private onConfirmationDialogCancel_() {
     this.visitsToBeRemoved_ = [];
   }
 
-  /** @private */
-  onRemoveButtonClick_() {
+  private onRemoveButtonClick_() {
     this.pageHandler_.removeVisits(this.visitsToBeRemoved_)
         .then(({accepted}) => {
           if (!accepted) {
@@ -163,12 +185,10 @@ class HistoryClustersAppElement extends PolymerElement {
   }
 
   /**
-   * @param {CustomEvent<!Array<!URLVisit>>} event Event received from a visit
-   *     requesting to be removed. The array may contain the related visits of
-   *     the said visit, if applicable.
-   * @private
+   * Called with `event` received from a visit requesting to be removed. `event`
+   * may contain the related visits of the said visit, if applicable.
    */
-  onRemoveVisits_(event) {
+  private onRemoveVisits_(event: CustomEvent<Array<URLVisit>>) {
     // Return early if there is a pending remove request.
     if (this.visitsToBeRemoved_.length) {
       return;
@@ -180,23 +200,19 @@ class HistoryClustersAppElement extends PolymerElement {
 
   /**
    * Called when the value of the search field changes.
-   * @param {!CustomEvent<string>} e
-   * @private
    */
-  onSearchChanged_(e) {
+  private onSearchChanged_(event: CustomEvent<string>) {
     // Update the query based on the value of the search field, if necessary.
-    if (e.detail !== this.query_) {
-      this.query_ = e.detail;
+    if (event.detail !== this.query_) {
+      this.query_ = event.detail;
     }
   }
 
   /**
    * Called when the scrollable area has been scrolled nearly to the bottom.
-   * @private
    */
-  onScrolledToBottom_() {
-    /** @type {IronScrollThresholdElement} */ (this.$['scroll-threshold'])
-        .clearTriggers();
+  private onScrolledToBottom_() {
+    this.$.scrollThreshold.clearTriggers();
 
     if (this.result_ && this.result_.continuationMaxTime) {
       this.queryClusters_({
@@ -211,38 +227,28 @@ class HistoryClustersAppElement extends PolymerElement {
   // Helper methods
   //============================================================================
 
-  /** @private */
-  computeTitle_() {
+  private computeTitle_(): string {
     return this.result_ ?
         loadTimeData.getStringF('headerTitle', this.result_.query || '') :
         '';
   }
 
-  /**
-   * @return {!CrToolbarSearchFieldElement}
-   * @private
-   */
-  getSearchField_() {
-    const crToolbarElement = /** @type {CrToolbarElement} */ (
-        this.shadowRoot.querySelector('cr-toolbar'));
-    return crToolbarElement.getSearchField();
+  private getSearchField_(): CrToolbarSearchFieldElement {
+    return this.$.toolbar.getSearchField();
   }
 
   /**
-   * @return {!Promise} A promise that resolves when the browser is idle.
-   * @private
+   * Returns a promise that resolves when the browser is idle.
    */
-  onBrowserIdle_() {
-    return new Promise((resolve) => {
-      window.requestIdleCallback(resolve);
+  private onBrowserIdle_(): Promise<void> {
+    return new Promise(resolve => {
+      window.requestIdleCallback(() => {
+        resolve();
+      });
     });
   }
 
-  /**
-   * @private
-   * @param {!QueryResult} result
-   */
-  onClustersQueryResult_(result) {
+  private onClustersQueryResult_(result: QueryResult) {
     if (result.isContinuation) {
       // Do not replace the existing result. `result` contains a partial set of
       // Clusters that should be appended to the existing ones.
@@ -253,8 +259,7 @@ class HistoryClustersAppElement extends PolymerElement {
     }
   }
 
-  /** @private */
-  onQueryChanged_() {
+  private onQueryChanged_() {
     // Update the value of the search field based on the query, if necessary.
     const searchField = this.getSearchField_();
     if (searchField.getValue() !== this.query_) {
@@ -265,6 +270,7 @@ class HistoryClustersAppElement extends PolymerElement {
       // Request up to `RESULTS_PER_PAGE` of the freshest Clusters until now.
       this.queryClusters_({
         query: this.query_.trim(),
+        maxTime: undefined,
         maxCount: RESULTS_PER_PAGE,
       });
       // Scroll to the top when the results change due to query change.
@@ -274,22 +280,17 @@ class HistoryClustersAppElement extends PolymerElement {
 
   /**
    * Called when the last accepted request to browser to remove visits succeeds.
-   * @private
    */
-  onVisitsRemoved_() {
+  private onVisitsRemoved_() {
     this.visitsToBeRemoved_ = [];
   }
 
-  /**
-   * @param {!QueryParams} queryParams
-   * @private
-   */
-  queryClusters_(queryParams) {
+  private queryClusters_(queryParams: QueryParams) {
     // Invalidate the existing `continuationMaxTime`, if any, in order to
     // prevent sending additional requests while a request is in-flight. A new
     // `continuationMaxTime` will be supplied with the new set of results.
     if (this.result_) {
-      this.result_.continuationMaxTime = null;
+      this.result_.continuationMaxTime = undefined;
     }
     this.pageHandler_.queryClusters(queryParams);
   }

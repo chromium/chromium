@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './search_query.js';
 import './shared_style.js';
 import './visit_row.js';
-import './search_query.js';
-import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import 'chrome://resources/cr_elements/cr_icons_css.m.js';
+import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -19,6 +19,12 @@ import {URLVisit} from './components/history_clusters/core/history_clusters.mojo
  * optional set of related visits which are not visible by default.
  */
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'top-visit': TopVisitElement;
+  }
+}
+
 class TopVisitElement extends PolymerElement {
   static get is() {
     return 'top-visit';
@@ -30,23 +36,13 @@ class TopVisitElement extends PolymerElement {
 
   static get properties() {
     return {
-      //========================================================================
-      // Public properties
-      //========================================================================
-
       /**
        * The top visit to display
-       * @type {!URLVisit}
        */
       visit: Object,
 
-      //========================================================================
-      // Private properties
-      //========================================================================
-
       /**
        * Whether the related visits of the top visit are expanded/visible.
-       * @private {boolean}
        */
       expanded_: {
         type: Boolean,
@@ -56,14 +52,12 @@ class TopVisitElement extends PolymerElement {
 
       /**
        * Related visits that are initially hidden.
-       * @private {!Array<!URLVisit>}
        */
       hiddenRelatedVisits_: {
         type: Object,
         computed: `computeHiddenRelatedVisits_(visit.*)`,
       },
 
-      /** @private {string} */
       toggleButtonLabel_: {
         type: String,
         computed: `computeToggleButtonLabel_(expanded_)`,
@@ -71,7 +65,6 @@ class TopVisitElement extends PolymerElement {
 
       /**
        * Related visits that are always visible.
-       * @private {!Array<!URLVisit>}
        */
       visibleRelatedVisits_: {
         type: Object,
@@ -81,14 +74,20 @@ class TopVisitElement extends PolymerElement {
   }
 
   //============================================================================
+  // Properties
+  //============================================================================
+
+  visit: URLVisit = new URLVisit();
+  private expanded_: boolean = false;
+  private hiddenRelatedVisits_: Array<URLVisit> = [];
+  private toggleButtonLabel_: string = '';
+  private visibleRelatedVisits_: Array<URLVisit> = [];
+
+  //============================================================================
   // Event handlers
   //============================================================================
 
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onToggleButtonKeyDown_(e) {
+  private onToggleButtonKeyDown_(e: KeyboardEvent) {
     if (e.key !== 'Enter' && e.key !== ' ') {
       return;
     }
@@ -99,8 +98,7 @@ class TopVisitElement extends PolymerElement {
     this.onToggleButtonClick_();
   }
 
-  /** @private */
-  onToggleButtonClick_() {
+  private onToggleButtonClick_() {
     this.expanded_ = !this.expanded_;
   }
 
@@ -108,27 +106,24 @@ class TopVisitElement extends PolymerElement {
   // Helper methods
   //============================================================================
 
-  /** @private */
-  computeHiddenRelatedVisits_() {
+  private computeHiddenRelatedVisits_(): Array<URLVisit> {
     return this.visit && this.visit.relatedVisits ?
-        this.visit.relatedVisits.filter(visit => {
-          // "Ghost" visits with scores of 0 (or below) are never to be shown.
+        this.visit.relatedVisits.filter((visit: URLVisit) => {
+          // 'Ghost' visits with scores of 0 (or below) are never to be shown.
           return visit.score > 0 && visit.belowTheFold;
         }) :
         [];
   }
 
-  /** @private */
-  computeToggleButtonLabel_() {
+  private computeToggleButtonLabel_(): string {
     return loadTimeData.getString(
         this.expanded_ ? 'toggleButtonLabelLess' : 'toggleButtonLabelMore');
   }
 
-  /** @private */
-  computeVisibleRelatedVisits_() {
+  private computeVisibleRelatedVisits_(): Array<URLVisit> {
     return this.visit && this.visit.relatedVisits ?
-        this.visit.relatedVisits.filter(visit => {
-          // "Ghost" visits with scores of 0 (or below) are never to be shown.
+        this.visit.relatedVisits.filter((visit: URLVisit) => {
+          // 'Ghost' visits with scores of 0 (or below) are never to be shown.
           return visit.score > 0 && !visit.belowTheFold;
         }) :
         [];
