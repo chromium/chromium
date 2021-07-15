@@ -44,7 +44,6 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </variant>
   <variant name="NearbyShare" summary="Nearby Share">
     <owner>nohle@chromium.org</owner>
-    <owner>vecore@chromium.org</owner>
     <owner>nearby-share-chromeos-eng@google.com</owner>
   </variant>
 </variants>

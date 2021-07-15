@@ -17441,7 +17441,7 @@
     },
     {
       'name': 'PhoneHubAllowed',
-      'owners': ['khorimoto@google.com', 'vecore@chromium.org', 'better-together-dev@google.com'],
+      'owners': ['khorimoto@google.com', 'danlee@google.com', 'better-together-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:89-'],
@@ -17462,7 +17462,7 @@
     },
     {
       'name': 'PhoneHubNotificationsAllowed',
-      'owners': ['khorimoto@google.com', 'vecore@chromium.org', 'better-together-dev@google.com'],
+      'owners': ['khorimoto@google.com', 'danlee@google.com', 'better-together-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:89-'],
@@ -17482,7 +17482,7 @@
     },
     {
       'name': 'PhoneHubTaskContinuationAllowed',
-      'owners': ['khorimoto@google.com', 'vecore@chromium.org', 'better-together-dev@google.com'],
+      'owners': ['khorimoto@google.com', 'danlee@google.com', 'better-together-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:89-'],
@@ -17502,7 +17502,7 @@
     },
     {
       'name': 'NearbyShareAllowed',
-      'owners': ['vecore@google.com', 'hansberry@chromium.org', 'better-together-dev@google.com'],
+      'owners': ['danlee@google.com', 'hansberry@chromium.org', 'better-together-dev@google.com'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome_os:91-'],
