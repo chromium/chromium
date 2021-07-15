@@ -394,32 +394,25 @@ Status ConfigureSession(Session* session,
 
 Status ConfigureHeadlessSession(Session* session,
                                 const Capabilities& capabilities) {
-  if (!session->chrome->GetBrowserInfo()->is_headless) {
-    // session is not headless
-    return Status(kOk);
-  }
-  if (capabilities.prefs) {
+  if (session->chrome->GetBrowserInfo()->is_headless) {
     std::string download_directory;
-    if (capabilities.prefs->GetString("download.default_directory",
-                                      &download_directory)) {
+    if (capabilities.prefs &&
+        (capabilities.prefs->GetString("download.default_directory",
+                                       &download_directory) ||
+         capabilities.prefs->GetStringWithoutPathExpansion(
+             "download.default_directory", &download_directory)))
       session->headless_download_directory =
           std::make_unique<std::string>(download_directory);
-    } else {
-      std::string* download_directory_str =
-          capabilities.prefs->FindStringKey("download.default_directory");
-      if (download_directory_str) {
-        session->headless_download_directory =
-            std::make_unique<std::string>(*download_directory_str);
-      }
-    }
-  } else {
-    session->headless_download_directory = std::make_unique<std::string>(".");
+    else
+      session->headless_download_directory = std::make_unique<std::string>(".");
+    WebView* first_view;
+    session->chrome->GetWebViewById(session->window, &first_view);
+    Status status = first_view->OverrideDownloadDirectoryIfNeeded(
+        *session->headless_download_directory);
+    return status;
   }
-  WebView* first_view;
-  session->chrome->GetWebViewById(session->window, &first_view);
-  Status status = first_view->OverrideDownloadDirectoryIfNeeded(
-      *session->headless_download_directory);
-  return status;
+  // session is not headless
+  return Status(kOk);
 }
 
 }  // namespace internal
