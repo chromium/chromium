@@ -40,6 +40,20 @@ bool IsFormSubmit(NavigationEntry* entry) {
 
 }  // namespace
 
+// static
+void SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
+    mojo::PendingAssociatedReceiver<
+        chrome::mojom::OpenSearchDescriptionDocumentHandler> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = SearchEngineTabHelper::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->osdd_handler_receivers_.Bind(rfh, std::move(receiver));
+}
+
 SearchEngineTabHelper::~SearchEngineTabHelper() = default;
 
 void SearchEngineTabHelper::DidFinishNavigation(
@@ -84,9 +98,7 @@ std::u16string SearchEngineTabHelper::GenerateKeywordFromNavigationEntry(
 
 SearchEngineTabHelper::SearchEngineTabHelper(WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      osdd_handler_receivers_(web_contents,
-                              this,
-                              content::WebContentsFrameReceiverSetPassKey()) {
+      osdd_handler_receivers_(web_contents, this) {
   DCHECK(web_contents);
 
   favicon::CreateContentFaviconDriverForWebContents(web_contents);

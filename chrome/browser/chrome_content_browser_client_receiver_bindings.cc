@@ -21,6 +21,7 @@
 #include "chrome/browser/net_benchmarking.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/content_capture/browser/onscreen_content_provider.h"
 #include "components/data_reduction_proxy/core/browser/data_reduction_proxy_service.h"
@@ -324,6 +325,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
             mojo::PendingAssociatedReceiver<
                 autofill::mojom::PasswordManagerDriver>(std::move(*handle)),
             render_frame_host);
+    return true;
+  }
+  if (interface_name ==
+      chrome::mojom::OpenSearchDescriptionDocumentHandler::Name_) {
+    SearchEngineTabHelper::BindOpenSearchDescriptionDocumentHandler(
+        mojo::PendingAssociatedReceiver<
+            chrome::mojom::OpenSearchDescriptionDocumentHandler>(
+            std::move(*handle)),
+        render_frame_host);
     return true;
   }
   if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {

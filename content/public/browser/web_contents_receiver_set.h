@@ -23,7 +23,6 @@ class EmbeddedSearchClientFactoryImpl;
 class LiteVideoObserver;
 class OfflinePageTabHelper;
 class PluginObserver;
-class SearchEngineTabHelper;
 class SupervisedUserNavigationObserver;
 class SyncEncryptionKeysTabHelper;
 
@@ -127,7 +126,6 @@ class WebContentsFrameReceiverSetPassKey {
   friend class ::EmbeddedSearchClientFactoryImpl;
   friend class ::LiteVideoObserver;
   friend class ::PluginObserver;
-  friend class ::SearchEngineTabHelper;
   friend class ::SupervisedUserNavigationObserver;
   friend class ::SyncEncryptionKeysTabHelper;
   friend class ::android_webview::AwRenderViewHostExt;
