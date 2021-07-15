@@ -11,10 +11,17 @@ package org.chromium.chrome.browser.xsurface;
 public interface ReliabilityLoggingTestUtil {
     /**
      * Return the most recent "flows" (at most 30), or lists of logged events
-     * representing a user interaction, rendered as a string.
+     * representing a user interaction, with each flow rendered as a string.
      */
     default String getRecentFlowsForTesting() {
         return "";
+    }
+
+    /**
+     * Return the number of recent flows that would be rendered by getRecentFlowsForTesting().
+     */
+    default int getRecentFlowsCountForTesting() {
+        return 0;
     }
 
     /** Clear the list of recent flows. */
