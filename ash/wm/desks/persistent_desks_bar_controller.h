@@ -57,7 +57,7 @@ class ASH_EXPORT PersistentDesksBarController
   void OnSessionStateChanged(session_manager::SessionState state) override;
 
   // OverviewObserver:
-  void OnOverviewModeStartingAnimationComplete(bool canceled) override;
+  void OnOverviewModeWillStart() override;
   void OnOverviewModeEndingAnimationComplete(bool canceled) override;
 
   // DesksController::Observer:

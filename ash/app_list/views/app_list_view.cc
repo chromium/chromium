@@ -31,6 +31,8 @@
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "ash/shell.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
@@ -1752,6 +1754,16 @@ void AppListView::SetState(AppListViewState new_state) {
   // `SetState()`.
   if (!set_state_request)
     return;
+
+  // Bail out if `WorkAreaInsets::SetPersistentDeskBarHeight(int height)` causes
+  // another call to `SetState()`. Note, the persistent desks bar is created in
+  // the primary display for now.
+  if (Shell::HasInstance() &&
+      WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+          ->PersistentDeskBarHeightInChange() &&
+      app_list_state_ == new_state_override) {
+    return;
+  }
 
   MaybeCreateAccessibilityEvent(new_state_override);
 

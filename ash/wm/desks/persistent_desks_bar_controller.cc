@@ -14,6 +14,7 @@
 #include "ash/wm/desks/persistent_desks_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/metrics/histogram_macros.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
@@ -85,10 +86,8 @@ void PersistentDesksBarController::OnSessionStateChanged(
     DestroyBarWidget();
 }
 
-void PersistentDesksBarController::OnOverviewModeStartingAnimationComplete(
-    bool canceled) {
-  if (!canceled)
-    DestroyBarWidget();
+void PersistentDesksBarController::OnOverviewModeWillStart() {
+  DestroyBarWidget();
 }
 
 void PersistentDesksBarController::OnOverviewModeEndingAnimationComplete(
@@ -228,11 +227,21 @@ void PersistentDesksBarController::MaybeInitBarWidget() {
   }
   persistent_desks_bar_view_->RefreshDeskButtons();
   persistent_desks_bar_widget_->Show();
+
+  // Update work area on the persistent desks bar's state. Note, the bar is only
+  // created in the primary display.
+  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+      ->SetPersistentDeskBarHeight(kBarHeight);
 }
 
 void PersistentDesksBarController::DestroyBarWidget() {
   persistent_desks_bar_widget_.reset();
   persistent_desks_bar_view_ = nullptr;
+
+  // Update work area on the persistent desks bar's state. Note, the bar is only
+  // created in the primary display.
+  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+      ->SetPersistentDeskBarHeight(0);
 }
 
 }  // namespace ash
