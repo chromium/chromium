@@ -13,6 +13,7 @@
 #include "android_webview/common/metrics/app_package_name_logging_rule.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -67,6 +68,7 @@ AwMetricsServiceClient* AwMetricsServiceClient::GetInstance() {
   return g_aw_metrics_service_client;
 }
 
+// static
 void AwMetricsServiceClient::SetInstance(
     std::unique_ptr<AwMetricsServiceClient> aw_metrics_service_client) {
   DCHECK(!g_aw_metrics_service_client);
@@ -247,6 +249,18 @@ void JNI_AwMetricsServiceClient_SetOnFinalMetricsCollectedListenerForTesting(
       ->SetOnFinalMetricsCollectedListenerForTesting(base::BindRepeating(
           base::android::RunRunnableAndroid,
           base::android::ScopedJavaGlobalRef<jobject>(listener)));
+}
+
+// static
+void JNI_AwMetricsServiceClient_SetAppPackageNameLoggingRuleForTesting(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jstring>& version,
+    jlong expiry_date_ms) {
+  AwMetricsServiceClient::GetInstance()->SetAppPackageNameLoggingRule(
+      AppPackageNameLoggingRule(
+          base::Version(base::android::ConvertJavaStringToUTF8(env, version)),
+          base::Time::UnixEpoch() +
+              base::TimeDelta::FromMilliseconds(expiry_date_ms)));
 }
 
 }  // namespace android_webview
