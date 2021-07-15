@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/test/ash_test_base.h"
 #include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,13 +64,13 @@ class MockDelegate : public MessageCenterUiDelegate {
 
 }  // namespace
 
-class MessageCenterUiControllerTest : public testing::Test {
+class MessageCenterUiControllerTest : public AshTestBase {
  public:
   MessageCenterUiControllerTest() {}
   ~MessageCenterUiControllerTest() override {}
 
   void SetUp() override {
-    message_center::MessageCenter::Initialize();
+    AshTestBase::SetUp();
     delegate_ = std::make_unique<MockDelegate>();
     message_center_ = message_center::MessageCenter::Get();
     ui_controller_ =
@@ -80,7 +81,7 @@ class MessageCenterUiControllerTest : public testing::Test {
     ui_controller_.reset();
     delegate_.reset();
     message_center_ = nullptr;
-    message_center::MessageCenter::Shutdown();
+    AshTestBase::TearDown();
   }
 
  protected:

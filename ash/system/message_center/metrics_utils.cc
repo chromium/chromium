@@ -391,5 +391,11 @@ void LogNotificationAdded(const std::string& notification_id) {
                                 type.value());
 }
 
+void LogNotificationsShownInFirstMinute(int count) {
+  UMA_HISTOGRAM_COUNTS_1000(
+      "Notifications.Cros.Actions.CountOfNotificationShownInFirstMinutePerUser",
+      count);
+}
+
 }  // namespace metrics_utils
 }  // namespace ash

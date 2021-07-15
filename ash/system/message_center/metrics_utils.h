@@ -105,6 +105,10 @@ void LogClosedByClearAll(const std::string& notification_id);
 // Logs a notification added event.
 void LogNotificationAdded(const std::string& notification_id);
 
+// Logs the count of notifications displayed during the first minute after a
+// user logs in.
+void LogNotificationsShownInFirstMinute(int notifications_count);
+
 }  // namespace metrics_utils
 
 }  // namespace ash

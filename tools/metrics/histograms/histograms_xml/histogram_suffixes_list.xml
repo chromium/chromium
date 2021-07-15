@@ -3798,6 +3798,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram_suffixes>
 
 <histogram_suffixes name="CrosNotificationActions" separator=".">
+  <suffix name="CountOfNotificationShownInFirstMinutePerUser"
+      label="Count of notifications displayed in the first minute since login
+             for a user"/>
   <suffix name="NotificationAdded"
       label="A notification was created (regardless if it was shown or not)"/>
   <suffix name="Popup.ClickedActionButton"
