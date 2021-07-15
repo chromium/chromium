@@ -51,13 +51,13 @@ def main(argv):
       else os.path.relpath(TSCONFIG_BASE_PATH, args.gen_dir)
 
   tsconfig['compilerOptions'] = collections.OrderedDict()
-  tsconfig['compilerOptions']['tsBuildInfoFile'] = 'tsconfig.tsbuildinfo'
   tsconfig['compilerOptions']['rootDir'] = root_dir
   tsconfig['compilerOptions']['outDir'] = out_dir
 
   if args.composite:
     tsconfig['compilerOptions']['composite'] = True
     tsconfig['compilerOptions']['declaration'] = True
+    tsconfig['compilerOptions']['tsBuildInfoFile'] = 'tsconfig.tsbuildinfo'
 
   tsconfig['files'] = []
   if args.in_files is not None:

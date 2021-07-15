@@ -98,13 +98,16 @@ class TsLibraryTest(unittest.TestCase):
         'bar.js',
         'tsconfig.json',
         'tsconfig.manifest',
-        'tsconfig.tsbuildinfo',
     ]
     for f in files:
       self.assertTrue(os.path.exists(os.path.join(gen_dir, f)), f)
 
-    dts_file = 'bar.d.ts'
-    self.assertFalse(os.path.exists(os.path.join(gen_dir, dts_file)), dts_file)
+    non_existing_files = [
+        'bar.d.ts',
+        'tsconfig.tsbuildinfo',
+    ]
+    for f in non_existing_files:
+      self.assertFalse(os.path.exists(os.path.join(gen_dir, f)), f)
 
   # Builds project3, which includes only definition files.
   def _build_project3(self):

@@ -17,10 +17,7 @@ template("ts_library") {
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
-    outputs = [
-      "$target_gen_dir/tsconfig.json",
-      "$target_gen_dir/tsconfig.tsbuildinfo",
-    ]
+    outputs = [ "$target_gen_dir/tsconfig.json" ]
 
     assert(defined(in_files) || defined(invoker.definitions))
 
@@ -37,6 +34,10 @@ template("ts_library") {
     composite = false
     if (defined(invoker.composite)) {
       composite = invoker.composite
+    }
+
+    if (composite) {
+      outputs += [ "$target_gen_dir/tsconfig.tsbuildinfo" ]
     }
 
     if (defined(in_files)) {
