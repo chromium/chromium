@@ -270,6 +270,19 @@ void HistoryService::AddContextAnnotationsForVisit(
                      history_backend_, visit_id, visit_context_annotations));
 }
 
+base::CancelableTaskTracker::TaskId HistoryService::GetAnnotatedVisits(
+    const QueryOptions& options,
+    GetAnnotatedVisitsCallback callback,
+    base::CancelableTaskTracker* tracker) const {
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return tracker->PostTaskAndReplyWithResult(
+      backend_task_runner_.get(), FROM_HERE,
+      base::BindOnce(&HistoryBackend::GetAnnotatedVisits, history_backend_,
+                     options),
+      std::move(callback));
+}
+
 base::CancelableTaskTracker::TaskId
 HistoryService::GetRecentClusterIdsAndAnnotatedVisits(
     base::Time minimum_time,

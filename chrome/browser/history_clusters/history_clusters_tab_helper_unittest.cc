@@ -47,12 +47,6 @@ class OnDestroyWebContentsObserver : content::WebContentsObserver {
   base::OnceCallback<void()> callback_;
 };
 
-// Returns a Time that's `seconds` seconds after Windows epoch.
-base::Time IntToTime(int seconds) {
-  return base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromSeconds(seconds));
-}
-
 class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   HistoryClustersTabHelperTest() = default;
@@ -92,13 +86,12 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
     return history_clusters_service_test_api_->GetVisits();
   }
 
-  void AddToHistory(const GURL& url,
-                    std::u16string title = u"Title",
-                    base::Time time = IntToTime(0)) {
+  void AddToHistory(const GURL& url, int time_seconds) {
     history::HistoryAddPageArgs add_page_args;
     add_page_args.url = url;
-    add_page_args.title = title;
-    add_page_args.time = time;
+    add_page_args.title = u"Fake Title";
+    add_page_args.time = base::Time::FromDeltaSinceWindowsEpoch(
+        base::TimeDelta::FromSeconds(time_seconds));
     history_service_->AddPage(add_page_args);
   }
 
@@ -149,7 +142,7 @@ class HistoryClustersTabHelperTest : public ChromeRenderViewHostTestHarness {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
-  AddToHistory(GURL{"https://google.com"});
+  AddToHistory(GURL{"https://google.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   DeleteContents();
@@ -163,7 +156,7 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith0HistoryVisits) {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 1 visit should be committed w/o `duration_since_last_visit`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   EXPECT_TRUE(GetVisits().empty());
@@ -185,8 +178,8 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWith1HistoryVisits) {
 // 2) `WebContentsDestroyed()` is invoked.
 // Then: 1 visit should be committed.
 TEST_F(HistoryClustersTabHelperTest, NavigationWith2HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"}, u"Title", IntToTime(19));
-  AddToHistory(GURL{"https://github.com"}, u"Title", IntToTime(23));
+  AddToHistory(GURL{"https://github.com"}, 19);
+  AddToHistory(GURL{"https://github.com"}, 23);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   EXPECT_TRUE(GetVisits().empty());
@@ -225,10 +218,10 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith0HistoryVisits) {
 // 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
-  AddToHistory(GURL{"https://github.com"});
-  AddToHistory(GURL{"https://github.com"});
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://google.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, 2);
+  AddToHistory(GURL{"https://google.com"}, 3);
+  AddToHistory(GURL{"https://google.com"}, 4);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   EXPECT_TRUE(GetVisits().empty());
@@ -240,8 +233,8 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
 }
 
 // For the remaining tests, all navigations will have at least 1 history visit.
@@ -253,7 +246,7 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigationsWith2HistoryVisits) {
 //    resolved.
 // Then: 0 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   DeleteContents();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
@@ -268,8 +261,8 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfterDestroy) {
 // 3) `WebContentsDestroyed()` is invoked.
 // Then: 2 visits should be committed.
 TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, 2);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://google.com"});
   helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://github.com"});
 
@@ -282,10 +275,10 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
   AddBookmark(GURL{"https://github.com"});
   auto visits = GetVisits();
   ASSERT_EQ(visits.size(), 2u);
-  EXPECT_EQ(visits[0].url_row.url(), GURL{"https://google.com"});
-  EXPECT_TRUE(visits[0].context_annotations.is_new_bookmark);
-  EXPECT_EQ(visits[1].url_row.url(), GURL{"https://github.com"});
-  EXPECT_FALSE(visits[1].context_annotations.is_new_bookmark);
+  EXPECT_EQ(visits[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_FALSE(visits[0].context_annotations.is_new_bookmark);
+  EXPECT_EQ(visits[1].url_row.url(), GURL{"https://google.com"});
+  EXPECT_TRUE(visits[1].context_annotations.is_new_bookmark);
 }
 
 // History -> copy -> history resolve -> history -> history -> copy -> destroy
@@ -301,9 +294,9 @@ TEST_F(HistoryClustersTabHelperTest, HistoryResolvedAfter2ndNavigation) {
 // Then: 3 visits should be committed; the 1st and 3rd should have
 //       `omnibox_url_copied` true.
 TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
-  AddToHistory(GURL{"https://github.com"});
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://gmail.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
+  AddToHistory(GURL{"https://google.com"}, 2);
+  AddToHistory(GURL{"https://gmail.com"}, 3);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   helper_->OnOmniboxUrlCopied();
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
@@ -312,21 +305,23 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
   helper_->OnUpdatedHistoryForNavigation(1, GURL{"https://google.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   ASSERT_EQ(GetVisits().size(), 1u);
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
   EXPECT_TRUE(GetVisits()[0].context_annotations.omnibox_url_copied);
 
   helper_->OnUpdatedHistoryForNavigation(2, GURL{"https://gmail.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->OnOmniboxUrlCopied();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_FALSE(GetVisits()[1].context_annotations.omnibox_url_copied);
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
+  EXPECT_FALSE(GetVisits()[0].context_annotations.omnibox_url_copied);
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 3u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://gmail.com"});
   EXPECT_TRUE(GetVisits()[0].context_annotations.omnibox_url_copied);
   EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
   EXPECT_FALSE(GetVisits()[1].context_annotations.omnibox_url_copied);
-  EXPECT_EQ(GetVisits()[2].url_row.url(), GURL{"https://gmail.com"});
+  EXPECT_EQ(GetVisits()[2].url_row.url(), GURL{"https://github.com"});
   EXPECT_TRUE(GetVisits()[2].context_annotations.omnibox_url_copied);
 }
 
@@ -338,7 +333,7 @@ TEST_F(HistoryClustersTabHelperTest, UrlsCopied) {
 // 4) `WebContentsDestroyed()` is invoked.
 // Then: 1 visit should be committed after step 3 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
@@ -360,7 +355,7 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmBeforeDestroy) {
 // 4) `OnUkmNavigationComplete()` is invoked.
 // Then: 1 visit should be committed after step 4 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
@@ -393,7 +388,7 @@ TEST_F(HistoryClustersTabHelperTest, NavigationWithUkmAfterDestroy) {
 // Then: 1 visit should be committed after step 3 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationAfterUkmExpectAndWithUkmBeforeDestroy) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
@@ -417,7 +412,7 @@ TEST_F(HistoryClustersTabHelperTest,
 // Then: 1 visit should be committed after step 4 w/ a `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        NavigationWithUkmBeforeDestroyAndHistoryResolvedAfterDestroy) {
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://github.com"}, 1);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
   AddBookmark(GURL{"https://github.com"});
@@ -454,8 +449,8 @@ TEST_F(HistoryClustersTabHelperTest,
 //       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmBefore2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, 2);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
@@ -474,11 +469,11 @@ TEST_F(HistoryClustersTabHelperTest,
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
 }
 
 // Expect History -> Expect UKM 1 -> history -> UKM 1 -> destroy
@@ -493,8 +488,8 @@ TEST_F(HistoryClustersTabHelperTest,
 //       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest,
        TwoNavigationsWith1stUkmAfter2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, 2);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   helper_->TagNavigationAsExpectingUkmNavigationComplete(0);
@@ -511,11 +506,11 @@ TEST_F(HistoryClustersTabHelperTest,
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
 }
 
 // Expect History -> Expect UKM 2 -> history -> destroy -> UKM 2
@@ -529,8 +524,8 @@ TEST_F(HistoryClustersTabHelperTest,
 // Then: 2 visits should be committed after steps 2 and 5; the 2nd should have a
 //       `page_end_reason`.
 TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
-  AddToHistory(GURL{"https://google.com"});
-  AddToHistory(GURL{"https://github.com"});
+  AddToHistory(GURL{"https://google.com"}, 1);
+  AddToHistory(GURL{"https://github.com"}, 2);
   helper_->OnUpdatedHistoryForNavigation(0, GURL{"https://github.com"});
   history::BlockUntilHistoryProcessesPendingRequests(history_service_);
   EXPECT_TRUE(GetVisits().empty());
@@ -556,11 +551,11 @@ TEST_F(HistoryClustersTabHelperTest, TwoNavigations2ndUkmBefore2ndNavigation) {
 
   DeleteContents();
   ASSERT_EQ(GetVisits().size(), 2u);
-  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://google.com"});
-  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason,
+  EXPECT_EQ(GetVisits()[0].url_row.url(), GURL{"https://github.com"});
+  EXPECT_EQ(GetVisits()[0].context_annotations.page_end_reason, 0);
+  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://google.com"});
+  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason,
             page_load_metrics::PageEndReason::END_OTHER);
-  EXPECT_EQ(GetVisits()[1].url_row.url(), GURL{"https://github.com"});
-  EXPECT_EQ(GetVisits()[1].context_annotations.page_end_reason, 0);
 }
 
 }  // namespace

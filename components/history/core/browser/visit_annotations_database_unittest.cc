@@ -4,6 +4,7 @@
 
 #include "components/history/core/browser/visit_annotations_database.h"
 
+#include "base/cxx17_backports.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
 #include "components/history/core/browser/history_types.h"
@@ -118,25 +119,37 @@ TEST_F(VisitAnnotationsDatabaseTest,
   AddVisitWithTime(IntToTime(30), false);
   AddVisitWithTime(IntToTime(10), false);
 
-  const std::vector<VisitContextAnnotations> visit_contest_annotations_list = {
+  const std::vector<VisitContextAnnotations> visit_context_annotations_list = {
       {true, false, true, true, false, false},
       {false, true, false, false, false, true},
       {false, true, true, false, true, false},
   };
 
-  AddContextAnnotationsForVisit(1, visit_contest_annotations_list[0]);
-  AddContextAnnotationsForVisit(2, visit_contest_annotations_list[1]);
-  AddContextAnnotationsForVisit(3, visit_contest_annotations_list[2]);
+  // Verify `AddContextAnnotationsForVisit()` and `GetAnnotatedVisits()`.
+  AddContextAnnotationsForVisit(1, visit_context_annotations_list[0]);
+  AddContextAnnotationsForVisit(2, visit_context_annotations_list[1]);
+  AddContextAnnotationsForVisit(3, visit_context_annotations_list[2]);
 
-  const std::vector<VisitID> expected_visit_ids = {3, 2, 1};
-  EXPECT_EQ(GetRecentAnnotatedVisitIds(base::Time::Min(), 10),
-            expected_visit_ids);
-  ExpectContextAnnotations(GetAnnotatedVisit(1).context_annotations,
-                           visit_contest_annotations_list[0]);
-  ExpectContextAnnotations(GetAnnotatedVisit(2).context_annotations,
-                           visit_contest_annotations_list[1]);
-  ExpectContextAnnotations(GetAnnotatedVisit(3).context_annotations,
-                           visit_contest_annotations_list[2]);
+  for (size_t i = 0; i < base::size(visit_context_annotations_list); ++i) {
+    SCOPED_TRACE(testing::Message() << "i: " << i);
+    VisitContextAnnotations actual;
+    VisitID visit_id = i + 1;  // VisitIDs are start at 1.
+    EXPECT_TRUE(GetContextAnnotationsForVisit(visit_id, &actual));
+    ExpectContextAnnotations(actual, visit_context_annotations_list[i]);
+  }
+
+  // Verify `DeleteAnnotationsForVisit()`.
+  DeleteAnnotationsForVisit(1);
+  DeleteAnnotationsForVisit(3);
+
+  VisitContextAnnotations actual;
+  EXPECT_FALSE(GetContextAnnotationsForVisit(1, &actual));
+
+  // Visit ID = 2 is in the 1st indexed position.
+  EXPECT_TRUE(GetContextAnnotationsForVisit(2, &actual));
+  ExpectContextAnnotations(actual, visit_context_annotations_list[1]);
+
+  EXPECT_FALSE(GetContextAnnotationsForVisit(3, &actual));
 }
 
 TEST_F(VisitAnnotationsDatabaseTest, UpdateContentAnnotationsForVisit) {

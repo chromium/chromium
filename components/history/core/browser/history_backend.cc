@@ -43,6 +43,7 @@
 #include "components/history/core/browser/history_database.h"
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_db_task.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/page_usage_data.h"
@@ -1407,6 +1408,58 @@ void HistoryBackend::AddContextAnnotationsForVisit(
   ScheduleCommit();
 }
 
+std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
+    const QueryOptions& options) {
+  // Gets `VisitVector` matching `options`, then for each visit, gets the
+  // associated `URLRow`, `VisitContextAnnotations`, and
+  // `VisitContentAnnotations`.
+
+  TRACE_EVENT0("browser", "HistoryBackend::GetAnnotatedVisits");
+  if (!db_)
+    return {};
+
+  // TODO(tommycli): This whole method looks very similar to QueryHistoryBasic,
+  //  and even returns a similar structure. We should investigate combining the
+  //  two, while somehow still avoiding fetching unnecessary fields, such as
+  //  `VisitContextAnnotations`. Probably we need to expand `QueryOptions`.
+  VisitVector visits;
+  // Ignore the return value, as we don't care if we have more visits.
+  db_->GetVisibleVisitsInRange(options, &visits);
+  DCHECK_LE(static_cast<int>(visits.size()), options.EffectiveMaxCount());
+
+  std::vector<AnnotatedVisit> annotated_visits;
+  for (const auto& visit : visits) {
+    // Add a result row for this visit, get the URL info from the DB.
+    URLRow url_row;
+    if (!db_->GetURLRow(visit.url_id, &url_row)) {
+      DVLOG(0) << "Failed to get id " << visit.url_id << " from history.urls.";
+      continue;  // DB out of sync and URL doesn't exist, try to recover.
+    }
+
+    VisitContextAnnotations context_annotations;
+    if (!db_->GetContextAnnotationsForVisit(visit.visit_id,
+                                            &context_annotations)) {
+      // Redirects don't have context annotations. That's not an execeptional
+      // case. We just skip these as normal.
+      continue;
+    }
+
+    VisitContentAnnotations content_annotations;
+
+    // The return value of GetContentAnnotationsForVisit() is not checked for
+    // failures, because the feature flag may be legitimately switched off.
+    // Moreover, some visits may legitimately not have any content annotations.
+    // In those cases, `content_annotations` is left unchanged, and this is
+    // the intended behavior.
+    db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
+
+    annotated_visits.emplace_back(url_row, visit, context_annotations,
+                                  content_annotations);
+  }
+
+  return annotated_visits;
+}
+
 ClusterIdsAndAnnotatedVisitsResult
 HistoryBackend::GetRecentClusterIdsAndAnnotatedVisits(base::Time minimum_time,
                                                       int max_results) {
@@ -1442,11 +1495,17 @@ HistoryBackend::GetRecentClusterIdsAndAnnotatedVisits(base::Time minimum_time,
 
   // Convert the `VisitID`s to `AnnotatedVisitRow`s.
   std::vector<AnnotatedVisitRow> recent_annotated_visit_rows;
-  base::ranges::transform(recent_visit_ids,
-                          std::back_inserter(recent_annotated_visit_rows),
-                          [&](const VisitID& visit_id) {
-                            return db_->GetAnnotatedVisit(visit_id);
-                          });
+  base::ranges::transform(
+      recent_visit_ids, std::back_inserter(recent_annotated_visit_rows),
+      [&](const VisitID& visit_id) {
+        AnnotatedVisitRow row;
+        row.visit_id = visit_id;
+        // Deliberately ignore the return values. It's okay if the annotations
+        // don't exist and the structs are left unchanged.
+        db_->GetContentAnnotationsForVisit(visit_id, &row.content_annotations);
+        db_->GetContextAnnotationsForVisit(visit_id, &row.context_annotations);
+        return row;
+      });
 
   return {recent_cluster_ids,
           AnnotatedVisitsFromRows(recent_annotated_visit_rows)};

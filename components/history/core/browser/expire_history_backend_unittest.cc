@@ -27,6 +27,7 @@
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_constants.h"
 #include "components/history/core/browser/history_database.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/top_sites.h"
 #include "components/history/core/browser/top_sites_impl.h"
 #include "components/history/core/browser/top_sites_observer.h"
@@ -522,22 +523,23 @@ TEST_F(ExpireHistoryTest, DeleteURLAndContextAnnotations) {
   // Add some stub context annotations for the last URL row.
   URLRow last_row;
   ASSERT_TRUE(main_db_->GetURLRow(url_ids[2], &last_row));
+
   VisitVector visits;
   main_db_->GetVisitsForURL(url_ids[2], &visits);
   ASSERT_EQ(1U, visits.size());
-  main_db_->AddContextAnnotationsForVisit(visits[0].visit_id, {});
+  int test_visit_id = visits[0].visit_id;
+  main_db_->AddContextAnnotationsForVisit(test_visit_id, {});
 
   // Verify that the context annotation is there for that visit.
-  auto annotated_visits = main_db_->GetAllContextAnnotationsForTesting();
-  ASSERT_EQ(1U, annotated_visits.size());
-  EXPECT_EQ(visits[0].visit_id, annotated_visits[0].visit_id);
+  VisitContextAnnotations unused;
+  EXPECT_TRUE(main_db_->GetContextAnnotationsForVisit(test_visit_id, &unused));
 
   // Delete the URL and its dependencies.
   expirer_.DeleteURL(last_row.url(), base::Time::Max());
 
   // All the normal data + the favicon should be gone.
   EnsureURLInfoGone(last_row, false);
-  EXPECT_TRUE(main_db_->GetAllContextAnnotationsForTesting().empty());
+  EXPECT_FALSE(main_db_->GetContextAnnotationsForVisit(test_visit_id, &unused));
 }
 
 // DeleteURL should delete the history of starred urls, but the URL should

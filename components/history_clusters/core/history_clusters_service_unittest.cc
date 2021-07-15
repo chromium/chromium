@@ -135,6 +135,14 @@ class HistoryClustersServiceTest : public testing::Test {
         test_clustering_backend_->last_clustered_visits();
     ASSERT_EQ(visits.size(), 2u);
     auto& visit = visits[0];
+    EXPECT_EQ(visit.visit_row.visit_id, 2);
+    EXPECT_EQ(visit.visit_row.visit_time,
+              GetHardcodedTestVisits()[1].visit_row.visit_time);
+    EXPECT_EQ(visit.visit_row.visit_duration, base::TimeDelta::FromSeconds(20));
+    EXPECT_EQ(visit.url_row.url(), "https://github.com/");
+    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
+
+    visit = visits[1];
     EXPECT_EQ(visit.visit_row.visit_id, 1);
     EXPECT_EQ(visit.visit_row.visit_time,
               GetHardcodedTestVisits()[0].visit_row.visit_time);
@@ -143,13 +151,6 @@ class HistoryClustersServiceTest : public testing::Test {
     EXPECT_EQ(visit.url_row.url(), "https://google.com/");
     EXPECT_EQ(visit.context_annotations.page_end_reason, 3);
 
-    visit = visits[1];
-    EXPECT_EQ(visit.visit_row.visit_id, 2);
-    EXPECT_EQ(visit.visit_row.visit_time,
-              GetHardcodedTestVisits()[1].visit_row.visit_time);
-    EXPECT_EQ(visit.visit_row.visit_duration, base::TimeDelta::FromSeconds(20));
-    EXPECT_EQ(visit.url_row.url(), "https://github.com/");
-    EXPECT_EQ(visit.context_annotations.page_end_reason, 5);
     // TODO(tommycli): Add back visit.referring_visit_id() check after updating
     //  the HistoryService test methods to support that field.
   }

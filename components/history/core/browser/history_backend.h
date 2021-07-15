@@ -429,6 +429,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
+  std::vector<AnnotatedVisit> GetAnnotatedVisits(const QueryOptions& options);
+
   ClusterIdsAndAnnotatedVisitsResult GetRecentClusterIdsAndAnnotatedVisits(
       base::Time minimum_time,
       int max_results);

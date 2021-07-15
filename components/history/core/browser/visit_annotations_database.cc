@@ -296,6 +296,33 @@ void VisitAnnotationsDatabase::UpdateContentAnnotationsForVisit(
   }
 }
 
+bool VisitAnnotationsDatabase::GetContextAnnotationsForVisit(
+    VisitID visit_id,
+    VisitContextAnnotations* out_context_annotations) {
+  DCHECK(out_context_annotations);
+
+  sql::Statement statement(GetDB().GetCachedStatement(
+      SQL_FROM_HERE, "SELECT" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
+                     "FROM context_annotations WHERE visit_id=?"));
+  statement.BindInt64(0, visit_id);
+
+  if (!statement.Step())
+    return false;
+
+  VisitID received_visit_id = statement.ColumnInt64(0);
+  DCHECK_EQ(visit_id, received_visit_id);
+
+  // TODO(tommycli): Make sure ConstructContextAnnotationsWithFlags validates
+  //  the column values against potential disk corruption, and add tests.
+  // The `VisitID` in column 0 is intentionally ignored, as it's not part of
+  // `VisitContextAnnotations`.
+  *out_context_annotations = ConstructContextAnnotationsWithFlags(
+      statement.ColumnInt64(1),
+      base::TimeDelta::FromMicroseconds(statement.ColumnInt64(2)),
+      statement.ColumnInt(3));
+  return true;
+}
+
 bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
     VisitID visit_id,
     VisitContentAnnotations* out_content_annotations) {
@@ -311,10 +338,7 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
     return false;
 
   VisitID received_visit_id = statement.ColumnInt64(0);
-  // We got a different visit than we asked for, something is wrong.
   DCHECK_EQ(visit_id, received_visit_id);
-  if (visit_id != received_visit_id)
-    return false;
 
   out_content_annotations->model_annotations.floc_protected_score =
       static_cast<float>(statement.ColumnDouble(1));
@@ -324,27 +348,6 @@ bool VisitAnnotationsDatabase::GetContentAnnotationsForVisit(
       statement.ColumnInt64(3);
   out_content_annotations->annotation_flags = statement.ColumnInt64(4);
   return true;
-}
-
-AnnotatedVisitRow VisitAnnotationsDatabase::GetAnnotatedVisit(
-    VisitID visit_id) {
-  // TODO(manukh): Currently, this only sets the `context_annotations`. It
-  //  should also set the `content_annotations`.
-  DCHECK_GT(visit_id, 0);
-  sql::Statement statement(GetDB().GetCachedStatement(
-      SQL_FROM_HERE, "SELECT" HISTORY_CONTEXT_ANNOTATIONS_ROW_FIELDS
-                     "FROM context_annotations WHERE visit_id=?"));
-  statement.BindInt64(0, visit_id);
-
-  if (!statement.Step()) {
-    DVLOG(0) << "Failed to execute 'context_annotations' select statement:  "
-             << "visit_id = " << visit_id;
-    return {};
-  }
-
-  auto annotated_visit_row = StatementToAnnotatedVisitRow(statement);
-  DCHECK_EQ(annotated_visit_row.visit_id, visit_id);
-  return annotated_visit_row;
 }
 
 std::vector<VisitID> VisitAnnotationsDatabase::GetRecentAnnotatedVisitIds(

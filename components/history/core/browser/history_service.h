@@ -505,6 +505,19 @@ class HistoryService : public KeyedService {
       VisitID visit_id,
       const VisitContextAnnotations& visit_context_annotations);
 
+  // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
+  // `options`. Uses the same deduplication and visibility logic as
+  // `HistoryService::QueryHistory()`. Notably, this method EXCLUDES from the
+  // result any visits that lack context annotations. To make a continuation
+  // call, the last item's visit time can be used as the `end_time` constraint
+  // in the next page's `options`.
+  using GetAnnotatedVisitsCallback =
+      base::OnceCallback<void(std::vector<AnnotatedVisit>)>;
+  base::CancelableTaskTracker::TaskId GetAnnotatedVisits(
+      const QueryOptions& options,
+      GetAnnotatedVisitsCallback callback,
+      base::CancelableTaskTracker* tracker) const;
+
   // Get recent recent `Cluster`s and `AnnotatedVisit`s as a flat list without
   // duplicates. Can include `AnnotatedVisit`s older than `minimum_time` if
   // they're in a `Cluster` that's newer than `minimum_time`. This is used to

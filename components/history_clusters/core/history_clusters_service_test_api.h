@@ -30,12 +30,11 @@ class HistoryClustersServiceTestApi {
     std::vector<history::AnnotatedVisit> annotated_visits;
 
     base::CancelableTaskTracker tracker;
-    history_service_->GetRecentClusterIdsAndAnnotatedVisits(
-        base::Time::Min(),
-        1000,  // Getting 1000 clusters for testing is a reasonable fake value.
+    history_service_->GetAnnotatedVisits(
+        history::QueryOptions(),
         base::BindLambdaForTesting(
-            [&](history::ClusterIdsAndAnnotatedVisitsResult result) {
-              annotated_visits = std::move(result.annotated_visits);
+            [&](std::vector<history::AnnotatedVisit> visits) {
+              annotated_visits = std::move(visits);
             }),
         &tracker);
     history::BlockUntilHistoryProcessesPendingRequests(history_service_);

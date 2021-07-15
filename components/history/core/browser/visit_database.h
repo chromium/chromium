@@ -114,12 +114,12 @@ class VisitDatabase {
   // begin time is inclusive, the end time is exclusive. Either time can be
   // is_null(), in which case the times in that direction are unbounded.
   //
-  // Up to `max_count` visits will be returned. If there are more visits than
-  // that, the most recent `max_count` will be returned. If 0, all visits in the
-  // range will be computed.
+  // Use `options.duplicate_policy` to control the URL deduplication policy -
+  // for instance, if only a single visit should be returned for each URL.
   //
-  // Only one visit for each URL will be returned, and it will be the most
-  // recent one in the time range.
+  // Up to `options.max_count` visits will be returned. If there are more visits
+  // than that, the most recent `options.max_count` will be returned. If 0, all
+  // visits in the range will be computed.
   //
   // Returns true if there are more results available, i.e. if the number of
   // results was restricted by `options.max_count`.

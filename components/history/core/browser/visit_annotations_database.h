@@ -51,17 +51,19 @@ class VisitAnnotationsDatabase {
       VisitID visit_id,
       const VisitContentAnnotations& visit_content_annotations);
 
-  // Query for a VisitContentAnnotations given a `VisitID` and returns it if
-  // present. If it's successful, `out_content_annotations` will be filled with
-  // the expected data and will return true; otherwise,
-  // `out_content_annotations` won't be changed and will return false.
+  // Query for a `VisitContentAnnotations` given `visit_id`. If it's found and
+  // valid, this method returns true, and `out_content_annotations` is filled.
+  // Otherwise, this returns false, and `out_content_annotations` is unchanged.
   bool GetContentAnnotationsForVisit(
       VisitID visit_id,
       VisitContentAnnotations* out_content_annotations);
 
-  // Get the `AnnotatedVisitRow` for `visit_id`. Returns an empty row (i.e.
-  // `visit_id` of 0) on failure.
-  AnnotatedVisitRow GetAnnotatedVisit(VisitID visit_id);
+  // Query for a `VisitContextAnnotations` given `visit_id`. If it's found and
+  // valid, this method returns true, and `out_context_annotations` is filled.
+  // Otherwise, this returns false, and `out_context_annotations` is unchanged.
+  bool GetContextAnnotationsForVisit(
+      VisitID visit_id,
+      VisitContextAnnotations* out_context_annotations);
 
   // Get recent `AnnotatedVisit`s' IDs. Does not return visits without
   // annotations.

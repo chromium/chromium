@@ -41,6 +41,7 @@
 #include "components/history/core/browser/history_database_params.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/in_memory_database.h"
 #include "components/history/core/browser/in_memory_history_backend.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -3145,16 +3146,21 @@ TEST(FormatUrlForRedirectComparisonTest, TestUrlFormatting) {
   EXPECT_EQ(u"www.baz.com/", FormatUrlForRedirectComparison(url3));
 }
 
-TEST_F(HistoryBackendTest, AddContextAnnotationsForVisit) {
+TEST_F(HistoryBackendTest, AnnotatedVisits) {
   auto last_visit_time = base::Time::Now();
   const auto add_url_and_visit = [&](std::string url) {
     // Each visit should have a unique `visit_time` to avoid deduping visits to
     // the same URL. The exact times don't matter, but we use increasing values
     // to making the test cases easy to reason about.
     last_visit_time += base::TimeDelta::FromMilliseconds(1);
-    return backend_->AddPageVisit(GURL(url), last_visit_time, 0,
-                                  ui::PageTransition::PAGE_TRANSITION_FIRST,
-                                  false, SOURCE_BROWSED, false, false);
+    return backend_->AddPageVisit(
+        GURL(url), last_visit_time, /*referring_visit=*/0,
+        // Must set this so that the visit is considered 'visible'.
+        ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
+                                  ui::PAGE_TRANSITION_CHAIN_START |
+                                  ui::PAGE_TRANSITION_CHAIN_END),
+        /*hidden=*/false, SOURCE_BROWSED, /*should_increment_typed_count=*/true,
+        /*floc_allowed=*/false);
   };
 
   const auto delete_url = [&](URLID id) { backend_->db_->DeleteURLRow(id); };
@@ -3164,23 +3170,16 @@ TEST_F(HistoryBackendTest, AddContextAnnotationsForVisit) {
     backend_->db_->DeleteVisit(row);
   };
 
-  // Helper function to get all annotated visits without worrying about params.
-  const auto get_annotated_visit_rows_from_backend = [&]() {
-    const auto visit_ids =
-        backend_->db_->GetRecentAnnotatedVisitIds(base::Time::Min(), 100);
-    std::vector<AnnotatedVisitRow> visit_rows;
-    base::ranges::transform(visit_ids, std::back_inserter(visit_rows),
-                            [&](const auto& visit_id) {
-                              return backend_->db_->GetAnnotatedVisit(visit_id);
-                            });
-    return backend_->AnnotatedVisitsFromRows(visit_rows);
-  };
   // Helper function to get the # of rows in the db before the backend prunes
   // annotated visits without an associated URL. Use this to verify row count.
   const auto get_annotated_visit_row_count_in_db = [&]() {
     return backend_->db_->GetRecentAnnotatedVisitIds(base::Time::Min(), 100)
         .size();
   };
+
+  // For test purposes, keep all the duplicates.
+  history::QueryOptions query_options;
+  query_options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
 
   // Happy path; annotated visits with associated URL & visits.
   ASSERT_EQ(add_url_and_visit("http://1.com/"),
@@ -3192,16 +3191,19 @@ TEST_F(HistoryBackendTest, AddContextAnnotationsForVisit) {
   backend_->AddContextAnnotationsForVisit(1, {true});
   backend_->AddContextAnnotationsForVisit(3, {false});
   backend_->AddContextAnnotationsForVisit(2, {true});
+  EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
   EXPECT_EQ(get_annotated_visit_row_count_in_db(), 3u);
 
   // Annotated visits should have a visit IDs.
   EXPECT_DCHECK_DEATH(backend_->AddContextAnnotationsForVisit(0, {true}));
+  EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
   EXPECT_EQ(get_annotated_visit_row_count_in_db(), 3u);
 
   // Annotated visits without an associated visit should not be added.
   backend_->AddContextAnnotationsForVisit(4, {true});
   EXPECT_EQ(add_url_and_visit("http://3.com/"),
             (std::pair<URLID, VisitID>{3, 4}));
+  EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
   EXPECT_EQ(get_annotated_visit_row_count_in_db(), 3u);
 
   // Annotated visits associated with a removed visit should not be added.
@@ -3209,11 +3211,11 @@ TEST_F(HistoryBackendTest, AddContextAnnotationsForVisit) {
             (std::pair<URLID, VisitID>{4, 5}));
   delete_visit(5);
   backend_->AddContextAnnotationsForVisit(5, {true});
-  EXPECT_EQ(get_annotated_visit_row_count_in_db(), 3u);
+  EXPECT_EQ(backend_->GetAnnotatedVisits(query_options).size(), 3u);
 
   // Verify only the correct annotated visits are retrieved ordered recent
   // visits first.
-  auto annotated_visits = get_annotated_visit_rows_from_backend();
+  auto annotated_visits = backend_->GetAnnotatedVisits(query_options);
   ASSERT_EQ(annotated_visits.size(), 3u);
   EXPECT_EQ(annotated_visits[0].url_row.id(), 1);
   EXPECT_EQ(annotated_visits[0].url_row.url(), "http://1.com/");
@@ -3231,15 +3233,13 @@ TEST_F(HistoryBackendTest, AddContextAnnotationsForVisit) {
   EXPECT_EQ(annotated_visits[2].visit_row.url_id, 1);
   EXPECT_EQ(annotated_visits[2].context_annotations.omnibox_url_copied, true);
 
-  // Annotated visits associated with a removed visit should not be retrievable.
-  // Associated URLs aren't checked.
   delete_url(2);
   delete_visit(3);
-  // The db should only return annotated visits with associated visits, but
-  // doesn't check for associated URLs.
+  // Annotated visits should be unfetchable if their associated URL or visit is
+  // removed. Notably, because of that, the row count in the DB and the fetched
+  // vector from `GetAnnotatedVisits()` differ in size here.
   EXPECT_EQ(get_annotated_visit_row_count_in_db(), 2u);
-  // The backend should check for both associated URL and visit.
-  annotated_visits = get_annotated_visit_rows_from_backend();
+  annotated_visits = backend_->GetAnnotatedVisits(query_options);
   ASSERT_EQ(annotated_visits.size(), 1u);
   EXPECT_EQ(annotated_visits[0].url_row.id(), 1);
   EXPECT_EQ(annotated_visits[0].url_row.url(), "http://1.com/");
