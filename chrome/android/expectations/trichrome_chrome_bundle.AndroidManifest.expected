@@ -489,12 +489,12 @@
         android:autoRemoveFromRecents="true"
         android:theme="@style/Theme.Chromium.Activity">
     </activity>  # DIFF-ANCHOR: 8492e3fd
-    <activity  # DIFF-ANCHOR: 76b60c10
-        android:name="org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity"
+    <activity  # DIFF-ANCHOR: 45a98fa4
+        android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
         android:excludeFromRecents="true"
         android:exported="false"
         android:theme="@style/Theme.MaterialComponents">
-    </activity>  # DIFF-ANCHOR: 76b60c10
+    </activity>  # DIFF-ANCHOR: 45a98fa4
     <activity  # DIFF-ANCHOR: 43bfa5de
         android:name="org.chromium.chrome.browser.test_dummy.TestDummyActivity"
         android:configChanges="orientation|keyboardHidden|keyboard|screenSize|mcc|mnc|screenLayout|smallestScreenSize"

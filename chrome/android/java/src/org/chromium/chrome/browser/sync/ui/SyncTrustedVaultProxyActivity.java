@@ -16,12 +16,12 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 /**
- * {@link TrustedVaultKeyRetrievalProxyActivity} has no own UI and just launches real key retrieval
- * activity (passed via extra). The reason for using this proxy activity is to detect when real key
- * retrieval activity finishes and notify TrustedVaultClient about changed keys.
+ * {@link SyncTrustedVaultProxyActivity} has no own UI and just acts as a proxy to launch an
+ * activity related to trusted vault user actions (passed via PendingIntent). The reason for using
+ * this proxy activity is to detect when the proxied activity (key retrieval or degraded
+ * recoverability fix UI) finishes and notify TrustedVaultClient about changes.
  */
-// TODO(crbug.com/1100279): Rename this class to avoid 'retrieval' in the name.
-public class TrustedVaultKeyRetrievalProxyActivity extends AsyncInitializationActivity {
+public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
     private static final String TAG = "SyncUI";
 
     // Note that the implementation relies on request codes being >0 (default value for
@@ -38,14 +38,14 @@ public class TrustedVaultKeyRetrievalProxyActivity extends AsyncInitializationAc
     private int mRequestCode;
 
     /**
-     * Creates an intent that launches an TrustedVaultKeyRetrievalProxyActivity for the purpose of
+     * Creates an intent that launches an SyncTrustedVaultProxyActivity for the purpose of
      * key retrieval.
      *
      * @param keyRetrievalIntent Actual key retrieval intent, which will be launched by
-     * TrustedVaultKeyRetrievalProxyActivity.
+     * SyncTrustedVaultProxyActivity.
      * @param userActionTrigger Enum representing which UI surface triggered the intent.
      *
-     * @return the intent for launching TrustedVaultKeyRetrievalProxyActivity
+     * @return the intent for launching SyncTrustedVaultProxyActivity
      */
     public static Intent createKeyRetrievalProxyIntent(PendingIntent keyRetrievalIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger) {
@@ -54,14 +54,14 @@ public class TrustedVaultKeyRetrievalProxyActivity extends AsyncInitializationAc
     }
 
     /**
-     * Creates an intent that launches an TrustedVaultKeyRetrievalProxyActivity for the purpose of
+     * Creates an intent that launches an SyncTrustedVaultProxyActivity for the purpose of
      * fixing the recoverability degraded case.
      *
      * @param recoverabilityDegradedIntent Actual recoverability degraded fix intent, which will be
-     *         launched by TrustedVaultKeyRetrievalProxyActivity.
+     *         launched by SyncTrustedVaultProxyActivity.
      * @param userActionTrigger Enum representing which UI surface triggered the intent.
      *
-     * @return the intent for launching TrustedVaultKeyRetrievalProxyActivity
+     * @return the intent for launching SyncTrustedVaultProxyActivity
      */
     public static Intent createRecoverabilityDegradedProxyIntent(
             PendingIntent recoverabilityDegradedIntent,
@@ -73,7 +73,7 @@ public class TrustedVaultKeyRetrievalProxyActivity extends AsyncInitializationAc
     private static Intent createProxyIntent(PendingIntent proxiedIntent,
             @TrustedVaultUserActionTriggerForUMA int userActionTrigger, int requestCode) {
         Intent proxyIntent = new Intent(
-                ContextUtils.getApplicationContext(), TrustedVaultKeyRetrievalProxyActivity.class);
+                ContextUtils.getApplicationContext(), SyncTrustedVaultProxyActivity.class);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         proxyIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         proxyIntent.putExtra(EXTRA_KEY_PROXIED_INTENT, proxiedIntent);

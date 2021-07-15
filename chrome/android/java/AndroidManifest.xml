@@ -527,7 +527,7 @@ by a child template that "extends" this file.
             TODO(crbug.com/1093292): investigate why
             @android:style/Theme.NoDisplay can't be used here.
         -->
-        <activity android:name="org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity"
+        <activity android:name="org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity"
             android:theme="@style/Theme.MaterialComponents"
             android:excludeFromRecents="true"
             android:exported="false">

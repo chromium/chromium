@@ -1119,7 +1119,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseCreationDialogFragment.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseDialogFragment.java",
   "java/src/org/chromium/chrome/browser/sync/ui/PassphraseTypeDialogFragment.java",
-  "java/src/org/chromium/chrome/browser/sync/ui/TrustedVaultKeyRetrievalProxyActivity.java",
+  "java/src/org/chromium/chrome/browser/sync/ui/SyncTrustedVaultProxyActivity.java",
   "java/src/org/chromium/chrome/browser/tab/AccessibilityVisibilityHandler.java",
   "java/src/org/chromium/chrome/browser/tab/AuthenticatorNavigationInterceptorTabHelper.java",
   "java/src/org/chromium/chrome/browser/tab/AutofillSessionLifetimeController.java",

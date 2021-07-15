@@ -26,7 +26,7 @@ import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils.SyncError;
-import org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity;
+import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.infobars.ConfirmInfoBar;
 import org.chromium.components.infobars.InfoBar;
@@ -130,10 +130,10 @@ public class SyncErrorInfoBar
                         (intent)
                                 -> {
                             IntentUtils.safeStartActivity(getApplicationContext(),
-                                    TrustedVaultKeyRetrievalProxyActivity
-                                            .createKeyRetrievalProxyIntent(intent,
-                                                    TrustedVaultUserActionTriggerForUMA
-                                                            .NEW_TAB_PAGE_INFOBAR));
+                                    SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
+                                            intent,
+                                            TrustedVaultUserActionTriggerForUMA
+                                                    .NEW_TAB_PAGE_INFOBAR));
                         },
                         (exception)
                                 -> Log.w(TAG, "Error creating trusted vault key retrieval intent: ",
@@ -151,7 +151,7 @@ public class SyncErrorInfoBar
                         (intent)
                                 -> {
                             IntentUtils.safeStartActivity(getApplicationContext(),
-                                    TrustedVaultKeyRetrievalProxyActivity
+                                    SyncTrustedVaultProxyActivity
                                             .createRecoverabilityDegradedProxyIntent(intent,
                                                     TrustedVaultUserActionTriggerForUMA
                                                             .NEW_TAB_PAGE_INFOBAR));

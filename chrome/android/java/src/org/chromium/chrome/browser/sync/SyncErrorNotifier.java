@@ -24,7 +24,7 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.sync.ui.PassphraseActivity;
-import org.chromium.chrome.browser.sync.ui.TrustedVaultKeyRetrievalProxyActivity;
+import org.chromium.chrome.browser.sync.ui.SyncTrustedVaultProxyActivity;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxy;
 import org.chromium.components.browser_ui.notifications.NotificationManagerProxyImpl;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
@@ -135,7 +135,7 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
         // Converting |intentTriggeredOnClick| into a PendingIntent is needed because it will be
         // handed over to the Android notification manager, a foreign application.
         // FLAG_UPDATE_CURRENT ensures any cached intent extras are updated.
-        // TODO(crbug.com/1071377): TrustedVaultKeyRetrievalProxyActivity is the only one to add
+        // TODO(crbug.com/1071377): SyncTrustedVaultProxyActivity is the only one to add
         // extras to the intent, so it should probably be responsible for passing
         // FLAG_UPDATE_CURRENT.
         PendingIntentProvider pendingIntent =
@@ -240,15 +240,14 @@ public class SyncErrorNotifier implements SyncService.SyncStateChangedListener {
 
         TrustedVaultClient.get()
                 .createKeyRetrievalIntent(primaryAccountInfo)
-                // Cf. TrustedVaultKeyRetrievalProxyActivity as to why use a proxy intent.
+                // Cf. SyncTrustedVaultProxyActivity as to why use a proxy intent.
                 // TODO(crbug.com/1071377): Sync state might have changed by the time |realIntent|
                 // is available, so showing the notification won't make sense.
                 .then((realIntent)
                                 -> showNotification(notificationTitle, notificationTextBody,
-                                        TrustedVaultKeyRetrievalProxyActivity
-                                                .createKeyRetrievalProxyIntent(realIntent,
-                                                        TrustedVaultUserActionTriggerForUMA
-                                                                .NOTIFICATION)),
+                                        SyncTrustedVaultProxyActivity.createKeyRetrievalProxyIntent(
+                                                realIntent,
+                                                TrustedVaultUserActionTriggerForUMA.NOTIFICATION)),
                         (exception)
                                 -> Log.w(TAG, "Error creating key retrieval intent: ", exception));
     }
