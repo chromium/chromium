@@ -30,6 +30,10 @@ class DictionaryValue;
 
 namespace printing {
 
+namespace mojom {
+enum class PrinterType;
+}
+
 class PrinterHandler;
 class PrintPreviewHandler;
 
@@ -50,7 +54,7 @@ class PrintPreviewHandlerChromeOS : public content::WebUIMessageHandler,
 
  protected:
   // Protected so unit tests can override.
-  virtual PrinterHandler* GetPrinterHandler(PrinterType printer_type);
+  virtual PrinterHandler* GetPrinterHandler(mojom::PrinterType printer_type);
 
  private:
   friend class PrintPreviewHandlerChromeOSTest;

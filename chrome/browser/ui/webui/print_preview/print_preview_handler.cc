@@ -74,6 +74,7 @@
 #include "printing/backend/print_backend_utils.h"
 #include "printing/backend/printing_restrictions.h"
 #include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/icu/source/i18n/unicode/ulocdata.h"
 
@@ -107,25 +108,25 @@ namespace {
 // crbug.com/372240.
 constexpr size_t kMaxCloudPrintPdfDataSizeInBytes = 80 * 1024 * 1024 / 2;
 
-PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
+mojom::PrinterType GetPrinterTypeForUserAction(UserActionBuckets user_action) {
   switch (user_action) {
     case UserActionBuckets::kPrintWithPrivet:
-      return PrinterType::kPrivet;
+      return mojom::PrinterType::kPrivet;
     case UserActionBuckets::kPrintWithExtension:
-      return PrinterType::kExtension;
+      return mojom::PrinterType::kExtension;
     // On Chrome OS, printing to Google Drive needs to open the local file
     // picker so |kPrintToGoogleDriveCros| action should be handled by the
     // PDFPrinterHandler.
     case UserActionBuckets::kPrintToGoogleDriveCros:
     case UserActionBuckets::kPrintToPdf:
-      return PrinterType::kPdf;
+      return mojom::PrinterType::kPdf;
     case UserActionBuckets::kPrintToPrinter:
     case UserActionBuckets::kFallbackToAdvancedSettingsDialog:
     case UserActionBuckets::kOpenInMacPreview:
-      return PrinterType::kLocal;
+      return mojom::PrinterType::kLocal;
     default:
       NOTREACHED();
-      return PrinterType::kLocal;
+      return mojom::PrinterType::kLocal;
   }
 }
 
@@ -237,16 +238,16 @@ UserActionBuckets DetermineUserAction(const base::Value& settings) {
   if (settings.FindKey(kSettingCloudPrintId))
     return UserActionBuckets::kPrintWithCloudPrint;
 
-  PrinterType type = static_cast<PrinterType>(
+  mojom::PrinterType type = static_cast<mojom::PrinterType>(
       settings.FindIntKey(kSettingPrinterType).value());
   switch (type) {
-    case PrinterType::kPrivet:
+    case mojom::PrinterType::kPrivet:
       return UserActionBuckets::kPrintWithPrivet;
-    case PrinterType::kExtension:
+    case mojom::PrinterType::kExtension:
       return UserActionBuckets::kPrintWithExtension;
-    case PrinterType::kPdf:
+    case mojom::PrinterType::kPdf:
       return UserActionBuckets::kPrintToPdf;
-    case PrinterType::kLocal:
+    case mojom::PrinterType::kLocal:
       break;
     default:
       NOTREACHED();
@@ -487,21 +488,21 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
   if (!deny_list_from_prefs)
     return;
 
-  std::vector<PrinterType> deny_list;
+  std::vector<mojom::PrinterType> deny_list;
   deny_list.reserve(deny_list_from_prefs->GetList().size());
   for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
-    printing::PrinterType printer_type;
+    mojom::PrinterType printer_type;
     if (deny_list_str == "privet")
-      printer_type = printing::PrinterType::kPrivet;
+      printer_type = mojom::PrinterType::kPrivet;
     else if (deny_list_str == "extension")
-      printer_type = printing::PrinterType::kExtension;
+      printer_type = mojom::PrinterType::kExtension;
     else if (deny_list_str == "pdf")
-      printer_type = printing::PrinterType::kPdf;
+      printer_type = mojom::PrinterType::kPdf;
     else if (deny_list_str == "local")
-      printer_type = printing::PrinterType::kLocal;
+      printer_type = mojom::PrinterType::kLocal;
     else if (deny_list_str == "cloud")
-      printer_type = printing::PrinterType::kCloud;
+      printer_type = mojom::PrinterType::kCloud;
     else
       continue;
 
@@ -512,7 +513,7 @@ void PrintPreviewHandler::ReadPrinterTypeDenyListFromPrefs() {
 }
 
 void PrintPreviewHandler::OnPrinterTypeDenyListReady(
-    const std::vector<PrinterType>& deny_list_types) {
+    const std::vector<mojom::PrinterType>& deny_list_types) {
   printer_type_deny_list_ = deny_list_types;
 }
 
@@ -559,7 +560,7 @@ void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
   CHECK(!callback_id.empty());
   int type;
   CHECK(args->GetInteger(1, &type));
-  PrinterType printer_type = static_cast<PrinterType>(type);
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
 
   // Immediately resolve the callback without fetching printers if the printer
   // type is on the deny list.
@@ -596,7 +597,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
-  PrinterType printer_type = static_cast<PrinterType>(type);
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
 
   // Reject the callback if the printer type is on the deny list.
   if (base::Contains(printer_type_deny_list_, printer_type)) {
@@ -632,9 +633,9 @@ void PrintPreviewHandler::HandleGetPreview(const base::ListValue* args) {
   CHECK(settings.is_dict());
   int request_id = settings.FindIntKey(kPreviewRequestID).value();
   CHECK_GT(request_id, -1);
-  PrinterType printer_type = static_cast<PrinterType>(
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       settings.FindIntKey(kSettingPrinterType).value());
-  CHECK(printer_type != PrinterType::kCloud || IsCloudPrintEnabled());
+  CHECK(printer_type != mojom::PrinterType::kCloud || IsCloudPrintEnabled());
 
   CHECK(!base::Contains(preview_callbacks_, request_id));
   preview_callbacks_[request_id] = callback_id;
@@ -868,7 +869,7 @@ void PrintPreviewHandler::HandleGetInitialSettings(
 
   AllowJavascript();
 
-  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
   base::OnceCallback<void(base::Value, const std::string&)> cb =
       base::BindOnce(&PrintPreviewHandler::SendInitialSettings,
                      weak_factory_.GetWeakPtr(), callback_id);
@@ -930,7 +931,7 @@ void PrintPreviewHandler::SendInitialSettings(
 
   initial_settings.SetBoolKey(
       kPdfPrinterDisabled,
-      base::Contains(printer_type_deny_list_, PrinterType::kPdf));
+      base::Contains(printer_type_deny_list_, mojom::PrinterType::kPdf));
 
   const bool destinations_managed =
       !printer_type_deny_list_.empty() &&
@@ -1140,8 +1141,8 @@ void PrintPreviewHandler::ClearInitiatorDetails() {
 }
 
 PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
-    PrinterType printer_type) {
-  if (printer_type == PrinterType::kExtension) {
+    mojom::PrinterType printer_type) {
+  if (printer_type == mojom::PrinterType::kExtension) {
     if (!extension_printer_handler_) {
       extension_printer_handler_ = PrinterHandler::CreateForExtensionPrinters(
           Profile::FromWebUI(web_ui()));
@@ -1149,7 +1150,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     return extension_printer_handler_.get();
   }
 #if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-  if (printer_type == PrinterType::kPrivet &&
+  if (printer_type == mojom::PrinterType::kPrivet &&
       GetPrefs()->GetBoolean(prefs::kForceEnablePrivetPrinting)) {
     if (!privet_printer_handler_) {
       privet_printer_handler_ =
@@ -1158,7 +1159,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     return privet_printer_handler_.get();
   }
 #endif
-  if (printer_type == PrinterType::kPdf) {
+  if (printer_type == mojom::PrinterType::kPdf) {
     if (!pdf_printer_handler_) {
       pdf_printer_handler_ = PrinterHandler::CreateForPdfPrinter(
           Profile::FromWebUI(web_ui()), preview_web_contents(),
@@ -1166,7 +1167,7 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
     }
     return pdf_printer_handler_.get();
   }
-  if (printer_type == PrinterType::kLocal) {
+  if (printer_type == mojom::PrinterType::kLocal) {
     if (!local_printer_handler_) {
       local_printer_handler_ = PrinterHandler::CreateForLocalPrinters(
           preview_web_contents(), Profile::FromWebUI(web_ui()));
@@ -1178,19 +1179,21 @@ PrinterHandler* PrintPreviewHandler::GetPrinterHandler(
 }
 
 PdfPrinterHandler* PrintPreviewHandler::GetPdfPrinterHandler() {
-  return static_cast<PdfPrinterHandler*>(GetPrinterHandler(PrinterType::kPdf));
+  return static_cast<PdfPrinterHandler*>(
+      GetPrinterHandler(mojom::PrinterType::kPdf));
 }
 
-void PrintPreviewHandler::OnAddedPrinters(PrinterType printer_type,
+void PrintPreviewHandler::OnAddedPrinters(mojom::PrinterType printer_type,
                                           const base::ListValue& printers) {
-  DCHECK(printer_type == PrinterType::kExtension ||
-         printer_type == PrinterType::kPrivet ||
-         printer_type == PrinterType::kLocal);
+  DCHECK(printer_type == mojom::PrinterType::kExtension ||
+         printer_type == mojom::PrinterType::kPrivet ||
+         printer_type == mojom::PrinterType::kLocal);
   DCHECK(!printers.GetList().empty());
   FireWebUIListener("printers-added",
                     base::Value(static_cast<int>(printer_type)), printers);
 
-  if (printer_type == PrinterType::kLocal && !has_logged_printers_count_) {
+  if (printer_type == mojom::PrinterType::kLocal &&
+      !has_logged_printers_count_) {
     ReportNumberOfPrinters(printers.GetSize());
     has_logged_printers_count_ = true;
   }
@@ -1219,7 +1222,7 @@ void PrintPreviewHandler::OnPrintResult(const std::string& callback_id,
 }
 
 bool PrintPreviewHandler::IsCloudPrintEnabled() {
-  return !base::Contains(printer_type_deny_list_, PrinterType::kCloud) &&
+  return !base::Contains(printer_type_deny_list_, mojom::PrinterType::kCloud) &&
          GetPrefs()->GetBoolean(prefs::kCloudPrintSubmitEnabled);
 }
 

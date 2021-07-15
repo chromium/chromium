@@ -38,6 +38,7 @@
 #include "components/printing/browser/prefs_util.h"
 #include "components/user_manager/user.h"
 #include "printing/backend/print_backend.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings.h"
 #include "printing/printing_features.h"
@@ -363,7 +364,7 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
   Profile* profile = GetActiveUserProfile();
   PrefService* prefs = profile->GetPrefs();
 
-  std::vector<printing::PrinterType> deny_list;
+  std::vector<printing::mojom::PrinterType> deny_list;
   if (!prefs->HasPrefPath(prefs::kPrinterTypeDenyList)) {
     std::move(callback).Run(deny_list);
     return;
@@ -379,17 +380,17 @@ void LocalPrinterAsh::GetPrinterTypeDenyList(
   deny_list.reserve(deny_list_from_prefs->GetList().size());
   for (const base::Value& deny_list_value : deny_list_from_prefs->GetList()) {
     const std::string& deny_list_str = deny_list_value.GetString();
-    printing::PrinterType printer_type;
+    printing::mojom::PrinterType printer_type;
     if (deny_list_str == "privet")
-      printer_type = printing::PrinterType::kPrivet;
+      printer_type = printing::mojom::PrinterType::kPrivet;
     else if (deny_list_str == "extension")
-      printer_type = printing::PrinterType::kExtension;
+      printer_type = printing::mojom::PrinterType::kExtension;
     else if (deny_list_str == "pdf")
-      printer_type = printing::PrinterType::kPdf;
+      printer_type = printing::mojom::PrinterType::kPdf;
     else if (deny_list_str == "local")
-      printer_type = printing::PrinterType::kLocal;
+      printer_type = printing::mojom::PrinterType::kLocal;
     else if (deny_list_str == "cloud")
-      printer_type = printing::PrinterType::kCloud;
+      printer_type = printing::mojom::PrinterType::kCloud;
     else
       continue;
 

@@ -9,9 +9,6 @@
 
 #include "base/component_export.h"
 
-// TODO(crbug.com/1222453): Remove once migration is complete.
-#include "printing/mojom/print.mojom.h"
-
 namespace printing {
 
 COMPONENT_EXPORT(PRINTING_BASE) extern const char kIsFirstRequest[];
@@ -188,9 +185,6 @@ enum ScalingType {
   CUSTOM,
   SCALING_TYPE_LAST = CUSTOM
 };
-
-// TODO(crbug.com/1222453): Remove once migration is complete.
-using PrinterType = printing::mojom::PrinterType;
 
 }  // namespace printing
 

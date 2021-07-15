@@ -361,9 +361,9 @@ bool IsPrintingNodeOrPdfFrame(blink::WebLocalFrame* frame,
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 bool IsPrintToPdfRequested(const base::DictionaryValue& job_settings) {
-  PrinterType type = static_cast<PrinterType>(
+  mojom::PrinterType type = static_cast<mojom::PrinterType>(
       job_settings.FindIntKey(kSettingPrinterType).value());
-  return type == PrinterType::kPdf;
+  return type == mojom::PrinterType::kPdf;
 }
 
 bool PrintingFrameHasPageSizeStyle(blink::WebLocalFrame* frame,

@@ -56,12 +56,7 @@ component("printing_base") {
   cflags = []
   defines = [ "IS_PRINTING_BASE_IMPL" ]
 
-  public_deps = [
-    "//build:chromeos_buildflags",
-
-    # TODO(crbug.com/1222453): Remove this dependency once migration is complete.
-    "//printing/mojom",
-  ]
+  public_deps = [ "//build:chromeos_buildflags" ]
   deps = [
     "//base",
     "//third_party/icu",

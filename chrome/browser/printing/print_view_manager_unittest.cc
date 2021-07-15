@@ -172,7 +172,7 @@ TEST_F(PrintViewManagerTest, PostScriptHasCorrectOffsets) {
 
   print_view_manager->PrintPreviewNow(web_contents->GetMainFrame(), false);
 
-  base::Value print_ticket = GetPrintTicket(PrinterType::kLocal);
+  base::Value print_ticket = GetPrintTicket(mojom::PrinterType::kLocal);
   const char kTestData[] = "abc";
   auto print_data = base::MakeRefCounted<base::RefCountedStaticMemory>(
       kTestData, sizeof(kTestData));

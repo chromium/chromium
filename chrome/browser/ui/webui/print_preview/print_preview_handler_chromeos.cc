@@ -31,6 +31,7 @@
 #include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/web_ui.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "printing/mojom/print.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/crosapi/local_printer_ash.h"
@@ -181,7 +182,7 @@ void PrintPreviewHandlerChromeOS::HandleGrantExtensionPrinterAccess(
   DCHECK(ok);
   MaybeAllowJavascript();
 
-  PrinterHandler* handler = GetPrinterHandler(PrinterType::kExtension);
+  PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kExtension);
   handler->StartGrantPrinterAccess(
       printer_id,
       base::BindOnce(&PrintPreviewHandlerChromeOS::OnGotExtensionPrinterInfo,
@@ -202,7 +203,7 @@ void PrintPreviewHandlerChromeOS::HandlePrinterSetup(
     return;
   }
 
-  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
   handler->StartGetCapability(
       printer_name,
       base::BindOnce(&PrintPreviewHandlerChromeOS::SendPrinterSetup,
@@ -232,7 +233,7 @@ void PrintPreviewHandlerChromeOS::HandleGetEulaUrl(
   const std::string& callback_id = args->GetList()[0].GetString();
   const std::string& destination_id = args->GetList()[1].GetString();
 
-  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
   handler->StartGetEulaUrl(
       destination_id, base::BindOnce(&PrintPreviewHandlerChromeOS::SendEulaUrl,
                                      weak_factory_.GetWeakPtr(), callback_id));
@@ -293,7 +294,7 @@ PrintPreviewHandler* PrintPreviewHandlerChromeOS::GetPrintPreviewHandler() {
 }
 
 PrinterHandler* PrintPreviewHandlerChromeOS::GetPrinterHandler(
-    PrinterType printer_type) {
+    mojom::PrinterType printer_type) {
   return GetPrintPreviewHandler()->GetPrinterHandler(printer_type);
 }
 
@@ -322,7 +323,7 @@ void PrintPreviewHandlerChromeOS::HandleRequestPrinterStatusUpdate(
   const std::string& printer_id = args->GetList()[1].GetString();
 
   MaybeAllowJavascript();
-  PrinterHandler* handler = GetPrinterHandler(PrinterType::kLocal);
+  PrinterHandler* handler = GetPrinterHandler(mojom::PrinterType::kLocal);
   handler->StartPrinterStatusRequest(
       printer_id,
       base::BindOnce(&PrintPreviewHandlerChromeOS::ResolveJavascriptCallback,

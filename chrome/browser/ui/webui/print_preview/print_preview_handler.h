@@ -117,7 +117,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Fires the 'manipulate-settings-for-test' WebUI event with |settings|.
   void SendManipulateSettingsForTest(const base::DictionaryValue& settings);
 
-  virtual PrinterHandler* GetPrinterHandler(PrinterType printer_type);
+  virtual PrinterHandler* GetPrinterHandler(mojom::PrinterType printer_type);
 
  protected:
   // Protected so unit tests can override.
@@ -158,7 +158,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   void ReadPrinterTypeDenyListFromPrefs();
 
   void OnPrinterTypeDenyListReady(
-      const std::vector<PrinterType>& deny_list_types);
+      const std::vector<mojom::PrinterType>& deny_list_types);
 
   // Whether the the handler should be receiving messages from the renderer to
   // forward to the Print Preview JS in response to preview request with id
@@ -266,7 +266,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // |printer_type|: The type of printers that were added.
   // |printers|: A non-empty list containing information about the printer or
   //     printers that have been added.
-  void OnAddedPrinters(PrinterType printer_type,
+  void OnAddedPrinters(mojom::PrinterType printer_type,
                        const base::ListValue& printers);
 
   // Called when printer search is done for some destination type.
@@ -316,7 +316,7 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   base::flat_set<int> preview_failures_;
 
   // Set of printer types on the deny list.
-  base::flat_set<PrinterType> printer_type_deny_list_;
+  base::flat_set<mojom::PrinterType> printer_type_deny_list_;
 
   // Used to transmit mojo interface method calls to the associated receiver.
   mojo::AssociatedRemote<mojom::PrintRenderFrame> print_render_frame_;

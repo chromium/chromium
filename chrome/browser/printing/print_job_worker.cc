@@ -210,9 +210,9 @@ void PrintJobWorker::UpdatePrintSettings(base::Value new_settings,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::unique_ptr<crash_keys::ScopedPrinterInfo> crash_key;
-  PrinterType type = static_cast<PrinterType>(
+  mojom::PrinterType type = static_cast<mojom::PrinterType>(
       new_settings.FindIntKey(kSettingPrinterType).value());
-  if (type == PrinterType::kLocal) {
+  if (type == mojom::PrinterType::kLocal) {
 #if defined(OS_WIN)
     // Blocking is needed here because Windows printer drivers are oftentimes
     // not thread-safe and have to be accessed on the UI thread.

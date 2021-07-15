@@ -9,6 +9,7 @@
 #include "base/check.h"
 #include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/page_setup.h"
 #include "printing/print_job_constants.h"
 #include "printing/print_settings_conversion.h"
@@ -87,7 +88,7 @@ PrintingContext::Result PrintingContext::UsePdfSettings() {
   pdf_settings.SetBoolKey(kSettingLandscape, false);
   pdf_settings.SetStringKey(kSettingDeviceName, "");
   pdf_settings.SetIntKey(kSettingPrinterType,
-                         static_cast<int>(PrinterType::kPdf));
+                         static_cast<int>(mojom::PrinterType::kPdf));
   pdf_settings.SetIntKey(kSettingScaleFactor, 100);
   pdf_settings.SetBoolKey(kSettingRasterizePdf, false);
   pdf_settings.SetIntKey(kSettingPagesPerSheet, 1);
@@ -107,17 +108,18 @@ PrintingContext::Result PrintingContext::UpdatePrintSettings(
     settings_ = std::move(settings);
   }
 
-  PrinterType printer_type = static_cast<PrinterType>(
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(
       job_settings.FindIntKey(kSettingPrinterType).value());
-  bool print_with_privet = printer_type == PrinterType::kPrivet;
+  bool print_with_privet = printer_type == mojom::PrinterType::kPrivet;
   bool print_to_cloud = !!job_settings.FindKey(kSettingCloudPrintId);
   bool open_in_external_preview =
       !!job_settings.FindKey(kSettingOpenPDFInPreview);
 
-  if (!open_in_external_preview && (print_to_cloud || print_with_privet ||
-                                    printer_type == PrinterType::kPdf ||
-                                    printer_type == PrinterType::kCloud ||
-                                    printer_type == PrinterType::kExtension)) {
+  if (!open_in_external_preview &&
+      (print_to_cloud || print_with_privet ||
+       printer_type == mojom::PrinterType::kPdf ||
+       printer_type == mojom::PrinterType::kCloud ||
+       printer_type == mojom::PrinterType::kExtension)) {
     settings_->set_dpi(kDefaultPdfDpi);
     gfx::Size paper_size(GetPdfPaperSizeDeviceUnits());
     if (!settings_->requested_media().size_microns.IsEmpty()) {
