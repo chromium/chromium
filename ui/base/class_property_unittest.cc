@@ -309,11 +309,11 @@ TEST(PropertyTest, PropertyChangedEvent) {
   EXPECT_EQ(4, h.num_events());
 
   // Verify that setting a heap-allocated value also ticks the event counter.
-  h.SetProperty(kAssignableKey, new AssignableTestProperty{4});
+  h.SetProperty(kAssignableKey, std::make_unique<AssignableTestProperty>(4));
   EXPECT_EQ(5, h.num_events());
 
   // Verify that overwriting a heap-allocated value ticks the event counter.
-  h.SetProperty(kAssignableKey, new AssignableTestProperty{5});
+  h.SetProperty(kAssignableKey, std::make_unique<AssignableTestProperty>(5));
   EXPECT_EQ(6, h.num_events());
 }
 
@@ -331,6 +331,19 @@ TEST(PropertyTest, CascadingProperties) {
   EXPECT_TRUE(value);
   // The property value should have a reference to |h|.
   EXPECT_EQ(&h, value->handler());
+}
+
+// TODO(kylixrd, pbos): Once all the call-sites are fixed to only use the
+// unique_ptr version for owned properties, enable the following test to ensure
+// that passing raw pointers for owned properties will, in fact, DCHECK.
+TEST(PropertyTest, DISABLED_CheckedOwnedProperties) {
+  PropertyHandler h;
+
+  EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
+  // The following SetProperty call should DCHECK if it's enabled. NOTE: This
+  // will leak the TestProperty!
+  EXPECT_DEATH_IF_SUPPORTED(h.SetProperty(kOwnedKey, new TestProperty()), "");
+  EXPECT_EQ(nullptr, h.GetProperty(kOwnedKey));
 }
 
 } // namespace test

@@ -9,6 +9,7 @@
 
 #include <map>
 #include <set>
+#include <type_traits>
 
 #include "base/component_export.h"
 #include "base/time/time.h"
@@ -95,7 +96,7 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHandler {
   // freed when they are overwritten or cleared).  NOTE: This should NOT be
   // for passing a raw pointer for owned properties. Prefer the std::unique_ptr
   // version below.
-  template<typename T>
+  template <typename T>
   void SetProperty(const ClassProperty<T>* property, T value);
 
   // Sets the |value| of the given class |property|, which must be an owned
@@ -197,9 +198,10 @@ namespace subtle {
 
 class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
  public:
-  template<typename T>
+  template <typename T>
   static void Set(::ui::PropertyHandler* handler,
-                  const ::ui::ClassProperty<T>* property, T value) {
+                  const ::ui::ClassProperty<T>* property,
+                  T value) {
     int64_t old = handler->SetPropertyInternal(
         property, property->name,
         value == property->default_value ? nullptr : property->deallocator,
@@ -218,10 +220,10 @@ class COMPONENT_EXPORT(UI_BASE) PropertyHelper {
         property, ClassPropertyCaster<T>::ToInt64(property->default_value),
         property->cascading && allow_cascade));
   }
-  template<typename T>
+  template <typename T>
   static void Clear(::ui::PropertyHandler* handler,
                     const ::ui::ClassProperty<T>* property) {
-    handler->SetProperty(property, property->default_value);
+    Set(handler, property, property->default_value);
   }
 };
 
@@ -293,6 +295,11 @@ T* PropertyHandler::SetProperty(const ClassProperty<T*>* property,
   template <>                                                                \
   EXPORT void PropertyHandler::SetProperty(const ClassProperty<T>* property, \
                                            T value) {                        \
+    /* TODO(kylixrd, pbos): Once all the call-sites are fixed to only use */ \
+    /* the unique_ptr version for owned properties, add the following */     \
+    /* DCHECK to guard against passing raw pointers for owned properties. */ \
+    /* DCHECK(!std::is_pointer<T>::value || */                               \
+    /*        (std::is_pointer<T>::value && !property->deallocator)); */     \
     subtle::PropertyHelper::Set<T>(this, property, value);                   \
   }                                                                          \
   template <>                                                                \
