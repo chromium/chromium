@@ -12,6 +12,7 @@
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
+#include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
 #include "extensions/browser/api/feedback_private/mock_feedback_service.h"
 #include "extensions/common/value_builder.h"
@@ -60,7 +61,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     FeedbackPrivateAPI::GetFactoryInstance()
         ->Get(browser_context())
         ->SetFeedbackServiceForTesting(
-            std::make_unique<FeedbackService>(browser_context()));
+            base::MakeRefCounted<FeedbackService>(browser_context()));
 
     FeedbackPrivateApiUnittestBase::TearDown();
   }
@@ -119,37 +120,56 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
 
   // Runs the feedbackPrivate.sendFeedback() function. See API function
   // definition for argument descriptions.
-  //
-  // The API function is expected to complete successfully.
-  testing::AssertionResult RunSendFeedbackFunction(
-      const Params& params,
-      FeedbackCommon::SystemLogsMap* logs) {
-    auto mock = std::make_unique<MockFeedbackService>(browser_context());
+  scoped_refptr<FeedbackData> RunSendFeedbackFunction(
+      const std::string& args,  // The payload that comes from client
+      const FeedbackParams& expected_params) {
+    base::Value values = base::test::ParseJson(args);
+    EXPECT_TRUE(values.is_list());
+
+    std::unique_ptr<api::feedback_private::SendFeedback::Params> params =
+        api::feedback_private::SendFeedback::Params::Create(
+            base::Value::AsListValue(values));
+    EXPECT_TRUE(params);
 
     scoped_refptr<FeedbackData> actual_feedback_data;
-    EXPECT_CALL(*mock, SendFeedback(_, _))
-        .WillOnce([&](scoped_refptr<FeedbackData> feedback_data,
-                      FeedbackService::SendFeedbackCallback callback) {
-          actual_feedback_data = std::move(feedback_data);
+    SetupMockFeedbackService(expected_params, actual_feedback_data);
+
+    auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
+
+    std::unique_ptr<base::Value> result_value =
+        RunFunctionAndReturnValue(function.get(), args);
+    EXPECT_TRUE(result_value);
+
+    return actual_feedback_data;
+  }
+
+  void SetupMockFeedbackService(
+      const FeedbackParams& expected_params,
+      scoped_refptr<FeedbackData>& actual_feedback_data) {
+    auto mock = base::MakeRefCounted<MockFeedbackService>(browser_context());
+
+    // scoped_refptr<FeedbackData> actual_feedback_data;
+    EXPECT_CALL(*mock, SendFeedback(_, _, _))
+        .WillOnce([&](const FeedbackParams& params,
+                      scoped_refptr<FeedbackData> feedback_data,
+                      SendFeedbackCallback callback) {
+          // Pass the feedback data out to verify its properties
+          actual_feedback_data = feedback_data;
+          // Verify that the flags in params are set correctly
+          EXPECT_EQ(expected_params.is_internal_email,
+                    params.is_internal_email);
+          EXPECT_EQ(expected_params.send_tab_titles, params.send_tab_titles);
+          EXPECT_EQ(expected_params.send_histograms, params.send_histograms);
+          EXPECT_EQ(expected_params.send_bluetooth_logs,
+                    params.send_bluetooth_logs);
+
           std::move(callback).Run(true);
         });
 
     FeedbackPrivateAPI::GetFactoryInstance()
         ->Get(browser_context())
         ->SetFeedbackServiceForTesting(
-            static_cast<std::unique_ptr<FeedbackService>>(std::move(mock)));
-
-    auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
-
-    std::unique_ptr<base::Value> result_value = RunFunctionAndReturnValue(
-        function.get(), ParamsToJSON(params.feedback));
-    if (!result_value) {
-      return testing::AssertionFailure() << "No result";
-    }
-
-    *logs = *actual_feedback_data->sys_info();
-
-    return testing::AssertionSuccess();
+            static_cast<scoped_refptr<FeedbackService>>(std::move(mock)));
   }
 
  private:
@@ -391,46 +411,107 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 }
 
-TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithTabTitles) {
-  base::Value values = base::test::ParseJson(R"([
-    {
-      "description": "words",
-      "sendTabTitles": true,
-      "systemInformation": [
-        {"key": "mem_usage_with_title", "value": "some sensitive info"}
-      ]
-    }
-  ])");
-  ASSERT_TRUE(values.is_list());
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name": "C:\\fakepath\\chrome_40px.svg"
+    },
+    "assistantDebugInfoAllowed": true,
+    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "categoryTag": "test-tag",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "tester@test.com",
+    "flow": "regular",
+    "fromAssistant": true,
+    "includeBluetoothLogs": true,
+    "pageUrl": "https://test.com",
+    "productId": 1122,
+    "screenshot": {},
+    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendBluetoothLogs": true,
+    "sendHistograms": true,
+    "sendTabTitles": true,
+    "systemInformation": [
+      {"key": "mem_usage_with_title", "value": "some sensitive info"}
+    ],
+    "traceId": 9966,
+    "useSystemWindowFrame": false
+  }
+])";
 
-  std::unique_ptr<Params> params =
-      Params::Create(base::Value::AsListValue(values));
-  ASSERT_TRUE(params);
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/true};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
-  FeedbackCommon::SystemLogsMap logs;
-  EXPECT_TRUE(RunSendFeedbackFunction(*params, &logs));
-  EXPECT_TRUE(base::Contains(logs, "mem_usage_with_title"));
+  EXPECT_EQ(9966, feedback_data->trace_id());
+  EXPECT_EQ(1122, feedback_data->product_id());
+  EXPECT_EQ("chrome_40px.svg", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-tag", feedback_data->category_tag());
+  EXPECT_EQ("tester@test.com", feedback_data->user_email());
+  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+            feedback_data->attached_file_uuid());
+  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+            feedback_data->screenshot_uuid());
+  EXPECT_EQ("https://test.com", feedback_data->page_url());
+
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->count("mem_usage_with_title"));
 }
 
-TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutTabTitles) {
-  base::Value values = base::test::ParseJson(R"([
-    {
-      "description": "words",
-      "sendTabTitles": false,
-      "systemInformation": [
-        {"key": "mem_usage_with_title", "value": "some sensitive info"}
-      ]
-    }
-  ])");
-  ASSERT_TRUE(values.is_list());
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name":""
+    },
+    "assistantDebugInfoAllowed": false,
+    "categoryTag": "",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "regular",
+    "fromAssistant": false,
+    "includeBluetoothLogs": false,
+    "pageUrl": "",
+    "screenshot": {},
+    "screenshotBlobUuid": "",
+    "sendBluetoothLogs": false,
+    "sendHistograms": false,
+    "sendTabTitles": false,
+    "systemInformation": [],
+    "useSystemWindowFrame": false
+  }
+])";
 
-  std::unique_ptr<Params> params =
-      Params::Create(base::Value::AsListValue(values));
-  ASSERT_TRUE(params);
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
 
-  FeedbackCommon::SystemLogsMap logs;
-  EXPECT_TRUE(RunSendFeedbackFunction(*params, &logs));
-  EXPECT_FALSE(base::Contains(logs, "mem_usage_with_title"));
+  EXPECT_EQ(0, feedback_data->trace_id());
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("", feedback_data->category_tag());
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->attached_file_uuid());
+  EXPECT_EQ("", feedback_data->screenshot_uuid());
+  EXPECT_EQ("", feedback_data->page_url());
+
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_FALSE(feedback_data->sys_info()->count("mem_usage_with_title"));
 }
 
 }  // namespace extensions

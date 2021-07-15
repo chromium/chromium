@@ -16,10 +16,6 @@
 #include "extensions/common/api/feedback_private.h"
 #include "ui/gfx/geometry/rect.h"
 
-namespace feedback {
-class FeedbackData;
-}  // namespace feedback
-
 namespace extensions {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -31,7 +27,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   explicit FeedbackPrivateAPI(content::BrowserContext* context);
   ~FeedbackPrivateAPI() override;
 
-  FeedbackService* GetService() const;
+  scoped_refptr<FeedbackService> GetService() const;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   LogSourceAccessManager* GetLogSourceAccessManager() const;
@@ -64,8 +60,8 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   GetFactoryInstance();
 
   // Use a custom FeedbackService implementation for tests.
-  void SetFeedbackServiceForTesting(std::unique_ptr<FeedbackService> service) {
-    service_ = std::move(service);
+  void SetFeedbackServiceForTesting(scoped_refptr<FeedbackService> service) {
+    service_ = service;
   }
 
  private:
@@ -77,7 +73,7 @@ class FeedbackPrivateAPI : public BrowserContextKeyedAPI {
   static const bool kServiceHasOwnInstanceInIncognito = true;
 
   content::BrowserContext* const browser_context_;
-  std::unique_ptr<FeedbackService> service_;
+  scoped_refptr<FeedbackService> service_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<LogSourceAccessManager> log_source_access_manager_;
@@ -158,26 +154,7 @@ class FeedbackPrivateSendFeedbackFunction : public ExtensionFunction {
  protected:
   ~FeedbackPrivateSendFeedbackFunction() override {}
   ResponseAction Run() override;
-
- private:
-  void OnAllLogsFetched(bool send_histograms,
-                        bool send_bluetooth_logs,
-                        bool send_tab_titles,
-                        scoped_refptr<feedback::FeedbackData> feedback_data);
   void OnCompleted(api::feedback_private::LandingPageType type, bool success);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  void OnAshLogsFetched(bool send_histograms,
-                        bool send_bluetooth_logs,
-                        bool send_tab_titles,
-                        scoped_refptr<feedback::FeedbackData> feedback_data);
-  void OnLacrosHistogramsFetched(
-      bool send_histograms,
-      bool send_bluetooth_logs,
-      bool send_tab_titles,
-      scoped_refptr<feedback::FeedbackData> feedback_data,
-      const std::string& compressed_histograms);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 };
 
 class FeedbackPrivateLoginFeedbackCompleteFunction : public ExtensionFunction {

@@ -33,6 +33,7 @@
 #include "extensions/common/api/feedback_private.h"
 #include "extensions/common/constants.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/base/network_change_notifier.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
@@ -45,8 +46,8 @@ namespace extensions {
 
 namespace feedback_private = api::feedback_private;
 
-using feedback_private::FeedbackInfo;
 using feedback_private::FeedbackFlow;
+using feedback_private::FeedbackInfo;
 using feedback_private::LogSource;
 using feedback_private::SystemInformation;
 
@@ -58,23 +59,7 @@ static base::LazyInstance<BrowserContextKeyedAPIFactory<FeedbackPrivateAPI>>::
 
 namespace {
 
-constexpr base::FilePath::CharType kBluetoothLogsFilePath[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2");
-constexpr base::FilePath::CharType kBluetoothLogsFilePathOld[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/log.bz2.old");
-constexpr base::FilePath::CharType kBluetoothQualityReportFilePath[] =
-    FILE_PATH_LITERAL("/var/log/bluetooth/bluetooth_quality_report");
-
-constexpr char kBluetoothLogsAttachmentName[] = "bluetooth_logs.bz2";
-constexpr char kBluetoothLogsAttachmentNameOld[] = "bluetooth_logs.old.bz2";
-constexpr char kBluetoothQualityReportAttachmentName[] =
-    "bluetooth_quality_report";
-
 constexpr int kChromeLabsAndKaleidoscopeProductId = 5192933;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
-#endif
 
 // Getting the filename of a blob prepends a "C:\fakepath" to the filename.
 // This is undesirable, strip it if it exists.
@@ -99,6 +84,91 @@ feedback_private::LandingPageType GetLandingPageType(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
+bool IsGoogleInternalAccountEmail(content::BrowserContext* context) {
+  return gaia::IsGoogleInternalAccountEmail(
+      ExtensionsAPIClient::Get()
+          ->GetFeedbackPrivateDelegate()
+          ->GetSignedInUserEmail(context));
+}
+
+void SendFeedback(content::BrowserContext* browser_context,
+                  const FeedbackInfo& feedback_info,
+                  base::OnceCallback<void(feedback_private::LandingPageType,
+                                          bool)> callback) {
+  // Populate feedback_params
+  FeedbackParams feedback_params;
+  feedback_params.is_internal_email =
+      IsGoogleInternalAccountEmail(browser_context);
+  feedback_params.send_histograms =
+      feedback_info.send_histograms && *feedback_info.send_histograms;
+  feedback_params.send_bluetooth_logs =
+      feedback_info.send_bluetooth_logs && *feedback_info.send_bluetooth_logs;
+  feedback_params.send_tab_titles =
+      feedback_info.send_tab_titles && *feedback_info.send_tab_titles;
+
+  FeedbackPrivateDelegate* delegate =
+      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
+  scoped_refptr<FeedbackData> feedback_data =
+      base::MakeRefCounted<FeedbackData>(
+          delegate->GetFeedbackUploaderForContext(browser_context),
+          ContentTracingManager::Get());
+
+  // Populate feedback data.
+  feedback_data->set_description(feedback_info.description);
+
+  if (feedback_info.product_id)
+    feedback_data->set_product_id(*feedback_info.product_id);
+  if (feedback_info.category_tag)
+    feedback_data->set_category_tag(*feedback_info.category_tag);
+  if (feedback_info.page_url)
+    feedback_data->set_page_url(*feedback_info.page_url);
+  if (feedback_info.email)
+    feedback_data->set_user_email(*feedback_info.email);
+  if (feedback_info.trace_id)
+    feedback_data->set_trace_id(*feedback_info.trace_id);
+
+  // Note that the blob_uuids are generated in
+  // renderer/resources/feedback_private_custom_bindings.js
+  if (feedback_info.attached_file_blob_uuid &&
+      !feedback_info.attached_file_blob_uuid->empty()) {
+    feedback_data->set_attached_filename(
+        StripFakepath((*feedback_info.attached_file).name));
+    feedback_data->set_attached_file_uuid(
+        *feedback_info.attached_file_blob_uuid);
+  }
+  if (feedback_info.screenshot_blob_uuid &&
+      !feedback_info.screenshot_blob_uuid->empty()) {
+    feedback_data->set_screenshot_uuid(*feedback_info.screenshot_blob_uuid);
+  }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  feedback_data->set_from_assistant(feedback_info.from_assistant &&
+                                    *feedback_info.from_assistant);
+  feedback_data->set_assistant_debug_info_allowed(
+      feedback_info.assistant_debug_info_allowed &&
+      *feedback_info.assistant_debug_info_allowed);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  if (feedback_info.system_information) {
+    for (SystemInformation& info : *feedback_info.system_information)
+      feedback_data->AddLog(std::move(info.key), std::move(info.value));
+  }
+
+  auto landing_page_type = GetLandingPageType(*feedback_data);
+  SendFeedbackCallback send_callback =
+      base::BindOnce(std::move(callback), landing_page_type);
+
+  FeedbackPrivateAPI::GetFactoryInstance()
+      ->Get(browser_context)
+      ->GetService()
+      ->SendFeedback(feedback_params, feedback_data, std::move(send_callback));
+}
+
+std::string ToFeedbackStatus(bool success) {
+  return feedback_private::ToString(success ? feedback_private::STATUS_SUCCESS
+                                            : feedback_private::STATUS_DELAYED);
+}
+
 }  // namespace
 
 // static
@@ -110,17 +180,17 @@ FeedbackPrivateAPI::GetFactoryInstance() {
 FeedbackPrivateAPI::FeedbackPrivateAPI(content::BrowserContext* context)
     : browser_context_(context),
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-      service_(new FeedbackService(context)) {
+      service_(base::MakeRefCounted<FeedbackService>(context)) {
 #else
-      service_(new FeedbackService(context)),
+      service_(base::MakeRefCounted<FeedbackService>(context)),
       log_source_access_manager_(new LogSourceAccessManager(context)){
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 FeedbackPrivateAPI::~FeedbackPrivateAPI() {}
 
-FeedbackService* FeedbackPrivateAPI::GetService() const {
-  return service_.get();
+scoped_refptr<FeedbackService> FeedbackPrivateAPI::GetService() const {
+  return service_;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -246,10 +316,7 @@ ExtensionFunction::ResponseAction FeedbackPrivateGetUserEmailFunction::Run() {
 
 ExtensionFunction::ResponseAction
 FeedbackPrivateGetSystemInformationFunction::Run() {
-  send_all_crash_report_ids_ = gaia::IsGoogleInternalAccountEmail(
-      ExtensionsAPIClient::Get()
-          ->GetFeedbackPrivateDelegate()
-          ->GetSignedInUserEmail(browser_context()));
+  send_all_crash_report_ids_ = IsGoogleInternalAccountEmail(browser_context());
 
   // Self-deleting object.
   system_logs::SystemLogsFetcher* fetcher =
@@ -328,158 +395,17 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
       feedback_private::SendFeedback::Params::Create(*args_));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  const FeedbackInfo& feedback_info = params->feedback;
-
-  // Populate feedback data.
-  FeedbackPrivateDelegate* delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  scoped_refptr<FeedbackData> feedback_data =
-      base::MakeRefCounted<FeedbackData>(
-          delegate->GetFeedbackUploaderForContext(browser_context()),
-          ContentTracingManager::Get());
-  feedback_data->set_description(feedback_info.description);
-
-  if (feedback_info.product_id)
-    feedback_data->set_product_id(*feedback_info.product_id);
-  if (feedback_info.category_tag)
-    feedback_data->set_category_tag(*feedback_info.category_tag);
-  if (feedback_info.page_url)
-    feedback_data->set_page_url(*feedback_info.page_url);
-  if (feedback_info.email)
-    feedback_data->set_user_email(*feedback_info.email);
-  if (feedback_info.trace_id)
-    feedback_data->set_trace_id(*feedback_info.trace_id);
-
-  if (feedback_info.attached_file_blob_uuid &&
-      !feedback_info.attached_file_blob_uuid->empty()) {
-    feedback_data->set_attached_filename(
-        StripFakepath((*feedback_info.attached_file).name));
-    feedback_data->set_attached_file_uuid(
-        *feedback_info.attached_file_blob_uuid);
-  }
-
-  if (feedback_info.screenshot_blob_uuid &&
-      !feedback_info.screenshot_blob_uuid->empty()) {
-    feedback_data->set_screenshot_uuid(*feedback_info.screenshot_blob_uuid);
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  feedback_data->set_from_assistant(feedback_info.from_assistant &&
-                                    *feedback_info.from_assistant);
-  feedback_data->set_assistant_debug_info_allowed(
-      feedback_info.assistant_debug_info_allowed &&
-      *feedback_info.assistant_debug_info_allowed);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  const bool send_histograms =
-      feedback_info.send_histograms && *feedback_info.send_histograms;
-  const bool send_bluetooth_logs =
-      feedback_info.send_bluetooth_logs && *feedback_info.send_bluetooth_logs;
-  const bool send_tab_titles =
-      feedback_info.send_tab_titles && *feedback_info.send_tab_titles;
-
-  if (params->feedback.system_information) {
-    for (SystemInformation& info : *params->feedback.system_information)
-      feedback_data->AddLog(std::move(info.key), std::move(info.value));
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    delegate->FetchExtraLogs(
-        feedback_data,
-        base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched,
-                       this, send_histograms, send_bluetooth_logs,
-                       send_tab_titles));
-    return RespondLater();
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  }
-
-  OnAllLogsFetched(send_histograms, send_bluetooth_logs, send_tab_titles,
-                   feedback_data);
+  SendFeedback(
+      browser_context(), params->feedback,
+      base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this));
 
   return RespondLater();
 }
 
-void FeedbackPrivateSendFeedbackFunction::OnAllLogsFetched(
-    bool send_histograms,
-    bool send_bluetooth_logs,
-    bool send_tab_titles,
-    scoped_refptr<feedback::FeedbackData> feedback_data) {
-  if (!send_tab_titles) {
-    feedback_data->RemoveLog(
-        feedback::FeedbackReport::kMemUsageWithTabTitlesKey);
-  }
-  feedback_data->CompressSystemInfo();
-
-  if (send_histograms) {
-    std::string histograms =
-        base::StatisticsRecorder::ToJSON(base::JSON_VERBOSITY_LEVEL_FULL);
-    feedback_data->SetAndCompressHistograms(std::move(histograms));
-  }
-
-  if (send_bluetooth_logs) {
-    std::string bluetooth_logs;
-    if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePath),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothLogsAttachmentName,
-                             std::move(bluetooth_logs));
-    }
-    if (base::ReadFileToString(base::FilePath(kBluetoothLogsFilePathOld),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothLogsAttachmentNameOld,
-                             std::move(bluetooth_logs));
-    }
-    if (base::ReadFileToString(base::FilePath(kBluetoothQualityReportFilePath),
-                               &bluetooth_logs)) {
-      feedback_data->AddFile(kBluetoothQualityReportAttachmentName,
-                             std::move(bluetooth_logs));
-    }
-  }
-
-  FeedbackService* service = FeedbackPrivateAPI::GetFactoryInstance()
-                                 ->Get(browser_context())
-                                 ->GetService();
-  DCHECK(service);
-
-  service->SendFeedback(
-      feedback_data,
-      base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this,
-                     GetLandingPageType(*feedback_data)));
-}
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-void FeedbackPrivateSendFeedbackFunction::OnAshLogsFetched(
-    bool send_histograms,
-    bool send_bluetooth_logs,
-    bool send_tab_titles,
-    scoped_refptr<feedback::FeedbackData> feedback_data) {
-  FeedbackPrivateDelegate* feedback_private_delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  feedback_private_delegate->GetLacrosHistograms(base::BindOnce(
-      &FeedbackPrivateSendFeedbackFunction::OnLacrosHistogramsFetched, this,
-      send_histograms, send_bluetooth_logs, send_tab_titles, feedback_data));
-}
-
-void FeedbackPrivateSendFeedbackFunction::OnLacrosHistogramsFetched(
-    bool send_histograms,
-    bool send_bluetooth_logs,
-    bool send_tab_titles,
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    const std::string& compressed_histograms) {
-  // Attach lacros histogram to feedback data.
-  if (!compressed_histograms.empty()) {
-    feedback_data->AddFile(kLacrosHistogramsFilename,
-                           std::move(compressed_histograms));
-  }
-
-  OnAllLogsFetched(send_histograms, send_bluetooth_logs, send_tab_titles,
-                   feedback_data);
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 void FeedbackPrivateSendFeedbackFunction::OnCompleted(
     api::feedback_private::LandingPageType type,
     bool success) {
-  Respond(TwoArguments(base::Value(feedback_private::ToString(
-                           success ? feedback_private::STATUS_SUCCESS
-                                   : feedback_private::STATUS_DELAYED)),
+  Respond(TwoArguments(base::Value(ToFeedbackStatus(success)),
                        base::Value(feedback_private::ToString(type))));
   if (!success) {
     ExtensionsAPIClient::Get()

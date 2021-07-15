@@ -49,6 +49,10 @@ class FeedbackData : public FeedbackCommon {
   void SendReport();
 
   // Getters
+  const std::string& attached_filename() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return attached_filename_;
+  }
   const std::string& attached_file_uuid() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return attached_file_uuid_;
@@ -56,6 +60,10 @@ class FeedbackData : public FeedbackCommon {
   const std::string& screenshot_uuid() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return screenshot_uuid_;
+  }
+  int trace_id() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return trace_id_;
   }
   bool from_assistant() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
