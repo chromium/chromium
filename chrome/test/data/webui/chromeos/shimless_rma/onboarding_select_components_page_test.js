@@ -83,13 +83,13 @@ export function onboardingSelectComponentsPageTest() {
     const trackpadComponent =
         component.shadowRoot.querySelector('#componentTrackpad');
     assertFalse(reworkFlowLink.hidden);
-    assertEquals(keyboardComponent.textContent.trim(), 'Keyboard');
+    assertEquals(keyboardComponent.componentName, 'Keyboard');
     assertFalse(keyboardComponent.disabled);
     assertFalse(keyboardComponent.checked);
-    assertEquals(thumbReaderComponent.textContent.trim(), 'Thumb Reader');
+    assertEquals(thumbReaderComponent.componentName, 'Thumb Reader');
     assertTrue(thumbReaderComponent.disabled);
     assertFalse(thumbReaderComponent.checked);
-    assertEquals(trackpadComponent.textContent.trim(), 'Trackpad');
+    assertEquals(trackpadComponent.componentName, 'Trackpad');
     assertFalse(trackpadComponent.disabled);
     assertTrue(trackpadComponent.checked);
   });

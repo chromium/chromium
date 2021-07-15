@@ -8,12 +8,12 @@
   </div>
   <div slot="body">
     <div>
-      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component" mutable-data>
-        <cr-checkbox id="[[component.id]]"
+      <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
+        <repair-component-chip id="[[component.id]]"
           checked="{{component.checked}}"
-          disabled$="[[component.disabled]]">
-          [[component.name]]
-        </cr-checkbox>
+          disabled$="[[component.disabled]]"
+          component-name="[[component.name]]">
+        </repair-component-chip>
       </template>
     </div>
     <div>If you are reworking a motherboard to use in another device, go to the

@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './shimless_rma_shared_css.js';
 import './base_page.js';
+import './repair_component_chip.js';
+import './shimless_rma_shared_css.js';
 
-import 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getShimlessRmaService} from './mojo_interface_provider.js';
@@ -78,29 +79,31 @@ export class OnboardingSelectComponentsPageElement extends PolymerElement {
   ready() {
     super.ready();
     this.shimlessRmaService_ = getShimlessRmaService();
+    this.getComponents_();
+  }
+
+  /** @private */
+  getComponents_() {
     this.shimlessRmaService_.getComponentList().then((result) => {
-      if (result === undefined || result.components === undefined) {
+      if (!result || !result.hasOwnProperty('components')) {
         // TODO(gavindodd): Set an error state?
         console.error('Could not get components!');
-      } else {
-        let newComponentCheckboxes = [];
-        result.components.forEach(item => {
-          if (ComponentTypeToName.hasOwnProperty(item.component)) {
-            newComponentCheckboxes.push({
-              component: item.component,
-              id: ComponentTypeToId[item.component],
-              name: ComponentTypeToName[item.component],
-              checked: item.state === ComponentRepairState.kReplaced,
-              disabled: item.state === ComponentRepairState.kMissing
-            });
-          } else {
-            // TODO(gavindodd): Set an error state?
-            console.error(
-                'Could not find name for component ' + item.component);
-          }
-        });
-        this.componentCheckboxes_ = newComponentCheckboxes;
+        return;
       }
+
+      let componentList = [];
+      result.components.forEach(item => {
+        const component = assert(item.component);
+
+        componentList.push({
+          component: item.component,
+          id: ComponentTypeToId[item.component],
+          name: ComponentTypeToName[item.component],
+          checked: item.state === ComponentRepairState.kReplaced,
+          disabled: item.state === ComponentRepairState.kMissing
+        });
+      });
+      this.componentCheckboxes_ = componentList;
     });
   }
 
