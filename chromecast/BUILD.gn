@@ -85,6 +85,7 @@ cast_test_group("cast_tests") {
     "//cc:cc_unittests",
     "//chromecast/base:cast_base_unittests",
     "//chromecast/base/component:cast_component_unittests",
+    "//chromecast/cast_core:cast_cast_core_unittests",
     "//chromecast/common:cast_common_unittests",
     "//chromecast/crypto:cast_crypto_unittests",
     "//chromecast/device/bluetooth:cast_bluetooth_unittests",
