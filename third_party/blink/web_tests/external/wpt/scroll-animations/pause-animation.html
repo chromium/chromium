@@ -23,8 +23,15 @@
 <body>
 <script>
 'use strict';
+
+// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+// functions that include ...WithTimeRange() should be replaced with the same
+// function but without that ending. For example:
+//
+// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
+
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -44,7 +51,7 @@ promise_test(async t => {
 }, 'Pausing clears the start time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -61,7 +68,7 @@ promise_test(async t => {
 }, 'Aborting a pause preserves the start time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -78,7 +85,7 @@ promise_test(async t => {
    + ' animation is paused');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -103,7 +110,7 @@ promise_test(async t => {
   // This test does not cover a specific step in the algorithm but serves as a
   // high-level sanity check that pausing does, in fact, freeze the current
   // time.
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   // Wait for new animation frame which allows the timeline to compute new
@@ -127,7 +134,7 @@ promise_test(async t => {
 }, 'The animation\'s current time remains fixed after pausing');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -155,7 +162,7 @@ promise_test(async t => {
 }, 'Pausing a canceled animation sets the current time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   const scroller = animation.timeline.scrollSource;
   // Make the scroll timeline inactive.
   scroller.style.overflow = 'visible';
@@ -179,7 +186,7 @@ promise_test(async t => {
 }, 'Pause pending task doesn\'t run when the timeline is inactive.');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   const scroller = animation.timeline.scrollSource;
   const maxScroll = scroller.scrollHeight - scroller.clientHeight;
   scroller.scrollTop = 0.2 * maxScroll;

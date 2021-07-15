@@ -24,8 +24,14 @@
 <script>
 'use strict';
 
+// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+// functions that include ...WithTimeRange() should be replaced with the same
+// function but without that ending. For example:
+//
+// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
+
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -48,7 +54,7 @@ promise_test(async t => {
 }, 'Updating the playback rate maintains the current time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -61,7 +67,7 @@ promise_test(async t => {
 }, 'Updating the playback rate while running makes the animation pending');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -85,7 +91,7 @@ promise_test(async t => {
    + ' the current time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -101,7 +107,7 @@ promise_test(async t => {
    + ' the current time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -118,7 +124,7 @@ promise_test(async t => {
 }, 'If a pending playback rate is set multiple times, the latest wins');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -131,7 +137,7 @@ promise_test(async t => {
 }, 'In the idle state, the playback rate is applied immediately');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -144,7 +150,7 @@ promise_test(async t => {
 }, 'In the paused state, the playback rate is applied immediately');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -161,7 +167,7 @@ promise_test(async t => {
    + ' the current time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();

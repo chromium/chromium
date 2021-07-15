@@ -854,6 +854,15 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
   AnimationPlayState old_play_state = CalculateAnimationPlayState();
   absl::optional<AnimationTimeDelta> old_current_time = CurrentTimeInternal();
 
+  // In some cases, we need to preserve the progress of the animation between
+  // the old timeline and the new one. We do this by storing the progress using
+  // the old current time and the effect end based on the old timeline. Pending
+  // spec issue: https://github.com/w3c/csswg-drafts/issues/6452
+  double progress = 0;
+  if (old_current_time && !EffectEnd().is_zero()) {
+    progress = old_current_time.value() / EffectEnd();
+  }
+
   CancelAnimationOnCompositor();
 
   // 3. Let the timeline of the animation be the new timeline.
@@ -873,7 +882,8 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
     document_->Timeline().AnimationAttached(this);
   SetOutdated();
 
-  // Update content timing to be based on new timeline type
+  // Update content timing to be based on new timeline type. This ensures that
+  // EffectEnd() is returning a value appropriate to the new timeline.
   if (content_ && timeline_)
     content_->InvalidateNormalizedTiming();
 
@@ -899,7 +909,8 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
           if (old_current_time) {
             reset_current_time_on_resume_ = true;
             start_time_ = absl::nullopt;
-            SetHoldTimeAndPhase(old_current_time, TimelinePhase::kInactive);
+            SetHoldTimeAndPhase(progress * EffectEnd(),
+                                TimelinePhase::kInactive);
           } else if (PendingInternal()) {
             start_time_ = boundary_time;
           }
@@ -910,7 +921,7 @@ void Animation::setTimeline(AnimationTimeline* timeline) {
       }
     } else if (old_current_time && old_timeline &&
                !old_timeline->IsMonotonicallyIncreasing()) {
-      SetCurrentTimeInternal(old_current_time.value());
+      SetCurrentTimeInternal(progress * EffectEnd());
     }
   }
 

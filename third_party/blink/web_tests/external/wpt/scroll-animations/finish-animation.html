@@ -24,8 +24,15 @@
 <div id="log"></div>
 <script>
 'use strict';
+
+  // TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+  // functions that include ...WithTimeRange() should be replaced with the same
+  // function but without that ending. For example:
+  //
+  // createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
+
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -39,32 +46,19 @@
 
   promise_test(async t => {
     const animation = createScrollLinkedAnimation(t);
-    animation.effect.updateTiming({ iterations : Infinity });
-    animation.play();
     // Wait for new animation frame which allows the timeline to compute new
-    // current time.
-    await waitForNextFrame();
-
-    assert_throws_dom('InvalidStateError', () => {
-      animation.finish();
-    });
-  }, 'Finishing an infinite animation throws');
-
-  promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
-    // Wait for new animation frame  which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
     animation.play();
     animation.finish();
 
-    assert_times_equal(animation.currentTime, 1000,
+    assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.01,
       'After finishing, the currentTime should be set to the end of the'
       + ' active duration');
   }, 'Finishing an animation seeks to the end time');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -74,19 +68,21 @@
       animation.effect.getComputedTiming().endTime + 1;
     animation.finish();
 
-    assert_time_equals_literal(animation.currentTime, 1000,
+    assert_times_equal(animation.currentTime, 1000,
       'After finishing, the currentTime should be set back to the end of the'
       + ' active duration');
   }, 'Finishing an animation with a current time past the effect end jumps'
     + ' back to the end');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
+    const scroller = animation.timeline.scrollSource;
+    const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
     animation.play();
-    animation.currentTime = 1000;
+    scroller.scrollTop = maxScroll;
     await animation.finished;
 
     animation.playbackRate = -1;
@@ -98,7 +94,7 @@
   }, 'Finishing a reversed animation jumps to zero time');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -110,14 +106,14 @@
     animation.currentTime = -10000;
     animation.finish();
 
-    assert_equals(animation.currentTime, 0,
+    assert_times_equal(animation.currentTime, 0,
                   'After finishing a reversed animation the currentTime ' +
                   'should be set back to zero');
   }, 'Finishing a reversed animation with a current time less than zero'
     + ' makes it jump back to zero');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -154,7 +150,7 @@
     assert_equals(animation.playState, 'finished',
                   'The play state of a play-pending animation should become ' +
                   '"finished"');
-    assert_times_equal(animation.currentTime, 1000,
+    assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.1,
                       'The current time of a play-pending animation should ' +
                       'be set to the end of the active duration');
     assert_equals(animation.startTime, null,
@@ -243,10 +239,12 @@
     assert_equals(animation.playState, 'finished',
                   'The play state of a canceled animation should become ' +
                   '"finished"');
-    assert_times_equal(animation.startTime,
-                      animation.timeline.currentTime - 1000,
+    // Divide by 1000 to convert from milliseconds to seconds, which represent
+    // percentage values until changed internally.
+    assert_times_equal(animation.startTime / 1000,
+                      animation.timeline.currentTime.value - 100,
                       'The start time of a finished animation should be set');
-    assert_times_equal(animation.currentTime, 1000,
+    assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.1,
                       'Hold time should be set to end boundary of the animation');
 
   }, 'Finishing a canceled animation sets the current and start times');
@@ -266,13 +264,15 @@
     const finishEvent = await eventWatcher.wait_for('finish');
     assert_equals(animation.playState, 'finished',
       'Animation is finished.');
-    assert_equals(animation.currentTime, 1000,
+      assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.1,
       'The current time is the end of the active duration in finished state.');
-    assert_equals(animation.startTime, -750,
+    // Divide by 1000 to convert from milliseconds to seconds, which represent
+    // percentage values until changed internally.
+    assert_equals(animation.startTime / 1000, -75,
       'The start time is calculated to match the current time.');
-    assert_equals(finishEvent.currentTime, 1000,
+    assert_equals(finishEvent.currentTime / 1000, 100,
       'event.currentTime is the animation current time.');
-    assert_equals(finishEvent.timelineTime, 250,
+    assert_equals(finishEvent.timelineTime / 1000, 25,
       'event.timelineTime is timeline.currentTime');
   }, 'Finishing idle animation produces correct state and fires finish event.');
 
@@ -306,13 +306,15 @@
     const finishEvent = await eventWatcher.wait_for('finish');
     assert_equals(animation.playState, 'finished',
       'Animation is finished.');
-    assert_equals(animation.currentTime, 1000,
+      assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.1,
       'The current time is the end of active duration in finished state.');
-    assert_equals(animation.startTime, -750,
+    // Divide by 1000 to convert from milliseconds to seconds, which represent
+    // percentage values until changed internally.
+    assert_equals(animation.startTime / 1000, -75,
       'The start time is calculated to match animation current time.');
-    assert_equals(finishEvent.currentTime, 1000,
+    assert_equals(finishEvent.currentTime / 1000, 100,
       'event.currentTime is the animation current time.');
-    assert_equals(finishEvent.timelineTime, 250,
+    assert_equals(finishEvent.timelineTime / 1000, 25,
       'event.timelineTime is timeline.currentTime');
   }, 'Finishing running animation produces correct state and fires finish event.');
 
@@ -352,13 +354,15 @@
     assert_equals(animation.playState, 'finished',
                   'The play state of a paused animation should become ' +
                   '"finished"');
-    assert_times_equal(animation.startTime,
-                      animation.timeline.currentTime - 1000,
+    // Divide by 1000 to convert from milliseconds to seconds, which represent
+    // percentage values until changed internally.
+    assert_times_equal(animation.startTime / 1000,
+                      animation.timeline.currentTime.value - 100,
                       'The start time of a paused animation should be set');
   }, 'Finishing a paused animation resolves the start time');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -382,7 +386,7 @@
     + ' immediately and update the start time');
 
   promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     // Wait for new animation frame which allows the timeline to compute new
     // current time.
     await waitForNextFrame();
@@ -436,7 +440,7 @@
     animation.finish();
     assert_false(animation.pending);
     assert_equals(animation.playbackRate, 2);
-    assert_times_equal(animation.currentTime, 1000);
+    assert_percent_css_unit_value_approx_equals(animation.currentTime, 100, 0.1);
   }, 'A pending playback rate should be applied immediately when an animation'
     + ' is finished');
 
@@ -454,40 +458,5 @@
       animation.finish();
     });
   }, 'An exception should be thrown if the effective playback rate is zero');
-
-  promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
-    animation.effect.updateTiming({ iterations: Infinity });
-    // Wait for new animation frame which allows the timeline to compute new
-    // current time.
-    await waitForNextFrame();
-    animation.play();
-    animation.currentTime = 500;
-    animation.playbackRate = -1;
-    await animation.ready;
-
-    animation.updatePlaybackRate(1);
-
-    assert_throws_dom('InvalidStateError', () => {
-      animation.finish();
-    });
-  }, 'An exception should be thrown when finishing if the effective playback rate'
-    + ' is positive and the target effect end is infinity');
-
-  promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
-    animation.effect.updateTiming({ iterations: Infinity });
-    // Wait for new animation frame which allows the timeline to compute new
-    // current time.
-    await waitForNextFrame();
-    animation.play();
-    await animation.ready;
-
-    animation.updatePlaybackRate(-1);
-
-    animation.finish();
-    // Should not have thrown
-  }, 'An exception is NOT thrown when finishing if the effective playback rate'
-    + ' is negative and the target effect end is infinity');
 </script>
 </body>

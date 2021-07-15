@@ -60,6 +60,12 @@
 <script>
   'use strict';
 
+  // TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+  // functions that include ...WithTimeRange() should be replaced with the same
+  // function but without that ending. For example:
+  //
+  // createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
+
   async function createScrollAnimationTest(description, config) {
     promise_test(async t => {
       const scroller = createScrollerWithStartAndEnd(t, config.orientation);
@@ -85,7 +91,7 @@
       // current time.
       await waitForNextFrame();
 
-      const animation = createScrollLinkedAnimation(t, timeline);
+      const animation = createScrollLinkedAnimationWithTimeRange(t, timeline);
       const scrollRange = end.offsetTop - start.offsetTop;
       const timeRange = animation.timeline.timeRange;
 

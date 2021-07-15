@@ -24,8 +24,14 @@
 <script>
 'use strict';
 
+// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+// functions that include ...WithTimeRange() should be replaced with the same
+// function but without that ending. For example:
+//
+// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
+
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -37,7 +43,7 @@ promise_test(async t => {
 }, 'Playing a running animation leaves the current time unchanged');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -49,7 +55,7 @@ promise_test(async t => {
 }, 'Playing a finished animation seeks back to the start');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -62,7 +68,7 @@ promise_test(async t => {
 }, 'Playing a finished and reversed animation seeks to end');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -83,7 +89,7 @@ promise_test(async t => {
    + ' to the start');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -96,7 +102,7 @@ promise_test(async t => {
 }, 'Playing a finished animation clears the start time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -109,7 +115,7 @@ promise_test(async t => {
    + ' pending');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -122,7 +128,7 @@ promise_test(async t => {
    + ' animation enters the running state');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -142,7 +148,7 @@ promise_test(async t => {
 }, 'Resuming an animation from paused calculates start time from hold time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -169,7 +175,7 @@ promise_test(async t => {
 
 promise_test(async t => {
   // Seek animation beyond target end
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -189,7 +195,7 @@ promise_test(async t => {
 }, 'A pending playback rate is used when determining auto-rewind behavior');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();
@@ -209,7 +215,7 @@ promise_test(async t => {
 }, 'Playing a canceled animation sets the start time');
 
 promise_test(async t => {
-  const animation = createScrollLinkedAnimation(t);
+  const animation = createScrollLinkedAnimationWithTimeRange(t);
   // Wait for new animation frame which allows the timeline to compute new
   // current time.
   await waitForNextFrame();

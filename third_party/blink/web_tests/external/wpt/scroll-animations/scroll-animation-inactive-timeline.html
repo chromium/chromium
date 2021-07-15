@@ -20,10 +20,16 @@
 </style>
 <div id="log"></div>
 <script>
-  'use strict';
+'use strict';
+
+// TODO(crbug.com/1216655): Remove time range. Once time range is removed, all
+// functions that include ...WithTimeRange() should be replaced with the same
+// function but without that ending. For example:
+//
+// createScrollLinkedAnimationWithTimeRange() => createScrollLinkedAnimation()
 
 promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     const scroller = animation.timeline.scrollSource;
     // Make the scroll timeline inactive.
     scroller.style.overflow = 'visible';
@@ -46,7 +52,7 @@ promise_test(async t => {
 }, 'Play pending task doesn\'t run when the timeline is inactive.');
 
 promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     const scroller = animation.timeline.scrollSource;
     // Make the scroll timeline inactive.
     scroller.style.overflow = 'visible';
@@ -70,7 +76,7 @@ promise_test(async t => {
    'activated after animation.play call.');
 
 promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     const scroller = animation.timeline.scrollSource;
     const target = animation.effect.target;
     // Make the scroll timeline inactive.
@@ -105,7 +111,7 @@ promise_test(async t => {
    'activated after setting start time.');
 
 promise_test(async t => {
-    const animation = createScrollLinkedAnimation(t);
+    const animation = createScrollLinkedAnimationWithTimeRange(t);
     const scroller = animation.timeline.scrollSource;
     const maxScroll = scroller.scrollHeight - scroller.clientHeight;
     const target = animation.effect.target;
