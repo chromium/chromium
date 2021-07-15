@@ -763,6 +763,9 @@ test("gfx_unittests") {
       "ios/uikit_util_unittest.mm",
     ]
   }
+  if (is_android) {
+    sources += [ "android/android_surface_control_compat_unittest.cc" ]
+  }
 
   include_dirs = [ "//third_party/skia/include/private" ]
 

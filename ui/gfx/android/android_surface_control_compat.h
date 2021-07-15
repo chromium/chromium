@@ -56,6 +56,8 @@ class GFX_EXPORT SurfaceControl {
   // Transaction class below instead.
   static void ApplyTransaction(ASurfaceTransaction* transaction);
 
+  static void SetStubImplementationForTesting();
+
   class GFX_EXPORT Surface : public base::RefCounted<Surface> {
    public:
     // Wraps ASurfaceControl, but doesn't transfer ownership. Will not release

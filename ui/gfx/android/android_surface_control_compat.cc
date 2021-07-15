@@ -143,12 +143,66 @@ uint64_t g_agb_required_usage_bits = AHARDWAREBUFFER_USAGE_COMPOSER_OVERLAY;
 
 struct SurfaceControlMethods {
  public:
-  static const SurfaceControlMethods& Get() {
-    static const SurfaceControlMethods instance;
+  static SurfaceControlMethods& GetImpl(bool load_functions) {
+    static SurfaceControlMethods instance(load_functions);
     return instance;
   }
 
-  SurfaceControlMethods() {
+  static const SurfaceControlMethods& Get() {
+    return GetImpl(/*load_functions=*/true);
+  }
+
+  void InitWithStubs() {
+    struct TransactionStub {
+      ASurfaceTransaction_OnComplete on_complete = nullptr;
+      void* on_complete_ctx = nullptr;
+      ASurfaceTransaction_OnCommit on_commit = nullptr;
+      void* on_commit_ctx = nullptr;
+    };
+
+    ASurfaceTransaction_createFn = []() {
+      return reinterpret_cast<ASurfaceTransaction*>(new TransactionStub);
+    };
+    ASurfaceTransaction_deleteFn = [](ASurfaceTransaction* transaction) {
+      delete reinterpret_cast<TransactionStub*>(transaction);
+    };
+    ASurfaceTransaction_applyFn = [](ASurfaceTransaction* transaction) {
+      auto* stub = reinterpret_cast<TransactionStub*>(transaction);
+
+      if (stub->on_commit)
+        stub->on_commit(stub->on_commit_ctx, nullptr);
+      stub->on_commit = nullptr;
+      stub->on_commit_ctx = nullptr;
+
+      if (stub->on_complete)
+        stub->on_complete(stub->on_complete_ctx, nullptr);
+      stub->on_complete = nullptr;
+      stub->on_complete_ctx = nullptr;
+
+      return static_cast<int64_t>(0);
+    };
+
+    ASurfaceTransaction_setOnCompleteFn =
+        [](ASurfaceTransaction* transaction, void* ctx,
+           ASurfaceTransaction_OnComplete callback) {
+          auto* stub = reinterpret_cast<TransactionStub*>(transaction);
+          stub->on_complete = callback;
+          stub->on_complete_ctx = ctx;
+        };
+
+    ASurfaceTransaction_setOnCommitFn =
+        [](ASurfaceTransaction* transaction, void* ctx,
+           ASurfaceTransaction_OnCommit callback) {
+          auto* stub = reinterpret_cast<TransactionStub*>(transaction);
+          stub->on_commit = callback;
+          stub->on_commit_ctx = ctx;
+        };
+  }
+
+  SurfaceControlMethods(bool load_functions) {
+    if (!load_functions)
+      return;
+
     void* main_dl_handle = dlopen("libandroid.so", RTLD_NOW);
     if (!main_dl_handle) {
       LOG(ERROR) << "Couldnt load android so";
@@ -275,6 +329,11 @@ uint64_t ColorSpaceToADataSpace(const gfx::ColorSpace& color_space) {
 SurfaceControl::TransactionStats ToTransactionStats(
     ASurfaceTransactionStats* stats) {
   SurfaceControl::TransactionStats transaction_stats;
+
+  // In unit tests we don't have stats.
+  if (!stats)
+    return transaction_stats;
+
   transaction_stats.present_fence = base::ScopedFD(
       SurfaceControlMethods::Get().ASurfaceTransactionStats_getPresentFenceFdFn(
           stats));
@@ -389,6 +448,10 @@ bool SurfaceControl::SupportsOnCommit() {
   return IsSupported() &&
          SurfaceControlMethods::Get().ASurfaceTransaction_setOnCommitFn !=
              nullptr;
+}
+
+void SurfaceControl::SetStubImplementationForTesting() {
+  SurfaceControlMethods::GetImpl(/*load_functions=*/false).InitWithStubs();
 }
 
 void SurfaceControl::ApplyTransaction(ASurfaceTransaction* transaction) {
