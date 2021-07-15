@@ -47,6 +47,7 @@ class FakeAppListModelUpdater : public AppListModelUpdater {
       const std::vector<ChromeSearchResult*>& results) override;
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
+  void LoadAppIcon(const std::string& id) override;
 
   // For AppListModel:
   ChromeAppListItem* FindItem(const std::string& id) override;

@@ -134,6 +134,9 @@ class ASH_PUBLIC_EXPORT AppListClient {
   // implementation, this can return nullptr.
   virtual AppListNotifier* GetNotifier() = 0;
 
+  // Invoked to load an icon of the app identified by `app_id`.
+  virtual void LoadIcon(int profile_id, const std::string& app_id) = 0;
+
  protected:
   virtual ~AppListClient() = default;
 };

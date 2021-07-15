@@ -113,6 +113,7 @@ class AppListTestViewDelegate : public AppListViewDelegate,
   bool IsInTabletMode() override;
   AppListNotifier* GetNotifier() override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
+  void LoadIcon(const std::string& app_id) override {}
 
   // Do a bulk replacement of the items in the model.
   void ReplaceTestModel(int item_count);

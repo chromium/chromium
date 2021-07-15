@@ -202,6 +202,9 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // Adjust scrolls that happen in the view. This needs to be delegated because
   // it depends on the active user's preferences.
   virtual int AdjustAppListViewScrollOffset(int offset, ui::EventType type) = 0;
+
+  // Loads the icon of an app item identified by `app_id`.
+  virtual void LoadIcon(const std::string& app_id) = 0;
 };
 
 }  // namespace ash

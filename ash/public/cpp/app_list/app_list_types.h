@@ -74,6 +74,9 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   gfx::ImageSkia icon;         // The icon of this item.
   bool is_page_break = false;  // Whether this item is a "page break" item.
   SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
+
+  int icon_version = 0;  // An int represent icon version. If changed, `icon`
+                         // should be reloaded.
 };
 
 // All possible states of the app list.

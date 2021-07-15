@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/notreached.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/app_list_client_impl.h"
@@ -39,13 +40,6 @@ std::unique_ptr<ash::AppListItemMetadata> CreateDefaultMetadata(
 void ChromeAppListItem::OverrideAppListControllerDelegateForTesting(
     AppListControllerDelegate* controller) {
   g_controller_for_test = controller;
-}
-
-// static
-gfx::ImageSkia ChromeAppListItem::CreateDisabledIcon(
-    const gfx::ImageSkia& icon) {
-  const color_utils::HSL shift = {-1, 0, 0.6};
-  return gfx::ImageSkiaOperations::CreateHSLShiftedImage(icon, shift);
 }
 
 // ChromeAppListItem::TestApi
@@ -164,6 +158,18 @@ void ChromeAppListItem::SetDefaultPositionIfApplicable(
   launch_ordinal = app_sorting->GetAppLaunchOrdinal(id());
   SetPosition(syncer::StringOrdinal(page_ordinal.ToInternalValue() +
                                     launch_ordinal.ToInternalValue()));
+}
+
+void ChromeAppListItem::LoadIcon() {
+  NOTIMPLEMENTED();
+}
+
+void ChromeAppListItem::IncrementIconVersion() {
+  ++metadata_->icon_version;
+
+  AppListModelUpdater* updater = model_updater();
+  if (updater)
+    updater->SetItemIconVersion(id(), metadata_->icon_version);
 }
 
 void ChromeAppListItem::SetIcon(const gfx::ImageSkia& icon) {

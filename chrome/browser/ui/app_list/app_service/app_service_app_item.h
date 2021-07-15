@@ -31,6 +31,7 @@ class AppServiceAppItem : public ChromeAppListItem,
   void OnAppUpdate(const apps::AppUpdate& app_update, bool in_constructor);
 
   // ChromeAppListItem overrides:
+  void LoadIcon() override;
   void Activate(int event_flags) override;
   const char* GetItemType() const override;
   void GetContextMenuModel(GetMenuModelCallback callback) override;

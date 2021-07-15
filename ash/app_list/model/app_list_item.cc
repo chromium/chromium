@@ -22,7 +22,6 @@ AppListItem::~AppListItem() {
 void AppListItem::SetIcon(AppListConfigType config_type,
                           const gfx::ImageSkia& icon) {
   per_config_icons_[config_type] = icon;
-  icon.EnsureRepsForSupportedScales();
 
   for (auto& observer : observers_)
     observer.ItemIconChanged(config_type);
@@ -41,7 +40,6 @@ const gfx::ImageSkia& AppListItem::GetIcon(
 
 void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
   metadata_->icon = icon;
-  icon.EnsureRepsForSupportedScales();
 
   // If the item does not have a config specific icon, it will be represented by
   // the (possibly scaled) default icon, which means that changing the default
@@ -58,6 +56,16 @@ void AppListItem::SetDefaultIcon(const gfx::ImageSkia& icon) {
 
 const gfx::ImageSkia& AppListItem::GetDefaultIcon() const {
   return metadata_->icon;
+}
+
+void AppListItem::SetIconVersion(int icon_version) {
+  if (metadata_->icon_version == icon_version)
+    return;
+
+  metadata_->icon_version = icon_version;
+  for (auto& observer : observers_) {
+    observer.ItemIconVersionChanged();
+  }
 }
 
 void AppListItem::SetNotificationBadgeColor(const SkColor color) {

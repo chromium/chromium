@@ -46,6 +46,14 @@ class APP_LIST_MODEL_EXPORT AppListItem {
   void SetDefaultIcon(const gfx::ImageSkia& icon);
   const gfx::ImageSkia& GetDefaultIcon() const;
 
+  // Sets an number to represent the current icon version. It is used so that
+  // the data provider side (AppService) only marks an icon change without
+  // actually loading the icon. When AppLIteItem is added to UI, UI code
+  // observes this icon version number and calls back into data provider to
+  // perform the actual icon loading. When the icon is loaded, SetIcon is called
+  // and UI would be updated since it also observe ItemIconChanged.
+  void SetIconVersion(int icon_version);
+
   void SetNotificationBadgeColor(const SkColor color);
 
   const std::string& GetDisplayName() const {

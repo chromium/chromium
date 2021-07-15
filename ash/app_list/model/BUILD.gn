@@ -4,6 +4,8 @@
 
 component("app_list_model") {
   sources = [
+    "app_icon_load_helper.cc",
+    "app_icon_load_helper.h",
     "app_list_folder_item.cc",
     "app_list_folder_item.h",
     "app_list_item.cc",

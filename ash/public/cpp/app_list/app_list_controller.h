@@ -79,6 +79,8 @@ class ASH_PUBLIC_EXPORT AppListController {
   virtual void SetItemMetadata(const std::string& id,
                                std::unique_ptr<AppListItemMetadata> data) = 0;
 
+  virtual void SetItemIconVersion(const std::string& id, int icon_version) = 0;
+
   // Updates an item's icon.
   virtual void SetItemIcon(const std::string& id,
                            const gfx::ImageSkia& icon) = 0;

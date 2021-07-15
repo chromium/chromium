@@ -3395,6 +3395,7 @@ if (!is_android) {
         "../browser/ui/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ui/app_list/app_service/app_service_app_item_browsertest.cc",
         "../browser/ui/app_list/arc/arc_usb_host_permission_browsertest.cc",
+        "../browser/ui/app_list/chrome_app_list_item_browsertest.cc",
         "../browser/ui/app_list/chrome_app_list_model_updater_browsertest.cc",
         "../browser/ui/app_list/search/app_list_search_browsertest.cc",
         "../browser/ui/ash/accelerator_commands_browsertest.cc",

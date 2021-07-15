@@ -9,10 +9,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/app_list/model/app_icon_load_helper.h"
 #include "ash/app_list/model/app_list_item_observer.h"
 #include "ash/ash_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/compositor/layer_animation_observer.h"
 #include "ui/views/context_menu_controller.h"
 #include "ui/views/controls/button/button.h"
@@ -361,6 +363,9 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
   // Whether the notification indicator flag is enabled.
   const bool is_notification_indicator_enabled_;
+
+  // Helper to trigger icon load.
+  absl::optional<AppIconLoadHelper> icon_load_helper_;
 
   base::WeakPtrFactory<AppListItemView> weak_ptr_factory_{this};
 };
