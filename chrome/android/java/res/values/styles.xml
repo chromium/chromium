@@ -427,11 +427,6 @@
         <item name="android:windowExitAnimation">@null</item>
     </style>
 
-    <!-- Content and Site Suggestions -->
-    <style name="SuggestionCardModern" parent="Card">
-        <item name="android:layout_marginBottom">@dimen/content_suggestions_card_bottom_margin</item>
-    </style>
-
     <!-- Password manager settings page -->
     <style name="PasswordEntryName">
         <item name="android:textAppearance">@style/TextAppearance.PasswordEntryName</item>

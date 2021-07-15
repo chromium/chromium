@@ -5,9 +5,6 @@
 
 <resources>
     <!-- Card styles -->
-    <style name="Card">
-        <item name="android:background">@drawable/hairline_border_card_background</item>
-    </style>
     <style name="CardTransparentForDark">
         <item name="android:background">@drawable/hairline_border_card_dark_transparent_bg</item>
     </style>

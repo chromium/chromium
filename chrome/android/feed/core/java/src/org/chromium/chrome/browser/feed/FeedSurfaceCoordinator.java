@@ -55,7 +55,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.share.ShareDelegate;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.browser.xsurface.FeedLaunchReliabilityLogger;
@@ -117,7 +116,7 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
     private @Nullable Profile mProfile;
     private @Nullable NativePageNavigationDelegate mPageNavigationDelegate;
     private @Nullable FeedSurfaceLifecycleManager mFeedSurfaceLifecycleManager;
-    private @Nullable PersonalizedSigninPromoView mSigninPromoView;
+    private @Nullable View mSigninPromoView;
     private @Nullable FeedStreamViewResizer mStreamViewResizer;
     // This is the "default"/interest feed stream, not necessarily the current stream.
     // TODO(chili): Remove the necessity of this.
@@ -685,11 +684,11 @@ public class FeedSurfaceCoordinator implements FeedSurfaceProvider {
         return mSectionHeaderModel;
     }
 
-    /** @return The {@link PersonalizedSigninPromoView} for this class. */
-    PersonalizedSigninPromoView getSigninPromoView() {
+    /** @return The {@link View} for this class. */
+    View getSigninPromoView() {
         if (mSigninPromoView == null) {
             LayoutInflater inflater = LayoutInflater.from(mRootView.getContext());
-            mSigninPromoView = (PersonalizedSigninPromoView) inflater.inflate(
+            mSigninPromoView = inflater.inflate(
                     R.layout.personalized_signin_promo_view_modern_content_suggestions, mRootView,
                     false);
         }

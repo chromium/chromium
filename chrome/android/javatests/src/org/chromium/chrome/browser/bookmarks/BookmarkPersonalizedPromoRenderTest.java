@@ -131,6 +131,6 @@ public class BookmarkPersonalizedPromoRenderTest {
     private View getPersonalizedPromoView() {
         BookmarkActivity bookmarkActivity = mBookmarkTestRule.getBookmarkActivity();
         Assert.assertNotNull("BookmarkActivity should not be null", bookmarkActivity);
-        return bookmarkActivity.findViewById(R.id.signin_promo_view_container);
+        return bookmarkActivity.findViewById(R.id.signin_promo_view_wrapper);
     }
 }

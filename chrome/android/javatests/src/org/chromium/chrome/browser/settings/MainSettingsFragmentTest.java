@@ -358,7 +358,7 @@ public class MainSettingsFragmentTest {
 
         Preference syncPromoPreference = mMainSettings.findPreference(MainSettings.PREF_SYNC_PROMO);
         CriteriaHelper.pollUiThread(() -> syncPromoPreference.isVisible());
-        View syncPromoView = mMainSettings.getView().findViewById(R.id.signin_promo_view_container);
+        View syncPromoView = mMainSettings.getView().findViewById(R.id.signin_promo_view_wrapper);
         mRenderTestRule.render(syncPromoView, "main_settings_sync_promo");
     }
 

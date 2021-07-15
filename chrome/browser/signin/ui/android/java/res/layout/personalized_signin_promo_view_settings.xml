@@ -14,25 +14,32 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView
-            android:id="@+id/signin_promo_view_container"
+        <org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
+            android:id="@+id/signin_promo_view_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/hairline_border_card_background"
-            android:gravity="center_horizontal"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:theme="@style/ThemeRefactorOverlay.Enabled.SettingsPromo"
+            style="@style/MaterialCardStyle">
 
-            <FrameLayout
+            <org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView
+                android:id="@+id/signin_promo_view_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp">
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-                <include layout="@layout/personalized_signin_promo_view_header"/>
-            </FrameLayout>
+                <FrameLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
 
-            <include layout="@layout/personalized_signin_promo_view_body"/>
-        </org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView>
+                    <include layout="@layout/personalized_signin_promo_view_header"/>
+                </FrameLayout>
+
+                <include layout="@layout/personalized_signin_promo_view_body"/>
+            </org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView>
+        </org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>
     </FrameLayout>
 
     <TextView

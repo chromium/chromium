@@ -3,28 +3,34 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView
+<org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/signin_promo_view_container"
+    android:id="@+id/signin_promo_view_wrapper"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
-    android:background="@drawable/hairline_border_card_background"
-    android:gravity="center_horizontal"
-    android:orientation="vertical"
-    android:paddingBottom="12dp"
-    android:paddingTop="14dp"
-    android:paddingStart="16dp"
-    android:paddingEnd="16dp">
+    style="@style/MaterialCardStyle">
 
-    <FrameLayout
+    <org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView
+        android:id="@+id/signin_promo_view_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="12dp">
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="12dp"
+        android:paddingTop="14dp"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp">
 
-        <include layout="@layout/personalized_signin_promo_view_header"/>
-    </FrameLayout>
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp">
 
-    <include layout="@layout/personalized_signin_promo_view_body"/>
+            <include layout="@layout/personalized_signin_promo_view_header"/>
+        </FrameLayout>
 
-</org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView>
+        <include layout="@layout/personalized_signin_promo_view_body"/>
+
+    </org.chromium.chrome.browser.signin.ui.PersonalizedSigninPromoView>
+</org.chromium.components.browser_ui.widget.MaterialCardViewNoShadow>

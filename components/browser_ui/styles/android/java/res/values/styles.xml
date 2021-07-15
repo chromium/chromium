@@ -226,6 +226,11 @@
     <style name="ThemeRefactorOverlay.Disabled.Settings" parent="">
         <item name="elevationOverlayEnabled">false</item>
     </style>
+    <!-- This is applied to view of MaterialCardViewNoShadow
+        in SettingsActivity. -->
+    <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
+        <item name="elevationOverlayEnabled">true</item>
+    </style>
     <!-- Indirection to allow downstream to add attributes. -->
     <style name="ColorOverlay" parent="Base.ColorOverlay"/>
 </resources>

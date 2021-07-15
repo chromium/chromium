@@ -301,7 +301,6 @@ public class SyncErrorCardPreferenceTest {
     }
 
     private View getPersonalizedSyncPromoView() {
-        return mSettingsActivityTestRule.getActivity().findViewById(
-                R.id.signin_promo_view_container);
+        return mSettingsActivityTestRule.getActivity().findViewById(R.id.signin_promo_view_wrapper);
     }
 }
