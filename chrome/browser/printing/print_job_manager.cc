@@ -140,21 +140,11 @@ void PrintJobManager::OnPrintJobEvent(
       DCHECK_EQ(1U, erased);
       break;
     }
-    case JobEventDetails::FAILED: {
+    case JobEventDetails::FAILED:
       current_jobs_.erase(print_job);
       break;
-    }
-#if defined(OS_WIN)
-    case JobEventDetails::PAGE_DONE:
-#endif
-    case JobEventDetails::DOC_DONE: {
-      // Don't care.
+    default:
       break;
-    }
-    default: {
-      NOTREACHED();
-      break;
-    }
   }
 }
 

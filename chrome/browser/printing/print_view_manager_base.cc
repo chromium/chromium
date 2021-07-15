@@ -775,13 +775,6 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
       TerminatePrintJob(true);
       break;
     }
-#if defined(OS_WIN)
-    case JobEventDetails::PAGE_DONE:
-#endif
-    case JobEventDetails::NEW_DOC: {
-      // Don't care about the actual printing process.
-      break;
-    }
     case JobEventDetails::DOC_DONE: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       chromeos::LacrosChromeServiceImpl* service =
@@ -801,18 +794,15 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
 #endif
       break;
     }
-    case JobEventDetails::JOB_DONE: {
+    case JobEventDetails::JOB_DONE:
       // Printing is done, we don't need it anymore.
       // print_job_->is_job_pending() may still be true, depending on the order
       // of object registration.
       printing_succeeded_ = true;
       ReleasePrintJob();
       break;
-    }
-    default: {
-      NOTREACHED();
+    default:
       break;
-    }
   }
 }
 
