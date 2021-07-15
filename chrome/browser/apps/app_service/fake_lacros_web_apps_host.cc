@@ -114,4 +114,8 @@ void FakeLacrosWebAppsHost::LoadIcon(const std::string& app_id,
                                      LoadIconCallback callback) {
   NOTIMPLEMENTED();
 }
+
+void FakeLacrosWebAppsHost::OpenNativeSettings(const std::string& app_id) {
+  NOTIMPLEMENTED();
+}
 }  // namespace apps

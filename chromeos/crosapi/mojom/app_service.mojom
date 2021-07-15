@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 6
+// Next MinVersion: 7
 
 module crosapi.mojom;
 
@@ -87,4 +87,9 @@ interface AppController {
     IconKey icon_key,
     IconType icon_type,
     int32 size_hint_in_dip) => (IconValue icon_value);
+
+  // Opens the app platform settings page for the app with |app_id|.
+  // e.g. for web app, it opens the Chrome site settings page for the app.
+  [MinVersion=6]
+  OpenNativeSettings@6(string app_id);
 };

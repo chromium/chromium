@@ -67,6 +67,7 @@ class WebAppsCrosapi : public KeyedService,
                     GetMenuModelCallback callback) override;
   void PauseApp(const std::string& app_id) override;
   void UnpauseApp(const std::string& app_id) override;
+  void OpenNativeSettings(const std::string& app_id) override;
 
   // crosapi::mojom::AppPublisher overrides.
   void OnApps(std::vector<apps::mojom::AppPtr> deltas) override;

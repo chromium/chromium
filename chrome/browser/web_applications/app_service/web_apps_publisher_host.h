@@ -76,7 +76,6 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
   void SetPermission(const std::string& app_id,
                      apps::mojom::PermissionPtr permission);
-  void OpenNativeSettings(const std::string& app_id);
 
   void SetWindowMode(const std::string& app_id,
                      apps::mojom::WindowMode window_mode);
@@ -87,6 +86,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, PauseUnpause);
+  FRIEND_TEST_ALL_PREFIXES(WebAppsPublisherHostBrowserTest, OpenNativeSettings);
 
   void OnReady();
 
@@ -104,6 +104,7 @@ class WebAppsPublisherHost : public crosapi::mojom::AppController,
                 apps::mojom::IconType icon_type,
                 int32_t size_hint_in_dip,
                 LoadIconCallback callback) override;
+  void OpenNativeSettings(const std::string& app_id) override;
 
   // WebAppPublisherHelper::Delegate:
   void PublishWebApps(std::vector<apps::mojom::AppPtr> apps) override;

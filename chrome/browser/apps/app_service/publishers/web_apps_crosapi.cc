@@ -211,6 +211,10 @@ void WebAppsCrosapi::UnpauseApp(const std::string& app_id) {
   controller_->UnpauseApp(app_id);
 }
 
+void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
+  controller_->OpenNativeSettings(app_id);
+}
+
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;
