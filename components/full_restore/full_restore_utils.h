@@ -88,6 +88,11 @@ extern const ui::ClassProperty<bool>* const kParentToHiddenContainerKey;
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<bool>* const kLaunchedFromFullRestoreKey;
 
+// A property key indicating whether a ARC ghost window has replaced by real
+// ARC task window.
+COMPONENT_EXPORT(FULL_RESTORE)
+extern const ui::ClassProperty<bool>* const kRealArcTaskWindow;
+
 COMPONENT_EXPORT(FULL_RESTORE)
 extern const ui::ClassProperty<WindowInfo*>* const kWindowInfoKey;
 

@@ -11,6 +11,7 @@
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/wm_helper.h"
 #include "components/full_restore/app_restore_data.h"
+#include "components/full_restore/full_restore_utils.h"
 #include "ui/views/window/caption_button_layout_constants.h"
 
 namespace chromeos {
@@ -27,11 +28,21 @@ void ArcWindowHandler::WindowSessionResolver::PopulateProperties(
     return;
   auto it = session_id_map_->find(params.window_session_id);
   if (it != session_id_map_->end()) {
+    // Reuse the ghost window instance for real ARC app window.
     if (it->second->HasOverlay())
       it->second->RemoveOverlay();
+    views::Widget* widget = it->second->GetWidget();
+    if (widget && widget->GetNativeWindow()) {
+      widget->GetNativeWindow()->SetProperty(::full_restore::kRealArcTaskWindow,
+                                             true);
+    }
     SetShellClientControlledShellSurface(&out_properties_container,
                                          it->second.release());
     session_id_map_->erase(it);
+  } else {
+    // ARC ghost window instance.
+    out_properties_container.SetProperty(::full_restore::kRealArcTaskWindow,
+                                         false);
   }
 }
 

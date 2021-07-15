@@ -28,6 +28,7 @@ DEFINE_UI_CLASS_PROPERTY_KEY(bool, kAppTypeBrowser, false)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(int32_t, kActivationIndexKey, nullptr)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kParentToHiddenContainerKey, false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kLaunchedFromFullRestoreKey, false)
+DEFINE_UI_CLASS_PROPERTY_KEY(bool, kRealArcTaskWindow, true)
 DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(WindowInfo, kWindowInfoKey, nullptr)
 
 void SaveAppLaunchInfo(const base::FilePath& profile_path,

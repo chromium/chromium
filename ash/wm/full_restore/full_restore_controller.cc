@@ -293,6 +293,19 @@ void FullRestoreController::OnARCTaskReadyForUnparentedWindow(
 void FullRestoreController::OnWindowPropertyChanged(aura::Window* window,
                                                     const void* key,
                                                     intptr_t old) {
+  // If the ARC ghost window becomes ARC app's window, it should be applied
+  // the activation delay.
+  if (key == full_restore::kRealArcTaskWindow &&
+      window->GetProperty(full_restore::kRealArcTaskWindow)) {
+    window->SetProperty(full_restore::kLaunchedFromFullRestoreKey, true);
+    restore_property_clear_callbacks_.emplace(
+        window, base::BindOnce(&FullRestoreController::ClearLaunchedKey,
+                               weak_ptr_factory_.GetWeakPtr(), window));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, restore_property_clear_callbacks_[window].callback(),
+        kAllowActivationDelay);
+  }
+
   if (key != full_restore::kActivationIndexKey &&
       key != full_restore::kLaunchedFromFullRestoreKey) {
     return;
@@ -500,8 +513,13 @@ void FullRestoreController::RestoreStateTypeAndClearLaunchedKey(
   // activatable for a while longer.
   const AppType app_type =
       static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  // Prevent apply activation delay on ARC ghost window. It should be only apply
+  // on real ARC window. Only ARC ghost window use this property.
+  const bool is_real_arc_window =
+      window->GetProperty(full_restore::kRealArcTaskWindow);
   const base::TimeDelta delay =
-      app_type == AppType::CHROME_APP || app_type == AppType::ARC_APP
+      app_type == AppType::CHROME_APP ||
+              (app_type == AppType::ARC_APP && is_real_arc_window)
           ? kAllowActivationDelay
           : base::TimeDelta();
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
