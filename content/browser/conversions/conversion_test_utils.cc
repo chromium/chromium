@@ -125,16 +125,14 @@ TestConversionManager::TestConversionManager() = default;
 
 TestConversionManager::~TestConversionManager() = default;
 
-void TestConversionManager::HandleImpression(
-    const StorableImpression& impression) {
+void TestConversionManager::HandleImpression(StorableImpression impression) {
   num_impressions_++;
   last_impression_source_type_ = impression.source_type();
   last_impression_origin_ = impression.impression_origin();
   last_attribution_source_priority_ = impression.priority();
 }
 
-void TestConversionManager::HandleConversion(
-    const StorableConversion& conversion) {
+void TestConversionManager::HandleConversion(StorableConversion conversion) {
   num_conversions_++;
 
   last_conversion_destination_ = conversion.conversion_destination();

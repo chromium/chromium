@@ -151,23 +151,21 @@ ConversionManagerImpl::~ConversionManagerImpl() {
           &IsOriginSessionOnly, std::move(special_storage_policy_));
   conversion_storage_.AsyncCall(&ConversionStorage::ClearData)
       .WithArgs(base::Time::Min(), base::Time::Max(),
-                session_only_origin_predicate);
+                std::move(session_only_origin_predicate));
 }
 
-void ConversionManagerImpl::HandleImpression(
-    const StorableImpression& impression) {
+void ConversionManagerImpl::HandleImpression(StorableImpression impression) {
   // Add the impression to storage.
   conversion_storage_.AsyncCall(&ConversionStorage::StoreImpression)
-      .WithArgs(impression);
+      .WithArgs(std::move(impression));
 }
 
-void ConversionManagerImpl::HandleConversion(
-    const StorableConversion& conversion) {
+void ConversionManagerImpl::HandleConversion(StorableConversion conversion) {
   // TODO(https://crbug.com/1043345): Add UMA for the number of conversions we
   // are logging to storage, and the number of new reports logged to storage.
   conversion_storage_
       .AsyncCall(&ConversionStorage::MaybeCreateAndStoreConversionReport)
-      .WithArgs(conversion)
+      .WithArgs(std::move(conversion))
       .Then(base::DoNothing::Once<bool>());
 
   // If we are running in debug mode, we should also schedule a task to

@@ -161,8 +161,8 @@ class TestConversionManager : public ConversionManager {
   ~TestConversionManager() override;
 
   // ConversionManager:
-  void HandleImpression(const StorableImpression& impression) override;
-  void HandleConversion(const StorableConversion& conversion) override;
+  void HandleImpression(StorableImpression impression) override;
+  void HandleConversion(StorableConversion conversion) override;
   void GetActiveImpressionsForWebUI(
       base::OnceCallback<void(std::vector<StorableImpression>)> callback)
       override;

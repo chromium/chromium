@@ -4,6 +4,8 @@
 
 #include "content/browser/conversions/conversion_host.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
@@ -255,7 +257,7 @@ void ConversionHost::VerifyAndStoreImpression(
       source_type, impression.priority,
       /*impression_id=*/absl::nullopt);
 
-  conversion_manager.HandleImpression(storable_impression);
+  conversion_manager.HandleImpression(std::move(storable_impression));
 }
 
 void ConversionHost::RegisterConversion(
@@ -311,7 +313,7 @@ void ConversionHost::RegisterConversion(
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(storable_conversion);
-  conversion_manager->HandleConversion(storable_conversion);
+  conversion_manager->HandleConversion(std::move(storable_conversion));
 }
 
 void ConversionHost::NotifyImpressionNavigationInitiatedByPage() {
