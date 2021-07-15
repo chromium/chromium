@@ -59,7 +59,7 @@ class TrustedVaultConnectionImpl : public TrustedVaultConnection {
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) override;
 
-  std::unique_ptr<Request> RetrieveIsRecoverabilityDegraded(
+  std::unique_ptr<Request> DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) override;
 

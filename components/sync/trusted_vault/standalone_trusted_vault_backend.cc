@@ -83,7 +83,7 @@ std::vector<std::vector<uint8_t>> GetAllVaultKeys(
   return vault_keys;
 }
 
-void RetrieveIsRecoverabilityDegradedCompleted(
+void DownloadIsRecoverabilityDegradedCompleted(
     base::OnceCallback<void(bool)> cb,
     TrustedVaultRecoverabilityStatus status) {
   std::move(cb).Run(status == TrustedVaultRecoverabilityStatus::kDegraded);
@@ -324,9 +324,9 @@ void StandaloneTrustedVaultBackend::GetIsRecoverabilityDegraded(
   // TODO(crbug.com/1201659): Improve this logic properly and add test coverage,
   // including throttling and periodic polling.
   ongoing_get_recoverability_request_ =
-      connection_->RetrieveIsRecoverabilityDegraded(
+      connection_->DownloadIsRecoverabilityDegraded(
           account_info,
-          base::BindOnce(&RetrieveIsRecoverabilityDegradedCompleted,
+          base::BindOnce(&DownloadIsRecoverabilityDegradedCompleted,
                          std::move(cb)));
 }
 

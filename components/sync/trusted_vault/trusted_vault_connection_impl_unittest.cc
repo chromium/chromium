@@ -649,7 +649,7 @@ TEST_F(TrustedVaultConnectionImplTest,
 TEST_F(TrustedVaultConnectionImplTest,
        ShouldSendGetSecurityDomainRequestWhenRetrievingRecoverability) {
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RetrieveIsRecoverabilityDegraded(
+      connection()->DownloadIsRecoverabilityDegraded(
           /*account_info=*/CoreAccountInfo(),
           TrustedVaultConnection::IsRecoverabilityDegradedCallback());
   ASSERT_THAT(request, NotNull());
@@ -671,7 +671,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RetrieveIsRecoverabilityDegraded(
+      connection()->DownloadIsRecoverabilityDegraded(
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -683,7 +683,7 @@ TEST_F(TrustedVaultConnectionImplTest,
           .SerializeAsString()));
   testing::Mock::VerifyAndClearExpectations(&callback);
 
-  request = connection()->RetrieveIsRecoverabilityDegraded(
+  request = connection()->DownloadIsRecoverabilityDegraded(
       /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -701,7 +701,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RetrieveIsRecoverabilityDegraded(
+      connection()->DownloadIsRecoverabilityDegraded(
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -719,7 +719,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RetrieveIsRecoverabilityDegraded(
+      connection()->DownloadIsRecoverabilityDegraded(
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -729,7 +729,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       RespondToGetSecurityDomainRequest(net::HTTP_OK,
                                         /*response_body=*/"invalid proto"));
 
-  request = connection()->RetrieveIsRecoverabilityDegraded(
+  request = connection()->DownloadIsRecoverabilityDegraded(
       /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 
@@ -746,7 +746,7 @@ TEST_F(TrustedVaultConnectionImplTest,
       callback;
 
   std::unique_ptr<TrustedVaultConnection::Request> request =
-      connection()->RetrieveIsRecoverabilityDegraded(
+      connection()->DownloadIsRecoverabilityDegraded(
           /*account_info=*/CoreAccountInfo(), callback.Get());
   ASSERT_THAT(request, NotNull());
 

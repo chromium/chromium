@@ -169,7 +169,7 @@ void ProcessDownloadKeysResponse(
                           processed_response.last_key_version);
 }
 
-void ProcessRetrieveIsRecoverabilityDegradedResponse(
+void ProcessDownloadIsRecoverabilityDegradedResponse(
     TrustedVaultConnection::IsRecoverabilityDegradedCallback callback,
     TrustedVaultRequest::HttpStatus http_status,
     const std::string& response_body) {
@@ -273,7 +273,7 @@ TrustedVaultConnectionImpl::DownloadNewKeys(
 }
 
 std::unique_ptr<TrustedVaultConnection::Request>
-TrustedVaultConnectionImpl::RetrieveIsRecoverabilityDegraded(
+TrustedVaultConnectionImpl::DownloadIsRecoverabilityDegraded(
     const CoreAccountInfo& account_info,
     IsRecoverabilityDegradedCallback callback) {
   auto request = std::make_unique<TrustedVaultRequest>(
@@ -285,7 +285,7 @@ TrustedVaultConnectionImpl::RetrieveIsRecoverabilityDegraded(
   request->FetchAccessTokenAndSendRequest(
       account_info.account_id, GetOrCreateURLLoaderFactory(),
       access_token_fetcher_.get(),
-      base::BindOnce(&ProcessRetrieveIsRecoverabilityDegradedResponse,
+      base::BindOnce(&ProcessDownloadIsRecoverabilityDegradedResponse,
                      std::move(callback)));
 
   return request;

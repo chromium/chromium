@@ -1400,8 +1400,6 @@ IN_PROC_BROWSER_TEST_F(
   // Let's resolve the error. Mimic opening a web page where the user would
   // interact with the degraded recoverability flow. Add an extra tab so the
   // flow tab can be closed via javascript.
-  // TODO(crbug.com/1081649): This should use a dedicated page, instead of the
-  // retrieval page.
   chrome::AddTabAt(GetBrowser(0), GURL(url::kAboutBlankURL), /*index=*/0,
                    /*foreground=*/true);
   OpenTabForSyncTrustedVaultUserActionForTesting(

@@ -119,7 +119,7 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
        DownloadNewKeysCallback callback),
       (override));
   MOCK_METHOD(std::unique_ptr<Request>,
-              RetrieveIsRecoverabilityDegraded,
+              DownloadIsRecoverabilityDegraded,
               (const CoreAccountInfo& account_info,
                IsRecoverabilityDegradedCallback),
               (override));

@@ -129,11 +129,10 @@ class TrustedVaultConnection {
       std::unique_ptr<SecureBoxKeyPair> device_key_pair,
       DownloadNewKeysCallback callback) WARN_UNUSED_RESULT = 0;
 
-  // Asynchronously attempts to retrieve degraded recoverability status from the
+  // Asynchronously attempts to download degraded recoverability status from the
   // trusted vault server. Caller should hold returned request object until
   // |callback| call or until request needs to be cancelled.
-  // TODO(crbug.com/1081649): Avoid term 'retrieve' in this name.
-  virtual std::unique_ptr<Request> RetrieveIsRecoverabilityDegraded(
+  virtual std::unique_ptr<Request> DownloadIsRecoverabilityDegraded(
       const CoreAccountInfo& account_info,
       IsRecoverabilityDegradedCallback callback) WARN_UNUSED_RESULT = 0;
 };
