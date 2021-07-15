@@ -2393,6 +2393,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Tabs.TabSearch.WebUI.RecentlyClosed{Item}OpenAction"
+    enum="TabSearchRecentlyClosedItemOpenAction" expires_after="2021-11-21">
+  <owner>tluk@chromium.org</owner>
+  <owner>chrome-cros@chromium.org</owner>
+  <summary>
+    Tab Search is a feature that allows users to better search their browsers
+    for their desired tabs or recently closed tabs and tab groups. This records
+    whether the user used Tab Search to open a recently closed {Item} from a
+    filtered search results list or the default unfiltered list.
+  </summary>
+  <token key="Item">
+    <variant name="Group"/>
+    <variant name="Tab"/>
+  </token>
+</histogram>
+
 <histogram name="Tabs.TabSearch.WebUI.TabListDataReceived" units="ms"
     expires_after="2021-11-21">
   <owner>tluk@chromium.org</owner>

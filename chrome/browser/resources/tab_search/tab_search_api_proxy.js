@@ -11,6 +11,16 @@ import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote, ProfileData, 
  * See tools/metrics/histograms/enums.xml.
  * @enum {number}
  */
+export const RecentlyClosedItemOpenAction = {
+  WITHOUT_SEARCH: 0,
+  WITH_SEARCH: 1,
+};
+
+/**
+ * These values are persisted to logs and should not be renumbered or re-used.
+ * See tools/metrics/histograms/enums.xml.
+ * @enum {number}
+ */
 export const TabSwitchAction = {
   WITHOUT_SEARCH : 0,
   WITH_SEARCH : 1,
@@ -28,8 +38,12 @@ export class TabSearchApiProxy {
   /** @return {Promise<{profileData: ProfileData}>} */
   getProfileData() {}
 
-  /** @param {number} id */
-  openRecentlyClosedEntry(id) {}
+  /**
+   * @param {number} id
+   * @param {boolean} withSearch
+   * @param {boolean} isTab
+   */
+  openRecentlyClosedEntry(id, withSearch, isTab) {}
 
   /**
    * @param {!SwitchToTabInfo} info
@@ -74,7 +88,14 @@ export class TabSearchApiProxyImpl {
   }
 
   /** @override */
-  openRecentlyClosedEntry(id) {
+  openRecentlyClosedEntry(id, withSearch, isTab) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        isTab ? 'Tabs.TabSearch.WebUI.RecentlyClosedTabOpenAction' :
+                'Tabs.TabSearch.WebUI.RecentlyClosedGroupOpenAction',
+        withSearch ? RecentlyClosedItemOpenAction.WITH_SEARCH :
+                     RecentlyClosedItemOpenAction.WITHOUT_SEARCH,
+        Object.keys(RecentlyClosedItemOpenAction).length);
+
     this.handler.openRecentlyClosedEntry(id);
   }
 

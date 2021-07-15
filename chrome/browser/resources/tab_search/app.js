@@ -382,11 +382,13 @@ export class TabSearchAppElement extends PolymerElement {
         return;
       case TabItemType.RECENTLY_CLOSED_TAB:
         this.apiProxy_.openRecentlyClosedEntry(
-            /** @type {!TabData} */ (itemData).tab.tabId);
+            /** @type {!TabData} */ (itemData).tab.tabId, !!this.searchText_,
+            true);
         return;
       case TabItemType.RECENTLY_CLOSED_TAB_GROUP:
         this.apiProxy_.openRecentlyClosedEntry(
-            /** @type {!TabGroupData} */ (itemData).tabGroup.sessionId);
+            /** @type {!TabGroupData} */ (itemData).tabGroup.sessionId,
+            !!this.searchText_, false);
         return;
       default:
         throw new Error('ItemData is of invalid type.');

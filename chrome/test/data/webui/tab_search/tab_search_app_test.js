@@ -260,8 +260,11 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-item[id="100"]'));
     tabSearchItem.click();
-    const tabId = await testProxy.whenCalled('openRecentlyClosedEntry');
+    const [tabId, withSearch, isTab] =
+        await testProxy.whenCalled('openRecentlyClosedEntry');
     assertEquals(tabData.tabId, tabId);
+    assertFalse(withSearch);
+    assertTrue(isTab);
   });
 
   test('Click on recently closed tab group item triggers action', async () => {
@@ -295,8 +298,11 @@ suite('TabSearchAppTest', () => {
         (tabSearchApp.shadowRoot.querySelector('#tabsList')
              .querySelector('tab-search-group-item'));
     tabSearchItem.click();
-    const id = await testProxy.whenCalled('openRecentlyClosedEntry');
+    const [id, withSearch, isTab] =
+        await testProxy.whenCalled('openRecentlyClosedEntry');
     assertEquals(tabGroupData.sessionId, id);
+    assertFalse(withSearch);
+    assertFalse(isTab);
   });
 
   test('Keyboard navigation on an empty list', async () => {
