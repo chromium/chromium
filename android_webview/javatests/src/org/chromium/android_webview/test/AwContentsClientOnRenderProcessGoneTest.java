@@ -23,7 +23,6 @@ import org.chromium.android_webview.renderer_priority.RendererPriority;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -101,7 +100,6 @@ public class AwContentsClientOnRenderProcessGoneTest {
     }
 
     @Test
-    @DisabledTest // http://crbug.com/689292
     @Feature({"AndroidWebView"})
     @SmallTest
     @OnlyRunIn(MULTI_PROCESS)
