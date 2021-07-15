@@ -12,6 +12,7 @@
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/render_document_host_user_data.h"
+#include "content/public/browser/render_process_host_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
@@ -38,7 +39,8 @@ class RenderProcessHost;
 // created via the RenderDocumentHostUserData static factories, as these
 // instances are deleted when a new document is commited.
 class CONTENT_EXPORT PermissionServiceContext
-    : public RenderDocumentHostUserData<PermissionServiceContext> {
+    : public RenderDocumentHostUserData<PermissionServiceContext>,
+      public RenderProcessHostObserver {
  public:
   explicit PermissionServiceContext(RenderProcessHost* render_process_host);
   PermissionServiceContext(const PermissionServiceContext&) = delete;
@@ -71,6 +73,9 @@ class CONTENT_EXPORT PermissionServiceContext
   RenderProcessHost* render_process_host() const {
     return render_process_host_;
   }
+
+  // RenderProcessHostObserver:
+  void RenderProcessHostDestroyed(RenderProcessHost* host) override;
 
  private:
   class PermissionSubscription;
