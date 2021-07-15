@@ -88,8 +88,11 @@ public class WebViewApkApplication extends Application {
         if (isWebViewProcess()) {
             PathUtils.setPrivateDataDirectorySuffix("webview", "WebView");
             CommandLineUtil.initCommandLine();
-            // disable using a native recorder in this process because native lib isn't loaded.
-            UmaRecorderHolder.setAllowNativeUmaRecorder(false);
+
+            // TODO(crbug.com/1182693): Do set up a native UMA recorder once we support recording
+            // metrics from native nonembedded code.
+            UmaRecorderHolder.setUpNativeUmaRecorder(false);
+
             UmaRecorderHolder.setNonNativeDelegate(new AwNonembeddedUmaRecorder());
         }
 
