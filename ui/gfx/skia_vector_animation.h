@@ -11,14 +11,11 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkStream.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gfx_export.h"
-
-namespace cc {
-class SkottieWrapper;
-}  // namespace cc
 
 namespace gfx {
 class Canvas;
