@@ -198,7 +198,12 @@ bool ResourcePrefetchPredictorTables::SetDatabaseVersion(sql::Database* db,
   return statement.Run();
 }
 
-void ResourcePrefetchPredictorTables::CreateTablesIfNonExistent() {
+void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
+  // TODO(crbug.com/1229370): This method's logic is almost identical to
+  // sqlite_proto::ProtoTableManager::CreateOrClearTablesIfNecessary, so the two
+  // classes could probably share a common implementation wrapping
+  // sql::MetaTable.
+
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   if (CantAccessDatabase())
     return;

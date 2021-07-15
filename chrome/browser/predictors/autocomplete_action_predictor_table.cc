@@ -223,7 +223,7 @@ AutocompleteActionPredictorTable::AutocompleteActionPredictorTable(
 
 AutocompleteActionPredictorTable::~AutocompleteActionPredictorTable() = default;
 
-void AutocompleteActionPredictorTable::CreateTablesIfNonExistent() {
+void AutocompleteActionPredictorTable::CreateOrClearTablesIfNecessary() {
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   if (CantAccessDatabase())
     return;

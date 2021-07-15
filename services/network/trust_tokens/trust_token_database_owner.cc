@@ -27,6 +27,11 @@ const char kToplevelTableName[] = "trust_tokens_toplevel_config";
 const char kIssuerToplevelPairTableName[] =
     "trust_tokens_issuer_toplevel_pair_config";
 
+// When updating the database's schema, please increment the schema version.
+//
+// TODO(crbug.com/1133969): In particular, when changing signing keys to use
+// P-256, update the version number to reset storage contents.
+constexpr int kCurrentSchemaVersion = 1;
 }  // namespace
 
 void TrustTokenDatabaseOwner::Create(
@@ -119,7 +124,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
               issuer_toplevel_pair_table_.get(),
               /*max_num_entries=*/absl::nullopt,
               flush_delay_for_writes)) {
-  // These two lines are boilerplate copied from predictor_database.cc.
+  // This line is boilerplate copied from predictor_database.cc.
   backing_database_->set_histogram_tag("TrustTokens");
 
   // Because TrustTokenDatabaseOwners are only constructed through an
@@ -154,7 +159,8 @@ void TrustTokenDatabaseOwner::InitializeMembersOnDbSequence(
   table_manager_->InitializeOnDbSequence(
       backing_database_.get(),
       std::vector<std::string>{kIssuerTableName, kToplevelTableName,
-                               kIssuerToplevelPairTableName});
+                               kIssuerToplevelPairTableName},
+      kCurrentSchemaVersion);
 
   issuer_data_->InitializeOnDBSequence();
   toplevel_data_->InitializeOnDBSequence();

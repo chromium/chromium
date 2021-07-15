@@ -70,7 +70,7 @@ class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
   static constexpr int kDatabaseVersion = 11;
 
   // sqlite_proto::TableManager:
-  void CreateTablesIfNonExistent() override;
+  void CreateOrClearTablesIfNecessary() override;
   void LogDatabaseStats() override;
 
   static bool DropTablesIfOutdated(sql::Database* db);

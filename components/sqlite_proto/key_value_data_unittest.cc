@@ -60,7 +60,7 @@ class FakeTableManager : public TableManager {
   ~FakeTableManager() override = default;
 
   // TableManager
-  void CreateTablesIfNonExistent() override {}
+  void CreateOrClearTablesIfNecessary() override {}
   void LogDatabaseStats() override {}
 };
 

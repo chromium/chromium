@@ -78,7 +78,7 @@ class AutocompleteActionPredictorTable : public sqlite_proto::TableManager {
   ~AutocompleteActionPredictorTable() override;
 
   // TableManager methods (DB sequence).
-  void CreateTablesIfNonExistent() override;
+  void CreateOrClearTablesIfNecessary() override;
   void LogDatabaseStats() override;
 
   DISALLOW_COPY_AND_ASSIGN(AutocompleteActionPredictorTable);

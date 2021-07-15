@@ -6,9 +6,11 @@
 #define COMPONENTS_SQLITE_PROTO_PROTO_TABLE_MANAGER_H_
 
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequenced_task_runner.h"
 #include "components/sqlite_proto/table_manager.h"
 
@@ -39,6 +41,13 @@ class ProtoTableManager : public TableManager {
   // - |table_names| specifies the names of the tables to initialize.
   // These must be unique.
   // - |db| must be null or point to an open sql::Database.
+  // - |schema_version|, which must be positive, will be compared to the version
+  // stored on disk if any; in case of a mismatch (either there's no version
+  // stored, or |schema_version| != the stored version), clears and
+  // reinitializes the tables and writes the new version. It generally makes
+  // sense to change the version whenever the database's layout changes in a
+  // backwards-incompatible manner, for instance when removing or renaming
+  // tables or columns.
   //
   // If |db| is null or initialization fails, subsequent calls to
   // ExecuteTaskOnDBThread will silently no-op. (When this class provides the
@@ -46,19 +55,21 @@ class ProtoTableManager : public TableManager {
   // reasonable fallback behavior of the KeyValueData objects caching data in
   // memory.)
   void InitializeOnDbSequence(sql::Database* db,
-                              base::span<const std::string> table_names);
+                              base::span<const std::string> table_names,
+                              int schema_version);
 
  protected:
   ~ProtoTableManager() override;
 
  private:
   // TableManager implementation.
-  void CreateTablesIfNonExistent() override;
+  void CreateOrClearTablesIfNecessary() override;
 
   // Currently unused.
   void LogDatabaseStats() override {}
 
   std::vector<std::string> table_names_;
+  int schema_version_;
 };
 
 }  // namespace sqlite_proto

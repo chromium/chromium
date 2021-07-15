@@ -49,7 +49,11 @@ class TableManager : public base::RefCountedThreadSafe<TableManager> {
   virtual ~TableManager();
 
   // DB sequence functions.
-  virtual void CreateTablesIfNonExistent() = 0;
+  //
+  // Creates tables if nonexistent, first clearing them if necessary, for
+  // instance if this database has a versioned schema and the version has
+  // changed since the tables were last written.
+  virtual void CreateOrClearTablesIfNecessary() = 0;
   virtual void LogDatabaseStats() = 0;
   void Initialize(sql::Database* db);
   void SetCancelled();

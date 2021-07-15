@@ -18,8 +18,10 @@
 #include "services/network/trust_tokens/proto/storage.pb.h"
 
 namespace sql {
+
 class Database;
-}
+
+}  // namespace sql
 
 namespace network {
 

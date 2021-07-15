@@ -43,7 +43,7 @@ TableManager::~TableManager() = default;
 void TableManager::Initialize(sql::Database* db) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   db_ = db;
-  CreateTablesIfNonExistent();
+  CreateOrClearTablesIfNecessary();
 }
 
 void TableManager::SetCancelled() {
