@@ -90,6 +90,19 @@ message VideoFrameBitmapInit {
   optional bytes rgb_bitmap = 4;
 }
 
+enum AudioSampleFormat {
+  U8 = 0;
+  S16 = 1;
+  S24 = 2;
+  S32 = 3;
+  FLT = 4;
+  U8P = 5;
+  S16P = 6;
+  S24P = 7;
+  S32P = 8;
+  FLTP = 9;
+}
+
 message AudioDataInit {
   optional uint64 timestamp = 1;
 
@@ -98,6 +111,8 @@ message AudioDataInit {
   optional uint32 sample_rate = 3;
 
   repeated bytes channels = 4;
+
+  required AudioSampleFormat format = 5;
 }
 
 message EncodeVideo {

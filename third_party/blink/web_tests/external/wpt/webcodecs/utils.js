@@ -1,23 +1,24 @@
-function make_audio_data(timestamp, channels, sampleRate, length) {
-  let buffer = new AudioBuffer({
-    length: length,
-    numberOfChannels: channels,
-    sampleRate: sampleRate
-  });
+function make_audio_data(timestamp, channels, sampleRate, frames) {
 
-  for (var channel = 0; channel < buffer.numberOfChannels; channel++) {
-    // This gives us the actual array that contains the data
-    var array = buffer.getChannelData(channel);
+  let data = new Float32Array(frames*channels);
+
+  // This generates samples in a planar format.
+  for (var channel = 0; channel < channels; channel++) {
     let hz = 100 + channel * 50; // sound frequency
-    for (var i = 0; i < array.length; i++) {
+    let base_index = channel * frames;
+    for (var i = 0; i < frames; i++) {
       let t = (i / sampleRate) * hz * (Math.PI * 2);
-      array[i] = Math.sin(t);
+      data[base_index + i] = Math.sin(t);
     }
   }
 
   return new AudioData({
     timestamp: timestamp,
-    buffer: buffer
+    data: data,
+    numberOfChannels: channels,
+    numberOfFrames: frames,
+    sampleRate: sampleRate,
+    format: "FLTP",
   });
 }
 

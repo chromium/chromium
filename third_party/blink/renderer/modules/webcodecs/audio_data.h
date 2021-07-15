@@ -28,7 +28,7 @@ class MODULES_EXPORT AudioData final : public ScriptWrappable {
   explicit AudioData(scoped_refptr<media::AudioBuffer>);
 
   // audio_data.idl implementation.
-  explicit AudioData(AudioDataInit*);
+  explicit AudioData(AudioDataInit*, ExceptionState&);
 
   // Creates a clone of |this|, taking on a new reference on |data_|. The cloned
   // frame will not be closed when |this| is, and its lifetime should be

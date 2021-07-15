@@ -43,29 +43,33 @@ class AudioDataTest : public testing::Test {
       ASSERT_NEAR(data[i], start_value + i * kIncrement, kEpsilon) << "i=" << i;
   }
 
-  AudioBuffer* CreateDefaultAudioBuffer() {
-    auto* audio_buffer =
-        AudioBuffer::CreateUninitialized(kChannels, kFrames, kSampleRate);
+  V8BufferSource* CreateDefaultData() {
+    auto* buffer = DOMArrayBuffer::Create(kChannels * kFrames, sizeof(float));
     for (int ch = 0; ch < kChannels; ++ch) {
-      float* buffer_data = audio_buffer->getChannelData(ch)->Data();
+      float* plane_start =
+          reinterpret_cast<float*>(buffer->Data()) + ch * kFrames;
       for (int i = 0; i < kFrames; ++i) {
-        buffer_data[i] = static_cast<float>((i + ch * kFrames) * kIncrement);
+        plane_start[i] = static_cast<float>((i + ch * kFrames) * kIncrement);
       }
     }
-    return audio_buffer;
+    return MakeGarbageCollected<V8BufferSource>(buffer);
   }
 
-  AudioDataInit* CreateDefaultAudioDataInit(AudioBuffer* buffer) {
+  AudioDataInit* CreateDefaultAudioDataInit(V8BufferSource* data) {
     auto* audio_data_init = AudioDataInit::Create();
-    audio_data_init->setBuffer(buffer);
+    audio_data_init->setData(data);
     audio_data_init->setTimestamp(kTimestampInMicroSeconds);
+    audio_data_init->setNumberOfChannels(kChannels);
+    audio_data_init->setNumberOfFrames(kFrames);
+    audio_data_init->setSampleRate(kSampleRate);
+    audio_data_init->setFormat("FLTP");
     return audio_data_init;
   }
 
-  AudioData* CreateDefaultAudioData() {
-    auto* audio_buffer = CreateDefaultAudioBuffer();
-    auto* audio_data_init = CreateDefaultAudioDataInit(audio_buffer);
-    return MakeGarbageCollected<AudioData>(audio_data_init);
+  AudioData* CreateDefaultAudioData(ExceptionState& exception_state) {
+    auto* data = CreateDefaultData();
+    auto* audio_data_init = CreateDefaultAudioDataInit(data);
+    return MakeGarbageCollected<AudioData>(audio_data_init, exception_state);
   }
 
   AudioDataCopyToOptions* CreateCopyToOptions(int index,
@@ -90,7 +94,7 @@ class AudioDataTest : public testing::Test {
                             int expected_size,
                             std::string description) {
     V8TestingScope scope;
-    auto* frame = CreateDefaultAudioData();
+    auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
 
     auto* options = CreateCopyToOptions(plane_index, frame_offset, frame_count);
     {
@@ -142,11 +146,13 @@ TEST_F(AudioDataTest, ConstructFromMediaBuffer) {
 }
 
 TEST_F(AudioDataTest, ConstructFromAudioDataInit) {
-  auto* audio_buffer = CreateDefaultAudioBuffer();
+  V8TestingScope scope;
+  auto* buffer_source = CreateDefaultData();
 
-  auto* audio_data_init = CreateDefaultAudioDataInit(audio_buffer);
+  auto* audio_data_init = CreateDefaultAudioDataInit(buffer_source);
 
-  auto* frame = MakeGarbageCollected<AudioData>(audio_data_init);
+  auto* frame = MakeGarbageCollected<AudioData>(audio_data_init,
+                                                scope.GetExceptionState());
 
   EXPECT_EQ(frame->format(), "FLTP");
   EXPECT_EQ(frame->sampleRate(), static_cast<uint32_t>(kSampleRate));
@@ -189,7 +195,7 @@ TEST_F(AudioDataTest, AllocationSize) {
 
 TEST_F(AudioDataTest, CopyTo_DestinationTooSmall) {
   V8TestingScope scope;
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/absl::nullopt,
                                       /*count=*/absl::nullopt);
 
@@ -203,7 +209,7 @@ TEST_F(AudioDataTest, CopyTo_DestinationTooSmall) {
 
 TEST_F(AudioDataTest, CopyTo_FullFrames) {
   V8TestingScope scope;
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/absl::nullopt,
                                       /*count=*/absl::nullopt);
 
@@ -220,7 +226,7 @@ TEST_F(AudioDataTest, CopyTo_FullFrames) {
 
 TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
   V8TestingScope scope;
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/1, /*offset=*/absl::nullopt,
                                       /*count=*/absl::nullopt);
 
@@ -240,7 +246,7 @@ TEST_F(AudioDataTest, CopyTo_PlaneIndex) {
 TEST_F(AudioDataTest, CopyTo_Offset) {
   V8TestingScope scope;
 
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options =
       CreateCopyToOptions(/*index=*/0, kOffset, /*count=*/absl::nullopt);
 
@@ -260,7 +266,7 @@ TEST_F(AudioDataTest, CopyTo_Offset) {
 TEST_F(AudioDataTest, CopyTo_PartialFrames) {
   V8TestingScope scope;
 
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/0, /*offset=*/absl::nullopt,
                                       kPartialFrameCount);
 
@@ -279,7 +285,7 @@ TEST_F(AudioDataTest, CopyTo_PartialFrames) {
 TEST_F(AudioDataTest, CopyTo_PartialFramesAndOffset) {
   V8TestingScope scope;
 
-  auto* frame = CreateDefaultAudioData();
+  auto* frame = CreateDefaultAudioData(scope.GetExceptionState());
   auto* options = CreateCopyToOptions(/*index=*/0, kOffset, kPartialFrameCount);
 
   DOMArrayBuffer* data_copy =

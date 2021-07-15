@@ -18,30 +18,56 @@ createDefaultAudioData() {
 }
 
 test(t => {
-  let localBuffer = new AudioBuffer({
-    length: defaultInit.frames,
+  let local_data = new Float32Array(defaultInit.channels * defaultInit.frames);
+
+  let audio_data_init = {
+    timestamp: defaultInit.timestamp,
+    data: local_data,
+    numberOfFrames: defaultInit.frames,
     numberOfChannels: defaultInit.channels,
-    sampleRate: defaultInit.sampleRate
-  });
+    sampleRate: defaultInit.sampleRate,
+    format: 'FLTP',
+  }
 
-  let audioDataInit = {timestamp: defaultInit.timestamp, buffer: localBuffer}
-
-  let data = new AudioData(audioDataInit);
+  let data = new AudioData(audio_data_init);
 
   assert_equals(data.timestamp, defaultInit.timestamp, 'timestamp');
   assert_equals(data.numberOfFrames, defaultInit.frames, 'frames');
   assert_equals(data.numberOfChannels, defaultInit.channels, 'channels');
   assert_equals(data.sampleRate, defaultInit.sampleRate, 'sampleRate');
-  assert_equals(data.format, "FLTP", 'format');
+  assert_equals(
+      data.duration, defaultInit.frames / defaultInit.sampleRate * 1_000_000,
+      'duration');
+  assert_equals(data.format, 'FLTP', 'format');
 
-  assert_throws_js(
-      TypeError, () => {let data = new AudioData({buffer: localBuffer})},
-      'AudioData requires \'timestamp\'')
+  // Create an Int16 array of the right length.
+  let small_data = new Int16Array(defaultInit.channels * defaultInit.frames);
 
-  assert_throws_js(
-      TypeError,
-      () => {let data = new AudioData({timestamp: defaultInit.timestamp})},
-      'AudioData requires \'buffer\'')
+  let wrong_format_init = {...audio_data_init};
+  wrong_format_init.data = small_data;
+
+  // Creating FLTP AudioData from Int16 from should throw.
+  assert_throws_js(TypeError, () => {
+    let data = new AudioData(wrong_format_init);
+  }, `AudioDataInit.data needs to be big enough`);
+
+  var members = [
+    'timestamp',
+    'data',
+    'numberOfFrames',
+    'numberOfChannels',
+    'sampleRate',
+    'format',
+  ];
+
+  for (const member of members) {
+    let incomplete_init = {... audio_data_init};
+    delete incomplete_init[member];
+
+    assert_throws_js(
+      TypeError, () => {let data = new AudioData(incomplete_init)},
+      "AudioData requires '" + member + "'");
+  }
 }, 'Verify AudioData constructors');
 
 test(t => {

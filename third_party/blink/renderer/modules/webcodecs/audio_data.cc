@@ -58,32 +58,110 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
   }
 }
 
+media::SampleFormat BlinkFormatToMediaFormat(V8AudioSampleFormat blink_format) {
+  using FormatEnum = V8AudioSampleFormat::Enum;
+
+  DCHECK(!blink_format.IsEmpty());
+
+  switch (blink_format.AsEnum()) {
+    case FormatEnum::kU8:
+      return media::SampleFormat::kSampleFormatU8;
+
+    case FormatEnum::kS16:
+      return media::SampleFormat::kSampleFormatS16;
+
+    case FormatEnum::kS24:
+      return media::SampleFormat::kSampleFormatS24;
+
+    case FormatEnum::kS32:
+      return media::SampleFormat::kSampleFormatS32;
+
+    case FormatEnum::kFLT:
+      return media::SampleFormat::kSampleFormatF32;
+
+    case FormatEnum::kS16P:
+      return media::SampleFormat::kSampleFormatPlanarS16;
+
+    case FormatEnum::kS32P:
+      return media::SampleFormat::kSampleFormatPlanarS32;
+
+    case FormatEnum::kFLTP:
+      return media::SampleFormat::kSampleFormatPlanarF32;
+
+    // TODO(crbug.com/1205281): Add support for "U8P" and "S24P".
+    case FormatEnum::kU8P:
+    case FormatEnum::kS24P:
+      return media::SampleFormat::kUnknownSampleFormat;
+  }
+}
+
 }  // namespace
 
 // static
 AudioData* AudioData::Create(AudioDataInit* init,
                              ExceptionState& exception_state) {
-  return MakeGarbageCollected<AudioData>(init);
+  return MakeGarbageCollected<AudioData>(init, exception_state);
 }
 
-AudioData::AudioData(AudioDataInit* init)
-    : format_(V8AudioSampleFormat::Enum::kFLTP), timestamp_(init->timestamp()) {
-  // TODO(crbug.com/1205281): Support multiple sample formats, and replace the
-  // AudioBuffer with a generic data type.
+AudioData::AudioData(AudioDataInit* init, ExceptionState& exception_state)
+    : format_(absl::nullopt), timestamp_(init->timestamp()) {
+  media::SampleFormat media_format = BlinkFormatToMediaFormat(init->format());
 
-  AudioBuffer* buffer = init->buffer();
-
-  std::vector<const uint8_t*> wrapped_channels(buffer->numberOfChannels());
-  for (unsigned ch = 0; ch < buffer->numberOfChannels(); ++ch) {
-    wrapped_channels[ch] =
-        reinterpret_cast<const uint8_t*>(buffer->getChannelData(ch)->Data());
+  // TODO(crbug.com/1205281): Add support for "U8P" and "S24P".
+  if (media_format == media::SampleFormat::kUnknownSampleFormat) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        String::Format("Format '%s' is not supported yet.",
+                       init->format().AsCStr()));
+    return;
   }
 
+  uint32_t bytes_per_sample =
+      media::SampleFormatToBytesPerChannel(media_format);
+
+  uint32_t total_bytes;
+  if (!base::CheckMul(bytes_per_sample, base::CheckMul(init->numberOfChannels(),
+                                                       init->numberOfFrames()))
+           .AssignIfValid(&total_bytes)) {
+    exception_state.ThrowTypeError(
+        "AudioData allocation size exceeds implementation limits.");
+    return;
+  }
+
+  DOMArrayPiece source_data(init->data());
+  if (total_bytes > source_data.ByteLength()) {
+    exception_state.ThrowTypeError(
+        String::Format("`data` is too small: needs %u bytes, received %zu.",
+                       total_bytes, source_data.ByteLength()));
+    return;
+  }
+
+  std::vector<const uint8_t*> wrapped_data;
+  if (media::IsInterleaved(media_format)) {
+    // Interleaved data can directly added.
+    wrapped_data.push_back(
+        reinterpret_cast<const uint8_t*>(source_data.Bytes()));
+  } else {
+    // Planar data needs one pointer per channel.
+    wrapped_data.resize(init->numberOfChannels());
+
+    uint32_t plane_size_in_bytes =
+        init->numberOfFrames() *
+        media::SampleFormatToBytesPerChannel(media_format);
+
+    const uint8_t* plane_start =
+        reinterpret_cast<const uint8_t*>(source_data.Bytes());
+
+    for (unsigned ch = 0; ch < init->numberOfChannels(); ++ch)
+      wrapped_data[ch] = plane_start + ch * plane_size_in_bytes;
+  }
+
+  format_ = init->format();
+
   data_ = media::AudioBuffer::CopyFrom(
-      media::SampleFormat::kSampleFormatPlanarF32,
-      media::GuessChannelLayout(buffer->numberOfChannels()),
-      buffer->numberOfChannels(), buffer->sampleRate(), buffer->length(),
-      wrapped_channels.data(), base::TimeDelta::FromMicroseconds(timestamp_));
+      media_format, media::GuessChannelLayout(init->numberOfChannels()),
+      init->numberOfChannels(), init->sampleRate(), init->numberOfFrames(),
+      wrapped_data.data(), base::TimeDelta::FromMicroseconds(timestamp_));
 }
 
 AudioData::AudioData(scoped_refptr<media::AudioBuffer> buffer)

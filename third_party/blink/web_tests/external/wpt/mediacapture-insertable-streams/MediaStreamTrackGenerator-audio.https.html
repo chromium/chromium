@@ -17,22 +17,25 @@
 
     function makeAudioData(timestamp) {
       const sampleRate = 30000;
-      const buffer = new AudioBuffer({
-        length: sampleRate / 10, // 100ms
-        numberOfChannels: 1,
-        sampleRate: sampleRate
-      });
+
+      let frames = sampleRate / 10;
+      let channels = 1;
+
       // Generate a simple sin wave, so we have something.
-      const array = buffer.getChannelData(0);
+      let data = new Float32Array(frames*channels);
       const hz = 100; // sound frequency
-      for (let i = 0; i < array.length; i++) {
+      for (let i = 0; i < data.length; i++) {
         const t = (i / sampleRate) * hz * (Math.PI * 2);
-        array[i] = Math.sin(t);
+        data[i] = Math.sin(t);
       }
 
       return new AudioData({
         timestamp: timestamp,
-        buffer: buffer
+        numberOfFrames: frames,
+        numberOfChannels: channels,
+        sampleRate: sampleRate,
+        data: data,
+        format: "FLT",
       });
     }
 
