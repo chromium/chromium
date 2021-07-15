@@ -337,25 +337,4 @@ void QuicHttp3Logger::OnHeadersFrameSent(
       });
 }
 
-void QuicHttp3Logger::OnPushPromiseFrameSent(
-    quic::QuicStreamId stream_id,
-    quic::QuicStreamId push_id,
-    const spdy::Http2HeaderBlock& header_block) {
-  if (!net_log_.IsCapturing()) {
-    return;
-  }
-  net_log_.AddEvent(
-      NetLogEventType::HTTP3_PUSH_PROMISE_SENT,
-      [stream_id, push_id, &header_block](NetLogCaptureMode capture_mode) {
-        base::Value dict(base::Value::Type::DICTIONARY);
-        dict.SetKey("stream_id",
-                    NetLogNumberValue(static_cast<uint64_t>(stream_id)));
-        dict.SetKey("push_id",
-                    NetLogNumberValue(static_cast<uint64_t>(push_id)));
-        dict.SetKey("headers",
-                    ElideHttp2HeaderBlockForNetLog(header_block, capture_mode));
-        return dict;
-      });
-}
-
 }  // namespace net
