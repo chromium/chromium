@@ -22,6 +22,7 @@ class AX_EXPORT AXScriptInstruction final {
 
   bool IsEvent() const;
   bool IsScript() const;
+
   AXPropertyNode AsScript() const;
   std::string AsEvent() const;
 

@@ -88,40 +88,51 @@ OptionalNSObject AttributeInvoker::Invoke(
   // the property node refers to a DOM id or line index of an accessible object.
   // If the property node doesn't provide a target then use the default one
   // (if any).
-  id target = node;
-  auto* current_node = &property_node;
-  if (property_node.IsTarget()) {
-    if (storage_) {
-      auto storage_iterator = storage_->find(property_node.name_or_value);
-      if (storage_iterator != storage_->end()) {
-        target = storage_iterator->second;
-        if (!target) {
-          LOG(ERROR) << "Stored " << property_node.name_or_value
-                     << " target is null ";
-          return OptionalNSObject::Error();
-        }
-      }
-    }
-    if (!target) {
-      target = line_indexer->NodeBy(property_node.name_or_value);
+  id target = nil;
+
+  // Case 1: try to get a target from the storage.
+  if (storage_) {
+    auto storage_iterator = storage_->find(property_node.name_or_value);
+    if (storage_iterator != storage_->end()) {
+      target = storage_iterator->second;
       if (!target) {
-        LOG(ERROR) << "No target in " << property_node.ToString();
+        LOG(ERROR) << "Stored " << property_node.name_or_value
+                   << " target is null.";
         return OptionalNSObject::Error();
       }
     }
-    current_node = property_node.next.get();
   }
+  // Case 2: try to get target from the tree indexer.
+  if (!target)
+    target = line_indexer->NodeBy(property_node.name_or_value);
 
-  // No target indicates the property_node is a scalar value or an AX object.
-  // Nothing to invoke.
+  // Case 3: no target either indicates an error or the property node is a
+  // scalar value and thus nothing to invoke or, if default target is given,
+  // then the target is deemed (|node| is null) and we should use the default
+  // target.
   if (!target) {
-    return OptionalNSObject::NotApplicable();
+    if (property_node.IsTarget())
+      return OptionalNSObject::Error();
+
+    if (!node)
+      return OptionalNSObject::NotApplicable();
   }
 
+  // If target is deemed, then start from the given property node. Otherwise the
+  // given property node is a target, and its next property node is a
+  // method/property to invoke.
+  auto* current_node = &property_node;
+  if (target) {
+    current_node = property_node.next.get();
+  } else {
+    target = node;
+  }
+
+  // Invoke the call chain.
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
     if (!target_optional.IsNotNil()) {
-      LOG(ERROR) << "Null result of " << current_node->ToString();
+      LOG(ERROR) << "Null result of " << current_node->ToFlatString();
       return target_optional;
     }
     target = *target_optional;
@@ -147,7 +158,7 @@ OptionalNSObject AttributeInvoker::InvokeFor(
   if ([target isKindOfClass:[NSArray class]])
     return InvokeForArray(target, property_node);
 
-  LOG(ERROR) << "Unexpected target type for " << property_node.ToString();
+  LOG(ERROR) << "Unexpected target type for " << property_node.ToFlatString();
   return OptionalNSObject::Error();
 }
 
@@ -170,6 +181,16 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
   // Attributes.
   for (NSString* attribute : AttributeNamesOf(target)) {
     if (property_node.IsMatching(base::SysNSStringToUTF8(attribute))) {
+      // Setter
+      if (property_node.rvalue) {
+        OptionalNSObject rvalue = Invoke(*property_node.rvalue);
+        if (rvalue.IsNotNil()) {
+          SetAttributeValueOf(target, attribute, *rvalue);
+          return OptionalNSObject::NotApplicable();
+        }
+        return rvalue;
+      }
+      // Getter
       return OptionalNSObject::NotNullOrNotApplicable(
           AttributeValueOf(target, attribute));
     }
@@ -314,7 +335,8 @@ OptionalNSObject AttributeInvoker::ParamByPropertyNode(
           "AXPreviousWordStartTextMarkerForTextMarker") {  // TextMarker
     return OptionalNSObject::NotNilOrError(PropertyNodeToTextMarker(arg_node));
   }
-  if (property_name == "AXStringForTextMarkerRange") {  // TextMarkerRange
+  if (property_name == "AXSelectedTextMarkerRangeAttribute" ||
+      property_name == "AXStringForTextMarkerRange") {  // TextMarkerRange
     return OptionalNSObject::NotNilOrError(
         PropertyNodeToTextMarkerRange(arg_node));
   }

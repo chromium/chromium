@@ -24,7 +24,9 @@ struct AXPropertyFilter;
 // parameterized property for column/row 0 indexes.
 class AX_EXPORT AXPropertyNode final {
  public:
-  // Parses a property node from a property filter.
+  // Parses a property node from a string or a property filter.
+  static AXPropertyNode From(const std::string& property,
+                             const std::vector<std::string>& line_indexes = {});
   static AXPropertyNode From(const AXPropertyFilter& filter);
 
   AXPropertyNode();
@@ -46,6 +48,9 @@ class AX_EXPORT AXPropertyNode final {
 
   // Next property node in a chain if any.
   std::unique_ptr<AXPropertyNode> next;
+
+  // Rvalue if any.
+  std::unique_ptr<AXPropertyNode> rvalue;
 
   // Used to store the original unparsed property including invocation
   // arguments if any.

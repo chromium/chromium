@@ -210,6 +210,12 @@ for example:
 You can also use array operator[] to refer to an array element at a given index,
 for example `paragraph.AXChildren[0]` will refer to the first child of the paragraph.
 
+To set a settable attribute you can assign a value to the attribute, for example:
+```
+textarea_range:= textarea.AXTextMarkerRangeForUIElement(textarea)
+textarea.AXSelectedTextMarkerRange = textarea_range
+```
+
 You can use `waitfor` instruction to wait for a specific event before the script
 continues, for example:
 

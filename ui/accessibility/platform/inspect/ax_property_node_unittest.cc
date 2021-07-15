@@ -42,7 +42,7 @@ void ParseAndCheck(const char* input, const char* expected) {
 }
 
 void ParseAndCheckTree(const char* input, const char* expected) {
-  auto got = Parse(input).ToTreeString();
+  auto got = AXPropertyNode::From(input).ToTreeString();
   EXPECT_EQ(got, expected);
 }
 
@@ -225,6 +225,16 @@ TEST_F(AXPropertyNodeTest, Keys) {
       R"~~(textmarker_range:textarea.
 AXTextMarkerRangeForUIElement(
   textarea
+))~~");
+}
+
+TEST_F(AXPropertyNodeTest, RValue) {
+  ParseAndCheckTree("textarea.AXSelectedTextMarkerRange = {loc: 3, len: 2}",
+                    R"~~(textarea.
+AXSelectedTextMarkerRange=
+{}(
+  loc:3,
+  len:2
 ))~~");
 }
 

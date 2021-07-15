@@ -488,4 +488,13 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
              {"button.AXPerformAction(AXPress)"}, R"~~()~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_SetAttribute) {
+  TestScript(R"~~(data:text/html,
+                    <textarea id="textarea">Text</textarea>)~~",
+             {"textarea.AXSelectedTextMarkerRange = "
+              "textarea.AXTextMarkerRangeForUIElement(textarea)"},
+             "");
+}
+
 }  // namespace content

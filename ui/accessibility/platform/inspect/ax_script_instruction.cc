@@ -27,7 +27,7 @@ bool AXScriptInstruction::IsScript() const {
 
 AXPropertyNode AXScriptInstruction::AsScript() const {
   DCHECK(!IsEvent());
-  return AXPropertyNode::From({instruction_, AXPropertyFilter::SCRIPT});
+  return AXPropertyNode::From(instruction_);
 }
 
 std::string AXScriptInstruction::AsEvent() const {

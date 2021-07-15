@@ -78,7 +78,9 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
             run_until);
         actual_contents = pair.first.GetString();
         for (auto event : pair.second) {
-          actual_contents += event + '\n';
+          if (base::StartsWith(event, wait_for)) {
+            actual_contents += event + '\n';
+          }
         }
       }
 
@@ -101,6 +103,18 @@ class DumpAccessibilityScriptTest : public DumpAccessibilityTestBase {
     base::FilePath html_file = test_path.Append(base::FilePath(file_path));
 
     RunTest(html_file, "accessibility/mac/action");
+  }
+
+  void RunMacSelectionTest(const base::FilePath::CharType* file_path) {
+    base::FilePath test_path =
+        GetTestFilePath("accessibility", "mac/selection");
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      ASSERT_TRUE(base::PathExists(test_path)) << test_path.LossyDisplayName();
+    }
+    base::FilePath html_file = test_path.Append(base::FilePath(file_path));
+
+    RunTest(html_file, "accessibility/mac/selection");
   }
 
   void RunMacTextMarkerTest(const base::FilePath::CharType* file_path) {
@@ -142,6 +156,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXPressButton) {
   RunMacActionTest(FILE_PATH_LITERAL("ax-press-button.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXSelectAllTextarea) {
+  RunMacSelectionTest(FILE_PATH_LITERAL("ax-selectall-textarea.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest,
