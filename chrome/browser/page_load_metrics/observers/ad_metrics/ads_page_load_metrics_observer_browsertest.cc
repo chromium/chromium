@@ -711,11 +711,21 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
       OriginStatus::kUnknown, OriginStatusWithThrottling::kUnknownAndThrottled);
 }
 
+// Disabled due to flakiness on Linux https://crbug.com/1229601
+#if defined(OS_LINUX)
+#define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
+  DISABLED_CreativeOriginStatusWithThrottlingNestedThrottled
+#else
+#define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
+  CreativeOriginStatusWithThrottlingNestedThrottled
+#endif
+
 // Test that an ad creative with the same origin as the main page,
 // but nested in a throttled cross-origin root ad frame, is marked as
 // throttled, with indeterminate creative origin status.
-IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
-                       CreativeOriginStatusWithThrottlingNestedThrottled) {
+IN_PROC_BROWSER_TEST_F(
+    CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
+    MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled) {
   TestCreativeOriginStatus(
       MakeFrame(
           "a",
