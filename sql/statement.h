@@ -16,8 +16,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece_forward.h"
+#include "base/thread_annotations.h"
 #include "base/time/time.h"
-#include "build/build_config.h"  // TODO(crbug.com/866218): Remove this include.
 #include "sql/database.h"
 
 namespace sql {
@@ -79,9 +79,7 @@ class COMPONENT_EXPORT(SQL) Statement {
   // middle of executing a command if there is a serious error and the database
   // has to be reset.
   bool is_valid() const {
-#if !defined(OS_ANDROID)  // TODO(crbug.com/866218): Remove this conditional
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-#endif  // !defined(OS_ANDROID)
 
     return ref_->is_valid();
   }
@@ -227,15 +225,16 @@ class COMPONENT_EXPORT(SQL) Statement {
   // The actual sqlite statement. This may be unique to us, or it may be cached
   // by the Database, which is why it's ref-counted. This pointer is
   // guaranteed non-null.
-  scoped_refptr<Database::StatementRef> ref_;
+  scoped_refptr<Database::StatementRef> ref_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // See Succeeded() for what this holds.
-  bool succeeded_ = false;
+  bool succeeded_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
 #if DCHECK_IS_ON()
   // Used to DCHECK() that Bind*() is called before Step() or Run() are called.
-  bool step_called_ = false;
-  bool run_called_ = false;
+  bool step_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  bool run_called_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 #endif  // DCHECK_IS_ON()
 
   SEQUENCE_CHECKER(sequence_checker_);
