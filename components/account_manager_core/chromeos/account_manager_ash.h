@@ -2,19 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
-#define ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_
 
 #include <memory>
 #include <vector>
 
-#include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager_ui.h"
 #include "base/callback_forward.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
+#include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -29,7 +29,7 @@ namespace crosapi {
 // Implements the |crosapi::mojom::AccountManager| interface in ash-chrome.
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
-class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerAsh
     : public mojom::AccountManager,
       public account_manager::AccountManager::Observer {
  public:
@@ -41,7 +41,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
   void BindReceiver(mojo::PendingReceiver<mojom::AccountManager> receiver);
 
   void SetAccountManagerUI(
-      std::unique_ptr<ash::AccountManagerUI> account_manager_ui);
+      std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui);
 
   // crosapi::mojom::AccountManager:
   void IsInitialized(IsInitializedCallback callback) override;
@@ -85,7 +85,7 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
   ShowAddAccountDialogCallback account_addition_callback_;
   bool account_addition_in_progress_ = false;
   account_manager::AccountManager* const account_manager_;
-  std::unique_ptr<ash::AccountManagerUI> account_manager_ui_;
+  std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui_;
   std::vector<std::unique_ptr<AccessTokenFetcher>>
       pending_access_token_requests_;
 
@@ -100,4 +100,4 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerAsh
 
 }  // namespace crosapi
 
-#endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_ASH_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_

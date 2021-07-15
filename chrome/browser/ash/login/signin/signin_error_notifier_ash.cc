@@ -40,6 +40,8 @@
 #include "chrome/grit/theme_resources.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "components/account_id/account_id.h"
+#include "components/account_manager_core/account.h"
+#include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/consent_level.h"

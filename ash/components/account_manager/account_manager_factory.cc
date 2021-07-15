@@ -9,6 +9,7 @@
 
 #include "base/macros.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 
 namespace ash {
 

@@ -9,13 +9,16 @@
 #include <string>
 #include <unordered_map>
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "base/component_export.h"
 #include "base/sequence_checker.h"
 
 namespace account_manager {
 class AccountManager;
 }  // namespace account_manager
+
+namespace crosapi {
+class AccountManagerAsh;
+}  // namespace crosapi
 
 namespace ash {
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/access_token_fetcher.h"
+#include "components/account_manager_core/chromeos/access_token_fetcher.h"
 
 #include <string>
 #include <utility>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 
 #include <cstddef>
 #include <memory>
@@ -10,8 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager_ui.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
@@ -21,7 +19,9 @@
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -110,7 +110,7 @@ class TestAccountManagerObserver
   mojo::Receiver<mojom::AccountManagerObserver> receiver_;
 };
 
-class FakeAccountManagerUI : public ash::AccountManagerUI {
+class FakeAccountManagerUI : public account_manager::AccountManagerUI {
  public:
   FakeAccountManagerUI() = default;
   FakeAccountManagerUI(const FakeAccountManagerUI&) = delete;

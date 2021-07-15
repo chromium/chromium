@@ -6,8 +6,8 @@
 
 #include <limits>
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 

@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 #define CHROME_BROWSER_UI_WEBUI_SIGNIN_SIGNIN_HELPER_CHROMEOS_H_
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"

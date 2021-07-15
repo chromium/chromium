@@ -8,46 +8,13 @@ assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
 component("account_manager") {
   sources = [
-    "access_token_fetcher.cc",
-    "access_token_fetcher.h",
-    "account_manager_ash.cc",
-    "account_manager_ash.h",
     "account_manager_factory.cc",
     "account_manager_factory.h",
-    "account_manager_ui.cc",
-    "account_manager_ui.h",
   ]
 
   public_deps = [ "//components/account_manager_core:account_manager_core" ]
 
-  deps = [
-    "//ash/constants",
-    "//base",
-    "//chromeos/crosapi/mojom",
-    "//components/prefs:prefs",
-    "//google_apis",
-    "//net",
-    "//services/network/public/cpp:cpp",
-  ]
+  deps = [ "//base" ]
 
   defines = [ "IS_ASH_COMPONENTS_ACCOUNT_MANAGER_IMPL" ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "account_manager_ash_unittest.cc" ]
-
-  deps = [
-    ":account_manager",
-    "//base",
-    "//base/test:test_support",
-    "//chromeos/crosapi/mojom",
-    "//components/prefs:test_support",
-    "//google_apis",
-    "//net",
-    "//services/network:test_support",
-    "//services/network/public/cpp:cpp",
-    "//testing/gmock",
-    "//testing/gtest",
-  ]
 }

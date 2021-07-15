@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 
 #include <algorithm>
 #include <memory>
 #include <utility>
 
-#include "ash/components/account_manager/access_token_fetcher.h"
-#include "ash/components/account_manager/account_manager_ui.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
@@ -18,7 +16,9 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_util.h"
+#include "components/account_manager_core/chromeos/access_token_fetcher.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -68,7 +68,7 @@ void AccountManagerAsh::BindReceiver(
 }
 
 void AccountManagerAsh::SetAccountManagerUI(
-    std::unique_ptr<ash::AccountManagerUI> account_manager_ui) {
+    std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
   account_manager_ui_ = std::move(account_manager_ui);
 }
 

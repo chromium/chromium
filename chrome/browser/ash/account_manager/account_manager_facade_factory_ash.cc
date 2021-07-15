@@ -15,6 +15,7 @@
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 
 namespace {
 

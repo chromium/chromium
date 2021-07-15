@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/components/account_manager/account_manager_ui.h"
+#include "components/account_manager_core/chromeos/account_manager_ui.h"
 
-namespace ash {
+namespace account_manager {
 
 AccountManagerUI::AccountManagerUI() = default;
 AccountManagerUI::~AccountManagerUI() = default;
 
-}  // namespace ash
+}  // namespace account_manager

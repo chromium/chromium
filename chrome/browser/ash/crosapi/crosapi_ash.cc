@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "base/dcheck_is_on.h"
 #include "chrome/browser/apps/app_service/publishers/standalone_browser_extension_apps.h"
@@ -68,6 +67,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"

@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_H_
-#define ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_UI_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_UI_H_
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 
-namespace ash {
+namespace account_manager {
 
 // This interface is used by `AccountManagerFacadeImpl` to show system UI
 // (system dialogs, OS Settings etc.)
-class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerUI {
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerUI {
  public:
   AccountManagerUI();
   AccountManagerUI(const AccountManagerUI&) = delete;
@@ -37,6 +37,6 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerUI {
   virtual void ShowManageAccountsSettings() = 0;
 };
 
-}  // namespace ash
+}  // namespace account_manager
 
-#endif  // ASH_COMPONENTS_ACCOUNT_MANAGER_ACCOUNT_MANAGER_UI_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_UI_H_

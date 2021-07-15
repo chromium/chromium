@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/webui/signin/signin_helper_chromeos.h"
 
-#include "ash/components/account_manager/account_manager_ash.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
+#include "components/account_manager_core/chromeos/account_manager_ash.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
