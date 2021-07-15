@@ -51,7 +51,7 @@ constexpr SkColor kExpandCollapseButtonBackground =
     SkColorSetARGB(0xFF, 0x8A, 0xB4, 0xF8);
 
 // Margin of the bubble with respect to the context window.
-constexpr int kMinAnchorMarginDip = 40;
+constexpr int kMinAnchorMarginDip = 15;
 
 constexpr char kSelfieCamResource[] = "selfie_cam.html";
 
@@ -167,7 +167,7 @@ class SelfieCamBubbleDialogView : public WebUIBubbleDialogView {
         ->SetOrientation(views::LayoutOrientation::kVertical)
         .SetMainAxisAlignment(views::LayoutAlignment::kEnd)
         .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
-        .SetInteriorMargin(gfx::Insets(0, 0, /*bottom=*/4, 0));
+        .SetInteriorMargin(gfx::Insets(0, 0, /*bottom=*/8, 0));
 
     views::Button::PressedCallback expand_or_collapse_callback =
         base::BindRepeating(

@@ -34,7 +34,7 @@ constexpr float kBarRadius = 20.f;
 constexpr int kBarAlpha_ = 230;  // 90% opacity
 constexpr int kBarHeight = 68;
 constexpr int kSeparatorHeight = 16;
-constexpr int kBarMargin = 12;
+constexpr int kBarMargin = 15;
 
 constexpr float kInnerBarRadius = 50.f;
 
