@@ -320,9 +320,18 @@ public class TabUiThemeProvider {
      */
     @ColorInt
     public static int getTabGridDialogBackgroundColor(Context context, boolean isIncognito) {
-        return ContextCompat.getColor(context,
-                isIncognito ? R.color.tab_grid_dialog_background_color_incognito
-                            : R.color.tab_grid_dialog_background_color);
+        if (!themeRefactorEnabled()) {
+            return ContextCompat.getColor(context,
+                    isIncognito ? R.color.tab_grid_dialog_background_color_incognito
+                                : R.color.tab_grid_dialog_background_color);
+        }
+
+        if (isIncognito) {
+            return ApiCompatibilityUtils.getColor(
+                    context.getResources(), R.color.incognito_tab_grid_dialog_background_color);
+        } else {
+            return MaterialColors.getColor(context, R.attr.colorSurface, TAG);
+        }
     }
 
     /**
@@ -380,6 +389,17 @@ public class TabUiThemeProvider {
     public static float getTabCardTopFaviconPadding(Context context) {
         return context.getResources().getDimension(themeRefactorEnabled()
                         ? R.dimen.tab_grid_card_favicon_padding
+                        : R.dimen.tab_list_card_padding);
+    }
+
+    /**
+     * Return the size represented by dimension for padding between tab cards.
+     * @param context {@link Context} to retrieve dimension.
+     * @return The padding between tab cards in float number.
+     */
+    public static float getTabCardPaddingDimension(Context context) {
+        return context.getResources().getDimension(themeRefactorEnabled()
+                        ? R.dimen.tab_grid_card_thumbnail_margin
                         : R.dimen.tab_list_card_padding);
     }
 

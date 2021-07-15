@@ -60,6 +60,9 @@
     <dimen name="tab_list_card_action_button_size">48dp</dimen>
     <dimen name="tab_list_card_title_fading_length">24dp</dimen>
 
+    <dimen name="tab_grid_dialog_bg_radius">24dp</dimen>
+    <dimen name="tab_grid_dialog_app_bar_padding">8dp</dimen>
+
     <!-- Elevation -->
     <dimen name="tab_bg_elevation">@dimen/default_elevation_4</dimen>
 

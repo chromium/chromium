@@ -305,7 +305,7 @@ public class TabGridDialogTest {
 
         // Add 400px top margin to the recyclerView.
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
-        float tabGridCardPadding = cta.getResources().getDimension(R.dimen.tab_list_card_padding);
+        float tabGridCardPadding = TabUiThemeProvider.getTabCardPaddingDimension(cta);
         int deltaTopMargin = 400;
         ViewGroup.MarginLayoutParams params =
                 (ViewGroup.MarginLayoutParams) recyclerView.getLayoutParams();

@@ -118,6 +118,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiThemeProvider;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.undo_tab_close_snackbar.UndoBarController;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
@@ -1086,7 +1087,7 @@ public class StartSurfaceLayoutTest {
         public void check(View view, NoMatchingViewException noMatchException) {
             if (noMatchException != null) throw noMatchException;
             int tabListPadding =
-                    (int) view.getResources().getDimension(R.dimen.tab_list_card_padding);
+                    (int) TabUiThemeProvider.getTabCardPaddingDimension(view.getContext());
 
             assertTrue(view instanceof RecyclerView);
             RecyclerView recyclerView = (RecyclerView) view;

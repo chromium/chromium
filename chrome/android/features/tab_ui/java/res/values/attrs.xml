@@ -19,4 +19,8 @@
     <attr name="tabGridFaviconStyle" format="reference" />
     <attr name="tabGridThumbnailStyle" format="reference" />
     <attr name="tabGridActionButtonStyle" format="reference" />
+
+    <!-- Tab grid dialog attributes -->
+    <attr name="tabGridDialogCornerRadius" format="dimension" />
+    <attr name="tabGridDialogAppBarPadding" format="dimension" />
 </resources>

@@ -65,6 +65,9 @@
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle</item>
         <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle</item>
         <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle</item>
+
+        <item name="tabGridDialogCornerRadius">@dimen/tab_list_card_radius</item>
+        <item name="tabGridDialogAppBarPadding">0dp</item>
     </style>
 
     <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
@@ -77,6 +80,9 @@
         <item name="tabGridFaviconStyle">@style/TabGridCardTopFaviconStyle.ThemeRefactor</item>
         <item name="tabGridActionButtonStyle">@style/TabGridCardActionButtonStyle.ThemeRefactor</item>
         <item name="tabGridThumbnailStyle">@style/TabGridCardThumbnailStyle.ThemeRefactor</item>
+
+        <item name="tabGridDialogCornerRadius">@dimen/tab_grid_dialog_bg_radius</item>
+        <item name="tabGridDialogAppBarPadding">@dimen/tab_grid_dialog_app_bar_padding</item>
     </style>
 
     <style name="TabThumbnailPlaceHolderStyle">

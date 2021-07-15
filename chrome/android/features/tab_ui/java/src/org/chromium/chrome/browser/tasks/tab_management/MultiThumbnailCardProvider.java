@@ -278,7 +278,7 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                 resource.getDimension(R.dimen.tab_grid_thumbnail_favicon_background_down_shift),
                 resource.getColor(R.color.modern_grey_800_alpha_38));
 
-        initializedThumbnailRects(resource, expectedThumbnailAspectRatio);
+        initializedThumbnailRects(context, expectedThumbnailAspectRatio);
 
         // Initialize Rects for favicons and favicon frame.
         final float halfFaviconFrameSize =
@@ -344,12 +344,10 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
      * Initialize rects used for thumbnails. Depending on whether thene refacotr is enabled, the
      * padding around the thumbnail is different.
      */
-    private void initializedThumbnailRects(Resources resource, float expectedThumbnailAspectRatio) {
+    private void initializedThumbnailRects(Context context, float expectedThumbnailAspectRatio) {
         boolean themeRefactorEnabled = TabUiThemeProvider.themeRefactorEnabled();
 
-        float thumbnailHorizontalPadding = themeRefactorEnabled
-                ? resource.getDimension(R.dimen.tab_grid_card_thumbnail_margin)
-                : resource.getDimension(R.dimen.tab_list_card_padding);
+        float thumbnailHorizontalPadding = TabUiThemeProvider.getTabCardPaddingDimension(context);
         float thumbnailVerticalPadding = themeRefactorEnabled
                 ? thumbnailHorizontalPadding
                 : thumbnailHorizontalPadding / expectedThumbnailAspectRatio;
