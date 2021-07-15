@@ -12,6 +12,7 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
+  "accelerator_row.js",
   "accelerator_view.js",
   "accessibility_shortcuts_page.js",
   "android_shortcuts_page.js",
@@ -91,6 +92,13 @@ js_library("accessibility_shortcuts_page") {
 js_library("accelerator_view") {
   deps = [
     ":input_key",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("accelerator_row") {
+  deps = [
+    ":accelerator_view",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }

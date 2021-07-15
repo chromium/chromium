@@ -43,6 +43,7 @@ ShortcutCustomizationAppBrowserTest.prototype = {
 const debug_suites_list = [
   'ShortcutCustomizationApp',
   'AcceleratorViewTest',
+  'AcceleratorRowTest',
 ];
 
 TEST_F('ShortcutCustomizationAppBrowserTest', 'All', function() {
