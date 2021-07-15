@@ -6638,12 +6638,9 @@ crbug.com/1201365 virtual/portals/http/tests/inspector-protocol/portals/device-e
 
 # Sheriff 2021-04-22
 crbug.com/1191990 [ Linux ] http/tests/serviceworker/clients-openwindow.html [ Failure Pass ]
-crbug.com/1198443 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/none.https.html [ Failure Pass Timeout ]
 
 # Sheriff 2021-04-23
 crbug.com/1198832 [ Linux ] external/wpt/css/css-sizing/aspect-ratio/replaced-element-003.html [ Failure Pass ]
-crbug.com/1202040 external/wpt/html/cross-origin-embedder-policy/none.https.html [ Failure Pass Timeout ]
-crbug.com/1202040 virtual/plz-service-worker/external/wpt/html/cross-origin-embedder-policy/none.https.html [ Failure Pass Timeout ]
 crbug.com/1202051 virtual/scroll-unification/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 crbug.com/1202051 virtual/scroll-unification-prefer_compositing_to_lcd_text/scrollbars/layout-viewport-scrollbars-hidden.html [ Failure Pass ]
 crbug.com/1197528 [ Linux ] pointer-lock/pointerlockchange-pointerlockerror-events.html [ Failure Pass ]
