@@ -11831,8 +11831,8 @@ class BackForwardCacheBrowserTestAllowCacheControlNoStore
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
-    EnableFeatureAndSetParams(
-        features::kCacheControlNoStoreEnterBackForwardCache, "", "");
+    EnableFeatureAndSetParams(kCacheControlNoStoreEnterBackForwardCache, "",
+                              "");
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }
 };
@@ -12286,8 +12286,8 @@ class BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeatureAndSetParams(features::kBackForwardCache, "", "");
-    EnableFeatureAndSetParams(
-        features::kCacheControlNoStoreEnterBackForwardCache, "", "");
+    EnableFeatureAndSetParams(kCacheControlNoStoreEnterBackForwardCache, "",
+                              "");
     EnableFeatureAndSetParams(
         kCacheControlNoStoreRestoreFromBackForwardCacheUnlessCookieChange, "",
         "");

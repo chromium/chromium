@@ -1158,7 +1158,7 @@ bool BackForwardCacheImpl::AllowStoringPagesWithCacheControlNoStore() {
     return false;
 
   return base::FeatureList::IsEnabled(
-      features::kCacheControlNoStoreEnterBackForwardCache);
+      kCacheControlNoStoreEnterBackForwardCache);
 }
 
 bool BackForwardCacheImpl::AllowRestoringPagesWithCacheControlNoStore() {

@@ -53,6 +53,12 @@ constexpr base::Feature kRecordBackForwardCacheMetricsWithoutEnabling{
 constexpr base::Feature kBackForwardCacheNoTimeEviction{
     "BackForwardCacheNoTimeEviction", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows pages with cache-control:no-store to enter the back/forward cache.
+// TODO(crbug.com/1228611): Enable this feature.
+const base::Feature kCacheControlNoStoreEnterBackForwardCache{
+    "CacheControlNoStoreEnterBackForwardCache",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Restore pages with cache-control:no-store from back/forward cache if there is
 // no cookie change while the page is in cache.
 // TODO(crbug.com/1228611): Enable this feature.
