@@ -12,6 +12,7 @@
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/sync/base/data_type_histogram.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/commit_processor.h"
 #include "components/sync/engine/commit_util.h"
 #include "components/sync/engine/cycle/sync_cycle.h"
@@ -92,8 +93,7 @@ std::unique_ptr<Commit> Commit::Init(
     const std::string& account_name,
     const std::string& cache_guid,
     bool cookie_jar_mismatch,
-    bool single_client,
-    const std::vector<std::string>& fcm_registration_tokens,
+    const ActiveDevicesInvalidationInfo& active_devices_invalidation_info,
     CommitProcessor* commit_processor,
     ExtensionsActivity* extensions_activity) {
   // Gather per-type contributions.
@@ -124,10 +124,18 @@ std::unique_ptr<Commit> Commit::Init(
     }
   }
 
+  ModelTypeSet contributed_data_types;
+  for (const auto& contribution : contributions) {
+    contributed_data_types.Put(contribution.first);
+  }
+
   // Set the client config params.
   commit_util::AddClientConfigParamsToMessage(
-      enabled_types, cookie_jar_mismatch, single_client,
-      fcm_registration_tokens, commit_message);
+      enabled_types, cookie_jar_mismatch,
+      active_devices_invalidation_info.IsSingleClientForTypes(
+          contributed_data_types),
+      active_devices_invalidation_info.fcm_registration_tokens(),
+      commit_message);
 
   // Finally, serialize all our contributions.
   for (const auto& contribution : contributions) {

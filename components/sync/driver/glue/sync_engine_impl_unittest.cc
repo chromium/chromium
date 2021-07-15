@@ -46,7 +46,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using testing::_;
+using testing::ByMove;
 using testing::NiceMock;
+using testing::Return;
 
 namespace syncer {
 
@@ -157,15 +159,14 @@ class MockActiveDevicesProvider : public ActiveDevicesProvider {
   MockActiveDevicesProvider() = default;
   ~MockActiveDevicesProvider() override = default;
 
-  MOCK_METHOD(size_t, CountActiveDevicesIfAvailable, (), (override));
   MOCK_METHOD(void,
               SetActiveDevicesChangedCallback,
               (ActiveDevicesProvider::ActiveDevicesChangedCallback),
               (override));
-  MOCK_METHOD(std::vector<std::string>,
-              CollectFCMRegistrationTokensForInvalidations,
+  MOCK_METHOD(ActiveDevicesInvalidationInfo,
+              CalculateInvalidationInfo,
               (const std::string&),
-              (override));
+              (const override));
 };
 
 std::unique_ptr<HttpPostProviderFactory> CreateHttpBridgeFactory() {
@@ -189,9 +190,14 @@ class SyncEngineImplTest : public testing::Test {
     auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
          base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    auto mock_active_devices_provider =
+        std::make_unique<NiceMock<MockActiveDevicesProvider>>();
+    ON_CALL(*mock_active_devices_provider.get(), CalculateInvalidationInfo)
+        .WillByDefault(Return(
+            ByMove(ActiveDevicesInvalidationInfo::CreateUninitialized())));
     backend_ = std::make_unique<SyncEngineImpl>(
         "dummyDebugName", &invalidator_, GetSyncInvalidationsService(),
-        std::make_unique<NiceMock<MockActiveDevicesProvider>>(),
+        std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
         sync_task_runner, sync_transport_data_cleared_cb_.Get());

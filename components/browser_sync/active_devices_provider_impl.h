@@ -28,10 +28,8 @@ class ActiveDevicesProviderImpl : public syncer::ActiveDevicesProvider,
   ~ActiveDevicesProviderImpl() override;
 
   // syncer::ActiveDevicesProvider implementation.
-  size_t CountActiveDevicesIfAvailable() override;
-
-  std::vector<std::string> CollectFCMRegistrationTokensForInvalidations(
-      const std::string& local_cache_guid) override;
+  syncer::ActiveDevicesInvalidationInfo CalculateInvalidationInfo(
+      const std::string& local_cache_guid) const override;
 
   void SetActiveDevicesChangedCallback(
       ActiveDevicesChangedCallback callback) override;

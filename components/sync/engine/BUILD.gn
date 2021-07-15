@@ -4,6 +4,8 @@
 
 static_library("engine") {
   sources = [
+    "active_devices_invalidation_info.cc",
+    "active_devices_invalidation_info.h",
     "backoff_delay_provider.cc",
     "backoff_delay_provider.h",
     "bookmark_update_preprocessing.cc",

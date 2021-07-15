@@ -22,6 +22,7 @@
 
 namespace syncer {
 
+class ActiveDevicesInvalidationInfo;
 class CommitProcessor;
 class StatusController;
 class SyncCycle;
@@ -52,8 +53,7 @@ class Commit {
       const std::string& account_name,
       const std::string& cache_guid,
       bool cookie_jar_mismatch,
-      bool single_client,
-      const std::vector<std::string>& fcm_registration_tokens,
+      const ActiveDevicesInvalidationInfo& active_devices_invalidation_info,
       CommitProcessor* commit_processor,
       ExtensionsActivity* extensions_activity);
 

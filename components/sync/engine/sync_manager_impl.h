@@ -81,9 +81,8 @@ class SyncManagerImpl
       override;
   void OnCookieJarChanged(bool account_mismatch) override;
   void UpdateInvalidationClientId(const std::string& client_id) override;
-  void UpdateSingleClientStatus(bool single_client) override;
-  void UpdateActiveDeviceFCMRegistrationTokens(
-      std::vector<std::string> fcm_registration_tokens) override;
+  void UpdateActiveDevicesInvalidationInfo(
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 
   // SyncEncryptionHandler::Observer implementation.
   void OnPassphraseRequired(

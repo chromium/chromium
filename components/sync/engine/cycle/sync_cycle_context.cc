@@ -30,7 +30,8 @@ SyncCycleContext::SyncCycleContext(
       model_type_registry_(model_type_registry),
       invalidator_client_id_(invalidator_client_id),
       cookie_jar_mismatch_(false),
-      single_client_(false),
+      active_devices_invalidation_info_(
+          ActiveDevicesInvalidationInfo::CreateUninitialized()),
       poll_interval_(poll_interval) {
   DCHECK(!poll_interval.is_zero());
   std::vector<SyncEngineEventListener*>::const_iterator it;
@@ -38,7 +39,7 @@ SyncCycleContext::SyncCycleContext(
     listeners_.AddObserver(*it);
 }
 
-SyncCycleContext::~SyncCycleContext() {}
+SyncCycleContext::~SyncCycleContext() = default;
 
 ModelTypeSet SyncCycleContext::GetEnabledTypes() const {
   return model_type_registry_->GetEnabledTypes();

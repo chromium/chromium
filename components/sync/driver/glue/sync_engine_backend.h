@@ -17,6 +17,7 @@
 #include "components/invalidation/public/invalidation.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
+#include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/engine/cancelation_signal.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
@@ -163,8 +164,7 @@ class SyncEngineBackend : public base::RefCountedThreadSafe<SyncEngineBackend>,
   // tokens for all known active devices (if available and excluding the local
   // device if reflections are disabled).
   void DoOnActiveDevicesChanged(
-      size_t active_devices,
-      std::vector<std::string> fcm_registration_tokens);
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info);
 
  private:
   friend class base::RefCountedThreadSafe<SyncEngineBackend>;

@@ -97,9 +97,8 @@ class FakeSyncManager : public SyncManager {
   void RefreshTypes(ModelTypeSet types) override;
   void OnCookieJarChanged(bool account_mismatch) override;
   void UpdateInvalidationClientId(const std::string&) override;
-  void UpdateSingleClientStatus(bool single_client) override;
-  void UpdateActiveDeviceFCMRegistrationTokens(
-      std::vector<std::string> fcm_registration_tokens) override;
+  void UpdateActiveDevicesInvalidationInfo(
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info) override;
 
  private:
   scoped_refptr<base::SequencedTaskRunner> sync_task_runner_;

@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -33,6 +34,8 @@
 
 namespace {
 
+using syncer::ModelType;
+using syncer::ModelTypeSet;
 using testing::Contains;
 using testing::ElementsAre;
 using testing::IsSupersetOf;
@@ -74,7 +77,13 @@ std::string SigninScopedDeviceIdForSuffix(int suffix) {
   return base::StringPrintf("signin scoped device id %d", suffix);
 }
 
-sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
+ModelTypeSet DefaultInterestedDataTypes() {
+  return Difference(syncer::ProtocolTypes(), syncer::CommitOnlyTypes());
+}
+
+sync_pb::DeviceInfoSpecifics CreateSpecifics(
+    int suffix,
+    const ModelTypeSet& interested_data_types) {
   sync_pb::DeviceInfoSpecifics specifics;
   specifics.set_cache_guid(CacheGuidForSuffix(suffix));
   specifics.set_client_name(ClientNameForSuffix(suffix));
@@ -84,14 +93,25 @@ sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
   specifics.set_signin_scoped_device_id(SigninScopedDeviceIdForSuffix(suffix));
   specifics.set_last_updated_timestamp(
       syncer::TimeToProtoTime(base::Time::Now()));
+  auto& mutable_interested_data_type_ids =
+      *specifics.mutable_invalidation_fields()
+           ->mutable_interested_data_type_ids();
+  for (ModelType type : interested_data_types) {
+    mutable_interested_data_type_ids.Add(
+        syncer::GetSpecificsFieldNumberFromModelType(type));
+  }
   return specifics;
+}
+
+sync_pb::DeviceInfoSpecifics CreateSpecifics(int suffix) {
+  return CreateSpecifics(suffix, DefaultInterestedDataTypes());
 }
 
 class SingleClientDeviceInfoSyncTest : public SyncTest {
  public:
   SingleClientDeviceInfoSyncTest() : SyncTest(SINGLE_CLIENT) {}
 
-  ~SingleClientDeviceInfoSyncTest() override {}
+  ~SingleClientDeviceInfoSyncTest() override = default;
 
   std::string GetLocalCacheGuid() {
     syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
@@ -298,6 +318,30 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   sync_pb::ClientToServerMessage message;
   GetFakeServer()->GetLastCommitMessage(&message);
 
+  EXPECT_TRUE(message.commit().config_params().single_client());
+}
+
+IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
+                       ShouldSetTheOnlyClientFlagForDataType) {
+  // There is a remote client which is not interested in BOOKMARKS.
+  const ModelTypeSet remote_interested_data_types =
+      Difference(DefaultInterestedDataTypes(), {syncer::BOOKMARKS});
+  InjectDeviceInfoSpecificsToServer(
+      CreateSpecifics(/*suffix=*/1, remote_interested_data_types));
+
+  ASSERT_TRUE(SetupSync());
+
+  bookmarks_helper::AddURL(/*profile=*/0, "Title", GURL("http://foo.com"));
+  ASSERT_TRUE(bookmarks_helper::BookmarkModelMatchesFakeServerChecker(
+                  /*profile=*/0, GetSyncService(0), GetFakeServer())
+                  .Wait());
+
+  sync_pb::ClientToServerMessage message;
+  GetFakeServer()->GetLastCommitMessage(&message);
+
+  // Even though there is another active client, that client is not interested
+  // in the just-committed bookmark, so for the purpose of this commit, the
+  // committing client is the "single" one.
   EXPECT_TRUE(message.commit().config_params().single_client());
 }
 

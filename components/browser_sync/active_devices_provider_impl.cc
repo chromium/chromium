@@ -11,6 +11,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/sync/base/model_type.h"
 
 namespace browser_sync {
 
@@ -28,32 +29,32 @@ ActiveDevicesProviderImpl::~ActiveDevicesProviderImpl() {
   device_info_tracker_->RemoveObserver(this);
 }
 
-size_t ActiveDevicesProviderImpl::CountActiveDevicesIfAvailable() {
+syncer::ActiveDevicesInvalidationInfo
+ActiveDevicesProviderImpl::CalculateInvalidationInfo(
+    const std::string& local_cache_guid) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  return GetActiveDevices().size();
-}
-
-std::vector<std::string>
-ActiveDevicesProviderImpl::CollectFCMRegistrationTokensForInvalidations(
-    const std::string& local_cache_guid) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  std::vector<std::string> fcm_registration_tokens;
-  if (!base::FeatureList::IsEnabled(
-          switches::kSyncUseFCMRegistrationTokensList)) {
-    return fcm_registration_tokens;
+  const std::vector<std::unique_ptr<syncer::DeviceInfo>> active_devices =
+      GetActiveDevices();
+  if (active_devices.empty()) {
+    // This may happen if the engine is not initialized yet.
+    return syncer::ActiveDevicesInvalidationInfo::CreateUninitialized();
   }
 
-  for (const std::unique_ptr<syncer::DeviceInfo>& device : GetActiveDevices()) {
+  std::vector<std::string> fcm_registration_tokens;
+  syncer::ModelTypeSet interested_data_types;
+
+  for (const std::unique_ptr<syncer::DeviceInfo>& device : active_devices) {
     if (!local_cache_guid.empty() && device->guid() == local_cache_guid) {
       continue;
     }
-    if (device->fcm_registration_token().empty()) {
-      continue;
-    }
 
-    fcm_registration_tokens.push_back(device->fcm_registration_token());
+    interested_data_types.PutAll(device->interested_data_types());
+    if (!device->fcm_registration_token().empty() &&
+        base::FeatureList::IsEnabled(
+            switches::kSyncUseFCMRegistrationTokensList)) {
+      fcm_registration_tokens.push_back(device->fcm_registration_token());
+    }
   }
 
   // Do not send tokens if the list of active devices is huge. This is similar
@@ -63,10 +64,11 @@ ActiveDevicesProviderImpl::CollectFCMRegistrationTokensForInvalidations(
   if (fcm_registration_tokens.size() >
       static_cast<size_t>(
           switches::kSyncFCMRegistrationTokensListMaxSize.Get())) {
-    return std::vector<std::string>();
+    fcm_registration_tokens.clear();
   }
 
-  return fcm_registration_tokens;
+  return syncer::ActiveDevicesInvalidationInfo::Create(
+      std::move(fcm_registration_tokens), interested_data_types);
 }
 
 void ActiveDevicesProviderImpl::SetActiveDevicesChangedCallback(

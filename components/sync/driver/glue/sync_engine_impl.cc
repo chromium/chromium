@@ -639,10 +639,8 @@ void SyncEngineImpl::OnActiveDevicesChanged() {
   sync_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&SyncEngineBackend::DoOnActiveDevicesChanged, backend_,
-                     active_devices_provider_->CountActiveDevicesIfAvailable(),
-                     active_devices_provider_
-                         ->CollectFCMRegistrationTokensForInvalidations(
-                             local_cache_guid)));
+                     active_devices_provider_->CalculateInvalidationInfo(
+                         local_cache_guid)));
 }
 
 void SyncEngineImpl::UpdateLastSyncedTime() {

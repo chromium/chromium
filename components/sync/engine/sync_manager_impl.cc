@@ -508,14 +508,10 @@ void SyncManagerImpl::UpdateInvalidationClientId(const std::string& client_id) {
   cycle_context_->set_invalidator_client_id(client_id);
 }
 
-void SyncManagerImpl::UpdateSingleClientStatus(bool single_client) {
-  cycle_context_->set_single_client(single_client);
-}
-
-void SyncManagerImpl::UpdateActiveDeviceFCMRegistrationTokens(
-    std::vector<std::string> fcm_registration_tokens) {
-  cycle_context_->set_active_device_fcm_registration_tokens(
-      std::move(fcm_registration_tokens));
+void SyncManagerImpl::UpdateActiveDevicesInvalidationInfo(
+    ActiveDevicesInvalidationInfo active_devices_invalidation_info) {
+  cycle_context_->set_active_devices_invalidation_info(
+      std::move(active_devices_invalidation_info));
 }
 
 }  // namespace syncer

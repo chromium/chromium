@@ -14,6 +14,7 @@
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/model_type_registry.h"
 #include "components/sync/engine/sync_engine_event_listener.h"
@@ -113,22 +114,20 @@ class SyncCycleContext {
     cookie_jar_mismatch_ = cookie_jar_mismatch;
   }
 
-  bool single_client() const { return single_client_; }
-  void set_single_client(bool single_client) { single_client_ = single_client; }
-
   base::TimeDelta poll_interval() const { return poll_interval_; }
   void set_poll_interval(base::TimeDelta interval) {
     DCHECK(!interval.is_zero());
     poll_interval_ = interval;
   }
 
-  const std::vector<std::string>& active_device_fcm_registration_tokens()
-      const {
-    return active_device_fcm_registration_tokens_;
+  const ActiveDevicesInvalidationInfo& active_devices_invalidation_info() {
+    return active_devices_invalidation_info_;
   }
-  void set_active_device_fcm_registration_tokens(
-      std::vector<std::string> fcm_registration_tokens) {
-    active_device_fcm_registration_tokens_ = std::move(fcm_registration_tokens);
+
+  void set_active_devices_invalidation_info(
+      ActiveDevicesInvalidationInfo active_devices_invalidation_info) {
+    active_devices_invalidation_info_ =
+        std::move(active_devices_invalidation_info);
   }
 
  private:
@@ -176,11 +175,7 @@ class SyncCycleContext {
   // mismatch implies all of them are different from the chrome account.
   bool cookie_jar_mismatch_;
 
-  // If there are no other known active devices.
-  bool single_client_;
-
-  // A list of FCM registration tokens to send invalidations.
-  std::vector<std::string> active_device_fcm_registration_tokens_;
+  ActiveDevicesInvalidationInfo active_devices_invalidation_info_;
 
   base::TimeDelta poll_interval_;
 

@@ -19,10 +19,11 @@ extern const char kLocalSyncBackendDir[];
 extern const base::Feature kSyncUseSessionsUnregisterDelay;
 #endif
 
-extern const base::Feature kSyncFilterOutInactiveDevicesForSingleClient;
-extern const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin;
+// Sync invalidation switches.
 extern const base::Feature kSyncUseFCMRegistrationTokensList;
 extern const base::FeatureParam<int> kSyncFCMRegistrationTokensListMaxSize;
+extern const base::Feature kSyncFilterOutInactiveDevicesForSingleClient;
+extern const base::FeatureParam<base::TimeDelta> kSyncActiveDeviceMargin;
 
 }  // namespace switches
 
