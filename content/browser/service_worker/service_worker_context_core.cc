@@ -111,9 +111,11 @@ void SuccessReportingCallback(
     base::OnceCallback<void(blink::ServiceWorkerStatusCode)>& callback,
     blink::ServiceWorkerStatusCode status) {
   if (status != blink::ServiceWorkerStatusCode::kOk) {
-    *expected_calls = -1;
-    listeners->clear();
-    std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    if (*expected_calls > 0) {
+      *expected_calls = -1;
+      listeners->clear();
+      std::move(callback).Run(blink::ServiceWorkerStatusCode::kErrorFailed);
+    }
     return;
   }
   (*expected_calls)--;
