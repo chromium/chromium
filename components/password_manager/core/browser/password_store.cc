@@ -177,12 +177,25 @@ void PasswordStore::UpdateLoginWithPrimaryKey(
     const PasswordForm& new_form,
     const PasswordForm& old_primary_key) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  PasswordForm new_form_with_correct_password_issues = new_form;
+  // TODO(crbug.com/1223022): Re-evaluate this once all places that call
+  // UpdateLoginWithPrimaryKey() have properly set the |password_issues|
+  // field.
+  if (new_form.username_value != old_primary_key.username_value ||
+      new_form.password_value != old_primary_key.password_value) {
+    // If the password or the username changes, the password issues aren't valid
+    // any more. Make sure they are cleared before storing the new form.
+    new_form_with_correct_password_issues.password_issues =
+        base::flat_map<InsecureType, InsecurityMetadata>();
+  }
+
   OperationHandler* handler = OperationHandler::CreateOperationHandler();
   handler->AwaitOperation(
       base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
                      base::Unretained(backend_), old_primary_key));
-  handler->AwaitOperation(base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
-                                         base::Unretained(backend_), new_form));
+  handler->AwaitOperation(base::BindOnce(
+      &PasswordStoreBackend::AddLoginAsync, base::Unretained(backend_),
+      new_form_with_correct_password_issues));
   handler->InvokeOnCompletion(
       base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
 }

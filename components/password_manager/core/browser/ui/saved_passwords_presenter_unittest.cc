@@ -180,6 +180,11 @@ TEST_F(SavedPasswordsPresenterTest, EditOnlyUsername) {
   base::HistogramTester histogram_tester;
 
   EXPECT_CALL(observer, OnEdited(updated_username));
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // properly set |password_issues|, setting them to an empty map should be part
+  // of the default constructor.
+  updated_username.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_username)));
   EXPECT_TRUE(
       presenter().EditSavedPasswords(forms, new_username, form.password_value));
@@ -260,6 +265,11 @@ TEST_F(SavedPasswordsPresenterTest, EditUsernameAndPassword) {
   base::HistogramTester histogram_tester;
   // Verify that editing username and password triggers the right notifications.
   EXPECT_CALL(observer, OnEdited(updated_both));
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // properly set |password_issues|, setting them to an empty map should be part
+  // of the default constructor.
+  updated_both.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_CALL(observer, OnSavedPasswordsChanged(ElementsAre(updated_both)));
   EXPECT_TRUE(
       presenter().EditSavedPasswords(forms, new_username, new_password));
@@ -530,6 +540,11 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditUsername) {
       forms_to_edit, new_username, profile_store_form.password_value));
   RunUntilIdle();
   profile_store_form.username_value = new_username;
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // properly set |password_issues|, setting them to an empty map should be
+  // part of the default constructor.
+  profile_store_form.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,
                                ElementsAre(profile_store_form))));
@@ -793,6 +808,14 @@ TEST_F(SavedPasswordsPresenterWithTwoStoresTest, EditPasswordBothStores) {
   expected_profile_store_form.in_store = PasswordForm::Store::kProfileStore;
   PasswordForm expected_account_store_form = expected_profile_store_form;
   expected_account_store_form.in_store = PasswordForm::Store::kAccountStore;
+
+  // TODO(crbug.com/1223022): Once all places that operate changes on forms
+  // via properly set |password_issues|, setting them to an empty
+  // map should be part of the default constructor.
+  expected_profile_store_form.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
+  expected_account_store_form.password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
 
   EXPECT_THAT(profile_store().stored_passwords(),
               ElementsAre(Pair(profile_store_form.signon_realm,

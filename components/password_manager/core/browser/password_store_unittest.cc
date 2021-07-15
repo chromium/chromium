@@ -288,6 +288,9 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
 
   std::unique_ptr<PasswordForm> old_form(
       FillPasswordFormWithData(kTestCredentials[0]));
+  old_form->password_issues = {
+      {InsecureType::kLeaked,
+       InsecurityMetadata(base::Time(), IsMuted(false))}};
   store->AddLogin(*old_form);
   WaitForPasswordStore();
 
@@ -296,6 +299,7 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
 
   std::unique_ptr<PasswordForm> new_form(
       FillPasswordFormWithData(kTestCredentials[1]));
+  new_form->password_issues = old_form->password_issues;
   EXPECT_CALL(mock_observer, OnLoginsChanged(_, testing::SizeIs(2u)));
   PasswordForm old_primary_key;
   old_primary_key.signon_realm = old_form->signon_realm;
@@ -310,6 +314,9 @@ TEST_F(PasswordStoreTest, UpdateLoginPrimaryKeyFields) {
   MockPasswordStoreConsumer mock_consumer;
   std::vector<std::unique_ptr<PasswordForm>> expected_forms;
   expected_forms.push_back(std::move(new_form));
+  // The expected form should have no password_issues.
+  expected_forms[0]->password_issues =
+      base::flat_map<InsecureType, InsecurityMetadata>();
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_forms)));
