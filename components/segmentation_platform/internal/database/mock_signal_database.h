@@ -6,9 +6,11 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_MOCK_SIGNAL_DATABASE_H_
 
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/proto/types.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace segmentation_platform {
 
@@ -16,7 +18,7 @@ namespace segmentation_platform {
 class MockSignalDatabase : public SignalDatabase {
  public:
   MockSignalDatabase();
-  ~MockSignalDatabase();
+  ~MockSignalDatabase() override;
 
   MOCK_METHOD(void, Initialize, (SignalDatabase::SuccessCallback), (override));
   MOCK_METHOD(void,
