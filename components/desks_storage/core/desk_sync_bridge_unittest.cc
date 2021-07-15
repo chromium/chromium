@@ -8,13 +8,15 @@
 #include <set>
 #include <utility>
 
+#include "ash/public/cpp/desk_template.h"
 #include "base/bind.h"
+#include "base/guid.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "components/desks_storage/core/desk_model_observer.h"
-#include "components/desks_storage/core/desk_template.h"
 #include "components/sync/engine/entity_data.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/in_memory_metadata_change_list.h"
@@ -30,6 +32,7 @@ namespace desks_storage {
 
 namespace {
 
+using ash::DeskTemplate;
 using sync_pb::ModelTypeState;
 using sync_pb::WorkspaceDeskSpecifics;
 using syncer::EntityChange;
@@ -48,8 +51,12 @@ using testing::Return;
 using testing::SizeIs;
 using testing::StrEq;
 
-const char kUuidFormat[] = "uuid %d";
-const char kNameFormat[] = "template %d";
+constexpr char kUuidFormat[] = "9e186d5a-502e-49ce-9ee1-00000000000%d";
+constexpr char kNameFormat[] = "template %d";
+const base::GUID kTestUuid1 =
+    base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 1));
+const base::GUID kTestUuid2 =
+    base::GUID::ParseCaseInsensitive(base::StringPrintf(kUuidFormat, 2));
 
 WorkspaceDeskSpecifics CreateWorkspaceDeskSpecifics(
     int templateIndex,
@@ -90,16 +97,16 @@ class DeskSyncBridgeTest : public testing::Test {
  protected:
   static void VerifyAddOrUpdateEntrySuccess(
       DeskModel::AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
+    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kOk);
   }
 
   static void VerifyAddOrUpdateEntryFailure(
       DeskModel::AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kFailure);
+    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kFailure);
   }
 
   static void VerifyDeleteEntrySuccess(DeskModel::DeleteEntryStatus status) {
-    EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
+    EXPECT_EQ(status, DeskSyncBridge::DeleteEntryStatus::kOk);
   }
 
   DeskSyncBridgeTest()
@@ -169,7 +176,7 @@ class DeskSyncBridgeTest : public testing::Test {
   }
 
   EntityData MakeEntityData(const DeskTemplate& desk_template) {
-    return MakeEntityData(desk_template.AsSyncProto());
+    return MakeEntityData(DeskSyncBridge::AsSyncProto(&desk_template));
   }
 
   // Helper method to reduce duplicated code between tests. Wraps the given
@@ -193,12 +200,12 @@ class DeskSyncBridgeTest : public testing::Test {
 
   void AddTwoTemplates() {
     bridge_->AddOrUpdateEntry(
-        std::make_unique<DeskTemplate>("uuid 1", "template 1",
-                                       AdvanceAndGetTime()),
+        std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
+                                       "template 1", AdvanceAndGetTime()),
         base::BindOnce(DeskSyncBridgeTest::VerifyAddOrUpdateEntrySuccess));
     bridge_->AddOrUpdateEntry(
-        std::make_unique<DeskTemplate>("uuid 2", "template 2",
-                                       AdvanceAndGetTime()),
+        std::make_unique<DeskTemplate>(kTestUuid2.AsLowercaseString(),
+                                       "template 2", AdvanceAndGetTime()),
         base::BindOnce(DeskSyncBridgeTest::VerifyAddOrUpdateEntrySuccess));
   }
 
@@ -256,15 +263,15 @@ TEST_F(DeskSyncBridgeTest, InitializationWithLocalDataAndMetadata) {
   EXPECT_EQ(2ul, bridge()->GetAllUuids().size());
 
   // Verify both local specifics are loaded correctly.
-  EXPECT_EQ(bridge()
-                ->GetEntryByUUID(template1.uuid())
-                ->AsSyncProto()
+  EXPECT_EQ(DeskSyncBridge::AsSyncProto(
+                bridge()->GetEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template1.uuid())))
                 .SerializeAsString(),
             template1.SerializeAsString());
 
-  EXPECT_EQ(bridge()
-                ->GetEntryByUUID(template2.uuid())
-                ->AsSyncProto()
+  EXPECT_EQ(DeskSyncBridge::AsSyncProto(
+                bridge()->GetEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())))
                 .SerializeAsString(),
             template2.SerializeAsString());
 }
@@ -292,8 +299,8 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {
   // Add entry should fail when the sync bridge is not ready.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>("uuid 1", "template 1",
-                                     AdvanceAndGetTime()),
+      std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
+                                     "template 1", AdvanceAndGetTime()),
       base::BindOnce(DeskSyncBridgeTest::VerifyAddOrUpdateEntrySuccess));
 }
 
@@ -307,8 +314,8 @@ TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenBridgeIsNotReady) {
   // Add entry should fail when the sync bridge is not ready.
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(0);
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>("uuid 1", "template 1",
-                                     AdvanceAndGetTime()),
+      std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
+                                     "template 1", AdvanceAndGetTime()),
       base::BindOnce(DeskSyncBridgeTest::VerifyAddOrUpdateEntryFailure));
 }
 
@@ -329,17 +336,21 @@ TEST_F(DeskSyncBridgeTest, UpdateEntryLocally) {
   // Update template 1
   EXPECT_CALL(*processor(), Put(_, _, _)).Times(1);
   bridge()->AddOrUpdateEntry(
-      std::make_unique<DeskTemplate>("uuid 1", "updated template 1",
-                                     AdvanceAndGetTime()),
+      std::make_unique<DeskTemplate>(kTestUuid1.AsLowercaseString(),
+                                     "updated template 1", AdvanceAndGetTime()),
       base::BindOnce(DeskSyncBridgeTest::VerifyAddOrUpdateEntrySuccess));
 
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllUuids().size());
   // Template 1 should be updated.
-  EXPECT_EQ(bridge()->GetEntryByUUID("uuid 1")->name(), "updated template 1");
+  EXPECT_EQ(
+      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid1)->template_name()),
+      "updated template 1");
 
   // Template 2 should be unchanged.
-  EXPECT_EQ(bridge()->GetEntryByUUID("uuid 2")->name(), "template 2");
+  EXPECT_EQ(
+      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid2)->template_name()),
+      "template 2");
 }
 
 TEST_F(DeskSyncBridgeTest, DeleteEntryLocally) {
@@ -358,12 +369,15 @@ TEST_F(DeskSyncBridgeTest, DeleteEntryLocally) {
 
   // Delete template 1.
   bridge()->DeleteEntry(
-      "uuid 1", base::BindOnce(DeskSyncBridgeTest::VerifyDeleteEntrySuccess));
+      kTestUuid1.AsLowercaseString(),
+      base::BindOnce(DeskSyncBridgeTest::VerifyDeleteEntrySuccess));
 
   // We should have only 1 template.
   EXPECT_EQ(1ul, bridge()->GetAllUuids().size());
   // Template 2 should be unchanged.
-  EXPECT_EQ(bridge()->GetEntryByUUID("uuid 2")->name(), "template 2");
+  EXPECT_EQ(
+      base::UTF16ToUTF8(bridge()->GetEntryByUUID(kTestUuid2)->template_name()),
+      "template 2");
 }
 
 TEST_F(DeskSyncBridgeTest, DeleteAllEntriesLocally) {
@@ -441,14 +455,14 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneUpdate) {
   // We should still have both templates.
   EXPECT_EQ(2ul, bridge()->GetAllUuids().size());
   // Template 1 should be updated to new content.
-  EXPECT_EQ(bridge()
-                ->GetEntryByUUID(template1.uuid())
-                ->AsSyncProto()
+  EXPECT_EQ(DeskSyncBridge::AsSyncProto(
+                bridge()->GetEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template1.uuid())))
                 .SerializeAsString(),
             updated_template1.SerializeAsString());
-  EXPECT_EQ(bridge()
-                ->GetEntryByUUID(template2.uuid())
-                ->AsSyncProto()
+  EXPECT_EQ(DeskSyncBridge::AsSyncProto(
+                bridge()->GetEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())))
                 .SerializeAsString(),
             template2.SerializeAsString());
 }
@@ -477,9 +491,9 @@ TEST_F(DeskSyncBridgeTest, ApplySyncChangesWithOneDeletion) {
 
   // Verify that we only have template 2.
   EXPECT_EQ(1ul, bridge()->GetAllUuids().size());
-  EXPECT_EQ(bridge()
-                ->GetEntryByUUID(template2.uuid())
-                ->AsSyncProto()
+  EXPECT_EQ(DeskSyncBridge::AsSyncProto(
+                bridge()->GetEntryByUUID(
+                    base::GUID::ParseCaseInsensitive(template2.uuid())))
                 .SerializeAsString(),
             template2.SerializeAsString());
 }
@@ -517,21 +531,22 @@ TEST_F(DeskSyncBridgeTest, MergeSyncDataUploadsLocalOnlyEntries) {
   InitializeBridge();
 
   // Seed two templates.
-  // Seeded templates will be "uuid 1" and "uuid 2".
+  // Seeded templates will be "template 1" and "template 2".
   AddTwoTemplates();
 
   // We should have seeded two templates.
   EXPECT_EQ(2ul, bridge()->GetAllUuids().size());
 
-  // Create server-side templates "uuid 2" and "uuid 3".
+  // Create server-side templates "template 2" and "template 3".
   const WorkspaceDeskSpecifics template1 = CreateWorkspaceDeskSpecifics(2);
   const WorkspaceDeskSpecifics template2 = CreateWorkspaceDeskSpecifics(3);
 
   auto metadata_change_list = std::make_unique<InMemoryMetadataChangeList>();
   EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(SizeIs(2)));
 
-  // MergeSyncData should upload the local-only template "uuid 1".
-  EXPECT_CALL(*processor(), Put(StrEq("uuid 1"), _, _)).Times(1);
+  // MergeSyncData should upload the local-only template "template 1".
+  EXPECT_CALL(*processor(), Put(StrEq(kTestUuid1.AsLowercaseString()), _, _))
+      .Times(1);
 
   bridge()->MergeSyncData(std::move(metadata_change_list),
                           EntityAddList({template1, template2}));

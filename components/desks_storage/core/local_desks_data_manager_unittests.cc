@@ -6,12 +6,16 @@
 
 #include <string>
 
+#include "ash/public/cpp/desk_template.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -21,6 +25,9 @@
 namespace desks_storage {
 
 namespace {
+
+constexpr char kJunkFileName[] = "01.template";
+constexpr char kJunkData[] = "dsjadsueAUWLKD293958";
 
 // Search |uuid_list| for |uuid_query| returns true if found false if not.
 //
@@ -45,27 +52,44 @@ void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
   EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
+void WriteJunkData(const base::FilePath& temp_dir) {
+  base::FilePath full_path = temp_dir.Append(std::string(kJunkFileName));
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  EXPECT_TRUE(base::WriteFile(full_path, kJunkData));
+}
+
 }  // namespace
 
 class LocalDeskDataManagerTest : public testing::Test {
  public:
   LocalDeskDataManagerTest()
       : sample_desk_template_one_(
-            std::make_unique<DeskTemplate>(std::string("01"),
-                                           std::string("desk_01"),
-                                           base::Time())),
+            std::make_unique<ash::DeskTemplate>(std::string("01"),
+                                                std::string("desk_01"),
+                                                base::Time::Now())),
         sample_desk_template_two_(
-            std::make_unique<DeskTemplate>(std::string("02"),
-                                           std::string("desk_02"),
-                                           base::Time())),
+            std::make_unique<ash::DeskTemplate>(std::string("02"),
+                                                std::string("desk_02"),
+                                                base::Time::Now())),
         sample_desk_template_three_(
-            std::make_unique<DeskTemplate>(std::string("03"),
-                                           std::string("desk_03"),
-                                           base::Time())),
+            std::make_unique<ash::DeskTemplate>(std::string("03"),
+                                                std::string("desk_03"),
+                                                base::Time::Now())),
         modified_sample_desk_template_one_(
-            std::make_unique<DeskTemplate>(std::string("01"),
-                                           std::string("desk_01_mod"),
-                                           base::Time())) {}
+            std::make_unique<ash::DeskTemplate>(std::string("01"),
+                                                std::string("desk_01_mod"),
+                                                base::Time::Now())) {
+    sample_desk_template_one_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    sample_desk_template_two_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    sample_desk_template_three_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+    modified_sample_desk_template_one_->set_desk_restore_data(
+        std::make_unique<full_restore::RestoreData>());
+  }
 
   LocalDeskDataManagerTest(const LocalDeskDataManagerTest&) = delete;
   LocalDeskDataManagerTest& operator=(const LocalDeskDataManagerTest&) = delete;
@@ -78,10 +102,10 @@ class LocalDeskDataManagerTest : public testing::Test {
   }
 
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<DeskTemplate> sample_desk_template_one_;
-  std::unique_ptr<DeskTemplate> sample_desk_template_two_;
-  std::unique_ptr<DeskTemplate> sample_desk_template_three_;
-  std::unique_ptr<DeskTemplate> modified_sample_desk_template_one_;
+  std::unique_ptr<ash::DeskTemplate> sample_desk_template_one_;
+  std::unique_ptr<ash::DeskTemplate> sample_desk_template_two_;
+  std::unique_ptr<ash::DeskTemplate> sample_desk_template_three_;
+  std::unique_ptr<ash::DeskTemplate> modified_sample_desk_template_one_;
 };
 
 TEST_F(LocalDeskDataManagerTest, CanAddEntry) {
@@ -139,11 +163,13 @@ TEST_F(LocalDeskDataManagerTest, CanGetEntryByUuid) {
       std::string("01"),
       base::BindLambdaForTesting(
           [](DeskModel::GetEntryByUuidStatus status,
-             std::unique_ptr<DeskTemplate> result_template) {
+             std::unique_ptr<ash::DeskTemplate> result_template) {
             EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-            EXPECT_EQ(result_template->uuid(), std::string("01"));
-            EXPECT_EQ(result_template->name(), std::string("desk_01"));
+            EXPECT_EQ(result_template->uuid(),
+                      base::GUID::ParseCaseInsensitive(std::string("01")));
+            EXPECT_EQ(result_template->template_name(),
+                      base::UTF8ToUTF16(std::string("desk_01")));
             EXPECT_EQ(result_template->created_time(), base::Time());
           }));
 }
@@ -157,8 +183,26 @@ TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryDoesntExist) {
   data_manager.GetEntryByUUID(
       std::string("01"),
       base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
-                                    std::unique_ptr<DeskTemplate> _) {
+                                    std::unique_ptr<ash::DeskTemplate> _) {
         EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
+      }));
+}
+
+TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryHasBadData) {
+  base::test::TaskEnvironment task_environment(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  auto task_runner = task_environment.GetMainThreadTaskRunner();
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&WriteJunkData, temp_dir_.GetPath()));
+
+  LocalDeskDataManager data_manager(temp_dir_.GetPath());
+
+  data_manager.GetEntryByUUID(
+      std::string("01"),
+      base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
+                                    std::unique_ptr<ash::DeskTemplate> _) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, status);
       }));
 }
 
@@ -178,11 +222,13 @@ TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
       std::string("01"),
       base::BindLambdaForTesting(
           [](DeskModel::GetEntryByUuidStatus status,
-             std::unique_ptr<DeskTemplate> result_template) {
+             std::unique_ptr<ash::DeskTemplate> result_template) {
             EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-            EXPECT_EQ(result_template->uuid(), std::string("01"));
-            EXPECT_EQ(result_template->name(), std::string("desk_01_mod"));
+            EXPECT_EQ(result_template->uuid(),
+                      base::GUID::ParseCaseInsensitive(std::string("01")));
+            EXPECT_EQ(result_template->template_name(),
+                      base::UTF8ToUTF16(std::string("desk_01_mod")));
             EXPECT_EQ(result_template->created_time(), base::Time());
           }));
 }

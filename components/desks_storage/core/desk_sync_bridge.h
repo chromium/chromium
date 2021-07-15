@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
@@ -21,9 +22,15 @@ namespace syncer {
 class ModelTypeChangeProcessor;
 }  // namespace syncer
 
-namespace desks_storage {
+namespace sync_pb {
+class WorkspaceDeskSpecifics;
+}  // namespace sync_pb
 
+namespace ash {
 class DeskTemplate;
+}  // namespace ash
+
+namespace desks_storage {
 
 // A Sync-backed persistence layer for Workspace Desk.
 class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
@@ -34,6 +41,12 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   DeskSyncBridge(const DeskSyncBridge&) = delete;
   DeskSyncBridge& operator=(const DeskSyncBridge&) = delete;
   ~DeskSyncBridge() override;
+
+  // Converts an ash::DeskTemplate to its corresponding WorkspaceDesk proto.
+  static sync_pb::WorkspaceDeskSpecifics AsSyncProto(
+      const ash::DeskTemplate* desk_template);
+  static std::unique_ptr<ash::DeskTemplate> FromProto(
+      const sync_pb::WorkspaceDeskSpecifics& pb_entry);
 
   // syncer::ModelTypeSyncBridge overrides.
   std::unique_ptr<syncer::MetadataChangeList> CreateMetadataChangeList()
@@ -53,7 +66,7 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   void GetAllUuids(GetAllUuidsCallback callback) override;
   void GetEntryByUUID(const std::string& uuid,
                       GetEntryByUuidCallback callback) override;
-  void AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
+  void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
   void DeleteEntry(const std::string& uuid,
                    DeleteEntryCallback callback) override;
@@ -70,16 +83,15 @@ class DeskSyncBridge : public syncer::ModelTypeSyncBridge, public DeskModel {
   // for Workspace Desk model type.
   bool IsSyncing() const;
   std::vector<std::string> GetAllUuids() const;
-  const DeskTemplate* GetEntryByUUID(const std::string& uuid) const;
+  const ash::DeskTemplate* GetEntryByUUID(const base::GUID& uuid) const;
 
  private:
-  // TODO(yzd) Refactor template keys to be base::GUID.
-  using DeskEntries = std::map<std::string, std::unique_ptr<DeskTemplate>>;
+  using DeskEntries = std::map<base::GUID, std::unique_ptr<ash::DeskTemplate>>;
 
   // Notify all observers of any |new_entries| when they are added/updated via
   // sync.
   void NotifyRemoteDeskTemplateAddedOrUpdated(
-      const std::vector<const DeskTemplate*>& new_entries);
+      const std::vector<const ash::DeskTemplate*>& new_entries);
 
   // Notify all observers when the entries with |uuids| have been removed via
   // sync or disabling sync locally.

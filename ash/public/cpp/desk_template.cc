@@ -4,12 +4,23 @@
 
 #include "ash/public/cpp/desk_template.h"
 
-#include "base/time/time.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ash {
 
-DeskTemplate::DeskTemplate() : uuid_(base::Time::Now().ToDoubleT()) {}
-DeskTemplate::DeskTemplate(double uuid) : uuid_(uuid) {}
+DeskTemplate::DeskTemplate()
+    : uuid_(base::GUID::GenerateRandomV4()), created_time_(base::Time::Now()) {}
+
+DeskTemplate::DeskTemplate(const base::GUID& guid)
+    : uuid_(guid), created_time_(base::Time::Now()) {}
+
+DeskTemplate::DeskTemplate(const std::string& uuid,
+                           const std::string& name,
+                           const base::Time& created_time)
+    : uuid_(base::GUID::ParseCaseInsensitive(uuid)),
+      created_time_(created_time),
+      template_name_(base::UTF8ToUTF16(name)) {}
+
 DeskTemplate::~DeskTemplate() = default;
 
 }  // namespace ash

@@ -9,6 +9,7 @@
 #include "ash/public/cpp/desk_template.h"
 #include "ash/public/cpp/desks_helper.h"
 #include "base/bind.h"
+#include "base/guid.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -43,16 +44,16 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
   std::move(callback).Run(/*success=*/true, std::move(desk_template));
 }
 
-void DesksClient::UpdateDeskTemplate(double template_uuid,
+void DesksClient::UpdateDeskTemplate(const std::string& template_uuid,
                                      const std::u16string& template_name,
                                      UpdateDeskTemplateCallback callback) {}
 
-void DesksClient::DeleteDeskTemplate(double template_uuid,
+void DesksClient::DeleteDeskTemplate(const std::string& template_uuid,
                                      DeleteDeskTemplateCallback callback) {}
 
 void DesksClient::GetDeskTemplates(GetDeskTemplatesCallback callback) {}
 
-void DesksClient::LaunchDeskTemplate(double template_uuid,
+void DesksClient::LaunchDeskTemplate(const std::string& template_uuid,
                                      LaunchDeskTemplateCallback callback) {
   MaybeCreateAppLaunchHandler();
   if (!app_launch_handler_) {
@@ -62,7 +63,8 @@ void DesksClient::LaunchDeskTemplate(double template_uuid,
 
   // TODO: Find the saved template associated with `template_uuid` from storage.
   if (!launch_template_for_test_ ||
-      launch_template_for_test_->uuid() != template_uuid) {
+      launch_template_for_test_->uuid() !=
+          base::GUID::ParseLowercase(template_uuid)) {
     std::move(callback).Run(/*success=*/false);
     return;
   }

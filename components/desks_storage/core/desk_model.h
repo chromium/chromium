@@ -12,11 +12,13 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 
+namespace ash {
+class DeskTemplate;
+}
+
 namespace desks_storage {
 
 class DeskModelObserver;
-class DeskTemplate;
-
 // The DeskModel is an interface for accessing desk templates.
 // Actual desk template storage backend (e.g. local file system backend and Sync
 // backend) classes should implement this interface. Desk template accessor
@@ -35,6 +37,7 @@ class DeskModel {
     kOk,
     kFailure,
     kNotFound,
+    kInvalidUuid,
   };
 
   // Status codes for adding or updating a desk template.
@@ -63,7 +66,7 @@ class DeskModel {
 
   using GetEntryByUuidCallback =
       base::OnceCallback<void(GetEntryByUuidStatus status,
-                              std::unique_ptr<DeskTemplate>)>;
+                              std::unique_ptr<ash::DeskTemplate>)>;
   // Get a specific desk template by |uuid|. Actual storage backend does not
   // need to keep desk templates in memory. The storage backend could load the
   // specified desk template into memory and then call the |callback| with a
@@ -85,7 +88,7 @@ class DeskModel {
   // critical information, such as |uuid|, |callback| will be called with
   // |kInvalidArgument|. If the given desk template could not be persisted due
   // to any backend error, |callback| will be called with |kFailure|.
-  virtual void AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
+  virtual void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                                 AddOrUpdateEntryCallback callback) = 0;
 
   using DeleteEntryCallback =

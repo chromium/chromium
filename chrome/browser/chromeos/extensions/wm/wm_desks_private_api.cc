@@ -20,7 +20,7 @@ namespace {
 api::wm_desks_private::DeskTemplate FromAshDeskTemplate(
     const ash::DeskTemplate& desk_template) {
   api::wm_desks_private::DeskTemplate out_api_template;
-  out_api_template.template_id = desk_template.uuid();
+  out_api_template.template_uuid = desk_template.uuid().AsLowercaseString();
   out_api_template.template_name =
       base::UTF16ToUTF8(desk_template.template_name());
   return out_api_template;
@@ -70,7 +70,7 @@ WmDesksPrivateUpdateDeskTemplateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->UpdateDeskTemplate(
-      params->desk_template.template_id,
+      params->desk_template.template_uuid,
       base::UTF8ToUTF16(params->desk_template.template_name),
       base::BindOnce(&WmDesksPrivateUpdateDeskTemplateFunction::
                          OnUpdateDeskTemplateCompleted,
@@ -133,7 +133,7 @@ WmDesksPrivateDeleteDeskTemplateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->DeleteDeskTemplate(
-      params->template_id,
+      params->template_uuid,
       base::BindOnce(&WmDesksPrivateDeleteDeskTemplateFunction::
                          OnDeleteDeskTemplateCompleted,
                      this));
@@ -162,7 +162,7 @@ WmDesksPrivateLaunchDeskTemplateFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(params);
 
   DesksClient::Get()->LaunchDeskTemplate(
-      params->template_id,
+      params->template_uuid,
       base::BindOnce(
           &WmDesksPrivateLaunchDeskTemplateFunction::OnLaunchDeskTemplate,
           this));

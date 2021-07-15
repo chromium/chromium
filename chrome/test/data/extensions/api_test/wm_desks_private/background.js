@@ -12,7 +12,7 @@ chrome.test.runTests([
     chrome.wmDesksPrivate.captureActiveDeskAndSaveTemplate(
         chrome.test.callbackPass(function(deskTemplate) {
           chrome.test.assertEq(typeof deskTemplate, 'object');
-          chrome.test.assertTrue(deskTemplate.hasOwnProperty('templateId'));
+          chrome.test.assertTrue(deskTemplate.hasOwnProperty('templateUuid'));
           chrome.test.assertTrue(deskTemplate.hasOwnProperty('templateName'));
         }));
   },

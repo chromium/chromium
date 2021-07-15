@@ -48,7 +48,7 @@ class DesksClient {
   // the id of an existing desk template that was previously-saved in the
   // storage. If no such existing desk template can be found or the file
   // operation has failed, |callback| will be invoked with |false| result.
-  void UpdateDeskTemplate(double template_uuid,
+  void UpdateDeskTemplate(const std::string& template_uuid,
                           const std::u16string& template_name,
                           UpdateDeskTemplateCallback callback);
 
@@ -57,7 +57,7 @@ class DesksClient {
   // deleted, |callback| will be invoked with |false| result. If it can be
   // deleted successfully, or there is no such |template_uuid| to be removed,
   // |callback| will be invoked with |true| result.
-  void DeleteDeskTemplate(double template_uuid,
+  void DeleteDeskTemplate(const std::string& template_uuid,
                           DeleteDeskTemplateCallback callback);
 
   using TemplateList = std::vector<ash::DeskTemplate*>;
@@ -72,7 +72,7 @@ class DesksClient {
   // no such id can be found or we are at the max desk limit (currently is 8)
   // so can't create new desk for the desk template, |callback| will be invoked
   // with |false| result.
-  void LaunchDeskTemplate(double template_uuid,
+  void LaunchDeskTemplate(const std::string& template_uuid,
                           LaunchDeskTemplateCallback callback);
 
  private:

@@ -1,3 +1,5 @@
 include_rules = [
+  "+ash/public",
   "+components/sync",
+  "+components/full_restore",
 ]

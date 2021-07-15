@@ -8,10 +8,8 @@
 namespace wmDesksPrivate {
   dictionary DeskTemplate {
     // The unique id for a desk template. Used internally to identify a desk
-    // template. Currently it's a double type number derived on a timestamp. It
-    // will later be change to base::GUID type and its name will change back to
-    // templateUuid.
-    double templateId;
+    // template.
+    DOMString templateUuid;
     DOMString templateName;
   };
 
@@ -40,18 +38,18 @@ namespace wmDesksPrivate {
     static void getSavedDeskTemplates(
         GetSavedDeskTemplatesCallback callback);
 
-    // Deletes the previously-saved desk template with id |templateId|. Note if
+    // Deletes the previously-saved desk template with id |templateUuid|. Note if
     // no such existing desk template can be found, this will still be regarded
     // as a successful operation. If the file operation has failed, an error
     // will be returned.
-    static void deleteDeskTemplate(long templateId,
+    static void deleteDeskTemplate(DOMString templateUuid,
                                    DeskTemplateVoidCallback callback);
 
-    // Launches the desk template with |templateId| as a new desk.
+    // Launches the desk template with |templateUuid| as a new desk.
     // |templateId| should be the unique id for an existing desk template. If
     // no such id can be found or a new desk can’t be created, an error will be
     // returned.
-    static void launchDeskTemplate(long templateId,
+    static void launchDeskTemplate(DOMString templateUuid,
                                    DeskTemplateVoidCallback callback);
   };
 };

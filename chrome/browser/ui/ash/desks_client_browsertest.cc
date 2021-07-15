@@ -343,7 +343,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, CaptureActiveDeskAsTemplateTest) {
 
 // Tests that launching a desk template creates a desk with the given name.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
-  const double kDeskUuid = 40.0;
+  const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
   DesksClient* desks_client = DesksClient::Get();
@@ -355,7 +355,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
   desk_template->set_template_name(kDeskName);
   SetLaunchTemplate(std::move(desk_template));
   ash::DeskSwitchAnimationWaiter waiter;
-  desks_client->LaunchDeskTemplate(kDeskUuid, base::DoNothing());
+  desks_client->LaunchDeskTemplate(kDeskUuid.AsLowercaseString(),
+                                   base::DoNothing());
   waiter.Wait();
 
   EXPECT_EQ(1, desks_helper->GetActiveDeskIndex());
@@ -365,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchEmptyDeskTemplate) {
 // Tests that launching the same desk template multiple times creates desks with
 // different/incremented names.
 IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleEmptyDeskTemplates) {
-  const double kDeskUuid = 40.0;
+  const base::GUID kDeskUuid = base::GUID::GenerateRandomV4();
   const std::u16string kDeskName(u"Test Desk Name");
 
   auto* desks_controller = ash::DesksController::Get();
@@ -379,7 +380,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchMultipleEmptyDeskTemplates) {
   auto check_launch_template_desk_name =
       [kDeskUuid, desks_controller](const std::u16string& desk_name) {
         ash::DeskSwitchAnimationWaiter waiter;
-        DesksClient::Get()->LaunchDeskTemplate(kDeskUuid, base::DoNothing());
+        DesksClient::Get()->LaunchDeskTemplate(kDeskUuid.AsLowercaseString(),
+                                               base::DoNothing());
         waiter.Wait();
 
         EXPECT_EQ(desk_name, desks_controller->GetDeskName(
@@ -462,8 +464,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithSystemApp) {
   ash::DeskTemplate* desk_template_ptr = desk_template.get();
   SetLaunchTemplate(std::move(desk_template));
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid(),
-                                         base::DoNothing());
+  DesksClient::Get()->LaunchDeskTemplate(
+      desk_template_ptr->uuid().AsLowercaseString(), base::DoNothing());
   waiter.Wait();
 
   // Verify that the settings window has been launched on the new desk (desk B).
@@ -549,8 +551,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithChromeApp) {
   ash::DeskTemplate* desk_template_ptr = desk_template.get();
   SetLaunchTemplate(std::move(desk_template));
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid(),
-                                         base::DoNothing());
+  DesksClient::Get()->LaunchDeskTemplate(
+      desk_template_ptr->uuid().AsLowercaseString(), base::DoNothing());
   waiter.Wait();
 }
 
@@ -601,8 +603,8 @@ IN_PROC_BROWSER_TEST_F(DesksClientTest, LaunchTemplateWithBrowserWindow) {
   ash::DeskTemplate* desk_template_ptr = desk_template.get();
   SetLaunchTemplate(std::move(desk_template));
   ash::DeskSwitchAnimationWaiter waiter;
-  DesksClient::Get()->LaunchDeskTemplate(desk_template_ptr->uuid(),
-                                         base::DoNothing());
+  DesksClient::Get()->LaunchDeskTemplate(
+      desk_template_ptr->uuid().AsLowercaseString(), base::DoNothing());
   waiter.Wait();
 
   // Verify that the browser was launched with the correct urls and active tab.

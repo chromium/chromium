@@ -14,13 +14,17 @@
 #include "base/sequenced_task_runner_helpers.h"
 #include "components/desks_storage/core/desk_model.h"
 
-namespace desks_storage {
-
+namespace ash {
 class DeskTemplate;
+}
+
+namespace desks_storage {
 
 // The LocalDeskDataManager is the local storage implementation of
 // the DeskModel interface and handles storage operations for local
 // desk templates.
+//
+// TODO(crbug: 1227215): add calls to DeskModelObserver
 class LocalDeskDataManager : public DeskModel {
  public:
   explicit LocalDeskDataManager(const base::FilePath& path);
@@ -34,7 +38,7 @@ class LocalDeskDataManager : public DeskModel {
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   void GetEntryByUUID(const std::string& uuid,
                       GetEntryByUuidCallback callback) override;
-  void AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
+  void AddOrUpdateEntry(std::unique_ptr<ash::DeskTemplate> new_entry,
                         AddOrUpdateEntryCallback callback) override;
   void DeleteEntry(const std::string& uuid,
                    DeleteEntryCallback callback) override;

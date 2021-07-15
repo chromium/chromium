@@ -8,6 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
+#include "base/guid.h"
+#include "base/time/time.h"
 #include "components/full_restore/restore_data.h"
 
 namespace ash {
@@ -17,12 +19,18 @@ namespace ash {
 class ASH_PUBLIC_EXPORT DeskTemplate {
  public:
   DeskTemplate();
-  explicit DeskTemplate(double uuid);
+  explicit DeskTemplate(const base::GUID& uuid);
+  // This constructor is used in the instantiation of the DeskTemplate from
+  // a WorkspaceDeskSpecifics proto and base::Value.
+  DeskTemplate(const std::string& uuid,
+               const std::string& name,
+               const base::Time& time_created);
   DeskTemplate(const DeskTemplate&) = delete;
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
 
-  double uuid() const { return uuid_; }
+  base::GUID uuid() const { return uuid_; }
+  base::Time created_time() const { return created_time_; }
   const std::u16string& template_name() const { return template_name_; }
   void set_template_name(const std::u16string& template_name) {
     template_name_ = template_name;
@@ -36,9 +44,11 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   }
 
  private:
-  // We'll use the current time in seconds since epoch to uniquely identify the
-  // template. TODO: change it to base::GUID type.
-  const double uuid_;
+  const base::GUID uuid_;  // We utilize the string based base::GUID to uniquely
+                           // identify the template.
+
+  const base::Time created_time_;  // We'll use the current time in seconds
+                                   // since the Windows epoch.
   std::u16string template_name_;
 
   // Contains the app launching and window information that can be used to

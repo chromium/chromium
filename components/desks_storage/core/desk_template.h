@@ -19,8 +19,7 @@ namespace desks_storage {
 // template. This class is a temporary placeholder. This could be replaced
 // by future ash::DeskTemplate when it is ready.
 //
-// NOTE: This definition will be deleted in an upcoming CL to be replaced by
-// ash::DeskTemplate.
+// TODO(crbug/1225727): remove this class.
 class DeskTemplate {
  public:
   // Creates a DeskTemplate from the protobuf format.
