@@ -7,14 +7,17 @@
 
 #include "base/callback_list.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/gfx/animation/linear_animation.h"
+#include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/metrics_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 namespace gfx {
@@ -22,7 +25,6 @@ class ImageSkia;
 }
 
 namespace views {
-class ImageView;
 class Label;
 }  // namespace views
 
@@ -31,6 +33,9 @@ class Tab;
 // Dialog that displays an informational hover card containing page information.
 class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
  public:
+  static constexpr base::TimeDelta kHoverCardSlideDuration =
+      base::TimeDelta::FromMilliseconds(200);
+
   METADATA_HEADER(TabHoverCardBubbleView);
   explicit TabHoverCardBubbleView(Tab* tab);
   TabHoverCardBubbleView(const TabHoverCardBubbleView&) = delete;
@@ -43,13 +48,25 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   // Update the text fade to the given percent, which should be between 0 and 1.
   void SetTextFade(double percent);
 
-  void ClearPreviewImage();
-  void SetPreviewImage(gfx::ImageSkia preview_image);
+  // Set the preview image to use for the target tab.
+  void SetTargetTabImage(gfx::ImageSkia preview_image);
+
+  // Specifies that the hover card should display a placeholder image
+  // specifying that no preview for the tab is available (yet).
+  void SetPlaceholderImage();
+
+  // Returns the percentage complete during transition animations when a
+  // pre-emptive crossfade to a placeholder should start if a new image is not
+  // available, or `absl::nullopt` to disable crossfades entirely.
+  static absl::optional<double> GetPreviewImageCrossfadeStart();
 
  private:
   friend class TabHoverCardBubbleViewBrowserTest;
   friend class TabHoverCardBubbleViewInteractiveUiTest;
   class FadeLabel;
+  class ThumbnailView;
+
+  bool using_rounded_corners() const { return corner_radius_.has_value(); }
 
   // views::BubbleDialogDelegateView:
   ax::mojom::Role GetAccessibleWindowRole() override;
@@ -62,9 +79,9 @@ class TabHoverCardBubbleView : public views::BubbleDialogDelegateView {
   absl::optional<TabAlertState> alert_state_;
   views::Label* domain_label_ = nullptr;
   FadeLabel* domain_fade_label_ = nullptr;
-  views::ImageView* preview_image_ = nullptr;
+  ThumbnailView* thumbnail_view_ = nullptr;
 
-  const bool using_rounded_corners_;
+  absl::optional<int> corner_radius_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_HOVER_CARD_BUBBLE_VIEW_H_

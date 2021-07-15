@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
@@ -342,7 +343,7 @@ void TabHoverCardController::HideHoverCard() {
 
   if (thumbnail_observer_) {
     thumbnail_observer_->Observe(nullptr);
-    waiting_for_preview_ = false;
+    thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
   }
   // This needs to be called whether we're doing a fade or a pop out.
   metrics_->CardWillBeHidden();
@@ -400,6 +401,8 @@ void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_observation_.Observe(hover_card_);
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
+  slide_animator_->SetSlideDuration(
+      TabHoverCardBubbleView::kHoverCardSlideDuration);
   slide_progressed_subscription_ = slide_animator_->AddSlideProgressedCallback(
       base::BindRepeating(&TabHoverCardController::OnSlideAnimationProgressed,
                           base::Unretained(this)));
@@ -445,7 +448,8 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
 
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail) {
-    hover_card_->ClearPreviewImage();
+    hover_card_->SetPlaceholderImage();
+    thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
     return;
   }
 
@@ -453,7 +457,14 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
     return;
 
   // We're definitely going to wait for an image at some point.
-  waiting_for_preview_ = true;
+  const auto crossfade_at =
+      TabHoverCardBubbleView::GetPreviewImageCrossfadeStart();
+  if (crossfade_at.has_value() && crossfade_at.value() == 0.0) {
+    hover_card_->SetPlaceholderImage();
+    thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+  } else {
+    thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithoutPlaceholder;
+  }
   // For the first show there has already been a delay, so it's fine to ask for
   // the image immediately; same is true if we already have a thumbnail.
   //  Otherwise the delay is based on the capture readiness.
@@ -466,7 +477,11 @@ void TabHoverCardController::MaybeStartThumbnailObservation(
   } else if (!delayed_show_timer_.IsRunning()) {
     // Stop updating the preview image unless/until we re-enable capture.
     thumbnail_observer_->Observe(nullptr);
-    hover_card_->ClearPreviewImage();
+    if (thumbnail_wait_state_ ==
+        ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+      hover_card_->SetPlaceholderImage();
+      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+    }
     delayed_show_timer_.Start(
         FROM_HERE, capture_delay,
         base::BindOnce(&TabHoverCardController::StartThumbnailObservation,
@@ -480,7 +495,7 @@ void TabHoverCardController::StartThumbnailObservation(Tab* tab) {
 
   DCHECK(tab);
   DCHECK(hover_card_);
-  DCHECK(waiting_for_preview_);
+  DCHECK(waiting_for_preview());
 
   auto thumbnail = tab->data().thumbnail;
   if (!thumbnail || thumbnail == thumbnail_observer_->current_image())
@@ -518,8 +533,8 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
 }
 
 void TabHoverCardController::OnCardFullyVisible() {
-  const bool has_preview =
-      ArePreviewsEnabled() && !target_tab_->IsActive() && !waiting_for_preview_;
+  const bool has_preview = ArePreviewsEnabled() && !target_tab_->IsActive() &&
+                           !waiting_for_preview();
   metrics_->CardFullyVisibleOnTab(target_tab_, has_preview);
 }
 
@@ -542,6 +557,14 @@ void TabHoverCardController::OnSlideAnimationProgressed(
     double value) {
   if (hover_card_)
     hover_card_->SetTextFade(value);
+  if (thumbnail_wait_state_ == ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+    const auto crossfade_start =
+        TabHoverCardBubbleView::GetPreviewImageCrossfadeStart();
+    if (crossfade_start.has_value() && value >= crossfade_start.value()) {
+      hover_card_->SetPlaceholderImage();
+      thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+    }
+  }
 }
 
 void TabHoverCardController::OnSlideAnimationComplete(
@@ -554,8 +577,10 @@ void TabHoverCardController::OnSlideAnimationComplete(
   // keep showing the old image while hovering on the new tab, so clear it. This
   // shouldn't happen very often for slide animations, but could on slower
   // computers.
-  if (waiting_for_preview_)
-    hover_card_->ClearPreviewImage();
+  if (thumbnail_wait_state_ == ThumbnailWaitState::kWaitingWithoutPlaceholder) {
+    hover_card_->SetPlaceholderImage();
+    thumbnail_wait_state_ = ThumbnailWaitState::kWaitingWithPlaceholder;
+  }
 
   OnCardFullyVisible();
 }
@@ -565,8 +590,8 @@ void TabHoverCardController::OnPreviewImageAvaialble(
     gfx::ImageSkia thumbnail_image) {
   DCHECK_EQ(thumbnail_observer_.get(), observer);
 
-  const bool was_waiting_for_preview = waiting_for_preview_;
-  waiting_for_preview_ = false;
+  const bool was_waiting_for_preview = waiting_for_preview();
+  thumbnail_wait_state_ = ThumbnailWaitState::kNotWaiting;
 
   // The hover card could be destroyed before the preview image is delivered.
   if (!hover_card_)
@@ -575,5 +600,5 @@ void TabHoverCardController::OnPreviewImageAvaialble(
     metrics_->ImageLoadedForTab(target_tab_);
   // Can still set image on a fading-out hover card (we can change this behavior
   // later if we want).
-  hover_card_->SetPreviewImage(thumbnail_image);
+  hover_card_->SetTargetTabImage(thumbnail_image);
 }

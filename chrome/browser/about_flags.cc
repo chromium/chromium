@@ -1523,12 +1523,47 @@ const FeatureEntry::FeatureParam
         {features::kTabHoverCardImagesNotReadyDelayParameterName, "800"},
         {features::kTabHoverCardImagesLoadingDelayParameterName, "300"},
         {features::kTabHoverCardImagesLoadedDelayParameterName, "300"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesImmediatePlaceholderCrossfade[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.0"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesEarlySlidePlaceholderCrossfade[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.25"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesMidSlidePlaceholderCrossfade[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+        {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "0.5"}};
+const FeatureEntry::FeatureParam kTabHoverCardImagesLatePlaceholderCrossfade[] =
+    {{features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+     {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+     {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+     {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "1.0"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
     {" capture speed", kTabHoverCardImagesOptimizationCaptureSpeed,
      base::size(kTabHoverCardImagesOptimizationCaptureSpeed), nullptr},
     {" resource usage", kTabHoverCardImagesOptimizationResourceUsage,
-     base::size(kTabHoverCardImagesOptimizationResourceUsage), nullptr}};
+     base::size(kTabHoverCardImagesOptimizationResourceUsage), nullptr},
+    {" immediate placeholder crossfade",
+     kTabHoverCardImagesImmediatePlaceholderCrossfade,
+     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr},
+    {" early-transition placeholder crossfade",
+     kTabHoverCardImagesEarlySlidePlaceholderCrossfade,
+     base::size(kTabHoverCardImagesEarlySlidePlaceholderCrossfade), nullptr},
+    {" mid-transition placeholder crossfade",
+     kTabHoverCardImagesMidSlidePlaceholderCrossfade,
+     base::size(kTabHoverCardImagesMidSlidePlaceholderCrossfade), nullptr},
+    {" placeholder crossfade on land",
+     kTabHoverCardImagesLatePlaceholderCrossfade,
+     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr}};
 
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};
