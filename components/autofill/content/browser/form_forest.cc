@@ -107,6 +107,8 @@ FormData* FormForest::GetFormData(const FormGlobalId& form,
   DCHECK(!frame_data || frame_data == GetFrameData(form.frame_token));
   if (!frame_data)
     frame_data = GetFrameData(form.frame_token);
+  if (!frame_data)
+    return nullptr;
   auto it = base::ranges::find(frame_data->child_forms, form.renderer_id,
                                &FormData::unique_renderer_id);
   return it != frame_data->child_forms.end() ? &*it : nullptr;
@@ -470,7 +472,8 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
                            form_id, &FormData::global_id);
     if (renderer_form == renderer_forms.rend()) {
       const FormData* original_form = mutable_this.GetFormData(form_id);
-      AFCHECK(original_form, continue);
+      if (!original_form)
+        continue;
       renderer_forms.push_back(*original_form);
       renderer_form = renderer_forms.rbegin();
       renderer_form->fields.clear();  // In case |original_form| is a root form.
