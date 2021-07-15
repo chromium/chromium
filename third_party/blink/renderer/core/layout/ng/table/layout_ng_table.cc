@@ -267,13 +267,6 @@ void LayoutNGTable::AddVisualEffectOverflow() {
 }
 #endif
 
-void LayoutNGTable::Paint(const PaintInfo& paint_info) const {
-  NOT_DESTROYED();
-  DCHECK_EQ(PhysicalFragmentCount(), 1u);
-  NGBoxFragmentPainter(*LayoutNGMixin<LayoutBlock>::GetPhysicalFragment(0))
-      .Paint(paint_info);
-}
-
 LayoutUnit LayoutNGTable::BorderLeft() const {
   NOT_DESTROYED();
   // DCHECK(cached_table_borders_.get())

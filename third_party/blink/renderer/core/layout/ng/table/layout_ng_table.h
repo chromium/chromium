@@ -90,8 +90,6 @@ class CORE_EXPORT LayoutNGTable : public LayoutNGBlock,
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
       const LayoutObject* parent) const override;
 
-  void Paint(const PaintInfo&) const final;
-
   LayoutUnit BorderTop() const override;
 
   LayoutUnit BorderBottom() const override;
