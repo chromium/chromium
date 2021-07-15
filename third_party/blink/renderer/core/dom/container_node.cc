@@ -55,6 +55,7 @@
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/line/inline_text_box.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
@@ -716,6 +717,14 @@ Node* ContainerNode::RemoveChild(Node* old_child,
         "child of this node. Perhaps it was moved "
         "in response to a mutation?");
     return nullptr;
+  }
+
+  if (auto* layout_object = child->GetLayoutObject()) {
+    // Request to merge previous and next |LayoutNGTextCombine| of |child|.
+    // See http:://crbug.com/1227066
+    if (UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->PreviousSibling())) &&
+        UNLIKELY(IsA<LayoutNGTextCombine>(layout_object->NextSibling())))
+      SetForceReattachLayoutTree();
   }
 
   {
