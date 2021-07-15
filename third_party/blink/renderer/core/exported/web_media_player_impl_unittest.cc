@@ -69,6 +69,7 @@
 #include "third_party/blink/public/web/web_testing_support.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/blink/public/web/web_widget.h"
+#include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/platform/media/resource_multi_buffer_data_provider.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_resource_fetch_context.h"
 #include "third_party/blink/renderer/platform/media/testing/mock_web_associated_url_loader.h"
@@ -324,28 +325,12 @@ class WebMediaPlayerImplTest
   explicit WebMediaPlayerImplTest(
       std::unique_ptr<scheduler::WebAgentGroupScheduler> agent_group_scheduler)
       : media_thread_("MediaThreadForTest"),
-        web_view_(WebView::Create(
-            /*client=*/nullptr,
-            /*is_hidden=*/false,
-            /*is_prerendering=*/false,
-            /*is_inside_portal=*/false,
-            /*compositing_enabled=*/false,
-            /*widgets_never_composited=*/false,
-            /*opener=*/nullptr,
-            mojo::NullAssociatedReceiver(),
-            *agent_group_scheduler,
-            /*session_storage_namespace_id=*/base::EmptyString(),
-            /*page_base_background_color=*/absl::nullopt)),
-        web_local_frame_(WebLocalFrame::CreateMainFrame(web_view_,
-                                                        &web_frame_client_,
-                                                        nullptr,
-                                                        LocalFrameToken(),
-                                                        nullptr)),
         context_provider_(viz::TestContextProvider::Create()),
         audio_parameters_(media::TestAudioParameters::Normal()),
         memory_dump_manager_(
             base::trace_event::MemoryDumpManager::CreateInstanceForTesting()),
         agent_group_scheduler_(std::move(agent_group_scheduler)) {
+    web_view_helper_.Initialize();
     media_thread_.StartAndWaitForTesting();
   }
 
@@ -377,8 +362,6 @@ class WebMediaPlayerImplTest
     wmpi_.reset();
 
     CycleThreads();
-
-    web_view_->Close();
 
     agent_group_scheduler_ = nullptr;
   }
@@ -457,7 +440,7 @@ class WebMediaPlayerImplTest
     compositor_ = compositor.get();
 
     wmpi_ = std::make_unique<WebMediaPlayerImpl>(
-        web_local_frame_, &client_, &encrypted_client_, &delegate_,
+        GetWebLocalFrame(), &client_, &encrypted_client_, &delegate_,
         std::move(factory_selector), url_index_.get(), std::move(compositor),
         std::move(params));
   }
@@ -468,7 +451,9 @@ class WebMediaPlayerImplTest
     return std::move(surface_layer_bridge_);
   }
 
-  WebLocalFrame* GetWebLocalFrame() { return web_local_frame_; }
+  WebLocalFrame* GetWebLocalFrame() {
+    return web_view_helper_.LocalMainFrame();
+  }
 
   int64_t OnAdjustAllocatedMemory(int64_t delta) {
     reported_memory_ += delta;
@@ -713,13 +698,12 @@ class WebMediaPlayerImplTest
     // network stack and "serve" an in memory file to the DataSource.
     WebAssociatedURLLoaderClient* client = nullptr;
     EXPECT_CALL(mock_resource_fetch_context_, CreateUrlLoader(_))
-        .WillRepeatedly(
-            Invoke([&client](const WebAssociatedURLLoaderOptions&) {
-              auto a = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
-              EXPECT_CALL(*a, LoadAsynchronously(_, _))
-                  .WillRepeatedly(testing::SaveArg<1>(&client));
-              return a;
-            }));
+        .WillRepeatedly(Invoke([&client](const WebAssociatedURLLoaderOptions&) {
+          auto a = std::make_unique<NiceMock<MockWebAssociatedURLLoader>>();
+          EXPECT_CALL(*a, LoadAsynchronously(_, _))
+              .WillRepeatedly(testing::SaveArg<1>(&client));
+          return a;
+        }));
 
     wmpi_->Load(WebMediaPlayer::kLoadTypeURL,
                 WebMediaPlayerSource(WebURL(kTestURL)),
@@ -842,9 +826,7 @@ class WebMediaPlayerImplTest
   base::Thread media_thread_;
 
   // Blink state.
-  WebLocalFrameClient web_frame_client_;
-  WebView* web_view_;
-  WebLocalFrame* web_local_frame_;
+  frame_test_helpers::WebViewHelper web_view_helper_;
 
   scoped_refptr<viz::TestContextProvider> context_provider_;
   NiceMock<MockVideoFrameCompositor>* compositor_;

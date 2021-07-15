@@ -14,4 +14,25 @@ specific_include_rules = {
     "+third_party/icu/source/common/unicode/uscript.h",
     "+ui/gfx/font_render_params.h",
   ],
+  "web_media_player_impl_unittest.cc": [
+    "+base/command_line.h",
+    "+base/memory/ref_counted.h",
+    "+base/run_loop.h",
+    "+base/strings/string_number_conversions.h",
+    "+base/strings/string_split.h",
+    "+base/strings/utf_string_conversions.h",
+    "+base/task/current_thread.h",
+    "+base/task_runner_util.h",
+    "+base/threading/thread.h",
+    "+components/viz/test",
+    "+media/base",
+    "+media/filters",
+    "+media/mojo/services",
+    "+media/renderers",
+    "+gin/v8_initializer.h",
+    "+mojo/core/embedder/embedder.h",
+
+    # Allow test support dependencies.
+    "+third_party/blink/renderer/platform/media/testing",
+  ],
 }
