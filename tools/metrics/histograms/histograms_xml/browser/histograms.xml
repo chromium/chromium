@@ -31,6 +31,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".Organic"/>
 </variants>
 
+<variants name="TabSwitchingType">
+  <variant name=".NoSavedFrames"
+      summary="The time from the input timestamp on a tab switch, until the
+               frame is presented on the screen when there is no saved frame
+               in the cache."/>
+  <variant name=".NoSavedFrames_Loaded"
+      summary="Same as NoSavedFrames with the destination tab being loaded
+               (frozen or not frozen)"/>
+  <variant name=".NoSavedFrames_Loaded_Frozen"
+      summary="Same as NoSavedFrames with the destination tab being loaded and
+               frozen.">
+    <obsolete>
+      Frozen is no longer a supported state.
+    </obsolete>
+  </variant>
+  <variant name=".NoSavedFrames_Loaded_NotFrozen"
+      summary="Same as NoSavedFrames with the destination tab being loaded and
+               not frozen.">
+    <obsolete>
+      Frozen is no longer a supported state.
+    </obsolete>
+  </variant>
+  <variant name=".NoSavedFrames_NotLoaded"
+      summary="Same as WithSavedFrames with the destination tab being
+               unloaded."/>
+  <variant name=".WithSavedFrames"
+      summary="There is a saved frame in the cache when the tab switch
+               starts."/>
+</variants>
+
 <histogram name="Browser.AnyWindowHasName" enum="Boolean"
     expires_after="2021-09-30">
   <owner>ellyjones@chromium.org</owner>
@@ -409,7 +439,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Browser.PaintPreview.TabbedPlayer.UpTime"
+<histogram
+    name="Browser.PaintPreview.TabbedPlayer.UpTime{TabbedPaintPreviewPlayerUptime}"
     units="ms" expires_after="2022-01-02">
   <owner>ckitagawa@chromium.org</owner>
   <owner>mahmoudi@chromium.org</owner>
@@ -417,7 +448,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>
     Records the length of the time that a session of TabbedPaintPreviewPlayer
     lasts. Recorded when paint preview is removed.
+    {TabbedPaintPreviewPlayerUptime}
   </summary>
+  <token key="TabbedPaintPreviewPlayerUptime">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".RemovedByCompositorFailure"
+        summary="Removed by compositor failure"/>
+    <variant name=".RemovedByLinkClick" summary="Removed by link click"/>
+    <variant name=".RemovedByNavigation" summary="Removed by navigation"/>
+    <variant name=".RemovedByPullToRefresh"
+        summary="Removed by pull to refresh"/>
+    <variant name=".RemovedBySnackBar" summary="Removed by SnackBar"/>
+    <variant name=".RemovedOnAccessibilityNotSupported"
+        summary="Removed on accessibility not supported"/>
+    <variant name=".RemovedOnLoad" summary="Removed on load"/>
+    <variant name=".RemovedOnOfflineAvailable"
+        summary="Removed on offline page available"/>
+    <variant name=".RemovedOnTabDestroy" summary="Removed on tab destroy"/>
+  </token>
 </histogram>
 
 <histogram name="Browser.PaintPreview.TabService.DiskUsageAtStartup" units="KB"
@@ -461,45 +513,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     responsive but the application is not (because things aren't loading). Not
     reported across system sleep. More details @
     https://bit.ly/chrome-io-jank-metric
-  </summary>
-</histogram>
-
-<histogram name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds"
-    units="janks" expires_after="never">
-<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
-
-  <owner>erikchen@chromium.org</owner>
-  <owner>chrome-analysis-team@google.com</owner>
-  <summary>
-    This metric is emitted every 30 seconds [when there is user activity]. Each
-    30 second duration is divided into 100ms intervals. This metric counts the
-    number of these intervals that were &quot;janky&quot;. See
-    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
-    for more details.
-
-    On desktop platforms, this metric measures native events, as well as tasks
-    posted to the UI and IO threads of the browser process. On Android, this
-    metric only measures tasks posted to the UI and IO threads.
-
-    Update (October 27th 2019): The responsiveness::Watcher emitting this metric
-    previously started observation before the main message loop was running,
-    this resulted in the 99th percentile being mostly comprised of slow startups
-    (before the message loop gets to run). This was fixed and a fake-improvement
-    in the high percentiles is expected when the fix goes live.
-
-    Update (M82 March 2020): Stopped recording background intervals on Android.
-
-    Due to a bug, this metric does not measure long queueing time as jankiness.
-    It only measures jankiness as individual tasks taking a long time to run.
-    Given that it's a long-standing bug, this metric will not be modified. We
-    are testing a new metric
-    Browser.Responsiveness.JankyIntervalsPerThirtySeconds2 that correctly
-    accounts for queueing time. See
-    https://groups.google.com/a/google.com/forum/#!topic/chrome-scheduler/X32gKl6fW2A
-    for more details.
-
-    This histogram is of special interest to the chrome-analysis-team@. Do not
-    change its semantics or retire it without talking to them first.
   </summary>
 </histogram>
 
@@ -549,16 +562,111 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Browser.Tabs.InputEventToSelectionTime"
-    units="microseconds" expires_after="2019-08-31">
-<!-- Name completed by histogram_suffixes name="TabSwitchInputLatency" -->
+<histogram
+    name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds{JankyIntervalsPerThirtySeconds}"
+    units="janks" expires_after="never">
+<!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
+  <owner>erikchen@chromium.org</owner>
+  <owner>chrome-analysis-team@google.com</owner>
+  <summary>
+    This metric is emitted every 30 seconds [when there is user activity]. Each
+    30 second duration is divided into 100ms intervals. This metric counts the
+    number of these intervals that were &quot;janky&quot;. See
+    https://docs.google.com/document/d/1vDSGFvJblh7yJ3U3RVB_7qZLubyfTbQdQjuN1GoUNkc/edit
+    for more details.
+
+    On desktop platforms, this metric measures native events, as well as tasks
+    posted to the UI and IO threads of the browser process. On Android, this
+    metric only measures tasks posted to the UI and IO threads.
+
+    Update (October 27th 2019): The responsiveness::Watcher emitting this metric
+    previously started observation before the main message loop was running,
+    this resulted in the 99th percentile being mostly comprised of slow startups
+    (before the message loop gets to run). This was fixed and a fake-improvement
+    in the high percentiles is expected when the fix goes live.
+
+    Update (M82 March 2020): Stopped recording background intervals on Android.
+
+    Due to a bug, this metric does not measure long queueing time as jankiness.
+    It only measures jankiness as individual tasks taking a long time to run.
+    Given that it's a long-standing bug, this metric will not be modified. We
+    are testing a new metric
+    Browser.Responsiveness.JankyIntervalsPerThirtySeconds2 that correctly
+    accounts for queueing time. See
+    https://groups.google.com/a/google.com/forum/#!topic/chrome-scheduler/X32gKl6fW2A
+    for more details.
+
+    This histogram is of special interest to the chrome-analysis-team@. Do not
+    change its semantics or retire it without talking to them first.
+    {JankyIntervalsPerThirtySeconds}
+  </summary>
+  <token key="JankyIntervalsPerThirtySeconds">
+    <variant name=""/>
+    <variant name=".NonStartup"
+        summary="Does not include jank in the first 30 seconds [startup].">
+      <obsolete>
+        This metric is now only recorded after the main message loop starts and
+        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
+        Startup.BrowserMessageLoopStartTime can be used for the startup phase
+        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
+        can be used for the user-visible startup performance.
+      </obsolete>
+    </variant>
+    <variant name=".NoSuspend"
+        summary="Only counts jank without power suspend/resume.">
+      <obsolete>
+        This metric is now only recorded after the main message loop starts and
+        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
+        Startup.BrowserMessageLoopStartTime can be used for the startup phase
+        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
+        can be used for the user-visible startup performance.
+      </obsolete>
+    </variant>
+    <variant name=".Startup"
+        summary="Only counts jank in the first 30 seconds [startup].">
+      <obsolete>
+        This metric is now only recorded after the main message loop starts and
+        no longer distinguishes the first 30 seconds as &quot;startup&quot;.
+        Startup.BrowserMessageLoopStartTime can be used for the startup phase
+        (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3
+        can be used for the user-visible startup performance.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Browser.Tabs.InputEventToSelectionTime{TabSwitchInputLatency}"
+    units="microseconds" expires_after="2019-08-31">
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
     The time between input event timestamp for tab switch and when the
-    TabStripModel begins processing the switch.
+    TabStripModel begins processing the switch. {TabSwitchInputLatency}
   </summary>
+  <token key="TabSwitchInputLatency">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Keyboard"
+        summary="The time it takes from receiving a keyboard input event that
+                 leads to the active tab changing to just before the TabStrip
+                 notifies its observers of the change."/>
+    <variant name=".Mouse"
+        summary="The time it takes from receiving a mouse input event that
+                 leads to the active tab changing to just before the TabStrip
+                 notifies its observers of the change."/>
+    <variant name=".Touch"
+        summary="The time it takes from receiving a touch input event that
+                 leads to the active tab changing to just before the TabStrip
+                 notifies its observers of the change."/>
+    <variant name=".Wheel"
+        summary="The time it takes from receiving a mouse scroll event that
+                 leads to the active tab changing to just before the TabStrip
+                 notifies its observers of the change."/>
+  </token>
 </histogram>
 
 <histogram name="Browser.Tabs.SelectionToVisibilityRequestTime"
@@ -575,36 +683,53 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Browser.Tabs.TabSwitchResult"
+<histogram name="Browser.Tabs.TabSwitchResult{TabSwitchingType}"
     enum="TabSwitchResult" expires_after="2021-11-14">
-<!-- Name completed by histogram_suffixes name="TabSwitchingType" -->
-
   <owner>fdoray@chromium.org</owner>
-  <summary>Whether a frame was presented after a tab switch event.</summary>
+  <summary>
+    Whether a frame was presented after a tab switch event. {TabSwitchingType}
+  </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Browser.Tabs.TotalIncompleteSwitchDuration"
+<histogram name="Browser.Tabs.TotalIncompleteSwitchDuration{TabSwitchingType}"
     units="ms" expires_after="2021-08-09">
-<!-- Name completed by histogram_suffixes name="TabSwitchingType" -->
-
   <owner>fdoray@chromium.org</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
     The time between a tab switch input event timestamp and when the tab is
-    hidden, if no frame is presented in the meantime.
+    hidden, if no frame is presented in the meantime. {TabSwitchingType}
   </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Browser.Tabs.TotalSwitchDuration" units="ms"
+<histogram name="Browser.Tabs.TotalSwitchDuration{TabSwitchingType}" units="ms"
     expires_after="2022-01-02">
-<!-- Name completed by histogram_suffixes name="TabSwitchingType" -->
-
   <owner>ejoe@google.com</owner>
   <owner>jonross@chromium.org</owner>
   <summary>
     The time between the input event timestamp and the frame presentation time
-    on a tab switch.
+    on a tab switch. {TabSwitchingType}
   </summary>
+  <token key="TabSwitchingType" variants="TabSwitchingType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Browser.WindowCount.Guest" units="units"

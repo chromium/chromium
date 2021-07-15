@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="BluetoothUISurfaces">
+  <variant name=".Settings" summary=""/>
+  <variant name=".SystemTray" summary=""/>
+</variants>
+
 <histogram name="Bluetooth.Android.GATTConnection.Disconnected.Result"
     enum="AndroidGATTConnectionErrorCodes" expires_after="2021-01-31">
   <obsolete>
@@ -70,18 +75,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.DeviceSelectionDuration" units="ms"
-    expires_after="2021-03-05">
-<!-- Name completed by histogram_suffixes name="BluetoothUISurfaces",
-     name="BluetoothPairingStates", and name="BluetoothTransportTypes" -->
-
+<histogram
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}"
+    units="ms" expires_after="2021-03-05">
   <owner>hansberry@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
-    open.
+    open. {BluetoothUISurfaces}
   </summary>
+  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.Duration.Failure" units="ms"
@@ -156,10 +162,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result"
-    enum="BooleanSuccess" expires_after="2021-11-14">
-<!-- Name completed by histogram_suffixes name="BluetoothUISurfaces" -->
+<histogram
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{BluetoothUISurfaces}"
+    enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
+  <owner>hansberry@chromium.org</owner>
+  <owner>cros-system-services-networking@google.com</owner>
+  <summary>
+    Breaks down why a user-initiated reconnection attempt to a peripheral failed
+    (see 'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result').
 
+    Suffixed by Bluetooth UI surface. View the base histogram to see results for
+    all UI surfaces aggregated together, and suffixed histograms for the results
+    of just that particular UI surfaces. {BluetoothUISurfaces}
+  </summary>
+  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{BluetoothUISurfaces}"
+    enum="BooleanSuccess" expires_after="2021-11-14">
   <owner>hansberry@chromium.org</owner>
   <owner>cros-system-services-networking@google.com</owner>
   <summary>
@@ -170,25 +193,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Suffixed by Bluetooth UI surface. View the base histogram to see results for
     all UI surfaces aggregated together, and suffixed histograms for the results
-    of just that particular UI surfaces.
+    of just that particular UI surfaces. {BluetoothUISurfaces}
   </summary>
-</histogram>
-
-<histogram
-    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason"
-    enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
-<!-- Name completed by histogram_suffixes name="BluetoothUISurfaces" -->
-
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Breaks down why a user-initiated reconnection attempt to a peripheral failed
-    (see 'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result').
-
-    Suffixed by Bluetooth UI surface. View the base histogram to see results for
-    all UI surfaces aggregated together, and suffixed histograms for the results
-    of just that particular UI surfaces.
-  </summary>
+  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ConnectedDeviceCount" units="devices"
@@ -235,17 +244,39 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Bluetooth.MacOS.Errors"
+<histogram name="Bluetooth.MacOS.Errors{WebBluetoothMacOSAPIs}"
     enum="MacOSBluetoothOperationsResult" expires_after="2021-01-31">
-<!-- Name completed by histogram_suffixes name="WebBluetoothMacOSAPIs" -->
-
   <owner>reillyg@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>
     Records how many times each macOS GATT error has occured. The results will
     be used to determine how commun this errors are and if we need to provide
-    better error messages to the users.
+    better error messages to the users. {WebBluetoothMacOSAPIs}
   </summary>
+  <token key="WebBluetoothMacOSAPIs">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".DidDisconnectPeripheral"
+        summary="Disconnected from peripheral"/>
+    <variant name=".DidDiscoverCharacteristics"
+        summary="Discovered characteristics"/>
+    <variant name=".DidDiscoverDescriptors" summary="Discovered descriptors"/>
+    <variant name=".DidDiscoverPrimaryServices"
+        summary="Discovered primary services"/>
+    <variant name=".DidFailToConnectToPeripheral"
+        summary="Failed to connect to peripheral"/>
+    <variant name=".DidUpdateNotificationState"
+        summary="Updated notification state"/>
+    <variant name=".DidUpdateValue" summary="Updated value for characteristic"/>
+    <variant name=".DidUpdateValueForDescriptor"
+        summary="Updated value for descriptor"/>
+    <variant name=".DidWriteValue" summary="Wrote value for characteristic"/>
+    <variant name=".DidWriteValueForDescriptor"
+        summary="Wrote value value for descriptor"/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.Mojo.PendingConnectAtShutdown.DurationWaiting"
@@ -296,16 +327,69 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.Web.Android" enum="AndroidGATTStatusResult"
-    expires_after="2021-01-31">
+<histogram name="Bluetooth.Web.Android{AndroidGATTEvents}"
+    enum="AndroidGATTStatusResult" expires_after="2021-01-31">
   <obsolete>
     Removed 2021/04/12. crbug.com/1052934
   </obsolete>
-<!-- Name completed by histogram_suffixes name="AndroidGATTEvents" -->
-
   <owner>ortuno@chromium.org</owner>
   <owner>reillyg@chromium.org</owner>
-  <summary>'status' values returned by Android GATT event.</summary>
+  <summary>
+    'status' values returned by Android GATT event. {AndroidGATTEvents}
+  </summary>
+  <token key="AndroidGATTEvents">
+    <variant name=""/>
+    <variant name=".onCharacteristicRead.Status" summary="">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onCharacteristicWrite.Status" summary="">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onConnectionStateChange.Status.Connected"
+        summary="While Connected">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onConnectionStateChange.Status.Disconnected"
+        summary="While Disonnected">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onConnectionStateChange.Status.InvalidState"
+        summary="While InvalidState">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onDescriptorRead.Status" summary="">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onDescriptorWrite.Status" summary="">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onServicesDiscovered.Status.Connected"
+        summary="While Connected">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+    <variant name=".onServicesDiscovered.Status.Disconnected"
+        summary="While Disconnected">
+      <obsolete>
+        Removed 2021/04/12. crbug.com/1052934
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.Web.Blocklist.ParsedNonEmptyString"

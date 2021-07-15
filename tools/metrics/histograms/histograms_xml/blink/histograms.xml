@@ -21,6 +21,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="BlinkIncrementalDecodeImageTypes">
+  <variant name=".Jpeg"
+      summary="Byte size of JPEG images that fall into this category."/>
+  <variant name=".WebP"
+      summary="Byte size of WebP images that fall into this category."/>
+</variants>
+
+<variants name="BlinkVisibleLoadTimeSuffixes">
+  <variant name=".2G" summary="2G effective connection type"/>
+  <variant name=".3G" summary="3G effective connection type"/>
+  <variant name=".4G" summary="4G effective connection type"/>
+  <variant name=".Slow2G" summary="Slow-2G effective connection type"/>
+</variants>
+
 <histogram name="Blink.Accessibility.NumTreeUpdatesQueuedBeforeLayout"
     units="updates" expires_after="M86">
   <owner>aboxhall@chromium.org</owner>
@@ -137,14 +151,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.DrawImage.SqrtNumberOfPixels"
+<histogram
+    name="Blink.Canvas.DrawImage.SqrtNumberOfPixels{BlinkCanvasDrawImageSizeType}"
     units="sqrt(pixels)" expires_after="2021-12-12">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
     Stores the square root of the number of pixels drawn into a Canvas.
-    Different histograms per CanvasImageSource.
+    Different histograms per CanvasImageSource. {BlinkCanvasDrawImageSizeType}
   </summary>
+  <token key="BlinkCanvasDrawImageSizeType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Canvas.CPU" summary=""/>
+    <variant name=".Canvas.GPU" summary=""/>
+    <variant name=".CssImage" summary=""/>
+    <variant name=".ImageBitmap" summary=""/>
+    <variant name=".ImageElement" summary=""/>
+    <variant name=".OffscreenCanvas.CPU" summary=""/>
+    <variant name=".OffscreenCanvas.GPU" summary=""/>
+    <variant name=".SVG" summary=""/>
+    <variant name=".Unknown" summary=""/>
+    <variant name=".Video" summary=""/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.GetImageDataScaledDuration"
@@ -267,8 +299,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.Canvas.RasterDuration" units="microseconds"
-    expires_after="2021-12-12">
+<histogram name="Blink.Canvas.RasterDuration{BlinkCanvasRasterDurationType}"
+    units="microseconds" expires_after="2021-12-12">
   <owner>aaronhk@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
@@ -280,18 +312,40 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {BlinkCanvasRasterDurationType}
   </summary>
+  <token key="BlinkCanvasRasterDurationType">
+    <variant name=""/>
+    <variant name=".Accelerated.CPU" summary=""/>
+    <variant name=".Accelerated.GPU" summary=""/>
+    <variant name=".Accelerated.Total" summary=""/>
+    <variant name=".Unaccelerated" summary=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.RequestedImageMimeTypes"
+<histogram
+    name="Blink.Canvas.RequestedImageMimeTypes{CanvasRequestedImageMimeTypeFunctions}"
     enum="RequestedImageMimeType" expires_after="2022-04-04">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
     Records the occurence of image file formats passed into toDataURL and toBlob
-    functions in canvas.
+    functions in canvas. {CanvasRequestedImageMimeTypeFunctions}
   </summary>
+  <token key="CanvasRequestedImageMimeTypeFunctions">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="_convertToBlobPromise"
+        summary="Image formats passed to OffscreenCanvas.convertToBlob
+                 (promise)"/>
+    <variant name="_toBlobCallback"
+        summary="Image formats passed to canvas.toBlob (callback)"/>
+    <variant name="_toDataURL"
+        summary="Image formats passed to canvas.toDataURL"/>
+  </token>
 </histogram>
 
 <histogram name="Blink.Canvas.ResourceProviderIsAccelerated"
@@ -434,7 +488,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.ToBlob.ScaledDuration"
+<histogram name="Blink.Canvas.ToBlob.ScaledDuration{BlinkCanvasToBlobType}"
     units="microseconds/sqrt(pixels)" expires_after="2022-04-04">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
@@ -450,7 +504,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Note: This metric drops reports on clients with low-resolution clocks, which
     means these reports will be biased against a portion of the population on
     Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+    {BlinkCanvasToBlobType}
   </summary>
+  <token key="BlinkCanvasToBlobType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".JPEG" summary=""/>
+    <variant name=".PNG" summary=""/>
+    <variant name=".WEBP" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Blink.Canvas.ToBlob.TotalEncodingDelay.{Type}"
@@ -488,7 +553,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram base="true" name="Blink.Canvas.ToDataURLScaledDuration"
+<histogram
+    name="Blink.Canvas.ToDataURLScaledDuration{BlinkCanvasToDataURLMimeType}"
     units="microseconds/sqrt(pixels)" expires_after="2022-04-04">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
@@ -504,8 +570,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {BlinkCanvasToDataURLMimeType}
   </summary>
+  <token key="BlinkCanvasToDataURLMimeType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".BMP" summary="">
+      <obsolete>
+        Removed in Oct 2016
+      </obsolete>
+    </variant>
+    <variant name=".GIF" summary="">
+      <obsolete>
+        Removed in Oct 2016
+      </obsolete>
+    </variant>
+    <variant name=".ICON" summary="">
+      <obsolete>
+        Removed in Oct 2016
+      </obsolete>
+    </variant>
+    <variant name=".JPEG" summary=""/>
+    <variant name=".PNG" summary=""/>
+    <variant name=".TIFF" summary="">
+      <obsolete>
+        Removed in Oct 2016
+      </obsolete>
+    </variant>
+    <variant name=".Unknown" summary="">
+      <obsolete>
+        Removed in Oct 2016
+      </obsolete>
+    </variant>
+    <variant name=".WEBP" summary=""/>
+  </token>
 </histogram>
 
 <histogram name="Blink.Canvas.WebGPUMaxRecycledResourcesCount"
@@ -593,14 +694,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.Compositing.LayerPromotionCount"
+<histogram
+    name="Blink.Compositing.LayerPromotionCount{BlinkCompositingLayerCount}"
     units="units" expires_after="2021-12-05">
   <owner>pdr@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
   <summary>
     Number of composited layers based on various reasons. Recorded when a page
-    finishes its layer updates.
+    finishes its layer updates. {BlinkCompositingLayerCount}
   </summary>
+  <token key="BlinkCompositingLayerCount">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".ActiveAnimation" summary=""/>
+    <variant name=".AssumedOverlap" summary=""/>
+    <variant name=".IndirectComposited" summary=""/>
+    <variant name=".Overlap" summary=""/>
+    <variant name=".TotalComposited" summary=""/>
+  </token>
 </histogram>
 
 <histogram base="true" name="Blink.CompositingAssignments.UpdateTime"
@@ -1504,7 +1618,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Blink.ImageDecoders.IncrementallyDecodedByteSize"
+<histogram
+    name="Blink.ImageDecoders.IncrementallyDecodedByteSize{BlinkIncrementalDecodeImageTypes}"
     units="bytes" expires_after="2021-11-14">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
@@ -1515,11 +1630,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     the bucket in which the decode will be counted (IncrementallyDecoded or
     InitiallyFullyDecoded) is computed when the DeferredImageDecoder is about to
     create the first DecodingImageGenerator for an image and the byte size is
-    emitted when all data is received.
+    emitted when all data is received. {BlinkIncrementalDecodeImageTypes}
   </summary>
+  <token key="BlinkIncrementalDecodeImageTypes"
+      variants="BlinkIncrementalDecodeImageTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Blink.ImageDecoders.InitiallyFullyDecodedByteSize"
+<histogram
+    name="Blink.ImageDecoders.InitiallyFullyDecodedByteSize{BlinkIncrementalDecodeImageTypes}"
     units="bytes" expires_after="2021-12-19">
   <owner>mbarowsky@chromium.org</owner>
   <owner>andrescj@chromium.org</owner>
@@ -1533,7 +1657,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     counted (IncrementallyDecoded or InitiallyFullyDecoded) is computed when the
     DeferredImageDecoder is about to create the first DecodingImageGenerator for
     an image and the byte size is emitted when all data is received.
+    {BlinkIncrementalDecodeImageTypes}
   </summary>
+  <token key="BlinkIncrementalDecodeImageTypes"
+      variants="BlinkIncrementalDecodeImageTypes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Blink.ImageDecoders.Jpeg.Area" units="pixels"
@@ -1747,12 +1880,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.LazyLoad.CrossOriginFrames.InitialDeferralAction"
+<histogram
+    name="Blink.LazyLoad.CrossOriginFrames.InitialDeferralAction{BlinkLazyLoadEffectiveConnectionTypeSuffixes}"
     enum="LazyLoad.FrameInitialDeferralAction" expires_after="2021-03-07">
   <owner>sclittle@chromium.org</owner>
   <summary>
     Records the initial lazy loading action taken for a cross-origin iframe.
+    {BlinkLazyLoadEffectiveConnectionTypeSuffixes}
   </summary>
+  <token key="BlinkLazyLoadEffectiveConnectionTypeSuffixes">
+    <variant name=""/>
+    <variant name=".2G" summary="2G effective connection type"/>
+    <variant name=".3G" summary="3G effective connection type"/>
+    <variant name=".4G" summary="4G effective connection type"/>
+    <variant name=".Offline" summary="Offline effective connection type"/>
+    <variant name=".Slow2G" summary="Slow-2G effective connection type"/>
+    <variant name=".Unknown" summary="Unknown effective connection type"/>
+  </token>
 </histogram>
 
 <histogram
@@ -3041,27 +3185,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold"
+<histogram
+    name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold{BlinkVisibleLoadTimeSuffixes}"
     units="ms" expires_after="2021-08-29">
   <owner>sclittle@chromium.org</owner>
   <summary>
     Milliseconds spent waiting for an above the fold iframe to load. Only fires
     for iframes that would be eligible for lazy loading, i.e. cross-origin and
-    non-hidden.
+    non-hidden. {BlinkVisibleLoadTimeSuffixes}
   </summary>
+  <token key="BlinkVisibleLoadTimeSuffixes"
+      variants="BlinkVisibleLoadTimeSuffixes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.BelowTheFold"
+<histogram
+    name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.BelowTheFold{BlinkVisibleLoadTimeSuffixes}"
     units="ms" expires_after="2021-02-21">
   <owner>sclittle@chromium.org</owner>
   <summary>
     Milliseconds spent waiting for a below the fold iframe to load. Only fires
     for iframes that would be eligible for lazy loading, i.e. cross-origin and
-    non-hidden.
+    non-hidden. {BlinkVisibleLoadTimeSuffixes}
   </summary>
+  <token key="BlinkVisibleLoadTimeSuffixes"
+      variants="BlinkVisibleLoadTimeSuffixes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold"
+<histogram
+    name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold{BlinkVisibleLoadTimeSuffixes}"
     units="ms" expires_after="2022-01-02">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
@@ -3069,11 +3224,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Milliseconds spent waiting for an above the fold image element to load. 0ms
     is recorded if the image is already loaded by the time user scrolls to it.
     EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
-    histogram.
+    histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
+  <token key="BlinkVisibleLoadTimeSuffixes"
+      variants="BlinkVisibleLoadTimeSuffixes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold"
+<histogram
+    name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold{BlinkVisibleLoadTimeSuffixes}"
     units="ms" expires_after="2022-01-02">
   <owner>rajendrant@chromium.org</owner>
   <owner>bengr@chromium.org</owner>
@@ -3081,8 +3245,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Milliseconds spent waiting for a below the fold image element to load. 0ms
     is recorded if the image is already loaded by the time user scrolls to it.
     EffectiveConnectionType (2G, 3G, etc) is recorded as suffix to this
-    histogram.
+    histogram. {BlinkVisibleLoadTimeSuffixes}
   </summary>
+  <token key="BlinkVisibleLoadTimeSuffixes"
+      variants="BlinkVisibleLoadTimeSuffixes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram base="true" name="Blink.WaitForCommit.UpdateTime"
@@ -3461,16 +3633,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="BlinkGC.TimeForMarking" units="ms" expires_after="M95">
-  <owner>omerkatz@chromium.org</owner>
-  <owner>oilpan-reviews@chromium.org</owner>
-  <summary>
-    Accumulated sum of all durations of individual phases contributing to
-    marking (main thread and background helpers) within one Blink garbage
-    collection. Reported once per garbage collection at the end.
-  </summary>
-</histogram>
-
 <histogram name="BlinkGC.TimeForMarkingRoots" units="ms" expires_after="M95">
   <owner>omerkatz@chromium.org</owner>
   <owner>oilpan-reviews@chromium.org</owner>
@@ -3478,6 +3640,23 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Duration of marking roots within one Blink garbage collection. Reported once
     per garbage collection at the end.
   </summary>
+</histogram>
+
+<histogram name="BlinkGC.TimeForMarking{BlinkGCTimingTypes}" units="ms"
+    expires_after="M95">
+  <owner>omerkatz@chromium.org</owner>
+  <owner>oilpan-reviews@chromium.org</owner>
+  <summary>
+    Accumulated sum of all durations of individual phases contributing to
+    marking (main thread and background helpers) within one Blink garbage
+    collection. Reported once per garbage collection at the end.
+    {BlinkGCTimingTypes}
+  </summary>
+  <token key="BlinkGCTimingTypes">
+    <variant name=""/>
+    <variant name=".Background" summary="Includes only background helpers"/>
+    <variant name=".Foreground" summary="Includes only the main thread"/>
+  </token>
 </histogram>
 
 <histogram name="BlinkGC.TimeForNestedInV8" units="ms" expires_after="M95">

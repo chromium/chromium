@@ -854,26 +854,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Android.IsolatedSplits.PreloadWaitTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="AndroidGATTEvents" separator=".">
-  <obsolete>
-    Removed 2021/04/12. crbug.com/1052934
-  </obsolete>
-  <suffix name="onCharacteristicRead.Status" label=""/>
-  <suffix name="onCharacteristicWrite.Status" label=""/>
-  <suffix name="onConnectionStateChange.Status.Connected"
-      label="While Connected"/>
-  <suffix name="onConnectionStateChange.Status.Disconnected"
-      label="While Disonnected"/>
-  <suffix name="onConnectionStateChange.Status.InvalidState"
-      label="While InvalidState"/>
-  <suffix name="onDescriptorRead.Status" label=""/>
-  <suffix name="onDescriptorWrite.Status" label=""/>
-  <suffix name="onServicesDiscovered.Status.Connected" label="While Connected"/>
-  <suffix name="onServicesDiscovered.Status.Disconnected"
-      label="While Disconnected"/>
-  <affected-histogram name="Bluetooth.Web.Android"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="AndroidGetAccountsTypes" separator="_">
   <suffix name="AccountManager" label="Using Android AccountManager API"/>
   <suffix name="GoogleAuthUtil" label="Using GoogleAuthUtil API"/>
@@ -1770,48 +1750,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Download.MapErrorNetworkFailed.NetworkService"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BackgroundFetchDatabaseStorageErrors" separator=".">
-  <suffix name="CleanupTask" label="CleanupTask"/>
-  <suffix name="CreateMetadataTask" label="CreateMetadata DatabaseTask"/>
-  <suffix name="DeleteRegistrationTask"
-      label="DeleteRegistration DatabaseTask"/>
-  <suffix name="GetDeveloperIdsTask" label="GetDeveloperIds DatabaseTask"/>
-  <suffix name="GetInitializationDataTask"
-      label="GetInitializationData DatabaseTask"/>
-  <suffix name="GetRegistrationTask" label="GetRegistration DatabaseTask"/>
-  <suffix name="GetRequestBlobTask" label="GetRequestBlob DatabaseTask"/>
-  <suffix name="GetSettledFetchesTask" label="GetSettledFetches DatabaseTask"/>
-  <suffix name="MarkRegistrationForDeletionTask"
-      label="MarkRegistrationForDeletion DatabaseTask"/>
-  <suffix name="MarkRequestCompleteTask"
-      label="MarkRequestComplete DatabaseTask"/>
-  <suffix name="MatchRequestsTask" label="MatchRequests DatabaseTask"/>
-  <suffix name="StartNextPendingRequestTask"
-      label="StartNextPendingRequest DatabaseTask"/>
-  <suffix name="UpdateRegistrationUITask"
-      label="UpdateRegistrationUI DatabaseTask"/>
-  <affected-histogram name="BackgroundFetch.Storage"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BackgroundFetchEvents" separator=".">
-  <suffix name="AbortEvent" label="BackgroundFetchAbortEvent"/>
-  <suffix name="ClickEvent" label="BackgroundFetchClickEvent"/>
-  <suffix name="FailEvent" label="BackgroundFetchFailEvent"/>
-  <suffix name="FetchedEvent" label="BackgroundFetchedEvent"/>
-  <suffix name="SuccessEvent" label="BackgroundFetchSuccessEvent"/>
-  <affected-histogram name="BackgroundFetch.EventDispatchFailure.Dispatch"/>
-  <affected-histogram name="BackgroundFetch.EventDispatchFailure.FindWorker"/>
-  <affected-histogram name="BackgroundFetch.EventDispatchFailure.StartWorker"/>
-  <affected-histogram name="BackgroundFetch.EventDispatchResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BackgroundFetchManagerAPIsDuration" separator=".">
-  <suffix name="FetchDuration" label="Duration of fetch"/>
-  <suffix name="GetDuration" label="Duration of get"/>
-  <suffix name="GetIdsDuration" label="Duration of getIds"/>
-  <affected-histogram name="BackgroundFetch.Manager"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BadBlockCounts" separator=".">
   <suffix name="Backupsys" label="backupsys partition"/>
   <suffix name="Bbt" label="bbt partition"/>
@@ -1867,20 +1805,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Media.Audio.Bitstream"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlinkCanvasDrawImageSizeType" separator=".">
-  <suffix name="Canvas.CPU" label=""/>
-  <suffix name="Canvas.GPU" label=""/>
-  <suffix name="CssImage" label=""/>
-  <suffix name="ImageBitmap" label=""/>
-  <suffix name="ImageElement" label=""/>
-  <suffix name="OffscreenCanvas.CPU" label=""/>
-  <suffix name="OffscreenCanvas.GPU" label=""/>
-  <suffix name="SVG" label=""/>
-  <suffix name="Unknown" label=""/>
-  <suffix name="Video" label=""/>
-  <affected-histogram name="Blink.Canvas.DrawImage.SqrtNumberOfPixels"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlinkCanvasDrawImageType" separator=".">
   <suffix base="true" name="Canvas" label=""/>
   <suffix base="true" name="CssImage" label=""/>
@@ -1930,14 +1854,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Canvas.OffscreenCommitTimer"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlinkCanvasRasterDurationType" separator=".">
-  <suffix name="Accelerated.CPU" label=""/>
-  <suffix name="Accelerated.GPU" label=""/>
-  <suffix name="Accelerated.Total" label=""/>
-  <suffix name="Unaccelerated" label=""/>
-  <affected-histogram name="Blink.Canvas.RasterDuration"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlinkCanvasToBlobIdleEncodAndDelayType" separator=".">
   <suffix name="JPEG" label=""/>
   <suffix name="PNG" label=""/>
@@ -1948,54 +1864,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     </obsolete>
   </affected-histogram>
   <affected-histogram name="Blink.Canvas.ToBlob.InitiateEncodingDelay"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkCanvasToBlobType" separator=".">
-  <suffix name="JPEG" label=""/>
-  <suffix name="PNG" label=""/>
-  <suffix name="WEBP" label=""/>
-  <affected-histogram name="Blink.Canvas.ToBlob.ScaledDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkCanvasToDataURLMimeType" separator=".">
-  <suffix name="BMP" label="">
-    <obsolete>
-      Removed in Oct 2016
-    </obsolete>
-  </suffix>
-  <suffix name="GIF" label="">
-    <obsolete>
-      Removed in Oct 2016
-    </obsolete>
-  </suffix>
-  <suffix name="ICON" label="">
-    <obsolete>
-      Removed in Oct 2016
-    </obsolete>
-  </suffix>
-  <suffix name="JPEG" label=""/>
-  <suffix name="PNG" label=""/>
-  <suffix name="TIFF" label="">
-    <obsolete>
-      Removed in Oct 2016
-    </obsolete>
-  </suffix>
-  <suffix name="Unknown" label="">
-    <obsolete>
-      Removed in Oct 2016
-    </obsolete>
-  </suffix>
-  <suffix name="WEBP" label=""/>
-  <affected-histogram name="Blink.Canvas.ToDataURLScaledDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkCompositingLayerCount" separator=".">
-  <suffix name="ActiveAnimation" label=""/>
-  <suffix name="AssumedOverlap" label=""/>
-  <suffix name="IndirectComposited" label=""/>
-  <suffix name="Overlap" label=""/>
-  <suffix name="TotalComposited" label=""/>
-  <affected-histogram name="Blink.Compositing.LayerPromotionCount"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkGCReason" separator="_">
@@ -2014,33 +1882,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="BlinkGC.AtomicPhaseMarking"/>
   <affected-histogram name="BlinkGC.CollectionRate"/>
   <affected-histogram name="BlinkGC.TimeForTotalCollectGarbage"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkGCTimingTypes" separator=".">
-  <suffix name="Background" label="Includes only background helpers"/>
-  <suffix name="Foreground" label="Includes only the main thread"/>
-  <affected-histogram name="BlinkGC.TimeForMarking"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkIncrementalDecodeImageTypes" separator=".">
-  <suffix name="Jpeg"
-      label="Byte size of JPEG images that fall into this category."/>
-  <suffix name="WebP"
-      label="Byte size of WebP images that fall into this category."/>
-  <affected-histogram name="Blink.ImageDecoders.IncrementallyDecodedByteSize"/>
-  <affected-histogram name="Blink.ImageDecoders.InitiallyFullyDecodedByteSize"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BlinkLazyLoadEffectiveConnectionTypeSuffixes"
-    separator=".">
-  <suffix name="2G" label="2G effective connection type"/>
-  <suffix name="3G" label="3G effective connection type"/>
-  <suffix name="4G" label="4G effective connection type"/>
-  <suffix name="Offline" label="Offline effective connection type"/>
-  <suffix name="Slow2G" label="Slow-2G effective connection type"/>
-  <suffix name="Unknown" label="Unknown effective connection type"/>
-  <affected-histogram
-      name="Blink.LazyLoad.CrossOriginFrames.InitialDeferralAction"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkMainFrameUpdateTimeSuffixes" separator=".">
@@ -2174,19 +2015,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BlinkVisibleLoadTimeSuffixes" separator=".">
-  <suffix name="2G" label="2G effective connection type"/>
-  <suffix name="3G" label="3G effective connection type"/>
-  <suffix name="4G" label="4G effective connection type"/>
-  <suffix name="Slow2G" label="Slow-2G effective connection type"/>
-  <affected-histogram
-      name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.AboveTheFold"/>
-  <affected-histogram
-      name="Blink.VisibleLoadTime.LazyLoadEligibleFrames.BelowTheFold"/>
-  <affected-histogram name="Blink.VisibleLoadTime.LazyLoadImages.AboveTheFold"/>
-  <affected-histogram name="Blink.VisibleLoadTime.LazyLoadImages.BelowTheFold"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BluetoothPairedStates" separator=".">
   <suffix name="NotPaired" label=""/>
   <suffix name="Paired" label=""/>
@@ -2208,16 +2036,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Bluetooth.ChromeOS.Pairing.Duration.Success"/>
   <affected-histogram name="Bluetooth.ChromeOS.Pairing.Result"/>
   <affected-histogram name="Bluetooth.ChromeOS.Pairing.Result.FailureReason"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BluetoothUISurfaces" separator=".">
-  <suffix name="Settings" label=""/>
-  <suffix name="SystemTray" label=""/>
-  <affected-histogram name="Bluetooth.ChromeOS.DeviceSelectionDuration"/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result"/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlueZPerProfileResult" separator="."
@@ -2570,15 +2388,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="LiveForegroundSameSequence"
       label="Foreground same-sequence task was not canceled."/>
   <affected-histogram name="Scheduler.CancelableTaskTracker.TaskDuration2"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="CanvasRequestedImageMimeTypeFunctions" separator="_">
-  <suffix name="convertToBlobPromise"
-      label="Image formats passed to OffscreenCanvas.convertToBlob (promise)"/>
-  <suffix name="toBlobCallback"
-      label="Image formats passed to canvas.toBlob (callback)"/>
-  <suffix name="toDataURL" label="Image formats passed to canvas.toDataURL"/>
-  <affected-histogram name="Blink.Canvas.RequestedImageMimeTypes"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="CdmFileIOTimes" separator=".">
@@ -8400,24 +8209,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="OnBattery" label="System is on battery power."/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="JankyIntervalsPerThirtySeconds" separator=".">
-  <obsolete>
-    This metric is now only recorded after the main message loop starts and no
-    longer distinguishes the first 30 seconds as &quot;startup&quot;.
-    Startup.BrowserMessageLoopStartTime can be used for the startup phase
-    (before the loop is running) and Startup.FirstWebContents.NonEmptyPaint3 can
-    be used for the user-visible startup performance.
-  </obsolete>
-  <suffix name="NonStartup"
-      label="Does not include jank in the first 30 seconds [startup]."/>
-  <suffix name="NoSuspend"
-      label="Only counts jank without power suspend/resume."/>
-  <suffix name="Startup"
-      label="Only counts jank in the first 30 seconds [startup]."/>
-  <affected-histogram
-      name="Browser.Responsiveness.JankyIntervalsPerThirtySeconds"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="JavaStartMode" separator=".">
@@ -19369,22 +19160,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Startup.BrowserOpenTabs"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="TabbedPaintPreviewPlayerUptime" separator=".">
-  <suffix name="RemovedByCompositorFailure"
-      label="Removed by compositor failure"/>
-  <suffix name="RemovedByLinkClick" label="Removed by link click"/>
-  <suffix name="RemovedByNavigation" label="Removed by navigation"/>
-  <suffix name="RemovedByPullToRefresh" label="Removed by pull to refresh"/>
-  <suffix name="RemovedBySnackBar" label="Removed by SnackBar"/>
-  <suffix name="RemovedOnAccessibilityNotSupported"
-      label="Removed on accessibility not supported"/>
-  <suffix name="RemovedOnLoad" label="Removed on load"/>
-  <suffix name="RemovedOnOfflineAvailable"
-      label="Removed on offline page available"/>
-  <suffix name="RemovedOnTabDestroy" label="Removed on tab destroy"/>
-  <affected-histogram name="Browser.PaintPreview.TabbedPlayer.UpTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="TabletOrClamshellMode" separator=".">
   <suffix name="ClamshellMode" label="Clamshell Mode Enabled"/>
   <suffix name="TabletMode" label="Tablet Mode Enabled"/>
@@ -19430,57 +19205,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Ash.TabDrag.PresentationTime.MaxLatency"/>
   <affected-histogram name="Ash.UnlockAnimation.Jank"/>
   <affected-histogram name="Ash.UnlockAnimation.Smoothness"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabSwitchingType" separator=".">
-  <suffix name="NoSavedFrames"
-      label="The time from the input timestamp on a tab switch, until the
-             frame is presented on the screen when there is no saved frame in
-             the cache."/>
-  <suffix name="NoSavedFrames_Loaded"
-      label="Same as NoSavedFrames with the destination tab being loaded
-             (frozen or not frozen)"/>
-  <suffix name="NoSavedFrames_Loaded_Frozen"
-      label="Same as NoSavedFrames with the destination tab being loaded and
-             frozen.">
-    <obsolete>
-      Frozen is no longer a supported state.
-    </obsolete>
-  </suffix>
-  <suffix name="NoSavedFrames_Loaded_NotFrozen"
-      label="Same as NoSavedFrames with the destination tab being loaded and
-             not frozen.">
-    <obsolete>
-      Frozen is no longer a supported state.
-    </obsolete>
-  </suffix>
-  <suffix name="NoSavedFrames_NotLoaded"
-      label="Same as WithSavedFrames with the destination tab being unloaded."/>
-  <suffix name="WithSavedFrames"
-      label="There is a saved frame in the cache when the tab switch starts."/>
-  <affected-histogram name="Browser.Tabs.TabSwitchResult"/>
-  <affected-histogram name="Browser.Tabs.TotalIncompleteSwitchDuration"/>
-  <affected-histogram name="Browser.Tabs.TotalSwitchDuration"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TabSwitchInputLatency" separator=".">
-  <suffix name="Keyboard"
-      label="The time it takes from receiving a keyboard input event that
-             leads to the active tab changing to just before the TabStrip
-             notifies its observers of the change."/>
-  <suffix name="Mouse"
-      label="The time it takes from receiving a mouse input event that leads
-             to the active tab changing to just before the TabStrip notifies
-             its observers of the change."/>
-  <suffix name="Touch"
-      label="The time it takes from receiving a touch input event that leads
-             to the active tab changing to just before the TabStrip notifies
-             its observers of the change."/>
-  <suffix name="Wheel"
-      label="The time it takes from receiving a mouse scroll event that leads
-             to the active tab changing to just before the TabStrip notifies
-             its observers of the change."/>
-  <affected-histogram name="Browser.Tabs.InputEventToSelectionTime"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TaskSchedulerCancelledDelayedTasks" separator=".">
@@ -20283,24 +20007,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Policy" label="Policy-installed app"/>
   <suffix base="true" name="System" label="System-installed app"/>
   <affected-histogram name="Webapp.InstallResult"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="WebBluetoothMacOSAPIs" separator=".">
-  <suffix name="DidDisconnectPeripheral" label="Disconnected from peripheral"/>
-  <suffix name="DidDiscoverCharacteristics" label="Discovered characteristics"/>
-  <suffix name="DidDiscoverDescriptors" label="Discovered descriptors"/>
-  <suffix name="DidDiscoverPrimaryServices"
-      label="Discovered primary services"/>
-  <suffix name="DidFailToConnectToPeripheral"
-      label="Failed to connect to peripheral"/>
-  <suffix name="DidUpdateNotificationState" label="Updated notification state"/>
-  <suffix name="DidUpdateValue" label="Updated value for characteristic"/>
-  <suffix name="DidUpdateValueForDescriptor"
-      label="Updated value for descriptor"/>
-  <suffix name="DidWriteValue" label="Wrote value for characteristic"/>
-  <suffix name="DidWriteValueForDescriptor"
-      label="Wrote value value for descriptor"/>
-  <affected-histogram name="Bluetooth.MacOS.Errors"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebFontFamily" separator="_">

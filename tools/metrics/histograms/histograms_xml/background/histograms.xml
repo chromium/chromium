@@ -21,53 +21,86 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
-<histogram base="true" name="BackgroundFetch.EventDispatchFailure.Dispatch"
-    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
+<variants name="BackgroundFetchEvents">
+  <variant name=".AbortEvent" summary="BackgroundFetchAbortEvent"/>
+  <variant name=".ClickEvent" summary="BackgroundFetchClickEvent"/>
+  <variant name=".FailEvent" summary="BackgroundFetchFailEvent"/>
+  <variant name=".FetchedEvent" summary="BackgroundFetchedEvent"/>
+  <variant name=".SuccessEvent" summary="BackgroundFetchSuccessEvent"/>
+</variants>
 
+<histogram
+    name="BackgroundFetch.EventDispatchFailure.Dispatch{BackgroundFetchEvents}"
+    enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
     Records the Service Worker status code that caused a Background Fetch API
     event to fail dispatching whilst trying to dispatch an event on the active
-    Service Worker.
+    Service Worker. {BackgroundFetchEvents}
   </summary>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="BackgroundFetch.EventDispatchFailure.FindWorker"
+<histogram
+    name="BackgroundFetch.EventDispatchFailure.FindWorker{BackgroundFetchEvents}"
     enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
-
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
     Records the Service Worker status code that caused a Background Fetch API
     event to fail dispatching whilst trying to find the Service Worker.
+    {BackgroundFetchEvents}
   </summary>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="BackgroundFetch.EventDispatchFailure.StartWorker"
+<histogram
+    name="BackgroundFetch.EventDispatchFailure.StartWorker{BackgroundFetchEvents}"
     enum="ServiceWorkerStatusCode" expires_after="2022-06-30">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
-
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
     Records the Service Worker status code that caused a Background Fetch API
     event to fail dispatching whilst trying to start the active Service Worker.
+    {BackgroundFetchEvents}
   </summary>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="BackgroundFetch.EventDispatchResult"
+<histogram name="BackgroundFetch.EventDispatchResult{BackgroundFetchEvents}"
     enum="BackgroundFetchEventDispatchResult" expires_after="2022-06-30">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchEvents" -->
-
   <owner>peter@chromium.org</owner>
   <owner>rayankans@chromium.org</owner>
   <summary>
     Records the result of dispatching one of the Background Fetch API events to
-    the Service Worker associated with the event.
+    the Service Worker associated with the event. {BackgroundFetchEvents}
   </summary>
+  <token key="BackgroundFetchEvents" variants="BackgroundFetchEvents">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="BackgroundFetch.HasDuplicateRequests" enum="Boolean"
@@ -103,16 +136,24 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="BackgroundFetch.Manager" units="ms"
-    expires_after="M95">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchManagerAPIsDuration" -->
-
+<histogram name="BackgroundFetch.Manager{BackgroundFetchManagerAPIsDuration}"
+    units="ms" expires_after="M95">
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
     Records the duration of the mojo call for the exposed BackgroundFetchManager
-    APIs.
+    APIs. {BackgroundFetchManagerAPIsDuration}
   </summary>
+  <token key="BackgroundFetchManagerAPIsDuration">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".FetchDuration" summary="Duration of fetch"/>
+    <variant name=".GetDuration" summary="Duration of get"/>
+    <variant name=".GetIdsDuration" summary="Duration of getIds"/>
+  </token>
 </histogram>
 
 <histogram name="BackgroundFetch.MatchCalledFromDocumentScope"
@@ -150,13 +191,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="BackgroundFetch.Storage"
+<histogram name="BackgroundFetch.Storage{BackgroundFetchDatabaseStorageErrors}"
     enum="BackgroundFetchStorageError" expires_after="M95">
-<!-- Name completed by histogram_suffixes name="BackgroundFetchDatabaseStorageErrors" -->
-
   <owner>rayankans@chromium.org</owner>
   <owner>peter@chromium.org</owner>
-  <summary>Records the storage error when running a database task.</summary>
+  <summary>
+    Records the storage error when running a database task.
+    {BackgroundFetchDatabaseStorageErrors}
+  </summary>
+  <token key="BackgroundFetchDatabaseStorageErrors">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".CleanupTask" summary="CleanupTask"/>
+    <variant name=".CreateMetadataTask" summary="CreateMetadata DatabaseTask"/>
+    <variant name=".DeleteRegistrationTask"
+        summary="DeleteRegistration DatabaseTask"/>
+    <variant name=".GetDeveloperIdsTask"
+        summary="GetDeveloperIds DatabaseTask"/>
+    <variant name=".GetInitializationDataTask"
+        summary="GetInitializationData DatabaseTask"/>
+    <variant name=".GetRegistrationTask"
+        summary="GetRegistration DatabaseTask"/>
+    <variant name=".GetRequestBlobTask" summary="GetRequestBlob DatabaseTask"/>
+    <variant name=".GetSettledFetchesTask"
+        summary="GetSettledFetches DatabaseTask"/>
+    <variant name=".MarkRegistrationForDeletionTask"
+        summary="MarkRegistrationForDeletion DatabaseTask"/>
+    <variant name=".MarkRequestCompleteTask"
+        summary="MarkRequestComplete DatabaseTask"/>
+    <variant name=".MatchRequestsTask" summary="MatchRequests DatabaseTask"/>
+    <variant name=".StartNextPendingRequestTask"
+        summary="StartNextPendingRequest DatabaseTask"/>
+    <variant name=".UpdateRegistrationUITask"
+        summary="UpdateRegistrationUI DatabaseTask"/>
+  </token>
 </histogram>
 
 <histogram name="BackgroundMode.BackgroundApplicationsCount" units="units"
