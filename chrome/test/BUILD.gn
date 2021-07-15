@@ -6978,6 +6978,10 @@ test("unit_tests") {
         public_deps += [ "//printing/mojom" ]
       }
 
+      if (is_posix) {
+        sources += [ "../browser/ui/webui/print_preview/pdf_printer_handler_posix_unittest.cc" ]
+      }
+
       if (is_mac) {
         sources += [ "../common/service_process_util_mac_unittest.mm" ]
       }
