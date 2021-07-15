@@ -19,7 +19,12 @@ test(() => {
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
+       instrument: {
+        displayName: 'X',
+        icon: 'https://example.test/icon.png',
+       },
     },
   }], details);
 }, 'Valid payment method data does not throw exceptions.');
@@ -31,7 +36,12 @@ test(() => {
        // Omitted action field.
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
        timeout: 60000,
+       instrument: {
+         displayName: 'X',
+         icon: 'https://example.test/icon.png',
+       },
     },
   }], details);
 }, 'The action field is optional.');
@@ -43,7 +53,12 @@ test(() => {
        action: 'authenticate',
        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+       challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
        // Omitted timeout field.
+       instrument: {
+         displayName: 'X',
+         icon: 'https://example.test/icon.png',
+       },
     },
   }], details);
 }, 'The timeout field is optional.');
@@ -56,7 +71,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }, {supportedMethods: 'basic-card'}], details);
   });
@@ -70,7 +90,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -84,7 +109,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details, {requestShipping: true});
   });
@@ -98,7 +128,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details, {requestPayerName: true});
   });
@@ -112,7 +147,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details, {requestPayerEmail: true});
   });
@@ -126,7 +166,12 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details, {requestPayerPhone: true});
   });
@@ -141,7 +186,12 @@ test(() => {
         action: 'authorize',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -155,7 +205,12 @@ test(() => {
         action: 'authenticate',
         // Omitted credentialIds field.
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -168,8 +223,12 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Omitted networkData field.
+        // Omitted networkData and challenge fields.
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -185,7 +244,12 @@ test(() => {
         // Empty credentialIds field.
         credentialIds: [],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -198,9 +262,14 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Null networkData field.
+        // Null networkData and challenge fields.
         networkData: null,
+        challenge: null,
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -213,9 +282,14 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Empty networkData field.
+        // Empty networkData and challenge fields.
         networkData: [],
+        challenge: [],
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -229,8 +303,13 @@ test(() => {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         // Timeout longer than 1 hour.
         timeout: 1000 * 60 * 60 + 1,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -246,7 +325,12 @@ test(() => {
         credentialIds: [Uint8Array.from(
             'x'.repeat(1024 * 1024), c => c.charCodeAt(0))],
         networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
@@ -259,11 +343,70 @@ test(() => {
       data: {
         action: 'authenticate',
         credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
-        // Large networkData value.
+        // Large networkData and challenge values.
         networkData: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x'.repeat(1024 * 1024), c => c.charCodeAt(0)),
         timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          icon: 'https://example.test/icon.png',
+        },
       },
     }], details);
   });
 }, 'Large networkData value throws exception.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        // Omitted instrument field.
+      },
+    }], details);
+  });
+}, 'Instrument field is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          // Ommitted instrument display name.
+          icon: 'https://example.test/icon.png',
+        },
+      },
+    }], details);
+  });
+}, 'Instrument display name is required.');
+
+test(() => {
+  assert_throws_js(TypeError, () => {
+    new PaymentRequest([{
+      supportedMethods: 'secure-payment-confirmation',
+      data: {
+        action: 'authenticate',
+        credentialIds: [Uint8Array.from('x', c => c.charCodeAt(0))],
+        networkData: Uint8Array.from('x', c => c.charCodeAt(0)),
+        challenge: Uint8Array.from('x', c => c.charCodeAt(0)),
+        timeout: 60000,
+        instrument: {
+          displayName: 'X',
+          // Ommitted instrument icon.
+        },
+      },
+    }], details);
+  });
+}, 'Instrument icon is required.');
 </script>

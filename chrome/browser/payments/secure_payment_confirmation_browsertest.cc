@@ -175,7 +175,8 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   EXPECT_TRUE(database_write_responded_);
   ASSERT_FALSE(test_controller()->app_descriptions().empty());
   EXPECT_EQ(1u, test_controller()->app_descriptions().size());
-  EXPECT_EQ("Stub label", test_controller()->app_descriptions().front().label);
+  EXPECT_EQ("display_name_for_instrument",
+            test_controller()->app_descriptions().front().label);
 }
 
 // canMakePayment() and hasEnrolledInstrument() should return false on
@@ -912,9 +913,13 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationCreationTest,
   // EvalJs waits for JavaScript promise to resolve.
   // The `networkData` field is the base64 encoding of 'hello world', which is
   // set in `get_challenge.js`.
-  EXPECT_EQ("{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
-                "\",\"total\":{\"currency\":\"USD\"," +
-                "\"value\":\"0.01\"}},\"networkData\":\"aGVsbG8gd29ybGQ=\"}",
+  std::string expected_challenge_field =
+      base::FeatureList::IsEnabled(features::kSecurePaymentConfirmationAPIV2)
+          ? "undefined"
+          : "{\"merchantData\":{\"merchantOrigin\":\"" + GetMerchantOrigin() +
+                "\",\"total\":{\"currency\":\"USD\",\"value\":\"0.01\"}},"
+                "\"networkData\":\"aGVsbG8gd29ybGQ=\"}";
+  EXPECT_EQ(expected_challenge_field,
             content::EvalJs(GetActiveWebContents(),
                             content::JsReplace("getChallenge($1, $2);",
                                                credentialIdentifier, "0.01")));
