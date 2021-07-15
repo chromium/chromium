@@ -26,6 +26,40 @@
   {
     "name": "highdpi",
     "args": ["--force-device-scale-factor=1.5"]
+  },
+  {
+    "name": "skia-gl",
+    "args": [
+          "--enable-gpu-rasterization",
+          "--enable-features=UseSkiaRenderer",
+          "--use-gl=any",
+          "--enable-oop-rasterization",
+          "--disable-software-compositing-fallback",
+          "--disable-headless-mode"
+    ]
+  },
+  {
+    "name": "skia-vulkan-native",
+    "args": [
+          "--enable-gpu-rasterization",
+          "--enable-features=UseSkiaRenderer,Vulkan",
+          "--use-gl=any",
+          "--enable-oop-rasterization",
+          "--disable-software-compositing-fallback",
+          "--use-vulkan=native",
+          "--disable-vulkan-fallback-to-gl-for-testing",
+          "--disable-headless-mode"
+    ]
+  },
+  {
+    "name": "skia-vulkan-swiftshader",
+    "args": [
+          "--enable-gpu-rasterization",
+          "--enable-features=UseSkiaRenderer,Vulkan",
+          "--enable-oop-rasterization",
+          "--use-vulkan=swiftshader",
+          "--disable-vulkan-fallback-to-gl-for-testing"
+    ]
   }
 ]
 

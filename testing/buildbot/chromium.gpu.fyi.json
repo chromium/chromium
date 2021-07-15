@@ -12272,19 +12272,14 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-gpu-rasterization",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer",
-          "--additional-driver-flag=--use-gl=any",
-          "--additional-driver-flag=--enable-oop-rasterization",
-          "--additional-driver-flag=--disable-software-compositing-fallback",
-          "--additional-driver-flag=--disable-headless-mode",
           "--no-xvfb",
           "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=UseSkiaRenderer",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-gl=any"
+          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-gl=any",
+          "--flag-specific=skia-gl"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -12358,14 +12353,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-gpu-rasterization",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--additional-driver-flag=--use-gl=any",
-          "--additional-driver-flag=--enable-oop-rasterization",
-          "--additional-driver-flag=--disable-software-compositing-fallback",
-          "--additional-driver-flag=--use-vulkan=native",
-          "--additional-driver-flag=--disable-vulkan-fallback-to-gl-for-testing",
-          "--additional-driver-flag=--disable-headless-mode",
           "--no-xvfb",
           "--fuzzy-diff",
           "--skipped=always",
@@ -12373,7 +12360,8 @@
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=UseSkiaRenderer",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-vulkan=native"
+          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-vulkan=native",
+          "--flag-specific=skia-vulkan-native"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -12730,19 +12718,14 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-gpu-rasterization",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer",
-          "--additional-driver-flag=--use-gl=any",
-          "--additional-driver-flag=--enable-oop-rasterization",
-          "--additional-driver-flag=--disable-software-compositing-fallback",
-          "--additional-driver-flag=--disable-headless-mode",
           "--no-xvfb",
           "--fuzzy-diff",
           "--skipped=always",
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=UseSkiaRenderer",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-gl=any"
+          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-gl=any",
+          "--flag-specific=skia-gl"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
@@ -12816,14 +12799,6 @@
       {
         "args": [
           "--num-retries=3",
-          "--additional-driver-flag=--enable-gpu-rasterization",
-          "--additional-driver-flag=--enable-features=UseSkiaRenderer,Vulkan",
-          "--additional-driver-flag=--use-gl=any",
-          "--additional-driver-flag=--enable-oop-rasterization",
-          "--additional-driver-flag=--disable-software-compositing-fallback",
-          "--additional-driver-flag=--use-vulkan=native",
-          "--additional-driver-flag=--disable-vulkan-fallback-to-gl-for-testing",
-          "--additional-driver-flag=--disable-headless-mode",
           "--no-xvfb",
           "--fuzzy-diff",
           "--skipped=always",
@@ -12831,7 +12806,8 @@
           "--test-list=../../testing/buildbot/filters/gpu.skiarenderer_vulkan_blink_web_tests.filter",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-features=UseSkiaRenderer",
           "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/enable-gpu-rasterization",
-          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-vulkan=native"
+          "--additional-expectations=../../third_party/blink/web_tests/FlagExpectations/use-vulkan=native",
+          "--flag-specific=skia-vulkan-native"
         ],
         "isolate_name": "blink_web_tests",
         "merge": {
