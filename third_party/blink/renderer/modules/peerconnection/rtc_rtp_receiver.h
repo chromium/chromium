@@ -93,6 +93,8 @@ class RTCRtpReceiver final : public ScriptWrappable {
   void SetAudioUnderlyingSource(
       RTCEncodedAudioUnderlyingSource* new_underlying_source,
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  void SetAudioUnderlyingSink(
+      RTCEncodedAudioUnderlyingSink* new_underlying_sink);
 
   Member<RTCPeerConnection> pc_;
   std::unique_ptr<RTCRtpReceiverPlatform> receiver_;
@@ -117,7 +119,10 @@ class RTCRtpReceiver final : public ScriptWrappable {
   CrossThreadPersistent<RTCEncodedAudioUnderlyingSource>
       audio_from_depacketizer_underlying_source_
           GUARDED_BY(audio_underlying_source_mutex_);
-  Member<RTCEncodedAudioUnderlyingSink> audio_to_decoder_underlying_sink_;
+  WTF::Mutex audio_underlying_sink_mutex_;
+  CrossThreadPersistent<RTCEncodedAudioUnderlyingSink>
+      audio_to_decoder_underlying_sink_
+          GUARDED_BY(audio_underlying_sink_mutex_);
   Member<RTCInsertableStreams> encoded_audio_streams_;
   scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
       encoded_audio_transformer_;

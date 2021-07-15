@@ -881,13 +881,7 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
   audio_to_packetizer_underlying_sink_ =
       MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
           script_state,
-          WTF::BindRepeating(
-              [](RTCRtpSender* sender) -> RTCEncodedAudioStreamTransformer* {
-                return sender ? sender->web_sender()
-                                    ->GetEncodedAudioStreamTransformer()
-                              : nullptr;
-              },
-              WrapWeakPersistent(this)));
+          web_sender()->GetEncodedAudioStreamTransformer()->GetBroker());
   // The high water mark for the stream is set to 1 so that the stream is
   // ready to write, but without queuing frames.
   WritableStream* writable_stream =

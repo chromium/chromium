@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be found
 // in the LICENSE file.
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_STREAM_OPTIMIZER_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_STREAM_OPTIMIZER_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_SOURCE_OPTIMIZER_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_SOURCE_OPTIMIZER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_transferring_optimizer.h"
@@ -16,13 +16,13 @@ class UnderlyingSourceBase;
 class ScriptState;
 class RTCEncodedAudioUnderlyingSource;
 
-class MODULES_EXPORT RtcEncodedAudioReceiverStreamOptimizer
+class MODULES_EXPORT RtcEncodedAudioReceiverSourceOptimizer
     : public ReadableStreamTransferringOptimizer {
  public:
   using UnderlyingSourceSetter = WTF::CrossThreadFunction<void(
       RTCEncodedAudioUnderlyingSource*,
       scoped_refptr<base::SingleThreadTaskRunner>)>;
-  RtcEncodedAudioReceiverStreamOptimizer(
+  RtcEncodedAudioReceiverSourceOptimizer(
       UnderlyingSourceSetter,
       WTF::CrossThreadOnceClosure disconnect_callback);
   UnderlyingSourceBase* PerformInProcessOptimization(
@@ -35,4 +35,4 @@ class MODULES_EXPORT RtcEncodedAudioReceiverStreamOptimizer
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_STREAM_OPTIMIZER_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_RECEIVER_SOURCE_OPTIMIZER_H_

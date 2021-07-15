@@ -5,8 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_UNDERLYING_SINK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PEERCONNECTION_RTC_ENCODED_AUDIO_UNDERLYING_SINK_H_
 
+#include "base/threading/thread_checker.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 
 namespace blink {
 
@@ -16,9 +18,9 @@ class RTCEncodedAudioStreamTransformer;
 class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
     : public UnderlyingSinkBase {
  public:
-  using TransformerCallback =
-      base::RepeatingCallback<RTCEncodedAudioStreamTransformer*()>;
-  RTCEncodedAudioUnderlyingSink(ScriptState*, TransformerCallback);
+  RTCEncodedAudioUnderlyingSink(
+      ScriptState*,
+      scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>);
 
   // UnderlyingSinkBase
   ScriptPromise start(ScriptState*,
@@ -36,7 +38,9 @@ class MODULES_EXPORT RTCEncodedAudioUnderlyingSink final
   void Trace(Visitor*) const override;
 
  private:
-  TransformerCallback transformer_callback_;
+  scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+      transformer_broker_;
+  THREAD_CHECKER(thread_checker_);
 };
 
 }  // namespace blink

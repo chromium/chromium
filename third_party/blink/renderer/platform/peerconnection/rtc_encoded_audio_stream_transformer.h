@@ -41,11 +41,11 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // creating a circular reference.
   class PLATFORM_EXPORT Broker : public WTF::ThreadSafeRefCounted<Broker> {
    public:
-    void RegisterTransformedFrameCallbackOnSinkTaskRunner(
+    void RegisterTransformedFrameCallback(
         rtc::scoped_refptr<webrtc::TransformedFrameCallback>
             send_frame_to_sink_callback);
 
-    void UnregisterTransformedFrameCallbackOnSinkTaskRunner();
+    void UnregisterTransformedFrameCallback();
 
     void TransformFrameOnSourceTaskRunner(
         std::unique_ptr<webrtc::TransformableFrameInterface> frame);
@@ -56,6 +56,9 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
 
     void SetSourceTaskRunner(
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+    void SendFrameToSink(
+        std::unique_ptr<webrtc::TransformableFrameInterface> frame);
 
    private:
     explicit Broker(RTCEncodedAudioStreamTransformer* transformer_);
@@ -88,8 +91,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // the stream is transferred.
   void TransformFrame(std::unique_ptr<webrtc::TransformableFrameInterface>);
 
-  // Send a transformed frame to the WebRTC sink. Must run on the main
-  // thread.
+  // Send a transformed frame to the WebRTC sink. Threadsafe.
   void SendFrameToSink(
       std::unique_ptr<webrtc::TransformableFrameInterface> frame);
 
@@ -103,27 +105,25 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // false otherwise. Is threadsafe.
   bool HasTransformerCallback();
 
-  // Returns true if a webrtc::TransformedFrameCallback is registered. Must be
-  // run on the main thread.
+  // Returns true if a webrtc::TransformedFrameCallback is registered.
+  // Threadsafe.
   bool HasTransformedFrameCallback() const;
 
   rtc::scoped_refptr<webrtc::FrameTransformerInterface> Delegate();
 
   // Set the TaskRunner used for the Source side - to deliver frames up to the
   // UnderlyingSource. Is threadsafe.
-  // TODO(crbug/1103280): Allow the sink side to move too.
   void SetSourceTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> realm_task_runner);
 
   scoped_refptr<Broker> GetBroker();
 
  private:
-  THREAD_CHECKER(thread_checker_);
   const scoped_refptr<Broker> broker_;
   const rtc::scoped_refptr<webrtc::FrameTransformerInterface> delegate_;
-  // send_frame_to_sink_cb_ is (currently) only modified or accessed on the
-  // main thread.
-  rtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_;
+  mutable WTF::Mutex sink_mutex_;
+  rtc::scoped_refptr<webrtc::TransformedFrameCallback> send_frame_to_sink_cb_
+      GUARDED_BY(sink_mutex_);
   WTF::Mutex source_mutex_;
   TransformerCallback transformer_callback_ GUARDED_BY(source_mutex_);
 };

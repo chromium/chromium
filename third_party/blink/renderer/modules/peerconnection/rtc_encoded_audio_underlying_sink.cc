@@ -14,9 +14,10 @@ namespace blink {
 
 RTCEncodedAudioUnderlyingSink::RTCEncodedAudioUnderlyingSink(
     ScriptState* script_state,
-    TransformerCallback transformer_callback)
-    : transformer_callback_(std::move(transformer_callback)) {
-  DCHECK(transformer_callback_);
+    scoped_refptr<blink::RTCEncodedAudioStreamTransformer::Broker>
+        transformer_broker)
+    : transformer_broker_(std::move(transformer_broker)) {
+  DCHECK(transformer_broker_);
 }
 
 ScriptPromise RTCEncodedAudioUnderlyingSink::start(
@@ -32,6 +33,7 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
     ScriptValue chunk,
     WritableStreamDefaultController* controller,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   RTCEncodedAudioFrame* encoded_frame =
       V8RTCEncodedAudioFrame::ToImplWithTypeCheck(script_state->GetIsolate(),
                                                   chunk.V8Value());
@@ -40,7 +42,7 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  if (!transformer_callback_) {
+  if (!transformer_broker_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Stream closed");
     return ScriptPromise();
@@ -53,22 +55,16 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::write(
     return ScriptPromise();
   }
 
-  RTCEncodedAudioStreamTransformer* transformer = transformer_callback_.Run();
-  if (!transformer) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "No underlying sink");
-    return ScriptPromise();
-  }
-
-  transformer->SendFrameToSink(std::move(webrtc_frame));
+  transformer_broker_->SendFrameToSink(std::move(webrtc_frame));
   return ScriptPromise::CastUndefined(script_state);
 }
 
 ScriptPromise RTCEncodedAudioUnderlyingSink::close(ScriptState* script_state,
                                                    ExceptionState&) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Disconnect from the transformer if the sink is closed.
-  if (transformer_callback_)
-    transformer_callback_.Reset();
+  if (transformer_broker_)
+    transformer_broker_.reset();
   return ScriptPromise::CastUndefined(script_state);
 }
 
@@ -76,6 +72,7 @@ ScriptPromise RTCEncodedAudioUnderlyingSink::abort(
     ScriptState* script_state,
     ScriptValue reason,
     ExceptionState& exception_state) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // It is not possible to cancel any frames already sent to the WebRTC sink,
   // thus abort() has the same effect as close().
   return close(script_state, exception_state);

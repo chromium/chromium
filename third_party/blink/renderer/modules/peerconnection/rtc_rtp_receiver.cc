@@ -23,7 +23,8 @@
 #include "third_party/blink/renderer/modules/peerconnection/identifiability_metrics.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_dtls_transport.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_stream_optimizer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_sink_optimizer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_receiver_source_optimizer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_sink.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_underlying_source.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_underlying_sink.h"
@@ -299,7 +300,6 @@ void RTCRtpReceiver::Trace(Visitor* visitor) const {
   visitor->Trace(transport_);
   visitor->Trace(streams_);
   visitor->Trace(transceiver_);
-  visitor->Trace(audio_to_decoder_underlying_sink_);
   visitor->Trace(encoded_audio_streams_);
   visitor->Trace(video_from_depacketizer_underlying_source_);
   visitor->Trace(video_to_decoder_underlying_sink_);
@@ -433,10 +433,15 @@ void RTCRtpReceiver::SetAudioUnderlyingSource(
       std::move(new_source_task_runner));
 }
 
+void RTCRtpReceiver::SetAudioUnderlyingSink(
+    RTCEncodedAudioUnderlyingSink* new_underlying_sink) {
+  WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+  audio_to_decoder_underlying_sink_ = new_underlying_sink;
+}
+
 void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(!encoded_audio_streams_);
-  DCHECK(!audio_to_decoder_underlying_sink_);
   DCHECK(force_encoded_audio_insertable_streams_);
 
   encoded_audio_streams_ = RTCInsertableStreams::Create();
@@ -466,31 +471,36 @@ void RTCRtpReceiver::InitializeEncodedAudioStreams(ScriptState* script_state) {
         ReadableStream::CreateWithCountQueueingStrategy(
             script_state, audio_from_depacketizer_underlying_source_,
             /*high_water_mark=*/0, AllowPerChunkTransferring(false),
-            absl::make_unique<RtcEncodedAudioReceiverStreamOptimizer>(
+            absl::make_unique<RtcEncodedAudioReceiverSourceOptimizer>(
                 std::move(set_underlying_source),
                 std::move(disconnect_callback)));
     encoded_audio_streams_->setReadableStream(readable_stream);
     encoded_audio_streams_->setReadable(readable_stream);
   }
 
-  // Set up writable.
-  audio_to_decoder_underlying_sink_ =
-      MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
-          script_state,
-          WTF::BindRepeating(
-              [](RTCRtpReceiver* receiver)
-                  -> RTCEncodedAudioStreamTransformer* {
-                return receiver ? receiver->platform_receiver()
-                                      ->GetEncodedAudioStreamTransformer()
-                                : nullptr;
-              },
-              WrapWeakPersistent(this)));
-  // The high water mark for the stream is set to 1 so that the stream seems
-  // ready to write, but without queuing frames.
-  WritableStream* writable_stream =
-      WritableStream::CreateWithCountQueueingStrategy(
-          script_state, audio_to_decoder_underlying_sink_,
-          /*high_water_mark=*/1);
+  WritableStream* writable_stream;
+  {
+    WTF::MutexLocker locker(audio_underlying_sink_mutex_);
+    DCHECK(!audio_to_decoder_underlying_sink_);
+
+    // Set up writable.
+    audio_to_decoder_underlying_sink_ =
+        MakeGarbageCollected<RTCEncodedAudioUnderlyingSink>(
+            script_state, encoded_audio_transformer_);
+
+    auto set_underlying_sink =
+        WTF::CrossThreadBindOnce(&RTCRtpReceiver::SetAudioUnderlyingSink,
+                                 WrapCrossThreadWeakPersistent(this));
+
+    // The high water mark for the stream is set to 1 so that the stream seems
+    // ready to write, but without queuing frames.
+    writable_stream = WritableStream::CreateWithCountQueueingStrategy(
+        script_state, audio_to_decoder_underlying_sink_,
+        /*high_water_mark=*/1,
+        absl::make_unique<RtcEncodedAudioReceiverSinkOptimizer>(
+            std::move(set_underlying_sink), encoded_audio_transformer_));
+  }
+
   encoded_audio_streams_->setWritableStream(writable_stream);
   encoded_audio_streams_->setWritable(writable_stream);
 }
