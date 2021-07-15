@@ -1,3 +1,4 @@
+DatabaseMaintenanceImplTest.*
 DummyModelExecutionManagerTest.*
 DummySegmentationPlatformServiceTest.*
 FeatureAggregatorImplTest.*

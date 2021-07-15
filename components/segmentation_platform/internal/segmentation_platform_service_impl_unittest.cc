@@ -119,7 +119,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   }
 
  protected:
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   Config* config_;
   std::map<std::string, proto::SegmentInfo> segment_db_entries_;
@@ -177,6 +178,11 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   // should have been updated.
   segment_storage_config_db_->UpdateCallback(true);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+  // Database maintenance tasks should try to cleanup the signals after a short
+  // delay, which starts with looking up data from the SegmentInfoDatabase.
+  task_environment_.FastForwardUntilNoTasksRemain();
+  segment_db_->LoadCallback(true);
 }
 
 TEST_F(SegmentationPlatformServiceImplTest,

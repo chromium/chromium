@@ -9,11 +9,13 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/sequenced_task_runner.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/leveldb_proto/public/shared_proto_database_client_list.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/database_maintenance_impl.h"
 #include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
@@ -41,6 +43,8 @@ const base::FilePath::CharType kSegmentInfoDBName[] =
 const base::FilePath::CharType kSignalDBName[] = FILE_PATH_LITERAL("SignalDB");
 const base::FilePath::CharType kSignalStorageConfigDBName[] =
     FILE_PATH_LITERAL("SignalStorageConfigDB");
+const base::TimeDelta kDatabaseMaintenanceDelay =
+    base::TimeDelta::FromSeconds(30);
 }  // namespace
 
 SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
@@ -106,6 +110,10 @@ SegmentationPlatformServiceImpl::SegmentationPlatformServiceImpl(
   segment_selector_ = std::make_unique<SegmentSelectorImpl>(
       segment_info_database_.get(), segmentation_result_prefs_.get(),
       config_.get());
+
+  database_maintenance_ = std::make_unique<DatabaseMaintenanceImpl>(
+      config_.get(), clock, segment_info_database_.get(),
+      signal_database_.get(), signal_storage_config_.get());
 
   // Kick off initialization of all databases. Internal operations will be
   // delayed until they are all complete.
@@ -182,6 +190,14 @@ void SegmentationPlatformServiceImpl::MaybeRunPostInitializationRoutines() {
   signal_filter_processor_->OnSignalListUpdated();
   model_execution_scheduler_->RequestModelExecutionForEligibleSegments(
       /*expired_only=*/true);
+
+  // Initiate database maintenance tasks with a small delay.
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(
+          &SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks,
+          weak_ptr_factory_.GetWeakPtr()),
+      kDatabaseMaintenanceDelay);
 }
 
 void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
@@ -193,6 +209,10 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
       segment_info.model_metadata());
 
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
+}
+
+void SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks() {
+  database_maintenance_->ExecuteMaintenanceTasks();
 }
 
 // static

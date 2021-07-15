@@ -17,6 +17,9 @@ static_library("internal") {
   sources = [
     "constants.cc",
     "constants.h",
+    "database/database_maintenance.h",
+    "database/database_maintenance_impl.cc",
+    "database/database_maintenance_impl.h",
     "database/metadata_utils.cc",
     "database/metadata_utils.h",
     "database/segment_info_database.cc",
@@ -108,9 +111,12 @@ source_set("unit_tests") {
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/segmentation_platform/components_unittests.filter
   sources = [
+    "database/database_maintenance_impl_unittest.cc",
     "database/metadata_utils_unittest.cc",
     "database/mock_signal_database.cc",
     "database/mock_signal_database.h",
+    "database/mock_signal_storage_config.cc",
+    "database/mock_signal_storage_config.h",
     "database/segment_info_database_unittest.cc",
     "database/signal_database_impl_unittest.cc",
     "database/signal_key_internal_unittest.cc",
