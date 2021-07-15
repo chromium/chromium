@@ -108,7 +108,6 @@ class WebsiteLoginManagerImplTest : public testing::Test {
     web_contents_ = content::WebContentsTester::CreateTestWebContents(
         &browser_context_, nullptr);
     profile_store_ = new password_manager::MockPasswordStore;
-    ON_CALL(*profile_store_, IsAccountStore()).WillByDefault(Return(false));
     ASSERT_TRUE(profile_store_->Init(/*prefs=*/nullptr));
 
     ON_CALL(client_, GetProfilePasswordStore())
@@ -117,7 +116,6 @@ class WebsiteLoginManagerImplTest : public testing::Test {
     if (base::FeatureList::IsEnabled(
             password_manager::features::kEnablePasswordsAccountStorage)) {
       account_store_ = new password_manager::MockPasswordStore;
-      ON_CALL(*account_store_, IsAccountStore()).WillByDefault(Return(true));
       ASSERT_TRUE(account_store_->Init(/*prefs=*/nullptr));
 
       ON_CALL(client_, GetAccountPasswordStore())

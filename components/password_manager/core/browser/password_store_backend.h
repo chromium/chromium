@@ -18,6 +18,8 @@ struct PasswordForm;
 
 using LoginsResult = std::vector<std::unique_ptr<PasswordForm>>;
 using LoginsReply = base::OnceCallback<void(LoginsResult)>;
+using PasswordStoreChangeListReply =
+    base::OnceCallback<void(const PasswordStoreChangeList&)>;
 
 // The backend is used by the `PasswordStore` to interact with the storage in a
 // platform-dependent way (e.g. on Desktop, it calls a local database while on
@@ -28,8 +30,8 @@ class PasswordStoreBackend {
  public:
   using OptionalLoginsReply =
       base::OnceCallback<void(absl::optional<LoginsResult>)>;
-  using OptionalStoreChangeListReply =
-      base::OnceCallback<void(absl::optional<PasswordStoreChangeList>)>;
+  using RemoteChangesReceived =
+      base::RepeatingCallback<void(const PasswordStoreChangeList&)>;
 
   PasswordStoreBackend() = default;
   PasswordStoreBackend(const PasswordStoreBackend&) = delete;
@@ -40,7 +42,8 @@ class PasswordStoreBackend {
 
   // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
   // longer inherits PasswordStore.
-  virtual void InitBackend(base::RepeatingClosure sync_enabled_or_disabled_cb,
+  virtual void InitBackend(RemoteChangesReceived remote_form_changes_received,
+                           base::RepeatingClosure sync_enabled_or_disabled_cb,
                            base::OnceCallback<void(bool)> completion) = 0;
 
   // Returns the complete list of PasswordForms (regardless of their blocklist
@@ -67,33 +70,30 @@ class PasswordStoreBackend {
   // TODO(crbug.com/1217071): Delete corresponding Impl method from
   //  PasswordStore and the async method on backend_ instead.
 
-  virtual void AddLoginAsync(OptionalStoreChangeListReply callback,
-                             const PasswordForm& form) = 0;
-  virtual void UpdateLoginAsync(OptionalStoreChangeListReply callback,
-                                const PasswordForm& form) = 0;
-  virtual void RemoveLoginAsync(OptionalStoreChangeListReply callback,
-                                const PasswordForm& form) = 0;
+  virtual void AddLoginAsync(const PasswordForm& form,
+                             PasswordStoreChangeListReply callback) = 0;
+  virtual void UpdateLoginAsync(const PasswordForm& form,
+                                PasswordStoreChangeListReply callback) = 0;
+  virtual void RemoveLoginAsync(const PasswordForm& form,
+                                PasswordStoreChangeListReply callback) = 0;
   virtual void RemoveLoginsByURLAndTimeAsync(
-      OptionalStoreChangeListReply callback,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion,
-      base::OnceCallback<void(bool)> sync_completion) = 0;
+      base::OnceCallback<void(bool)> sync_completion,
+      PasswordStoreChangeListReply callback) = 0;
   virtual void RemoveLoginsCreatedBetweenAsync(
-      OptionalStoreChangeListReply callback,
       base::Time delete_begin,
-      base::Time delete_end) {}
+      base::Time delete_end,
+      PasswordStoreChangeListReply callback) = 0;
   virtual void DisableAutoSignInForOriginsAsync(
-      OptionalStoreChangeListReply callback,
+      PasswordStoreChangeListReply callback,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {}
   virtual void FillMatchingLoginsByPasswordAsync(
       LoginsReply callback,
       const std::u16string& plain_text_password) {}
-  virtual void FillAutofillableLoginsAsync(
-      OptionalStoreChangeListReply callback) {}
-  virtual void FillBlocklistLoginsAsync(OptionalStoreChangeListReply callback) {
-  }
+  virtual void FillAutofillableLoginsAsync(LoginsReply callback) {}
+  virtual void FillBlocklistLoginsAsync(LoginsReply callback) {}
 };
 
 }  // namespace password_manager

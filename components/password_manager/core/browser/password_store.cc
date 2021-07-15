@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -68,6 +69,64 @@ std::vector<PasswordFormDigest> ConvertToForms(
   return forms;
 }
 
+// Helper function which invokes |notifying_callback| and |completion_callback|
+// when changes are received.
+void InvokeCallbackOnChanges(
+    base::OnceCallback<void(const PasswordStoreChangeList& changes)>
+        notifying_callback,
+    base::OnceCallback<void(bool)> completion_callback,
+    const PasswordStoreChangeList& changes) {
+  DCHECK(notifying_callback);
+  std::move(notifying_callback).Run(changes);
+  if (completion_callback)
+    std::move(completion_callback).Run(!changes.empty());
+}
+
+// Helper object which aggregates results from multiple operations and invokes
+// completion callback when all the operations are finished.
+class OperationHandler {
+ public:
+  static OperationHandler* CreateOperationHandler() {
+    return new OperationHandler();
+  }
+
+  void AwaitOperation(
+      base::OnceCallback<void(PasswordStoreChangeListReply)> operation) {
+    std::move(operation).Run(
+        base::BindOnce(&OperationHandler::OnPasswordStoreChangesReceived,
+                       base::Unretained(this)));
+    operations_++;
+  }
+
+  // After |InvokeOnCompletion| was called the object shouldn't be used.
+  void InvokeOnCompletion(PasswordStoreChangeListReply callback) {
+    DCHECK_NE(0, operations_);
+    changes_received_ = base::BarrierClosure(
+        operations_, base::BindOnce(&OperationHandler::OnAllOperationsFinished,
+                                    base::Owned(this), std::move(callback)));
+  }
+
+ private:
+  OperationHandler() = default;
+
+  void OnPasswordStoreChangesReceived(const PasswordStoreChangeList& changes) {
+    operations_--;
+    changes_.insert(changes_.end(), changes.begin(), changes.end());
+    if (changes_received_)
+      changes_received_.Run();
+  }
+
+  void OnAllOperationsFinished(PasswordStoreChangeListReply callback) {
+    std::move(callback).Run(changes_);
+  }
+
+  PasswordStoreChangeList changes_;
+
+  base::RepeatingClosure changes_received_;
+
+  int operations_ = 0;
+};
+
 }  // namespace
 
 PasswordStore::PasswordStore() = default;
@@ -86,6 +145,8 @@ bool PasswordStore::Init(PrefService* prefs,
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         "passwords", "PasswordStore::InitOnBackgroundSequence", this);
     backend_->InitBackend(
+        base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
+                            this),
         std::move(sync_enabled_or_disabled_cb),
         base::BindOnce(&PasswordStore::OnInitCompleted, this));
   }
@@ -100,25 +161,37 @@ void PasswordStore::SetAffiliatedMatchHelper(
 
 void PasswordStore::AddLogin(const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::AddLoginInternal, this, form));
+  backend_->AddLoginAsync(
+      form,
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
 }
 
 void PasswordStore::UpdateLogin(const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::UpdateLoginInternal, this, form));
+  backend_->UpdateLoginAsync(
+      form,
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
 }
 
 void PasswordStore::UpdateLoginWithPrimaryKey(
     const PasswordForm& new_form,
     const PasswordForm& old_primary_key) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::UpdateLoginWithPrimaryKeyInternal,
-                              this, new_form, old_primary_key));
+  OperationHandler* handler = OperationHandler::CreateOperationHandler();
+  handler->AwaitOperation(
+      base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
+                     base::Unretained(backend_), old_primary_key));
+  handler->AwaitOperation(base::BindOnce(&PasswordStoreBackend::AddLoginAsync,
+                                         base::Unretained(backend_), new_form));
+  handler->InvokeOnCompletion(
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
 }
 
 void PasswordStore::RemoveLogin(const PasswordForm& form) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::RemoveLoginInternal, this, form));
+  backend_->RemoveLoginAsync(
+      form,
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this));
 }
 
 void PasswordStore::RemoveLoginsByURLAndTime(
@@ -128,12 +201,10 @@ void PasswordStore::RemoveLoginsByURLAndTime(
     base::OnceClosure completion,
     base::OnceCallback<void(bool)> sync_completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  // TODO(crbug.com/1226042): Pass NotifyLoginsChanged as a callback since
-  // PasswordStoreImpl won't call PasswordStore::NotifyLoginsChanged directly
-  // after it inherits PasswordStoreSync.
   backend_->RemoveLoginsByURLAndTimeAsync(
-      base::NullCallback(), url_filter, delete_begin, delete_end,
-      std::move(completion), std::move(sync_completion));
+      url_filter, delete_begin, delete_end, std::move(sync_completion),
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this)
+          .Then(std::move(completion)));
 }
 
 void PasswordStore::RemoveLoginsCreatedBetween(
@@ -141,9 +212,12 @@ void PasswordStore::RemoveLoginsCreatedBetween(
     base::Time delete_end,
     base::OnceCallback<void(bool)> completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(
-      base::BindOnce(&PasswordStore::RemoveLoginsCreatedBetweenInternal, this,
-                     delete_begin, delete_end, std::move(completion)));
+  auto callback =
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this);
+  backend_->RemoveLoginsCreatedBetweenAsync(
+      delete_begin, delete_end,
+      base::BindOnce(&InvokeCallbackOnChanges, std::move(callback),
+                     std::move(completion)));
 }
 
 void PasswordStore::DisableAutoSignInForOrigins(
@@ -159,8 +233,10 @@ void PasswordStore::DisableAutoSignInForOrigins(
 void PasswordStore::Unblocklist(const PasswordFormDigest& form_digest,
                                 base::OnceClosure completion) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::UnblocklistInternal, this,
-                              form_digest, std::move(completion)));
+  backend_->FillMatchingLoginsAsync(
+      base::BindOnce(&PasswordStore::UnblocklistInternal, this,
+                     std::move(completion)),
+      {form_digest});
 }
 
 void PasswordStore::GetLogins(const PasswordFormDigest& form,
@@ -400,21 +476,14 @@ PasswordStore::CreateBackgroundTaskRunner() const {
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
 }
 
-void PasswordStore::NotifyLoginsChanged(
-    const PasswordStoreChangeList& changes) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  if (!changes.empty()) {
-    main_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
-                       changes));
-  }
-}
-
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(
     base::OnceCallback<PasswordStoreChangeList()> callback) {
   DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  NotifyLoginsChanged(std::move(callback).Run());
+  PasswordStoreChangeList changes = std::move(callback).Run();
+  main_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this,
+                     changes));
 }
 
 void PasswordStore::OnInitCompleted(bool success) {
@@ -479,84 +548,6 @@ void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
                      consumer->GetWeakPtr(), base::RetainedRef(this)));
 }
 
-void PasswordStore::AddLoginInternal(const PasswordForm& form) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::AddLoginInternal");
-  BeginTransaction();
-  PasswordStoreChangeList changes = AddLoginImpl(form);
-  NotifyLoginsChanged(changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-}
-
-void PasswordStore::UpdateLoginInternal(const PasswordForm& form) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::UpdateLoginInternal");
-  BeginTransaction();
-  PasswordStoreChangeList changes = UpdateLoginImpl(form);
-  NotifyLoginsChanged(changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-}
-
-void PasswordStore::RemoveLoginInternal(const PasswordForm& form) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::RemoveLoginInternal");
-  BeginTransaction();
-  PasswordStoreChangeList changes = RemoveLoginImpl(form);
-  NotifyLoginsChanged(changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-}
-
-void PasswordStore::UpdateLoginWithPrimaryKeyInternal(
-    const PasswordForm& new_form,
-    const PasswordForm& old_primary_key) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords", "PasswordStore::UpdateLoginWithPrimaryKeyInternal");
-  BeginTransaction();
-  PasswordStoreChangeList all_changes = RemoveLoginImpl(old_primary_key);
-  PasswordStoreChangeList changes = AddLoginImpl(new_form);
-  all_changes.insert(all_changes.end(), changes.begin(), changes.end());
-  NotifyLoginsChanged(all_changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-}
-
-void PasswordStore::RemoveLoginsCreatedBetweenInternal(
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceCallback<void(bool)> completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords",
-               "PasswordStore::RemoveLoginsCreatedBetweenInternal");
-  BeginTransaction();
-  PasswordStoreChangeList changes =
-      RemoveLoginsCreatedBetweenImpl(delete_begin, delete_end);
-  NotifyLoginsChanged(changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-  if (completion) {
-    main_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(completion), !changes.empty()));
-  }
-}
-
 void PasswordStore::RemoveStatisticsByOriginAndTimeInternal(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
     base::Time delete_begin,
@@ -581,20 +572,39 @@ void PasswordStore::DisableAutoSignInForOriginsInternal(
     main_task_runner_->PostTask(FROM_HERE, std::move(completion));
 }
 
-void PasswordStore::UnblocklistInternal(const PasswordFormDigest& form_digest,
-                                        base::OnceClosure completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+void PasswordStore::UnblocklistInternal(
+    base::OnceClosure completion,
+    std::vector<std::unique_ptr<PasswordForm>> forms) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
   TRACE_EVENT0("passwords", "PasswordStore::UnblocklistInternal");
 
-  std::vector<std::unique_ptr<PasswordForm>> all_matches =
-      GetLoginsImpl(form_digest);
-  for (auto& form : all_matches) {
+  std::vector<PasswordForm> forms_to_remove;
+  for (auto& form : forms) {
     // Ignore PSL matches for blocked entries.
     if (form->blocked_by_user && !form->is_public_suffix_match)
-      RemoveLoginInternal(*form);
+      forms_to_remove.push_back(std::move(*form));
   }
+
+  if (forms_to_remove.empty()) {
+    if (completion)
+      std::move(completion).Run();
+    return;
+  }
+
+  OperationHandler* handler = OperationHandler::CreateOperationHandler();
+
+  for (const auto& form : forms_to_remove) {
+    handler->AwaitOperation(
+        base::BindOnce(&PasswordStoreBackend::RemoveLoginAsync,
+                       base::Unretained(backend_), form));
+  }
+
+  auto notify_callback =
+      base::BindOnce(&PasswordStore::NotifyLoginsChangedOnMainSequence, this);
   if (completion)
-    main_task_runner_->PostTask(FROM_HERE, std::move(completion));
+    notify_callback = std::move(notify_callback).Then(std::move(completion));
+
+  handler->InvokeOnCompletion(std::move(notify_callback));
 }
 
 void PasswordStore::RemoveFieldInfoByTimeInternal(
@@ -674,118 +684,6 @@ std::unique_ptr<PasswordForm> PasswordStore::GetLoginImpl(
     }
   }
   return nullptr;
-}
-
-void PasswordStore::FindAndUpdateAffiliatedWebLogins(
-    const PasswordForm& added_or_updated_android_form) {
-  if (!affiliated_match_helper_)
-    return;
-  affiliated_match_helper_->GetAffiliatedWebRealms(
-      PasswordFormDigest(added_or_updated_android_form),
-      base::BindOnce(&PasswordStore::ScheduleUpdateAffiliatedWebLoginsImpl,
-                     this, added_or_updated_android_form));
-}
-
-void PasswordStore::ScheduleFindAndUpdateAffiliatedWebLogins(
-    const PasswordForm& added_or_updated_android_form) {
-  main_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PasswordStore::FindAndUpdateAffiliatedWebLogins, this,
-                     added_or_updated_android_form));
-}
-
-void PasswordStore::UpdateAffiliatedWebLoginsImpl(
-    const PasswordForm& updated_android_form,
-    const std::vector<std::string>& affiliated_web_realms) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  BeginTransaction();
-  PasswordStoreChangeList all_changes;
-  for (const std::string& affiliated_web_realm : affiliated_web_realms) {
-    std::vector<std::unique_ptr<PasswordForm>> web_logins(FillMatchingLogins(
-        {PasswordForm::Scheme::kHtml, affiliated_web_realm, GURL()}));
-    for (auto& web_login : web_logins) {
-      // Do not update HTTP logins, logins saved under insecure conditions, and
-      // non-HTML login forms; PSL matches; logins with a different username;
-      // and logins with the same password (to avoid generating no-op updates).
-      if (!AffiliatedMatchHelper::IsValidWebCredential(
-              PasswordFormDigest(*web_login)) ||
-          web_login->is_public_suffix_match ||
-          web_login->username_value != updated_android_form.username_value ||
-          web_login->password_value == updated_android_form.password_value)
-        continue;
-
-      // If the |web_login| was updated in the same or a later chunk of Sync
-      // changes, assume that it is more recent and do not update it. Note that
-      // this check is far from perfect conflict resolution and mostly prevents
-      // long-dormant Sync clients doing damage when they wake up in the face
-      // of the following list of changes:
-      //
-      //   Time   Source     Change
-      //   ====   ======     ======
-      //   #1     Android    android_login.password_value = "A"
-      //   #2     Client A   web_login.password_value = "A" (propagation)
-      //   #3     Client A   web_login.password_value = "B" (manual overwrite)
-      //
-      // When long-dormant Sync client B wakes up, it will only get a distilled
-      // subset of not-yet-obsoleted changes {1, 3}. In this case, client B must
-      // not propagate password "A" to |web_login|. This is prevented as change
-      // #3 will arrive either in the same/later chunk of sync changes, so the
-      // |date_synced| of |web_login| value will be greater or equal.
-      //
-      // Note that this solution has several shortcomings:
-      //
-      //   (1) It will not prevent local changes to |web_login| from being
-      //       overwritten if they were made shortly after start-up, before
-      //       Sync changes are applied. This should be tolerable.
-      //
-      //   (2) It assumes that all Sync clients are fully capable of propagating
-      //       changes to web credentials on their own. If client C runs an
-      //       older version of Chrome and updates the password for |web_login|
-      //       around the time when the |android_login| is updated, the updated
-      //       password will not be propagated by client B to |web_login| when
-      //       it wakes up, regardless of the temporal order of the original
-      //       changes, as client B will see both credentials having the same
-      //       |data_synced|.
-      //
-      //   (2a) Above could be mitigated by looking not only at |data_synced|,
-      //        but also at the actual order of Sync changes.
-      //
-      //   (2b) However, (2a) is still not workable, as a Sync change is made
-      //        when any attribute of the credential is updated, not only the
-      //        password. Hence it is not possible for client B to distinguish
-      //        between two following two event orders:
-      //
-      //    #1     Android    android_login.password_value = "A"
-      //    #2     Client C   web_login.password_value = "B" (manual overwrite)
-      //    #3     Android    android_login.random_attribute = "..."
-      //
-      //    #1     Client C   web_login.password_value = "B" (manual overwrite)
-      //    #2     Android    android_login.password_value = "A"
-      //
-      //        And so it must assume that it is unsafe to update |web_login|.
-      if (web_login->date_synced >= updated_android_form.date_synced)
-        continue;
-
-      web_login->password_value = updated_android_form.password_value;
-
-      PasswordStoreChangeList changes = UpdateLoginImpl(*web_login);
-      all_changes.insert(all_changes.end(), changes.begin(), changes.end());
-    }
-  }
-  NotifyLoginsChanged(all_changes);
-  // Sync metadata get updated in NotifyLoginsChanged(). Therefore,
-  // CommitTransaction() must be called after NotifyLoginsChanged(), because
-  // sync codebase needs to update metadata atomically together with the login
-  // data.
-  CommitTransaction();
-}
-
-void PasswordStore::ScheduleUpdateAffiliatedWebLoginsImpl(
-    const PasswordForm& updated_android_form,
-    const std::vector<std::string>& affiliated_web_realms) {
-  ScheduleTask(base::BindOnce(&PasswordStore::UpdateAffiliatedWebLoginsImpl,
-                              this, updated_android_form,
-                              affiliated_web_realms));
 }
 
 }  // namespace password_manager

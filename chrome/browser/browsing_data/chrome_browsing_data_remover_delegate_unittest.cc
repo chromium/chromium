@@ -557,8 +557,6 @@ class RemovePasswordsTester {
           AccountPasswordStoreFactory::GetForProfile(
               testing_profile, ServiceAccessType::EXPLICIT_ACCESS)
               .get());
-      ON_CALL(*account_store_, GetMetadataStore())
-          .WillByDefault(Return(&account_metadata_store_));
     }
 
     OSCryptMocker::SetUp();

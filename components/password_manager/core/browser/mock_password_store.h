@@ -50,34 +50,16 @@ class MockPasswordStore : public PasswordStore {
               (const PasswordForm&, const PasswordForm&),
               (override));
   MOCK_METHOD(void,
+              RemoveLoginsCreatedBetween,
+              (base::Time, base::Time, base::OnceCallback<void(bool)>),
+              (override));
+  MOCK_METHOD(void,
               ReportMetrics,
               (const std::string&, bool, bool),
               (override));
   MOCK_METHOD(void,
               ReportMetricsImpl,
               (const std::string&, bool, BulkCheckDone),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              AddLoginImpl,
-              (const PasswordForm&, AddLoginError* error),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              UpdateLoginImpl,
-              (const PasswordForm&, UpdateLoginError* error),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginImpl,
-              (const PasswordForm&),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginsByURLAndTimeImpl,
-              (const base::RepeatingCallback<bool(const GURL&)>&,
-               base::Time,
-               base::Time),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginsCreatedBetweenImpl,
-              (base::Time, base::Time),
               (override));
   MOCK_METHOD(bool,
               RemoveStatisticsByOriginAndTimeImpl,
@@ -97,21 +79,6 @@ class MockPasswordStore : public PasswordStore {
               FillMatchingLoginsByPassword,
               (const std::u16string&),
               (override));
-  MOCK_METHOD(DatabaseCleanupResult, DeleteUndecryptableLogins, (), (override));
-  void SetUnsyncedCredentialsDeletionNotifier(
-      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
-      override {
-    NOTIMPLEMENTED();
-  }
-  MOCK_METHOD(void,
-              NotifyLoginsChanged,
-              (const PasswordStoreChangeList&),
-              (override));
-  void NotifyDeletionsHaveSynced(bool) override { NOTIMPLEMENTED(); }
-  void NotifyUnsyncedCredentialsWillBeDeleted(
-      std::vector<PasswordForm>) override {
-    NOTIMPLEMENTED();
-  }
   MOCK_METHOD(std::vector<InteractionsStats>,
               GetSiteStatsImpl,
               (const GURL& origin_domain),
@@ -151,54 +118,13 @@ class MockPasswordStore : public PasswordStore {
               GetAllLoginsWithAffiliationAndBrandingInformation,
               (PasswordStoreConsumer*),
               (override));
+  void SetUnsyncedCredentialsDeletionNotifier(
+      std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier)
+      override {
+    NOTIMPLEMENTED();
+  }
 
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (override, const));
-
-  // TODO(crbug.bom/1226042): Remove this after PasswordStore no longer
-  // inherits PasswordStoreSync.
-  MOCK_METHOD(PasswordStoreChangeList,
-              AddLoginSync,
-              (const PasswordForm&, AddLoginError*),
-              (override));
-  MOCK_METHOD(bool,
-              AddInsecureCredentialsSync,
-              (base::span<const InsecureCredential>),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              UpdateLoginSync,
-              (const PasswordForm&, UpdateLoginError*),
-              (override));
-  MOCK_METHOD(bool,
-              UpdateInsecureCredentialsSync,
-              (const PasswordForm&, base::span<const InsecureCredential>),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginSync,
-              (const PasswordForm& form),
-              (override));
-  MOCK_METHOD(bool, BeginTransaction, ());
-  MOCK_METHOD(void, RollbackTransaction, (), (override));
-  MOCK_METHOD(bool, CommitTransaction, (), (override));
-  MOCK_METHOD(FormRetrievalResult,
-              ReadAllLogins,
-              (PrimaryKeyToFormMap*),
-              (override));
-  MOCK_METHOD(std::vector<InsecureCredential>,
-              ReadSecurityIssues,
-              (FormPrimaryKey),
-              (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginByPrimaryKeySync,
-              (FormPrimaryKey),
-              (override));
-  MOCK_METHOD(PasswordStoreSync::MetadataStore*,
-              GetMetadataStore,
-              (),
-              (override));
-  MOCK_METHOD(bool, IsAccountStore, (), (override, const));
-  MOCK_METHOD(bool, DeleteAndRecreateDatabaseFile, (), (override));
-
-  PasswordStoreSync* GetSyncInterface() { return this; }
 
  protected:
   ~MockPasswordStore() override;

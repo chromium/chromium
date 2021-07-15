@@ -20,9 +20,9 @@ class PasswordSyncBridge;
 
 // Simple password store implementation that delegates everything to
 // the LoginDatabase.
-// TODO(crbug.com/1217071): Currently, only implicitly inherits from protected
-// PasswordStoreSync but should be explicit.
-class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
+class PasswordStoreImpl : protected PasswordStoreSync,
+                          public PasswordStore,
+                          public PasswordStoreBackend {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
@@ -43,18 +43,6 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   void ReportMetricsImpl(const std::string& sync_username,
                          bool custom_passphrase_sync_enabled,
                          BulkCheckDone bulk_check_done) override;
-  PasswordStoreChangeList AddLoginImpl(const PasswordForm& form,
-                                       AddLoginError* error) override;
-  PasswordStoreChangeList UpdateLoginImpl(const PasswordForm& form,
-                                          UpdateLoginError* error) override;
-  PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) override;
-  PasswordStoreChangeList RemoveLoginsByURLAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end) override;
-  PasswordStoreChangeList RemoveLoginsCreatedBetweenImpl(
-      base::Time delete_begin,
-      base::Time delete_end) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
   bool RemoveStatisticsByOriginAndTimeImpl(
@@ -124,29 +112,34 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   FRIEND_TEST_ALL_PREFIXES(PasswordStoreTest, UpdateInsecureCredentialsSync);
 
   // Implements PasswordStoreBackend interface.
-  void InitBackend(base::RepeatingClosure sync_enabled_or_disabled_cb,
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+                   base::RepeatingClosure sync_enabled_or_disabled_cb,
                    base::OnceCallback<void(bool)> completion) override;
   void GetAllLoginsAsync(LoginsReply callback) override;
   void GetAutofillableLoginsAsync(LoginsReply callback) override;
   void FillMatchingLoginsAsync(
       LoginsReply callback,
       const std::vector<PasswordFormDigest>& forms) override;
-  void AddLoginAsync(OptionalStoreChangeListReply callback,
-                     const PasswordForm& form) override;
-  void UpdateLoginAsync(OptionalStoreChangeListReply callback,
-                        const PasswordForm& form) override;
-  void RemoveLoginAsync(OptionalStoreChangeListReply callback,
-                        const PasswordForm& form) override;
+  void AddLoginAsync(const PasswordForm& form,
+                     PasswordStoreChangeListReply callback) override;
+  void UpdateLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginsCreatedBetweenAsync(
+      base::Time delete_begin,
+      base::Time delete_end,
+      PasswordStoreChangeListReply callback) override;
   void RemoveLoginsByURLAndTimeAsync(
-      OptionalStoreChangeListReply callback,
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion,
-      base::OnceCallback<void(bool)> sync_completion) override;
+      base::OnceCallback<void(bool)> sync_completion,
+      PasswordStoreChangeListReply callback) override;
 
   // Opens |login_db_| and creates |sync_bridge_| on the background sequence.
   bool InitOnBackgroundSequence(
+      RemoteChangesReceived remote_form_changes_received,
       base::RepeatingClosure sync_enabled_or_disabled_cb);
 
   // Resets |login_db_| and |sync_bridge_| on the background sequence.
@@ -165,11 +158,13 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   PasswordStoreChangeList AddLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList UpdateLoginInternal(const PasswordForm& form);
   PasswordStoreChangeList RemoveLoginInternal(const PasswordForm& form);
+  PasswordStoreChangeList RemoveLoginsCreatedBetweenInternal(
+      base::Time delete_begin,
+      base::Time delete_end);
   PasswordStoreChangeList RemoveLoginsByURLAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time delete_begin,
       base::Time delete_end,
-      base::OnceClosure completion,
       base::OnceCallback<void(bool)> sync_completion);
 
   // The login SQL database. The LoginDatabase instance is received via the
@@ -179,6 +174,11 @@ class PasswordStoreImpl : public PasswordStore, public PasswordStoreBackend {
   std::unique_ptr<LoginDatabase> login_db_;
 
   std::unique_ptr<PasswordSyncBridge> sync_bridge_;
+
+  // Whenever 'sync_bridge_'receive remote changes this callback is used to
+  // notify PasswordStore observers about them. Called on a main sequence from
+  // the 'NotifyLoginsChanged'.
+  RemoteChangesReceived remote_forms_changes_received_callback_;
 
   std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier_;
 

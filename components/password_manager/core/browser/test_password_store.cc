@@ -151,6 +151,7 @@ TestPasswordStore::CreateBackgroundTaskRunner() const {
 }
 
 void TestPasswordStore::InitBackend(
+    RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
   main_task_runner()->PostTask(FROM_HERE,
@@ -183,108 +184,48 @@ void TestPasswordStore::FillMatchingLoginsAsync(
       std::move(callback));
 }
 
-void TestPasswordStore::AddLoginAsync(OptionalStoreChangeListReply callback,
-                                      const PasswordForm& form) {
+void TestPasswordStore::AddLoginAsync(const PasswordForm& form,
+                                      PasswordStoreChangeListReply callback) {
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::AddLoginImpl, base::Unretained(this),
-                     form, /*error=*/nullptr),
+                     form),
       std::move(callback));
 }
 
-void TestPasswordStore::UpdateLoginAsync(OptionalStoreChangeListReply callback,
-                                         const PasswordForm& form) {
+void TestPasswordStore::UpdateLoginAsync(
+    const PasswordForm& form,
+    PasswordStoreChangeListReply callback) {
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::UpdateLoginImpl,
-                     base::Unretained(this), form, /*error=*/nullptr),
+                     base::Unretained(this), form),
       std::move(callback));
 }
 
-void TestPasswordStore::RemoveLoginAsync(OptionalStoreChangeListReply callback,
-                                         const PasswordForm& form) {
+void TestPasswordStore::RemoveLoginAsync(
+    const PasswordForm& form,
+    PasswordStoreChangeListReply callback) {
   background_task_runner()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&TestPasswordStore::RemoveLoginImpl,
                      base::Unretained(this), form),
       std::move(callback));
 }
-
-void TestPasswordStore::RemoveLoginsByURLAndTimeAsync(
-    OptionalStoreChangeListReply callback,
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+void TestPasswordStore::RemoveLoginsCreatedBetweenAsync(
     base::Time delete_begin,
     base::Time delete_end,
-    base::OnceClosure completion,
-    base::OnceCallback<void(bool)> sync_completion) {
+    PasswordStoreChangeListReply callback) {
   NOTIMPLEMENTED();
 }
 
-PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
-    const PasswordForm& form,
-    AddLoginError* error) {
-  if (error)
-    *error = AddLoginError::kNone;
-
-  PasswordStoreChangeList changes;
-  auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
-  auto iter = std::find_if(
-      passwords_for_signon_realm.begin(), passwords_for_signon_realm.end(),
-      [&form](const auto& password) {
-        return ArePasswordFormUniqueKeysEqual(form, password);
-      });
-
-  if (iter != passwords_for_signon_realm.end()) {
-    changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
-    changes.emplace_back(PasswordStoreChange::ADD, form);
-    *iter = form;
-    iter->in_store = IsAccountStore() ? PasswordForm::Store::kAccountStore
-                                      : PasswordForm::Store::kProfileStore;
-    return changes;
-  }
-
-  changes.emplace_back(PasswordStoreChange::ADD, form);
-  passwords_for_signon_realm.push_back(form);
-  passwords_for_signon_realm.back().in_store =
-      IsAccountStore() ? PasswordForm::Store::kAccountStore
-                       : PasswordForm::Store::kProfileStore;
-  return changes;
-}
-
-PasswordStoreChangeList TestPasswordStore::UpdateLoginImpl(
-    const PasswordForm& form,
-    UpdateLoginError* error) {
-  if (error)
-    *error = UpdateLoginError::kNone;
-
-  PasswordStoreChangeList changes;
-  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
-  for (auto& stored_form : forms) {
-    if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
-      stored_form = form;
-      stored_form.in_store = IsAccountStore()
-                                 ? PasswordForm::Store::kAccountStore
-                                 : PasswordForm::Store::kProfileStore;
-      changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
-    }
-  }
-  return changes;
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginImpl(
-    const PasswordForm& form) {
-  PasswordStoreChangeList changes;
-  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
-  auto it = forms.begin();
-  while (it != forms.end()) {
-    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
-      it = forms.erase(it);
-      changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
-    } else {
-      ++it;
-    }
-  }
-  return changes;
+void TestPasswordStore::RemoveLoginsByURLAndTimeAsync(
+    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceCallback<void(bool)> sync_completion,
+    PasswordStoreChangeListReply callback) {
+  NOTIMPLEMENTED();
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
@@ -330,10 +271,6 @@ TestPasswordStore::FillMatchingLoginsByPassword(
   return matched_forms;
 }
 
-DatabaseCleanupResult TestPasswordStore::DeleteUndecryptableLogins() {
-  return DatabaseCleanupResult::kSuccess;
-}
-
 std::vector<InteractionsStats> TestPasswordStore::GetSiteStatsImpl(
     const GURL& origin_domain) {
   return std::vector<InteractionsStats>();
@@ -343,21 +280,6 @@ void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                           bool custom_passphrase_sync_enabled,
                                           BulkCheckDone bulk_check_done) {
   NOTIMPLEMENTED();
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginsByURLAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-    base::Time begin,
-    base::Time end) {
-  NOTIMPLEMENTED();
-  return PasswordStoreChangeList();
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginsCreatedBetweenImpl(
-    base::Time begin,
-    base::Time end) {
-  NOTIMPLEMENTED();
-  return PasswordStoreChangeList();
 }
 
 PasswordStoreChangeList TestPasswordStore::DisableAutoSignInForOriginsImpl(
@@ -462,97 +384,8 @@ void TestPasswordStore::SetUnsyncedCredentialsDeletionNotifier(
   NOTIMPLEMENTED();
 }
 
-PasswordStoreChangeList TestPasswordStore::AddLoginSync(
-    const PasswordForm& form,
-    AddLoginError* error) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-bool TestPasswordStore::AddInsecureCredentialsSync(
-    base::span<const InsecureCredential> credentials) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
-PasswordStoreChangeList TestPasswordStore::UpdateLoginSync(
-    const PasswordForm& form,
-    UpdateLoginError* error) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-bool TestPasswordStore::UpdateInsecureCredentialsSync(
-    const PasswordForm& form,
-    base::span<const InsecureCredential> credentials) {
-  NOTIMPLEMENTED();
-  return true;
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginSync(
-    const PasswordForm& form) {
-  NOTIMPLEMENTED();
-  return {};
-}
-
-void TestPasswordStore::NotifyDeletionsHaveSynced(bool success) {
-  NOTIMPLEMENTED();
-}
-
-void TestPasswordStore::NotifyUnsyncedCredentialsWillBeDeleted(
-    std::vector<PasswordForm> unsynced_credentials) {
-  NOTIMPLEMENTED();
-}
-
-bool TestPasswordStore::BeginTransaction() {
-  return true;
-}
-
-void TestPasswordStore::RollbackTransaction() {
-  NOTIMPLEMENTED();
-}
-
-bool TestPasswordStore::CommitTransaction() {
-  return true;
-}
-
-FormRetrievalResult TestPasswordStore::ReadAllLogins(
-    PrimaryKeyToFormMap* key_to_form_map) {
-  if (stored_passwords_.empty()) {
-    key_to_form_map->clear();
-    return FormRetrievalResult::kSuccess;
-  }
-  // This currently can't be implemented properly, since TestPasswordStore
-  // doesn't have primary keys. Right now no tests actually depend on it, so
-  // just leave it not implemented.
-  NOTIMPLEMENTED();
-  return FormRetrievalResult::kDbError;
-}
-
-std::vector<InsecureCredential> TestPasswordStore::ReadSecurityIssues(
-    FormPrimaryKey parent_key) {
-  NOTIMPLEMENTED();
-  return std::vector<InsecureCredential>();
-}
-
-PasswordStoreChangeList TestPasswordStore::RemoveLoginByPrimaryKeySync(
-    FormPrimaryKey primary_key) {
-  NOTIMPLEMENTED();
-  return PasswordStoreChangeList();
-}
-
-PasswordStoreSync::MetadataStore* TestPasswordStore::GetMetadataStore() {
-  return metadata_store_.get();
-}
-
 bool TestPasswordStore::IsAccountStore() const {
   return is_account_store_.value();
-}
-
-bool TestPasswordStore::DeleteAndRecreateDatabaseFile() {
-  stored_passwords_.clear();
-  metadata_store_->DeleteAllSyncMetadata();
-  return true;
 }
 
 LoginsResult TestPasswordStore::GetAllLoginsInternal() {
@@ -587,6 +420,65 @@ LoginsResult TestPasswordStore::FillMatchingLoginsBulk(
                    std::make_move_iterator(matched_forms.end()));
   }
   return results;
+}
+
+PasswordStoreChangeList TestPasswordStore::AddLoginImpl(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  auto& passwords_for_signon_realm = stored_passwords_[form.signon_realm];
+  auto iter = std::find_if(
+      passwords_for_signon_realm.begin(), passwords_for_signon_realm.end(),
+      [&form](const auto& password) {
+        return ArePasswordFormUniqueKeysEqual(form, password);
+      });
+
+  if (iter != passwords_for_signon_realm.end()) {
+    changes.emplace_back(PasswordStoreChange::REMOVE, *iter);
+    changes.emplace_back(PasswordStoreChange::ADD, form);
+    *iter = form;
+    iter->in_store = IsAccountStore() ? PasswordForm::Store::kAccountStore
+                                      : PasswordForm::Store::kProfileStore;
+    return changes;
+  }
+
+  changes.emplace_back(PasswordStoreChange::ADD, form);
+  passwords_for_signon_realm.push_back(form);
+  passwords_for_signon_realm.back().in_store =
+      IsAccountStore() ? PasswordForm::Store::kAccountStore
+                       : PasswordForm::Store::kProfileStore;
+  return changes;
+}
+
+PasswordStoreChangeList TestPasswordStore::UpdateLoginImpl(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
+  for (auto& stored_form : forms) {
+    if (ArePasswordFormUniqueKeysEqual(form, stored_form)) {
+      stored_form = form;
+      stored_form.in_store = IsAccountStore()
+                                 ? PasswordForm::Store::kAccountStore
+                                 : PasswordForm::Store::kProfileStore;
+      changes.push_back(PasswordStoreChange(PasswordStoreChange::UPDATE, form));
+    }
+  }
+  return changes;
+}
+
+PasswordStoreChangeList TestPasswordStore::RemoveLoginImpl(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
+  auto it = forms.begin();
+  while (it != forms.end()) {
+    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
+      it = forms.erase(it);
+      changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+    } else {
+      ++it;
+    }
+  }
+  return changes;
 }
 
 }  // namespace password_manager

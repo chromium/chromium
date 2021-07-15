@@ -1149,7 +1149,6 @@ TEST_F(PasswordStoreTest, Unblocklisting) {
   base::RunLoop run_loop;
   PasswordFormDigest observed_form_digest = {
       PasswordForm::Scheme::kHtml, kTestWebRealm1, GURL(kTestWebOrigin1)};
-
   store->Unblocklist(observed_form_digest, run_loop.QuitClosure());
   run_loop.Run();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
@@ -1547,6 +1546,27 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
   mock_consumer.CancelAllRequests();
   WaitForPasswordStore();
 
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, TestUnblockListEmptyStore) {
+  scoped_refptr<PasswordStoreWithMockedMetadataStore> store =
+      CreatePasswordStoreWithMockedMetaData();
+  store->Init(nullptr);
+  WaitForPasswordStore();
+
+  MockPasswordStoreObserver observer;
+  store->AddObserver(&observer);
+
+  PasswordFormDigest digest = {PasswordForm::Scheme::kHtml, kTestWebRealm1,
+                               GURL(kTestWebOrigin1)};
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer, OnLoginsChanged).Times(0);
+  store->Unblocklist(digest, run_loop.QuitClosure());
+  run_loop.Run();
+
+  store->RemoveObserver(&observer);
   store->ShutdownOnUIThread();
 }
 

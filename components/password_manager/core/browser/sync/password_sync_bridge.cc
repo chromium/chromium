@@ -168,6 +168,9 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
   password.federation_origin =
       url::Origin::Create(GURL(password_data.federation_url()));
   password.date_synced = sync_time;
+  password.password_issues =
+      base::flat_map<password_manager::InsecureType,
+                     password_manager::InsecurityMetadata>();
   return password;
 }
 

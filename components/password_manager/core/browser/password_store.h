@@ -57,9 +57,7 @@ struct FieldInfo;
 // from the UI thread.
 // PasswordStoreSync is a hidden base class because only PasswordSyncBridge
 // needs to access these methods.
-// TODO(crbug.com/1217071): Move PasswordStoreSync to local backend.
-class PasswordStore : protected PasswordStoreSync,
-                      public PasswordStoreInterface,
+class PasswordStore : public PasswordStoreInterface,
                       protected SmartBubbleStatsStore {
  public:
   // Used to notify that unsynced credentials are about to be deleted.
@@ -229,17 +227,6 @@ class PasswordStore : protected PasswordStoreSync,
                                  bool custom_passphrase_sync_enabled,
                                  BulkCheckDone bulk_check_done) = 0;
 
-  // Synchronous implementation to remove the given logins.
-  virtual PasswordStoreChangeList RemoveLoginsByURLAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
-      base::Time delete_begin,
-      base::Time delete_end) = 0;
-
-  // Synchronous implementation to remove the given logins.
-  virtual PasswordStoreChangeList RemoveLoginsCreatedBetweenImpl(
-      base::Time delete_begin,
-      base::Time delete_end) = 0;
-
   // Synchronous implementation to remove the statistics.
   virtual bool RemoveStatisticsByOriginAndTimeImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
@@ -249,21 +236,6 @@ class PasswordStore : protected PasswordStoreSync,
   // Synchronous implementation to disable auto sign-in.
   virtual PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) = 0;
-
-  // Synchronous implementation provided by subclasses to add the given login.
-  virtual PasswordStoreChangeList AddLoginImpl(
-      const PasswordForm& form,
-      AddLoginError* error = nullptr) = 0;
-
-  // Synchronous implementation provided by subclasses to update the given
-  // login.
-  virtual PasswordStoreChangeList UpdateLoginImpl(
-      const PasswordForm& form,
-      UpdateLoginError* error = nullptr) = 0;
-
-  // Synchronous implementation provided by subclasses to remove the given
-  // login.
-  virtual PasswordStoreChangeList RemoveLoginImpl(const PasswordForm& form) = 0;
 
   // Finds and returns all PasswordForms with the same signon_realm as |form|,
   // or with a signon_realm that is a PSL-match to that of |form|.
@@ -311,10 +283,6 @@ class PasswordStore : protected PasswordStoreSync,
   // PasswordStoreInterface.
   virtual base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegateOnBackgroundSequence() = 0;
-
-  // Called by *Internal() methods once the underlying data-modifying operation
-  // has been performed.
-  void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
 
   // Invokes callback and notifies observers if there was a change to the list
   // of insecure passwords. It also informs Sync about the updated password
@@ -382,17 +350,12 @@ class PasswordStore : protected PasswordStoreSync,
       InsecureCredentialsTask task);
 
   // The following methods notify observers that the password store may have
-  // been modified via NotifyLoginsChanged(). Note that there is no guarantee
-  // that the called method will actually modify the password store data.
-  void AddLoginInternal(const PasswordForm& form);
-  void UpdateLoginInternal(const PasswordForm& form);
-  void RemoveLoginInternal(const PasswordForm& form);
-  void UpdateLoginWithPrimaryKeyInternal(const PasswordForm& new_form,
-                                         const PasswordForm& old_primary_key);
-  void RemoveLoginsCreatedBetweenInternal(
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceCallback<void(bool)> completion);
+  // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
+  // no guarantee that the called method will actually modify the password store
+  // data.
+  void UnblocklistInternal(base::OnceClosure completion,
+                           std::vector<std::unique_ptr<PasswordForm>> forms);
+
   void RemoveStatisticsByOriginAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
@@ -401,8 +364,6 @@ class PasswordStore : protected PasswordStoreSync,
   void DisableAutoSignInForOriginsInternal(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::OnceClosure completion);
-  void UnblocklistInternal(const PasswordFormDigest& form_digest,
-                           base::OnceClosure completion);
   PasswordStoreChangeList RemoveCompromisedCredentialsByUrlAndTimeInternal(
       const base::RepeatingCallback<bool(const GURL&)>& url_filter,
       base::Time remove_begin,
@@ -450,32 +411,6 @@ class PasswordStore : protected PasswordStoreSync,
   // username_value and password_element attributes. To be called on the
   // background sequence.
   std::unique_ptr<PasswordForm> GetLoginImpl(const PasswordForm& primary_key);
-
-  // Called when a password is added or updated for an Android application, and
-  // triggers finding web sites affiliated with the Android application and
-  // propagating the new password to credentials for those web sites, if any.
-  // Called on the main sequence.
-  void FindAndUpdateAffiliatedWebLogins(
-      const PasswordForm& added_or_updated_android_form);
-
-  // Posts FindAndUpdateAffiliatedWebLogins() to the main sequence. Should be
-  // called from the background sequence.
-  void ScheduleFindAndUpdateAffiliatedWebLogins(
-      const PasswordForm& added_or_updated_android_form);
-
-  // Called when a password is added or updated for an Android application, and
-  // propagates these changes to credentials stored for |affiliated_web_realms|
-  // under the same username, if there are any. Called on the background
-  // sequence.
-  void UpdateAffiliatedWebLoginsImpl(
-      const PasswordForm& updated_android_form,
-      const std::vector<std::string>& affiliated_web_realms);
-
-  // Schedules UpdateAffiliatedWebLoginsImpl() to run on the background
-  // sequence. Should be called from the main sequence.
-  void ScheduleUpdateAffiliatedWebLoginsImpl(
-      const PasswordForm& updated_android_form,
-      const std::vector<std::string>& affiliated_web_realms);
 
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
