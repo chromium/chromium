@@ -8,8 +8,23 @@
       "is_official_build": true,
       "proprietary_codecs": true,
       "strip_absolute_paths_from_debug_symbols": true,
-      "symbol_level": 1,
+      "symbol_level": 0,
       "target_cpu": "arm",
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "android-arm64-pgo": {
+    "gn_args": {
+      "chrome_pgo_phase": 1,
+      "clang_use_default_sample_profile": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 0,
+      "target_cpu": "arm64",
       "target_os": "android",
       "use_goma": true
     }

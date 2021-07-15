@@ -35,6 +35,7 @@
     },
     'chrome.pgo': {
       'android-arm32-pgo': 'official_goma_android_arm32_pgo',
+      'android-arm64-pgo': 'official_goma_android_arm64_pgo',
       'linux-pgo': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
@@ -912,6 +913,7 @@
 
     'tryserver.chrome.pgo': {
       'android-arm32-pgo': 'official_goma_android_arm32_pgo',
+      'android-arm64-pgo': 'official_goma_android_arm64_pgo',
       'linux-pgo': 'official_goma_linux_pgo',
       'mac-pgo': 'official_goma_mac_pgo',
       'win32-pgo': 'official_goma_x86_pgo',
@@ -2464,7 +2466,11 @@
     ],
 
     'official_goma_android_arm32_pgo': [
-      'official', 'goma', 'android', 'arm', 'minimal_symbols', 'no_default_afdo', 'pgo_phase_1',
+      'official', 'goma', 'android', 'arm', 'no_symbols', 'no_default_afdo', 'pgo_phase_1',
+    ],
+
+    'official_goma_android_arm64_pgo': [
+      'official', 'goma', 'android', 'arm64', 'no_symbols', 'no_default_afdo', 'pgo_phase_1',
     ],
 
     'official_goma_mac': [
