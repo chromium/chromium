@@ -39,8 +39,6 @@ crbug.com/901056 virtual/plz-dedicated-worker/external/wpt/resource-timing/neste
 #
 # Text failures
 #
-### fast/block/float
-crbug.com/901056 fast/block/float/4145535Crash.html [ Failure Pass ]
 
 ### http/tests/devtools/console
 # An extra "VM" is printed in front of the page name.
