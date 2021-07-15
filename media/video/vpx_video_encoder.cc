@@ -108,11 +108,18 @@ Status SetUpVpxConfig(const VideoEncoder::Options& opts,
     config->kf_max_dist = opts.keyframe_interval.value();
   }
 
-  if (opts.bitrate.has_value() && opts.bitrate.value()) {
-    config->rc_end_usage = VPX_CBR;
-    config->rc_target_bitrate = opts.bitrate.value() / 1000;
+  if (opts.bitrate.has_value()) {
+    auto& bitrate = opts.bitrate.value();
+    config->rc_target_bitrate = bitrate.target() / 1000;
+    switch (bitrate.mode()) {
+      case Bitrate::Mode::kVariable:
+        config->rc_end_usage = VPX_VBR;
+        break;
+      case Bitrate::Mode::kConstant:
+        config->rc_end_usage = VPX_CBR;
+        break;
+    }
   } else {
-    config->rc_end_usage = VPX_VBR;
     config->rc_target_bitrate =
         double{opts.frame_size.GetCheckedArea().ValueOrDie()} / config->g_w /
         config->g_h * config->rc_target_bitrate;

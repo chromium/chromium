@@ -34,6 +34,7 @@ class MEDIA_EXPORT Bitrate {
     return Bitrate(Mode::kVariable, target_bitrate, peak_bitrate);
   }
   bool operator==(const Bitrate& right) const;
+  bool operator!=(const Bitrate& right) const;
 
   // Accessor for |mode_|.
   constexpr Mode mode() const { return mode_; }

@@ -13,6 +13,10 @@ bool Bitrate::operator==(const Bitrate& right) const {
          (this->peak_ == right.peak_);
 }
 
+bool Bitrate::operator!=(const Bitrate& right) const {
+  return !(*this == right);
+}
+
 uint32_t Bitrate::peak() const {
   DCHECK_EQ(mode_ == Mode::kConstant, peak_ == 0u);
   return peak_;

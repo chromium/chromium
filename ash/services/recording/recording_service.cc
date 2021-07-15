@@ -34,7 +34,7 @@ namespace {
 
 // For a capture size of 320 by 240, we use a bitrate of 256 kbit/s. Based on
 // that, we calculate the bits per second per squared pixel.
-constexpr uint64_t kMinBitrateInBitsPerSecond = 256 * 1000;
+constexpr uint32_t kMinBitrateInBitsPerSecond = 256 * 1000;
 constexpr float kBitsPerSecondPerSquarePixel =
     static_cast<float>(kMinBitrateInBitsPerSecond) / (320.f * 240.f);
 
@@ -45,9 +45,9 @@ constexpr gfx::Size kThumbnailSize{328, 184};
 
 // Calculates the bitrate used to initialize the video encoder based on the
 // given |capture_size|.
-uint64_t CalculateVpxEncoderBitrate(const gfx::Size& capture_size) {
+uint32_t CalculateVpxEncoderBitrate(const gfx::Size& capture_size) {
   return std::max(kMinBitrateInBitsPerSecond,
-                  static_cast<uint64_t>(capture_size.GetArea() *
+                  static_cast<uint32_t>(capture_size.GetArea() *
                                         kBitsPerSecondPerSquarePixel));
 }
 
@@ -56,7 +56,8 @@ uint64_t CalculateVpxEncoderBitrate(const gfx::Size& capture_size) {
 media::VideoEncoder::Options CreateVideoEncoderOptions(
     const gfx::Size& capture_size) {
   media::VideoEncoder::Options video_encoder_options;
-  video_encoder_options.bitrate = CalculateVpxEncoderBitrate(capture_size);
+  video_encoder_options.bitrate =
+      media::Bitrate::ConstantBitrate(CalculateVpxEncoderBitrate(capture_size));
   video_encoder_options.framerate = kMaxFrameRate;
   video_encoder_options.frame_size = capture_size;
   // This value, expressed as a number of frames, forces the encoder to code

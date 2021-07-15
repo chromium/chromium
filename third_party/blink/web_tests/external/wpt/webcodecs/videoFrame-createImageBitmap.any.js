@@ -83,7 +83,7 @@ function testCreateImageBitmapFromVideoFrameVP9Decoder() {
           let myCanvas = new OffscreenCanvas(width, height);
           let myCtx = myCanvas.getContext('2d');
           myCtx.drawImage(toImageBitmap, 0, 0);
-          let tolerance = 6;
+          let tolerance = 10;
           try {
             testCanvas(myCtx, width, height, kSRGBPixel, null,
               (actual, expected) => {
@@ -128,7 +128,7 @@ function testCreateImageBitmapFromVideoFrameVP9Decoder() {
         width: width,
         height: height,
         bitrate: 10e6,
-        framerate: 30,
+        framerate: 30
       };
 
       let encoder = new VideoEncoder(encoderInit);

@@ -38,8 +38,9 @@ Status SetUpOpenH264Params(const VideoEncoder::Options& options,
     params->uiIntraPeriod = options.keyframe_interval.value();
 
   if (options.bitrate.has_value()) {
+    auto& bitrate = options.bitrate.value();
     params->iRCMode = RC_BITRATE_MODE;
-    params->iTargetBitrate = base::saturated_cast<int>(options.bitrate.value());
+    params->iTargetBitrate = base::saturated_cast<int>(bitrate.target());
   } else {
     params->iRCMode = RC_OFF_MODE;
   }

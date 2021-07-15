@@ -338,11 +338,10 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask(
     uint32_t framerate) {
   DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
-  // If this is changed to use variable bitrate encoding, change the mode check
-  // to check that the mode matches the current mode.
   if (bitrate.mode() != media::Bitrate::Mode::kConstant) {
-    NotifyError(kInvalidArgumentError);
-    return;
+    // Even if users ask for VBR, CBR will do for now, because
+    // CBR is kinda a subset of VBR.
+    DLOG(ERROR) << "Unexpected bitrate mode. Using CBR anyway.";
   }
 
   if (!compression_session_) {

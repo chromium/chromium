@@ -201,6 +201,21 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     return nullptr;
   }
 
+  if (config->hasBitrate()) {
+    uint32_t bps = static_cast<uint32_t>(base::ClampToRange(
+        config->bitrate(), uint64_t{0},
+        static_cast<uint64_t>(std::numeric_limits<uint32_t>::max())));
+    if (config->hasBitrateMode() && config->bitrateMode() == "constant") {
+      result->options.bitrate = media::Bitrate::ConstantBitrate(bps);
+    } else {
+      // VBR in media:Bitrate supports both target and peak bitrate.
+      // Currently webcodecs doesn't expose peak bitrate
+      // (assuming unconstrained VBR), here we just set peak as 10 times target
+      // as a good enough way of expressing unconstrained VBR.
+      result->options.bitrate = media::Bitrate::VariableBitrate(bps, 10 * bps);
+    }
+  }
+
   if (config->hasDisplayWidth() && config->hasDisplayHeight()) {
     result->display_size.emplace(config->displayWidth(),
                                  config->displayHeight());
@@ -219,9 +234,6 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
     }
     result->options.framerate = config->framerate();
   }
-
-  if (config->hasBitrate())
-    result->options.bitrate = config->bitrate();
 
   // https://w3c.github.io/webrtc-svc/
   if (config->hasScalabilityMode()) {

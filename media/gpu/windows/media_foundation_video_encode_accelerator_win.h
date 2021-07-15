@@ -143,7 +143,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;
   uint32_t frame_rate_;
-  uint32_t target_bitrate_;
+  Bitrate bitrate_;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.

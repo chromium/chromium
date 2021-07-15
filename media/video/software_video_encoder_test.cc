@@ -326,7 +326,7 @@ TEST_P(SoftwareVideoEncoderTest, ResizeFrames) {
 TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(320, 200);
-  options.bitrate = 1e6;  // 1Mbps
+  options.bitrate = Bitrate::VariableBitrate(1e6, 2e6);
   options.framerate = 25;
   options.keyframe_interval = options.framerate.value() * 3;  // every 3s
   int total_frames_count =
@@ -367,7 +367,7 @@ TEST_P(SoftwareVideoEncoderTest, OutputCountEqualsFrameCount) {
 TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(320, 200);
-  options.bitrate = 1e6;  // 1Mbps
+  options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
   if (codec_ == kCodecH264)
     options.avc.produce_annexb = true;
@@ -431,7 +431,7 @@ TEST_P(SoftwareVideoEncoderTest, EncodeAndDecode) {
 TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(320, 200);
-  options.bitrate = 1e6;  // 1Mbps
+  options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
   options.temporal_layers = GetParam().temporal_layers;
   if (codec_ == kCodecH264)
@@ -596,7 +596,7 @@ TEST_P(H264VideoEncoderTest, AnnexB) {
 TEST_P(H264VideoEncoderTest, EncodeAndDecodeWithConfig) {
   VideoEncoder::Options options;
   options.frame_size = gfx::Size(320, 200);
-  options.bitrate = 1e6;  // 1Mbps
+  options.bitrate = Bitrate::ConstantBitrate(1e6);  // 1Mbps
   options.framerate = 25;
   options.avc.produce_annexb = false;
   struct ChunkWithConfig {

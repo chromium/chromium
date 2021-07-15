@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/numerics/ranges.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequenced_task_runner.h"
 #include "base/synchronization/waitable_event.h"
@@ -41,12 +42,14 @@ VideoEncodeAccelerator::Config SetUpVeaConfig(
   if (opts.framerate.has_value())
     initial_framerate = static_cast<uint32_t>(opts.framerate.value());
 
-  auto config = VideoEncodeAccelerator::Config(
-      format, opts.frame_size, profile,
-      Bitrate::ConstantBitrate(opts.bitrate.value_or(
-          opts.frame_size.width() * opts.frame_size.height() *
-          kVEADefaultBitratePerPixel)),
-      initial_framerate, opts.keyframe_interval);
+  uint64_t default_bitrate = opts.frame_size.width() *
+                             opts.frame_size.height() *
+                             kVEADefaultBitratePerPixel;
+  Bitrate bitrate =
+      opts.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
+  auto config =
+      VideoEncodeAccelerator::Config(format, opts.frame_size, profile, bitrate,
+                                     initial_framerate, opts.keyframe_interval);
 
   if (opts.temporal_layers > 1) {
     VideoEncodeAccelerator::Config::SpatialLayer layer;
@@ -341,12 +344,11 @@ void VideoEncodeAcceleratorAdapter::ChangeOptionsOnAcceleratorThread(
     return;
   }
 
-  uint32_t target_bitrate =
-      std::min(options.bitrate.value_or(options.frame_size.width() *
-                                        options.frame_size.height() *
-                                        kVEADefaultBitratePerPixel),
-               uint64_t{std::numeric_limits<uint32_t>::max()});
-  Bitrate bitrate = Bitrate::ConstantBitrate(target_bitrate);
+  uint32_t default_bitrate = options.frame_size.width() *
+                             options.frame_size.height() *
+                             kVEADefaultBitratePerPixel;
+  auto bitrate =
+      options.bitrate.value_or(Bitrate::ConstantBitrate(default_bitrate));
 
   uint32_t framerate = base::ClampRound<uint32_t>(
       options.framerate.value_or(VideoEncodeAccelerator::kDefaultFramerate));
