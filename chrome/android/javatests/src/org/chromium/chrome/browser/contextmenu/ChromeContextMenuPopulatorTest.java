@@ -155,7 +155,9 @@ public class ChromeContextMenuPopulatorTest {
                 for (int initialListIndex = 0; initialListIndex < expectedItemsInGroup.length;
                         initialListIndex++) {
                     if (expectedItemsInGroup[initialListIndex]
-                            != R.id.contextmenu_open_in_ephemeral_tab) {
+                                    != R.id.contextmenu_open_in_ephemeral_tab
+                            && expectedItemsInGroup[initialListIndex]
+                                    != R.id.contextmenu_open_image_in_ephemeral_tab) {
                         updatedList.add(expectedItemsInGroup[initialListIndex]);
                     }
                 }
