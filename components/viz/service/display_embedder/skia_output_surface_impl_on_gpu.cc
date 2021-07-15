@@ -433,7 +433,8 @@ std::unique_ptr<gpu::SharedImageFactory> CreateSharedImageFactory(
       deps->GetGpuFeatureInfo(), deps->GetSharedContextState().get(),
       deps->GetMailboxManager(), deps->GetSharedImageManager(),
       deps->GetGpuImageFactory(), memory_tracker,
-      true /* enable_wrapped_sk_image */);
+      /*enable_wrapped_sk_image=*/true,
+      /*is_for_display_compositor=*/true);
 }
 
 std::unique_ptr<gpu::SharedImageRepresentationFactory>

@@ -543,7 +543,8 @@ ContextResult SharedImageStub::MakeContextCurrentAndCreateFactory() {
       channel_manager->mailbox_manager(),
       channel_manager->shared_image_manager(),
       gmb_factory ? gmb_factory->AsImageFactory() : nullptr, this,
-      features::IsUsingSkiaRenderer());
+      features::IsUsingSkiaRenderer(),
+      /*is_for_display_compositor=*/false);
   return ContextResult::kSuccess;
 }
 

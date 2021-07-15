@@ -119,11 +119,13 @@ SharedImageFactory::SharedImageFactory(
     SharedImageManager* shared_image_manager,
     ImageFactory* image_factory,
     MemoryTracker* memory_tracker,
-    bool enable_wrapped_sk_image)
+    bool enable_wrapped_sk_image,
+    bool is_for_display_compositor)
     : mailbox_manager_(mailbox_manager),
       shared_image_manager_(shared_image_manager),
       shared_context_state_(context_state),
       memory_tracker_(std::make_unique<MemoryTypeTracker>(memory_tracker)),
+      is_for_display_compositor_(is_for_display_compositor),
       gr_context_type_(context_state ? context_state->gr_context_type()
                                      : GrContextType::kGL) {
 #if defined(OS_MAC)
@@ -508,11 +510,12 @@ bool SharedImageFactory::IsSharedBetweenThreads(uint32_t usage) {
   // running on a separate thread (which uses a separate GL context or
   // VkDeviceQueue).
   const bool used_by_display_compositor_gpu_thread =
-      (usage & SHARED_IMAGE_USAGE_DISPLAY) &&
+      (usage & SHARED_IMAGE_USAGE_DISPLAY || is_for_display_compositor_) &&
       shared_image_manager_->display_context_on_another_thread();
-  // If it has usage other than DISPLAY, it means that it is used by the
-  // gpu main thread.
-  const bool used_by_main_gpu_thread = usage & ~SHARED_IMAGE_USAGE_DISPLAY;
+  // If it has usage other than DISPLAY OR if it is not used just for display
+  // compositor, it means that it is used by the gpu main thread.
+  const bool used_by_main_gpu_thread =
+      usage & ~SHARED_IMAGE_USAGE_DISPLAY || !is_for_display_compositor_;
   return used_by_display_compositor_gpu_thread && used_by_main_gpu_thread;
 }
 

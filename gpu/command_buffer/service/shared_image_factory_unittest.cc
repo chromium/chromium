@@ -41,7 +41,8 @@ class SharedImageFactoryTest : public testing::Test {
     factory_ = std::make_unique<SharedImageFactory>(
         preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
         &shared_image_manager_, &image_factory_, nullptr,
-        /*enable_wrapped_sk_image=*/false);
+        /*enable_wrapped_sk_image=*/false,
+        /*is_for_display_compositor=*/false);
   }
 
   void TearDown() override {
@@ -96,7 +97,7 @@ TEST_F(SharedImageFactoryTest, DuplicateMailbox) {
   auto other_factory = std::make_unique<SharedImageFactory>(
       preferences, workarounds, GpuFeatureInfo(), nullptr, &mailbox_manager_,
       &shared_image_manager_, &image_factory_, nullptr,
-      /*enable_wrapped_sk_image=*/false);
+      /*enable_wrapped_sk_image=*/false, /*is_for_display_compositor=*/false);
   EXPECT_FALSE(other_factory->CreateSharedImage(
       mailbox, format, size, color_space, kTopLeft_GrSurfaceOrigin,
       kPremul_SkAlphaType, surface_handle, usage));

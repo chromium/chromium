@@ -409,7 +409,8 @@ class CommandBufferSetup {
         gpu_preferences_, config_.workarounds, gpu_feature_info,
         context_state_.get(), &mailbox_manager_, shared_image_manager_.get(),
         nullptr /* image_factory */, nullptr /* memory_tracker */,
-        false /* enable_wrapped_sk_image */);
+        false /* enable_wrapped_sk_image */,
+        false /* is_for_display_compositor */);
     for (uint32_t usage = SHARED_IMAGE_USAGE_GLES2;
          usage <= SHARED_IMAGE_USAGE_RGB_EMULATION; usage <<= 1) {
       Mailbox::Name name;

@@ -54,7 +54,8 @@ class GPU_GLES2_EXPORT SharedImageFactory {
                      SharedImageManager* manager,
                      ImageFactory* image_factory,
                      MemoryTracker* tracker,
-                     bool enable_wrapped_sk_image);
+                     bool enable_wrapped_sk_image,
+                     bool is_for_display_compositor);
   ~SharedImageFactory();
 
   bool CreateSharedImage(const Mailbox& mailbox,
@@ -156,6 +157,10 @@ class GPU_GLES2_EXPORT SharedImageFactory {
   SharedImageManager* shared_image_manager_;
   SharedContextState* shared_context_state_;
   std::unique_ptr<MemoryTypeTracker> memory_tracker_;
+
+  // This is used if the factory is created on display compositor to check for
+  // sharing between threads.
+  const bool is_for_display_compositor_;
 
   // This is |shared_context_state_|'s context type. Some tests leave
   // |shared_context_state_| as nullptr, in which case this is set to a default

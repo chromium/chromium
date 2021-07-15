@@ -61,7 +61,8 @@ void SharedImageInterfaceInProcess::SetUpOnGpu(
             display_controller->mailbox_manager(),
             display_controller->shared_image_manager(),
             display_controller->image_factory(),
-            display_controller->memory_tracker(), enable_wrapped_sk_image);
+            display_controller->memory_tracker(), enable_wrapped_sk_image,
+            /*is_for_display_compositor=*/true);
         return shared_image_factory;
       },
       display_controller);
