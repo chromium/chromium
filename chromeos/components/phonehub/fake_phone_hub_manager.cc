@@ -51,6 +51,13 @@ PhoneModel* FakePhoneHubManager::GetPhoneModel() {
   return &mutable_phone_model_;
 }
 
+RecentAppsInteractionHandler*
+FakePhoneHubManager::GetRecentAppsInteractionHandler() {
+  return features::IsPhoneHubRecentAppsEnabled()
+             ? &fake_recent_apps_interaction_handler_
+             : nullptr;
+}
+
 TetherController* FakePhoneHubManager::GetTetherController() {
   return &fake_tether_controller_;
 }

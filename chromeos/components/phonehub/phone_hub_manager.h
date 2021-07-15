@@ -19,6 +19,7 @@ class NotificationManager;
 class NotificationInteractionHandler;
 class OnboardingUiTracker;
 class PhoneModel;
+class RecentAppsInteractionHandler;
 class TetherController;
 class UserActionRecorder;
 class BrowserTabsModelProvider;
@@ -44,6 +45,7 @@ class PhoneHubManager {
   virtual NotificationManager* GetNotificationManager() = 0;
   virtual OnboardingUiTracker* GetOnboardingUiTracker() = 0;
   virtual PhoneModel* GetPhoneModel() = 0;
+  virtual RecentAppsInteractionHandler* GetRecentAppsInteractionHandler() = 0;
   virtual TetherController* GetTetherController() = 0;
   virtual UserActionRecorder* GetUserActionRecorder() = 0;
 
