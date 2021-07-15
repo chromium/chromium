@@ -548,6 +548,10 @@ void DownloadFileImpl::Pause() {
   record_stream_bandwidth_ = false;
   for (auto& stream : source_streams_)
     stream.second->ClearDataReadyCallback();
+
+  // Stop sending updates since meaningless after paused.
+  if (update_timer_ && update_timer_->IsRunning())
+    update_timer_->Stop();
 }
 
 void DownloadFileImpl::Resume() {
