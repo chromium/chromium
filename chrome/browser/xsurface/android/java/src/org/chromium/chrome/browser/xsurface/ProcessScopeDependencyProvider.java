@@ -90,11 +90,6 @@ public interface ProcessScopeDependencyProvider {
         return false;
     }
 
-    @Deprecated
-    default boolean isStableChannel() {
-        return false;
-    }
-
     /** Returns the reliability logging id. */
     default long getReliabilityLoggingId() {
         return 0L;

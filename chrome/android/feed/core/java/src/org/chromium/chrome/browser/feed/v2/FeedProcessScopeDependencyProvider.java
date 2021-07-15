@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.chrome.browser.xsurface.ImageFetchClient;
 import org.chromium.chrome.browser.xsurface.PersistentKeyValueCache;
 import org.chromium.chrome.browser.xsurface.ProcessScopeDependencyProvider;
@@ -107,11 +106,6 @@ public class FeedProcessScopeDependencyProvider implements ProcessScopeDependenc
         }
         return ChromeFeatureList.isEnabled(ChromeFeatureList.XSURFACE_METRICS_REPORTING)
                 && manager.isMetricsReportingEnabled();
-    }
-
-    @Override
-    public boolean isStableChannel() {
-        return ChromeVersionInfo.isStableBuild();
     }
 
     public static Context createFeedContext(Context context) {
