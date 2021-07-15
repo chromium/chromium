@@ -31,14 +31,6 @@ Polymer({
     },
 
     /**
-     * Title key of the screen.
-     */
-    titleKey_: {
-      type: String,
-      value: 'assistantRelatedInfoTitle',
-    },
-
-    /**
      * Whether activity control consent is skipped.
      */
     skipActivityControl_: {
@@ -52,6 +44,15 @@ Polymer({
     equalWeightButtons_: {
       type: Boolean,
       value: false,
+    },
+
+    /**
+     * The given name of the user, if a child account is in use; otherwise,
+     * this is an empty string.
+     */
+    childName_: {
+      type: String,
+      value: '',
     },
   },
 
@@ -224,12 +225,8 @@ Polymer({
    * Reload the page with the given consent string text data.
    */
   reloadContent(data) {
-    if (data['activityControlNeeded']) {
-      this.titleKey_ = 'assistantRelatedInfoTitle';
-    } else {
-      this.titleKey_ = 'assistantRelatedInfoReturnedUserTitle';
-    }
     this.skipActivityControl_ = !data['activityControlNeeded'];
+    this.childName_ = data['childName'];
     this.$.zippy.setAttribute(
         'icon-src',
         'data:text/html;charset=utf-8,' +
@@ -298,5 +295,18 @@ Polymer({
    */
   getAnimationContainer() {
     return this.$['animation-container'];
+  },
+
+  /**
+   * Returns the title of the dialog.
+   */
+  getDialogTitle_(locale, skipActivityControl, childName) {
+    if (skipActivityControl) {
+      return this.i18n('assistantRelatedInfoReturnedUserTitle');
+    } else {
+      return childName ?
+          this.i18n('assistantRelatedInfoTitleForChild', childName) :
+          this.i18n('assistantRelatedInfoTitle');
+    }
   },
 });

@@ -16,7 +16,7 @@
 <dom-module id="assistant-related-info">
 <template>
   <style include="oobe-dialog-host-styles">
-    #intro-text {
+    #content-container .content {
       padding-bottom: 16px;
     }
 
@@ -53,16 +53,23 @@
   </style>
   <link rel="stylesheet" href="assistant_shared_styles.css">
   <oobe-adaptive-dialog id="relatedInfoDialog" role="dialog" hide-shadow
-      aria-label$="[[i18nDynamic(locale, titleKey_)]]">
+      aria-label$=
+          "[[getDialogTitle_(locale, skipActivityControl_, childName_)]]">
     <iron-icon slot="icon" icon="assistant-32:assistant"
         aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
     </iron-icon>
     <h1 slot="title">
-      [[i18nDynamic(locale, titleKey_)]]
+      [[getDialogTitle_(locale, skipActivityControl_, childName_)]]
     </h1>
     <div slot="subtitle" id="subtitle-container"
         hidden$="[[skipActivityControl_]]">
-      <div>[[i18nDynamic(locale, 'assistantScreenContextDesc')]]</div>
+      <div hidden$="[[!!childName_]]">
+        [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
+      </div>
+      <div hidden$="[[!childName_]]">
+        [[i18nDynamic(
+            locale, 'assistantScreenContextDescForChild', childName_)]]
+      </div>
       <div>[[i18nDynamic(locale, 'assistantRelatedInfoMessage')]]</div>
     </div>
     <div id="animation-container" hidden$="[[!skipActivityControl_]]">
@@ -70,24 +77,37 @@
     </div>
     <div slot="content" class="flex layout vertical center center-justified"
         hidden$="[[skipActivityControl_]]">
-      <div class="example-text">
+      <div class="example-text" hidden$="[[!!childName_]]">
         [[i18nDynamic(locale, 'assistantRelatedInfoExample')]]
+      </div>
+      <div class="example-text" hidden$="[[!childName_]]">
+        [[i18nDynamic(locale, 'assistantRelatedInfoExampleForChild')]]
       </div>
       <img id="relatedInfoImg" class="oobe-illustration" aria-hidden="true"
           src="assistant_related_info.svg">
     </div>
     <div slot="content" id="content-container" class="landscape-header-aligned"
         hidden$="[[!skipActivityControl_]]">
-      <div id="intro-text" class="content">
+      <div class="content" hidden$="[[!!childName_]]">
         [[i18nDynamic(locale, 'assistantRelatedInfoReturnedUserMessage')]]
+      </div>
+      <div class="content" hidden$="[[!childName_]]">
+        [[i18nDynamic(locale,
+            'assistantRelatedInfoReturnedUserMessageForChild', childName_)]]
       </div>
       <div class="line"></div>
       <setting-zippy id="zippy">
         <div slot="title" aria-hidden="true">
           [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
         </div>
-        <div slot="content" aria-hidden="true">
+        <div slot="content" aria-hidden="true"
+            hidden$="[[!!childName_]]">
           [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
+        </div>
+        <div slot="content" aria-hidden="true"
+            hidden$="[[!childName_]]">
+          [[i18nDynamic(locale,
+              'assistantScreenContextDescForChild', childName_)]]
         </div>
       </setting-zippy>
     </div>

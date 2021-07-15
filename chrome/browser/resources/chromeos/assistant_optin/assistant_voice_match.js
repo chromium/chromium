@@ -36,6 +36,23 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /**
+     * The given name of the user, if a child account is in use; otherwise,
+     * this is an empty string.
+     */
+    childName_: {
+      type: String,
+      value: '',
+    },
+
+    /**
+     * The name of the Chrome device.
+     */
+    deviceName_: {
+      type: String,
+      value: '',
+    }
   },
 
   /**
@@ -125,6 +142,8 @@ Polymer({
    */
   reloadContent(data) {
     this.equalWeightButtons_ = data['equalWeightButtons'];
+    this.childName_ = data['childName'];
+    this.deviceName_ = data['deviceName'];
   },
 
   /**
@@ -211,9 +230,31 @@ Polymer({
   },
 
   /**
+   * Returns the text for dialog title.
+   */
+  getDialogTitle_(locale, uiStep, childName) {
+    if (uiStep == VoiceMatchUIState.INTRO) {
+      return childName ?
+          this.i18n('assistantVoiceMatchTitleForChild', childName) :
+          this.i18n('assistantVoiceMatchTitle');
+    } else if (uiStep === VoiceMatchUIState.RECORDING) {
+      return childName ?
+          this.i18n('assistantVoiceMatchRecordingForChild', childName) :
+          this.i18n('assistantVoiceMatchRecording');
+    } else if (uiStep === VoiceMatchUIState.COMPLETED) {
+      return this.i18n('assistantVoiceMatchCompleted');
+    }
+  },
+
+  /**
    * Returns the text for subtitle.
    */
-  getSubtitleMessage_(locale) {
-    return this.i18nAdvanced('assistantVoiceMatchMessage');
+  getSubtitleMessage_(locale, uiStep, childName, deviceName) {
+    if (uiStep == VoiceMatchUIState.INTRO) {
+      return this.i18nAdvanced('assistantVoiceMatchMessage');
+    } else if (uiStep === VoiceMatchUIState.RECORDING) {
+      return this.i18nAdvanced(
+          'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
+    }
   },
 });

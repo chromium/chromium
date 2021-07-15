@@ -22,16 +22,17 @@
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_voice_match.css">
     <oobe-adaptive-dialog id="voiceMatchIntroDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]"
+        aria-label$="[[getDialogTitle_(locale, uiStep, childName_)]]"
         hide-shadow for-step="intro">
       <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
       </iron-icon>
       <h1 slot="title">
-        [[i18nDynamic(locale, 'assistantVoiceMatchTitle')]]
+        [[getDialogTitle_(locale, uiStep, childName_)]]
       </h1>
       <div slot="subtitle" id="message-horizontal-mode"
-          inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
+          inner-h-t-m-l=
+            "[[getSubtitleMessage_(locale, uiStep, childName_, deviceName_)]]">
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <div id="voice-match-animation">
@@ -39,8 +40,8 @@
               animation-url="voice_match_animation.json">
           </cr-lottie>
         </div>
-        <div id="message-vertical-mode"
-            inner-h-t-m-l="[[getSubtitleMessage_(locale)]]">
+        <div id="message-vertical-mode" inner-h-t-m-l=
+            "[[getSubtitleMessage_(locale, uiStep, childName_, deviceName_)]]">
         </div>
       </div>
       <div slot="bottom-buttons">
@@ -56,19 +57,19 @@
     </oobe-adaptive-dialog>
 
     <oobe-adaptive-dialog id="voiceMatchRecordingDialog" role="dialog"
-        aria-label$="[[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]"
+        aria-label$="[[getDialogTitle_(locale, uiStep, childName_)]]"
         hide-shadow for-step="recording, completed">
       <iron-icon slot="icon" icon="assistant-32:assistant"
           aria-label$="[[i18nDynamic(locale, 'assistantLogo')]]">
       </iron-icon>
-      <h1 slot="title" for-step="recording">
-        [[i18nDynamic(locale, 'assistantVoiceMatchRecording')]]
+      <h1 slot="title">
+        [[getDialogTitle_(locale, uiStep, childName_)]]
       </h1>
-      <h1 slot="title" for-step="completed">
-        [[i18nDynamic(locale, 'assistantVoiceMatchCompleted')]]
-      </h1>
-      <div slot="subtitle">
+      <div slot="subtitle" hidden$="[[!!childName_]]">
         [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
+      </div>
+      <div slot="subtitle" hidden$="[[!childName_]]"
+          inner-h-t-m-l="[[getSubtitleMessage_(locale, uiStep, childName_)]]">
       </div>
       <div slot="content" class="landscape-header-aligned
           portrait-horizontal-centered">
@@ -116,8 +117,12 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
       </h1>
-      <div slot="subtitle">
+      <div slot="subtitle" hidden$="[[!!childName_]]">
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
+      </div>
+      <div slot="subtitle" hidden$="[[!childName_]]">
+        [[i18nDynamic(locale,
+            'assistantVoiceMatchAlreadySetupMessageForChild', childName_)]]
       </div>
       <div slot="content" class="flex layout vertical center center-justified">
         <img id="ready-img" class="oobe-illustration" aria-hidden="true"

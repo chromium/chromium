@@ -46,6 +46,16 @@ bool IsKnownEnumValue(ash::FlowType flow_type) {
          flow_type == ash::FlowType::kSpeakerIdRetrain;
 }
 
+// Returns given name of the user if a child account is in use; returns empty
+// string if user is not a child.
+std::u16string GetGivenNameIfIsChild() {
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetActiveUser();
+  if (!user || !user->IsChild())
+    return std::u16string();
+  return user->GetGivenName();
+}
+
 }  // namespace
 
 constexpr StaticOobeScreenId AssistantOptInFlowScreenView::kScreenId;
@@ -78,27 +88,44 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
   builder->Add("assistantUserImage", IDS_ASSISTANT_OOBE_USER_IMAGE);
   builder->Add("assistantRelatedInfoTitle",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE);
+  builder->Add("assistantRelatedInfoTitleForChild",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_TITLE_CHILD);
   builder->Add("assistantRelatedInfoMessage",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_MESSAGE);
   builder->Add("assistantRelatedInfoReturnedUserTitle",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_TITLE);
   builder->Add("assistantRelatedInfoReturnedUserMessage",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE);
+  builder->Add("assistantRelatedInfoReturnedUserMessageForChild",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_RETURNED_USER_MESSAGE_CHILD);
   builder->Add("assistantRelatedInfoExample",
                IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE);
+  builder->Add("assistantRelatedInfoExampleForChild",
+               IDS_ASSISTANT_RELATED_INFO_SCREEN_EXAMPLE_CHILD);
   builder->Add("assistantScreenContextTitle",
                IDS_ASSISTANT_SCREEN_CONTEXT_TITLE);
   builder->Add("assistantScreenContextDesc", IDS_ASSISTANT_SCREEN_CONTEXT_DESC);
+  builder->Add("assistantScreenContextDescForChild",
+               IDS_ASSISTANT_SCREEN_CONTEXT_DESC_CHILD);
   builder->Add("assistantVoiceMatchTitle", IDS_ASSISTANT_VOICE_MATCH_TITLE);
-  builder->Add("assistantVoiceMatchMessage",
-               chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
-                   ? IDS_ASSISTANT_VOICE_MATCH_MESSAGE
-                   : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE);
+  builder->Add("assistantVoiceMatchTitleForChild",
+               IDS_ASSISTANT_VOICE_MATCH_TITLE_CHILD);
+  builder->AddF("assistantVoiceMatchMessage",
+                chromeos::IsHotwordDspAvailable() || !DeviceHasBattery()
+                    ? IDS_ASSISTANT_VOICE_MATCH_MESSAGE
+                    : IDS_ASSISTANT_VOICE_MATCH_NO_DSP_MESSAGE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("assistantVoiceMatchMessageForChild",
+               IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD);
   builder->Add("assistantVoiceMatchRecording",
                IDS_ASSISTANT_VOICE_MATCH_RECORDING);
+  builder->Add("assistantVoiceMatchRecordingForChild",
+               IDS_ASSISTANT_VOICE_MATCH_RECORDING_CHILD);
   builder->Add("assistantVoiceMatchCompleted",
                IDS_ASSISTANT_VOICE_MATCH_COMPLETED);
   builder->Add("assistantVoiceMatchFooter", IDS_ASSISTANT_VOICE_MATCH_FOOTER);
+  builder->Add("assistantVoiceMatchFooterForChild",
+               IDS_ASSISTANT_VOICE_MATCH_FOOTER_CHILD);
   builder->Add("assistantVoiceMatchInstruction0",
                IDS_ASSISTANT_VOICE_MATCH_INSTRUCTION0);
   builder->Add("assistantVoiceMatchInstruction1",
@@ -117,6 +144,8 @@ void AssistantOptInFlowScreenHandler::DeclareLocalizedValues(
                IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_TITLE);
   builder->Add("assistantVoiceMatchAlreadySetupMessage",
                IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_MESSAGE);
+  builder->Add("assistantVoiceMatchAlreadySetupMessageForChild",
+               IDS_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_MESSAGE_CHILD);
   builder->Add("assistantOptinOKButton", IDS_OOBE_OK_BUTTON_TEXT);
   builder->Add("assistantOptinNoThanksButton", IDS_ASSISTANT_NO_THANKS_BUTTON);
   builder->Add("assistantOptinLaterButton", IDS_ASSISTANT_LATER_BUTTON);
@@ -523,6 +552,8 @@ void AssistantOptInFlowScreenHandler::OnGetSettingsResponse(
   PrefService* prefs = ProfileManager::GetActiveUserProfile()->GetPrefs();
   dictionary.SetKey("voiceMatchEnforcedOff",
                     base::Value(IsVoiceMatchEnforcedOff(prefs)));
+  dictionary.SetKey("deviceName", base::Value(ui::GetChromeOSDeviceName()));
+  dictionary.SetKey("childName", base::Value(GetGivenNameIfIsChild()));
   ReloadContent(dictionary);
 
   // Now that screen's content has been reloaded, skip screens that can be
