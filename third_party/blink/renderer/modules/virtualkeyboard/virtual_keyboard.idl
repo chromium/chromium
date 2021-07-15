@@ -8,6 +8,7 @@
 
 [
     Exposed=Window,
+    SecureContext,
     RuntimeEnabled=VirtualKeyboard
 ] interface VirtualKeyboard : EventTarget {
     void show();

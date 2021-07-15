@@ -1818,7 +1818,7 @@ TEST_F(RenderViewImplTextInputStateChanged, VirtualKeyboardPolicyAutoToManual) {
 }
 
 TEST_F(RenderViewImplTextInputStateChanged,
-       VirtualKeyboardPolicyManualAndShowHideAPIsCalled) {
+       VirtualKeyboardPolicyManualAndShowHideAPIsCalledInInsecureContext) {
   // Load an HTML page consisting of two input fields.
   LoadHTML(
       "<html>"
@@ -1866,7 +1866,7 @@ TEST_F(RenderViewImplTextInputStateChanged,
   EXPECT_EQ(updated_states()[0]->vk_policy,
             ui::mojom::VirtualKeyboardPolicy::MANUAL);
   EXPECT_EQ(updated_states()[0]->last_vk_visibility_request,
-            ui::mojom::VirtualKeyboardVisibilityRequest::HIDE);
+            ui::mojom::VirtualKeyboardVisibilityRequest::NONE);
 }
 
 TEST_F(RenderViewImplTextInputStateChanged,

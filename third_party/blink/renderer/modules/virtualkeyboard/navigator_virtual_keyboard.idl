@@ -10,5 +10,5 @@
     ImplementedAs=VirtualKeyboard,
     RuntimeEnabled=VirtualKeyboard
 ] partial interface Navigator {
-    [SameObject] readonly attribute VirtualKeyboard virtualKeyboard;
+    [SecureContext, SameObject] readonly attribute VirtualKeyboard virtualKeyboard;
 };

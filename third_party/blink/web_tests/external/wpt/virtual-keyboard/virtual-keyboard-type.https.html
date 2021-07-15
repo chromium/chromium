@@ -19,6 +19,14 @@
               assert_equals(navigator.virtualKeyboard.toString(), "[object VirtualKeyboard]");
             }, "navigator.virtualKeyboard has type `VirtualKeyboard`");
 
+        test(function() {
+            assert_true(navigator.virtualKeyboard.show instanceof Function);
+            }, "navigator.virtualKeyboard.show instanceof Function");
+
+        test(function() {
+            assert_true(navigator.virtualKeyboard.hide instanceof Function);
+            }, "navigator.virtualKeyboard.hide instanceof Function");
+
         addEventListener("load", function() {
             document.getElementById("viewtype-log").innerText = typeof(navigator.virtualKeyboard);
         });
