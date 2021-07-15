@@ -27,17 +27,17 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
 
   static constexpr webui::LocalizedString kStrings[] = {
       {"actionMenuDescription", IDS_HISTORY_ACTION_MENU_DESCRIPTION},
+      {"bookmarked", IDS_HISTORY_ENTRY_BOOKMARKED},
       {"cancel", IDS_CANCEL},
-      {"remove", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
+      {"deleteConfirm", IDS_HISTORY_DELETE_PRIOR_VISITS_CONFIRM_BUTTON},
+      {"deleteWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
+      {"removeFromHistory", IDS_HISTORY_REMOVE_PAGE},
       {"removeSelected", IDS_HISTORY_REMOVE_SELECTED_ITEMS},
-      {"removeSelfFromHistory", IDS_HISTORY_REMOVE_PAGE},
-      {"removeWarning", IDS_HISTORY_DELETE_PRIOR_VISITS_WARNING},
       {"title", IDS_MEMORIES_PAGE_TITLE},
   };
   source->AddLocalizedStrings(kStrings);
 
   // TODO(crbug.com/1173908): Replace these with localized strings.
-  source->AddString("bookmarked", u"Bookmarked");
   source->AddString("clearLabel", u"Clear search");
   source->AddString("headerTitle", u"Based on web activity related to \"$1\"");
   source->AddString("relatedSearchesLabel", u"Related:");
@@ -46,7 +46,6 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("searchPrompt", u"Search clusters");
   source->AddString("toggleButtonLabelLess", u"Show less");
   source->AddString("toggleButtonLabelMore", u"Show more");
-  source->AddString("visitsSectionHeader", u"From Chrome History");
 
   webui::SetupWebUIDataSource(
       source,

@@ -50,13 +50,13 @@
   <template>
     <cr-dialog consume-keydown-event on-cancel="onConfirmationDialogCancel_">
       <div slot="title">$i18n{removeSelected}</div>
-      <div slot="body">$i18n{removeWarning}</div>
+      <div slot="body">$i18n{deleteWarning}</div>
       <div slot="button-container">
         <cr-button class="cancel-button" on-click="onCancelButtonClick_">
           $i18n{cancel}
         </cr-button>
         <cr-button class="action-button" on-click="onRemoveButtonClick_">
-          $i18n{remove}
+          $i18n{deleteConfirm}
         </cr-button>
       </div>
     </cr-dialog>
