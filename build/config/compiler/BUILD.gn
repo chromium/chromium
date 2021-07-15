@@ -2385,6 +2385,9 @@ config("symbols") {
     # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
     if (!is_nacl || is_clang) {
       cflags += [ "-g2" ]
+      if (!is_tsan && !is_asan) {
+        cflags += [ "-gdwarf-aranges" ]
+      }
     }
 
     if (is_apple) {
@@ -2477,6 +2480,9 @@ config("minimal_symbols") {
     # gcc nacl is is_nacl && !is_clang, pnacl and nacl-clang are && is_clang.
     if (!is_nacl || is_clang) {
       cflags += [ "-g1" ]
+      if (!is_tsan && !is_asan) {
+        cflags += [ "-gdwarf-aranges" ]
+      }
     }
     ldflags = []
     if (is_android && is_clang) {
