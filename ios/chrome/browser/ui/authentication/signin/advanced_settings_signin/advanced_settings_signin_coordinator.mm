@@ -7,7 +7,6 @@
 #include "base/mac/foundation_util.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -54,10 +53,21 @@ using l10n_util::GetNSString;
     ActionSheetCoordinator* cancelConfirmationAlertCoordinator;
 // Manager for user's Google identities.
 @property(nonatomic, assign) signin::IdentityManager* identityManager;
-
+// State used to revert to if the user action is canceled during sign-in.
+@property(nonatomic, assign) IdentitySigninState signinStateForCancel;
 @end
 
 @implementation AdvancedSettingsSigninCoordinator
+
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser
+                               signinState:(IdentitySigninState)signinState {
+  self = [super initWithBaseViewController:viewController browser:browser];
+  if (self) {
+    _signinStateForCancel = signinState;
+  }
+  return self;
+}
 
 #pragma mark - SigninCoordinator
 
@@ -88,7 +98,8 @@ using l10n_util::GetNSString;
       initWithSyncSetupService:syncSetupService
          authenticationService:authenticationService
                    syncService:syncService
-                   prefService:self.browser->GetBrowserState()->GetPrefs()];
+                   prefService:self.browser->GetBrowserState()->GetPrefs()
+               identityManager:self.identityManager];
   self.advancedSettingsSigninNavigationController.presentationController
       .delegate = self;
 
@@ -105,13 +116,6 @@ using l10n_util::GetNSString;
   DCHECK(self.advancedSettingsSigninNavigationController);
   [self.syncSettingsCoordinator stop];
   self.syncSettingsCoordinator = nil;
-
-  if (base::FeatureList::IsEnabled(signin::kMobileIdentityConsistency)) {
-    // Revokes all refresh tokens and alerts services of the signed-out state.
-    self.identityManager->GetPrimaryAccountMutator()->ClearPrimaryAccount(
-        signin_metrics::ABORT_SIGNIN,
-        signin_metrics::SignoutDelete::kIgnoreMetric);
-  }
 
   switch (action) {
     case SigninCoordinatorInterruptActionNoDismiss:
@@ -212,7 +216,8 @@ using l10n_util::GetNSString;
   DCHECK(self.advancedSettingsSigninNavigationController);
   DCHECK(self.advancedSettingsSigninMediator);
   [self.advancedSettingsSigninMediator
-      saveUserPreferenceForSigninResult:signinResult];
+      saveUserPreferenceForSigninResult:signinResult
+                    originalSigninState:self.signinStateForCancel];
   self.advancedSettingsSigninNavigationController = nil;
   self.advancedSettingsSigninMediator = nil;
   [self.syncSettingsCoordinator stop];

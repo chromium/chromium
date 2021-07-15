@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/ui/authentication/authentication_flow.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_coordinator+protected.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_utils.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/logging/user_signin_logger.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_mediator.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_view_controller.h"
@@ -70,6 +71,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
 @property(nonatomic, assign) BOOL viewControllerPresentingAnimation;
 // Callback to be invoked when the view controller presenting animation is done.
 @property(nonatomic, copy) ProceduralBlock interruptCallback;
+// User sign-in state when the coordinator starts. This is used as the
+// state to revert to in case the user is interrupted during sign-in.
+@property(nonatomic, assign) IdentitySigninState signinStateOnStart;
 
 @end
 
@@ -123,11 +127,12 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
          self.signinIntent == UserSigninIntentFirstRun);
   [super start];
 
+  self.signinStateOnStart =
+      signin::GetPrimaryIdentitySigninState(self.browser->GetBrowserState());
+
   // Setup mediator.
   self.mediator = [[UserSigninMediator alloc]
-      initWithAuthenticationService:AuthenticationServiceFactory::
-                                        GetForBrowserState(
-                                            self.browser->GetBrowserState())
+      initWithAuthenticationService:authenticationService
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         self.browser->GetBrowserState())
                      consentAuditor:ConsentAuditorFactory::GetForBrowserState(
@@ -385,7 +390,9 @@ const CGFloat kFadeOutAnimationDuration = 0.16f;
   self.advancedSettingsSigninCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:
           self.baseViewController
-                                                      browser:self.browser];
+                                                      browser:self.browser
+                                                  signinState:
+                                                      self.signinStateOnStart];
   __weak UserSigninCoordinator* weakSelf = self;
   self.advancedSettingsSigninCoordinator.signinCompletion = ^(
       SigninCoordinatorResult advancedSigninResult,

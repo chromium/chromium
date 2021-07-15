@@ -22,6 +22,13 @@ typedef NS_ENUM(NSUInteger, SigninCoordinatorResult) {
   SigninCoordinatorResultSuccess,
 };
 
+// User's signed-in state as defined by AuthenticationService.
+typedef NS_ENUM(NSUInteger, IdentitySigninState) {
+  IdentitySigninStateSignedOut,
+  IdentitySigninStateSignedInWithSyncDisabled,
+  IdentitySigninStateSignedInWithSyncEnabled,
+};
+
 // Action to do when the sign-in dialog needs to be interrupted.
 typedef NS_ENUM(NSUInteger, SigninCoordinatorInterruptAction) {
   // Stops the sign-in coordinator without dismissing the view.

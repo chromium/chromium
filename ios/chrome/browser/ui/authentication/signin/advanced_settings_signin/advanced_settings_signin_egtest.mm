@@ -4,6 +4,7 @@
 
 #include "base/ios/ios_util.h"
 #import "components/signin/public/base/account_consistency_method.h"
+#import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -256,8 +257,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -276,8 +276,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -293,8 +292,7 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
-  [SigninEarlGrey verifySignedOut];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
 }
 
 // Tests interrupting sign-in by opening an URL from another app.
@@ -310,7 +308,27 @@ const NSTimeInterval kSyncOperationTimeout = 5.0;
 
   [ChromeEarlGrey simulateExternalAppURLOpening];
 
-  [ChromeEarlGrey waitForSyncInitialized:NO syncTimeout:kSyncOperationTimeout];
+  [SigninEarlGrey verifySignedInWithFakeIdentity:fakeIdentity];
+}
+
+// Tests that canceling sign-in from advanced sign-in settings will
+// return the user to their prior sign-in state.
+- (void)testCancelSigninFromAdvancedSigninSettings {
+  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:PrimarySignInButton()];
+  [SigninEarlGreyUI tapSettingsLink];
+  [ChromeEarlGreyUI waitForAppToIdle];
+
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kSyncSettingsCancelButtonId)]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   @"Cancel Sync")] performAction:grey_tap()];
+
   [SigninEarlGrey verifySignedOut];
 }
 

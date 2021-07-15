@@ -1518,9 +1518,17 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
                                   << base::SysNSStringToUTF8(NSStringFromClass(
                                          self.signinCoordinator.class));
   Browser* mainBrowser = self.mainInterface.browser;
+  // If the account is in the decoupled FRE then the user has already signed-in
+  // before opening advanced settings, otherwise they are signed out.
+  // Note that this method should only be used by the FRE.
+  IdentitySigninState signinState =
+      base::FeatureList::IsEnabled(kEnableFREUIModuleIOS)
+          ? IdentitySigninStateSignedInWithSyncDisabled
+          : IdentitySigninStateSignedOut;
   self.signinCoordinator = [SigninCoordinator
       advancedSettingsSigninCoordinatorWithBaseViewController:baseViewController
-                                                      browser:mainBrowser];
+                                                      browser:mainBrowser
+                                                  signinState:signinState];
   [self startSigninCoordinatorWithCompletion:^(BOOL success) {
     if (location_permissions_field_trial::IsInFirstRunModalGroup()) {
       [self showLocationPermissionsFromViewController:baseViewController];

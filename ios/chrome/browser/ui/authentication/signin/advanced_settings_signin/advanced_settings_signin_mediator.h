@@ -14,6 +14,9 @@
 class AuthenticationService;
 class PrefService;
 class SyncSetupService;
+namespace signin {
+class IdentityManager;
+}
 namespace syncer {
 class SyncService;
 }
@@ -23,15 +26,18 @@ class SyncService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithSyncSetupService:(SyncSetupService*)syncSetupService
-                   authenticationService:
-                       (AuthenticationService*)authenticationService
-                             syncService:(syncer::SyncService*)syncService
-                             prefService:(PrefService*)prefService
+- (instancetype)
+    initWithSyncSetupService:(SyncSetupService*)syncSetupService
+       authenticationService:(AuthenticationService*)authenticationService
+                 syncService:(syncer::SyncService*)syncService
+                 prefService:(PrefService*)prefService
+             identityManager:(signin::IdentityManager*)identityManager
     NS_DESIGNATED_INITIALIZER;
 
 // Saves the user sync preferences.
-- (void)saveUserPreferenceForSigninResult:(SigninCoordinatorResult)signinResult;
+- (void)saveUserPreferenceForSigninResult:(SigninCoordinatorResult)signinResult
+                      originalSigninState:
+                          (IdentitySigninState)originalSigninState;
 
 @end
 

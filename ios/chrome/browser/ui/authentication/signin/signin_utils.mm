@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 #import "ios/chrome/browser/ui/authentication/signin/user_signin/user_signin_constants.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
@@ -160,6 +161,19 @@ bool IsSigninAllowed(const PrefService* prefs) {
 
 bool IsSigninAllowedByPolicy(const PrefService* prefs) {
   return prefs->GetBoolean(prefs::kSigninAllowedByPolicy);
+}
+
+IdentitySigninState GetPrimaryIdentitySigninState(
+    ChromeBrowserState* browser_state) {
+  AuthenticationService* auth_service =
+      AuthenticationServiceFactory::GetForBrowserState(browser_state);
+  if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSync)) {
+    return IdentitySigninStateSignedInWithSyncEnabled;
+  } else if (auth_service->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    return IdentitySigninStateSignedInWithSyncDisabled;
+  } else {
+    return IdentitySigninStateSignedOut;
+  }
 }
 
 }  // namespace signin

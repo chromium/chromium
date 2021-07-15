@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_mediator.h"
 
 #import "base/metrics/user_metrics.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
+#import "components/signin/public/identity_manager/primary_account_mutator.h"
 #import "components/sync/driver/sync_service.h"
 #import "components/unified_consent/unified_consent_metrics.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -28,6 +30,7 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
 @property(nonatomic, assign, readonly) syncer::SyncService* syncService;
 // Browser state preference service.
 @property(nonatomic, assign, readonly) PrefService* prefService;
+@property(nonatomic, assign) signin::IdentityManager* identityManager;
 
 @end
 
@@ -35,27 +38,31 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
 
 #pragma mark - Public
 
-- (instancetype)initWithSyncSetupService:(SyncSetupService*)syncSetupService
-                   authenticationService:
-                       (AuthenticationService*)authenticationService
-                             syncService:(syncer::SyncService*)syncService
-                             prefService:(PrefService*)prefService {
+- (instancetype)
+    initWithSyncSetupService:(SyncSetupService*)syncSetupService
+       authenticationService:(AuthenticationService*)authenticationService
+                 syncService:(syncer::SyncService*)syncService
+                 prefService:(PrefService*)prefService
+             identityManager:(signin::IdentityManager*)identityManager {
   self = [super init];
   if (self) {
     DCHECK(syncSetupService);
     DCHECK(authenticationService);
     DCHECK(syncService);
     DCHECK(prefService);
+    DCHECK(identityManager);
     _syncSetupService = syncSetupService;
     _authenticationService = authenticationService;
     _syncService = syncService;
     _prefService = prefService;
+    _identityManager = identityManager;
   }
   return self;
 }
 
-- (void)saveUserPreferenceForSigninResult:
-    (SigninCoordinatorResult)signinResult {
+- (void)saveUserPreferenceForSigninResult:(SigninCoordinatorResult)signinResult
+                      originalSigninState:
+                          (IdentitySigninState)originalSigninState {
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       RecordAction(
@@ -78,14 +85,45 @@ using unified_consent::metrics::RecordSyncSetupDataTypesHistrogam;
       RecordAction(
           UserMetricsAction("Signin_Signin_ConfirmCancelAdvancedSyncSettings"));
       self.syncSetupService->CommitSyncChanges();
-      self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
-                                          /*force_clear_browsing_data=*/false,
-                                          nil);
+      [self revertToSigninState:originalSigninState];
       break;
     case SigninCoordinatorResultInterrupted:
       RecordAction(
           UserMetricsAction("Signin_Signin_AbortAdvancedSyncSettings"));
       break;
+  }
+}
+
+// For users that cancel the sign-in flow, revert to the sign-in
+// state prior to starting sign-in coordinators.
+- (void)revertToSigninState:(IdentitySigninState)originalState {
+  switch (originalState) {
+    case IdentitySigninStateSignedOut: {
+      self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                          /*force_clear_browsing_data=*/false,
+                                          nil);
+      break;
+    }
+    case IdentitySigninStateSignedInWithSyncDisabled: {
+      ChromeIdentity* syncingIdentity =
+          self.authenticationService->GetPrimaryIdentity(
+              signin::ConsentLevel::kSync);
+      // If the identity is Syncing, Chrome needs to manually sign the user out
+      // and back in again in order to properly end the sign-in flow in its
+      // original state.
+      if (syncingIdentity) {
+        self.authenticationService->SignOut(signin_metrics::ABORT_SIGNIN,
+                                            /*force_clear_browsing_data=*/false,
+                                            nil);
+        self.authenticationService->SignIn(syncingIdentity);
+      }
+      break;
+    }
+    case IdentitySigninStateSignedInWithSyncEnabled: {
+      // Switching accounts is not possible without sign-out.
+      NOTREACHED();
+      break;
+    }
   }
 }
 

@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_SIGNIN_UTILS_H_
 
 #import <UIKit/UIKit.h>
+#import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 class ChromeAccountManagerService;
 class ChromeBrowserState;
@@ -35,6 +36,10 @@ bool IsSigninAllowed(const PrefService* prefs);
 
 // Returns a boolean indicating whether policy allows browser sign-in.
 bool IsSigninAllowedByPolicy(const PrefService* prefs);
+
+// Returns the current sign-in state of primary identity.
+IdentitySigninState GetPrimaryIdentitySigninState(
+    ChromeBrowserState* browser_state);
 
 }  // namespace signin
 

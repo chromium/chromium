@@ -108,10 +108,14 @@ constexpr int kDefaultSignInWebSignInDismissalCount = 3;
 + (instancetype)
     advancedSettingsSigninCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                                    browser:(Browser*)browser {
+                                                    browser:(Browser*)browser
+                                                signinState:
+                                                    (IdentitySigninState)
+                                                        signinState {
   return [[AdvancedSettingsSigninCoordinator alloc]
       initWithBaseViewController:viewController
-                         browser:browser];
+                         browser:browser
+                     signinState:signinState];
 }
 
 + (instancetype)addAccountCoordinatorWithBaseViewController:
