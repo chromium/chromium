@@ -118,6 +118,19 @@ bool GetCodecSpecificDataForAudio(const AudioDecoderConfig& config,
                           extra_data + extra_data_size);
       break;
     }
+    case kCodecFLAC: {
+      // According to MediaCodec spec, CSB buffer #0 for FLAC should be:
+      // "fLaC", the FLAC stream marker in ASCII, followed by the STREAMINFO
+      // block (the mandatory metadata block), optionally followed by any number
+      // of other metadata blocks.
+      output_csd0->emplace_back('f');
+      output_csd0->emplace_back('L');
+      output_csd0->emplace_back('a');
+      output_csd0->emplace_back('C');
+      output_csd0->insert(output_csd0->end(), extra_data,
+                          extra_data + extra_data_size);
+      break;
+    }
     case kCodecAAC: {
       output_csd0->assign(extra_data, extra_data + extra_data_size);
       *output_frame_has_adts_header =

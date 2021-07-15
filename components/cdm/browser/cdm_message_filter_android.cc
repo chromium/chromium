@@ -21,6 +21,7 @@
 #include "media/base/android/media_codec_util.h"
 #include "media/base/android/media_drm_bridge.h"
 #include "media/base/audio_codecs.h"
+#include "media/base/eme_constants.h"
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/media_buildflags.h"
@@ -60,7 +61,6 @@ const CodecInfo<media::VideoCodec> kMP4VideoCodecsToQuery[] = {
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
 };
 
-// FLAC is not supported. See https://crbug.com/747050 for details.
 // Vorbis is not supported. See http://crbug.com/710924 for details.
 
 const CodecInfo<media::AudioCodec> kWebMAudioCodecsToQuery[] = {
@@ -68,6 +68,7 @@ const CodecInfo<media::AudioCodec> kWebMAudioCodecsToQuery[] = {
 };
 
 const CodecInfo<media::AudioCodec> kMP4AudioCodecsToQuery[] = {
+    {media::EME_CODEC_FLAC, media::kCodecFLAC},
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
     {media::EME_CODEC_AAC, media::kCodecAAC},
 #if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)

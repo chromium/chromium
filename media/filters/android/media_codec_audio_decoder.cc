@@ -89,8 +89,9 @@ void MediaCodecAudioDecoder::Initialize(const AudioDecoderConfig& config,
   // TODO(xhwang): Get this list from MediaCodecBridge or just rely on
   // attempting to create one to determine whether the codec is supported.
   const bool is_codec_supported =
-      config.codec() == kCodecVorbis || config.codec() == kCodecAAC ||
-      config.codec() == kCodecOpus || is_passthrough_;
+      config.codec() == kCodecVorbis || config.codec() == kCodecFLAC ||
+      config.codec() == kCodecAAC || config.codec() == kCodecOpus ||
+      is_passthrough_;
   if (!is_codec_supported) {
     DVLOG(1) << "Unsuported codec " << GetCodecName(config.codec());
     BindToCurrentLoop(std::move(init_cb))

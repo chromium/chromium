@@ -39,6 +39,7 @@ const char kMp3MimeType[] = "audio/mpeg";
 const char kAacMimeType[] = "audio/mp4a-latm";
 const char kOpusMimeType[] = "audio/opus";
 const char kVorbisMimeType[] = "audio/vorbis";
+const char kFLACMimeType[] = "audio/flac";
 const char kAc3MimeType[] = "audio/ac3";
 const char kEac3MimeType[] = "audio/eac3";
 const char kBitstreamAudioMimeType[] = "audio/raw";
@@ -130,6 +131,8 @@ std::string MediaCodecUtil::CodecToAndroidMimeType(AudioCodec codec) {
       return kMp3MimeType;
     case kCodecVorbis:
       return kVorbisMimeType;
+    case kCodecFLAC:
+      return kFLACMimeType;
     case kCodecOpus:
       return kOpusMimeType;
     case kCodecAAC:
