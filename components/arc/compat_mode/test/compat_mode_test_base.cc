@@ -1,0 +1,104 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/arc/compat_mode/test/compat_mode_test_base.h"
+
+#include "ash/constants/app_types.h"
+#include "ash/public/cpp/window_properties.h"
+#include "base/containers/flat_map.h"
+#include "ui/aura/client/aura_constants.h"
+
+namespace arc {
+
+namespace {
+
+class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
+ public:
+  ~TestArcResizeLockPrefDelegate() override = default;
+
+  // ArcResizeLockPrefDelegate:
+  mojom::ArcResizeLockState GetResizeLockState(
+      const std::string& app_id) const override {
+    auto it = resize_lock_states.find(app_id);
+    if (it == resize_lock_states.end())
+      return mojom::ArcResizeLockState::UNDEFINED;
+
+    return it->second;
+  }
+  void SetResizeLockState(const std::string& app_id,
+                          mojom::ArcResizeLockState state) override {
+    resize_lock_states[app_id] = state;
+  }
+
+  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
+    return base::Contains(confirmation_needed_app_ids_, app_id);
+  }
+  void SetResizeLockNeedsConfirmation(const std::string& app_id,
+                                      bool is_needed) override {
+    if (GetResizeLockNeedsConfirmation(app_id) == is_needed)
+      return;
+
+    if (is_needed)
+      confirmation_needed_app_ids_.push_back(app_id);
+    else
+      base::Erase(confirmation_needed_app_ids_, app_id);
+  }
+
+  int GetShowSplashScreenDialogCount() const override { return show_count_; }
+  void SetShowSplashScreenDialogCount(int count) override {
+    show_count_ = count;
+  }
+
+ private:
+  std::vector<std::string> confirmation_needed_app_ids_;
+  base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
+  int show_count_{0};
+};
+
+}  // namespace
+
+CompatModeTestBase::CompatModeTestBase()
+    : views::ViewsTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+}
+CompatModeTestBase::~CompatModeTestBase() = default;
+
+void CompatModeTestBase::SetUp() {
+  views::ViewsTestBase::SetUp();
+  pref_delegate_ = std::make_unique<TestArcResizeLockPrefDelegate>();
+
+  // FHD size by default. Must be bigger than kPortraitPhoneDp and
+  // kLandscapeTabletDp.
+  SetDisplayWorkArea(gfx::Rect(0, 0, 1920, 1080));
+}
+
+void CompatModeTestBase::TearDown() {
+  views::ViewsTestBase::TearDown();
+}
+
+std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
+  auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  if (show)
+    widget->Show();
+  return widget;
+}
+
+std::unique_ptr<views::Widget> CompatModeTestBase::CreateArcWidget(
+    const std::string& app_id,
+    bool show) {
+  auto widget = CreateWidget(/*show=*/false);
+  widget->GetNativeWindow()->SetProperty(ash::kAppIDKey, app_id);
+  widget->GetNativeWindow()->SetProperty(
+      aura::client::kAppType, static_cast<int>(ash::AppType::ARC_APP));
+  if (show)
+    widget->Show();
+  return widget;
+}
+
+void CompatModeTestBase::SetDisplayWorkArea(const gfx::Rect& work_area) {
+  display::Display display = test_screen_.GetPrimaryDisplay();
+  display.set_work_area(work_area);
+  test_screen_.display_list().UpdateDisplay(display);
+}
+
+}  // namespace arc

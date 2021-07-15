@@ -6,20 +6,14 @@
 
 #include <memory>
 
-#include "ash/public/cpp/window_properties.h"
-#include "base/containers/flat_map.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "components/arc/compat_mode/arc_resize_lock_pref_delegate.h"
 #include "components/arc/compat_mode/metrics.h"
+#include "components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/display/test/scoped_screen_override.h"
-#include "ui/display/test/test_screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/test/views_test_base.h"
-#include "ui/views/test/widget_test.h"
-#include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace arc {
@@ -27,61 +21,22 @@ namespace {
 
 constexpr char kTestAppId[] = "123";
 
-class TestArcResizeLockPrefDelegate : public ArcResizeLockPrefDelegate {
- public:
-  ~TestArcResizeLockPrefDelegate() override = default;
-
-  // ArcResizeLockPrefDelegate:
-  mojom::ArcResizeLockState GetResizeLockState(
-      const std::string& app_id) const override {
-    auto it = resize_lock_states.find(app_id);
-    if (it == resize_lock_states.end())
-      return mojom::ArcResizeLockState::ON;
-
-    return it->second;
-  }
-  void SetResizeLockState(const std::string& app_id,
-                          mojom::ArcResizeLockState state) override {
-    resize_lock_states[app_id] = state;
-  }
-  bool GetResizeLockNeedsConfirmation(const std::string& app_id) override {
-    return false;
-  }
-  void SetResizeLockNeedsConfirmation(const std::string& app_id,
-                                      bool is_needed) override {}
-
- private:
-  base::flat_map<std::string, mojom::ArcResizeLockState> resize_lock_states;
-  int GetShowSplashScreenDialogCount() const override { return 1; }
-  void SetShowSplashScreenDialogCount(int count) override {}
-};
-
 }  // namespace
 
-class ResizeToggleMenuTest : public views::ViewsTestBase {
+class ResizeToggleMenuTest : public CompatModeTestBase {
  public:
-  ResizeToggleMenuTest()
-      : views::ViewsTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
-  ~ResizeToggleMenuTest() override = default;
-
   // Overridden from test::Test.
   void SetUp() override {
-    views::ViewsTestBase::SetUp();
-    widget_ = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
-    widget_->GetNativeWindow()->SetProperty(ash::kAppIDKey,
-                                            std::string(kTestAppId));
-    widget_->Show();
+    CompatModeTestBase::SetUp();
+    widget_ = CreateArcWidget(std::string(kTestAppId));
+    pref_delegate()->SetResizeLockState(kTestAppId,
+                                        mojom::ArcResizeLockState::ON);
     resize_toggle_menu_ =
-        std::make_unique<ResizeToggleMenu>(widget_.get(), &pref_delegate_);
-
-    // FHD size by default. Must be bigger than kPortraitPhoneDp and
-    // kLandscapeTabletDp.
-    SetDisplayWorkArea(gfx::Rect(0, 0, 1920, 1080));
+        std::make_unique<ResizeToggleMenu>(widget_.get(), pref_delegate());
   }
   void TearDown() override {
     widget_->CloseNow();
-    views::ViewsTestBase::TearDown();
+    CompatModeTestBase::TearDown();
   }
 
   bool IsMenuRunning() {
@@ -93,7 +48,7 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
   void ReshowMenu() {
     resize_toggle_menu_.reset();
     resize_toggle_menu_ =
-        std::make_unique<ResizeToggleMenu>(widget_.get(), &pref_delegate_);
+        std::make_unique<ResizeToggleMenu>(widget_.get(), pref_delegate());
   }
 
   bool IsCommandButtonDisabled(ResizeCompatMode command_id) {
@@ -108,16 +63,9 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
     event_generator.ClickLeftButton();
   }
 
-  TestArcResizeLockPrefDelegate* pref_delegate() { return &pref_delegate_; }
   views::Widget* widget() { return widget_.get(); }
 
  private:
-  void SetDisplayWorkArea(const gfx::Rect& work_area) {
-    display::Display display = test_screen_.GetPrimaryDisplay();
-    display.set_work_area(work_area);
-    test_screen_.display_list().UpdateDisplay(display);
-  }
-
   views::Button* GetButtonByCommandId(ResizeCompatMode command_id) {
     switch (command_id) {
       case ResizeCompatMode::kPhone:
@@ -129,11 +77,8 @@ class ResizeToggleMenuTest : public views::ViewsTestBase {
     }
   }
 
-  TestArcResizeLockPrefDelegate pref_delegate_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ResizeToggleMenu> resize_toggle_menu_;
-  display::test::TestScreen test_screen_;
-  display::test::ScopedScreenOverride scoped_screen_override_{&test_screen_};
 };
 
 TEST_F(ResizeToggleMenuTest, ConstructDestruct) {
