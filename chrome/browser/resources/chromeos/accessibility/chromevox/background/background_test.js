@@ -3586,3 +3586,27 @@ TEST_F('ChromeVoxBackgroundTest', 'NestedMenuHints', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'SkipLabelDescriptionFor', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>start</p>
+    <label>
+      <input type="checkbox" name="enableSpeechLogging">
+      <span>Enable speech logging</span>
+    </label>
+    <p>end</p>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback.expectSpeech('start')
+        .call(doCmd('nextObject'))
+        .expectSpeech('Enable speech logging', 'Check box')
+        .call(doCmd('nextObject'))
+        .expectSpeech('end')
+        .call(doCmd('previousObject'))
+        .expectSpeech('Enable speech logging', 'Check box')
+        .call(doCmd('previousObject'))
+        .expectSpeech('start')
+        .replay();
+  });
+});

@@ -579,12 +579,15 @@ CommandHandler.onCommand = function(command) {
     case 'nextObject':
       didNavigate = true;
       current = current.move(cursors.Unit.NODE, Dir.FORWARD);
+      current = CommandHandler.skipLabelOrDescriptionFor_(current, Dir.FORWARD);
       break;
     case 'left':
     case 'previousObject':
       dir = Dir.BACKWARD;
       didNavigate = true;
       current = current.move(cursors.Unit.NODE, dir);
+      current =
+          CommandHandler.skipLabelOrDescriptionFor_(current, Dir.BACKWARD);
       break;
     case 'previousGroup':
       skipSync = true;
@@ -1458,6 +1461,40 @@ CommandHandler.onEditCommand_ = function(command) {
       return true;
   }
   return false;
+};
+
+/**
+ * A helper to object navigation to skip all static text nodes who have
+ * label/description for on ancestor nodes.
+ * @param {cursors.Range} current
+ * @param {Dir} dir
+ * @return {cursors.Range} The resulting range.
+ */
+CommandHandler.skipLabelOrDescriptionFor_ = function(current, dir) {
+  if (!current) {
+    return null;
+  }
+
+  // Keep moving past all nodes acting as labels or descriptions.
+  while (current && current.start && current.start.node &&
+         current.start.node.role === RoleType.STATIC_TEXT) {
+    // We must scan upwards as any ancestor might have a label or description.
+    let ancestor = current.start.node;
+    while (ancestor) {
+      if ((ancestor.labelFor && ancestor.labelFor.length > 0) ||
+          (ancestor.descriptionFor && ancestor.descriptionFor.length > 0)) {
+        break;
+      }
+      ancestor = ancestor.parent;
+    }
+    if (ancestor) {
+      current = current.move(cursors.Unit.NODE, dir);
+    } else {
+      break;
+    }
+  }
+
+  return current;
 };
 
 /**
