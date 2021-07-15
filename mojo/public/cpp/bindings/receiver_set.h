@@ -80,6 +80,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) ReceiverSetState {
     class DispatchFilter;
 
     void WillDispatch();
+    void DidDispatchOrReject();
     void OnDisconnect(uint32_t custom_reason_code,
                       const std::string& description);
 

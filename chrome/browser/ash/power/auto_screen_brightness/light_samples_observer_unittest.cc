@@ -60,6 +60,8 @@ class LightSamplesObserverTest : public testing::Test {
   }
 
   void DisableIlluminanceChannel() {
+    // TODO(https://crbug.com/1229481): SetChannelsEnabled assumes it is only
+    // called via a mojo pipe, as such this call is not valid and will DCHECK.
     sensor_device_->SetChannelsEnabled(
         {0}, false,
         base::BindOnce(&LightSamplesObserverTest::SetChannelsEnabledCallback,
@@ -121,7 +123,9 @@ TEST_F(LightSamplesObserverTest, StartReadingTwiceError) {
   EXPECT_EQ(fake_observer_.num_received_ambient_lights(), 0);
 }
 
-TEST_F(LightSamplesObserverTest, GetSamplesWithoutColorChannels) {
+// TODO(https://crbug.com/1229481): This test hits a DCHECK in the
+// DisableIlluminanceChannel call.
+TEST_F(LightSamplesObserverTest, DISABLED_GetSamplesWithoutColorChannels) {
   SetChannels(false);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> light;

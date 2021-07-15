@@ -29,7 +29,9 @@ class ReceiverSetState::Entry::DispatchFilter : public MessageFilter {
     return true;
   }
 
-  void DidDispatchOrReject(Message* message, bool accepted) override {}
+  void DidDispatchOrReject(Message* message, bool accepted) override {
+    entry_.DidDispatchOrReject();
+  }
 
   Entry& entry_;
 };
@@ -48,6 +50,10 @@ ReceiverSetState::Entry::~Entry() = default;
 
 void ReceiverSetState::Entry::WillDispatch() {
   state_.SetDispatchContext(receiver_->GetContext(), id_);
+}
+
+void ReceiverSetState::Entry::DidDispatchOrReject() {
+  state_.SetDispatchContext(nullptr, 0);
 }
 
 void ReceiverSetState::Entry::OnDisconnect(uint32_t custom_reason_code,
