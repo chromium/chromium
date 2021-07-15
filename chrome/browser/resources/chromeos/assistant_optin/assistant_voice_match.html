@@ -65,10 +65,10 @@
       <h1 slot="title">
         [[getDialogTitle_(locale, uiStep, childName_)]]
       </h1>
-      <div slot="subtitle" hidden$="[[!!childName_]]">
+      <div slot="subtitle" hidden="[[childName_]]">
         [[i18nDynamic(locale, 'assistantVoiceMatchFooter')]]
       </div>
-      <div slot="subtitle" hidden$="[[!childName_]]"
+      <div slot="subtitle" hidden="[[!childName_]]"
           inner-h-t-m-l="[[getSubtitleMessage_(locale, uiStep, childName_)]]">
       </div>
       <div slot="content" class="landscape-header-aligned
@@ -117,10 +117,10 @@
       <h1 slot="title">
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupTitle')]]
       </h1>
-      <div slot="subtitle" hidden$="[[!!childName_]]">
+      <div slot="subtitle" hidden="[[childName_]]">
         [[i18nDynamic(locale, 'assistantVoiceMatchAlreadySetupMessage')]]
       </div>
-      <div slot="subtitle" hidden$="[[!childName_]]">
+      <div slot="subtitle" hidden="[[!childName_]]">
         [[i18nDynamic(locale,
             'assistantVoiceMatchAlreadySetupMessageForChild', childName_)]]
       </div>

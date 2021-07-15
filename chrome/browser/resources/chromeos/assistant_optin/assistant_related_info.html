@@ -63,10 +63,10 @@
     </h1>
     <div slot="subtitle" id="subtitle-container"
         hidden$="[[skipActivityControl_]]">
-      <div hidden$="[[!!childName_]]">
+      <div hidden="[[childName_]]">
         [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
       </div>
-      <div hidden$="[[!childName_]]">
+      <div hidden="[[!childName_]]">
         [[i18nDynamic(
             locale, 'assistantScreenContextDescForChild', childName_)]]
       </div>
@@ -77,10 +77,10 @@
     </div>
     <div slot="content" class="flex layout vertical center center-justified"
         hidden$="[[skipActivityControl_]]">
-      <div class="example-text" hidden$="[[!!childName_]]">
+      <div class="example-text" hidden="[[childName_]]">
         [[i18nDynamic(locale, 'assistantRelatedInfoExample')]]
       </div>
-      <div class="example-text" hidden$="[[!childName_]]">
+      <div class="example-text" hidden="[[!childName_]]">
         [[i18nDynamic(locale, 'assistantRelatedInfoExampleForChild')]]
       </div>
       <img id="relatedInfoImg" class="oobe-illustration" aria-hidden="true"
@@ -88,10 +88,10 @@
     </div>
     <div slot="content" id="content-container" class="landscape-header-aligned"
         hidden$="[[!skipActivityControl_]]">
-      <div class="content" hidden$="[[!!childName_]]">
+      <div class="content" hidden="[[childName_]]">
         [[i18nDynamic(locale, 'assistantRelatedInfoReturnedUserMessage')]]
       </div>
-      <div class="content" hidden$="[[!childName_]]">
+      <div class="content" hidden="[[!childName_]]">
         [[i18nDynamic(locale,
             'assistantRelatedInfoReturnedUserMessageForChild', childName_)]]
       </div>
@@ -101,11 +101,11 @@
           [[i18nDynamic(locale, 'assistantScreenContextTitle')]]
         </div>
         <div slot="content" aria-hidden="true"
-            hidden$="[[!!childName_]]">
+            hidden="[[childName_]]">
           [[i18nDynamic(locale, 'assistantScreenContextDesc')]]
         </div>
         <div slot="content" aria-hidden="true"
-            hidden$="[[!childName_]]">
+            hidden="[[!childName_]]">
           [[i18nDynamic(locale,
               'assistantScreenContextDescForChild', childName_)]]
         </div>
