@@ -609,11 +609,6 @@ class BASE_EXPORT ScopedAllowBaseSyncPrimitivesOutsideBlockingScope {
   std::unique_ptr<BooleanWithStack> was_disallowed_;
 #endif
 
-  // Since this object is used to indicate that sync primitives will be used to
-  // wait for an event ignore the current operation for hang watching purposes
-  // since the wait time duration is unknown.
-  base::IgnoreHangsInScope hang_watch_scope_disabled_;
-
   DISALLOW_COPY_AND_ASSIGN(ScopedAllowBaseSyncPrimitivesOutsideBlockingScope);
 };
 

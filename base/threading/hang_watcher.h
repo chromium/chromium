@@ -85,57 +85,15 @@ class BASE_EXPORT WatchHangsInScope {
   // destroyed.
   TimeTicks previous_deadline_;
 
-  // Indicates whether the kIgnoreCurrentHang flag must be set upon exiting this
-  // WatchHangsInScope. This is true if the
-  // kIgnoreCurrentWatchHangsInScope flag was set upon entering this scope,
-  // but was cleared for this WatchHangsInScope because there was no active
-  // IgnoreHangsInScope.
+  // Indicates whether the kIgnoreCurrentWatchHangsInScope flag must be set upon
+  // exiting this WatchHangsInScope if a call to InvalidateActiveExpectations()
+  // previously suspended hang watching.
   bool set_hangs_ignored_on_exit_ = false;
 
 #if DCHECK_IS_ON()
   // The previous WatchHangsInScope created on this thread.
   WatchHangsInScope* previous_watch_hangs_in_scope_;
 #endif
-};
-
-// Scoped object that disables hang watching on the thread. The object nullifies
-// the effect of all live WatchHangsInScope instances and also that of new
-// WatchHangsInScope instances created during its lifetime. Use to avoid
-// capturing hangs for operations known to take unbounded time like waiting for
-// user input. This does not unregister the thread so when this object is
-// destroyed hang watching resumes for new WatchHangsInScopes.
-//
-// Example usage:
-//  {
-//    WatchHangsInScope scope_1;
-//    {
-//      WatchHangsInScope scope_2;
-//      IgnoreHangsInScope disabler;
-//      WaitForUserInput();
-//      WatchHangsInScope scope_3;
-//    }
-//
-//    WatchHangsInScope scope_4;
-//  }
-//
-// WatchHangsInScope scope_5;
-//
-// In this example hang watching is disabled for WatchHangsInScopes 1, 2 and
-// 3 since they were either active at the time of the |disabler|'s creation or
-// created while the disabler was still active. WatchHangsInScopes 4 and 5
-// are unaffected since they were created after the disabler was destroyed.
-//
-class BASE_EXPORT IgnoreHangsInScope {
- public:
-  IgnoreHangsInScope();
-  ~IgnoreHangsInScope();
-  IgnoreHangsInScope(const IgnoreHangsInScope&) = delete;
-  IgnoreHangsInScope& operator=(const IgnoreHangsInScope&) = delete;
-
- private:
-  // Will be true if the object actually disabled hang watching and
-  // false if watching was already disabled by a previously declared object.
-  bool took_effect_ = true;
 };
 
 // Monitors registered threads for hangs by inspecting their associated
@@ -184,6 +142,32 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
 
   // Returns true if crash dump reporting is configured for any thread type.
   static bool IsCrashReportingEnabled();
+
+  // Use to avoid capturing hangs for operations known to take unbounded time
+  // like waiting for user input. WatchHangsInScope objects created after this
+  // call will take effect. To resume watching for hangs create a new
+  // WatchHangsInScope after the unbounded operation finishes.
+  //
+  // Example usage:
+  //  {
+  //    WatchHangsInScope scope_1;
+  //    {
+  //      WatchHangsInScope scope_2;
+  //      InvalidateActiveExpectations();
+  //      WaitForUserInput();
+  //    }
+  //
+  //    WatchHangsInScope scope_4;
+  //  }
+  //
+  // WatchHangsInScope scope_5;
+  //
+  // In this example hang watching is disabled for WatchHangsInScopes 1 and 2
+  // since they were both active at the time of the invalidation.
+  // WatchHangsInScopes 4 and 5 are unaffected since they were created after the
+  // end of the WatchHangsInScope that was current at the time of invalidation.
+  //
+  static void InvalidateActiveExpectations();
 
   // Sets up the calling thread to be monitored for threads. Returns a
   // ScopedClosureRunner that unregisters the thread. This closure has to be
@@ -399,13 +383,10 @@ class BASE_EXPORT HangWatchDeadline {
   enum class Flag : uint64_t {
     // Minimum value for validation purposes. Not currently used.
     kMinValue = bits::LeftmostBit<uint64_t>() >> 7,
-    // Persistent because control by the lifetime of IgnoreHangsInScope.
-    kHasActiveIgnoreHangsInScope = bits::LeftmostBit<uint64_t>() >> 2,
     // Persistent because if hang detection is disabled on a thread it should
     // be re-enabled manually.
     kIgnoreCurrentWatchHangsInScope = bits::LeftmostBit<uint64_t>() >> 1,
-    // Non-persistent because a new value means a new WatchHangsInScope
-    // started
+    // Non-persistent because a new value means a new WatchHangsInScope started
     // after the beginning of capture. It can't be implicated in the hang so we
     // don't want it to block.
     kShouldBlockOnHang = bits::LeftmostBit<uint64_t>() >> 0,
@@ -449,12 +430,6 @@ class BASE_EXPORT HangWatchDeadline {
   // deadline are still equal to |old_flags| and  |old_deadline|. Otherwise does
   // not set the flag and returns false.
   bool SetShouldBlockOnHang(uint64_t old_flags, TimeTicks old_deadline);
-
-  // Sets the kHasActiveIgnoreHangsInScope flag.
-  void SetHasActiveIgnoreHangsInScope();
-
-  // Clears the kHasActiveIgnoreHangsInScope flag.
-  void UnsetHasActiveIgnoreHangsInScope();
 
   // Sets the kIgnoreCurrentWatchHangsInScope flag.
   void SetIgnoreCurrentWatchHangsInScope();
@@ -580,21 +555,13 @@ class BASE_EXPORT HangWatchState {
   // Sets the deadline to a new value.
   void SetDeadline(TimeTicks deadline);
 
-  // Mark this thread as ignored for hang watching. This means existing hang
-  // watch will not trigger hangs.
+  // Mark this thread as ignored for hang watching. This means existing
+  // WatchHangsInScope will not trigger hangs.
   void SetIgnoreCurrentWatchHangsInScope();
 
   // Reactivate hang watching on this thread. Should be called when all
   // WatchHangsInScope instances that were ignored have completed.
   void UnsetIgnoreCurrentWatchHangsInScope();
-
-  // Mark hang watching as disabled on this thread. This means new
-  // WatchHangsInScope instances will not trigger hangs.
-  void SetHasActiveIgnoreHangsInScope();
-
-  // Reactivate hang watching on this thread. New WatchHangsInScope
-  // instances will trigger hangs.
-  void UnsetHasActiveIgnoreHangsInScope();
 
   // Mark the current state as having to block in its destruction until hang
   // capture completes.

@@ -68,9 +68,11 @@ ui::mojom::DragOperation DesktopDragDropClientWin::StartDragAndDrop(
 
   DWORD effect;
 
-  // Disable hang watching until the end of the function since the user can take
-  // unbounded time to complete the drag. (http://crbug.com/806174)
-  base::IgnoreHangsInScope disabler;
+  // Never consider the current scope as hung. The hang watching deadline (if
+  // any) is not valid since the user can take unbounded time to complete the
+  // drag. (http://crbug.com/806174)
+  base::HangWatcher::InvalidateActiveExpectations();
+
   base::TimeTicks start_time = base::TimeTicks::Now();
 
   HRESULT result = ::DoDragDrop(

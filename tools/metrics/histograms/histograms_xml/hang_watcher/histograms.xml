@@ -40,9 +40,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Every 10 seconds, a boolean is recorded to this histogram to indicate
     whether the {ProcessType} {ThreadType} was hung. The thread is hung if the
     current work unit started running more than 10 seconds ago and this was not
-    labeled as &quot;working as intended&quot; by IgnoreHangsInScope. Recording
-    is skipped if the hang watcher detects an irregular heartbeat (e.g. when the
-    machine sleeps).
+    labeled as &quot;working as intended&quot; by InvalidateActiveExpectations()
+    (Prior to 2021-07-09 with IgnoreHangsInScope). Recording is skipped if the
+    hang watcher detects an irregular heartbeat (e.g. when the machine sleeps).
   </summary>
   <token key="ProcessType" variants="ProcessType"/>
   <token key="ThreadType" variants="ThreadType"/>

@@ -137,10 +137,6 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
     return;
   }
 
-  DCHECK(current_hang_watch_state)
-      << "WatchHangsInScope can only be used on a thread that "
-         "registered for hang watching with HangWatcher::RegisterThread.";
-
 #if DCHECK_IS_ON()
   previous_watch_hangs_in_scope_ =
       current_hang_watch_state->GetCurrentWatchHangsInScope();
@@ -152,25 +148,6 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   std::tie(old_flags, old_deadline) =
       current_hang_watch_state->GetFlagsAndDeadline();
 
-  const bool hangs_ignored_for_current_scope =
-      internal::HangWatchDeadline::IsFlagSet(
-          internal::HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,
-          old_flags);
-
-  const bool has_active_hang_watch_disabled =
-      internal::HangWatchDeadline::IsFlagSet(
-          internal::HangWatchDeadline::Flag::kHasActiveIgnoreHangsInScope,
-          old_flags);
-
-  // If the current WatchHangsInScope is ignored but there are no active
-  // IgnoreHangsInScope instances, temporarily reactivate hang watching for
-  // this newly created WatchHangsInScope. On exiting hang watching is
-  // suspended again to return to the original state.
-  if (hangs_ignored_for_current_scope && !has_active_hang_watch_disabled) {
-    current_hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
-    set_hangs_ignored_on_exit_ = true;
-  }
-
   // TODO(crbug.com/1034046): Check whether we are over deadline already for the
   // previous WatchHangsInScope here by issuing only one TimeTicks::Now()
   // and resuing the value.
@@ -179,6 +156,19 @@ WatchHangsInScope::WatchHangsInScope(TimeDelta timeout) {
   TimeTicks deadline = TimeTicks::Now() + timeout;
   current_hang_watch_state->SetDeadline(deadline);
   current_hang_watch_state->IncrementNestingLevel();
+
+  const bool hangs_ignored_for_current_scope =
+      internal::HangWatchDeadline::IsFlagSet(
+          internal::HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope,
+          old_flags);
+
+  // If the current WatchHangsInScope is ignored, temporarily reactivate hang
+  // watching for newly created WatchHangsInScopes. On exiting hang watching
+  // is suspended again to return to the original state.
+  if (hangs_ignored_for_current_scope) {
+    current_hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
+    set_hangs_ignored_on_exit_ = true;
+  }
 }
 
 WatchHangsInScope::~WatchHangsInScope() {
@@ -212,19 +202,18 @@ WatchHangsInScope::~WatchHangsInScope() {
       previous_watch_hangs_in_scope_);
 #endif
 
-  // If a IgnoreHangsInScope suspended hang watching during the
-  // lifetime of this or any nested WatchHangsInScope it can now safely be
-  // reactivated by clearing the ignore bit since this is the outer-most scope.
-  // See IgnoreHangsInScope class comments where this represents the
-  // destruction of |scope_1|.
-  if (current_hang_watch_state->nesting_level() == 1)
+  if (current_hang_watch_state->nesting_level() == 1) {
+    // If a call to InvalidateActiveExpectations() suspended hang watching
+    // during the lifetime of this or any nested WatchHangsInScope it can now
+    // safely be reactivated by clearing the ignore bit since this is the
+    // outer-most scope.
     current_hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
-  // Return to ignoring hangs since this was the previous state before hang
-  // watching was temporarily enabled for this WatchHangsInScope only in the
-  // constructor. See IgnoreHangsInScope class comments where the next line
-  // of code is part of the destruction of |scope_4|.
-  else if (set_hangs_ignored_on_exit_)
+  } else if (set_hangs_ignored_on_exit_) {
+    // Return to ignoring hangs since this was the previous state before hang
+    // watching was temporarily enabled for this WatchHangsInScope only in the
+    // constructor.
     current_hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
+  }
 
   // Reset the deadline to the value it had before entering this
   // WatchHangsInScope.
@@ -233,49 +222,6 @@ WatchHangsInScope::~WatchHangsInScope() {
   // deadline and that went undetected by the HangWatcher.
 
   current_hang_watch_state->DecrementNestingLevel();
-}
-
-IgnoreHangsInScope::IgnoreHangsInScope() {
-  internal::HangWatchState* current_hang_watch_state =
-      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
-  if (!current_hang_watch_state) {
-    took_effect_ = false;
-    return;
-  }
-
-  uint64_t old_flags;
-  base::TimeTicks old_deadline;
-  std::tie(old_flags, old_deadline) =
-      current_hang_watch_state->GetFlagsAndDeadline();
-
-  // If there already is an active IgnoreHangsInScope.
-  const bool has_active_hang_watch_disabled =
-      internal::HangWatchDeadline::IsFlagSet(
-          internal::HangWatchDeadline::Flag::kHasActiveIgnoreHangsInScope,
-          old_flags);
-
-  if (has_active_hang_watch_disabled) {
-    took_effect_ = false;
-    return;
-  }
-
-  current_hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
-  current_hang_watch_state->SetHasActiveIgnoreHangsInScope();
-}
-
-IgnoreHangsInScope::~IgnoreHangsInScope() {
-  internal::HangWatchState* current_hang_watch_state =
-      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
-
-  if (!current_hang_watch_state || !took_effect_)
-    return;
-
-  // If this instance outlived all WatchHangsInScope instances watching
-  // needs to be reactivated.
-  if (current_hang_watch_state->nesting_level() == 0)
-    current_hang_watch_state->UnsetIgnoreCurrentWatchHangsInScope();
-
-  current_hang_watch_state->UnsetHasActiveIgnoreHangsInScope();
 }
 
 // static
@@ -348,6 +294,17 @@ bool HangWatcher::IsCrashReportingEnabled() {
     return true;
   }
   return false;
+}
+
+// static
+void HangWatcher::InvalidateActiveExpectations() {
+  internal::HangWatchState* current_hang_watch_state =
+      internal::HangWatchState::GetHangWatchStateForCurrentThread()->Get();
+  if (!current_hang_watch_state) {
+    // If the current thread is not under watch there is nothing to invalidate.
+    return;
+  }
+  current_hang_watch_state->SetIgnoreCurrentWatchHangsInScope();
 }
 
 HangWatcher::HangWatcher()
@@ -842,9 +799,7 @@ constexpr uint64_t kMaximumFlag = 0x8000000000000000u;
 constexpr uint64_t kPersistentFlagsAndDeadlineMask =
     kOnlyDeadlineMask |
     static_cast<uint64_t>(
-        HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope) |
-    static_cast<uint64_t>(
-        HangWatchDeadline::Flag::kHasActiveIgnoreHangsInScope);
+        HangWatchDeadline::Flag::kIgnoreCurrentWatchHangsInScope);
 }  // namespace
 
 // Flag binary representation assertions.
@@ -929,14 +884,6 @@ bool HangWatchDeadline::SetShouldBlockOnHang(uint64_t old_flags,
   return bits_.compare_exchange_weak(old_bits, desired_bits,
                                      std::memory_order_relaxed,
                                      std::memory_order_relaxed);
-}
-
-void HangWatchDeadline::SetHasActiveIgnoreHangsInScope() {
-  SetPersistentFlag(Flag::kHasActiveIgnoreHangsInScope);
-}
-
-void HangWatchDeadline::UnsetHasActiveIgnoreHangsInScope() {
-  ClearPersistentFlag(Flag::kHasActiveIgnoreHangsInScope);
 }
 
 void HangWatchDeadline::SetIgnoreCurrentWatchHangsInScope() {
@@ -1068,14 +1015,6 @@ void HangWatchState::SetDeadline(TimeTicks deadline) {
 
 bool HangWatchState::IsOverDeadline() const {
   return TimeTicks::Now() > deadline_.GetDeadline();
-}
-
-void HangWatchState::SetHasActiveIgnoreHangsInScope() {
-  deadline_.SetHasActiveIgnoreHangsInScope();
-}
-
-void HangWatchState::UnsetHasActiveIgnoreHangsInScope() {
-  deadline_.UnsetHasActiveIgnoreHangsInScope();
 }
 
 void HangWatchState::SetIgnoreCurrentWatchHangsInScope() {

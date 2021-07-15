@@ -388,9 +388,10 @@ bool AuthenticateUser(gfx::NativeWindow window,
   cui.pszCaptionText = base::as_wcstr(product_name);
   cui.hbmBanner = nullptr;
 
-  // Disable hang watching until the end of the function since the user can take
-  // unbounded time to answer the password prompt. (http://crbug.com/806174)
-  base::IgnoreHangsInScope disabler;
+  // Never consider the current scope as hung. The hang watching deadline (if
+  // any) is not valid since the user can take unbounded time to answer the
+  // password prompt (http://crbug.com/806174)
+  base::HangWatcher::InvalidateActiveExpectations();
 
   CredentialBufferValidator validator;
 

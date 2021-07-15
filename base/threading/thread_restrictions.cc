@@ -294,6 +294,11 @@ ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
             base::trace_event::InternedSourceLocation::Get(
                 &ctx, base::trace_event::TraceSourceLocation(from_here)));
       });
+
+  // Since this object is used to indicate that sync primitives will be used to
+  // wait for an event ignore the current operation for hang watching purposes
+  // since the wait time duration is unknown.
+  base::HangWatcher::InvalidateActiveExpectations();
 }
 
 ScopedAllowBaseSyncPrimitivesOutsideBlockingScope::
