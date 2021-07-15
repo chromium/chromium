@@ -31,6 +31,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.merchant_viewer.MerchantTrustMetrics.MessageClearReason;
@@ -151,6 +152,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage() {
         mCoordinator.maybeDisplayMessage(
                 new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents));
@@ -171,6 +173,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/60000"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_LastEventWithinTimeWindow() {
         doReturn(System.currentTimeMillis() - TimeUnit.SECONDS.toMillis(10))
                 .when(mMockMerchantTrustSignalsEvent)
@@ -195,6 +198,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_FirstTime() {
         setMockTrustSignalsEventData("fake_host", null);
 
@@ -217,6 +221,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_NoMerchantTrustData() {
         setMockTrustSignalsData(null);
 
@@ -239,6 +244,7 @@ public class MerchantTrustSignalsCoordinatorTest {
     @Test
     @CommandLineFlags.
     Add({"force-fieldtrial-params=Study.Group:trust_signals_message_window_duration_ms/-1"})
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_WithInvalidStorage() {
         doReturn(null).when(mMockMerchantTrustStorageFactory).getForLastUsedProfile();
 
@@ -281,6 +287,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_WithScheduledMessage() {
         doReturn(new MerchantTrustMessageContext(mMockNavigationHandle, mMockWebContents))
                 .when(mMockMerchantMessageScheduler)
@@ -294,6 +301,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testMaybeDisplayMessage_WithScheduledMessage_ForDifferentHost() {
         doReturn(new MerchantTrustMessageContext(mMockNavigationHandle2, mMockWebContents))
                 .when(mMockMerchantMessageScheduler)
@@ -307,6 +315,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testOnMessageEnqueued() {
         mCoordinator.onMessageEnqueued(null);
         verify(mMockMerchantTrustStorage, times(0)).save(any(MerchantTrustSignalsEvent.class));
@@ -318,6 +327,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testOnMessageDismissed() {
         mCoordinator.onMessageDismissed(DismissReason.TIMER);
         verify(mMockMetrics, times(1)).recordMetricsForMessageDismissed(eq(DismissReason.TIMER));
@@ -325,6 +335,7 @@ public class MerchantTrustSignalsCoordinatorTest {
 
     @SmallTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1211897")
     public void testOnMessagePrimaryAction() {
         mCoordinator.onMessagePrimaryAction(mDummyMerchantTrustSignals);
         verify(mMockMetrics, times(1)).recordMetricsForMessageTapped();
