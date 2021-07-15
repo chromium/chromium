@@ -67,6 +67,8 @@ void CrosapiNewWindowDelegate::OpenDiagnostics() {
   delegate_->OpenDiagnostics();
 }
 
-void CrosapiNewWindowDelegate::OpenFeedbackPage(bool from_assistant) {
-  delegate_->OpenFeedbackPage(from_assistant);
+void CrosapiNewWindowDelegate::OpenFeedbackPage(
+    FeedbackSource source,
+    const std::string& description_template) {
+  delegate_->OpenFeedbackPage(source, description_template);
 }

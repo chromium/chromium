@@ -196,7 +196,7 @@ void AssistantControllerImpl::OnDeepLinkReceived(
     }
     case DeepLinkType::kFeedback:
       NewWindowDelegate::GetInstance()->OpenFeedbackPage(
-          /*from_assistant=*/true);
+          NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant);
 
       // Close the assistant UI so that the feedback page is visible.
       assistant_ui_controller_.CloseUi(

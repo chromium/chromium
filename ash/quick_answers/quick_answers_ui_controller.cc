@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "base/bind.h"
+#include "base/strings/stringprintf.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -29,6 +30,8 @@ namespace ash {
 namespace {
 
 constexpr char kGoogleSearchUrlPrefix[] = "https://www.google.com/search?q=";
+
+constexpr char kFeedbackDescriptionTemplate[] = "#QuickAnswers\nQuery:%s\n";
 
 }  // namespace
 
@@ -189,7 +192,9 @@ void QuickAnswersUiController::OnSettingsButtonPressed() {
 }
 
 void QuickAnswersUiController::OnReportQueryButtonPressed() {
-  NewWindowDelegate::GetInstance()->OpenFeedbackPage();
+  NewWindowDelegate::GetInstance()->OpenFeedbackPage(
+      NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
+      base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));
 }
 
 void QuickAnswersUiController::OnUserConsentResult(bool consented) {

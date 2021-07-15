@@ -34154,6 +34154,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="16" label="Capture Mode"/>
   <int value="17" label="Chrome Labs"/>
   <int value="18" label="Bento Bar"/>
+  <int value="19" label="Quick Answers"/>
 </enum>
 
 <enum name="FeedControlsActions">

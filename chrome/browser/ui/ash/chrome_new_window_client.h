@@ -49,7 +49,8 @@ class ChromeNewWindowClient : public ash::NewWindowDelegate,
   void ShowKeyboardShortcutViewer() override;
   void ShowTaskManager() override;
   void OpenDiagnostics() override;
-  void OpenFeedbackPage(bool from_assistant) override;
+  void OpenFeedbackPage(FeedbackSource source,
+                        const std::string& description_template) override;
 
   // arc::OpenUrlDelegate:
   void OpenUrlFromArc(const GURL& url) override;

@@ -218,6 +218,18 @@ apps::mojom::IntentPtr ConvertLaunchIntent(
   return intent;
 }
 
+chrome::FeedbackSource MapToChromeSource(
+    ash::NewWindowDelegate::FeedbackSource source) {
+  switch (source) {
+    case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceAsh:
+      return chrome::FeedbackSource::kFeedbackSourceAsh;
+    case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant:
+      return chrome::FeedbackSource::kFeedbackSourceAssistant;
+    case ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers:
+      return chrome::FeedbackSource::kFeedbackSourceQuickAnswers;
+  }
+}
+
 }  // namespace
 
 ChromeNewWindowClient::ChromeNewWindowClient()
@@ -465,11 +477,11 @@ void ChromeNewWindowClient::OpenDiagnostics() {
     chrome::ShowDiagnosticsApp(ProfileManager::GetActiveUserProfile());
 }
 
-void ChromeNewWindowClient::OpenFeedbackPage(bool from_assistant) {
-  chrome::FeedbackSource source;
-  source = from_assistant ? chrome::kFeedbackSourceAssistant
-                          : chrome::kFeedbackSourceAsh;
-  chrome::OpenFeedbackDialog(chrome::FindBrowserWithActiveWindow(), source);
+void ChromeNewWindowClient::OpenFeedbackPage(
+    FeedbackSource source,
+    const std::string& description_template) {
+  chrome::OpenFeedbackDialog(chrome::FindBrowserWithActiveWindow(),
+                             MapToChromeSource(source), description_template);
 }
 
 void ChromeNewWindowClient::OpenUrlFromArc(const GURL& url) {

@@ -74,7 +74,11 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (const GURL& url, bool from_user_interaction),
               (override));
 
-  MOCK_METHOD(void, OpenFeedbackPage, (bool from_assistant), (override));
+  MOCK_METHOD(void,
+              OpenFeedbackPage,
+              (NewWindowDelegate::FeedbackSource source,
+               const std::string& description_template),
+              (override));
 };
 
 // AssistantControllerImplTest -------------------------------------------------
@@ -177,7 +181,12 @@ TEST_F(AssistantControllerImplTest, OpensFeedbackPageForFeedbackDeeplink) {
           }));
 
   EXPECT_CALL(new_window_delegate(), OpenFeedbackPage)
-      .WillOnce([](bool from_assistant) { EXPECT_TRUE(from_assistant); });
+      .WillOnce([](NewWindowDelegate::FeedbackSource source,
+                   const std::string& description_template) {
+        EXPECT_EQ(NewWindowDelegate::FeedbackSource::kFeedbackSourceAssistant,
+                  source);
+        EXPECT_EQ(std::string(), description_template);
+      });
 
   controller()->OpenUrl(GURL("googleassistant://send-feedback"),
                         /*in_background=*/false, /*from_server=*/true);

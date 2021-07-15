@@ -24,7 +24,9 @@ void TestNewWindowDelegate::OpenGetHelp() {}
 void TestNewWindowDelegate::RestoreTab() {}
 void TestNewWindowDelegate::ShowKeyboardShortcutViewer() {}
 void TestNewWindowDelegate::ShowTaskManager() {}
-void TestNewWindowDelegate::OpenFeedbackPage(bool from_assistant) {}
+void TestNewWindowDelegate::OpenFeedbackPage(
+    FeedbackSource source,
+    const std::string& description_template) {}
 
 TestNewWindowDelegateProvider::TestNewWindowDelegateProvider(
     std::unique_ptr<TestNewWindowDelegate> delegate)

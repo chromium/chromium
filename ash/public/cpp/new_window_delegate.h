@@ -5,6 +5,8 @@
 #ifndef ASH_PUBLIC_CPP_NEW_WINDOW_DELEGATE_H_
 #define ASH_PUBLIC_CPP_NEW_WINDOW_DELEGATE_H_
 
+#include <string>
+
 #include "ash/public/cpp/ash_public_export.h"
 
 class GURL;
@@ -15,6 +17,13 @@ namespace ash {
 // management responsibilities.
 class ASH_PUBLIC_EXPORT NewWindowDelegate {
  public:
+  // Sources of feedback requests.
+  enum FeedbackSource {
+    kFeedbackSourceAsh,
+    kFeedbackSourceAssistant,
+    kFeedbackSourceQuickAnswers,
+  };
+
   virtual ~NewWindowDelegate();
 
   // Returns an instance connected to ash-chrome.
@@ -63,9 +72,14 @@ class ASH_PUBLIC_EXPORT NewWindowDelegate {
   // Shows the task manager window.
   virtual void ShowTaskManager() = 0;
 
-  // Opens the feedback page for "Report Issue". If |from_assistant| is
-  // true then the page is triggered from Assistant.
-  virtual void OpenFeedbackPage(bool from_assistant = false) = 0;
+  // Opens the feedback page for "Report Issue".
+  // |source| indicates the source of the feedback request, which is Ash by
+  // default.
+  // |description_template| is the preset description when the feedback dialog
+  // is opened.
+  virtual void OpenFeedbackPage(
+      FeedbackSource source = kFeedbackSourceAsh,
+      const std::string& description_template = std::string()) = 0;
 
  protected:
   NewWindowDelegate();
