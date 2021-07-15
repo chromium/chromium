@@ -2573,14 +2573,15 @@ WebRequestInternalAddEventListenerFunction::Run() {
         browser_context(), args_list[2], &extra_info_spec));
   }
 
-  std::string event_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(3, &event_name));
-
-  std::string sub_event_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(4, &sub_event_name));
-
-  int web_view_instance_id = 0;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(5, &web_view_instance_id));
+  const auto& event_name_value = args_list[3];
+  const auto& sub_event_name_value = args_list[4];
+  const auto& web_view_instance_id_value = args_list[5];
+  EXTENSION_FUNCTION_VALIDATE(event_name_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(sub_event_name_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(web_view_instance_id_value.is_int());
+  std::string event_name = event_name_value.GetString();
+  std::string sub_event_name = sub_event_name_value.GetString();
+  int web_view_instance_id = web_view_instance_id_value.GetInt();
 
   int render_process_id = source_process_id();
 
@@ -2651,19 +2652,24 @@ void WebRequestInternalEventHandledFunction::OnError(
 
 ExtensionFunction::ResponseAction
 WebRequestInternalEventHandledFunction::Run() {
-  std::string event_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &event_name));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 5);
+  const auto& event_name_value = list[0];
+  const auto& sub_event_name_value = list[1];
+  const auto& request_id_str_value = list[2];
+  const auto& web_view_instance_id_value = list[3];
+  EXTENSION_FUNCTION_VALIDATE(event_name_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(sub_event_name_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(request_id_str_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(web_view_instance_id_value.is_int());
+  std::string event_name = event_name_value.GetString();
+  std::string sub_event_name = sub_event_name_value.GetString();
+  std::string request_id_str = request_id_str_value.GetString();
+  int web_view_instance_id = web_view_instance_id_value.GetInt();
 
-  std::string sub_event_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &sub_event_name));
-
-  std::string request_id_str;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(2, &request_id_str));
   uint64_t request_id;
   EXTENSION_FUNCTION_VALIDATE(base::StringToUint64(request_id_str,
                                                    &request_id));
-  int web_view_instance_id = 0;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(3, &web_view_instance_id));
 
   int render_process_id = source_process_id();
 

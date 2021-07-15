@@ -141,11 +141,14 @@ RulesFunction::~RulesFunction() {}
 ExtensionFunction::ResponseAction RulesFunction::Run() {
   EXTENSION_FUNCTION_VALIDATE(CreateParams());
 
-  std::string event_name;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &event_name));
-
-  int web_view_instance_id = 0;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(1, &web_view_instance_id));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 2);
+  const auto& event_name_value = list[0];
+  const auto& web_view_instance_id_value = list[1];
+  EXTENSION_FUNCTION_VALIDATE(event_name_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(web_view_instance_id_value.is_int());
+  std::string event_name = event_name_value.GetString();
+  int web_view_instance_id = web_view_instance_id_value.GetInt();
 
   EXTENSION_FUNCTION_VALIDATE(extension_);
 

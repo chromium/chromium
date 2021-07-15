@@ -285,8 +285,11 @@ bool WebViewInternalExtensionFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-  int instance_id = 0;
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetInteger(0, &instance_id));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(list.size() >= 1);
+  const auto& instance_id_value = list[0];
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(instance_id_value.is_int());
+  int instance_id = instance_id_value.GetInt();
   // TODO(780728): Remove crash key once the cause of the kill is known.
   static crash_reporter::CrashKeyString<128> name_key("webview-function");
   crash_reporter::ScopedCrashKeyString name_key_scope(&name_key, name());
@@ -436,18 +439,23 @@ ExecuteCodeFunction::InitResult WebViewInternalExecuteCodeFunction::Init() {
   if (init_result_)
     return init_result_.value();
 
-  if (!args_->GetInteger(0, &guest_instance_id_) || !guest_instance_id_)
+  const auto& list = args_->GetList();
+  if (list.size() < 3)
     return set_init_result(VALIDATION_FAILURE);
 
-  std::string src;
-  if (!args_->GetString(1, &src))
+  guest_instance_id_ = list[0].GetIfInt().value_or(0);
+  if (guest_instance_id_ == 0)
+    return set_init_result(VALIDATION_FAILURE);
+
+  const std::string* src = list[1].GetIfString();
+  if (!src)
     return set_init_result(VALIDATION_FAILURE);
 
   // Set |guest_src_| here, but do not return false if it is invalid.
   // Instead, let it continue with the normal page load sequence,
   // which will result in the usual LOAD_ABORT event in the case where
   // the URL is invalid.
-  guest_src_ = GURL(src);
+  guest_src_ = GURL(*src);
 
   base::DictionaryValue* details_value = NULL;
   if (!args_->GetDictionary(2, &details_value))

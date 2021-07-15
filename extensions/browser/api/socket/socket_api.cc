@@ -248,9 +248,11 @@ ExtensionFunction::ResponseAction SocketCreateFunction::Work() {
 }
 
 ExtensionFunction::ResponseAction SocketDestroyFunction::Work() {
-  int socket_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &socket_id));
-  RemoveSocket(socket_id);
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
+  const auto& socket_id_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
+  RemoveSocket(socket_id_value.GetInt());
   return RespondNow(NoArguments());
 }
 
@@ -259,10 +261,18 @@ SocketConnectFunction::SocketConnectFunction() = default;
 SocketConnectFunction::~SocketConnectFunction() = default;
 
 ExtensionFunction::ResponseAction SocketConnectFunction::Work() {
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &socket_id_));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &hostname_));
-  int port;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(2, &port));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 3);
+  const auto& socket_id_value = list[0];
+  const auto& hostname_value = list[1];
+  const auto& port_value = list[2];
+  EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
+  EXTENSION_FUNCTION_VALIDATE(hostname_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(port_value.is_int());
+  socket_id_ = socket_id_value.GetInt();
+  hostname_ = hostname_value.GetString();
+  int port = port_value.GetInt();
+
   if (!IsPortValid(port)) {
     return RespondNow(Error(kPortInvalidError));
   }
@@ -323,8 +333,11 @@ void SocketConnectFunction::OnConnect(int result) {
 }
 
 ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
-  int socket_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &socket_id));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 1);
+  const auto& socket_id_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
+  int socket_id = socket_id_value.GetInt();
 
   Socket* socket = GetSocket(socket_id);
   if (socket) {
@@ -339,10 +352,18 @@ ExtensionFunction::ResponseAction SocketDisconnectFunction::Work() {
 }
 
 ExtensionFunction::ResponseAction SocketBindFunction::Work() {
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &socket_id_));
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(1, &address_));
-  int port;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(2, &port));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() >= 3);
+  const auto& socket_id_value = list[0];
+  const auto& address_value = list[1];
+  const auto& port_value = list[2];
+  EXTENSION_FUNCTION_VALIDATE(socket_id_value.is_int());
+  EXTENSION_FUNCTION_VALIDATE(address_value.is_string());
+  EXTENSION_FUNCTION_VALIDATE(port_value.is_int());
+  socket_id_ = socket_id_value.GetInt();
+  address_ = address_value.GetString();
+  int port = port_value.GetInt();
+
   if (!IsPortValid(port)) {
     return RespondNow(Error(kPortInvalidError));
   }
