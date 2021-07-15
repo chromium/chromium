@@ -305,10 +305,14 @@ namespace {
 // To disable a data driven test, please add the name of the test file
 // (i.e., "NNN_some_site.html") as a literal to the initializer_list given
 // to the failing_test_names constructor.
-const std::set<std::string>& GetFailingTestNames() {
-  static std::set<std::string>* failing_test_names =
-      new std::set<std::string>{};
-  return *failing_test_names;
+const auto& GetFailingTestNames() {
+  static std::set<std::string> failing_test_names{
+      // TODO(crbug.com/1187842): This page contains iframes. Until filling
+      // across iframes is also supported on iOS, iOS has has different
+      // expectations compared to non-iOS platforms.
+      "049_register_ebay.com.html",
+  };
+  return failing_test_names;
 }
 
 }  // namespace
