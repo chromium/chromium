@@ -301,17 +301,27 @@ using signin_metrics::PromoAction;
           self.browser->GetBrowserState());
   BOOL isSyncConsentGiven =
       syncSetupService && syncSetupService->IsFirstSetupComplete();
-  NSString* message =
-      isSyncConsentGiven
-          ? l10n_util::GetNSString(IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC)
-          : nil;
+
   self.signOutCoordinator = [[ActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser
                            title:nil
-                         message:message
+                         message:nil
                             rect:targetRect
                             view:self.viewController.view];
+  // Because setting |title| to nil automatically forces the title-style text on
+  // |message| in the UIAlertController, the attributed message below
+  // specifically denotes the font style to apply.
+  if (isSyncConsentGiven) {
+    self.signOutCoordinator.attributedMessage = [[NSAttributedString alloc]
+        initWithString:l10n_util::GetNSString(
+                           IDS_IOS_SIGNOUT_DIALOG_MESSAGE_WITH_SYNC)
+            attributes:@{
+              NSFontAttributeName :
+                  [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+            }];
+    [self.signOutCoordinator updateAttributedText];
+  }
 
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   [self.signOutCoordinator
