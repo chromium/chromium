@@ -5,7 +5,9 @@ include_rules = [
   "+chromeos/grit/chromeos_personalization_app_resources.h",
   "+content/public/browser",
   "+content/public/common",
+  "+ui/chromeos/colors/cros_colors.h",
   "+ui/resources/grit/webui_generated_resources.h",
   "+ui/resources/grit/webui_generated_resources_map.h",
+  "+ui/resources/grit/webui_resources.h",
   "+ui/webui",
 ]

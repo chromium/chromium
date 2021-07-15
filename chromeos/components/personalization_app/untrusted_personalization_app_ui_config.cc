@@ -16,8 +16,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
+#include "ui/chromeos/colors/cros_colors.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_generated_resources_map.h"
+#include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 
 namespace chromeos {
@@ -37,6 +39,17 @@ void AddStrings(content::WebUIDataSource* source) {
   // to import load_time_data.m.js at this unusual path.
   source->AddResourcePath("load_time_data.js", IDR_WEBUI_JS_LOAD_TIME_DATA_JS);
   source->UseStringsJs();
+}
+
+void AddCrosColors(content::WebUIDataSource* source) {
+  source->AddResourcePath("chromeos/colors/cros_colors.generated.css",
+                          IDR_WEBUI_CROS_COLORS_CSS);
+
+  source->AddString(
+      "crosColorsDebugOverrides",
+      base::FeatureList::IsEnabled(ash::features::kSemanticColorsDebugOverride)
+          ? cros_colors::kDebugOverrideCssString
+          : std::string());
 }
 
 class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
@@ -66,6 +79,8 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
     // inside untrusted iframe.
     source->AddResourcePaths(base::make_span(kWebuiGeneratedResources,
                                              kWebuiGeneratedResourcesSize));
+
+    AddCrosColors(source.get());
 
     source->AddFrameAncestor(GURL(kChromeUIPersonalizationAppURL));
 
