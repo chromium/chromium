@@ -72,13 +72,13 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kStart);
 
-  // File icon.
-  auto checkbox = std::make_unique<views::Checkbox>();
+  // TODO(tluk): We should be sourcing the size of the file icon from the layout
+  // provider rather than relying on hardcoded constants.
+  constexpr int kIconSize = 16;
   auto* icon = files_view->AddChildView(
       std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
           vector_icons::kDescriptionIcon,
-          ui::NativeTheme::kColorId_DefaultIconColor,
-          checkbox->GetImage(views::Button::STATE_NORMAL).width())));
+          ui::NativeTheme::kColorId_DefaultIconColor, kIconSize)));
   const int icon_margin = views::LayoutProvider::Get()->GetDistanceMetric(
       views::DISTANCE_RELATED_LABEL_HORIZONTAL);
   icon->SetProperty(views::kMarginsKey, gfx::Insets(0, 0, 0, icon_margin));
@@ -117,6 +117,7 @@ FileHandlingPermissionRequestDialog::FileHandlingPermissionRequestDialog(
   files_label->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   // Permanency checkbox.
+  auto checkbox = std::make_unique<views::Checkbox>();
   bool multiple_associations = false;
   std::u16string associations =
       web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(

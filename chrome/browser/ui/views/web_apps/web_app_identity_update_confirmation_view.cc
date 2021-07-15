@@ -15,6 +15,7 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/image_view.h"
@@ -135,11 +136,10 @@ WebAppIdentityUpdateConfirmationView::WebAppIdentityUpdateConfirmationView(
   old_icon_image_view->SetImage(gfx::ImageSkia::CreateFrom1xBitmap(old_icon));
   layout->AddView(std::move(old_icon_image_view));
 
-  auto arrow = std::make_unique<views::ImageView>();
-  arrow->SetImage(
-      gfx::CreateVectorIcon(kKeyboardArrowRightIcon, kArrowIconSizeDp,
-                            GetNativeTheme()->GetSystemColor(
-                                ui::NativeTheme::kColorId_DefaultIconColor)));
+  auto arrow =
+      std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+          kKeyboardArrowRightIcon, ui::NativeTheme::kColorId_DefaultIconColor,
+          kArrowIconSizeDp));
   layout->AddView(std::move(arrow));
 
   auto new_icon_image_view = std::make_unique<views::ImageView>();
