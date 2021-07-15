@@ -1073,7 +1073,7 @@ test("content_browsertests") {
     "../browser/battery_monitor_browsertest.cc",
     "../browser/blob_storage/blob_storage_browsertest.cc",
     "../browser/blob_storage/blob_url_browsertest.cc",
-    "../browser/bluetooth/bluetooth_device_scanning_prompt_browsertest.cc",
+    "../browser/bluetooth/web_bluetooth_service_impl_browsertest.cc",
     "../browser/bookmarklet_browsertest.cc",
     "../browser/browser_thread_browsertest.cc",
     "../browser/browsing_data/browsing_data_remover_impl_browsertest.cc",

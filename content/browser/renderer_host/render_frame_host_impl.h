@@ -2415,6 +2415,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(RenderDocumentHostUserDataTest,
                            CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
+                           NoShowBluetoothScanningPromptInPrerendering);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
+                           RequestDeviceInPrerendering);
 
   class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;

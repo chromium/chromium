@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/bluetooth/bluetooth_device_scanning_prompt_controller.h"
+#include "content/browser/bluetooth/web_bluetooth_service_impl.h"
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "content/browser/bluetooth/bluetooth_adapter_factory_wrapper.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -19,7 +20,10 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_web_contents.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
+#include "device/bluetooth/test/mock_bluetooth_device.h"
+#include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -32,6 +36,9 @@ using testing::Return;
 namespace content {
 
 namespace {
+constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
+constexpr char kHeartRateUUIDString[] = "0000180d-0000-1000-8000-00805f9b34fb";
+
 using PromptEventCallback =
     base::OnceCallback<void(BluetoothScanningPrompt::Event)>;
 
@@ -63,6 +70,22 @@ class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
   FakeBluetoothAdapter& operator=(const FakeBluetoothAdapter&) = delete;
 
   // device::BluetoothAdapter:
+  device::BluetoothAdapter::ConstDeviceList GetDevices() const override {
+    device::BluetoothAdapter::ConstDeviceList devices;
+    for (const auto& it : mock_devices_)
+      devices.push_back(it.get());
+    return devices;
+  }
+
+  device::BluetoothDevice* GetDevice(const std::string& address) override {
+    device::MockBluetoothAdapter::GetDevice(address);
+    for (const auto& it : mock_devices_) {
+      if (it->GetAddress() == address)
+        return it.get();
+    }
+    return nullptr;
+  }
+
   void StartScanWithFilter(
       std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
       DiscoverySessionResultCallback callback) override {
@@ -72,12 +95,38 @@ class FakeBluetoothAdapter : public device::MockBluetoothAdapter {
   }
   void StopScan(DiscoverySessionResultCallback callback) override {
     std::move(callback).Run(
-        /*is_error=*/true,
-        device::UMABluetoothDiscoverySessionOutcome::UNKNOWN);
+        /*is_error=*/false,
+        device::UMABluetoothDiscoverySessionOutcome::SUCCESS);
   }
 
  private:
   ~FakeBluetoothAdapter() override = default;
+};
+
+class FakeBluetoothChooser : public content::BluetoothChooser {
+ public:
+  FakeBluetoothChooser(content::BluetoothChooser::EventHandler event_handler,
+                       const std::string& device_to_select)
+      : event_handler_(event_handler), device_to_select_(device_to_select) {}
+  FakeBluetoothChooser(const FakeBluetoothChooser&) = delete;
+  FakeBluetoothChooser& operator=(const FakeBluetoothChooser&) = delete;
+  ~FakeBluetoothChooser() override = default;
+
+  // content::BluetoothChooser implementation:
+  void AddOrUpdateDevice(const std::string& device_id,
+                         bool should_update_name,
+                         const std::u16string& device_name,
+                         bool is_gatt_connected,
+                         bool is_paired,
+                         int signal_strength_level) override {
+    // Select the added device if its device ID matches |device_to_select_|.
+    if (device_to_select_ == device_id)
+      event_handler_.Run(content::BluetoothChooserEvent::SELECTED, device_id);
+  }
+
+ private:
+  content::BluetoothChooser::EventHandler event_handler_;
+  std::string device_to_select_;
 };
 
 class TestBluetoothDelegate : public BluetoothDelegate {
@@ -87,11 +136,16 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   TestBluetoothDelegate(const TestBluetoothDelegate&) = delete;
   TestBluetoothDelegate& operator=(const TestBluetoothDelegate&) = delete;
 
+  void SetDeviceToSelect(const std::string& device_address) {
+    device_to_select_ = device_address;
+  }
+
   // BluetoothDelegate:
   std::unique_ptr<BluetoothChooser> RunBluetoothChooser(
       RenderFrameHost* frame,
       const BluetoothChooser::EventHandler& event_handler) override {
-    return nullptr;
+    return std::make_unique<FakeBluetoothChooser>(event_handler,
+                                                  device_to_select_);
   }
   std::unique_ptr<BluetoothScanningPrompt> ShowBluetoothScanningPrompt(
       RenderFrameHost* frame,
@@ -178,6 +232,7 @@ class TestBluetoothDelegate : public BluetoothDelegate {
   }
 
  private:
+  std::string device_to_select_;
   FakeBluetoothScanningPrompt* prompt_ = nullptr;
   base::OnceClosure quit_on_scanning_prompt_;
   bool showed_bluetooth_scanning_prompt_ = false;
@@ -204,13 +259,13 @@ class TestContentBrowserClient : public ContentBrowserClient {
 
 }  // namespace
 
-class BluetoothDeviceChooserControllerBrowserTest : public ContentBrowserTest {
+class WebBluetoothServiceImplBrowserTest : public ContentBrowserTest {
  public:
-  BluetoothDeviceChooserControllerBrowserTest()
+  WebBluetoothServiceImplBrowserTest()
       : prerender_helper_(base::BindRepeating(
-            &BluetoothDeviceChooserControllerBrowserTest::GetWebContents,
+            &WebBluetoothServiceImplBrowserTest::GetWebContents,
             base::Unretained(this))) {}
-  ~BluetoothDeviceChooserControllerBrowserTest() override = default;
+  ~WebBluetoothServiceImplBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
     prerender_helper_.SetUpOnMainThread(embedded_test_server());
@@ -235,6 +290,26 @@ class BluetoothDeviceChooserControllerBrowserTest : public ContentBrowserTest {
         adapter_);
   }
 
+  void AddFakeDevice(const std::string& device_address) {
+    const device::BluetoothUUID kHeartRateUUID(kHeartRateUUIDString);
+    auto fake_device =
+        std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
+            adapter_.get(), /*bluetooth_class=*/0u,
+            /*name=*/"Test Device", device_address,
+            /*paired=*/true,
+            /*connected=*/true);
+    fake_device->AddUUID(kHeartRateUUID);
+    fake_device->AddMockService(
+        std::make_unique<testing::NiceMock<device::MockBluetoothGattService>>(
+            fake_device.get(), kHeartRateUUIDString, kHeartRateUUID,
+            /*is_primary=*/true));
+    adapter_->AddMockDevice(std::move(fake_device));
+  }
+
+  void SetDeviceToSelect(const std::string& device_address) {
+    browser_client_.bluetooth_delegate()->SetDeviceToSelect(device_address);
+  }
+
   WebContents* GetWebContents() { return shell()->web_contents(); }
   TestBluetoothDelegate* GetBluetoothDelegate() {
     return browser_client_.bluetooth_delegate();
@@ -251,8 +326,9 @@ class BluetoothDeviceChooserControllerBrowserTest : public ContentBrowserTest {
   ContentBrowserClient* old_browser_client_ = nullptr;
 };
 
-// Tests that the scanning prompt is not shown in the prerendering.
-IN_PROC_BROWSER_TEST_F(BluetoothDeviceChooserControllerBrowserTest,
+// Tests that the scanning prompt is not shown in the prerendering. It also
+// ensures that ScanningClient is not created in the prerendering.
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
                        NoShowBluetoothScanningPromptInPrerendering) {
   GURL url = embedded_test_server()->GetURL("/hello.html");
   EXPECT_TRUE(NavigateToURL(shell(), url));
@@ -266,6 +342,13 @@ IN_PROC_BROWSER_TEST_F(BluetoothDeviceChooserControllerBrowserTest,
   GetBluetoothDelegate()->WaitForShowBluetoothScanningPrompt();
   // It should show the scanning prompt.
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
+
+  WebBluetoothServiceImpl* service_for_main_frame =
+      static_cast<RenderFrameHostImpl*>(GetWebContents()->GetMainFrame())
+          ->GetWebBluetoothServiceForTesting();
+  // ScanningClient with the main frame is created.
+  EXPECT_EQ(service_for_main_frame->scanning_clients_.size(), 1u);
+
   GetBluetoothDelegate()->reset_showed_bluetooth_scanning_prompt();
 
   // Posts a task to simulate a prompt event during a call to
@@ -283,11 +366,14 @@ IN_PROC_BROWSER_TEST_F(BluetoothDeviceChooserControllerBrowserTest,
       prerender_helper()->GetPrerenderedMainFrameHost(host_id);
 
   // Runs JS asynchronously since Mojo calls is deferred on the prerendering.
-  prerendered_frame_host->ExecuteJavaScriptWithUserGestureForTests(
-      u"var requestLEScanPromise = navigator.bluetooth.requestLEScan({"
-      u"acceptAllAdvertisements: true});");
+  content::ExecuteScriptAsync(prerendered_frame_host, R"(
+    var requestLEScanPromise = navigator.bluetooth.requestLEScan({
+    acceptAllAdvertisements: true});
+  )");
   // The prerendering doesn't show the bluetoothscanning prompt.
   EXPECT_FALSE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
+  // ScanningClient is not created in the prerendering.
+  EXPECT_EQ(service_for_main_frame->scanning_clients_.size(), 1u);
 
   // Loading a new primary page removes observer and stops scanning.
   EXPECT_CALL(*adapter(), RemoveObserver(_));
@@ -296,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(BluetoothDeviceChooserControllerBrowserTest,
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
-  // Sets BlueboothAdapter for the new primary page since the previous
+  // Sets BluetoothAdapter for the new primary page since the previous
   // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
   BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
       adapter());
@@ -306,10 +392,102 @@ IN_PROC_BROWSER_TEST_F(BluetoothDeviceChooserControllerBrowserTest,
   GetBluetoothDelegate()->WaitForShowBluetoothScanningPrompt();
   // It should show the scanning prompt.
   EXPECT_TRUE(GetBluetoothDelegate()->showed_bluetooth_scanning_prompt());
+
+  WebBluetoothServiceImpl* service_for_activated_frame =
+      static_cast<RenderFrameHostImpl*>(GetWebContents()->GetMainFrame())
+          ->GetWebBluetoothServiceForTesting();
+  // ScanningClient is created after the prerendering activation.
+  EXPECT_EQ(service_for_activated_frame->scanning_clients_.size(), 1u);
+
   // Post a task to simulate a prompt event during a call to
   // RequestScanningStart().
   GetBluetoothDelegate()->RunBluetoothScanningPromptEventCallback(
       BluetoothScanningPrompt::Event::kAllow);
+  EXPECT_CALL(*adapter(), RemoveObserver(_));
+}
+
+// Tests that navigator.bluetooth.requestDevice() is deferred in the
+// prerendering and works after the prerendering activation.
+IN_PROC_BROWSER_TEST_F(WebBluetoothServiceImplBrowserTest,
+                       RequestDeviceInPrerendering) {
+  GURL url = embedded_test_server()->GetURL("/hello.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+
+  // Setup the fake device.
+  AddFakeDevice(kDeviceAddress);
+  SetDeviceToSelect(kDeviceAddress);
+
+  EXPECT_CALL(*adapter(), AddObserver(_));
+  EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
+
+  EXPECT_EQ("", content::EvalJs(GetWebContents(), R"(
+    (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })()
+  )"));
+
+  // WebBluetoothService is created for the main frame.
+  EXPECT_NE(static_cast<content::RenderFrameHostImpl*>(
+                GetWebContents()->GetMainFrame())
+                ->GetWebBluetoothServiceForTesting(),
+            nullptr);
+
+  // Loads a page in the prerender.
+  auto prerender_url = embedded_test_server()->GetURL("/empty.html");
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*GetWebContents(),
+                                                     host_id);
+  content::RenderFrameHost* prerendered_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+
+  // Runs JS asynchronously since mojom::WebBluetoothService::RequestDevice() is
+  // deferred on the prerendering.
+  EXPECT_TRUE(content::ExecJs(prerendered_frame_host, R"(
+    var requestDevicePromise = (async() => {
+      try {
+        let device = await navigator.bluetooth.requestDevice({
+          filters: [{name: 'Test Device', services: ['heart_rate']}]});
+        return "";
+      } catch(e) {
+        return `${e.name}: ${e.message}`;
+      }
+    })();
+  )"));
+
+  // WebBluetoothService is not created for `prerendered_frame_host`.
+  ASSERT_EQ(static_cast<content::RenderFrameHostImpl*>(prerendered_frame_host)
+                ->web_bluetooth_services_.size(),
+            0u);
+
+  // Loading a new primary page removes observer.
+  EXPECT_CALL(*adapter(), RemoveObserver(_));
+
+  // Navigates the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // The page should be activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // Sets BluetoothAdapter for the new primary page since the previous
+  // adapter is released by BluetoothAdapterFactoryWrapper::ReleaseAdapter().
+  BluetoothAdapterFactoryWrapper::Get().SetBluetoothAdapterForTesting(
+      adapter());
+  EXPECT_CALL(*adapter(), AddObserver(_));
+  EXPECT_CALL(*adapter(), GetDevice(kDeviceAddress));
+
+  EXPECT_EQ("",
+            content::EvalJs(prerendered_frame_host, "requestDevicePromise"));
+
+  // WebBluetoothService is created for the activated page.
+  EXPECT_NE(static_cast<content::RenderFrameHostImpl*>(prerendered_frame_host)
+                ->GetWebBluetoothServiceForTesting(),
+            nullptr);
+
   EXPECT_CALL(*adapter(), RemoveObserver(_));
 }
 

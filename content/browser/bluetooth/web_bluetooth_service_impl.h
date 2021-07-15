@@ -123,6 +123,9 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            BluetoothScanningPermissionRevokedWhenFocusIsLost);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
                            ReadCharacteristicValueErrorWithValueIgnored);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
+                           NoShowBluetoothScanningPromptInPrerendering);
+
   friend class FrameConnectedBluetoothDevicesTest;
   friend class WebBluetoothServiceImplTest;
   using PrimaryServicesRequestCallback =
