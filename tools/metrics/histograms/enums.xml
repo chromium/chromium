@@ -33404,9 +33404,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3386" label="V8FontManager_Query_Method"/>
   <int value="3387" label="AudioContextBaseLatency"/>
   <int value="3388" label="V8Window_GetScreens_Method"/>
-  <int value="3389" label="V8Window_IsMultiScreen_Method"/>
-  <int value="3390" label="V8Window_Onscreenschange_AttributeGetter"/>
-  <int value="3391" label="V8Window_Onscreenschange_AttributeSetter"/>
+  <int value="3389" label="OBSOLETE_V8Window_IsMultiScreen_Method"/>
+  <int value="3390" label="OBSOLETE_V8Window_Onscreenschange_AttributeGetter"/>
+  <int value="3391" label="OBSOLETE_V8Window_Onscreenschange_AttributeSetter"/>
   <int value="3392" label="DOMWindowOpenPositioningFeaturesCrossScreen"/>
   <int value="3393" label="DOMWindowSetWindowRectCrossScreen"/>
   <int value="3394" label="FullscreenCrossScreen"/>
