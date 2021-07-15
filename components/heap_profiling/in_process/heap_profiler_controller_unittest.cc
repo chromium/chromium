@@ -14,20 +14,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
 
-// TODO(crbug.com/961073): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_EmptyProfileIsNotEmitted DISABLED_EmptyProfileIsNotEmitted
-#else
-#define MAYBE_EmptyProfileIsNotEmitted EmptyProfileIsNotEmitted
-#endif
-
 class HeapProfilerControllerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
-TEST_F(HeapProfilerControllerTest, MAYBE_EmptyProfileIsNotEmitted) {
+TEST_F(HeapProfilerControllerTest, EmptyProfileIsNotEmitted) {
   HeapProfilerController controller;
   metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
       base::BindLambdaForTesting(
