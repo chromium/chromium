@@ -47,8 +47,6 @@ void DisplaySchedulerWebView::DidSwapBuffers() {
   root_frame_sink_->SetNeedsDraw(needs_draw);
 }
 void DisplaySchedulerWebView::OutputSurfaceLost() {
-  // WebView can't handle surface lost so this isn't called.
-  NOTREACHED();
 }
 
 bool DisplaySchedulerWebView::IsFrameSinkOverlayed(

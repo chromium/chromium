@@ -30,12 +30,16 @@ namespace android_webview {
 
 namespace {
 
-void OnContextLost(bool synthetic_loss) {
+void OnContextLost(std::unique_ptr<bool> expect_loss, bool synthetic_loss) {
+  if (expect_loss && *expect_loss)
+    return;
   // TODO(https://crbug.com/1112841): Debugging contexts losts. WebView will
   // intentionally crash in HardwareRendererViz::OnViz::DisplayOutputSurface
   // that will happen after this callback. That crash happens on viz thread and
   // doesn't have any useful information. Crash here on RenderThread to
   // understand the reason of context losts.
+  // If this implementation changes, need to ensure `expect_loss` access from
+  // MarkExpectContextLoss is still valid.
   LOG(FATAL) << "Non owned context lost!";
 }
 
@@ -115,9 +119,12 @@ void OutputSurfaceProviderWebView::InitializeContext() {
       gl::init::CreateGLContext(share_group.get(), gl_surface_.get(), attribs);
   gl_context->MakeCurrent(gl_surface_.get());
 
+  auto expect_context_loss_ptr = std::make_unique<bool>(false);
+  expect_context_loss_ = expect_context_loss_ptr.get();
   shared_context_state_ = base::MakeRefCounted<gpu::SharedContextState>(
       share_group, gl_surface_, std::move(gl_context),
-      false /* use_virtualized_gl_contexts */, base::BindOnce(&OnContextLost),
+      false /* use_virtualized_gl_contexts */,
+      base::BindOnce(&OnContextLost, std::move(expect_context_loss_ptr)),
       GpuServiceWebView::GetInstance()->gpu_preferences().gr_context_type,
       vulkan_context_provider_);
   if (!enable_vulkan_) {
@@ -165,6 +172,14 @@ OutputSurfaceProviderWebView::CreateOutputSurface(
          "CreateOutputSurface()";
   return viz::SkiaOutputSurfaceImpl::Create(
       display_compositor_controller, renderer_settings_, debug_settings());
+}
+
+void OutputSurfaceProviderWebView::MarkExpectContextLoss() {
+  // This is safe because either the OnContextLost callback has run and we've
+  // already crashed or it has not run and this pointer is still valid.
+  if (expect_context_loss_)
+    *expect_context_loss_ = true;
+  expect_context_loss_ = nullptr;
 }
 
 }  // namespace android_webview

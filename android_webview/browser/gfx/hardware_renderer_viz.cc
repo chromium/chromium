@@ -80,6 +80,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
                         ChildFrame* child_frame);
   void PostDrawOnViz(viz::FrameTimingDetailsMap* timing_details);
   void RemoveOverlaysOnViz();
+  void MarkExpectContextLossOnViz();
 
   OverlayProcessorWebView* overlay_processor() {
     return overlay_processor_webview_;
@@ -113,6 +114,7 @@ class HardwareRendererViz::OnViz : public viz::DisplayClient {
   std::unique_ptr<viz::HitTestAggregator> hit_test_aggregator_;
   viz::SurfaceId child_surface_id_;
   const bool viz_frame_submission_;
+  bool expect_context_loss_ = false;
 
   // Initialized in ctor and never changes, so it's safe to access from both
   // threads. Can be null, if overlays are disabled.
@@ -268,6 +270,11 @@ void HardwareRendererViz::OnViz::RemoveOverlaysOnViz() {
     overlay_processor_webview_->RemoveOverlays();
 }
 
+void HardwareRendererViz::OnViz::MarkExpectContextLossOnViz() {
+  DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
+  expect_context_loss_ = true;
+}
+
 viz::FrameSinkManagerImpl* HardwareRendererViz::OnViz::GetFrameSinkManager() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
   return VizCompositorThreadRunnerWebView::GetInstance()->GetFrameSinkManager();
@@ -275,8 +282,10 @@ viz::FrameSinkManagerImpl* HardwareRendererViz::OnViz::GetFrameSinkManager() {
 
 void HardwareRendererViz::OnViz::DisplayOutputSurfaceLost() {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  // Android WebView does not handle context loss.
-  LOG(FATAL) << "Render thread context loss";
+  if (!expect_context_loss_) {
+    // Android WebView does not handle real context loss.
+    LOG(FATAL) << "Render thread context loss";
+  }
 }
 
 void HardwareRendererViz::OnViz::DisplayWillDrawAndSwap(
@@ -454,6 +463,16 @@ void HardwareRendererViz::MergeTransactionIfNeeded(
       merge_transaction(transaction->GetTransaction());
     }
   }
+}
+
+void HardwareRendererViz::AbandonContext() {
+  VizCompositorThreadRunnerWebView::GetInstance()->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HardwareRendererViz::OnViz::MarkExpectContextLossOnViz,
+                     base::Unretained(on_viz_.get())));
+  output_surface_provider_.MarkExpectContextLoss();
+  output_surface_provider_.shared_context_state()->MarkContextLost(
+      gpu::error::ContextLostReason::kUnknown);
 }
 
 }  // namespace android_webview

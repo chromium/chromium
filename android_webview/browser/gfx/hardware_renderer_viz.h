@@ -30,6 +30,7 @@ class HardwareRendererViz : public HardwareRenderer {
                    const OverlaysParams& overlays_params) override;
   void RemoveOverlays(
       OverlaysParams::MergeTransactionFn merge_transaction) override;
+  void AbandonContext() override;
 
  private:
   class OnViz;

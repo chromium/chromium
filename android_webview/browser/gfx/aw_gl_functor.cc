@@ -83,7 +83,8 @@ void AwGLFunctor::DeleteHardwareRenderer(
   if (!draw_functor_succeeded) {
     LOG(ERROR) << "Unable to free GL resources. Has the Window leaked?";
     // Calling release on wrong thread intentionally.
-    render_thread_manager_.DestroyHardwareRendererOnRT(true /* save_restore */);
+    render_thread_manager_.DestroyHardwareRendererOnRT(
+        true /* save_restore */, false /* abandon_context */);
   }
 }
 
@@ -98,9 +99,12 @@ void AwGLFunctor::DrawGL(AwDrawGLInfo* draw_info) {
       break;
     case AwDrawGLInfo::kModeProcessNoContext:
       LOG(ERROR) << "Received unexpected kModeProcessNoContext";
-      FALLTHROUGH;
+      render_thread_manager_.DestroyHardwareRendererOnRT(
+          save_restore, true /* abandon_context */);
+      break;
     case AwDrawGLInfo::kModeProcess:
-      render_thread_manager_.DestroyHardwareRendererOnRT(save_restore);
+      render_thread_manager_.DestroyHardwareRendererOnRT(
+          save_restore, false /* abandon_context */);
       break;
     case AwDrawGLInfo::kModeDraw: {
       HardwareRendererDrawParams params{

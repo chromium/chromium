@@ -244,7 +244,7 @@ void AwDrawFnImpl::OnContextDestroyed() {
     RenderThreadManager::InsideHardwareReleaseReset release_reset(
         &render_thread_manager_);
     render_thread_manager_.DestroyHardwareRendererOnRT(
-        false /* save_restore */);
+        false /* save_restore */, false /* abandon_context */);
   }
 
   interop_.reset();

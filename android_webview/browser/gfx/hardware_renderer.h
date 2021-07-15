@@ -68,6 +68,7 @@ class HardwareRenderer {
   void CommitFrame();
   virtual void RemoveOverlays(
       OverlaysParams::MergeTransactionFn merge_transaction) = 0;
+  virtual void AbandonContext() = 0;
 
  protected:
   explicit HardwareRenderer(RenderThreadManager* state);

@@ -65,7 +65,7 @@ class RenderThreadManager : public CompositorFrameConsumer {
   void DrawOnRT(bool save_restore,
                 const HardwareRendererDrawParams& params,
                 const OverlaysParams& overlays_params);
-  void DestroyHardwareRendererOnRT(bool save_restore);
+  void DestroyHardwareRendererOnRT(bool save_restore, bool abandon_context);
   void RemoveOverlaysOnRT(OverlaysParams::MergeTransactionFn merge_transaction);
 
   // May be created on either thread.
