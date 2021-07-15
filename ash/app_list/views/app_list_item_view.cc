@@ -313,20 +313,6 @@ AppListItemView::AppListItemView(GridDelegate* grid_delegate,
   SetAnimationDuration(base::TimeDelta());
 
   preview_circle_radius_ = 0;
-
-  // Creates app icon load helper. base::Unretained is safe because `this` owns
-  // `icon_load_helper_` and `view_delegate_` outlives `this`.
-  if (is_folder_) {
-    AppListFolderItem* folder_item = static_cast<AppListFolderItem*>(item);
-    icon_load_helper_.emplace(
-        folder_item->item_list(),
-        base::BindRepeating(&AppListViewDelegate::LoadIcon,
-                            base::Unretained(view_delegate_)));
-  } else {
-    icon_load_helper_.emplace(
-        item, base::BindRepeating(&AppListViewDelegate::LoadIcon,
-                                  base::Unretained(view_delegate_)));
-  }
 }
 
 AppListItemView::~AppListItemView() {

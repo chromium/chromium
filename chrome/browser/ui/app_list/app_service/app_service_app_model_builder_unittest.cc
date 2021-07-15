@@ -589,7 +589,6 @@ TEST_F(ExtensionAppTest, LoadIcon) {
   GenerateExtensionAppIcon(kPackagedApp1Id, src_image_skia);
 
   auto* item = model_updater_->FindItem(kPackagedApp1Id);
-  item->LoadIcon();
   WaitForIconUpdates(item);
 
   VerifyIcon(src_image_skia, item->icon());
@@ -653,7 +652,6 @@ TEST_F(WebAppBuilderTest, LoadGeneratedIcon) {
   GenerateWebAppIcon(app_id, src_image_skia);
 
   auto* item = model_updater_->FindItem(app_id);
-  item->LoadIcon();
   WaitForIconUpdates(item);
 
   VerifyIcon(src_image_skia, item->icon());

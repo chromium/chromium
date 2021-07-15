@@ -432,13 +432,6 @@ void AppListControllerImpl::SetItemMetadata(
   item->SetMetadata(std::move(data));
 }
 
-void AppListControllerImpl::SetItemIconVersion(const std::string& id,
-                                               int icon_version) {
-  AppListItem* item = model_->FindItem(id);
-  if (item)
-    item->SetIconVersion(icon_version);
-}
-
 void AppListControllerImpl::SetItemIcon(const std::string& id,
                                         const gfx::ImageSkia& icon) {
   AppListItem* item = model_->FindItem(id);
@@ -1670,11 +1663,6 @@ int AppListControllerImpl::AdjustAppListViewScrollOffset(int offset,
   }
 
   return adjusted_offset;
-}
-
-void AppListControllerImpl::LoadIcon(const std::string& app_id) {
-  if (client_)
-    client_->LoadIcon(profile_id_, app_id);
 }
 
 void AppListControllerImpl::GetAppLaunchedMetricParams(

@@ -558,15 +558,6 @@ ash::AppListNotifier* AppListClientImpl::GetNotifier() {
   return app_list_notifier_.get();
 }
 
-void AppListClientImpl::LoadIcon(int profile_id, const std::string& app_id) {
-  auto* requested_model_updater = profile_model_mappings_[profile_id];
-  if (requested_model_updater != current_model_updater_ ||
-      !requested_model_updater) {
-    return;
-  }
-  requested_model_updater->LoadAppIcon(app_id);
-}
-
 void AppListClientImpl::MaybeRecordViewShown() {
   // Record the time duration between session activation and the first launcher
   // showing if the current user is new.

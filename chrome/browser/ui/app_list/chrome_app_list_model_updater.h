@@ -47,7 +47,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
   std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
-  void SetItemIconVersion(const std::string& id, int icon_version) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemName(const std::string& id, const std::string& name) override;
   void SetItemNameAndShortName(const std::string& id,
@@ -68,9 +67,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater {
       std::unique_ptr<ash::SearchResultMetadata> metadata) override;
 
   void ActivateChromeItem(const std::string& id, int event_flags) override;
-  void LoadAppIcon(const std::string& id) override;
-
-  // Methods only for visiting Chrome items that never talk to ash.
   ChromeAppListItem* AddChromeItem(std::unique_ptr<ChromeAppListItem> app_item);
   void RemoveChromeItem(const std::string& id);
   void MoveChromeItemToFolder(const std::string& id,

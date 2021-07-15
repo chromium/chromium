@@ -138,13 +138,6 @@ void FakeAppListModelUpdater::GetContextMenuModel(
 void FakeAppListModelUpdater::ActivateChromeItem(const std::string& id,
                                                  int event_flags) {}
 
-void FakeAppListModelUpdater::LoadAppIcon(const std::string& id) {
-  ChromeAppListItem* item = FindItem(id);
-  if (!item)
-    return;
-  item->LoadIcon();
-}
-
 size_t FakeAppListModelUpdater::BadgedItemCount() {
   return 0u;
 }
