@@ -184,8 +184,7 @@ template("nacl_test_data") {
     # This is a template so it can be invoked twice in the
     # defined(extra_tc_cpu) case below.
     template("nacl_test_data_pretranslate_pexe") {
-      # TODO(crbug.com/1112471): Get this to run cleanly under Python 3.
-      python2_action(target_name) {
+      action(target_name) {
         translate_cpu = invoker.translate_cpu
 
         visibility = [ ":$nexe_copy_target_name" ]
