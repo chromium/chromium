@@ -13,6 +13,7 @@
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "net/url_request/referrer_policy.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 using content::BrowserThread;
 
