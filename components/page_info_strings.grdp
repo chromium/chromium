@@ -512,6 +512,9 @@
     <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera permission is in the ask state and the site can prompt the user to ask if they allow the site to use their camera.">
       Can ask to use your camera
     </message>
+    <message name="IDS_PAGE_INFO_STATE_TEXT_CAMERA_PAN_TILT_ZOOM_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the camera and movement permission is in the ask state and the site can prompt the user to ask if they allow the site to use and move their camera.">
+      Can ask to use &amp; move your camera
+    </message>
     <message name="IDS_PAGE_INFO_STATE_TEXT_CLIPBOARD_ASK" desc="The Page Info permission subpage and the main page info page contain a label which shows the state of the site permission. This is the text shown if the clipboard permission is in the ask state and the site can prompt the user to ask if they allow the site to see text and images on their clipboard.">
       Can ask to see text and images on your clipboard
     </message>

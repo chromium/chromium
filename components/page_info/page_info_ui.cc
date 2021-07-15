@@ -281,7 +281,7 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
       message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK;
       break;
     case ContentSettingsType::CAMERA_PAN_TILT_ZOOM:
-      message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_ASK;
+      message_id = IDS_PAGE_INFO_STATE_TEXT_CAMERA_PAN_TILT_ZOOM_ASK;
       break;
     case ContentSettingsType::MEDIASTREAM_MIC:
       message_id = IDS_PAGE_INFO_STATE_TEXT_MIC_ASK;
@@ -652,7 +652,8 @@ std::u16string PageInfoUI::PermissionMainPageStateToUIString(
   if (!auto_blocked_text.empty())
     return auto_blocked_text;
 
-  if (permission.is_one_time || permission.setting == CONTENT_SETTING_DEFAULT) {
+  if (permission.is_one_time || permission.setting == CONTENT_SETTING_DEFAULT ||
+      permission.setting == CONTENT_SETTING_ASK) {
     return PermissionStateToUIString(delegate, permission);
   }
 
