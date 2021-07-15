@@ -12,6 +12,7 @@
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/features/feature.h"
+#include "extensions/renderer/bindings/test_js_runner.h"
 #include "extensions/renderer/scoped_web_frame.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/script_context_set.h"
@@ -106,10 +107,13 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
         web_frame_.frame()->MainWorldScriptContext();
     DCHECK(!local_v8_context.IsEmpty());
     v8_context_.Reset(isolate, local_v8_context);
+    test_js_runner_ =
+        std::make_unique<TestJSRunner::Scope>(std::make_unique<TestJSRunner>());
   }
 
   void TearDown() override {
     v8_context_.Reset();
+    test_js_runner_.reset();
     RequestGarbageCollection();
   }
 
@@ -121,6 +125,7 @@ class GCCallbackTest : public testing::TestWithParam<CallbackType> {
   ExtensionIdSet active_extensions_;
   ScriptContextSet script_context_set_;
   v8::Global<v8::Context> v8_context_;
+  std::unique_ptr<TestJSRunner::Scope> test_js_runner_;
 
   DISALLOW_COPY_AND_ASSIGN(GCCallbackTest);
 };
