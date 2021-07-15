@@ -283,6 +283,20 @@ absl::optional<AnalysisSettings> ConnectorsService::GetAnalysisSettings(
   return settings;
 }
 
+absl::optional<FileSystemSettings>
+ConnectorsService::GetFileSystemGlobalSettings(FileSystemConnector connector) {
+  if (!ConnectorsEnabled())
+    return absl::nullopt;
+
+  absl::optional<FileSystemSettings> settings =
+      connectors_manager_->GetFileSystemGlobalSettings(connector);
+
+  if (!settings.has_value())
+    return absl::nullopt;
+
+  return settings;
+}
+
 absl::optional<FileSystemSettings> ConnectorsService::GetFileSystemSettings(
     const GURL& url,
     FileSystemConnector connector) {

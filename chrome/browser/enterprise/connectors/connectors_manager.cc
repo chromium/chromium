@@ -108,11 +108,10 @@ ConnectorsManager::GetAnalysisSettingsFromConnectorPolicy(
   return analysis_connector_settings_[connector][0].GetAnalysisSettings(url);
 }
 
-absl::optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
-    const GURL& url,
+FileSystemServiceSettings* ConnectorsManager::GetFileSystemServiceSettings(
     FileSystemConnector connector) {
   if (!IsConnectorEnabled(connector))
-    return absl::nullopt;
+    return nullptr;
 
   if (file_system_connector_settings_.count(connector) == 0)
     CacheFileSystemConnectorPolicy(connector);
@@ -120,11 +119,28 @@ absl::optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
   // If the connector is still not in memory, it means the pref is set to an
   // empty list or that it is not a list.
   if (file_system_connector_settings_.count(connector) == 0)
-    return absl::nullopt;
+    return nullptr;
 
   // While multiple services can be set by the connector policies, only the
   // first one is considered for now.
-  return file_system_connector_settings_[connector][0].GetSettings(url);
+  return &(file_system_connector_settings_[connector][0]);
+}
+
+absl::optional<FileSystemSettings>
+ConnectorsManager::GetFileSystemGlobalSettings(FileSystemConnector connector) {
+  auto* service_settings = GetFileSystemServiceSettings(connector);
+  if (!service_settings)
+    return absl::nullopt;
+  return service_settings->GetGlobalSettings();
+}
+
+absl::optional<FileSystemSettings> ConnectorsManager::GetFileSystemSettings(
+    const GURL& url,
+    FileSystemConnector connector) {
+  auto* service_settings = GetFileSystemServiceSettings(connector);
+  if (!service_settings)
+    return absl::nullopt;
+  return service_settings->GetSettings(url);
 }
 
 void ConnectorsManager::CacheAnalysisConnectorPolicy(

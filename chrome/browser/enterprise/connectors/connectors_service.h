@@ -54,6 +54,8 @@ class ConnectorsService : public KeyedService {
   absl::optional<AnalysisSettings> GetAnalysisSettings(
       const GURL& url,
       AnalysisConnector connector);
+  absl::optional<FileSystemSettings> GetFileSystemGlobalSettings(
+      FileSystemConnector connector);
   absl::optional<FileSystemSettings> GetFileSystemSettings(
       const GURL& url,
       FileSystemConnector connector);

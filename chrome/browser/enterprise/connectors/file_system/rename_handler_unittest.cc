@@ -12,6 +12,7 @@
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
+#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "chrome/browser/enterprise/connectors/file_system/test_helper.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -98,11 +99,15 @@ class RenameHandlerCreateTest : public RenameHandlerCreateTestBase,
 };
 
 TEST_P(RenameHandlerCreateTest, FeatureFlagTest) {
+  // Check the precondition regardless of download item: feature is enabled.
+  auto settings = GetFileSystemSettings(profile());
+  ASSERT_EQ(enable_feature_flag(), settings.has_value());
+
+  // Ensure a RenameHandler can be created with the profile in download item.
   content::FakeDownloadItem item;
   item.SetURL(GURL("https://renameme.com"));
   item.SetMimeType("text/plain");
   content::DownloadItemUtils::AttachInfo(&item, profile(), nullptr);
-
   auto handler = RenameHandler::CreateIfNeeded(&item);
   ASSERT_EQ(enable_feature_flag(), handler.get() != nullptr);
 }

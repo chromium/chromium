@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -15,6 +16,9 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace enterprise_connectors {
+
+// Experimental flag to enable or disable the file system connector.
+extern const base::Feature kFileSystemConnectorEnabled;
 
 // The settings for a report service obtained from a connector policy.
 class FileSystemServiceSettings {
@@ -26,6 +30,7 @@ class FileSystemServiceSettings {
   ~FileSystemServiceSettings();
 
   // Get the settings to apply. absl::nullopt implies no file system settings.
+  absl::optional<FileSystemSettings> GetGlobalSettings() const;
   absl::optional<FileSystemSettings> GetSettings(const GURL& url) const;
 
  private:

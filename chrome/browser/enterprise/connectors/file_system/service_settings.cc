@@ -9,6 +9,9 @@
 
 namespace enterprise_connectors {
 
+const base::Feature kFileSystemConnectorEnabled{
+    "FileSystemConnectorsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
+
 FileSystemServiceSettings::FileSystemServiceSettings(
     const base::Value& settings_value,
     const ServiceProviderConfig& service_provider_config) {
@@ -79,18 +82,9 @@ FileSystemServiceSettings::FileSystemServiceSettings(
     FileSystemServiceSettings&&) = default;
 FileSystemServiceSettings::~FileSystemServiceSettings() = default;
 
-absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
-    const GURL& url) const {
+absl::optional<FileSystemSettings>
+FileSystemServiceSettings::GetGlobalSettings() const {
   if (!IsValid())
-    return absl::nullopt;
-
-  DCHECK(matcher_);
-  auto matches = matcher_->MatchURL(url);
-  if (matches.empty())
-    return absl::nullopt;
-
-  auto mime_types = GetMimeTypes(matches);
-  if (mime_types.empty())
     return absl::nullopt;
 
   FileSystemSettings settings;
@@ -105,7 +99,30 @@ absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
   settings.client_secret = service_provider_->fs_client_secret();
   settings.scopes = service_provider_->fs_scopes();
   settings.max_direct_size = service_provider_->fs_max_direct_size();
-  settings.mime_types = std::move(mime_types);
+
+  return settings;
+}
+
+absl::optional<FileSystemSettings> FileSystemServiceSettings::GetSettings(
+    const GURL& url) const {
+  if (!IsValid())
+    return absl::nullopt;
+
+  DCHECK(url.is_valid()) << "URL: " << url;
+
+  auto settings = GetGlobalSettings();
+  if (settings.has_value()) {
+    DCHECK(matcher_);
+    std::set<std::string> mime_types;
+    auto matches = matcher_->MatchURL(url);
+    if (matches.empty())
+      return absl::nullopt;
+    mime_types = GetMimeTypes(matches);
+    if (mime_types.empty())
+      return absl::nullopt;
+
+    settings->mime_types = std::move(mime_types);
+  }
 
   return settings;
 }

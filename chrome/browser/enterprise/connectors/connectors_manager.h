@@ -49,8 +49,10 @@ class ConnectorsManager {
       AnalysisConnector connector);
 
   // Validates which settings should be applied to a file system connector
-  // against cached policies. Cache the policy value the first time this is
-  // called for every different connector.
+  // against cached policies.
+  absl::optional<FileSystemSettings> GetFileSystemGlobalSettings(
+      FileSystemConnector connector);
+  // In addition to method above; also validates specifically for an URL.
   absl::optional<FileSystemSettings> GetFileSystemSettings(
       const GURL& url,
       FileSystemConnector connector);
@@ -104,6 +106,12 @@ class ConnectorsManager {
   // called for every different connector.
   absl::optional<ReportingSettings> GetReportingSettingsFromConnectorPolicy(
       ReportingConnector connector);
+
+  // Returns service settings (if there are multiple service providers, only the
+  // first one for now) for |connector|. Cache the policy value the first time
+  // this is called for every different connector.
+  FileSystemServiceSettings* GetFileSystemServiceSettings(
+      FileSystemConnector connector);
 
   // Cached values of available service providers. This information validates
   // the Connector policies have a valid provider.

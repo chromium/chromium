@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_RENAME_HANDLER_H_
 
 #include "base/callback.h"
-#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -26,9 +25,6 @@ namespace enterprise_connectors {
 
 class AccessTokenFetcher;
 class BoxUploader;
-
-// Experimental flag to enable or disable the file system connector.
-extern const base::Feature kFileSystemConnectorEnabled;
 
 // An implementation of download::DownloadItemRenameHandler that sends a
 // download item file to a cloud-based storage provider as specified in the
@@ -70,9 +66,6 @@ class FileSystemRenameHandler : public download::DownloadItemRenameHandler {
                             const std::string& refresh_token);
 
  private:
-  static absl::optional<FileSystemSettings> IsEnabled(
-      download::DownloadItem* download_item);
-
   void StartInternal(std::string access_token = std::string());
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
       content::BrowserContext* context);

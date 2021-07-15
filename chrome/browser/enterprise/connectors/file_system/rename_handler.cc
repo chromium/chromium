@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/files/file_util.h"
-#include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_uploader.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
@@ -38,18 +37,9 @@ PrefService* PrefsFromDownloadItem(download::DownloadItem* item) {
   return context ? PrefsFromBrowserContext(context) : nullptr;
 }
 
-bool MimeTypeMatches(const std::set<std::string>& mime_types,
-                     const std::string& mime_type) {
-  return mime_types.count(kWildcardMimeType) != 0 ||
-         mime_types.count(mime_type) != 0;
-}
-
 using download::ConvertNetErrorToInterruptReason;
 
 }  // namespace
-
-const base::Feature kFileSystemConnectorEnabled{
-    "FileSystemConnectorsEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
 using InterruptReason = download::DownloadInterruptReason;
 constexpr auto kBrowserFailure = download::DOWNLOAD_INTERRUPT_REASON_CRASH;
@@ -57,34 +47,6 @@ constexpr auto kCredentialUpdateFailure = kBrowserFailure;
 // download::DOWNLOAD_INTERRUPT_REASON_CREDENTIALS_UPDATE_FAILED;
 constexpr auto kSignInCancellation =
     download::DOWNLOAD_INTERRUPT_REASON_USER_CANCELED;
-
-// static
-absl::optional<FileSystemSettings> FileSystemRenameHandler::IsEnabled(
-    download::DownloadItem* download_item) {
-  if (!base::FeatureList::IsEnabled(kFileSystemConnectorEnabled))
-    return absl::nullopt;
-
-  // Check to see if the download item matches any rules.  If the URL of the
-  // download itself does not match then check the URL of site on which the
-  // download is hosted.
-  ConnectorsService* service = ConnectorsServiceFactory::GetForBrowserContext(
-      content::DownloadItemUtils::GetBrowserContext(download_item));
-  auto settings = service->GetFileSystemSettings(
-      download_item->GetURL(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
-  if (settings.has_value() &&
-      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
-    return settings;
-  }
-
-  settings = service->GetFileSystemSettings(
-      download_item->GetTabUrl(), FileSystemConnector::SEND_DOWNLOAD_TO_CLOUD);
-  if (settings.has_value() &&
-      MimeTypeMatches(settings->mime_types, download_item->GetMimeType())) {
-    return settings;
-  }
-
-  return absl::nullopt;
-}
 
 // static
 std::unique_ptr<download::DownloadItemRenameHandler>
@@ -96,12 +58,11 @@ FileSystemRenameHandler::CreateIfNeeded(download::DownloadItem* download_item) {
   }
   // TODO(https://crbug.com/1213761) Resume upload if state is IN_PROGRESS, and
   // perhaps also INTERRUPTED and CANCELLED.
-  absl::optional<FileSystemSettings> settings = IsEnabled(download_item);
-  if (settings.has_value()) {
-    return std::make_unique<FileSystemRenameHandler>(
-        download_item, std::move(settings.value()));
-  }
-  return nullptr;
+  absl::optional<FileSystemSettings> settings =
+      GetFileSystemSettings(download_item);
+  return settings.has_value() ? std::make_unique<FileSystemRenameHandler>(
+                                    download_item, std::move(settings.value()))
+                              : nullptr;
 }
 
 // The only permitted use of |download_item| in this class other than the ctor
@@ -139,7 +100,7 @@ void FileSystemRenameHandler::TryUploaderTask(content::BrowserContext* context,
 
 void FileSystemRenameHandler::PromptUserSignInForAuthorization(
     content::WebContents* contents) {
-  StartSigninExperienceForDownloadItem(
+  StartFileSystemConnectorSigninExperienceForDownloadItem(
       contents, settings_,
       base::BindOnce(&FileSystemRenameHandler::OnAuthorization,
                      weak_factory_.GetWeakPtr()));
