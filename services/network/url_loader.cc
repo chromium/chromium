@@ -1355,7 +1355,8 @@ void URLLoader::ContinueOnResponseStarted() {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = kDataPipeDefaultAllocationSize;
+  options.capacity_num_bytes =
+      network::features::GetDataPipeDefaultAllocationSize();
   MojoResult result =
       mojo::CreateDataPipe(&options, response_body_stream_, consumer_handle_);
   if (result != MOJO_RESULT_OK) {

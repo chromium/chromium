@@ -23,6 +23,7 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
@@ -134,7 +135,8 @@ class WebBundleURLLoaderFactory::EntryLoader final
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
     options.capacity_num_bytes =
-        std::min(static_cast<uint64_t>(network::kDataPipeDefaultAllocationSize),
+        std::min(base::strict_cast<uint64_t>(
+                     network::features::GetDataPipeDefaultAllocationSize()),
                  response->payload_length);
 
     auto result =

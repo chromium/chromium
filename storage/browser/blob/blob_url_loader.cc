@@ -25,9 +25,11 @@
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
+#include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace storage {
 
@@ -154,7 +156,8 @@ void BlobURLLoader::Start(const std::string& method,
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
+  options.capacity_num_bytes =
+      blink::BlobUtils::GetDataPipeCapacity(blink::BlobUtils::kUnknownSize);
   if (mojo::CreateDataPipe(&options, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     OnComplete(net::ERR_INSUFFICIENT_RESOURCES, 0);

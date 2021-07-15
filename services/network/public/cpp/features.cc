@@ -4,6 +4,8 @@
 
 #include "services/network/public/cpp/features.h"
 
+#include "base/metrics/field_trial_params.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -216,6 +218,24 @@ const base::Feature kFtpProtocol{"FtpProtocol",
 
 const base::Feature kSCTAuditingRetryAndPersistReports{
     "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// This feature will be used for tuning several loading-related data pipe
+// parameters. See crbug.com/1041006.
+const base::Feature kLoaderDataPipeTuningFeature{
+    "LoaderDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
+
+namespace {
+// The default buffer size of DataPipe which is used to send the content body.
+static constexpr uint32_t kDataPipeDefaultAllocationSize = 512 * 1024;
+constexpr base::FeatureParam<int> kDataPipeAllocationSize{
+    &kLoaderDataPipeTuningFeature, "allocation_size_bytes",
+    base::saturated_cast<int>(kDataPipeDefaultAllocationSize)};
+}  // namespace
+
+// static
+uint32_t GetDataPipeDefaultAllocationSize() {
+  return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+}
 
 }  // namespace features
 }  // namespace network

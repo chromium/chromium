@@ -317,7 +317,8 @@ class InnerResponseURLLoader : public network::mojom::URLLoader {
     options.struct_size = sizeof(MojoCreateDataPipeOptions);
     options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
     options.element_num_bytes = 1;
-    options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
+    options.capacity_num_bytes =
+        network::features::GetDataPipeDefaultAllocationSize();
     MojoResult rv = mojo::CreateDataPipe(&options, pipe_producer_handle,
                                          pipe_consumer_handle);
     if (rv != MOJO_RESULT_OK) {

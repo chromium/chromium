@@ -315,7 +315,8 @@ void SignedExchangeLoader::OnHTTPExchangeFound(
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
+  options.capacity_num_bytes =
+      network::features::GetDataPipeDefaultAllocationSize();
   if (mojo::CreateDataPipe(&options, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     forwarding_client_->OnComplete(

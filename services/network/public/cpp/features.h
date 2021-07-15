@@ -85,6 +85,12 @@ extern const base::Feature kFtpProtocol;
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const base::Feature kSCTAuditingRetryAndPersistReports;
 
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const base::Feature kLoaderDataPipeTuningFeature;
+
+COMPONENT_EXPORT(NETWORK_CPP)
+extern uint32_t GetDataPipeDefaultAllocationSize();
+
 }  // namespace features
 }  // namespace network
 
