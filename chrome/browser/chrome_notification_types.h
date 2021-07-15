@@ -91,11 +91,6 @@ enum NotificationType {
   // TODO(https://crbug.com/796051): Remove.
   NOTIFICATION_PRINT_JOB_EVENT,
 
-  // Sent when a PrintJob has been released.
-  // Source is the WebContents that holds the print job.
-  // TODO(https://crbug.com/1174788): Remove.
-  NOTIFICATION_PRINT_JOB_RELEASED,
-
   // Misc --------------------------------------------------------------------
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

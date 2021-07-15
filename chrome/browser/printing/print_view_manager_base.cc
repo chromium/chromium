@@ -712,11 +712,6 @@ void PrintViewManagerBase::PrintingFailed(int32_t cookie) {
 #endif
 
   ReleasePrinterQuery();
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_RELEASED,
-      content::Source<content::WebContents>(web_contents()),
-      content::NotificationService::NoDetails());
 }
 
 void PrintViewManagerBase::ShowInvalidPrinterSettingsError() {
@@ -762,10 +757,6 @@ void PrintViewManagerBase::SystemDialogCancelled() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   ReleasePrinterQuery();
   TerminatePrintJob(true);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_RELEASED,
-      content::Source<content::WebContents>(web_contents()),
-      content::NotificationService::NoDetails());
 }
 #endif
 
@@ -782,11 +773,6 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
   switch (event_details.type()) {
     case JobEventDetails::FAILED: {
       TerminatePrintJob(true);
-
-      content::NotificationService::current()->Notify(
-          chrome::NOTIFICATION_PRINT_JOB_RELEASED,
-          content::Source<content::WebContents>(web_contents()),
-          content::NotificationService::NoDetails());
       break;
     }
     case JobEventDetails::USER_INIT_DONE:
@@ -831,11 +817,6 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
       // of object registration.
       printing_succeeded_ = true;
       ReleasePrintJob();
-
-      content::NotificationService::current()->Notify(
-          chrome::NOTIFICATION_PRINT_JOB_RELEASED,
-          content::Source<content::WebContents>(web_contents()),
-          content::NotificationService::NoDetails());
       break;
     }
     default: {
