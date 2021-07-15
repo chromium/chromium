@@ -386,6 +386,32 @@ TEST_F(TrustedVaultConnectionImplTest,
 }
 
 TEST_F(TrustedVaultConnectionImplTest,
+       ShouldHandleJoinSecurityDomainsResponseWithConflictError) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  base::MockCallback<TrustedVaultConnection::RegisterDeviceWithoutKeysCallback>
+      callback;
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterDeviceWithoutKeys(
+          /*account_info=*/CoreAccountInfo(), key_pair->public_key(),
+          callback.Get());
+  ASSERT_THAT(request, NotNull());
+
+  const int kServerConstantKeyVersion = 100;
+  EXPECT_CALL(callback,
+              Run(Eq(TrustedVaultRegistrationStatus::kAlreadyRegistered),
+                  TrustedVaultKeyAndVersionEq(GetConstantTrustedVaultKey(),
+                                              kServerConstantKeyVersion)));
+  sync_pb::JoinSecurityDomainsErrorDetail response;
+  *response.mutable_already_exists_response() = MakeJoinSecurityDomainsResponse(
+      /*current_epoch=*/kServerConstantKeyVersion);
+  EXPECT_TRUE(RespondToJoinSecurityDomainsRequest(
+      net::HTTP_CONFLICT, response.SerializeAsString()));
+}
+
+TEST_F(TrustedVaultConnectionImplTest,
        ShouldHandleJoinSecurityDomainsRequestWithEmptyResponse) {
   std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
   ASSERT_THAT(key_pair, NotNull());

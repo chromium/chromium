@@ -66,3 +66,7 @@ message JoinSecurityDomainsRequest {
 message JoinSecurityDomainsResponse {
   SecurityDomain security_domain = 1;
 }
+
+message JoinSecurityDomainsErrorDetail {
+  JoinSecurityDomainsResponse already_exists_response = 1;
+}

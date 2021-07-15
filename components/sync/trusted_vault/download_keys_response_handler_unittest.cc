@@ -118,6 +118,13 @@ TEST_F(DownloadKeysResponseHandlerTest, ShouldHandleHttpErrors) {
   EXPECT_THAT(
       handler()
           .ProcessResponse(
+              /*http_status=*/TrustedVaultRequest::HttpStatus::kConflict,
+              /*response_body=*/std::string())
+          .status,
+      Eq(TrustedVaultDownloadKeysStatus::kOtherError));
+  EXPECT_THAT(
+      handler()
+          .ProcessResponse(
               /*http_status=*/TrustedVaultRequest::HttpStatus::kOtherError,
               /*response_body=*/std::string())
           .status,

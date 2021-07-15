@@ -125,6 +125,7 @@ void ProcessJoinSecurityDomainsResponse(
     const std::string& response_body) {
   switch (http_status) {
     case TrustedVaultRequest::HttpStatus::kSuccess:
+    case TrustedVaultRequest::HttpStatus::kConflict:
       break;
     case TrustedVaultRequest::HttpStatus::kOtherError:
       std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
@@ -140,7 +141,15 @@ void ProcessJoinSecurityDomainsResponse(
   }
 
   sync_pb::JoinSecurityDomainsResponse response;
-  if (!response.ParseFromString(response_body)) {
+  if (http_status == TrustedVaultRequest::HttpStatus::kConflict) {
+    sync_pb::JoinSecurityDomainsErrorDetail error_detail;
+    if (!error_detail.ParseFromString(response_body)) {
+      std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
+                              /*last_key_version=*/0);
+      return;
+    }
+    response = error_detail.already_exists_response();
+  } else if (!response.ParseFromString(response_body)) {
     std::move(callback).Run(TrustedVaultRegistrationStatus::kOtherError,
                             /*last_key_version=*/0);
     return;
@@ -153,8 +162,11 @@ void ProcessJoinSecurityDomainsResponse(
                             /*last_key_version=*/0);
     return;
   }
-  std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess,
-                          last_key_version);
+  std::move(callback).Run(
+      http_status == TrustedVaultRequest::HttpStatus::kConflict
+          ? TrustedVaultRegistrationStatus::kAlreadyRegistered
+          : TrustedVaultRegistrationStatus::kSuccess,
+      last_key_version);
 }
 
 void ProcessDownloadKeysResponse(
@@ -181,6 +193,7 @@ void ProcessDownloadIsRecoverabilityDegradedResponse(
     case TrustedVaultRequest::HttpStatus::kOtherError:
     case TrustedVaultRequest::HttpStatus::kNotFound:
     case TrustedVaultRequest::HttpStatus::kBadRequest:
+    case TrustedVaultRequest::HttpStatus::kConflict:
       std::move(callback).Run(TrustedVaultRecoverabilityStatus::kError);
       return;
   }

@@ -20,6 +20,9 @@ class SecureBoxPublicKey;
 
 enum class TrustedVaultRegistrationStatus {
   kSuccess,
+  // Used when member corresponding to authentication factor already exists and
+  // local keys that were sent as part of the request aren't stale.
+  kAlreadyRegistered,
   // Used when trusted vault request can't be completed successfully due to
   // vault key being outdated or device key being not registered.
   kLocalDataObsolete,

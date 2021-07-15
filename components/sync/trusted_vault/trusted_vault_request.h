@@ -39,6 +39,8 @@ class TrustedVaultRequest : public TrustedVaultConnection::Request {
     kBadRequest,
     // Reported when server returns http status code 404 (not found).
     kNotFound,
+    // Reported when server returns http status code 409 (conflict).
+    kConflict,
     // Reported when other error occurs: unable to fetch access token, network
     // and http errors (except 400 and 404).
     kOtherError

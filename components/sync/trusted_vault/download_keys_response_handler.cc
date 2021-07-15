@@ -161,6 +161,7 @@ DownloadKeysResponseHandler::ProcessResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::
               kMemberNotFoundOrCorrupted);
     case TrustedVaultRequest::HttpStatus::kBadRequest:
+    case TrustedVaultRequest::HttpStatus::kConflict:
     case TrustedVaultRequest::HttpStatus::kOtherError:
       return ProcessedResponse(
           /*status=*/TrustedVaultDownloadKeysStatus::kOtherError);

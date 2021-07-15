@@ -132,25 +132,31 @@ void TrustedVaultRequest::OnURLLoadComplete(
       "Sync.TrustedVaultURLFetchResponse",
       http_response_code == 0 ? net_error : http_response_code);
 
+  std::string response_content = response_body ? *response_body : std::string();
   if (http_response_code == net::HTTP_BAD_REQUEST) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kBadRequest,
-                                             std::string());
+                                             response_content);
     return;
   }
   if (http_response_code == net::HTTP_NOT_FOUND) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kNotFound,
-                                             std::string());
+                                             response_content);
+    return;
+  }
+  if (http_response_code == net::HTTP_CONFLICT) {
+    RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kConflict,
+                                             response_content);
     return;
   }
 
   if (http_response_code != net::HTTP_OK &&
       http_response_code != net::HTTP_NO_CONTENT) {
     RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kOtherError,
-                                             std::string());
+                                             response_content);
     return;
   }
   RunCompletionCallbackAndMaybeDestroySelf(HttpStatus::kSuccess,
-                                           *response_body);
+                                           response_content);
 }
 
 std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
@@ -172,6 +178,7 @@ std::unique_ptr<network::SimpleURLLoader> TrustedVaultRequest::CreateURLLoader(
       network::SimpleURLLoader::Create(std::move(request),
                                        CreateTrafficAnnotationTag());
 
+  url_loader->SetAllowHttpErrorResults(true);
   // TODO(crbug.com/1113598): do we need to set retry options? (in particular
   // RETRY_ON_NETWORK_CHANGE).
 

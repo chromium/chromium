@@ -242,6 +242,20 @@ TEST_F(TrustedVaultRequestTest, ShouldHandleBadRequestStatus) {
                                    /*response_body=*/""));
 }
 
+TEST_F(TrustedVaultRequestTest,
+       ShouldHandleConflictStatusAndPopulateResponseBody) {
+  base::MockCallback<TrustedVaultRequest::CompletionCallback>
+      completion_callback;
+  std::unique_ptr<TrustedVaultRequest> request = StartNewRequestWithAccessToken(
+      kAccessToken, TrustedVaultRequest::HttpMethod::kGet,
+      /*request_body=*/absl::nullopt, completion_callback.Get());
+
+  // |completion_callback| should be called after receiving response.
+  EXPECT_CALL(completion_callback,
+              Run(TrustedVaultRequest::HttpStatus::kConflict, kResponseBody));
+  EXPECT_TRUE(RespondToHttpRequest(net::OK, net::HTTP_CONFLICT, kResponseBody));
+}
+
 TEST_F(TrustedVaultRequestTest, ShouldHandleNotFoundStatus) {
   base::MockCallback<TrustedVaultRequest::CompletionCallback>
       completion_callback;
