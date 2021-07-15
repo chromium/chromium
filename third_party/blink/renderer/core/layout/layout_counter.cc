@@ -484,7 +484,6 @@ CounterNode* MakeCounterNodeIfNeeded(LayoutObject& object,
 }
 
 String GenerateCounterText(const CounterStyle* counter_style,
-                           EListStyleType deprecated_list_style_type,
                            int value) {
   if (!counter_style)
     return g_empty_string;
@@ -596,7 +595,6 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
 
   int value = ValueForText(child);
   const CounterStyle* counter_style = nullptr;
-  EListStyleType list_style = EListStyleType::kNone;
   // Note: CSS3 spec doesn't allow 'none' but CSS2.1 allows it. We currently
   // allow it for backward compatibility.
   // See https://github.com/w3c/csswg-drafts/issues/5795 for details.
@@ -605,7 +603,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
         &GetDocument().GetStyleEngine().FindCounterStyleAcrossScopes(
             counter_->ListStyle(), counter_->GetTreeScope());
   }
-  String text = GenerateCounterText(counter_style, list_style, value);
+  String text = GenerateCounterText(counter_style, value);
   // If the separator exists, we need to append all of the parent values as well,
   // including the ones that cross the style containment boundary.
   if (!counter_->Separator().IsNull()) {
@@ -616,7 +614,7 @@ scoped_refptr<StringImpl> LayoutCounter::OriginalText() const {
                child->ParentCrossingStyleContainment(counter_->Identifier())) {
       int next_value = next_result_uses_parent_value ? ValueForText(parent)
                                                      : child->CountInParent();
-      text = GenerateCounterText(counter_style, list_style, next_value) +
+      text = GenerateCounterText(counter_style, next_value) +
              counter_->Separator() + text;
       child = parent;
       next_result_uses_parent_value = !child->Parent();
