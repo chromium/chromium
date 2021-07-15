@@ -11,7 +11,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_suite.h"
 #include "build/build_config.h"
-#include "gpu/command_buffer/client/gles2_lib.h"
+#include "gpu/command_buffer/tests/gl_test_setup_helper.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "mojo/core/embedder/embedder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -49,13 +49,12 @@ class GlTestsSuite : public base::TestSuite {
       ui::OzonePlatform::InitializeForGPU(params);
     }
 #endif
-  gpu::GLTestHelper::InitializeGLDefault();
-
-  ::gles2::Initialize();
+    gl_setup_ = std::make_unique<gpu::GLTestSetupHelper>();
   }
 
  private:
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+  std::unique_ptr<gpu::GLTestSetupHelper> gl_setup_;
 };
 
 }  // namespace

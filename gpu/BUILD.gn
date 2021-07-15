@@ -344,6 +344,8 @@ test("gl_tests") {
     "command_buffer/tests/gl_set_aggressively_free_resources_unittest.cc",
     "command_buffer/tests/gl_shared_resources_unittest.cc",
     "command_buffer/tests/gl_stream_draw_unittest.cc",
+    "command_buffer/tests/gl_test_setup_helper.cc",
+    "command_buffer/tests/gl_test_setup_helper.h",
     "command_buffer/tests/gl_test_utils.cc",
     "command_buffer/tests/gl_test_utils.h",
     "command_buffer/tests/gl_tests_main.cc",
