@@ -645,10 +645,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                         const QueryOptions& options,
                         QueryResults* result);
 
-  // Performs a brute force search over the database to find any host names that
-  // match the `host_name` string. Returns any matches.
-  URLRows GetMatchesForHost(const std::u16string& host_name);
-
   // Clusters ------------------------------------------------------------------
 
   // Convert `AnnotatedVisitRow`s to `AnnotatedVisit`s. Drops rows without

@@ -156,16 +156,6 @@ void QueryResults::AdjustResultMap(size_t begin, size_t end, ptrdiff_t delta) {
 
 QueryOptions::QueryOptions() = default;
 
-QueryOptions::~QueryOptions() = default;
-
-QueryOptions::QueryOptions(const QueryOptions&) = default;
-
-QueryOptions::QueryOptions(QueryOptions&&) noexcept = default;
-
-QueryOptions& QueryOptions::operator=(const QueryOptions&) = default;
-
-QueryOptions& QueryOptions::operator=(QueryOptions&&) noexcept = default;
-
 void QueryOptions::SetRecentDayRange(int days_ago) {
   end_time = base::Time::Now();
   begin_time = end_time - base::TimeDelta::FromDays(days_ago);

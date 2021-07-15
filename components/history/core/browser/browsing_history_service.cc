@@ -648,7 +648,6 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
     if (const base::Value* events = results_value->FindListKey("event")) {
       state->remote_results.reserve(state->remote_results.size() +
                                     events->GetList().size());
-      std::string host_name_utf8 = base::UTF16ToUTF8(state->search_text);
       for (const base::Value& event : events->GetList()) {
         if (!event.is_dict())
           continue;
@@ -665,15 +664,8 @@ void BrowsingHistoryService::WebHistoryQueryComplete(
         if (!ids || ids->GetList().empty())
           continue;
 
-        GURL gurl(*url);
-        if (state->original_options.host_only) {
-          // Do post filter to skip entries that do not have the correct
-          // hostname.
-          if (gurl.host() != host_name_utf8)
-            continue;
-        }
-
         // Ignore any URLs that should not be shown in the history page.
+        GURL gurl(*url);
         if (driver_->ShouldHideWebHistoryUrl(gurl))
           continue;
 

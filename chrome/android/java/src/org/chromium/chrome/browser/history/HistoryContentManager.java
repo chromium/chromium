@@ -225,8 +225,12 @@ public class HistoryContentManager implements SignInStateObserver, PrefObserver 
 
     /** Initialize the HistoryContentManager to start loading items. */
     public void initialize() {
-        // Filtering the adapter to only the results from this particular host.
-        mHistoryAdapter.setHostName(mHostName);
+        if (mHostName != null) {
+            // Filtering the adapter to only the results from this particular host.
+            // TODO(crbug.com/1173154): Add robust filtering for just items with a matching host in
+            // backend. QueryText could return entries that contain the string anywhere.
+            mHistoryAdapter.setQueryText(mHostName);
+        }
         mHistoryAdapter.initialize();
     }
 

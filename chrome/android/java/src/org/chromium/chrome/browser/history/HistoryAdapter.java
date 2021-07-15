@@ -66,7 +66,6 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
     private boolean mPrivacyDisclaimersVisible;
     private boolean mClearBrowsingDataButtonVisible;
     private String mQueryText = EMPTY_QUERY;
-    private String mHostName;
 
     private boolean mDisableScrollToLoadForTest;
 
@@ -99,11 +98,7 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         mAreHeadersInitialized = false;
         mIsLoadingItems = true;
         mClearOnNextQueryComplete = true;
-        if (mHostName != null) {
-            mHistoryProvider.queryHistoryForHost(mHostName);
-        } else {
-            mHistoryProvider.queryHistory(mQueryText);
-        }
+        mHistoryProvider.queryHistory(mQueryText);
     }
 
     @Override
@@ -416,9 +411,12 @@ public class HistoryAdapter extends DateDividedAdapter implements BrowsingHistor
         if (mAreHeadersInitialized) setHeaders();
     }
 
-    /** @param hostName The hostName to retrieve history entries for. */
-    public void setHostName(String hostName) {
-        mHostName = hostName;
+    /**
+     * Sets the query text.
+     * @param query The text to be searched for.
+     */
+    void setQueryText(String query) {
+        mQueryText = query;
     }
 
     @VisibleForTesting

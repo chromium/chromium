@@ -52,15 +52,13 @@ void BrowsingHistoryBridge::QueryHistory(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& j_result_obj,
-    jstring j_query,
-    jboolean j_host_only) {
+    jstring j_query) {
   j_query_result_obj_.Reset(env, j_result_obj);
   query_history_continuation_.Reset();
 
   history::QueryOptions options;
   options.max_count = kMaxQueryCount;
   options.duplicate_policy = history::QueryOptions::REMOVE_DUPLICATES_PER_DAY;
-  options.host_only = j_host_only;
 
   browsing_history_service_->QueryHistory(
       base::android::ConvertJavaStringToUTF16(env, j_query), options);
