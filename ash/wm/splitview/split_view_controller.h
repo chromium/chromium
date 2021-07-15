@@ -92,6 +92,14 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
     kBothSnapped,
   };
 
+  // The split view resize behavior in tablet mode. The normal mode resizes
+  // windows on drag events. In the fast mode, windows are instead moved. A
+  // single drag "session" may involve both modes.
+  enum class TabletResizeMode {
+    kNormal,
+    kFast,
+  };
+
   // Gets the |SplitViewController| for the root window of |window|. |window| is
   // important in clamshell mode. In tablet mode, the working assumption for now
   // is mirror mode (or just one display), and so |window| can be almost any
@@ -192,6 +200,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   gfx::Rect GetSnappedWindowBoundsInScreen(
       SnapPosition snap_position,
       aura::Window* window_for_minimum_size);
+
+  // Returns true if we are resizing with the fast resize
+  // mode. `GetSnappedWindowBoundsInScreen()` should then return the windows
+  // current bounds in screen coordinates.
+  bool ShouldUseWindowBoundsDuringFastResize();
 
   // Gets the default value of |divider_position_|.
   int GetDefaultDividerPosition() const;
@@ -345,6 +358,11 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // of the screen.
   void UpdateBlackScrim(const gfx::Point& location_in_screen);
 
+  // Updates the resize mode backdrop. This is drawn behind windows to ensure
+  // that the allotted space is always filled, even if the window itself hasn't
+  // resized yet.
+  void UpdateResizeBackdrop();
+
   // Updates the bounds for the snapped windows and divider according to the
   // current snap direction.
   void UpdateSnappedWindowsAndDividerBounds();
@@ -451,6 +469,15 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // snapping animation completes or is interrupted or totally skipped.
   void EndResizeImpl();
 
+  // Called from a timer during resizing. Facilitates switching between fast and
+  // normal tablet resizing modes.
+  void OnResizeTimer();
+
+  // Figure out which resize mode we should be using. This is based on the speed
+  // at which the divider is dragged.
+  void UpdateTabletResizeMode(base::TimeTicks event_time_ticks,
+                              const gfx::Point& event_location);
+
   // Called by OnWindowDragEnded to do the actual work of finishing the window
   // dragging. If |is_being_destroyed| equals true, the dragged window is to be
   // destroyed, and SplitViewController should not try to put it in splitview.
@@ -483,6 +510,10 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // 1/3 of the width of the screen, increasing in opacity as the divider gets
   // closer to the edge of the screen.
   std::unique_ptr<ui::Layer> black_scrim_layer_;
+
+  // Backdrop layers that may be visible below windows when resizing.
+  std::unique_ptr<ui::Layer> left_resize_backdrop_layer_;
+  std::unique_ptr<ui::Layer> right_resize_backdrop_layer_;
 
   // The window observer that obseves the tab-dragged window in tablet mode.
   std::unique_ptr<TabDraggedWindowObserver> dragged_window_observer_;
@@ -564,6 +595,21 @@ class ASH_EXPORT SplitViewController : public aura::WindowObserver,
   // window before entering overview, so when it's snapped in splitview, it
   // should remain to be the active window.
   aura::Window* to_be_activated_window_ = nullptr;
+
+  // The split view resize mode for tablet mode.
+  TabletResizeMode tablet_resize_mode_ = TabletResizeMode::kNormal;
+
+  // True *while* a resize event is being processed.
+  bool processing_resize_event_ = false;
+
+  // Accumulated drag distance, during a time interval.
+  int accumulated_drag_distance_ = 0;
+  base::TimeTicks accumulated_drag_time_ticks_;
+
+  // Used to potentially invoke `Resize()` during resizes. This is so that
+  // tablet resize mode can switch to normal mode (letting windows be resized)
+  // even if the divider isn't moved.
+  base::OneShotTimer resize_timer_;
 
   DISALLOW_COPY_AND_ASSIGN(SplitViewController);
 };

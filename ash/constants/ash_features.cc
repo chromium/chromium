@@ -804,6 +804,11 @@ const base::Feature kOverviewButton{"OverviewButton",
 const base::Feature kPerDeskShelf{"PerDeskShelf",
                                   base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Allows tablet mode split screen to resize by moving windows instead of
+// resizing. This reduces jank on low end devices.
+const base::Feature kPerformantSplitViewResizing{
+    "PerformantSplitViewResizing", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Provides a UI for users to view information about their Android phone
 // and perform phone-side actions within Chrome OS.
 const base::Feature kPhoneHub{"PhoneHub", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1441,6 +1446,10 @@ bool IsPerDeskShelfEnabled() {
 
 bool IsPhoneHubCameraRollEnabled() {
   return base::FeatureList::IsEnabled(kPhoneHubCameraRoll);
+}
+
+bool IsPerformantSplitViewResizingEnabled() {
+  return base::FeatureList::IsEnabled(kPerformantSplitViewResizing);
 }
 
 bool IsPhoneHubEnabled() {

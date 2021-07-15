@@ -2877,6 +2877,9 @@ extern const char kNearbySharingDeviceContactsDescription[];
 extern const char kNearbySharingWebRtcName[];
 extern const char kNearbySharingWebRtcDescription[];
 
+extern const char kPerformantSplitViewResizing[];
+extern const char kPerformantSplitViewResizingDescription[];
+
 extern const char kPhoneHubCameraRollName[];
 extern const char kPhoneHubCameraRollDescription[];
 

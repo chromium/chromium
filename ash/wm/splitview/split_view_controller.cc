@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -39,6 +40,7 @@
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_transient_descendant_iterator.h"
 #include "ash/wm/window_util.h"
+#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
@@ -46,6 +48,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/ranges.h"
 #include "base/system/sys_info.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/full_restore/features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -88,6 +91,16 @@ constexpr float kTwoThirdPositionRatio = 0.67f;
 // details.
 constexpr float kBlackScrimFadeInRatio = 0.1f;
 constexpr float kBlackScrimOpacity = 0.4f;
+
+// If performant split view resizing is enabled, the speed at which the divider
+// is moved controls whether windows are scaled or translated. If the divider is
+// moved more than this many pixels per second, the "fast" mode is enabled.
+constexpr int kPerformantSplitViewThresholdPixelsPerSec = 72;
+
+// If performant split view resizing is enabled, this is how often the divider
+// drag speed is checked.
+constexpr base::TimeDelta kPerformantSplitViewChunkTime =
+    base::TimeDelta::FromMilliseconds(500);
 
 // Records the animation smoothness when the divider is released during a resize
 // and animated to a fixed position ratio.
@@ -157,14 +170,20 @@ WindowStateType GetStateTypeFromSnapPosition(
   return WindowStateType::kDefault;
 }
 
-// Returns the minimum size of the window according to the screen orientation.
-int GetMinimumWindowSize(aura::Window* window, bool horizontal) {
+// Returns the minimum length of the window according to the screen orientation.
+int GetMinimumWindowLength(aura::Window* window, bool horizontal) {
   int minimum_width = 0;
   if (window && window->delegate()) {
     gfx::Size minimum_size = window->delegate()->GetMinimumSize();
     minimum_width = horizontal ? minimum_size.width() : minimum_size.height();
   }
   return minimum_width;
+}
+
+// Returns the length of the window according to the screen orientation.
+int GetWindowLength(aura::Window* window, bool horizontal) {
+  const auto& bounds = window->bounds();
+  return horizontal ? bounds.width() : bounds.height();
 }
 
 // Returns true if |window| is currently snapped.
@@ -350,8 +369,10 @@ class SplitViewController::DividerSnapAnimation
     split_view_controller_->NotifyDividerPositionChanged();
     split_view_controller_->UpdateSnappedWindowsAndDividerBounds();
     // Updating the window may stop animation.
-    if (is_animating())
+    if (is_animating()) {
+      split_view_controller_->UpdateResizeBackdrop();
       split_view_controller_->SetWindowsTransformDuringResizing();
+    }
   }
 
   void AnimationCanceled(const gfx::Animation* animation) override {
@@ -750,7 +771,7 @@ bool SplitViewController::CanSnapWindow(aura::Window* window) const {
   if (!restoring_snap_state && !wm::CanActivateWindow(window))
     return false;
 
-  return GetMinimumWindowSize(window, IsLayoutHorizontal()) <=
+  return GetMinimumWindowLength(window, IsLayoutHorizontal()) <=
          GetDividerEndPosition() / 2 - kSplitviewDividerShortSideLength / 2;
 }
 
@@ -982,6 +1003,12 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   if (snap_position == NONE)
     return work_area_bounds_in_screen;
 
+  if (window_for_minimum_size && ShouldUseWindowBoundsDuringFastResize()) {
+    gfx::Rect bounds = window_for_minimum_size->bounds();
+    ::wm::ConvertRectToScreen(window_for_minimum_size->parent(), &bounds);
+    return bounds;
+  }
+
   const bool horizontal = IsLayoutHorizontal();
   const bool snap_left_or_top = IsPhysicalLeftOrTop(snap_position);
   const bool in_tablet = Shell::Get()->tablet_mode_controller()->InTabletMode();
@@ -1000,7 +1027,8 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
       window_size -= kSplitviewDividerShortSideLength;
   }
 
-  const int minimum = GetMinimumWindowSize(window_for_minimum_size, horizontal);
+  const int minimum =
+      GetMinimumWindowLength(window_for_minimum_size, horizontal);
   DCHECK(window_for_minimum_size || minimum == 0);
   if (window_size < minimum) {
     if (in_tablet && !is_resizing_) {
@@ -1038,6 +1066,10 @@ gfx::Rect SplitViewController::GetSnappedWindowBoundsInScreen(
   return snapped_window_bounds_in_screen;
 }
 
+bool SplitViewController::ShouldUseWindowBoundsDuringFastResize() {
+  return is_resizing_ && tablet_resize_mode_ == TabletResizeMode::kFast;
+}
+
 int SplitViewController::GetDefaultDividerPosition() const {
   int default_divider_position = GetDividerEndPosition() / 2;
   if (split_view_type_ == SplitViewType::kTabletType)
@@ -1065,6 +1097,11 @@ void SplitViewController::StartResize(const gfx::Point& location_in_screen) {
   is_resizing_ = true;
   split_view_divider_->UpdateDividerBounds();
   previous_event_location_ = location_in_screen;
+
+  accumulated_drag_time_ticks_ = base::TimeTicks::Now();
+  accumulated_drag_distance_ = 0;
+
+  tablet_resize_mode_ = TabletResizeMode::kNormal;
 
   for (auto* window : {left_window_, right_window_}) {
     if (window == nullptr)
@@ -1106,6 +1143,9 @@ void SplitViewController::Resize(const gfx::Point& location_in_screen) {
 
   if (!is_resizing_)
     return;
+
+  base::AutoReset<bool> auto_reset(&processing_resize_event_, true);
+
   presentation_time_recorder_->RequestNext();
   const gfx::Rect work_area_bounds =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
@@ -1113,15 +1153,29 @@ void SplitViewController::Resize(const gfx::Point& location_in_screen) {
   gfx::Point modified_location_in_screen =
       GetBoundedPosition(location_in_screen, work_area_bounds);
 
+  // This updates `tablet_resize_mode_` based on drag speed.
+  UpdateTabletResizeMode(base::TimeTicks::Now(), modified_location_in_screen);
+
+  // If we are in the fast mode, start a timer that automatically invokes
+  // `Resize()` after a timeout. This ensure that we can switch back to the
+  // normal mode if the user stops dragging. Note: if the timer is already
+  // active, this will simply move the deadline forward.
+  if (tablet_resize_mode_ == TabletResizeMode::kFast) {
+    resize_timer_.Start(FROM_HERE, kPerformantSplitViewChunkTime, this,
+                        &SplitViewController::OnResizeTimer);
+  }
+
   // Update |divider_position_|.
   UpdateDividerPosition(modified_location_in_screen);
   NotifyDividerPositionChanged();
 
-  // Update the black scrim layer's bounds and opacity.
-  UpdateBlackScrim(modified_location_in_screen);
-
   // Update the snapped window/windows and divider's position.
   UpdateSnappedWindowsAndDividerBounds();
+
+  // Update the resize backdrop, as well as the black scrim layer's bounds and
+  // opacity.
+  UpdateResizeBackdrop();
+  UpdateBlackScrim(modified_location_in_screen);
 
   // Apply window transform if necessary.
   SetWindowsTransformDuringResizing();
@@ -1136,6 +1190,9 @@ void SplitViewController::EndResize(const gfx::Point& location_in_screen) {
     return;
   // TODO(xdai): Use fade out animation instead of just removing it.
   black_scrim_layer_.reset();
+
+  resize_timer_.Stop();
+  tablet_resize_mode_ = TabletResizeMode::kNormal;
   is_resizing_ = false;
 
   const gfx::Rect work_area_bounds =
@@ -1367,6 +1424,17 @@ void SplitViewController::OnWindowBoundsChanged(
     const gfx::Rect& new_bounds,
     ui::PropertyChangeReason reason) {
   DCHECK_EQ(root_window_, window->GetRootWindow());
+
+  if (InTabletSplitViewMode() && is_resizing_) {
+    // Bounds may be changed while we are processing a resize event. In this
+    // case, we don't update the windows transform here, since it will be done
+    // soon anyway. If we are *not* currently processing a resize, it means the
+    // bounds of a window have been updated "async", and we need to update the
+    // window's transform.
+    if (!processing_resize_event_)
+      SetWindowsTransformDuringResizing();
+    return;
+  }
 
   if (!InClamshellSplitViewMode())
     return;
@@ -1822,8 +1890,8 @@ void SplitViewController::UpdateBlackScrim(
     black_scrim_layer_.reset();
     return;
   }
-  black_scrim_layer_->SetBounds(
-      GetSnappedWindowBoundsInScreen(position, GetSnappedWindow(position)));
+  black_scrim_layer_->SetBounds(GetSnappedWindowBoundsInScreen(
+      position, /*window_for_minimum_size=*/nullptr));
 
   // Update its opacity. The opacity increases as it gets closer to the edge of
   // the screen.
@@ -1845,6 +1913,44 @@ void SplitViewController::UpdateBlackScrim(
     opacity = std::max(opacity, 0.f);
   }
   black_scrim_layer_->SetOpacity(opacity);
+}
+
+void SplitViewController::UpdateResizeBackdrop() {
+  if (!features::IsPerformantSplitViewResizingEnabled())
+    return;
+
+  // Creates a backdrop layer. It is stacked below the snapped window.
+  auto create_backdrop = [](aura::Window* window) {
+    auto resize_backdrop_layer =
+        std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR);
+
+    ui::Layer* parent = window->layer()->parent();
+    ui::Layer* stacking_target = window->layer();
+    parent->Add(resize_backdrop_layer.get());
+    parent->StackBelow(resize_backdrop_layer.get(), stacking_target);
+
+    return resize_backdrop_layer;
+  };
+
+  // Updates the bounds and color of a backdrop.
+  auto update_backdrop = [this](SnapPosition position, aura::Window* window,
+                                ui::Layer* backdrop) {
+    backdrop->SetBounds(GetSnappedWindowBoundsInParent(position, nullptr));
+    backdrop->SetColor(window->GetProperty(
+        wm::IsActiveWindow(window) ? chromeos::kFrameActiveColorKey
+                                   : chromeos::kFrameInactiveColorKey));
+  };
+
+  if (state_ == State::kLeftSnapped || state_ == State::kBothSnapped) {
+    if (!left_resize_backdrop_layer_)
+      left_resize_backdrop_layer_ = create_backdrop(left_window_);
+    update_backdrop(LEFT, left_window_, left_resize_backdrop_layer_.get());
+  }
+  if (state_ == State::kRightSnapped || state_ == State::kBothSnapped) {
+    if (!right_resize_backdrop_layer_)
+      right_resize_backdrop_layer_ = create_backdrop(right_window_);
+    update_backdrop(RIGHT, right_window_, right_resize_backdrop_layer_.get());
+  }
 }
 
 void SplitViewController::UpdateSnappedWindowsAndDividerBounds() {
@@ -2086,9 +2192,9 @@ void SplitViewController::GetDividerOptionalPositionRatios(
     std::vector<float>* out_position_ratios) {
   const bool landscape = IsCurrentScreenOrientationLandscape();
   const int min_left_size =
-      GetMinimumWindowSize(GetPhysicalLeftOrTopWindow(), landscape);
+      GetMinimumWindowLength(GetPhysicalLeftOrTopWindow(), landscape);
   const int min_right_size =
-      GetMinimumWindowSize(GetPhysicalRightOrBottomWindow(), landscape);
+      GetMinimumWindowLength(GetPhysicalRightOrBottomWindow(), landscape);
   const int divider_end_position = GetDividerEndPosition();
   const float min_size_left_ratio =
       static_cast<float>(min_left_size) / divider_end_position;
@@ -2171,9 +2277,8 @@ void SplitViewController::SetWindowsTransformDuringResizing() {
   gfx::Transform left_or_top_transform;
   if (left_or_top_window) {
     const int left_size = divider_position_;
-    const int left_minimum_size =
-        GetMinimumWindowSize(left_or_top_window, horizontal);
-    const int distance = left_size - left_minimum_size;
+    const int distance =
+        left_size - GetWindowLength(left_or_top_window, horizontal);
     if (distance < 0) {
       left_or_top_transform.Translate(horizontal ? distance : 0,
                                       horizontal ? 0 : distance);
@@ -2185,20 +2290,13 @@ void SplitViewController::SetWindowsTransformDuringResizing() {
   if (right_or_bottom_window) {
     const int right_size = GetDividerEndPosition() - divider_position_ -
                            kSplitviewDividerShortSideLength;
-    const int right_minimum_size =
-        GetMinimumWindowSize(right_or_bottom_window, horizontal);
-    const int distance = right_size - right_minimum_size;
+    const int distance =
+        right_size - GetWindowLength(right_or_bottom_window, horizontal);
     if (distance < 0) {
       right_or_bottom_transform.Translate(horizontal ? -distance : 0,
                                           horizontal ? 0 : -distance);
     }
     SetTransform(right_or_bottom_window, right_or_bottom_transform);
-  }
-
-  if (black_scrim_layer_.get()) {
-    black_scrim_layer_->SetTransform(left_or_top_transform.IsIdentity()
-                                         ? right_or_bottom_transform
-                                         : left_or_top_transform);
   }
 }
 
@@ -2271,11 +2369,57 @@ void SplitViewController::FinishWindowResizing(aura::Window* window) {
 void SplitViewController::EndResizeImpl() {
   DCHECK(InSplitViewMode());
   DCHECK(!is_resizing_);
+
+  // The backdrop layers are removed here (rather than in `EndResize()`) since
+  // they may be used while the divider is animating to a snapped position.
+  left_resize_backdrop_layer_.reset();
+  right_resize_backdrop_layer_.reset();
+
   // Resize may not end with |EndResize()|, so make sure to clear here too.
+  resize_timer_.Stop();
   presentation_time_recorder_.reset();
   RestoreWindowsTransformAfterResizing();
   FinishWindowResizing(left_window_);
   FinishWindowResizing(right_window_);
+}
+
+void SplitViewController::OnResizeTimer() {
+  if (InSplitViewMode())
+    Resize(previous_event_location_);
+}
+
+void SplitViewController::UpdateTabletResizeMode(
+    base::TimeTicks event_time_ticks,
+    const gfx::Point& event_location) {
+  if (!features::IsPerformantSplitViewResizingEnabled())
+    return;
+
+  if (IsLayoutHorizontal()) {
+    accumulated_drag_distance_ +=
+        std::abs(event_location.x() - previous_event_location_.x());
+  } else {
+    accumulated_drag_distance_ +=
+        std::abs(event_location.y() - previous_event_location_.y());
+  }
+
+  const base::TimeDelta chunk_time_ticks =
+      event_time_ticks - accumulated_drag_time_ticks_;
+  // We switch between fast and normal resize mode depending on how fast the
+  // divider is dragged. This is done in "chunks" by keeping track of how far
+  // the divider has been dragged. When the chunk gone on for long enough, we
+  // calculate the drag speed based on `accumulated_drag_distance_` and update
+  // the resize mode accordingly.
+  if (chunk_time_ticks >= kPerformantSplitViewChunkTime) {
+    int drag_per_second =
+        accumulated_drag_distance_ / chunk_time_ticks.InSecondsF();
+    tablet_resize_mode_ =
+        drag_per_second > kPerformantSplitViewThresholdPixelsPerSec
+            ? TabletResizeMode::kFast
+            : TabletResizeMode::kNormal;
+
+    accumulated_drag_time_ticks_ = event_time_ticks;
+    accumulated_drag_distance_ = 0;
+  }
 }
 
 void SplitViewController::EndWindowDragImpl(

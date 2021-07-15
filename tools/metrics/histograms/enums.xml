@@ -48769,6 +48769,7 @@ from previous Chrome versions.
   <int value="-28295905" label="AutofillEnableAccountWalletStorage:enabled"/>
   <int value="-27287076" label="DesktopPWAsTabStripSettings:disabled"/>
   <int value="-27213807" label="GlobalMediaControls:enabled"/>
+  <int value="-25025176" label="PerformantSplitViewResizing:enabled"/>
   <int value="-24570936" label="DestroyProfileOnBrowserClose:disabled"/>
   <int value="-24217468" label="QuickAnswersTextAnnotator:enabled"/>
   <int value="-23804418"
@@ -49394,6 +49395,7 @@ from previous Chrome versions.
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
+  <int value="487605950" label="PerformantSplitViewResizing:disabled"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>
   <int value="491258649" label="UseFirstPartySet"/>
   <int value="491334698" label="ConditionalTabStripAndroid:enabled"/>

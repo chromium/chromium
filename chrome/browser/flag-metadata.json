@@ -4444,6 +4444,11 @@
     "expiry_milestone": 100
   },
   {
+    "name": "performant-split-view-resizing",
+    "owners": [ "dandersson", "riomat" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "permission-chip",
     "owners": [ "bsep", "engedy", "olesiamarukhno" ],
     "expiry_milestone": 94

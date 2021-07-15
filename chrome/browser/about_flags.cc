@@ -7389,6 +7389,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kClipboardCustomFormatsDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kClipboardCustomFormats)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"performant-split-view-resizing",
+     flag_descriptions::kPerformantSplitViewResizing,
+     flag_descriptions::kPerformantSplitViewResizingDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPerformantSplitViewResizing)},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
     {"privacy-review", flag_descriptions::kPrivacyReviewName,
      flag_descriptions::kPrivacyReviewDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kPrivacyReview)},

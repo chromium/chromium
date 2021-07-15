@@ -4985,6 +4985,11 @@ const char kNearbySharingWebRtcName[] = "Nearby Sharing WebRTC";
 const char kNearbySharingWebRtcDescription[] =
     "Enables use of WebRTC in Nearby Share.";
 
+const char kPerformantSplitViewResizing[] = "Performant Split View Resizing";
+const char kPerformantSplitViewResizingDescription[] =
+    "If enabled, windows may be moved instead of scaled when resizing split "
+    "view in tablet mode.";
+
 const char kPhoneHubCameraRollName[] = "Camera Roll in Phone Hub";
 const char kPhoneHubCameraRollDescription[] =
     "Enables the Camera Roll feature in Phone Hub, which allows users to "
