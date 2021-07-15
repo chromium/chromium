@@ -4,8 +4,12 @@
 
 package org.chromium.android_webview;
 
+import android.os.SystemClock;
+
 import org.chromium.android_webview.AwContents.VisualStateCallback;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.LifecycleState;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -35,6 +39,13 @@ public class AwWebContentsObserver extends WebContentsObserver {
 
     // Temporarily stores the URL passed the last time to didFinishLoad callback.
     private String mLastDidFinishLoadUrl;
+
+    // The start time for measuring time spent on a page, from commit to the start of the next
+    // navigation.
+    private long mStartTimeSpentMillis = -1;
+
+    // The scheme for the page we're currently on and measuring time spent for.
+    private String mCurrentSchemeForTimeSpent;
 
     public AwWebContentsObserver(
             WebContents webContents, AwContents awContents, AwContentsClient awContentsClient) {
@@ -120,12 +131,60 @@ public class AwWebContentsObserver extends WebContentsObserver {
         client.updateTitle(title, true);
     }
 
+    /**
+     * Converts a scheme to a histogram key used in Android.WebView.PageTimeSpent.{Scheme}. These
+     * must be kept in sync.
+     */
+    private static String pageTimeSpentSchemeToHistogramKey(String scheme) {
+        switch (scheme) {
+            case UrlConstants.DATA_SCHEME:
+                return "Data";
+            case UrlConstants.FILE_SCHEME:
+                return "File";
+            case UrlConstants.HTTP_SCHEME:
+                return "Http";
+            case UrlConstants.HTTPS_SCHEME:
+                return "Https";
+            case UrlConstants.JAVASCRIPT_SCHEME:
+                return "JavaScript";
+            default:
+                return "Other";
+        }
+    }
+
+    @Override
+    public void didStartNavigation(NavigationHandle navigation) {
+        // Time spent on page is measured from navigation commit to the start of the next
+        // navigation.
+        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()
+                && mStartTimeSpentMillis != -1 && mCurrentSchemeForTimeSpent != null) {
+            long timeSpentMillis = SystemClock.uptimeMillis() - mStartTimeSpentMillis;
+            String key = pageTimeSpentSchemeToHistogramKey(mCurrentSchemeForTimeSpent);
+            RecordHistogram.recordLongTimesHistogram100(
+                    "Android.WebView.PageTimeSpent." + key, timeSpentMillis);
+            mStartTimeSpentMillis = -1;
+            mCurrentSchemeForTimeSpent = null;
+        }
+    }
+
     @Override
     public void didFinishNavigation(NavigationHandle navigation) {
         String url = navigation.getUrl().getPossiblyInvalidSpec();
         if (navigation.errorCode() != NetError.OK && !navigation.isDownload()) {
             processFailedLoad(
                     navigation.isInPrimaryMainFrame(), navigation.errorCode(), navigation.getUrl());
+        }
+
+        // Time spent on page is measured from navigation commit to the start of the next
+        // navigation.
+        if (navigation.isInPrimaryMainFrame() && !navigation.isSameDocument()) {
+            if (navigation.hasCommitted()) {
+                mStartTimeSpentMillis = SystemClock.uptimeMillis();
+                mCurrentSchemeForTimeSpent = navigation.getUrl().getScheme();
+            } else {
+                mStartTimeSpentMillis = -1;
+                mCurrentSchemeForTimeSpent = null;
+            }
         }
 
         if (!navigation.hasCommitted()) return;
