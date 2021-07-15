@@ -4,7 +4,9 @@
 
 #include "components/autofill_assistant/browser/user_data_util.h"
 
+#include <map>
 #include <numeric>
+
 #include "base/callback.h"
 #include "base/i18n/case_conversion.h"
 #include "base/strings/string_number_conversions.h"
@@ -27,34 +29,47 @@ namespace {
 
 constexpr char kDefaultLocale[] = "en-US";
 
-ClientStatus ExtractProfileAndFormatAutofillValue(
-    const AutofillProfile& profile,
+template <typename T>
+ClientStatus ExtractDataAndFormatAutofillValue(
+    const T& autofill_value,
     const ValueExpression& value_expression,
     const UserData* user_data,
     bool quote_meta,
     std::string* out_value) {
-  if (profile.identifier().empty() || value_expression.chunk().empty()) {
-    VLOG(1) << "|value_expression| with empty "
-               "|profile.identifier| or |value_expression|";
+  if (value_expression.chunk().empty()) {
+    VLOG(1) << "|value_expression| is empty";
     return ClientStatus(INVALID_ACTION);
   }
 
-  const autofill::AutofillProfile* address =
-      user_data->selected_address(profile.identifier());
-  if (address == nullptr) {
-    VLOG(1) << "Requested unknown address '" << profile.identifier() << "'";
-    return ClientStatus(PRECONDITION_FAILED);
+  std::map<std::string, std::string> data;
+
+  if (autofill_value.has_profile()) {
+    const auto& profile = autofill_value.profile();
+    if (profile.identifier().empty()) {
+      VLOG(1) << "empty |profile.identifier|";
+      return ClientStatus(INVALID_ACTION);
+    }
+    const autofill::AutofillProfile* address =
+        user_data->selected_address(profile.identifier());
+    if (address == nullptr) {
+      VLOG(1) << "Requested unknown address '" << profile.identifier() << "'";
+      return ClientStatus(PRECONDITION_FAILED);
+    }
+
+    auto address_map =
+        field_formatter::CreateAutofillMappings(*address, kDefaultLocale);
+    data.insert(address_map.begin(), address_map.end());
   }
 
-  auto mappings =
-      field_formatter::CreateAutofillMappings(*address, kDefaultLocale);
-  ClientStatus format_status = field_formatter::FormatExpression(
-      value_expression, mappings, quote_meta, out_value);
-  if (!format_status.ok()) {
-    return format_status;
+  const autofill::CreditCard* card = user_data->selected_card();
+  if (card != nullptr) {
+    auto card_map =
+        field_formatter::CreateAutofillMappings(*card, kDefaultLocale);
+    data.insert(card_map.begin(), card_map.end());
   }
 
-  return OkClientStatus();
+  return field_formatter::FormatExpression(value_expression, data, quote_meta,
+                                           out_value);
 }
 
 void OnGetStoredPassword(
@@ -469,8 +484,8 @@ bool CompareContactDetails(
 ClientStatus GetFormattedAutofillValue(const AutofillValue& autofill_value,
                                        const UserData* user_data,
                                        std::string* out_value) {
-  return ExtractProfileAndFormatAutofillValue(
-      autofill_value.profile(), autofill_value.value_expression(), user_data,
+  return ExtractDataAndFormatAutofillValue(
+      autofill_value, autofill_value.value_expression(), user_data,
       /* quote_meta= */ false, out_value);
 }
 
@@ -478,8 +493,8 @@ ClientStatus GetFormattedAutofillValue(
     const AutofillValueRegexp& autofill_value_regexp,
     const UserData* user_data,
     std::string* out_value) {
-  return ExtractProfileAndFormatAutofillValue(
-      autofill_value_regexp.profile(),
+  return ExtractDataAndFormatAutofillValue(
+      autofill_value_regexp,
       autofill_value_regexp.value_expression_re2().value_expression(),
       user_data,
       /* quote_meta= */ true, out_value);

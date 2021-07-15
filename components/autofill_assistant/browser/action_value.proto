@@ -24,7 +24,9 @@ message ValueExpression {
       // The key is an integer corresponding to entries from field_types.h or
       // |AutofillFormatProto::AutofillAssistantCustomField|.
       // Note that the set of actually available fields are outside of our
-      // control and are retrieved automatically from the provided profile.
+      // control and are retrieved automatically from the selected profile or
+      // credit card. In case of a credit card, the full card number as well as
+      // the CVC are not available.
       int32 key = 1;
       // A plain text.
       string text = 2;

@@ -1071,6 +1071,58 @@ TEST_F(UserDataUtilTextValueTest, EscapeDataFromProfile) {
   EXPECT_EQ(result, "^Jo\\.h\\*n$");
 }
 
+TEST_F(UserDataUtilTextValueTest, RequestDataFromUnknownCreditCard) {
+  AutofillValue autofill_value;
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
+
+  std::string result;
+
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+                .proto_status(),
+            AUTOFILL_INFO_NOT_AVAILABLE);
+  EXPECT_EQ(result, "");
+}
+
+TEST_F(UserDataUtilTextValueTest, RequestUnknownDataFromKnownCreditCard) {
+  autofill::CreditCard credit_card(base::GenerateGUID(),
+                                   autofill::test::kEmptyOrigin);
+  autofill::test::SetCreditCardInfo(&credit_card, "John Doe",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data_);
+
+  AutofillValue autofill_value;
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(AutofillFormatProto::CREDIT_CARD_VERIFICATION_CODE));
+
+  std::string result;
+
+  EXPECT_EQ(GetFormattedAutofillValue(autofill_value, &user_data_, &result)
+                .proto_status(),
+            AUTOFILL_INFO_NOT_AVAILABLE);
+  EXPECT_EQ(result, "");
+}
+
+TEST_F(UserDataUtilTextValueTest, RequestDataFromKnownCreditCard) {
+  autofill::CreditCard credit_card(base::GenerateGUID(),
+                                   autofill::test::kEmptyOrigin);
+  autofill::test::SetCreditCardInfo(&credit_card, "John Doe",
+                                    "4111 1111 1111 1111", "01", "2050", "");
+  user_model_.SetSelectedCreditCard(
+      std::make_unique<autofill::CreditCard>(credit_card), &user_data_);
+
+  AutofillValue autofill_value;
+  autofill_value.mutable_value_expression()->add_chunk()->set_key(
+      static_cast<int>(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
+
+  std::string result;
+
+  EXPECT_TRUE(
+      GetFormattedAutofillValue(autofill_value, &user_data_, &result).ok());
+  EXPECT_EQ(result, "John Doe");
+}
+
 TEST_F(UserDataUtilTextValueTest, GetCredentialsFromDifferentDomainFails) {
   user_data_.selected_login_ = absl::make_optional<WebsiteLoginManager::Login>(
       GURL("https://www.example.com"), "username");
