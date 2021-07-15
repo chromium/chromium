@@ -1212,7 +1212,9 @@ export class PDFViewerElement extends PDFViewerBaseElement {
 const TOOLBAR_WINDOW_MIN_HEIGHT = 250;
 
 /**
- * The background color used for the regular viewer.
+ * The background color used for the regular viewer. Its decimal value in string
+ * format should match `kPdfViewerBackgroundColor` in
+ * components/pdf/browser/plugin_response_writer.cc.
  * @type {number}
  */
 const BACKGROUND_COLOR = 0xff525659;
