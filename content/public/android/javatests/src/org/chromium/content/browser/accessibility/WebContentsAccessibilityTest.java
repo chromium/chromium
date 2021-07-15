@@ -29,6 +29,7 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.graphics.Rect;
 import android.graphics.RectF;
 import android.os.Build;
 import android.os.Bundle;
@@ -100,6 +101,8 @@ public class WebContentsAccessibilityTest {
             "Conversion of event masks to event types not correct.";
     private static final String TEXT_SELECTION_AND_TRAVERSAL_ERROR =
             "Expected to receive both a traversal and selection text event";
+    private static final String BOUNDING_BOX_ERROR =
+            "Expected bounding box to change after web contents was resized.";
 
     // Constant values for unit tests
     private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
@@ -1364,6 +1367,47 @@ public class WebContentsAccessibilityTest {
 
         Assert.assertNotNull(EVENT_TYPE_MASK_ERROR, outcome_test);
         Assert.assertEquals(EVENT_TYPE_MASK_ERROR, expected_test, outcome_test);
+    }
+
+    /**
+     * Test that changing the window size properly updates bounding boxes.
+     */
+    @Test
+    @SmallTest
+    public void testBoundingBoxUpdatesOnWindowResize() {
+        // Build a simple web page with a flex and a will-change: transform button.
+        setupTestWithHTML("<div style=\"display: flex; min-height: 90vh;\">\n"
+                + " <div style=\"display: flex; flex-grow: 1; align-items: flex-end;\">\n"
+                + "   <div>\n"
+                + "     <button style=\"display: inline-flex; will-change: transform;\">\n"
+                + "       Next\n"
+                + "     </button>\n"
+                + "   </div>\n"
+                + " </div>\n"
+                + "</div>");
+
+        // Find the button and get the current bounding box.
+        int buttonvvId = waitForNodeMatching(sClassNameMatcher, "android.widget.Button");
+        mNodeInfo = createAccessibilityNodeInfo(buttonvvId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+        Assert.assertEquals(NODE_TIMEOUT_ERROR, "Next", mNodeInfo.getText());
+
+        Rect beforeBounds = new Rect();
+        mNodeInfo.getBoundsInScreen(beforeBounds);
+
+        // Resize the web contents.
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mActivityTestRule.getWebContents().setSize(1080, beforeBounds.top / 3));
+
+        // Send end of test signal.
+        mActivityTestRule.sendEndOfTestSignal();
+
+        // Fetch the bounding box again and assert top has shrunk by at least half.
+        mNodeInfo = createAccessibilityNodeInfo(buttonvvId);
+        Rect afterBounds = new Rect();
+        mNodeInfo.getBoundsInScreen(afterBounds);
+
+        Assert.assertTrue(BOUNDING_BOX_ERROR, afterBounds.top < (beforeBounds.top / 2));
     }
 
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)

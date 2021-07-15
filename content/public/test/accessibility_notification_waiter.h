@@ -82,11 +82,14 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   // for a given frame within the WebContent's frame tree.
   void ListenToFrame(RenderFrameHostImpl* frame_host);
 
-  // Helper to bind the OnAccessibilityEvent callback
+  // Helper to bind the OnAccessibilityEvent callback.
   void BindOnAccessibilityEvent(RenderFrameHostImpl* frame_host);
 
-  // Helper to bind the OnGeneratedEvent callback
+  // Helper to bind the OnGeneratedEvent callback.
   void BindOnGeneratedEvent(RenderFrameHostImpl* frame_host);
+
+  // Helper to bind the OnLocationsChanged callback.
+  void BindOnLocationsChanged(RenderFrameHostImpl* frame_host);
 
   // Callback from RenderViewHostImpl.
   void OnAccessibilityEvent(RenderFrameHostImpl* rfhi,
@@ -97,6 +100,10 @@ class AccessibilityNotificationWaiter : public WebContentsObserver {
   void OnGeneratedEvent(BrowserAccessibilityDelegate* delegate,
                         ui::AXEventGenerator::Event event,
                         int event_target_id);
+
+  // Callback from BrowserAccessibilityManager when locations / bounding
+  // boxes change.
+  void OnLocationsChanged();
 
   // Callback from BrowserAccessibilityManager for the focus changed event.
   //

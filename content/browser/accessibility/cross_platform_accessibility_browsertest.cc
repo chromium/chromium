@@ -1993,4 +1993,49 @@ IN_PROC_BROWSER_TEST_F(
       ax::mojom::BoolAttribute::kSelectedFromFocus));
 }
 
+// We do not run this test on Android because only the Java code can change the
+// size of the web contents, instead see the associated test in
+// WebContentsAccessibilityTest#testBoundingBoxUpdatesOnWindowResize().
+#if !defined(OS_ANDROID)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       FlexBoxBoundingBoxUpdatesOnWindowResize) {
+  // This is an edge case that was discovered on a mobile sign-in page.
+  // The size of the outer flexbox is tied to the vertical height of the
+  // window, so ensure that the bounding box of the button is correctly
+  // recomputed if the window is resized, causing the button to move up.
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <div style="display: flex; min-height: 90vh;">
+        <div style="display: flex; flex-grow: 1; align-items: flex-end;">
+          <div>
+            <button style="display: inline-flex; will-change: transform;">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>)HTML");
+
+  BrowserAccessibility* button =
+      FindFirstNodeWithRole(ax::mojom::Role::kButton);
+  gfx::Rect bounds0 = button->GetUnclippedRootFrameBoundsRect();
+
+  // Resize the viewport, making it half the height.
+  gfx::Rect view_bounds = shell()->web_contents()->GetViewBounds();
+  view_bounds.set_height(view_bounds.height() / 2);
+  shell()->web_contents()->Resize(view_bounds);
+
+  gfx::Rect bounds1;
+  do {
+    // Wait for any event
+    AccessibilityNotificationWaiter waiter(
+        shell()->web_contents(), ui::AXMode(), ax::mojom::Event::kNone);
+    waiter.WaitForNotification();
+    bounds1 = button->GetUnclippedRootFrameBoundsRect();
+  } while (bounds1.y() == bounds0.y());
+
+  // The top coordinate of the button should be less than half of its
+  // original top coordinate.
+  EXPECT_LT(bounds1.y(), bounds0.y() / 2);
+}
+#endif
+
 }  // namespace content

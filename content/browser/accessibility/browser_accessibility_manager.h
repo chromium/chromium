@@ -245,6 +245,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
   void SetGeneratedEventCallbackForTesting(
       const GeneratedEventCallbackForTesting& callback);
 
+  // For testing only, register a function to be called when nodes
+  // change location / bounding box in this BrowserAccessibilityManager.
+  void SetLocationChangeCallbackForTesting(
+      const base::RepeatingClosure& callback);
+
   // Normally we avoid firing accessibility focus events when the containing
   // native window isn't focused, and we also delay some other events like
   // live region events to improve screen reader compatibility.
@@ -579,6 +584,9 @@ class CONTENT_EXPORT BrowserAccessibilityManager : public ui::AXTreeObserver,
 
   // For testing only: A function to call when a generated event is fired.
   GeneratedEventCallbackForTesting generated_event_callback_for_testing_;
+
+  // For testing only; A function to call when locations change.
+  base::RepeatingClosure location_change_callback_for_testing_;
 
   // Keeps track of the nested popup root's id, if it exists. See GetPopupRoot()
   // for details.

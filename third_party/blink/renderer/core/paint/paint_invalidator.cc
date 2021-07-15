@@ -323,6 +323,9 @@ bool PaintInvalidator::InvalidatePaint(
   }
 #endif  // DCHECK_IS_ON()
 
+  if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
+    cache->InvalidateBoundingBox(&object);
+
   if (!object.ShouldCheckForPaintInvalidation() && !context.NeedsSubtreeWalk())
     return false;
 
@@ -400,9 +403,6 @@ bool PaintInvalidator::InvalidatePaint(
         (!pre_paint_info || pre_paint_info->is_last_for_node))
       mf_checker->NotifyInvalidatePaint(object);
   }
-
-  if (AXObjectCache* cache = object.GetDocument().ExistingAXObjectCache())
-    cache->InvalidateBoundingBox(&object);
 
   return reason != PaintInvalidationReason::kNone;
 }

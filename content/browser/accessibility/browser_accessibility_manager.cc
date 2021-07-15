@@ -606,6 +606,8 @@ void BrowserAccessibilityManager::OnLocationChanges(
                       change->new_location.transform.get());
   }
   SendLocationChangeEvents(changes);
+  if (!location_change_callback_for_testing_.is_null())
+    location_change_callback_for_testing_.Run();
 }
 
 void BrowserAccessibilityManager::SendLocationChangeEvents(
@@ -795,6 +797,11 @@ void BrowserAccessibilityManager::SetFocusChangeCallbackForTesting(
 void BrowserAccessibilityManager::SetGeneratedEventCallbackForTesting(
     const GeneratedEventCallbackForTesting& callback) {
   generated_event_callback_for_testing_ = callback;
+}
+
+void BrowserAccessibilityManager::SetLocationChangeCallbackForTesting(
+    const base::RepeatingClosure& callback) {
+  location_change_callback_for_testing_ = callback;
 }
 
 // static
