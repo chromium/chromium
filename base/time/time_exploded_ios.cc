@@ -9,6 +9,7 @@
 #include <CoreFoundation/CFTimeZone.h>
 
 #include "base/mac/scoped_cftyperef.h"
+#include "base/numerics/safe_conversions.h"
 
 #if __LP64__
 #error Use posix implementation on 64-bit platforms.
@@ -46,8 +47,7 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   // it cannot be suited to int64, then fail to avoid overflows.
   double microseconds =
       (seconds * kMicrosecondsPerSecond) + kTimeTToMicrosecondsOffset;
-  if (microseconds > std::numeric_limits<int64_t>::max() ||
-      microseconds < std::numeric_limits<int64_t>::min()) {
+  if (!IsValueInRangeForNumericType<int64_t>(microseconds)) {
     *time = Time(0);
     return false;
   }
