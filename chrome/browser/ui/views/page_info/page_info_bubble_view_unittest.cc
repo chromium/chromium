@@ -397,6 +397,7 @@ class PageInfoBubbleViewTest : public testing::Test,
  protected:
   bool is_page_info_v2_enabled() const { return GetParam(); }
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<ScopedTestingLocalState> testing_local_state_;
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
@@ -404,7 +405,6 @@ class PageInfoBubbleViewTest : public testing::Test,
 
   views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 base::Value ReadJson(base::StringPiece json) {
