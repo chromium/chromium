@@ -2604,6 +2604,26 @@ constexpr char kBorealisDiskManagementInternalName[] =
     "borealis-disk-management";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if defined(OS_ANDROID)
+// The variations of Continuous Search.
+const FeatureEntry::FeatureParam kContinuousSearchAfterSecondSrp[] = {
+    {"trigger_mode", "1"}};
+
+const FeatureEntry::FeatureParam kContinuousSearchOnReverseScroll[] = {
+    {"trigger_mode", "2"}};
+
+const FeatureEntry::FeatureParam kContinuousSearchPermanentDismissal[] = {
+    {"permanent_dismissal_threshold", "3"}};
+
+const FeatureEntry::FeatureVariation kContinuousSearchFeatureVariations[] = {
+    {"show after second SRP", kContinuousSearchAfterSecondSrp,
+     base::size(kContinuousSearchAfterSecondSrp), nullptr},
+    {"show on reverse scroll", kContinuousSearchOnReverseScroll,
+     base::size(kContinuousSearchOnReverseScroll), nullptr},
+    {"with permanent dismissal", kContinuousSearchPermanentDismissal,
+     base::size(kContinuousSearchPermanentDismissal), nullptr}};
+#endif  // defined(OS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -6991,7 +7011,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_ANDROID)
     {"continuous-search", flag_descriptions::kContinuousSearchName,
      flag_descriptions::kContinuousSearchDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kContinuousSearch)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(features::kContinuousSearch,
+                                    kContinuousSearchFeatureVariations,
+                                    "ContinuousSearchVariations")},
 
     {"enable-experimental-accessibility-labels",
      flag_descriptions::kExperimentalAccessibilityLabelsName,

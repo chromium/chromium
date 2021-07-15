@@ -96,6 +96,19 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram name="Browser.ContinuousSearch.DismissalCount" units="count"
+    expires_after="2021-12-12">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>fredmello@chromium.org</owner>
+  <owner>yashard@chromium.org</owner>
+  <summary>
+    Records the number of dismissals of the Continuous Search feature. It is
+    emitted when the Continuous Search UI is dismissed via the dismiss button.
+    This metric is only emitted if permanent dismissal is enabled and the UI is
+    not permanently dismissed.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ContinuousSearch.NumberOfSearchResultsExtracted"
     units="count" expires_after="2021-12-12">
   <owner>ckitagawa@chromium.org</owner>

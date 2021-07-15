@@ -43,6 +43,7 @@ public class ContinuousSearchListCoordinator {
             BrowserControlsStateProvider browserControlsStateProvider,
             ObservableSupplier<Tab> tabSupplier, Callback<VisibilitySettings> setLayoutVisibility,
             ThemeColorProvider themeColorProvider, Resources resources) {
+        ContinuousSearchConfiguration.initialize();
         mRootViewModel = new PropertyModel(ContinuousSearchListProperties.ALL_KEYS);
         ModelList listItems = new ModelList();
         mRecyclerViewAdapter = new SimpleRecyclerViewAdapter(listItems);

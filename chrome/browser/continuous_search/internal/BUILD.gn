@@ -18,6 +18,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImpl.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataObserver.java",
+    "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfiguration.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducer.java",
     "android/java/src/org/chromium/chrome/browser/continuous_search/SearchResultListener.java",
@@ -33,6 +34,7 @@ android_library("java") {
     "//chrome/android:chrome_app_java_resources",
     "//chrome/browser/continuous_search:data_structures_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//content/public/android:content_java",
@@ -50,6 +52,7 @@ android_library("junit") {
   sources = [
     "android/junit/org/chromium/chrome/browser/continuous_search/BackNavigationTabObserverTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousNavigationUserDataImplTest.java",
+    "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchConfigurationTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/ContinuousSearchTabObserverTest.java",
     "android/junit/org/chromium/chrome/browser/continuous_search/SearchResultExtractorProducerTest.java",
   ]
@@ -61,6 +64,7 @@ android_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/continuous_search:data_structures_java",
     "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/tab:java",
     "//chrome/test/android:chrome_java_test_support",
     "//content/public/android:content_java",

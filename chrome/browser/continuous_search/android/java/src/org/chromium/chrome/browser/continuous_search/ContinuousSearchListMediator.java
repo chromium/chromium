@@ -104,6 +104,7 @@ class ContinuousSearchListMediator implements ContinuousNavigationUserDataObserv
         // To avoid showing for duration of the current SRP session don't delete the data, instead
         // hide the UI permamently. Data will be deleted as soon as the SRP session is over.
         mDismissed = true;
+        ContinuousSearchConfiguration.recordDismissed();
         setVisibility(false, null);
     }
 

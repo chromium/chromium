@@ -24,6 +24,7 @@ import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -74,6 +75,9 @@ public class ContinuousSearchTabObserverTest {
 
     @Before
     public void setUp() {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.CONTINUOUS_SEARCH, true);
+        FeatureList.setTestValues(testValues);
         ShadowRecordHistogram.reset();
 
         mSrpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_1);
@@ -111,8 +115,10 @@ public class ContinuousSearchTabObserverTest {
         mObserver.onUpdateUrl(mTabMock, mNonSrpUrl);
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mNonSrpUrl));
 
+        doReturn(false).when(mUserDataMock).isMatchingSrp(eq(mNonSrpUrl));
         mObserver.onPageLoadFinished(mTabMock, mNonSrpUrl);
-        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mNonSrpUrl));
+        inOrder.verify(mUserDataMock).isMatchingSrp(eq(mNonSrpUrl));
+        inOrder.verifyNoMoreInteractions();
     }
 
     /**
@@ -126,7 +132,6 @@ public class ContinuousSearchTabObserverTest {
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
-        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
         inOrder.verify(mProducerMock).fetchResults(eq(mSrpUrl), eq(TEST_QUERY));
 
         ContinuousNavigationMetadata metadata = mock(ContinuousNavigationMetadata.class);
@@ -151,7 +156,6 @@ public class ContinuousSearchTabObserverTest {
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
-        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
         inOrder.verify(mProducerMock).fetchResults(eq(mSrpUrl), eq(TEST_QUERY));
 
         mObserver.onError(1);
@@ -170,7 +174,6 @@ public class ContinuousSearchTabObserverTest {
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
-        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
         inOrder.verify(mProducerMock).fetchResults(eq(mSrpUrl), eq(TEST_QUERY));
 
         mObserver.onCloseContents(mTabMock);
@@ -189,7 +192,6 @@ public class ContinuousSearchTabObserverTest {
         inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
 
         mObserver.onPageLoadFinished(mTabMock, mSrpUrl);
-        inOrder.verify(mUserDataMock).updateCurrentUrl(eq(mSrpUrl));
         inOrder.verify(mProducerMock).fetchResults(eq(mSrpUrl), eq(TEST_QUERY));
 
         // Close the tab.

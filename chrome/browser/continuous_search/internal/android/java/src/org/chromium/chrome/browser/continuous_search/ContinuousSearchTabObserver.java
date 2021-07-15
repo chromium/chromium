@@ -36,7 +36,10 @@ public class ContinuousSearchTabObserver extends EmptyTabObserver implements Sea
     public void onPageLoadFinished(Tab tab, GURL url) {
         ContinuousNavigationUserDataImpl continuousNavigationUserData =
                 ContinuousNavigationUserDataImpl.getOrCreateForTab(tab);
-        continuousNavigationUserData.updateCurrentUrl(url);
+        if (ContinuousSearchConfiguration.isPermanentlyDismissed()) {
+            continuousNavigationUserData.invalidateData();
+            return;
+        }
 
         // Cancel any existing requests.
         resetProducer();
