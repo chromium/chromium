@@ -7091,6 +7091,7 @@
                 "android_weblayer",
                 "chromeos",
                 "chromeos_lacros",
+                "ios",
                 "linux",
                 "mac",
                 "windows"
