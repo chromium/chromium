@@ -1271,6 +1271,15 @@ ci.angle_thin_tester(
 )
 
 ci.angle_thin_tester(
+    name = "mac-angle-amd-exp",
+    console_view_entry = consoles.console_view_entry(
+        category = "Mac|AMD|ANGLE",
+        short_name = "exp",
+    ),
+    triggered_by = ["mac-angle-builder"],
+)
+
+ci.angle_thin_tester(
     name = "mac-angle-intel",
     console_view_entry = consoles.console_view_entry(
         category = "Mac|Intel|ANGLE",
@@ -2533,7 +2542,7 @@ ci.dawn_mac_builder(
     name = "Dawn Mac x64 Builder",
     console_view_entry = consoles.console_view_entry(
         category = "ToT|Mac|Builder",
-        short_name = "x64",
+        short_name = "exp",
     ),
 )
 
@@ -2572,6 +2581,15 @@ ci.dawn_thin_tester(
     cq_mirrors_console_view = "mirrors",
     main_console_view = main_console_if_on_branch(),
     triggered_by = ["ci/Dawn Mac x64 DEPS Builder"],
+)
+
+ci.dawn_thin_tester(
+    name = "Dawn Mac x64 Experimental Release (AMD)",
+    console_view_entry = consoles.console_view_entry(
+        category = "ToT|Mac|AMD",
+        short_name = "x64",
+    ),
+    triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.dawn_thin_tester(

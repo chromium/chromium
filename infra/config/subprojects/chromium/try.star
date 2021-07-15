@@ -729,6 +729,14 @@ try_.chromium_angle_builder(
 )
 
 try_.chromium_angle_builder(
+    name = "angle-try-mac-amd-exp",
+    cores = None,
+    os = os.MAC_ANY,
+    pool = "luci.chromium.gpu.mac.retina.amd.try",
+    executable = "recipe:angle_chromium_trybot",
+)
+
+try_.chromium_angle_builder(
     name = "win-angle-chromium-x64-try",
     os = os.WINDOWS_ANY,
     executable = "recipe:angle_chromium_trybot",
@@ -979,6 +987,12 @@ try_.chromium_dawn_builder(
 try_.chromium_dawn_builder(
     name = "mac-dawn-rel",
     os = os.MAC_ANY,
+)
+
+try_.chromium_dawn_builder(
+    name = "dawn-try-mac-amd-exp",
+    os = os.MAC_ANY,
+    pool = "luci.chromium.gpu.mac.retina.amd.try",
 )
 
 try_.chromium_dawn_builder(

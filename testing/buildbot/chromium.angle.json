@@ -1685,6 +1685,7 @@
       }
     ]
   },
+  "mac-angle-amd-exp": {},
   "mac-angle-builder": {},
   "mac-angle-chromium-amd": {
     "gtest_tests": [

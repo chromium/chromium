@@ -867,6 +867,7 @@
       'android-angle-try': 'angle_specific_no_trace_android_release_trybot_arm64',
       'android_angle_rel_ng': 'gpu_tests_android_release_trybot_arm64',
       'android_angle_deqp_rel_ng': 'angle_deqp_android_release_trybot_arm64',
+      'angle-try-mac-amd-exp': 'angle_specific_release_trybot',
       'fuchsia-angle-rel': 'gpu_fyi_tests_release_trybot_fuchsia',
       'fuchsia-angle-try': 'angle_specific_release_trybot_fuchsia',
       'ios-angle-try-intel': 'angle_specific_release_trybot_ios',
@@ -957,6 +958,7 @@
     'tryserver.chromium.dawn': {
       'dawn-linux-x64-deps-rel': 'dawn_tests_release_trybot',
       'dawn-mac-x64-deps-rel': 'dawn_tests_release_trybot',
+      'dawn-try-mac-amd-exp': 'dawn_tests_release_trybot',
       'dawn-win10-x86-deps-rel': 'dawn_tests_release_trybot_x86',
       'dawn-win10-x64-deps-rel': 'dawn_tests_release_trybot',
       'linux-dawn-rel': 'dawn_tests_release_trybot',
