@@ -2460,6 +2460,9 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_PASSWORDS_ERROR_TITLE" desc="Title of the error message shown for sync errors when it affects passwords only. [iOS only]">
         Password Sync Isn't Working
       </message>
+      <message name="IDS_SYNC_NEEDS_VERIFICATION_TITLE" desc="Title of the error message shown when sync needs to verify the user. [iOS only]">
+        Sync Needs To Verify It's You
+      </message>
       <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
         Initial sync setup was not finished. Sync is off.
       </message>

@@ -896,11 +896,8 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
               ? IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_EVERYTHING
               : IDS_IOS_GOOGLE_SERVICES_SETTINGS_SYNC_FIX_RECOVERABILITY_DEGRADED_FOR_PASSWORDS);
 
-      // Also override the title to be more accurate, if only passwords are
-      // being encrypted.
-      if (!self.syncSetupService->IsEncryptEverythingEnabled()) {
-        syncErrorItem.text = GetNSString(IDS_IOS_SYNC_PASSWORDS_ERROR_TITLE);
-      }
+      // Also override the title to be more accurate.
+      syncErrorItem.text = GetNSString(IDS_SYNC_NEEDS_VERIFICATION_TITLE);
       break;
   }
 
