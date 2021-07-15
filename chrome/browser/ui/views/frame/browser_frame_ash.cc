@@ -85,7 +85,8 @@ void BrowserFrameAsh::OnWidgetInitDone() {
   // For legacy reasons v1 apps (like Secure Shell) are allowed to consume keys
   // like brightness, volume, etc. Otherwise these keys are handled by the
   // Ash window manager.
-  window_state->SetCanConsumeSystemKeys(browser->deprecated_is_app());
+  window_state->SetCanConsumeSystemKeys(browser->is_type_app() ||
+                                        browser->is_type_app_popup());
 
   full_restore::FullRestoreInfo::GetInstance()->OnWidgetInitialized(
       GetWidget());
@@ -183,10 +184,10 @@ views::Widget::InitParams BrowserFrameAsh::GetWidgetParams() {
 
   // This is only needed for ash. For lacros, Exo tags the associated
   // ShellSurface as being of AppType::LACROS.
+  bool is_app = browser->is_type_app() || browser->is_type_app_popup();
   params.init_properties_container.SetProperty(
-      aura::client::kAppType,
-      static_cast<int>(browser->deprecated_is_app() ? ash::AppType::CHROME_APP
-                                                    : ash::AppType::BROWSER));
+      aura::client::kAppType, static_cast<int>(is_app ? ash::AppType::CHROME_APP
+                                                      : ash::AppType::BROWSER));
 
   full_restore::ModifyWidgetParams(restore_id, &params);
   // Override session restore bounds with Full Restore bounds if they exist.
