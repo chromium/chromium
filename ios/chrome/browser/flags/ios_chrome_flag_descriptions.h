@@ -145,6 +145,12 @@ extern const char kRestoreSessionFromCacheDescription[];
 extern const char kEnableAutofillAccountWalletStorageName[];
 extern const char kEnableAutofillAccountWalletStorageDescription[];
 
+// Title and description for the flag to enable address verification support in
+// autofill address save prompts.
+extern const char kEnableAutofillAddressSavePromptAddressVerificationName[];
+extern const char
+    kEnableAutofillAddressSavePromptAddressVerificationDescription[];
+
 // Title and description for the flag to enable autofill address save prompts.
 extern const char kEnableAutofillAddressSavePromptName[];
 extern const char kEnableAutofillAddressSavePromptDescription[];

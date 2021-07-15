@@ -698,6 +698,14 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInterestFeedNoticeCardAutoDismissDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(feed::kInterestFeedNoticeCardAutoDismiss)},
+    {"autofill-address-verification-in-save-prompt",
+     flag_descriptions::kEnableAutofillAddressSavePromptAddressVerificationName,
+     flag_descriptions::
+         kEnableAutofillAddressSavePromptAddressVerificationDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         autofill::features::
+             kAutofillAddressProfileSavePromptAddressVerificationSupport)},
     {"autofill-address-save-prompt",
      flag_descriptions::kEnableAutofillAddressSavePromptName,
      flag_descriptions::kEnableAutofillAddressSavePromptDescription,

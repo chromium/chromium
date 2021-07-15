@@ -163,6 +163,11 @@ const char kEnableAutofillAccountWalletStorageName[] =
 const char kEnableAutofillAccountWalletStorageDescription[] =
     "Enable the ephemeral storage for account data for autofill.";
 
+const char kEnableAutofillAddressSavePromptAddressVerificationName[] =
+    "Autofill Address Save Prompts Address Verification";
+const char kEnableAutofillAddressSavePromptAddressVerificationDescription[] =
+    "Enable the address verification support in Autofill address save prompts.";
+
 const char kEnableAutofillAddressSavePromptName[] =
     "Autofill Address Save Prompts";
 const char kEnableAutofillAddressSavePromptDescription[] =
