@@ -52,6 +52,7 @@
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
+#import "ios/public/provider/chrome/browser/discover_feed/discover_feed_view_controller_configuration.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -238,11 +239,15 @@
   // Requests a Discover feed here if the correct flags and prefs are enabled.
   if ([self shouldUseRefactoredNTP]) {
     self.ntpViewController = [[NewTabPageViewController alloc] init];
+    DiscoverFeedViewControllerConfiguration* viewControllerConfig =
+        [[DiscoverFeedViewControllerConfiguration alloc] init];
+    viewControllerConfig.browser = self.browser;
+    viewControllerConfig.scrollDelegate = self.ntpViewController;
+    viewControllerConfig.previewDelegate = self;
     self.discoverFeedViewController =
         ios::GetChromeBrowserProvider()
             .GetDiscoverFeedProvider()
-            ->NewFeedViewControllerWithScrollDelegate(self.browser,
-                                                      self.ntpViewController);
+            ->NewFeedViewControllerWithConfiguration(viewControllerConfig);
   }
 
   if (self.discoverFeedViewController) {
