@@ -2801,15 +2801,15 @@ void NavigationRequest::OnResponseStarted(
 
   {
     const url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
-    // TODO(pmeuleman) Move the enforcement of COOP to after
-    // ComputePoliciesToCommit and use the origin from
-    // GetOriginForURLLoaderFactory.
+    policy_container_navigation_bundle_->SetCrossOriginOpenerPolicy(
+        coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin));
+
+    ComputePoliciesToCommit();
     const absl::optional<network::mojom::BlockedByResponseReason>
         coop_requires_blocking = coop_status_.EnforceCOOP(
-            coop_status_.RetrieveCOOPFromResponse(response_head_.get(), origin),
+            policy_container_navigation_bundle_->FinalPolicies()
+                .cross_origin_opener_policy,
             origin, network_isolation_key);
-    policy_container_navigation_bundle_->SetCrossOriginOpenerPolicy(
-        coop_status_.current_coop());
     if (coop_requires_blocking) {
       // TODO(https://crbug.com/1172169): Investigate what must be done in case
       // of a download.
@@ -2823,7 +2823,6 @@ void NavigationRequest::OnResponseStarted(
     }
   }
 
-  ComputePoliciesToCommit();
 
   // The navigation may have encountered a header that requests isolation for
   // the url's origin. Before we pick the renderer, make sure we update the
@@ -3264,6 +3263,19 @@ void NavigationRequest::OnRequestFailedInternal(
     DCHECK_EQ(net::ERR_BLOCKED_BY_CLIENT, status.error_code);
     frame_tree_node_->SetCollapsed(true);
   }
+
+  is_mhtml_or_subframe_ = false;
+  sandbox_flags_to_commit_.reset();
+  // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
+  // flags from their parent/opener. Document loaded from the network
+  // shouldn't have any influence over Chrome's internal error page. We should
+  // define our own flags, preferably the strictest ones instead.
+  ComputePoliciesToCommitForError();
+
+  coop_status_.EnforceCOOP(policy_container_navigation_bundle_->FinalPolicies()
+                               .cross_origin_opener_policy,
+                           url::Origin(),
+                           net::NetworkIsolationKey::CreateTransient());
 
   RenderFrameHostImpl* render_frame_host = nullptr;
   switch (ComputeErrorPageProcess(status.error_code)) {
@@ -3952,14 +3964,6 @@ void NavigationRequest::CommitErrorPage(
       IgnoreInterfaceDisconnection();
     }
   }
-
-  is_mhtml_or_subframe_ = false;
-  sandbox_flags_to_commit_.reset();
-  // TODO(https://crbug.com/1158370): Apparently, error pages inherit sandbox
-  // flags from their parent/opener. Document loaded from the network
-  // shouldn't have any influence over Chrome's internal error page. We should
-  // define our own flags, preferably the strictest ones instead.
-  ComputePoliciesToCommitForError();
 
   // On failed navigations, the redirect chain should only contain the last URL.
   redirect_chain_.clear();

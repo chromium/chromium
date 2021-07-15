@@ -160,15 +160,6 @@ void PolicyContainerNavigationBundle::ComputePoliciesForError() {
   // crbug.com/1180140.
   policies->ip_address_space = delivered_policies_->ip_address_space;
 
-  // TODO(https://crbug.com/1153648) This keeps the existing behavior which is
-  // to keep the last value stored in cross_origin_opener_policy_status for the
-  // error page. This will be the previous document COOP value or the last
-  // redirect. This should be changed to a default value to be decided, for that
-  // this will need to be executed before determining the render frame host to
-  // use for the error.
-  policies->cross_origin_opener_policy =
-      delivered_policies_->cross_origin_opener_policy;
-
   SetFinalPolicies(std::move(policies));
 
   DCHECK(HasComputedPolicies());

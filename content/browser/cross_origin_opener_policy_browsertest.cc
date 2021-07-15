@@ -13,6 +13,7 @@
 #include "content/common/content_navigation_policy.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
@@ -2518,6 +2519,70 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
     EXPECT_NE(current_si->GetProcess(), previous_si->GetProcess());
     EXPECT_FALSE(current_si->IsCrossOriginIsolated());
   }
+}
+
+// Regression test for https://crbug.com/1226909.
+IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
+                       NavigatePopupToErrorAndCrash) {
+  GURL isolated_page(
+      https_server()->GetURL("a.com",
+                             "/set-header?"
+                             "Cross-Origin-Opener-Policy: same-origin&"
+                             "Cross-Origin-Embedder-Policy: require-corp"));
+
+  // Initial cross-origin isolated page.
+  EXPECT_TRUE(NavigateToURL(shell(), isolated_page));
+  SiteInstanceImpl* main_si = current_frame_host()->GetSiteInstance();
+  EXPECT_TRUE(main_si->IsCrossOriginIsolated());
+
+  ShellAddedObserver shell_observer;
+  GURL error_url(embedded_test_server()->GetURL("/close-socket"));
+  EXPECT_TRUE(ExecJs(current_frame_host(),
+                     JsReplace("window.w = open($1);", error_url)));
+  WebContentsImpl* popup_web_contents =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  WaitForLoadStop(popup_web_contents);
+
+  // The popup should commit an error page with default COOP.
+  EXPECT_EQ(PAGE_TYPE_ERROR, popup_web_contents->GetController()
+                                 .GetLastCommittedEntry()
+                                 ->GetPageType());
+  EXPECT_FALSE(popup_web_contents->GetMainFrame()
+                   ->GetSiteInstance()
+                   ->IsCrossOriginIsolated());
+  EXPECT_EQ(CoopUnsafeNone(),
+            popup_web_contents->GetMainFrame()->cross_origin_opener_policy());
+
+  url::Origin error_origin =
+      popup_web_contents->GetMainFrame()->GetLastCommittedOrigin();
+
+  // Simulate the popup renderer process crashing.
+  RenderProcessHost* popup_process =
+      popup_web_contents->GetMainFrame()->GetProcess();
+  EXPECT_NE(popup_process, current_frame_host()->GetProcess());
+
+  ASSERT_TRUE(popup_process);
+  {
+    RenderProcessHostWatcher crash_observer(
+        popup_process, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+    popup_process->Shutdown(0);
+    crash_observer.Wait();
+  }
+
+  // Try to navigate the popup. This should not be possible, since the opener
+  // relationship should be closed.
+  EXPECT_TRUE(
+      ExecJs(current_frame_host(), "window.w.location = 'about:blank';"));
+  WaitForLoadStop(popup_web_contents);
+
+  // The popup should not have navigated.
+  EXPECT_EQ(error_origin,
+            popup_web_contents->GetMainFrame()->GetLastCommittedOrigin());
+  EXPECT_FALSE(popup_web_contents->GetMainFrame()
+                   ->GetSiteInstance()
+                   ->IsCrossOriginIsolated());
+  EXPECT_EQ(CoopUnsafeNone(),
+            popup_web_contents->GetMainFrame()->cross_origin_opener_policy());
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
