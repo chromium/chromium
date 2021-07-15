@@ -4,6 +4,6 @@
 
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/EyeDropper/explainer.md
 
-dictionary ColorSelectEventInit : PointerEventInit {
-    DOMString value = "";
+dictionary ColorSelectionResult {
+    DOMString sRGBHex;
 };

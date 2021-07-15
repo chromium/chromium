@@ -5,15 +5,8 @@
 // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/EyeDropper/explainer.md
 
 [Exposed=Window, RuntimeEnabled=EyeDropperAPI]
-interface EyeDropper : EventTarget {
-  [CallWith=ScriptState] constructor();
+interface EyeDropper {
+  [CallWith=ExecutionContext] constructor();
 
-  Promise<void> open();
-  void close();
-
-  readonly attribute boolean opened;
-
-  // Event handler attributes
-  attribute EventHandler oncolorselect;
-  attribute EventHandler onclose;
+  [CallWith=ScriptState, RaisesException] Promise<ColorSelectionResult> open();
 };
