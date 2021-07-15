@@ -186,8 +186,8 @@ TEST_F(DatabaseMaintenanceImplTest, ExecuteMaintenanceTasks) {
   // Verify that for each of the signal data, we get a compaction request for
   // each day within the correct range.
   for (auto& sd : signal_datas) {
-    for (uint64_t days_ago = kEarliestCompactionDaysAgo;
-         days_ago <= kLatestCompactionDaysAgo; ++days_ago) {
+    for (uint64_t days_ago = kLatestCompactionDaysAgo;
+         days_ago <= kEarliestCompactionDaysAgo; ++days_ago) {
       EXPECT_CALL(*signal_database_,
                   CompactSamplesForDay(
                       sd.signal_type, sd.name_hash,
