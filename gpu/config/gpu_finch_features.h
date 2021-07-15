@@ -33,6 +33,8 @@ GPU_EXPORT extern const base::Feature kDefaultEnableOopRasterization;
 
 GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
 
+GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;
+
 #if defined(OS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
 #endif
@@ -64,6 +66,7 @@ GPU_EXPORT extern const base::Feature kEnableDrDc;
 
 GPU_EXPORT bool IsUsingVulkan();
 GPU_EXPORT bool IsDrDcEnabled();
+GPU_EXPORT bool IsANGLEValidationEnabled();
 
 #if defined(OS_ANDROID)
 GPU_EXPORT bool IsAImageReaderEnabled();

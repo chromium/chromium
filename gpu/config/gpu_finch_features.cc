@@ -7,6 +7,7 @@
 #include "base/command_line.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/config/gpu_switches.h"
+#include "ui/gl/gl_features.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
@@ -134,6 +135,10 @@ const base::Feature kDefaultEnableOopRasterization{
 // Enables the use of out of process rasterization for canvas.
 const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the use of ANGLE validation for non-WebGL contexts.
+const base::Feature kDefaultEnableANGLEValidation{
+    "DefaultEnableANGLEValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_WIN)
 // Use a high priority for GPU process on Windows.
@@ -307,6 +312,25 @@ bool IsDrDcEnabled() {
 #else
   return false;
 #endif
+}
+
+bool IsANGLEValidationEnabled() {
+  if (!base::FeatureList::IsEnabled(kDefaultEnableANGLEValidation)) {
+    return false;
+  }
+
+  if (!UsePassthroughCommandDecoder()) {
+    return false;
+  }
+
+  // Enable ANGLE validation when OOP canvas is enabled on Windows
+#if defined(OS_WIN)
+  if (!base::FeatureList::IsEnabled(kCanvasOopRasterization)) {
+    return false;
+  }
+#endif
+
+  return true;
 }
 
 #if defined(OS_ANDROID)

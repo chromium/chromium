@@ -34,6 +34,7 @@
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/command_buffer/service/sync_point_manager.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/common/memory_stats.h"
 #include "gpu/ipc/service/gpu_channel.h"
@@ -767,6 +768,12 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
   use_virtualized_gl_contexts |=
       gpu_driver_bug_workarounds_.use_virtualized_gl_contexts;
 
+  bool enable_angle_validation = features::IsANGLEValidationEnabled();
+#if DCHECK_IS_ON()
+  // Force validation on for all debug builds and testing
+  enable_angle_validation = true;
+#endif
+
   const bool use_passthrough_decoder =
       gles2::PassthroughCommandDecoderSupported() &&
       gpu_preferences_.use_passthrough_cmd_decoder;
@@ -799,6 +806,8 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
       // an issue for mixing using context with different settings.
       // attribs.robust_resource_initialization = false;
     }
+
+    attribs.can_skip_validation = !enable_angle_validation;
 
     context =
         gl::init::CreateGLContext(share_group.get(), surface.get(), attribs);
@@ -856,7 +865,7 @@ scoped_refptr<SharedContextState> GpuChannelManager::GetSharedContextState(
 
   // Log crash reports when GL errors are generated.
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      feature_info->feature_flags().khr_debug) {
+      enable_angle_validation && feature_info->feature_flags().khr_debug) {
     static int remaining_gl_error_reports =
 #if defined(OS_ANDROID)
         // Don't generate crash reports on Android due to errors generated
