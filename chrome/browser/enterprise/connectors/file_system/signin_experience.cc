@@ -6,6 +6,7 @@
 
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
 #include "chrome/browser/enterprise/connectors/file_system/service_settings.h"
 #include "chrome/browser/enterprise/connectors/file_system/signin_confirmation_modal.h"
 #include "chrome/browser/ui/browser.h"
@@ -145,6 +146,60 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
       l10n_util::GetStringUTF16(
           IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_REQUIRED_ACCEPT_BUTTON),
       std::move(confirmed_to_sign_in));
+}
+
+void OnConfirmationModalClosedForSettingsPage(
+    gfx::NativeWindow context,
+    content::BrowserContext* browser_context,
+    const FileSystemSettings& settings,
+    base::OnceCallback<void(bool)> settings_page_callback,
+    bool user_confirmed_to_proceed) {
+  AuthorizationCompletedCallback converted_cb = base::BindOnce(
+      [](base::OnceCallback<void(bool)> cb,
+         const GoogleServiceAuthError& status, const std::string& access_token,
+         const std::string& refresh_token) {
+        std::move(cb).Run(status.state() ==
+                          GoogleServiceAuthError::State::NONE);
+      },
+      std::move(settings_page_callback));
+  OnConfirmationModalClosed(context, browser_context, settings,
+                            std::move(converted_cb), user_confirmed_to_proceed);
+}
+
+void StartFileSystemConnectorSigninExperienceForSettingsPage(
+    Profile* profile,
+    base::OnceCallback<void(bool)> callback) {
+  gfx::NativeWindow context = FindMostRelevantContextWindow(nullptr);
+  DCHECK(context);
+
+  auto settings = GetFileSystemSettings(profile);
+  if (!settings.has_value())
+    return std::move(callback).Run(false);
+
+  DCHECK_EQ(settings->service_provider, kBoxProviderName);
+  std::u16string provider =
+      l10n_util::GetStringUTF16(IDS_FILE_SYSTEM_CONNECTOR_BOX);
+
+  base::OnceCallback<void(bool)> confirmed_to_sign_in =
+      base::BindOnce(&OnConfirmationModalClosedForSettingsPage, context,
+                     profile, settings.value(), std::move(callback));
+  FileSystemConfirmationModal::Show(
+      context,
+      l10n_util::GetStringFUTF16(IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_CONFIRM_TITLE,
+                                 provider),
+      l10n_util::GetStringUTF16(
+          IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_CONFIRM_MESSAGE),
+      l10n_util::GetStringUTF16(
+          IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_CONFIRM_CANCEL_BUTTON),
+      l10n_util::GetStringUTF16(
+          IDS_FILE_SYSTEM_CONNECTOR_SIGNIN_CONFIRM_ACCEPT_BUTTON),
+      std::move(confirmed_to_sign_in));
+}
+
+bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
+                                           PrefService* prefs) {
+  CHECK_EQ(settings.service_provider, kBoxProviderName);
+  return ClearFileSystemOAuth2Tokens(prefs, kBoxProviderName);
 }
 
 void ReturnCancellation(AuthorizationCompletedCallback callback) {

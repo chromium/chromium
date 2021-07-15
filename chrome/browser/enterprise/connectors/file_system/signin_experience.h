@@ -31,6 +31,15 @@ void StartFileSystemConnectorSigninExperienceForDownloadItem(
     const FileSystemSettings& settings,
     AuthorizationCompletedCallback callback);
 
+// Start the sign in experience as triggered by the settings page.
+void StartFileSystemConnectorSigninExperienceForSettingsPage(
+    Profile* profile,
+    base::OnceCallback<void(bool)> callback);
+
+// Clear authentication tokens.
+bool ClearFileSystemConnectorLinkedAccount(const FileSystemSettings& settings,
+                                           PrefService* prefs);
+
 // Run |callback| with a GoogleServiceAuthError that indicates cancellation.
 void ReturnCancellation(AuthorizationCompletedCallback callback);
 
