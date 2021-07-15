@@ -78,6 +78,10 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // Called when progress bar UI update is available.
   void OnProgressBarUpdate(double value);
 
+  // Called when the |session_receiver_| is disconnected, and closes the
+  // Nearby Share bubble.
+  void OnSessionDisconnected();
+
   // Android activity's task ID
   int32_t task_id_;
 

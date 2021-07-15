@@ -55,6 +55,9 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
       share_info_(std::move(share_info)),
       profile_(profile),
       session_finished_callback_(std::move(session_finished_callback)) {
+  session_receiver_.set_disconnect_handler(
+      base::BindOnce(&NearbyShareSessionImpl::OnSessionDisconnected,
+                     weak_ptr_factory_.GetWeakPtr()));
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (arc_window) {
     VLOG(1) << "ARC window found";
@@ -274,6 +277,27 @@ void NearbyShareSessionImpl::OnTimerFired() {
 void NearbyShareSessionImpl::OnProgressBarUpdate(double value) {
   // TODO(b/191705289): Add UI integration with views::ProgressBar.
   VLOG(1) << "Called OnProgressBarUpdate with value: " << value;
+}
+
+void NearbyShareSessionImpl::OnSessionDisconnected() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  aura::Window* const arc_window = GetArcWindow(task_id_);
+  if (!arc_window) {
+    LOG(ERROR) << "Unable to close sharesheet bubble. No ARC window found for "
+               << "task ID " << task_id_;
+    return;
+  }
+
+  VLOG(1) << "Getting Sharesheet service";
+  sharesheet::SharesheetService* sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile_);
+  if (!sharesheet_service) {
+    LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find sharesheet "
+                  "service.";
+    return;
+  }
+  sharesheet_service->CloseBubble(arc_window);
 }
 
 }  // namespace arc
