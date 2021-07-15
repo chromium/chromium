@@ -55,9 +55,4 @@ void ProcessMetricsRecorder::OnMetricsSampled(
   }
 }
 
-void ProcessMetricsRecorder::OnAggregatedMetricsSampled(
-    const ProcessMonitor::Metrics& metrics) {
-  RecordProcessHistograms("Total", metrics);
-}
-
 }  // namespace performance_monitor

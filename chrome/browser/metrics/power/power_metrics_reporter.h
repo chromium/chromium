@@ -69,21 +69,24 @@ class PowerMetricsReporter
     kMaxValue = kInvalidInterval
   };
 
-  // Report the histograms for the past interval, with |sampling_interval| the
-  // expected sampling interval, and |interval_duration| the actual duration
-  // since the beginning of the interval.
-  static void ReportBatteryHistograms(
+  // Report battery and CPU metrics to generic histograms and histograms with a
+  // scenario suffix derived from |interval_data|.
+  static void ReportHistograms(
       const UsageScenarioDataStore::IntervalData& interval_data,
-      base::TimeDelta sampling_interval,
+      const performance_monitor::ProcessMonitor::Metrics& metrics,
+      base::TimeDelta interval_duration,
+      BatteryDischargeMode discharge_mode,
+      absl::optional<int64_t> discharge_rate_during_interval);
+
+  // Report battery metrics to histograms with |suffixes|.
+  static void ReportBatteryHistograms(
       base::TimeDelta interval_duration,
       BatteryDischargeMode discharge_mode,
       absl::optional<int64_t> discharge_rate_during_interval,
       const std::vector<const char*>& suffixes);
 
-  // Report CPU histograms based on data in |metrics| and suffixed based on
-  // scenarios inferred from |interval_data|.
+  // Report CPU histograms to histograms with |suffixes|.
   static void ReportCPUHistograms(
-      const UsageScenarioDataStore::IntervalData& interval_data,
       const performance_monitor::ProcessMonitor::Metrics& metrics,
       const std::vector<const char*>& suffixes);
 

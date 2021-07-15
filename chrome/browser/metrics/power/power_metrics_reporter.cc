@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -25,7 +26,6 @@ constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
-constexpr const char* kZeroWindowSuffix = ".ZeroWindow";
 constexpr const char* kBatterySamplingDelayHistogramName =
     "Power.BatterySamplingDelay";
 constexpr const char* kMainScreenBrightnessHistogramName =
@@ -47,6 +47,46 @@ int64_t GetBucketForSample(base::TimeDelta value) {
   return std::min(
       ukm::GetExponentialBucketMin(value.InSeconds(), kBucketSpacing),
       kOverflowBucket);
+}
+
+// Returns the scenario-specific suffix to use for metrics captured during an
+// interval described by |interval_data|.
+const char* GetScenarioSuffix(
+    const UsageScenarioDataStore::IntervalData& interval_data) {
+  // Important: The order of the conditions is important. See the full
+  // description of each scenario in the histograms.xml file.
+  if (interval_data.max_tab_count == 0)
+    return ".ZeroWindow";
+  if (interval_data.max_visible_window_count == 0)
+    return ".AllTabsHidden";
+  if (!interval_data.time_capturing_video.is_zero())
+    return ".VideoCapture";
+  if (!interval_data.time_playing_video_full_screen_single_monitor.is_zero())
+    return ".FullscreenVideo";
+  if (!interval_data.time_playing_video_in_visible_tab.is_zero()) {
+    // Note: UKM data reveals that navigations are infrequent when a video is
+    // playing in fullscreen, when video is captured or when audio is playing.
+    // For that reason, there is no distinct suffix for navigation vs. no
+    // navigation in these cases.
+    if (interval_data.top_level_navigation_count == 0)
+      return ".EmbeddedVideo_NoNavigation";
+    return ".EmbeddedVideo_WithNavigation";
+  }
+  if (!interval_data.time_playing_audio.is_zero())
+    return ".Audio";
+  if (interval_data.top_level_navigation_count > 0)
+    return ".Navigation";
+  if (interval_data.user_interaction_count > 0)
+    return ".Interaction";
+  return ".Passive";
+}
+
+// Returns the histogram suffixes to use for metrics captured during an interval
+// described by |interval_data|.
+std::vector<const char*> GetSuffixes(
+    const UsageScenarioDataStore::IntervalData& interval_data) {
+  // Histograms are recorded without suffix and with a scenario-specific suffix.
+  return std::vector<const char*>{"", GetScenarioSuffix(interval_data)};
 }
 
 }  // namespace
@@ -97,46 +137,46 @@ void PowerMetricsReporter::OnAggregatedMetricsSampled(
                      /* scheduled_time=*/base::TimeTicks::Now()));
 }
 
-// Returns all usage scenario suffixes that apply to |interval_data|.
-std::vector<const char*> GetSuffixes(
-    const UsageScenarioDataStore::IntervalData& interval_data) {
-  std::vector<const char*> suffixes;
-  if (interval_data.max_tab_count == 0) {
-    suffixes.push_back(kZeroWindowSuffix);
-  }
-  return suffixes;
-}
-
 std::vector<const char*> PowerMetricsReporter::GetSuffixesForTesting(
     const UsageScenarioDataStore::IntervalData& interval_data) {
-  std::vector<const char*> suffixes = GetSuffixes(interval_data);
-  // Always at least record the unsuffixed version for tested histograms.
-  suffixes.push_back("");
-  return suffixes;
+  return GetSuffixes(interval_data);
+}
+
+void PowerMetricsReporter::ReportHistograms(
+    const UsageScenarioDataStore::IntervalData& interval_data,
+    const performance_monitor::ProcessMonitor::Metrics& metrics,
+    base::TimeDelta interval_duration,
+    BatteryDischargeMode discharge_mode,
+    absl::optional<int64_t> discharge_rate_during_interval) {
+  const std::vector<const char*> suffixes = GetSuffixes(interval_data);
+  ReportCPUHistograms(metrics, suffixes);
+  ReportBatteryHistograms(interval_duration, discharge_mode,
+                          discharge_rate_during_interval, suffixes);
 }
 
 void PowerMetricsReporter::ReportBatteryHistograms(
-    const UsageScenarioDataStore::IntervalData& interval_data,
-    base::TimeDelta sampling_interval,
     base::TimeDelta interval_duration,
     BatteryDischargeMode discharge_mode,
     absl::optional<int64_t> discharge_rate_during_interval,
     const std::vector<const char*>& suffixes) {
-  // Ratio by which the time elapsed can deviate from |recording_interval|
-  // without invalidating this sample.
+  // Ratio by which the time elapsed can deviate from
+  // |performance_monitor::ProcessMonitor::kGatherInterval| without invalidating
+  // this sample.
   constexpr double kTolerableTimeElapsedRatio = 0.10;
   constexpr double kTolerablePositiveDrift = (1. + kTolerableTimeElapsedRatio);
   constexpr double kTolerableNegativeDrift = (1. - kTolerableTimeElapsedRatio);
 
   if (discharge_mode == BatteryDischargeMode::kDischarging &&
-      interval_duration > sampling_interval * kTolerablePositiveDrift) {
+      interval_duration > performance_monitor::ProcessMonitor::kGatherInterval *
+                              kTolerablePositiveDrift) {
     // Too much time passed since the last record. Either the task took
     // too long to get executed or system sleep took place.
     discharge_mode = BatteryDischargeMode::kInvalidInterval;
   }
 
   if (discharge_mode == BatteryDischargeMode::kDischarging &&
-      interval_duration < sampling_interval * kTolerableNegativeDrift) {
+      interval_duration < performance_monitor::ProcessMonitor::kGatherInterval *
+                              kTolerableNegativeDrift) {
     // The recording task executed too early after the previous one, possibly
     // because the previous task took too long to execute.
     discharge_mode = BatteryDischargeMode::kInvalidInterval;
@@ -221,28 +261,16 @@ void PowerMetricsReporter::ReportUKMsAndHistograms(
   ReportUKMs(interval_data, metrics, interval_duration, discharge_mode,
              discharge_rate_during_interval, main_screen_brightness);
 
-  std::vector<const char*> suffixes = GetSuffixes(interval_data);
-  ReportCPUHistograms(interval_data, metrics, suffixes);
-
-  // Always at least record the unsuffixed version for the remaining histograms.
-  suffixes.push_back("");
-
-  auto* process_monitor = performance_monitor::ProcessMonitor::Get();
-  base::TimeDelta sampling_interval =
-      process_monitor->GetScheduledSamplingInterval();
-
-  ReportBatteryHistograms(interval_data, sampling_interval, interval_duration,
-                          discharge_mode, discharge_rate_during_interval,
-                          suffixes);
+  ReportHistograms(interval_data, metrics, interval_duration, discharge_mode,
+                   discharge_rate_during_interval);
 }
 
 // static
 void PowerMetricsReporter::ReportCPUHistograms(
-    const UsageScenarioDataStore::IntervalData& interval_data,
     const performance_monitor::ProcessMonitor::Metrics& metrics,
     const std::vector<const char*>& suffixes) {
   for (const char* suffix : suffixes) {
-    std::string complete_suffix = base::JoinString({"Total", suffix}, "");
+    std::string complete_suffix = base::StrCat({"Total", suffix});
     performance_monitor::RecordProcessHistograms(complete_suffix.c_str(),
                                                  metrics);
   }

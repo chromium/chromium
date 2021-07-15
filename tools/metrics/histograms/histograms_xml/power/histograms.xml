@@ -28,8 +28,33 @@ Also used in tools/metrics/histograms/histograms_xml/others/histograms.xml
 -->
 
   <variant name="" summary="Any scenario."/>
-  <variant name=".ZeroWindow"
-      summary="When chromium has no windows at all (ex: docked on macOS)"/>
+  <variant name=".AllTabsHidden" summary="Chrome had tabs, but none visible"/>
+  <variant name=".Audio"
+      summary="Chrome had at least 1 visible tab and was audible, but there
+               was no video playback or video capture"/>
+  <variant name=".EmbeddedVideo_NoNavigation"
+      summary="Chrome played a video in a visible tab, and there was no
+               navigation or video capture"/>
+  <variant name=".EmbeddedVideo_WithNavigation"
+      summary="Chrome played a video in a visible tab, there was a
+               navigation, but no video capture"/>
+  <variant name=".FullscreenVideo"
+      summary="Chrome played a video in fullscreen, and there was no video
+               capture"/>
+  <variant name=".Interaction"
+      summary="Chrome had at least 1 visible tab and received a user
+               interaction, but no navigation, audio, video playback or video
+               capture"/>
+  <variant name=".Navigation"
+      summary="Chrome had at least 1 visible tab and a navigation, but no
+               audio, video playback or video capture"/>
+  <variant name=".Passive"
+      summary="Chrome had at least 1 visible tab, but there was no user
+               interaction, navigation, audio, video playback or video
+               capture"/>
+  <variant name=".VideoCapture"
+      summary="Chrome had at least 1 visible tab and captured video"/>
+  <variant name=".ZeroWindow" summary="Chrome had no window"/>
 </variants>
 
 <histogram name="Power.ApproxCpuTimeSecondsPerCoreTypeAndFrequency"

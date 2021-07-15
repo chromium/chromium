@@ -26,7 +26,6 @@ constexpr const char* kBatteryDischargeRateHistogramName =
     "Power.BatteryDischargeRate2";
 constexpr const char* kBatteryDischargeModeHistogramName =
     "Power.BatteryDischargeMode";
-constexpr const char* kZeroWindowSuffix = ".ZeroWindow";
 constexpr const char* kMainScreenBrightnessHistogramName =
     "Power.MainScreenBrightness2";
 constexpr const char* kMainScreenBrightnessAvailableHistogramName =
@@ -38,22 +37,21 @@ constexpr double kTolerableTimeElapsedRatio = 0.10;
 constexpr double kTolerablePositiveDrift = 1 + kTolerableTimeElapsedRatio;
 constexpr double kTolerableNegativeDrift = 1 - kTolerableTimeElapsedRatio;
 
+performance_monitor::ProcessMonitor::Metrics GetFakeProcessMetrics() {
+  performance_monitor::ProcessMonitor::Metrics metrics;
+  metrics.cpu_usage = 5;
+  return metrics;
+}
+
 using UkmEntry = ukm::builders::PowerUsageScenariosIntervalData;
 
 class PowerMetricsReporterAccess : public PowerMetricsReporter {
  public:
+  // Expose members of PowerMetricsReporter publicly on
+  // PowerMetricsReporterAccess.
   using PowerMetricsReporter::BatteryDischargeMode;
-  static void ReportBatteryHistograms(
-      const UsageScenarioDataStore::IntervalData& interval_data,
-      base::TimeDelta sampling_interval,
-      base::TimeDelta interval_duration,
-      BatteryDischargeMode discharge_mode,
-      absl::optional<int64_t> discharge_rate_during_interval,
-      const std::vector<const char*>& suffixes) {
-    PowerMetricsReporter::ReportBatteryHistograms(
-        interval_data, sampling_interval, interval_duration, discharge_mode,
-        std::move(discharge_rate_during_interval), suffixes);
-  }
+  using PowerMetricsReporter::ReportBatteryHistograms;
+  using PowerMetricsReporter::ReportHistograms;
 };
 
 // TODO(sebmarchand|etiennep): Move this to a test util file.
@@ -87,10 +85,6 @@ class TestProcessMonitor : public performance_monitor::ProcessMonitor {
   void NotifyObserversForOnAggregatedMetricsSampled(const Metrics& metrics) {
     for (auto& obs : GetObserversForTesting())
       obs.OnAggregatedMetricsSampled(metrics);
-  }
-
-  base::TimeDelta GetScheduledSamplingInterval() const override {
-    return kExpectedMetricsCollectionInterval;
   }
 };
 
@@ -517,68 +511,398 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
       1);
 }
 
-TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureZeroWindow) {
-  // Default value for interval_data.max_tab_count is zero.
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_ZeroWindow) {
   UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 0;
 
-  PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
 
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
-                                       1);
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
+      "Power.BatteryDischargeMode",
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
 
-  // There were no tabs shown during the interval so no windows either.
-  // ZeroWindow suffix should be recorded.
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.ZeroWindow",
+                                       2500, 1);
   histogram_tester_.ExpectUniqueSample(
-      base::JoinString({kBatteryDischargeRateHistogramName, kZeroWindowSuffix},
-                       ""),
-      2500, 1);
-  histogram_tester_.ExpectUniqueSample(
-      base::JoinString({kBatteryDischargeModeHistogramName, kZeroWindowSuffix},
-                       ""),
+      "Power.BatteryDischargeMode.ZeroWindow",
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.ZeroWindow", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
 }
 
-TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureMultipleWindows) {
-  // Tabs were shown during interval so windows too.
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_AllTabsHidden) {
   UsageScenarioDataStore::IntervalData interval_data;
   interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 0;
+  // Values below should be ignored.
+  interval_data.time_capturing_video = base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.top_level_navigation_count = 1;
+  interval_data.user_interaction_count = 1;
 
-  PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
       kExpectedMetricsCollectionInterval,
-      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
-      PowerMetricsReporter::GetSuffixesForTesting(interval_data));
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
 
-  histogram_tester_.ExpectUniqueSample(kBatteryDischargeRateHistogramName, 2500,
-                                       1);
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
   histogram_tester_.ExpectUniqueSample(
-      kBatteryDischargeModeHistogramName,
+      "Power.BatteryDischargeMode",
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
 
-  // Tabs were shown during the interval so windows too. ZeroWindow
-  // suffix should not be recorded.
-  histogram_tester_.ExpectTotalCount(
-      base::JoinString({kBatteryDischargeRateHistogramName, kZeroWindowSuffix},
-                       ""),
-      0);
-  histogram_tester_.ExpectTotalCount(
-      base::JoinString({kBatteryDischargeModeHistogramName, kZeroWindowSuffix},
-                       ""),
-      0);
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.AllTabsHidden", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.AllTabsHidden",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.AllTabsHidden", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_VideoCapture) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta::FromSeconds(1);
+  // Values below should be ignored.
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.top_level_navigation_count = 1;
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.VideoCapture", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.VideoCapture",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.VideoCapture", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_FullscreenVideo) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta::FromSeconds(1);
+  // Values below should be ignored.
+  interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(1);
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.top_level_navigation_count = 1;
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.FullscreenVideo", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.FullscreenVideo",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.FullscreenVideo", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       SuffixedHistograms_EmbeddedVideo_NoNavigation) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.top_level_navigation_count = 0;
+  interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(1);
+  // Values below should be ignored.
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.EmbeddedVideo_NoNavigation", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.EmbeddedVideo_NoNavigation",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_NoNavigation", 500,
+      1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest,
+       SuffixedHistograms_EmbeddedVideo_WithNavigation) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.top_level_navigation_count = 1;
+  interval_data.time_playing_video_in_visible_tab =
+      base::TimeDelta::FromSeconds(1);
+  // Values below should be ignored.
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.EmbeddedVideo_WithNavigation", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.EmbeddedVideo_WithNavigation",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.EmbeddedVideo_WithNavigation", 500,
+      1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Audio) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
+  interval_data.time_playing_audio = base::TimeDelta::FromSeconds(1);
+  // Values below should be ignored.
+  interval_data.user_interaction_count = 1;
+  interval_data.top_level_navigation_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Audio",
+                                       2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.Audio",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.Audio", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Navigation) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
+  interval_data.time_playing_audio = base::TimeDelta();
+  interval_data.top_level_navigation_count = 1;
+  // Values below should be ignored.
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Navigation",
+                                       2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.Navigation",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.Navigation", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Interaction) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
+  interval_data.time_playing_audio = base::TimeDelta();
+  interval_data.top_level_navigation_count = 0;
+  interval_data.user_interaction_count = 1;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeRate2.Interaction", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.Interaction",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.Interaction", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
+}
+
+TEST_F(PowerMetricsReporterUnitTest, SuffixedHistograms_Passive) {
+  UsageScenarioDataStore::IntervalData interval_data;
+  interval_data.max_tab_count = 1;
+  interval_data.max_visible_window_count = 1;
+  interval_data.time_capturing_video = base::TimeDelta();
+  interval_data.time_playing_video_full_screen_single_monitor =
+      base::TimeDelta();
+  interval_data.time_playing_video_in_visible_tab = base::TimeDelta();
+  interval_data.time_playing_audio = base::TimeDelta();
+  interval_data.top_level_navigation_count = 0;
+  interval_data.user_interaction_count = 0;
+
+  PowerMetricsReporterAccess::ReportHistograms(
+      interval_data, GetFakeProcessMetrics(),
+      kExpectedMetricsCollectionInterval,
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500);
+
+  // Non-suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2", 2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample("PerformanceMonitor.AverageCPU2.Total",
+                                       500, 1);
+
+  // Suffixed histograms.
+  histogram_tester_.ExpectUniqueSample("Power.BatteryDischargeRate2.Passive",
+                                       2500, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "Power.BatteryDischargeMode.Passive",
+      PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 1);
+  histogram_tester_.ExpectUniqueSample(
+      "PerformanceMonitor.AverageCPU2.Total.Passive", 500, 1);
+
+  // Note: For simplicity, this test only verifies that one of the
+  // PerformanceMonitor.* histograms is recorded correctly.
 }
 
 TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooEarly) {
   UsageScenarioDataStore::IntervalData interval_data;
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) -
           base::TimeDelta::FromSeconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
@@ -594,7 +918,6 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsEarly) {
   UsageScenarioDataStore::IntervalData interval_data;
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
       (kExpectedMetricsCollectionInterval * kTolerableNegativeDrift) +
           base::TimeDelta::FromSeconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
@@ -611,7 +934,6 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsTooLate) {
   UsageScenarioDataStore::IntervalData interval_data;
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) +
           base::TimeDelta::FromSeconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
@@ -627,7 +949,6 @@ TEST_F(PowerMetricsReporterUnitTest, BatteryDischargeCaptureIsLate) {
   UsageScenarioDataStore::IntervalData interval_data;
 
   PowerMetricsReporterAccess::ReportBatteryHistograms(
-      interval_data, kExpectedMetricsCollectionInterval,
       (kExpectedMetricsCollectionInterval * kTolerablePositiveDrift) -
           base::TimeDelta::FromSeconds(1),
       PowerMetricsReporterAccess::BatteryDischargeMode::kDischarging, 2500,
@@ -654,10 +975,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoTab) {
 
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
-  fake_metrics.cpu_usage = 0.5;
-
-  WaitForNextSample(fake_metrics);
+  WaitForNextSample(GetFakeProcessMetrics());
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -681,9 +999,7 @@ TEST_F(PowerMetricsReporterUnitTest, DurationsLongerThanIntervalAreCapped) {
       1, 1, 0.50, true, base::TimeTicks::Now()});
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
-  fake_metrics.cpu_usage = 0.5;
-  WaitForNextSample(fake_metrics);
+  WaitForNextSample(GetFakeProcessMetrics());
 
   auto entries = test_ukm_recorder_.GetEntriesByName(
       ukm::builders::PowerUsageScenariosIntervalData::kEntryName);
@@ -752,8 +1068,8 @@ TEST_F(PowerMetricsReporterUnitTest, MainScreenBrightnessHistogram) {
       1, 1, 0.50, true, base::TimeTicks::Now()});
   data_store_.SetIntervalDataToReturn(fake_interval_data);
 
-  performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
-  fake_metrics.cpu_usage = 0.5;
+  performance_monitor::ProcessMonitor::Metrics fake_metrics =
+      GetFakeProcessMetrics();
   WaitForNextSample(fake_metrics);
 
   histogram_tester_.ExpectTotalCount(kMainScreenBrightnessHistogramName, 0);

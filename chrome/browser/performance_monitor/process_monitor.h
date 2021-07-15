@@ -38,6 +38,10 @@ struct ProcessMetadata {
 // upon noticing serious performance degradation.
 class ProcessMonitor {
  public:
+  // The interval at which ProcessMonitor performs its timed collections.
+  static constexpr base::TimeDelta kGatherInterval =
+      base::TimeDelta::FromMinutes(2);
+
   struct Metrics {
     // The percentage of time spent executing, across all threads of the
     // process, in the interval since the last time the metric was sampled. This
@@ -90,10 +94,6 @@ class ProcessMonitor {
 
   // Start the cycle of metrics gathering.
   void StartGatherCycle();
-
-  // Returns the expected sampling interval according to how it's scheduled.
-  // This might vary from the actual interval. Virtual for testing.
-  virtual base::TimeDelta GetScheduledSamplingInterval() const;
 
   // Adds/removes an observer.
   void AddObserver(Observer* observer);

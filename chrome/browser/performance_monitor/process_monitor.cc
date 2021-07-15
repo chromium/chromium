@@ -36,10 +36,6 @@ namespace performance_monitor {
 
 namespace {
 
-// The default interval at which ProcessMonitor performs its timed
-// collections.
-constexpr base::TimeDelta kGatherInterval = base::TimeDelta::FromSeconds(120);
-
 // The global instance.
 ProcessMonitor* g_process_monitor = nullptr;
 
@@ -95,6 +91,8 @@ ProcessMonitor::Metrics& operator+=(ProcessMonitor::Metrics& lhs,
 
 }  // namespace
 
+constexpr base::TimeDelta ProcessMonitor::kGatherInterval;
+
 // static
 std::unique_ptr<ProcessMonitor> ProcessMonitor::Create() {
   DCHECK(!g_process_monitor);
@@ -115,10 +113,6 @@ void ProcessMonitor::StartGatherCycle() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   repeating_timer_.Start(FROM_HERE, kGatherInterval, this,
                          &ProcessMonitor::GatherProcesses);
-}
-
-base::TimeDelta ProcessMonitor::GetScheduledSamplingInterval() const {
-  return kGatherInterval;
 }
 
 void ProcessMonitor::AddObserver(Observer* observer) {
