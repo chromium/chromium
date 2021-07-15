@@ -4469,6 +4469,7 @@ class SchedulerTestForPowerMode : public SchedulerTest {
   ~SchedulerTestForPowerMode() override {
     DCHECK_EQ(this, current_test_);
     current_test_ = nullptr;
+    power_mode_arbiter_.RemoveObserver(&observer_);
   }
 
   void AdvanceToArbiterSnapAfter(base::TimeDelta delay) {
