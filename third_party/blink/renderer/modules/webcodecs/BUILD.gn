@@ -26,6 +26,8 @@ blink_modules_sources("webcodecs") {
     "codec_state_helper.cc",
     "codec_state_helper.h",
     "codec_trace_names.h",
+    "decoder_buffer_attachment.cc",
+    "decoder_buffer_attachment.h",
     "decoder_selector.cc",
     "decoder_selector.h",
     "decoder_template.cc",

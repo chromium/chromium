@@ -12,6 +12,8 @@ namespace blink {
 
 class AudioData;
 class CryptoKey;
+class EncodedAudioChunk;
+class EncodedVideoChunk;
 class FileSystemHandle;
 class RTCEncodedAudioFrame;
 class RTCEncodedVideoFrame;
@@ -52,6 +54,8 @@ class MODULES_EXPORT V8ScriptValueDeserializerForModules final
   RTCEncodedVideoFrame* ReadRTCEncodedVideoFrame();
   AudioData* ReadAudioData();
   VideoFrame* ReadVideoFrame();
+  EncodedAudioChunk* ReadEncodedAudioChunk();
+  EncodedVideoChunk* ReadEncodedVideoChunk();
 };
 
 }  // namespace blink

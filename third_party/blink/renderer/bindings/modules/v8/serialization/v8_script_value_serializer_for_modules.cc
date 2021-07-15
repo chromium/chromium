@@ -14,6 +14,8 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_data.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_crypto_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_dom_file_system.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_audio_chunk.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_encoded_video_chunk.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_directory_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_file_handle.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_landmark.h"
@@ -28,6 +30,9 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_video_frame_delegate.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_data_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/decoder_buffer_attachment.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_audio_chunk.h"
+#include "third_party/blink/renderer/modules/webcodecs/encoded_video_chunk.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_attachment.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame_transfer_list.h"
@@ -174,6 +179,25 @@ bool V8ScriptValueSerializerForModules::WriteDOMObject(
       return false;
     }
     return WriteMediaAudioBuffer(std::move(data));
+  }
+  if ((wrapper_type_info == V8EncodedAudioChunk::GetWrapperTypeInfo() ||
+       wrapper_type_info == V8EncodedVideoChunk::GetWrapperTypeInfo()) &&
+      RuntimeEnabledFeatures::WebCodecsEnabled(
+          ExecutionContext::From(GetScriptState()))) {
+    if (IsForStorage()) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kDataCloneError,
+          "Encoded chunks cannot be serialized for storage.");
+      return false;
+    }
+
+    if (wrapper_type_info == V8EncodedAudioChunk::GetWrapperTypeInfo()) {
+      auto data = wrappable->ToImpl<EncodedAudioChunk>()->buffer();
+      return WriteDecoderBuffer(std::move(data), /*for_audio=*/true);
+    }
+
+    auto data = wrappable->ToImpl<EncodedVideoChunk>()->buffer();
+    return WriteDecoderBuffer(std::move(data), /*for_audio=*/false);
   }
   return false;
 }
@@ -424,6 +448,21 @@ bool V8ScriptValueSerializerForModules::WriteMediaAudioBuffer(
   const uint32_t index = static_cast<uint32_t>(audio_buffers.size() - 1);
 
   WriteTag(kAudioDataTag);
+  WriteUint32(index);
+
+  return true;
+}
+
+bool V8ScriptValueSerializerForModules::WriteDecoderBuffer(
+    scoped_refptr<media::DecoderBuffer> data,
+    bool for_audio) {
+  auto* attachment = GetSerializedScriptValue()
+                         ->GetOrCreateAttachment<DecoderBufferAttachment>();
+  auto& buffers = attachment->Buffers();
+  buffers.push_back(std::move(data));
+  const uint32_t index = static_cast<uint32_t>(buffers.size() - 1);
+
+  WriteTag(for_audio ? kEncodedAudioChunkTag : kEncodedVideoChunkTag);
   WriteUint32(index);
 
   return true;

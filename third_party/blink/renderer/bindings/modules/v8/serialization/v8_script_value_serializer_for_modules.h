@@ -12,6 +12,7 @@
 
 namespace media {
 class AudioBuffer;
+class DecoderBuffer;
 }
 
 namespace blink {
@@ -50,6 +51,8 @@ class MODULES_EXPORT V8ScriptValueSerializerForModules final
   bool WriteRTCEncodedVideoFrame(RTCEncodedVideoFrame*);
   bool WriteVideoFrameHandle(scoped_refptr<VideoFrameHandle>);
   bool WriteMediaAudioBuffer(scoped_refptr<media::AudioBuffer>);
+  bool WriteDecoderBuffer(scoped_refptr<media::DecoderBuffer> data,
+                          bool for_audio);
 };
 
 }  // namespace blink
