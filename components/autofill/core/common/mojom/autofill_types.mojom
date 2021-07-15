@@ -194,6 +194,7 @@ struct FormData {
 
 // autofill::FormFieldDataPredictions
 struct FormFieldDataPredictions {
+  string host_form_signature;
   string signature;
   string heuristic_type;
   string server_type;

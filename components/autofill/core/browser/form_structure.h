@@ -510,9 +510,9 @@ class FormStructure {
   // when it considers necessary.
   void RationalizeFieldTypePredictions(LogManager* log_manager);
 
-  void EncodeFormForQuery(
-      autofill::AutofillPageQueryRequest::Form* query_form,
-      std::vector<FormSignature>* queried_form_signatures) const;
+  void EncodeFormForQuery(AutofillPageQueryRequest* query,
+                          std::vector<FormSignature>* queried_form_signatures,
+                          std::set<FormSignature>* processed_forms) const;
 
   void EncodeFormForUpload(
       bool is_raw_metadata_uploading_enabled,

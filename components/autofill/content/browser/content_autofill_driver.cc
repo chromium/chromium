@@ -468,33 +468,37 @@ void ContentAutofillDriver::SetFormToBeProbablySubmitted(
 void ContentAutofillDriver::FormsSeen(const std::vector<FormData>& raw_forms) {
   std::vector<FormData> forms = raw_forms;
   for (FormData& form : forms)
-    SetFrameAndFormMetaData(form);
+    SetFrameAndFormMetaData(form, nullptr);
   autofill_router_->FormsSeen(this, forms);
 }
 
 void ContentAutofillDriver::FormSubmitted(const FormData& raw_form,
                                           bool known_success,
                                           mojom::SubmissionSource source) {
-  FormData form = GetFormWithFrameAndFormMetaData(raw_form);
-  autofill_router_->FormSubmitted(this, form, known_success, source);
+  autofill_router_->FormSubmitted(
+      this, GetFormWithFrameAndFormMetaData(raw_form), known_success, source);
 }
 
 void ContentAutofillDriver::TextFieldDidChange(const FormData& raw_form,
                                                const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box,
                                                base::TimeTicks timestamp) {
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
   autofill_router_->TextFieldDidChange(
-      this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      this, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box), timestamp);
 }
 
 void ContentAutofillDriver::TextFieldDidScroll(const FormData& raw_form,
                                                const FormFieldData& raw_field,
                                                const gfx::RectF& bounding_box) {
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
   autofill_router_->TextFieldDidScroll(
-      this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      this, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
@@ -502,9 +506,11 @@ void ContentAutofillDriver::SelectControlDidChange(
     const FormData& raw_form,
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box) {
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
   autofill_router_->SelectControlDidChange(
-      this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      this, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
@@ -514,9 +520,11 @@ void ContentAutofillDriver::QueryFormFieldAutofill(
     const FormFieldData& raw_field,
     const gfx::RectF& bounding_box,
     bool autoselect_first_suggestion) {
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
   autofill_router_->QueryFormFieldAutofill(
-      this, id, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      this, id, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box),
       autoselect_first_suggestion);
 }
@@ -532,9 +540,11 @@ void ContentAutofillDriver::FocusNoLongerOnForm(bool had_interacted_form) {
 void ContentAutofillDriver::FocusOnFormField(const FormData& raw_form,
                                              const FormFieldData& raw_field,
                                              const gfx::RectF& bounding_box) {
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
   autofill_router_->FocusOnFormField(
-      this, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field),
+      this, form, field,
       TransformBoundingBoxToViewportCoordinates(bounding_box));
 }
 
@@ -562,9 +572,10 @@ void ContentAutofillDriver::FillFormForAssistant(
     const AutofillableData& fill_data,
     const FormData& raw_form,
     const FormFieldData& raw_field) {
-  autofill_router_->FillFormForAssistant(
-      this, fill_data, GetFormWithFrameAndFormMetaData(raw_form),
-      GetFieldWithFrameAndFormMetaData(raw_form, raw_field));
+  FormData form = raw_form;
+  FormFieldData field = raw_field;
+  SetFrameAndFormMetaData(form, &field);
+  autofill_router_->FillFormForAssistant(this, fill_data, form, field);
 }
 
 void ContentAutofillDriver::DidNavigateFrame(
@@ -646,15 +657,8 @@ void ContentAutofillDriver::UnsetKeyPressHandlerImpl() {
 }
 
 void ContentAutofillDriver::SetFrameAndFormMetaData(
-    const FormData& raw_form,
-    FormFieldData& field) const {
-  field.host_frame =
-      LocalFrameToken(render_frame_host_->GetFrameToken().value());
-  field.host_form_id = raw_form.unique_renderer_id;
-  field.origin = render_frame_host_->GetLastCommittedOrigin();
-}
-
-void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
+    FormData& form,
+    FormFieldData* optional_field) const {
   form.host_frame =
       LocalFrameToken(render_frame_host_->GetFrameToken().value());
   form.url = StripAuthAndParams(render_frame_host_->GetLastCommittedURL());
@@ -663,20 +667,25 @@ void ContentAutofillDriver::SetFrameAndFormMetaData(FormData& form) const {
   else
     form.main_frame_origin = url::Origin();
 
-  for (FormFieldData& field : form.fields)
-    SetFrameAndFormMetaData(form, field);
-}
+  // The form signature must not be calculated before setting FormData::url.
+  FormSignature form_signature = CalculateFormSignature(form);
 
-FormFieldData ContentAutofillDriver::GetFieldWithFrameAndFormMetaData(
-    const FormData& raw_form,
-    FormFieldData field) const {
-  SetFrameAndFormMetaData(raw_form, field);
-  return field;
+  auto SetFieldMetaData = [&](FormFieldData& field) {
+    field.host_frame = form.host_frame;
+    field.host_form_id = form.unique_renderer_id;
+    field.origin = render_frame_host_->GetLastCommittedOrigin();
+    field.host_form_signature = form_signature;
+  };
+
+  for (FormFieldData& field : form.fields)
+    SetFieldMetaData(field);
+  if (optional_field)
+    SetFieldMetaData(*optional_field);
 }
 
 FormData ContentAutofillDriver::GetFormWithFrameAndFormMetaData(
     FormData form) const {
-  SetFrameAndFormMetaData(form);
+  SetFrameAndFormMetaData(form, nullptr);
   return form;
 }
 

@@ -18,6 +18,7 @@
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_form_test_utils.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/proto/api_v1.pb.h"
 #include "components/autofill/core/browser/randomized_encoder.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -54,9 +55,10 @@ std::string SerializeAndEncode(const AutofillQueryResponse& response) {
   return response_string;
 }
 
+// Sets |field_type| suggestion for |field_data|'s signature.
 void AddFieldSuggestionToForm(
     ::autofill::AutofillQueryResponse_FormSuggestion* form_suggestion,
-    autofill::FormFieldData field_data,
+    const autofill::FormFieldData& field_data,
     ServerFieldType field_type) {
   auto* field_suggestion = form_suggestion->add_field_suggestions();
   field_suggestion->set_field_signature(
@@ -2225,7 +2227,17 @@ TEST_F(FormStructureTestImpl, HeuristicsInferCCNames_NamesFirst) {
             form_structure->field(5)->heuristic_type());
 }
 
-TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
+TEST_P(ParameterizedFormStructureTest, EncodeQueryRequest) {
+  bool autofill_across_iframes = GetParam();
+  base::test::ScopedFeatureList scoped_features;
+  std::vector<base::Feature> enabled;
+  std::vector<base::Feature> disabled;
+  (autofill_across_iframes ? &enabled : &disabled)
+      ->push_back(features::kAutofillAcrossIframes);
+  scoped_features.InitWithFeatures(enabled, disabled);
+
+  FormSignature form_signature(16692857476255362434UL);
+
   FormData form;
   form.url = GURL("http://www.foo.com/");
 
@@ -2235,26 +2247,31 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   field.label = u"Name on Card";
   field.name = u"name_on_card";
   field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = form_signature;
   form.fields.push_back(field);
 
   field.label = u"Address";
   field.name = u"billing_address";
   field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
   field.label = u"Card Number";
   field.name = u"card_number";
   field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(67890UL);
   form.fields.push_back(field);
 
   field.label = u"Expiration Date";
   field.name = u"expiration_month";
   field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
   field.label = u"Expiration Year";
   field.name = u"expiration_year";
   field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345UL);
   form.fields.push_back(field);
 
   // Add checkable field.
@@ -2264,6 +2281,7 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   checkable_field.label = u"Checkable1";
   checkable_field.name = u"Checkable1";
   checkable_field.unique_renderer_id = MakeFieldRendererId();
+  checkable_field.host_form_signature = form_signature;
   form.fields.push_back(checkable_field);
 
   FormStructure form_structure(form);
@@ -2272,19 +2290,36 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   forms.push_back(&form_structure);
 
   std::vector<FormSignature> expected_signatures;
-  expected_signatures.push_back(form_structure.form_signature());
+  expected_signatures.push_back(FormSignature(form_signature.value()));
+  if (autofill_across_iframes) {
+    expected_signatures.push_back(FormSignature(12345UL));
+    expected_signatures.push_back(FormSignature(67890UL));
+  }
 
   // Prepare the expected proto string.
   AutofillPageQueryRequest query;
   query.set_client_version(GetProductNameAndVersionForUserAgent());
-  AutofillPageQueryRequest::Form* query_form = query.add_forms();
-  query_form->set_signature(form_structure.form_signature().value());
-
-  query_form->add_fields()->set_signature(412125936U);
-  query_form->add_fields()->set_signature(1917667676U);
-  query_form->add_fields()->set_signature(2226358947U);
-  query_form->add_fields()->set_signature(747221617U);
-  query_form->add_fields()->set_signature(4108155786U);
+  {
+    AutofillPageQueryRequest::Form* query_form = query.add_forms();
+    query_form->set_signature(form_signature.value());
+    query_form->add_fields()->set_signature(412125936U);
+    query_form->add_fields()->set_signature(1917667676U);
+    query_form->add_fields()->set_signature(2226358947U);
+    query_form->add_fields()->set_signature(747221617U);
+    query_form->add_fields()->set_signature(4108155786U);
+    if (autofill_across_iframes) {
+      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+      query_form->set_signature(12345UL);
+      query_form->add_fields()->set_signature(1917667676U);
+      query_form->add_fields()->set_signature(747221617U);
+      query_form->add_fields()->set_signature(4108155786U);
+    }
+    if (autofill_across_iframes) {
+      AutofillPageQueryRequest::Form* query_form = query.add_forms();
+      query_form->set_signature(67890UL);
+      query_form->add_fields()->set_signature(2226358947U);
+    }
+  }
 
   std::string expected_query_string;
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -2316,10 +2351,16 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   EXPECT_EQ(expected_query_string, encoded_query_string);
 
   // Add 5 address fields - this should be still a valid form.
+  FormSignature form_signature3(2608858059775241169UL);
+  for (auto& f : form.fields) {
+    if (f.host_form_signature == form_signature)
+      f.host_form_signature = form_signature3;
+  }
   for (size_t i = 0; i < 5; ++i) {
     field.label = u"Address";
     field.name = u"address";
     field.unique_renderer_id = MakeFieldRendererId();
+    field.host_form_signature = form_signature3;
     form.fields.push_back(field);
   }
 
@@ -2327,19 +2368,19 @@ TEST_F(FormStructureTestImpl, EncodeQueryRequest) {
   forms.push_back(&form_structure3);
 
   std::vector<FormSignature> expected_signatures3 = expected_signatures2;
-  expected_signatures3.push_back(form_structure3.form_signature());
+  expected_signatures3.push_back(form_signature3);
 
   // Add the second form to the expected proto.
-  query_form = query.add_forms();
-  query_form->set_signature(form_structure3.form_signature().value());
-
-  query_form->add_fields()->set_signature(412125936U);
-  query_form->add_fields()->set_signature(1917667676U);
-  query_form->add_fields()->set_signature(2226358947U);
-  query_form->add_fields()->set_signature(747221617U);
-  query_form->add_fields()->set_signature(4108155786U);
-  for (int i = 0; i < 5; ++i) {
-    query_form->add_fields()->set_signature(509334676U);
+  {
+    AutofillPageQueryRequest::Form* query_form = query.add_forms();
+    query_form->set_signature(2608858059775241169);
+    query_form->add_fields()->set_signature(412125936U);
+    query_form->add_fields()->set_signature(1917667676U);
+    query_form->add_fields()->set_signature(2226358947U);
+    query_form->add_fields()->set_signature(747221617U);
+    query_form->add_fields()->set_signature(4108155786U);
+    for (int i = 0; i < 5; ++i)
+      query_form->add_fields()->set_signature(509334676U);
   }
 
   ASSERT_TRUE(query.SerializeToString(&expected_query_string));
@@ -5528,6 +5569,131 @@ TEST_F(FormStructureTestImpl, ParseQueryResponse_UnknownType) {
   EXPECT_EQ(ADDRESS_HOME_LINE1, form.field(2)->server_type());
   EXPECT_EQ(HTML_TYPE_ADDRESS_LEVEL2, form.field(2)->html_type());
   EXPECT_EQ(ADDRESS_HOME_CITY, form.field(2)->Type().GetStorableType());
+}
+
+// Tests that the signatures of a field's FormFieldData::host_form_signature are
+// used as a fallback if the form's signature does not contain useful type
+// predictions.
+TEST_F(FormStructureTestImpl, ParseApiQueryResponseWithDifferentRendererForms) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kAutofillAcrossIframes);
+
+  std::vector<ServerFieldType> expected_types;
+
+  // Create a form whose fields have FormFieldData::host_form_signature either
+  // 12345 or 67890. The first two fields have identical field signatures.
+  std::vector<FormFieldData> fields;
+  FormFieldData field;
+  field.form_control_type = "text";
+
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_NAME_FIRST);
+
+  field.name = u"name";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_NAME_LAST);
+
+  field.name = u"number";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(12345);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_NUMBER);
+
+  field.name = u"exp_month";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(67890);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_EXP_MONTH);
+
+  field.name = u"exp_year";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(67890);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_EXP_2_DIGIT_YEAR);
+
+  field.name = u"cvc";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(67890);
+  fields.push_back(field);
+  expected_types.push_back(CREDIT_CARD_VERIFICATION_CODE);
+
+  field.name = u"";
+  field.unique_renderer_id = MakeFieldRendererId();
+  field.host_form_signature = FormSignature(67890);
+  fields.push_back(field);
+  expected_types.push_back(NO_SERVER_DATA);
+
+  FormData form;
+  form.fields = fields;
+  form.url = GURL("http://foo.com");
+
+  FormStructure form_structure(form);
+  std::vector<FormStructure*> forms;
+  forms.push_back(&form_structure);
+
+  ASSERT_GE(fields.size(), 6u);
+
+  // Make serialized API response.
+  AutofillQueryResponse api_response;
+  // Response for the form's signature:
+  // - The predictions for `fields[1]`, `fields[2]`, `fields[5]` are expected to
+  //   be overridden by the FormFieldData::host_form_signature predictions.
+  // - Since fields 0 and 1 have identical signatures, the client must consider
+  //   the fields' rank in FormData::host_form_signature's predictions
+  //   to obtain the right prediction for `fields[1]`.
+  // - `fields[6]` has no predictions at all.
+  std::vector<FormSignature> encoded_signatures =
+      test::GetEncodedSignatures(forms);
+  {
+    auto* form_suggestion = api_response.add_form_suggestions();
+    AddFieldSuggestionToForm(form_suggestion, fields[0], expected_types[0]);
+    AddFieldSuggestionToForm(form_suggestion, fields[1], NO_SERVER_DATA);
+    AddFieldSuggestionToForm(form_suggestion, fields[2], NO_SERVER_DATA);
+    AddFieldSuggestionToForm(form_suggestion, fields[3], expected_types[3]);
+    AddFieldSuggestionToForm(form_suggestion, fields[4], expected_types[4]);
+  }
+  // Response for the FormFieldData::host_form_signature 12345.
+  encoded_signatures.push_back(FormSignature(12345));
+  {
+    auto* form_suggestion = api_response.add_form_suggestions();
+    AddFieldSuggestionToForm(form_suggestion, fields[0], NO_SERVER_DATA);
+    AddFieldSuggestionToForm(form_suggestion, fields[1], expected_types[1]);
+    AddFieldSuggestionToForm(form_suggestion, fields[2], expected_types[2]);
+  }
+  // Response for the FormFieldData::host_form_signature 67890.
+  encoded_signatures.push_back(FormSignature(67890));
+  {
+    auto* form_suggestion = api_response.add_form_suggestions();
+    AddFieldSuggestionToForm(form_suggestion, fields[4], ADDRESS_HOME_CITY);
+    AddFieldSuggestionToForm(form_suggestion, fields[5], expected_types[5]);
+  }
+
+  // Serialize API response.
+  std::string response_string;
+  std::string encoded_response_string;
+  ASSERT_TRUE(api_response.SerializeToString(&response_string));
+  base::Base64Encode(response_string, &encoded_response_string);
+
+  FormStructure::ParseApiQueryResponse(std::move(encoded_response_string),
+                                       forms, encoded_signatures, nullptr,
+                                       nullptr);
+
+  // Check expected field types.
+  ASSERT_GE(forms[0]->field_count(), 6U);
+  ASSERT_EQ(forms[0]->field(0)->GetFieldSignature(),
+            forms[0]->field(1)->GetFieldSignature());
+  EXPECT_EQ(forms.front()->field(0)->server_type(), expected_types[0]);
+  EXPECT_EQ(forms.front()->field(1)->server_type(), expected_types[1]);
+  EXPECT_EQ(forms.front()->field(2)->server_type(), expected_types[2]);
+  EXPECT_EQ(forms.front()->field(3)->server_type(), expected_types[3]);
+  EXPECT_EQ(forms.front()->field(4)->server_type(), expected_types[4]);
+  EXPECT_EQ(forms.front()->field(5)->server_type(), expected_types[5]);
+  EXPECT_EQ(forms.front()->field(6)->server_type(), expected_types[6]);
 }
 
 TEST_F(FormStructureTestImpl, ParseApiQueryResponse) {

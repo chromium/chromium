@@ -45,8 +45,8 @@ namespace autofill {
 bool operator==(const FormFieldDataPredictions& a,
                 const FormFieldDataPredictions& b) {
   auto members = [](const FormFieldDataPredictions& p) {
-    return std::tie(p.signature, p.heuristic_type, p.server_type,
-                    p.overall_type, p.parseable_name, p.section);
+    return std::tie(p.host_form_signature, p.signature, p.heuristic_type,
+                    p.server_type, p.overall_type, p.parseable_name, p.section);
   };
   return members(a) == members(b);
 }

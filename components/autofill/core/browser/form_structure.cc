@@ -61,6 +61,7 @@
 #include "components/autofill/core/common/signatures.h"
 #include "components/security_state/core/security_state.h"
 #include "components/version_info/version_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace autofill {
@@ -783,14 +784,13 @@ bool FormStructure::EncodeQueryRequest(
   // the original form signature.
   std::set<FormSignature> processed_forms;
   for (const auto* form : forms) {
-    if (processed_forms.find(form->form_signature()) != processed_forms.end())
+    if (base::Contains(processed_forms, form->form_signature()))
       continue;
-    processed_forms.insert(form->form_signature());
     UMA_HISTOGRAM_COUNTS_1000("Autofill.FieldCount", form->field_count());
     if (form->IsMalformed())
       continue;
 
-    form->EncodeFormForQuery(query->add_forms(), queried_form_signatures);
+    form->EncodeFormForQuery(query, queried_form_signatures, &processed_forms);
   }
 
   return !queried_form_signatures->empty();
@@ -845,6 +845,7 @@ void FormStructure::ProcessQueryResponse(
   std::map<std::pair<FormSignature, FieldSignature>,
            std::deque<FieldSuggestion>>
       field_types;
+
   for (int form_idx = 0;
        form_idx < std::min(response.form_suggestions_size(),
                            static_cast<int>(queried_form_signatures.size()));
@@ -857,35 +858,62 @@ void FormStructure::ProcessQueryResponse(
     }
   }
 
+  // Retrieves the next prediction for |form| and |field| and pops it. Popping
+  // is omitted if no other predictions for |form| and |field| are left, so that
+  // any subsequent fields with the same signature will get the same prediction.
+  auto GetPrediction =
+      [&field_types](FormSignature form,
+                     FieldSignature field) -> absl::optional<FieldSuggestion> {
+    auto it = field_types.find({form, field});
+    if (it == field_types.end())
+      return absl::nullopt;
+    DCHECK(!it->second.empty());
+    auto current_field = it->second.front();
+    if (it->second.size() > 1)
+      it->second.pop_front();
+    return absl::make_optional(std::move(current_field));
+  };
+
   // Copy the field types into the actual form.
   for (FormStructure* form : forms) {
     for (auto& field : form->fields_) {
-      auto it = field_types.find(
-          {form->form_signature(), field->GetFieldSignature()});
-      if (it == field_types.end())
+      // Get the field prediction for |form|'s signature and the |field|'s
+      // host_form_signature. The former takes precedence over the latter.
+      absl::optional<FieldSuggestion> current_field =
+          GetPrediction(form->form_signature(), field->GetFieldSignature());
+      if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes) &&
+          field->host_form_signature &&
+          field->host_form_signature != form->form_signature()) {
+        // Retrieves the alternative prediction even if it is not used so that
+        // the alternative predictions are popped.
+        auto alternative_field = GetPrediction(field->host_form_signature,
+                                               field->GetFieldSignature());
+        if (alternative_field &&
+            (!current_field ||
+             base::ranges::all_of(current_field->predictions(),
+                                  [](const auto& prediction) {
+                                    return prediction.type() == NO_SERVER_DATA;
+                                  }))) {
+          current_field = *alternative_field;
+        }
+      }
+      if (!current_field)
         continue;
-
-      // Get the next suggestion for this signature. If this is the last
-      // suggestion, keep it for all subsequent fields with this signature.
-      DCHECK(!it->second.empty());
-      FieldSuggestion current_field = it->second.front();
-      if (it->second.size() > 1)
-        it->second.pop_front();
 
       ServerFieldType heuristic_type = field->heuristic_type();
       if (heuristic_type != UNKNOWN_TYPE)
         heuristics_detected_fillable_field = true;
 
-      field->set_server_predictions({current_field.predictions().begin(),
-                                     current_field.predictions().end()});
+      field->set_server_predictions({current_field->predictions().begin(),
+                                     current_field->predictions().end()});
       field->set_may_use_prefilled_placeholder(
-          current_field.may_use_prefilled_placeholder());
+          current_field->may_use_prefilled_placeholder());
 
       if (heuristic_type != field->Type().GetStorableType())
         query_response_overrode_heuristics = true;
 
-      if (current_field.has_password_requirements())
-        field->SetPasswordRequirements(current_field.password_requirements());
+      if (current_field->has_password_requirements())
+        field->SetPasswordRequirements(current_field->password_requirements());
     }
 
     AutofillMetrics::LogServerResponseHasDataForForm(base::ranges::any_of(
@@ -925,6 +953,8 @@ std::vector<FormDataPredictions> FormStructure::GetFieldTypePredictions(
 
     for (const auto& field : form_structure->fields_) {
       FormFieldDataPredictions annotated_field;
+      annotated_field.host_form_signature =
+          base::NumberToString(field->host_form_signature.value());
       annotated_field.signature = field->FieldSignatureAsStr();
       annotated_field.heuristic_type =
           AutofillType(field->heuristic_type()).ToString();
@@ -2007,20 +2037,42 @@ void FormStructure::RationalizeFieldTypePredictions(LogManager* log_manager) {
 }
 
 void FormStructure::EncodeFormForQuery(
-    AutofillPageQueryRequest::Form* query_form,
-    std::vector<FormSignature>* queried_form_signatures) const {
+    AutofillPageQueryRequest* query,
+    std::vector<FormSignature>* queried_form_signatures,
+    std::set<FormSignature>* processed_forms) const {
   DCHECK(!IsMalformed());
+  // Adds a request to |query| that contains all (|form|, |field|) for every
+  // |field| from |fields_| that meets |necessary_condition|. Repeated calls for
+  // the same |form| have no effect (early return if |processed_forms| contains
+  // |form|).
+  auto AddFormIf = [&](FormSignature form, auto necessary_condition) mutable {
+    if (!processed_forms->insert(form).second)
+      return;
 
-  query_form->set_signature(form_signature().value());
-  queried_form_signatures->push_back(form_signature());
+    AutofillPageQueryRequest::Form* query_form = query->add_forms();
+    query_form->set_signature(form.value());
+    queried_form_signatures->push_back(form);
 
-  for (const auto& field : fields_) {
-    if (ShouldSkipField(*field))
-      continue;
+    for (const auto& field : fields_) {
+      if (ShouldSkipField(*field) || !necessary_condition(field))
+        continue;
 
-    AutofillPageQueryRequest::Form::Field* added_field =
-        query_form->add_fields();
-    added_field->set_signature(field->GetFieldSignature().value());
+      AutofillPageQueryRequest::Form::Field* added_field =
+          query_form->add_fields();
+      added_field->set_signature(field->GetFieldSignature().value());
+    }
+  };
+
+  AddFormIf(form_signature(), [](auto& f) { return true; });
+
+  if (base::FeatureList::IsEnabled(features::kAutofillAcrossIframes)) {
+    for (const auto& field : fields_) {
+      if (field->host_form_signature) {
+        AddFormIf(field->host_form_signature, [&](const auto& f) {
+          return f->host_form_signature == field->host_form_signature;
+        });
+      }
+    }
   }
 }
 
@@ -2588,7 +2640,12 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                   {base::NumberToString(field->GetFieldSignature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFieldSignature(field->GetFieldSignature()))});
+                       HashFieldSignature(field->GetFieldSignature())),
+                   ", host form signature: ",
+                   base::NumberToString(field->host_form_signature.value()),
+                   " - ",
+                   base::NumberToString(
+                       HashFormSignature(field->host_form_signature))});
     buffer << "\n  Name: " << field->parseable_name();
 
     auto type = field->Type().ToString();
@@ -2659,7 +2716,12 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
                   {base::NumberToString(field->GetFieldSignature().value()),
                    " - ",
                    base::NumberToString(
-                       HashFieldSignature(field->GetFieldSignature()))});
+                       HashFieldSignature(field->GetFieldSignature())),
+                   ", host form signature: ",
+                   base::NumberToString(field->host_form_signature.value()),
+                   " - ",
+                   base::NumberToString(
+                       HashFormSignature(field->host_form_signature))});
     buffer << Tr{} << "Name:" << field->parseable_name();
 
     auto type = field->Type().ToString();

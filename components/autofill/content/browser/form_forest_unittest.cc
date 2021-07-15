@@ -72,7 +72,9 @@ auto Equals(const FormFieldData& exp) {
       Field("form_control_type", &FormFieldData::form_control_type,
             exp.form_control_type),
       Field("value", &FormFieldData::value, exp.value),
-      Field("label", &FormFieldData::label, exp.label));
+      Field("label", &FormFieldData::label, exp.label),
+      Field("host_form_signature", &FormFieldData::host_form_signature,
+            exp.host_form_signature));
 }
 
 // The relevant attributes are FormData::global_id(), FormData::fields.

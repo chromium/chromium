@@ -17,6 +17,7 @@
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "components/autofill/content/browser/content_autofill_driver_test_api.h"
 #include "components/autofill/content/browser/content_autofill_router.h"
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
@@ -282,33 +283,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
 }  // namespace
 
-class ContentAutofillDriverTestApi {
- public:
-  explicit ContentAutofillDriverTestApi(ContentAutofillDriver* driver)
-      : driver_(driver) {}
-
-  void SetFrameAndFormMetaData(const FormData& raw_form,
-                               FormFieldData& field) const {
-    driver_->SetFrameAndFormMetaData(raw_form, field);
-  }
-
-  void SetFrameAndFormMetaData(FormData& form) const {
-    driver_->SetFrameAndFormMetaData(form);
-  }
-
-  FormFieldData GetFieldWithFrameAndFormMetaData(const FormData& raw_form,
-                                                 FormFieldData field) const {
-    return driver_->GetFieldWithFrameAndFormMetaData(raw_form, field);
-  }
-
-  FormData GetFormWithFrameAndFormMetaData(FormData form) const {
-    return driver_->GetFormWithFrameAndFormMetaData(form);
-  }
-
- private:
-  ContentAutofillDriver* driver_;
-};
-
 class MockBrowserAutofillManager : public BrowserAutofillManager {
  public:
   MockBrowserAutofillManager(AutofillDriver* driver, AutofillClient* client)
@@ -457,7 +431,8 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
   form.fields.push_back(FormFieldData());
   FormData form2 = ContentAutofillDriverTestApi(driver_.get())
                        .GetFormWithFrameAndFormMetaData(form);
-  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(form);
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form, nullptr);
 
   EXPECT_EQ(
       form.host_frame,
@@ -483,18 +458,25 @@ TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfForm) {
 
 TEST_P(ContentAutofillDriverTest, SetFrameAndFormMetaDataOfField) {
   NavigateAndCommit(GURL("https://username:password@hostname/path?query#hash"));
+  // We test that `SetFrameAndFormMetaData(form, &field) sets the meta data not
+  // just of |form|'s fields but also of an additional individual |field|.
   FormData form;
-  FormFieldData field;
-  FormFieldData field2 = ContentAutofillDriverTestApi(driver_.get())
-                             .GetFieldWithFrameAndFormMetaData(form, field);
+  form.fields.push_back(FormFieldData());
+  FormFieldData field = form.fields.back();
+  FormSignature signature_without_meta_data = CalculateFormSignature(form);
   ContentAutofillDriverTestApi(driver_.get())
-      .SetFrameAndFormMetaData(form, field);
+      .SetFrameAndFormMetaData(form, &field);
 
+  EXPECT_NE(signature_without_meta_data, CalculateFormSignature(form));
   EXPECT_EQ(
       field.host_frame,
       LocalFrameToken(web_contents()->GetMainFrame()->GetFrameToken().value()));
+  EXPECT_EQ(field.host_form_id, form.unique_renderer_id);
+  EXPECT_EQ(field.host_form_signature, CalculateFormSignature(form));
 
-  EXPECT_EQ(field2.host_frame, field.host_frame);
+  EXPECT_EQ(field.host_frame, form.fields.front().host_frame);
+  EXPECT_EQ(field.host_form_id, form.fields.front().host_form_id);
+  EXPECT_EQ(field.host_form_signature, form.fields.front().host_form_signature);
 }
 
 TEST_P(ContentAutofillDriverTest, FormDataSentToRenderer_FillForm) {
@@ -552,7 +534,8 @@ TEST_P(ContentAutofillDriverTest, TypePredictionsSentToRendererWhenEnabled) {
       .WillOnce(DoAll(SaveArg<0>(&augmented_forms), Return(false)));
   driver_->FormsSeen({form});
 
-  ContentAutofillDriverTestApi(driver_.get()).SetFrameAndFormMetaData(form);
+  ContentAutofillDriverTestApi(driver_.get())
+      .SetFrameAndFormMetaData(form, nullptr);
   ASSERT_EQ(augmented_forms.size(), 1u);
   EXPECT_TRUE(augmented_forms.front().SameFormAs(form));
 

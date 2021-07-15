@@ -23,6 +23,14 @@ class ContentAutofillDriverTestApi {
     return *driver_->autofill_router_;
   }
 
+  void SetFrameAndFormMetaData(FormData& form, FormFieldData* field) const {
+    driver_->SetFrameAndFormMetaData(form, field);
+  }
+
+  FormData GetFormWithFrameAndFormMetaData(const FormData& form) const {
+    return driver_->GetFormWithFrameAndFormMetaData(form);
+  }
+
  private:
   // Non-null pointer to wrapped ContentAutofillDriver.
   ContentAutofillDriver* driver_;

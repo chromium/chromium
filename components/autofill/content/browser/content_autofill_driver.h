@@ -360,19 +360,14 @@ class ContentAutofillDriver : public AutofillDriver,
  private:
   friend class ContentAutofillDriverTestApi;
 
-  // Sets parameters of |form| and |field| that can be extracted from
-  // |render_frame_host_|. Setting |field|'s meta data also requires the
-  // enclosing FormData |raw_form|, which does not need to have its own meta
-  // data set.
+  // Sets parameters of |form| and |optional_field| that can be extracted from
+  // |render_frame_host_|. |optional_field| is treated as if it is a field of
+  // |form|.
   //
   // These functions must be called for every FormData and FormFieldData
   // received from the renderer.
-  void SetFrameAndFormMetaData(const FormData& raw_form,
-                               FormFieldData& field) const;
-  void SetFrameAndFormMetaData(FormData& form) const;
-  FormFieldData GetFieldWithFrameAndFormMetaData(const FormData& raw_form,
-                                                 FormFieldData field) const
-      WARN_UNUSED_RESULT;
+  void SetFrameAndFormMetaData(FormData& form,
+                               FormFieldData* optional_field) const;
   FormData GetFormWithFrameAndFormMetaData(FormData form) const
       WARN_UNUSED_RESULT;
 

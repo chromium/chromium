@@ -88,8 +88,8 @@ struct FormFieldData {
 
   // An identifier of the renderer form that contained this field.
   // This may be from the browser form that contains this field in the case of a
-  // frame-transcending form. See ContentAutofillRouter for details on the
-  // distinction between renderer and browser forms.
+  // frame-transcending form. See ContentAutofillRouter and internal::FormForest
+  // for details on the distinction between renderer and browser forms.
   FormGlobalId renderer_form_id() const { return {host_frame, host_form_id}; }
 
   // Returns true if both fields are identical, ignoring value- and
@@ -177,6 +177,15 @@ struct FormFieldData {
 
   // Unique renderer ID of the enclosing form in the same frame.
   FormRendererId host_form_id;
+
+  // The signature of the field's renderer form, that is, the signature of the
+  // FormData that contained this field when it was received by the
+  // AutofillDriver (see ContentAutofillRouter and internal::FormForest
+  // for details on the distinction between renderer and browser forms). The
+  // value is only set in ContentAutofillDriver and null on iOS.
+  // This value is written and read only in the browser for voting of
+  // cross-frame forms purposes. It is therefore not sent via mojo.
+  FormSignature host_form_signature;
 
   // The origin of the frame that hosts the field.
   url::Origin origin;

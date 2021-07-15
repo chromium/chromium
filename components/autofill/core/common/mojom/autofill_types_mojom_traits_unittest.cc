@@ -35,8 +35,9 @@ bool EquivalentData(const T& a, const T& b) {
 
 void CreateTestFieldDataPredictions(const std::string& signature,
                                     FormFieldDataPredictions* field_predict) {
+  field_predict->host_form_signature = "TestHostFormSignature";
   field_predict->signature = signature;
-  field_predict->heuristic_type = "TestSignature";
+  field_predict->heuristic_type = "TestHeuristicType";
   field_predict->server_type = "TestServerType";
   field_predict->overall_type = "TestOverallType";
   field_predict->parseable_name = "TestParseableName";
