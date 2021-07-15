@@ -17,7 +17,7 @@
 #include "base/syslog_logging.h"
 #include "base/values.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
-#include "chrome/browser/chromeos/policy/off_hours/off_hours_proto_parser.h"
+#include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/chromeos/tpm_firmware_update.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chromeos/dbus/dbus_thread_manager.h"

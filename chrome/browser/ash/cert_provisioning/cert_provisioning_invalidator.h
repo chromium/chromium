@@ -10,7 +10,7 @@
 #include "base/callback_forward.h"
 #include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "chrome/browser/chromeos/policy/invalidation/affiliated_invalidation_service_provider.h"
+#include "chrome/browser/ash/policy/invalidation/affiliated_invalidation_service_provider.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
 #include "components/invalidation/public/invalidation_util.h"

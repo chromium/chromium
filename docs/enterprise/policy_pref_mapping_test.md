@@ -211,7 +211,7 @@ location. Possible values are:
 - `local_state`
 - `signin_profile` (CrOS only, use when a device policy is mapped into the
   sign-in screen profile using
-  [login_profile_policy_provider.cc](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/policy/login_profile_policy_provider.cc))
+  [login_profile_policy_provider.cc](https://cs.chromium.org/chromium/src/chrome/browser/ash/policy/login/login_profile_policy_provider.cc))
 
 Policies that map into CrosSettings can not be tested at the moment (see
 `reason_for_missing_test`).
