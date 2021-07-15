@@ -1023,6 +1023,52 @@ TEST_F(MapCoordinatesTest, MulticolWithAbsPosInRelPos) {
   EXPECT_EQ(PhysicalOffset(29, 139), mapped_point);
 }
 
+TEST_F(MapCoordinatesTest, MulticolWithAbsPosInInlineRelPos) {
+  SetBodyInnerHTML(R"HTML(
+    <div id='multicol' style='columns:3; column-gap:0; column-fill:auto;
+    width:300px; height:100px; border:8px solid; padding:7px;'>
+        <div style='height:110px;'></div>
+        <div id='container'>
+          <span id='relpos' style='position:relative; left:4px; top:4px;'>
+              <div id='target' style='position:absolute; left:15px; top:15px;
+               margin:10px; border:13px; padding:13px;'></div>
+          </span>
+        </div>
+    </div>
+  )HTML");
+
+  auto* target = GetLayoutBoxByElementId("target");
+  auto* multicol = GetLayoutBoxByElementId("multicol");
+
+  PhysicalOffset mapped_point =
+      MapLocalToAncestor(target, multicol, PhysicalOffset());
+  EXPECT_EQ(PhysicalOffset(144, 54), mapped_point);
+  mapped_point = MapAncestorToLocal(target, multicol, mapped_point);
+  EXPECT_EQ(PhysicalOffset(), mapped_point);
+
+  // Walk each ancestor in the chain separately, to verify each step on the way.
+  auto* container = GetLayoutBoxByElementId("container");
+  LayoutBox* flow_thread = container->ParentBox();
+  ASSERT_TRUE(flow_thread->IsLayoutFlowThread());
+
+  mapped_point = MapLocalToAncestor(target, container, PhysicalOffset());
+  EXPECT_EQ(PhysicalOffset(29, 29), mapped_point);
+  mapped_point = MapAncestorToLocal(target, container, mapped_point);
+  EXPECT_EQ(PhysicalOffset(), mapped_point);
+
+  mapped_point =
+      MapLocalToAncestor(container, flow_thread, PhysicalOffset(25, 25));
+  EXPECT_EQ(PhysicalOffset(25, 135), mapped_point);
+  mapped_point = MapAncestorToLocal(container, flow_thread, mapped_point);
+  EXPECT_EQ(PhysicalOffset(25, 25), mapped_point);
+
+  mapped_point =
+      MapLocalToAncestor(flow_thread, multicol, PhysicalOffset(29, 139));
+  EXPECT_EQ(PhysicalOffset(144, 54), mapped_point);
+  mapped_point = MapAncestorToLocal(flow_thread, multicol, mapped_point);
+  EXPECT_EQ(PhysicalOffset(29, 139), mapped_point);
+}
+
 TEST_F(MapCoordinatesTest, MulticolWithAbsPosNotContained) {
   SetBodyInnerHTML(R"HTML(
     <div id='container' style='position:relative; margin:666px; border:7px

@@ -401,6 +401,9 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     // The relative offset of the inline's containing block to the
     // fragmentation context root.
     LogicalOffset relative_offset;
+    // The offset of the containing block relative to the fragmentation context
+    // root (not including any relative offset).
+    LogicalOffset offset_to_fragmentation_context;
   };
 
   HashMap<const LayoutBox*, InlineContainingBlockInfo> inline_containg_blocks;
@@ -440,8 +443,12 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
       inline_containers.insert(descendant.inline_container.container,
                                inline_geometry);
       InlineContainingBlockInfo inline_info{
-          inline_containers, offset.block_offset, block_size, start_index,
-          descendant.containing_block.relative_offset};
+          inline_containers,
+          offset.block_offset,
+          block_size,
+          start_index,
+          descendant.containing_block.relative_offset,
+          descendant.containing_block.offset};
       inline_containg_blocks.insert(containing_block, inline_info);
     }
   }
@@ -461,11 +468,10 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
         container_builder_physical_size, *container_builder_,
         inline_info.fragmentainer_index, &inline_info.map);
 
-    // TODO(almaher): Set |offset_to_border_box| in the final containing block
-    // info that gets created.
     AddInlineContainingBlockInfo(
         inline_info.map, containing_block->StyleRef().GetWritingDirection(),
-        container_builder_physical_size, inline_info.relative_offset);
+        container_builder_physical_size, inline_info.relative_offset,
+        inline_info.offset_to_fragmentation_context);
   }
 }
 
@@ -474,7 +480,8 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         inline_container_fragments,
     const WritingDirectionMode container_writing_direction,
     PhysicalSize container_builder_size,
-    LogicalOffset containing_block_relative_offset) {
+    LogicalOffset containing_block_relative_offset,
+    LogicalOffset containing_block_offset) {
   // Transform the start/end fragments into a ContainingBlockInfo.
   for (const auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());
@@ -589,18 +596,28 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     // applied after fragmentation is performed on the fragmentainer
     // descendants.
     DCHECK((block_info.value->relative_offset == LogicalOffset() &&
-            containing_block_relative_offset == LogicalOffset()) ||
+            containing_block_relative_offset == LogicalOffset() &&
+            containing_block_offset == LogicalOffset()) ||
            container_builder_->IsBlockFragmentationContextRoot());
     LogicalOffset container_offset =
         start_offset - block_info.value->relative_offset;
     LogicalOffset total_relative_offset =
         containing_block_relative_offset + block_info.value->relative_offset;
 
+    // If an OOF has an inline containing block, the OOF offset that is written
+    // back to legacy is relative to the containing block of the inline rather
+    // than the inline itself. |containing_block_offset| will be used when
+    // calculating this OOF offset. However, there may be some relative offset
+    // between the containing block and the inline container that should be
+    // included in the final OOF offset that is written back to legacy. Adjust
+    // for that relative offset here.
     containing_blocks_map_.insert(
         block_info.key,
-        ContainingBlockInfo{inline_writing_direction,
-                            LogicalRect(container_offset, inline_cb_size),
-                            total_relative_offset});
+        ContainingBlockInfo{
+            inline_writing_direction,
+            LogicalRect(container_offset, inline_cb_size),
+            total_relative_offset,
+            containing_block_offset - block_info.value->relative_offset});
   }
 }
 

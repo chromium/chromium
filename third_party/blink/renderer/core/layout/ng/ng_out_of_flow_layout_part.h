@@ -177,8 +177,6 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
     // The physical fragment of the containing block used when laying out a
     // fragmentainer descendant. This is the containing block as defined by the
     // spec: https://www.w3.org/TR/css-position-3/#absolute-cb.
-    // TODO(almaher): Ensure that this is correct in the case of an inline
-    // ancestor.
     scoped_refptr<const NGPhysicalFragment> containing_block_fragment = nullptr;
   };
 
@@ -191,11 +189,17 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const Vector<NGLogicalOutOfFlowPositionedNode>&);
   void ComputeInlineContainingBlocksForFragmentainer(
       const Vector<NGLogicalOutOfFlowPositionedNode>&);
+  // |containing_block_relative_offset| is the accumulated relative offset from
+  // the inline's containing block to the fragmentation context root.
+  // |containing_block_offset| is the offset of the inline's containing block
+  // relative to the fragmentation context root (not including any offset from
+  // relative positioning).
   void AddInlineContainingBlockInfo(
       const InlineContainingBlockUtils::InlineContainingBlockMap&,
       const WritingDirectionMode container_writing_direction,
       PhysicalSize container_builder_size,
-      LogicalOffset containing_block_relative_offset = LogicalOffset());
+      LogicalOffset containing_block_relative_offset = LogicalOffset(),
+      LogicalOffset containing_block_offset = LogicalOffset());
 
   void LayoutCandidates(Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
                         const LayoutBox* only_layout,
