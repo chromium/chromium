@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.app.flags;
 
 import android.text.TextUtils;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.firstrun.FirstRunUtils;
@@ -165,8 +165,9 @@ public class ChromeCachedFlags {
         mIsFinishedCachingNativeFlags = true;
     }
 
-    @RemovableInRelease
     private void tryToCatchMissingParameters(List<CachedFieldTrialParameter> listed) {
+        if (!BuildConfig.ENABLE_ASSERTS) return;
+
         // All instances of CachedFieldTrialParameter should be manually passed to
         // CachedFeatureFlags.cacheFieldTrialParameters(). The following checking is a best-effort
         // attempt to try to catch accidental omissions. It cannot replace the list because some

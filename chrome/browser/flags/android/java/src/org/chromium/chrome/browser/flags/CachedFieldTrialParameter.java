@@ -8,7 +8,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.CheckDiscard;
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 
 import java.lang.annotation.Retention;
@@ -55,8 +55,9 @@ public abstract class CachedFieldTrialParameter {
         registerInstance();
     }
 
-    @RemovableInRelease
     private void registerInstance() {
+        if (!BuildConfig.ENABLE_ASSERTS) return;
+
         if (sAllInstances == null) {
             sAllInstances = new HashSet<>();
         }
