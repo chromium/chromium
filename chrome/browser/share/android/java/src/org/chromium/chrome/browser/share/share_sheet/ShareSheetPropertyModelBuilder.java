@@ -149,6 +149,18 @@ public class ShareSheetPropertyModelBuilder {
         return contentTypes;
     }
 
+    public PropertyModel buildThirdPartyAppModel(ShareSheetBottomSheetContent bottomSheet,
+            ShareParams params, ResolveInfo info, boolean saveLastUsed, long shareStartTime,
+            int logIndex, @LinkGeneration int linkGenerationStatusForMetrics) {
+        OnClickListener onClickListener = v -> {
+            onThirdPartyAppSelected(bottomSheet, params, saveLastUsed, info.activityInfo, logIndex,
+                    shareStartTime, linkGenerationStatusForMetrics);
+        };
+        return createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
+                (String) info.loadLabel(mPackageManager), onClickListener,
+                /*displayNew*/ false);
+    }
+
     protected List<PropertyModel> selectThirdPartyApps(ShareSheetBottomSheetContent bottomSheet,
             Set<Integer> contentTypes, ShareParams params, boolean saveLastUsed,
             long shareStartTime, @LinkGeneration int linkGenerationStatusForMetrics) {
@@ -185,16 +197,8 @@ public class ShareSheetPropertyModelBuilder {
 
         ArrayList<PropertyModel> models = new ArrayList<>();
         for (int i = 0; i < MAX_NUM_APPS && i < thirdPartyActivities.size(); ++i) {
-            ResolveInfo info = thirdPartyActivities.get(i);
-            final int logIndex = i;
-            OnClickListener onClickListener = v
-                    -> onThirdPartyAppSelected(bottomSheet, params, saveLastUsed, info.activityInfo,
-                            logIndex, shareStartTime, linkGenerationStatusForMetrics);
-            PropertyModel propertyModel =
-                    createPropertyModel(ShareHelper.loadIconForResolveInfo(info, mPackageManager),
-                            (String) info.loadLabel(mPackageManager), onClickListener,
-                            /*displayNew*/ false);
-            models.add(propertyModel);
+            models.add(buildThirdPartyAppModel(bottomSheet, params, thirdPartyActivities.get(i),
+                    saveLastUsed, shareStartTime, i, linkGenerationStatusForMetrics));
         }
 
         return models;
@@ -205,8 +209,10 @@ public class ShareSheetPropertyModelBuilder {
             long shareStartTime, @LinkGeneration int linkGenerationStatusForMetrics) {
         // Record all metrics.
         RecordUserAction.record("SharingHubAndroid.ThirdPartyAppSelected");
-        RecordHistogram.recordEnumeratedHistogram(
-                "Sharing.SharingHubAndroid.ThirdPartyAppUsage", logIndex, MAX_NUM_APPS + 1);
+        if (logIndex >= 0) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Sharing.SharingHubAndroid.ThirdPartyAppUsage", logIndex, MAX_NUM_APPS + 1);
+        }
         ChromeProvidedSharingOptionsProvider.recordTimeToShare(shareStartTime);
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
             LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(

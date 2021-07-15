@@ -4,15 +4,24 @@
 
 #include "chrome/browser/share/share_ranking.h"
 
+#include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
+#include "base/android/jni_string.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_android.h"
 #include "chrome/browser/share/default_ranking.h"
 #include "chrome/browser/share/share_history.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#include "chrome/browser/share/jni_headers/ShareRankingBridge_jni.h"
+
+using base::android::JavaParamRef;
 
 namespace sharing {
 
@@ -21,6 +30,7 @@ const char* const ShareRanking::kMoreTarget = "$more";
 namespace {
 
 const char* const kShareRankingFolder = "share_ranking";
+const char* const kShareRankingKey = "share_ranking";
 
 // TODO(ellyjones): This should probably be a field trial.
 const int kRecentWindowDays = 7;
@@ -145,6 +155,13 @@ std::vector<std::string> MaybeUpdateRankingFromHistory(
   return new_ranking;
 }
 
+void RunJniRankCallback(base::android::ScopedJavaGlobalRef<jobject> callback,
+                        JNIEnv* env,
+                        absl::optional<ShareRanking::Ranking> ranking) {
+  auto result = base::android::ToJavaArrayOfStrings(env, ranking.value());
+  base::android::RunObjectCallbackAndroid(callback, result);
+}
+
 #if DCHECK_IS_ON()
 bool EveryElementInList(const std::vector<std::string>& ranking,
                         const std::vector<std::string>& available) {
@@ -206,6 +223,20 @@ bool ShouldFixMore() {
 }
 
 }  // namespace
+
+ShareRanking* ShareRanking::Get(Profile* profile) {
+  if (profile->IsOffTheRecord())
+    return nullptr;
+
+  base::SupportsUserData::Data* instance =
+      profile->GetUserData(kShareRankingKey);
+  if (!instance) {
+    auto new_instance = std::make_unique<ShareRanking>(profile);
+    instance = new_instance.get();
+    profile->SetUserData(kShareRankingKey, std::move(new_instance));
+  }
+  return static_cast<ShareRanking*>(instance);
+}
 
 ShareRanking::ShareRanking(Profile* profile,
                            std::unique_ptr<BackingDb> backing_db)
@@ -403,11 +434,46 @@ void ShareRanking::OnRankGetOldRankingDone(
 
 ShareRanking::Ranking ShareRanking::GetDefaultInitialRankingForType(
     const std::string& type) {
-  // TODO(https://crbug.com/1222156): Use default per-locale ranking values
-  // rather than an empty list.
   std::string locale = l10n_util::GetApplicationLocale("", false);
   return initial_ranking_for_test_.value_or(
       DefaultRankingForLocaleAndType(locale, type));
 }
 
 }  // namespace sharing
+
+void JNI_ShareRankingBridge_Rank(JNIEnv* env,
+                                 const JavaParamRef<jobject>& jprofile,
+                                 const JavaParamRef<jstring>& jtype,
+                                 const JavaParamRef<jobjectArray>& javailable,
+                                 jint jfold,
+                                 jboolean jpersist,
+                                 const JavaParamRef<jobject>& jcallback) {
+  base::android::ScopedJavaGlobalRef<jobject> callback(jcallback);
+  Profile* profile = ProfileAndroid::FromProfileAndroid(jprofile);
+
+  if (profile->IsOffTheRecord()) {
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
+                       base::Unretained(env), absl::nullopt));
+    return;
+  }
+
+  auto* history = sharing::ShareHistory::Get(profile);
+  auto* ranking = sharing::ShareRanking::Get(profile);
+
+  DCHECK(history);
+  DCHECK(ranking);
+
+  std::string type = base::android::ConvertJavaStringToUTF8(env, jtype);
+  std::vector<std::string> available;
+
+  base::android::AppendJavaStringArrayToStringVector(env, javailable,
+                                                     &available);
+
+  ranking->Rank(
+      history, type, available, jfold, jpersist,
+      base::BindOnce(&sharing::RunJniRankCallback, std::move(callback),
+                     // TODO(ellyjones): Is it safe to unretained env here?
+                     base::Unretained(env)));
+}

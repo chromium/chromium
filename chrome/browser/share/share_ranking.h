@@ -28,6 +28,8 @@ class ShareRanking : public base::SupportsUserData::Data {
   using GetRankingCallback =
       base::OnceCallback<void(absl::optional<Ranking> result)>;
 
+  static ShareRanking* Get(Profile* profile);
+
   explicit ShareRanking(Profile* profile,
                         std::unique_ptr<BackingDb> backing_db = nullptr);
   ~ShareRanking() override;

@@ -5,6 +5,9 @@
 package org.chromium.chrome.browser.share.share_sheet;
 
 import android.app.Activity;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.content.res.Configuration;
 import android.text.TextUtils;
 import android.view.View;
@@ -15,6 +18,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
@@ -26,6 +30,7 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.share.ChromeShareExtras;
 import org.chromium.chrome.browser.share.ShareHelper;
+import org.chromium.chrome.browser.share.ShareRankingBridge;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextCoordinator.LinkGeneration;
 import org.chromium.chrome.browser.share.link_to_text.LinkToTextMetricsHelper;
@@ -45,7 +50,9 @@ import org.chromium.ui.base.WindowAndroid.ActivityStateObserver;
 import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -78,6 +85,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
     private final LargeIconBridge mIconBridge;
     private final Tracker mFeatureEngagementTracker;
     private @LinkGeneration int mLinkGenerationStatusForMetrics = LinkGeneration.MAX;
+
+    // This same constant is used on the C++ side, in ShareRanking, to indicate
+    // the position of the special "More..." target. Don't change its value
+    // without also changing the C++ side.
+    private static final String MORE_TARGET_NAME = "$more";
+
+    // Don't log click indexes for usage-ranked items: the ordering is local to this client, so
+    // histogramming them would have no value.
+    private static final int NO_LOG_INDEX = -1;
 
     /**
      * Constructs a new ShareSheetCoordinator.
@@ -240,6 +256,15 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
         showShareSheet(params, chromeShareExtras, shareStartTime);
     }
 
+    private Profile getCurrentProfile() {
+        if (mTabProvider != null && mTabProvider.get() != null
+                && mTabProvider.get().getWebContents() != null) {
+            return Profile.fromWebContents(mTabProvider.get().getWebContents());
+        } else {
+            return null;
+        }
+    }
+
     // Used by first party features to share with only non-chrome apps.
     @Override
     public void showThirdPartyShareSheet(
@@ -267,6 +292,34 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
                 contentTypes, mIsMultiWindow);
     }
 
+    private PropertyModel createMorePropertyModel(
+            Activity activity, ShareParams params, boolean saveLastUsed) {
+        return ShareSheetPropertyModelBuilder.createPropertyModel(
+                AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
+                activity.getResources().getString(R.string.sharing_more_icon_label),
+                (shareParams)
+                        -> {
+                    RecordUserAction.record("SharingHubAndroid.MoreSelected");
+                    if (ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
+                        LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
+                                mLinkGenerationStatusForMetrics);
+                    }
+                    mBottomSheetController.hideContent(mBottomSheet, true);
+                    ShareHelper.showDefaultShareUi(params, getCurrentProfile(), saveLastUsed);
+                    // Reset callback to prevent cancel() being called when the custom sheet is
+                    // closed. The callback will be called by ShareHelper on actions from the
+                    // default share UI.
+                    params.setCallback(null);
+                },
+                /*displayNew*/ false);
+    }
+
+    private boolean shouldUseUsageRanking() {
+        return getCurrentProfile() != null
+                && ChromeFeatureList.isEnabled(ChromeFeatureList.SHARE_USAGE_RANKING);
+    }
+
     /**
      * Create third-party property models.
      *
@@ -287,35 +340,78 @@ public class ShareSheetCoordinator implements ActivityStateObserver, ChromeOptio
             PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(null));
             return;
         }
+
+        if (shouldUseUsageRanking()) {
+            createThirdPartyPropertyModelsFromUsageRanking(
+                    activity, params, contentTypes, saveLastUsed, callback);
+            return;
+        }
+
         List<PropertyModel> models =
                 mPropertyModelBuilder.selectThirdPartyApps(mBottomSheet, contentTypes, params,
                         saveLastUsed, mShareStartTime, mLinkGenerationStatusForMetrics);
-        // More...
-        PropertyModel morePropertyModel = ShareSheetPropertyModelBuilder.createPropertyModel(
-                AppCompatResources.getDrawable(activity, R.drawable.sharing_more),
-                activity.getResources().getString(R.string.sharing_more_icon_label),
-                (shareParams)
-                        -> {
-                    RecordUserAction.record("SharingHubAndroid.MoreSelected");
-                    if (ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION)) {
-                        LinkToTextMetricsHelper.recordSharedHighlightStateMetrics(
-                                mLinkGenerationStatusForMetrics);
-                    }
-                    mBottomSheetController.hideContent(mBottomSheet, true);
-                    Profile profile = null;
-                    if (mTabProvider.get() != null && mTabProvider.get().getWebContents() != null) {
-                        profile = Profile.fromWebContents(mTabProvider.get().getWebContents());
-                    }
-                    ShareHelper.showDefaultShareUi(params, profile, saveLastUsed);
-                    // Reset callback to prevent cancel() being called when the custom sheet is
-                    // closed. The callback will be called by ShareHelper on actions from the
-                    // default share UI.
-                    params.setCallback(null);
-                },
-                /*displayNew*/ false);
-        models.add(morePropertyModel);
+        models.add(createMorePropertyModel(activity, params, saveLastUsed));
 
+        PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
+    }
+
+    private void createThirdPartyPropertyModelsFromUsageRanking(Activity activity,
+            ShareParams params, Set<Integer> contentTypes, boolean saveLastUsed,
+            Callback<List<PropertyModel>> callback) {
+        Profile profile = getCurrentProfile();
+
+        assert profile != null;
+
+        String type = contentTypesToTypeForRanking(contentTypes);
+
+        PackageManager pm = ContextUtils.getApplicationContext().getPackageManager();
+
+        Intent shareIntent = ShareHelper.getShareLinkAppCompatibilityIntent();
+        List<ResolveInfo> availableResolveInfos =
+                pm.queryIntentActivities(ShareHelper.getShareLinkAppCompatibilityIntent(), 0);
+        availableResolveInfos.addAll(pm.queryIntentActivities(
+                ShareHelper.createShareFileAppCompatibilityIntent(params.getFileContentType()), 0));
+
+        List<String> availableActivities = new ArrayList<String>();
+        Map<String, PropertyModel> models = new HashMap<String, PropertyModel>();
+
+        for (ResolveInfo r : availableResolveInfos) {
+            availableActivities.add(r.activityInfo.name);
+            models.put(r.activityInfo.name,
+                    mPropertyModelBuilder.buildThirdPartyAppModel(mBottomSheet, params, r,
+                            saveLastUsed, mShareStartTime, NO_LOG_INDEX,
+                            mLinkGenerationStatusForMetrics));
+        }
+
+        models.put(MORE_TARGET_NAME, createMorePropertyModel(activity, params, saveLastUsed));
+
+        // TODO(ellyjones): Compute the fold from the device size.
+        int fold = 4;
+
+        // TODO(ellyjones): Does !saveLastUsed always imply that we shouldn't incorporate the share
+        // into our ranking?
+        boolean persist = !profile.isOffTheRecord() && saveLastUsed;
+
+        ShareRankingBridge.rank(profile, type, availableActivities, fold, persist,
+                ranking -> { onThirdPartyShareTargetsReceived(callback, models, ranking); });
+    }
+
+    private String contentTypesToTypeForRanking(Set<Integer> contentTypes) {
+        // TODO(ellyjones): Once we have field data, check whether the split into image vs not image
+        // is sufficient (i.e. is share ranking is performing well with a split this coarse).
+        if (contentTypes.contains(ShareSheetPropertyModelBuilder.ContentType.IMAGE)) {
+            return "image";
+        } else {
+            return "other";
+        }
+    }
+
+    private void onThirdPartyShareTargetsReceived(Callback<List<PropertyModel>> callback,
+            Map<String, PropertyModel> modelMap, List<String> targets) {
+        List<PropertyModel> models = new ArrayList<PropertyModel>();
+        for (String target : targets) {
+            models.add(modelMap.get(target));
+        }
         PostTask.postTask(UiThreadTaskTraits.DEFAULT, callback.bind(models));
     }
 
