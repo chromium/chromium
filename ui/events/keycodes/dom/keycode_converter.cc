@@ -383,6 +383,19 @@ bool KeycodeConverter::IsDomKeyForModifier(DomKey dom_key) {
   }
 }
 
+// static
+bool KeycodeConverter::IsDomKeyNamed(DomKey dom_key) {
+  if (dom_key.IsDeadKey()) {
+    return true;
+  }
+  for (auto& mapping : kDomKeyMappings) {
+    if (mapping.dom_key == dom_key) {
+      return mapping.string != nullptr;
+    }
+  }
+  return false;
+}
+
 // USB keycodes
 // Note that USB keycodes are not part of any web standard.
 // Please don't use USB keycodes in new code.

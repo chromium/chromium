@@ -117,6 +117,10 @@ class KeycodeConverter {
   // Returns true if the DomKey is a modifier.
   static bool IsDomKeyForModifier(DomKey dom_key);
 
+  // Returns true if the DomKey is a named key, as defined by
+  // https://www.w3.org/TR/uievents-key/#named-key-attribute-value
+  static bool IsDomKeyNamed(DomKey dom_key);
+
   // The following methods relate to USB keycodes.
   // Note that USB keycodes are not part of any web standard.
   // Please don't use USB keycodes in new code.

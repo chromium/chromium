@@ -450,6 +450,43 @@ TEST_F(NativeInputMethodEngineTest, ProcessesNamedKeysCorrectly) {
   InputMethodManager::Shutdown();
 }
 
+TEST_F(NativeInputMethodEngineTest, DoesNotSendUnhandledNamedKeys) {
+  TestingProfile testing_profile;
+  SetPhysicalTypingAutocorrectEnabled(testing_profile, true);
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  input_method::InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  ui::MockIMEInputContextHandler mock_handler;
+  ui::IMEBridge::Get()->SetInputContextHandler(&mock_handler);
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  {
+    testing::InSequence seq;
+    EXPECT_CALL(mock_input_method, OnFocus(_));
+    EXPECT_CALL(mock_input_method, ProcessKeyEvent(_, _)).Times(0);
+  }
+
+  engine.Enable(kEngineIdUs);
+  engine.FocusIn(ui::IMEEngineHandlerInterface::InputContext(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true));
+
+  // Escape is a named DOM key, but is not used by IMEs.
+  engine.ProcessKeyEvent(
+      {ui::ET_KEY_PRESSED, ui::VKEY_ESCAPE, ui::DomCode::ESCAPE, ui::EF_NONE,
+       ui::DomKey::ESCAPE, base::TimeTicks()},
+      base::DoNothing());
+  engine.ProcessKeyEvent({ui::ET_KEY_RELEASED, ui::VKEY_ESCAPE, ui::EF_NONE},
+                         base::DoNothing());
+  engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
 // TODO(crbug.com/1148157): Refactor NativeInputMethodEngine etc. to avoid
 // hidden dependencies on globals such as ImeBridge.
 class NativeInputMethodEngineWithRenderViewHostTest

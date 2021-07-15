@@ -293,9 +293,9 @@ mojom::DomKeyPtr DomKeyToMojom(const ui::DomKey& key) {
   // `IsCharacter` may return true for named keys like Enter because they have a
   // Unicode representation. Hence, try to convert the key into a named key
   // first before trying to convert it to a character key.
-  absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
-  if (named_key) {
-    return mojom::DomKey::NewNamedKey(*named_key);
+  if (ui::KeycodeConverter::IsDomKeyNamed(key)) {
+    absl::optional<mojom::NamedDomKey> named_key = NamedDomKeyToMojom(key);
+    return named_key ? mojom::DomKey::NewNamedKey(*named_key) : nullptr;
   }
   if (key.IsCharacter()) {
     return mojom::DomKey::NewCodepoint(key.ToCharacter());
