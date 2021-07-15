@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
 #include "components/policy/policy_constants.h"
 #include "net/url_request/url_request_context_getter.h"
@@ -57,6 +58,11 @@ using protocol::ValidatingAuthenticator;
 typedef ValidatingAuthenticator::Result ValidationResult;
 typedef ValidatingAuthenticator::ValidationCallback ValidationCallback;
 typedef ValidatingAuthenticator::ResultCallback ValidationResultCallback;
+
+// The amount of time to wait before destroying the signal strategy.  This delay
+// ensures there is time for the session-terminate message to be sent.
+constexpr base::TimeDelta kDestroySignalingDelay =
+    base::TimeDelta::FromSeconds(2);
 
 }  // namespace
 
@@ -552,7 +558,19 @@ void It2MeHost::DisconnectOnNetworkThread() {
   host_status_logger_ = nullptr;
   log_to_server_ = nullptr;
   ftl_signaling_connector_ = nullptr;
-  signal_strategy_ = nullptr;
+
+  if (signal_strategy_) {
+    // Delay destruction of the signaling strategy by a few seconds to give it
+    // a chance to send any outgoing messages (e.g. session-terminate) so the
+    // other end of the connection can display and log an accurate disconnect
+    // reason.
+    host_context_->network_task_runner()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce([](std::unique_ptr<SignalStrategy> signaling) {},
+                       std::move(signal_strategy_)),
+        kDestroySignalingDelay);
+  }
+
   host_event_logger_ = nullptr;
 
   // Post tasks to delete UI objects on the UI thread.
