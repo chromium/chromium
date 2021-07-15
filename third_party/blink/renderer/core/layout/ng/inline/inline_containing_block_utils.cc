@@ -20,13 +20,21 @@ namespace {
 using LineBoxPair = std::pair<const NGPhysicalLineBoxFragment*,
                               const NGPhysicalLineBoxFragment*>;
 
+// |fragment_converter| is the converter for the current containing block
+// fragment, and |containing_block_converter| is the converter of the
+// containing block where all fragments are stacked. These are used to
+// convert offsets to be relative to the full containing block rather
+// than the current containing block fragment.
 template <class Items>
 void GatherInlineContainerFragmentsFromItems(
     const Items& items,
     const PhysicalOffset& box_offset,
     InlineContainingBlockUtils::InlineContainingBlockMap*
         inline_containing_block_map,
-    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map) {
+    HashMap<const LayoutObject*, LineBoxPair>* containing_linebox_map,
+    const WritingModeConverter* fragment_converter = nullptr,
+    const WritingModeConverter* containing_block_converter = nullptr) {
+  DCHECK_EQ(!!fragment_converter, !!containing_block_converter);
   const NGPhysicalLineBoxFragment* linebox = nullptr;
   for (const auto& item : items) {
     // Track the current linebox.
@@ -60,7 +68,16 @@ void GatherInlineContainerFragmentsFromItems(
            !containing_lineboxes.first);
 
     PhysicalRect fragment_rect = item->RectInContainerFragment();
+    if (fragment_converter) {
+      // Convert the offset to be relative to the containing block such
+      // that all containing block fragments are stacked.
+      fragment_rect.offset = containing_block_converter->ToPhysical(
+          fragment_converter->ToLogical(fragment_rect.offset,
+                                        fragment_rect.size),
+          fragment_rect.size);
+    }
     fragment_rect.offset += box_offset;
+
     if (containing_lineboxes.first == linebox) {
       // Unite the start rect with the fragment's rect.
       containing_block_geometry->start_fragment_union_rect.Unite(fragment_rect);
@@ -151,6 +168,7 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometry(
 void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     const LayoutBox* box,
     LayoutUnit block_offset,
+    PhysicalSize accumulated_containing_block_size,
     const NGBoxFragmentBuilder& container_builder,
     wtf_size_t fragment_index,
     InlineContainingBlockMap* inline_containing_block_map) {
@@ -162,8 +180,10 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     DCHECK_EQ(entry.key, entry.key->ContinuationRoot());
 #endif
 
-  WritingModeConverter converter(box->StyleRef().GetWritingDirection(),
-                                 PhysicalSize());
+  WritingDirectionMode writing_direction =
+      box->StyleRef().GetWritingDirection();
+  WritingModeConverter containing_block_converter = WritingModeConverter(
+      writing_direction, accumulated_containing_block_size);
 
   const auto& children = container_builder.Children();
   DCHECK(children.size());
@@ -189,34 +209,37 @@ void InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
     if (previous_break_token)
       current_block_offset += previous_break_token->ConsumedBlockSize();
     LogicalOffset logical_offset(LayoutUnit(), current_block_offset);
-    PhysicalOffset offset =
-        converter.ToPhysical(logical_offset, PhysicalSize());
+    PhysicalOffset offset = containing_block_converter.ToPhysical(
+        logical_offset, accumulated_containing_block_size);
 
+    WritingModeConverter current_fragment_converter =
+        WritingModeConverter(writing_direction, physical_fragment.Size());
     if (physical_fragment.HasItems()) {
       GatherInlineContainerFragmentsFromItems(
           physical_fragment.Items()->Items(), offset,
-          inline_containing_block_map, &containing_linebox_map);
-      continue;
-    }
+          inline_containing_block_map, &containing_linebox_map,
+          &current_fragment_converter, &containing_block_converter);
+    } else {
+      // If we have children which are anonymous block, we might contain split
+      // inlines, this can occur in the following example:
+      // <div>
+      //    Some text <span style="position: relative;">text
+      //    <div>block</div>
+      //    text </span> text.
+      // </div>
+      for (const auto& child : physical_fragment.Children()) {
+        if (!child.fragment->IsAnonymousBlock())
+          continue;
 
-    // If we have children which are anonymous block, we might contain split
-    // inlines, this can occur in the following example:
-    // <div>
-    //    Some text <span style="position: relative;">text
-    //    <div>block</div>
-    //    text </span> text.
-    // </div>
-    for (const auto& child : physical_fragment.Children()) {
-      if (!child.fragment->IsAnonymousBlock())
-        continue;
+        const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
+        if (!child_fragment.HasItems())
+          continue;
 
-      const auto& child_fragment = To<NGPhysicalBoxFragment>(*child.fragment);
-      if (!child_fragment.HasItems())
-        continue;
-
-      GatherInlineContainerFragmentsFromItems(
-          child_fragment.Items()->Items(), child.offset + offset,
-          inline_containing_block_map, &containing_linebox_map);
+        GatherInlineContainerFragmentsFromItems(
+            child_fragment.Items()->Items(), child.offset + offset,
+            inline_containing_block_map, &containing_linebox_map,
+            &current_fragment_converter, &containing_block_converter);
+      }
     }
     if (fragment_index < children.size()) {
       previous_break_token = To<NGBlockBreakToken>(

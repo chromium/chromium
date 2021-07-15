@@ -439,15 +439,16 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     const LayoutBox* containing_block = inline_containg_block.key;
     InlineContainingBlockInfo& inline_info = inline_containg_block.value;
 
-    // Fetch the inline start/end fragment geometry.
-    InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
-        containing_block, inline_info.block_offset, *container_builder_,
-        inline_info.fragmentainer_index, &inline_info.map);
-
     LogicalSize size(LayoutBoxUtils::InlineSize(*containing_block),
                      inline_info.block_size);
     PhysicalSize container_builder_physical_size =
         ToPhysicalSize(size, containing_block->StyleRef().GetWritingMode());
+
+    // Fetch the inline start/end fragment geometry.
+    InlineContainingBlockUtils::ComputeInlineContainerGeometryForFragmentainer(
+        containing_block, inline_info.block_offset,
+        container_builder_physical_size, *container_builder_,
+        inline_info.fragmentainer_index, &inline_info.map);
 
     // TODO(almaher): Set |relative_offset| and |offset_to_border_box| in the
     // final containing block info that gets created.
