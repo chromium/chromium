@@ -33,6 +33,7 @@ void PostMessageSender::Post(base::Value message) {
   if (!container_)
     return;
 
+  v8::Isolate::Scope isolate_scope(isolate_);
   v8::HandleScope handle_scope(isolate_);
   v8::Local<v8::Context> context =
       container_->GetDocument().GetFrame()->MainWorldScriptContext();
