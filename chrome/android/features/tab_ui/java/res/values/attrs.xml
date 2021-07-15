@@ -23,4 +23,5 @@
     <!-- Tab grid dialog attributes -->
     <attr name="tabGridDialogCornerRadius" format="dimension" />
     <attr name="tabGridDialogAppBarPadding" format="dimension" />
+    <attr name="tabGridDialogUngroupBarDividerStyle" format="reference" />
 </resources>

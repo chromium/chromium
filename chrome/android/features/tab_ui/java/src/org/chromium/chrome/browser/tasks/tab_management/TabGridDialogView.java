@@ -25,6 +25,7 @@ import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.content.ContextCompat;
@@ -97,9 +98,12 @@ public class TabGridDialogView extends FrameLayout {
     private int mParentWidth;
     private int mBackgroundDrawableColor;
     private int mUngroupBarStatus = UngroupBarStatus.HIDE;
-    private int mUngroupBarBackgroundColorResourceId = R.color.tab_grid_dialog_background_color;
-    private int mUngroupBarHoveredBackgroundColorResourceId = R.color.tab_grid_card_selected_color;
-    private int mUngroupBarTextAppearance = R.style.TextAppearance_TextMediumThick_Blue;
+    private int mUngroupBarBackgroundColor;
+    private int mUngroupBarHoveredBackgroundColor;
+    @ColorInt
+    private int mUngroupBarTextColor;
+    @ColorInt
+    private int mUngroupBarHoveredTextColor;
 
     public TabGridDialogView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -111,6 +115,17 @@ public class TabGridDialogView extends FrameLayout {
                 (int) mContext.getResources().getDimension(R.dimen.bottom_sheet_peek_height);
         mBackgroundDrawableColor =
                 ContextCompat.getColor(mContext, R.color.tab_grid_dialog_background_color);
+
+        mUngroupBarTextColor =
+                TabUiThemeProvider.getTabGridDialogUngroupBarTextColor(mContext, false);
+        mUngroupBarHoveredTextColor =
+                TabUiThemeProvider.getTabGridDialogUngroupBarHoveredTextColor(mContext, false);
+
+        mUngroupBarBackgroundColor =
+                TabUiThemeProvider.getTabGridDialogUngroupBarBackgroundColor(mContext, false);
+        mUngroupBarHoveredBackgroundColor =
+                TabUiThemeProvider.getTabGridDialogUngroupBarHoveredBackgroundColor(
+                        mContext, false);
     }
 
     @Override
@@ -752,12 +767,10 @@ public class TabGridDialogView extends FrameLayout {
         assert mUngroupBarTextView.getBackground() instanceof GradientDrawable;
         mUngroupBar.bringToFront();
         GradientDrawable background = (GradientDrawable) mUngroupBarTextView.getBackground();
-        background.setColor(ContextCompat.getColor(mContext,
-                isHovered ? mUngroupBarHoveredBackgroundColorResourceId
-                          : mUngroupBarBackgroundColorResourceId));
-        mUngroupBarTextView.setTextAppearance(mContext,
-                isHovered ? R.style.TextAppearance_TextMediumThick_Primary_Light
-                          : mUngroupBarTextAppearance);
+        background.setColor(
+                isHovered ? mUngroupBarHoveredBackgroundColor : mUngroupBarBackgroundColor);
+        mUngroupBarTextView.setTextColor(
+                isHovered ? mUngroupBarHoveredTextColor : mUngroupBarTextColor);
     }
 
     /**
@@ -772,30 +785,34 @@ public class TabGridDialogView extends FrameLayout {
 
     /**
      * Update the ungroup bar background color.
-     *
-     * @param colorResource The new background color resource to use when ungroup bar is visible.
+     * @param colorInt The new background color to use when ungroup bar is visible.
      */
-    void updateUngroupBarBackgroundColor(int colorResource) {
-        mUngroupBarBackgroundColorResourceId = colorResource;
+    void updateUngroupBarBackgroundColor(int colorInt) {
+        mUngroupBarBackgroundColor = colorInt;
     }
 
     /**
      * Update the ungroup bar background color when the ungroup bar is hovered.
-     *
-     * @param colorResource The new background color resource to use when ungroup bar is visible
-     *                      and hovered.
+     * @param colorInt The new background color to use when ungroup bar is visible and hovered.
      */
-    void updateUngroupBarHoveredBackgroundColor(int colorResource) {
-        mUngroupBarHoveredBackgroundColorResourceId = colorResource;
+    void updateUngroupBarHoveredBackgroundColor(int colorInt) {
+        mUngroupBarHoveredBackgroundColor = colorInt;
     }
 
     /**
-     * Update the ungroup bar text appearance when the ungroup bar is visible but not hovered.
-     *
-     * @param textAppearance The new text appearance to use.
+     * Update the ungroup bar text color when the ungroup bar is visible but not hovered.
+     * @param colorInt The new text color to use when ungroup bar is visible.
      */
-    void updateUngroupBarTextAppearance(int textAppearance) {
-        mUngroupBarTextAppearance = textAppearance;
+    void updateUngroupBarTextColor(int colorInt) {
+        mUngroupBarTextColor = colorInt;
+    }
+
+    /**
+     * Update the ungroup bar text color when the ungroup bar is hovered.
+     * @param colorInt The new text color to use when ungroup bar is visible and hovered.
+     */
+    void updateUngroupBarHoveredTextColor(int colorInt) {
+        mUngroupBarHoveredTextColor = colorInt;
     }
 
     /**
@@ -831,18 +848,23 @@ public class TabGridDialogView extends FrameLayout {
     }
 
     @VisibleForTesting
-    int getUngroupBarBackgroundColorResourceIdForTesting() {
-        return mUngroupBarBackgroundColorResourceId;
+    int getUngroupBarBackgroundColorForTesting() {
+        return mUngroupBarBackgroundColor;
     }
 
     @VisibleForTesting
-    int getUngroupBarHoveredBackgroundColorResourceIdForTesting() {
-        return mUngroupBarHoveredBackgroundColorResourceId;
+    int getUngroupBarHoveredBackgroundColorForTesting() {
+        return mUngroupBarHoveredBackgroundColor;
     }
 
     @VisibleForTesting
-    int getUngroupBarTextAppearanceForTesting() {
-        return mUngroupBarTextAppearance;
+    int getUngroupBarTextColorForTesting() {
+        return mUngroupBarTextColor;
+    }
+
+    @VisibleForTesting
+    int getUngroupBarHoveredTextColorForTesting() {
+        return mUngroupBarHoveredTextColor;
     }
 
     @VisibleForTesting

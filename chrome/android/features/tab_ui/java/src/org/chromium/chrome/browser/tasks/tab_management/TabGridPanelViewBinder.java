@@ -10,9 +10,10 @@ import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelPrope
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.COLLAPSE_CLICK_LISTENER;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.CONTENT_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_BACKGROUND_COLOR;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID;
-import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_APPEARANCE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR;
+import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.HEADER_TITLE;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.INITIAL_SCROLL_INDEX;
 import static org.chromium.chrome.browser.tasks.tab_management.TabGridPanelProperties.IS_DIALOG_VISIBLE;
@@ -100,20 +101,25 @@ class TabGridPanelViewBinder {
                 viewHolder.dialogView.updateDialogContainerBackgroundColor(backgroundColorInt);
                 viewHolder.toolbarView.setBackgroundColorTint(backgroundColorInt);
             }
-        } else if (DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID == propertyKey) {
+        } else if (DIALOG_UNGROUP_BAR_BACKGROUND_COLOR == propertyKey) {
             if (viewHolder.dialogView != null) {
                 viewHolder.dialogView.updateUngroupBarBackgroundColor(
-                        model.get(DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID));
+                        model.get(DIALOG_UNGROUP_BAR_BACKGROUND_COLOR));
             }
-        } else if (DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID == propertyKey) {
+        } else if (DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR == propertyKey) {
             if (viewHolder.dialogView != null) {
                 viewHolder.dialogView.updateUngroupBarHoveredBackgroundColor(
-                        model.get(DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID));
+                        model.get(DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR));
             }
-        } else if (DIALOG_UNGROUP_BAR_TEXT_APPEARANCE == propertyKey) {
+        } else if (DIALOG_UNGROUP_BAR_TEXT_COLOR == propertyKey) {
             if (viewHolder.dialogView != null) {
-                viewHolder.dialogView.updateUngroupBarTextAppearance(
-                        model.get(DIALOG_UNGROUP_BAR_TEXT_APPEARANCE));
+                viewHolder.dialogView.updateUngroupBarTextColor(
+                        model.get(DIALOG_UNGROUP_BAR_TEXT_COLOR));
+            }
+        } else if (DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR == propertyKey) {
+            if (viewHolder.dialogView != null) {
+                viewHolder.dialogView.updateUngroupBarHoveredTextColor(
+                        model.get(DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR));
             }
         } else if (INITIAL_SCROLL_INDEX == propertyKey) {
             int index = (Integer) model.get(INITIAL_SCROLL_INDEX);

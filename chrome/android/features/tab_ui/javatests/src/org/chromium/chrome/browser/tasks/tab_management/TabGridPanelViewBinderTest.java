@@ -306,49 +306,73 @@ public class TabGridPanelViewBinderTest extends DummyUiChromeActivityTestCase {
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarBackgroundColor() {
-        int normalColorId = R.color.tab_grid_dialog_background_color;
-        int incognitoColorId = R.color.tab_grid_dialog_background_color_incognito;
+        int normalColor =
+                ContextCompat.getColor(getActivity(), R.color.tab_grid_dialog_background_color);
+        int incognitoColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_background_color_incognito);
         // Default setup is in normal mode.
-        Assert.assertEquals(normalColorId,
-                mTabGridDialogView.getUngroupBarBackgroundColorResourceIdForTesting());
+        Assert.assertEquals(
+                normalColor, mTabGridDialogView.getUngroupBarBackgroundColorForTesting());
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID, incognitoColorId);
+        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_BACKGROUND_COLOR, incognitoColor);
 
-        Assert.assertEquals(incognitoColorId,
-                mTabGridDialogView.getUngroupBarBackgroundColorResourceIdForTesting());
+        Assert.assertEquals(
+                incognitoColor, mTabGridDialogView.getUngroupBarBackgroundColorForTesting());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
     public void testSetUngroupbarHoveredBackgroundColor() {
-        int normalColorId = R.color.tab_grid_card_selected_color;
-        int incognitoColorId = R.color.tab_grid_card_selected_color_incognito;
+        int normalColorId =
+                ContextCompat.getColor(getActivity(), R.color.tab_grid_card_selected_color);
+        int incognitoColorId = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_card_selected_color_incognito);
         // Default setup is in normal mode.
-        Assert.assertEquals(normalColorId,
-                mTabGridDialogView.getUngroupBarHoveredBackgroundColorResourceIdForTesting());
+        Assert.assertEquals(
+                normalColorId, mTabGridDialogView.getUngroupBarHoveredBackgroundColorForTesting());
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID,
+        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR,
                 incognitoColorId);
 
         Assert.assertEquals(incognitoColorId,
-                mTabGridDialogView.getUngroupBarHoveredBackgroundColorResourceIdForTesting());
+                mTabGridDialogView.getUngroupBarHoveredBackgroundColorForTesting());
     }
 
     @Test
     @SmallTest
     @UiThreadTest
-    public void testSetUngroupbarTextAppearance() {
-        int normalStyleId = R.style.TextAppearance_TextMediumThick_Blue;
-        int incognitoStyleId = R.style.TextAppearance_TextMediumThick_Blue_Light;
+    public void testSetUngroupbarTextColor() {
+        int normalColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_ungroup_button_text_color);
+        int incognitoColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_ungroup_button_text_color_incognito);
+        // Default setup is in normal mode.
+        Assert.assertEquals(normalColor, mTabGridDialogView.getUngroupBarTextColorForTesting());
+
+        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_COLOR, incognitoColor);
+
+        Assert.assertEquals(incognitoColor, mTabGridDialogView.getUngroupBarTextColorForTesting());
+    }
+
+    @Test
+    @SmallTest
+    @UiThreadTest
+    public void testSetUngroupbarHoveredTextColor() {
+        int normalColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_ungroup_button_text_color_hovered);
+        // Another color just for the sake of testing, as the hovered color does not change before
+        // theme refactor.
+        int incognitoColor = ContextCompat.getColor(
+                getActivity(), R.color.tab_grid_dialog_ungroup_button_text_color_incognito);
         // Default setup is in normal mode.
         Assert.assertEquals(
-                normalStyleId, mTabGridDialogView.getUngroupBarTextAppearanceForTesting());
+                normalColor, mTabGridDialogView.getUngroupBarHoveredTextColorForTesting());
 
-        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_TEXT_APPEARANCE, incognitoStyleId);
+        mModel.set(TabGridPanelProperties.DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, incognitoColor);
 
         Assert.assertEquals(
-                incognitoStyleId, mTabGridDialogView.getUngroupBarTextAppearanceForTesting());
+                incognitoColor, mTabGridDialogView.getUngroupBarHoveredTextColorForTesting());
     }
 
     @Test

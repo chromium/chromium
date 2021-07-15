@@ -25,20 +25,18 @@
             android:orientation="vertical"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:visibility="invisible">
+            android:visibility="invisible"
+            tools:ignore="UseCompoundDrawables">
             <ImageView
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/toolbar_shadow_height"
-                android:src="@drawable/modern_toolbar_shadow"
-                android:scaleType="fitXY"
-                android:scaleY="-1"
-                android:tint="@color/ungroup_bar_shadow_color"
+                style="?attr/tabGridDialogUngroupBarDividerStyle"
                 tools:ignore="ContentDescription" />
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/bottom_sheet_peek_height"
                 android:id="@+id/dialog_ungroup_bar_text"
                 android:text="@string/tab_grid_dialog_remove_from_group"
+                android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
                 android:background="@drawable/ungroup_bar_background"
                 android:gravity="center" />
         </LinearLayout>

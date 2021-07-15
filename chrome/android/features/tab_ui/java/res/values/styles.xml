@@ -55,6 +55,19 @@
         <item name="cornerRadiusBottomEnd">@dimen/tab_grid_card_thumbnail_corner_radius_bottom</item>
     </style>
 
+    <style name="TabGridDialogUngroupBarDivider.Shadow" parent="">
+        <item name="android:layout_height">@dimen/toolbar_shadow_height</item>
+        <item name="android:src">@drawable/modern_toolbar_shadow</item>
+        <item name="android:tint">@color/ungroup_bar_shadow_color</item>
+        <item name="android:scaleType">fitXY</item>
+        <item name="android:scaleY">-1</item>
+    </style>
+
+    <style name="TabGridDialogUngroupBarDivider.Hairline" parent="">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:src">@drawable/toolbar_hairline</item>
+    </style>
+
     <style name="ThemeRefactorOverlay.Disabled.TabUi" parent="">
         <item name="tabGridDividerVisible">@integer/view_visible</item>
         <item name="tabGridHeaderHeight">@dimen/tab_list_card_title_height</item>
@@ -68,6 +81,7 @@
 
         <item name="tabGridDialogCornerRadius">@dimen/tab_list_card_radius</item>
         <item name="tabGridDialogAppBarPadding">0dp</item>
+        <item name="tabGridDialogUngroupBarDividerStyle">@style/TabGridDialogUngroupBarDivider.Shadow</item>
     </style>
 
     <style name="ThemeRefactorOverlay.Enabled.TabUi" parent="">
@@ -83,6 +97,7 @@
 
         <item name="tabGridDialogCornerRadius">@dimen/tab_grid_dialog_bg_radius</item>
         <item name="tabGridDialogAppBarPadding">@dimen/tab_grid_dialog_app_bar_padding</item>
+        <item name="tabGridDialogUngroupBarDividerStyle">@style/TabGridDialogUngroupBarDivider.Hairline</item>
     </style>
 
     <style name="TabThumbnailPlaceHolderStyle">

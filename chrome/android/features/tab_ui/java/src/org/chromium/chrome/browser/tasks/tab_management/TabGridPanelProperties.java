@@ -40,13 +40,14 @@ class TabGridPanelProperties {
             new PropertyModel.WritableObjectPropertyKey<>(true);
     public static final PropertyModel.WritableIntPropertyKey UNGROUP_BAR_STATUS =
             new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel
-            .WritableIntPropertyKey DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID =
+    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_BACKGROUND_COLOR =
             new PropertyModel.WritableIntPropertyKey();
     public static final PropertyModel
-            .WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID =
+            .WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR =
             new PropertyModel.WritableIntPropertyKey();
-    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_TEXT_APPEARANCE =
+    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_TEXT_COLOR =
+            new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableIntPropertyKey DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR =
             new PropertyModel.WritableIntPropertyKey();
     /**
      * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
@@ -76,9 +77,10 @@ class TabGridPanelProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {COLLAPSE_CLICK_LISTENER,
             ADD_CLICK_LISTENER, HEADER_TITLE, CONTENT_TOP_MARGIN, PRIMARY_COLOR,
             DIALOG_BACKGROUND_COLOR, TINT, IS_DIALOG_VISIBLE, SCRIMVIEW_CLICK_RUNNABLE,
-            ANIMATION_SOURCE_VIEW, UNGROUP_BAR_STATUS, DIALOG_UNGROUP_BAR_BACKGROUND_COLOR_ID,
-            DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR_ID, DIALOG_UNGROUP_BAR_TEXT_APPEARANCE,
-            INITIAL_SCROLL_INDEX, IS_MAIN_CONTENT_VISIBLE, MENU_CLICK_LISTENER, TITLE_TEXT_WATCHER,
-            TITLE_TEXT_ON_FOCUS_LISTENER, TITLE_CURSOR_VISIBILITY, IS_TITLE_TEXT_FOCUSED,
-            IS_KEYBOARD_VISIBLE, COLLAPSE_BUTTON_CONTENT_DESCRIPTION};
+            ANIMATION_SOURCE_VIEW, UNGROUP_BAR_STATUS, DIALOG_UNGROUP_BAR_BACKGROUND_COLOR,
+            DIALOG_UNGROUP_BAR_HOVERED_BACKGROUND_COLOR, DIALOG_UNGROUP_BAR_TEXT_COLOR,
+            DIALOG_UNGROUP_BAR_HOVERED_TEXT_COLOR, INITIAL_SCROLL_INDEX, IS_MAIN_CONTENT_VISIBLE,
+            MENU_CLICK_LISTENER, TITLE_TEXT_WATCHER, TITLE_TEXT_ON_FOCUS_LISTENER,
+            TITLE_CURSOR_VISIBILITY, IS_TITLE_TEXT_FOCUSED, IS_KEYBOARD_VISIBLE,
+            COLLAPSE_BUTTON_CONTENT_DESCRIPTION};
 }
