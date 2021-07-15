@@ -1437,8 +1437,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Tabs.CountAtResume" units="tabs" expires_after="M92">
+<histogram name="Tabs.CountAtResume" units="tabs" expires_after="2021-12-12">
   <owner>marq@chromium.org</owner>
+  <owner>olivierrobin@chromium.org</owner>
   <summary>
     [iOS] The number of tabs open when the app comes out of the background.
   </summary>
