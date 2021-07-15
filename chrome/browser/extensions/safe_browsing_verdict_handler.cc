@@ -6,8 +6,8 @@
 
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_registry.h"
 

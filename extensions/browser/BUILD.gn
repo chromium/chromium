@@ -215,6 +215,8 @@ source_set("browser_sources") {
     "blob_reader.cc",
     "blob_reader.h",
     "blocked_action_type.h",
+    "blocklist_extension_prefs.cc",
+    "blocklist_extension_prefs.h",
     "blocklist_state.h",
     "browser_context_keyed_api_factory.h",
     "component_extension_resource_manager.h",

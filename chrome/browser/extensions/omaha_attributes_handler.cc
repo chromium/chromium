@@ -6,9 +6,9 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/values.h"
-#include "chrome/browser/extensions/blocklist_extension_prefs.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "content/public/browser/browser_thread.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/common/extension_features.h"
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/extensions/blocklist_extension_prefs.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_prefs.h"

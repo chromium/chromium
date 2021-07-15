@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_EXTENSIONS_BLOCKLIST_EXTENSION_PREFS_H_
-#define CHROME_BROWSER_EXTENSIONS_BLOCKLIST_EXTENSION_PREFS_H_
+#ifndef EXTENSIONS_BROWSER_BLOCKLIST_EXTENSION_PREFS_H_
+#define EXTENSIONS_BROWSER_BLOCKLIST_EXTENSION_PREFS_H_
 
 #include <string>
 
-#include "chrome/browser/extensions/blocklist.h"
 #include "extensions/browser/blocklist_state.h"
 
 namespace extensions {
@@ -75,4 +74,4 @@ void UpdateCurrentGreylistStatesAsAcknowledged(const std::string& extension_id,
 }  // namespace blocklist_prefs
 }  // namespace extensions
 
-#endif  // CHROME_BROWSER_EXTENSIONS_BLOCKLIST_EXTENSION_PREFS_H_
+#endif  // EXTENSIONS_BROWSER_BLOCKLIST_EXTENSION_PREFS_H_
