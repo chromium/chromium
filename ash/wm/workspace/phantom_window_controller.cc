@@ -90,6 +90,9 @@ std::unique_ptr<views::Widget> PhantomWindowController::CreatePhantomWidget(
   if (phantom_widget_window->parent() == window_->parent()) {
     phantom_widget_window->parent()->StackChildAbove(phantom_widget_window,
                                                      window_);
+  } else {
+    // Ensure the phantom and its shadow do not cover the shelf.
+    phantom_widget_window->parent()->StackChildAtBottom(phantom_widget_window);
   }
   ui::Layer* widget_layer = phantom_widget_window->layer();
   widget_layer->SetColor(SkColorSetA(SK_ColorWHITE, 0.4 * 255));
