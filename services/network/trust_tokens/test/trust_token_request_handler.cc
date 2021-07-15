@@ -20,7 +20,6 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
-#include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
 #include "services/network/trust_tokens/scoped_boringssl_bytes.h"
 #include "services/network/trust_tokens/test/signed_request_verification_util.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"

@@ -16,7 +16,7 @@
 #include "net/http/http_request_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/trust_token_http_headers.h"
-#include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
+#include "services/network/trust_tokens/ecdsa_sha256_trust_token_request_signer.h"
 #include "services/network/trust_tokens/trust_token_parameterization.h"
 #include "services/network/trust_tokens/trust_token_request_canonicalizer.h"
 #include "services/network/trust_tokens/trust_token_request_signing_helper.h"
@@ -124,8 +124,8 @@ bool ReconstructSigningDataAndVerifyForIndividualIssuer(
         [](base::span<const uint8_t> data, base::span<const uint8_t> signature,
            base::span<const uint8_t> verification_key,
            const std::string& signing_alg) {
-          std::unique_ptr<Ed25519TrustTokenRequestSigner> signer =
-              std::make_unique<Ed25519TrustTokenRequestSigner>();
+          std::unique_ptr<EcdsaSha256TrustTokenRequestSigner> signer =
+              std::make_unique<EcdsaSha256TrustTokenRequestSigner>();
           return signer->Verify(data, signature, verification_key) &&
                  signing_alg == signer->GetAlgorithmIdentifier();
         });

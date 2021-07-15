@@ -28,10 +28,7 @@ const char kIssuerToplevelPairTableName[] =
     "trust_tokens_issuer_toplevel_pair_config";
 
 // When updating the database's schema, please increment the schema version.
-//
-// TODO(crbug.com/1133969): In particular, when changing signing keys to use
-// P-256, update the version number to reset storage contents.
-constexpr int kCurrentSchemaVersion = 1;
+constexpr int kCurrentSchemaVersion = 2;
 }  // namespace
 
 void TrustTokenDatabaseOwner::Create(

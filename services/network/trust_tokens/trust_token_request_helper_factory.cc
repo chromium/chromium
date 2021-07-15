@@ -19,8 +19,8 @@
 #include "services/network/public/mojom/trust_tokens.mojom-shared.h"
 #include "services/network/trust_tokens/boringssl_trust_token_issuance_cryptographer.h"
 #include "services/network/trust_tokens/boringssl_trust_token_redemption_cryptographer.h"
-#include "services/network/trust_tokens/ed25519_key_pair_generator.h"
-#include "services/network/trust_tokens/ed25519_trust_token_request_signer.h"
+#include "services/network/trust_tokens/ecdsa_p256_key_pair_generator.h"
+#include "services/network/trust_tokens/ecdsa_sha256_trust_token_request_signer.h"
 #include "services/network/trust_tokens/local_trust_token_operation_delegate.h"
 #include "services/network/trust_tokens/local_trust_token_operation_delegate_impl.h"
 #include "services/network/trust_tokens/operating_system_matching.h"
@@ -166,7 +166,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
                  Outcome::kSuccessfullyCreatedARedemptionHelper);
       auto helper = std::make_unique<TrustTokenRequestRedemptionHelper>(
           std::move(top_frame_origin), params->refresh_policy, store,
-          key_commitment_getter_, std::make_unique<Ed25519KeyPairGenerator>(),
+          key_commitment_getter_, std::make_unique<EcdsaP256KeyPairGenerator>(),
           std::make_unique<BoringsslTrustTokenRedemptionCryptographer>(),
           std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
@@ -208,7 +208,7 @@ void TrustTokenRequestHelperFactory::ConstructHelperUsingStore(
                  Outcome::kSuccessfullyCreatedASigningHelper);
       auto helper = std::make_unique<TrustTokenRequestSigningHelper>(
           store, std::move(signing_params),
-          std::make_unique<Ed25519TrustTokenRequestSigner>(),
+          std::make_unique<EcdsaSha256TrustTokenRequestSigner>(),
           std::make_unique<TrustTokenRequestCanonicalizer>(),
           std::move(net_log));
       std::move(done).Run(TrustTokenStatusOrRequestHelper(
