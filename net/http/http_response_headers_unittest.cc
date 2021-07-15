@@ -2184,10 +2184,26 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithSpaceParameterRejected) {
   EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
 }
 
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithInterimSpaceIsRejected) {
+  InitializeHeadersWithCacheControl("max-age=1 2");
+  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+}
+
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeWithMinusSignIsRejected) {
+  InitializeHeadersWithCacheControl("max-age=-7");
+  EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+}
+
 TEST_F(HttpResponseHeadersCacheControlTest,
        MaxAgeWithSpaceBeforeEqualsIsRejected) {
   InitializeHeadersWithCacheControl("max-age = 7");
   EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+}
+
+TEST_F(HttpResponseHeadersCacheControlTest,
+       MaxAgeWithLeadingandTrailingSpaces) {
+  InitializeHeadersWithCacheControl("max-age= 7  ");
+  EXPECT_EQ(TimeDelta::FromSeconds(7), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeFirstMatchUsed) {
@@ -2196,10 +2212,11 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeFirstMatchUsed) {
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeBogusFirstMatchUsed) {
-  // "max-age10" isn't parsed as "max-age"; "max-age=now" is parsed as
-  // "max-age=0" and so "max-age=20" is not used.
-  InitializeHeadersWithCacheControl("max-age10, max-age=now, max-age=20");
-  EXPECT_EQ(TimeDelta::FromSeconds(0), GetMaxAgeValue());
+  // "max-age10" isn't parsed as "max-age"; "max-age=now" is bogus and
+  // ignored and so "max-age=20" is used.
+  InitializeHeadersWithCacheControl(
+      "max-age10, max-age=now, max-age=20, max-age=30");
+  EXPECT_EQ(TimeDelta::FromSeconds(20), GetMaxAgeValue());
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeCaseInsensitive) {
@@ -2207,9 +2224,14 @@ TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeCaseInsensitive) {
   EXPECT_EQ(TimeDelta::FromSeconds(15), GetMaxAgeValue());
 }
 
+TEST_F(HttpResponseHeadersCacheControlTest, MaxAgeOverflow) {
+  InitializeHeadersWithCacheControl("max-age=99999999999999999999");
+  EXPECT_EQ(TimeDelta::FiniteMax().InSeconds(), GetMaxAgeValue().InSeconds());
+}
+
 struct MaxAgeTestData {
   const char* max_age_string;
-  const int64_t expected_seconds;
+  const absl::optional<int64_t> expected_seconds;
 };
 
 class MaxAgeEdgeCasesTest
@@ -2223,27 +2245,31 @@ TEST_P(MaxAgeEdgeCasesTest, MaxAgeEdgeCases) {
   std::string max_age = "max-age=";
   InitializeHeadersWithCacheControl(
       (max_age + test.max_age_string).c_str());
-  EXPECT_EQ(test.expected_seconds, GetMaxAgeValue().InSeconds())
-      << " for max-age=" << test.max_age_string;
+  if (test.expected_seconds.has_value()) {
+    EXPECT_EQ(test.expected_seconds.value(), GetMaxAgeValue().InSeconds())
+        << " for max-age=" << test.max_age_string;
+  } else {
+    EXPECT_FALSE(headers()->GetMaxAgeValue(TimeDeltaPointer()));
+  }
 }
 
 const MaxAgeTestData max_age_tests[] = {
     {" 1 ", 1},  // Spaces are ignored.
-    {"-1", -1},  // Negative numbers are passed through.
-    {"--1", 0},  // Leading junk gives 0.
-    {"2s", 2},   // Trailing junk is ignored.
-    {"3 days", 3},
-    {"'4'", 0},    // Single quotes don't work.
-    {"\"5\"", 0},  // Double quotes don't work.
-    {"0x6", 0},    // Hex not parsed as hex.
-    {"7F", 7},     // Hex without 0x still not parsed as hex.
-    {"010", 10},   // Octal not parsed as octal.
+    {"-1", absl::nullopt},
+    {"--1", absl::nullopt},
+    {"2s", absl::nullopt},
+    {"3 days", absl::nullopt},
+    {"'4'", absl::nullopt},
+    {"\"5\"", absl::nullopt},
+    {"0x6", absl::nullopt},  // Hex not parsed as hex.
+    {"7F", absl::nullopt},   // Hex without 0x still not parsed as hex.
+    {"010", 10},             // Octal not parsed as octal.
+    {"9223372036853", 9223372036853},
     {"9223372036854", 9223372036854},
-    //  {"9223372036855", -9223372036854},  // Undefined behaviour.
-    //  {"9223372036854775806", -2},        // Undefined behaviour.
-    {"9223372036854775807", 9223372036854775807},
-    {"20000000000000000000",
-     std::numeric_limits<int64_t>::max()},  // Overflow int64_t.
+    {"9223372036855", 9223372036854},
+    {"9223372036854775806", 9223372036854},
+    {"9223372036854775807", 9223372036854},
+    {"20000000000000000000", 9223372036854},  // Overflow int64_t.
 };
 
 INSTANTIATE_TEST_SUITE_P(HttpResponseHeadersCacheControl,
@@ -2263,9 +2289,9 @@ TEST_F(HttpResponseHeadersCacheControlTest,
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest,
-       StaleWhileRevalidateWithInvalidValueTreatedAsZero) {
+       StaleWhileRevalidateWithInvalidValueIgnored) {
   InitializeHeadersWithCacheControl("max-age=3600,stale-while-revalidate=true");
-  EXPECT_EQ(TimeDelta(), GetStaleWhileRevalidateValue());
+  EXPECT_FALSE(headers()->GetStaleWhileRevalidateValue(TimeDeltaPointer()));
 }
 
 TEST_F(HttpResponseHeadersCacheControlTest, StaleWhileRevalidateValueReturned) {
