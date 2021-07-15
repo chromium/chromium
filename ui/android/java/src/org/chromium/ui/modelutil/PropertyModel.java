@@ -14,7 +14,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.util.ObjectsCompat;
 
-import org.chromium.build.BuildConfig;
+import org.chromium.base.annotations.RemovableInRelease;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -273,8 +273,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
         mData = startingValues;
     }
 
+    @RemovableInRelease
     private void validateKey(PropertyKey key) {
-        if (BuildConfig.ENABLE_ASSERTS && !mData.containsKey(key)) {
+        if (!mData.containsKey(key)) {
             throw new IllegalArgumentException(
                     "Invalid key passed in: " + key + ". Current data is: " + mData.toString());
         }
@@ -464,8 +465,9 @@ public class PropertyModel extends PropertyObservable<PropertyKey> {
             mData = values;
         }
 
+        @RemovableInRelease
         private void validateKey(PropertyKey key) {
-            if (BuildConfig.ENABLE_ASSERTS && !mData.containsKey(key)) {
+            if (!mData.containsKey(key)) {
                 throw new IllegalArgumentException("Invalid key passed in: " + key);
             }
         }
