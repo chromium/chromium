@@ -6,9 +6,13 @@ package org.chromium.components.infobars;
 
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.LayerDrawable;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.FrameLayout;
+
+import org.chromium.components.browser_ui.styles.ChromeColors;
 
 /**
  * Layout that holds an infobar's contents and provides a background color and a top shadow.
@@ -30,6 +34,12 @@ class InfoBarWrapper extends FrameLayout {
         // setBackgroundResource() changes the padding, so call setPadding() second.
         setBackgroundResource(R.drawable.infobar_wrapper_bg);
         setPadding(0, shadowHeight, 0, 0);
+
+        LayerDrawable layerDrawable = (LayerDrawable) getBackground();
+        ColorDrawable colorDrawable =
+                (ColorDrawable) layerDrawable.findDrawableByLayerId(R.id.infobar_wrapper_bg_fill);
+        colorDrawable.setColor(
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.infobar_elevation));
     }
 
     InfoBarUiItem getItem() {

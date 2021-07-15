@@ -23,6 +23,7 @@ android_resources("java_resources") {
     "res/layout/infobar_control_spinner_drop_down.xml",
     "res/layout/infobar_control_spinner_view.xml",
     "res/layout/infobar_control_toggle.xml",
+    "res/values-night/dimens.xml",
     "res/values/dimens.xml",
     "res/values/ids.xml",
   ]
@@ -68,6 +69,7 @@ android_library("java") {
     ":infobar_android_enums_java",
     ":java_resources",
     "//base:base_java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/infobars/core:infobar_enums_java",
     "//third_party/androidx:androidx_annotation_annotation_java",

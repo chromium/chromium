@@ -12,6 +12,7 @@ android_library("java") {
     ":java_resources",
     "//base:base_java",
     "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/android_deps:material_design_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
   ]

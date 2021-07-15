@@ -10,7 +10,11 @@
             android:gravity="top|fill_horizontal"
             android:tileMode="disabled" />
     </item>
+    <!-- Java code reaches into the containing LayerDrawable and then this
+         ColorDrawable using the id below. Be careful changing this layout
+         without adjusting the code making these assumptions. -->
     <item
+        android:id="@+id/infobar_wrapper_bg_fill"
         android:top="@dimen/infobar_shadow_height"
         android:drawable="@color/infobar_background_color" />
 </layer-list>

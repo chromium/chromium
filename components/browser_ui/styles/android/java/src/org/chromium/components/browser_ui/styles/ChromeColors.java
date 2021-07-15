@@ -10,7 +10,10 @@ import android.content.res.Resources;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
+import androidx.annotation.DimenRes;
 import androidx.appcompat.content.res.AppCompatResources;
+
+import com.google.android.material.elevation.ElevationOverlayProvider;
 
 import org.chromium.base.ApiCompatibilityUtils;
 
@@ -122,5 +125,17 @@ public class ChromeColors {
     public static ColorStateList getSecondaryIconTint(Context context, boolean forceLightIconTint) {
         return AppCompatResources.getColorStateList(
                 context, getSecondaryIconTintRes(forceLightIconTint));
+    }
+
+    /**
+     * Calculates the surface color using theme colors. Only the elevation is needed.
+     * @param context The {@link Context} used to retrieve attrs, colors, and dimens.
+     * @param elevationDimen The dimen to look up the elevation level with.
+     * @return the {@link ColorInt} for the background of a surface view.
+     */
+    public static @ColorInt int getSurfaceColor(Context context, @DimenRes int elevationDimen) {
+        ElevationOverlayProvider elevationOverlayProvider = new ElevationOverlayProvider(context);
+        float elevation = context.getResources().getDimension(elevationDimen);
+        return elevationOverlayProvider.compositeOverlayWithThemeSurfaceColorIfNeeded(elevation);
     }
 }

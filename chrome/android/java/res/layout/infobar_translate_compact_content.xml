@@ -24,6 +24,7 @@
         app:tabSelectedTextColor="@color/tab_layout_selected_tab_color"
         app:tabIndicatorColor="@color/tab_layout_selected_tab_color"
         app:tabGravity="fill"
+        android:background="@null"
         app:tabMode="scrollable" />
 
     <org.chromium.ui.widget.ChromeImageButton

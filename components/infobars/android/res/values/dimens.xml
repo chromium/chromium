@@ -40,4 +40,7 @@
     <!-- Vertical margin applied between groups of controls. -->
     <dimen name="infobar_margin_above_control_groups">24dp</dimen>
     <dimen name="infobar_margin_above_button_row">32dp</dimen>
+
+    <!-- Used for the surface color of infobar, theme specific. -->
+    <dimen name="infobar_elevation">@dimen/default_elevation_0</dimen>
 </resources>
