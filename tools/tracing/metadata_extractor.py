@@ -140,6 +140,26 @@ class MetadataExtractor:
     else:
       raise Exception('OS name %s not recognized.' % (raw_os_name))
 
+  def InitializeForTesting(self,
+                           version_number=None,
+                           os_name=None,
+                           architecture=None,
+                           bitness=None,
+                           version_code=None,
+                           modules=None):
+    """Sets class parameter values for test cases.
+
+    The |trace_processor_path| and |trace_file| parameters should
+    be specified in the constructor.
+    """
+    self._initialized = True
+    self.version_number = version_number
+    self.os_name = os_name
+    self.architecture = architecture
+    self.bitness = bitness
+    self.version_code = version_code
+    self.modules = modules
+
   def _GetStringValueFromQuery(self, sql):
     """Runs SQL query on trace processor and returns 'str_value' result.
     """

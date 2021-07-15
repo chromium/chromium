@@ -8,6 +8,7 @@ This executable script symbolizes proto perfetto traces.
 """
 
 import optparse
+import logging
 import sys
 
 import symbolize_flags
@@ -21,6 +22,9 @@ def _CreateOptionParser():
                                 prog='tools/tracing/symbolize_trace',
                                 conflict_handler='resolve')
 
+  parser.add_option('-v', '--verbose', help='Increase output verbosity.',
+                    action='count', dest='verbosity')
+
   parser = symbolize_flags.AddSymbolizeOptions(parser)
 
   return parser
@@ -28,6 +32,14 @@ def _CreateOptionParser():
 def main():
   parser = _CreateOptionParser()
   options, args = parser.parse_args()
+
+  # Setup Logging.
+  if options.verbosity == 0:
+    logging.basicConfig(level=logging.WARNING)
+  elif options.verbosity == 1:
+    logging.basicConfig(level=logging.INFO)
+  elif options.verbosity >= 2:
+    logging.basicConfig(level=logging.DEBUG)
 
   # Argument error checking
   trace_file = None

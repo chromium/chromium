@@ -9,6 +9,7 @@ import os
 import sys
 import shutil
 import tempfile
+import logging
 
 sys.path.insert(
     0,
@@ -17,6 +18,7 @@ sys.path.insert(
 
 from systrace import util
 import metadata_extractor
+import symbol_fetcher
 
 
 def SymbolizeTrace(trace_file,
@@ -43,24 +45,32 @@ def SymbolizeTrace(trace_file,
     # Temp dir must be cleaned up later.
     breakpad_output_dir = tempfile.mkdtemp()
     need_cleanup = True
+    logging.debug('Created temporary directory to hold symbol files.')
   else:
     if not os.path.isdir(breakpad_output_dir):
       os.makedirs(breakpad_output_dir)
+      logging.debug('Created directory to hold symbol files.')
     else:
       # Assert breakpad_output_dir is empty
       if os.listdir(breakpad_output_dir):
-        raise Exception('breakpad_output_dir is not empty.')
+        raise Exception('Breakpad output directory is not empty: ' +
+                        breakpad_output_dir)
 
   # Extract Metadata
-  print('Extracting proto trace metadata, please wait.')
+  logging.info('Extracting proto trace metadata.')
   trace_metadata = metadata_extractor.MetadataExtractor(trace_processor_path,
                                                         trace_file)
   trace_metadata.Initialize()
+  logging.info(trace_metadata)
 
-  # TODO(rhuckleberry): Fetch trace breakpad symbols from GCS.
+  # Fetch trace breakpad symbols from GCS
+  logging.info('Fetching and extracting trace breakpad symbols.')
+  symbol_fetcher.GetTraceBreakpadSymbols(cloud_storage_bucket, trace_metadata,
+                                         breakpad_output_dir)
 
   # TODO(rhuckleberry): use Perfetto's traceconv to symbolize.
 
   # Cleanup
   if need_cleanup:
+    logging.debug('Cleaning up symbol files.')
     shutil.rmtree(breakpad_output_dir)
