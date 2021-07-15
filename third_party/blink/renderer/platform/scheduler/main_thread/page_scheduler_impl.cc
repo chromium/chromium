@@ -174,8 +174,6 @@ base::TimeDelta GetTimeToDelayIPCTrackingWhileStoredInBackForwardCache() {
 
 constexpr base::TimeDelta PageSchedulerImpl::kDefaultThrottledWakeUpInterval;
 constexpr base::TimeDelta PageSchedulerImpl::kIntensiveThrottledWakeUpInterval;
-constexpr base::TimeDelta
-    PageSchedulerImpl::kForegroundPagesThrottledWakeUpInterval;
 
 PageSchedulerImpl::PageSchedulerImpl(
     PageScheduler::Delegate* delegate,
@@ -203,7 +201,9 @@ PageSchedulerImpl::PageSchedulerImpl(
       delay_for_background_and_network_idle_tab_freezing_(
           GetDelayForBackgroundAndNetworkIdleTabFreezing()),
       throttle_foreground_timers_(
-          base::FeatureList::IsEnabled(kThrottleForegroundTimers)) {
+          base::FeatureList::IsEnabled(kThrottleForegroundTimers)),
+      foreground_timers_throttled_wake_up_interval_(
+          GetForegroundTimersThrottledWakeUpInterval()) {
   page_lifecycle_state_tracker_ = std::make_unique<PageLifecycleStateTracker>(
       this, kDefaultPageVisibility == PageVisibilityState::kVisible
                 ? PageLifecycleState::kActive
@@ -884,7 +884,7 @@ void PageSchedulerImpl::UpdateWakeUpBudgetPools(
   normal_wake_up_budget_pool_->SetWakeUpInterval(
       lazy_now->Now(), IsBackgrounded()
                            ? kDefaultThrottledWakeUpInterval
-                           : kForegroundPagesThrottledWakeUpInterval);
+                           : foreground_timers_throttled_wake_up_interval_);
   cross_origin_hidden_normal_wake_up_budget_pool_->SetWakeUpInterval(
       lazy_now->Now(), kDefaultThrottledWakeUpInterval);
   same_origin_intensive_wake_up_budget_pool_->SetWakeUpInterval(

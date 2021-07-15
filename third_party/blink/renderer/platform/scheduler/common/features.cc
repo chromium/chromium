@@ -80,6 +80,20 @@ base::TimeDelta GetIntensiveWakeUpThrottlingGracePeriod() {
   return base::TimeDelta::FromSeconds(seconds);
 }
 
+const base::Feature kThrottleForegroundTimers{
+    "ThrottleForegroundTimers", base::FEATURE_DISABLED_BY_DEFAULT};
+
+base::TimeDelta GetForegroundTimersThrottledWakeUpInterval() {
+  constexpr int kForegroundTimersThrottling_WakeUpIntervalMillis_Default = 100;
+  static const base::FeatureParam<int>
+      kForegroundTimersThrottledWakeUpIntervalMills{
+          &kThrottleForegroundTimers,
+          "ForegroundTimersThrottledWakeUpIntervalMills",
+          kForegroundTimersThrottling_WakeUpIntervalMillis_Default};
+  return base::TimeDelta::FromMilliseconds(
+      kForegroundTimersThrottledWakeUpIntervalMills.Get());
+}
+
 const base::Feature kDeprioritizeDOMTimersDuringPageLoading{
     "DeprioritizeDOMTimersDuringPageLoading",
     base::FEATURE_DISABLED_BY_DEFAULT};

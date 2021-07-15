@@ -56,10 +56,6 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   static constexpr base::TimeDelta kIntensiveThrottledWakeUpInterval =
       base::TimeDelta::FromMinutes(1);
 
-  // Interval between throttled wake ups on a foreground page.
-  static constexpr base::TimeDelta kForegroundPagesThrottledWakeUpInterval =
-      base::TimeDelta::FromMilliseconds(100);
-
   PageSchedulerImpl(PageScheduler::Delegate*, AgentGroupSchedulerImpl&);
   PageSchedulerImpl(const PageSchedulerImpl&) = delete;
   PageSchedulerImpl& operator=(const PageSchedulerImpl&) = delete;
@@ -353,7 +349,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
   //    * Frame origin changes
   //
   // 1: This pool allows 1-second aligned wake ups when the page is backgrounded
-  //    or 100ms aligned wake ups when the page is foregrounded.
+  //    or |foreground_timers_throttled_wake_up_interval_| aligned wake ups when
+  //    the page is foregrounded.
   WakeUpBudgetPool* normal_wake_up_budget_pool_ = nullptr;
   // 2: This pool allows 1-second aligned wake ups for hidden frames in
   //    foreground pages.
@@ -390,6 +387,8 @@ class PLATFORM_EXPORT PageSchedulerImpl : public PageScheduler {
 
   // Whether foreground timers should be always throttled.
   const bool throttle_foreground_timers_;
+  // Interval between throttled wake ups on a foreground page.
+  const base::TimeDelta foreground_timers_throttled_wake_up_interval_;
 
   bool is_stored_in_back_forward_cache_ = false;
   TaskHandle set_ipc_posted_handler_task_;
