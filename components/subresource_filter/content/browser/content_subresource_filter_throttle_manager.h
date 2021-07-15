@@ -22,8 +22,8 @@
 #include "components/subresource_filter/content/common/subresource_filter_utils.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/frame/frame_ad_evidence.h"
 
@@ -68,45 +68,6 @@ enum class SubresourceFilterAction {
   kForcedActivationEnabled = 5,
 
   kMaxValue = kForcedActivationEnabled
-};
-
-// Wraps an AssociatedReceiverSet to provide automatic cleanup when a
-// RenderFrameHost is removed.
-// TODO(bokan, csharrison): Expose this functionality to others if it is
-// broadly desirable.
-class RenderFrameReceiverSet : public content::WebContentsObserver {
- public:
-  RenderFrameReceiverSet(
-      content::WebContents* web_contents,
-      ContentSubresourceFilterThrottleManager* throttle_manager);
-  ~RenderFrameReceiverSet() override;
-
-  RenderFrameReceiverSet(const RenderFrameReceiverSet&) = delete;
-  RenderFrameReceiverSet& operator=(const RenderFrameReceiverSet&) = delete;
-
-  void Bind(content::RenderFrameHost* frame_host,
-            mojo::PendingAssociatedReceiver<mojom::SubresourceFilterHost>
-                pending_receiver);
-
-  content::RenderFrameHost* GetCurrentTargetFrame();
-
-  // content::WebContentsObserver:
-  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
-
- private:
-  // Receiver set for each frame in the page. Note, bindings are reused across
-  // navigations that are same-site since the RenderFrameHost is reused in that
-  // case.
-  mojo::AssociatedReceiverSet<mojom::SubresourceFilterHost,
-                              content::RenderFrameHost*>
-      receiver_;
-
-  // Track which RenderFrameHosts are in the |receiver_| set so that we can
-  // remove them when a RenderFrameHost is removed.
-  std::map<content::RenderFrameHost*, mojo::ReceiverId> frame_to_receivers_map_;
-
-  // Must outlive this class.
-  ContentSubresourceFilterThrottleManager* throttle_manager_;
 };
 
 // The ContentSubresourceFilterThrottleManager manages NavigationThrottles in
@@ -362,7 +323,7 @@ class ContentSubresourceFilterThrottleManager
   std::map<int, LoadPolicy> navigation_load_policies_;
 
   // Receiver set for all RenderFrames in the WebContents.
-  RenderFrameReceiverSet receiver_;
+  content::RenderFrameHostReceiverSet<mojom::SubresourceFilterHost> receiver_;
 
   base::ScopedObservation<SubresourceFilterObserverManager,
                           SubresourceFilterObserver>

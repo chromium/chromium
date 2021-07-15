@@ -83,43 +83,6 @@ bool ShouldInheritParentActivation(
 
 }  // namespace
 
-RenderFrameReceiverSet::RenderFrameReceiverSet(
-    content::WebContents* web_contents,
-    ContentSubresourceFilterThrottleManager* throttle_manager)
-    : content::WebContentsObserver(web_contents),
-      throttle_manager_(throttle_manager) {}
-
-RenderFrameReceiverSet::~RenderFrameReceiverSet() = default;
-
-void RenderFrameReceiverSet::Bind(
-    content::RenderFrameHost* frame_host,
-    mojo::PendingAssociatedReceiver<mojom::SubresourceFilterHost>
-        pending_receiver) {
-  mojo::ReceiverId id =
-      receiver_.Add(throttle_manager_, std::move(pending_receiver), frame_host);
-  bool newly_inserted =
-      frame_to_receivers_map_
-          .insert(std::pair<content::RenderFrameHost*, mojo::ReceiverId>(
-              frame_host, id))
-          .second;
-
-  // We should only ever have one binding per RenderFrame.
-  CHECK(newly_inserted);
-}
-
-void RenderFrameReceiverSet::RenderFrameDeleted(
-    content::RenderFrameHost* frame_host) {
-  auto it = frame_to_receivers_map_.find(frame_host);
-  if (it != frame_to_receivers_map_.end()) {
-    receiver_.Remove(it->second);
-    frame_to_receivers_map_.erase(it);
-  }
-}
-
-content::RenderFrameHost* RenderFrameReceiverSet::GetCurrentTargetFrame() {
-  return receiver_.current_context();
-}
-
 const char ContentSubresourceFilterThrottleManager::
     kContentSubresourceFilterThrottleManagerWebContentsUserDataKey[] =
         "content_subresource_filter_throttle_manager";

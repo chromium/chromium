@@ -148,6 +148,8 @@ class WebContentsFrameReceiverSetPassKey {
                            OverrideForTesting);
 };
 
+// Use RenderFrameHostReceiverSet (render_frame_host_receiver_set.h) instead.
+//
 // Owns a set of Channel-associated interface receivers with frame context on
 // message dispatch.
 //
