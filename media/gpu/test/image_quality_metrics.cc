@@ -138,12 +138,11 @@ double ComputeYUV420P10SSIM(const uint8_t* src_y_a,
 double ComputeSimilarity(const VideoFrame* frame1,
                          const VideoFrame* frame2,
                          SimilarityMetrics mode) {
-  ASSERT_TRUE_OR_RETURN(
-      frame1->IsMappable() && frame2->IsMappable(),
-      static_cast<double>(std::numeric_limits<std::size_t>::max()));
+  ASSERT_TRUE_OR_RETURN(frame1->IsMappable() && frame2->IsMappable(),
+                        std::numeric_limits<std::size_t>::max());
   ASSERT_TRUE_OR_RETURN(
       frame1->visible_rect().size() == frame2->visible_rect().size(),
-      static_cast<double>(std::numeric_limits<std::size_t>::max()));
+      std::numeric_limits<std::size_t>::max());
   // Ideally, frame1->BitDepth() should be the same as frame2->BitDepth()
   // always. But in the 10 bit case, the 10 bit frame can be carried with P016LE
   // whose bit depth is regarded to be 16. This is due to a lack of NV12 10-bit
@@ -152,7 +151,7 @@ double ComputeSimilarity(const VideoFrame* frame1,
   ASSERT_TRUE_OR_RETURN(
       (frame1->BitDepth() == 8 && frame1->BitDepth() == frame2->BitDepth()) ||
           std::min(frame1->BitDepth(), frame2->BitDepth()) == 10,
-      static_cast<double>(std::numeric_limits<std::size_t>::max()));
+      std::numeric_limits<std::size_t>::max());
   const size_t bit_depth = std::min(frame1->BitDepth(), frame2->BitDepth());
   const VideoPixelFormat common_format =
       bit_depth == 8 ? PIXEL_FORMAT_I420 : PIXEL_FORMAT_YUV420P10;
