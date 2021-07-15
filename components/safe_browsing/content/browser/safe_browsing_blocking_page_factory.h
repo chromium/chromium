@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
-#define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 
-#include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 
 class GURL;
 
@@ -32,4 +32,4 @@ class SafeBrowsingBlockingPageFactory {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_

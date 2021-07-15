@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 #define CHROME_BROWSER_SAFE_BROWSING_CHROME_SAFE_BROWSING_BLOCKING_PAGE_FACTORY_H_
 
-#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 
 namespace safe_browsing {
 

@@ -4941,6 +4941,12 @@ static_library("ui") {
     }
   }
 
+  if (safe_browsing_mode > 0) {
+    deps += [
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+    ]
+  }
+
   if (safe_browsing_mode == 1) {
     sources += [
       "webui/reset_password/reset_password_ui.cc",

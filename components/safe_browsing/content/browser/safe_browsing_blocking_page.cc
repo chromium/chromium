@@ -4,7 +4,7 @@
 //
 // Implementation of the SafeBrowsingBlockingPage class.
 
-#include "chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 
 #include <memory>
 
@@ -126,8 +126,7 @@ SafeBrowsingBlockingPage::SafeBrowsingBlockingPage(
   }
 }
 
-SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() {
-}
+SafeBrowsingBlockingPage::~SafeBrowsingBlockingPage() {}
 
 security_interstitials::SecurityInterstitialPage::TypeID
 SafeBrowsingBlockingPage::GetTypeForTesting() {

@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/safe_browsing/safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/safe_browsing/content/browser/safe_browsing_blocking_page_factory.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 
 class GURL;

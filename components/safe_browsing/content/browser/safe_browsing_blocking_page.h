@@ -25,8 +25,8 @@
 // decides to proceed in the first interstitial, we display all queued unsafe
 // resources in a new interstitial.
 
-#ifndef CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_H_
-#define CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_H_
+#ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
+#define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
 
 #include <map>
 #include <vector>
@@ -127,6 +127,7 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
   // The threat source that triggers the blocking page.
   ThreatSource threat_source_;
+
  private:
   history::HistoryService* history_service_ = nullptr;
   SafeBrowsingNavigationObserverManager* navigation_observer_manager_ = nullptr;
@@ -138,4 +139,4 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
 }  // namespace safe_browsing
 
-#endif  // CHROME_BROWSER_SAFE_BROWSING_SAFE_BROWSING_BLOCKING_PAGE_H_
+#endif  // COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_SAFE_BROWSING_BLOCKING_PAGE_H_
