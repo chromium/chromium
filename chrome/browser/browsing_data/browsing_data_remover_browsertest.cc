@@ -1378,18 +1378,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   EXPECT_EQ(0, found) << "A non-ignored file contains the hostname.";
 }
 
-// TODO(crbug.com/840080): Filesystem can't be deleted on exit correctly at the
-// moment.
-// TODO(crbug.com/927312): LocalStorage deletion is flaky.
 const std::vector<std::string> kSessionOnlyStorageTestTypes{
-    "Cookie",
-    // "LocalStorage",
-    // "FileSystem",
-    "SessionStorage",
-    "IndexedDb",
-    "WebSql",
-    "ServiceWorker",
-    "CacheStorage",
+    "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
+    "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage",
 };
 
 // Test that storage gets deleted if marked as SessionOnly.
