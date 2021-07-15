@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/run_loop.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -13,6 +14,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/site_engagement/content/engagement_type.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
+#include "components/site_engagement/content/site_engagement_observer.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
@@ -36,7 +38,8 @@ class TestOneShotTimer : public base::OneShotTimer {
   void Start(const base::Location& posted_from,
              base::TimeDelta delay,
              base::OnceClosure user_task) override {
-    base::OneShotTimer::Start(posted_from, delay, std::move(user_task));
+    base::OneShotTimer::Start(posted_from, base::TimeDelta::FromSeconds(0),
+                              std::move(user_task));
 
     // Updates |restarted_| if the timer is restarted.
     if (started_)
@@ -76,6 +79,13 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
         base::WrapUnique(input_tracker_timer_));
   }
 
+  // Set a pause timer on the media tracker for test purposes.
+  void SetMediaTrackerPauseTimer(SiteEngagementService::Helper* helper) {
+    media_tracker_timer_ = new TestOneShotTimer;
+    helper->media_tracker_.SetPauseTimerForTesting(
+        base::WrapUnique(media_tracker_timer_));
+  }
+
   bool IsInputTrackerTimerRestarted(SiteEngagementService::Helper* helper) {
     return input_tracker_timer_->restarted();
   }
@@ -95,6 +105,7 @@ class SiteEngagementHelperBrowserTest : public InProcessBrowserTest {
   net::test_server::EmbeddedTestServerHandle test_server_handle_;
   base::HistogramTester histogram_tester_;
   TestOneShotTimer* input_tracker_timer_;
+  TestOneShotTimer* media_tracker_timer_;
 };
 
 // Tests if SiteEngagementHelper checks the primary main frame in the
@@ -147,6 +158,79 @@ IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
   histogram_tester()->ExpectBucketCount(
       SiteEngagementMetrics::kEngagementTypeHistogram,
       EngagementType::kNavigation, 1);
+}
+
+class ObserverTester : public SiteEngagementObserver {
+ public:
+  explicit ObserverTester(SiteEngagementService* service)
+      : SiteEngagementObserver(service) {}
+
+  void OnEngagementEvent(content::WebContents* web_contents,
+                         const GURL& url,
+                         double score,
+                         EngagementType type) override {
+    last_updated_type_ = type;
+    last_updated_url_ = url;
+    if (type == type_waiting_) {
+      if (quit_closure_)
+        std::move(quit_closure_).Run();
+    }
+  }
+
+  void WaitForEngagementEvent(EngagementType type) {
+    type_waiting_ = type;
+    base::RunLoop run_loop;
+    quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+
+  EngagementType last_updated_type() { return last_updated_type_; }
+  const GURL& last_updated_url() { return last_updated_url_; }
+
+ private:
+  base::OnceClosure quit_closure_;
+  GURL last_updated_url_;
+  EngagementType last_updated_type_ = EngagementType::kLast;
+  EngagementType type_waiting_ = EngagementType::kLast;
+};
+
+IN_PROC_BROWSER_TEST_F(SiteEngagementHelperBrowserTest,
+                       SiteEngagementHelperMediaTrackerInPrerendering) {
+  site_engagement::SiteEngagementService* service =
+      site_engagement::SiteEngagementService::Get(browser()->profile());
+  ObserverTester tester(service);
+
+  SiteEngagementService::Helper* helper =
+      SiteEngagementService::Helper::FromWebContents(web_contents());
+  SetMediaTrackerPauseTimer(helper);
+
+  GURL url = embedded_test_server()->GetURL("/empty.html");
+  ui_test_utils::NavigateToURL(browser(), url);
+  EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
+  EXPECT_EQ(tester.last_updated_url(), url);
+
+  // Load a page in the prerender.
+  GURL prerender_url =
+      embedded_test_server()->GetURL("/media/unified_autoplay.html");
+  int host_id = prerender_helper()->AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  content::RenderFrameHost* prerendered_frame_host =
+      prerender_helper()->GetPrerenderedMainFrameHost(host_id);
+  EXPECT_TRUE(content::ExecJs(prerendered_frame_host, "attemptPlay();"));
+
+  EXPECT_EQ(tester.last_updated_type(), EngagementType::kNavigation);
+  EXPECT_EQ(tester.last_updated_url(), url);
+
+  // Navigate the primary page to the URL.
+  prerender_helper()->NavigatePrimaryPage(prerender_url);
+  // The page should be activated from the prerendering.
+  EXPECT_TRUE(host_observer.was_activated());
+
+  EXPECT_EQ(nullptr, content::EvalJs(prerendered_frame_host, "attemptPlay();"));
+
+  tester.WaitForEngagementEvent(EngagementType::kMediaVisible);
+  EXPECT_EQ(tester.last_updated_type(), EngagementType::kMediaVisible);
+  EXPECT_EQ(tester.last_updated_url(), prerender_url);
 }
 
 }  // namespace site_engagement
