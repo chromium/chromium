@@ -43,8 +43,8 @@ class MetricsReportingHandlerTest : public testing::Test {
     handler_ = std::make_unique<TestingMetricsReportingHandler>();
     handler_->set_web_ui(&test_web_ui_);
 
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_)).WillRepeatedly(
-        testing::Return(true));
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -83,7 +83,7 @@ class MetricsReportingHandlerTest : public testing::Test {
   std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<TestingMetricsReportingHandler> handler_;
 
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   policy::PolicyMap map_;
 };
 
