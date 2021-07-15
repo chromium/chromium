@@ -6609,7 +6609,6 @@ crbug.com/1193979 [ Mac ] fast/events/tabindex-focus-blur-all.html [ Failure Pas
 crbug.com/1196201 fast/events/mouse-event-source-device-event-sender.html [ Failure Pass ]
 
 # Sheriff 2021-04-13
-crbug.com/1198515 [ Mac ] external/wpt/web-animations/timing-model/animations/playing-an-animation.html [ Failure Pass ]
 crbug.com/1198698 external/wpt/clear-site-data/storage.https.html [ Pass Timeout ]
 
 # Sheriff 2021-04-14
