@@ -62,11 +62,11 @@ Profile* GetSenderProfile(
     return ProfileManager::GetActiveUserProfile();
 
   return g_browser_process->profile_manager()->GetProfileByPath(
-      chromeos::ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
+      ash::ProfileHelper::GetProfilePathByUserIdHash(user_id_hash));
 }
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 ChromeFeaturesServiceProvider::ChromeFeaturesServiceProvider() {}
 
@@ -75,69 +75,70 @@ ChromeFeaturesServiceProvider::~ChromeFeaturesServiceProvider() = default;
 void ChromeFeaturesServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsFeatureEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsFeatureEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsFeatureEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsCrostiniEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsCrostiniEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsCrostiniEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsPluginVmEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsPluginVmEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsPluginVmEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsCryptohomeDistributedModelEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsCryptohomeDistributedModelEnabledMethod,
       base::BindRepeating(
           &ChromeFeaturesServiceProvider::IsCryptohomeDistributedModelEnabled,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsCryptohomeUserDataAuthEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsCryptohomeUserDataAuthEnabledMethod,
       base::BindRepeating(
           &ChromeFeaturesServiceProvider::IsCryptohomeUserDataAuthEnabled,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsCryptohomeUserDataAuthKillswitchEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::
+          kChromeFeaturesServiceIsCryptohomeUserDataAuthKillswitchEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::
                               IsCryptohomeUserDataAuthKillswitchEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsVmManagementCliAllowedMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsVmManagementCliAllowedMethod,
       base::BindRepeating(
           &ChromeFeaturesServiceProvider::IsVmManagementCliAllowed,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ChromeFeaturesServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsPeripheralDataAccessEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsPeripheralDataAccessEnabledMethod,
       base::BindRepeating(
           &ChromeFeaturesServiceProvider::IsPeripheralDataAccessEnabled,
           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kChromeFeaturesServiceInterface,
-      kChromeFeaturesServiceIsDNSProxyEnabledMethod,
+      chromeos::kChromeFeaturesServiceInterface,
+      chromeos::kChromeFeaturesServiceIsDNSProxyEnabledMethod,
       base::BindRepeating(&ChromeFeaturesServiceProvider::IsDnsProxyEnabled,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&ChromeFeaturesServiceProvider::OnExported,
@@ -272,4 +273,4 @@ void ChromeFeaturesServiceProvider::IsDnsProxyEnabled(
                base::FeatureList::IsEnabled(features::kEnableDnsProxy));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -12,7 +12,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 MetricsEventServiceProvider::MetricsEventServiceProvider() {}
 
@@ -31,7 +31,7 @@ void MetricsEventServiceProvider::Start(
 
 void MetricsEventServiceProvider::OnDiscardedStateChange(
     content::WebContents* contents,
-    mojom::LifecycleUnitDiscardReason reason,
+    LifecycleUnitDiscardReason reason,
     bool is_discarded) {
   if (is_discarded) {
     EmitSignal(metrics_event::Event_Type_TAB_DISCARD);
@@ -64,4 +64,4 @@ void MetricsEventServiceProvider::EmitSignal(metrics_event::Event_Type type) {
   exported_object_->SendSignal(&signal);
 }
 
-}  // namespace chromeos
+}  // namespace ash

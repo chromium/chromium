@@ -28,7 +28,7 @@
 #include "net/base/backoff_entry.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -280,8 +280,8 @@ void EncryptedReportingServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   DCHECK(OnOriginThread());
   exported_object->ExportMethod(
-      kChromeReportingServiceInterface,
-      kChromeReportingServiceUploadEncryptedRecordMethod,
+      chromeos::kChromeReportingServiceInterface,
+      chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
       base::BindRepeating(
           &EncryptedReportingServiceProvider::RequestUploadEncryptedRecord,
           weak_ptr_factory_.GetWeakPtr()),
@@ -341,4 +341,4 @@ bool EncryptedReportingServiceProvider::OnOriginThread() const {
   return base::PlatformThread::CurrentId() == origin_thread_id_;
 }
 
-}  // namespace chromeos
+}  // namespace ash

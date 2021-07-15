@@ -154,4 +154,9 @@ class COMPONENT_EXPORT(DLCSERVICE_CLIENT) DlcserviceClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::DlcserviceClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_DLCSERVICE_DLCSERVICE_CLIENT_H_

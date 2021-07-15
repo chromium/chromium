@@ -64,4 +64,9 @@ class COMPONENT_EXPORT(CUPS_PROXY) CupsProxyClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::CupsProxyClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CUPS_PROXY_CUPS_PROXY_CLIENT_H_

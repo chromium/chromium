@@ -82,4 +82,9 @@ class COMPONENT_EXPORT(MEDIA_ANALYTICS_CLIENT) MediaAnalyticsClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::MediaAnalyticsClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_MEDIA_ANALYTICS_MEDIA_ANALYTICS_CLIENT_H_

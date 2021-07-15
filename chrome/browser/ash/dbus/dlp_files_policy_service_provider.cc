@@ -13,7 +13,7 @@
 #include "third_party/cros_system_api/dbus/dlp/dbus-constants.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 DlpFilesPolicyServiceProvider::DlpFilesPolicyServiceProvider() = default;
 DlpFilesPolicyServiceProvider::~DlpFilesPolicyServiceProvider() = default;
@@ -137,4 +137,4 @@ void DlpFilesPolicyServiceProvider::IsDlpPolicyMatched(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

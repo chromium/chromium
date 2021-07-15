@@ -16,7 +16,7 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports D-Bus methods for querying PluginVm information,
 // and to show the PluginVm settings page.
@@ -106,6 +106,11 @@ class PluginVmServiceProvider
   DISALLOW_COPY_AND_ASSIGN(PluginVmServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PluginVmServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_PLUGIN_VM_SERVICE_PROVIDER_H_

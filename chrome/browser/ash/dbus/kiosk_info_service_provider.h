@@ -13,9 +13,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // Exports a "GetKioskAppRequiredPlatformVersion" D-Bus method that
 // update_engine calls to get the required platform version of the
@@ -46,6 +46,11 @@ class KioskInfoService : public CrosDBusService::ServiceProviderInterface {
   DISALLOW_COPY_AND_ASSIGN(KioskInfoService);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::KioskInfoService;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_KIOSK_INFO_SERVICE_PROVIDER_H_

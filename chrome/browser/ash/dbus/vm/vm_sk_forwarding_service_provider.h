@@ -15,7 +15,7 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports D-Bus methods for functions used by Crostini VMs for
 // Security Key forwarding.
@@ -56,6 +56,11 @@ class VmSKForwardingServiceProvider
   base::WeakPtrFactory<VmSKForwardingServiceProvider> weak_ptr_factory_{this};
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::VmSKForwardingServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_VM_VM_SK_FORWARDING_SERVICE_PROVIDER_H_

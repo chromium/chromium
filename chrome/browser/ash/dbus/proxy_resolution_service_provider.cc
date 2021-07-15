@@ -27,7 +27,7 @@
 #include "services/network/public/mojom/proxy_lookup_client.mojom.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -134,7 +134,8 @@ void ProxyResolutionServiceProvider::Start(
   exported_object_ = exported_object;
   VLOG(1) << "ProxyResolutionServiceProvider started";
   exported_object_->ExportMethod(
-      kNetworkProxyServiceInterface, kNetworkProxyServiceResolveProxyMethod,
+      chromeos::kNetworkProxyServiceInterface,
+      chromeos::kNetworkProxyServiceResolveProxyMethod,
       base::BindRepeating(&ProxyResolutionServiceProvider::DbusResolveProxy,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ProxyResolutionServiceProvider::OnExported,
@@ -255,4 +256,4 @@ ProxyResolutionServiceProvider::GetNetworkContext() {
   return storage_partition->GetNetworkContext();
 }
 
-}  // namespace chromeos
+}  // namespace ash

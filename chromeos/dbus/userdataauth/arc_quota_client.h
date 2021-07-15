@@ -90,4 +90,9 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) ArcQuotaClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ArcQuotaClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_USERDATAAUTH_ARC_QUOTA_CLIENT_H_

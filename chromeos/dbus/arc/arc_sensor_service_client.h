@@ -44,4 +44,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_ARC) ArcSensorServiceClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ArcSensorServiceClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_ARC_ARC_SENSOR_SERVICE_CLIENT_H_

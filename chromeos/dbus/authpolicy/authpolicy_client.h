@@ -106,4 +106,9 @@ class COMPONENT_EXPORT(AUTHPOLICY) AuthPolicyClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::AuthPolicyClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_AUTHPOLICY_AUTHPOLICY_CLIENT_H_

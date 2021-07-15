@@ -24,7 +24,7 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports D-Bus methods used by Crostini VMs (currently only
 // Borealis) for resizing their disks.
@@ -70,6 +70,11 @@ class VmDiskManagementServiceProvider
   base::WeakPtrFactory<VmDiskManagementServiceProvider> weak_ptr_factory_{this};
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::VmDiskManagementServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_VM_VM_DISK_MANAGEMENT_SERVICE_PROVIDER_H_

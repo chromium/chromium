@@ -17,7 +17,7 @@ namespace dbus {
 class MethodCall;
 }  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports D-Bus methods for functions that we want to be available
 // to the Crostini container.
@@ -70,6 +70,11 @@ class VmApplicationsServiceProvider
   DISALLOW_COPY_AND_ASSIGN(VmApplicationsServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::VmApplicationsServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_VM_APPLICATIONS_SERVICE_PROVIDER_H_

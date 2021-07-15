@@ -10,7 +10,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 ScreenLockServiceProvider::ScreenLockServiceProvider() {}
 
@@ -19,7 +19,8 @@ ScreenLockServiceProvider::~ScreenLockServiceProvider() = default;
 void ScreenLockServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kScreenLockServiceInterface, kScreenLockServiceShowLockScreenMethod,
+      chromeos::kScreenLockServiceInterface,
+      chromeos::kScreenLockServiceShowLockScreenMethod,
       base::BindRepeating(&ScreenLockServiceProvider::ShowLockScreen,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ScreenLockServiceProvider::OnExported,
@@ -43,4 +44,4 @@ void ScreenLockServiceProvider::ShowLockScreen(
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
-}  // namespace chromeos
+}  // namespace ash

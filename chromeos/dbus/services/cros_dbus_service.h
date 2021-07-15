@@ -77,4 +77,9 @@ class CrosDBusService {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::CrosDBusService;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SERVICES_CROS_DBUS_SERVICE_H_

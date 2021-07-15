@@ -18,7 +18,7 @@
 #include "mojo/public/cpp/system/invitation.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 MojoConnectionServiceProvider::MojoConnectionServiceProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -69,9 +69,9 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForIioService(
   mojo::ScopedMessagePipeHandle pipe;
   SendInvitation(&platform_channel, &pipe);
 
-  sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
-      mojo::PendingRemote<sensors::mojom::SensorHalServer>(std::move(pipe),
-                                                           0u /* version */));
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterServer(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalServer>(
+          std::move(pipe), 0u /* version */));
 
   SendResponse(std::move(platform_channel), method_call,
                std::move(response_sender));
@@ -86,9 +86,9 @@ void MojoConnectionServiceProvider::BootstrapMojoConnectionForSensorClients(
   mojo::ScopedMessagePipeHandle pipe;
   SendInvitation(&platform_channel, &pipe);
 
-  sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
-      mojo::PendingRemote<sensors::mojom::SensorHalClient>(std::move(pipe),
-                                                           0u /* version */));
+  chromeos::sensors::SensorHalDispatcher::GetInstance()->RegisterClient(
+      mojo::PendingRemote<chromeos::sensors::mojom::SensorHalClient>(
+          std::move(pipe), 0u /* version */));
 
   SendResponse(std::move(platform_channel), method_call,
                std::move(response_sender));
@@ -122,4 +122,4 @@ void MojoConnectionServiceProvider::SendResponse(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

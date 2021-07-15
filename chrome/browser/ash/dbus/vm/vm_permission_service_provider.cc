@@ -50,7 +50,7 @@ base::UnguessableToken TokenFromString(const std::string& str) {
 
 }  // namespace
 
-namespace chromeos {
+namespace ash {
 
 VmPermissionServiceProvider::VmInfo::VmInfo(std::string vm_owner_id,
                                             std::string vm_name,
@@ -76,25 +76,29 @@ VmPermissionServiceProvider::FindVm(const std::string& owner_id,
 void VmPermissionServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kVmPermissionServiceInterface, kVmPermissionServiceRegisterVmMethod,
+      chromeos::kVmPermissionServiceInterface,
+      chromeos::kVmPermissionServiceRegisterVmMethod,
       base::BindRepeating(&VmPermissionServiceProvider::RegisterVm,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&VmPermissionServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kVmPermissionServiceInterface, kVmPermissionServiceUnregisterVmMethod,
+      chromeos::kVmPermissionServiceInterface,
+      chromeos::kVmPermissionServiceUnregisterVmMethod,
       base::BindRepeating(&VmPermissionServiceProvider::UnregisterVm,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&VmPermissionServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kVmPermissionServiceInterface, kVmPermissionServiceGetPermissionsMethod,
+      chromeos::kVmPermissionServiceInterface,
+      chromeos::kVmPermissionServiceGetPermissionsMethod,
       base::BindRepeating(&VmPermissionServiceProvider::GetPermissions,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&VmPermissionServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kVmPermissionServiceInterface, kVmPermissionServiceSetPermissionsMethod,
+      chromeos::kVmPermissionServiceInterface,
+      chromeos::kVmPermissionServiceSetPermissionsMethod,
       base::BindRepeating(&VmPermissionServiceProvider::SetPermissions,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&VmPermissionServiceProvider::OnExported,
@@ -327,8 +331,8 @@ void VmPermissionServiceProvider::UpdateVmPermissions(VmInfo* vm) {
 
 void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile || chromeos::ProfileHelper::GetUserIdHashFromProfile(profile) !=
-                      vm->owner_id) {
+  if (!profile ||
+      ProfileHelper::GetUserIdHashFromProfile(profile) != vm->owner_id) {
     return;
   }
 
@@ -344,4 +348,4 @@ void VmPermissionServiceProvider::UpdatePluginVmPermissions(VmInfo* vm) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

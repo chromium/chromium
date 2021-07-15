@@ -54,10 +54,4 @@ class ChromeDataExchangeDelegate : public exo::DataExchangeDelegate {
 
 }  // namespace ash
 
-// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
-namespace chromeos {
-using ::ash::ShareWithVMAndTranslateToFileUrls;
-using ::ash::TranslateVMPathsToHost;
-}  // namespace chromeos
-
 #endif  // CHROME_BROWSER_ASH_EXO_CHROME_DATA_EXCHANGE_DELEGATE_H_

@@ -16,9 +16,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports D-Bus methods for forcing a reboot after sign-out.
 //
@@ -50,6 +50,11 @@ class LockToSingleUserServiceProvider
   DISALLOW_COPY_AND_ASSIGN(LockToSingleUserServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::LockToSingleUserServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_LOCK_TO_SINGLE_USER_SERVICE_PROVIDER_H_

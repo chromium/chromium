@@ -12,7 +12,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 MachineLearningDecisionServiceProvider::MachineLearningDecisionServiceProvider()
     : user_activity_controller_(
@@ -24,7 +24,8 @@ MachineLearningDecisionServiceProvider::
 void MachineLearningDecisionServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kMlDecisionServiceInterface, kMlDecisionServiceShouldDeferScreenDimMethod,
+      chromeos::kMlDecisionServiceInterface,
+      chromeos::kMlDecisionServiceShouldDeferScreenDimMethod,
       base::BindRepeating(
           &MachineLearningDecisionServiceProvider::ShouldDeferScreenDim,
           weak_ptr_factory_.GetWeakPtr()),
@@ -70,4 +71,4 @@ void MachineLearningDecisionServiceProvider::SendSmartDimDecision(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

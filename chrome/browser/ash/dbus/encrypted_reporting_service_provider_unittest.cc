@@ -32,7 +32,7 @@ using ::testing::_;
 using ::testing::Invoke;
 using ::testing::WithArgs;
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 MATCHER_P(EqualsProto,
@@ -178,11 +178,12 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
   }
 
   void SetupForRequestUploadEncryptedRecord() {
-    test_helper_.SetUp(kChromeReportingServiceName,
-                       dbus::ObjectPath(kChromeReportingServicePath),
-                       kChromeReportingServiceInterface,
-                       kChromeReportingServiceUploadEncryptedRecordMethod,
-                       service_provider_.get());
+    test_helper_.SetUp(
+        chromeos::kChromeReportingServiceName,
+        dbus::ObjectPath(chromeos::kChromeReportingServicePath),
+        chromeos::kChromeReportingServiceInterface,
+        chromeos::kChromeReportingServiceUploadEncryptedRecordMethod,
+        service_provider_.get());
     // There are multiple Tasks that are started by calling the Upload request.
     // We need to wait for them to complete, or we will get race conditions on
     // exit and some test runs will be flakey.
@@ -193,8 +194,8 @@ class EncryptedReportingServiceProviderTest : public ::testing::Test {
       const reporting::UploadEncryptedRecordRequest& request,
       reporting::UploadEncryptedRecordResponse* encrypted_record_response) {
     dbus::MethodCall method_call(
-        kChromeReportingServiceInterface,
-        kChromeReportingServiceUploadEncryptedRecordMethod);
+        chromeos::kChromeReportingServiceInterface,
+        chromeos::kChromeReportingServiceUploadEncryptedRecordMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendProtoAsArrayOfBytes(request);
 
@@ -240,4 +241,4 @@ TEST_F(EncryptedReportingServiceProviderTest, SuccessfullyUploadsRecord) {
 }
 
 }  // namespace
-}  // namespace chromeos
+}  // namespace ash

@@ -26,7 +26,7 @@
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -242,4 +242,4 @@ void CryptohomeKeyDelegateServiceProvider::HandleChallengeKey(
                                                "Unknown challenge type"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

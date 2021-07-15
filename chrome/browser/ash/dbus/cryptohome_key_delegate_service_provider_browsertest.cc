@@ -40,11 +40,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/cryptohome/dbus-constants.h"
 
+namespace ash {
+
 namespace {
 
 // Returns the profile into which login-screen extensions are force-installed.
 Profile* GetOriginalSigninProfile() {
-  return chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+  return ProfileHelper::GetSigninProfile()->GetOriginalProfile();
 }
 
 }  // namespace
@@ -64,8 +66,8 @@ class CryptohomeKeyDelegateServiceProviderTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MixinBasedInProcessBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(switches::kLoginManager);
+    command_line->AppendSwitch(switches::kForceLoginManagerInTests);
   }
 
   void SetUpOnMainThread() override {
@@ -113,10 +115,10 @@ class CryptohomeKeyDelegateServiceProviderTest
 
   // Refreshes the browser's state from the current certificate providers.
   void RefreshCertsFromCertProviders() {
-    chromeos::CertificateProviderService* cert_provider_service =
-        chromeos::CertificateProviderServiceFactory::GetForBrowserContext(
+    CertificateProviderService* cert_provider_service =
+        CertificateProviderServiceFactory::GetForBrowserContext(
             GetOriginalSigninProfile());
-    std::unique_ptr<chromeos::CertificateProvider> cert_provider =
+    std::unique_ptr<CertificateProvider> cert_provider =
         cert_provider_service->CreateCertificateProvider();
     base::RunLoop run_loop;
     cert_provider->GetCertificates(base::BindLambdaForTesting(
@@ -208,7 +210,7 @@ class CryptohomeKeyDelegateServiceProviderTest
       chromeos::DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
   ExtensionForceInstallMixin force_install_mixin_{&mixin_host_};
 
-  chromeos::CryptohomeKeyDelegateServiceProvider service_provider_;
+  CryptohomeKeyDelegateServiceProvider service_provider_;
   std::unique_ptr<chromeos::ServiceProviderTestHelper>
       dbus_service_test_helper_;
   std::unique_ptr<TestCertificateProviderExtension>
@@ -413,3 +415,5 @@ IN_PROC_BROWSER_TEST_F(CryptohomeKeyDelegateServiceProviderTest,
           user_manager::StubAccountId()),
       request, &signature));
 }
+
+}  // namespace ash

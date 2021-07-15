@@ -15,7 +15,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -63,16 +63,16 @@ ComponentUpdaterServiceProvider::~ComponentUpdaterServiceProvider() {
 void ComponentUpdaterServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kComponentUpdaterServiceInterface,
-      kComponentUpdaterServiceLoadComponentMethod,
+      chromeos::kComponentUpdaterServiceInterface,
+      chromeos::kComponentUpdaterServiceLoadComponentMethod,
       base::BindRepeating(&ComponentUpdaterServiceProvider::LoadComponent,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ComponentUpdaterServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
 
   exported_object->ExportMethod(
-      kComponentUpdaterServiceInterface,
-      kComponentUpdaterServiceUnloadComponentMethod,
+      chromeos::kComponentUpdaterServiceInterface,
+      chromeos::kComponentUpdaterServiceUnloadComponentMethod,
       base::BindRepeating(&ComponentUpdaterServiceProvider::UnloadComponent,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&ComponentUpdaterServiceProvider::OnExported,
@@ -180,4 +180,4 @@ void ComponentUpdaterServiceProvider::EmitInstalledSignalInternal(
   exported_object_->SendSignal(&signal);
 }
 
-}  // namespace chromeos
+}  // namespace ash

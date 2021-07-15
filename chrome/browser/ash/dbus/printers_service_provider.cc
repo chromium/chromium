@@ -11,7 +11,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 PrintersServiceProvider::PrintersServiceProvider() = default;
 
@@ -20,17 +20,17 @@ PrintersServiceProvider::~PrintersServiceProvider() = default;
 void PrintersServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object_ = exported_object;
-  auto* proxy = CupsPrintersManagerFactory::GetInstance()->GetProxy();
+  auto* proxy = chromeos::CupsPrintersManagerFactory::GetInstance()->GetProxy();
   DCHECK(proxy);
   printers_manager_observation_.Observe(proxy);
 }
 
 void PrintersServiceProvider::OnPrintersChanged(
-    PrinterClass printer_class,
-    const std::vector<Printer>& /*printers*/) {
+    chromeos::PrinterClass printer_class,
+    const std::vector<chromeos::Printer>& /*printers*/) {
   // Signal is suppressed for discovered printers because they require setup
   // before being usable.
-  if (printer_class == PrinterClass::kDiscovered) {
+  if (printer_class == chromeos::PrinterClass::kDiscovered) {
     return;
   }
   DVLOG(1) << "Emitting printers changed DBus event";
@@ -45,4 +45,4 @@ void PrintersServiceProvider::EmitSignal() {
   exported_object_->SendSignal(&signal);
 }
 
-}  // namespace chromeos
+}  // namespace ash

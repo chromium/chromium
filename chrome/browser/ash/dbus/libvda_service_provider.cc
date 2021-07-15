@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 LibvdaServiceProvider::LibvdaServiceProvider() {}
 
@@ -62,4 +62,4 @@ void LibvdaServiceProvider::OnBootstrapVideoAcceleratorFactoryCallback(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

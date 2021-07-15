@@ -18,7 +18,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 arc::ArcFileSystemBridge* GetArcFileSystemBridge() {
@@ -41,8 +41,8 @@ VirtualFileRequestServiceProvider::~VirtualFileRequestServiceProvider() =
 void VirtualFileRequestServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kVirtualFileRequestServiceInterface,
-      kVirtualFileRequestServiceHandleReadRequestMethod,
+      chromeos::kVirtualFileRequestServiceInterface,
+      chromeos::kVirtualFileRequestServiceHandleReadRequestMethod,
       base::BindRepeating(&VirtualFileRequestServiceProvider::HandleReadRequest,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce([](const std::string& interface_name,
@@ -51,8 +51,8 @@ void VirtualFileRequestServiceProvider::Start(
             << "Failed to export " << interface_name << "." << method_name;
       }));
   exported_object->ExportMethod(
-      kVirtualFileRequestServiceInterface,
-      kVirtualFileRequestServiceHandleIdReleasedMethod,
+      chromeos::kVirtualFileRequestServiceInterface,
+      chromeos::kVirtualFileRequestServiceHandleIdReleasedMethod,
       base::BindRepeating(&VirtualFileRequestServiceProvider::HandleIdReleased,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce([](const std::string& interface_name,
@@ -111,4 +111,4 @@ void VirtualFileRequestServiceProvider::HandleIdReleased(
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

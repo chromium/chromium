@@ -17,9 +17,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports a D-Bus method that libvda will call to establish a
 // mojo pipe to the VideoAcceleratorFactory interface.
@@ -56,6 +56,11 @@ class LibvdaServiceProvider : public CrosDBusService::ServiceProviderInterface {
   DISALLOW_COPY_AND_ASSIGN(LibvdaServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::LibvdaServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_LIBVDA_SERVICE_PROVIDER_H_

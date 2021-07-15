@@ -16,9 +16,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class exports a D-Bus method that the session_manager calls to instruct
 // Chrome to show the lock screen.
@@ -49,6 +49,11 @@ class ScreenLockServiceProvider
   DISALLOW_COPY_AND_ASSIGN(ScreenLockServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::ScreenLockServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_SCREEN_LOCK_SERVICE_PROVIDER_H_

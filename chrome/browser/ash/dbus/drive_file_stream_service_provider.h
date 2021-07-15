@@ -17,9 +17,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // DriveFileStreamServiceProvider exposes D-Bus methods which will be
 // called by the DriveFileStream service - new implementation of Drive
@@ -48,6 +48,11 @@ class DriveFileStreamServiceProvider
   DISALLOW_COPY_AND_ASSIGN(DriveFileStreamServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::DriveFileStreamServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_DRIVE_FILE_STREAM_SERVICE_PROVIDER_H_

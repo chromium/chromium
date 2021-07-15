@@ -51,4 +51,9 @@ class COMPONENT_EXPORT(CDM_FACTORY_DAEMON) CdmFactoryDaemonClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::CdmFactoryDaemonClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CDM_FACTORY_DAEMON_CDM_FACTORY_DAEMON_CLIENT_H_

@@ -13,9 +13,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // SmbFsServiceProvider exposes a D-Bus method which is used by instances of
 // SmbFs to bootstrap a Mojo IPC connection. The method by which SmbFs is
@@ -40,6 +40,11 @@ class SmbFsServiceProvider : public CrosDBusService::ServiceProviderInterface {
   DISALLOW_COPY_AND_ASSIGN(SmbFsServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::SmbFsServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_SMB_FS_SERVICE_PROVIDER_H_

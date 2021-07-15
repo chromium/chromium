@@ -119,4 +119,9 @@ class COMPONENT_EXPORT(SYSTEM_PROXY) SystemProxyClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SystemProxyClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SYSTEM_PROXY_SYSTEM_PROXY_CLIENT_H_

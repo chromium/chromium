@@ -55,4 +55,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::CrosHealthdClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CROS_HEALTHD_CROS_HEALTHD_CLIENT_H_

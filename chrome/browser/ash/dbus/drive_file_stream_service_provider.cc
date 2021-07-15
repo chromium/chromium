@@ -12,7 +12,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 DriveFileStreamServiceProvider::DriveFileStreamServiceProvider() {}
 
@@ -62,4 +62,4 @@ void DriveFileStreamServiceProvider::HandleOpenIpcChannel(
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 
-}  // namespace chromeos
+}  // namespace ash

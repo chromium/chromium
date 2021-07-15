@@ -32,7 +32,7 @@ constexpr char kFakeUUID[] = "74657374-4444-4444-8888-888888888888";
 constexpr char kShowSettingsPageDetails[] = "pluginVm/details";
 constexpr char kShowSettingsPageSharedPaths[] = "pluginVm/sharedPaths";
 
-namespace chromeos {
+namespace ash {
 
 PluginVmServiceProvider::PluginVmServiceProvider() {}
 
@@ -41,25 +41,29 @@ PluginVmServiceProvider::~PluginVmServiceProvider() = default;
 void PluginVmServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kPluginVmServiceInterface, kPluginVmServiceGetLicenseDataMethod,
+      chromeos::kPluginVmServiceInterface,
+      chromeos::kPluginVmServiceGetLicenseDataMethod,
       base::BindRepeating(&PluginVmServiceProvider::GetLicenseData,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PluginVmServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kPluginVmServiceInterface, kPluginVmServiceShowSettingsPage,
+      chromeos::kPluginVmServiceInterface,
+      chromeos::kPluginVmServiceShowSettingsPage,
       base::BindRepeating(&PluginVmServiceProvider::ShowSettingsPage,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&PluginVmServiceProvider::OnExported,
                      weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kPluginVmServiceInterface, kPluginVmServiceGetAppLicenseUserId,
+      chromeos::kPluginVmServiceInterface,
+      chromeos::kPluginVmServiceGetAppLicenseUserId,
       base::BindRepeating(&PluginVmServiceProvider::GetUserId,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PluginVmServiceProvider::OnExported,
                           weak_ptr_factory_.GetWeakPtr()));
   exported_object->ExportMethod(
-      kPluginVmServiceInterface, kPluginVmServiceGetPermissionsMethod,
+      chromeos::kPluginVmServiceInterface,
+      chromeos::kPluginVmServiceGetPermissionsMethod,
       base::BindRepeating(&PluginVmServiceProvider::GetPermissions,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindRepeating(&PluginVmServiceProvider::OnExported,
@@ -158,4 +162,4 @@ void PluginVmServiceProvider::GetPermissions(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -27,7 +27,7 @@
 #include "services/network/test/test_network_context.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -103,10 +103,11 @@ class ProxyResolutionServiceProviderTest : public testing::Test {
     service_provider_ = std::make_unique<ProxyResolutionServiceProvider>();
     service_provider_->set_network_context_for_test(&mock_network_context_);
 
-    test_helper_.SetUp(
-        kNetworkProxyServiceName, dbus::ObjectPath(kNetworkProxyServicePath),
-        kNetworkProxyServiceInterface, kNetworkProxyServiceResolveProxyMethod,
-        service_provider_.get());
+    test_helper_.SetUp(chromeos::kNetworkProxyServiceName,
+                       dbus::ObjectPath(chromeos::kNetworkProxyServicePath),
+                       chromeos::kNetworkProxyServiceInterface,
+                       chromeos::kNetworkProxyServiceResolveProxyMethod,
+                       service_provider_.get());
   }
 
   ~ProxyResolutionServiceProviderTest() override {
@@ -117,8 +118,9 @@ class ProxyResolutionServiceProviderTest : public testing::Test {
   // Makes a D-Bus call to |service_provider_|'s ResolveProxy method and sets
   // the parsed response in |result|.
   void CallMethod(const std::string& source_url, ResolveProxyResult* result) {
-    dbus::MethodCall method_call(kNetworkProxyServiceInterface,
-                                 kNetworkProxyServiceResolveProxyMethod);
+    dbus::MethodCall method_call(
+        chromeos::kNetworkProxyServiceInterface,
+        chromeos::kNetworkProxyServiceResolveProxyMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(source_url);
 
@@ -244,9 +246,10 @@ class ProxyResolutionServiceWithSystemProxyTest
   // the parsed response in |result|.
   void CallMethod(const std::string& source_url,
                   ResolveProxyResult* result,
-                  SystemProxyOverride system_proxy_override) {
-    dbus::MethodCall method_call(kNetworkProxyServiceInterface,
-                                 kNetworkProxyServiceResolveProxyMethod);
+                  chromeos::SystemProxyOverride system_proxy_override) {
+    dbus::MethodCall method_call(
+        chromeos::kNetworkProxyServiceInterface,
+        chromeos::kNetworkProxyServiceResolveProxyMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(source_url);
     writer.AppendInt32(system_proxy_override);
@@ -277,7 +280,8 @@ TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagOptIn) {
   mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
 
   ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptIn);
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kOptIn);
 
   // The response should contain the system-proxy address and an empty error.
   EXPECT_EQ("PROXY system-proxy:3128; PROXY localhost:8080", result.proxy_info);
@@ -289,7 +293,8 @@ TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagOptIn) {
 TEST_F(ProxyResolutionServiceWithSystemProxyTest, DirectProxy) {
   mock_network_context_.SetNextProxyResult({net::OK, "DIRECT"});
   ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptIn);
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kOptIn);
 
   EXPECT_EQ("DIRECT", result.proxy_info);
   EXPECT_EQ("", result.error);
@@ -301,7 +306,8 @@ TEST_F(ProxyResolutionServiceWithSystemProxyTest, DirectProxy) {
 TEST_F(ProxyResolutionServiceWithSystemProxyTest, FlagDefault) {
   mock_network_context_.SetNextProxyResult({net::OK, "PROXY localhost:8080"});
   ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kDefault);
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kDefault);
 
   EXPECT_EQ("PROXY localhost:8080", result.proxy_info);
   EXPECT_EQ("", result.error);
@@ -316,7 +322,8 @@ TEST_F(ProxyResolutionServiceWithSystemProxyTest, PolicyDefault) {
   // Enable system-proxy via policy.
   SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
   ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kDefault);
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kDefault);
 
   EXPECT_EQ("PROXY system-proxy:3128; PROXY localhost:8080", result.proxy_info);
   EXPECT_EQ("", result.error);
@@ -330,10 +337,11 @@ TEST_F(ProxyResolutionServiceWithSystemProxyTest, PolicyOptOut) {
   // Enable system-proxy via policy.
   SystemProxyManager::Get()->SetSystemProxyEnabledForTest(true);
   ResolveProxyResult result;
-  CallMethod("http://www.gmail.com/", &result, SystemProxyOverride::kOptOut);
+  CallMethod("http://www.gmail.com/", &result,
+             chromeos::SystemProxyOverride::kOptOut);
 
   EXPECT_EQ("PROXY localhost:8080", result.proxy_info);
   EXPECT_EQ("", result.error);
 }
 
-}  // namespace chromeos
+}  // namespace ash

@@ -98,4 +98,9 @@ class ServiceProviderTestHelper {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ServiceProviderTestHelper;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SERVICES_SERVICE_PROVIDER_TEST_HELPER_H_

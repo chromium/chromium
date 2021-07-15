@@ -13,9 +13,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // Provider for the org.chromium.CryptohomeKeyDelegateInterface service
 // implementation.
@@ -45,6 +45,11 @@ class CryptohomeKeyDelegateServiceProvider final
   DISALLOW_COPY_AND_ASSIGN(CryptohomeKeyDelegateServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::CryptohomeKeyDelegateServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_CRYPTOHOME_KEY_DELEGATE_SERVICE_PROVIDER_H_

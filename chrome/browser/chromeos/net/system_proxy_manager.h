@@ -289,4 +289,9 @@ class SystemProxyManager : public NetworkStateHandlerObserver {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SystemProxyManager;
+}  // namespace ash
+
 #endif  // CHROME_BROWSER_CHROMEOS_NET_SYSTEM_PROXY_MANAGER_H_

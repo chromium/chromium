@@ -14,7 +14,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -55,7 +55,7 @@ class ProxyResolutionServiceProviderTestWrapper {
         base::BindOnce(
             &ProxyResolutionServiceProviderTestWrapper::OnResolveProxyComplete,
             &result, run_loop.QuitClosure()),
-        SystemProxyOverride::kDefault);
+        chromeos::SystemProxyOverride::kDefault);
 
     run_loop.Run();
 
@@ -203,4 +203,4 @@ IN_PROC_BROWSER_TEST_F(ProxyResolutionServiceProviderSystemProxyPolicyTest,
   EXPECT_EQ("DIRECT", ResolveProxyAndWait("http://www.test.direct.com"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

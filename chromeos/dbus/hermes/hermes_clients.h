@@ -28,4 +28,12 @@ COMPONENT_EXPORT(HERMES_CLIENT) void Shutdown();
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+namespace hermes_clients {
+using ::chromeos::hermes_clients::Initialize;
+using ::chromeos::hermes_clients::Shutdown;
+}  // namespace hermes_clients
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_HERMES_HERMES_CLIENTS_H_

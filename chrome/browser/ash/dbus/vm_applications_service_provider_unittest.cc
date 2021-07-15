@@ -7,7 +7,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 
-namespace chromeos {
+namespace ash {
 
 using VmApplicationsServiceProviderTest = testing::Test;
 
@@ -37,4 +37,4 @@ TEST_F(VmApplicationsServiceProviderTest, ParseSelectFileDialogFileTypes) {
   EXPECT_FALSE(file_types.include_all_files);
 }
 
-}  // namespace chromeos
+}  // namespace ash

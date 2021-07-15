@@ -13,7 +13,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 KioskInfoService::KioskInfoService() {}
 
@@ -22,8 +22,8 @@ KioskInfoService::~KioskInfoService() = default;
 void KioskInfoService::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object->ExportMethod(
-      kKioskAppServiceInterface,
-      kKioskAppServiceGetRequiredPlatformVersionMethod,
+      chromeos::kKioskAppServiceInterface,
+      chromeos::kKioskAppServiceGetRequiredPlatformVersionMethod,
       base::BindRepeating(&KioskInfoService::GetKioskAppRequiredPlatformVersion,
                           weak_ptr_factory_.GetWeakPtr()),
       base::BindOnce(&KioskInfoService::OnExported,
@@ -48,4 +48,4 @@ void KioskInfoService::GetKioskAppRequiredPlatformVersion(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

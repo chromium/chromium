@@ -80,4 +80,9 @@ class COMPONENT_EXPORT(OS_INSTALL) OsInstallClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::OsInstallClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_OS_INSTALL_OS_INSTALL_CLIENT_H_

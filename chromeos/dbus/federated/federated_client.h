@@ -53,4 +53,9 @@ class COMPONENT_EXPORT(FEDERATED) FederatedClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FederatedClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_FEDERATED_FEDERATED_CLIENT_H_

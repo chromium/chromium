@@ -21,7 +21,7 @@
 #include "dbus/exported_object.h"
 #include "dbus/message.h"
 
-namespace chromeos {
+namespace ash {
 
 // EncryptedReportingServiceProvider is the link between Missive and
 // |reporting::UploadClient|. Missive is a daemon on ChromeOS that encrypts and
@@ -90,6 +90,11 @@ class EncryptedReportingServiceProvider
       this};
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::EncryptedReportingServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_ENCRYPTED_REPORTING_SERVICE_PROVIDER_H_

@@ -46,4 +46,9 @@ class COMPONENT_EXPORT(MISSIVE) MissiveClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::MissiveClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_MISSIVE_MISSIVE_CLIENT_H_

@@ -34,7 +34,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/display/types/display_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace {
 
 struct SelectFileData {
@@ -328,4 +328,4 @@ void VmApplicationsServiceProvider::FileSelectionCanceled(void* params) {
   MultiFilesSelected({}, params);
 }
 
-}  // namespace chromeos
+}  // namespace ash

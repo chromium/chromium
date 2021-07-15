@@ -17,7 +17,7 @@
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 VmDiskManagementServiceProvider::VmDiskManagementServiceProvider() = default;
 
@@ -238,4 +238,4 @@ void VmDiskManagementServiceProvider::OnReleaseSpace(
   std::move(response_sender).Run(std::move(response));
 }
 
-}  // namespace chromeos
+}  // namespace ash

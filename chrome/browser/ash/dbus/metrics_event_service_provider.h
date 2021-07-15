@@ -12,7 +12,7 @@
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
-namespace chromeos {
+namespace ash {
 
 // This class does not export any methods.  An instance of this class can send
 // signals to clients for a number of events of statistical interest, e.g. tab
@@ -30,7 +30,7 @@ class MetricsEventServiceProvider
  private:
   // resource_coordinator::TabLifecycleObserver:
   void OnDiscardedStateChange(content::WebContents* contents,
-                              mojom::LifecycleUnitDiscardReason reason,
+                              LifecycleUnitDiscardReason reason,
                               bool is_discarded) override;
 
   // Emits the D-Bus signal for this event.
@@ -42,6 +42,11 @@ class MetricsEventServiceProvider
   DISALLOW_COPY_AND_ASSIGN(MetricsEventServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::MetricsEventServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_METRICS_EVENT_SERVICE_PROVIDER_H_

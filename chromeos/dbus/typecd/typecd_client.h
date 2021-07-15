@@ -57,4 +57,9 @@ class COMPONENT_EXPORT(TYPECD) TypecdClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::TypecdClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_TYPECD_TYPECD_CLIENT_H_

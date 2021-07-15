@@ -13,7 +13,7 @@
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
 
-namespace chromeos {
+namespace ash {
 
 // Provides a DBus service which emits a signal to indicate that the available
 // printers has changed.  Clients are intended to listen for the signal then
@@ -29,8 +29,9 @@ class PrintersServiceProvider
   void Start(scoped_refptr<dbus::ExportedObject> exported_object) override;
 
   // CupsPrintersManager::Observer overrides:
-  void OnPrintersChanged(PrinterClass printers_class,
-                         const std::vector<Printer>& printers) override;
+  void OnPrintersChanged(
+      chromeos::PrinterClass printers_class,
+      const std::vector<chromeos::Printer>& printers) override;
 
  private:
   // Emits the D-Bus signal for this event.
@@ -46,6 +47,11 @@ class PrintersServiceProvider
   DISALLOW_COPY_AND_ASSIGN(PrintersServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::PrintersServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_PRINTERS_SERVICE_PROVIDER_H_

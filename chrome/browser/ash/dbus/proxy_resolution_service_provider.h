@@ -18,19 +18,19 @@
 
 namespace base {
 class SingleThreadTaskRunner;
-}
+}  // namespace base
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
 namespace network {
 namespace mojom {
 class NetworkContext;
-}
+}  // namespace mojom
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 
 // This class processes proxy resolution requests for Chrome OS clients.
 //
@@ -129,6 +129,11 @@ class ProxyResolutionServiceProvider
   DISALLOW_COPY_AND_ASSIGN(ProxyResolutionServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::ProxyResolutionServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_PROXY_RESOLUTION_SERVICE_PROVIDER_H_

@@ -70,4 +70,9 @@ class COMPONENT_EXPORT(RESOURCED) ResourcedClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::ResourcedClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_RESOURCED_RESOURCED_CLIENT_H_

@@ -69,4 +69,9 @@ class COMPONENT_EXPORT(DLP) DlpClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::DlpClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_DLP_DLP_CLIENT_H_

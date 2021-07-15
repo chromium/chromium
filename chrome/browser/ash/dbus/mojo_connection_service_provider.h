@@ -17,9 +17,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // This class processes bootstrap mojo connection requests for other processes.
 // Current it supports IIO Service and Sensor Clients, such as
@@ -82,6 +82,11 @@ class MojoConnectionServiceProvider
   base::WeakPtrFactory<MojoConnectionServiceProvider> weak_ptr_factory_{this};
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::MojoConnectionServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_MOJO_CONNECTION_SERVICE_PROVIDER_H_

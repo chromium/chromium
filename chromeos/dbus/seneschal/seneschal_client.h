@@ -81,4 +81,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) SeneschalClient : public DBusClient {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::SeneschalClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_SENESCHAL_SENESCHAL_CLIENT_H_

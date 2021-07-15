@@ -13,9 +13,9 @@
 
 namespace dbus {
 class MethodCall;
-}
+}  // namespace dbus
 
-namespace chromeos {
+namespace ash {
 
 // VirtualFileRequestServiceProvider exposes D-Bus methods which will be
 // called by the VirtualFileProvider service.
@@ -43,6 +43,11 @@ class VirtualFileRequestServiceProvider
   DISALLOW_COPY_AND_ASSIGN(VirtualFileRequestServiceProvider);
 };
 
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove when ChromeOS code migration is done.
+namespace chromeos {
+using ::ash::VirtualFileRequestServiceProvider;
 }  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_DBUS_VIRTUAL_FILE_REQUEST_SERVICE_PROVIDER_H_
