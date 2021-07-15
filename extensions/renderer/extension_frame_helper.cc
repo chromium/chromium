@@ -45,9 +45,6 @@ base::LazyInstance<std::set<const ExtensionFrameHelper*>>::DestructorAtExit
 
 // Returns true if the render frame corresponding with |frame_helper| matches
 // the given criteria.
-//
-// We deliberately do not access any methods that require a v8::Context or
-// ScriptContext.  See also comment below.
 bool RenderFrameMatches(const ExtensionFrameHelper* frame_helper,
                         mojom::ViewType match_view_type,
                         int match_window_id,
@@ -78,16 +75,7 @@ bool RenderFrameMatches(const ExtensionFrameHelper* frame_helper,
       frame_helper->tab_id() != match_tab_id)
     return false;
 
-  // Returning handles to frames that haven't created a script context yet
-  // can result in the caller "forcing" a script context (by accessing
-  // properties on the window object). This, in turn, can cause the script
-  // context to be initialized prematurely, with invalid values (e.g., the
-  // inability to retrieve a valid URL from the frame). That then leads to
-  // the ScriptContext being misclassified.
-  // Don't return any frames until they have a valid ScriptContext to limit
-  // the chances for bindings to prematurely initialize these contexts.
-  // This speculatively fixes https://crbug.com/1021014.
-  return frame_helper->did_create_script_context();
+  return true;
 }
 
 // Runs every callback in |callbacks_to_be_run_and_cleared| while |frame_helper|
