@@ -33,9 +33,9 @@ void DefaultDownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     const policy::PolicyHandlerParameters& parameters,
     PrefValueMap* prefs) {
   const base::Value* value = policies.GetValue(policy_name());
-  std::string str_value;
-  if (!value || !value->GetAsString(&str_value))
+  if (!value || !value->is_string())
     return;
+  std::string str_value = value->GetString();
   base::FilePath::StringType string_value =
 #if defined(OS_WIN)
       base::UTF8ToWide(str_value);
