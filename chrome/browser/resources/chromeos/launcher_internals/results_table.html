@@ -14,8 +14,18 @@
   thead td {
     font-weight: bold;
   }
-  thead td.sort-header {
+  thead td.sort-header::after {
+    content: '▼';
+    position: absolute;
+  }
+  thead td.sort-header,
+  tbody tr {
     cursor: pointer;
+  }
+  .selected td {
+    background-color: lightgray;
+    white-space: normal;
+    word-break: break-word;
   }
 </style>
 

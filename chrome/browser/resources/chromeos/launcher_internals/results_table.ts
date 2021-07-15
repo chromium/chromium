@@ -34,6 +34,10 @@ export class LauncherResultsTableElement extends PolymerElement {
   // this will change whenever the user clicks on a new header to sort by.
   private sortKey: string = 'Score';
 
+  // The IDs of results that are currently selected. This is used to persist
+  // formatting when the table is sorted.
+  private selectedIds: Set<string> = new Set();
+
   connectedCallback() {
     super.connectedCallback();
     this.$.scoreHeader.addEventListener(
@@ -96,6 +100,10 @@ export class LauncherResultsTableElement extends PolymerElement {
     this.$.resultsSection.innerHTML = '';
     for (const result of sortedResults) {
       const newRow = this.$.resultsSection.insertRow();
+      newRow.addEventListener('click', (e: Event) => this.toggleRowSelected(e));
+      if (this.selectedIds.has(result.id)) {
+        newRow.classList.add('selected');
+      }
       [result.id,
        result.title,
        result.description,
@@ -119,6 +127,23 @@ export class LauncherResultsTableElement extends PolymerElement {
       outputScores.push(score === undefined ? '' : score.toString());
     }
     return outputScores;
+  }
+
+  // Toggles selection in the class list of the targeted row.
+  private toggleRowSelected(event: Event) {
+    const row = (event.target as HTMLElement).closest('tr');
+    if (row == null || row.cells.length === 0) {
+      return;
+    }
+
+    const id = row.cells[0]!.textContent!;
+    if (row.classList.contains('selected')) {
+      row.classList.remove('selected');
+      this.selectedIds.delete(id);
+    } else {
+      row.classList.add('selected');
+      this.selectedIds.add(id);
+    }
   }
 }
 
