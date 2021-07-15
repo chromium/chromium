@@ -74936,6 +74936,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 </enum>
 
 <enum name="SigninReauthStates">
+  <obsolete>
+    Removed 2021-07.
+  </obsolete>
   <int value="0" label="Account mismatch"/>
   <int value="1" label="Reauth Shown"/>
 </enum>

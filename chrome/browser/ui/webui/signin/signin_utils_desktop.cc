@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 
-#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -55,12 +54,8 @@ SigninUIError CanOfferSignin(Profile* profile,
         identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSync)
             .email;
     const bool same_email = gaia::AreEmailsSame(current_email, email);
-    if (!current_email.empty() && !same_email) {
-      UMA_HISTOGRAM_ENUMERATION("Signin.Reauth",
-                                signin_metrics::HISTOGRAM_ACCOUNT_MISSMATCH,
-                                signin_metrics::HISTOGRAM_REAUTH_MAX);
+    if (!current_email.empty() && !same_email)
       return SigninUIError::WrongReauthAccount(email, current_email);
-    }
 
     // If some profile, not just the current one, is already connected to this
     // account, don't show the infobar.

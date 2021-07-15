@@ -881,6 +881,9 @@ should be kept to monitor/debug signin Multilogin issues-->
 </histogram>
 
 <histogram name="Signin.Reauth" enum="SigninReauthStates" expires_after="M77">
+  <obsolete>
+    Removed 2021-07.
+  </obsolete>
   <owner>noms@chromium.org</owner>
   <summary>Tracks events related to the reauthentication Gaia page.</summary>
 </histogram>

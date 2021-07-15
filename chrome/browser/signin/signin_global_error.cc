@@ -5,7 +5,6 @@
 #include "chrome/browser/signin/signin_global_error.h"
 
 #include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -87,9 +86,6 @@ void SigninGlobalError::ExecuteMenuItem(Browser* browser) {
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("Signin.Reauth",
-                            signin_metrics::HISTOGRAM_REAUTH_SHOWN,
-                            signin_metrics::HISTOGRAM_REAUTH_MAX);
   browser->window()->ShowAvatarBubbleFromAvatarButton(
       BrowserWindow::AVATAR_BUBBLE_MODE_REAUTH,
       signin_metrics::AccessPoint::ACCESS_POINT_MENU, false);
