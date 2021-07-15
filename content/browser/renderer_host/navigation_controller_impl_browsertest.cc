@@ -2237,21 +2237,23 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, RendererURLs) {
   EXPECT_EQ(url404, root->current_frame_host()->last_history_url_in_renderer());
 }
 
+// Tests various cases of replacements caused by error pages.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
   NavigationController& controller = shell()->web_contents()->GetController();
-  GURL error_url = embedded_test_server()->GetURL("/close-socket");
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
 
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  GURL url1 = embedded_test_server()->GetURL("/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_EQ(1, controller.GetEntryCount());
 
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
                             ->GetFrameTree()
                             ->root();
 
-  // Navigate to a page that fails to load. It must result in an error page, the
-  // NEW_ENTRY navigation type, and an addition to the history list.
+  // 1) Navigate to a page that fails to load. It must result in an error page,
+  // the NEW_ENTRY navigation type, and an addition to the history list.
+  GURL error_url = embedded_test_server()->GetURL("/close-socket");
   {
     FrameNavigateParamsCapturer capturer(root);
     NavigateFrameToURL(root, error_url);
@@ -2262,9 +2264,11 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
     EXPECT_EQ(2, controller.GetEntryCount());
   }
 
-  // Navigate again to the page that fails to load. It results in an error page,
-  // the NEW_ENTRY navigation type with replacement, and no addition to the
-  // history list.
+  // 2) Navigate again to the same URL. It results in an error page, the
+  // NEW_ENTRY navigation type, does replacement, and no addition to the
+  // history list. The navigation initially got converted into a reload by the
+  // browser but since it failed and doesn't have a valid PageState, it does
+  // replacement instead.
   {
     FrameNavigateParamsCapturer capturer(root);
     NavigateFrameToURL(root, error_url);
@@ -2276,30 +2280,65 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
     EXPECT_EQ(2, controller.GetEntryCount());
   }
 
-  // Make a new entry ...
-  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-  EXPECT_EQ(3, controller.GetEntryCount());
-
-  // ... and replace it with a failed load.
+  // 3) Navigate to a different URL (|url2|) that fails to load. It adds a new
+  // entry.
+  GURL url2 = embedded_test_server()->GetURL("/title2.html");
   {
+    // Set up an URLLoaderInterceptor which will cause the next navigation to
+    // fail.
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
     FrameNavigateParamsCapturer capturer(root);
-    RendererLocationReplace(shell(), error_url);
+    NavigateFrameToURL(root, url2);
     capturer.Wait();
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
-    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_FALSE(capturer.did_replace_entry());
     NavigationEntry* entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
     EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   }
 
-  // Make a new web ui page to force a process swap ...
-  GURL web_ui_page(std::string(kChromeUIScheme) + "://" +
-                   std::string(kChromeUIGpuHost));
-  EXPECT_TRUE(NavigateToURL(shell(), web_ui_page));
+  // 4) Go back to the previous error page. Since this still results in an error
+  // page, it's classified as EXISTING_ENTRY, like a normal history navigation.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    controller.GoBack();
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    NavigationEntry* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  }
+
+  // 5) Go forward to |url2|. This navigation will succeed, and since the final
+  // SiteInstance is different from the history entry's (due to error page
+  // isolation), it will be classified as NEW_ENTRY with replacement.
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    controller.GoForward();
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    NavigationEntry* entry = controller.GetLastCommittedEntry();
+    EXPECT_NE(PAGE_TYPE_ERROR, entry->GetPageType());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+  }
+
+  // 6) Make a new entry ...
+  EXPECT_TRUE(NavigateToURL(shell(), url1));
   EXPECT_EQ(4, controller.GetEntryCount());
 
-  // ... and replace it with a failed load. (It is NEW_ENTRY for the reason
-  // noted above.)
+  // 7) ... and replace it with a failed load.
   {
     FrameNavigateParamsCapturer capturer(root);
     RendererLocationReplace(shell(), error_url);
@@ -2309,6 +2348,143 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, ErrorPageReplacement) {
     NavigationEntry* entry = controller.GetLastCommittedEntry();
     EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
     EXPECT_EQ(4, controller.GetEntryCount());
+  }
+
+  // 8) Make a new web ui page to force a process swap ...
+  GURL web_ui_page(std::string(kChromeUIScheme) + "://" +
+                   std::string(kChromeUIGpuHost));
+  EXPECT_TRUE(NavigateToURL(shell(), web_ui_page));
+  EXPECT_EQ(5, controller.GetEntryCount());
+
+  // 9) ... and replace it with a failed load. (It is NEW_ENTRY for the reason
+  // noted above.)
+  {
+    FrameNavigateParamsCapturer capturer(root);
+    RendererLocationReplace(shell(), error_url);
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    NavigationEntry* entry = controller.GetLastCommittedEntry();
+    EXPECT_EQ(PAGE_TYPE_ERROR, entry->GetPageType());
+    EXPECT_EQ(5, controller.GetEntryCount());
+  }
+}
+
+// Tests various cases of replacements caused by error pages on subframes.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
+                       ErrorPageReplacementSubframe) {
+  NavigationController& controller = shell()->web_contents()->GetController();
+  // Navigate to a page with an iframe.
+  GURL main_frame_url = embedded_test_server()->GetURL(
+      "/navigation_controller/page_with_data_iframe.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_frame_url));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  GURL error_url = embedded_test_server()->GetURL("/close-socket");
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&net::URLRequestFailedJob::AddUrlHandler));
+
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetFrameTree()
+                            ->root();
+
+  // 1) Navigate the subframe to a page that fails to load. It must result in an
+  // error page, the NEW_SUBFRAME navigation type, and an addition to the
+  // history list.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    NavigateFrameToURL(root->child_at(0), error_url);
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_EQ(2, controller.GetEntryCount());
+  }
+
+  // 2) Navigate the subframe again to the same URL. It results in an error
+  // page, the AUTO_SUBFRAME navigation type, does replacement, and no addition
+  // to the history list. This is because the navigation got converted into a
+  // reload and doesn't have a valid PageState, but since it fails,
+  // it does replacement instead of reload.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    NavigateFrameToURL(root->child_at(0), error_url);
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_EQ(2, controller.GetEntryCount());
+  }
+
+  // 3) Navigate the subframe to a different URL (|url2|) that fails to load. It
+  // adds a new entry.
+  GURL url2 = embedded_test_server()->GetURL("/title1.html");
+  {
+    // Set up an URLLoaderInterceptor which will cause the next navigation to
+    // fail.
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    NavigateFrameToURL(root->child_at(0), url2);
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_NEW_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+  }
+
+  // 4) Go back to the previous error page on the subframe. Since this still
+  // results in an error page, it's classified as AUTO_SUBFRAME and won't do
+  // replacement, like a normal subframe history navigation.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    controller.GoBack();
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(1, controller.GetLastCommittedEntryIndex());
+  }
+
+  // 5) Go forward to |url2|. This navigation will succeed, and since the final
+  // SiteInstance is the same as the entry, it will be classified as
+  // AUTO_SUBFRAME and won't do replacement, like a normal subframe history
+  // navigation. Note this is different from the main frame case, where the
+  // navigation will do a replacement instead, because the SiteInstance would be
+  // different due to error page isolation on main frames.
+  {
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    controller.GoForward();
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_FALSE(capturer.did_replace_entry());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
+  }
+
+  // 6) Navigate the subframe to the same URL but fail to load again. It will
+  // be classified as AUTO_SUBFRAME and do replacement.
+  {
+    // Set up an URLLoaderInterceptor which will cause the next navigation to
+    // fail.
+    auto url_loader_interceptor = std::make_unique<URLLoaderInterceptor>(
+        base::BindRepeating([](URLLoaderInterceptor::RequestParams* params) {
+          network::URLLoaderCompletionStatus status;
+          status.error_code = net::ERR_NOT_IMPLEMENTED;
+          params->client->OnComplete(status);
+          return true;
+        }));
+
+    FrameNavigateParamsCapturer capturer(root->child_at(0));
+    NavigateFrameToURL(root->child_at(0), url2);
+    capturer.Wait();
+    EXPECT_EQ(NAVIGATION_TYPE_AUTO_SUBFRAME, capturer.navigation_type());
+    EXPECT_TRUE(capturer.did_replace_entry());
+    EXPECT_EQ(3, controller.GetEntryCount());
+    EXPECT_EQ(2, controller.GetLastCommittedEntryIndex());
   }
 }
 
@@ -2884,17 +3060,16 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
       }));
 
   {
-    // Navigate to the same URL (browser-initiated), but this time we hit a
+    // Navigate to the same URL (renderer-initiated), but this time we hit a
     // network error and end up in an error page. This will result in
-    // replacement.
+    // replacement as it's a same-url navigation.
     FrameNavigateParamsCapturer capturer(root);
-    EXPECT_FALSE(NavigateToURL(shell(), url1));
+    EXPECT_FALSE(NavigateToURLFromRenderer(shell(), url1));
     capturer.Wait();
     // We're classifying this as NEW_ENTRY.
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
 
-    // The navigation replaced the previously committed entry with a new entry
-    // because the navigation resulted in an error page.
+    // The navigation replaced the previously committed entry.
     EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
@@ -2903,8 +3078,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   }
 
   {
-    // Navigate to the same URL (through reload), and hit a network error
-    // again. This will reload the previous entry.
+    // Navigate to the same URL (through explicit reload), and hit a network
+    // error again. This will reload the previous entry.
     FrameNavigateParamsCapturer capturer(root);
     shell()->Reload();
     capturer.Wait();
@@ -2921,22 +3096,24 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
   {
     // Navigate to the same URL (browser-initiated), and hit a network error
-    // again. This will result in replacement.
+    // again. The navigation initially got converted into a reload by the
+    // browser but since it failed and doesn't have a valid PageState, it does
+    // replacement instead.
     FrameNavigateParamsCapturer capturer(root);
     EXPECT_FALSE(NavigateToURL(shell(), url1));
     capturer.Wait();
     // We're classifying this as NEW_ENTRY.
     EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, capturer.navigation_type());
 
-    // The navigation replaced the previously committed entry with a new entry
-    // because the navigation resulted in an error page.
+    // The navigation replaced the previously committed entry.
     EXPECT_TRUE(capturer.did_replace_entry());
     EXPECT_NE(previous_entry, controller.GetLastCommittedEntry());
     EXPECT_EQ(1, controller.GetEntryCount());
 
-    url_loader_interceptor.reset();
     previous_entry = controller.GetLastCommittedEntry();
   }
+  // Stop failing future navigations.
+  url_loader_interceptor.reset();
 
   {
     // Navigate successfully to the same URL (browser-initiated) after a failed
