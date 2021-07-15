@@ -76,6 +76,9 @@ class ASH_EXPORT AssistantPageView : public AppListPage,
       absl::optional<AssistantEntryPoint> entry_point,
       absl::optional<AssistantExitPoint> exit_point) override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
  private:
   void InitLayout();
   void MaybeUpdateAppListState(int child_height);

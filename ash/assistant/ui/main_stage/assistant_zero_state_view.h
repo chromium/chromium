@@ -35,6 +35,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantZeroStateView
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   void ChildPreferredSizeChanged(views::View* child) override;
+  void OnThemeChanged() override;
 
   // AssistantController:
   void OnAssistantControllerDestroying() override;

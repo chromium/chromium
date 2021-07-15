@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
+  void OnThemeChanged() override;
 
   void SetQuery(const AssistantQuery& query);
 

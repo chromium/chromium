@@ -6,16 +6,24 @@
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/ui/assistant_ui_constants.h"
+#include "ash/assistant/ui/colors/assistant_colors.h"
 #include "ash/assistant/ui/main_stage/assistant_onboarding_suggestion_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/session/session_controller_impl.h"
+#include "ash/shell.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
@@ -902,6 +910,35 @@ TEST_F(AssistantPageViewTest, ShouldHavePopulatedSuggestionChips) {
   auto* chip = chips.at(0);
 
   EXPECT_EQ(kAnyChip, base::UTF16ToUTF8(chip->GetText()));
+}
+
+TEST_F(AssistantPageViewTest, Theme) {
+  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+
+  ShowAssistantUi();
+
+  EXPECT_EQ(page_view()->background()->get_color(), SK_ColorWHITE);
+}
+
+TEST_F(AssistantPageViewTest, ThemeDarkLightMode) {
+  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
+      Shell::Get()->session_controller()->GetActivePrefService());
+
+  ShowAssistantUi();
+
+  EXPECT_EQ(page_view()->background()->get_color(),
+            assistant_colors::ResolveColor(
+                assistant_colors::ColorName::kBgAssistantPlate,
+                /*is_dark_mode=*/false, /*use_debug_colors=*/false));
+
+  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
+      prefs::kDarkModeEnabled, true);
+
+  EXPECT_EQ(page_view()->background()->get_color(),
+            assistant_colors::ResolveColor(
+                assistant_colors::ColorName::kBgAssistantPlate,
+                /*is_dark_mode=*/true, /*use_debug_colors=*/false));
 }
 
 // Tests the |AssistantPageView| with tablet mode enabled.

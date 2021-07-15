@@ -37,6 +37,10 @@ enum AssistantViewID {
 
   // UIs in OptInView
   kOptInViewStyledLabel,
+
+  // UIs in QueryView
+  kHighConfidenceLabel,
+  kLowConfidenceLabel
 };
 
 }  // namespace ash

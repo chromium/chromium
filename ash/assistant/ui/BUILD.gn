@@ -89,6 +89,8 @@ component("ui") {
   deps = [
     "//ash/assistant/model",
     "//ash/assistant/ui:constants",
+    "//ash/assistant/ui/colors:assistant_colors_util",
+    "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
@@ -101,6 +103,7 @@ component("ui") {
     "//chromeos/services/libassistant/public/cpp:structs",
     "//chromeos/ui/vector_icons",
     "//ui/aura",
+    "//ui/chromeos/colors:cros_colors_views",
     "//ui/compositor",
     "//ui/gfx",
     "//ui/views",

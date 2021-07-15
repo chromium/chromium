@@ -236,7 +236,6 @@ AppListAssistantMainStage::CreateMainContentLayoutContainer() {
   query_view_ = content_layout_container->AddChildView(
       std::make_unique<AssistantQueryView>());
   query_view_->SetPaintToLayer();
-  query_view_->SetBackground(views::CreateSolidBackground(SK_ColorWHITE));
   query_view_->AddObserver(this);
 
   // UI element container.
