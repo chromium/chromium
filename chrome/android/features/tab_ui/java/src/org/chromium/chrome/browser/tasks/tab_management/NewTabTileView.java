@@ -65,7 +65,8 @@ class NewTabTileView extends RelativeLayout {
      */
     void updateColor(boolean isIncognito) {
         ViewCompat.setBackgroundTintList(this,
-                TabUiThemeProvider.getHoveredCardBackgroundTintList(getContext(), isIncognito));
+                TabUiThemeProvider.getHoveredCardBackgroundTintList(
+                        getContext(), isIncognito, false));
 
         ApiCompatibilityUtils.setImageTintList(mActionButtonView,
                 TabUiThemeProvider.getNewTabTilePlusTintList(getContext(), isIncognito));

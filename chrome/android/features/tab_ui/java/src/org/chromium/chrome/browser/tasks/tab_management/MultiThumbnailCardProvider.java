@@ -185,8 +185,10 @@ public class MultiThumbnailCardProvider implements TabListMediator.ThumbnailProv
                     mThumbnailRects.get(index), mThumbnailBasePaint);
             thumbnail.recycle();
 
-            mCanvas.drawRoundRect(
-                    mThumbnailRects.get(index), mRadius, mRadius, mThumbnailFramePaint);
+            if (!TabUiThemeProvider.themeRefactorEnabled()) {
+                mCanvas.drawRoundRect(
+                        mThumbnailRects.get(index), mRadius, mRadius, mThumbnailFramePaint);
+            }
         }
 
         private void drawFaviconDrawableOnCanvasWithFrame(Drawable favicon, int index) {

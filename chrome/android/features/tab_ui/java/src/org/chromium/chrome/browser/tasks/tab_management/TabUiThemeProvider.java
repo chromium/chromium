@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.content.res.TypedArray;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
@@ -61,18 +60,6 @@ public class TabUiThemeProvider {
                               .compositeOverlayWithThemeSurfaceColorIfNeeded(tabElevation);
             return ColorStateList.valueOf(colorInt);
         }
-    }
-
-    /**
-     * Returns the {@link Drawable} for tab grid card background view based on the incognito mode.
-     *
-     * @param context {@link Context} used to retrieve color.
-     * @param isIncognito Whether the color is used for incognito mode.
-     * @return The {@link Drawable} for tab grid card view.
-     */
-    public static Drawable getCardViewBackgroundDrawable(Context context, boolean isIncognito) {
-        return ApiCompatibilityUtils.getDrawable(context.getResources(),
-                isIncognito ? R.drawable.popup_bg_dark : R.drawable.popup_bg_tinted);
     }
 
     /**
@@ -285,13 +272,43 @@ public class TabUiThemeProvider {
      *
      * @param context {@link Context} used to retrieve color.
      * @param isIncognito Whether the color is used for incognito mode.
+     * @param isSelected Whether the tab is currently selected.
      * @return The {@link ColorStateList} for hovered tab grid card background.
      */
     public static ColorStateList getHoveredCardBackgroundTintList(
-            Context context, boolean isIncognito) {
-        return AppCompatResources.getColorStateList(context,
-                isIncognito ? R.color.hovered_tab_grid_card_background_color_incognito
-                            : R.color.hovered_tab_grid_card_background_color);
+            Context context, boolean isIncognito, boolean isSelected) {
+        if (!themeRefactorEnabled()) {
+            return AppCompatResources.getColorStateList(context,
+                    isIncognito ? R.color.hovered_tab_grid_card_background_color_incognito
+                                : R.color.hovered_tab_grid_card_background_color);
+        }
+
+        if (isIncognito) {
+            @ColorRes
+            int colorRes = isSelected ? R.color.incognito_tab_group_hovered_bg_selected_color
+                                      : R.color.incognito_tab_group_hovered_bg_color;
+            return AppCompatResources.getColorStateList(context, colorRes);
+        } else {
+            if (isSelected) {
+                @ColorInt
+                int baseColor = MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+                int alpha = context.getResources().getInteger(
+                        R.integer.tab_grid_hovered_card_background_selected_color_alpha);
+                return ColorStateList.valueOf(
+                        MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
+            } else {
+                float backgroundElevation =
+                        context.getResources().getDimension(R.dimen.default_elevation_4);
+                @ColorInt
+                int baseColor =
+                        new ElevationOverlayProvider(context)
+                                .compositeOverlayWithThemeSurfaceColorIfNeeded(backgroundElevation);
+                int alpha = context.getResources().getInteger(
+                        R.integer.tab_grid_hovered_card_background_color_alpha);
+                return ColorStateList.valueOf(
+                        MaterialColors.compositeARGBWithAlpha(baseColor, alpha));
+            }
+        }
     }
 
     /**

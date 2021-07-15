@@ -425,7 +425,7 @@ class TabGridViewBinder {
         if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(rootView.getContext())) {
             ViewCompat.setBackgroundTintList(backgroundView,
                     TabUiThemeProvider.getHoveredCardBackgroundTintList(
-                            backgroundView.getContext(), isIncognito));
+                            backgroundView.getContext(), isIncognito, isSelected));
         }
     }
 

@@ -10,7 +10,7 @@
         android:id="@+id/background_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/hovered_tab_grid_card_background"
+        android:background="?attr/tabGridBackground"
         android:layout_margin="8dp"
         android:visibility="gone"/>
     <org.chromium.ui.widget.ChromeImageView

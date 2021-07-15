@@ -11,6 +11,7 @@
     <color name="baseline_primary_0">@android:color/white</color>
     <color name="baseline_primary_100">#D3E3FD</color>
     <color name="baseline_primary_200">#A8C7FA</color>
+    <color name="baseline_primary_200_alpha_10">#19A8C7FA</color>
     <color name="baseline_primary_600">#0B57D0</color>
     <color name="baseline_primary_800">#062E6F</color>
     <color name="baseline_primary_900">#041E49</color>
@@ -31,6 +32,7 @@
     <color name="baseline_neutral_variant_500">#747775</color>
     <color name="baseline_neutral_variant_700">#444746</color>
 
+    <color name="baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2">#2A2A2B</color>
     <color name="baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2">#353637</color>
 
     <!-- TODO: Change modern_blue_600 to baseline_primary_600 -->
