@@ -4240,11 +4240,11 @@ others/histograms.xml -->
 
 <enum name="AssistantExitPoint">
   <int value="0" label="kUnspecified"/>
-  <int value="1" label="kCloseButton"/>
+  <int value="1" label="kCloseButtonDeprecated"/>
   <int value="2" label="kHotkey"/>
   <int value="3" label="kNewBrowserTabFromServer"/>
   <int value="4" label="kNewBrowserTabFromUser"/>
-  <int value="5" label="kOutsidePress"/>
+  <int value="5" label="kOutsidePressDeprecated"/>
   <int value="6" label="kSetup"/>
   <int value="7" label="kStylus"/>
   <int value="8" label="kBackInLauncher"/>

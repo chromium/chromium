@@ -87,11 +87,11 @@ enum class AssistantExitPoint {
   // using keyboard shortcuts, pressing search button).
   kUnspecified = 0,
   kMinValue = kUnspecified,
-  kCloseButton = 1,
+  // kCloseButtonDeprecated = 1,
   kHotkey = 2,
   kNewBrowserTabFromServer = 3,
   kNewBrowserTabFromUser = 4,
-  kOutsidePress = 5,
+  // kOutsidePressDeprecated = 5,
   kSetup = 6,
   kStylus = 7,
   kBackInLauncher = 8,
