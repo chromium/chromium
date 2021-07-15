@@ -13,8 +13,8 @@ namespace pdf {
 PdfInternalPluginDelegate::PdfInternalPluginDelegate() = default;
 PdfInternalPluginDelegate::~PdfInternalPluginDelegate() = default;
 
-bool PdfInternalPluginDelegate::IsAllowedOrigin(
-    const url::Origin& origin) const {
+bool PdfInternalPluginDelegate::IsAllowedFrame(
+    const blink::WebFrame& frame) const {
   return false;
 }
 

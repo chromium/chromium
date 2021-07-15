@@ -746,8 +746,15 @@ bool ChromeContentRendererClient::IsPluginHandledExternally(
     // Only actually treat the internal PDF plugin as externally handled if
     // used within an origin allowed to create the internal PDF plugin;
     // otherwise, let Blink try to create the in-process PDF plugin.
-    if (IsPdfInternalPluginAllowedOrigin(
-            render_frame->GetWebFrame()->GetSecurityOrigin())) {
+    url::Origin frame_origin = render_frame->GetWebFrame()->GetSecurityOrigin();
+    if (IsPdfInternalPluginAllowedOrigin(frame_origin)) {
+      // TODO(crbug.com/1225756): Until this is fixed, allow Print Preview to
+      // create the in-process plugin directly within its own frames.
+      if (frame_origin ==
+          url::Origin::Create(GURL(chrome::kChromeUIPrintURL))) {
+        DCHECK_EQ(original_url.GetOrigin(), chrome::kChromeUIPrintURL);
+        return false;
+      }
       return true;
     }
   }

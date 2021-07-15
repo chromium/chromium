@@ -22,7 +22,7 @@ class ChromePdfInternalPluginDelegate final
   ~ChromePdfInternalPluginDelegate() override;
 
   // `pdf::PdfInternalPluginDelegate`:
-  bool IsAllowedOrigin(const url::Origin& origin) const override;
+  bool IsAllowedFrame(const blink::WebFrame& frame) const override;
   std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient> CreatePrintClient()
       override;
 

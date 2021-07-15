@@ -11,9 +11,9 @@
 // `chrome_pdf::PdfViewWebPlugin::PrintClient` declaration.
 #include "pdf/pdf_view_web_plugin.h"
 
-namespace url {
-class Origin;
-}  // namespace url
+namespace blink {
+class WebFrame;
+}  // namespace blink
 
 namespace pdf {
 
@@ -24,10 +24,8 @@ class PdfInternalPluginDelegate {
   PdfInternalPluginDelegate();
   virtual ~PdfInternalPluginDelegate();
 
-  // Returns `true` if the origin is allowed to create the internal PDF plugin.
-  // Note that this applies to the origin of the parent of the frame that
-  // contains the in-process plugin.
-  virtual bool IsAllowedOrigin(const url::Origin& origin) const;
+  // Returns `true` if the frame is allowed to create the internal PDF plugin.
+  virtual bool IsAllowedFrame(const blink::WebFrame& frame) const;
 
   // Creates the print client, or `nullptr` if printing is not supported.
   virtual std::unique_ptr<chrome_pdf::PdfViewWebPlugin::PrintClient>
