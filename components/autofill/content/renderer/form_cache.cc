@@ -14,6 +14,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/macros.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -236,6 +237,10 @@ std::vector<FormData> FormCache::ExtractNewForms(
 }
 
 void FormCache::Reset() {
+  // Record the size of |parsed_forms_| every time it reaches its peak size. The
+  // peak size is reached right before the cache is cleared.
+  UMA_HISTOGRAM_COUNTS_1000("Autofill.FormCacheSize", parsed_forms_.size());
+
   synthetic_form_ = FormData();
   parsed_forms_.clear();
   initial_select_values_.clear();

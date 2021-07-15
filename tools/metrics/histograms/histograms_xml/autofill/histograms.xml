@@ -846,6 +846,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Autofill.FormCacheSize" units="forms"
+    expires_after="2022-05-31">
+  <owner>evih@google.com</owner>
+  <owner>schwering@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Records the peak number of the form cache size. The peak size is reached
+    when navigating to a new page or when the page is refreshed. The metric is
+    counted once for every loaded frame.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.FormEvents.Address" enum="AutofillFormEvent"
     expires_after="2021-12-12">
   <owner>battre@chromium.org</owner>
