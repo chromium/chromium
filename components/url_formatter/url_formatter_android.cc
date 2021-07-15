@@ -110,8 +110,12 @@ JNI_UrlFormatter_FormatUrlForDisplayOmitSchemeOmitTrivialSubdomains(
     JNIEnv* env,
     const JavaParamRef<jstring>& url) {
   return base::android::ConvertUTF16ToJavaString(
-      env, url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
-               JNI_UrlFormatter_ConvertJavaStringToGURL(env, url)));
+      env, url_formatter::FormatUrl(
+               JNI_UrlFormatter_ConvertJavaStringToGURL(env, url),
+               url_formatter::kFormatUrlOmitDefaults |
+                   url_formatter::kFormatUrlOmitHTTPS |
+                   url_formatter::kFormatUrlOmitTrivialSubdomains,
+               net::UnescapeRule::SPACES, nullptr, nullptr, nullptr));
 }
 
 static ScopedJavaLocalRef<jstring>
