@@ -56,3 +56,6 @@ rendering of the web content.
 Contains services that need to be present when creating a
 `fuchsia.web.Context`. Note that the `fuchsia.scheduler.ProfileProvider` service
 is only used in tests that encounter memory pressure code.
+
+#### web_instance_host_capabilities.test-cmx
+Contains services that need to be present to use `WebInstanceHost`.

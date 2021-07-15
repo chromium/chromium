@@ -25,12 +25,6 @@ class WebEngineDevToolsController {
   static std::unique_ptr<WebEngineDevToolsController> CreateFromCommandLine(
       const base::CommandLine& command_line);
 
-  // Called by the Context to signal its creation.
-  virtual void OnContextCreated() = 0;
-
-  // Called by the Context to signal its destruction.
-  virtual void OnContextDestroyed() = 0;
-
   // Called by the Context to signal a new Frame was created. |user_debugging|
   // should be set to true when debugging was requested from the user API.
   // Returns false if |contents| is not user-debuggable despite |user_debugging|

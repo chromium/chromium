@@ -406,6 +406,7 @@ source_set("browsertest_core") {
     "//net:test_support",
     "//testing/gtest",
     "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.web",
+    "//third_party/fuchsia-sdk/sdk/pkg/scenic_cpp",
     "//ui/ozone",
   ]
 }
@@ -560,14 +561,17 @@ test("web_engine_integration_tests") {
     "web_engine_integration_test.cc",
     "web_engine_integration_test_base.cc",
     "web_engine_integration_test_base.h",
+    "web_instance_host_integration_test.cc",
   ]
   data = [ "test/data" ]
   deps = [
+    ":browsertest_core",
     "//base",
     "//base:test_log_listener_safe",
     "//fuchsia/base",
     "//fuchsia/base:run_all_integration_tests",
     "//fuchsia/base/test:test_support",
+    "//fuchsia/engine/web_instance_host",
     "//media",
     "//media/fuchsia/audio:test_support",
     "//media/fuchsia/camera:test_support",
@@ -584,7 +588,11 @@ test("web_engine_integration_tests") {
     "//build/config/fuchsia/test/read_debug_data.test-cmx",
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
+    "//build/config/fuchsia/test/web_instance_host_capabilities.test-cmx",
   ]
+
+  # Required by web_instance_host.
+  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
 }
 
 cr_fuchsia_package("web_engine_shell_pkg") {
