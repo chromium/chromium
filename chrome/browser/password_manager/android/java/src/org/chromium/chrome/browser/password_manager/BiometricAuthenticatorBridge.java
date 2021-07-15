@@ -150,6 +150,6 @@ class BiometricAuthenticatorBridge {
 
     @NativeMethods
     interface Natives {
-        void onAuthenticationCompleted(long nativeBiometricAuthenticatorAndroid, int result);
+        void onAuthenticationCompleted(long nativeBiometricAuthenticatorBridgeImpl, int result);
     }
 }

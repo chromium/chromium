@@ -4672,6 +4672,7 @@ test("unit_tests") {
       "../browser/metrics/thread_watcher_android_unittest.cc",
       "../browser/notifications/notification_channels_provider_android_unittest.cc",
       "../browser/optimization_guide/android/optimization_guide_tab_url_provider_android_unittest.cc",
+      "../browser/password_manager/android/biometric_authenticator_android_unittest.cc",
       "../browser/password_manager/android/password_ui_view_android_unittest.cc",
       "../browser/search/contextual_search_policy_handler_android_unittest.cc",
       "../browser/share/share_history_unittest.cc",

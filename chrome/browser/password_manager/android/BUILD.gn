@@ -74,5 +74,5 @@ android_resources("java_resources") {
 }
 
 java_cpp_enum("password_manager_android_java_enums_srcjar") {
-  sources = [ "biometric_authenticator_android.h" ]
+  sources = [ "biometric_authenticator_bridge.h" ]
 }

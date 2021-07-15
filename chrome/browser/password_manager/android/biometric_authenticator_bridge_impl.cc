@@ -1,0 +1,53 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/password_manager/android/biometric_authenticator_bridge_impl.h"
+
+#include "base/android/jni_android.h"
+#include "base/callback.h"
+#include "chrome/browser/password_manager/android/biometric_authenticator_android.h"
+#include "chrome/browser/password_manager/android/jni_headers/BiometricAuthenticatorBridge_jni.h"
+#include "components/password_manager/core/browser/biometric_authenticator.h"
+#include "ui/android/window_android.h"
+
+using base::android::AttachCurrentThread;
+using password_manager::BiometricAuthUIResult;
+using password_manager::BiometricsAvailability;
+
+BiometricAuthenticatorBridgeImpl::BiometricAuthenticatorBridgeImpl(
+    ui::WindowAndroid* window_android) {
+  java_object_ = Java_BiometricAuthenticatorBridge_create(
+      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      window_android->GetJavaObject());
+}
+
+BiometricAuthenticatorBridgeImpl::~BiometricAuthenticatorBridgeImpl() {
+  Java_BiometricAuthenticatorBridge_destroy(AttachCurrentThread(),
+                                            java_object_);
+}
+
+BiometricsAvailability BiometricAuthenticatorBridgeImpl::CanAuthenticate() {
+  return static_cast<BiometricsAvailability>(
+      Java_BiometricAuthenticatorBridge_canAuthenticate(AttachCurrentThread(),
+                                                        java_object_));
+}
+
+void BiometricAuthenticatorBridgeImpl::Authenticate(
+    base::OnceCallback<void(password_manager::BiometricAuthUIResult)>
+        response_callback) {
+  response_callback_ = std::move(response_callback);
+  Java_BiometricAuthenticatorBridge_authenticate(AttachCurrentThread(),
+                                                 java_object_);
+}
+
+void BiometricAuthenticatorBridgeImpl::Cancel() {
+  Java_BiometricAuthenticatorBridge_cancel(AttachCurrentThread(), java_object_);
+}
+
+void BiometricAuthenticatorBridgeImpl::OnAuthenticationCompleted(JNIEnv* env,
+                                                                 jint result) {
+  if (!response_callback_)
+    return;
+  std::move(response_callback_).Run(static_cast<BiometricAuthUIResult>(result));
+}
