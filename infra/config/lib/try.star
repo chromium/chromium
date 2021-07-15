@@ -309,6 +309,17 @@ def chromium_dawn_builder(*, name, **kwargs):
         **kwargs
     )
 
+def chromium_dawn_builderless_builder(*, name, **kwargs):
+    return try_builder(
+        name = name,
+        builder_group = "tryserver.chromium.dawn",
+        builderless = True,
+        cores = None,
+        goma_backend = builders.goma.backend.RBE_PROD,
+        service_account = "chromium-try-gpu-builder@chops-service-accounts.iam.gserviceaccount.com",
+        **kwargs
+    )
+
 def chromium_linux_builder(*, name, goma_backend = builders.goma.backend.RBE_PROD, **kwargs):
     kwargs.setdefault("os", builders.os.LINUX_BIONIC_REMOVE)
     return try_builder(
@@ -563,8 +574,10 @@ try_ = struct(
     chromium_angle_builder = chromium_angle_builder,
     chromium_angle_ios_builder = chromium_angle_ios_builder,
     chromium_angle_mac_builder = chromium_angle_mac_builder,
+    chromium_angle_pinned_builder = chromium_angle_pinned_builder,
     chromium_chromiumos_builder = chromium_chromiumos_builder,
     chromium_dawn_builder = chromium_dawn_builder,
+    chromium_dawn_builderless_builder = chromium_dawn_builderless_builder,
     chromium_linux_builder = chromium_linux_builder,
     chromium_mac_builder = chromium_mac_builder,
     chromium_mac_ios_builder = chromium_mac_ios_builder,
