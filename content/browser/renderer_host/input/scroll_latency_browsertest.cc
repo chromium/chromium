@@ -208,14 +208,22 @@ class ScrollLatencyBrowserTest : public ContentBrowserTest {
   DISALLOW_COPY_AND_ASSIGN(ScrollLatencyBrowserTest);
 };
 
+// Disabled due to flakiness https://crbug.com/1163246.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_MultipleWheelScroll DISABLED_MultipleWheelScroll
+#else
+#define MAYBE_MultipleWheelScroll MultipleWheelScroll
+#endif
+
 // Perform a smooth wheel scroll, and verify that our end-to-end wheel latency
 // metrics are recorded. See crbug.com/599910 for details.
-IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MultipleWheelScroll) {
+IN_PROC_BROWSER_TEST_F(ScrollLatencyBrowserTest, MAYBE_MultipleWheelScroll) {
   LoadURL();
   RunMultipleWheelScroll();
 }
 
-#if !defined(NDEBUG) && defined(OS_LINUX)
+// Disabled due to flakiness https://crbug.com/1163246.
+#if defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_MultipleWheelScrollOnMain DISABLED_MultipleWheelScrollOnMain
 #else
 #define MAYBE_MultipleWheelScrollOnMain MultipleWheelScrollOnMain
