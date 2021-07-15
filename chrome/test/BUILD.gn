@@ -2359,7 +2359,10 @@ if (!is_android) {
     }
 
     if (is_chromeos_lacros) {
-      sources += [ "../browser/web_applications/app_service/web_apps_publisher_host_browsertest.cc" ]
+      sources += [
+        "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
+        "../browser/web_applications/app_service/web_apps_publisher_host_browsertest.cc",
+      ]
       deps += [
         "//chromeos/crosapi/mojom",
         "//chromeos/lacros",
