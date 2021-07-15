@@ -334,7 +334,7 @@ void BrowserAccessibilityStateImpl::AddAccessibilityModeFlags(ui::AXMode mode) {
 
   // Keep track of the total time accessibility is enabled, and the time
   // it was previously disabled.
-  if (accessibility_enabled_time_.is_null()) {
+  if (previous_mode.is_mode_off()) {
     base::TimeTicks now = ui::EventTimeForNow();
     accessibility_enabled_time_ = now;
     if (!accessibility_disabled_time_.is_null()) {
