@@ -206,7 +206,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // position OOF candidates yet, (as a containing box may be split over
   // multiple lines), instead we bubble all the descendants up to the parent
   // block layout algorithm, to perform the final OOF layout and positioning.
-  void MoveOutOfFlowDescendantCandidatesToDescendants();
+  void MoveOutOfFlowDescendantCandidatesToDescendants(
+      LogicalOffset relative_offset);
 
   // Propagate the OOF descendants from a fragment to the builder. Since the OOF
   // descendants on the fragment are NGPhysicalOutOfFlowPositionedNodes, we
@@ -218,7 +219,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       LogicalOffset offset,
       LogicalOffset relative_offset,
       LogicalOffset offset_adjustment = LogicalOffset(),
-      const LayoutInline* inline_container = nullptr,
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       LayoutUnit containing_block_adjustment = LayoutUnit(),
       const NGContainingBlock<LogicalOffset>* fixedpos_containing_block =
           nullptr,
@@ -295,7 +296,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
       const NGPhysicalFragment& child,
       LogicalOffset child_offset,
       LogicalOffset relative_offset,
-      const LayoutInline* inline_container = nullptr,
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       absl::optional<LayoutUnit> adjustment_for_oof_propagation = LayoutUnit());
 
   void AddChildInternal(scoped_refptr<const NGPhysicalFragment>,

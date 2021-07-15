@@ -406,7 +406,7 @@ void NGInlineLayoutAlgorithm::CreateLine(
   // the children have their layout_result, fragment, (or similar) set to null,
   // creating a "hole" in the array.
   if (box_states_->HasBoxFragments())
-    box_states_->CreateBoxFragments(line_box);
+    box_states_->CreateBoxFragments(ConstraintSpace(), line_box);
 
   // Update item index of the box states in the context.
   context_->SetItemIndex(line_info->ItemsData().items,
@@ -760,8 +760,6 @@ void NGInlineLayoutAlgorithm::PlaceRelativePositionedItems(
     const auto* physical_fragment = child.PhysicalFragment();
     if (!physical_fragment)
       continue;
-    // TODO(almaher): Handle inline relative positioning correctly for OOF
-    // fragmentation.
     child.rect.offset += ComputeRelativeOffsetForInline(
         ConstraintSpace(), physical_fragment->Style());
   }

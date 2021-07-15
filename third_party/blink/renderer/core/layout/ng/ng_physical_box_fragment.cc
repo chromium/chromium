@@ -482,19 +482,26 @@ NGPhysicalBoxFragment::RareData::RareData(NGBoxFragmentBuilder* builder,
       builder->oof_positioned_fragmentainer_descendants_.size());
   for (const auto& descendant :
        builder->oof_positioned_fragmentainer_descendants_) {
+    WritingDirectionMode writing_direction = builder->GetWritingDirection();
+    const WritingModeConverter converter(writing_direction, size);
+    NGInlineContainer<PhysicalOffset> inline_container(
+        descendant.inline_container.container,
+        converter.ToPhysical(descendant.inline_container.relative_offset,
+                             PhysicalSize()));
+
     // The static position should remain relative to the containing block.
     PhysicalSize containing_block_size =
         descendant.containing_block.fragment
             ? descendant.containing_block.fragment->Size()
             : size;
-    WritingDirectionMode writing_direction = builder->GetWritingDirection();
-    const WritingModeConverter converter(writing_direction,
-                                         containing_block_size);
+    const WritingModeConverter containing_block_converter(
+        writing_direction, containing_block_size);
 
     oof_positioned_fragmentainer_descendants.emplace_back(
         descendant.Node(),
-        descendant.static_position.ConvertToPhysical(converter),
-        descendant.inline_container,
+        descendant.static_position.ConvertToPhysical(
+            containing_block_converter),
+        inline_container,
         PhysicalContainingBlock(builder, size, containing_block_size,
                                 descendant.containing_block),
         PhysicalContainingBlock(builder, size,

@@ -210,7 +210,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   void AddChild(
       const NGPhysicalFragment&,
       const LogicalOffset&,
-      const LayoutInline* inline_container = nullptr,
+      const NGInlineContainer<LogicalOffset>* inline_container = nullptr,
       const NGMarginStrut* margin_strut = nullptr,
       bool is_self_collapsing = false,
       absl::optional<LogicalOffset> relative_offset = absl::nullopt,

@@ -368,10 +368,14 @@ NGPhysicalFragment::NGPhysicalFragment(NGContainerFragmentBuilder* builder,
     const WritingModeConverter converter(
         {builder->Style().GetWritingMode(), builder->Direction()}, size);
     for (const auto& descendant : builder->oof_positioned_descendants_) {
+      NGInlineContainer<PhysicalOffset> inline_container(
+          descendant.inline_container.container,
+          converter.ToPhysical(descendant.inline_container.relative_offset,
+                               PhysicalSize()));
       oof_positioned_descendants_->emplace_back(
           descendant.Node(),
           descendant.static_position.ConvertToPhysical(converter),
-          descendant.inline_container);
+          inline_container);
     }
   }
 }

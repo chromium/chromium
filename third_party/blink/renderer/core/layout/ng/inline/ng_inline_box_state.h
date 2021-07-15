@@ -205,7 +205,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   // Create box fragments. This function turns a flat list of children into
   // a box tree.
-  void CreateBoxFragments(NGLogicalLineItems*);
+  void CreateBoxFragments(const NGConstraintSpace&, NGLogicalLineItems*);
 
 #if DCHECK_IS_ON()
   void CheckSame(const NGInlineLayoutStateStack&) const;
@@ -292,7 +292,9 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
-    scoped_refptr<const NGLayoutResult> CreateBoxFragment(NGLogicalLineItems*);
+    scoped_refptr<const NGLayoutResult> CreateBoxFragment(
+        const NGConstraintSpace&,
+        NGLogicalLineItems*);
   };
 
   Vector<NGInlineBoxState, 4> stack_;

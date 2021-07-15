@@ -39,7 +39,7 @@ void NGContainerFragmentBuilder::PropagateChildData(
     const NGPhysicalFragment& child,
     LogicalOffset child_offset,
     LogicalOffset relative_offset,
-    const LayoutInline* inline_container,
+    const NGInlineContainer<LogicalOffset>* inline_container,
     absl::optional<LayoutUnit> adjustment_for_oof_propagation) {
   if (adjustment_for_oof_propagation) {
     PropagateOOFPositionedInfo(child, child_offset, relative_offset,
@@ -159,7 +159,7 @@ void NGContainerFragmentBuilder::AddOutOfFlowChildCandidate(
 
   oof_positioned_candidates_.emplace_back(
       child, NGLogicalStaticPosition{child_offset, inline_edge, block_edge},
-      /* inline_container */ nullptr, needs_block_offset_adjustment,
+      NGInlineContainer<LogicalOffset>(), needs_block_offset_adjustment,
       /* containing_block */ NGContainingBlock<LogicalOffset>(),
       /* fixedpos_containing_block */ NGContainingBlock<LogicalOffset>(),
       containing_block_rect);
@@ -269,8 +269,8 @@ void NGContainerFragmentBuilder::TransferOutOfFlowCandidates(
   oof_positioned_candidates_.clear();
 }
 
-void NGContainerFragmentBuilder::
-    MoveOutOfFlowDescendantCandidatesToDescendants() {
+void NGContainerFragmentBuilder::MoveOutOfFlowDescendantCandidatesToDescendants(
+    LogicalOffset relative_offset) {
   DCHECK(oof_positioned_descendants_.IsEmpty());
   std::swap(oof_positioned_candidates_, oof_positioned_descendants_);
 
@@ -284,14 +284,16 @@ void NGContainerFragmentBuilder::
     //
     // This checks if the object creating this box will be the container for
     // the given descendant.
-    if (!candidate.inline_container &&
-        IsInlineContainerForNode(candidate.Node(), layout_object_))
-      candidate.inline_container = To<LayoutInline>(layout_object_);
+    if (!candidate.inline_container.container &&
+        IsInlineContainerForNode(candidate.Node(), layout_object_)) {
+      candidate.inline_container = NGInlineContainer<LogicalOffset>(
+          To<LayoutInline>(layout_object_), relative_offset);
+    }
 
     // Ensure that the inline_container is a continuation root.
-    if (candidate.inline_container) {
-      candidate.inline_container =
-          To<LayoutInline>(candidate.inline_container->ContinuationRoot());
+    if (candidate.inline_container.container) {
+      candidate.inline_container.container = To<LayoutInline>(
+          candidate.inline_container.container->ContinuationRoot());
     }
   }
 }
@@ -301,11 +303,16 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     LogicalOffset offset,
     LogicalOffset relative_offset,
     LogicalOffset offset_adjustment,
-    const LayoutInline* inline_container,
+    const NGInlineContainer<LogicalOffset>* inline_container,
     LayoutUnit containing_block_adjustment,
     const NGContainingBlock<LogicalOffset>* fixedpos_containing_block,
     LogicalOffset additional_fixedpos_offset) {
-  LogicalOffset adjusted_offset = offset + relative_offset + offset_adjustment;
+  LogicalOffset adjusted_offset = offset + offset_adjustment;
+
+  // The relative offset is already applied for inlines, so don't include it
+  // in the |adjusted_offset|, as well.
+  if (!fragment.IsInlineBox())
+    adjusted_offset += relative_offset;
 
   // Collect the child's out of flow descendants.
   const WritingModeConverter converter(GetWritingDirection(), fragment.Size());
@@ -314,10 +321,17 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     NGLogicalStaticPosition static_position =
         descendant.StaticPosition().ConvertToLogical(converter);
 
-    const LayoutInline* new_inline_container = descendant.inline_container;
-    if (!new_inline_container &&
-        IsInlineContainerForNode(node, inline_container))
-      new_inline_container = inline_container;
+    NGInlineContainer<LogicalOffset> new_inline_container;
+    if (descendant.inline_container.container) {
+      new_inline_container.container = descendant.inline_container.container;
+      new_inline_container.relative_offset =
+          converter.ToLogical(descendant.inline_container.relative_offset,
+                              PhysicalSize()) +
+          relative_offset;
+    } else if (inline_container &&
+               IsInlineContainerForNode(node, inline_container->container)) {
+      new_inline_container = *inline_container;
+    }
 
     // If an OOF element is inside a fragmentation context, it will be laid out
     // once it reaches the fragmentation context root. However, if such OOF
@@ -472,6 +486,11 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           fixedpos_containing_block->relative_offset;
     }
 
+    LogicalOffset inline_relative_offset = converter.ToLogical(
+        descendant.inline_container.relative_offset, PhysicalSize());
+    NGInlineContainer<LogicalOffset> new_inline_container(
+        descendant.inline_container.container, inline_relative_offset);
+
     // The static position should remain relative to its containing block
     // fragment.
     const WritingModeConverter containing_block_converter(
@@ -479,8 +498,16 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     NGLogicalStaticPosition static_position =
         descendant.StaticPosition().ConvertToLogical(
             containing_block_converter);
+
+    // The relative offset should be applied after fragmentation. Subtract out
+    // the accumulated relative offset from the inline container to the
+    // containing block so that it can be re-applied at the correct time.
+    if (new_inline_container.container &&
+        containing_block_fragment == box_fragment)
+      static_position.offset -= inline_relative_offset;
+
     AddOutOfFlowFragmentainerDescendant(
-        {descendant.Node(), static_position, descendant.inline_container,
+        {descendant.Node(), static_position, new_inline_container,
          /* needs_block_offset_adjustment */ false,
          NGContainingBlock<LogicalOffset>(containing_block_offset,
                                           containing_block_rel_offset,

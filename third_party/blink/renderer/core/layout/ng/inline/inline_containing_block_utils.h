@@ -28,6 +28,9 @@ class InlineContainingBlockUtils {
     PhysicalRect start_fragment_union_rect;
     // Union of fragments generated on the last line.
     PhysicalRect end_fragment_union_rect;
+    // The accumulated relative offset of the inline container to be applied to
+    // any descendants after fragmentation.
+    LogicalOffset relative_offset;
   };
 
   using InlineContainingBlockMap =

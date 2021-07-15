@@ -416,15 +416,13 @@ void NGInlineLayoutStateStack::AddBoxData(const NGConstraintSpace& space,
   // An empty box fragment is still flat that we do not have to defer.
   // Also, placeholders cannot be reordred if empty.
   placeholder.rect.offset.inline_offset += box_data.margin_line_left;
-  // TODO(almaher): Handle inline relative positioning correctly for OOF
-  // fragmentation.
   placeholder.rect.offset +=
       ComputeRelativeOffsetForInline(space, *box_data.item->Style());
   LayoutUnit advance = box_data.margin_border_padding_line_left +
                        box_data.margin_border_padding_line_right;
   box_data.rect.size.inline_size =
       advance - box_data.margin_line_left - box_data.margin_line_right;
-  placeholder.layout_result = box_data.CreateBoxFragment(line_box);
+  placeholder.layout_result = box_data.CreateBoxFragment(space, line_box);
   placeholder.inline_size = advance;
   DCHECK(!placeholder.children_count);
   box_data_list_.pop_back();
@@ -686,8 +684,6 @@ void NGInlineLayoutStateStack::ApplyRelativePositioning(
   for (BoxData& box_data : box_data_list_) {
     unsigned start = box_data.fragment_start;
     unsigned end = box_data.fragment_end;
-    // TODO(almaher): Handle inline relative positioning correctly for OOF
-    // fragmentation.
     const LogicalOffset relative_offset =
         ComputeRelativeOffsetForInline(space, *box_data.item->Style());
 
@@ -705,6 +701,7 @@ void NGInlineLayoutStateStack::ApplyRelativePositioning(
 }
 
 void NGInlineLayoutStateStack::CreateBoxFragments(
+    const NGConstraintSpace& space,
     NGLogicalLineItems* line_box) {
   DCHECK(!box_data_list_.IsEmpty());
 
@@ -715,7 +712,7 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
     NGLogicalLineItem* child = &(*line_box)[start];
     DCHECK(box_data.item->ShouldCreateBoxFragment());
     scoped_refptr<const NGLayoutResult> box_fragment =
-        box_data.CreateBoxFragment(line_box);
+        box_data.CreateBoxFragment(space, line_box);
     if (child->IsPlaceholder()) {
       child->layout_result = std::move(box_fragment);
       child->rect = box_data.rect;
@@ -735,6 +732,7 @@ void NGInlineLayoutStateStack::CreateBoxFragments(
 
 scoped_refptr<const NGLayoutResult>
 NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
+    const NGConstraintSpace& space,
     NGLogicalLineItems* line_box) {
   DCHECK(item);
   DCHECK(item->Style());
@@ -758,6 +756,11 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   // was fragmented. Fragmenting a line box in block direction is not
   // supported today.
   box.SetSidesToInclude({true, has_line_right_edge, true, has_line_left_edge});
+
+  // We don't use ComputeRelativeOffsetForInline() when storing the relative
+  // offset for OOF descendants to avoid any line-logical conversions.
+  const LogicalOffset relative_offset = ComputeRelativeOffset(
+      style, space.GetWritingDirection(), space.AvailableSize());
 
   for (unsigned i = fragment_start; i < fragment_end; i++) {
     NGLogicalLineItem& child = (*line_box)[i];
@@ -784,11 +787,8 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
 
     // Propagate any OOF-positioned descendants from any atomic-inlines, etc.
     if (child.layout_result) {
-      // TODO(almaher): Handle the inline case correctly for OOF fragmentation.
-      // The relative offset should not always be set to LogicalOffset() here.
       box.PropagateChildData(child.layout_result->PhysicalFragment(),
-                             child.rect.offset - rect.offset,
-                             /* relative_offset */ LogicalOffset());
+                             child.rect.offset - rect.offset, relative_offset);
     }
 
     // |NGFragmentItems| has a flat list of all descendants, except
@@ -800,7 +800,7 @@ NGInlineLayoutStateStack::BoxData::CreateBoxFragment(
   // invalidations.
   item->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
 
-  box.MoveOutOfFlowDescendantCandidatesToDescendants();
+  box.MoveOutOfFlowDescendantCandidatesToDescendants(relative_offset);
   return box.ToInlineBoxFragment();
 }
 

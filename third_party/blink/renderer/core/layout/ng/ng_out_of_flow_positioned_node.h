@@ -43,6 +43,25 @@ struct NGContainingBlock {
         fragment(std::move(fragment)) {}
 };
 
+// This holds the containing block for an out-of-flow positioned element
+// if the containing block is a non-atomic inline. It is the continuation
+// root (i.e. the first LayoutInline in the continuation chain for the same
+// node) if continuations are involved.
+template <typename OffsetType>
+struct NGInlineContainer {
+  DISALLOW_NEW();
+
+ public:
+  const LayoutInline* container = nullptr;
+  // Store the relative offset so that it can be applied after fragmentation,
+  // if inside a fragmentation context.
+  OffsetType relative_offset;
+
+  NGInlineContainer() = default;
+  NGInlineContainer(const LayoutInline* container, OffsetType relative_offset)
+      : container(container), relative_offset(relative_offset) {}
+};
+
 // If an out-of-flow positioned element is inside a nested fragmentation
 // context, it will be laid out once it reaches the outermost fragmentation
 // context root. A multicol with pending OOFs is the inner multicol information
@@ -96,21 +115,22 @@ struct CORE_EXPORT NGPhysicalOutOfFlowPositionedNode {
   unsigned static_position_vertical_edge : 2;
   // Whether or not this is an NGPhysicalOOFNodeForFragmentation.
   unsigned is_for_fragmentation : 1;
-  // Continuation root of the optional inline container.
-  const LayoutInline* inline_container;
+  NGInlineContainer<PhysicalOffset> inline_container;
 
   NGPhysicalOutOfFlowPositionedNode(
       NGBlockNode node,
       NGPhysicalStaticPosition static_position,
-      const LayoutInline* inline_container = nullptr)
+      NGInlineContainer<PhysicalOffset> inline_container =
+          NGInlineContainer<PhysicalOffset>())
       : box(node.GetLayoutBox()),
         static_position(static_position.offset),
         static_position_horizontal_edge(static_position.horizontal_edge),
         static_position_vertical_edge(static_position.vertical_edge),
         is_for_fragmentation(false),
         inline_container(inline_container) {
-    DCHECK(!inline_container ||
-           inline_container == inline_container->ContinuationRoot());
+    DCHECK(!inline_container.container ||
+           inline_container.container ==
+               inline_container.container->ContinuationRoot());
     DCHECK(node.IsBlock());
   }
 
@@ -155,7 +175,8 @@ struct CORE_EXPORT NGPhysicalOOFNodeForFragmentation final
   NGPhysicalOOFNodeForFragmentation(
       NGBlockNode node,
       NGPhysicalStaticPosition static_position,
-      const LayoutInline* inline_container = nullptr,
+      NGInlineContainer<PhysicalOffset> inline_container =
+          NGInlineContainer<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> containing_block =
           NGContainingBlock<PhysicalOffset>(),
       NGContainingBlock<PhysicalOffset> fixedpos_containing_block =
@@ -181,8 +202,7 @@ struct NGLogicalOutOfFlowPositionedNode final {
  public:
   LayoutBox* box;
   NGLogicalStaticPosition static_position;
-  // Continuation root of the optional inline container.
-  const LayoutInline* inline_container;
+  NGInlineContainer<LogicalOffset> inline_container;
   bool needs_block_offset_adjustment;
   const LayoutUnit fragmentainer_consumed_block_size;
   NGContainingBlock<LogicalOffset> containing_block;
@@ -192,7 +212,8 @@ struct NGLogicalOutOfFlowPositionedNode final {
   NGLogicalOutOfFlowPositionedNode(
       NGBlockNode node,
       NGLogicalStaticPosition static_position,
-      const LayoutInline* inline_container = nullptr,
+      NGInlineContainer<LogicalOffset> inline_container =
+          NGInlineContainer<LogicalOffset>(),
       bool needs_block_offset_adjustment = false,
       NGContainingBlock<LogicalOffset> containing_block =
           NGContainingBlock<LogicalOffset>(),
@@ -206,8 +227,9 @@ struct NGLogicalOutOfFlowPositionedNode final {
         containing_block(containing_block),
         fixedpos_containing_block(fixedpos_containing_block),
         containing_block_rect(containing_block_rect) {
-    DCHECK(!inline_container ||
-           inline_container == inline_container->ContinuationRoot());
+    DCHECK(!inline_container.container ||
+           inline_container.container ==
+               inline_container.container->ContinuationRoot());
     DCHECK(node.IsBlock());
   }
 

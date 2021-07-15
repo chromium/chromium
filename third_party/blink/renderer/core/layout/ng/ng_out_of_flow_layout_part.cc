@@ -182,11 +182,11 @@ void NGOutOfFlowLayoutPart::Run(const LayoutBox* only_layout) {
       if (absolute_containing_block &&
           absolute_containing_block->CanContainOutOfFlowPositionedElement(
               candidate.Node().Style().GetPosition())) {
-        candidate.inline_container = absolute_containing_block;
+        candidate.inline_container.container = absolute_containing_block;
       } else if (fixed_containing_block &&
                  fixed_containing_block->CanContainOutOfFlowPositionedElement(
                      candidate.Node().Style().GetPosition())) {
-        candidate.inline_container = fixed_containing_block;
+        candidate.inline_container.container = fixed_containing_block;
       }
       container_builder_->AddOutOfFlowDescendant(candidate);
     }
@@ -308,8 +308,9 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
     const NGLogicalOutOfFlowPositionedNode& candidate) {
   if (candidate.containing_block_rect)
     return {default_writing_direction_, *candidate.containing_block_rect};
-  if (candidate.inline_container) {
-    const auto it = containing_blocks_map_.find(candidate.inline_container);
+  if (candidate.inline_container.container) {
+    const auto it =
+        containing_blocks_map_.find(candidate.inline_container.container);
     DCHECK(it != containing_blocks_map_.end());
     return it->value;
   }
@@ -363,11 +364,12 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocks(
       inline_container_fragments;
 
   for (auto& candidate : candidates) {
-    if (candidate.inline_container &&
-        !inline_container_fragments.Contains(candidate.inline_container)) {
+    if (candidate.inline_container.container &&
+        !inline_container_fragments.Contains(
+            candidate.inline_container.container)) {
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
-      inline_container_fragments.insert(candidate.inline_container,
+      inline_container_fragments.insert(candidate.inline_container.container,
                                         inline_geometry);
     }
   }
@@ -396,23 +398,30 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     LayoutUnit block_size;
     // The fragmentainer index the containing block starts in.
     wtf_size_t fragmentainer_index;
+    // The relative offset of the inline's containing block to the
+    // fragmentation context root.
+    LogicalOffset relative_offset;
   };
 
   HashMap<const LayoutBox*, InlineContainingBlockInfo> inline_containg_blocks;
 
   // Collect the inline containers by shared containing block.
   for (auto& descendant : descendants) {
-    if (descendant.inline_container) {
+    if (descendant.inline_container.container) {
       DCHECK(descendant.containing_block.fragment);
       const LayoutBox* containing_block = To<LayoutBox>(
           descendant.containing_block.fragment->GetLayoutObject());
 
       InlineContainingBlockUtils::InlineContainingBlockGeometry
           inline_geometry = {};
+      inline_geometry.relative_offset =
+          descendant.inline_container.relative_offset;
       auto it = inline_containg_blocks.find(containing_block);
       if (it != inline_containg_blocks.end()) {
-        if (!it->value.map.Contains(descendant.inline_container))
-          it->value.map.insert(descendant.inline_container, inline_geometry);
+        if (!it->value.map.Contains(descendant.inline_container.container)) {
+          it->value.map.insert(descendant.inline_container.container,
+                               inline_geometry);
+        }
         continue;
       }
       // Find the fragmentainer that the containing block starts in and the
@@ -428,9 +437,11 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
           &start_index, &offset);
 
       InlineContainingBlockUtils::InlineContainingBlockMap inline_containers;
-      inline_containers.insert(descendant.inline_container, inline_geometry);
+      inline_containers.insert(descendant.inline_container.container,
+                               inline_geometry);
       InlineContainingBlockInfo inline_info{
-          inline_containers, offset.block_offset, block_size, start_index};
+          inline_containers, offset.block_offset, block_size, start_index,
+          descendant.containing_block.relative_offset};
       inline_containg_blocks.insert(containing_block, inline_info);
     }
   }
@@ -450,11 +461,11 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
         container_builder_physical_size, *container_builder_,
         inline_info.fragmentainer_index, &inline_info.map);
 
-    // TODO(almaher): Set |relative_offset| and |offset_to_border_box| in the
-    // final containing block info that gets created.
+    // TODO(almaher): Set |offset_to_border_box| in the final containing block
+    // info that gets created.
     AddInlineContainingBlockInfo(
         inline_info.map, containing_block->StyleRef().GetWritingDirection(),
-        container_builder_physical_size);
+        container_builder_physical_size, inline_info.relative_offset);
   }
 }
 
@@ -462,7 +473,8 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     const InlineContainingBlockUtils::InlineContainingBlockMap&
         inline_container_fragments,
     const WritingDirectionMode container_writing_direction,
-    PhysicalSize container_builder_size) {
+    PhysicalSize container_builder_size,
+    LogicalOffset containing_block_relative_offset) {
   // Transform the start/end fragments into a ContainingBlockInfo.
   for (const auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());
@@ -563,6 +575,7 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         std::max(end_offset.inline_offset, start_offset.inline_offset);
     end_offset.block_offset =
         std::max(end_offset.block_offset, start_offset.block_offset);
+
     // Step 3 - determine the logical rectangle.
 
     // Determine the logical size of the containing block.
@@ -572,10 +585,22 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     DCHECK_GE(inline_cb_size.inline_size, LayoutUnit());
     DCHECK_GE(inline_cb_size.block_size, LayoutUnit());
 
+    // Subtract out the inline relative offset, if set, so that it can be
+    // applied after fragmentation is performed on the fragmentainer
+    // descendants.
+    DCHECK((block_info.value->relative_offset == LogicalOffset() &&
+            containing_block_relative_offset == LogicalOffset()) ||
+           container_builder_->IsBlockFragmentationContextRoot());
+    LogicalOffset container_offset =
+        start_offset - block_info.value->relative_offset;
+    LogicalOffset total_relative_offset =
+        containing_block_relative_offset + block_info.value->relative_offset;
+
     containing_blocks_map_.insert(
         block_info.key,
         ContainingBlockInfo{inline_writing_direction,
-                            LogicalRect(start_offset, inline_cb_size)});
+                            LogicalRect(container_offset, inline_cb_size),
+                            total_relative_offset});
   }
 }
 
@@ -608,7 +633,7 @@ void NGOutOfFlowLayoutPart::LayoutCandidates(
             LayoutOOFNode(node_to_layout, only_layout);
         container_builder_->AddChild(result->PhysicalFragment(),
                                      result->OutOfFlowPositionedOffset(),
-                                     candidate.inline_container);
+                                     &candidate.inline_container);
         placed_objects->insert(layout_box);
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);
@@ -779,6 +804,11 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
             fixedpos_containing_block_fragment->Size());
       }
 
+      NGInlineContainer<LogicalOffset> inline_container(
+          descendant.inline_container.container,
+          converter.ToLogical(descendant.inline_container.relative_offset,
+                              PhysicalSize()));
+
       // The static position should remain relative to its containing block
       // fragment.
       const WritingModeConverter containing_block_converter(
@@ -790,7 +820,7 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
       NGLogicalOutOfFlowPositionedNode node = {
           descendant.Node(),
           static_position,
-          descendant.inline_container,
+          inline_container,
           /* needs_block_offset_adjustment */ false,
           NGContainingBlock<LogicalOffset>(containing_block_offset,
                                            containing_block_rel_offset,
@@ -1042,7 +1072,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
                   default_writing_direction,
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   oof_node.fixedpos_containing_block,
-                  oof_node.inline_container);
+                  oof_node.inline_container.container);
 }
 
 scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
@@ -1255,9 +1285,9 @@ bool NGOutOfFlowLayoutPart::IsContainingBlockForCandidate(
 
   // Candidates whose containing block is inline are always positioned inside
   // closest parent block flow.
-  if (candidate.inline_container) {
-    DCHECK(candidate.inline_container->CanContainOutOfFlowPositionedElement(
-        position));
+  if (candidate.inline_container.container) {
+    DCHECK(candidate.inline_container.container
+               ->CanContainOutOfFlowPositionedElement(position));
     return container_builder_->GetLayoutObject() ==
            candidate.box->ContainingBlock();
   }

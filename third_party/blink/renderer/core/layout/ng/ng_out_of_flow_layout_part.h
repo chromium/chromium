@@ -194,7 +194,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   void AddInlineContainingBlockInfo(
       const InlineContainingBlockUtils::InlineContainingBlockMap&,
       const WritingDirectionMode container_writing_direction,
-      PhysicalSize container_builder_size);
+      PhysicalSize container_builder_size,
+      LogicalOffset containing_block_relative_offset = LogicalOffset());
 
   void LayoutCandidates(Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
                         const LayoutBox* only_layout,

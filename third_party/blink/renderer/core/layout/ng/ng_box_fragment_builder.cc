@@ -124,7 +124,7 @@ void NGBoxFragmentBuilder::AddResult(
 void NGBoxFragmentBuilder::AddChild(
     const NGPhysicalFragment& child,
     const LogicalOffset& child_offset,
-    const LayoutInline* inline_container,
+    const NGInlineContainer<LogicalOffset>* inline_container,
     const NGMarginStrut* margin_strut,
     bool is_self_collapsing,
     absl::optional<LogicalOffset> relative_offset,
@@ -270,10 +270,12 @@ void NGBoxFragmentBuilder::AddOutOfFlowLegacyCandidate(
     NGBlockNode node,
     const NGLogicalStaticPosition& static_position,
     const LayoutInline* inline_container) {
+  if (inline_container)
+    inline_container = To<LayoutInline>(inline_container->ContinuationRoot());
   oof_positioned_candidates_.emplace_back(
       node, static_position,
-      inline_container ? To<LayoutInline>(inline_container->ContinuationRoot())
-                       : nullptr);
+      NGInlineContainer<LogicalOffset>(inline_container,
+                                       /* relative_offset */ LogicalOffset()));
 }
 
 NGPhysicalFragment::NGBoxType NGBoxFragmentBuilder::BoxType() const {

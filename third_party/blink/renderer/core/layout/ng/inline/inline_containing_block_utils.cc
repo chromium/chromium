@@ -89,7 +89,8 @@ void GatherInlineContainerFragmentsFromItems(
       containing_lineboxes.second = linebox;
       containing_block_geometry =
           InlineContainingBlockUtils::InlineContainingBlockGeometry{
-              fragment_rect, fragment_rect};
+              fragment_rect, fragment_rect,
+              containing_block_geometry->relative_offset};
     }
 
     if (containing_lineboxes.second == linebox) {
