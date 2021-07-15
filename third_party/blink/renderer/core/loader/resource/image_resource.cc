@@ -240,8 +240,8 @@ void ImageResource::OnMemoryDump(WebMemoryDumpLevelOfDetail level_of_detail,
   Resource::OnMemoryDump(level_of_detail, memory_dump);
   const String name = GetMemoryDumpName() + "/image_content";
   auto* dump = memory_dump->CreateMemoryAllocatorDump(name);
-  if (content_->HasImage() && content_->GetImage()->Data())
-    dump->AddScalar("size", "bytes", content_->GetImage()->Data()->size());
+  if (content_->HasImage() && content_->GetImage()->HasData())
+    dump->AddScalar("size", "bytes", content_->GetImage()->DataSize());
 }
 
 void ImageResource::Trace(Visitor* visitor) const {

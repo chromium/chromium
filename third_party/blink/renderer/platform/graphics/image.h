@@ -192,7 +192,22 @@ class PLATFORM_EXPORT Image : public ThreadSafeRefCounted<Image> {
 
   virtual void DestroyDecodedData() = 0;
 
+  // In some overrides, |Data()| can be somewhat expensive (e.g. in BitmapImage,
+  // we don't use a SharedBuffer to store the image data, so |Data()| involves a
+  // copy). |HasData()| and |DataSize()| should be preferred in cases where the
+  // data itself is not needed.
+  //
+  // If a subclass overrides |Data|, it must override |HasData| and |DataSize|
+  // as well.
   virtual scoped_refptr<SharedBuffer> Data() { return encoded_image_data_; }
+  // Returns true iff the encoded image data is available.
+  virtual bool HasData() const { return encoded_image_data_ != nullptr; }
+  // Returns the size of the encoded image data, in bytes. Should only be called
+  // if |HasData()| is true.
+  virtual size_t DataSize() const {
+    DCHECK(encoded_image_data_);
+    return encoded_image_data_->size();
+  }
 
   // Animation begins whenever someone draws the image, so startAnimation() is
   // not normally called. It will automatically pause once all observers no

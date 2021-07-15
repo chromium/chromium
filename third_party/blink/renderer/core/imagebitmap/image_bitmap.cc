@@ -423,7 +423,7 @@ static scoped_refptr<StaticBitmapImage> CropImageAndApplyColorSpaceConversion(
     scoped_refptr<StaticBitmapImage>&& image,
     ImageBitmap::ParsedOptions& parsed_options) {
   DCHECK(image);
-  DCHECK(!image->Data());
+  DCHECK(!image->HasData());
 
   IntRect img_rect(IntPoint(), IntSize(image->width(), image->height()));
   const IntRect& src_rect{parsed_options.crop_rect};
@@ -535,7 +535,7 @@ ImageBitmap::ImageBitmap(ImageElementBase* image,
   DCHECK(!paint_image.IsTextureBacked());
   if (input->IsBitmapImage()) {
     // A BitmapImage indicates that this is a coded backed image.
-    if (!input->Data())
+    if (!input->HasData())
       return;
 
     DCHECK(paint_image.IsLazyGenerated());

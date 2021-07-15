@@ -300,7 +300,7 @@ scoped_refptr<Image> ImageResourceContent::CreateImage(bool is_multipart) {
 void ImageResourceContent::ClearImage() {
   if (!image_)
     return;
-  int64_t length = image_->Data() ? image_->Data()->size() : 0;
+  int64_t length = image_->HasData() ? image_->DataSize() : 0;
   v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(-length);
 
   // If our Image has an observer, it's always us so we need to clear the back
@@ -488,9 +488,9 @@ bool ImageResourceContent::IsAcceptableCompressionRatio(
 
   double resource_length =
       static_cast<double>(GetResponse().ExpectedContentLength());
-  if (resource_length <= 0 && image_->Data()) {
+  if (resource_length <= 0 && image_->HasData()) {
     // WPT and LayoutTests server returns -1 or 0 for the content length.
-    resource_length = static_cast<double>(image_->Data()->size());
+    resource_length = static_cast<double>(image_->DataSize());
   }
 
   // Calculate the image's compression ratio (in bytes per pixel) with both 1k

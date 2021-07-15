@@ -255,7 +255,7 @@ void ImagePainter::PaintIntoRect(GraphicsContext& context,
       // Does not set an observer for the placeholder image, setting it to null.
       scoped_refptr<PlaceholderImage> placeholder_image =
           PlaceholderImage::Create(nullptr, image->Size(),
-                                   image->Data() ? image->Data()->size() : 0);
+                                   image->HasData() ? image->DataSize() : 0);
       placeholder_image->SetIconAndTextScaleFactor(
           layout_image_.GetFrame()->PageZoomFactor());
       image = std::move(placeholder_image);

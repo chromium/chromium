@@ -770,7 +770,7 @@ Image::SizeAvailability SVGImage::DataChanged(bool all_data_received) {
   TRACE_EVENT0("blink", "SVGImage::dataChanged");
 
   // Don't do anything if is an empty image.
-  if (!Data()->size())
+  if (!DataSize())
     return kSizeAvailable;
 
   if (!all_data_received)

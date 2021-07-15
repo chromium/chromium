@@ -94,6 +94,15 @@ scoped_refptr<SharedBuffer> BitmapImage::Data() {
   return decoder_ ? decoder_->Data() : nullptr;
 }
 
+bool BitmapImage::HasData() const {
+  return decoder_ ? decoder_->HasData() : false;
+}
+
+size_t BitmapImage::DataSize() const {
+  DCHECK(decoder_);
+  return decoder_->DataSize();
+}
+
 void BitmapImage::NotifyMemoryChanged() {
   if (GetImageObserver())
     GetImageObserver()->DecodedSizeChangedTo(this, TotalFrameBytes());
