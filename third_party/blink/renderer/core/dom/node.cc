@@ -1341,7 +1341,7 @@ void Node::SetNeedsStyleRecalc(StyleChangeType change_type,
   DCHECK(change_type != kNoStyleChange);
   DCHECK(IsElementNode() || IsTextNode());
 
-  recordreplay::Assert("Node::SetNeedsStyleRecalc Start %d %d",
+  recordreplay::Assert("Node::SetNeedsStyleRecalc Start %d",
                        recordreplay::PointerId(this));
 
   if (!InActiveDocument())
