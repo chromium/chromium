@@ -799,6 +799,8 @@ bool IsURLAllowedInIncognito(const GURL& url,
     DCHECK_GT(stripped_spec.size(), strlen(content::kViewSourceScheme));
     stripped_spec.erase(0, strlen(content::kViewSourceScheme) + 1);
     GURL stripped_url(stripped_spec);
+    if (stripped_url.is_empty())
+      return true;
     return stripped_url.is_valid() &&
            IsURLAllowedInIncognito(stripped_url, browser_context);
   }
