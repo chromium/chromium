@@ -101,7 +101,7 @@ class NET_EXPORT URLRequestContext
   // |traffic_annotation| is metadata about the network traffic send via this
   // URLRequest, see net::DefineNetworkTrafficAnnotation. Note that:
   // - net provides the API for tagging requests with an opaque identifier.
-  // - tools/traffic_annotation/traffic_annotation.proto contains the Chrome
+  // - chrome/browser/privacy/traffic_annotation.proto contains the Chrome
   // specific .proto describing the verbose annotation format that Chrome's
   // callsites are expected to follow.
   // - tools/traffic_annotation/ contains sample and template for annotation and

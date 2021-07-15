@@ -130,7 +130,7 @@ struct PartialNetworkTrafficAnnotationTag {
 // debugging, or auditing tasks. Unique ids should include only alphanumeric
 // characters and underline.
 // |proto| is a text-encoded NetworkTrafficAnnotation protobuf (see
-// tools/traffic_annotation/traffic_annotation.proto)
+// chrome/browser/privacy/traffic_annotation.proto)
 //
 // An empty and a sample template for the text-encoded protobuf can be found in
 // tools/traffic_annotation/sample_traffic_annotation.cc.

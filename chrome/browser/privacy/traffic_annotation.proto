@@ -8,6 +8,9 @@ package traffic_annotation;
 // chrome_settings_full_runtime.proto is a version of the following proto
 // without lite runtime optimization:
 // out/Debug/gen/components/policy/proto/chrome_settings.proto
+//
+// TODO(crbug.com/1119417): Change this to the non-full-runtime version when
+// the C++ auditor is removed.
 import "chrome_settings_full_runtime.proto";
 
 // Describes a specific kind of network traffic based on a fine-grained

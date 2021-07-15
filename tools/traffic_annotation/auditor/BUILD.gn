@@ -31,7 +31,9 @@ proto_library("chrome_settings_full_runtime") {
 }
 
 proto_library("traffic_annotation") {
-  sources = [ "../traffic_annotation.proto" ]
+  sources = [ "//chrome/browser/privacy/traffic_annotation.proto" ]
+
+  proto_out_dir = "tools/traffic_annotation"
 
   import_dirs = [ "$root_gen_dir" + "/components/policy/proto" ]
 

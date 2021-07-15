@@ -5263,6 +5263,10 @@ static_library("browser") {
     }
   }
 
+  if (is_win || is_linux) {
+    deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
+  }
+
   if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/connectors/device_trust/attestation_service.cc",

@@ -70,7 +70,7 @@ config("component_implementation") {
 # and compiled.
 cloud_policy_proto_path = "$target_gen_dir/proto/cloud_policy.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 cloud_policy_full_runtime_proto_path =
     "$target_gen_dir/proto/cloud_policy_full_runtime.proto"
@@ -80,7 +80,7 @@ cloud_policy_full_runtime_proto_path =
 policy_common_definitions_proto_abspath =
     "//components/policy/proto/policy_common_definitions.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 policy_common_definitions_full_runtime_proto_path =
     "$target_gen_dir/proto/policy_common_definitions_full_runtime.proto"
@@ -89,7 +89,7 @@ policy_common_definitions_full_runtime_proto_path =
 # policy. It is also the format currently used by the server.
 chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 chrome_settings_full_runtime_proto_path =
     "$target_gen_dir/proto/chrome_settings_full_runtime.proto"
