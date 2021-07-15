@@ -4405,7 +4405,7 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
       </message>
 
       <message name="IDS_QR_CODE_SHARE_TAB_LABEL" desc="Share tab label for QR Code sharing activity."
-        meaning="Sharing QR code">
+        meaning="Sharing QR Code">
         Share
       </message>
 
@@ -4413,22 +4413,22 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Scan
       </message>
 
-      <message name="IDS_QR_CODE_SHARE_DESCRIPTION" desc="Text on QR code sharing tab describing how to use the QR code.">
-        To share with people nearby, let them scan this QR code
+      <message name="IDS_QR_CODE_SHARE_DESCRIPTION" desc="Text on QR Code sharing tab describing how to use the QR Code.">
+        To share with people nearby, let them scan this QR Code
       </message>
 
-      <message name="IDS_QR_CODE_DOWNLOAD" desc="Text on QR code download button.">
+      <message name="IDS_QR_CODE_DOWNLOAD" desc="Text on QR Code download button.">
         Download
       </message>
 
       <message name="IDS_QR_CODE_ERROR_TOO_LONG"
-          desc="Error message displayed when a URL exceeds the limit for which we can generate a QR code.">
-          Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT">%1$d<ex>300</ex></ph> characters.
+          desc="Error message displayed when a URL exceeds the limit for which we can generate a QR Code.">
+          Can't create QR Code. URL is more than <ph name="CHARACTER_LIMIT">%1$d<ex>300</ex></ph> characters.
       </message>
 
       <message name="IDS_QR_CODE_ERROR_UNKNOWN"
           desc="Error message displayed when an unknown error occurs.">
-          Can't create QR code
+          Can't create QR Code
       </message>
 
       <!-- Sharing Hub -->
@@ -4507,24 +4507,24 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Image Copied
       </message>
 
-      <message name="IDS_QR_CODE_CAMERA_FRAMING_RECT_DESCRIPTION" desc="Text under the framing rectangle in QR code camera preview.">
-        Position QR/barcode in this frame.
+      <message name="IDS_QR_CODE_CAMERA_FRAMING_RECT_DESCRIPTION" desc="Text under the framing rectangle in QR Code camera preview.">
+        Position QR Code/barcode in this frame.
       </message>
 
-      <message name="IDS_QR_CODE_PERMISSION_DESCRIPTION" desc="Text on QR code sharing tab indicating that permissions need to be given.">
-        To scan a QR code, let Chrome use your camera
+      <message name="IDS_QR_CODE_PERMISSION_DESCRIPTION" desc="Text on QR Code sharing tab indicating that permissions need to be given.">
+        To scan a QR Code, let Chrome use your camera
       </message>
 
-      <message name="IDS_QR_CODE_OPEN_SETTINGS_DESCRIPTION" desc="Text on QR code sharing tab indicating that user needs to open settings to give camera permission.">
-        To scan a QR code, change your settings so that Chrome can use your camera
+      <message name="IDS_QR_CODE_OPEN_SETTINGS_DESCRIPTION" desc="Text on QR Code sharing tab indicating that user needs to open settings to give camera permission.">
+        To scan a QR Code, change your settings so that Chrome can use your camera
       </message>
 
-      <message name="IDS_QR_CODE_PERMISSION_CONTINUE_LABEL" desc="Text on button on QR code sharing tab triggering camera permission dialog.">
+      <message name="IDS_QR_CODE_PERMISSION_CONTINUE_LABEL" desc="Text on button on QR Code sharing tab triggering camera permission dialog.">
         Continue
       </message>
 
       <message name="IDS_QR_CODE_NO_CAMERA_ERROR" desc="Error text shown when no camera is found.">
-        To scan a QR code, use a device with a camera.
+        To scan a QR Code, use a device with a camera.
       </message>
 
       <message name="IDS_QR_CODE_DISABLED_CAMERA_ERROR" desc="Error text shown when the camera is disabled by the device policy manager.">
@@ -4539,11 +4539,11 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Can't open your camera. Something went wrong.
       </message>
 
-      <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR code sharing tab triggering Android settings.">
+      <message name="IDS_QR_CODE_OPEN_SETTINGS_LABEL" desc="Text on button on QR Code sharing tab triggering Android settings.">
         Open Settings
       </message>
 
-      <message name="IDS_QR_CODE_NOT_A_URL_LABEL" desc="Text on toast on QR code scanning tab indicating that the QR Code does not correspond to a URL and can not be opened.">
+      <message name="IDS_QR_CODE_NOT_A_URL_LABEL" desc="Text on toast on QR Code scanning tab indicating that the QR Code does not correspond to a URL and can not be opened.">
         This QR Code is not a URL: <ph name="QrCodeValue">%1$s<ex>QR Code Text</ex></ph>
       </message>
 

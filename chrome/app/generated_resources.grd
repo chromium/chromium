@@ -3861,7 +3861,7 @@ are declared in tools/grit/grit_rule.gni.
           Profile Importer
         </message>
       </if>
-      <message name="IDS_UTILITY_PROCESS_QRCODE_GENERATOR_SERVICE_NAME" desc="The name of the utility process used for encoding QR codes.">
+      <message name="IDS_UTILITY_PROCESS_QRCODE_GENERATOR_SERVICE_NAME" desc="The name of the utility process used for encoding QR Codes.">
         QR Code Generator
       </message>
       <if expr="is_win">
@@ -7724,55 +7724,55 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
       </if>
 
-      <!-- Share via QR code strings -->
+      <!-- Share via QR Code strings -->
       <if expr="not use_titlecase">
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR code for this Page context menu item.">
-          Create QR code for this page
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR Code for this Page context menu item.">
+          Create QR Code for this page
         </message>
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR code for this Image context menu item.">
-          Create QR code for this image
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
+          Create QR Code for this image
         </message>
       </if>
       <if expr="use_titlecase">
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR code for this Page context menu item.">
-          Create QR code for this Page
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_PAGE" desc="The label for the Create QR Code for this Page context menu item.">
+          Create QR Code for this Page
         </message>
-        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR code for this Image context menu item.">
-          Create QR code for this Image
+        <message name="IDS_CONTEXT_MENU_GENERATE_QR_CODE_IMAGE" desc="The label for the Create QR Code for this Image context menu item.">
+          Create QR Code for this Image
         </message>
       </if>
       <if expr="not is_android">
-        <message name="IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL" desc="String for the omnibox icon label for the QR code Generator">
-          QR code
+        <message name="IDS_OMNIBOX_QRCODE_GENERATOR_ICON_LABEL" desc="String for the omnibox icon label for the QR Code Generator">
+          QR Code
         </message>
-        <message name="IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP" desc="Tooltip for the omnibox icon label for the QR code Generator">
-          Create QR code for this Page
+        <message name="IDS_OMNIBOX_QRCODE_GENERATOR_ICON_TOOLTIP" desc="Tooltip for the omnibox icon label for the QR Code Generator">
+          Create QR Code for this Page
         </message>
       </if>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_TITLE"
           desc="Title for the QR Generator dialog.">
-        Scan QR code
+        Scan QR Code
       </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_URL_TEXTFIELD_ACCESSIBLE_NAME"
-          desc="Text to be spoken for the QR code Generator's URL Textfield.">
+          desc="Text to be spoken for the QR Code Generator's URL Textfield.">
         URL
       </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_TOOLTIP"
           desc="Tooltip string for QR Generator dialog informing the user they
-          can scan a QR code with their phone.">
+          can scan a QR Code with their phone.">
         To scan this code, you can use a QR scanner app on your phone, or some camera apps.
       </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_DOWNLOAD_BUTTON_LABEL"
-          desc="Button text for the QR code generator's download button.">
+          desc="Button text for the QR Code generator's download button.">
         Download
       </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_TOO_LONG"
-          desc="Error message displayed when a URL exceeds the limit for which we can generate a QR code.">
+          desc="Error message displayed when a URL exceeds the limit for which we can generate a QR Code.">
         Use <ph name="CHARACTER_LIMIT">$1<ex>300</ex></ph> characters or fewer
       </message>
       <message name="IDS_BROWSER_SHARING_QR_CODE_DIALOG_ERROR_UNKNOWN"
           desc="Error message displayed when an unknown error occurs.">
-          Can't create QR code
+          Can't create QR Code
       </message>
 
       <!-- Sharing Hub feature strings. -->
@@ -11108,11 +11108,11 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_CABLE_V2_ACTIVATE_DESCRIPTION_SHORT" desc="Second line of text in an item letting the user know how they can use Chrome on their Android phone as a security key. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
         Open Chrome on your Android phone, and go to "Settings > Passwords > Use phone as a security key", and follow the instructions there.
       </message>
-      <message name="IDS_WEBAUTHN_CABLE_QR_TITLE" desc="Title of a dialog that contains a QR-code for the user to scan with a mobile phone app. A QR code is a type of barcode that can be read using a smartphone's camera.">
+      <message name="IDS_WEBAUTHN_CABLE_QR_TITLE" desc="Title of a dialog that contains a QR-code for the user to scan with a mobile phone app. A QR Code is a type of barcode that can be read using a smartphone's camera.">
         Add new phone
       </message>
-      <message name="IDS_WEBAUTHN_CABLE_QR_DESCRIPTION" desc="Description text in a dialog that contains a QR-code for the user to scan with Chrome on their Android phone. A QR code is a type of barcode that can be read using a smartphone's camera. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
-        To set up an Android phone to be used as a security key with this computer for the first time, open Chrome on your phone and go to "Settings > Passwords > Use phone as a security key". Then tap "Connect new device" and scan this QR code.
+      <message name="IDS_WEBAUTHN_CABLE_QR_DESCRIPTION" desc="Description text in a dialog that contains a QR-code for the user to scan with Chrome on their Android phone. A QR Code is a type of barcode that can be read using a smartphone's camera. The substring 'Use phone as a security key' refers to the string IDS_PHONE_AS_SECURITY_KEY_TEXT in Chrome on Android.">
+        To set up an Android phone to be used as a security key with this computer for the first time, open Chrome on your phone and go to "Settings > Passwords > Use phone as a security key". Then tap "Connect new device" and scan this QR Code.
       </message>
 
       <!-- WebAuthn authenticator PIN entry/setup -->
