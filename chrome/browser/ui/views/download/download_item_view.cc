@@ -349,6 +349,8 @@ DownloadItemView::~DownloadItemView() = default;
 
 void DownloadItemView::AddedToWidget() {
   current_scale_ = GetDPIScaleForView(this);
+  // As the icon depends upon DPI, reload the icon when DPI changes.
+  StartLoadIcons();
 }
 
 void DownloadItemView::Layout() {
@@ -763,6 +765,9 @@ void DownloadItemView::UpdateFilePathAndIcons() {
 }
 
 void DownloadItemView::StartLoadIcons() {
+  // The correct scale_factor is set only in the AddedToWidget()
+  if (!GetWidget())
+    return;
   // The small icon is not stored directly, but will be requested in other
   // functions, so ask the icon manager to load it so it's cached.
   IconManager* const im = g_browser_process->icon_manager();
