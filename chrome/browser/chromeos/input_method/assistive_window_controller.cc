@@ -145,7 +145,7 @@ void AssistiveWindowController::SetBounds(const Bounds& bounds) {
         confirmed_length_ == 0 ? bounds.caret : bounds.composition_text);
   }
   if (grammar_suggestion_window_) {
-    grammar_suggestion_window_->SetAnchorRect(bounds.caret);
+    grammar_suggestion_window_->SetBounds(bounds_.caret);
   }
 }
 
@@ -238,7 +238,7 @@ void AssistiveWindowController::SetAssistiveWindowProperties(
       if (!grammar_suggestion_window_)
         InitGrammarSuggestionWindow();
       if (window.visible) {
-        grammar_suggestion_window_->SetAnchorRect(bounds_.caret);
+        grammar_suggestion_window_->SetBounds(bounds_.caret);
         grammar_suggestion_window_->SetSuggestion(window.candidates[0]);
         grammar_suggestion_window_->Show();
       } else {

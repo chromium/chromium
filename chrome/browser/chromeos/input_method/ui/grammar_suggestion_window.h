@@ -37,6 +37,8 @@ class UI_CHROMEOS_EXPORT GrammarSuggestionWindow
   void SetButtonHighlighted(const AssistiveWindowButton& button,
                             bool highlighted);
 
+  void SetBounds(gfx::Rect bounds);
+
   SuggestionView* GetSuggestionButtonForTesting();
   views::Button* GetIgnoreButtonForTesting();
 
