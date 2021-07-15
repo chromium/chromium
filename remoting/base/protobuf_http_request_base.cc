@@ -8,6 +8,7 @@
 #include "remoting/base/protobuf_http_request_config.h"
 #include "remoting/base/scoped_protobuf_http_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace remoting {
 

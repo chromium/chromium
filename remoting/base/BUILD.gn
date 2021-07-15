@@ -99,6 +99,7 @@ source_set("base") {
     "//remoting/proto/remoting/v1:directory_proto",
     "//remoting/proto/remoting/v1:telemetry_messages",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//third_party/libvpx",
     "//third_party/libyuv",
     "//third_party/webrtc_overrides:webrtc_component",
