@@ -12,6 +12,13 @@ html {
   --md-toolbar-height: 56px;
 }
 
+@media (prefers-color-scheme: light) {
+  html[enable-branding-update] {
+    --md-background-color: white;
+    --md-toolbar-color: white;
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     --md-background-color: rgb(32, 33, 36);  /* --google-grey-900 */

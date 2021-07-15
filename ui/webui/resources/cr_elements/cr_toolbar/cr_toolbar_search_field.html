@@ -26,6 +26,12 @@
               --cr-toolbar-search-field-input-icon-color,
               white);
         }
+
+        :host-context([enable-branding-update]) cr-icon-button {
+          --cr-icon-button-fill-color: var(
+              --cr-toolbar-search-field-input-icon-color,
+              var(--google-grey-refresh-700));
+        }
       }
 
       @media (prefers-color-scheme: dark) {
@@ -45,6 +51,13 @@
         opacity: 0;
       }
 
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) #prompt {
+          color: var(--cr-toolbar-search-field-prompt-color,
+              var(--google-grey-refresh-700));
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
         #prompt {
           --cr-toolbar-search-field-prompt-opacity: 1;
@@ -61,6 +74,14 @@
         padding: 6px;
         position: absolute;
         width: var(--cr-icon-size);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) paper-spinner-lite {
+          --paper-spinner-color: var(
+              --cr-toolbar-search-field-input-icon-color,
+              var(--google-grey-refresh-700));
+        }
       }
 
       paper-spinner-lite[active] {
@@ -109,6 +130,14 @@
         width: 100%;
       }
 
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) input {
+          caret-color: var(--google-blue-refresh-700);
+          color: var(--cr-toolbar-search-field-input-text-color,
+              var(--google-grey-refresh-700));
+        }
+      }
+
       input[type='search']::-webkit-search-cancel-button {
         display: none;
       }
@@ -127,6 +156,27 @@
         cursor: var(--cr-toolbar-search-field-cursor, text);
         padding-inline-end: 0;
         width: var(--cr-toolbar-field-width, 680px);
+      }
+
+      :host-context([enable-branding-update]):host(:not([narrow])) {
+        border-radius:
+            var(--cr-toolbar-search-field-border-radius, 46px);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host(:not([narrow])) {
+          background:
+              var(--cr-toolbar-search-field-background,
+                  var(--google-grey-refresh-100));
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host-context([enable-branding-update]):host(:not([narrow])) {
+          background:
+              var(--cr-toolbar-search-field-background,
+                  rgba(0, 0, 0, 0.22));
+        }
       }
 
       :host(:not([narrow]):not([showing-search])) #icon {

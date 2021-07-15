@@ -7,6 +7,12 @@
         height: var(--cr-toolbar-height);
       }
 
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host {
+          color: var(--google-grey-900);
+        }
+      }
+
       @media (prefers-color-scheme: dark) {
         :host {
           border-bottom: var(--cr-separator-line);
@@ -23,6 +29,11 @@
         line-height: normal;
         margin-inline-start: 6px;
         padding-inline-end: 12px;
+      }
+
+      :host-context([enable-branding-update]):host h1 {
+        font-size: 170%;
+        font-weight: 500;
       }
 
       @media (prefers-color-scheme: dark) {
@@ -93,6 +104,17 @@
         flex: 1 1 0;
         text-align: end;
       }
+
+      #product-logo {
+        display: none;
+      }
+
+      :host-context([enable-branding-update]):host(:not([narrow])) #product-logo {
+        display: initial;
+        height: 24px;
+        margin-inline-end: 10px;
+        width: 24px;
+      }
     </style>
     <div id="leftContent">
       <div id="leftSpacer">
@@ -103,6 +125,10 @@
               title="[[menuLabel]]">
           </cr-icon-button>
         </template>
+        <img id="product-logo"
+            srcset="chrome://theme/current-channel-logo@1x 1x,
+                    chrome://theme/current-channel-logo@2x 2x"
+            role="presentation">
         <h1>[[pageName]]</h1>
       </div>
     </div>

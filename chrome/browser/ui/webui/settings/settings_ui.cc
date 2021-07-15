@@ -266,6 +266,12 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   html_source->AddBoolean("enableLandingPageRedesign",
                           enable_landing_page_redesign);
 
+  html_source->AddString(
+      "enableBrandingUpdateAttribute",
+      base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
+          ? "enable-branding-update"
+          : "");
+
   html_source->AddBoolean("signinAllowed", !profile->IsGuestSession() &&
                                                profile->GetPrefs()->GetBoolean(
                                                    prefs::kSigninAllowed));

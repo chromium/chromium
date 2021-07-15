@@ -103,6 +103,12 @@
     --cr-focus-outline-color: rgba(var(--google-blue-600-rgb), .4);
   }
 
+  @media (prefers-color-scheme: light) {
+    html[enable-branding-update] {
+      --cr-toolbar-background-color: white;
+    }
+  }
+
   @media (prefers-color-scheme: dark) {
     html {
       --cr-primary-text-color: var(--google-grey-200);
