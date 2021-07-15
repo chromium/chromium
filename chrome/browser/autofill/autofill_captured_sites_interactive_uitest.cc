@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/proto/server.pb.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/variations/variations_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_renderer_host.h"
@@ -161,6 +162,11 @@ class AutofillCapturedSitesInteractiveTest
 
   bool SetupAutofillProfile() override {
     AddTestAutofillData(browser()->profile(), profile(), credit_card());
+    // Disable the Password Manager to prevent password bubbles from occurring.
+    // The password bubbles could overlap with the Autofill popups, in which
+    // case the Autofill popup would not be shown (crbug.com/1223898).
+    browser()->profile()->GetPrefs()->SetBoolean(
+        password_manager::prefs::kCredentialsEnableService, false);
     return true;
   }
 
