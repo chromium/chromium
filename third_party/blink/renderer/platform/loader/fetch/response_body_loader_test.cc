@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 #include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -44,6 +45,16 @@ class ResponseBodyLoaderTest : public testing::Test {
   using Command = ReplayingBytesConsumer::Command;
   using PublicState = BytesConsumer::PublicState;
   using Result = BytesConsumer::Result;
+
+  static constexpr uint32_t kMaxNumConsumedBytesInTaskForTesting = 512 * 1024;
+  ResponseBodyLoaderTest() {
+    base::FieldTrialParams params;
+    params["loader_chunk_size"] =
+        base::NumberToString(kMaxNumConsumedBytesInTaskForTesting);
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        network::features::kLoaderDataPipeTuningFeature, params);
+  }
+
   class TestClient final : public GarbageCollected<TestClient>,
                            public ResponseBodyLoaderClient {
    public:
@@ -160,6 +171,9 @@ class ResponseBodyLoaderTest : public testing::Test {
         bytes_consumer, client, task_runner,
         MakeGarbageCollected<TestBackForwardCacheLoaderHelper>());
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ResponseBodyLoaderDrainedBytesConsumerNotificationOutOfOnStateChangeTest
@@ -346,7 +360,7 @@ TEST_F(ResponseBodyLoaderTest, Suspend) {
 TEST_F(ResponseBodyLoaderTest, ReadTooBigBuffer) {
   auto task_runner = base::MakeRefCounted<scheduler::FakeTaskRunner>();
   auto* consumer = MakeGarbageCollected<ReplayingBytesConsumer>(task_runner);
-  constexpr auto kMax = ResponseBodyLoader::kMaxNumConsumedBytesInTask;
+  constexpr auto kMax = kMaxNumConsumedBytesInTaskForTesting;
 
   consumer->Add(Command(Command::kData, std::string(kMax - 1, 'a').data()));
   consumer->Add(Command(Command::kData, std::string(2, 'b').data()));

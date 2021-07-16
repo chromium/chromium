@@ -373,13 +373,6 @@ class WebURLLoader::Context : public WebRequestPeer {
       std::unique_ptr<WebResourceRequestSender> resource_request_sender);
 
  private:
-  // The maximal number of bytes consumed in a task. When there are more bytes
-  // in the data pipe, they will be consumed in following tasks. Setting a too
-  // small number will generate ton of tasks but setting a too large number will
-  // lead to thread janks. Also, some clients cannot handle too large chunks
-  // (512k for example).
-  static constexpr uint32_t kMaxNumConsumedBytesInTask = 64 * 1024;
-
   ~Context() override;
 
   // Called when the body data stream is detached from the reader side.
@@ -435,9 +428,6 @@ class WebURLLoader::Context : public WebRequestPeer {
 };
 
 // WebURLLoader::Context -------------------------------------------------------
-
-// static
-constexpr uint32_t WebURLLoader::Context::kMaxNumConsumedBytesInTask;
 
 WebURLLoader::Context::Context(
     WebURLLoader* loader,

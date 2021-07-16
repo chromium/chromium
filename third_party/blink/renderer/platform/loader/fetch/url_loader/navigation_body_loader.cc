@@ -6,9 +6,12 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/trace_event/trace_event.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -21,9 +24,6 @@
 #include "third_party/blink/public/web/web_navigation_params.h"
 
 namespace blink {
-
-// static
-constexpr uint32_t NavigationBodyLoader::kMaxNumConsumedBytesInTask;
 
 NavigationBodyLoader::NavigationBodyLoader(
     const KURL& original_url,
@@ -233,9 +233,9 @@ void NavigationBodyLoader::ReadFromDataPipe() {
       NotifyCompletionIfAppropriate();
       return;
     }
-    DCHECK_LE(num_bytes_consumed, kMaxNumConsumedBytesInTask);
-    available =
-        std::min(available, kMaxNumConsumedBytesInTask - num_bytes_consumed);
+    uint32_t chunk_size = network::features::GetLoaderChunkSize();
+    DCHECK_LE(num_bytes_consumed, chunk_size);
+    available = std::min(available, chunk_size - num_bytes_consumed);
     if (available == 0) {
       // We've already consumed many bytes in this task. Defer the remaining
       // to the next task.
@@ -374,5 +374,4 @@ void WebNavigationBodyLoader::FillNavigationParamsResponseAndBodyLoader(
         std::move(resource_load_info_notifier_wrapper), is_main_frame));
   }
 }
-
 }  // namespace blink

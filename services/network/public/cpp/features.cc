@@ -219,7 +219,7 @@ const base::Feature kFtpProtocol{"FtpProtocol",
 const base::Feature kSCTAuditingRetryAndPersistReports{
     "SCTAuditingRetryAndPersistReports", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// This feature will be used for tuning several loading-related data pipe
+// This feature is used for tuning several loading-related data pipe
 // parameters. See crbug.com/1041006.
 const base::Feature kLoaderDataPipeTuningFeature{
     "LoaderDataPipeTuning", base::FEATURE_DISABLED_BY_DEFAULT};
@@ -230,11 +230,25 @@ static constexpr uint32_t kDataPipeDefaultAllocationSize = 512 * 1024;
 constexpr base::FeatureParam<int> kDataPipeAllocationSize{
     &kLoaderDataPipeTuningFeature, "allocation_size_bytes",
     base::saturated_cast<int>(kDataPipeDefaultAllocationSize)};
+
+// The maximal number of bytes consumed in a loading task. When there are more
+// bytes in the data pipe, they will be consumed in following tasks. Setting too
+// small of a number will generate many tasks but setting a too large of a
+// number will lead to thread janks.
+static constexpr uint32_t kMaxNumConsumedBytesInTask = 64 * 1024;
+constexpr base::FeatureParam<int> kLoaderChunkSize{
+    &kLoaderDataPipeTuningFeature, "loader_chunk_size",
+    base::saturated_cast<int>(kMaxNumConsumedBytesInTask)};
 }  // namespace
 
 // static
 uint32_t GetDataPipeDefaultAllocationSize() {
   return base::saturated_cast<uint32_t>(kDataPipeAllocationSize.Get());
+}
+
+// static
+uint32_t GetLoaderChunkSize() {
+  return base::saturated_cast<uint32_t>(kLoaderChunkSize.Get());
 }
 
 }  // namespace features
