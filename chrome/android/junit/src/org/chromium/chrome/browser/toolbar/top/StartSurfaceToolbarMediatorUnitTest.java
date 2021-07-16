@@ -804,7 +804,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
                                 mMediator.getOverviewModeStateForTesting()),
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage,
-                isTabGroupsAndroidContinuationEnabled, mUserEducationHelper, () -> false);
+                isTabGroupsAndroidContinuationEnabled, mUserEducationHelper,
+                () -> false, /* isAnimationEnabled = */ false);
 
         mMediator.setLayoutStateProvider(mLayoutStateProvider);
         mMediator.setStartSurfaceHomeButtonIPHControllerForTesting(

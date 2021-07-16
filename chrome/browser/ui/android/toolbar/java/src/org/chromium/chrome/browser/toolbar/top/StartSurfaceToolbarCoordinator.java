@@ -16,6 +16,7 @@ import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -97,7 +98,9 @@ public class StartSurfaceToolbarCoordinator {
                 homepageManagedByPolicySupplier, homeButtonOnClickHandler,
                 StartSurfaceConfiguration.shouldShowNewSurfaceFromHomeButton(),
                 isTabGroupsAndroidContinuationEnabled, userEducationHelper,
-                isIncognitoModeEnabledSupplier);
+                isIncognitoModeEnabledSupplier,
+                StartSurfaceConfiguration.shouldShowAnimationsForFinale()
+                        && !DeviceClassManager.enableAccessibilityLayout());
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;

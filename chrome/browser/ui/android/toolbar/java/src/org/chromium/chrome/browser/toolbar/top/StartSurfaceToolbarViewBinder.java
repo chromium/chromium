@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.SHOW_ANIMATION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
@@ -64,6 +65,8 @@ class StartSurfaceToolbarViewBinder {
             view.updateIncognito(model.get(IS_INCOGNITO));
         } else if (propertyKey == IS_VISIBLE) {
             view.setToolbarVisibility(model.get(IS_VISIBLE));
+        } else if (propertyKey == SHOW_ANIMATION) {
+            view.setShowAnimation(model.get(SHOW_ANIMATION));
         } else if (propertyKey == LOGO_IS_VISIBLE) {
             view.setLogoVisibility(model.get(LOGO_IS_VISIBLE));
         } else if (propertyKey == MENU_IS_VISIBLE) {

@@ -26,6 +26,7 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_HIGHLIGHT;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_CLICK_HANDLER;
+import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.SHOW_ANIMATION;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TAB_SWITCHER_BUTTON_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
@@ -77,7 +78,8 @@ class StartSurfaceToolbarMediator {
     private LayoutStateProvider.LayoutStateObserver mLayoutStateObserver;
     private MenuButtonCoordinator mMenuButtonCoordinator;
     @StartSurfaceState
-    private int mOverviewModeState;
+    private int mStartSurfaceState;
+    private boolean mIsAnimationEnabled;
     private boolean mIsGoogleSearchEngine;
     private boolean mShouldShowStartSurfaceAsHomepage;
     private boolean mHomepageEnabled;
@@ -100,9 +102,9 @@ class StartSurfaceToolbarMediator {
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean shouldShowTabSwitcherButtonOnHomepage,
             boolean isTabGroupsAndroidContinuationEnabled, UserEducationHelper userEducationHelper,
-            BooleanSupplier isIncognitoModeEnabledSupplier) {
+            BooleanSupplier isIncognitoModeEnabledSupplier, boolean isAnimationEnabled) {
         mPropertyModel = model;
-        mOverviewModeState = StartSurfaceState.NOT_SHOWN;
+        mStartSurfaceState = StartSurfaceState.NOT_SHOWN;
         mShowIdentityIPHCallback = showIdentityIPHCallback;
         mHideIncognitoSwitchWhenNoTabs = hideIncognitoSwitchWhenNoTabs;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -142,6 +144,7 @@ class StartSurfaceToolbarMediator {
                     }));
         }
         mShouldShowTabSwitcherButtonOnHomepage = shouldShowTabSwitcherButtonOnHomepage;
+        mIsAnimationEnabled = isAnimationEnabled;
     }
 
     void onNativeLibraryReady() {
@@ -177,13 +180,14 @@ class StartSurfaceToolbarMediator {
 
     void onStartSurfaceStateChanged(
             @StartSurfaceState int newState, boolean shouldShowStartSurfaceToolbar) {
-        mOverviewModeState = newState;
+        updateShowAnimation(newState);
+        mStartSurfaceState = newState;
+        updateLogoVisibility(mIsGoogleSearchEngine);
+        updateTabSwitcherButtonVisibility();
         updateIncognitoToggleTabVisibility();
         updateNewTabButtonVisibility();
         updateHomeButtonVisibility();
-        updateLogoVisibility(mIsGoogleSearchEngine);
         updateIdentityDisc(mIdentityDiscButtonSupplier.get());
-        updateTabSwitcherButtonVisibility();
         setStartSurfaceToolbarVisibility(shouldShowStartSurfaceToolbar);
         updateTranslationY(mNonIncognitoHomepageTranslationY);
     }
@@ -213,12 +217,12 @@ class StartSurfaceToolbarMediator {
 
     /** Returns whether it's on the start surface homepage. */
     boolean isOnHomepage() {
-        return mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
+        return mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
     }
 
     /** Returns whether it's on a normal tab. */
     private boolean isOnATab() {
-        return mOverviewModeState == StartSurfaceState.NOT_SHOWN;
+        return mStartSurfaceState == StartSurfaceState.NOT_SHOWN;
     }
 
     /**
@@ -285,8 +289,8 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateIncognitoToggleTabVisibility() {
-        if (mOverviewModeState != StartSurfaceState.SHOWN_TABSWITCHER
-                && mOverviewModeState != StartSurfaceState.SHOWING_TABSWITCHER) {
+        if (mStartSurfaceState != StartSurfaceState.SHOWN_TABSWITCHER
+                && mStartSurfaceState != StartSurfaceState.SHOWING_TABSWITCHER) {
             mPropertyModel.set(INCOGNITO_SWITCHER_VISIBLE, false);
             return;
         }
@@ -308,6 +312,14 @@ class StartSurfaceToolbarMediator {
             if (!incognitoTabModel.getTabAt(i).isClosing()) return true;
         }
         return false;
+    }
+
+    private boolean isOverviewState(@StartSurfaceState int state) {
+        return state == StartSurfaceState.SHOWN_HOMEPAGE
+                || state == StartSurfaceState.SHOWN_TABSWITCHER
+                || state == StartSurfaceState.SHOWING_START
+                || state == StartSurfaceState.SHOWING_HOMEPAGE
+                || state == StartSurfaceState.SHOWING_TABSWITCHER;
     }
 
     void setStartSurfaceMode(boolean inStartSurfaceMode) {
@@ -380,7 +392,7 @@ class StartSurfaceToolbarMediator {
     private void updateLogoVisibility(boolean isGoogleSearchEngine) {
         mIsGoogleSearchEngine = isGoogleSearchEngine;
         boolean shouldShowLogo =
-                mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE && mIsGoogleSearchEngine;
+                mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE && mIsGoogleSearchEngine;
         mPropertyModel.set(LOGO_IS_VISIBLE, shouldShowLogo);
     }
 
@@ -403,7 +415,7 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateNewTabButtonVisibility() {
-        boolean isShownTabSwitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
 
         // This button is only shown for homepage when accessibility is enabled and
         // OverviewListLayout is shown as the tab switcher instead of the start surface.
@@ -414,7 +426,7 @@ class StartSurfaceToolbarMediator {
     }
 
     private void updateHomeButtonVisibility() {
-        boolean isShownTabSwitcherState = mOverviewModeState == StartSurfaceState.SHOWN_TABSWITCHER;
+        boolean isShownTabSwitcherState = mStartSurfaceState == StartSurfaceState.SHOWN_TABSWITCHER;
         boolean shouldShow = mHomepageEnabled && isShownTabSwitcherState
                 && !mPropertyModel.get(IS_INCOGNITO) && mShowHomeButtonOnTabSwitcher
                 && mShouldShowStartSurfaceAsHomepage;
@@ -436,14 +448,14 @@ class StartSurfaceToolbarMediator {
         // This button should only be shown on homepage. On tab switcher page, new tab button is
         // shown.
         boolean shouldShow = mShouldShowTabSwitcherButtonOnHomepage
-                && mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE;
+                && mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE;
         mPropertyModel.set(TAB_SWITCHER_BUTTON_IS_VISIBLE, shouldShow);
         // If tab switcher button is visible, we should move identity disc to the left.
         mPropertyModel.set(IDENTITY_DISC_AT_START, shouldShow);
     }
 
     private void updateTranslationY(float transY) {
-        if (mOverviewModeState == StartSurfaceState.SHOWN_HOMEPAGE
+        if (mStartSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE
                 && !mPropertyModel.get(IS_INCOGNITO)) {
             // If it's on the non-incognito homepage, document the homepage translationY.
             mNonIncognitoHomepageTranslationY = transY;
@@ -455,10 +467,16 @@ class StartSurfaceToolbarMediator {
         }
     }
 
+    private void updateShowAnimation(@StartSurfaceState int newState) {
+        mPropertyModel.set(SHOW_ANIMATION,
+                mIsAnimationEnabled && isOverviewState(newState)
+                        && isOverviewState(mStartSurfaceState) && newState != mStartSurfaceState);
+    }
+
     @VisibleForTesting
     @StartSurfaceState
     int getOverviewModeStateForTesting() {
-        return mOverviewModeState;
+        return mStartSurfaceState;
     }
 
     @VisibleForTesting

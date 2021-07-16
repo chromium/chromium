@@ -81,6 +81,11 @@ public class StartSurfaceConfiguration {
             new BooleanCachedFieldTrialParameter(
                     ChromeFeatureList.START_SURFACE_ANDROID, SUPPORT_ACCESSIBILITY_PARAM, true);
 
+    private static final String FINALE_ANIMATION_ENABLED_PARAM = "finale_animation_enabled";
+    public static final BooleanCachedFieldTrialParameter FINALE_ANIMATION_ENABLED =
+            new BooleanCachedFieldTrialParameter(
+                    ChromeFeatureList.START_SURFACE_ANDROID, FINALE_ANIMATION_ENABLED_PARAM, false);
+
     private static final String STARTUP_UMA_PREFIX = "Startup.Android.";
     private static final String INSTANT_START_SUBFIX = ".Instant";
     private static final String REGULAR_START_SUBFIX = ".NoInstant";
@@ -211,6 +216,13 @@ public class StartSurfaceConfiguration {
     public static boolean shouldShowNewSurfaceFromHomeButton() {
         return NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_tab_switcher_only")
                 || NEW_SURFACE_FROM_HOME_BUTTON.getValue().equals("hide_mv_tiles_and_tab_switcher");
+    }
+
+    /**
+     * Returns whether to show the transition animations for the Finale version.
+     */
+    public static boolean shouldShowAnimationsForFinale() {
+        return HOME_BUTTON_ON_GRID_TAB_SWITCHER.getValue() && FINALE_ANIMATION_ENABLED.getValue();
     }
 
     @VisibleForTesting
