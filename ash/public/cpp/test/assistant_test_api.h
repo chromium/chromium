@@ -86,10 +86,12 @@ class ASH_EXPORT AssistantTestApi {
 
   // Returns the top-level Assistant specific view.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* page_view() = 0;
 
   // Returns the Assistant main view.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Only exists for fullscreen launcher.
   virtual views::View* main_view() = 0;
 
   // Returns the Assistant UI element container view, which contains all the
@@ -99,34 +101,42 @@ class ASH_EXPORT AssistantTestApi {
 
   // Returns the text field used for inputting new queries.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::Textfield* input_text_field() = 0;
 
   // Returns the mic field used for dictating new queries.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* mic_view() = 0;
 
   // Returns the greeting label shown when the Assistant is displayed.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* greeting_label() = 0;
 
   // Returns the button to enable voice mode.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* voice_input_toggle() = 0;
 
   // Returns the button to enable text mode.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* keyboard_input_toggle() = 0;
 
   // Returns the Assistant onboarding view.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* onboarding_view() = 0;
 
   // Returns the button to launch Assistant setup.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* opt_in_view() = 0;
 
   // Returns the view containing the suggestion chips.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Exists for both bubble launcher and fullscreen launcher.
   virtual views::View* suggestion_chip_container() = 0;
 
   // Returns the window containing the Assistant UI.
@@ -136,6 +146,7 @@ class ASH_EXPORT AssistantTestApi {
 
   // Returns the app list view hosting the Assistant UI.
   // Can only be used after the Assistant UI has been shown at least once.
+  // Only exists for fullscreen launcher.
   virtual AppListView* app_list_view() = 0;
 
   // Returns the root window containing the Assistant UI (and the Ash shell).
