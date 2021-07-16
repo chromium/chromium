@@ -3111,6 +3111,8 @@ static_library("browser") {
       "password_manager/android/password_store_android_backend.cc",
       "password_manager/android/password_store_android_backend.h",
       "password_manager/android/password_store_android_backend_bridge.h",
+      "password_manager/android/password_store_android_backend_bridge_impl.cc",
+      "password_manager/android/password_store_android_backend_bridge_impl.h",
       "password_manager/android/password_store_bridge.cc",
       "password_manager/android/password_store_bridge.h",
       "password_manager/android/password_ui_view_android.cc",
