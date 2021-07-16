@@ -9,6 +9,7 @@ import android.graphics.Rect;
 import android.os.Handler;
 import android.view.View;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
@@ -32,9 +33,10 @@ import org.chromium.ui.widget.ViewRectProvider;
  * they can follow.
  */
 class WebFeedFollowIntroView {
-    private static final String TAG = "WFFIntroView";
-    private static final int sAcceleratorTimeout = 10 * 1000; // 10 seconds
-    private static final int IPH_WAIT_TIME_MS = 5 * 1000;
+    private static final String TAG = "WFFollowIntroView";
+
+    private static final int DEFAULT_SHOW_TIMEOUT_MILLIS = 8 * 1000;
+    private static final String PARAM_SHOW_TIMEOUT_MILLIS = "intro-show-timeout-millis";
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
@@ -43,6 +45,7 @@ class WebFeedFollowIntroView {
     private final View mMenuButtonAnchorView;
 
     private ClickableTextBubble mFollowBubble;
+    private final int mShowTimeoutMillis;
 
     /**
      * Constructs an instance of {@link WebFeedFollowIntroView}.
@@ -56,6 +59,9 @@ class WebFeedFollowIntroView {
         mActivity = activity;
         mAppMenuHandler = appMenuHandler;
         mMenuButtonAnchorView = menuButtonAnchorView;
+
+        mShowTimeoutMillis = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.WEB_FEED, PARAM_SHOW_TIMEOUT_MILLIS, DEFAULT_SHOW_TIMEOUT_MILLIS);
     }
 
     void showAccelerator(View.OnTouchListener onTouchListener, Tracker featureEngagementTracker) {
@@ -70,13 +76,13 @@ class WebFeedFollowIntroView {
             }
         });
         // TODO(crbug/1152592): Figure out a way to dismiss on outside taps as well.
-        mFollowBubble.setAutoDismissTimeout(sAcceleratorTimeout);
+        mFollowBubble.setAutoDismissTimeout(mShowTimeoutMillis);
         turnOnHighlightForFollowMenuItem();
 
         mFollowBubble.show();
     }
 
-    void showAcceleratorIPH(View.OnTouchListener onTouchListener, Tracker featureEngagementTracker,
+    void showIPH(View.OnTouchListener onTouchListener, Tracker featureEngagementTracker,
             UserEducationHelper helper) {
         int iphStringResource = R.string.follow_accelerator;
         int iphAccessibilityStringResource = R.string.accessibility_follow_accelerator_iph;
@@ -88,7 +94,7 @@ class WebFeedFollowIntroView {
                         iphAccessibilityStringResource)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setDismissOnTouch(false)
-                        .setAutoDismissTimeout(IPH_WAIT_TIME_MS)
+                        .setAutoDismissTimeout(mShowTimeoutMillis)
                         .build());
     }
 

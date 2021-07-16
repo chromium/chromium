@@ -13,6 +13,7 @@ import android.view.View;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
@@ -46,14 +47,16 @@ import java.util.concurrent.TimeUnit;
  * Controls when and how the Web Feed follow intro is shown.
  */
 public class WebFeedFollowIntroController {
-    static final long INTRO_WAIT_TIME_MS = TimeUnit.SECONDS.toMillis(8);
-    public static final String TAG = "WFFIController";
+    private static final String TAG = "WFFollowIntroCtrl";
 
+    // In-page time delay to show the recommendation.
+    private static final int DEFAULT_WAIT_TIME_MILLIS = 3 * 1000;
+    private static final String PARAM_WAIT_TIME_MILLIS = "intro-wait-time-millis";
     // Visit history requirements.
-    static final int DEFAULT_DAILY_VISIT_MIN = 3;
-    static final int DEFAULT_NUM_VISIT_MIN = 5;
-    static final String PARAM_DAILY_VISIT_MIN = "intro-daily-visit-min";
-    static final String PARAM_NUM_VISIT_MIN = "intro-num-visit-min";
+    private static final int DEFAULT_DAILY_VISIT_MIN = 3;
+    private static final int DEFAULT_NUM_VISIT_MIN = 3;
+    private static final String PARAM_DAILY_VISIT_MIN = "intro-daily-visit-min";
+    private static final String PARAM_NUM_VISIT_MIN = "intro-num-visit-min";
     // Time between appearances.
     private static final int DEFAULT_APPEARANCE_THRESHOLD_MINUTES = 15;
     private static final String PARAM_APPEARANCE_THRESHOLD_MINUTES =
@@ -78,7 +81,8 @@ public class WebFeedFollowIntroController {
     private final WebFeedFollowIntroView mWebFeedFollowIntroView;
     private final ObservableSupplier<Tab> mTabSupplier;
 
-    private final long mAppearanceThresholdMs;
+    private final long mWaitTimeMillis;
+    private final long mAppearanceThresholdMillis;
 
     private boolean mAcceleratorPressed;
     private boolean mIntroShown;
@@ -115,7 +119,9 @@ public class WebFeedFollowIntroController {
         mWebFeedFollowIntroView =
                 new WebFeedFollowIntroView(mActivity, appMenuHandler, menuButtonAnchorView);
 
-        mAppearanceThresholdMs = TimeUnit.MINUTES.toMillis(
+        mWaitTimeMillis = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.WEB_FEED, PARAM_WAIT_TIME_MILLIS, DEFAULT_WAIT_TIME_MILLIS);
+        mAppearanceThresholdMillis = TimeUnit.MINUTES.toMillis(
                 ChromeFeatureList.getFieldTrialParamByFeatureAsInt(ChromeFeatureList.WEB_FEED,
                         PARAM_APPEARANCE_THRESHOLD_MINUTES, DEFAULT_APPEARANCE_THRESHOLD_MINUTES));
 
@@ -123,6 +129,8 @@ public class WebFeedFollowIntroController {
                 ChromeFeatureList.WEB_FEED, PARAM_NUM_VISIT_MIN, DEFAULT_NUM_VISIT_MIN);
         int dailyVisitMin = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
                 ChromeFeatureList.WEB_FEED, PARAM_DAILY_VISIT_MIN, DEFAULT_DAILY_VISIT_MIN);
+        Log.d(TAG, "Minimum visit requirements set: minTotalVisits=%s, minDailyVisits=%s",
+                numVisitMin, dailyVisitMin);
         mTabObserver = new EmptyTabObserver() {
             @Override
             public void onPageLoadStarted(Tab tab, GURL url) {
@@ -139,13 +147,18 @@ public class WebFeedFollowIntroController {
                 // TODO(crbug/1152592): Also check for certificate errors or SafeBrowser warnings.
                 if (tab.isIncognito()
                         || !(url.getScheme().equals("http") || url.getScheme().equals("https"))) {
+                    Log.d(TAG, "No recommendation: URL scheme is not HTTP or HTTPS");
                     return;
                 }
 
-                WebFeedBridge.getVisitCountsToHost(url,
-                        result
-                        -> mMeetsVisitRequirement = result.visits >= numVisitMin
-                                && result.dailyVisits >= dailyVisitMin);
+                WebFeedBridge.getVisitCountsToHost(url, result -> {
+                    mMeetsVisitRequirement =
+                            result.visits >= numVisitMin && result.dailyVisits >= dailyVisitMin;
+                    Log.d(TAG,
+                            "Host visits queried: totalVisits=%s, dailyVisits=%s, "
+                                    + "meetsRequirements=%s",
+                            result.visits, result.dailyVisits, mMeetsVisitRequirement);
+                });
                 WebFeedBridge.getWebFeedMetadataForPage(tab, url, result -> {
                     // Shouldn't be recommended if there's no metadata, ID doesn't exist, or if it
                     // is already followed.
@@ -160,13 +173,13 @@ public class WebFeedFollowIntroController {
                     } else {
                         mRecommendedInfo = null;
                     }
+                    Log.d(TAG, "Web Feed metadata queried: mRecommendedInfo=%s", mRecommendedInfo);
                 });
 
                 // The requests for information above should all be done by the time this delayed
                 // task is executed.
                 PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT,
-                        WebFeedFollowIntroController.this::maybeShowFollowIntro,
-                        INTRO_WAIT_TIME_MS);
+                        WebFeedFollowIntroController.this::maybeShowFollowIntro, mWaitTimeMillis);
             }
         };
         mCurrentTabObserver = new CurrentTabObserver(tabSupplier, mTabObserver, this::swapTabs);
@@ -229,8 +242,7 @@ public class WebFeedFollowIntroController {
 
         if (shouldUseIPH()) {
             UserEducationHelper helper = new UserEducationHelper(mActivity, new Handler());
-            mWebFeedFollowIntroView.showAcceleratorIPH(
-                    onTouchListener, mFeatureEngagementTracker, helper);
+            mWebFeedFollowIntroView.showIPH(onTouchListener, mFeatureEngagementTracker, helper);
         } else {
             mWebFeedFollowIntroView.showAccelerator(onTouchListener, mFeatureEngagementTracker);
         }
@@ -266,26 +278,32 @@ public class WebFeedFollowIntroController {
 
     /**
      * Allows the intro to be presented if (all must be true):
-     *  * It was not already presented for this page
-     *  * The URL is recommended.
-     *  * This site was visited enough in day-boolean count and in total.
-     *  * Enough time has passed since the last intro was presented and since the last intro was
-     *    presented for this site.
-     *  * Feature trackers allows it, which includes checking for a weekly limit.
+     *  1. It was not already presented for this page
+     *  2. The URL is recommended.
+     *  3. This site was visited enough in day-boolean count and in total.
+     *  4. Enough time has passed since the last intro was presented and since the last intro was
+     *     presented for this site.
+     *  5. Feature trackers allows it, which includes checking for a weekly limit.
      *
-     *  If the intro debug mode pref is enabled, then only checks for the intro not having been
-     *  presented yet.
+     *  If the intro debug mode pref is enabled then only 1. and 2. are checked for.
      *
      * @return true if the follow intro should be shown. false otherwise.
      */
     private boolean shouldShowFollowIntro() {
-        if (mIntroShown) return false;
-
-        if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
-            return true;
+        if (mIntroShown) {
+            Log.d(TAG, "No recommendation: it was already shown");
+            return false;
         }
 
-        if (mRecommendedInfo == null) return false;
+        if (mRecommendedInfo == null) {
+            Log.d(TAG, "No recommendation: URL is not in recommended list");
+            return false;
+        }
+
+        if (mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+            Log.d(TAG, "Allowed recommendation: debug mode is enabled");
+            return true;
+        }
 
         long currentTimeMillis = mClock.currentTimeMillis();
         long timeSinceLastShown = currentTimeMillis
@@ -294,13 +312,27 @@ public class WebFeedFollowIntroController {
         long timeSinceLastShownForWebFeed = currentTimeMillis
                 - mSharedPreferencesManager.readLong(
                         getWebFeedIntroWebFeedIdShownTimeMsKey(mRecommendedInfo.webFeedId));
-        // Note: the maximum number of weekly appearances is controlled by FeatureEngagementTracker
-        // based on the configuration used for this IPH. See the kIPHWebFeedFollowFeature entry in
+        if (!mMeetsVisitRequirement || (timeSinceLastShown < mAppearanceThresholdMillis)
+                || (timeSinceLastShownForWebFeed < WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)) {
+            Log.d(TAG,
+                    "No recommendation: mMeetsVisitRequirement=%s, enoughTimeSinceLastShown=%s, "
+                            + "enoughTimeSinceLastShownForWebFeed=%s",
+                    mMeetsVisitRequirement, timeSinceLastShown > mAppearanceThresholdMillis,
+                    timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS);
+            return false;
+        }
+        // Note: the maximum number of weekly appearances is controlled by
+        // FeatureEngagementTracker based on the configuration used for this IPH. See the
+        // kIPHWebFeedFollowFeature entry in
         // components/feature_engagement/public/feature_configurations.cc.
-        return mMeetsVisitRequirement && (timeSinceLastShown > mAppearanceThresholdMs)
-                && (timeSinceLastShownForWebFeed > WEB_FEED_ID_APPEARANCE_THRESHOLD_MILLIS)
-                && mFeatureEngagementTracker.shouldTriggerHelpUI(
-                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+        if (!mFeatureEngagementTracker.shouldTriggerHelpUI(
+                    FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE)) {
+            Log.d(TAG, "No recommendation: not allowed by feature tracker");
+            return false;
+        }
+
+        Log.d(TAG, "Allowed recommendation: all requirements met");
+        return true;
     }
 
     private static String getWebFeedIntroWebFeedIdShownTimeMsKey(byte[] webFeedId) {
