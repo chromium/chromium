@@ -183,10 +183,10 @@ class AppMatcher {
                 web_contents, app_id_));
   }
 
-  // Returns true if this web app matches the given |web_contents|. If
-  // |deprecated_is_app| is true, the application gets first checked against its
-  // original URL since a windowed app might have navigated away from its app
-  // domain.
+  // Returns true if this web app matches the given |web_contents|. If the
+  // browser has an app controller, the application gets first checked against
+  // its original URL since a windowed app might have navigated away from its
+  // app domain.
   bool WebContentMatchesWebApp(content::WebContents* web_contents,
                                Browser* browser) const {
     DCHECK(registrar_);
