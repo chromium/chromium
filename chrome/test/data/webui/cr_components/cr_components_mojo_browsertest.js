@@ -42,7 +42,13 @@ TEST_F('CrComponentsMostVisitedTest', 'General', function() {
   runMochaSuite('General');
 });
 
-TEST_F('CrComponentsMostVisitedTest', 'Modification', function() {
+// crbug.com/1226996
+GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
+GEN('#define MAYBE_Modification DISABLED_Modification');
+GEN('#else');
+GEN('#define MAYBE_Modification Modification');
+GEN('#endif');
+TEST_F('CrComponentsMostVisitedTest', 'MAYBE_Modification', function() {
   runMochaSuite('Modification');
 });
 
