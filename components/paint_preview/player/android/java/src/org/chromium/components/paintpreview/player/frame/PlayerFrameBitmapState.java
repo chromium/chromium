@@ -48,16 +48,19 @@ public class PlayerFrameBitmapState {
     private final PlayerFrameBitmapStateController mStateController;
     private Set<Integer> mInitialMissingVisibleBitmaps = new HashSet<>();
     private final SequencedTaskRunner mTaskRunner;
+    private final boolean mShouldCompressBitmaps;
 
     PlayerFrameBitmapState(UnguessableToken guid, int tileWidth, int tileHeight, float scaleFactor,
             Size contentSize, PlayerCompositorDelegate compositorDelegate,
-            PlayerFrameBitmapStateController stateController, SequencedTaskRunner taskRunner) {
+            PlayerFrameBitmapStateController stateController, SequencedTaskRunner taskRunner,
+            boolean shouldCompressBitmaps) {
         mGuid = guid;
         mTileSize = new Size(tileWidth, tileHeight);
         mScaleFactor = scaleFactor;
         mCompositorDelegate = compositorDelegate;
         mStateController = stateController;
         mTaskRunner = taskRunner;
+        mShouldCompressBitmaps = shouldCompressBitmaps;
 
         // Each tile is as big as the initial view port. Here we determine the number of
         // columns and rows for the current scale factor.
@@ -382,7 +385,7 @@ public class PlayerFrameBitmapState {
             }
 
             mBitmapMatrix[mRequestRow][mRequestCol] =
-                    new CompressibleBitmap(result, mTaskRunner, mVisible);
+                    new CompressibleBitmap(result, mTaskRunner, mVisible, mShouldCompressBitmaps);
             deleteUnrequiredBitmaps();
             markBitmapReceived(mRequestRow, mRequestCol);
             mPendingBitmapRequests[mRequestRow][mRequestCol] = null;

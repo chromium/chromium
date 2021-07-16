@@ -45,14 +45,14 @@ public class PlayerFrameCoordinator {
             @Nullable OverscrollHandler overscrollHandler, PlayerGestureListener gestureHandler,
             @Nullable Runnable firstPaintListener,
             @Nullable Supplier<Boolean> isAccessibilityEnabled,
-            @Nullable Runnable initialViewportSizeAvailable) {
+            @Nullable Runnable initialViewportSizeAvailable, boolean shouldCompressBitmaps) {
         PropertyModel model = new PropertyModel.Builder(PlayerFrameProperties.ALL_KEYS).build();
         OverScroller scroller = new OverScroller(context);
         scroller.setFriction(ViewConfiguration.getScrollFriction() / 2);
 
         mMediator = new PlayerFrameMediator(model, compositorDelegate, gestureHandler, frameGuid,
                 new Size(contentWidth, contentHeight), initialScrollX, initialScrollY,
-                initialViewportSizeAvailable);
+                initialViewportSizeAvailable, shouldCompressBitmaps);
 
         if (canDetectZoom) {
             mScaleController =

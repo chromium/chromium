@@ -9,6 +9,7 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,6 +56,25 @@ public class CompressibleBitmapTest {
     }
 
     @Test
+    public void testNoCompression() {
+        Bitmap bitmap = Mockito.mock(Bitmap.class);
+
+        SequencedTaskRunner taskRunner = Mockito.mock(SequencedTaskRunner.class);
+        doAnswer(invocation -> {
+            ((Runnable) invocation.getArgument(0)).run();
+            return null;
+        })
+                .when(taskRunner)
+                .postTask(any());
+
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, false, false);
+        verify(bitmap, never()).compress(any(), anyInt(), any());
+
+        Assert.assertNotNull(compressibleBitmap.getBitmap());
+    }
+
+    @Test
     public void testCompressAndDiscard() {
         Bitmap bitmap = Mockito.mock(Bitmap.class);
         Bitmap alphaBitmap = Mockito.mock(Bitmap.class);
@@ -69,7 +89,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, false);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, false, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
 
@@ -91,7 +112,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, true);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, true, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
 
@@ -118,7 +140,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, false);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, false, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
 
@@ -143,7 +166,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, false);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, false, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
         Assert.assertNull(compressibleBitmap.getBitmap());
@@ -186,7 +210,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, false);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, false, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
         Assert.assertNull(compressibleBitmap.getBitmap());
@@ -216,7 +241,8 @@ public class CompressibleBitmapTest {
                 .when(taskRunner)
                 .postTask(any());
 
-        CompressibleBitmap compressibleBitmap = new CompressibleBitmap(bitmap, taskRunner, true);
+        CompressibleBitmap compressibleBitmap =
+                new CompressibleBitmap(bitmap, taskRunner, true, true);
         verify(bitmap, times(1)).compress(any(), eq(100), any());
         verify(bitmap, times(1)).extractAlpha();
         Assert.assertTrue(compressibleBitmap.lock());

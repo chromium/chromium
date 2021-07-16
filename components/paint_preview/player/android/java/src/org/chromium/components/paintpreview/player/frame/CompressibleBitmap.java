@@ -60,7 +60,8 @@ class CompressibleBitmap {
      * @param visible Whether the bitmap is currently visible. If visible, the bitmap won't be
      *     immediately discarded.
      */
-    CompressibleBitmap(Bitmap bitmap, SequencedTaskRunner taskRunner, boolean visible) {
+    CompressibleBitmap(Bitmap bitmap, SequencedTaskRunner taskRunner, boolean visible,
+            boolean shouldCompress) {
         mBitmap = bitmap;
         mWidth = mBitmap.getWidth();
         mHeight = mBitmap.getHeight();
@@ -69,7 +70,9 @@ class CompressibleBitmap {
         // ARGB8888 AKA N32Premultiplied.
         mBitmap.setHasAlpha(true);
         mTaskRunner = taskRunner;
-        compressInBackground(visible);
+        if (shouldCompress) {
+            compressInBackground(visible);
+        }
     }
 
     /**
@@ -174,13 +177,12 @@ class CompressibleBitmap {
     private void compress() {
         if (mBitmap == null) return;
 
-        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
-
         Bitmap alphaChannel = mBitmap.extractAlpha();
         // Bitmap#compress() doesn't work for Bitmap.Config.ALPHA_8 so use zip instead.
         mCompressedAlphaBytes = compressAlpha(alphaChannel);
         alphaChannel.recycle();
 
+        ByteArrayOutputStream byteArrayStream = new ByteArrayOutputStream();
         boolean success = mBitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayStream);
         if (success) {
             mCompressedData = byteArrayStream.toByteArray();

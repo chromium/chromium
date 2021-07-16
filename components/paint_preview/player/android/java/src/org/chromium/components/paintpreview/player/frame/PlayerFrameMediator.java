@@ -76,7 +76,8 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
 
     PlayerFrameMediator(PropertyModel model, PlayerCompositorDelegate compositorDelegate,
             PlayerGestureListener gestureListener, UnguessableToken frameGuid, Size contentSize,
-            int initialScrollX, int initialScrollY, Runnable initialViewportSizeAvailable) {
+            int initialScrollX, int initialScrollY, Runnable initialViewportSizeAvailable,
+            boolean shouldCompressBitmaps) {
         mBitmapScaleMatrix = new Matrix();
         mModel = model;
         mModel.set(PlayerFrameProperties.SCALE_MATRIX, mBitmapScaleMatrix);
@@ -90,8 +91,8 @@ class PlayerFrameMediator implements PlayerFrameViewDelegate, PlayerFrameMediato
         mContentSize = contentSize;
         SequencedTaskRunner taskRunner =
                 PostTask.createSequencedTaskRunner(TaskTraits.THREAD_POOL_USER_VISIBLE);
-        mBitmapStateController = new PlayerFrameBitmapStateController(
-                mGuid, mViewport, mContentSize, mCompositorDelegate, this, taskRunner);
+        mBitmapStateController = new PlayerFrameBitmapStateController(mGuid, mViewport,
+                mContentSize, mCompositorDelegate, this, taskRunner, shouldCompressBitmaps);
         mViewport.offset(initialScrollX, initialScrollY);
         mViewport.setScale(0f);
         mInitialViewportSizeAvailable = initialViewportSizeAvailable;
