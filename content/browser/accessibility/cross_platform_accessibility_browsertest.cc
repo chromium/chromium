@@ -688,6 +688,61 @@ IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
 }
 #endif  // !defined(OS_ANDROID)
 
+// Select controls behave differently on Mac/Android, this test doesn't apply.
+#if !defined(OS_ANDROID) && !defined(OS_MAC)
+IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
+                       SelectSizeChangeWithOpenedPopupDoesNotCrash) {
+  LoadInitialAccessibilityTreeFromHtml(R"HTML(
+      <!DOCTYPE html>
+      <html>
+      <body>
+        <select aria-label="Select" id="select_node">
+          <option>Option 1</option>
+          <option>Option 2</option>
+          <option>Option 3</option>
+        </select>
+      </body>
+      </html>)HTML");
+
+  WaitForAccessibilityTreeToContainNodeWithName(shell()->web_contents(),
+                                                "Select");
+
+  const BrowserAccessibility* root = GetManager()->GetRoot();
+  ASSERT_NE(root, nullptr);
+  const BrowserAccessibility* body = root->PlatformGetChild(0);
+  ASSERT_NE(body, nullptr);
+
+  for (size_t attempts = 0; attempts < 10; ++attempts) {
+    BrowserAccessibility* select = FindNode("Select");
+    ASSERT_NE(select, nullptr);
+    // If there is a popup, expand it and wait for it to appear.
+    // If it's a list, it will simply click on the list.
+    {
+      AccessibilityNotificationWaiter waiter(
+          shell()->web_contents(), ui::kAXModeComplete,
+          ax::mojom::Event::kChildrenChanged);
+
+      ui::AXActionData action_data;
+      action_data.action = ax::mojom::Action::kDoDefault;
+      select->AccessibilityPerformAction(action_data);
+      waiter.WaitForNotification();
+    }
+
+    // Toggle whether 'size' is '2' or not present (effectively size=1),
+    // There can't be a popup when the size to 2, because it becomes a list box.
+    // This means the accessible object for the listbox needs to be cleanly
+    // removed, and the widget's accessible hierarchy is rebuilt.
+    ExecuteScript(
+        "var select = document.getElementById('select_node');"
+        "if (select.hasAttribute('size')) {"
+        "  select.removeAttribute('size');"
+        "} else {"
+        "  select.setAttribute('size', '2');"
+        "}");
+  }
+}
+#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+
 IN_PROC_BROWSER_TEST_F(CrossPlatformAccessibilityBrowserTest,
                        PlatformIterator) {
   LoadInitialAccessibilityTreeFromHtml(R"HTML(

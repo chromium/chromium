@@ -938,6 +938,11 @@ bool WebAXObject::AccessibilityIsIncludedInTree() const {
   if (IsDetached())
     return false;
 
+  DCHECK_GE(private_->GetDocument()->Lifecycle().GetState(),
+            DocumentLifecycle::kLayoutClean)
+      << "Document lifecycle must be at LayoutClean or later, was "
+      << private_->GetDocument()->Lifecycle().GetState();
+
   return private_->AccessibilityIsIncludedInTree();
 }
 

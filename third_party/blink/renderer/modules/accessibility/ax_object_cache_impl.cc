@@ -2076,8 +2076,14 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(Node* optional_node,
       << "Unclean document at lifecycle " << document->Lifecycle().ToString();
 #endif  // DCHECK_IS_ON()
 
-  if (obj)
+  if (obj) {
     obj->ChildrenChangedWithCleanLayout();
+    // TODO(accessibility) Only needed for <select> size changes.
+    // This can turn into a DCHECK if the shadow DOM is used for <select>
+    // elements instead of AXMenuList* and AXListBox* classes.
+    if (obj->IsDetached())
+      return;
+  }
 
   if (optional_node)
     relation_cache_->UpdateRelatedTree(optional_node, obj);
@@ -3184,10 +3190,9 @@ void AXObjectCacheImpl::PostPlatformNotification(
     ax::mojom::blink::EventFrom event_from,
     ax::mojom::blink::Action event_from_action,
     const BlinkAXEventIntentsSet& event_intents) {
-  if (!document_ || !document_->View() ||
-      !document_->View()->GetFrame().GetPage()) {
+  obj = GetSerializationTarget(obj);
+  if (!obj)
     return;
-  }
 
   WebLocalFrameImpl* web_frame =
       WebLocalFrameImpl::FromFrame(document_->AXObjectCacheOwner().GetFrame());
@@ -3209,11 +3214,9 @@ void AXObjectCacheImpl::PostPlatformNotification(
 
 void AXObjectCacheImpl::MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj,
                                                                bool subtree) {
-  if (!obj || obj->IsDetached() || !obj->GetDocument() ||
-      !obj->GetDocument()->View() ||
-      !obj->GetDocument()->View()->GetFrame().GetPage()) {
+  obj = GetSerializationTarget(obj);
+  if (!obj)
     return;
-  }
 
   WebLocalFrameImpl* webframe = WebLocalFrameImpl::FromFrame(
       obj->GetDocument()->AXObjectCacheOwner().GetFrame());
@@ -3256,6 +3259,40 @@ void AXObjectCacheImpl::MarkElementDirty(const Node* element) {
 void AXObjectCacheImpl::MarkElementDirtyWithCleanLayout(const Node* element) {
   // Warning, if no AXObject exists for element, nothing is marked dirty.
   MarkAXObjectDirtyWithCleanLayout(Get(element));
+}
+
+AXObject* AXObjectCacheImpl::GetSerializationTarget(AXObject* obj) {
+  if (!obj || obj->IsDetached() || !obj->GetDocument() ||
+      !obj->GetDocument()->View() ||
+      !obj->GetDocument()->View()->GetFrame().GetPage()) {
+    return nullptr;
+  }
+
+  // Ensure still in tree.
+  if (obj->IsMissingParent()) {
+    // TODO(accessibility) Only needed because of <select> size changes.
+    // This should become a DCHECK(!obj->IsMissingParent()) once the shadow DOM
+    // is used for <select> elements instead of AXMenuList* and AXListBox*
+    // classes.
+    if (!RestoreParentOrPrune(obj))
+      return nullptr;
+  }
+
+  // Return included in tree object.
+  if (obj->LastKnownIsIncludedInTreeValue())
+    return obj;
+
+  return obj->ParentObjectIncludedInTree();
+}
+
+AXObject* AXObjectCacheImpl::RestoreParentOrPrune(AXObject* child) {
+  AXObject* parent = child->ComputeParent();
+  if (parent)
+    child->SetParent(parent);
+  else  // If no parent is possible, the child is no longer part of the tree.
+    Remove(child);
+
+  return parent;
 }
 
 void AXObjectCacheImpl::HandleFocusedUIElementChanged(
