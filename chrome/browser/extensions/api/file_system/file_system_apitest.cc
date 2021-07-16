@@ -564,7 +564,16 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
   CheckStoredDirectoryMatches(test_file);
 }
 
-IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiSaveMultipleFilesTest) {
+#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+// TODO(http://crbug.com/1230100): Timing-out on Mac ASan.
+#define MAYBE_FileSystemApiSaveMultipleFilesTest \
+  DISABLED_FileSystemApiSaveMultipleFilesTest
+#else
+#define MAYBE_FileSystemApiSaveMultipleFilesTest \
+  FileSystemApiSaveMultipleFilesTest
+#endif
+IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
+                       MAYBE_FileSystemApiSaveMultipleFilesTest) {
   std::vector<std::string> names;
   names.push_back("save1.txt");
   names.push_back("save2.txt");
