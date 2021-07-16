@@ -197,7 +197,7 @@ public class LibraryLoader {
             if (useChromiumLinker()) {
                 // In the main process choose the loading address at random.
                 getLinker().ensureInitialized(/* asRelroProducer= */ true,
-                        Linker.PreferAddress.FIND_RESERVED, /* addressHint= */ 0);
+                        Linker.PreferAddress.RESERVE_RANDOM, /* addressHint= */ 0);
             }
             mInitDone = true;
         }
