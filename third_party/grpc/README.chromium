@@ -5,6 +5,10 @@ Version: v1.38.0+
 Revision: 54dc182082db941aa67c7c3f93ad858c99a16d7d
 Security Critical: yes
 
+Please note that that the use of gRPC is not generally allowed within Chromium.
+Before integrating with this library, consult with the security team.
+See go/chrome-grpc-advice for more details.
+
 Steps to upgrade to a new version of GRPC, all relative to //third_party/grpc:
 1. Update ../../DEPS to pull origin/grpc/master.
    NOTE: Tagged "official releases" do not work on the buildbots. The master
