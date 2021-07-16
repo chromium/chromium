@@ -242,11 +242,9 @@ IN_PROC_BROWSER_TEST_F(LoggedInSpokenFeedbackTest, NavigateNotificationCenter) {
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
-      "center.");
+      "center., window");
 
   sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-  sm_.Call([this]() { SendKeyPressWithSearch(ui::VKEY_LEFT); });
-
   // If you are hitting this in the course of changing the UI, please fix. This
   // item needs a label.
   sm_.ExpectSpeech("List item");
@@ -669,7 +667,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, OpenStatusTray) {
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
-      "center.");
+      "center., window");
   sm_.Replay();
 }
 
@@ -684,7 +682,7 @@ IN_PROC_BROWSER_TEST_P(SpokenFeedbackTest, NavigateSystemTray) {
   });
   sm_.ExpectSpeech(
       "Quick Settings, Press search plus left to access the notification "
-      "center.");
+      "center., window");
 
   // Avatar button. Disabled for guest account.
   if (GetParam() != kTestAsGuestUser) {

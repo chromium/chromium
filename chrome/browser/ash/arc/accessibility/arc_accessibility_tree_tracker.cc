@@ -590,6 +590,8 @@ void ArcAccessibilityTreeTracker::UpdateWindowProperties(aura::Window* window) {
   window->SetProperty(aura::client::kAccessibilityTouchExplorationPassThrough,
                       use_talkback);
   window->SetProperty(ash::kSearchKeyAcceleratorReservedKey, use_talkback);
+  window->SetProperty(aura::client::kAccessibilityFocusFallsbackToWidgetKey,
+                      !use_talkback);
 
   if (use_talkback) {
     SetChildAxTreeIDForWindow(window, ui::AXTreeIDUnknown());
