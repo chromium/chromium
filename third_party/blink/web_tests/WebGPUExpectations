@@ -115,8 +115,8 @@ crbug.com/dawn/812 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="r8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="2d";format="rg8unorm";aspect="all";mipLevelCount=5;sampleCount=1;uninitializeMethod="StoreOpClear";layerCount=1;nonPowerOfTwo=false;canaryOnCreation=false;* [ Failure ]
 
-[ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,basic:large_draw:* [ Failure ]
-[ Mac ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:* [ Failure ]
+wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,basic:large_draw:* [ Failure ]
+wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,rendering,basic:large_draw:* [ Failure ]
 
 ###
 ### Untriaged timeouts
