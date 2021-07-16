@@ -508,8 +508,6 @@ void PermissionContextBase::UpdateContentSetting(const GURL& requesting_origin,
   DCHECK_EQ(embedding_origin, embedding_origin.GetOrigin());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
-  DCHECK(!requesting_origin.SchemeIsFile());
-  DCHECK(!embedding_origin.SchemeIsFile());
 
   using Constraints = content_settings::ContentSettingConstraints;
   PermissionsClient::Get()
