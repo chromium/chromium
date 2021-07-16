@@ -541,6 +541,9 @@ gfx::Rect ScreenWin::ScreenToDIPRect(HWND hwnd, const gfx::Rect& pixel_bounds) {
 
 // static
 gfx::Rect ScreenWin::DIPToScreenRect(HWND hwnd, const gfx::Rect& dip_bounds) {
+  // The HWND parameter is needed for cases where Chrome windows span monitors
+  // that have different DPI settings. This is known to matter when using the OS
+  // IME support. See https::/crbug.com/1224715 for more details.
   const ScreenWinDisplay screen_win_display = hwnd
       ? GetScreenWinDisplayVia(&ScreenWin::GetScreenWinDisplayNearestHWND, hwnd)
       : GetScreenWinDisplayVia(
