@@ -290,6 +290,10 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
                            VisibleWidgetShowsInkDropOnAttaching);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
                            AttachedWidgetShowsInkDropWhenVisible);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           MultipleBubbleAnchorHighlightTestInOrder);
+  FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest,
+                           MultipleBubbleAnchorHighlightTestOutOfOrder);
 
   friend class AnchorViewObserver;
   friend class AnchorWidgetObserver;
@@ -311,6 +315,14 @@ class VIEWS_EXPORT BubbleDialogDelegate : public DialogDelegate,
   void OnBubbleWidgetPaintAsActiveChanged();
 
   void OnDeactivate();
+
+  // Notify this bubble that it is now the primary anchored bubble. When a new
+  // bubble becomes the primary anchor, the previous primary silently loses its
+  // primary status. This method is only called when this bubble becomes primary
+  // after losing it.
+  void NotifyAnchoredBubbleIsPrimary();
+
+  void SetAnchoredDialogKey();
 
   gfx::Insets title_margins_;
   BubbleBorder::Arrow arrow_ = BubbleBorder::NONE;

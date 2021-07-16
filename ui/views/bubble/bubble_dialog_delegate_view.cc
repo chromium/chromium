@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -13,6 +14,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/ax_role_properties.h"
+#include "ui/base/class_property.h"
 #include "ui/base/default_style.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -43,9 +45,28 @@
 #include "ui/aura/window_observer.h"
 #endif
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(std::vector<views::BubbleDialogDelegate*>*)
+
 namespace views {
 
 namespace {
+
+// Some anchors may have multiple bubbles associated with them. This can happen
+// if a bubble does not have close_on_deactivate and another bubble appears
+// that needs the same anchor view. This property maintains a vector of bubbles
+// in anchored order where the last item is the primary anchored bubble. If the
+// last item is removed, the new last item, if available, is notified that it is
+// the new primary anchored bubble.
+DEFINE_OWNED_UI_CLASS_PROPERTY_KEY(std::vector<views::BubbleDialogDelegate*>,
+                                   kAnchorVector,
+                                   nullptr)
+
+std::vector<BubbleDialogDelegate*>& GetAnchorVector(View* view) {
+  if (view->GetProperty(kAnchorVector) == nullptr)
+    view->SetProperty(kAnchorVector, new std::vector<BubbleDialogDelegate*>());
+
+  return *(view->GetProperty(kAnchorVector));
+}
 
 // A BubbleFrameView will apply a masking path to its ClientView to ensure
 // contents are appropriately clipped to the frame's rounded corners. If the
@@ -161,12 +182,16 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
   AnchorViewObserver(BubbleDialogDelegate* parent, View* anchor_view)
       : parent_(parent), anchor_view_(anchor_view) {
     anchor_view_->AddObserver(this);
+    AddToAnchorVector();
   }
 
   AnchorViewObserver(const AnchorViewObserver&) = delete;
   AnchorViewObserver& operator=(const AnchorViewObserver&) = delete;
 
-  ~AnchorViewObserver() override { anchor_view_->RemoveObserver(this); }
+  ~AnchorViewObserver() override {
+    RemoveFromAnchorVector();
+    anchor_view_->RemoveObserver(this);
+  }
 
   View* anchor_view() const { return anchor_view_; }
 
@@ -190,6 +215,28 @@ class BubbleDialogDelegate::AnchorViewObserver : public ViewObserver {
   // view bounds when the anchor is visible.
 
  private:
+  void AddToAnchorVector() {
+    auto& vector = GetAnchorVector(anchor_view_);
+    DCHECK(vector.cend() == std::find(vector.cbegin(), vector.cend(), parent_));
+    vector.push_back(parent_);
+  }
+
+  void RemoveFromAnchorVector() {
+    auto& vector = GetAnchorVector(anchor_view_);
+    DCHECK(!vector.empty());
+
+    auto iter = vector.cend() - 1;
+    bool latest_anchor_bubble_will_change = (*iter == parent_);
+    if (!latest_anchor_bubble_will_change)
+      iter = std::find(vector.cbegin(), iter, parent_);
+
+    DCHECK(iter != vector.cend());
+    vector.erase(iter);
+
+    if (!vector.empty() && latest_anchor_bubble_will_change)
+      vector.back()->NotifyAnchoredBubbleIsPrimary();
+  }
+
   BubbleDialogDelegate* const parent_;
   View* const anchor_view_;
 };
@@ -749,18 +796,8 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
     // point. (It's safe to skip this, since if we were to update the
     // bounds when |anchor_view| is NULL, the bubble won't move.)
     OnAnchorBoundsChanged();
-  }
 
-  if (anchor_view && focus_traversable_from_anchor_view_) {
-    // Make sure that focus can move into here from the anchor view (but not
-    // out, focus will cycle inside the dialog once it gets here).
-    // It is possible that a view anchors more than one widgets,
-    // but among them there should be at most one widget that is focusable.
-    auto* old_anchored_dialog = anchor_view->GetProperty(kAnchoredDialogKey);
-    if (old_anchored_dialog && old_anchored_dialog != this)
-      DLOG(WARNING) << "|anchor_view| has already anchored a focusable widget.";
-    anchor_view->SetProperty(kAnchoredDialogKey,
-                             static_cast<DialogDelegate*>(this));
+    SetAnchoredDialogKey();
   }
 }
 
@@ -817,6 +854,28 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
 void BubbleDialogDelegate::OnDeactivate() {
   if (close_on_deactivate_ && GetWidget())
     GetWidget()->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+}
+
+void BubbleDialogDelegate::NotifyAnchoredBubbleIsPrimary() {
+  const bool visible = GetWidget() && GetWidget()->IsVisible();
+  UpdateHighlightedButton(visible);
+  SetAnchoredDialogKey();
+}
+
+void BubbleDialogDelegate::SetAnchoredDialogKey() {
+  auto* anchor_view = GetAnchorView();
+  DCHECK(anchor_view);
+  if (focus_traversable_from_anchor_view_) {
+    // Make sure that focus can move into here from the anchor view (but not
+    // out, focus will cycle inside the dialog once it gets here).
+    // It is possible that a view anchors more than one widgets,
+    // but among them there should be at most one widget that is focusable.
+    auto* old_anchored_dialog = anchor_view->GetProperty(kAnchoredDialogKey);
+    if (old_anchored_dialog && old_anchored_dialog != this)
+      DLOG(WARNING) << "|anchor_view| has already anchored a focusable widget.";
+    anchor_view->SetProperty(kAnchoredDialogKey,
+                             static_cast<DialogDelegate*>(this));
+  }
 }
 
 void BubbleDialogDelegate::UpdateHighlightedButton(bool highlighted) {

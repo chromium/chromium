@@ -298,6 +298,80 @@ TEST_F(BubbleDialogDelegateViewTest, ResetAnchorWidget) {
   EXPECT_TRUE(bubble_observer.widget_closed());
 }
 
+TEST_F(BubbleDialogDelegateViewTest, MultipleBubbleAnchorHighlightTestInOrder) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
+  LabelButton* button =
+      anchor_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), std::u16string()));
+  TestInkDrop* ink_drop = new TestInkDrop();
+  test::InkDropHostTestApi(InkDrop::Get(button))
+      .SetInkDrop(base::WrapUnique(ink_drop));
+  TestBubbleDialogDelegateView* bubble_delegate_first =
+      new TestBubbleDialogDelegateView(button);
+  bubble_delegate_first->set_parent_window(anchor_widget->GetNativeView());
+  bubble_delegate_first->set_close_on_deactivate(false);
+
+  Widget* bubble_widget_first =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate_first);
+  bubble_widget_first->Show();
+  bubble_delegate_first->OnBubbleWidgetVisibilityChanged(true);
+  ASSERT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  TestBubbleDialogDelegateView* bubble_delegate_second =
+      new TestBubbleDialogDelegateView(button);
+  bubble_delegate_second->set_parent_window(anchor_widget->GetNativeView());
+  Widget* bubble_widget_second =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate_second);
+  bubble_widget_second->Show();
+  bubble_delegate_second->OnBubbleWidgetVisibilityChanged(true);
+  ASSERT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  bubble_delegate_second->OnBubbleWidgetVisibilityChanged(false);
+  bubble_widget_second->CloseNow();
+
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+  bubble_widget_first->Close();
+  bubble_delegate_first->OnBubbleWidgetVisibilityChanged(false);
+  EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
+TEST_F(BubbleDialogDelegateViewTest,
+       MultipleBubbleAnchorHighlightTestOutOfOrder) {
+  std::unique_ptr<Widget> anchor_widget = CreateTestWidget();
+  LabelButton* button =
+      anchor_widget->SetContentsView(std::make_unique<LabelButton>(
+          Button::PressedCallback(), std::u16string()));
+  TestInkDrop* ink_drop = new TestInkDrop();
+  test::InkDropHostTestApi(InkDrop::Get(button))
+      .SetInkDrop(base::WrapUnique(ink_drop));
+  TestBubbleDialogDelegateView* bubble_delegate_first =
+      new TestBubbleDialogDelegateView(button);
+  bubble_delegate_first->set_parent_window(anchor_widget->GetNativeView());
+  bubble_delegate_first->set_close_on_deactivate(false);
+
+  Widget* bubble_widget_first =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate_first);
+  bubble_widget_first->Show();
+  bubble_delegate_first->OnBubbleWidgetVisibilityChanged(true);
+  ASSERT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  TestBubbleDialogDelegateView* bubble_delegate_second =
+      new TestBubbleDialogDelegateView(button);
+  bubble_delegate_second->set_parent_window(anchor_widget->GetNativeView());
+  Widget* bubble_widget_second =
+      BubbleDialogDelegateView::CreateBubble(bubble_delegate_second);
+  bubble_widget_second->Show();
+  bubble_delegate_second->OnBubbleWidgetVisibilityChanged(true);
+  ASSERT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+
+  bubble_widget_first->CloseNow();
+
+  EXPECT_EQ(InkDropState::ACTIVATED, ink_drop->GetTargetInkDropState());
+  bubble_widget_second->Close();
+  bubble_delegate_second->OnBubbleWidgetVisibilityChanged(false);
+  EXPECT_EQ(InkDropState::DEACTIVATED, ink_drop->GetTargetInkDropState());
+}
+
 TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
   test_views_delegate()->set_use_desktop_native_widgets(true);
 #if defined(OS_CHROMEOS)
