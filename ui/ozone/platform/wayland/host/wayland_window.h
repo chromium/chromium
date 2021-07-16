@@ -166,6 +166,7 @@ class WaylandWindow : public PlatformWindow,
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
   void SizeConstraintsChanged() override;
+  bool IsTranslucentWindowOpacitySupported() const override;
   bool ShouldUpdateWindowShape() const override;
 
   // PlatformEventDispatcher
