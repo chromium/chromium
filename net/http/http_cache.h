@@ -19,9 +19,9 @@
 #include <memory>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/clock.h"
@@ -29,9 +29,9 @@
 #include "net/base/cache_type.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/load_states.h"
+#include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
-#include "net/http/http_network_session.h"
 #include "net/http/http_transaction_factory.h"
 
 class GURL;
@@ -57,6 +57,7 @@ namespace net {
 class HttpNetworkSession;
 class HttpResponseInfo;
 class NetLog;
+class NetworkIsolationKey;
 struct HttpRequestInfo;
 
 class NET_EXPORT HttpCache : public HttpTransactionFactory {
@@ -183,6 +184,9 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
             std::unique_ptr<BackendFactory> backend_factory,
             bool is_main_cache);
+
+  HttpCache(const HttpCache&) = delete;
+  HttpCache& operator=(const HttpCache&) = delete;
 
   ~HttpCache() override;
 
@@ -679,8 +683,6 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<HttpCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HttpCache);
 };
 
 }  // namespace net

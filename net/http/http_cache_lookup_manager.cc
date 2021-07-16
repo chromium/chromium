@@ -10,6 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "net/base/load_flags.h"
+#include "net/http/http_request_info.h"
 
 namespace net {
 

@@ -26,6 +26,7 @@
 #include "net/disk_cache/disk_cache_test_util.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_response_info.h"
 #include "net/http/http_util.h"
 
 using disk_cache::Backend;

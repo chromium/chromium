@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/values.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/global_routing_id.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"

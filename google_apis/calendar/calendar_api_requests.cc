@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/task_runner_util.h"
+#include "base/values.h"
 #include "net/base/url_util.h"
 
 namespace google_apis {

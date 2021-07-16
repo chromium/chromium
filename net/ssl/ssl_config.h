@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"

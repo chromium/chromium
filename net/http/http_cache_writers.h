@@ -12,10 +12,12 @@
 #include "base/memory/weak_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/http/http_cache.h"
+#include "net/http/http_response_info.h"
 
 namespace net {
 
 class HttpResponseInfo;
+class IOBuffer;
 class PartialData;
 
 // If multiple HttpCache::Transactions are accessing the same cache entry
