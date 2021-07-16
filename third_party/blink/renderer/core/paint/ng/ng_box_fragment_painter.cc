@@ -733,58 +733,68 @@ void NGBoxFragmentPainter::PaintBlockChildren(const PaintInfo& paint_info,
     DCHECK(child_fragment.IsBox());
     if (child_fragment.HasSelfPaintingLayer() || child_fragment.IsFloating())
       continue;
+    PaintBlockChild(child, paint_info, paint_info_for_descendants,
+                    paint_offset);
+  }
+}
 
-    const auto& box_child_fragment = To<NGPhysicalBoxFragment>(child_fragment);
-    if (box_child_fragment.CanTraverse()) {
-      if (!box_child_fragment.GetLayoutObject()) {
-        // It's normally FragmentData that provides us with the paint offset.
-        // FragmentData is (at least currently) associated with a LayoutObject.
-        // If we have no LayoutObject, we have no FragmentData, so we need to
-        // calculate the offset on our own (which is very simple, anyway).
-        // Bypass Paint() and jump directly to PaintObject(), to skip the code
-        // that assumes that we have a LayoutObject (and FragmentData).
-        PhysicalOffset child_offset = paint_offset + child.offset;
+void NGBoxFragmentPainter::PaintBlockChild(
+    const NGLink& child,
+    const PaintInfo& paint_info,
+    const PaintInfo& paint_info_for_descendants,
+    PhysicalOffset paint_offset) {
+  const NGPhysicalFragment& child_fragment = *child;
+  DCHECK(child_fragment.IsBox());
+  DCHECK(!child_fragment.HasSelfPaintingLayer());
+  DCHECK(!child_fragment.IsFloating());
+  const auto& box_child_fragment = To<NGPhysicalBoxFragment>(child_fragment);
+  if (box_child_fragment.CanTraverse()) {
+    if (!box_child_fragment.GetLayoutObject()) {
+      // It's normally FragmentData that provides us with the paint offset.
+      // FragmentData is (at least currently) associated with a LayoutObject.
+      // If we have no LayoutObject, we have no FragmentData, so we need to
+      // calculate the offset on our own (which is very simple, anyway).
+      // Bypass Paint() and jump directly to PaintObject(), to skip the code
+      // that assumes that we have a LayoutObject (and FragmentData).
+      PhysicalOffset child_offset = paint_offset + child.offset;
 
-        if (box_child_fragment.IsFragmentainerBox()) {
-          // This is a fragmentainer, and when node inside a fragmentation
-          // context paints multiple block fragments, we need to distinguish
-          // between them somehow, for paint caching to work. Therefore,
-          // establish a display item scope here.
-          unsigned identifier =
-              FragmentainerUniqueIdentifier(box_child_fragment);
-          ScopedDisplayItemFragment scope(paint_info.context, identifier);
-          NGBoxFragmentPainter(box_child_fragment)
-              .PaintObject(paint_info, child_offset);
-          continue;
-        }
-
+      if (box_child_fragment.IsFragmentainerBox()) {
+        // This is a fragmentainer, and when node inside a fragmentation
+        // context paints multiple block fragments, we need to distinguish
+        // between them somehow, for paint caching to work. Therefore,
+        // establish a display item scope here.
+        unsigned identifier = FragmentainerUniqueIdentifier(box_child_fragment);
+        ScopedDisplayItemFragment scope(paint_info.context, identifier);
         NGBoxFragmentPainter(box_child_fragment)
             .PaintObject(paint_info, child_offset);
-        continue;
+        return;
       }
 
       NGBoxFragmentPainter(box_child_fragment)
-          .Paint(paint_info_for_descendants);
-      continue;
+          .PaintObject(paint_info, child_offset);
+      return;
     }
 
-    // Fall back to flow-thread painting when reaching a column (the flow thread
-    // is treated as a self-painting PaintLayer when fragment traversal is
-    // disabled, so nothing to do here).
-    if (box_child_fragment.IsColumnBox())
-      continue;
+    NGBoxFragmentPainter(box_child_fragment).Paint(paint_info_for_descendants);
+    return;
+  }
 
-    auto* layout_object = child_fragment.GetLayoutObject();
-    DCHECK(layout_object);
-    if (child_fragment.IsPaintedAtomically() &&
-        child_fragment.IsLegacyLayoutRoot()) {
-      ObjectPainter(*layout_object)
-          .PaintAllPhasesAtomically(paint_info_for_descendants);
-    } else {
-      // TODO(ikilpatrick): Once FragmentItem ships we should call the
-      // NGBoxFragmentPainter directly for NG objects.
-      layout_object->Paint(paint_info_for_descendants);
-    }
+  // Fall back to flow-thread painting when reaching a column (the flow thread
+  // is treated as a self-painting PaintLayer when fragment traversal is
+  // disabled, so nothing to do here).
+  if (box_child_fragment.IsColumnBox())
+    return;
+
+  auto* layout_object = child_fragment.GetLayoutObject();
+  DCHECK(layout_object);
+  if (child_fragment.IsPaintedAtomically() &&
+      child_fragment.IsLegacyLayoutRoot()) {
+    ObjectPainter(*layout_object)
+        .PaintAllPhasesAtomically(paint_info_for_descendants);
+  } else {
+    // TODO(ikilpatrick): Once FragmentItem ships we should call the
+    // NGBoxFragmentPainter directly for NG objects.
+    layout_object->Paint(paint_info_for_descendants);
   }
 }
 
@@ -1625,9 +1635,19 @@ void NGBoxFragmentPainter::PaintBoxItem(
     return;
   }
 
-  DCHECK(child_fragment.IsInlineBox());
-  NGInlineBoxFragmentPainter(cursor, item, child_fragment)
-      .Paint(paint_info, paint_offset);
+  if (child_fragment.IsInlineBox()) {
+    NGInlineBoxFragmentPainter(cursor, item, child_fragment)
+        .Paint(paint_info, paint_offset);
+    return;
+  }
+
+  // Block-in-inline
+  DCHECK(RuntimeEnabledFeatures::LayoutNGBlockInInlineEnabled());
+  DCHECK(!child_fragment.GetLayoutObject()->IsInline());
+  PaintInfo paint_info_for_descendants = paint_info.ForDescendants();
+  paint_info_for_descendants.SetIsInFragmentTraversal();
+  PaintBlockChild({&child_fragment, item.OffsetInContainerFragment()},
+                  paint_info, paint_info_for_descendants, paint_offset);
 }
 
 void NGBoxFragmentPainter::PaintBoxItem(const NGFragmentItem& item,

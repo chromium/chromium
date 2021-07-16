@@ -121,6 +121,10 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintInternal(const PaintInfo&);
   void PaintAllPhasesAtomically(const PaintInfo&);
   void PaintBlockChildren(const PaintInfo&, PhysicalOffset);
+  void PaintBlockChild(const NGLink& child,
+                       const PaintInfo& paint_info,
+                       const PaintInfo& paint_info_for_descendants,
+                       PhysicalOffset paint_offset);
   void PaintInlineItems(const PaintInfo&,
                         const PhysicalOffset& paint_offset,
                         const PhysicalOffset& parent_offset,
@@ -326,8 +330,6 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
     DCHECK_EQ(inline_box_cursor_->Current().Item(), box_item_);
   if (box_item_)
     DCHECK_EQ(box_item_->BoxFragment(), &box);
-  DCHECK_EQ(box.IsInlineBox(), !!inline_box_cursor_);
-  DCHECK_EQ(box.IsInlineBox(), !!box_item_);
 #endif
 }
 
@@ -347,7 +349,6 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
                            &inline_box_cursor,
                            &item) {
   DCHECK_EQ(item.BoxFragment(), &fragment);
-  DCHECK(fragment.IsInlineBox());
 }
 
 }  // namespace blink
