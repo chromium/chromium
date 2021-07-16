@@ -51,9 +51,10 @@ TEST_F('FocusRingManagerTest', 'BackButtonFocus', function() {
 
 TEST_F('FocusRingManagerTest', 'BackButtonForMenuFocus', function() {
   const site = '<input type="text">';
-  this.runWithLoadedTree(site, async (root) => {
+  this.runWithLoadedTree(site, async (rootWebArea) => {
     // Open the menu and focus the back button.
-    const input = root.find({role: chrome.automation.RoleType.TEXT_FIELD});
+    const input =
+        rootWebArea.find({role: chrome.automation.RoleType.TEXT_FIELD});
     assertNotNullNorUndefined(input);
     Navigator.byItem.moveTo_(input);
     ActionManager.onSelect();
@@ -76,8 +77,8 @@ TEST_F('FocusRingManagerTest', 'BackButtonForMenuFocus', function() {
 
 TEST_F('FocusRingManagerTest', 'ButtonFocus', function() {
   const site = '<button>Test</button>';
-  this.runWithLoadedTree(site, async (root) => {
-    const button = root.find({role: chrome.automation.RoleType.BUTTON});
+  this.runWithLoadedTree(site, async (rootWebArea) => {
+    const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
     Navigator.byItem.moveTo_(button);
     const rings = FocusRingManager.instance.rings_;
     const primary = rings.get(SAConstants.Focus.ID.PRIMARY);
@@ -101,9 +102,9 @@ TEST_F('FocusRingManagerTest', 'GroupFocus', function() {
       <div role="menuitem">Cat</div>
     </div>
   `;
-  this.runWithLoadedTree(site, async (root) => {
-    const menu = root.find({role: chrome.automation.RoleType.MENU});
-    const menuItem = root.find({
+  this.runWithLoadedTree(site, async (rootWebArea) => {
+    const menu = rootWebArea.find({role: chrome.automation.RoleType.MENU});
+    const menuItem = rootWebArea.find({
       role: chrome.automation.RoleType.MENU_ITEM,
       attributes: {name: 'Dog'}
     });

@@ -33,8 +33,8 @@ TEST_F('SwitchAccessBasicNodeTest', 'AsRootNode', function() {
                      </div>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (root) => {
-    const slider = root.find({role: chrome.automation.RoleType.SLIDER});
+  this.runWithLoadedTree(website, (rootWebArea) => {
+    const slider = rootWebArea.find({role: chrome.automation.RoleType.SLIDER});
     const inner = slider.parent;
     assertNotEquals(undefined, inner, 'Could not find inner group');
     const outer = inner.parent;
@@ -133,9 +133,9 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
   const website = `<input type="text">
                    <button></button>
                    <input type="range" min=1 max=5 value=3>`;
-  this.runWithLoadedTree(website, (root) => {
+  this.runWithLoadedTree(website, (rootWebArea) => {
     const textField = BasicNode.create(
-        root.find({role: chrome.automation.RoleType.TEXT_FIELD}),
+        rootWebArea.find({role: chrome.automation.RoleType.TEXT_FIELD}),
         new SARootNode());
 
     assertEquals(
@@ -152,7 +152,8 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
         'Text field has action SELECT');
 
     const button = BasicNode.create(
-        root.find({role: chrome.automation.RoleType.BUTTON}), new SARootNode());
+        rootWebArea.find({role: chrome.automation.RoleType.BUTTON}),
+        new SARootNode());
 
     assertEquals(
         chrome.automation.RoleType.BUTTON, button.role,
@@ -168,7 +169,8 @@ TEST_F('SwitchAccessBasicNodeTest', 'Actions', function() {
         'Button has action DICTATION');
 
     const slider = BasicNode.create(
-        root.find({role: chrome.automation.RoleType.SLIDER}), new SARootNode());
+        rootWebArea.find({role: chrome.automation.RoleType.SLIDER}),
+        new SARootNode());
 
     assertEquals(
         chrome.automation.RoleType.SLIDER, slider.role,

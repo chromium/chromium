@@ -62,8 +62,8 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveTo', function() {
                      </div>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (root) => {
-    const desktop = root.parent.root;
+  this.runWithLoadedTree(website, (rootWebArea) => {
+    const desktop = rootWebArea.parent.root;
     const textFields =
         desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD});
     assertEquals(2, textFields.length, 'Should be exactly 2 text fields.');
@@ -126,8 +126,8 @@ TEST_F('SwitchAccessItemScanManagerTest', 'JumpTo', function() {
                      <button></button>
                      <button></button>
                    </div>`;
-  this.runWithLoadedTree(website, (root) => {
-    const desktop = root.parent.root;
+  this.runWithLoadedTree(website, (rootWebArea) => {
+    const desktop = rootWebArea.parent.root;
     const textInput =
         desktop.findAll({role: chrome.automation.RoleType.TEXT_FIELD})[1];
     assertNotNullNorUndefined(textInput, 'Text field is undefined');
@@ -194,7 +194,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'EnterGroup', function() {
                      <button></button>
                    </div>
                    <input type="range">`;
-  this.runWithLoadedTree(website, (root) => {
+  this.runWithLoadedTree(website, (rootWebArea) => {
     const targetGroup = this.findNodeById('group');
     Navigator.byItem.moveTo_(targetGroup);
 
@@ -224,7 +224,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveForward', function() {
                      <button id="button2"></button>
                      <button id="button3"></button>
                    </div>`;
-  this.runWithLoadedTree(website, (root) => {
+  this.runWithLoadedTree(website, (rootWebArea) => {
     Navigator.byItem.moveTo_(this.findNodeById('button1'));
     const button1 = Navigator.byItem.node_;
     assertFalse(
@@ -279,7 +279,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'MoveBackward', function() {
                      <button id="button2"></button>
                      <button id="button3"></button>
                    </div>`;
-  this.runWithLoadedTree(website, (root) => {
+  this.runWithLoadedTree(website, (rootWebArea) => {
     Navigator.byItem.moveTo_(this.findNodeById('button1'));
     const button1 = Navigator.byItem.node_;
     assertFalse(
@@ -332,7 +332,7 @@ TEST_F(
       const website = `<div>
                      <button id="button1"></button>
                    </div>`;
-      this.runWithLoadedTree(website, (root) => {
+      this.runWithLoadedTree(website, (rootWebArea) => {
         Navigator.byItem.moveTo_(this.findNodeById('button1'));
         const button1 = Navigator.byItem.node_;
         assertFalse(
@@ -359,7 +359,7 @@ TEST_F(
     'SwitchAccessItemScanManagerTest', 'ScanAndTypeVirtualKeyboard',
     function() {
       const website = `<input type="text" id="input"></input>`;
-      this.runWithLoadedTree(website, async (root) => {
+      this.runWithLoadedTree(website, async (rootWebArea) => {
         // SA initially focuses this node; wait for it first.
         await this.untilFocusIs(
             {className: 'BrowserNonClientFrameViewChromeOS'});
@@ -396,7 +396,7 @@ TEST_F(
 
 TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
   const website = `<input type="text" id="input"></input><button>ok</button>`;
-  this.runWithLoadedTree(website, async (root) => {
+  this.runWithLoadedTree(website, async (rootWebArea) => {
     // SA initially focuses this node; wait for it first.
     await this.untilFocusIs({className: 'BrowserNonClientFrameViewChromeOS'});
 
@@ -416,7 +416,7 @@ TEST_F('SwitchAccessItemScanManagerTest', 'DismissVirtualKeyboard', function() {
     const key = await this.untilFocusIs({instance: KeyboardNode});
 
     // Simulate a page focusing the ok button.
-    const okButton = root.find({attributes: {name: 'ok'}});
+    const okButton = rootWebArea.find({attributes: {name: 'ok'}});
     okButton.focus();
 
     // Wait for the keyboard to become invisible and the ok button to be focused
@@ -450,7 +450,7 @@ TEST_F(
     </div>
     <button>done</button>
   `;
-      this.runWithLoadedTree(website, async (root) => {
+      this.runWithLoadedTree(website, async (rootWebArea) => {
         // SA initially focuses this node; wait for it first.
         await this.untilFocusIs(
             {className: 'BrowserNonClientFrameViewChromeOS'});
@@ -464,7 +464,7 @@ TEST_F(
 
         // Trigger a children changed on the group.
         const automationGroup =
-            root.find({role: chrome.automation.RoleType.GROUP});
+            rootWebArea.find({role: chrome.automation.RoleType.GROUP});
         assertTrue(!!automationGroup);
         const group = Navigator.byItem.group_;
         assertTrue(!!group);
@@ -486,14 +486,14 @@ TEST_F(
 
 TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', function() {
   const website = `<input></input><button autofocus></button>`;
-  this.runWithLoadedTree(website, async (root) => {
+  this.runWithLoadedTree(website, async (rootWebArea) => {
     // The button should have initial focus. This ensures we move past the focus
     // event below.
     const button =
         await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
 
     // Build a new ItemScanManager to see what it sets as the initial node.
-    const desktop = root.parent.root;
+    const desktop = rootWebArea.parent.root;
     assertEquals(
         chrome.automation.RoleType.DESKTOP, desktop.role,
         `Unexpected desktop ${desktop.toString()}`);
@@ -508,14 +508,14 @@ TEST_F('SwitchAccessItemScanManagerTest', 'InitialFocus', function() {
 TEST_F('SwitchAccessItemScanManagerTest', 'SyncFocusToNewWindow', function() {
   const website1 = `<button autofocus>one</button>`;
   const website2 = `<button autofocus>two</button>`;
-  this.runWithLoadedTree(website1, async (root) => {
+  this.runWithLoadedTree(website1, async (rootWebArea) => {
     // Wait for the first button to get SA focused.
     const button1 = await this.untilFocusIs(
         {role: chrome.automation.RoleType.BUTTON, name: 'one'});
 
     // Launch a new browser window and load up the second site.
     EventGenerator.sendKeyPress(KeyCode.N, {ctrl: true});
-    this.runWithLoadedTree(website2, async (root) => {
+    this.runWithLoadedTree(website2, async (rootWebArea) => {
       // Wait for the second button to get SA focused.
       const button2 = await this.untilFocusIs(
           {role: chrome.automation.RoleType.BUTTON, name: 'two'});
@@ -587,7 +587,7 @@ TEST_F_WITH_PREAMBLE(
     'SwitchAccessItemScanManagerTest', 'MAYBE_LockScreenBlocksUserSession',
     function() {
       const website = `<button autofocus>kitties!</button>`;
-      this.runWithLoadedTree(website, async (root) => {
+      this.runWithLoadedTree(website, async (rootWebArea) => {
         let button =
             await this.untilFocusIs({role: chrome.automation.RoleType.BUTTON});
         assertEquals('kitties!', button.automationNode.name);

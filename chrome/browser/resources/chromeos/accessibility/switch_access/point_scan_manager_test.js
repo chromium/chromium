@@ -30,8 +30,8 @@ SwitchAccessPointScanManagerTest = class extends SwitchAccessE2ETest {
 
 TEST_F('SwitchAccessPointScanManagerTest', 'PointScanLeftClick', function() {
   const website = '<input type=checkbox style="width: 800px; height: 800px;">';
-  this.runWithLoadedTree(website, async (root) => {
-    const checkbox = root.find({role: 'checkBox'});
+  this.runWithLoadedTree(website, async (rootWebArea) => {
+    const checkbox = rootWebArea.find({role: 'checkBox'});
     checkbox.doDefault();
 
     const verifyChecked = checked => resolve => {
@@ -55,10 +55,10 @@ TEST_F('SwitchAccessPointScanManagerTest', 'PointScanLeftClick', function() {
 
 TEST_F('SwitchAccessPointScanManagerTest', 'PointScanRightClick', function() {
   const website = '<p>Kittens r cute</p>';
-  this.runWithLoadedTree(website, async (root) => {
+  this.runWithLoadedTree(website, async (rootWebArea) => {
     const findParams = {role: 'menuItem', attributes: {name: /Back.*/}};
     // Context menu with back button shouldn't exist yet.
-    const initialMenuItem = root.find(findParams);
+    const initialMenuItem = rootWebArea.find(findParams);
     assertEquals(initialMenuItem, null);
 
     const menuItemLoaded = () => resolve => {
@@ -88,7 +88,7 @@ TEST_F('SwitchAccessPointScanManagerTest', 'PointScanNoFocusRings', function() {
   };
 
   const site = '<button>Test</button>';
-  this.runWithLoadedTree(site, async (root) => {
+  this.runWithLoadedTree(site, async (rootWebArea) => {
     let setFocusRingsCallCount = 0;
     // Mock this API to track how many times it's called.
     chrome.accessibilityPrivate.setFocusRings = (focusRings) => {
@@ -100,7 +100,7 @@ TEST_F('SwitchAccessPointScanManagerTest', 'PointScanNoFocusRings', function() {
     // the focus rings.
     assertEquals(1, setFocusRingsCallCount);
     // Simulate the page focusing the button.
-    const button = root.find({role: chrome.automation.RoleType.BUTTON});
+    const button = rootWebArea.find({role: chrome.automation.RoleType.BUTTON});
     assertNotNullNorUndefined(button);
     button.focus();
     // Allow point scanning to run for 2 seconds and ensure no extra calls to
