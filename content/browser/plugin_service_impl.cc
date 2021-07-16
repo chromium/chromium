@@ -30,7 +30,6 @@
 #include "content/browser/ppapi_plugin_process_host.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_switches_internal.h"
 #include "content/common/pepper_plugin_list.h"
 #include "content/public/browser/browser_task_traits.h"

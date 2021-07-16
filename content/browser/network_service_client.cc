@@ -14,7 +14,6 @@
 #include "content/browser/browsing_data/clear_site_data_handler.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/ssl/ssl_manager.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_connections_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"

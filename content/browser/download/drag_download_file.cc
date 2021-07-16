@@ -15,11 +15,13 @@
 #include "build/build_config.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_request_utils.h"
+#include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_process_host.h"
+#include "content/public/browser/web_contents.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace content {

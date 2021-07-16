@@ -27,7 +27,6 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/browser/url_loader_factory_params_helper.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/worker_host/worker_script_fetcher.h"
 #include "content/browser/worker_host/worker_script_loader.h"
 #include "content/browser/worker_host/worker_script_loader_factory.h"

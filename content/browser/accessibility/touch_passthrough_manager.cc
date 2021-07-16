@@ -15,7 +15,6 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_frame_metadata_provider_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/web_contents/web_contents_view.h"
 #include "content/common/input/synthetic_pointer_action_list_params.h"
 #include "content/common/input/synthetic_pointer_action_params.h"
