@@ -19,6 +19,24 @@ void TestSmallerThanOperator(const UnguessableToken& a,
   EXPECT_FALSE(b < a);
 }
 
+TEST(UnguessableTokenTest, VerifyEveryBit) {
+  UnguessableToken token = UnguessableToken::Deserialize(1, 2);
+  uint64_t high = 1;
+  uint64_t low = 2;
+
+  for (uint64_t bit = 1; bit != 0; bit <<= 1) {
+    uint64_t new_high = high ^ bit;
+    UnguessableToken new_token = UnguessableToken::Deserialize(new_high, low);
+    EXPECT_FALSE(token == new_token);
+  }
+
+  for (uint64_t bit = 1; bit != 0; bit <<= 1) {
+    uint64_t new_low = low ^ bit;
+    UnguessableToken new_token = UnguessableToken::Deserialize(high, new_low);
+    EXPECT_FALSE(token == new_token);
+  }
+}
+
 TEST(UnguessableTokenTest, VerifyEqualityOperators) {
   // Deserialize is used for testing purposes.
   // Use UnguessableToken::Create() in production code instead.

@@ -24,7 +24,7 @@ Token Token::CreateRandom() {
 }
 
 std::string Token::ToString() const {
-  return base::StringPrintf("%016" PRIX64 "%016" PRIX64, high_, low_);
+  return base::StringPrintf("%016" PRIX64 "%016" PRIX64, words_[0], words_[1]);
 }
 
 void WriteTokenToPickle(Pickle* pickle, const Token& token) {
