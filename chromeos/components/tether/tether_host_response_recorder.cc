@@ -114,9 +114,8 @@ std::vector<std::string> TetherHostResponseRecorder::GetDeviceIdsForPref(
     return device_ids;
 
   for (const auto& entry : ids->GetList()) {
-    std::string device_id;
-    if (entry.GetAsString(&device_id))
-      device_ids.push_back(device_id);
+    if (entry.is_string())
+      device_ids.push_back(entry.GetString());
   }
 
   return device_ids;
