@@ -34,8 +34,11 @@ class FakeRmadClientTest : public testing::Test {
   FakeRmadClientTest& operator=(const FakeRmadClientTest&) = delete;
 
   void SetUp() override {
-    // Create a client with the mock bus.
-    RmadClient::InitializeFake();
+    // Create a fake client.
+    // The constructor registers the singleton with RmadClient.
+    // Rmad::InitializeFake is not called because it sets up the fake states for
+    // testing ShimlessRMA app.
+    new FakeRmadClient();
     client_ = RmadClient::Get();
   }
 

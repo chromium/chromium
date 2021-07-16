@@ -17,6 +17,83 @@ namespace chromeos {
 
 namespace {
 RmadClient* g_instance = nullptr;
+
+rmad::RmadState* CreateState(rmad::RmadState::StateCase state_case) {
+  rmad::RmadState* state = new rmad::RmadState();
+  switch (state_case) {
+    case rmad::RmadState::kWelcome:
+      state->set_allocated_welcome(new rmad::WelcomeState());
+      break;
+    case rmad::RmadState::kSelectNetwork:
+      state->set_allocated_select_network(new rmad::SelectNetworkState());
+      break;
+    case rmad::RmadState::kUpdateChrome:
+      state->set_allocated_update_chrome(new rmad::UpdateChromeState());
+      break;
+    case rmad::RmadState::kComponentsRepair:
+      state->set_allocated_components_repair(new rmad::ComponentsRepairState());
+      break;
+    case rmad::RmadState::kDeviceDestination:
+      state->set_allocated_device_destination(
+          new rmad::DeviceDestinationState());
+      break;
+    case rmad::RmadState::kWpDisableMethod:
+      state->set_allocated_wp_disable_method(
+          new rmad::WriteProtectDisableMethodState());
+      break;
+    case rmad::RmadState::kWpDisableRsu:
+      state->set_allocated_wp_disable_rsu(
+          new rmad::WriteProtectDisableRsuState());
+      break;
+    case rmad::RmadState::kWpDisablePhysical:
+      state->set_allocated_wp_disable_physical(
+          new rmad::WriteProtectDisablePhysicalState());
+      break;
+    case rmad::RmadState::kWpDisableComplete:
+      state->set_allocated_wp_disable_complete(
+          new rmad::WriteProtectDisableCompleteState());
+      break;
+    case rmad::RmadState::kVerifyRsu:
+      state->set_allocated_verify_rsu(new rmad::VerifyRsuState());
+      break;
+    case rmad::RmadState::kUpdateRoFirmware:
+      state->set_allocated_update_ro_firmware(
+          new rmad::UpdateRoFirmwareState());
+      break;
+    case rmad::RmadState::kRestock:
+      state->set_allocated_restock(new rmad::RestockState());
+      break;
+    case rmad::RmadState::kUpdateDeviceInfo:
+      state->set_allocated_update_device_info(
+          new rmad::UpdateDeviceInfoState());
+      break;
+    case rmad::RmadState::kCalibrateComponents:
+      state->set_allocated_calibrate_components(
+          new rmad::CalibrateComponentsState());
+      break;
+    case rmad::RmadState::kProvisionDevice:
+      state->set_allocated_provision_device(new rmad::ProvisionDeviceState());
+      break;
+    case rmad::RmadState::kWpEnablePhysical:
+      state->set_allocated_wp_enable_physical(
+          new rmad::WriteProtectEnablePhysicalState());
+      break;
+    case rmad::RmadState::kFinalize:
+      state->set_allocated_finalize(new rmad::FinalizeState());
+      break;
+    default:
+      assert(false);
+  }
+  return state;
+}
+
+rmad::GetStateReply CreateStateReply(rmad::RmadState::StateCase state,
+                                     rmad::RmadErrorCode error) {
+  rmad::GetStateReply reply;
+  reply.set_allocated_state(CreateState(state));
+  reply.set_error(error);
+  return reply;
+}
 }  // namespace
 
 class RmadClientImpl : public RmadClient {
@@ -329,7 +406,43 @@ void RmadClient::Initialize(dbus::Bus* bus) {
 
 // static
 void RmadClient::InitializeFake() {
-  new FakeRmadClient();
+  FakeRmadClient* fake = new FakeRmadClient();
+  // Set up fake state.
+  rmad::GetStateReply components_repair_state =
+      CreateStateReply(rmad::RmadState::kComponentsRepair, rmad::RMAD_ERROR_OK);
+  rmad::ComponentRepairState* component =
+      components_repair_state.mutable_state()
+          ->mutable_components_repair()
+          ->add_components();
+  component->set_name(rmad::ComponentRepairState::RMAD_COMPONENT_KEYBOARD);
+  component->set_repair_state(rmad::ComponentRepairState::RMAD_REPAIR_UNKNOWN);
+
+  std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kSelectNetwork, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateChrome, rmad::RMAD_ERROR_OK),
+      components_repair_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableMethod, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableRsu, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kVerifyRsu, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisablePhysical,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpDisableComplete,
+                       rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateRoFirmware, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kRestock, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK),
+      // TODO(gavindodd): Add calibration states when implemented.
+      // rmad::RmadState::kCheckCalibration
+      // rmad::RmadState::kSetupCalibration
+      // rmad::RmadState::kRunCalibration
+      CreateStateReply(rmad::RmadState::kProvisionDevice, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kWpEnablePhysical, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+  };
+  fake->SetFakeStateReplies(fake_states);
 }
 
 // static

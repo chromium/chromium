@@ -6,13 +6,29 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {fakeChromeVersion, fakeComponents, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
-import {Component, ComponentRepairState, ComponentType, NetworkConfigServiceInterface, RmadErrorCode, RmaState, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
+import {Component, ComponentRepairState, ComponentType, NetworkConfigServiceInterface, RmadErrorCode, RmaState, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
 /**
  * @fileoverview
  * Provides singleton access to (fake) mojo interfaces with the ability
  * to override them with test/fake implementations.
  */
+
+/**
+ * If true this will replace ShimlessRmaService with a fake.
+ * @type {boolean}
+ */
+let useFakeService = true;
+
+/**
+ * @type {?ShimlessRmaServiceInterface}
+ */
+let shimlessRmaService = null;
+
+/**
+ * @type {?NetworkConfigServiceInterface}
+ */
+let networkConfigService = null;
 
 /**
  * Sets up a FakeShimlessRmaService to be used at runtime.
@@ -36,16 +52,6 @@ function setupFakeShimlessRmaService_() {
 }
 
 /**
- * @type {?ShimlessRmaServiceInterface}
- */
-let shimlessRmaService = null;
-
-/**
- * @type {?NetworkConfigServiceInterface}
- */
-let networkConfigService = null;
-
-/**
  * @param {!ShimlessRmaServiceInterface} testService
  */
 export function setShimlessRmaServiceForTesting(testService) {
@@ -57,12 +63,14 @@ export function setShimlessRmaServiceForTesting(testService) {
  */
 export function getShimlessRmaService() {
   if (!shimlessRmaService) {
-    setupFakeShimlessRmaService_();
+    if (useFakeService) {
+      setupFakeShimlessRmaService_();
+    } else {
+      shimlessRmaService = ShimlessRmaService.getRemote();
+    }
   }
 
-  // TODO(gavindodd): Instantiate a real mojo interface here.
   assert(!!shimlessRmaService);
-
   return shimlessRmaService;
 }
 

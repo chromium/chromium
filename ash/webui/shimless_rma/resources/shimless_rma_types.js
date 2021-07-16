@@ -125,6 +125,13 @@ export let PowerCableStateObserverRemote =
     ash.shimlessRma.mojom.PowerCableStateObserverRemote;
 
 /**
+ * Type alias for the ShimlessRmaService.
+ * @typedef {ash.shimlessRma.mojom.ShimlessRmaService}
+ */
+export let ShimlessRmaService =
+    ash.shimlessRma.mojom.ShimlessRmaService;
+
+/**
  * Type alias for the ShimlessRmaServiceInterface.
  * @typedef {ash.shimlessRma.mojom.ShimlessRmaServiceInterface}
  */
