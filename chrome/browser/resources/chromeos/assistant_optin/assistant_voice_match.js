@@ -251,7 +251,10 @@ Polymer({
    */
   getSubtitleMessage_(locale, uiStep, childName, deviceName) {
     if (uiStep == VoiceMatchUIState.INTRO) {
-      return this.i18nAdvanced('assistantVoiceMatchMessage');
+      return childName ? this.i18nAdvanced(
+                             'assistantVoiceMatchMessageForChild',
+                             {substitutions: [deviceName, childName]}) :
+                         this.i18nAdvanced('assistantVoiceMatchMessage');
     } else if (uiStep === VoiceMatchUIState.RECORDING) {
       return this.i18nAdvanced(
           'assistantVoiceMatchFooterForChild', {substitutions: [childName]});
