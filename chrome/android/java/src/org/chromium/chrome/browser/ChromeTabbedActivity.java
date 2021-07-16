@@ -113,6 +113,7 @@ import org.chromium.chrome.browser.modaldialog.ChromeTabModalPresenter;
 import org.chromium.chrome.browser.modaldialog.TabModalLifetimeHandler;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceChromeTabbedActivity;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.native_page.NativePageAssassin;
 import org.chromium.chrome.browser.navigation_predictor.NavigationPredictorBridge;
 import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController;
@@ -154,6 +155,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tasks.ConditionalTabStripUtils;
 import org.chromium.chrome.browser.tasks.EngagementTimeUtil;
 import org.chromium.chrome.browser.tasks.JourneyManager;
@@ -437,13 +439,8 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
      */
     public ChromeTabbedActivity() {
         mMainIntentMetrics = new MainIntentBehaviorMetrics();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            mMultiInstanceManager =
-                    new MultiInstanceManager(this, getTabModelOrchestratorSupplier(),
-                            getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
-        } else {
-            mMultiInstanceManager = null;
-        }
+        mMultiInstanceManager = MultiInstanceManager.create(this, getTabModelOrchestratorSupplier(),
+                getMultiWindowModeStateDispatcher(), getLifecycleDispatcher(), this);
 
         // AppLaunchDrawBlocker may block drawing the Activity content until the initial tab is
         // available.
@@ -1728,7 +1725,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
 
     @Override
     protected TabModelOrchestrator createTabModelOrchestrator() {
-        mTabModelOrchestrator = new TabbedModeTabModelOrchestrator();
+        boolean tabMergingEnabled =
+                mMultiInstanceManager != null && mMultiInstanceManager.isTabModelMergingEnabled();
+        mTabModelOrchestrator = new TabbedModeTabModelOrchestrator(tabMergingEnabled);
         return mTabModelOrchestrator;
     }
 
@@ -1742,7 +1741,16 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         boolean startIncognito = savedInstanceState != null
                 && savedInstanceState.getBoolean(IS_INCOGNITO_SELECTED, false);
 
-        int index = savedInstanceState != null ? savedInstanceState.getInt(WINDOW_INDEX, 0) : 0;
+        int windowId = IntentUtils.safeGetIntExtra(
+                getIntent(), IntentHandler.EXTRA_WINDOW_ID, TabWindowManager.INVALID_WINDOW_INDEX);
+        int index = 0;
+        if (savedInstanceState != null && savedInstanceState.containsKey(WINDOW_INDEX)) {
+            // Activity is recreated after destruction. |windowId| must not be valid in this case.
+            assert windowId == TabWindowManager.INVALID_WINDOW_INDEX;
+            index = savedInstanceState.getInt(WINDOW_INDEX, 0);
+        } else if (mMultiInstanceManager != null) {
+            index = mMultiInstanceManager.allocInstanceId(windowId, getTaskId());
+        }
 
         mNextTabPolicySupplier = new ChromeNextTabPolicySupplier(mOverviewModeBehaviorSupplier);
 
@@ -1751,6 +1759,13 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (!tabModelWasCreated) {
             finish();
             return;
+        }
+
+        if (mMultiInstanceManager != null) {
+            int assignedIndex = TabWindowManagerSingleton.getInstance().getIndexForWindow(this);
+            // The given index and the one computed by TabWindowManager should be one and the same.
+            assert !MultiWindowUtils.instanceSwitcherEnabled() || assignedIndex == index;
+            mMultiInstanceManager.updateTaskIdMap(assignedIndex, getTaskId());
         }
 
         mTabModelSelector = mTabModelOrchestrator.getTabModelSelector();

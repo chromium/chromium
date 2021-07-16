@@ -115,7 +115,7 @@ public class TabPersistentStoreIntegrationTest {
         when(mResources.getInteger(org.chromium.ui.R.integer.min_screen_width_bucket))
                 .thenReturn(1);
         when(mTabCreatorManager.getTabCreator(anyBoolean())).thenReturn(mChromeTabCreator);
-        mOrchestrator = new TabbedModeTabModelOrchestrator();
+        mOrchestrator = new TabbedModeTabModelOrchestrator(/*tabMergingEnabled=*/true);
         mOrchestrator.createTabModels(
                 mChromeActivity, mTabCreatorManager, mNextTabPolicySupplier, 0);
         mTabModelSelector = mOrchestrator.getTabModelSelector();

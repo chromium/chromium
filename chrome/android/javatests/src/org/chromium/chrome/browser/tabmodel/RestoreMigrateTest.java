@@ -120,8 +120,8 @@ public class RestoreMigrateTest {
         return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<TabPersistentStore>() {
             @Override
             public TabPersistentStore call() {
-                TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(
-                        selectorIndex, false);
+                TabPersistencePolicy persistencePolicy =
+                        new TabbedModeTabPersistencePolicy(selectorIndex, false, true);
                 TabPersistentStore store =
                         new TabPersistentStore(persistencePolicy, selector, null);
                 return store;

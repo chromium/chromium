@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.app.tabmodel;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorFactory;
 import org.chromium.chrome.browser.tabmodel.TabWindowManager;
 import org.chromium.chrome.browser.tabmodel.TabWindowManagerFactory;
@@ -24,11 +25,12 @@ public class TabWindowManagerSingleton {
     public static TabWindowManager getInstance() {
         ThreadUtils.assertOnUiThread();
         if (sInstance == null) {
+            int maxSelectors = MultiWindowUtils.instanceSwitcherEnabled() ? 5 : 3;
             TabModelSelectorFactory selectorFactory = sSelectorFactoryForTesting == null
                     ? new DefaultTabModelSelectorFactory()
                     : sSelectorFactoryForTesting;
             sInstance = TabWindowManagerFactory.createInstance(
-                    selectorFactory, AsyncTabParamsManagerSingleton.getInstance());
+                    selectorFactory, AsyncTabParamsManagerSingleton.getInstance(), maxSelectors);
         }
         return sInstance;
     }

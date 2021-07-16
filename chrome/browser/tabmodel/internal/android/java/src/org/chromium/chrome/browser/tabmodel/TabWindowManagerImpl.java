@@ -27,26 +27,33 @@ import java.util.Map;
 public class TabWindowManagerImpl implements ActivityStateListener, TabWindowManager {
     private TabModelSelectorFactory mSelectorFactory;
     private final AsyncTabParamsManager mAsyncTabParamsManager;
+    private final int mMaxSelectors;
 
     private List<TabModelSelector> mSelectors = new ArrayList<>();
 
     private Map<Activity, TabModelSelector> mAssignments = new HashMap<>();
 
-    TabWindowManagerImpl(
-            TabModelSelectorFactory selectorFactory, AsyncTabParamsManager asyncTabParamsManager) {
+    TabWindowManagerImpl(TabModelSelectorFactory selectorFactory,
+            AsyncTabParamsManager asyncTabParamsManager, int maxSelectors) {
         mSelectorFactory = selectorFactory;
         mAsyncTabParamsManager = asyncTabParamsManager;
         ApplicationStatus.registerStateListenerForAllActivities(this);
+        mMaxSelectors = maxSelectors;
+        for (int i = 0; i < mMaxSelectors; i++) mSelectors.add(null);
+    }
 
-        for (int i = 0; i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
-            mSelectors.add(null);
-        }
+    @Override
+    public int getMaxSimultaneousSelectors() {
+        return mMaxSelectors;
     }
 
     @Override
     public Pair<Integer, TabModelSelector> requestSelector(Activity activity,
             TabCreatorManager tabCreatorManager, NextTabPolicySupplier nextTabPolicySupplier,
             int index) {
+        if (index < 0 || index >= mSelectors.size()) return null;
+
+        // Return the already existing selector if found.
         if (mAssignments.get(activity) != null) {
             TabModelSelector assignedSelector = mAssignments.get(activity);
             for (int i = 0; i < mSelectors.size(); i++) {
@@ -57,8 +64,6 @@ public class TabWindowManagerImpl implements ActivityStateListener, TabWindowMan
             throw new IllegalStateException(
                     "TabModelSelector is assigned to an Activity but has no index.");
         }
-
-        if (index < 0 || index >= mSelectors.size()) index = 0;
 
         if (mSelectors.get(index) != null) {
             for (int i = 0; i < mSelectors.size(); i++) {

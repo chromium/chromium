@@ -22,7 +22,6 @@ import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.chrome.browser.app.tabmodel.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
@@ -66,6 +65,8 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     private final int mSelectorIndex;
     private final int mOtherSelectorIndex;
     private final boolean mMergeTabs;
+    private final boolean mTabMergingEnabled;
+    private final int mMaxSelectors;
 
     private TabContentManager mTabContentManager;
     private boolean mDestroyed;
@@ -76,11 +77,15 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
      *                      This is used when there can be more than one TabModelSelector.
      * @param mergeTabs     Whether this policy should handle merging tabs from all available
      *                      tabbed mode files.
+     * @param tabMergingEnabled Whether we are on the platform where tab merging is enabled.
      */
-    public TabbedModeTabPersistencePolicy(int selectorIndex, boolean mergeTabs) {
+    public TabbedModeTabPersistencePolicy(
+            int selectorIndex, boolean mergeTabs, boolean tabMergingEnabled) {
         mSelectorIndex = selectorIndex;
         mOtherSelectorIndex = selectorIndex == 0 ? 1 : 0;
         mMergeTabs = mergeTabs;
+        mTabMergingEnabled = tabMergingEnabled;
+        mMaxSelectors = TabWindowManagerSingleton.getInstance().getMaxSimultaneousSelectors();
     }
 
     @Override
@@ -101,7 +106,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
     @Override
     public List<String> getStateToBeMergedFileNames() {
         List<String> mergedFileNames = new ArrayList<>();
-        if (MultiInstanceManager.isTabModelMergingEnabled()) {
+        if (mTabMergingEnabled) {
             mergedFileNames.add(getStateFileName(mOtherSelectorIndex));
         }
         // TODO(peconn): Can I clean up this code now that Browser Actions are gone?
@@ -209,8 +214,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
         }
 
         // 2. Move files from other state directories.
-        for (int i = TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX;
-                i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
+        for (int i = TabModelSelectorImpl.CUSTOM_TABS_SELECTOR_INDEX; i < mMaxSelectors; i++) {
             // Skip the directory we're migrating to.
             if (i == 0) continue;
 
@@ -407,7 +411,7 @@ public class TabbedModeTabPersistencePolicy implements TabPersistencePolicy {
          * @param tabIds SparseBooleanArray to populate with TabIds.
          */
         private void getTabsFromOtherStateFiles(SparseBooleanArray tabIds) {
-            for (int i = 0; i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
+            for (int i = 0; i < mMaxSelectors; i++) {
                 // Although we check all selectors before deleting, we can only be sure that our own
                 // selector will not go away between now and then. So, we read from disk all other
                 // state files, even if they are already loaded by another selector.

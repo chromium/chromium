@@ -24,7 +24,15 @@ import org.chromium.ui.widget.Toast;
  * {@link TabModelSelectorImpl} for tabbed mode.
  */
 public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
-    public TabbedModeTabModelOrchestrator() {}
+    private final boolean mTabMergingEnabled;
+
+    /**
+     * Constructor.
+     * @param tabMergingEnabled Whether we are on the platform where tab merging is enabled.
+     */
+    public TabbedModeTabModelOrchestrator(boolean tabMergingEnabled) {
+        mTabMergingEnabled = tabMergingEnabled;
+    }
 
     /**
      * Creates the TabModelSelector and the TabPersistentStore.
@@ -57,7 +65,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
 
         // Instantiate TabPersistentStore
         TabPersistencePolicy tabPersistencePolicy =
-                new TabbedModeTabPersistencePolicy(assignedIndex, mergeTabs);
+                new TabbedModeTabPersistencePolicy(assignedIndex, mergeTabs, mTabMergingEnabled);
         mTabPersistentStore =
                 new TabPersistentStore(tabPersistencePolicy, mTabModelSelector, tabCreatorManager);
 
@@ -70,8 +78,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         // Merge tabs if this TabModelSelector is for a ChromeTabbedActivity created in
         // fullscreen mode and there are no TabModelSelector's currently alive. This indicates
         // that it is a cold start or process restart in fullscreen mode.
-        boolean mergeTabs = Build.VERSION.SDK_INT > Build.VERSION_CODES.M
-                && MultiInstanceManager.isTabModelMergingEnabled()
+        boolean mergeTabs = Build.VERSION.SDK_INT > Build.VERSION_CODES.M && mTabMergingEnabled
                 && !activity.isInMultiWindowMode();
         if (MultiInstanceManager.shouldMergeOnStartup(activity)) {
             mergeTabs = mergeTabs

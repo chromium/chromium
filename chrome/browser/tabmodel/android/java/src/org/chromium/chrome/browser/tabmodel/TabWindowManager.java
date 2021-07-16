@@ -14,7 +14,7 @@ import org.chromium.ui.base.WindowAndroid;
 /**
  * Manages multiple {@link TabModelSelector} instances, each owned by different {@link Activity}s.
  *
- * Each of the 0-3 {@link WindowAndroid} contains 1 {@link Activity},
+ * Each of the 0 ~ |max-1| {@link WindowAndroid} contains 1 {@link Activity},
  * which contains 1 {@link TabModelSelector}, which contains 2 {@link TabModel}s,
  * each of which contains n {@link Tab}s.
  *
@@ -23,8 +23,10 @@ import org.chromium.ui.base.WindowAndroid;
  * This is the highest level of the hierarchy of Tab containers.
  */
 public interface TabWindowManager {
-    /** The maximum number of simultaneous TabModelSelector instances in this Application. */
-    int MAX_SIMULTANEOUS_SELECTORS = 3;
+    /**
+     * @return The maximum number of simultaneous TabModelSelector instances in this Application.
+     */
+    int getMaxSimultaneousSelectors();
 
     /**
      * Called to request a {@link TabModelSelector} based on {@code index}. Note that the

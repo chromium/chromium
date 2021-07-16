@@ -74,7 +74,7 @@ public class MultiInstanceManager
      */
     private ApplicationStatus.ActivityStateListener mOtherCTAStateObserver;
 
-    private final Activity mActivity;
+    protected final Activity mActivity;
     private final ObservableSupplier<TabModelOrchestrator> mTabModelOrchestratorSupplier;
     private final MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
@@ -99,8 +99,27 @@ public class MultiInstanceManager
      *         associated activity.
      * @param menuOrKeyboardActionController The {@link MenuOrKeyboardActionController} for the
      *         associated activity.
+     * @return {@link MultiInstanceManager} object or {@code null} on the platform it is not needed.
      */
-    public MultiInstanceManager(Activity activity,
+    public @Nullable static MultiInstanceManager create(Activity activity,
+            ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
+            MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
+            ActivityLifecycleDispatcher activityLifecycleDispatcher,
+            MenuOrKeyboardActionController menuOrKeyboardActionController) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            return null;
+        } else if (MultiWindowUtils.instanceSwitcherEnabled()) {
+            return new MultiInstanceManagerApi31(activity, tabModelOrchestratorSupplier,
+                    multiWindowModeStateDispatcher, activityLifecycleDispatcher,
+                    menuOrKeyboardActionController);
+        } else {
+            return new MultiInstanceManager(activity, tabModelOrchestratorSupplier,
+                    multiWindowModeStateDispatcher, activityLifecycleDispatcher,
+                    menuOrKeyboardActionController);
+        }
+    }
+
+    protected MultiInstanceManager(Activity activity,
             ObservableSupplier<TabModelOrchestrator> tabModelOrchestratorSupplier,
             MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
@@ -471,9 +490,25 @@ public class MultiInstanceManager
     }
 
     /**
+     * Assigned an ID for the current activity instance.
+     * @param windowId Instance ID explicitly given for assignment.
+     * @param taskId Task ID of the activity.
+     */
+    public int allocInstanceId(int windowId, int taskId) {
+        return 0; // Use a default index 0.
+    }
+
+    /**
+     * Update the persistent instance - task ID map.
+     * @param instanceId Instance ID of the activity.
+     * @param taskId Task ID of the activity.
+     */
+    public void updateTaskIdMap(int instanceId, int taskId) {}
+
+    /**
      * @return True if tab model merging for Android N+ is enabled.
      */
-    public static boolean isTabModelMergingEnabled() {
+    public boolean isTabModelMergingEnabled() {
         if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING)) {
             return false;
         }

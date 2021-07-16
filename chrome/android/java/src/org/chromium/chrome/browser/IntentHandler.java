@@ -158,7 +158,9 @@ public class IntentHandler {
     private static final String EXTRA_TIMESTAMP_MS = "org.chromium.chrome.browser.timestamp";
 
     /**
-     * For multi-window, passes the id of the window.
+     * For multi-window, passes the id of the window. On Android S, this is synonymous with
+     * the id of 'activity instance' among multiple instances that can be chosen on instance
+     * switcher UI, ranging from 0 ~ max_instances - 1. -1 for an invalid id.
      */
     public static final String EXTRA_WINDOW_ID = "org.chromium.chrome.browser.window_id";
 

@@ -132,6 +132,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/messages/ChromeMessageAutodismissDurationProviderTest.java",
   "junit/src/org/chromium/chrome/browser/messages/ChromeMessageQueueMediatorTest.java",
   "junit/src/org/chromium/chrome/browser/metrics/VariationsSessionTest.java",
+  "junit/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManagerApi31UnitTest.java",
   "junit/src/org/chromium/chrome/browser/multiwindow/MultiWindowUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/native_page/NativePageFactoryTest.java",
   "junit/src/org/chromium/chrome/browser/net/nqe/NetworkQualityProviderTest.java",

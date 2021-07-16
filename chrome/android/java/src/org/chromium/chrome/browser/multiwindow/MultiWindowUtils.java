@@ -8,8 +8,10 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.AppTask;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -25,11 +27,14 @@ import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.util.AndroidTaskUtils;
 import org.chromium.components.ukm.UkmRecorder;
@@ -50,8 +55,9 @@ import java.util.Locale;
  * Thread-safe: This class may be accessed from any thread.
  */
 public class MultiWindowUtils implements ActivityStateListener {
-    // getInstance() is called early in start-up, so there is not point in lazily initializing it.
-    private static final MultiWindowUtils sInstance = new MultiWindowUtils();
+    private static MultiWindowUtils sInstance = new MultiWindowUtils();
+
+    private final boolean mInstanceSwitcherEnabled;
 
     // Used to keep track of whether ChromeTabbedActivity2 is running. A tri-state Boolean is
     // used in case both activities die in the background and MultiWindowUtils is recreated.
@@ -75,7 +81,33 @@ public class MultiWindowUtils implements ActivityStateListener {
         int MULTI_WINDOW = 1;
     }
 
-    protected MultiWindowUtils() {}
+    protected MultiWindowUtils() {
+        mInstanceSwitcherEnabled = instanceSwitcherEnabled();
+    }
+
+    public static boolean instanceSwitcherEnabled() {
+        // Instance switcher is supported on S, and on some R platforms where the new
+        // launch mode is backported.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) return false;
+        if (!CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANCE_SWITCHER)) return false;
+        Context context = ContextUtils.getApplicationContext();
+        String packageName = context.getPackageName();
+        String className = ChromeTabbedActivity.class.getCanonicalName();
+        ComponentName comp = new ComponentName(packageName, className);
+        try {
+            int launchMode = context.getPackageManager().getActivityInfo(comp, 0).launchMode;
+            // ActivityInfo#LAUNCH_SINGLE_INSTANCE_PER_TASK is introduced in S.
+            Field launchSingleInstancePerTask =
+                    ActivityInfo.class.getField("LAUNCH_SINGLE_INSTANCE_PER_TASK");
+            return launchMode == launchSingleInstancePerTask.getInt(null);
+        } catch (PackageManager.NameNotFoundException e) {
+            return false;
+        } catch (NoSuchFieldException e) {
+            return false;
+        } catch (IllegalAccessException e) {
+            return false;
+        }
+    }
 
     /**
      * Returns the singleton instance of MultiWindowUtils.
@@ -302,6 +334,9 @@ public class MultiWindowUtils implements ActivityStateListener {
      */
     public Class<? extends ChromeTabbedActivity> getTabbedActivityForIntent(
             @Nullable Intent intent, Context context) {
+        // 0. Use always ChromeTabbedActivity when multi-instance support in S+ is enabled.
+        if (mInstanceSwitcherEnabled) return ChromeTabbedActivity.class;
+
         // 1. Exit early if the build version doesn't support Android N+ multi-window mode or
         // ChromeTabbedActivity2 isn't running.
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.M

@@ -597,6 +597,10 @@ public final class ChromePreferenceKeys {
     public static final String METRICS_MAIN_INTENT_LAUNCH_COUNT = "MainIntent.LaunchCount";
     public static final String METRICS_MAIN_INTENT_LAUNCH_TIMESTAMP = "MainIntent.LaunchTimestamp";
 
+    // {Instance:Task} ID mapping for multi-instance support.
+    public static final KeyPrefix MULTI_INSTANCE_TASK_MAP =
+            new KeyPrefix("Chrome.MultiInstance.TaskMap.*");
+
     public static final String NOTIFICATIONS_CHANNELS_VERSION = "channels_version_key";
     public static final String NOTIFICATIONS_LAST_SHOWN_NOTIFICATION_TYPE =
             "NotificationUmaTracker.LastShownNotificationType";
@@ -1062,6 +1066,7 @@ public final class ChromePreferenceKeys {
                 ISOLATED_SPLITS_DEX_COMPILE_VERSION,
                 LAST_SESSION_BROWSER_PID,
                 LAST_SESSION_APPLICATION_STATE,
+                MULTI_INSTANCE_TASK_MAP.pattern(),
                 OFFLINE_INDICATOR_V2_WALL_TIME_SHOWN_MS,
                 OFFLINE_INDICATOR_V2_LAST_UPDATE_WALL_TIME_MS,
                 OFFLINE_INDICATOR_V2_TIME_IN_FOREGROUND_MS,

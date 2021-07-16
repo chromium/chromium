@@ -109,8 +109,8 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testMultipleActivities() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
+        Assert.assertTrue("Not enough selectors", manager.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
@@ -134,7 +134,8 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testTooManyActivities() {
-        for (int i = 0; i < TabWindowManager.MAX_SIMULTANEOUS_SELECTORS; i++) {
+        final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
+        for (int i = 0; i < manager.getMaxSimultaneousSelectors(); i++) {
             ChromeActivity a = buildActivity();
             Assert.assertNotNull("Could not build selector", requestSelector(a, 0));
         }
@@ -153,9 +154,8 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testIndexFallback() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
-
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
+        Assert.assertTrue("Not enough selectors", manager.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
@@ -180,9 +180,8 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testIndexFallback2() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 3);
-
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
+        Assert.assertTrue("Not enough selectors", manager.getMaxSimultaneousSelectors() >= 3);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();
@@ -263,9 +262,8 @@ public class TabWindowManagerTest {
     @Feature({"Multiwindow"})
     @UiThreadTest
     public void testActivityDeathWithMultipleActivities() {
-        Assert.assertTrue("Not enough selectors", TabWindowManager.MAX_SIMULTANEOUS_SELECTORS >= 2);
-
         final TabWindowManager manager = TabWindowManagerSingleton.getInstance();
+        Assert.assertTrue("Not enough selectors", manager.getMaxSimultaneousSelectors() >= 2);
 
         ChromeActivity activity0 = buildActivity();
         ChromeActivity activity1 = buildActivity();

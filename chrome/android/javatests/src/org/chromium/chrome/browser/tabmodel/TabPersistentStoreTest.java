@@ -142,7 +142,7 @@ public class TabPersistentStoreTest {
                         @Override
                         public TabPersistentStore call() {
                             TabPersistencePolicy persistencePolicy =
-                                    new TabbedModeTabPersistencePolicy(0, true);
+                                    createTabPersistencePolicy(0, true, true);
                             TabPersistentStore tabPersistentStore =
                                     new TabPersistentStore(persistencePolicy,
                                             TestTabModelSelector.this, getTabCreatorManager());
@@ -370,11 +370,15 @@ public class TabPersistentStoreTest {
 
     private TabPersistentStore buildTabPersistentStore(final TabPersistencePolicy persistencePolicy,
             final TabModelSelector modelSelector, final TabCreatorManager creatorManager) {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(new Callable<TabPersistentStore>() {
-            @Override
-            public TabPersistentStore call() {
-                return new TabPersistentStore(persistencePolicy, modelSelector, creatorManager);
-            }
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new TabPersistentStore(persistencePolicy, modelSelector, creatorManager);
+        });
+    }
+
+    private static TabbedModeTabPersistencePolicy createTabPersistencePolicy(
+            int selectorIndex, boolean mergeTabs, boolean tabMergingEnabled) {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new TabbedModeTabPersistencePolicy(selectorIndex, mergeTabs, tabMergingEnabled);
         });
     }
 
@@ -395,7 +399,7 @@ public class TabPersistentStoreTest {
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabCreator regularCreator = mockManager.getTabCreator(false);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         store.addObserver(mockObserver);
@@ -452,7 +456,7 @@ public class TabPersistentStoreTest {
 
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         TabPersistencePolicy persistencePolicy =
-                new TabbedModeTabPersistencePolicy(/* selectorIndex = */ 0, false);
+                createTabPersistencePolicy(/* selectorIndex = */ 0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         verifyIfTabIsSaved(regularTab.getId(), regularTab.isIncognito(), true);
@@ -499,7 +503,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector firstSelector = new MockTabModelSelector(0, 0, null);
         MockTabCreatorManager firstManager = new MockTabCreatorManager(firstSelector);
         MockTabPersistentStoreObserver firstObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy firstPersistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy firstPersistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore firstStore =
                 buildTabPersistentStore(firstPersistencePolicy, firstSelector, firstManager);
         firstStore.addObserver(firstObserver);
@@ -515,7 +519,7 @@ public class TabPersistentStoreTest {
         MockTabCreatorManager secondManager = new MockTabCreatorManager(secondSelector);
         MockTabCreator secondCreator = secondManager.getTabCreator(false);
         MockTabPersistentStoreObserver secondObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy secondPersistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy secondPersistencePolicy = createTabPersistencePolicy(0, false, true);
 
         final TabPersistentStore secondStore =
                 buildTabPersistentStore(secondPersistencePolicy, secondSelector, secondManager);
@@ -579,7 +583,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector = new MockTabModelSelector(0, 0, null);
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         store.addObserver(mockObserver);
@@ -627,7 +631,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector = new MockTabModelSelector(0, 0, null);
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         store.addObserver(mockObserver);
@@ -662,7 +666,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector = new MockTabModelSelector(0, 0, null);
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         store.addObserver(mockObserver);
@@ -724,7 +728,7 @@ public class TabPersistentStoreTest {
         MockTabModelSelector mockSelector = new MockTabModelSelector(0, 0, null);
         MockTabCreatorManager mockManager = new MockTabCreatorManager(mockSelector);
         MockTabPersistentStoreObserver mockObserver = new MockTabPersistentStoreObserver();
-        TabPersistencePolicy persistencePolicy = new TabbedModeTabPersistencePolicy(0, false);
+        TabPersistencePolicy persistencePolicy = createTabPersistencePolicy(0, false, true);
         final TabPersistentStore store =
                 buildTabPersistentStore(persistencePolicy, mockSelector, mockManager);
         store.addObserver(mockObserver);
