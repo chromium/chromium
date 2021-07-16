@@ -267,6 +267,8 @@ static_library("browser") {
     "//components/variations/net",
     "//extensions/common:common_constants",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//skia",
     "//sql",
     "//third_party/protobuf:protobuf_lite",

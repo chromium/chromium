@@ -32,6 +32,7 @@
 #include "components/url_formatter/url_formatter.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "ui/base/device_form_factor.h"
 #include "url/url_constants.h"
 
