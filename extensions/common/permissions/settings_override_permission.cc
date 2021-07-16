@@ -50,7 +50,10 @@ bool SettingsOverrideAPIPermission::FromValue(
     const base::Value* value,
     std::string* /*error*/,
     std::vector<std::string>* unhandled_permissions) {
-  return value && value->GetAsString(&setting_value_);
+  if (!value || !value->is_string())
+    return false;
+  setting_value_ = value->GetString();
+  return true;
 }
 
 std::unique_ptr<base::Value> SettingsOverrideAPIPermission::ToValue() const {

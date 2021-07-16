@@ -105,11 +105,10 @@ std::unique_ptr<base::Value> SocketPermissionData::ToValue() const {
 }
 
 bool SocketPermissionData::FromValue(const base::Value* value) {
-  std::string spec;
-  if (!value->GetAsString(&spec))
+  if (!value->is_string())
     return false;
 
-  return Parse(spec);
+  return Parse(value->GetString());
 }
 
 SocketPermissionEntry& SocketPermissionData::entry() {

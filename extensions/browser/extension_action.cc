@@ -123,14 +123,13 @@ ExtensionAction::IconParseResult ExtensionAction::ParseIconFromCanvasDictionary(
   for (base::DictionaryValue::Iterator iter(dict); !iter.IsAtEnd();
        iter.Advance()) {
     std::string byte_string;
-    std::string base64_string;
     const void* bytes = nullptr;
     size_t num_bytes = 0;
     if (iter.value().is_blob()) {
       bytes = iter.value().GetBlob().data();
       num_bytes = iter.value().GetBlob().size();
-    } else if (iter.value().GetAsString(&base64_string)) {
-      if (!base::Base64Decode(base64_string, &byte_string))
+    } else if (iter.value().is_string()) {
+      if (!base::Base64Decode(iter.value().GetString(), &byte_string))
         return IconParseResult::kDecodeFailure;
       bytes = byte_string.c_str();
       num_bytes = byte_string.length();

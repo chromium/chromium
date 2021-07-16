@@ -153,9 +153,8 @@ TEST_F(IdleTest, QueryLockedActive) {
   std::unique_ptr<base::Value> result(
       RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
 
-  std::string idle_state;
-  ASSERT_TRUE(result->GetAsString(&idle_state));
-  EXPECT_EQ("locked", idle_state);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("locked", result->GetString());
 }
 
 // Verifies that "locked" takes priority over "idle".
@@ -166,9 +165,8 @@ TEST_F(IdleTest, QueryLockedIdle) {
   std::unique_ptr<base::Value> result(
       RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
 
-  std::string idle_state;
-  ASSERT_TRUE(result->GetAsString(&idle_state));
-  EXPECT_EQ("locked", idle_state);
+  ASSERT_TRUE(result->is_string());
+  EXPECT_EQ("locked", result->GetString());
 }
 
 // Verifies that any amount of idle time less than the detection interval
@@ -183,9 +181,8 @@ TEST_F(IdleTest, QueryActive) {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
 
-    std::string idle_state;
-    ASSERT_TRUE(result->GetAsString(&idle_state));
-    EXPECT_EQ("active", idle_state);
+    ASSERT_TRUE(result->is_string());
+    EXPECT_EQ("active", result->GetString());
   }
 }
 
@@ -201,9 +198,8 @@ TEST_F(IdleTest, QueryIdle) {
     std::unique_ptr<base::Value> result(
         RunFunctionAndReturnValue(new IdleQueryStateFunction(), "[60]"));
 
-    std::string idle_state;
-    ASSERT_TRUE(result->GetAsString(&idle_state));
-    EXPECT_EQ("idle", idle_state);
+    ASSERT_TRUE(result->is_string());
+    EXPECT_EQ("idle", result->GetString());
   }
 }
 
@@ -222,12 +218,10 @@ TEST_F(IdleTest, QueryMinThreshold) {
       std::unique_ptr<base::Value> result(
           RunFunctionAndReturnValue(new IdleQueryStateFunction(), args));
 
-      std::string idle_state;
-      ASSERT_TRUE(result->GetAsString(&idle_state));
-
       int real_threshold = (threshold < 15) ? 15 : threshold;
       const char* expected = (time < real_threshold) ? "active" : "idle";
-      EXPECT_EQ(expected, idle_state);
+      ASSERT_TRUE(result->is_string());
+      EXPECT_EQ(expected, result->GetString());
     }
   }
 }
@@ -251,13 +245,11 @@ TEST_F(IdleTest, QueryMaxThreshold) {
       std::unique_ptr<base::Value> result(
           RunFunctionAndReturnValue(new IdleQueryStateFunction(), args));
 
-      std::string idle_state;
-      ASSERT_TRUE(result->GetAsString(&idle_state));
-
       int real_threshold =
           (threshold > kFourHoursInSeconds) ? kFourHoursInSeconds : threshold;
       const char* expected = (time < real_threshold) ? "active" : "idle";
-      EXPECT_EQ(expected, idle_state);
+      ASSERT_TRUE(result->is_string());
+      EXPECT_EQ(expected, result->GetString());
     }
   }
 }

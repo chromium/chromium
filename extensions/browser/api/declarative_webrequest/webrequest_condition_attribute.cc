@@ -225,12 +225,11 @@ WebRequestConditionAttributeContentType::Create(
   }
   std::vector<std::string> content_types;
   for (const auto& entry : value->GetList()) {
-    std::string content_type;
-    if (!entry.GetAsString(&content_type)) {
+    if (!entry.is_string()) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
       return nullptr;
     }
-    content_types.push_back(content_type);
+    content_types.push_back(entry.GetString());
   }
 
   return scoped_refptr<const WebRequestConditionAttribute>(
@@ -406,9 +405,8 @@ std::unique_ptr<HeaderMatcher::StringMatchTest>
 HeaderMatcher::StringMatchTest::Create(const base::Value& data,
                                        MatchType type,
                                        bool case_sensitive) {
-  std::string str;
-  CHECK(data.GetAsString(&str));
-  return base::WrapUnique(new StringMatchTest(str, type, case_sensitive));
+  return base::WrapUnique(
+      new StringMatchTest(data.GetString(), type, case_sensitive));
 }
 
 HeaderMatcher::StringMatchTest::~StringMatchTest() {}
@@ -726,10 +724,10 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     return false;
 
   int stages = 0;
-  std::string stage_name;
   for (const auto& entry : value.GetList()) {
-    if (!entry.GetAsString(&stage_name))
+    if (!entry.is_string())
       return false;
+    const std::string& stage_name = entry.GetString();
     if (stage_name == keys::kOnBeforeRequestEnum) {
       stages |= ON_BEFORE_REQUEST;
     } else if (stage_name == keys::kOnBeforeSendHeadersEnum) {

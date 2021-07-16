@@ -473,9 +473,7 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
     return RespondNow(Error(networking_private::kErrorNotSupported));
   std::unique_ptr<base::ListValue> enabled_networks_list(new base::ListValue);
   for (const auto& entry : enabled_networks_onc_types->GetList()) {
-    std::string type;
-    if (!entry.GetAsString(&type))
-      NOTREACHED();
+    const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
       enabled_networks_list->AppendString(
           private_api::ToString(private_api::NETWORK_TYPE_ETHERNET));
