@@ -77,6 +77,9 @@ class EnrollmentScreenView {
   virtual void ShowUserError(UserErrorType error_type,
                              const std::string& email) = 0;
 
+  // Shows error that enrollment is not allowed during CloudReady run.
+  virtual void ShowEnrollmentCloudReadyNotAllowedError() = 0;
+
   // Shows the Active Directory domain joining screen.
   virtual void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                          const std::string& machine_name,

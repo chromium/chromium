@@ -45,6 +45,7 @@ class MockEnrollmentScreenView : public EnrollmentScreenView {
   MOCK_METHOD(void,
               ShowUserError,
               (UserErrorType error_type, const std::string& email));
+  MOCK_METHOD(void, ShowEnrollmentCloudReadyNotAllowedError, ());
   MOCK_METHOD(void,
               ShowLicenseTypeSelectionScreen,
               (const base::DictionaryValue&));

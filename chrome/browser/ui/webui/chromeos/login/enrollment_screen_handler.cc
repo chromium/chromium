@@ -276,6 +276,10 @@ void EnrollmentScreenHandler::ShowUserError(UserErrorType error_type,
   }
 }
 
+void EnrollmentScreenHandler::ShowEnrollmentCloudReadyNotAllowedError() {
+  ShowError(IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED, false);
+}
+
 void EnrollmentScreenHandler::ShowActiveDirectoryScreen(
     const std::string& domain_join_config,
     const std::string& machine_name,

@@ -79,6 +79,7 @@ class EnrollmentScreenHandler
   void ShowSigninScreen() override;
   void ShowUserError(UserErrorType error_type,
                      const std::string& email) override;
+  void ShowEnrollmentCloudReadyNotAllowedError() override;
   void ShowActiveDirectoryScreen(const std::string& domain_join_config,
                                  const std::string& machine_name,
                                  const std::string& username,

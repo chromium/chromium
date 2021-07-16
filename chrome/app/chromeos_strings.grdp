@@ -2737,6 +2737,9 @@
   </message>
 
   <!-- Strings for the enterprise enrollment page -->
+  <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_CLOUD_READY_NOT_ALLOWED" desc="Error message shown on the enrollment screen if enrollment is not allowed because of CloudReady.">
+    Enrollment is only supported after installation. To manage this device, install CloudReady first.
+  </message>
   <message name="IDS_ENTERPRISE_ENROLLMENT_STATUS_REGISTRATION_FAILED" desc="Error message shown on the enrollment screen upon failed device registration.">
     Error when registering the device with the server: <ph name="CLIENT_ERROR">$1<ex>Failed to connect to the server</ex></ph>.
   </message>

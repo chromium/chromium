@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
@@ -237,6 +238,11 @@ void EnrollmentScreen::ShowImpl() {
   view_->SetEnrollmentController(this);
   UMA(policy::kMetricEnrollmentTriggered);
   UpdateFlowType();
+  if (switches::IsOsInstallAllowed()) {
+    view_->Show();
+    view_->ShowEnrollmentCloudReadyNotAllowedError();
+    return;
+  }
   switch (current_auth_) {
     case AUTH_OAUTH:
       ShowInteractiveScreen();
