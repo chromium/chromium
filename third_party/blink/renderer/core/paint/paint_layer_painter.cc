@@ -60,6 +60,9 @@ bool PaintLayerPainter::PaintedOutputInvisible(const ComputedStyle& style) {
   if (style.HasWillChangeOpacityHint())
     return false;
 
+  if (style.HasCurrentOpacityAnimation())
+    return false;
+
   // 0.0004f < 1/2048. With 10-bit color channels (only available on the
   // newest Macs; otherwise it's 8-bit), we see that an alpha of 1/2048 or
   // less leads to a color output of less than 0.5 in all channels, hence

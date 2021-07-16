@@ -2424,4 +2424,31 @@ TEST_P(CompositingSimTest, EffectCompositedWith3DTransform) {
   EXPECT_FALSE(filter_effect->filters.IsEmpty());
 }
 
+// The main thread will not have a chance to update the painted content of an
+// animation running on the compositor, so ensure the cc::Layer with animating
+// opacity has content when starting the animation, even if the opacity is
+// initially 0.
+TEST_P(CompositingSimTest, CompositorAnimationOfOpacityHasPaintedContent) {
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        @keyframes opacity {
+          0% { opacity: 0; }
+          99% { opacity: 0; }
+          100% { opacity: 0.5; }
+        }
+        #animation {
+          animation-name: opacity;
+          animation-duration: 999s;
+          width: 100px;
+          height: 100px;
+          background: lightblue;
+        }
+      </style>
+      <div id="animation"></div>
+  )HTML");
+  Compositor().BeginFrame();
+  EXPECT_TRUE(CcLayerByDOMElementId("animation")->DrawsContent());
+}
+
 }  // namespace blink
