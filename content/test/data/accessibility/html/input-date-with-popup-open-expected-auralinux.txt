@@ -129,4 +129,5 @@
 ++++++++++++++++++++++++[static] name='10'
 ++++++++++++++++++++++[table cell] name='Saturday, October 11, 2008' selectable (row=5, col=6, row_span=1, col_span=1, n_row_headers=0, n_col_headers=0)
 ++++++++++++++++++++++++[static] name='11'
+++++++++++++++++[push button] name='Clear'
 ++++++++++++++++[push button] name='Today'

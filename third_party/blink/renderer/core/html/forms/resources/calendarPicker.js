@@ -3303,6 +3303,27 @@ MonthPopupButton.prototype.onClick = function(event) {
  * @constructor
  * @extends View
  */
+function ClearButton() {
+  View.call(this, createElement('button', ClearButton.ClassNameClearButton));
+  this.element.addEventListener('click', this.onClick, false);
+};
+
+ClearButton.prototype = Object.create(View.prototype);
+
+ClearButton.ClassNameClearButton = 'clear-button';
+ClearButton.EventTypeButtonClick = 'buttonClick';
+
+/**
+ * @param {?Event} event
+ */
+ClearButton.prototype.onClick = function(event) {
+  this.dispatchEvent(ClearButton.EventTypeButtonClick, this);
+};
+
+/**
+ * @constructor
+ * @extends View
+ */
 function CalendarNavigationButton() {
   View.call(
       this,
@@ -3932,6 +3953,16 @@ function CalendarTableView(calendarPicker) {
   headerView.attachTo(this, this.scrollView);
 
   /**
+   * @type {!ClearButton}
+   * @const
+   */
+  var clearButton = new ClearButton();
+  clearButton.attachTo(this);
+  clearButton.on(ClearButton.EventTypeButtonClick, this.onClearButtonClick);
+  clearButton.element.textContent = global.params.clearLabel;
+  clearButton.element.setAttribute('aria-label', global.params.clearLabel);
+
+  /**
    * @type {!CalendarNavigationButton}
    * @const
    */
@@ -4028,6 +4059,10 @@ CalendarTableView.prototype.onClick = function(event) {
     return;
   var dayCell = dayCellElement.$view;
   this.calendarPicker.selectRangeContainingDay(dayCell.day);
+};
+
+CalendarTableView.prototype.onClearButtonClick = function() {
+  window.pagePopupController.setValueAndClosePopup(0, '');
 };
 
 CalendarTableView.prototype.onTodayButtonClick = function(sender) {
@@ -4720,7 +4755,8 @@ CalendarPicker.prototype.onCalendarTableKeyDown = function(event) {
   var key = event.key;
   var offset = 0;
 
-  if (!event.target.matches('.today-button') && this._selection) {
+  if (!event.target.matches('.today-button, .clear-button') &&
+      this._selection) {
     switch (key) {
       case 'PageUp':
         var previousMonth = this.currentMonth().previous();
@@ -4878,11 +4914,11 @@ CalendarPicker.prototype.onBodyKeyDown = function(event) {
       break;
     case 'Enter':
       // Submit the popup for an Enter keypress except when the user is
-      // hitting Enter to activate the month switcher button, Today button,
-      // or previous/next month arrows.
+      // hitting Enter to activate the month switcher button, Clear button,
+      // Today button, or previous/next month arrows.
       if (this.type !== 'datetime-local') {
         if (!event.target.matches(
-                '.calendar-navigation-button, .month-popup-button, .year-list-view')) {
+                '.calendar-navigation-button, .clear-button, .month-popup-button, .year-list-view')) {
           if (this._selection) {
             window.pagePopupController.setValueAndClosePopup(
                 0, this.getSelectedValue());

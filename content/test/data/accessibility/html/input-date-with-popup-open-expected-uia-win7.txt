@@ -130,4 +130,5 @@ Document
 ++++++++++++++++++++++++++Text Name='10' IsControlElement=false
 ++++++++++++++++++++++++DataItem Name='Saturday, October 11, 2008' GridItem.Column=6 GridItem.ColumnSpan=1 GridItem.Row=5 GridItem.RowSpan=1 SelectionItem.IsSelected=false
 ++++++++++++++++++++++++++Text Name='11' IsControlElement=false
+++++++++++++++++++Button Name='Clear'
 ++++++++++++++++++Button Name='Today'

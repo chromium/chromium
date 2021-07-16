@@ -140,5 +140,7 @@ rootWebArea
 ++++++++++++++++++++++++++++staticText name='10'
 ++++++++++++++++++++++++++cell name='Saturday, October 11, 2008' selected=false
 ++++++++++++++++++++++++++++staticText name='11'
+++++++++++++++++++++button name='Clear'
+++++++++++++++++++++++staticText name='Clear'
 ++++++++++++++++++++button name='Today'
 ++++++++++++++++++++++staticText name='Today'

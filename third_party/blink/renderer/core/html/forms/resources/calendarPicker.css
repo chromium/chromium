@@ -417,18 +417,30 @@ body {
   outline-offset: -2px;
 }
 
-.today-button {
+.clear-button, .today-button {
+  -webkit-align-self: center;
+  background-color: #ffffff;
   border: 1px solid transparent;
   bottom: 12px;
   color: #0078D4;
   font-size: 12px;
   height: 20px;
-  padding: 4px;
+  padding: 4px 0 4px 0;
   position: absolute;
-  right: 20px;
+  text-align: center;
   width: auto;
 }
 
+.clear-button {
+  left: 20px;
+  margin-inline-end: 4px !important;
+}
+
+.today-button {
+  right: 20px;
+}
+
+.clear-button:hover,
 .today-button:hover {
   background-color: rgba(0, 117, 255, 0.3);
 }
@@ -590,12 +602,14 @@ body {
     color: GrayText;
   }
 
+  .clear-button,
   .today-button {
     background-color: Window;
     color: LinkText;
     forced-color-adjust: none;
   }
 
+  .clear-button:hover,
   .today-button:hover {
     background-color: Window;
     border-color: Highlight;
@@ -714,10 +728,13 @@ body {
     color: rgba(255, 255, 255, 0.3);
   }
 
+  .clear-button,
   .today-button {
+    background-color: #3B3B3B;
     color: #99C8FF;
   }
 
+  .clear-button:hover,
   .today-button:hover {
     color: #D1E6FF;
     background-color: #545454;
