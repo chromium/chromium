@@ -1305,6 +1305,23 @@
     '$mixin_append': {
       'args': [
         '--xcode-build-version',
+        '13a5192i'
+      ],
+    },
+    'swarming': {
+      'named_caches': [
+        {
+          'name': 'xcode_ios_13a5192i',
+          'path': 'Xcode.app',
+        },
+      ],
+    },
+  },
+  # Xcode 13.0 beta 2. Currently on ios-simulator-noncq bot.
+  'xcode_13a5155e': {
+    '$mixin_append': {
+      'args': [
+        '--xcode-build-version',
         '13a5155e'
       ],
     },

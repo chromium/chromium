@@ -5181,7 +5181,7 @@
           'mac_11_x64',
           'mac_toolchain',
           'out_dir_arg',
-          'xcode_13_latest_beta',
+          'xcode_13a5155e',
           'xctest',
         ],
         'test_suites': {
