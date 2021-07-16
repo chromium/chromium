@@ -421,6 +421,10 @@ void PageInfo::RecordPageInfoAction(PageInfoAction action) {
   if (action != PAGE_INFO_OPENED)
     did_perform_action_ = true;
 
+#if !defined(OS_ANDROID)
+  delegate_->OnPageInfoActionOccurred(action);
+#endif
+
   UMA_HISTOGRAM_ENUMERATION("WebsiteSettings.Action", action, PAGE_INFO_COUNT);
 
   if (web_contents()) {
@@ -552,6 +556,7 @@ void PageInfo::OnSiteChosenObjectDeleted(const ChooserUIInfo& ui_info,
 
   // Refresh the UI to reflect the changed settings.
   PresentSitePermissions();
+  RecordPageInfoAction(PAGE_INFO_CHOOSER_OBJECT_DELETED);
 }
 
 void PageInfo::OnUIClosing(bool* reload_prompt) {
@@ -564,6 +569,7 @@ void PageInfo::OnUIClosing(bool* reload_prompt) {
     if (delegate_->CreateInfoBarDelegate() && reload_prompt)
       *reload_prompt = true;
   }
+  delegate_->OnUIClosing();
 #endif
 }
 
@@ -574,14 +580,15 @@ void PageInfo::OnRevokeSSLErrorBypassButtonPressed() {
   stateful_ssl_host_state_delegate->RevokeUserAllowExceptionsHard(
       site_url().host());
   did_revoke_user_ssl_decisions_ = true;
+  RecordPageInfoAction(PAGE_INFO_RESET_DECISIONS_CLICKED);
 }
 
 void PageInfo::OpenSiteSettingsView() {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
-  delegate_->ShowSiteSettings(site_url());
   RecordPageInfoAction(PAGE_INFO_SITE_SETTINGS_OPENED);
+  delegate_->ShowSiteSettings(site_url());
 #endif
 }
 
@@ -592,8 +599,8 @@ void PageInfo::OpenCookiesDialog() {
   if (!web_contents() || web_contents()->IsBeingDestroyed())
     return;
 
-  delegate_->OpenCookiesDialog();
   RecordPageInfoAction(PAGE_INFO_COOKIES_DIALOG_OPENED);
+  delegate_->OpenCookiesDialog();
 #endif
 }
 
@@ -606,8 +613,8 @@ void PageInfo::OpenCertificateDialog(net::X509Certificate* certificate) {
 
   gfx::NativeWindow top_window = web_contents()->GetTopLevelNativeWindow();
   if (certificate && top_window) {
-    delegate_->OpenCertificateDialog(certificate);
     RecordPageInfoAction(PAGE_INFO_CERTIFICATE_DIALOG_OPENED);
+    delegate_->OpenCertificateDialog(certificate);
   }
 #endif
 }
@@ -616,6 +623,7 @@ void PageInfo::OpenSafetyTipHelpCenterPage() {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
+  RecordPageInfoAction(PAGE_INFO_SAFETY_TIP_HELP_OPENED);
   delegate_->OpenSafetyTipHelpCenterPage();
 #endif
 }
@@ -624,8 +632,8 @@ void PageInfo::OpenConnectionHelpCenterPage(const ui::Event& event) {
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
-  delegate_->OpenConnectionHelpCenterPage(event);
   RecordPageInfoAction(PAGE_INFO_CONNECTION_HELP_OPENED);
+  delegate_->OpenConnectionHelpCenterPage(event);
 #endif
 }
 
@@ -634,12 +642,14 @@ void PageInfo::OpenContentSettingsExceptions(
 #if defined(OS_ANDROID)
   NOTREACHED();
 #else
+  RecordPageInfoAction(PAGE_INFO_CONNECTION_HELP_OPENED);
   delegate_->OpenContentSettingsExceptions(content_settings_type);
 #endif
 }
 
 void PageInfo::OnChangePasswordButtonPressed() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+  RecordPageInfoAction(PAGE_INFO_CHANGE_PASSWORD_PRESSED);
   delegate_->OnUserActionOnPasswordUi(
       safe_browsing::WarningAction::CHANGE_PASSWORD);
 #endif
@@ -647,6 +657,7 @@ void PageInfo::OnChangePasswordButtonPressed() {
 
 void PageInfo::OnAllowlistPasswordReuseButtonPressed() {
 #if BUILDFLAG(FULL_SAFE_BROWSING)
+  RecordPageInfoAction(PAGE_INFO_PASSWORD_REUSE_ALLOWED);
   delegate_->OnUserActionOnPasswordUi(
       safe_browsing::WarningAction::MARK_AS_LEGITIMATE);
 #endif

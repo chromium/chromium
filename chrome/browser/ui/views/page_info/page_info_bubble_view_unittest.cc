@@ -580,6 +580,12 @@ TEST_P(PageInfoBubbleViewTest, ResetBlockedInIncognitoPermission) {
     return;
   }
 
+  // This test uses OnSitePermissionChanged to inform the bubble of the
+  // permission changes, in production code this means the user interacted with
+  // page info and is thus reported to the sentiment service, inflating the
+  // expected interaction count.
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(5);
+
   api_->SetOffTheRecordProfile();
 
   PermissionInfoList list(1);
@@ -652,9 +658,7 @@ TEST_P(PageInfoBubbleViewTest, ResetBlockedInIncognitoPermission) {
 
 // Test UI construction and reconstruction with USB devices.
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUsbDevice) {
-  if (!is_page_info_v2_enabled()) {
-    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
-  }
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
 
@@ -696,6 +700,7 @@ TEST_P(PageInfoBubbleViewTest, ResetPermissionInfoWithUsbDevice) {
   if (!is_page_info_v2_enabled()) {
     return;
   }
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
 
   constexpr size_t kExpectedChildren = 0;
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
@@ -795,9 +800,7 @@ TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithPolicyUsbDevices) {
 // Test UI construction and reconstruction with both user and policy USB
 // devices.
 TEST_P(PageInfoBubbleViewTest, SetPermissionInfoWithUserAndPolicyUsbDevices) {
-  if (!is_page_info_v2_enabled()) {
-    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
-  }
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo);
   constexpr size_t kExpectedChildren = 0;
   EXPECT_TRUE(api_->ValidatePermissionsChildrenCount(kExpectedChildren));
 
@@ -1081,23 +1084,20 @@ TEST_P(PageInfoBubbleViewTest, EnsureCloseCallback) {
 }
 
 TEST_P(PageInfoBubbleViewTest, CheckHeaderInteractions) {
-  // New page info doesn't support sentiment service yet.
-  if (is_page_info_v2_enabled()) {
-    return;
-  }
-
   // Confirm that interactions with the header tips are reported to the
   // sentiment service correctly.
-  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
   const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              ui::EventTimeForNow(), 0, 0);
   if (is_page_info_v2_enabled()) {
+    // Navigating to the security page constitutes an interaction.
+    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(3);
     api_->navigation_handler()->OpenSecurityPage();
-    auto* page_view =
-        static_cast<PageInfoSecurityContentView*>(api_->current_view());
+    auto* page_view = static_cast<PageInfoSecurityContentView*>(
+        api_->current_view()->children()[1]);
     page_view->SecurityDetailsClicked(event);
     page_view->ResetDecisionsClicked();
   } else {
+    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
     auto* bubble_view = static_cast<PageInfoBubbleView*>(api_->current_view());
     bubble_view->SecurityDetailsClicked(event);
     bubble_view->ResetDecisionsClicked();

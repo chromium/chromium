@@ -101,6 +101,17 @@ void PageInfoDelegateImpl::OpenContentSettingsExceptions(
   // Used for desktop only. Doesn't need implementation for WebLayer.
   NOTREACHED();
 }
+
+void PageInfoDelegateImpl::OnPageInfoActionOccurred(
+    PageInfo::PageInfoAction action) {
+  // Used for desktop only. Doesn't need implementation for WebLayer.
+  NOTREACHED();
+}
+
+void PageInfoDelegateImpl::OnUIClosing() {
+  // Used for desktop only. Doesn't need implementation for WebLayer.
+  NOTREACHED();
+}
 #endif
 
 permissions::PermissionDecisionAutoBlocker*

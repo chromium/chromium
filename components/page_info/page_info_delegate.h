@@ -10,6 +10,7 @@
 #include "build/build_config.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/page_info/page_info.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/safe_browsing/buildflags.h"
@@ -69,6 +70,8 @@ class PageInfoDelegate {
   virtual void OpenSafetyTipHelpCenterPage() = 0;
   virtual void OpenContentSettingsExceptions(
       ContentSettingsType content_settings_type) = 0;
+  virtual void OnPageInfoActionOccurred(PageInfo::PageInfoAction action) = 0;
+  virtual void OnUIClosing() = 0;
 #endif
   virtual permissions::PermissionDecisionAutoBlocker*
   GetPermissionDecisionAutoblocker() = 0;

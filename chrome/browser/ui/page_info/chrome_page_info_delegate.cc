@@ -44,6 +44,8 @@
 #include "chrome/browser/serial/serial_chooser_context_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
+#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/page_info_infobar_delegate.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "ui/events/event.h"
@@ -54,7 +56,12 @@
 
 ChromePageInfoDelegate::ChromePageInfoDelegate(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : web_contents_(web_contents) {
+#if !defined(OS_ANDROID)
+  sentiment_service_ =
+      TrustSafetySentimentServiceFactory::GetForProfile(GetProfile());
+#endif
+}
 
 Profile* ChromePageInfoDelegate::GetProfile() const {
   return Profile::FromBrowserContext(web_contents_->GetBrowserContext());
@@ -188,6 +195,21 @@ void ChromePageInfoDelegate::OpenContentSettingsExceptions(
     ContentSettingsType content_settings_type) {
   chrome::ShowContentSettingsExceptionsForProfile(GetProfile(),
                                                   content_settings_type);
+}
+
+void ChromePageInfoDelegate::OnPageInfoActionOccurred(
+    PageInfo::PageInfoAction action) {
+  if (sentiment_service_) {
+    if (action == PageInfo::PAGE_INFO_OPENED)
+      sentiment_service_->PageInfoOpened();
+    else
+      sentiment_service_->InteractedWithPageInfo();
+  }
+}
+
+void ChromePageInfoDelegate::OnUIClosing() {
+  if (sentiment_service_)
+    sentiment_service_->PageInfoClosed();
 }
 #endif
 
