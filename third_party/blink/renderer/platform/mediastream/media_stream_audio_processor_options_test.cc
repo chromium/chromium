@@ -254,7 +254,52 @@ TEST(PopulateApmConfigTest, SetNoiseSuppressionLevelInConfigJson) {
       apm_config.echo_canceller.mobile_mode);
 }
 
-// Verify that some basic settings have the expected default values.
+TEST(CreateWebRtcAudioProcessingModuleTest, SetGainsInConfigJson) {
+  const media::AudioProcessingSettings settings{
+      .automatic_gain_control = true,
+      .experimental_automatic_gain_control = false};
+  absl::optional<std::string> audio_processing_platform_config_json =
+      "{\"gain_control_compression_gain_db\": 12.1212, "
+      "\"pre_amplifier_fixed_gain_factor\": 2.345}";
+
+  std::unique_ptr<webrtc::AudioProcessing> apm =
+      CreateWebRtcAudioProcessingModule(
+          settings, audio_processing_platform_config_json,
+          /*agc_startup_min_volume=*/absl::nullopt);
+  ASSERT_TRUE(!!apm);
+  webrtc::AudioProcessing::Config config = apm->GetConfig();
+
+  // Pre-amplifier is enabled if a gain factor is specified.
+  EXPECT_TRUE(config.pre_amplifier.enabled);
+  EXPECT_FLOAT_EQ(config.pre_amplifier.fixed_gain_factor, 2.345);
+
+  // Fixed digital AGC2 is enabled if AGC is on, analog AGC is off, and a
+  // compression gain is specified.
+  EXPECT_TRUE(config.gain_controller2.enabled);
+  EXPECT_FALSE(config.gain_controller2.adaptive_digital.enabled);
+  EXPECT_FLOAT_EQ(config.gain_controller2.fixed_digital.gain_db, 12.1212);
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     SetNoiseSuppressionLevelInConfigJson) {
+  const media::AudioProcessingSettings settings{.noise_suppression = true};
+  absl::optional<std::string> audio_processing_platform_config_json =
+      "{\"noise_suppression_level\": 3}";
+
+  std::unique_ptr<webrtc::AudioProcessing> apm =
+      CreateWebRtcAudioProcessingModule(
+          settings, audio_processing_platform_config_json,
+          /*agc_startup_min_volume=*/absl::nullopt);
+  ASSERT_TRUE(!!apm);
+
+  webrtc::AudioProcessing::Config config = apm->GetConfig();
+
+  EXPECT_TRUE(config.noise_suppression.enabled);
+  EXPECT_EQ(config.noise_suppression.level,
+            webrtc::AudioProcessing::Config::NoiseSuppression::kVeryHigh);
+}
+
+// Verify the default audio processing effects.
 TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   const AudioProcessingProperties properties;
   const media::AudioProcessingSettings settings =
@@ -271,6 +316,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
 
   EXPECT_TRUE(config.pipeline.multi_channel_render);
   EXPECT_TRUE(config.pipeline.multi_channel_capture);
+  EXPECT_EQ(config.pipeline.maximum_internal_processing_rate, 48000);
   EXPECT_TRUE(config.high_pass_filter.enabled);
   EXPECT_TRUE(config.echo_canceller.enabled);
   EXPECT_TRUE(config.gain_controller1.enabled);
@@ -278,6 +324,7 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyDefaultProperties) {
   EXPECT_FALSE(config.gain_controller2.enabled);
   EXPECT_TRUE(config.noise_suppression.enabled);
   EXPECT_FALSE(config.voice_detection.enabled);
+  EXPECT_FALSE(config.residual_echo_detector.enabled);
 
 #if defined(OS_ANDROID)
   // Android uses echo cancellation optimized for mobiles, and does not
@@ -306,6 +353,86 @@ TEST(CreateWebRtcAudioProcessingModuleTest, VerifyNoiseSuppressionSettings) {
     EXPECT_EQ(config.noise_suppression.level,
               webrtc::AudioProcessing::Config::NoiseSuppression::kHigh);
   }
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest, VerifyEchoCancellerSettings) {
+  for (bool ec_enabled : {true, false}) {
+    const media::AudioProcessingSettings settings{.echo_cancellation =
+                                                      ec_enabled};
+    std::unique_ptr<webrtc::AudioProcessing> apm =
+        CreateWebRtcAudioProcessingModule(
+            settings,
+            /*audio_processing_platform_config_json=*/absl::nullopt,
+            /*agc_startup_min_volume=*/absl::nullopt);
+    ASSERT_TRUE(!!apm);
+    webrtc::AudioProcessing::Config config = apm->GetConfig();
+
+    EXPECT_EQ(config.echo_canceller.enabled, ec_enabled);
+#if defined(OS_ANDROID)
+    EXPECT_TRUE(config.echo_canceller.mobile_mode);
+#else
+    EXPECT_FALSE(config.echo_canceller.mobile_mode);
+#endif
+  }
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest, ToggleHighPassFilter) {
+  for (bool high_pass_filter_enabled : {true, false}) {
+    const media::AudioProcessingSettings settings{.high_pass_filter =
+                                                      high_pass_filter_enabled};
+    std::unique_ptr<webrtc::AudioProcessing> apm =
+        CreateWebRtcAudioProcessingModule(
+            settings,
+            /*audio_processing_platform_config_json=*/absl::nullopt,
+            /*agc_startup_min_volume=*/absl::nullopt);
+    ASSERT_TRUE(!!apm);
+    webrtc::AudioProcessing::Config config = apm->GetConfig();
+
+    EXPECT_EQ(config.high_pass_filter.enabled, high_pass_filter_enabled);
+  }
+}
+
+TEST(CreateWebRtcAudioProcessingModuleTest, ToggleTransientSuppression) {
+  for (bool transient_suppression_enabled : {true, false}) {
+    const media::AudioProcessingSettings settings{
+        .transient_noise_suppression = transient_suppression_enabled};
+    std::unique_ptr<webrtc::AudioProcessing> apm =
+        CreateWebRtcAudioProcessingModule(
+            settings,
+            /*audio_processing_platform_config_json=*/absl::nullopt,
+            /*agc_startup_min_volume=*/absl::nullopt);
+    ASSERT_TRUE(!!apm);
+    webrtc::AudioProcessing::Config config = apm->GetConfig();
+
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+    EXPECT_EQ(config.transient_suppression.enabled,
+              transient_suppression_enabled);
+#else
+    // Transient suppression is not supported (nor useful) on mobile platforms.
+    EXPECT_FALSE(config.transient_suppression.enabled);
+#endif
+  }
+}
+
+// There is no way to test what echo cancellation configuration is applied, but
+// this test at least exercises the code that handles echo cancellation
+// configuration from JSON.
+TEST(CreateWebRtcAudioProcessingModuleTest,
+     ApplyEchoCancellationConfigFromJson) {
+  // Arbitrary settings to have something to parse.
+  absl::optional<std::string> audio_processing_platform_config_json =
+      "{\"aec3\": {"
+      "\"comfort_noise\": {\"noise_floor_dbfs\": -123.4567},"
+      "\"echo_model\": {\"min_noise_floor_power\": 1234567.8},"
+      "},}";
+  const media::AudioProcessingSettings settings{.echo_cancellation = true};
+  std::unique_ptr<webrtc::AudioProcessing> apm =
+      CreateWebRtcAudioProcessingModule(
+          settings, audio_processing_platform_config_json,
+          /*agc_startup_min_volume=*/absl::nullopt);
+  ASSERT_TRUE(!!apm);
+  webrtc::AudioProcessing::Config config = apm->GetConfig();
+  EXPECT_TRUE(config.echo_canceller.enabled);
 }
 
 TEST(AudioProcessingPropertiesToAudioProcessingSettingsTest,
