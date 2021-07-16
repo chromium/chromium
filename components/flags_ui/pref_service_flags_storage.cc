@@ -26,12 +26,11 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
       prefs_->GetList(prefs::kAboutFlagsEntries);
   std::set<std::string> flags;
   for (const auto& entry : enabled_experiments->GetList()) {
-    std::string experiment_name;
-    if (!entry.GetAsString(&experiment_name)) {
+    if (!entry.is_string()) {
       LOG(WARNING) << "Invalid entry in " << prefs::kAboutFlagsEntries;
       continue;
     }
-    flags.insert(experiment_name);
+    flags.insert(entry.GetString());
   }
   return flags;
 }
