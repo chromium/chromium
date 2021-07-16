@@ -10,9 +10,20 @@
 
 namespace enterprise_connectors {
 
+static const base::ListValue* GetTrustedUrlPatterns(PrefService* prefs) {
+  return prefs->HasPrefPath(kContextAwareAccessSignalsAllowlistPref)
+             ? prefs->GetList(kContextAwareAccessSignalsAllowlistPref)
+             : nullptr;
+}
+
+// static
+bool DeviceTrustService::IsEnabled(PrefService* prefs) {
+  auto* list = GetTrustedUrlPatterns(prefs);
+  return list && !list->GetList().empty();
+}
+
 DeviceTrustService::DeviceTrustService(Profile* profile)
     : prefs_(profile->GetPrefs()),
-      first_report_sent_(false),
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
@@ -27,21 +38,26 @@ DeviceTrustService::DeviceTrustService(Profile* profile)
   // and we Remove() this path from pref_observer_ in Shutdown().
   reporter_ =
       std::make_unique<enterprise_connectors::DeviceTrustSignalReporter>();
+
+  // OnPolicyUpdated() won't get called until the policy actually changes.
+  // To make sure everything is initialized on start up, call it now to kick
+  // things off.
+  OnPolicyUpdated();
 }
 
-DeviceTrustService::~DeviceTrustService() = default;
+DeviceTrustService::~DeviceTrustService() {
+  DCHECK(callbacks_.empty());
+}
 
 void DeviceTrustService::Shutdown() {
   pref_observer_.Remove(kContextAwareAccessSignalsAllowlistPref);
 }
 
 bool DeviceTrustService::IsEnabled() const {
-  return prefs_->HasPrefPath(kContextAwareAccessSignalsAllowlistPref) &&
-         !prefs_->GetList(kContextAwareAccessSignalsAllowlistPref)
-              ->GetList()
-              .empty();
+  return is_enabled_;
 }
 
+// static
 base::RepeatingCallback<bool()> DeviceTrustService::MakePolicyCheck() {
   // Have to make lambda here because weak_ptrs can only bind to methods without
   // return values. Unretained is ok here since this callback is only used in
@@ -52,6 +68,15 @@ base::RepeatingCallback<bool()> DeviceTrustService::MakePolicyCheck() {
 }
 
 void DeviceTrustService::OnPolicyUpdated() {
+  DVLOG(1) << "DeviceTrustService::OnPolicyUpdated";
+
+  // Cache "is enabled" because some callers of IsEnabled() cannot access the
+  // PrefService.
+  is_enabled_ = IsEnabled(prefs_);
+
+  if (IsEnabled() && !callbacks_.empty())
+    callbacks_.Notify(GetTrustedUrlPatterns(prefs_));
+
   if (!reporter_) {
     // Bypass reporter initialization because it already failed previously.
     return OnReporterInitialized(false);
@@ -65,6 +90,8 @@ void DeviceTrustService::OnPolicyUpdated() {
 }
 
 void DeviceTrustService::OnReporterInitialized(bool success) {
+  DVLOG(1) << "DeviceTrustService::OnReporterInitialized success=" << success;
+
   if (!success) {
     // Initialization failed, so reset reporter_ to prevent retrying Init().
     reporter_.reset(nullptr);
@@ -84,6 +111,7 @@ void DeviceTrustService::OnReporterInitialized(bool success) {
   credential->set_credential(attestation_service_->ExportPublicKey());
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
+  DVLOG(1) << "DeviceTrustService::OnReporterInitialized report sent";
   reporter_->SendReport(&report, std::move(signal_report_callback_));
 }
 
@@ -123,5 +151,15 @@ void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
       challenge, std::move(callback));
 }
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+base::CallbackListSubscription
+DeviceTrustService::RegisterTrustedUrlPatternsChangedCallback(
+    TrustedUrlPatternsChangedCallback callback) {
+  // Notify the callback right away so that caller can initialize itself.
+  if (IsEnabled())
+    callback.Run(GetTrustedUrlPatterns(prefs_));
+
+  return callbacks_.Add(callback);
+}
 
 }  // namespace enterprise_connectors

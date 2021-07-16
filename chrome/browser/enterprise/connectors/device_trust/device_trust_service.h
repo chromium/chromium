@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_DEVICE_TRUST_SERVICE_H_
 
+#include "base/callback_list.h"
+#include "base/values.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
@@ -30,12 +32,21 @@ class DeviceTrustService : public KeyedService {
  public:
   using AttestationCallback = base::OnceCallback<void(const std::string&)>;
 
+  using TrustedUrlPatternsChangedCallbackList =
+      base::RepeatingCallbackList<void(const base::ListValue*)>;
+  using TrustedUrlPatternsChangedCallback =
+      TrustedUrlPatternsChangedCallbackList::CallbackType;
+
+  // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
+  static bool IsEnabled(PrefService* prefs);
+
   DeviceTrustService() = delete;
   DeviceTrustService(const DeviceTrustService&) = delete;
   DeviceTrustService& operator=(const DeviceTrustService&) = delete;
   ~DeviceTrustService() override;
 
-  // Check if DeviceTrustService is enabled via prefs with non-empty allowlist.
+  // Check if DeviceTrustService is enabled.  This method may be called from
+  // any task sequence.
   bool IsEnabled() const;
 
   // These methods are added to facilitate testing, because this class is
@@ -53,6 +64,10 @@ class DeviceTrustService : public KeyedService {
                               AttestationCallback callback);
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
+  // Register a callback that listens for changes in the trust URL patterns.
+  base::CallbackListSubscription RegisterTrustedUrlPatternsChangedCallback(
+      TrustedUrlPatternsChangedCallback callback);
+
  private:
   friend class DeviceTrustFactory;
 
@@ -68,8 +83,14 @@ class DeviceTrustService : public KeyedService {
 
   PrefService* prefs_;
 
+  // Caches whether the device trust service is enabled or not.  This is used
+  // to implement IsEnabled() so the method does not need to access the prefs.
+  // This is important because |reporter_| will indirectly call IsEnabled()
+  // from a sequence that cannot call prefs methods.
+  bool is_enabled_ = false;
+
   PrefChangeRegistrar pref_observer_;
-  bool first_report_sent_;
+  bool first_report_sent_ = false;
 
   std::unique_ptr<enterprise_connectors::DeviceTrustSignalReporter> reporter_;
   SignalReportCallback signal_report_callback_;
@@ -77,6 +98,8 @@ class DeviceTrustService : public KeyedService {
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::unique_ptr<AttestationService> attestation_service_;
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+  TrustedUrlPatternsChangedCallbackList callbacks_;
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_NAVIGATION_THROTTLE_H_
 
-#include "components/prefs/pref_change_registrar.h"
+#include "base/callback_list.h"
+#include "base/values.h"
 #include "content/public/browser/navigation_throttle.h"
 
 class GURL;
@@ -21,14 +22,15 @@ namespace enterprise_connectors {
 class DeviceTrustService;
 
 // DeviceTrustNavigationThrottle provides a simple way to start a handshake
-// base on a list of allowed URLs.
-// Handshake is an exchange between Chrome and an IdP. This start when Chrome
-// visit one of the allowed list of URLs set in the policy
-// `ContextAwareAccessSignalsAllowlist`. Chrome will add a HTTP header
-// (X-Device-Trust: VerifiedAccess), when the IdP detect that header it should
-// reply with a challenge from Verified Access. Chrome will take this challenge
-// and build a challenge response that is sent back to the IdP using another
-// HTTP header (X-Verified-Access-Challenge-Response).
+// between Chrome and an origin based on a list of trusted URLs set in the
+// `ContextAwareAccessSignalsAllowlist` policy.
+//
+// The handshake begins when the user visits a trusted URL. Chrome
+// adds the (X-Device-Trust: VerifiedAccess) HTTP header to the request.
+// When the origin detects this header it responds with a 302 redirect that
+// includes a Verified Access challenge in the X-Verified-Access-Challenge HTTP
+// header. Chrome uses the challenge to build a challenge response that is sent
+// back to the origin via the X-Verified-Access-Challenge-Response HTTP header.
 class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  public:
   static std::unique_ptr<DeviceTrustNavigationThrottle> MaybeCreateThrottleFor(
@@ -51,7 +53,7 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
  private:
   ThrottleCheckResult GetUrlThrottleResult(const GURL& url);
 
-  void OnPolicyUpdate();
+  void OnTrustedUrlPatternsChanged(const base::ListValue*);
 
   content::NavigationThrottle::ThrottleCheckResult AddHeadersIfNeeded();
 
@@ -66,7 +68,8 @@ class DeviceTrustNavigationThrottle : public content::NavigationThrottle {
   // The URL matcher created from the ContextAwareAccessSignalsAllowlist policy.
   std::unique_ptr<url_matcher::URLMatcher> matcher_;
 
-  PrefChangeRegistrar pref_change_registrar_;
+  // Subscription for trusted URL pattern changes.
+  base::CallbackListSubscription subscription_;
 
   base::WeakPtrFactory<DeviceTrustNavigationThrottle> weak_ptr_factory_{this};
 };
