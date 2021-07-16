@@ -195,9 +195,11 @@ bool IsSupportedPlanarFormat(const media::VideoFrame& frame) {
 }  // namespace
 
 VideoFrame::VideoFrame(scoped_refptr<media::VideoFrame> frame,
-                       ExecutionContext* context) {
+                       ExecutionContext* context,
+                       std::string monitoring_source_id) {
   DCHECK(frame);
-  handle_ = base::MakeRefCounted<VideoFrameHandle>(frame, context);
+  handle_ = base::MakeRefCounted<VideoFrameHandle>(
+      frame, context, std::move(monitoring_source_id));
 
   external_allocated_memory_ =
       media::VideoFrame::AllocationSize(frame->format(), frame->coded_size());

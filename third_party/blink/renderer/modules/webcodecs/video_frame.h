@@ -47,8 +47,11 @@ class MODULES_EXPORT VideoFrame final : public ScriptWrappable,
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  // Creates a VideoFrame with a new VideoFrameHandle wrapping |frame|.
-  VideoFrame(scoped_refptr<media::VideoFrame> frame, ExecutionContext*);
+  // Creates a VideoFrame with a new VideoFrameHandle wrapping |frame|, and
+  // monitored using |monitoring_source_id|.
+  VideoFrame(scoped_refptr<media::VideoFrame> frame,
+             ExecutionContext*,
+             std::string monitoring_source_id = std::string());
 
   // Creates a VideoFrame from an existing handle.
   // All frames sharing |handle| will have their |handle_| invalidated if any of

@@ -42,5 +42,8 @@ specific_include_rules = {
   ],
   "video_frame_test\.cc": [
     "+components/viz/test/test_context_provider.h",
-  ]
+  ],
+  "video_frame_monitor_test\.cc": [
+    "+base/run_loop.h",
+  ],
 }
