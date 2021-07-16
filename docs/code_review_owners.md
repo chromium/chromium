@@ -1,6 +1,6 @@
 # Mandatory Code-Review and Native OWNERS
 
-Beginning on March 24, 2021, committers@ of Chromium are no longer be able to
+Beginning on March 24, 2021, committers@ of Chromium are no longer able to
 circumvent code review and OWNERS approval on CLs. The full
 [Code Review](code_reviews.md) documentation has been updated to reflect this.
 
@@ -49,7 +49,7 @@ patches).
 
 ### Will trivial files require code-review?
 
-Rubber Stamper auto-reviewer (described above) reviews CLs that that meet strict
+Rubber Stamper auto-reviewer (described above) reviews CLs that meet strict
 criteria. (The list of file types is Google-internal.) For example: directories
 with no code.
 

@@ -22,7 +22,7 @@ Every toolchain update needs to make sure that none of these combinations break.
 
 To have any chance that this works, we continuously build and run tests in
 most of these configurations with trunk clang/llvm, to catch regressions and
-intentinonal changes upstream that cause problems for us.
+intentional changes upstream that cause problems for us.
 
 When we land a toolchain update, we rely on the CQ to make sure all combinations
 work with the new toolchain. We use all default CQ bots, and a long list of

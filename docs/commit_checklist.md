@@ -80,7 +80,7 @@ changes to a test device. If you're testing Chrome for ChromeOS, follow the
 device. Make sure you hit every code path you changed.
 
 Some testing tips:
-*   Use LOG(ERROR) << "debug print statement" to for debugging. You can find
+*   Use `LOG(ERROR) << "debug print statement"` for debugging. You can find
     the logs in /var/logs/chrome/ on the ChromeOS device.
 *   Use GDB for setting breakpoints while debugging.
 
