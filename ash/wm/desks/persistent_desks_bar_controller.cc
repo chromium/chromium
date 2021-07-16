@@ -12,6 +12,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/persistent_desks_bar_view.h"
+#include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
@@ -176,6 +177,35 @@ void PersistentDesksBarController::ToggleEnabledState() {
   UMA_HISTOGRAM_BOOLEAN("Ash.Desks.BentoBarEnabled", is_enabled_);
 }
 
+void PersistentDesksBarController::MaybeInitBarWidget() {
+  if (!ShouldPersistentDesksBarBeCreated())
+    return;
+
+  if (!persistent_desks_bar_widget_) {
+    DCHECK(!persistent_desks_bar_view_);
+    persistent_desks_bar_widget_ = CreatePersistentDesksBarWidget();
+    persistent_desks_bar_view_ = persistent_desks_bar_widget_->SetContentsView(
+        std::make_unique<PersistentDesksBarView>());
+  }
+  persistent_desks_bar_view_->RefreshDeskButtons();
+  persistent_desks_bar_widget_->Show();
+
+  // Update work area on the persistent desks bar's state. Note, the bar is only
+  // created in the primary display.
+  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+      ->SetPersistentDeskBarHeight(kBarHeight);
+}
+
+void PersistentDesksBarController::DestroyBarWidget() {
+  persistent_desks_bar_widget_.reset();
+  persistent_desks_bar_view_ = nullptr;
+
+  // Update work area on the persistent desks bar's state. Note, the bar is only
+  // created in the primary display.
+  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
+      ->SetPersistentDeskBarHeight(0);
+}
+
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
   if (!is_enabled_)
     return false;
@@ -212,36 +242,18 @@ bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
     return false;
   }
 
-  return true;
-}
-
-void PersistentDesksBarController::MaybeInitBarWidget() {
-  if (!ShouldPersistentDesksBarBeCreated())
-    return;
-
-  if (!persistent_desks_bar_widget_) {
-    DCHECK(!persistent_desks_bar_view_);
-    persistent_desks_bar_widget_ = CreatePersistentDesksBarWidget();
-    persistent_desks_bar_view_ = persistent_desks_bar_widget_->SetContentsView(
-        std::make_unique<PersistentDesksBarView>());
+  // Do not create the bar if any window within the primary display is
+  // fullscreened.
+  MruWindowTracker::WindowList windows =
+      shell->mru_window_tracker()->BuildMruWindowList(kActiveDesk);
+  for (aura::Window* window : windows) {
+    if (window->GetRootWindow() != Shell::GetPrimaryRootWindow())
+      continue;
+    if (WindowState::Get(window)->IsFullscreen())
+      return false;
   }
-  persistent_desks_bar_view_->RefreshDeskButtons();
-  persistent_desks_bar_widget_->Show();
 
-  // Update work area on the persistent desks bar's state. Note, the bar is only
-  // created in the primary display.
-  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
-      ->SetPersistentDeskBarHeight(kBarHeight);
-}
-
-void PersistentDesksBarController::DestroyBarWidget() {
-  persistent_desks_bar_widget_.reset();
-  persistent_desks_bar_view_ = nullptr;
-
-  // Update work area on the persistent desks bar's state. Note, the bar is only
-  // created in the primary display.
-  WorkAreaInsets::ForWindow(Shell::GetPrimaryRootWindow())
-      ->SetPersistentDeskBarHeight(0);
+  return true;
 }
 
 }  // namespace ash

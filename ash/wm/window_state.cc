@@ -17,6 +17,7 @@
 #include "ash/shell.h"
 #include "ash/wm/collision_detection/collision_detection_utils.h"
 #include "ash/wm/default_state.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/full_restore/full_restore_controller.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -409,6 +410,22 @@ void WindowState::OnWMEvent(const WMEvent* event) {
   current_state_->OnWMEvent(this, event);
 
   UpdateSnappedWidthRatio(event);
+
+  PersistentDesksBarController* bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  if (bar_controller &&
+      window_->GetRootWindow() == Shell::GetPrimaryRootWindow()) {
+    if (event->type() == WM_EVENT_TOGGLE_FULLSCREEN) {
+      if (IsFullscreen())
+        bar_controller->DestroyBarWidget();
+      else
+        bar_controller->MaybeInitBarWidget();
+    } else if (event->type() == WM_EVENT_MINIMIZE) {
+      bar_controller->MaybeInitBarWidget();
+    } else if (event->type() == WM_EVENT_FULLSCREEN) {
+      bar_controller->DestroyBarWidget();
+    }
+  }
 }
 
 void WindowState::SaveCurrentBoundsForRestore() {
@@ -1037,6 +1054,19 @@ void WindowState::OnWindowDestroying(aura::Window* window) {
 
   current_state_->OnWindowDestroying(this);
   delegate_.reset();
+}
+
+void WindowState::OnWindowVisibilityChanged(aura::Window* window,
+                                            bool visible) {
+  PersistentDesksBarController* bar_controller =
+      Shell::Get()->persistent_desks_bar_controller();
+  if (bar_controller && IsFullscreen() &&
+      window->GetRootWindow() == Shell::GetPrimaryRootWindow()) {
+    if (visible)
+      bar_controller->DestroyBarWidget();
+    else
+      bar_controller->MaybeInitBarWidget();
+  }
 }
 
 void WindowState::OnWindowBoundsChanged(aura::Window* window,

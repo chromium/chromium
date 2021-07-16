@@ -87,10 +87,6 @@ class ASH_EXPORT PersistentDesksBarController
   // to false.
   void ToggleEnabledState();
 
- private:
-  // Returns true if the persistent desks bar should be created and shown.
-  bool ShouldPersistentDesksBarBeCreated() const;
-
   // Initializes and shows the widget that contains the PersistentDesksBarView
   // contents. Creates the widget only if ShouldPersistentDesksBarBeCreated()
   // returns true and it hasn't been created already. Only refreshes the
@@ -99,6 +95,10 @@ class ASH_EXPORT PersistentDesksBarController
 
   // Destroys `persistent_desks_bar_widget_` and `persistent_desks_bar_view_`.
   void DestroyBarWidget();
+
+ private:
+  // Returns true if the persistent desks bar should be created and shown.
+  bool ShouldPersistentDesksBarBeCreated() const;
 
   views::UniqueWidgetPtr persistent_desks_bar_widget_;
   // The contents view of the above |persistent_desks_bar_widget_| if created.
