@@ -175,7 +175,7 @@ void AssistantAshTestBase::OpenLauncher() {
 }
 
 void AssistantAshTestBase::CloseLauncher() {
-  Shell::Get()->app_list_controller()->ViewClosing();
+  Shell::Get()->app_list_controller()->DismissAppList();
 }
 
 void AssistantAshTestBase::SetTabletMode(bool enable) {

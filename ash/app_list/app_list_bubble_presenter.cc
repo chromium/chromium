@@ -10,6 +10,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/bubble/app_list_bubble_event_filter.h"
 #include "ash/app_list/bubble/app_list_bubble_view.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
@@ -18,10 +19,13 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
+
+using chromeos::assistant::AssistantExitPoint;
 
 AppListBubblePresenter::AppListBubblePresenter(
     AppListControllerImpl* controller)
@@ -90,14 +94,31 @@ void AppListBubblePresenter::Dismiss() {
   // Must happen before widget is destroyed.
   controller_->SetKeyboardTraversalMode(false);
 
+  controller_->ViewClosing();
+  DCHECK(bubble_widget_);  // ViewClosing() did not destroy the widget.
+
   const int64_t display_id = GetDisplayId();
   controller_->OnVisibilityWillChange(/*visible=*/false, display_id);
   bubble_widget_->CloseNow();
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
+
+  // Clean up assistant. Must occur after CloseNow(), otherwise it will try to
+  // Dismiss() the app list and call this function re-entrantly.
+  AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
 }
 
 bool AppListBubblePresenter::IsShowing() const {
   return !!bubble_widget_;
+}
+
+bool AppListBubblePresenter::IsShowingEmbeddedAssistantUI() const {
+  if (!bubble_view_)
+    return false;
+  return bubble_view_->IsShowingEmbeddedAssistantUI();
+}
+
+void AppListBubblePresenter::ShowEmbeddedAssistantUI() {
+  bubble_view_->ShowEmbeddedAssistantUI();
 }
 
 void AppListBubblePresenter::OnWidgetDestroying(views::Widget* widget) {

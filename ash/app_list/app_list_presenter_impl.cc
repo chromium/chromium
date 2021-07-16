@@ -14,9 +14,11 @@
 #include "ash/app_list/views/apps_container_view.h"
 #include "ash/app_list/views/contents_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/shell_window_ids.h"
@@ -27,6 +29,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window.h"
@@ -44,6 +47,8 @@
 
 namespace ash {
 namespace {
+
+using chromeos::assistant::AssistantExitPoint;
 
 inline ui::Layer* GetLayer(views::Widget* widget) {
   return widget->GetNativeView()->layer();
@@ -263,6 +268,19 @@ void AppListPresenterImpl::Dismiss(base::TimeTicks event_time_stamp) {
     view_->GetWidget()->Deactivate();
 
   event_filter_.reset();
+
+  if (view_->search_box_view()->is_search_box_active()) {
+    // Close the virtual keyboard before the app list view is dismissed.
+    // Otherwise if the browser is behind the app list view, after the latter is
+    // closed, IME is updated because of the changed focus. Consequently,
+    // the virtual keyboard is hidden for the wrong IME instance, which may
+    // bring troubles when restoring the virtual keyboard (see
+    // https://crbug.com/944233).
+    keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
+  }
+
+  AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
+
   controller_->ViewClosing();
 
   OnVisibilityWillChange(GetTargetVisibility(), GetDisplayId());

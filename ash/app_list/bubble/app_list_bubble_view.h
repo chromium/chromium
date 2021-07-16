@@ -38,6 +38,12 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
   // Focuses the search box text input field.
   void FocusSearchBox();
 
+  // Returns true if the assistant page is showing.
+  bool IsShowingEmbeddedAssistantUI() const;
+
+  // Shows the assistant page.
+  void ShowEmbeddedAssistantUI();
+
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
 

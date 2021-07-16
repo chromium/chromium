@@ -61,6 +61,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/services/assistant/public/cpp/assistant_enums.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -576,7 +577,7 @@ void AppListControllerImpl::GetAppInfoDialogBounds(
 }
 
 void AppListControllerImpl::ShowAppList() {
-  if (features::IsAppListBubbleEnabled() && !IsTabletMode()) {
+  if (ShouldShowAppListBubble()) {
     DCHECK(!fullscreen_presenter_->GetTargetVisibility());
     bubble_presenter_->Show(GetDisplayIdToShowAppListOn());
     return;
@@ -727,8 +728,7 @@ bool AppListControllerImpl::GetTargetVisibility(
 void AppListControllerImpl::Show(int64_t display_id,
                                  absl::optional<AppListShowSource> show_source,
                                  base::TimeTicks event_time_stamp) {
-  const bool show_app_list_bubble =
-      features::IsAppListBubbleEnabled() && !IsTabletMode();
+  const bool show_app_list_bubble = ShouldShowAppListBubble();
   if (show_source.has_value())
     LogAppListShowSource(show_source.value(), show_app_list_bubble);
 
@@ -803,8 +803,8 @@ ShelfAction AppListControllerImpl::ToggleAppList(
 bool AppListControllerImpl::GoHome(int64_t display_id) {
   DCHECK(Shell::Get()->tablet_mode_controller()->InTabletMode());
 
-  if (IsShowingEmbeddedAssistantUI())
-    presenter()->ShowEmbeddedAssistantUI(false);
+  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
+    fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 
   SplitViewController* split_view_controller =
       SplitViewController::Get(Shell::GetPrimaryRootWindow());
@@ -1160,14 +1160,17 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         Show(GetDisplayIdToShowAppListOn(), kAssistantEntryPoint,
              base::TimeTicks());
       }
+      if (ShouldShowAppListBubble()) {
+        bubble_presenter_->ShowEmbeddedAssistantUI();
+      } else {
+        if (!fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
+          fullscreen_presenter_->ShowEmbeddedAssistantUI(true);
 
-      if (!IsShowingEmbeddedAssistantUI())
-        fullscreen_presenter_->ShowEmbeddedAssistantUI(true);
-
-      // Make sure that app list views are visible - they might get hidden
-      // during session startup, and the app list visibility might not have yet
-      // changed to visible by this point.
-      fullscreen_presenter_->SetViewVisibility(true);
+        // Make sure that app list views are visible - they might get hidden
+        // during session startup, and the app list visibility might not have
+        // yet changed to visible by this point. https://crbug.com/1040751
+        fullscreen_presenter_->SetViewVisibility(true);
+      }
       break;
     case AssistantVisibility::kClosed:
       if (!IsShowingEmbeddedAssistantUI())
@@ -1180,7 +1183,7 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         absl::optional<ContentsView::ScopedSetActiveStateAnimationDisabler>
             set_active_state_animation_disabler;
         // When taking a screenshot by Assistant, we do not want to animate to
-        // the final state. Otherwise the screenshot may have tansient state
+        // the final state. Otherwise the screenshot may have transient state
         // during the animation. In tablet mode, we want to go back to
         // kStateApps immediately, i.e. skipping the animation in
         // |SetActiveStateInternal|, which are called from
@@ -1203,13 +1206,12 @@ void AppListControllerImpl::OnUiVisibilityChanged(
       } else if (exit_point != AssistantExitPoint::kBackInLauncher) {
         // Similarly, when taking a screenshot by Assistant in clamshell mode,
         // we do not want to dismiss launcher with animation. Otherwise the
-        // screenshot may have tansient state during the animation.
+        // screenshot may have transient state during the animation.
         base::AutoReset<bool> auto_reset(
             &should_dismiss_immediately_,
             exit_point == AssistantExitPoint::kScreenshot);
         DismissAppList();
       }
-
       break;
   }
 }
@@ -1307,6 +1309,8 @@ void AppListControllerImpl::SetKeyboardTraversalMode(bool engaged) {
 }
 
 bool AppListControllerImpl::IsShowingEmbeddedAssistantUI() const {
+  if (bubble_presenter_ && bubble_presenter_->IsShowingEmbeddedAssistantUI())
+    return true;
   return fullscreen_presenter_->IsShowingEmbeddedAssistantUI();
 }
 
@@ -1470,20 +1474,6 @@ bool AppListControllerImpl::AppListTargetVisibility() const {
 }
 
 void AppListControllerImpl::ViewClosing() {
-  if (fullscreen_presenter_->GetView()
-          ->search_box_view()
-          ->is_search_box_active()) {
-    // Close the virtual keyboard before the app list view is dismissed.
-    // Otherwise if the browser is behind the app list view, after the latter is
-    // closed, IME is updated because of the changed focus. Consequently,
-    // the virtual keyboard is hidden for the wrong IME instance, which may
-    // bring troubles when restoring the virtual keyboard (see
-    // https://crbug.com/944233).
-    keyboard::KeyboardUIController::Get()->HideKeyboardExplicitlyBySystem();
-  }
-
-  AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
-
   if (client_)
     client_->ViewClosing();
 
@@ -1994,6 +1984,10 @@ bool AppListControllerImpl::ShouldShowHomeScreen() const {
   return !SplitViewController::Get(window)->InSplitViewMode();
 }
 
+bool AppListControllerImpl::ShouldShowAppListBubble() const {
+  return !IsTabletMode() && features::IsAppListBubbleEnabled();
+}
+
 void AppListControllerImpl::UpdateForOverviewModeChange(bool show_home_launcher,
                                                         bool animate) {
   // Force the home view into the expected initial state without animation,
@@ -2124,7 +2118,7 @@ void AppListControllerImpl::OnWindowDragStarted() {
   UpdateHomeScreenVisibility();
 
   // Dismiss Assistant if it's running when a window drag starts.
-  if (IsShowingEmbeddedAssistantUI())
+  if (fullscreen_presenter_->IsShowingEmbeddedAssistantUI())
     fullscreen_presenter_->ShowEmbeddedAssistantUI(false);
 }
 

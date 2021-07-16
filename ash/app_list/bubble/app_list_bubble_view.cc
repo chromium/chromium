@@ -155,6 +155,20 @@ void AppListBubbleView::FocusSearchBox() {
   search_box_view_->SetSearchBoxActive(true, /*event_type=*/ui::ET_UNKNOWN);
 }
 
+bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
+  return assistant_page_->GetVisible();
+}
+
+void AppListBubbleView::ShowEmbeddedAssistantUI() {
+  // The assistant has its own text input field.
+  search_box_view_->SetVisible(false);
+
+  apps_page_->SetVisible(false);
+  search_page_->SetVisible(false);
+  assistant_page_->SetVisible(true);
+  assistant_page_->RequestFocus();
+}
+
 gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   int height = kDefaultHeight - margins().height();
   int width = kDefaultWidth - margins().width();
@@ -200,13 +214,7 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
 }
 
 void AppListBubbleView::AssistantButtonPressed() {
-  // The assistant has its own text input field.
-  search_box_view_->SetVisible(false);
-
-  apps_page_->SetVisible(false);
-  search_page_->SetVisible(false);
-  assistant_page_->SetVisible(true);
-  assistant_page_->RequestFocus();
+  ShowEmbeddedAssistantUI();
 }
 
 void AppListBubbleView::CloseButtonPressed() {

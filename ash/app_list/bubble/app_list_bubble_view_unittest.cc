@@ -238,6 +238,7 @@ TEST_F(AppListBubbleViewTest, AppsPageShownByDefault) {
 
   EXPECT_TRUE(GetAppsPage()->GetVisible());
   EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_FALSE(GetAssistantPage()->GetVisible());
 }
 
 TEST_F(AppListBubbleViewTest, TypingTextShowsSearchPage) {
