@@ -26,9 +26,22 @@ struct TileComparator {
   std::map<std::string, double>* tile_score_map;
 };
 
+// Shuffle tiles from index starting with |GetTileShufflePosition()|,
+// so that they have a chance to be displayed.
+void ShuffleTiles(std::vector<std::unique_ptr<Tile>>* tiles,
+                  std::map<std::string, double>* tile_score_map,
+                  const TileShuffler& shuffler) {
+  size_t starting_index = TileConfig::GetTileShufflePosition();
+  if (tiles->size() <= starting_index + 1)
+    return;
+
+  shuffler.Shuffle(tiles, starting_index);
+}
+
 void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
                std::map<std::string, TileStats>* tile_stats,
-               std::map<std::string, double>* score_map) {
+               std::map<std::string, double>* score_map,
+               const TileShuffler& shuffler) {
   if (!tiles || tiles->empty())
     return;
 
@@ -88,23 +101,28 @@ void SortTiles(std::vector<std::unique_ptr<Tile>>* tiles,
   // Sort the tiles in descending order.
   std::sort(tiles->begin(), tiles->end(), TileComparator(score_map));
 
+  // Randomly shuffle tiles that are never clicked so they get a chance
+  // to show up on the display.
+  ShuffleTiles(tiles, score_map, shuffler);
+
   for (auto& tile : *tiles)
-    SortTiles(&tile->sub_tiles, tile_stats, score_map);
+    SortTiles(&tile->sub_tiles, tile_stats, score_map, shuffler);
 }
 
 }  // namespace
 
-void TileShuffler::Shuffle(std::vector<Tile>* tiles, int start) const {
+void TileShuffler::Shuffle(std::vector<std::unique_ptr<Tile>>* tiles,
+                           int start) const {
   base::RandomShuffle(tiles->begin() + start, tiles->end());
 }
 
-void SortTilesAndClearUnusedStats(
-    std::vector<std::unique_ptr<Tile>>* tiles,
-    std::map<std::string, TileStats>* tile_stats) {
+void SortTilesAndClearUnusedStats(std::vector<std::unique_ptr<Tile>>* tiles,
+                                  std::map<std::string, TileStats>* tile_stats,
+                                  const TileShuffler& shuffler) {
   if (!tiles || tiles->empty())
     return;
   std::map<std::string, double> score_map;
-  SortTiles(tiles, tile_stats, &score_map);
+  SortTiles(tiles, tile_stats, &score_map, shuffler);
   auto iter = tile_stats->begin();
   while (iter != tile_stats->end()) {
     if (score_map.find(iter->first) == score_map.end()) {
@@ -130,14 +148,6 @@ double CalculateTileScore(const TileStats& tile_stats,
 
 bool IsTrendingTile(const std::string& tile_id) {
   return base::StartsWith(tile_id, "trending_");
-}
-
-void ShuffleTiles(std::vector<Tile>* tiles, const TileShuffler& shuffler) {
-  size_t starting_index = TileConfig::GetTileShufflePosition();
-  if (tiles->size() <= starting_index + 1)
-    return;
-
-  shuffler.Shuffle(tiles, starting_index);
 }
 
 }  // namespace query_tiles
