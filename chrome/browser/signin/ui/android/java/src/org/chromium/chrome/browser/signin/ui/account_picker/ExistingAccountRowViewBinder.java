@@ -20,7 +20,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor.ViewBinder;
  * This class regroups the buildView and bindView util methods of the
  * existing account row.
  */
-class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
+public class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, PropertyKey> {
     /**
      * View binder that associates an existing account view with the model of
      * {@link ExistingAccountRowProperties}.
@@ -46,7 +46,7 @@ class ExistingAccountRowViewBinder implements ViewBinder<PropertyModel, View, Pr
      * @param profileData profile data needs to bind.
      * @param view A view object inflated from @layout/account_picker_row.
      */
-    static void bindAccountView(DisplayableProfileData profileData, View view) {
+    public static void bindAccountView(DisplayableProfileData profileData, View view) {
         ImageView accountImage = view.findViewById(R.id.account_image);
         accountImage.setImageDrawable(profileData.getImage());
 

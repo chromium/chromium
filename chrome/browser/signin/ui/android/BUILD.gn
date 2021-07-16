@@ -65,6 +65,10 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/AccountPickerProperties.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/ExistingAccountRowViewBinder.java",
     "java/src/org/chromium/chrome/browser/signin/ui/account_picker/OnClickListenerViewBinder.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupCoordinator.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupMediator.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupProperties.java",
+    "java/src/org/chromium/chrome/browser/signin/ui/frebottomgroup/FREBottomGroupViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.signin.ui"
 }
@@ -97,6 +101,7 @@ android_resources("java_resources") {
     "java/res/layout/personalized_signin_promo_view_modern_content_suggestions.xml",
     "java/res/layout/personalized_signin_promo_view_recent_tabs.xml",
     "java/res/layout/personalized_signin_promo_view_settings.xml",
+    "java/res/layout/signin_first_run_view.xml",
     "java/res/layout/signin_progress_bar_dialog.xml",
     "java/res/layout/signin_view.xml",
     "java/res/layout/signout_wipe_storage_dialog.xml",
