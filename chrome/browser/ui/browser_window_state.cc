@@ -123,10 +123,11 @@ const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
 }
 
 bool ShouldSaveWindowPlacement(const Browser* browser) {
-  // Never track app popup windows that do not have a trusted source (i.e.
-  // popup windows spawned by an app).  See similar code in
-  // SessionService::ShouldTrackBrowser().
-  return !browser->deprecated_is_app() || browser->is_trusted_source();
+  // Never track app windows that do not have a trusted source (i.e. windows
+  // spawned by an app).  See similar code in
+  // SessionServiceBase::ShouldTrackBrowser().
+  return !(browser->is_type_app() || browser->is_type_app_popup()) ||
+         browser->is_trusted_source();
 }
 
 bool SavedBoundsAreContentBounds(const Browser* browser) {
