@@ -205,23 +205,23 @@ bool WebGPUSwapBufferProvider::PrepareTransferableResource(
   webgpu->GenUnverifiedSyncTokenCHROMIUM(
       current_swap_buffer_->access_finished_token.GetData());
 
-  // On macOS, shared images are backed by IOSurfaces that can only be used
-  // with OpenGL via the rectangle texture target. Every other shared image
-  // implementation is implemented on OpenGL via some form of eglSurface and
-  // eglBindTexImage (on ANGLE or system drivers) so they use the 2D texture
-  // target.
-  const uint32_t texture_target =
+  // On macOS, shared images are backed by IOSurfaces that can only be used with
+  // OpenGL via the rectangle texture target and are overlay candidates. Every
+  // other shared image implementation is implemented on OpenGL via some form of
+  // eglSurface and eglBindTexImage (on ANGLE or system drivers) so they use the
+  // 2D texture target and cannot always be overlay candidates.
 #if defined(OS_MAC)
-      GL_TEXTURE_RECTANGLE_ARB
+  const uint32_t texture_target = GL_TEXTURE_RECTANGLE_ARB;
+  const bool is_overlay_candidate = true;
 #else
-      GL_TEXTURE_2D
+  const uint32_t texture_target = GL_TEXTURE_2D;
+  const bool is_overlay_candidate = false;
 #endif
-      ;
   // Populate the output resource
   *out_resource = viz::TransferableResource::MakeGL(
       current_swap_buffer_->mailbox, GL_LINEAR, texture_target,
       current_swap_buffer_->access_finished_token, current_swap_buffer_->size,
-      false);
+      is_overlay_candidate);
   out_resource->color_space = gfx::ColorSpace::CreateSRGB();
   out_resource->format = format_;
 
