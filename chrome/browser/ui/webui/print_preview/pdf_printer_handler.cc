@@ -157,10 +157,7 @@ base::Value GetPdfCapabilities(
 // Callback that stores a PDF file on disk.
 void PrintToPdfCallback(scoped_refptr<base::RefCountedMemory> data,
                         const base::FilePath& path) {
-  base::File file(path,
-                  base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-  file.WriteAtCurrentPos(reinterpret_cast<const char*>(data->front()),
-                         base::checked_cast<int>(data->size()));
+  base::WriteFile(path, *data);
 }
 
 // Callback that runs after `PrintToPdfCallback()` returns.
