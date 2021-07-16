@@ -2687,6 +2687,8 @@ crbug.com/626703 [ Mac11.0 ] virtual/web-bluetooth-new-permissions-backend/wpt_i
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel-service-worker.https.html [ Timeout ]
 crbug.com/626703 external/wpt/webrtc-extensions/transfer-datachannel.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/1-iframe/parent-no-child-yeswithparams-subdomain.sub.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11.0 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Timeout ]
+crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-yes-subdomainport.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/popups/opener-no-openee-yes-same.sub.https.html [ Failure Timeout ]
 crbug.com/626703 [ Mac11.0 ] virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/2-iframes/parent-yes-child1-yes-subdomain-child2-no-port.sub.https.html [ Failure Timeout ]
@@ -7315,6 +7317,7 @@ crbug.com/1227710 external/wpt/bluetooth/requestDevice/cross-origin-iframe.sub.h
 crbug.com/1220114 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-simulcast.https.html [ Failure Pass Timeout ]
 crbug.com/1228788 [ Linux ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-audio.https.html [ Failure Pass ]
 crbug.com/1228772 [ Linux ] external/wpt/webrtc/simulcast/h264.https.html [ Crash Failure Pass ]
+crbug.com/1228772 [ Linux ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Failure Pass ]
 crbug.com/1228959 [ Linux ] virtual/scroll-unification/fast/scroll-snap/snaps-after-wheel-scrolling-single-tick.html [ Failure Pass ]
 
 # PlzServiceWorker failing tests
@@ -7370,7 +7373,3 @@ crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Pass Failu
 crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
 crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
 crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-from-coop.https.html?* [ Pass Timeout ]
-
-# Sheriff 2021-07-16
-crbug.com/1229973 external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Pass Failure Timeout ]
-crbug.com/1229973 virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-mandatory-getStats.https.html [ Pass Failure Timeout ]
