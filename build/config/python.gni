@@ -63,48 +63,6 @@ template("python_library") {
   }
 }
 
-# This is a wrapper around action() that ensures that the script is
-# run under a Python2 executable, even if the main script_executable is
-# Python3.
-#
-# It supports all of action()'s arguments.
-#
-# TODO(crbug.com/1112471): Remove this once everything runs cleanly under
-# Python3.
-template("python2_action") {
-  action(target_name) {
-    # Forward all variables. Ensure that testonly and visibility are forwarded
-    # explicitly, since this performs recursive scope lookups, which is
-    # required to ensure their definition from scopes above the caller are
-    # properly handled. All other variables are forwarded with "*", which
-    # doesn't perform recursive lookups at all. See https://crbug.com/862232
-    forward_variables_from(invoker,
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-    forward_variables_from(invoker,
-                           "*",
-                           [
-                             "testonly",
-                             "visibility",
-                           ])
-
-    script = "//build/util/python2_action.py"
-    _rebased_script = rebase_path(invoker.script, root_build_dir)
-    inputs = []
-    inputs = [ invoker.script ]
-    if (defined(invoker.inputs)) {
-      inputs += invoker.inputs
-    }
-    args = []
-    args = [ _rebased_script ]
-    if (defined(invoker.args)) {
-      args += invoker.args
-    }
-  }
-}
-
 # A template used for actions that execute a Python script, which has an
 # associated .pydeps file. In other words:
 #
