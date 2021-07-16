@@ -871,6 +871,10 @@ function showPage(pageDivId, options) {
  * @param {string} errorMessage Localized error message text.
  * @param {?boolean} opt_shouldShowSendFeedback If set to true, show "Send
  *     feedback" button.
+ * @param {?boolean} opt_shouldShowNetworkTests If set to true, show "Check
+ *     network" button. If set to false, position the "Send feedback" button
+ *     after the flex div that separates the left and right side of the error
+ *     dialog.
  */
 function showErrorPage(
     errorMessage, opt_shouldShowSendFeedback, opt_shouldShowNetworkTests) {
@@ -888,6 +892,11 @@ function showErrorPage(
   var networkTestsElement = doc.getElementById('button-run-network-tests');
   networkTestsElement.hidden = !opt_shouldShowNetworkTests;
   showPage('error');
+
+  // If the error is not network-related, position send feedback after the flex
+  // div.
+  if (!opt_shouldShowNetworkTests)
+    doc.getElementById('div-error-separating-buttons').style.order = -1;
 }
 
 /**

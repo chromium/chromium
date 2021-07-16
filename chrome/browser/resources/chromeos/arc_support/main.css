@@ -85,10 +85,13 @@ p.title {
   margin-inline-end: 18px;
 }
 
-#button-cancel,
+#button-cancel {
+  margin-inline-end: 6px;
+}
+
 #button-run-network-tests,
 #button-send-feedback {
-  margin-inline-end: 6px;
+  margin-inline-end: 18px;
 }
 
 #button-send-feedback {
@@ -217,11 +220,14 @@ p.title {
 }
 
 .section-buttons {
-  box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.14);
   height: 80px;
   padding: 0;
   z-index: 1;
   width: 100%
+}
+
+.section-buttons-box-shadow {
+  box-shadow: 0 -1px 1px rgba(0, 0, 0, 0.14);
 }
 
 .section-active-directory-auth-buttons {
