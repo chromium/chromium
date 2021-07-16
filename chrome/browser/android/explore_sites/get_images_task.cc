@@ -51,8 +51,7 @@ EncodedImageList GetCategoryImagesSync(int category_id,
 
   EncodedImageList result;
   while (category_statement.Step()) {
-    int byte_length = category_statement.ColumnByteLength(0);
-    result.push_back(std::make_unique<std::vector<uint8_t>>(byte_length));
+    result.push_back(std::make_unique<std::vector<uint8_t>>());
     category_statement.ColumnBlobAsVector(0, result.back().get());
   }
   if (!category_statement.Succeeded())
@@ -81,8 +80,7 @@ EncodedImageList GetSummaryImagesSync(int max_images, sql::Database* db) {
 
   EncodedImageList result;
   while (category_statement.Step()) {
-    int byte_length = category_statement.ColumnByteLength(0);
-    result.push_back(std::make_unique<std::vector<uint8_t>>(byte_length));
+    result.push_back(std::make_unique<std::vector<uint8_t>>());
     category_statement.ColumnBlobAsVector(0, result.back().get());
   }
   if (!category_statement.Succeeded())
@@ -99,8 +97,7 @@ EncodedImageList GetSiteImageSync(int site_id, sql::Database* db) {
 
   EncodedImageList result;
   while (site_statement.Step()) {
-    int byte_length = site_statement.ColumnByteLength(0);
-    result.push_back(std::make_unique<std::vector<uint8_t>>(byte_length));
+    result.push_back(std::make_unique<std::vector<uint8_t>>());
     site_statement.ColumnBlobAsVector(0, result.back().get());
   }
   if (!site_statement.Succeeded())
