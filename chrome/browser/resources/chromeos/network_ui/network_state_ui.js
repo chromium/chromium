@@ -15,7 +15,6 @@ import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bun
 
 import {NetworkUIBrowserProxy, NetworkUIBrowserProxyImpl} from './network_ui_browser_proxy.js';
 
-
 /**
  * @typedef {!OncMojo.DeviceStateProperties|!OncMojo.NetworkStateProperties}
  */
@@ -430,7 +429,9 @@ Polymer({
       this.showDetailError_(detailCell, error.message);
       return;
     }
-    detailCell.textContent = JSON.stringify(state, null, '\t');
+    detailCell.textContent = JSON.stringify(state, (key, value) => {
+      return typeof value === 'bigint' ? value.toString() : value;
+    }, '\t');
   },
 
   /**
