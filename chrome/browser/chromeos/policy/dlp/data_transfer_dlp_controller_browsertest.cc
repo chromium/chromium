@@ -710,8 +710,9 @@ IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_CancelWarn) {
   EXPECT_EQ("", EvalJs(GetActiveWebContents(), "p"));
 }
 
-// crbug.com/1213143
-IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, Reporting) {
+// Test case for crbug.com/1213143
+// Disabled due to flakiness: crbug.com/1219981
+IN_PROC_BROWSER_TEST_F(DataTransferDlpBlinkBrowserTest, DISABLED_Reporting) {
   ASSERT_TRUE(embedded_test_server()->Start());
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL("/title1.html")));
