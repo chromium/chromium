@@ -63,8 +63,6 @@ blink_core_sources_inspector = [
   "inspector_issue_storage.h",
   "inspector_layer_tree_agent.cc",
   "inspector_layer_tree_agent.h",
-  "inspector_layout_invalidation_reason.cc",
-  "inspector_layout_invalidation_reason.h",
   "inspector_log_agent.cc",
   "inspector_log_agent.h",
   "inspector_media_agent.cc",
