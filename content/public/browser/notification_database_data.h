@@ -92,6 +92,10 @@ struct CONTENT_EXPORT NotificationDatabaseData {
 
   // Why the notification was closed.
   ClosedReason closed_reason = ClosedReason::UNKNOWN;
+
+  // Flag for notifications shown by the browser that should not be visible to
+  // the origin when requesting a list of notifications.
+  bool is_shown_by_browser = false;
 };
 
 }  // namespace content

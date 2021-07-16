@@ -15,6 +15,7 @@
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom.h"
@@ -63,6 +64,7 @@ class NotificationDatabaseTest : public ::testing::Test {
   void CreateAndWriteNotification(NotificationDatabase* database,
                                   const GURL& origin,
                                   const std::string& tag,
+                                  bool is_shown_by_browser,
                                   int64_t service_worker_registration_id,
                                   std::string* notification_id) {
     DCHECK(notification_id);
@@ -73,6 +75,7 @@ class NotificationDatabaseTest : public ::testing::Test {
     database_data.service_worker_registration_id =
         service_worker_registration_id;
     database_data.notification_data.tag = tag;
+    database_data.is_shown_by_browser = is_shown_by_browser;
 
     ASSERT_EQ(NotificationDatabase::STATUS_OK,
               database->WriteNotificationData(origin, database_data));
@@ -87,6 +90,7 @@ class NotificationDatabaseTest : public ::testing::Test {
     for (const auto& notification_data : kExampleNotificationData) {
       ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
           database, GURL(notification_data.origin), notification_data.tag,
+          false /* is_shown_by_browser */,
           notification_data.service_worker_registration_id, &notification_id));
     }
   }
@@ -202,9 +206,9 @@ TEST_F(NotificationDatabaseTest, NotificationIdIncrements) {
   GURL origin("https://example.com");
 
   std::string notification_id;
-  ASSERT_NO_FATAL_FAILURE(
-      CreateAndWriteNotification(database.get(), origin, "" /* tag */,
-                                 0 /* sw_registration_id */, &notification_id));
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, "" /* tag */, false /* is_shown_by_browser */,
+      0 /* sw_registration_id */, &notification_id));
 
   database.reset(CreateDatabaseOnFileSystem(database_dir.GetPath()));
   ASSERT_EQ(NotificationDatabase::STATUS_OK,
@@ -431,8 +435,8 @@ TEST_F(NotificationDatabaseTest, ReadWriteMultipleNotificationData) {
   // notification id (it is the responsibility of the user to increment this).
   for (int i = 1; i <= 10; ++i) {
     ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
-        database.get(), origin, "" /* tag */, i /* sw_registration_id */,
-        &notification_id));
+        database.get(), origin, "" /* tag */, false /* is_shown_by_browser */,
+        i /* sw_registration_id */, &notification_id));
 
     EXPECT_FALSE(notification_id.empty());
 
@@ -704,9 +708,61 @@ TEST_F(NotificationDatabaseTest,
   std::vector<NotificationDatabaseData> notifications;
   ASSERT_EQ(NotificationDatabase::STATUS_OK,
             database->ReadAllNotificationDataForServiceWorkerRegistration(
-                origin, kExampleServiceWorkerRegistrationId, &notifications));
+                origin, kExampleServiceWorkerRegistrationId,
+                absl::nullopt /* is_shown_by_browser */, &notifications));
 
   EXPECT_EQ(2u, notifications.size());
+}
+
+TEST_F(NotificationDatabaseTest,
+       ReadAllNotificationDataForServiceWorkerRegistrationShownByBrowser) {
+  std::unique_ptr<NotificationDatabase> database(CreateDatabaseInMemory());
+  ASSERT_EQ(NotificationDatabase::STATUS_OK,
+            database->Open(true /* create_if_missing */));
+  GURL origin("https://example.com:443");
+  std::string kTag = "tag";
+
+  std::string non_browser_notification_id;
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, false /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &non_browser_notification_id));
+
+  std::string browser_notification_id;
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, true /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &browser_notification_id));
+
+  {
+    // Expect to be able to read notification shown by the browser.
+    std::vector<NotificationDatabaseData> notifications;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->ReadAllNotificationDataForServiceWorkerRegistration(
+                  origin, kExampleServiceWorkerRegistrationId,
+                  true /* is_shown_by_browser */, &notifications));
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_EQ(browser_notification_id, notifications[0].notification_id);
+  }
+
+  {
+    // Expect to be able to read notification not shown by the browser.
+    std::vector<NotificationDatabaseData> notifications;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->ReadAllNotificationDataForServiceWorkerRegistration(
+                  origin, kExampleServiceWorkerRegistrationId,
+                  false /* is_shown_by_browser */, &notifications));
+    ASSERT_EQ(1u, notifications.size());
+    EXPECT_EQ(non_browser_notification_id, notifications[0].notification_id);
+  }
+
+  {
+    // Expect to be able to read notification not shown by anyone.
+    std::vector<NotificationDatabaseData> notifications;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->ReadAllNotificationDataForServiceWorkerRegistration(
+                  origin, kExampleServiceWorkerRegistrationId,
+                  absl::nullopt /* is_shown_by_browser */, &notifications));
+    ASSERT_EQ(2u, notifications.size());
+  }
 }
 
 TEST_F(NotificationDatabaseTest, DeleteAllNotificationDataForOrigin) {
@@ -721,7 +777,8 @@ TEST_F(NotificationDatabaseTest, DeleteAllNotificationDataForOrigin) {
   std::set<std::string> deleted_notification_ids;
   ASSERT_EQ(NotificationDatabase::STATUS_OK,
             database->DeleteAllNotificationDataForOrigin(
-                origin, "" /* tag */, &deleted_notification_ids));
+                origin, "" /* tag */, absl::nullopt /* is_shown_by_browser */,
+                &deleted_notification_ids));
 
   EXPECT_EQ(4u, deleted_notification_ids.size());
 
@@ -761,9 +818,11 @@ TEST_F(NotificationDatabaseTest, DeleteAllNotificationDataForOriginWithTag) {
   ASSERT_GT(notifications_without_tag, 0u);
 
   std::set<std::string> deleted_notification_ids;
-  ASSERT_EQ(NotificationDatabase::STATUS_OK,
-            database->DeleteAllNotificationDataForOrigin(
-                origin, "foo" /* tag */, &deleted_notification_ids));
+  ASSERT_EQ(
+      NotificationDatabase::STATUS_OK,
+      database->DeleteAllNotificationDataForOrigin(
+          origin, "foo" /* tag */, absl::nullopt /* is_shown_by_browser */,
+          &deleted_notification_ids));
 
   EXPECT_EQ(notifications_with_tag, deleted_notification_ids.size());
 
@@ -798,9 +857,86 @@ TEST_F(NotificationDatabaseTest, DeleteAllNotificationDataForOriginEmpty) {
   std::set<std::string> deleted_notification_ids;
   ASSERT_EQ(NotificationDatabase::STATUS_OK,
             database->DeleteAllNotificationDataForOrigin(
-                origin, "" /* tag */, &deleted_notification_ids));
+                origin, "" /* tag */, absl::nullopt /* is_shown_by_browser */,
+                &deleted_notification_ids));
 
   EXPECT_EQ(0u, deleted_notification_ids.size());
+}
+
+TEST_F(NotificationDatabaseTest,
+       DeleteAllNotificationDataForOriginShownByBrowser) {
+  std::unique_ptr<NotificationDatabase> database(CreateDatabaseInMemory());
+  ASSERT_EQ(NotificationDatabase::STATUS_OK,
+            database->Open(true /* create_if_missing */));
+  GURL origin("https://example.com:443");
+  std::string kTag = "tag";
+
+  std::string non_browser_notification_id;
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, false /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &non_browser_notification_id));
+
+  std::string browser_notification_id;
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, true /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &browser_notification_id));
+
+  {
+    // Expect two notifications in the database for |origin|.
+    std::vector<NotificationDatabaseData> notifications;
+    ASSERT_EQ(
+        NotificationDatabase::STATUS_OK,
+        database->ReadAllNotificationDataForOrigin(origin, &notifications));
+    EXPECT_EQ(2u, notifications.size());
+  }
+
+  {
+    // Expect to be able to delete only notifications from the browser.
+    std::set<std::string> deleted_notification_ids;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->DeleteAllNotificationDataForOrigin(
+                  origin, kTag, true /* is_shown_by_browser */,
+                  &deleted_notification_ids));
+    EXPECT_EQ(1u, deleted_notification_ids.size());
+    EXPECT_EQ(1u, deleted_notification_ids.count(browser_notification_id));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, true /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &browser_notification_id));
+
+  {
+    // Expect to be able to delete only notifications not from the browser.
+    std::set<std::string> deleted_notification_ids;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->DeleteAllNotificationDataForOrigin(
+                  origin, kTag, false /* is_shown_by_browser */,
+                  &deleted_notification_ids));
+    EXPECT_EQ(1u, deleted_notification_ids.size());
+    EXPECT_EQ(1u, deleted_notification_ids.count(non_browser_notification_id));
+  }
+
+  ASSERT_NO_FATAL_FAILURE(CreateAndWriteNotification(
+      database.get(), origin, kTag, false /* is_shown_by_browser */,
+      kExampleServiceWorkerRegistrationId, &non_browser_notification_id));
+
+  {
+    // Expect to be able to delete notifications from the browser or not.
+    std::set<std::string> deleted_notification_ids;
+    ASSERT_EQ(NotificationDatabase::STATUS_OK,
+              database->DeleteAllNotificationDataForOrigin(
+                  origin, kTag, absl::nullopt /* is_shown_by_browser */,
+                  &deleted_notification_ids));
+    EXPECT_EQ(2u, deleted_notification_ids.size());
+    EXPECT_EQ(1u, deleted_notification_ids.count(browser_notification_id));
+    EXPECT_EQ(1u, deleted_notification_ids.count(non_browser_notification_id));
+  }
+
+  // Expect no remaining notifications.
+  std::vector<NotificationDatabaseData> notifications;
+  ASSERT_EQ(NotificationDatabase::STATUS_OK,
+            database->ReadAllNotificationDataForOrigin(origin, &notifications));
+  EXPECT_EQ(0u, notifications.size());
 }
 
 TEST_F(NotificationDatabaseTest,
@@ -823,7 +959,8 @@ TEST_F(NotificationDatabaseTest,
   std::vector<NotificationDatabaseData> notifications;
   ASSERT_EQ(NotificationDatabase::STATUS_OK,
             database->ReadAllNotificationDataForServiceWorkerRegistration(
-                origin, kExampleServiceWorkerRegistrationId, &notifications));
+                origin, kExampleServiceWorkerRegistrationId,
+                absl::nullopt /* is_shown_by_browser */, &notifications));
 
   EXPECT_EQ(0u, notifications.size());
 }

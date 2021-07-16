@@ -36,6 +36,10 @@ namespace content {
 // It is important to note that, for persistent notifications, the generated
 // notification id can outlive the browser process responsible for creating it.
 //
+// The browser may create notifications on behalf of an origin which will be
+// captured as part of the notification id to make sure those ids don't collide
+// with ones created via the website.
+//
 // Note that the PlatformNotificationService is expected to handle
 // distinguishing identical generated ids from different browser contexts.
 //
@@ -56,11 +60,13 @@ class CONTENT_EXPORT NotificationIdGenerator {
       const base::StringPiece& notification_id);
 
   // Generates an id for a persistent notification given the notification's
-  // origin, tag and persistent notification id. The persistent notification id
-  // will have been created by the persistent notification database.
+  // origin, tag, is_shown_by_browser and persistent notification id. The
+  // persistent notification id will have been created by the persistent
+  // notification database.
   std::string GenerateForPersistentNotification(
       const GURL& origin,
       const std::string& tag,
+      bool is_shown_by_browser,
       int64_t persistent_notification_id) const;
 
   // Generates an id for a non-persistent notification given the notification's

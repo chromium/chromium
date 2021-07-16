@@ -16,6 +16,7 @@
 #include "base/sequence_checker.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/platform_notification_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -138,10 +139,12 @@ class CONTENT_EXPORT NotificationDatabase {
 
   // Reads all notification data associated to |service_worker_registration_id|
   // belonging to |origin| from the database, and appends the data to the
-  // |notification_data_vector|. Returns the status code.
+  // |notification_data_vector|. Optionally filtered by |is_shown_by_browser|.
+  // Returns the status code.
   Status ReadAllNotificationDataForServiceWorkerRegistration(
       const GURL& origin,
       int64_t service_worker_registration_id,
+      absl::optional<bool> is_shown_by_browser,
       std::vector<NotificationDatabaseData>* notification_data_vector) const;
 
   // Writes the |notification_data| for a new notification belonging to |origin|
@@ -166,12 +169,13 @@ class CONTENT_EXPORT NotificationDatabase {
                                      const GURL& origin);
 
   // Deletes all data associated with |origin| from the database, optionally
-  // filtered by the |tag|, and appends the deleted notification ids to
-  // |deleted_notification_ids|. Returns the status code of the deletion
-  // operation.
+  // filtered by |tag| and |is_shown_by_browser|, and appends the deleted
+  // notification ids to |deleted_notification_ids|. Returns the status code of
+  // the deletion operation.
   Status DeleteAllNotificationDataForOrigin(
       const GURL& origin,
       const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
       std::set<std::string>* deleted_notification_ids);
 
   // Deletes all data associated with the |service_worker_registration_id|
@@ -205,26 +209,32 @@ class CONTENT_EXPORT NotificationDatabase {
   Status ReadAllNotificationDataInternal(
       const GURL& origin,
       int64_t service_worker_registration_id,
+      absl::optional<bool> is_shown_by_browser,
       std::vector<NotificationDatabaseData>* notification_data_vector) const;
 
   // Reads all notification data with the given constraints. |origin| may be
   // empty to read all notification data from all origins. If |origin| is
   // set, but |service_worker_registration_id| is invalid, then all notification
   // data for |origin| will be read. If both are set, then all notification data
-  // for the given |service_worker_registration_id| will be read.
+  // for the given |service_worker_registration_id| will be read. If
+  // |is_shown_by_browser| is not absl::nullopt, only notification data with
+  // matching |is_shown_by_browser| flags will be read.
   Status ForEachNotificationDataInternal(
       const GURL& origin,
       int64_t service_worker_registration_id,
+      absl::optional<bool> is_shown_by_browser,
       ReadAllNotificationsCallback callback) const;
 
   // Deletes all notification data with the given constraints. |origin| must
   // always be set - use Destroy() when the goal is to empty the database. If
   // |service_worker_registration_id| is invalid, all notification data for the
-  // |origin| will be deleted, optionally filtered by the |tag| when non-empty.
-  // All deleted notification ids will be written to |deleted_notification_ids|.
+  // |origin| will be deleted, optionally filtered by |tag| and
+  // |is_shown_by_browser| when non-empty. All deleted notification ids will be
+  // written to |deleted_notification_ids|.
   Status DeleteAllNotificationDataInternal(
       const GURL& origin,
       const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
       int64_t service_worker_registration_id,
       std::set<std::string>* deleted_notification_ids);
 

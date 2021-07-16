@@ -181,6 +181,8 @@ bool DeserializeNotificationDatabaseData(const std::string& input,
 
   output->has_triggered = message.has_triggered();
 
+  output->is_shown_by_browser = message.is_shown_by_browser();
+
   output->notification_resources = absl::nullopt;
 
   return true;
@@ -305,6 +307,8 @@ bool SerializeNotificationDatabaseData(const NotificationDatabaseData& input,
   }
 
   message.set_has_triggered(input.has_triggered);
+
+  message.set_is_shown_by_browser(input.is_shown_by_browser);
 
   return message.SerializeToString(output);
 }

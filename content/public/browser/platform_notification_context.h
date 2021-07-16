@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_resource_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -147,12 +148,13 @@ class PlatformNotificationContext
                                       bool close_notification,
                                       DeleteResultCallback callback) = 0;
 
-  // Deletes all data of notifications with |tag| belonging to |origin| from the
-  // database and closes the notifications. |callback| will be invoked with the
-  // success status and the number of closed notifications when the operation
-  // has completed.
+  // Deletes all data of notifications with |tag|, optionally filtered by
+  // |is_shown_by_browser|, belonging to |origin| from the database and closes
+  // the notifications. |callback| will be invoked with the success status and
+  // the number of closed notifications when the operation has completed.
   virtual void DeleteAllNotificationDataWithTag(
       const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
       const GURL& origin,
       DeleteAllResultCallback callback) = 0;
 

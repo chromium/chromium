@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
@@ -93,6 +94,10 @@ NotificationDatabaseData CreateDatabaseData(
   database_data.origin = origin;
   database_data.service_worker_registration_id = service_worker_registration_id;
   database_data.notification_data = notification_data;
+
+  // Make sure we don't expose this notification to the site.
+  database_data.is_shown_by_browser = true;
+
   return database_data;
 }
 
@@ -173,7 +178,8 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
     scoped_refptr<PlatformNotificationContext> notification_context =
         GetStoragePartition(profile_, origin)->GetPlatformNotificationContext();
     notification_context->DeleteAllNotificationDataWithTag(
-        kPushMessagingForcedNotificationTag, origin, base::DoNothing());
+        kPushMessagingForcedNotificationTag, /*is_shown_by_browser=*/true,
+        origin, base::DoNothing());
   }
 
   if (notification_needed && !notification_shown) {

@@ -101,6 +101,7 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
                               DeleteResultCallback callback) override;
   void DeleteAllNotificationDataWithTag(
       const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
       const GURL& origin,
       DeleteAllResultCallback callback) override;
   void DeleteAllNotificationDataForBlockedOrigins(
@@ -275,10 +276,12 @@ class CONTENT_EXPORT PlatformNotificationContextImpl
   // database. Optionally filtered by |tag|. Must only be called on the
   // |task_runner_| thread. |callback| will be invoked on the UI thread when the
   // operation has completed.
-  void DoDeleteAllNotificationDataForOrigins(std::set<GURL> origins,
-                                             const std::string& tag,
-                                             DeleteAllResultCallback callback,
-                                             bool initialized);
+  void DoDeleteAllNotificationDataForOrigins(
+      std::set<GURL> origins,
+      const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
+      DeleteAllResultCallback callback,
+      bool initialized);
 
   // Actually writes the notification resources to the database. Must only be
   // called on the |task_runner_| thread. |callback| will be invoked on the UI
