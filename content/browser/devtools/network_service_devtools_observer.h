@@ -57,7 +57,8 @@ class CONTENT_EXPORT NetworkServiceDevToolsObserver
       network::mojom::ClientSecurityStatePtr client_security_state) override;
   void OnCorsPreflightRequest(
       const base::UnguessableToken& devtools_request_id,
-      const network::ResourceRequest& request,
+      const net::HttpRequestHeaders& request_headers,
+      network::mojom::URLRequestDevToolsInfoPtr request_info,
       const GURL& initiator_url,
       const std::string& initiator_devtools_request_id) override;
   void OnCorsPreflightResponse(

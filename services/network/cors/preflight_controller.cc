@@ -233,8 +233,16 @@ class PreflightController::PreflightLoader final {
 
     if (devtools_observer_) {
       DCHECK(devtools_request_id_);
+      auto request_info = network::mojom::URLRequestDevToolsInfo::New(
+          preflight_request->method, preflight_request->url,
+          preflight_request->priority, preflight_request->referrer_policy,
+          preflight_request->trust_token_params
+              ? preflight_request->trust_token_params->Clone()
+              : nullptr,
+          request.has_user_gesture);
       devtools_observer_->OnCorsPreflightRequest(
-          *devtools_request_id_, *preflight_request, original_request_.url,
+          *devtools_request_id_, preflight_request->headers,
+          std::move(request_info), original_request_.url,
           original_request_.devtools_request_id.value_or(""));
     }
     loader_ =

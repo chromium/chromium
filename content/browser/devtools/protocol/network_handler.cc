@@ -1958,7 +1958,8 @@ void NetworkHandler::NavigationRequestWillBeSent(
 void NetworkHandler::RequestSent(
     const std::string& request_id,
     const std::string& loader_id,
-    const network::ResourceRequest& request,
+    const net::HttpRequestHeaders& request_headers,
+    const network::mojom::URLRequestDevToolsInfo& request_info,
     const char* initiator_type,
     const absl::optional<GURL>& initiator_url,
     const std::string& initiator_devtools_request_id,
@@ -1966,7 +1967,7 @@ void NetworkHandler::RequestSent(
   if (!enabled_)
     return;
   std::unique_ptr<DictionaryValue> headers_dict(DictionaryValue::create());
-  for (net::HttpRequestHeaders::Iterator it(request.headers); it.GetNext();)
+  for (net::HttpRequestHeaders::Iterator it(request_headers); it.GetNext();)
     headers_dict->setString(it.name(), it.value());
   std::unique_ptr<Network::Initiator> initiator =
       Network::Initiator::Create().SetType(initiator_type).Build();
@@ -1976,27 +1977,27 @@ void NetworkHandler::RequestSent(
     initiator->SetRequestId(initiator_devtools_request_id);
   std::string url_fragment;
   std::string url_without_fragment =
-      ExtractFragment(request.url, &url_fragment);
+      ExtractFragment(request_info.url, &url_fragment);
   auto request_object =
       Network::Request::Create()
           .SetUrl(url_without_fragment)
-          .SetMethod(request.method)
+          .SetMethod(request_info.method)
           .SetHeaders(Object::fromValue(headers_dict.get(), nullptr))
-          .SetInitialPriority(resourcePriority(request.priority))
-          .SetReferrerPolicy(referrerPolicy(request.referrer_policy))
+          .SetInitialPriority(resourcePriority(request_info.priority))
+          .SetReferrerPolicy(referrerPolicy(request_info.referrer_policy))
           .Build();
   if (!url_fragment.empty())
     request_object->SetUrlFragment(url_fragment);
-  if (request.trust_token_params.has_value()) {
+  if (request_info.trust_token_params) {
     request_object->SetTrustTokenParams(
-        BuildTrustTokenParams(request.trust_token_params.value()));
+        BuildTrustTokenParams(*request_info.trust_token_params));
   }
   frontend_->RequestWillBeSent(
       request_id, loader_id, url_without_fragment, std::move(request_object),
       timestamp.since_origin().InSecondsF(), base::Time::Now().ToDoubleT(),
       std::move(initiator), std::unique_ptr<Network::Response>(),
       std::string(Network::ResourceTypeEnum::Other),
-      Maybe<std::string>() /* frame_id */, request.has_user_gesture);
+      Maybe<std::string>() /* frame_id */, request_info.has_user_gesture);
 }
 
 namespace {

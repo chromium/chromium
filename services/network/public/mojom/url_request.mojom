@@ -506,6 +506,17 @@ union DataElement {
   DataElementChunkedDataPipe chunked_data_pipe;
 };
 
+// A struct with information about a URLRequest that is reported to DevTools.
+// See URLRequest definition for a description of the fields.
+struct URLRequestDevToolsInfo {
+  string method;
+  url.mojom.Url url;
+  RequestPriority priority;
+  URLRequestReferrerPolicy referrer_policy;
+  TrustTokenParams? trust_token_params;
+  bool has_user_gesture;
+};
+
 // Interface for devtools receiving information about individual request
 // state.
 interface DevToolsObserver {
@@ -545,7 +556,8 @@ interface DevToolsObserver {
   // |devtool_request_id| is available on the original request.
   OnCorsPreflightRequest(
     mojo_base.mojom.UnguessableToken devtool_request_id,
-    URLRequest request,
+    HttpRequestHeaders request_headers,
+    URLRequestDevToolsInfo request_info,
     url.mojom.Url initiator_url,
     string initiator_devtool_request_id);
 

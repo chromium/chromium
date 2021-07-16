@@ -344,11 +344,16 @@ void OnSignedExchangeCertificateRequestSent(
     const GURL& signed_exchange_url) {
   // Make sure both back-ends yield the same timestamp.
   auto timestamp = base::TimeTicks::Now();
-  DispatchToAgents(frame_tree_node, &protocol::NetworkHandler::RequestSent,
-                   request_id.ToString(), loader_id.ToString(), request,
-                   protocol::Network::Initiator::TypeEnum::SignedExchange,
-                   signed_exchange_url, /*initiator_devtools_request_id=*/"",
-                   timestamp);
+  network::mojom::URLRequestDevToolsInfo request_info(
+      request.method, request.url, request.priority, request.referrer_policy,
+      request.trust_token_params ? request.trust_token_params->Clone()
+                                 : nullptr,
+      request.has_user_gesture);
+  DispatchToAgents(
+      frame_tree_node, &protocol::NetworkHandler::RequestSent,
+      request_id.ToString(), loader_id.ToString(), request.headers,
+      request_info, protocol::Network::Initiator::TypeEnum::SignedExchange,
+      signed_exchange_url, /*initiator_devtools_request_id=*/"", timestamp);
 
   auto value = std::make_unique<base::trace_event::TracedValue>();
   value->SetString("requestId", request_id.ToString());

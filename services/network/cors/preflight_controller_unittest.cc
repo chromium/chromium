@@ -270,8 +270,8 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
 
   bool on_raw_request_called() const { return on_raw_request_called_; }
   bool on_raw_response_called() const { return on_raw_response_called_; }
-  const absl::optional<network::ResourceRequest>& preflight_request() const {
-    return preflight_request_;
+  const network::mojom::URLRequestDevToolsInfoPtr& preflight_request() const {
+    return preflight_request_info_;
   }
   const network::mojom::URLResponseHeadPtr& preflight_response() const {
     return preflight_response_;
@@ -303,10 +303,11 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   }
   void OnCorsPreflightRequest(
       const base::UnguessableToken& devtool_request_id,
-      const network::ResourceRequest& request,
+      const net::HttpRequestHeaders& request_headers,
+      network::mojom::URLRequestDevToolsInfoPtr request_info,
       const GURL& initiator_url,
       const std::string& initiator_devtools_request_id) override {
-    preflight_request_ = request;
+    preflight_request_info_ = std::move(request_info);
     initiator_devtools_request_id_ = initiator_devtools_request_id;
   }
   void OnCorsPreflightResponse(
@@ -363,7 +364,7 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
   base::OnceClosure wait_for_completed_;
   bool on_raw_request_called_ = false;
   bool on_raw_response_called_ = false;
-  absl::optional<network::ResourceRequest> preflight_request_;
+  network::mojom::URLRequestDevToolsInfoPtr preflight_request_info_;
   network::mojom::URLResponseHeadPtr preflight_response_;
   absl::optional<network::URLLoaderCompletionStatus> preflight_status_;
   std::string initiator_devtools_request_id_;
@@ -697,7 +698,7 @@ TEST_F(PreflightControllerTest, DevToolsEvents) {
   devtools_observer()->WaitUntilRequestCompleted();
   EXPECT_TRUE(devtools_observer()->on_raw_request_called());
   EXPECT_TRUE(devtools_observer()->on_raw_response_called());
-  ASSERT_TRUE(devtools_observer()->preflight_request().has_value());
+  ASSERT_TRUE(devtools_observer()->preflight_request());
   EXPECT_EQ(request.url, devtools_observer()->preflight_request()->url);
   EXPECT_EQ("OPTIONS", devtools_observer()->preflight_request()->method);
   ASSERT_TRUE(devtools_observer()->preflight_response());

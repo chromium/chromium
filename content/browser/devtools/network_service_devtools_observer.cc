@@ -137,7 +137,8 @@ void NetworkServiceDevToolsObserver::OnPrivateNetworkRequest(
 
 void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
     const base::UnguessableToken& devtools_request_id,
-    const network::ResourceRequest& request,
+    const net::HttpRequestHeaders& request_headers,
+    network::mojom::URLRequestDevToolsInfoPtr request_info,
     const GURL& initiator_url,
     const std::string& initiator_devtools_request_id) {
   auto* host = GetDevToolsAgentHost();
@@ -146,7 +147,7 @@ void NetworkServiceDevToolsObserver::OnCorsPreflightRequest(
   auto timestamp = base::TimeTicks::Now();
   auto id = devtools_request_id.ToString();
   DispatchToAgents(host, &protocol::NetworkHandler::RequestSent, id,
-                   /* loader_id=*/"", request,
+                   /* loader_id=*/"", request_headers, *request_info,
                    protocol::Network::Initiator::TypeEnum::Preflight,
                    initiator_url, initiator_devtools_request_id, timestamp);
 }
