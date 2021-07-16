@@ -248,8 +248,6 @@ String DOMWindow::CrossDomainAccessErrorMessage(
   if (accessing_window_url.IsNull())
     return String();
 
-  // FIXME: This message, and other console messages, have extra newlines.
-  // Should remove them.
   const SecurityOrigin* active_origin = accessing_window->GetSecurityOrigin();
   const SecurityOrigin* target_origin =
       GetFrame()->GetSecurityContext()->GetSecurityOrigin();
@@ -309,7 +307,7 @@ String DOMWindow::CrossDomainAccessErrorMessage(
     return message + " The frame requesting access has a protocol of \"" +
            active_url.Protocol() +
            "\", the frame being accessed has a protocol of \"" +
-           target_url.Protocol() + "\". Protocols must match.\n";
+           target_url.Protocol() + "\". Protocols must match.";
 
   // 'document.domain' errors.
   if (target_origin->DomainWasSetInDOM() && active_origin->DomainWasSetInDOM())
