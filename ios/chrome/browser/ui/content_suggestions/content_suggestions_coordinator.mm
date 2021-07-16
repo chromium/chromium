@@ -65,7 +65,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/theme_change_delegate.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
-#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
@@ -700,7 +700,7 @@
         // Record that this context menu was shown to the user.
         RecordMenuShown(MenuScenario::kMostVisitedEntry);
 
-        ActionFactory* actionFactory = [[ActionFactory alloc]
+        BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
             initWithBrowser:strongSelf.browser
                    scenario:MenuScenario::kMostVisitedEntry];
 

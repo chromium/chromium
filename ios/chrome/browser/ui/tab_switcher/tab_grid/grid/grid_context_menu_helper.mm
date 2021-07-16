@@ -63,9 +63,8 @@
         // Record that this context menu was shown to the user.
         RecordMenuShown(MenuScenario::kTabGridEntry);
 
-        ActionFactory* actionFactory =
-            [[ActionFactory alloc] initWithBrowser:strongSelf.browser
-                                          scenario:MenuScenario::kTabGridEntry];
+        ActionFactory* actionFactory = [[ActionFactory alloc]
+            initWithScenario:MenuScenario::kTabGridEntry];
 
         GridItem* item = [weakSelf.actionsDataSource
             gridItemForCellIdentifier:gridCell.itemIdentifier];

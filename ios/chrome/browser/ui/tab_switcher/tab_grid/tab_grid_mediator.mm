@@ -473,8 +473,7 @@ web::WebState* GetWebStateWithId(WebStateList* web_state_list,
 - (NSArray<UIMenuElement*>*)addToButtonMenuElementsForGridViewController:
     (GridViewController*)gridViewController {
   ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithBrowser:self.browser
-                                    scenario:MenuScenario::kTabGridAddTo];
+      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridAddTo];
   __weak GridViewController* weakGrid = gridViewController;
   __weak TabGridMediator* weakSelf = self;
   return @[

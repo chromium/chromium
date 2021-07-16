@@ -1172,8 +1172,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
 - (void)setupEditButton API_AVAILABLE(ios(14.0)) {
   ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithBrowser:nil
-                                    scenario:MenuScenario::kTabGridEdit];
+      [[ActionFactory alloc] initWithScenario:MenuScenario::kTabGridEdit];
   __weak TabGridViewController* weakSelf = self;
   NSArray<UIMenuElement*>* menuElements = @[
     [actionFactory actionToCloseAllTabsWithBlock:^{

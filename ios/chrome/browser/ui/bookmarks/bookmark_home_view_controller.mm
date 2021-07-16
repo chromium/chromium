@@ -58,7 +58,7 @@
 #import "ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
-#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
@@ -2332,9 +2332,9 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       // Record that this context menu was shown to the user.
       RecordMenuShown(MenuScenario::kBookmarkEntry);
 
-      ActionFactory* actionFactory =
-          [[ActionFactory alloc] initWithBrowser:strongSelf.browser
-                                        scenario:MenuScenario::kBookmarkEntry];
+      BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+          initWithBrowser:strongSelf.browser
+                 scenario:MenuScenario::kBookmarkEntry];
 
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];
@@ -2429,9 +2429,8 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
       // Record that this context menu was shown to the user.
       RecordMenuShown(MenuScenario::kBookmarkFolder);
 
-      ActionFactory* actionFactory =
-          [[ActionFactory alloc] initWithBrowser:strongSelf.browser
-                                        scenario:MenuScenario::kBookmarkFolder];
+      ActionFactory* actionFactory = [[ActionFactory alloc]
+          initWithScenario:MenuScenario::kBookmarkFolder];
 
       NSMutableArray<UIMenuElement*>* menuElements =
           [[NSMutableArray alloc] init];

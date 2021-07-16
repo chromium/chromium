@@ -24,7 +24,7 @@
 #include "ios/chrome/browser/ui/history/history_ui_delegate.h"
 #include "ios/chrome/browser/ui/history/ios_browsing_history_driver.h"
 #import "ios/chrome/browser/ui/history/public/history_presentation_delegate.h"
-#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/sharing/sharing_coordinator.h"
 #import "ios/chrome/browser/ui/table_view/feature_flags.h"
@@ -211,9 +211,9 @@
     // Record that this context menu was shown to the user.
     RecordMenuShown(MenuScenario::kHistoryEntry);
 
-    ActionFactory* actionFactory =
-        [[ActionFactory alloc] initWithBrowser:strongSelf.browser
-                                      scenario:MenuScenario::kHistoryEntry];
+    BrowserActionFactory* actionFactory = [[BrowserActionFactory alloc]
+        initWithBrowser:strongSelf.browser
+               scenario:MenuScenario::kHistoryEntry];
 
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];

@@ -6,13 +6,8 @@
 
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/task_environment.h"
-#import "ios/chrome/browser/main/test_browser.h"
-#import "ios/chrome/browser/sessions/test_session_service.h"
-#import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/gmock/include/gmock/gmock.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -35,23 +30,7 @@ MenuScenario kTestMenuScenario = MenuScenario::kHistoryEntry;
 // Test fixture for the ActionFactory.
 class ActionFactoryTest : public PlatformTest {
  protected:
-  ActionFactoryTest()
-      : test_title_(@"SomeTitle"),
-        test_browser_(std::make_unique<TestBrowser>()) {}
-
-  void SetUp() override {
-    mock_application_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationCommands));
-    [test_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_commands_handler_
-                     forProtocol:@protocol(ApplicationCommands)];
-
-    mock_application_settings_commands_handler_ =
-        OCMStrictProtocolMock(@protocol(ApplicationSettingsCommands));
-    [test_browser_->GetCommandDispatcher()
-        startDispatchingToTarget:mock_application_settings_commands_handler_
-                     forProtocol:@protocol(ApplicationSettingsCommands)];
-  }
+  ActionFactoryTest() : test_title_(@"SomeTitle") {}
 
   // Creates a blue square.
   UIImage* CreateMockImage() {
@@ -62,9 +41,6 @@ class ActionFactoryTest : public PlatformTest {
   base::test::TaskEnvironment task_environment_;
   base::HistogramTester histogram_tester_;
   NSString* test_title_;
-  std::unique_ptr<TestBrowser> test_browser_;
-  id mock_application_commands_handler_;
-  id mock_application_settings_commands_handler_;
 };
 
 // Tests the creation of an action using the parameterized method, and verifies
@@ -72,8 +48,7 @@ class ActionFactoryTest : public PlatformTest {
 TEST_F(ActionFactoryTest, CreateActionWithParameters) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* mockImage = CreateMockImage();
 
@@ -92,8 +67,7 @@ TEST_F(ActionFactoryTest, CreateActionWithParameters) {
 TEST_F(ActionFactoryTest, BookmarkAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"bookmark"];
     NSString* expectedTitle =
@@ -111,8 +85,7 @@ TEST_F(ActionFactoryTest, BookmarkAction) {
 TEST_F(ActionFactoryTest, CloseAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"close"];
     NSString* expectedTitle =
@@ -130,8 +103,7 @@ TEST_F(ActionFactoryTest, CloseAction) {
 TEST_F(ActionFactoryTest, CopyAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"copy_link_url"];
     NSString* expectedTitle =
@@ -150,8 +122,7 @@ TEST_F(ActionFactoryTest, CopyAction) {
 TEST_F(ActionFactoryTest, ShareAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"share"];
     NSString* expectedTitle =
@@ -169,8 +140,7 @@ TEST_F(ActionFactoryTest, ShareAction) {
 TEST_F(ActionFactoryTest, DeleteAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"delete"];
     NSString* expectedTitle =
@@ -185,113 +155,11 @@ TEST_F(ActionFactoryTest, DeleteAction) {
   }
 }
 
-// Tests that the Open in New Tab actions have the right titles and images.
-TEST_F(ActionFactoryTest, OpenInNewTabAction_URL) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
-
-    // Ensure that with browserless factory, a nil will be returned instead of
-    // an action.
-    ActionFactory* browserlessFactory =
-        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
-    UIAction* actionFromBrowserlessFactory =
-        [browserlessFactory actionToOpenInNewTabWithURL:testURL completion:nil];
-    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
-
-    // Using an action factory with a browser should return expected action.
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open_in_new_tab"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-
-    UIAction* actionWithURL = [factory actionToOpenInNewTabWithURL:testURL
-                                                        completion:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
-    EXPECT_EQ(expectedImage, actionWithURL.image);
-
-    UIAction* actionWithBlock = [factory actionToOpenInNewTabWithBlock:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
-    EXPECT_EQ(expectedImage, actionWithBlock.image);
-  }
-}
-
-// Tests that the Open in New Incognito Tab actions have the right titles
-// and images.
-TEST_F(ActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
-
-    // Ensure that with browserless factory, a nil will be returned instead of
-    // an action.
-    ActionFactory* browserlessFactory =
-        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
-    UIAction* actionFromBrowserlessFactory =
-        [browserlessFactory actionToOpenInNewIncognitoTabWithURL:testURL
-                                                      completion:nil];
-    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
-
-    // Using an action factory with a browser should return expected action.
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open_in_incognito"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE);
-
-    UIAction* actionWithURL =
-        [factory actionToOpenInNewIncognitoTabWithURL:testURL completion:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithURL.title]);
-    EXPECT_EQ(expectedImage, actionWithURL.image);
-
-    UIAction* actionWithBlock =
-        [factory actionToOpenInNewIncognitoTabWithBlock:nil];
-    EXPECT_TRUE([expectedTitle isEqualToString:actionWithBlock.title]);
-    EXPECT_EQ(expectedImage, actionWithBlock.image);
-  }
-}
-
-// Tests that the Open in New Window action has the right title and image.
-TEST_F(ActionFactoryTest, OpenInNewWindowAction) {
-  if (@available(iOS 13.0, *)) {
-    GURL testURL = GURL("https://example.com");
-
-    // Ensure that with browserless factory, a nil will be returned instead of
-    // an action.
-    ActionFactory* browserlessFactory =
-        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
-    UIAction* actionFromBrowserlessFactory = [browserlessFactory
-        actionToOpenInNewWindowWithURL:testURL
-                        activityOrigin:WindowActivityToolsOrigin];
-    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
-
-    // Using an action factory with a browser should return expected action.
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open_new_window"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENINNEWWINDOW);
-
-    UIAction* action =
-        [factory actionToOpenInNewWindowWithURL:testURL
-                                 activityOrigin:WindowActivityToolsOrigin];
-
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
-}
-
 // Tests that the read later action has the right title and image.
 TEST_F(ActionFactoryTest, ReadLaterAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"read_later"];
     NSString* expectedTitle =
@@ -309,8 +177,7 @@ TEST_F(ActionFactoryTest, ReadLaterAction) {
 TEST_F(ActionFactoryTest, RemoveAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"remove"];
     NSString* expectedTitle =
@@ -328,8 +195,7 @@ TEST_F(ActionFactoryTest, RemoveAction) {
 TEST_F(ActionFactoryTest, EditAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"edit"];
     NSString* expectedTitle = l10n_util::GetNSString(IDS_IOS_EDIT_ACTION_TITLE);
@@ -346,8 +212,7 @@ TEST_F(ActionFactoryTest, EditAction) {
 TEST_F(ActionFactoryTest, openAllTabsAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage systemImageNamed:@"plus"];
     NSString* expectedTitle =
@@ -365,8 +230,7 @@ TEST_F(ActionFactoryTest, openAllTabsAction) {
 TEST_F(ActionFactoryTest, hideAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"remove"];
     NSString* expectedTitle =
@@ -384,8 +248,7 @@ TEST_F(ActionFactoryTest, hideAction) {
 TEST_F(ActionFactoryTest, MoveFolderAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"move_folder"];
 
@@ -404,8 +267,7 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
 TEST_F(ActionFactoryTest, markAsReadAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"mark_read"];
 
@@ -424,8 +286,7 @@ TEST_F(ActionFactoryTest, markAsReadAction) {
 TEST_F(ActionFactoryTest, markAsUnreadAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"remove"];
 
@@ -445,8 +306,7 @@ TEST_F(ActionFactoryTest, markAsUnreadAction) {
 TEST_F(ActionFactoryTest, viewOfflineVersion) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"offline"];
 
@@ -466,8 +326,7 @@ TEST_F(ActionFactoryTest, viewOfflineVersion) {
 TEST_F(ActionFactoryTest, OpenWithJavaScript) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"open"];
 
@@ -485,8 +344,7 @@ TEST_F(ActionFactoryTest, OpenWithJavaScript) {
 TEST_F(ActionFactoryTest, SaveImageAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"download"];
     NSString* expectedTitle =
@@ -504,8 +362,7 @@ TEST_F(ActionFactoryTest, SaveImageAction) {
 TEST_F(ActionFactoryTest, CopyImageAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"copy"];
     NSString* expectedTitle =
@@ -519,57 +376,11 @@ TEST_F(ActionFactoryTest, CopyImageAction) {
   }
 }
 
-// Tests that the open image action has the right title and image.
-TEST_F(ActionFactoryTest, OpenImageAction) {
-  if (@available(iOS 13.0, *)) {
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
-
-    GURL testURL = GURL("https://example.com/logo.png");
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGE);
-
-    UIAction* action = [factory actionOpenImageWithURL:testURL
-                                            completion:^{
-                                            }];
-
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
-}
-
-// Tests that the open image in new tab action has the right title and image.
-TEST_F(ActionFactoryTest, OpenImageInNewTabAction) {
-  if (@available(iOS 13.0, *)) {
-    ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:test_browser_.get()
-                                      scenario:kTestMenuScenario];
-
-    GURL testURL = GURL("https://example.com/logo.png");
-    UrlLoadParams testParams = UrlLoadParams::InNewTab(testURL);
-
-    UIImage* expectedImage = [UIImage imageNamed:@"open_image_in_new_tab"];
-    NSString* expectedTitle =
-        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_OPENIMAGENEWTAB);
-
-    UIAction* action =
-        [factory actionOpenImageInNewTabWithUrlLoadParams:testParams
-                                               completion:^{
-                                               }];
-
-    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-    EXPECT_EQ(expectedImage, action.image);
-  }
-}
-
 // Tests that the close all action has the right title and image.
 TEST_F(ActionFactoryTest, CloseAllTabsAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"close"];
     NSString* expectedTitle =
@@ -587,7 +398,7 @@ TEST_F(ActionFactoryTest, CloseAllTabsAction) {
 TEST_F(ActionFactoryTest, SelectTabsAction) {
   if (@available(iOS 13.0, *)) {
     ActionFactory* factory =
-        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+        [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
     UIImage* expectedImage = [UIImage imageNamed:@"select"];
     NSString* expectedTitle =

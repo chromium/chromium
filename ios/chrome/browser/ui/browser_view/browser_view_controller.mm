@@ -115,7 +115,7 @@
 #import "ios/chrome/browser/ui/main_content/main_content_ui_broadcasting_util.h"
 #import "ios/chrome/browser/ui/main_content/main_content_ui_state.h"
 #import "ios/chrome/browser/ui/main_content/web_scroll_view_main_content_ui_forwarder.h"
-#import "ios/chrome/browser/ui/menu/action_factory.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -3809,9 +3809,9 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                   : isImage ? MenuScenario::kContextMenuImage
                                             : MenuScenario::kContextMenuLink;
 
-  ActionFactory* actionFactory =
-      [[ActionFactory alloc] initWithBrowser:self.browser
-                                    scenario:menuScenario];
+  BrowserActionFactory* actionFactory =
+      [[BrowserActionFactory alloc] initWithBrowser:self.browser
+                                           scenario:menuScenario];
 
   if (isLink) {
     if (link.SchemeIs(url::kJavaScriptScheme)) {

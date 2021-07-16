@@ -10,21 +10,16 @@
 #import "base/ios/block_types.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
-#import "ios/chrome/browser/window_activities/window_activity_helpers.h"
 
-class Browser;
 class GURL;
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure.
 @interface ActionFactory : NSObject
 
-// Initializes a factory instance for the current |browser| to create action
-// instances for the given |scenario|. |browser| can be nil, and in that case
-// only actions that doesn't require browser will work, and other actions will
-// return nil;
-- (instancetype)initWithBrowser:(Browser*)browser
-                       scenario:(MenuScenario)scenario;
+// Initializes a factory instance to create action instances for the given
+// |scenario|.
+- (instancetype)initWithScenario:(MenuScenario)scenario;
 
 // Creates a UIAction instance configured with the given |title| and |image|.
 // Upon execution, the action's |type| will be recorded and the |block| will be
@@ -46,12 +41,6 @@ class GURL;
 // the given delete |block| when executed.
 - (UIAction*)actionToDeleteWithBlock:(ProceduralBlock)block;
 
-// Creates a UIAction instance configured for opening the |URL| in a new tab and
-// which will invoke the given |completion| block after execution.
-// Will return nil if a browser was not given in the initialization.
-- (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
-                              completion:(ProceduralBlock)completion;
-
 // Creates a UIAction instance whose title and icon are configured for opening a
 // URL in a new tab. When triggered, the action will invoke the |block| which
 // needs to open a URL in a new tab.
@@ -61,26 +50,6 @@ class GURL;
 // multiple URLs in new tabs. When triggered, the action will invoke the |block|
 // which needs to open URLs in new tabs.
 - (UIAction*)actionToOpenAllTabsWithBlock:(ProceduralBlock)block;
-
-// Creates a UIAction instance configured for opening the |URL| in a new
-// incognito tab and which will invoke the given |completion| block after
-// execution.
-// Will return nil if a browser was not given in the initialization.
-- (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
-                                       completion:(ProceduralBlock)completion;
-
-// Creates a UIAction instance whose title and icon are configured for opening a
-// URL in a new incognito tab. When triggered, the action will invoke the
-// |block| which needs to open a URL in a new incognito tab.
-// Will return nil if a browser was not given in the initialization.
-- (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block;
-
-// Creates a UIAction instance configured for opening the |URL| in a new window
-// from |activityOrigin|.
-// Will return nil if a browser was not given in the initialization.
-- (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
-                             activityOrigin:
-                                 (WindowActivityOrigin)activityOrigin;
 
 // Creates a UIAction instance configured for suppression which will invoke
 // the given delete |block| when executed.
@@ -132,17 +101,6 @@ class GURL;
 
 // Creates a UIAction instance for copying an image.
 - (UIAction*)actionCopyImageWithBlock:(ProceduralBlock)block;
-
-// Creates a UIAction instance for opening an image |URL| in current tab and
-// invoke the given |completion| block after execution.
-- (UIAction*)actionOpenImageWithURL:(const GURL)URL
-                         completion:(ProceduralBlock)completion;
-
-// Creates a UIAction instance for opening an image |params| in a new tab and
-// invoke the given |completion| block after execution.
-- (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
-                                           completion:
-                                               (ProceduralBlock)completion;
 
 // Creates a UIAction instance for searching an image with given search service
 // |title|. Invokes the given |completion| block after execution.
