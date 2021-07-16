@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/scanning/zeroconf_scanner_detector_utils.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "chromeos/scanning/scanner.h"
+#include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
@@ -83,8 +84,13 @@ absl::optional<chromeos::Scanner> CreateScanner(
   if (service_description.service_name.empty() ||
       service_description.ip_address.empty() ||
       service_description.address.port() == 0) {
+    PRINTER_LOG(ERROR) << "Found zeroconf " << service_type
+                       << " scanner that isn't usable";
     return absl::nullopt;
   }
+
+  PRINTER_LOG(EVENT) << "Found zeroconf " << service_type
+                     << " scanner: " << service_description.instance_name();
 
   return CreateSaneAirscanScanner(
       service_description.instance_name(), service_type, metadata.rs(),
