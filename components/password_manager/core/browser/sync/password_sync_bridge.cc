@@ -117,6 +117,9 @@ sync_pb::PasswordSpecifics SpecificsFromPassword(
       base::UTF16ToUTF8(password_form.password_value));
   password_data->set_date_last_used(
       password_form.date_last_used.ToDeltaSinceWindowsEpoch().InMicroseconds());
+  password_data->set_date_password_modified_windows_epoch_micros(
+      password_form.date_password_modified.ToDeltaSinceWindowsEpoch()
+          .InMicroseconds());
   password_data->set_date_created(
       password_form.date_created.ToDeltaSinceWindowsEpoch().InMicroseconds());
   password_data->set_blacklisted(password_form.blocked_by_user);
@@ -159,6 +162,10 @@ PasswordForm PasswordFromEntityChange(const syncer::EntityChange& entity_change,
     password.date_last_used =
         base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromDays(1));
   }
+  password.date_password_modified = ConvertToBaseTime(
+      password_data.has_date_password_modified_windows_epoch_micros()
+          ? password_data.date_password_modified_windows_epoch_micros()
+          : password_data.date_created());
   password.date_created = ConvertToBaseTime(password_data.date_created());
   password.blocked_by_user = password_data.blacklisted();
   password.type = static_cast<PasswordForm::Type>(password_data.type());
@@ -265,6 +272,10 @@ bool AreLocalAndRemotePasswordsEqual(
               password_specifics.password_value() &&
           password_form.date_last_used ==
               ConvertToBaseTime(password_specifics.date_last_used()) &&
+          password_form.date_password_modified ==
+              ConvertToBaseTime(
+                  password_specifics
+                      .date_password_modified_windows_epoch_micros()) &&
           password_form.date_created ==
               ConvertToBaseTime(password_specifics.date_created()) &&
           password_form.blocked_by_user == password_specifics.blacklisted() &&

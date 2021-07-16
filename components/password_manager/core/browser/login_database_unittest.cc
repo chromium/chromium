@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -93,8 +94,10 @@ PasswordForm GenerateExamplePasswordForm() {
   form.scheme = PasswordForm::Scheme::kHtml;
   form.times_used = 1;
   form.form_data.name = u"form_name";
-  form.date_synced = base::Time::Now();
+  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(7);
   form.date_last_used = base::Time::Now();
+  form.date_password_modified =
+      base::Time::Now() - base::TimeDelta::FromDays(1);
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
@@ -131,7 +134,7 @@ int64_t GetFirstColumn(sql::Statement& s) {
 }
 
 template <>
-std::string GetFirstColumn(sql::Statement& s) {
+ALLOW_UNUSED_TYPE std::string GetFirstColumn(sql::Statement& s) {
   return s.ColumnString(0);
 }
 
@@ -394,6 +397,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   form5.password_value = u"test6";
   const base::Time kNow = base::Time::Now();
   form5.date_last_used = kNow;
+  form5.date_password_modified = kNow;
 
   // We update, and check to make sure it matches the
   // old form, and there is only one record.
@@ -410,6 +414,7 @@ TEST_F(LoginDatabaseTest, Logins) {
   EXPECT_EQ(form5.password_value, result[0]->password_value);
   // Date last used.
   EXPECT_EQ(kNow, form5.date_last_used);
+  EXPECT_EQ(kNow, form5.date_password_modified);
   result.clear();
 
   // Make sure everything can disappear.
@@ -1148,7 +1153,6 @@ TEST_F(LoginDatabaseTest, BlocklistedLogins) {
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kHtml;
   form.date_synced = base::Time::Now();
-  form.date_last_used = base::Time::Now();
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.federation_origin =
@@ -1230,7 +1234,6 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   incomplete_form.signon_realm = "http://accounts.google.com/";
   incomplete_form.username_value = u"my_username";
   incomplete_form.password_value = u"my_password";
-  incomplete_form.date_last_used = base::Time::Now();
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(incomplete_form), db().AddLogin(incomplete_form));
@@ -1270,6 +1273,7 @@ TEST_F(LoginDatabaseTest, UpdateIncompleteCredentials) {
   completed_form.username_element = encountered_form.username_element;
   completed_form.password_element = encountered_form.password_element;
   completed_form.submit_element = encountered_form.submit_element;
+  completed_form.date_last_used = base::Time::Now();
   EXPECT_EQ(AddChangeForForm(completed_form), db().AddLogin(completed_form));
   EXPECT_TRUE(db().RemoveLogin(incomplete_form, /*changes=*/nullptr));
 
@@ -1301,7 +1305,6 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   incomplete_form.signon_realm = "http://accounts.google.com/";
   incomplete_form.username_value = u"my_username";
   incomplete_form.password_value = u"my_password";
-  incomplete_form.date_last_used = base::Time::Now();
   incomplete_form.blocked_by_user = false;
   incomplete_form.scheme = PasswordForm::Scheme::kHtml;
   EXPECT_EQ(AddChangeForForm(incomplete_form), db().AddLogin(incomplete_form));
@@ -1336,6 +1339,8 @@ TEST_F(LoginDatabaseTest, UpdateOverlappingCredentials) {
   // Simulate the user changing their password.
   complete_form.password_value = u"new_password";
   complete_form.date_synced = base::Time::Now();
+  complete_form.date_last_used = base::Time::Now();
+  complete_form.date_password_modified = base::Time::Now();
   EXPECT_EQ(UpdateChangeForForm(complete_form, /*password_changed=*/true),
             db().UpdateLogin(complete_form));
 
@@ -1397,7 +1402,6 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  form.date_last_used = base::Time::Now();
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
@@ -1406,9 +1410,11 @@ TEST_F(LoginDatabaseTest, UpdateLogin) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_synced = base::Time::Now();
-  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(1);
-  form.date_last_used = base::Time::Now() + base::TimeDelta::FromDays(1);
+  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(2);
+  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
+  form.date_last_used = base::Time::Now();
+  form.date_password_modified =
+      base::Time::Now() - base::TimeDelta::FromDays(1);
   form.blocked_by_user = true;
   form.scheme = PasswordForm::Scheme::kBasic;
   form.type = PasswordForm::Type::kGenerated;
@@ -1445,7 +1451,6 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
   form.password_value = u"my_password";
   form.blocked_by_user = false;
   form.scheme = PasswordForm::Scheme::kHtml;
-  form.date_last_used = base::Time::Now();
   EXPECT_EQ(AddChangeForForm(form), db().AddLogin(form));
 
   form.action = GURL("http://accounts.google.com/login");
@@ -1453,9 +1458,9 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithoutPassword) {
       ValueElementPair(u"my_new_username", u"new_username_id"));
   form.times_used = 20;
   form.submit_element = u"submit_element";
-  form.date_synced = base::Time::Now();
-  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(1);
-  form.date_last_used = base::Time::Now() + base::TimeDelta::FromDays(1);
+  form.date_synced = base::Time::Now() - base::TimeDelta::FromDays(2);
+  form.date_created = base::Time::Now() - base::TimeDelta::FromDays(3);
+  form.date_last_used = base::Time::Now();
   form.display_name = u"Mr. Smith";
   form.icon_url = GURL("https://accounts.google.com/Icon");
   form.skip_zero_click = true;
@@ -2253,25 +2258,6 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     base::StringPiece sql_file) {
   SCOPED_TRACE(testing::Message("Version file = ") << sql_file);
   CreateDatabase(sql_file);
-  // Original date, in seconds since UTC epoch.
-  std::vector<int64_t> date_created(
-      GetColumnValuesFromDatabase<int64_t>(database_path_, "date_created"));
-  if (version() == 10)  // Version 10 has a duplicate entry.
-    ASSERT_EQ(4U, date_created.size());
-  else
-    ASSERT_EQ(3U, date_created.size());
-  // Migration to version 8 performs changes dates to the new format.
-  // So for versions less of equal to 8 create date should be in old
-  // format before migration and in new format after.
-  if (version() <= 8) {
-    ASSERT_EQ(1402955745, date_created[0]);
-    ASSERT_EQ(1402950000, date_created[1]);
-    ASSERT_EQ(1402950000, date_created[2]);
-  } else {
-    ASSERT_EQ(13047429345000000, date_created[0]);
-    ASSERT_EQ(13047423600000000, date_created[1]);
-    ASSERT_EQ(13047423600000000, date_created[2]);
-  }
 
   {
     // Assert that the database was successfully opened and updated
@@ -2301,33 +2287,15 @@ void LoginDatabaseMigrationTest::MigrationToVCurrent(
     EXPECT_EQ(form, *result[0]);
     EXPECT_TRUE(db.RemoveLogin(form, /*changes=*/nullptr));
   }
-  // New date, in microseconds since platform independent epoch.
-  std::vector<int64_t> new_date_created(
-      GetColumnValuesFromDatabase<int64_t>(database_path_, "date_created"));
-  ASSERT_EQ(3U, new_date_created.size());
-  if (version() <= 8) {
-    // Check that the two dates match up.
-    for (size_t i = 0; i < date_created.size(); ++i) {
-      EXPECT_EQ(base::Time::FromInternalValue(new_date_created[i]),
-                base::Time::FromTimeT(date_created[i]));
-    }
-  } else {
-    ASSERT_EQ(13047429345000000, new_date_created[0]);
-    ASSERT_EQ(13047423600000000, new_date_created[1]);
-    ASSERT_EQ(13047423600000000, new_date_created[2]);
+  // Added 07/21. Safe to remove in a year.
+  if (version() <= 29) {
+    // Check that 'date_password_modified' is copied from 'date_created'.
+    std::vector<int64_t> password_modified(GetColumnValuesFromDatabase<int64_t>(
+        database_path_, "date_password_modified"));
+    EXPECT_EQ(13047429345000000, password_modified[0]);
+    EXPECT_EQ(13047423600000000, password_modified[1]);
+    EXPECT_EQ(13047423600000000, password_modified[2]);
   }
-
-  if (version() >= 7 && version() <= 13) {
-    // The "avatar_url" column first appeared in version 7. In version 14,
-    // it was renamed to "icon_url". Migration from a version <= 13
-    // to >= 14 should not break theses URLs.
-    std::vector<std::string> urls(
-        GetColumnValuesFromDatabase<std::string>(database_path_, "icon_url"));
-
-    EXPECT_THAT(urls, UnorderedElementsAre("", "https://www.google.com/icon",
-                                           "https://www.google.com/icon"));
-  }
-
   {
     // On versions < 15 |kCompatibleVersionNumber| was set to 1, but
     // the migration should bring it to the correct value.

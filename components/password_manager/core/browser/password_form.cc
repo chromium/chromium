@@ -140,6 +140,8 @@ void PasswordFormToJSON(const PasswordForm& form,
                     ValueElementVectorToString(form.all_possible_passwords));
   target->SetBoolean("blocked_by_user", form.blocked_by_user);
   target->SetDouble("date_last_used", form.date_last_used.ToDoubleT());
+  target->SetDouble("date_password_modified",
+                    form.date_password_modified.ToDoubleT());
   target->SetDouble("date_created", form.date_created.ToDoubleT());
   target->SetDouble("date_synced", form.date_synced.ToDoubleT());
   target->SetString("type", ToString(form.type));
@@ -288,6 +290,7 @@ bool operator==(const PasswordForm& lhs, const PasswordForm& rhs) {
          lhs.date_created == rhs.date_created &&
          lhs.date_synced == rhs.date_synced &&
          lhs.date_last_used == rhs.date_last_used &&
+         lhs.date_password_modified == rhs.date_password_modified &&
          lhs.blocked_by_user == rhs.blocked_by_user && lhs.type == rhs.type &&
          lhs.times_used == rhs.times_used &&
          lhs.form_data.SameFormAs(rhs.form_data) &&

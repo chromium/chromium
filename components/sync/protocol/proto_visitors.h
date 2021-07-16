@@ -714,6 +714,7 @@ VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData& proto) {
   VISIT(federation_url);
   VISIT(date_last_used);
   VISIT(password_issues);
+  VISIT(date_password_modified_windows_epoch_micros);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::PasswordSpecificsData_PasswordIssues& proto) {

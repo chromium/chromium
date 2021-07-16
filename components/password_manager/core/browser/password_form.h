@@ -260,6 +260,13 @@ struct PasswordForm {
   // When parsing an HTML form, this is not used.
   base::Time date_last_used;
 
+  // When the password value was last changed. The date can be unset on the old
+  // credentials because the passwords wasn't modified yet. The code must keep
+  // it in mind and fallback to 'date_last_used' or 'date_created'.
+  //
+  // When parsing an HTML form, this is not used.
+  base::Time date_password_modified;
+
   // When the login was saved (by chrome).
   //
   // When parsing an HTML form, this is not used.

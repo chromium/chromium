@@ -57,7 +57,7 @@ using autofill::GaiaIdHash;
 namespace password_manager {
 
 // The current version number of the login database schema.
-constexpr int kCurrentVersionNumber = 29;
+constexpr int kCurrentVersionNumber = 30;
 // The oldest version of the schema such that a legacy Chrome client using that
 // version can still read/write the current database.
 constexpr int kCompatibleVersionNumber = 29;
@@ -163,6 +163,7 @@ enum LoginDatabaseTableColumns {
   COLUMN_ID,
   COLUMN_DATE_LAST_USED,
   COLUMN_MOVING_BLOCKED_FOR,
+  COLUMN_DATE_PASSWORD_MODIFIED,
   COLUMN_NUM  // Keep this last.
 };
 
@@ -241,6 +242,9 @@ void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
   s->BindBlob(COLUMN_MOVING_BLOCKED_FOR,
               PickleToSpan(moving_blocked_for_pickle));
+  s->BindInt64(
+      COLUMN_DATE_PASSWORD_MODIFIED,
+      form.date_password_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
 }
 
 // Output parameter is the first one because of binding order.
@@ -459,6 +463,11 @@ void InitializeBuilders(SQLTableBuilders builders) {
                                            "INTEGER NOT NULL DEFAULT 0");
   SealVersion(builders, /*expected_version=*/29u);
 
+  // Version 30. Introduce 'date_password_modified' column.
+  builders.logins->AddColumn("date_password_modified",
+                             "INTEGER NOT NULL DEFAULT 0");
+  SealVersion(builders, /*expected_version=*/30u);
+
   DCHECK_EQ(static_cast<size_t>(COLUMN_NUM), builders.logins->NumberOfColumns())
       << "Adjust LoginDatabaseTableColumns if you change column definitions "
          "here.";
@@ -569,8 +578,7 @@ bool MigrateDatabase(unsigned current_version,
   // Data changes, not covered by the schema migration above.
   if (current_version <= 8) {
     sql::Statement fix_time_format;
-    fix_time_format.Assign(db->GetCachedStatement(
-        SQL_FROM_HERE,
+    fix_time_format.Assign(db->GetUniqueStatement(
         "UPDATE logins SET date_created = (date_created * ?) + ?"));
     fix_time_format.BindInt64(0, base::Time::kMicrosecondsPerSecond);
     fix_time_format.BindInt64(1, base::Time::kTimeTToMicrosecondsOffset);
@@ -580,8 +588,8 @@ bool MigrateDatabase(unsigned current_version,
 
   if (current_version <= 16) {
     sql::Statement reset_zero_click;
-    reset_zero_click.Assign(db->GetCachedStatement(
-        SQL_FROM_HERE, "UPDATE logins SET skip_zero_click = 1"));
+    reset_zero_click.Assign(
+        db->GetUniqueStatement("UPDATE logins SET skip_zero_click = 1"));
     if (!reset_zero_click.Run())
       return false;
   }
@@ -590,6 +598,15 @@ bool MigrateDatabase(unsigned current_version,
   // drop all data because Sync would populate the tables properly at startup.
   if (current_version >= 21 && current_version < 26) {
     if (!ClearAllSyncMetadata(db))
+      return false;
+  }
+
+  // Set the default value for 'date_password_modified'.
+  if (current_version < 30) {
+    sql::Statement set_date_password_modified;
+    set_date_password_modified.Assign(db->GetUniqueStatement(
+        "UPDATE logins SET date_password_modified = date_created"));
+    if (!set_date_password_modified.Run())
       return false;
   }
 
@@ -1271,6 +1288,9 @@ PasswordStoreChangeList LoginDatabase::UpdateLogin(const PasswordForm& form,
   base::Pickle moving_blocked_for_pickle =
       SerializeGaiaIdHashVector(form.moving_blocked_for_list);
   s.BindBlob(next_param++, PickleToSpan(moving_blocked_for_pickle));
+  s.BindInt64(
+      next_param++,
+      form.date_password_modified.ToDeltaSinceWindowsEpoch().InMicroseconds());
   // NOTE: Add new fields here unless the field is a part of the unique key.
   // If so, add new field below.
 
@@ -1552,6 +1572,9 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
     base::Pickle pickle = PickleFromSpan(moving_blocked_for_blob);
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
+  form->date_password_modified =
+      base::Time::FromDeltaSinceWindowsEpoch(base::TimeDelta::FromMicroseconds(
+          s.ColumnInt64(COLUMN_DATE_PASSWORD_MODIFIED)));
   PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
 
   return ENCRYPTION_RESULT_SUCCESS;
