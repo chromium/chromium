@@ -22,7 +22,6 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
-#include "components/exo/wm_helper.h"
 #include "components/exo/xkb_tracker.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/focus_client.h"
@@ -167,7 +166,6 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
       seat_(seat),
       expiration_delay_for_pending_key_acks_(base::TimeDelta::FromMilliseconds(
           kExpirationDelayForPendingKeyAcksMs)) {
-  AddEventHandler();
   seat_->AddObserver(this, kKeyboardSeatObserverPriority);
   ash::KeyboardController::Get()->AddObserver(this);
   ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
@@ -431,6 +429,7 @@ void Keyboard::OnKeyboardLayoutNameChanged(const std::string& layout_name) {
 
 void Keyboard::SetFocus(Surface* surface) {
   if (focus_) {
+    RemoveEventHandler();
     delegate_->OnKeyboardLeave(focus_);
     focus_->RemoveSurfaceObserver(this);
     focus_ = nullptr;
@@ -443,6 +442,7 @@ void Keyboard::SetFocus(Surface* surface) {
     focus_ = surface;
     focus_->AddSurfaceObserver(this);
     focused_on_ime_supported_surface_ = IsImeSupportedSurface(surface);
+    AddEventHandler();
   }
 }
 
@@ -485,19 +485,35 @@ void Keyboard::ScheduleProcessExpiredPendingKeyAcks(base::TimeDelta delay) {
 }
 
 void Keyboard::AddEventHandler() {
-  auto* helper = WMHelper::GetInstance();
+  if (!focus_)
+    return;
+
+  // Toplevel window can be not ShellSurface, for example for a notification
+  // surface.
+  aura::Window* toplevel_window = focus_->window();
+  if (toplevel_window->GetToplevelWindow())
+    toplevel_window = toplevel_window->GetToplevelWindow();
+
   if (are_keyboard_key_acks_needed_)
-    helper->AddPreTargetHandler(this);
+    toplevel_window->AddPreTargetHandler(this);
   else
-    helper->AddPostTargetHandler(this);
+    toplevel_window->AddPostTargetHandler(this);
 }
 
 void Keyboard::RemoveEventHandler() {
-  auto* helper = WMHelper::GetInstance();
+  if (!focus_)
+    return;
+
+  // Toplevel window can be not ShellSurface, for example for a notification
+  // surface.
+  aura::Window* toplevel_window = focus_->window();
+  if (toplevel_window->GetToplevelWindow())
+    toplevel_window = toplevel_window->GetToplevelWindow();
+
   if (are_keyboard_key_acks_needed_)
-    helper->RemovePreTargetHandler(this);
+    toplevel_window->RemovePreTargetHandler(this);
   else
-    helper->RemovePostTargetHandler(this);
+    toplevel_window->RemovePostTargetHandler(this);
 }
 
 }  // namespace exo
