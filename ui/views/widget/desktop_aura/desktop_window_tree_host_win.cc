@@ -928,10 +928,6 @@ void DesktopWindowTreeHostWin::HandleWorkAreaChanged() {
   GetWidget()->widget_delegate()->OnWorkAreaChanged();
 }
 
-void DesktopWindowTreeHostWin::HandleVisibilityChanging(bool visible) {
-  native_widget_delegate_->OnNativeWidgetVisibilityChanging(visible);
-}
-
 void DesktopWindowTreeHostWin::HandleVisibilityChanged(bool visible) {
   native_widget_delegate_->OnNativeWidgetVisibilityChanged(visible);
 }

@@ -41,7 +41,6 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   virtual void OnWidgetDragWillStart(Widget* widget) {}
   virtual void OnWidgetDragComplete(Widget* widget) {}
 
-  virtual void OnWidgetVisibilityChanging(Widget* widget, bool visible) {}
   virtual void OnWidgetVisibilityChanged(Widget* widget, bool visible) {}
 
   virtual void OnWidgetActivationChanged(Widget* widget, bool active) {}

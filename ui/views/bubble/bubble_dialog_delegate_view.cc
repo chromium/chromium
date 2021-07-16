@@ -288,19 +288,8 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
     owner_->OnWidgetBoundsChanged(widget, bounds);
   }
 
-  void OnWidgetVisibilityChanging(Widget* widget, bool visible) override {
-#if defined(OS_WIN)
-    // On Windows we need to handle this before the bubble is visible or hidden.
-    // Please see the comment on the OnWidgetVisibilityChanging function. On
-    // other platforms it is fine to handle it after the bubble is shown/hidden.
-    owner_->OnBubbleWidgetVisibilityChanged(visible);
-#endif
-  }
-
   void OnWidgetVisibilityChanged(Widget* widget, bool visible) override {
-#if !defined(OS_WIN)
     owner_->OnBubbleWidgetVisibilityChanged(visible);
-#endif
     owner_->OnWidgetVisibilityChanged(widget, visible);
   }
 

@@ -821,9 +821,6 @@ TEST_F(BubbleDialogDelegateViewTest, WithoutClientLayerTest) {
   EXPECT_EQ(nullptr, bubble_widget->client_view()->layer());
 }
 
-// TODO(crbug.com/1123933): Investigate why BubbleDialogDelegate is explicitly
-// not firing this event on Windows.
-#if !defined(OS_WIN)
 TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   std::unique_ptr<Widget> anchor_widget =
@@ -846,7 +843,6 @@ TEST_F(BubbleDialogDelegateViewTest, AlertAccessibleEvent) {
   alert_bubble_widget->Show();
   EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
-#endif
 
 // Anchoring Tests -------------------------------------------------------------
 

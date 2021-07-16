@@ -202,7 +202,6 @@ class VIEWS_EXPORT DesktopWindowTreeHostWin
   void HandleEndWMSizeMove() override;
   void HandleMove() override;
   void HandleWorkAreaChanged() override;
-  void HandleVisibilityChanging(bool visible) override;
   void HandleVisibilityChanged(bool visible) override;
   void HandleWindowMinimizedOrRestored(bool restored) override;
   void HandleClientSizeChanged(const gfx::Size& new_size) override;

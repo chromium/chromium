@@ -985,7 +985,6 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   bool OnNativeWidgetActivationChanged(bool active) override;
   void OnNativeFocus() override;
   void OnNativeBlur() override;
-  void OnNativeWidgetVisibilityChanging(bool visible) override;
   void OnNativeWidgetVisibilityChanged(bool visible) override;
   void OnNativeWidgetCreated() override;
   void OnNativeWidgetDestroying() override;

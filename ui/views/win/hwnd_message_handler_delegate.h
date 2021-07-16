@@ -170,10 +170,6 @@ class VIEWS_EXPORT HWNDMessageHandlerDelegate {
   // Called when the system's work area has changed.
   virtual void HandleWorkAreaChanged() = 0;
 
-  // Called when the window's visibility is changing. |visible| holds the new
-  // state.
-  virtual void HandleVisibilityChanging(bool visible) = 0;
-
   // Called when the window's visibility changed. |visible| holds the new state.
   virtual void HandleVisibilityChanged(bool visible) = 0;
 

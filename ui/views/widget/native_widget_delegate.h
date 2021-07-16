@@ -63,9 +63,6 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   virtual void OnNativeFocus() = 0;
   virtual void OnNativeBlur() = 0;
 
-  // Called when the window is about to be shown/hidden.
-  virtual void OnNativeWidgetVisibilityChanging(bool visible) = 0;
-
   // Called when the window is shown/hidden.
   virtual void OnNativeWidgetVisibilityChanged(bool visible) = 0;
 

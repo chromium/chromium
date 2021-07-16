@@ -1307,11 +1307,6 @@ void Widget::OnNativeBlur() {
   WidgetFocusManager::GetInstance()->OnNativeFocusChanged(nullptr);
 }
 
-void Widget::OnNativeWidgetVisibilityChanging(bool visible) {
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetVisibilityChanging(this, visible);
-}
-
 void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   View* root = GetRootView();
   if (root)
