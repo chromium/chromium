@@ -674,12 +674,17 @@ config("compiler") {
       # TODO(thakis): Check if '=0' (that is, number of cores, instead
       # of "all" which means number of hardware threads) is faster.
       ldflags += [ "-Wl,--thinlto-jobs=all" ]
+      if (is_mac) {
+        ldflags +=
+            [ "-Wl,-cache_path_lto," +
+              rebase_path("$root_out_dir/thinlto-cache", root_build_dir) ]
+      } else {
+        ldflags +=
+            [ "-Wl,--thinlto-cache-dir=" +
+              rebase_path("$root_out_dir/thinlto-cache", root_build_dir) ]
+      }
 
-      ldflags += [
-        "-Wl,--thinlto-cache-dir=" +
-            rebase_path("$root_out_dir/thinlto-cache", root_build_dir),
-        "-Wl,--thinlto-cache-policy,$cache_policy",
-      ]
+      ldflags += [ "-Wl,--thinlto-cache-policy=$cache_policy" ]
 
       if (is_chromeos_ash) {
         # Not much performance difference was noted between the default (100)
