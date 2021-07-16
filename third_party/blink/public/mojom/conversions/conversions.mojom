@@ -7,6 +7,10 @@ module blink.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/origin.mojom";
 
+struct DedupKey {
+  int64 value;
+};
+
 struct Conversion {
   // Origin of the conversion registration redirect.
   url.mojom.Origin reporting_origin;
@@ -22,6 +26,10 @@ struct Conversion {
   // Priority specified in conversion redirect. 0 is used as a default if none
   // is provided.
   int64 priority = 0;
+
+  // Key specified in conversion redirect for deduplication against existing
+  // conversions with the same source.
+  DedupKey? dedup_key;
 };
 
 // Mojo struct to represent blink::Impression native struct.

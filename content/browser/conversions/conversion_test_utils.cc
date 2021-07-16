@@ -269,6 +269,8 @@ ConversionBuilder::ConversionBuilder()
           net::SchemefulSite(GURL(kDefaultConversionDestination))),
       reporting_origin_(url::Origin::Create(GURL(kDefaultReportOrigin))) {}
 
+ConversionBuilder::~ConversionBuilder() = default;
+
 ConversionBuilder& ConversionBuilder::SetConversionData(
     uint64_t conversion_data) {
   conversion_data_ = conversion_data;
@@ -298,10 +300,16 @@ ConversionBuilder& ConversionBuilder::SetPriority(int64_t priority) {
   return *this;
 }
 
+ConversionBuilder& ConversionBuilder::SetDedupKey(
+    absl::optional<int64_t> dedup_key) {
+  dedup_key_ = dedup_key;
+  return *this;
+}
+
 StorableConversion ConversionBuilder::Build() const {
   return StorableConversion(conversion_data_, conversion_destination_,
                             reporting_origin_, event_source_trigger_data_,
-                            priority_);
+                            priority_, dedup_key_);
 }
 
 // Custom comparator for StorableImpressions that does not take impression IDs

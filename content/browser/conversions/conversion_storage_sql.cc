@@ -79,11 +79,15 @@ const base::FilePath::CharType kDatabasePath[] =
 // Version 9 - 2021/06/30 - https://crrev.com/c/2951620
 //
 // Version 9 adds the conversions.priority column.
-const int kCurrentVersionNumber = 9;
+//
+// Version 10 - 2021/07/16 - https://crrev.com/c/2983439
+//
+// Version 10 adds the dedup_keys table.
+const int kCurrentVersionNumber = 10;
 
 // Earliest version which can use a |kCurrentVersionNumber| database
 // without failing.
-const int kCompatibleVersionNumber = 9;
+const int kCompatibleVersionNumber = 10;
 
 // Latest version of the database that cannot be upgraded to
 // |kCurrentVersionNumber| without razing the database. No versions are
@@ -434,6 +438,11 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   if (!statement.Succeeded() || !impression_to_attribute.has_value())
     return false;
 
+  if (IsReportAlreadyStored(*impression_to_attribute->impression_id(),
+                            conversion.dedup_key())) {
+    return false;
+  }
+
   const uint64_t conversion_data =
       impression_to_attribute->source_type() ==
               StorableImpression::SourceType::kEvent
@@ -482,6 +491,20 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
                                conversion.priority())) {
       return false;
     }
+  }
+
+  // If a dedup key is present, store it. We do this regardless of whether
+  // `create_report` is true to avoid leaking whether the report was actually
+  // stored.
+  if (conversion.dedup_key().has_value()) {
+    static constexpr char kInsertDedupKeySql[] =
+        "INSERT INTO dedup_keys(impression_id,dedup_key)VALUES(?,?)";
+    sql::Statement insert_dedup_key_statement(
+        db_->GetCachedStatement(SQL_FROM_HERE, kInsertDedupKeySql));
+    insert_dedup_key_statement.BindInt64(0, *report.impression.impression_id());
+    insert_dedup_key_statement.BindInt64(1, *conversion.dedup_key());
+    if (!insert_dedup_key_statement.Run())
+      return false;
   }
 
   // Only increment the number of conversions associated with the impression if
@@ -615,27 +638,55 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
 }
 
 void ConversionStorageSql::DeleteExpiredImpressions() {
+  const int kMaxDeletesPerBatch = 100;
+
+  auto delete_impressions_from_paged_select =
+      [this](sql::Statement& statement)
+          VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT -> bool {
+    while (true) {
+      std::vector<int64_t> impression_ids;
+      while (statement.Step()) {
+        int64_t impression_id = statement.ColumnInt64(0);
+        impression_ids.push_back(impression_id);
+      }
+      if (!statement.Succeeded())
+        return false;
+      if (impression_ids.empty())
+        return true;
+      if (!DeleteImpressions(impression_ids))
+        return false;
+      // Deliberately retain the existing bound vars so that the limit, etc are
+      // the same.
+      statement.Reset(/*clear_bound_vars=*/false);
+    }
+  };
+
   // Delete all impressions that have no associated conversions and are past
   // their expiry time. Optimized by |kImpressionExpiryIndexSql|.
-  static constexpr char kDeleteExpiredImpressionsSql[] =
-      "DELETE FROM impressions WHERE expiry_time <= ? AND "
-      "impression_id NOT IN(SELECT impression_id FROM conversions)";
-  sql::Statement delete_expired_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteExpiredImpressionsSql));
-  delete_expired_statement.BindTime(0, clock_->Now());
-  if (!delete_expired_statement.Run())
+  static constexpr char kSelectExpiredImpressionsSql[] =
+      "SELECT impression_id FROM impressions WHERE expiry_time <= ? AND "
+      "impression_id NOT IN(SELECT impression_id FROM conversions)"
+      "LIMIT ?";
+  sql::Statement select_expired_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSelectExpiredImpressionsSql));
+  select_expired_statement.BindTime(0, clock_->Now());
+  select_expired_statement.BindInt(1, kMaxDeletesPerBatch);
+  if (!delete_impressions_from_paged_select(select_expired_statement))
     return;
 
   // Delete all impressions that have no associated conversions and are
   // inactive. This is done in a separate statement from
   // |kDeleteExpiredImpressionsSql| so that each query is optimized by an index.
   // Optimized by |kConversionUrlIndexSql|.
-  static constexpr char kDeleteInactiveImpressionsSql[] =
-      "DELETE FROM impressions WHERE active = 0 AND "
-      "impression_id NOT IN(SELECT impression_id FROM conversions)";
-  sql::Statement delete_inactive_statement(
-      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteInactiveImpressionsSql));
-  delete_inactive_statement.Run();
+  static constexpr char kSelectInactiveImpressionsSql[] =
+      "SELECT impression_id FROM impressions WHERE active = 0 AND "
+      "impression_id NOT IN(SELECT impression_id FROM conversions)"
+      "LIMIT ?";
+  sql::Statement select_inactive_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kSelectInactiveImpressionsSql));
+  select_inactive_statement.BindInt(0, kMaxDeletesPerBatch);
+  if (!delete_impressions_from_paged_select(select_inactive_statement))
+    return;
 }
 
 bool ConversionStorageSql::DeleteConversion(int64_t conversion_id) {
@@ -860,6 +911,12 @@ void ConversionStorageSql::ClearAllDataAllTime() {
     return;
   int num_impressions_deleted = db_->GetLastChangeCount();
 
+  static constexpr char kDeleteAllDedupKeysSql[] = "DELETE FROM dedup_keys";
+  sql::Statement delete_all_dedup_keys_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteAllDedupKeysSql));
+  if (!delete_all_dedup_keys_statement.Run())
+    return;
+
   if (!rate_limit_table_.ClearAllDataAllTime(db_.get()))
     return;
 
@@ -883,6 +940,29 @@ bool ConversionStorageSql::HasCapacityForStoringImpression(
     return false;
   int64_t count = statement.ColumnInt64(0);
   return count < delegate_->GetMaxImpressionsPerOrigin();
+}
+
+bool ConversionStorageSql::IsReportAlreadyStored(
+    int64_t impression_id,
+    absl::optional<int64_t> dedup_key) {
+  if (!dedup_key.has_value())
+    return false;
+
+  static constexpr char kCountConversionsSql[] =
+      "SELECT COUNT(*)FROM dedup_keys "
+      "WHERE impression_id = ? AND dedup_key = ?";
+  sql::Statement statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kCountConversionsSql));
+  statement.BindInt64(0, impression_id);
+  statement.BindInt64(1, *dedup_key);
+
+  // If there's an error, return true so `MaybeCreateAndStoreConversionReport()`
+  // returns early.
+  if (!statement.Step())
+    return true;
+
+  int64_t count = statement.ColumnInt64(0);
+  return count > 0;
 }
 
 int ConversionStorageSql::GetCapacityForStoringConversion(
@@ -1190,6 +1270,14 @@ bool ConversionStorageSql::CreateSchema() {
   if (!rate_limit_table_.CreateTable(db_.get()))
     return false;
 
+  static constexpr char kDedupKeyTableSql[] =
+      "CREATE TABLE IF NOT EXISTS dedup_keys"
+      "(impression_id INTEGER NOT NULL,"
+      "dedup_key INTEGER NOT NULL,"
+      "PRIMARY KEY(impression_id,dedup_key))WITHOUT ROWID";
+  if (!db_->Execute(kDedupKeyTableSql))
+    return false;
+
   if (!meta_table_.Init(db_.get(), kCurrentVersionNumber,
                         kCompatibleVersionNumber)) {
     return false;
@@ -1332,6 +1420,18 @@ bool ConversionStorageSql::DeleteImpressions(
     delete_impression_statement.Reset(/*clear_bound_vars=*/true);
     delete_impression_statement.BindInt64(0, impression_id);
     if (!delete_impression_statement.Run())
+      return false;
+  }
+
+  static constexpr char kDeleteDedupKeySql[] =
+      "DELETE FROM dedup_keys WHERE impression_id = ?";
+  sql::Statement delete_dedup_key_statement(
+      db_->GetCachedStatement(SQL_FROM_HERE, kDeleteDedupKeySql));
+
+  for (int64_t impression_id : impression_ids) {
+    delete_dedup_key_statement.Reset(/*clear_bound_vars=*/true);
+    delete_dedup_key_statement.BindInt64(0, impression_id);
+    if (!delete_dedup_key_statement.Run())
       return false;
   }
 

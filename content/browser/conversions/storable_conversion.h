@@ -10,6 +10,7 @@
 #include "base/compiler_specific.h"
 #include "content/common/content_export.h"
 #include "net/base/schemeful_site.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -26,7 +27,8 @@ class CONTENT_EXPORT StorableConversion {
                      net::SchemefulSite conversion_destination,
                      url::Origin reporting_origin,
                      uint64_t event_source_trigger_data,
-                     int64_t priority);
+                     int64_t priority,
+                     absl::optional<int64_t> dedup_key);
   StorableConversion(const StorableConversion& other);
   StorableConversion& operator=(const StorableConversion& other);
   StorableConversion(StorableConversion&& other);
@@ -51,6 +53,10 @@ class CONTENT_EXPORT StorableConversion {
 
   int64_t priority() const WARN_UNUSED_RESULT { return priority_; }
 
+  const absl::optional<int64_t>& dedup_key() const WARN_UNUSED_RESULT {
+    return dedup_key_;
+  }
+
  private:
   // Conversion data associated with conversion registration event.
   uint64_t conversion_data_;
@@ -70,6 +76,10 @@ class CONTENT_EXPORT StorableConversion {
   // to send among multiple different reports for the same attribution source.
   // Defaults to 0 if not provided.
   int64_t priority_;
+
+  // Key specified in conversion redirect for deduplication against existing
+  // conversions with the same source. If absent, no deduplication is performed.
+  absl::optional<int64_t> dedup_key_;
 };
 
 }  // namespace content

@@ -7,6 +7,7 @@ function registerConversion({
   origin = '',  // use a relative URL for conversion registration
   eventSourceTriggerData,
   priority,
+  dedupKey,
 } = {}) {
   let img = document.createElement('img');
   img.src = origin + '/server-redirect?.well-known/attribution-reporting' +
@@ -14,7 +15,8 @@ function registerConversion({
       (eventSourceTriggerData === undefined ?
            '' :
            '&event-source-trigger-data=' + eventSourceTriggerData) +
-      (priority === undefined ? '' : '&priority=' + priority);
+      (priority === undefined ? '' : '&priority=' + priority) +
+      (dedupKey === undefined ? '' : '&dedup-key=' + dedupKey);
   img.onerror = function() {
     document.title = 'converted';
   };

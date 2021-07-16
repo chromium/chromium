@@ -309,7 +309,10 @@ void ConversionHost::RegisterConversion(
       conversion_manager->GetConversionPolicy()
           .GetSanitizedEventSourceTriggerData(
               conversion->event_source_trigger_data),
-      conversion->priority);
+      conversion->priority,
+      conversion->dedup_key.is_null()
+          ? absl::nullopt
+          : absl::make_optional(conversion->dedup_key->value));
 
   if (conversion_page_metrics_)
     conversion_page_metrics_->OnConversion(storable_conversion);

@@ -714,4 +714,64 @@ IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
   expected_report.WaitForReport();
 }
 
+IN_PROC_BROWSER_TEST_F(ConversionsBrowserTest,
+                       ImpressionConversionWithDedupKey_Deduped) {
+  // Expected reports must be registered before the server starts.
+  ExpectedReportWaiter expected_report1(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/R"({"source_event_id":"1","trigger_data":"7"})", https_server());
+  // 12 below is sanitized to 4 here by the `ConversionPolicy`.
+  ExpectedReportWaiter expected_report2(
+      GURL("https://a.test/.well-known/attribution-reporting/"
+           "report-attribution"),
+      /*body=*/R"({"source_event_id":"1","trigger_data":"4"})",
+      https_server());
+  ASSERT_TRUE(https_server()->Start());
+
+  GURL impression_url = https_server()->GetURL(
+      "a.test", "/conversions/page_with_impression_creator.html");
+  EXPECT_TRUE(NavigateToURL(web_contents(), impression_url));
+
+  // Create an anchor tag with impression attributes and click the link. By
+  // default the target is set to "_top".
+  GURL conversion_url = https_server()->GetURL(
+      "b.test", "/conversions/page_with_conversion_redirect.html");
+  EXPECT_TRUE(
+      ExecJs(web_contents(),
+             JsReplace(R"(
+    createImpressionTag({id: 'link',
+                        url: $1,
+                        data: '1',
+                        destination: $2});)",
+                       conversion_url, url::Origin::Create(conversion_url))));
+
+  TestNavigationObserver observer(web_contents());
+  EXPECT_TRUE(ExecJs(shell(), "simulateClick('link');"));
+  observer.Wait();
+
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 7,
+                                       origin: $1,
+                                       dedupKey: 123});)",
+                                       url::Origin::Create(impression_url))));
+
+  // This report should be deduped against the previous one.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 9,
+                                       origin: $1,
+                                       dedupKey: 123});)",
+                                       url::Origin::Create(impression_url))));
+
+  // This report should be received, as it has a different dedupKey.
+  EXPECT_TRUE(
+      ExecJs(web_contents(), JsReplace(R"(registerConversion({data: 12,
+                                       origin: $1,
+                                       dedupKey: 456});)",
+                                       url::Origin::Create(impression_url))));
+
+  expected_report1.WaitForReport();
+  expected_report2.WaitForReport();
+}
+
 }  // namespace content

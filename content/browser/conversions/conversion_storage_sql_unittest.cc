@@ -46,6 +46,24 @@ class ConversionStorageSqlTest : public testing::Test {
     storage_->MaybeCreateAndStoreConversionReport(DefaultConversion());
   }
 
+  void ExpectAllTablesEmpty() {
+    sql::Database raw_db;
+    EXPECT_TRUE(raw_db.Open(db_path()));
+
+    static constexpr const char* kTables[] = {
+        "conversions",
+        "impressions",
+        "rate_limits",
+        "dedup_keys",
+    };
+
+    for (const char* table : kTables) {
+      size_t rows;
+      sql::test::CountTableRows(&raw_db, table, &rows);
+      EXPECT_EQ(0u, rows) << table;
+    }
+  }
+
   base::FilePath db_path() {
     return temp_directory_.GetPath().Append(FILE_PATH_LITERAL("Conversions"));
   }
@@ -108,8 +126,8 @@ TEST_F(ConversionStorageSqlTest,
     sql::Database raw_db;
     EXPECT_TRUE(raw_db.Open(db_path()));
 
-    // [impressions], [conversions], [meta], [rate_limits].
-    EXPECT_EQ(4u, sql::test::CountSQLTables(&raw_db));
+    // [impressions], [conversions], [meta], [rate_limits], [dedup_keys].
+    EXPECT_EQ(5u, sql::test::CountSQLTables(&raw_db));
 
     // [conversion_domain_idx], [impression_expiry_idx],
     // [impression_origin_idx], [impression_site_idx],
@@ -180,19 +198,7 @@ TEST_F(ConversionStorageSqlTest, ClearDataWithVestigialConversion) {
   CloseDatabase();
 
   // Verify that everything is deleted.
-  sql::Database raw_db;
-  EXPECT_TRUE(raw_db.Open(db_path()));
-
-  size_t conversion_rows;
-  size_t impression_rows;
-  size_t rate_limit_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
-  sql::test::CountTableRows(&raw_db, "impressions", &impression_rows);
-  sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-
-  EXPECT_EQ(0u, conversion_rows);
-  EXPECT_EQ(0u, impression_rows);
-  EXPECT_EQ(0u, rate_limit_rows);
+  ExpectAllTablesEmpty();
 
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
@@ -227,19 +233,7 @@ TEST_F(ConversionStorageSqlTest, ClearAllDataWithVestigialConversion) {
   CloseDatabase();
 
   // Verify that everything is deleted.
-  sql::Database raw_db;
-  EXPECT_TRUE(raw_db.Open(db_path()));
-
-  size_t conversion_rows;
-  size_t impression_rows;
-  size_t rate_limit_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
-  sql::test::CountTableRows(&raw_db, "impressions", &impression_rows);
-  sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-
-  EXPECT_EQ(0u, conversion_rows);
-  EXPECT_EQ(0u, impression_rows);
-  EXPECT_EQ(0u, rate_limit_rows);
+  ExpectAllTablesEmpty();
 
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
@@ -275,19 +269,7 @@ TEST_F(ConversionStorageSqlTest, DeleteEverything) {
   CloseDatabase();
 
   // Verify that everything is deleted.
-  sql::Database raw_db;
-  EXPECT_TRUE(raw_db.Open(db_path()));
-
-  size_t conversion_rows;
-  size_t impression_rows;
-  size_t rate_limit_rows;
-  sql::test::CountTableRows(&raw_db, "conversions", &conversion_rows);
-  sql::test::CountTableRows(&raw_db, "impressions", &impression_rows);
-  sql::test::CountTableRows(&raw_db, "rate_limits", &rate_limit_rows);
-
-  EXPECT_EQ(0u, conversion_rows);
-  EXPECT_EQ(0u, impression_rows);
-  EXPECT_EQ(0u, rate_limit_rows);
+  ExpectAllTablesEmpty();
 
   histograms.ExpectUniqueSample(
       "Conversions.ImpressionsDeletedInDataClearOperation", 1, 1);
@@ -510,7 +492,7 @@ TEST_F(ConversionStorageSqlTest, MaxUint64StorageSucceeds) {
   EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(StorableConversion(
       /*conversion_data=*/kMaxUint64, impression.ConversionDestination(),
       impression.reporting_origin(), /*event_source_trigger_data=*/0,
-      /*priority=*/0)));
+      /*priority=*/0, /*dedup_key=*/absl::nullopt)));
 
   std::vector<ConversionReport> reports =
       storage()->GetConversionsToReport(clock()->Now());

@@ -796,6 +796,25 @@ bool MigrateToVersion9(sql::Database* db, sql::MetaTable* meta_table) {
   return transaction.Commit();
 }
 
+bool MigrateToVersion10(sql::Database* db, sql::MetaTable* meta_table) {
+  // Wrap each migration in its own transaction. See comment in
+  // |MigrateToVersion2|.
+  sql::Transaction transaction(db);
+  if (!transaction.Begin())
+    return false;
+
+  const char kDedupKeyTableSql[] =
+      "CREATE TABLE IF NOT EXISTS dedup_keys"
+      "(impression_id INTEGER NOT NULL,"
+      "dedup_key INTEGER NOT NULL,"
+      "PRIMARY KEY(impression_id,dedup_key))WITHOUT ROWID";
+  if (!db->Execute(kDedupKeyTableSql))
+    return false;
+
+  meta_table->SetVersionNumber(10);
+  return transaction.Commit();
+}
+
 }  // namespace
 
 bool UpgradeConversionStorageSqlSchema(sql::Database* db,
@@ -832,6 +851,10 @@ bool UpgradeConversionStorageSqlSchema(sql::Database* db,
   }
   if (meta_table->GetVersionNumber() == 8) {
     if (!MigrateToVersion9(db, meta_table))
+      return false;
+  }
+  if (meta_table->GetVersionNumber() == 9) {
+    if (!MigrateToVersion10(db, meta_table))
       return false;
   }
   // Add similar if () blocks for new versions here.

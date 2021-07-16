@@ -20,6 +20,7 @@
 #include "content/common/content_export.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
+#include "sql/statement.h"
 
 namespace base {
 class Clock;
@@ -109,6 +110,9 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   bool HasCapacityForStoringImpression(const std::string& serialized_origin)
+      VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
+  bool IsReportAlreadyStored(int64_t impression_id,
+                             absl::optional<int64_t> dedup_key)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
   int GetCapacityForStoringConversion(const std::string& serialized_origin)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;

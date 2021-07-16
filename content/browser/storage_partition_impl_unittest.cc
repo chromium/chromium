@@ -1943,7 +1943,8 @@ TEST_F(StoragePartitionImplTest, ConversionsClearDataForFilter) {
     conversion_manager->HandleConversion(
         StorableConversion(123, net::SchemefulSite(conv), reporter,
                            /*event_source_trigger_data=*/0,
-                           /*priority=*/0));
+                           /*priority=*/0,
+                           /*dedup_key=*/absl::nullopt));
   }
 
   EXPECT_EQ(5u, GetConversionsToReportForTesting(conversion_manager,

@@ -1274,4 +1274,116 @@ TEST_F(ConversionStorageTest, TriggerPriority_DeactivatesImpression) {
   EXPECT_TRUE(storage()->GetActiveImpressions().empty());
 }
 
+TEST_F(ConversionStorageTest, DedupKey_Dedups) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetData(1)
+          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
+          .Build());
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetData(2)
+          .SetConversionOrigin(url::Origin::Create(GURL("https://b.example")))
+          .Build());
+  EXPECT_EQ(2u, storage()->GetActiveImpressions().size());
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(11)
+          .SetConversionData(71)
+          .Build()));
+
+  // Should be stored because dedup key doesn't match even though conversion
+  // destination does.
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(12)
+          .SetConversionData(72)
+          .Build()));
+
+  // Should be stored because conversion destination doesn't match even though
+  // dedup key does.
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://b.example"))))
+          .SetDedupKey(12)
+          .SetConversionData(73)
+          .Build()));
+
+  // Shouldn't be stored because conversion destination and dedup key match.
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(11)
+          .SetConversionData(74)
+          .Build()));
+
+  // Shouldn't be stored because conversion destination and dedup key match.
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://b.example"))))
+          .SetDedupKey(12)
+          .SetConversionData(75)
+          .Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(3u, actual_reports.size());
+  EXPECT_EQ(71u, actual_reports[0].conversion_data);
+  EXPECT_EQ(72u, actual_reports[1].conversion_data);
+  EXPECT_EQ(73u, actual_reports[2].conversion_data);
+}
+
+TEST_F(ConversionStorageTest, DedupKey_DedupsAfterConversionDeletion) {
+  storage()->StoreImpression(
+      ImpressionBuilder(clock()->Now())
+          .SetData(1)
+          .SetConversionOrigin(url::Origin::Create(GURL("https://a.example")))
+          .Build());
+  EXPECT_EQ(1u, storage()->GetActiveImpressions().size());
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+
+  EXPECT_TRUE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(2)
+          .SetConversionData(3)
+          .Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+
+  std::vector<ConversionReport> actual_reports =
+      storage()->GetConversionsToReport(clock()->Now());
+  EXPECT_EQ(1u, actual_reports.size());
+  EXPECT_EQ(3u, actual_reports[0].conversion_data);
+
+  // Simulate the report being sent and deleted from storage.
+  DeleteConversionReports(actual_reports);
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(1));
+
+  // This report shouldn't be stored, as it should be deduped against the
+  // previously stored one even though that previous one is no longer in the DB.
+  EXPECT_FALSE(storage()->MaybeCreateAndStoreConversionReport(
+      ConversionBuilder()
+          .SetConversionDestination(net::SchemefulSite(
+              url::Origin::Create(GURL("https://a.example"))))
+          .SetDedupKey(2)
+          .SetConversionData(5)
+          .Build()));
+
+  clock()->Advance(base::TimeDelta::FromMilliseconds(kReportTime));
+  EXPECT_THAT(storage()->GetConversionsToReport(clock()->Now()), IsEmpty());
+}
+
 }  // namespace content

@@ -24,6 +24,7 @@
 #include "content/test/test_content_browser_client.h"
 #include "net/base/schemeful_site.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
@@ -274,7 +275,7 @@ StorableConversion DefaultConversion() WARN_UNUSED_RESULT;
 class ConversionBuilder {
  public:
   ConversionBuilder();
-  ~ConversionBuilder() = default;
+  ~ConversionBuilder();
 
   ConversionBuilder& SetConversionData(uint64_t conversion_data)
       WARN_UNUSED_RESULT;
@@ -290,6 +291,9 @@ class ConversionBuilder {
 
   ConversionBuilder& SetPriority(int64_t priority) WARN_UNUSED_RESULT;
 
+  ConversionBuilder& SetDedupKey(absl::optional<int64_t> dedup_key)
+      WARN_UNUSED_RESULT;
+
   StorableConversion Build() const WARN_UNUSED_RESULT;
 
  private:
@@ -298,6 +302,7 @@ class ConversionBuilder {
   net::SchemefulSite conversion_destination_;
   url::Origin reporting_origin_;
   int64_t priority_ = 0;
+  absl::optional<int64_t> dedup_key_ = absl::nullopt;
 };
 
 bool operator==(const StorableImpression& a, const StorableImpression& b);
