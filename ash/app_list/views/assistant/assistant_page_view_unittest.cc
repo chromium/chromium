@@ -20,7 +20,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
@@ -165,10 +164,6 @@ class GestureEventForTest : public ui::GestureEvent {
   DISALLOW_COPY_AND_ASSIGN(GestureEventForTest);
 };
 
-// Base class for tests of the embedded assistant page in:
-// - Legacy clamshell mode ("peeking launcher")
-// - Clamshell mode ("bubble launcher")
-// - Tablet mode
 class AssistantPageViewTest : public AssistantAshTestBase {
  public:
   AssistantPageViewTest() = default;
@@ -181,6 +176,25 @@ class AssistantPageViewTest : public AssistantAshTestBase {
   void ShowAssistantUiInVoiceMode() {
     ShowAssistantUi(AssistantEntryPoint::kHotword);
     EXPECT_TRUE(IsVisible());
+  }
+
+  // Returns a point in the AppList, but outside the Assistant UI.
+  gfx::Point GetPointInAppListOutsideAssistantUi() {
+    gfx::Point result = GetPointOutside(page_view());
+
+    // Validity check
+    EXPECT_TRUE(app_list_view()->bounds().Contains(result));
+    EXPECT_FALSE(page_view()->bounds().Contains(result));
+
+    return result;
+  }
+
+  gfx::Point GetPointOutside(const views::View* view) {
+    return gfx::Point(view->origin().x() - 10, view->origin().y() - 10);
+  }
+
+  gfx::Point GetPointInside(const views::View* view) {
+    return view->GetBoundsInScreen().CenterPoint();
   }
 
   void PressKey(ui::KeyboardCode key_code) {
@@ -203,22 +217,11 @@ class AssistantPageViewTest : public AssistantAshTestBase {
   }
 
   const views::View* GetFocusedView() {
-    return page_view()->GetWidget()->GetFocusManager()->GetFocusedView();
+    return main_view()->GetFocusManager()->GetFocusedView();
   }
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AssistantPageViewTest);
-};
-
-// Tests for the legacy non-bubble app list ("peeking launcher").
-// These tests can be deleted when features::kAppListBubble is fully launched.
-class AssistantPageNonBubbleTest : public AssistantPageViewTest {
- public:
-  AssistantPageNonBubbleTest() {
-    scoped_feature_list_.InitAndDisableFeature(features::kAppListBubble);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Counts the number of Assistant interactions that are started.
@@ -247,7 +250,9 @@ class AssistantInteractionCounter
       interaction_observer_{this};
 };
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {
+}  // namespace
+
+TEST_F(AssistantPageViewTest, ShouldStartInPeekingState) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -257,7 +262,7 @@ TEST_F(AssistantPageNonBubbleTest, ShouldStartInPeekingState) {
   EXPECT_EQ(AppListViewState::kPeeking, app_list_view()->app_list_state());
 }
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartInHalfState) {
+TEST_F(AssistantPageViewTest, ShouldStartInHalfState) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       chromeos::assistant::features::kAssistantBetterOnboarding);
@@ -268,7 +273,7 @@ TEST_F(AssistantPageNonBubbleTest, ShouldStartInHalfState) {
   EXPECT_EQ(AppListViewState::kHalf, app_list_view()->app_list_state());
 }
 
-TEST_F(AssistantPageNonBubbleTest, ShouldStartAtMinimumHeight) {
+TEST_F(AssistantPageViewTest, ShouldStartAtMinimumHeight) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -279,7 +284,7 @@ TEST_F(AssistantPageNonBubbleTest, ShouldStartAtMinimumHeight) {
   EXPECT_EQ(kMinHeightDip, main_view()->size().height());
 }
 
-TEST_F(AssistantPageNonBubbleTest,
+TEST_F(AssistantPageViewTest,
        ShouldRemainAtMinimumHeightWhenDisplayingOneLiner) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
@@ -293,7 +298,7 @@ TEST_F(AssistantPageNonBubbleTest,
   EXPECT_EQ(kMinHeightDip, main_view()->size().height());
 }
 
-TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWithMultilineText) {
+TEST_F(AssistantPageViewTest, ShouldGetBiggerWithMultilineText) {
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse(
@@ -303,7 +308,7 @@ TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWithMultilineText) {
   EXPECT_EQ(kMaxHeightDip, main_view()->size().height());
 }
 
-TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWhenWrappingTextLine) {
+TEST_F(AssistantPageViewTest, ShouldGetBiggerWhenWrappingTextLine) {
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse(
@@ -315,10 +320,7 @@ TEST_F(AssistantPageNonBubbleTest, ShouldGetBiggerWhenWrappingTextLine) {
   EXPECT_EQ(kMaxHeightDip, main_view()->size().height());
 }
 
-// Only tested for non-bubble launcher because for the bubble launcher we always
-// close the bubble and it can't permanently steal focus from another window.
-TEST_F(AssistantPageNonBubbleTest,
-       ShouldNotRequestFocusWhenOtherAppWindowOpens) {
+TEST_F(AssistantPageViewTest, ShouldNotRequestFocusWhenOtherAppWindowOpens) {
   // This tests the root cause of b/141945964.
   // Namely, the Assistant code should not request the focus while being closed.
   ShowAssistantUi();
@@ -340,46 +342,13 @@ TEST_F(AssistantPageNonBubbleTest,
   }
 }
 
-// Only tested for non-bubble launcher because for the bubble launcher we always
-// close the bubble and clear the input when we switch to tablet mode.
-TEST_F(AssistantPageNonBubbleTest,
-       ShouldNotClearQueryWhenSwitchingToTabletMode) {
-  const std::u16string query_text = u"unsubmitted query";
-  ShowAssistantUiInTextMode();
-  input_text_field()->SetText(query_text);
-
-  SetTabletMode(true);
-
-  EXPECT_HAS_FOCUS(input_text_field());
-  EXPECT_EQ(query_text, input_text_field()->GetText());
-}
-
-//------------------------------------------------------------------------------
-// Tests for the clamshell mode launcher, parameterized by the feature
-// kAppListBubble.
-class AssistantPageClamshellTest : public AssistantPageViewTest,
-                                   public testing::WithParamInterface<bool> {
- public:
-  AssistantPageClamshellTest() {
-    if (GetParam())
-      scoped_feature_list_.InitAndEnableFeature(features::kAppListBubble);
-    else
-      scoped_feature_list_.InitAndDisableFeature(features::kAppListBubble);
-  }
-
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(Bubble, AssistantPageClamshellTest, testing::Bool());
-
-TEST_P(AssistantPageClamshellTest, ShouldFocusTextFieldWhenOpeningWithHotkey) {
+TEST_F(AssistantPageViewTest, ShouldFocusTextFieldWhenOpeningWithHotkey) {
   ShowAssistantUi(AssistantEntryPoint::kHotkey);
 
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldNotLoseTextfieldFocusWhenSendingTextQuery) {
+TEST_F(AssistantPageViewTest, ShouldNotLoseTextfieldFocusWhenSendingTextQuery) {
   ShowAssistantUi();
 
   SendQueryThroughTextField("The query");
@@ -387,7 +356,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotLoseTextfieldFocusWhenDisplayingResponse) {
   ShowAssistantUi();
 
@@ -396,7 +365,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldNotLoseTextfieldFocusWhenResizing) {
+TEST_F(AssistantPageViewTest, ShouldNotLoseTextfieldFocusWhenResizing) {
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse(
@@ -406,8 +375,7 @@ TEST_P(AssistantPageClamshellTest, ShouldNotLoseTextfieldFocusWhenResizing) {
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       FocusShouldRemainInAssistantViewWhenPressingTab) {
+TEST_F(AssistantPageViewTest, FocusShouldRemainInAssistantViewWhenPressingTab) {
   constexpr int kMaxIterations = 100;
   ShowAssistantUi();
 
@@ -428,7 +396,7 @@ TEST_P(AssistantPageClamshellTest,
   } while (focused_view != initial_focused_view);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        FocusShouldCycleThroughOnboardingSuggestionsWhenPressingTab) {
   constexpr int kMaxIterations = 100;
 
@@ -456,8 +424,8 @@ TEST_P(AssistantPageClamshellTest,
   }
 
   // Verify we can cycle through them.
-  for (auto* onboarding_suggestion : onboarding_suggestions) {
-    ASSERT_EQ(GetFocusedView(), onboarding_suggestion);
+  for (size_t i = 0; i < onboarding_suggestions.size(); ++i) {
+    ASSERT_EQ(GetFocusedView(), onboarding_suggestions.at(i));
     PressKeyAndWait(ui::VKEY_TAB);
   }
 
@@ -469,13 +437,13 @@ TEST_P(AssistantPageClamshellTest,
   }
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldFocusMicWhenOpeningWithHotword) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
   ShowAssistantUi(AssistantEntryPoint::kHotword);
 
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelWhenOpening) {
+TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -486,7 +454,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelWhenOpening) {
   EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingWhenOpening) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chromeos::assistant::features::kAssistantBetterOnboarding);
@@ -497,7 +465,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingWhenOpening) {
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldDismissGreetingLabelAfterQuery) {
+TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -510,7 +478,7 @@ TEST_P(AssistantPageClamshellTest, ShouldDismissGreetingLabelAfterQuery) {
   EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldDismissOnboardingAfterQuery) {
+TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chromeos::assistant::features::kAssistantBetterOnboarding);
@@ -523,7 +491,7 @@ TEST_P(AssistantPageClamshellTest, ShouldDismissOnboardingAfterQuery) {
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelAgainAfterReopening) {
+TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -542,7 +510,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowGreetingLabelAgainAfterReopening) {
   EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowGreetingLabelWhenOpeningFromSearchResult) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
@@ -554,7 +522,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingWhenOpeningFromSearchResult) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -566,7 +534,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(greeting_label()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chromeos::assistant::features::kAssistantBetterOnboarding);
@@ -593,7 +561,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingForNewUsers) {
   EXPECT_TRUE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingUntilInteractionOccurs) {
+TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       chromeos::assistant::features::kAssistantBetterOnboarding);
@@ -622,7 +590,7 @@ TEST_P(AssistantPageClamshellTest, ShouldShowOnboardingUntilInteractionOccurs) {
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldShowOnboardingToExistingUsersIfShownPreviouslyInDifferentSession) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -648,7 +616,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingToExistingUsersIfShownPreviouslyInMaxSessions) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -667,8 +635,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldFocusMicViewWhenPressingVoiceInputToggle) {
+TEST_F(AssistantPageViewTest, ShouldFocusMicViewWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
   ClickOnAndWait(voice_input_toggle());
@@ -676,7 +643,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldStartVoiceInteractionWhenPressingVoiceInputToggle) {
   ShowAssistantUiInTextMode();
 
@@ -685,7 +652,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_INTERACTION_OF_TYPE(AssistantInteractionType::kVoice);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldStopVoiceInteractionWhenPressingKeyboardInputToggle) {
   ShowAssistantUiInVoiceMode();
   EXPECT_INTERACTION_OF_TYPE(AssistantInteractionType::kVoice);
@@ -695,8 +662,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_FALSE(current_interaction().has_value());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldShowOptInViewUnlessUserHasGivenConsent) {
+TEST_F(AssistantPageViewTest, ShouldShowOptInViewUnlessUserHasGivenConsent) {
   ShowAssistantUi();
   const views::View* suggestion_chips = suggestion_chip_container();
   const views::View* opt_in = opt_in_view();
@@ -718,8 +684,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_TRUE(suggestion_chips->IsDrawn());
 }
 
-TEST_P(AssistantPageClamshellTest,
-       ShouldSubmitQueryWhenClickingOnSuggestionChip) {
+TEST_F(AssistantPageViewTest, ShouldSubmitQueryWhenClickingOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
       CreateAndGetSuggestionChip("<suggestion chip query>");
@@ -730,7 +695,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<suggestion chip query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldSubmitQueryWhenPressingEnterOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -743,7 +708,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<suggestion chip query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotSubmitQueryWhenPressingSpaceOnSuggestionChip) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -755,7 +720,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_NO_INTERACTION();
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldOnlySubmitOneQueryWhenClickingSuggestionChipMultipleTimes) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -770,7 +735,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ(1, counter.interaction_count());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldOnlySubmitQueryFromFirstSuggestionChipClickedOn) {
   ShowAssistantUi();
   MockTextInteraction()
@@ -793,7 +758,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_EQ("<first query>", current_interaction()->query);
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        SuggestionChipsShouldNotBeFocusableAfterSubmittingQuery) {
   ShowAssistantUi();
   MockTextInteraction()
@@ -812,7 +777,7 @@ TEST_P(AssistantPageClamshellTest,
   }
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldFocusTextFieldWhenSubmittingSuggestionChipInTextMode) {
   ShowAssistantUiInTextMode();
   ash::SuggestionChipView* suggestion_chip =
@@ -824,7 +789,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldFocusMicWhenSubmittingSuggestionChipInVoiceMode) {
   ShowAssistantUi();
   ash::SuggestionChipView* suggestion_chip =
@@ -837,7 +802,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(mic_view());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldFocusTextFieldWhenPressingKeyboardInputToggle) {
   ShowAssistantUiInVoiceMode();
 
@@ -846,9 +811,6 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_HAS_FOCUS(input_text_field());
 }
 
-// TODO(crbug.com/1229797): Switch to TEST_P and AssistantPageClamshellTest.
-// It fails with kAppListBubble enabled because the vertical position of the
-// suggestion chip doesn't match.
 TEST_F(AssistantPageViewTest,
        ShouldNotScrollSuggestionChipsWhenSubmittingQuery) {
   ShowAssistantUiInTextMode();
@@ -871,7 +833,7 @@ TEST_F(AssistantPageViewTest,
   EXPECT_EQ(initial_bounds, final_bounds);
 }
 
-TEST_P(AssistantPageClamshellTest, RememberAndShowHistory) {
+TEST_F(AssistantPageViewTest, RememberAndShowHistory) {
   ShowAssistantUiInTextMode();
   EXPECT_HAS_FOCUS(input_text_field());
 
@@ -898,7 +860,18 @@ TEST_P(AssistantPageClamshellTest, RememberAndShowHistory) {
   EXPECT_TRUE(input_text_field()->GetText().empty());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldHaveConversationStarters) {
+TEST_F(AssistantPageViewTest, ShouldNotClearQueryWhenSwitchingToTabletMode) {
+  const std::u16string query_text = u"unsubmitted query";
+  ShowAssistantUiInTextMode();
+  input_text_field()->SetText(query_text);
+
+  SetTabletMode(true);
+
+  EXPECT_HAS_FOCUS(input_text_field());
+  EXPECT_EQ(query_text, input_text_field()->GetText());
+}
+
+TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
   // Ensure that better onboarding is not shown (if enabled).
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -909,7 +882,7 @@ TEST_P(AssistantPageClamshellTest, ShouldHaveConversationStarters) {
   EXPECT_FALSE(GetSuggestionChips().empty());
 }
 
-TEST_P(AssistantPageClamshellTest,
+TEST_F(AssistantPageViewTest,
        ShouldNotHaveConversationStartersWhenShowingOnboarding) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
@@ -921,7 +894,7 @@ TEST_P(AssistantPageClamshellTest,
   EXPECT_TRUE(GetSuggestionChips().empty());
 }
 
-TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
+TEST_F(AssistantPageViewTest, ShouldHavePopulatedSuggestionChips) {
   constexpr char kAnyQuery[] = "<query>";
   constexpr char kAnyText[] = "<text>";
   constexpr char kAnyChip[] = "<chip>";
@@ -939,7 +912,7 @@ TEST_P(AssistantPageClamshellTest, ShouldHavePopulatedSuggestionChips) {
   EXPECT_EQ(kAnyChip, base::UTF16ToUTF8(chip->GetText()));
 }
 
-TEST_P(AssistantPageClamshellTest, Theme) {
+TEST_F(AssistantPageViewTest, Theme) {
   ASSERT_FALSE(features::IsDarkLightModeEnabled());
 
   ShowAssistantUi();
@@ -947,7 +920,7 @@ TEST_P(AssistantPageClamshellTest, Theme) {
   EXPECT_EQ(page_view()->background()->get_color(), SK_ColorWHITE);
 }
 
-TEST_P(AssistantPageClamshellTest, ThemeDarkLightMode) {
+TEST_F(AssistantPageViewTest, ThemeDarkLightMode) {
   base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
@@ -968,7 +941,6 @@ TEST_P(AssistantPageClamshellTest, ThemeDarkLightMode) {
                 /*is_dark_mode=*/true, /*use_debug_colors=*/false));
 }
 
-//------------------------------------------------------------------------------
 // Tests the |AssistantPageView| with tablet mode enabled.
 class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
  public:
@@ -991,25 +963,6 @@ class AssistantPageViewTabletModeTest : public AssistantPageViewTest {
     // as that puts us in voice mode.
     ShowAssistantUiInVoiceMode();
     TapOnAndWait(keyboard_input_toggle());
-  }
-
-  // Returns a point in the AppList, but outside the Assistant UI.
-  gfx::Point GetPointInAppListOutsideAssistantUi() {
-    gfx::Point result = GetPointOutside(page_view());
-
-    // Validity check
-    EXPECT_TRUE(app_list_view()->bounds().Contains(result));
-    EXPECT_FALSE(page_view()->bounds().Contains(result));
-
-    return result;
-  }
-
-  gfx::Point GetPointOutside(const views::View* view) {
-    return gfx::Point(view->origin().x() - 10, view->origin().y() - 10);
-  }
-
-  gfx::Point GetPointInside(const views::View* view) {
-    return view->GetBoundsInScreen().CenterPoint();
   }
 
  private:
@@ -1234,5 +1187,4 @@ TEST_F(AssistantPageViewTabletModeTest, ShouldCloseAssistantUIInOverviewMode) {
   EXPECT_FALSE(IsVisible());
 }
 
-}  // namespace
 }  // namespace ash

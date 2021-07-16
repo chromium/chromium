@@ -58,7 +58,6 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
 
  private:
   friend class AppListTestHelper;
-  friend class AssistantTestApiImpl;
 
   AppListViewDelegate* const view_delegate_;
   SearchBoxView* search_box_view_ = nullptr;
