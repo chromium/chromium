@@ -86,6 +86,7 @@ void OnProfileCheckComplete(const std::string& email,
             [](DiceTurnSyncOnHelper::SigninChoiceCallback callback,
                Browser* browser, bool prompt_for_new_profile,
                bool create_profile) {
+              browser->signin_view_controller()->CloseModalSignin();
               std::move(callback).Run(
                   create_profile
                       ? prompt_for_new_profile

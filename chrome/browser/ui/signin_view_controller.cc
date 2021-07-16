@@ -251,7 +251,6 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
           base::BindOnce(
               [](Browser* browser, base::OnceCallback<void(bool)> callback,
                  bool result) {
-                browser->signin_view_controller()->CloseModalSignin();
                 std::move(callback).Run(result);
               },
               base::Unretained(browser_), std::move(callback)));

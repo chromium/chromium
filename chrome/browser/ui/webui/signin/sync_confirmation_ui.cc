@@ -62,14 +62,6 @@ void SyncConfirmationUI::InitializeMessageHandlerForCreationFlow(
   InitializeMessageHandler(/*browser=*/nullptr);
 }
 
-void SyncConfirmationUI::InitializeMessageHandlerForEnterpriseInterception(
-    Browser* browser,
-    SkColor profile_color) {
-  // Redo the initialization with `profile_color`.
-  Initialize(profile_color, /*is_modal_dialog=*/true);
-  InitializeMessageHandler(browser);
-}
-
 void SyncConfirmationUI::Initialize(
     absl::optional<SkColor> profile_creation_flow_color,
     bool is_modal_dialog) {

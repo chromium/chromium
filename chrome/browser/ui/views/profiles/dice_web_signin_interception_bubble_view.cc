@@ -100,12 +100,14 @@ void DiceWebSigninInterceptionBubbleView::RecordInterceptionResult(
   std::string histogram_base_name = "Signin.InterceptResult";
   switch (bubble_parameters.interception_type) {
     case DiceWebSigninInterceptor::SigninInterceptionType::kEnterprise:
+    case DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced:
       histogram_base_name.append(".Enterprise");
       break;
     case DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser:
       histogram_base_name.append(".MultiUser");
       break;
     case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch:
+    case DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced:
       histogram_base_name.append(".Switch");
       break;
   }

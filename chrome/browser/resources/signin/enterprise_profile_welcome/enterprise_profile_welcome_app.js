@@ -74,6 +74,12 @@ Polymer({
     proceedLabel_: {
       type: String,
     },
+
+    /** @private */
+    disable_proceed_button_: {
+      type: Boolean,
+      value: false,
+    }
   },
 
   /** @private {?EnterpriseProfileWelcomeBrowserProxy} */
@@ -96,6 +102,7 @@ Polymer({
    * @private
    */
   onProceed_() {
+    this.disable_proceed_button_ = true;
     this.enterpriseProfileWelcomeBrowserProxy_.proceed();
   },
 

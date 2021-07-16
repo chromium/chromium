@@ -39,9 +39,6 @@ class SyncConfirmationUI : public SigninWebDialogUI {
   // no browser available).
   void InitializeMessageHandlerForCreationFlow(SkColor profile_color);
 
-  void InitializeMessageHandlerForEnterpriseInterception(Browser* browser,
-                                                         SkColor profile_color);
-
  private:
   void Initialize(absl::optional<SkColor> profile_creation_flow_color,
                   bool is_modal_dialog);

@@ -99,14 +99,6 @@ class FakeDiceWebSigninInterceptorDelegate
     return bubble_handle;
   }
 
-  void ShowEnterpriseProfileInterceptionDialog(
-      Browser* browser,
-      const std::string& email,
-      SkColor profile_color,
-      base::OnceCallback<void(bool)> callback) override {
-    std::move(callback).Run(expected_enteprise_confirmation_result_);
-  }
-
   void ShowProfileCustomizationBubble(Browser* browser) override {
     EXPECT_FALSE(customized_browser_)
         << "Customization must be shown only once.";
@@ -124,10 +116,6 @@ class FakeDiceWebSigninInterceptorDelegate
     expected_interception_result_ = result;
   }
 
-  void set_expected_enteprise_confirmation_result(bool result) {
-    expected_enteprise_confirmation_result_ = result;
-  }
-
   bool intercept_bubble_shown() const { return weak_bubble_handle_.get(); }
 
   bool intercept_bubble_destroyed() const {
@@ -140,7 +128,6 @@ class FakeDiceWebSigninInterceptorDelegate
       DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser;
   SigninInterceptionResult expected_interception_result_ =
       SigninInterceptionResult::kAccepted;
-  bool expected_enteprise_confirmation_result_ = false;
   base::WeakPtr<FakeBubbleHandle> weak_bubble_handle_;
 };
 
@@ -440,13 +427,14 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest,
   EXPECT_EQ(BrowserList::GetInstance()->size(), 1u);
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(profile());
-  source_interceptor_delegate->set_expected_enteprise_confirmation_result(true);
+  source_interceptor_delegate->set_expected_interception_type(
+      DiceWebSigninInterceptor::SigninInterceptionType::kEnterpriseForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   EXPECT_TRUE(new_profile->GetPrefs()->GetBoolean(
       prefs::kUserAcceptedAccountManagement));
   ASSERT_TRUE(new_profile);
-  EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_shown());
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
@@ -735,11 +723,11 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseSwitchBrowserTest,
   FakeDiceWebSigninInterceptorDelegate* source_interceptor_delegate =
       GetInterceptorDelegate(profile());
   source_interceptor_delegate->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   Profile* new_profile =
       InterceptAndWaitProfileCreation(web_contents, account_info.account_id);
   ASSERT_TRUE(new_profile);
-  EXPECT_FALSE(source_interceptor_delegate->intercept_bubble_shown());
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_shown());
   signin::IdentityManager* new_identity_manager =
       IdentityManagerFactory::GetForProfile(new_profile);
   EXPECT_TRUE(new_identity_manager->HasAccountWithRefreshToken(
@@ -765,6 +753,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseSwitchBrowserTest,
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::
                       kInterceptEnterpriseForcedProfileSwitch);
+
+  // Interception bubble was closed.
+  EXPECT_TRUE(source_interceptor_delegate->intercept_bubble_destroyed());
 
   // Profile customization was not shown.
   EXPECT_EQ(GetInterceptorDelegate(new_profile)->customized_browser(), nullptr);
@@ -826,7 +817,7 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseSwitchBrowserTest,
 
   // Start the interception.
   GetInterceptorDelegate(profile())->set_expected_interception_type(
-      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitch);
+      DiceWebSigninInterceptor::SigninInterceptionType::kProfileSwitchForced);
   DiceWebSigninInterceptor* interceptor =
       DiceWebSigninInterceptorFactory::GetForProfile(profile());
   interceptor->MaybeInterceptWebSignin(web_contents, account_info.account_id,

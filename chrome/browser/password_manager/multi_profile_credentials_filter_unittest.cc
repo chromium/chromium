@@ -43,11 +43,6 @@ class TestDiceWebSigninInterceptorDelegate
     return nullptr;
   }
   void ShowProfileCustomizationBubble(Browser* browser) override {}
-  void ShowEnterpriseProfileInterceptionDialog(
-      Browser* browser,
-      const std::string& email,
-      SkColor profile_color,
-      base::OnceCallback<void(bool)> callback) override {}
 };
 
 class TestPasswordManagerClient
