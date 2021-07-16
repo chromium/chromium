@@ -553,45 +553,76 @@ bool VADisplayState::Initialize() {
   return success;
 }
 
-bool VADisplayState::InitializeVaDisplay_Locked() {
+#if defined(USE_X11)
+
+absl::optional<VADisplay> GetVADisplayStateX11(const base::ScopedFD& drm_fd) {
+  bool use_drm_as_fallback = false;
   switch (gl::GetGLImplementation()) {
     case gl::kGLImplementationEGLGLES2:
-      va_display_ = vaGetDisplayDRM(drm_fd_.get());
-      break;
-    case gl::kGLImplementationDesktopGL:
-#if defined(USE_X11)
-      if (!features::IsUsingOzonePlatform()) {
-        va_display_ = vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-        if (!vaDisplayIsValid(va_display_))
-          va_display_ = vaGetDisplayDRM(drm_fd_.get());
-      }
-#endif  // USE_X11
-      break;
-    case gl::kGLImplementationEGLANGLE:
-#if defined(USE_X11)
-      if (!features::IsUsingOzonePlatform())
-        va_display_ = vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-#endif  // USE_X11
-      break;
-    // Cannot infer platform from GL, try all available displays
+      return vaGetDisplayDRM(drm_fd.get());
+
     case gl::kGLImplementationNone:
-#if defined(USE_X11)
+      use_drm_as_fallback = true;
+      FALLTHROUGH;
+
+    case gl::kGLImplementationDesktopGL: {
       if (!features::IsUsingOzonePlatform()) {
-        va_display_ = vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
-        if (vaDisplayIsValid(va_display_))
-          break;
+        VADisplay display =
+            vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
+        if (vaDisplayIsValid(display))
+          return display;
+        return vaGetDisplayDRM(drm_fd.get());
       }
-#endif  // USE_X11
-      va_display_ = vaGetDisplayDRM(drm_fd_.get());
       break;
+    }
+
+    case gl::kGLImplementationEGLANGLE: {
+      if (!features::IsUsingOzonePlatform())
+        return vaGetDisplay(x11::Connection::Get()->GetXlibDisplay());
+      break;
+    }
 
     default:
       LOG(WARNING) << "VAAPI video acceleration not available for "
                    << gl::GetGLImplementationGLName(
                           gl::GetGLImplementationParts());
-      return false;
+      return absl::nullopt;
   }
 
+  if (use_drm_as_fallback)
+    return vaGetDisplayDRM(drm_fd.get());
+  return absl::nullopt;
+}
+
+#else
+
+absl::optional<VADisplay> GetVADisplayState(const base::ScopedFD& drm_fd) {
+  switch (gl::GetGLImplementation()) {
+    case gl::kGLImplementationEGLGLES2:
+    case gl::kGLImplementationNone:
+      return vaGetDisplayDRM(drm_fd.get());
+    default:
+      LOG(WARNING) << "VAAPI video acceleration not available for "
+                   << gl::GetGLImplementationGLName(
+                          gl::GetGLImplementationParts());
+      return absl::nullopt;
+  }
+}
+
+#endif  // defined(USE_X11)
+
+bool VADisplayState::InitializeVaDisplay_Locked() {
+  absl::optional<VADisplay> display =
+#if defined(USE_X11)
+      GetVADisplayStateX11(drm_fd_);
+#else
+      GetVADisplayState(drm_fd_);
+#endif
+
+  if (!display)
+    return false;
+
+  va_display_ = *display;
   if (!vaDisplayIsValid(va_display_)) {
     LOG(ERROR) << "Could not get a valid VA display";
     return false;
