@@ -1248,6 +1248,27 @@
             ]
         }
     ],
+    "AutofillServerBehaviors": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "MoreKnownVotes_Enabled-2021-06"
+                },
+                {
+                    "name": "RankedSignatures_Enabled-2021-06"
+                }
+            ]
+        }
+    ],
     "AutofillServerTypeTakesPrecedence": [
         {
             "platforms": [
