@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "net/base/host_port_pair.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "url/gurl.h"
 
@@ -30,39 +31,39 @@ class QuicSimpleTestServer {
       const std::vector<spdy::Http2HeaderBlock>& early_hints);
 
   // Returns example.com
-  static const std::string GetDomain();
+  static std::string const GetDomain();
   // Returns test.example.com
-  static const std::string GetHost();
+  static std::string const GetHost();
   // Returns port number of the server.
   static int GetPort();
   // Returns test.example.com:port
-  static const std::string GetHostPort();
+  static HostPortPair const GetHostPort();
 
   // Returns URL with host, port and file path, for example
   // https://test.example.com:12345/{file_path}
   static GURL GetFileURL(const std::string& file_path);
 
-  static const std::string GetStatusHeaderName();
+  static std::string const GetStatusHeaderName();
 
   // Server returns response with HTTP/2 headers and trailers. Does not include
   // |port| as it is resolved differently: https://test.example.com/hello.txt
   static GURL GetHelloURL();
-  static const std::string GetHelloPath();
-  static const std::string GetHelloBodyValue();
-  static const std::string GetHelloStatus();
-  static const std::string GetHelloHeaderName();
-  static const std::string GetHelloHeaderValue();
-  static const std::string GetCombinedHeaderName();
-  static const std::string GetHelloTrailerName();
-  static const std::string GetHelloTrailerValue();
+  static std::string const GetHelloPath();
+  static std::string const GetHelloBodyValue();
+  static std::string const GetHelloStatus();
+  static std::string const GetHelloHeaderName();
+  static std::string const GetHelloHeaderValue();
+  static std::string const GetCombinedHeaderName();
+  static std::string const GetHelloTrailerName();
+  static std::string const GetHelloTrailerValue();
 
   // Server returns response without HTTP/2 trailers.
   // https://test.example.com/simple.txt
   static GURL GetSimpleURL();
-  static const std::string GetSimpleBodyValue();
-  static const std::string GetSimpleStatus();
-  static const std::string GetSimpleHeaderName();
-  static const std::string GetSimpleHeaderValue();
+  static std::string const GetSimpleBodyValue();
+  static std::string const GetSimpleStatus();
+  static std::string const GetSimpleHeaderName();
+  static std::string const GetSimpleHeaderValue();
 };
 
 }  // namespace net

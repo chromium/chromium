@@ -60,12 +60,16 @@ int g_quic_server_port = 0;
 
 namespace net {
 
-const std::string QuicSimpleTestServer::GetDomain() {
+std::string const QuicSimpleTestServer::GetDomain() {
   return kTestServerDomain;
 }
 
-const std::string QuicSimpleTestServer::GetHost() {
+std::string const QuicSimpleTestServer::GetHost() {
   return kTestServerHost;
+}
+
+HostPortPair const QuicSimpleTestServer::GetHostPort() {
+  return HostPortPair(kTestServerHost, GetPort());
 }
 
 GURL QuicSimpleTestServer::GetFileURL(const std::string& file_path) {
@@ -78,39 +82,39 @@ GURL QuicSimpleTestServer::GetHelloURL() {
   return GURL("https://test.example.com").Resolve(kHelloPath);
 }
 
-const std::string QuicSimpleTestServer::GetStatusHeaderName() {
+std::string const QuicSimpleTestServer::GetStatusHeaderName() {
   return kStatusHeader;
 }
 
 // Hello Url returns response with HTTP/2 headers and trailers.
-const std::string QuicSimpleTestServer::GetHelloPath() {
+std::string const QuicSimpleTestServer::GetHelloPath() {
   return kHelloPath;
 }
 
-const std::string QuicSimpleTestServer::GetHelloBodyValue() {
+std::string const QuicSimpleTestServer::GetHelloBodyValue() {
   return kHelloBodyValue;
 }
-const std::string QuicSimpleTestServer::GetHelloStatus() {
+std::string const QuicSimpleTestServer::GetHelloStatus() {
   return kHelloStatus;
 }
 
-const std::string QuicSimpleTestServer::GetHelloHeaderName() {
+std::string const QuicSimpleTestServer::GetHelloHeaderName() {
   return kHelloHeaderName;
 }
 
-const std::string QuicSimpleTestServer::GetHelloHeaderValue() {
+std::string const QuicSimpleTestServer::GetHelloHeaderValue() {
   return kHelloHeaderValue;
 }
 
-const std::string QuicSimpleTestServer::GetCombinedHeaderName() {
+std::string const QuicSimpleTestServer::GetCombinedHeaderName() {
   return kCombinedHeaderName;
 }
 
-const std::string QuicSimpleTestServer::GetHelloTrailerName() {
+std::string const QuicSimpleTestServer::GetHelloTrailerName() {
   return kHelloTrailerName;
 }
 
-const std::string QuicSimpleTestServer::GetHelloTrailerValue() {
+std::string const QuicSimpleTestServer::GetHelloTrailerValue() {
   return kHelloTrailerValue;
 }
 
@@ -120,19 +124,19 @@ GURL QuicSimpleTestServer::GetSimpleURL() {
   return GURL("https://test.example.com").Resolve(kSimplePath);
 }
 
-const std::string QuicSimpleTestServer::GetSimpleBodyValue() {
+std::string const QuicSimpleTestServer::GetSimpleBodyValue() {
   return kSimpleBodyValue;
 }
 
-const std::string QuicSimpleTestServer::GetSimpleStatus() {
+std::string const QuicSimpleTestServer::GetSimpleStatus() {
   return kSimpleStatus;
 }
 
-const std::string QuicSimpleTestServer::GetSimpleHeaderName() {
+std::string const QuicSimpleTestServer::GetSimpleHeaderName() {
   return kSimpleHeaderName;
 }
 
-const std::string QuicSimpleTestServer::GetSimpleHeaderValue() {
+std::string const QuicSimpleTestServer::GetSimpleHeaderValue() {
   return kSimpleHeaderValue;
 }
 
