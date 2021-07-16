@@ -15,6 +15,7 @@
 #include "components/shared_highlighting/core/common/shared_highlighting_features.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "components/shared_highlighting/core/common/text_fragments_utils.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -196,9 +197,10 @@ void LinkToTextMenuObserver::CopyLinkToClipboard() {
       proxy_->GetWebContents()->GetMainFrame();
 
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      main_frame ? std::make_unique<ui::DataTransferEndpoint>(
-                       main_frame->GetLastCommittedOrigin())
-                 : nullptr;
+      main_frame && !main_frame->GetBrowserContext()->IsOffTheRecord()
+          ? std::make_unique<ui::DataTransferEndpoint>(
+                main_frame->GetLastCommittedOrigin())
+          : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint));
@@ -239,9 +241,10 @@ void LinkToTextMenuObserver::OnGetExistingSelectorsComplete(
       proxy_->GetWebContents()->GetMainFrame();
 
   std::unique_ptr<ui::DataTransferEndpoint> data_transfer_endpoint =
-      main_frame ? std::make_unique<ui::DataTransferEndpoint>(
-                       main_frame->GetLastCommittedOrigin())
-                 : nullptr;
+      main_frame && !main_frame->GetBrowserContext()->IsOffTheRecord()
+          ? std::make_unique<ui::DataTransferEndpoint>(
+                main_frame->GetLastCommittedOrigin())
+          : nullptr;
 
   ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste,
                                 std::move(data_transfer_endpoint));

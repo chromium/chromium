@@ -40,6 +40,7 @@
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
 #include "content/browser/web_contents/aura/gesture_nav_simple.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/notification_observer.h"
@@ -1040,8 +1041,12 @@ void WebContentsViewAura::StartDragging(
 
   auto data(std::make_unique<ui::OSExchangeData>(
       std::move(provider)));  // takes ownership of |provider|.
-  data->SetSource(std::make_unique<ui::DataTransferEndpoint>(
-      web_contents_->GetFocusedFrame()->GetLastCommittedOrigin()));
+  data->SetSource(
+      web_contents_->GetBrowserContext()->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ui::DataTransferEndpoint>(
+
+                web_contents_->GetFocusedFrame()->GetLastCommittedOrigin()));
 
   if (!image.isNull())
     data->provider().SetDragImage(image, image_offset);
@@ -1354,7 +1359,7 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
 
   aura::client::DragUpdateInfo drag_info;
   auto* focused_frame = web_contents_->GetFocusedFrame();
-  if (focused_frame) {
+  if (focused_frame && !web_contents_->GetBrowserContext()->IsOffTheRecord()) {
     drag_info.data_endpoint = ui::DataTransferEndpoint(
         web_contents_->GetFocusedFrame()->GetLastCommittedOrigin());
   }

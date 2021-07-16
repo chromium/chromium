@@ -24,6 +24,7 @@
 #include "content/browser/renderer_host/data_transfer_util.h"
 #include "content/browser/renderer_host/render_frame_host_delegate.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -115,8 +116,10 @@ ClipboardHostImpl::ClipboardHostImpl(
     : DocumentServiceBase(render_frame_host, std::move(receiver)) {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste,
-      std::make_unique<ui::DataTransferEndpoint>(
-          render_frame_host->GetLastCommittedOrigin()));
+      render_frame_host->GetBrowserContext()->IsOffTheRecord()
+          ? nullptr
+          : std::make_unique<ui::DataTransferEndpoint>(
+                render_frame_host->GetLastCommittedOrigin()));
 }
 
 void ClipboardHostImpl::Create(
@@ -582,6 +585,9 @@ void ClipboardHostImpl::CleanupObsoleteRequests() {
 
 std::unique_ptr<ui::DataTransferEndpoint>
 ClipboardHostImpl::CreateDataEndpoint() {
+  if (render_frame_host()->GetBrowserContext()->IsOffTheRecord()) {
+    return nullptr;
+  }
   return std::make_unique<ui::DataTransferEndpoint>(
       render_frame_host()->GetLastCommittedOrigin(),
       render_frame_host()->HasTransientUserActivation());

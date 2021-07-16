@@ -5,12 +5,41 @@
 #include "chrome/browser/ash/policy/dlp/dlp_content_tab_helper.h"
 
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager.h"
+#include "chrome/browser/ash/policy/dlp/dlp_rules_manager_factory.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace policy {
+
+namespace {
+bool g_ignore_rules_manager_for_testing_ = false;
+}
+
+// static
+void DlpContentTabHelper::MaybeCreateForWebContents(
+    content::WebContents* web_contents) {
+  DCHECK(web_contents);
+  // Do not observe incognito windows.
+  if (web_contents->GetBrowserContext()->IsOffTheRecord()) {
+    return;
+  }
+  // Do not observer non-managed users.
+  if (!g_ignore_rules_manager_for_testing_ &&
+      !DlpRulesManagerFactory::GetForPrimaryProfile()) {
+    return;
+  }
+  DlpContentTabHelper::CreateForWebContents(web_contents);
+}
+
+// static
+DlpContentTabHelper::ScopedIgnoreDlpRulesManager
+DlpContentTabHelper::IgnoreDlpRulesManagerForTesting() {
+  return ScopedIgnoreDlpRulesManager(&g_ignore_rules_manager_for_testing_,
+                                     true);
+}
 
 DlpContentTabHelper::~DlpContentTabHelper() = default;
 
