@@ -467,28 +467,27 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<base::ListValue> enabled_networks_onc_types(
+  base::Value enabled_networks_onc_types(
       GetDelegate(browser_context())->GetEnabledNetworkTypes());
-  if (!enabled_networks_onc_types)
+  if (enabled_networks_onc_types.GetList().empty())
     return RespondNow(Error(networking_private::kErrorNotSupported));
-  std::unique_ptr<base::ListValue> enabled_networks_list(new base::ListValue);
-  for (const auto& entry : enabled_networks_onc_types->GetList()) {
+  base::Value enabled_networks_list(base::Value::Type::LIST);
+  for (const auto& entry : enabled_networks_onc_types.GetList()) {
     const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_ETHERNET));
     } else if (type == ::onc::network_type::kWiFi) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_WIFI));
     } else if (type == ::onc::network_type::kCellular) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_CELLULAR));
     } else {
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
     }
   }
-  return RespondNow(OneArgument(
-      base::Value::FromUniquePtrValue(std::move(enabled_networks_list))));
+  return RespondNow(OneArgument(std::move(enabled_networks_list)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

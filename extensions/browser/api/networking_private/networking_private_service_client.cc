@@ -329,10 +329,9 @@ void NetworkingPrivateServiceClient::SelectCellularMobileNetwork(
   std::move(failure_callback).Run(networking_private::kErrorNotSupported);
 }
 
-std::unique_ptr<base::ListValue>
-NetworkingPrivateServiceClient::GetEnabledNetworkTypes() {
-  auto network_list = std::make_unique<base::ListValue>();
-  network_list->AppendString(::onc::network_type::kWiFi);
+base::Value NetworkingPrivateServiceClient::GetEnabledNetworkTypes() {
+  base::Value network_list(base::Value::Type::LIST);
+  network_list.Append(::onc::network_type::kWiFi);
   return network_list;
 }
 

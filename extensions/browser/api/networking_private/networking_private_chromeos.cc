@@ -678,18 +678,17 @@ void NetworkingPrivateChromeOS::SelectCellularMobileNetwork(
                      std::move(failure_callback)));
 }
 
-std::unique_ptr<base::ListValue>
-NetworkingPrivateChromeOS::GetEnabledNetworkTypes() {
+base::Value NetworkingPrivateChromeOS::GetEnabledNetworkTypes() {
   chromeos::NetworkStateHandler* state_handler = GetStateHandler();
 
-  std::unique_ptr<base::ListValue> network_list(new base::ListValue);
+  base::Value network_list(base::Value::Type::LIST);
 
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Ethernet()))
-    network_list->AppendString(::onc::network_type::kEthernet);
+    network_list.Append(::onc::network_type::kEthernet);
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::WiFi()))
-    network_list->AppendString(::onc::network_type::kWiFi);
+    network_list.Append(::onc::network_type::kWiFi);
   if (state_handler->IsTechnologyEnabled(NetworkTypePattern::Cellular()))
-    network_list->AppendString(::onc::network_type::kCellular);
+    network_list.Append(::onc::network_type::kCellular);
 
   return network_list;
 }

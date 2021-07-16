@@ -205,14 +205,10 @@ TEST_F(QuotaServiceTest, SingleHeuristic) {
   EXPECT_EQ("",
             service_->Assess(extension_b_, f.get(), &args, kStartTime + peace));
   EXPECT_EQ("",
-            service_->Assess(extension_b_,
-                             f.get(),
-                             &args,
+            service_->Assess(extension_b_, f.get(), &args,
                              kStartTime + peace + TimeDelta::FromSeconds(10)));
   EXPECT_NE("",
-            service_->Assess(extension_b_,
-                             f.get(),
-                             &args2,
+            service_->Assess(extension_b_, f.get(), &args2,
                              kStartTime + peace + TimeDelta::FromSeconds(15)));
 
   // Test that items are independent.

@@ -16,12 +16,12 @@ namespace bluetooth_low_energy {
 
 namespace {
 
-// Converts a list of CharacteristicProperty to a base::ListValue of strings.
-std::unique_ptr<base::ListValue> CharacteristicPropertiesToValue(
+// Converts a list of CharacteristicProperty to a base::Value of strings.
+base::Value CharacteristicPropertiesToValue(
     const std::vector<CharacteristicProperty> properties) {
-  std::unique_ptr<base::ListValue> property_list(new base::ListValue());
+  base::Value property_list(base::Value::Type::LIST);
   for (auto iter = properties.cbegin(); iter != properties.cend(); ++iter)
-    property_list->AppendString(ToString(*iter));
+    property_list.Append(ToString(*iter));
   return property_list;
 }
 
@@ -35,8 +35,7 @@ std::unique_ptr<base::DictionaryValue> CharacteristicToValue(
   std::vector<CharacteristicProperty> properties = from->properties;
   from->properties.clear();
   std::unique_ptr<base::DictionaryValue> to = from->ToValue();
-  to->SetKey("properties", base::Value::FromUniquePtrValue(
-                               CharacteristicPropertiesToValue(properties)));
+  to->SetKey("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 
@@ -53,9 +52,7 @@ std::unique_ptr<base::DictionaryValue> DescriptorToValue(Descriptor* from) {
   base::DictionaryValue* chrc_value = NULL;
   to->GetDictionaryWithoutPathExpansion("characteristic", &chrc_value);
   DCHECK(chrc_value);
-  chrc_value->SetKey("properties",
-                     base::Value::FromUniquePtrValue(
-                         CharacteristicPropertiesToValue(properties)));
+  chrc_value->SetKey("properties", CharacteristicPropertiesToValue(properties));
   return to;
 }
 

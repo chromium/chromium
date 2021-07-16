@@ -152,7 +152,7 @@ base::ListValue GetStorageDetachedArgs() {
   // Because of the use of GetTransientIdForDeviceId(), we cannot use a static
   // variable and cache the returned ListValue.
   base::ListValue args;
-  args.AppendString(
+  args.Append(
       storage_monitor::StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           GetFakeStorageDeviceId()));
   return args;

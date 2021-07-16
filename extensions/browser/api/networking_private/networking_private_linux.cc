@@ -610,10 +610,9 @@ void NetworkingPrivateLinux::SelectCellularMobileNetwork(
                      std::move(failure_callback));
 }
 
-std::unique_ptr<base::ListValue>
-NetworkingPrivateLinux::GetEnabledNetworkTypes() {
-  std::unique_ptr<base::ListValue> network_list(new base::ListValue);
-  network_list->AppendString(::onc::network_type::kWiFi);
+base::Value NetworkingPrivateLinux::GetEnabledNetworkTypes() {
+  base::Value network_list(base::Value::Type::LIST);
+  network_list.Append(::onc::network_type::kWiFi);
   return network_list;
 }
 

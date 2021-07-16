@@ -208,26 +208,27 @@ class ContentVerifierTest : public ExtensionsTest {
 
     if (background_manifest_type_ ==
         BackgroundManifestType::kBackgroundScript) {
-      auto background_scripts = std::make_unique<base::ListValue>();
-      background_scripts->AppendString("foo/bg.txt");
-      manifest.Set(manifest_keys::kBackgroundScripts,
-                   std::move(background_scripts));
+      base::Value background_scripts(base::Value::Type::LIST);
+      background_scripts.Append("foo/bg.txt");
+      manifest.Set(
+          manifest_keys::kBackgroundScripts,
+          base::Value::ToUniquePtrValue(std::move(background_scripts)));
     } else if (background_manifest_type_ ==
                BackgroundManifestType::kBackgroundPage) {
       manifest.SetString(manifest_keys::kBackgroundPage, "foo/page.txt");
     }
 
-    auto content_scripts = std::make_unique<base::ListValue>();
-    auto content_script = std::make_unique<base::DictionaryValue>();
-    auto js_files = std::make_unique<base::ListValue>();
-    auto matches = std::make_unique<base::ListValue>();
-    js_files->AppendString("foo/content.txt");
-    content_script->Set("js", std::move(js_files));
-    matches->AppendString("http://*/*");
-    content_script->Set("matches", std::move(matches));
-    content_scripts->Append(std::move(content_script));
+    base::Value content_scripts(base::Value::Type::LIST);
+    base::Value content_script(base::Value::Type::DICTIONARY);
+    base::Value js_files(base::Value::Type::LIST);
+    base::Value matches(base::Value::Type::LIST);
+    js_files.Append("foo/content.txt");
+    content_script.SetPath("js", std::move(js_files));
+    matches.Append("http://*/*");
+    content_script.SetPath("matches", std::move(matches));
+    content_scripts.Append(std::move(content_script));
     manifest.Set(api::content_scripts::ManifestKeys::kContentScripts,
-                 std::move(content_scripts));
+                 base::Value::ToUniquePtrValue(std::move(content_scripts)));
 
     base::FilePath path;
     EXPECT_TRUE(base::PathService::Get(DIR_TEST_DATA, &path));

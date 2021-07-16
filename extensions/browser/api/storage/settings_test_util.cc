@@ -77,7 +77,7 @@ scoped_refptr<const Extension> AddExtensionWithIdAndPermissions(
 
   std::unique_ptr<base::ListValue> permissions(new base::ListValue());
   for (auto it = permissions_set.cbegin(); it != permissions_set.cend(); ++it) {
-    permissions->AppendString(*it);
+    permissions->Append(*it);
   }
   manifest.Set("permissions", std::move(permissions));
 

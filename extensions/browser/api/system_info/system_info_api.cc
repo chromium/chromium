@@ -211,7 +211,7 @@ void SystemInfoEventRouter::OnRemovableStorageDetached(
   std::string transient_id =
       StorageMonitor::GetInstance()->GetTransientIdForDeviceId(
           info.device_id());
-  args->AppendString(transient_id);
+  args->Append(transient_id);
 
   DispatchEvent(events::SYSTEM_STORAGE_ON_DETACHED,
                 system_storage::OnDetached::kEventName, std::move(args));

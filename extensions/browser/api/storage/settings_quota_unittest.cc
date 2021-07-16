@@ -15,8 +15,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::DictionaryValue;
-using base::ListValue;
-using base::Value;
 
 namespace extensions {
 
@@ -30,9 +28,10 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   ExtensionSettingsQuotaTest()
       : byte_value_1_(1),
         byte_value_16_("sixteen bytes."),
+        byte_value_256_(base::Value(base::Value::Type::LIST)),
         delegate_(new TestingValueStore()) {
     for (int i = 1; i < 89; ++i) {
-      byte_value_256_.AppendInteger(i);
+      byte_value_256_.Append(i);
     }
     ValidateByteValues();
   }
@@ -70,7 +69,7 @@ class ExtensionSettingsQuotaTest : public testing::Test {
   // Values with different serialized sizes.
   base::Value byte_value_1_;
   base::Value byte_value_16_;
-  base::ListValue byte_value_256_;
+  base::Value byte_value_256_;
 
   // Quota enforcing storage area being tested.
   std::unique_ptr<SettingsStorageQuotaEnforcer> storage_;

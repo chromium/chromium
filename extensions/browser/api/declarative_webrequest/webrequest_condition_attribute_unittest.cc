@@ -35,8 +35,8 @@ TEST(WebRequestConditionAttributeTest, CreateConditionAttribute) {
   std::string error;
   scoped_refptr<const WebRequestConditionAttribute> result;
   base::Value string_value("main_frame");
-  base::ListValue resource_types;
-  resource_types.AppendString("main_frame");
+  base::Value resource_types(base::Value::Type::LIST);
+  resource_types.Append("main_frame");
 
   // Test wrong condition name passed.
   error.clear();
@@ -71,8 +71,8 @@ TEST(WebRequestConditionAttributeTest, CreateConditionAttribute) {
 
 TEST(WebRequestConditionAttributeTest, ResourceType) {
   std::string error;
-  base::ListValue resource_types;
-  resource_types.AppendString("sub_frame");
+  base::Value resource_types(base::Value::Type::LIST);
+  resource_types.Append("sub_frame");
 
   scoped_refptr<const WebRequestConditionAttribute> attribute =
       WebRequestConditionAttribute::Create(
@@ -103,8 +103,8 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
       net::HttpUtil::AssembleRawHeaders("HTTP/1.1 200 OK\r\n"
                                         "Content-Type: text/plain; UTF-8\r\n"));
 
-  base::ListValue content_types;
-  content_types.AppendString("text/plain");
+  base::Value content_types(base::Value::Type::LIST);
+  content_types.Append("text/plain");
   scoped_refptr<const WebRequestConditionAttribute> attribute_include =
       WebRequestConditionAttribute::Create(
           keys::kContentTypeKey, &content_types, &error);
@@ -125,7 +125,7 @@ TEST(WebRequestConditionAttributeTest, ContentType) {
       &request_info, ON_HEADERS_RECEIVED, response_headers.get())));
 
   content_types.ClearList();
-  content_types.AppendString("something/invalid");
+  content_types.Append("something/invalid");
   scoped_refptr<const WebRequestConditionAttribute> attribute_unincluded =
       WebRequestConditionAttribute::Create(
           keys::kContentTypeKey, &content_types, &error);
@@ -167,7 +167,7 @@ TEST(WebRequestConditionAttributeTest, Stages) {
   std::string error;
 
   // Create an attribute with an empty set of applicable stages.
-  base::ListValue empty_list;
+  base::Value empty_list(base::Value::Type::LIST);
   scoped_refptr<const WebRequestConditionAttribute> empty_attribute =
       WebRequestConditionAttribute::Create(keys::kStagesKey,
                                            &empty_list,
@@ -177,9 +177,9 @@ TEST(WebRequestConditionAttributeTest, Stages) {
   EXPECT_EQ(std::string(keys::kStagesKey), empty_attribute->GetName());
 
   // Create an attribute with all possible applicable stages.
-  base::ListValue all_stages;
+  base::Value all_stages(base::Value::Type::LIST);
   for (size_t i = 0; i < base::size(active_stages); ++i)
-    all_stages.AppendString(active_stages[i].second);
+    all_stages.Append(active_stages[i].second);
   scoped_refptr<const WebRequestConditionAttribute> attribute_with_all =
       WebRequestConditionAttribute::Create(keys::kStagesKey,
                                            &all_stages,
@@ -193,8 +193,8 @@ TEST(WebRequestConditionAttributeTest, Stages) {
       one_stage_attributes;
 
   for (size_t i = 0; i < base::size(active_stages); ++i) {
-    base::ListValue single_stage_list;
-    single_stage_list.AppendString(active_stages[i].second);
+    base::Value single_stage_list(base::Value::Type::LIST);
+    single_stage_list.Append(active_stages[i].second);
     one_stage_attributes.push_back(
         WebRequestConditionAttribute::Create(keys::kStagesKey,
                                              &single_stage_list,
@@ -263,13 +263,12 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
-          auto list = std::make_unique<base::ListValue>();
+          base::Value list(base::Value::Type::LIST);
           // No need to check again, we already verified the entry is there.
           entry_owned = dictionary->ExtractKey(*name);
-          list->Append(base::Value::ToUniquePtrValue(std::move(*entry_owned)));
-          list->AppendString(*value);
-          dictionary->SetKey(*name,
-                             base::Value::FromUniquePtrValue(std::move(list)));
+          list.Append(std::move(*entry_owned));
+          list.Append(*value);
+          dictionary->SetKey(*name, std::move(list));
           break;
         }
         case base::Value::Type::LIST:  // Just append to the list.

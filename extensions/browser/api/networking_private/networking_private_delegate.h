@@ -124,7 +124,7 @@ class NetworkingPrivateDelegate : public KeyedService {
   // Synchronous methods
 
   // Returns a list of ONC type strings.
-  virtual std::unique_ptr<base::ListValue> GetEnabledNetworkTypes() = 0;
+  virtual base::Value GetEnabledNetworkTypes() = 0;
 
   // Returns a list of DeviceStateProperties.
   virtual std::unique_ptr<DeviceStateList> GetDeviceStateList() = 0;

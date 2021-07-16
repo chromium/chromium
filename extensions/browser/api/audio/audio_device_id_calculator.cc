@@ -59,7 +59,7 @@ std::string AudioDeviceIdCalculator::GenerateNewStableDeviceId(
 
   std::string api_stable_id = base::NumberToString(update.Get()->GetSize());
   stable_id_map_[audio_service_stable_id] = api_stable_id;
-  update->AppendString(audio_service_stable_id);
+  update->Append(audio_service_stable_id);
   return api_stable_id;
 }
 

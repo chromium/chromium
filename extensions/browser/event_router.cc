@@ -1077,15 +1077,16 @@ void EventRouter::DispatchPendingEvent(
 void EventRouter::SetRegisteredEvents(const std::string& extension_id,
                                       const std::set<std::string>& events,
                                       RegisteredEventType type) {
-  auto events_value = std::make_unique<base::ListValue>();
+  base::Value events_value(base::Value::Type::LIST);
   for (auto iter = events.cbegin(); iter != events.cend(); ++iter) {
-    events_value->AppendString(*iter);
+    events_value.Append(*iter);
   }
   const char* pref_key = type == RegisteredEventType::kLazy
                              ? kRegisteredLazyEvents
                              : kRegisteredServiceWorkerEvents;
-  extension_prefs_->UpdateExtensionPref(extension_id, pref_key,
-                                        std::move(events_value));
+  extension_prefs_->UpdateExtensionPref(
+      extension_id, pref_key,
+      base::Value::ToUniquePtrValue(std::move(events_value)));
 }
 
 void EventRouter::AddFilterToEvent(const std::string& event_name,

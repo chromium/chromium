@@ -82,7 +82,7 @@ class RequirementsCheckerTest : public ExtensionsTest {
       manifest_dict_->Set(kFeaturesKey, std::make_unique<base::ListValue>());
     base::ListValue* features_list = nullptr;
     ASSERT_TRUE(manifest_dict_->GetList(kFeaturesKey, &features_list));
-    features_list->AppendString(feature);
+    features_list->Append(feature);
   }
 
   std::unique_ptr<RequirementsChecker> checker_;
