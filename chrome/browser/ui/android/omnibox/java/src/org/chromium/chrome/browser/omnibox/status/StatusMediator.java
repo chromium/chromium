@@ -30,7 +30,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
-import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -621,7 +621,7 @@ public class StatusMediator
             return;
         }
         @ContentSettingsType
-        int permission = SingleWebsiteSettings.getHighestPriorityPermission(permissions);
+        int permission = SiteSettingsUtil.getHighestPriorityPermission(permissions);
         // The permission is not available in the settings page. Do not show an icon.
         if (permission == ContentSettingsType.DEFAULT) return;
         mLastPermission = permission;
