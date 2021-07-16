@@ -991,6 +991,19 @@ base::DictionaryValue PolicyUIHandler::GetStatusValue(bool for_webui) const {
 }
 
 void PolicyUIHandler::HandleExportPoliciesJson(const base::ListValue* args) {
+#if defined(OS_ANDROID)
+  // TODO(crbug.com/1228691): Unify download logic between all platforms to
+  // use the WebUI download solution (and remove the Android check).
+  if (!IsJavascriptAllowed()) {
+    DVLOG(1) << "Tried to export policies as JSON but executing JavaScript is "
+                "not allowed.";
+    return;
+  }
+
+  // Since file selection doesn't work as well on Android as on other platforms,
+  // simply download the JSON as a file via JavaScript.
+  FireWebUIListener("download-json", base::Value(GetPoliciesAsJson()));
+#else
   // If the "select file" dialog window is already opened, we don't want to open
   // it again.
   if (export_policies_select_file_dialog_)
@@ -1014,6 +1027,7 @@ void PolicyUIHandler::HandleExportPoliciesJson(const base::ListValue* args) {
   export_policies_select_file_dialog_->SelectFile(
       ui::SelectFileDialog::SELECT_SAVEAS_FILE, std::u16string(), initial_path,
       &file_type_info, 0, base::FilePath::StringType(), owning_window, nullptr);
+#endif
 }
 
 void PolicyUIHandler::HandleListenPoliciesUpdates(const base::ListValue* args) {
