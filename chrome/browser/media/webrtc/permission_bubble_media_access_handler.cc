@@ -159,22 +159,14 @@ bool PermissionBubbleMediaAccessHandler::CheckMediaAccessPermission(
     const GURL& security_origin,
     blink::mojom::MediaStreamType type,
     const extensions::Extension* extension) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-
-  DCHECK_EQ(render_frame_host->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kActive);
-
   Profile* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   ContentSettingsType content_settings_type =
       type == blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE
           ? ContentSettingsType::MEDIASTREAM_MIC
           : ContentSettingsType::MEDIASTREAM_CAMERA;
 
   DCHECK(!security_origin.is_empty());
-  GURL embedding_origin =
-      permissions::PermissionUtil::GetLastCommittedOriginAsURL(web_contents);
   permissions::PermissionManager* permission_manager =
       PermissionManagerFactory::GetForProfile(profile);
   return permission_manager
