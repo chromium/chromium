@@ -208,15 +208,6 @@ void SharedWorkerHost::Start(
       worker_cross_origin_embedder_policy_ = CoepFromMainResponse(
           final_response_url, main_script_load_params->response_head.get());
     }
-
-    // > 13.9 If the result of checking a global object's embedder policy with
-    // worker global scope, owner, and response is false, then set response to a
-    // network error.
-    if (!CheckCrossOriginEmbedderPolicy(creator_cross_origin_embedder_policy_,
-                                        cross_origin_embedder_policy())) {
-      OnScriptLoadFailed("");
-      return;
-    }
   } else {
     worker_cross_origin_embedder_policy_ = network::CrossOriginEmbedderPolicy();
   }

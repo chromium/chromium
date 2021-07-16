@@ -77,10 +77,6 @@ bool SupportsSharedWorker() {
 #endif
 }
 
-bool CoepForSharedWorker() {
-  return base::FeatureList::IsEnabled(blink::features::kCOEPForSharedWorker);
-}
-
 }  // namespace
 
 // These tests are parameterized on following options:
@@ -388,8 +384,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPRequireCorpDocument) {
   // outside of the worker.onerror message.
   // Without CoepForSharedWorker: the worker isn't blocked, but it should at
   // least not be loaded in the cross-origin isolated process.
-  EXPECT_EQ(CoepForSharedWorker() ? "Worker blocked." : "Worker connected.",
-            EvalJs(shell(), R"(
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
     new Promise(resolve => {
       const worker =
         new SharedWorker("/workers/messageport_worker.js");
@@ -472,8 +467,7 @@ IN_PROC_BROWSER_TEST_P(WorkerTest, SharedWorkerInCOEPCredentiallessDocument) {
   // outside of the worker.onerror message.
   // Without CoepForSharedWorker: the worker isn't blocked, but it should at
   // least not be loaded in the cross-origin isolated process.
-  EXPECT_EQ(CoepForSharedWorker() ? "Worker blocked." : "Worker connected.",
-            EvalJs(shell(), R"(
+  EXPECT_EQ("Worker connected.", EvalJs(shell(), R"(
     new Promise(resolve => {
       const worker =
         new SharedWorker("/workers/messageport_worker.js");
