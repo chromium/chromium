@@ -200,9 +200,19 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                     @Override
                     public void call(String[] matches) {
                         mSelectedText = String.join(",", matches);
-                        onSelectorReady(mVisibleUrl);
+                        onGetExistingSelectors();
                     }
                 });
+    }
+
+    // Request text fragment selectors for existing highlights
+    public void onGetExistingSelectors() {
+        mProducer.getExistingSelectors(new TextFragmentReceiver.GetExistingSelectorsResponse() {
+            @Override
+            public void call(String[] text) {
+                onSelectorReady(String.join("", text));
+            }
+        });
     }
 
     public String getUrlToShare(String selector) {
