@@ -195,6 +195,8 @@ void StyleCascade::Apply(CascadeFilter filter) {
       state_.Style()->SetHasAuthorBackground();
     if (resolver.AuthorFlags() & CSSProperty::kBorder)
       state_.Style()->SetHasAuthorBorder();
+    if (resolver.AuthorFlags() & CSSProperty::kBorderRadius)
+      state_.Style()->SetHasAuthorBorderRadius();
   }
 }
 

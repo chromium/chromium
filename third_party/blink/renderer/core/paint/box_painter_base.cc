@@ -191,7 +191,7 @@ void BoxPainterBase::PaintInsetBoxShadowWithInnerRect(
     const ComputedStyle& style) {
   if (!style.BoxShadow())
     return;
-  auto bounds = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+  auto bounds = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
       style, inner_rect, LayoutRectOutsets());
   PaintInsetBoxShadow(info, bounds, style);
 }
@@ -809,7 +809,7 @@ FloatRoundedRect RoundedBorderRectForClip(
   PhysicalRect border_rect =
       PhysicalRect::FastAndLossyFromFloatRect(border.Rect());
   if (bg_layer.Clip() == EFillBox::kContent) {
-    border = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+    border = RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
         style, border_rect, border_padding_insets, info.sides_to_include);
   } else if (bg_layer.Clip() == EFillBox::kPadding) {
     border = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(

@@ -36,10 +36,12 @@ class CORE_EXPORT RoundedBorderGeometry {
       const PhysicalRect& border_rect,
       PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 
-  static FloatRoundedRect PixelSnappedRoundedInnerBorder(
+  // Values in |outsets| must be either all >= 0 to expand from |border_rect|,
+  // or all <= 0 to shrink from |border_rect|.
+  static FloatRoundedRect PixelSnappedRoundedBorderWithOutsets(
       const ComputedStyle&,
       const PhysicalRect& border_rect,
-      const LayoutRectOutsets& insets,
+      const LayoutRectOutsets& outsets_from_border,
       PhysicalBoxSides edges_to_include = PhysicalBoxSides());
 };
 

@@ -112,39 +112,46 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
   int bottom_width =
       sides_to_include.bottom ? style.BorderBottomWidth().Floor() : 0;
 
-  return PixelSnappedRoundedInnerBorder(
+  return PixelSnappedRoundedBorderWithOutsets(
       style, border_rect,
       LayoutRectOutsets(-top_width, -right_width, -bottom_width, -left_width),
       sides_to_include);
 }
 
-FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
     const ComputedStyle& style,
     const PhysicalRect& border_rect,
-    const LayoutRectOutsets& insets,
+    const LayoutRectOutsets& outsets,
     PhysicalBoxSides sides_to_include) {
-  PhysicalRect inner_rect = border_rect;
-  inner_rect.Expand(insets);
-  inner_rect.size.ClampNegativeToZero();
+  PhysicalRect rect_with_outsets = border_rect;
+  rect_with_outsets.Expand(outsets);
+  rect_with_outsets.size.ClampNegativeToZero();
 
   // The standard LayoutRect::PixelSnappedIntRect() method will not
   // let small sizes snap to zero, but that has the side effect here of
   // preventing an inner border for a very thin element from snapping to
   // zero size as occurs when a unit width border is applied to a sub-pixel
   // sized element. So round without forcing non-near-zero sizes to one.
-  FloatRoundedRect rounded_rect(IntRect(
-      RoundedIntPoint(inner_rect.offset),
-      IntSize(
-          SnapSizeToPixelAllowingZero(inner_rect.Width(), inner_rect.X()),
-          SnapSizeToPixelAllowingZero(inner_rect.Height(), inner_rect.Y()))));
+  FloatRoundedRect rounded_rect(
+      IntRect(RoundedIntPoint(rect_with_outsets.offset),
+              IntSize(SnapSizeToPixelAllowingZero(rect_with_outsets.Width(),
+                                                  rect_with_outsets.X()),
+                      SnapSizeToPixelAllowingZero(rect_with_outsets.Height(),
+                                                  rect_with_outsets.Y()))));
 
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =
         PixelSnappedRoundedBorder(style, border_rect, sides_to_include)
             .GetRadii();
-    // Insets use negative values.
-    radii.Shrink(-insets.Top().ToFloat(), -insets.Bottom().ToFloat(),
-                 -insets.Left().ToFloat(), -insets.Right().ToFloat());
+    if (outsets.Top() <= 0 && outsets.Bottom() <= 0 && outsets.Left() <= 0 &&
+        outsets.Right() <= 0) {
+      radii.Shrink(-outsets.Top().ToFloat(), -outsets.Bottom().ToFloat(),
+                   -outsets.Left().ToFloat(), -outsets.Right().ToFloat());
+    } else {
+      // radii.Expand() will DCHECK if all values are >= 0.
+      radii.Expand(outsets.Top().ToFloat(), outsets.Bottom().ToFloat(),
+                   outsets.Left().ToFloat(), outsets.Right().ToFloat());
+    }
     ExcludeSides(sides_to_include, &radii);
     rounded_rect.SetRadii(radii);
   }

@@ -510,6 +510,14 @@
       valid_type: "bool",
     },
 
+    // - is_border_radius
+    // The property, when used by the author, will disable any native
+    // appearance on UI elements.
+    is_border_radius: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - tree_scoped_value: true
     // Whether the property takes a tree-scoped reference as its value.
     // https://drafts.csswg.org/css-scoping/#css-tree-scoped-reference
@@ -1407,6 +1415,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
+      is_border_radius: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "bottom-left",
@@ -1425,6 +1434,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
+      is_border_radius: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "bottom-right",
@@ -1692,6 +1702,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
+      is_border_radius: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "top-left",
@@ -1710,6 +1721,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       is_border: true,
+      is_border_radius: true,
       logical_property_group: {
         name: "border-radius",
         resolver: "top-right",

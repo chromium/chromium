@@ -1903,13 +1903,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
               LayoutReplaced::PreSnappedRectForPersistentSizing(content_rect);
         }
         // LayoutReplaced clips the foreground by rounded content box.
-        auto clip_rect = RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
-            replaced.StyleRef(), content_rect,
-            LayoutRectOutsets(
-                -(replaced.PaddingTop() + replaced.BorderTop()),
-                -(replaced.PaddingRight() + replaced.BorderRight()),
-                -(replaced.PaddingBottom() + replaced.BorderBottom()),
-                -(replaced.PaddingLeft() + replaced.BorderLeft())));
+        auto clip_rect =
+            RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+                replaced.StyleRef(), content_rect,
+                LayoutRectOutsets(
+                    -(replaced.PaddingTop() + replaced.BorderTop()),
+                    -(replaced.PaddingRight() + replaced.BorderRight()),
+                    -(replaced.PaddingBottom() + replaced.BorderBottom()),
+                    -(replaced.PaddingLeft() + replaced.BorderLeft())));
         state.SetClipRect(clip_rect, clip_rect);
         if (replaced.IsLayoutEmbeddedContent()) {
           // Embedded objects are always sized to fit the content rect, but they

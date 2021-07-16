@@ -7,6 +7,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/paint/box_border_painter.h"
+#include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
@@ -225,9 +226,31 @@ void PaintSingleRectangleOutline(GraphicsContext& context,
   BoxBorderPainter::PaintSingleRectOutline(context, style, outer, inner, edge);
 }
 
-float GetFocusRingBorderRadius(const ComputedStyle& style) {
+float GetFocusRingBorderRadius(const ComputedStyle& style,
+                               const PhysicalRect& reference_border_rect) {
   // Default style is border-radius equal to outline width.
   float border_radius = style.GetOutlineStrokeWidthForFocusRing();
+
+  if (style.HasBorderRadius() &&
+      (!style.HasEffectiveAppearance() || style.HasAuthorBorderRadius())) {
+    int outset = style.OutlineOffsetInt();
+    FloatRoundedRect rect =
+        RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
+            style, reference_border_rect,
+            LayoutRectOutsets(outset, outset, outset, outset));
+    // For now we only support uniform border radius for all corners of the
+    // focus ring. Use the minimum radius of all corners to prevent the focus
+    // ring from overlapping with the element, but not smaller than the default
+    // border radius.
+    const auto& radii = rect.GetRadii();
+    return std::max(
+        border_radius,
+        std::min({radii.TopLeft().Width(), radii.TopLeft().Height(),
+                  radii.TopRight().Width(), radii.TopRight().Height(),
+                  radii.BottomRight().Width(), radii.BottomRight().Height(),
+                  radii.BottomLeft().Width(), radii.BottomLeft().Height()}));
+  }
+
   if (!style.HasAuthorBorder() && style.HasEffectiveAppearance()) {
     // For the elements that have not been styled and that have an appearance,
     // the focus ring should use the same border radius as the one used for
@@ -288,7 +311,7 @@ void OutlinePainter::PaintOutlineRects(
     float min_border_width =
         std::min(std::min(style.BorderTopWidth(), style.BorderBottomWidth()),
                  std::min(style.BorderLeftWidth(), style.BorderRightWidth()));
-    float border_radius = GetFocusRingBorderRadius(style);
+    float border_radius = GetFocusRingBorderRadius(style, outline_rects[0]);
     context.DrawFocusRing(pixel_snapped_outline_rects,
                           style.GetOutlineStrokeWidthForFocusRing(),
                           style.OutlineOffsetInt(), border_radius,

@@ -745,7 +745,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   const LayoutRectOutsets outer_third_insets =
       DoubleStripeInsets(BorderEdge::kDoubleBorderStripeOuter);
   FloatRoundedRect outer_third_rect =
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
           style_, border_rect_, outer_third_insets, sides_to_include_);
   if (force_rectangular)
     outer_third_rect.SetRadii(FloatRoundedRect::Radii());
@@ -756,7 +756,7 @@ void BoxBorderPainter::DrawDoubleBorder() const {
   const LayoutRectOutsets inner_third_insets =
       DoubleStripeInsets(BorderEdge::kDoubleBorderStripeInner);
   FloatRoundedRect inner_third_rect =
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
           style_, border_rect_, inner_third_insets, sides_to_include_);
   if (force_rectangular)
     inner_third_rect.SetRadii(FloatRoundedRect::Radii());
@@ -1285,7 +1285,7 @@ void BoxBorderPainter::DrawDashedDottedBoxSideFromPath(
   // Convert the path to be down the middle of the dots or dashes.
   Path centerline_path;
   centerline_path.AddRoundedRect(
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
           style_, border_rect_, CenterInsets(), sides_to_include_));
 
   context_.SetStrokeColor(color);
@@ -1337,7 +1337,7 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(
     const LayoutRectOutsets inner_insets =
         DoubleStripeInsets(BorderEdge::kDoubleBorderStripeInner);
     FloatRoundedRect inner_clip =
-        RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+        RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             style_, border_rect_, inner_insets, sides_to_include_);
 
     context_.ClipRoundedRect(inner_clip);
@@ -1361,7 +1361,7 @@ void BoxBorderPainter::DrawDoubleBoxSideFromPath(
     }
 
     FloatRoundedRect outer_clip =
-        RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+        RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             style_, outer_rect, outer_insets, sides_to_include_);
     context_.ClipOutRoundedRect(outer_clip);
     DrawBoxSideFromPath(border_path, border_thickness, stroke_thickness, side,
@@ -1393,7 +1393,7 @@ void BoxBorderPainter::DrawRidgeGrooveBoxSideFromPath(
   // Paint inner only
   GraphicsContextStateSaver state_saver(context_);
   FloatRoundedRect clip_rect =
-      RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(
+      RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
           style_, border_rect_, CenterInsets(), sides_to_include_);
 
   context_.ClipRoundedRect(clip_rect);

@@ -59,6 +59,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   bool AffectsFont() const { return flags_ & kAffectsFont; }
   bool IsBackground() const { return flags_ & kBackground; }
   bool IsBorder() const { return flags_ & kBorder; }
+  bool IsBorderRadius() const { return flags_ & kBorderRadius; }
   bool TakesTreeScopedValue() const { return flags_ & kTreeScopedValue; }
   bool IsInLogicalPropertyGroup() const {
     return flags_ & kInLogicalPropertyGroup;
@@ -138,18 +139,19 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     // inline-size is a surrogate for either width or height.
     kSurrogate = 1 << 13,
     kAffectsFont = 1 << 14,
-    // If the author specifies any background or border property on an UI
-    // element, the native appearance must be disabled.
+    // If the author specifies any background, border or border-radius property
+    // on an UI element, the native appearance must be disabled.
     kBackground = 1 << 15,
     kBorder = 1 << 16,
+    kBorderRadius = 1 << 17,
     // Set if the property values are tree-scoped references.
-    kTreeScopedValue = 1 << 17,
+    kTreeScopedValue = 1 << 18,
     // https://drafts.csswg.org/css-pseudo-4/#highlight-styling
-    kValidForHighlight = 1 << 18,
+    kValidForHighlight = 1 << 19,
     // https://drafts.csswg.org/css-logical/#logical-property-group
-    kInLogicalPropertyGroup = 1 << 19,
+    kInLogicalPropertyGroup = 1 << 20,
     // https://drafts.csswg.org/css-pseudo-4/#first-line-styling
-    kValidForFirstLine = 1 << 20,
+    kValidForFirstLine = 1 << 21,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,
