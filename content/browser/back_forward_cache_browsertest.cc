@@ -12387,11 +12387,19 @@ IN_PROC_BROWSER_TEST_F(
   ExpectRestored(FROM_HERE);
 }
 
+// Flaky on Cast: crbug.com/1229182
+#if BUILDFLAG(IS_CHROMECAST)
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange \
+  DISABLED_PagesWithCacheControlNoStoreEvictedIfCookieChange
+#else
+#define MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange \
+  PagesWithCacheControlNoStoreEvictedIfCookieChange
+#endif
 // Test that a page with cache-control:no-store enters bfcache with the flag on,
 // but gets evicted if cookies change.
 IN_PROC_BROWSER_TEST_F(
     BackForwardCacheBrowserTestRestoreCacheControlNoStoreUnlessCookieChange,
-    PagesWithCacheControlNoStoreEvictedIfCookieChange) {
+    MAYBE_PagesWithCacheControlNoStoreEvictedIfCookieChange) {
   net::test_server::ControllableHttpResponse response(embedded_test_server(),
                                                       "/main_document");
   net::test_server::ControllableHttpResponse response2(embedded_test_server(),
