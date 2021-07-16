@@ -51,8 +51,12 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
         Pair<Integer, TabModelSelector> selectorAssignment =
                 TabWindowManagerSingleton.getInstance().requestSelector(
                         activity, tabCreatorManager, nextTabPolicySupplier, selectorIndex);
-        int assignedIndex = selectorAssignment.first;
-        mTabModelSelector = (TabModelSelectorImpl) selectorAssignment.second;
+        if (selectorAssignment == null) {
+            mTabModelSelector = null;
+        } else {
+            mTabModelSelector = (TabModelSelectorImpl) selectorAssignment.second;
+        }
+
         if (mTabModelSelector == null) {
             markTabModelsInitialized();
             Toast.makeText(activity,
@@ -62,6 +66,8 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                     .show();
             return false;
         }
+
+        int assignedIndex = selectorAssignment.first;
 
         // Instantiate TabPersistentStore
         TabPersistencePolicy tabPersistencePolicy =
