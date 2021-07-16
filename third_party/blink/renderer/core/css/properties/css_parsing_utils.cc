@@ -4989,7 +4989,11 @@ AtomicString ConsumeCounterStyleNameInPrelude(CSSParserTokenRange& prelude,
 
   if (context.Mode() != kUASheetMode) {
     if (name_token.Id() == CSSValueID::kDecimal ||
-        name_token.Id() == CSSValueID::kDisc)
+        name_token.Id() == CSSValueID::kDisc ||
+        name_token.Id() == CSSValueID::kCircle ||
+        name_token.Id() == CSSValueID::kSquare ||
+        name_token.Id() == CSSValueID::kDisclosureOpen ||
+        name_token.Id() == CSSValueID::kDisclosureClosed)
       return g_null_atom;
   }
 
