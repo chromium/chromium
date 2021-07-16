@@ -73,11 +73,10 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   }
   std::vector<std::string> parsed_ids;
   for (const base::Value& value : ids->GetList()) {
-    std::string id;
-    if (!value.GetAsString(&id)) {
+    if (!value.is_string()) {
       return nullptr;
     }
-    parsed_ids.push_back(id);
+    parsed_ids.push_back(value.GetString());
   }
 
   if (parsed_ids.empty()) {
