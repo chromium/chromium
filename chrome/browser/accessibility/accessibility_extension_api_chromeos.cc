@@ -453,8 +453,8 @@ AccessibilityPrivateMoveMagnifierToRectFunction::Run() {
                    params->rect.height);
 
   auto* magnification_manager = ash::MagnificationManager::Get();
-  if (magnification_manager)
-    magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
+  DCHECK(magnification_manager);
+  magnification_manager->HandleMoveMagnifierToRectIfEnabled(bounds);
 
   return RespondNow(NoArguments());
 }
