@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 7
+// Next MinVersion: 8
 
 module crosapi.mojom;
 
@@ -92,4 +92,12 @@ interface AppController {
   // e.g. for web app, it opens the Chrome site settings page for the app.
   [MinVersion=6]
   OpenNativeSettings@6(string app_id);
+
+  // Set the window display mode for the app identified by |app_id|.
+  // |window_mode| represents how the app will be open in (e.g. in a
+  // standalone window or in a browser tab).
+  [MinVersion=7]
+  SetWindowMode@7(
+      string app_id,
+      WindowMode window_mode);
 };

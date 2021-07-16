@@ -43,6 +43,8 @@ class FakeLacrosWebAppsHost : public crosapi::mojom::AppController {
                 int32_t size_hint_in_dip,
                 LoadIconCallback callback) override;
   void OpenNativeSettings(const std::string& app_id) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
   mojo::Receiver<crosapi::mojom::AppController> receiver_{this};
 };

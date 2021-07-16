@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module crosapi.mojom;
 
@@ -19,47 +19,51 @@ import "ui/gfx/image/mojom/image.mojom";
 // for the structs in this file.
 [Stable]
 struct App {
-  AppType app_type;
-  string app_id;
+  AppType app_type@0;
+  string app_id@1;
 
   // The fields above are mandatory. Everything else below is optional.
 
-  Readiness readiness;
-  string? name;
-  string? short_name;
+  Readiness readiness@2;
+  string? name@3;
+  string? short_name@4;
 
   // An optional, publisher-specific ID for this app, e.g. for Android apps,
   // this field contains the Android package name, and for web apps, it
   // contains the start URL.
-  string? publisher_id;
-  string? description;
-  string? version;
-  array<string> additional_search_terms;
-  IconKey? icon_key;
-  mojo_base.mojom.Time? last_launch_time;
-  mojo_base.mojom.Time? install_time;
+  string? publisher_id@5;
+  string? description@6;
+  string? version@7;
+  array<string> additional_search_terms@8;
+  IconKey? icon_key@9;
+  mojo_base.mojom.Time? last_launch_time@10;
+  mojo_base.mojom.Time? install_time@11;
 
   // Whether the app was installed by sync, policy or as a default app.
-  InstallSource install_source;
-  OptionalBool recommendable;
-  OptionalBool searchable;
-  OptionalBool show_in_launcher;
-  OptionalBool show_in_shelf;
-  OptionalBool show_in_search;
-  OptionalBool show_in_management;
+  InstallSource install_source@12;
+  OptionalBool recommendable@13;
+  OptionalBool searchable@14;
+  OptionalBool show_in_launcher@15;
+  OptionalBool show_in_shelf@16;
+  OptionalBool show_in_search@17;
+  OptionalBool show_in_management@18;
 
   // Whether the app icon should add the notification badging.
-  OptionalBool has_badge;
+  OptionalBool has_badge@19;
 
   // Paused apps cannot be launched, and any running apps that become paused
   // will be stopped. This is independent of whether or not the app is ready to
   // be launched (defined by the Readiness field).
-  OptionalBool paused;
+  OptionalBool paused@20;
 
   // This vector stores all the intent filters defined in this app. Each
   // intent filter defines a matching criteria for whether an intent can
   // be handled by this app. One app can have multiple intent filters.
-  array<IntentFilter> intent_filters;
+  array<IntentFilter> intent_filters@21;
+
+  // Whether the app's display mode is in the browser or otherwise.
+  [MinVersion=2]
+  WindowMode window_mode@22;
 };
 
 // The types of apps available in the registry.
@@ -255,4 +259,17 @@ struct MenuItems {
 struct MenuItem {
   string label@0;                      // The string label, may be empty.
   gfx.mojom.ImageSkia? image@1;        // The image icon, may be null.
+};
+
+[Stable, Extensible]
+// The mode that the app will be opened in (e.g. standalone window or browser
+// tab).
+enum WindowMode {
+  [Default] kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
 };

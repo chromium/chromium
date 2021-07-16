@@ -119,6 +119,11 @@ struct StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr> {
     return r->intent_filters;
   }
 
+  static const apps::mojom::WindowMode& window_mode(
+      const apps::mojom::AppPtr& r) {
+    return r->window_mode;
+  }
+
   static bool Read(crosapi::mojom::AppDataView data, apps::mojom::AppPtr* out);
 };
 
@@ -301,6 +306,13 @@ struct StructTraits<crosapi::mojom::IconValueDataView,
 
   static bool Read(crosapi::mojom::IconValueDataView,
                    apps::mojom::IconValuePtr* out);
+};
+
+template <>
+struct EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode> {
+  static crosapi::mojom::WindowMode ToMojom(apps::mojom::WindowMode input);
+  static bool FromMojom(crosapi::mojom::WindowMode input,
+                        apps::mojom::WindowMode* output);
 };
 
 }  // namespace mojo

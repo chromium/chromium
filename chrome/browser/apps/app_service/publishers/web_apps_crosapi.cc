@@ -215,6 +215,11 @@ void WebAppsCrosapi::OpenNativeSettings(const std::string& app_id) {
   controller_->OpenNativeSettings(app_id);
 }
 
+void WebAppsCrosapi::SetWindowMode(const std::string& app_id,
+                                   apps::mojom::WindowMode window_mode) {
+  controller_->SetWindowMode(app_id, window_mode);
+}
+
 void WebAppsCrosapi::OnApps(std::vector<apps::mojom::AppPtr> deltas) {
   if (!base::FeatureList::IsEnabled(features::kWebAppsCrosapi))
     return;

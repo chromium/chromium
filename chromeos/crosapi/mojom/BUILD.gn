@@ -100,6 +100,10 @@ mojom("mojom") {
           cpp = "::apps::mojom::IconKeyPtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.WindowMode"
+          cpp = "::apps::mojom::WindowMode"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",

@@ -54,6 +54,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
   intent_filter->activity_label = "activity_label";
   input->intent_filters.push_back(std::move(intent_filter));
 
+  input->window_mode = apps::mojom::WindowMode::kWindow;
+
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<crosapi::mojom::App>(input, output));
@@ -97,6 +99,8 @@ TEST(AppServiceTypesTraitsTest, RoundTrip) {
             apps::mojom::PatternMatchType::kNone);
   EXPECT_EQ(filter->activity_name, "activity_name");
   EXPECT_EQ(filter->activity_label, "activity_label");
+
+  EXPECT_EQ(output->window_mode, apps::mojom::WindowMode::kWindow);
 }
 
 // Test that serialization and deserialization works with optional fields that
@@ -124,6 +128,7 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
       apps::mojom::ConditionType::kScheme, "https",
       apps::mojom::PatternMatchType::kNone, intent_filter);
   input->intent_filters.push_back(std::move(intent_filter));
+  input->window_mode = apps::mojom::WindowMode::kBrowser;
 
   apps::mojom::AppPtr output;
   ASSERT_TRUE(
@@ -154,6 +159,8 @@ TEST(AppServiceTypesTraitsTest, RoundTripNoOptional) {
   EXPECT_EQ(condition->condition_values[0]->value, "https");
   EXPECT_EQ(condition->condition_values[0]->match_type,
             apps::mojom::PatternMatchType::kNone);
+
+  EXPECT_EQ(output->window_mode, apps::mojom::WindowMode::kBrowser);
 }
 
 // Test that serialization and deserialization works with updating app type.
@@ -740,5 +747,38 @@ TEST(AppServiceTypesTraitsTest, RoundTripIconValue) {
     EXPECT_EQ(output->icon_type, apps::mojom::IconType::kCompressed);
     EXPECT_EQ(output->compressed, std::vector<uint8_t>({3u, 4u}));
     EXPECT_TRUE(output->is_placeholder_icon);
+  }
+}
+
+// Test that serialization and deserialization works with window mode.
+TEST(AppServiceTypesTraitsTest, RoundTripWindowMode) {
+  apps::mojom::WindowMode input;
+  {
+    input = apps::mojom::WindowMode::kUnknown;
+    apps::mojom::WindowMode output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::WindowMode>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::WindowMode::kUnknown);
+  }
+  {
+    input = apps::mojom::WindowMode::kWindow;
+    apps::mojom::WindowMode output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::WindowMode>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::WindowMode::kWindow);
+  }
+  {
+    input = apps::mojom::WindowMode::kBrowser;
+    apps::mojom::WindowMode output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::WindowMode>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::WindowMode::kBrowser);
+  }
+  {
+    input = apps::mojom::WindowMode::kTabbedWindow;
+    apps::mojom::WindowMode output;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<crosapi::mojom::WindowMode>(
+        input, output));
+    EXPECT_EQ(output, apps::mojom::WindowMode::kTabbedWindow);
   }
 }

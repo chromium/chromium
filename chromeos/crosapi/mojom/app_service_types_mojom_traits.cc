@@ -102,6 +102,10 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   if (!data.ReadIntentFilters(&intent_filters))
     return false;
 
+  apps::mojom::WindowMode window_mode;
+  if (!data.ReadWindowMode(&window_mode))
+    return false;
+
   auto app = apps::mojom::App::New();
   app->app_type = std::move(app_type);
   app->app_id = app_id;
@@ -125,6 +129,7 @@ bool StructTraits<crosapi::mojom::AppDataView, apps::mojom::AppPtr>::Read(
   app->has_badge = has_badge;
   app->paused = paused;
   app->intent_filters = std::move(intent_filters);
+  app->window_mode = window_mode;
   *out = std::move(app);
   return true;
 }
@@ -622,6 +627,45 @@ bool StructTraits<
   icon_value->is_placeholder_icon = data.is_placeholder_icon();
   *out = std::move(icon_value);
   return true;
+}
+
+crosapi::mojom::WindowMode
+EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode>::ToMojom(
+    apps::mojom::WindowMode input) {
+  switch (input) {
+    case apps::mojom::WindowMode::kUnknown:
+      return crosapi::mojom::WindowMode::kUnknown;
+    case apps::mojom::WindowMode::kWindow:
+      return crosapi::mojom::WindowMode::kWindow;
+    case apps::mojom::WindowMode::kBrowser:
+      return crosapi::mojom::WindowMode::kBrowser;
+    case apps::mojom::WindowMode::kTabbedWindow:
+      return crosapi::mojom::WindowMode::kTabbedWindow;
+  }
+
+  NOTREACHED();
+}
+
+bool EnumTraits<crosapi::mojom::WindowMode, apps::mojom::WindowMode>::FromMojom(
+    crosapi::mojom::WindowMode input,
+    apps::mojom::WindowMode* output) {
+  switch (input) {
+    case crosapi::mojom::WindowMode::kUnknown:
+      *output = apps::mojom::WindowMode::kUnknown;
+      return true;
+    case crosapi::mojom::WindowMode::kWindow:
+      *output = apps::mojom::WindowMode::kWindow;
+      return true;
+    case crosapi::mojom::WindowMode::kBrowser:
+      *output = apps::mojom::WindowMode::kBrowser;
+      return true;
+    case crosapi::mojom::WindowMode::kTabbedWindow:
+      *output = apps::mojom::WindowMode::kTabbedWindow;
+      return true;
+  }
+
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace mojo
