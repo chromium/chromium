@@ -2429,6 +2429,12 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="398884292557092447">Si estableces la política como verdadera o no la estableces, los usuarios podrán controlar las sugerencias de Autocompletar para las tarjetas de crédito en la IU.
 
       Si la estableces como falsa, la función Autocompletar nunca sugerirá ni completará información de las tarjetas de crédito, ni guardará información adicional relacionada que envíen los usuarios cuando navegan por la Web.</translation>
+<translation id="3996594590700242138">Si habilitas la política o no la estableces, se permitirán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
+
+      Si la inhabilitas, no se permitirán las actualizaciones. Sin embargo, algunos componentes están exceptuados de esta política: no se inhabilitarán las actualizaciones de componentes que no contengan código ejecutable, que no alteren significativamente el comportamiento del navegador y que sean fundamentales para su funcionamiento.
+      Los ejemplos de estos componentes incluyen las listas de revocación de certificados y los datos de Navegación segura.
+      Para obtener más información sobre la Navegación segura, consulta https://developers.google.com/safe-browsing.
+      Ten en cuenta que, si inhabilitas esta política, es posible que impidas que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones de seguridad críticas a tiempo y, por lo tanto, no se recomienda.</translation>
 <translation id="3997519162482760140">URL a las que se les concede acceso a los dispositivos de captura de video en las páginas de acceso de SAML</translation>
 <translation id="4007646377576030214"> Ten en cuenta que esta política dejará de estar disponible en la versión M87 y se quitará en la versión M89. En su lugar, utiliza <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar las advertencias de privacidad de las sesiones de invitado administradas.
 
@@ -5051,7 +5057,6 @@ Si se selecciona "U2F_EXTENDED", el segundo factor integrado proporcionará func
 <translation id="7458437477941640506">No implementes una reversión a la versión objetivo si la versión del sistema operativo es más reciente que la objetivo. Las actualizaciones también se inhabilitan.</translation>
 <translation id="7459601923199346224">Controla las políticas de dispositivo y usuario para la administración de certificados.</translation>
 <translation id="7459633275230216698">Permite los diálogos de selección de archivos</translation>
-<translation id="7460710589177177376">Si la estableces como verdadera, esta extensión podrá firmar datos arbitrarios con todas las claves diseñadas para uso corporativo. Si la estableces como falsa, no podrá acceder a ninguna de esas claves, y el usuario tampoco podrá otorgarle permiso para hacerlo.</translation>
 <translation id="7464991223784276288">Restringir las cookies solo para las URL coincidentes en la sesión actual</translation>
 <translation id="7468182772656807573">Si estableces la política, se determinará la frecuencia con la que se envían paquetes de red de control (expresado en milisegundos). Los intervalos varían de 30 segundos a 24 horas. Los valores fuera de este rango se restringirán conforme a estos valores.
 

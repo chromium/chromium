@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Tryck på vänster- eller högerpil för att navigera och Retur för att aktivera</translation>
 <translation id="224426591676115802">Det finns ingen tillgänglig röst på följande språk: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Inlärningsläget avslutas</translation>
+<translation id="2247870315273396641">Förhandslyssna på röst</translation>
 <translation id="225732394367814946">Öka talhastigheten</translation>
 <translation id="2267538686624070261">Felstavning lämnas</translation>
 <translation id="2267945578749931355">Nästa tecken</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Tryck på Retur om du vill fortsätta. Tryck på mellanslag om du vill öppna föregående sida.</translation>
 <translation id="2398579267367951220">Skriv det du vill söka efter på sidan. Hoppa till resultatet genom att trycka på Retur. Bläddra mellan resultaten med uppåt- och nedåtpil, fortsätt skriva om du vill ändra sökningen eller tryck på Esc om du vill avbryta.</translation>
 <translation id="240709722712693803">Blåviolett</translation>
+<translation id="2410298923485357543">Använd en naturlig röst när enheten är online</translation>
 <translation id="2416512023405990736">En omarkerad kryssruta</translation>
 <translation id="2417569100218200841">Innehållsinformation</translation>
 <translation id="2417948780551741035">Slutnoter</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">Alternativ för ChromeVox</translation>
 <translation id="3060756054951570867">Menyn <ph name="TITLE" /> har öppnats</translation>
 <translation id="3060880924447482063">Flytta ett objekt i taget genom att svepa åt vänster eller höger</translation>
+<translation id="3061302636956643119">Texten skickas till Google för bearbetning.</translation>
 <translation id="3070245424257836917">Svep uppåt med tre fingrar</translation>
 <translation id="307516670110542567">Snabbguide</translation>
 <translation id="3078345202707391975">Nästa rubrik på nivå 2</translation>
@@ -428,6 +431,7 @@
 <translation id="3887399638190992181">Viktiga tangenter</translation>
 <translation id="3887576927692165210">textfält</translation>
 <translation id="3897092660631435901">Meny</translation>
+<translation id="3898233949376129212">Enhetens språk</translation>
 <translation id="3907138069015388678">rutnät</translation>
 <translation id="3909320334364316587">Föregående rubrik på nivå 6</translation>
 <translation id="3914173277599553213">Obligatoriskt</translation>
@@ -604,6 +608,7 @@
 <translation id="5263344797180442561">rubr2</translation>
 <translation id="528468243742722775">Avsluta</translation>
 <translation id="5290220123487191192">Vi börjar med några vanliga rörelser. När du har kommit till ett objekt du vill aktivera trycker du snabbt på skärmen två gånger med ett finger. Tryck snabbt två gånger nu för att fortsätta.</translation>
+<translation id="5302048478445481009">Språk</translation>
 <translation id="5302089807023311274">Bibliografisk referens</translation>
 <translation id="530391007967514163">Testa hoppkommandona medan du navigerar genom texten nedan.</translation>
 <translation id="5304943142864553931">Fliken <ph name="TITLE" /></translation>
@@ -636,6 +641,7 @@
 <translation id="5452267669091857717">Det finns inga fler rubriker på nivå 1</translation>
 <translation id="5455441614648621694">Kompletterande</translation>
 <translation id="5462510922370980473">Sidlista</translation>
+<translation id="5471768120198416576">Hejsan! Nu används min röst för text till tal.</translation>
 <translation id="5495517933067991341">Viktiga tangenter: Skift</translation>
 <translation id="549602578321198708">Ord</translation>
 <translation id="5513242761114685513">Snabbmeny</translation>
@@ -735,6 +741,7 @@
 <translation id="6150023170003443621">Gulgrön</translation>
 <translation id="6158882249329863701">rad <ph name="TABLECELLROWINDEX" /> kolumn <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">mätare</translation>
+<translation id="6165508094623778733">Läs mer</translation>
 <translation id="6166362019018438352">Textning med punktskrift har inaktiverats</translation>
 <translation id="6186305613600865047">Till slutet av sidan</translation>
 <translation id="6187190722927752226">Akvamarin</translation>
@@ -803,6 +810,7 @@
 <translation id="6759710362319508545">Resurser</translation>
 <translation id="67862343314499040">Violett</translation>
 <translation id="6786800275320335305">Artikel</translation>
+<translation id="6790428901817661496">Spela</translation>
 <translation id="6790781785997195160">När du har övat lite letar du reda på knappen Nästa lektion. Tryck sedan snabbt två gånger för att fortsätta.</translation>
 <translation id="6793101435925451627">listruta</translation>
 <translation id="6815255864998354418">Gulbrun</translation>
@@ -932,6 +940,7 @@
 <translation id="7693840228159394336">Föregående alternativknapp</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7701196182766842984">autoslutför i lista</translation>
+<translation id="7713139339518499741">Naturlig röst</translation>
 <translation id="7714340021005120797">Det finns inga fler kombinationsrutor</translation>
 <translation id="772146615414628379">Grattis! Nu kan du grunderna i att använda ChromeVox. Kom ihåg att du kan öppna kommandomenyn för ChromeVox när som helst genom att trycka på söktangenten + punkt. Om du vill veta ännu mer om ChromeVox och Chrome OS kan du läsa följande artiklar.
     Om du är klar med självstudierna kan du använda ChromeVox till att navigera till stängningsknappen och klicka på den.</translation>
@@ -962,6 +971,7 @@
 <translation id="7939428177581522200">har lagts till i det markerade avsnittet</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{snabel-a}other{# snabel-an}}</translation>
 <translation id="7942349550061667556">Röd</translation>
+<translation id="7945703887991230167">Önskad röst</translation>
 <translation id="7948364528129376623">Det finns inga fler länkar som har besökts</translation>
 <translation id="7952460583030260752">Kommandoreferenser</translation>
 <translation id="7965147473449754028">menyn stängdes</translation>

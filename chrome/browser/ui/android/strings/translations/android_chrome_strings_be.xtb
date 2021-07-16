@@ -251,7 +251,7 @@
 <translation id="2593272815202181319">Монашырынны</translation>
 <translation id="2612676031748830579">Нумар карткі</translation>
 <translation id="2625189173221582860">Пароль скапіраваны</translation>
-<translation id="2631006050119455616">Зэканомлена</translation>
+<translation id="2631006050119455616">Сэканомлена</translation>
 <translation id="2645657967708199252">Спампоўванне праз падключэнне <ph name="CONNECTION_TYPE" /> можа быць маруднейшым</translation>
 <translation id="2647434099613338025">Дадаць мову</translation>
 <translation id="2650751991977523696">Спампаваць файл зноў?</translation>
@@ -306,6 +306,7 @@
 <translation id="2942036813789421260">Укладка перадпрагляду закрыта</translation>
 <translation id="2956410042958133412">Гэтым уліковым запісам кіруюць бацькі <ph name="PARENT_NAME_1" /> і <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрачытаная старонка}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаная старонка}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаныя старонкі}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытаных старонак}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрачытанай старонкі}}</translation>
+<translation id="2961210776189273067">Форма звароту</translation>
 <translation id="2979025552038692506">Выбраная ўкладка інкогніта</translation>
 <translation id="2979448359891869301">Не ўдаецца зрабіць большы здымак экрана. Паўтарыце спробу, калі памяць тэлефона будзе менш загружанай.</translation>
 <translation id="2979639724566107830">Адкрыць у новым акне</translation>
@@ -599,7 +600,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="4881695831933465202">Адкрыць</translation>
 <translation id="488187801263602086">Перайменаваць файл</translation>
 <translation id="4885273946141277891">Недапушчальная колькасць версій Chrome.</translation>
-<translation id="4905269543817054577">У рэжыме інкогніта гісторыя не захоўваецца</translation>
 <translation id="4908869848243824489">Рэкамендацыі ад Google</translation>
 <translation id="4910889077668685004">Плацежныя праграмы</translation>
 <translation id="4913161338056004800">Скінуць статыстыку</translation>
@@ -618,6 +618,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="497421865427891073">Наперад</translation>
 <translation id="4988210275050210843">Ідзе спампоўванне файла (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Старонкі</translation>
+<translation id="5001388021414335527">Падпісацца на сайт можна тут</translation>
 <translation id="5004416275253351869">Параметры дзейнасці Google</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> хоча падключыцца</translation>
@@ -988,6 +989,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Абагуліць 1 выбраны элемент}one{Абагуліць # выбраны элемент}few{Абагуліць # выбраныя элементы}many{Абагуліць # выбраных элементаў}other{Абагуліць # выбранага элемента}}</translation>
 <translation id="7359002509206457351">Доступ да спосабаў аплаты</translation>
 <translation id="7375125077091615385">Тып:</translation>
+<translation id="7386842512861524348">Калі падключэнне сайта небяспечнае, Chrome паведаміць вам аб гэтым.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL-адрас</translation>
 <translation id="7403691278183511381">Першы запуск Chrome</translation>
@@ -1036,7 +1038,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7630202231528827509">URL-адрас пастаўшчыка DNS</translation>
 <translation id="7638584964844754484">Няправільная фраза-пароль</translation>
 <translation id="7641339528570811325">Выдаліць гісторыю праглядаў…</translation>
-<translation id="764170292089748542">Chrome не захоўвае гісторыю прагляду сайтаў, калі вы праглядаеце вэб-старонкі ў прыватным рэжыме. Вы па-ранейшаму можаце выкарыстоўваць закладкі для пераходу да любімых сайтаў.</translation>
 <translation id="7646772052135772216">Сінхранізацыя пароляў не працуе</translation>
 <translation id="7655900163790317559">Уключаецца Bluetooth…</translation>
 <translation id="7658239707568436148">Скасаваць</translation>
@@ -1047,7 +1048,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="7704317875155739195">Аўтаматычна дапісваць пошукавыя запыты і URL-адрасы</translation>
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7725024127233776428">Тут будуць паказвацца старонкі, якія вы дадалі ў закладкі</translation>
-<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Іншыя дзеянні<ph name="END_LINK1" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Гэтыя даныя можна ў любы час выдаліць.</translation>
 <translation id="7757787379047923882">Тэкст абагулены з прылады "<ph name="DEVICE_NAME" />"</translation>
 <translation id="7761849928583394409">Выберыце дату і час</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1150,6 +1150,7 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="8284326494547611709">Субцітры</translation>
 <translation id="829672787777123339">Ідзе падключэнне да вашай прылады…</translation>
 <translation id="8310344678080805313">Стандартныя ўкладкі</translation>
+<translation id="831192587911042850">Дадае бягучы вэб-сайт у спіс падпісак.</translation>
 <translation id="8327155640814342956">Каб карыстацца найлепшымі функцыямі, адкрыйце і абнавіце Chrome</translation>
 <translation id="834313815369870491">Ніколі не перакладаць наступныя сайты:</translation>
 <translation id="8349013245300336738">Сартаваць па аб'ёме выкарыстанага трафіка</translation>
@@ -1292,7 +1293,6 @@ Privacy Sandbox падтрымлівае адкрытасць інтэрнэту
 <translation id="9209888181064652401">Нельга рабіць выклікі</translation>
 <translation id="9212845824145208577">Не ўдаецца перамясціцца ніжэй. Паспрабуйце пачаць з месца, якое б знаходзілася ніжэй на старонцы.</translation>
 <translation id="9219103736887031265">Відарысы</translation>
-<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Гісторыя пошуку<ph name="END_LINK1" /> і <ph name="BEGIN_LINK2" />іншыя дзеянні<ph name="END_LINK2" /> могуць захоўвацца ва Уліковым запісе Google, у які вы ўвайшлі. Гэтыя даныя можна ў любы час выдаліць.</translation>
 <translation id="926205370408745186">Выдаліць дзеянні ў Chrome са службы лічбавага камфорту</translation>
 <translation id="927968626442779827">Выкарыстоўвайце Google Chrome, уключыўшы спрошчаны рэжым</translation>
 <translation id="932327136139879170">Галоўная старонка</translation>

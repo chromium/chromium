@@ -599,7 +599,6 @@
 <translation id="4881695831933465202">開く</translation>
 <translation id="488187801263602086">ファイル名を変更してください</translation>
 <translation id="4885273946141277891">Chrome のインスタンス数の上限を超えています。</translation>
-<translation id="4905269543817054577">シークレット モードでは履歴は保存されません</translation>
 <translation id="4908869848243824489">Discover by Google</translation>
 <translation id="4910889077668685004">お支払いアプリ</translation>
 <translation id="4913161338056004800">統計情報をリセット</translation>
@@ -1036,7 +1035,6 @@
 <translation id="7630202231528827509">プロバイダの URL</translation>
 <translation id="7638584964844754484">パスフレーズが正しくありません</translation>
 <translation id="7641339528570811325">閲覧履歴データを削除…</translation>
-<translation id="764170292089748542">シークレット モードで閲覧する場合、Chrome に閲覧履歴は保存されません。ブックマークを使って、お気に入りのサイトにアクセスすることはできます。</translation>
 <translation id="7646772052135772216">パスワード同期が機能していません</translation>
 <translation id="7655900163790317559">Bluetooth をオンにしています…</translation>
 <translation id="7658239707568436148">キャンセル</translation>
@@ -1047,7 +1045,6 @@
 <translation id="7704317875155739195">検索語句や URL をオートコンプリートする</translation>
 <translation id="7707922173985738739">モバイルデータを使用します</translation>
 <translation id="7725024127233776428">ブックマークしたページがここに表示されます</translation>
-<translation id="7731260005404856143">ログイン中は Google アカウントに<ph name="BEGIN_LINK1" />その他のアクティビティ<ph name="END_LINK1" />が保存される可能性があります。保存されたデータはいつでも削除できます。</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> からテキストが共有されました</translation>
 <translation id="7761849928583394409">日付と時間を選択</translation>
 <translation id="7762668264895820836">SD カード <ph name="SD_CARD_NUMBER" /></translation>
@@ -1292,7 +1289,6 @@
 <translation id="9209888181064652401">通話ができません</translation>
 <translation id="9212845824145208577">下に移動できません。ページの下のほうから始めてみてください。</translation>
 <translation id="9219103736887031265">画像</translation>
-<translation id="923957533152125119">ログイン中は Google アカウントに<ph name="BEGIN_LINK1" />検索履歴<ph name="END_LINK1" />や<ph name="BEGIN_LINK2" />その他のアクティビティ<ph name="END_LINK2" />が保存される可能性があります。保存されたデータはいつでも削除できます。</translation>
 <translation id="926205370408745186">Chrome のアクティビティを Digital Wellbeing から削除</translation>
 <translation id="927968626442779827">Google Chrome のライトモードをご活用ください</translation>
 <translation id="932327136139879170">ホーム</translation>

@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2161394479394250669">Хэвлэх ажлыг цуцлах</translation>
+<translation id="2209788852729124853">Ачаалал тоологчийг шинэчлэх</translation>
 <translation id="2217935453350629363">Одоогийн хурд</translation>
 <translation id="2224337661447660594">Интернэт алга</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Цэнэг дүүрсэн.</translation>
 <translation id="360565022852130722">WiFi сүлжээ WEP 802.1x-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> тест</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Хуудсыг дахин скан хийх}=1{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}other{{PAGE_NUMBER}-р хуудсыг дахин скан хийх}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> шүүмж)</translation>
 <translation id="3748026146096797577">Холбогдоогүй</translation>
 <translation id="3749289110408117711">Файлын нэр</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Миний Драйв</translation>
 <translation id="4429881212383817840">Kerberos тасалбарын хугацаа удахгүй дуусна</translation>
 <translation id="4431821876790500265">Тайланг харах</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Хуудас хасах}=1{{PAGE_NUMBER}-р хуудсыг хасах}other{{PAGE_NUMBER}-р хуудсыг хасах}}</translation>
 <translation id="445059817448385655">Хуучин нууц үг</translation>
 <translation id="4453205916657964690">Дэд сүлжээний маск</translation>
 <translation id="4454245904991689773">Дараах руу скан хийх</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">Хориглосон</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Таны файлыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}other{Таны файлуудыг амжилттай скан хийсэн бөгөөд <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />-д хадгалсан.}}</translation>
 <translation id="5931523347251946569">Файл олдсонгүй</translation>
+<translation id="5972388717451707488">Системийг шинэчлэх</translation>
 <translation id="6037291330010597344">Сканнерын документ дамжуулах тавиур хоосон байна. Документ нэмээд, дахин оролдоно уу.</translation>
 <translation id="6040143037577758943">Хаах</translation>
 <translation id="6040852767465482106">Нэрээ нууцалсан байдал</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">WiFi-н аюулгүй байдлын үл мэдэгдэх протокол</translation>
 <translation id="65587193855025101">Тавцант</translation>
 <translation id="6564646048574748301">Амжилтгүй болсон - Хэвлэгчид холбогдох боломжгүй</translation>
+<translation id="6574762126505704998">Дүүргэх</translation>
 <translation id="6603230386432466813">Холбогдоход асуудал гарсан уу?</translation>
 <translation id="6618744767048954150">Ажиллуулж байна</translation>
 <translation id="6620487321149975369">Хэвлэлийн ажлыг гараар хасахгүй бол түүхэнд харагдана</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> үлдсэн</translation>
 <translation id="7620771111601174153">Тусламжийн төвөөс нэмэлт мэдээлэл авах</translation>
+<translation id="763165478673169849">Хамгийн сүүлд шинэчилсэн цаг</translation>
 <translation id="7648838807254605802">Өндөр HTTPS хоцролт</translation>
 <translation id="7658239707568436148">Болих</translation>
 <translation id="7690294790491645610">Шинэ нууц үг баталгаажуулна уу</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">Үлдсэн цэнэг</translation>
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">Ачаалал тоологчийн хүсэлт тавих</translation>
 <translation id="8206859287963243715">Үүрэн холбоо</translation>
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8214184102975786227">Олон хуудсыг нэг PDF болгож скан хийх</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">WiFi сүлжээ WEP PSK-н сул протоколоор хамгаалагдсан байна</translation>
 <translation id="8477551185774834963">DNS хоцролт зөвшөөрөгдөх хязгаараас бага зэрэг өндөр байна</translation>
 <translation id="8483248364096924578">IP хаяг</translation>
+<translation id="8498220429738806196">Ачаалал тоологч</translation>
 <translation id="8503813439785031346">Хэрэглэгчийн нэр</translation>
 <translation id="8503836310948963452">Цөөн хэдэн минут хүлээнэ үү...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Та оператор компанийнхаа сүлжээнд холбогдохын тулд тэд танаас энэ сонголтыг шаардаж болзошгүй. Дэлгэрэнгүй мэдээлэл авах бол оператор компанитайгаа холбогдоно уу.</translation>
 <translation id="8576249514688522074">Бэлтгэгдээгүй</translation>
 <translation id="8620617069779373398">Роумингийн төлөв</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">Утасгүй интернет</translation>
 <translation id="8818152010000655963">Дэлгэцийн зураг</translation>
 <translation id="8845001906332463065">Тусламж авах</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Туршилт амжилттай боллоо</translation>
 <translation id="8898840733695078011">Дохионы хүч</translation>
 <translation id="8910721771319628100">Өгөгдмөл сүлжээ хоцролтын хязгаараас дээш байна</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Одоогийн ашиглалт</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" />-н тасалбарыг дахин шинэчлэх</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" />-р хуудсыг скан хийж байна</translation>
 <translation id="9111102763498581341">Нээх</translation>

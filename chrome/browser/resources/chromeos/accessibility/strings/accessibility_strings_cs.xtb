@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Šipkami se pohybujete, klávesou Enter provedete aktivaci</translation>
 <translation id="224426591676115802">Pro následující jazyky není hlas k dispozici: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Ukončování režimu výuky</translation>
+<translation id="2247870315273396641">Ukázka hlasu</translation>
 <translation id="225732394367814946">Zvýšit rychlost řeči</translation>
 <translation id="2267538686624070261">Opuštění překlepu</translation>
 <translation id="2267945578749931355">Další znak</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Na další stránku přejdete stisknutím klávesy Enter. Na předchozí stránku přejdete stisknutím klávesy Backspace.</translation>
 <translation id="2398579267367951220">Zadejte stránku, kterou chcete vyhledat. Stisknutím klávesy Enter přejdete na výsledek, pomocí šipek nahoru a dolů lze procházet výsledky, pokračováním v zadávání můžete vyhledávání upravit a pomocí klávesy Escape jej zrušíte.</translation>
 <translation id="240709722712693803">Modrofialová</translation>
+<translation id="2410298923485357543">Když je zařízení online, použít přirozený hlas</translation>
 <translation id="2416512023405990736">Nezaškrtnuté zaškrtávací políčko</translation>
 <translation id="2417569100218200841">Informace o obsahu</translation>
 <translation id="2417948780551741035">Koncové poznámky</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">Možnosti programu ChromeVox</translation>
 <translation id="3060756054951570867">otevřena nabídka <ph name="TITLE" /></translation>
 <translation id="3060880924447482063">Přejetím prstem vlevo nebo vpravo můžete přecházet mezi položkami</translation>
+<translation id="3061302636956643119">Text bude odeslán do Googlu ke zpracování.</translation>
 <translation id="3070245424257836917">Přejeďte třemi prsty nahoru</translation>
 <translation id="307516670110542567">Rychlá instruktáž</translation>
 <translation id="3078345202707391975">Další nadpis 2. úrovně</translation>
@@ -428,6 +431,7 @@
 <translation id="3887399638190992181">Základní klávesy</translation>
 <translation id="3887576927692165210">upr</translation>
 <translation id="3897092660631435901">Nabídka</translation>
+<translation id="3898233949376129212">Jazyk zařízení</translation>
 <translation id="3907138069015388678">mřžszn</translation>
 <translation id="3909320334364316587">Předchozí nadpis 6. úrovně</translation>
 <translation id="3914173277599553213">Vyžadováno</translation>
@@ -604,6 +608,7 @@
 <translation id="5263344797180442561">nadp 2</translation>
 <translation id="528468243742722775">Konec</translation>
 <translation id="5290220123487191192">Začneme několika gesty, které budete pravidelně používat. Když se dostanete na položku, kterou chcete aktivovat, dvakrát na obrazovku klepněte jedním prstem. Nyní pokračujte dvojitým klepnutím.</translation>
+<translation id="5302048478445481009">Jazyk</translation>
 <translation id="5302089807023311274">Bibliografický odkaz</translation>
 <translation id="530391007967514163">Zkuste přeskakováním po nadpisech projít text níže.</translation>
 <translation id="5304943142864553931">karta <ph name="TITLE" /></translation>
@@ -636,6 +641,7 @@
 <translation id="5452267669091857717">Žádný další nadpis 1. úrovně není</translation>
 <translation id="5455441614648621694">Doplňkové</translation>
 <translation id="5462510922370980473">Seznam stránek</translation>
+<translation id="5471768120198416576">Zdravím vás. Jsem váš hlas převodu textu na řeč.</translation>
 <translation id="5495517933067991341">Základní klávesy: Shift</translation>
 <translation id="549602578321198708">Slovo</translation>
 <translation id="5513242761114685513">Kontextová nabídka</translation>
@@ -735,6 +741,7 @@
 <translation id="6150023170003443621">Žlutozelená</translation>
 <translation id="6158882249329863701">řádek <ph name="TABLECELLROWINDEX" /> sloupec <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">měřič</translation>
+<translation id="6165508094623778733">Další informace</translation>
 <translation id="6166362019018438352">Titulky v Braillově písmu jsou vypnuty</translation>
 <translation id="6186305613600865047">Přejít na konec stránky</translation>
 <translation id="6187190722927752226">Akvamarínová</translation>
@@ -803,6 +810,7 @@
 <translation id="6759710362319508545">Zdroje</translation>
 <translation id="67862343314499040">Fialová</translation>
 <translation id="6786800275320335305">Článek</translation>
+<translation id="6790428901817661496">Přehrát</translation>
 <translation id="6790781785997195160">Až si to trochu vyzkoušíte, najděte tlačítko Další lekce. Poté pokračujte tím, že na něj dvakrát klepnete.</translation>
 <translation id="6793101435925451627">nabíd</translation>
 <translation id="6815255864998354418">Světle citrónová</translation>
@@ -931,6 +939,7 @@
 <translation id="7693840228159394336">Předchozí přepínač</translation>
 <translation id="7701040980221191251">Žádné</translation>
 <translation id="7701196182766842984">auto sezn</translation>
+<translation id="7713139339518499741">Přirozený hlas</translation>
 <translation id="7714340021005120797">Žádné další pole se seznamem není</translation>
 <translation id="772146615414628379">Gratulujeme! Naučili jste se základy používání nástroje ChromeVox. Nabídku příkazů nástroje ChromeVox můžete kdykoliv otevřít stisknutím kláves Hledat + Tečka. Další informace o nástroji ChromeVox a systému Chrome OS najdete v následujících článcích.
     Chcete-li výukový program ukončit, přejděte pomocí nástroje ChromeVox na tlačítko Zavřít a klikněte na něj.</translation>
@@ -961,6 +970,7 @@
 <translation id="7939428177581522200">přidáno do výběru</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{zavináč}few{# zavináče}many{# at signs}other{# zavináčů}}</translation>
 <translation id="7942349550061667556">Červená</translation>
+<translation id="7945703887991230167">Preferovaný hlas</translation>
 <translation id="7948364528129376623">Žádný další navštívený odkaz není</translation>
 <translation id="7952460583030260752">Referenční seznam příkazů</translation>
 <translation id="7965147473449754028">nabídka zavřena</translation>

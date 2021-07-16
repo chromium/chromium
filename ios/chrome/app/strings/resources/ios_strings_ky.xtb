@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">Шилтеме түзүлгөн жок</translation>
 <translation id="2800683595868705743">Өтмөк которуштургучтан кетүү</translation>
 <translation id="2815198996063984598">2. Демейки серепчи колдонмосун басыңыз</translation>
+<translation id="2820289420301699633">Администраторуңуз Chrome'ду көзөмөлдөп, андагы маалыматты колдоно алат.</translation>
 <translation id="2830972654601096923">Даректерди башкаруу…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Баштапкы шайкештирүү жөндөөсү аяктаган жок</translation>
@@ -195,6 +196,7 @@
 <translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2952581218264071393">1. Chrome'дун жөндөөлөрүн ачыңыз</translation>
 <translation id="2958718410589002129">Сырсөздөр</translation>
+<translation id="2961210776189273067">Аталышы</translation>
 <translation id="2964349545761222050">Үчүнчү тараптын cookie файлдарын бөгөттөө</translation>
 <translation id="2969979262385602596">Кире албай калдңз. Бир аздн кийн аракт кылп көрңз.</translation>
 <translation id="2975121486251958312">Жашыруун режим гана жеткиликтүү</translation>
@@ -268,7 +270,6 @@
 <translation id="3607167657931203000">Дайындарды автотолтуруу</translation>
 <translation id="3609785682760573515">Шайкештештирилүүдө…</translation>
 <translation id="3638472932233958418">Желебет алдн-ал жүкт</translation>
-<translation id="3648013730801605241">Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK" />издөө таржымалы<ph name="END_LINK" /> жана <ph name="BEGIN_LINK" />башка аракеттер<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта өчүрө аласыз.</translation>
 <translation id="3661160521073045932">Профилдин конфигурациясы жеткиликтүү</translation>
 <translation id="3670030362669914947">Сан</translation>
 <translation id="3691593122358196899">Кыстарма <ph name="FOLDER_TITLE" /> куржунуна кошулду</translation>
@@ -648,10 +649,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="734758817008927353">Картаны сактоо параметрлери</translation>
 <translation id="7348502496356775519">Кыстарма</translation>
 <translation id="7353432112255316844">Өзүңүз экениңизди ырастаңыз</translation>
-<translation id="7376492662175718683">Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK" />башка аракеттер<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта өчүрө аласыз.
-
-        
-Издөө каражатыңыз: <ph name="DSE_NAME" />. Издөө таржымалын өчүрүү үчүн издөө каражатындагы нускамаларды (бар болсо) караңыз.</translation>
 <translation id="7383797227493018512">Окуу тизмеси</translation>
 <translation id="7398893703713203428">Шилтеме түзүү</translation>
 <translation id="739941347996872055">Мурунку өтмөк</translation>
@@ -794,10 +791,6 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Кыстармалар</translation>
 <translation id="8840513115188359703">Google Каттоо эсебиңизден чыгарылбайсыз.</translation>
-<translation id="8851300969441660830">Google аккаунтуңуздан чыгарылбайсыз. Аккаунтуңузга кирип турсаңыз, <ph name="BEGIN_LINK" />башка аракеттер<ph name="END_LINK" /> Google аккаунтуңузга сакталышы мүмкүн. Аларды каалаган убакта өчүрө аласыз.
-
-
-Издөө таржымалын өчүрүү үчүн издөө каражатындагы нускамаларды (бар болсо) караңыз.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} өтмөк}other{{count} өтмөк}}</translation>
 <translation id="8870413625673593573">Жакында жабылган</translation>
 <translation id="8876882697946675716">Түзмөктөрүңүздү шайкештириңиз</translation>

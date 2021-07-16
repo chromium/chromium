@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
 <translation id="2161394479394250669">Annuller udskriftsjob</translation>
+<translation id="2209788852729124853">Nulstil trafiktællere</translation>
 <translation id="2217935453350629363">Nuværende hastighed</translation>
 <translation id="2224337661447660594">Der er ingen internetforbindelse</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Batteri helt opladet</translation>
 <translation id="360565022852130722">Wi-Fi-netværket er beskyttet med den svage protokol WEP 802.1x</translation>
 <translation id="3689839747745352263">Testen <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scan siden igen}=1{Scan side {PAGE_NUMBER} igen}one{Rescan page {PAGE_NUMBER}}other{Scan side {PAGE_NUMBER} igen}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> anmeldelser)</translation>
 <translation id="3748026146096797577">Ikke forbundet</translation>
 <translation id="3749289110408117711">Filnavn</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Mit drev</translation>
 <translation id="4429881212383817840">Din Kerberos-billet er ved at udløbe</translation>
 <translation id="4431821876790500265">Se rapport</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Fjern side}=1{Fjern side {PAGE_NUMBER}}one{Remove page {PAGE_NUMBER}}other{Fjern side {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Gammel adgangskode</translation>
 <translation id="4453205916657964690">Undernetmaske</translation>
 <translation id="4454245904991689773">Scan til</translation>
@@ -247,6 +250,7 @@
 <translation id="5916084858004523819">Forbudt</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Din fil blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Dine filer blev scannet og er gemt i <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Filen blev ikke fundet</translation>
+<translation id="5972388717451707488">Opdater maskine</translation>
 <translation id="6037291330010597344">Scannerens dokumentføder er tom. Tilføj dokumenter, og prøv igen.</translation>
 <translation id="6040143037577758943">Luk</translation>
 <translation id="6040852767465482106">Anonym identitet</translation>
@@ -284,6 +288,7 @@
 <translation id="6527081081771465939">Ukendt Wi-Fi-sikkerhedsprotokol</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Handlingen mislykkedes – Ingen forbindelse til printer</translation>
+<translation id="6574762126505704998">Udfyld</translation>
 <translation id="6603230386432466813">Har du problemer med at oprette forbindelse?</translation>
 <translation id="6618744767048954150">Kører</translation>
 <translation id="6620487321149975369">Udskriftsjobs vises i historikken, medmindre de fjernes manuelt</translation>
@@ -332,6 +337,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> tilbage</translation>
 <translation id="7620771111601174153">Få flere oplysninger i Hjælp</translation>
+<translation id="763165478673169849">Tidspunkt for seneste nulstilling</translation>
 <translation id="7648838807254605802">Høj HTTPS-forsinkelse</translation>
 <translation id="7658239707568436148">Annuller</translation>
 <translation id="7690294790491645610">Bekræft den nye adgangskode</translation>
@@ -353,6 +359,7 @@
 <translation id="8075838845814659848">Resterende batteriniveau</translation>
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Anmod om trafiktællere</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8214184102975786227">Scan flere sider til én PDF-fil</translation>
@@ -374,8 +381,10 @@
 <translation id="8475690821716466388">Wi-Fi-netværket er beskyttet med den svage protokol WEP PSK</translation>
 <translation id="8477551185774834963">DNS-forsinkelsen er en smule højere end den tilladte grænse</translation>
 <translation id="8483248364096924578">IP-adresse</translation>
+<translation id="8498220429738806196">Trafiktællere</translation>
 <translation id="8503813439785031346">Brugernavn</translation>
 <translation id="8503836310948963452">Det tager kun et par minutter mere...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Dit mobilselskab kræver muligvis denne tilladelse, for at du kan oprette forbindelse til mobilnetværket. Kontakt dit mobilselskab for at få flere oplysninger.</translation>
 <translation id="8576249514688522074">Ikke startet</translation>
 <translation id="8620617069779373398">Roamingstatus</translation>
@@ -392,6 +401,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Baggrund</translation>
 <translation id="8845001906332463065">Få hjælp</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Testen blev gennemført</translation>
 <translation id="8898840733695078011">Signalstyrke</translation>
 <translation id="8910721771319628100">Standardnetværket overstiger grænsen for forsinkelse</translation>
@@ -407,6 +417,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Aktuelt forbrug</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Gendan billetten for <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scanner side <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Lås op</translation>

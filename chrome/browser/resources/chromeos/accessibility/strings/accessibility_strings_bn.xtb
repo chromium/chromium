@@ -428,6 +428,7 @@
 <translation id="3887399638190992181">গুরুত্বপূর্ণ কী</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">মেনু</translation>
+<translation id="3898233949376129212">ডিভাইসের ভাষা</translation>
 <translation id="3907138069015388678">সূচির গ্রিড</translation>
 <translation id="3909320334364316587">পূর্ববর্তী স্তর ৬ শিরোনাম</translation>
 <translation id="3914173277599553213">প্রয়োজন</translation>
@@ -604,6 +605,7 @@
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5290220123487191192">আপনি নিয়মিত ব্যবহার করবেন এমন কয়েকটি জেস্চার দিয়ে শুরু করুন। অ্যাক্টিভেট করতে চান এমন কোনও আইটেম পেলে স্ক্রিনে এক আঙুল দিয়ে ডবল ট্যাপ করুন। চালিয়ে যেতে, এখনই ডবল ট্যাপ করুন।</translation>
+<translation id="5302048478445481009">ভাষা</translation>
 <translation id="5302089807023311274">বিবলিওগ্রাফি রেফারেন্স</translation>
 <translation id="530391007967514163">নিচের টেক্সটে নেভিগেট করতে জাম্প কমান্ড ব্যবহার করে দেখুন।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ট্যাব</translation>
@@ -636,6 +638,7 @@
 <translation id="5452267669091857717">কোনও পরবর্তী লেভেল ১ শিরোনাম নেই</translation>
 <translation id="5455441614648621694">পরিপূরক</translation>
 <translation id="5462510922370980473">পৃষ্ঠা তালিকা</translation>
+<translation id="5471768120198416576">হ্যালো! আমি হলাম আপনার পাঠ্য থেকে ভাষ্য ভয়েস।</translation>
 <translation id="5495517933067991341">গুরুত্বপূর্ণ কী: Shift</translation>
 <translation id="549602578321198708">শব্দ</translation>
 <translation id="5513242761114685513">সংশ্লিষ্ট মেনু</translation>
@@ -735,6 +738,7 @@
 <translation id="6150023170003443621">হলদে সবুজ</translation>
 <translation id="6158882249329863701">সারি <ph name="TABLECELLROWINDEX" /> কলাম <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">মিটার</translation>
+<translation id="6165508094623778733">আরও জানুন</translation>
 <translation id="6166362019018438352">ব্রেইল ক্যাপশনগুলি বন্ধ করা হয়েছে</translation>
 <translation id="6186305613600865047">পৃষ্ঠাটির একেবারে নিচে চলে যান</translation>
 <translation id="6187190722927752226">সবুজাভ নীল</translation>
@@ -803,6 +807,7 @@
 <translation id="6759710362319508545">রিসোর্স</translation>
 <translation id="67862343314499040">বেগুনি</translation>
 <translation id="6786800275320335305">নিবন্ধ</translation>
+<translation id="6790428901817661496">চালু করুন</translation>
 <translation id="6790781785997195160">আপনি খানিকটা সড়গড় হয়ে যাওয়ার পর পরবর্তী টিউটোরিয়ালের বোতাম খুঁজুন। তারপর চালিয়ে যাতে ডবল ট্যাপ করুন।</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">লেবু শিফন</translation>

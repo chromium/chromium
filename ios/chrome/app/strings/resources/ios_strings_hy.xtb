@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">Չհաջողվեց ստեղծել հղում</translation>
 <translation id="2800683595868705743">Փակել ներդիրների փոխանջատիչը</translation>
 <translation id="2815198996063984598">2. Հպեք «Դիտարկիչի կանխադրված հավելված»։</translation>
+<translation id="2820289420301699633">Ադմինիստրատորը վերահսկում է Chrome-ը, և նրան հասանելի են դրա տվյալները։</translation>
 <translation id="2830972654601096923">Կառավարել հասցեները…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Համաժամացման սկզբնական կարգավորումը չի ավարտվել</translation>
@@ -268,7 +269,6 @@
 <translation id="3607167657931203000">Ինքնալցման տվյալները</translation>
 <translation id="3609785682760573515">Համաժամացում…</translation>
 <translation id="3638472932233958418">Նախաբեռնել ոստայնէջերը</translation>
-<translation id="3648013730801605241"><ph name="BEGIN_LINK" />Որոնումների պատմությունը<ph name="END_LINK" /> և <ph name="BEGIN_LINK" />այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Այդ տվյալները կարող եք ցանկացած ժամանակ ջնջել։</translation>
 <translation id="3661160521073045932">Կազմաձևման պրոֆիլ է հասանելի</translation>
 <translation id="3670030362669914947">Քարտի համարը</translation>
 <translation id="3691593122358196899">Էջանիշը պահվել է <ph name="FOLDER_TITLE" />-ում</translation>
@@ -648,10 +648,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="734758817008927353">Քարտը պահելու կարգավորումներ</translation>
 <translation id="7348502496356775519">Էջանիշ</translation>
 <translation id="7353432112255316844">Հաստատեք ձեր ինքնությունը</translation>
-<translation id="7376492662175718683">Դուք դուրս չեք գա ձեր Google հաշվից։ <ph name="BEGIN_LINK" />Այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Այդ տվյալները կարող եք ցանկացած ժամանակ ջնջել։
-
-        
-Դուք օգտագործում եք <ph name="DSE_NAME" /> որոնողական համակարգը։ Որոնումների պատմությունը ջնջելու համար կարդացեք համապատասխան ցուցումները։</translation>
 <translation id="7383797227493018512">Ընթերցանության ցանկ</translation>
 <translation id="7398893703713203428">Ստեղծել հղում</translation>
 <translation id="739941347996872055">Նախորդ ներդիրը</translation>
@@ -794,10 +790,6 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Էջանիշներ</translation>
 <translation id="8840513115188359703">Դուք դուրս չեք գա ձեր Google հաշվից:</translation>
-<translation id="8851300969441660830">Դուք դուրս չեք գա ձեր Google հաշվից։ <ph name="BEGIN_LINK" />Այլ գործողություններ<ph name="END_LINK" /> կարող են պահվել ձեր Google հաշվում, երբ դուք մուտք եք գործում։ Այդ տվյալները կարող եք ցանկացած ժամանակ ջնջել։
-
-
-Որոնումների պատմությունը ջնջելու համար կարդացեք ձեր որոնողական համակարգի համապատասխան ցուցումները։</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ներդիր}one{{count} ներդիր}other{{count} ներդիր}}</translation>
 <translation id="8870413625673593573">Վերջին փակվածները</translation>
 <translation id="8876882697946675716">Համաժամացրեք ձեր սարքերը</translation>

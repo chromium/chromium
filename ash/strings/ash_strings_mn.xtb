@@ -16,6 +16,7 @@
 <translation id="1056775291175587022">Сүлжээ алга</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">Батарейг солих эсвэл дахин цэнэглэнэ үү</translation>
+<translation id="1077253978657569125">Бид үүнийг сайжруулахыг хүсэж байна!</translation>
 <translation id="108486256082349153">Үүрэн холбоо: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">Өдрийн мэнд <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">Би уйдаж байна</translation>
@@ -1034,6 +1035,7 @@
 <translation id="9080132581049224423">Нүүр хуудас руу очихын тулд дээш шударна уу</translation>
 <translation id="9080206825613744995">Микрофоныг ашиглаж байна.</translation>
 <translation id="9084606467167974638">Цэсийн байршлыг асаах/унтраах</translation>
+<translation id="9087578468327036362">Энэ асуулгыг мэдээлэх</translation>
 <translation id="9089416786594320554">Оролтын аргууд</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> дэлгэцийг хассан</translation>
 <translation id="9098969848082897657">Утасны дууг хаах</translation>

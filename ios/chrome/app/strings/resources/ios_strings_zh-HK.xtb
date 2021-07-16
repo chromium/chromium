@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">無法建立連結</translation>
 <translation id="2800683595868705743">退出分頁切換選項</translation>
 <translation id="2815198996063984598">2. 輕按 [預設瀏覽器應用程式]</translation>
+<translation id="2820289420301699633">管理員可控制 Chrome，並存取其中的資料</translation>
 <translation id="2830972654601096923">管理地址…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />，<ph name="STATE" />，<ph name="URL" /></translation>
 <translation id="2840687315230832938">未完成初始同步處理設定</translation>
@@ -268,7 +269,6 @@
 <translation id="3607167657931203000">自動填入資料</translation>
 <translation id="3609785682760573515">同步處理中…</translation>
 <translation id="3638472932233958418">預先載入網頁</translation>
-<translation id="3648013730801605241">在您登入後，<ph name="BEGIN_LINK" />搜尋記錄<ph name="END_LINK" />和<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您隨時可刪除這些資料。</translation>
 <translation id="3661160521073045932">有可用的設定描述檔。</translation>
 <translation id="3670030362669914947">號碼</translation>
 <translation id="3691593122358196899">已將書籤加入到「<ph name="FOLDER_TITLE" />」</translation>
@@ -646,10 +646,6 @@
 <translation id="734758817008927353">付款卡儲存選項</translation>
 <translation id="7348502496356775519">加入書籤</translation>
 <translation id="7353432112255316844">驗證身分</translation>
-<translation id="7376492662175718683">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您隨時可刪除這些資料。
-
-        
-您的搜尋引擎是「<ph name="DSE_NAME" />」。建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="7383797227493018512">閱讀清單</translation>
 <translation id="7398893703713203428">建立連結</translation>
 <translation id="739941347996872055">上一個分頁</translation>
@@ -792,10 +788,6 @@
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">書籤</translation>
 <translation id="8840513115188359703">您不會因此登出 Google 帳戶。</translation>
-<translation id="8851300969441660830">您不會因此登出 Google 帳戶。在您登入後，<ph name="BEGIN_LINK" />其他形式的活動<ph name="END_LINK" />可能會儲存至您的 Google 帳戶。您隨時可刪除這些資料。
-
-
-建議您查看搜尋引擎的搜尋記錄刪除指示 (如有)。</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓您的裝置保持同步</translation>

@@ -64,6 +64,7 @@
 <translation id="1201895884277373915">यस साइटबाट थप</translation>
 <translation id="1206967143813997005">प्रारम्भिक हस्ताक्षर त्रुटिपूर्ण छ</translation>
 <translation id="1209206284964581585">अहिलेका लागि लुकाउनुहोस्</translation>
+<translation id="1209221128712833642">"फाराम बनाउनुहोस्" बटन, Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउन Enter थिच्नुहोस्</translation>
 <translation id="121201262018556460">तपाईंले <ph name="DOMAIN" /> मा पुग्ने प्रयत्न गर्नुभयो, तर सर्भरले एउटा कमजोर कुञ्जी भएको प्रमाणपत्र प्रस्तुत गर्‍यो। कुनै आक्रमणकारीले निजी कुञ्जीलाई तोडेको हुन सक्छ, र त्यो सर्भर तपाईंले अपेक्षा गर्नुभएको सर्भर नहुन सक्छ (तपाईं एउटा आक्रमणकारीसँग सञ्चारण गरिरहनुभएको हुन सक्छ)।</translation>
 <translation id="1219129156119358924">प्रणाली सुरक्षा</translation>
 <translation id="1227224963052638717">अज्ञात नीति।</translation>
@@ -75,6 +76,7 @@
 <translation id="1243027604378859286">लेखक:</translation>
 <translation id="1246424317317450637">बोल्ड</translation>
 <translation id="1250759482327835220">अर्को पटक अझ छिटो भुक्तानी गर्न आफ्नो Google खातामा आफ्नो कार्ड, नाम र बिलिङ ठेगाना सेभ गर्नुहोस्।</translation>
+<translation id="1252799212227771492">"पाना बनाउनुहोस्" बटन, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Enter थिच्नुहोस्</translation>
 <translation id="1253921432148366685"><ph name="TYPE_1" />, <ph name="TYPE_2" /> (सिंक गरिएका)</translation>
 <translation id="1256368399071562588">&lt;p&gt;तपाईं कुनै वेबसाइटमा जान खोज्दा उक्त साइट नखुलेको खण्डमा सर्वप्रथम समस्या निवारणका यी चरणहरूको प्रयोग गरी त्रुटिको समाधान गर्ने प्रयास गर्नुहोस्:&lt;/p&gt;
     &lt;ol&gt;
@@ -84,6 +86,7 @@
     &lt;/ol&gt;</translation>
 <translation id="1257286744552378071">तपाईंले आफ्नो संगठनले व्यवस्थापन नगरेको कुनै साइटमा आफ्नो पासवर्ड प्रविष्ट गर्नुभयो। आफ्नो खाता सुरक्षित गर्न, अन्य एप र साइटहरूमा तपाईंको पासवर्ड पुनः प्रयोग नगर्नुहोस्।</translation>
 <translation id="1263231323834454256">पाठ्य सूची</translation>
+<translation id="1269516672602708785">Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउनुहोस्</translation>
 <translation id="1270502636509132238">पिकअपको विधि</translation>
 <translation id="1281476433249504884">स्ट्याकर १</translation>
 <translation id="1285320974508926690">यो साइट कहिले पनि अनुवाद नगर्नुहोस्</translation>
@@ -113,6 +116,7 @@
 <translation id="1348198688976932919">अगाडिको साइटमा खतरनाक एपहरू समावेश छन्‌</translation>
 <translation id="1348779747280417563">नाम सही भएको निश्चित गर्नुहोस्</translation>
 <translation id="1357195169723583938">हालासालै यन्त्र प्रयोग गर्ने व्यक्ति र प्रयोग गरिएको समय</translation>
+<translation id="1358187717814494928">पाना बनाउनुहोस्</translation>
 <translation id="1360955481084547712">गोप्य रूपमा ब्राउज गर्न नयाँ इन्कोग्निटो विन्डो खोल्नुहोस्</translation>
 <translation id="1363819917331173092"><ph name="SOURCE_LANGUAGE" /> भाषाका पृष्ठहरू अनुवाद गर्ने प्रस्ताव नगरियोस्</translation>
 <translation id="1364822246244961190">यो नीतिलाई रोक लगाइएको छ, यसको मानलाई बेवास्ता गरिने छ।</translation>
@@ -198,6 +202,7 @@
 <translation id="1640244768702815859"><ph name="BEGIN_LINK" />साइटको गृहपृष्ठमा गई हेर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="1641976391427233992">आउटपुट यति समयसम्म विलम्बित गर्नुहोस्:</translation>
 <translation id="164212631332220697">चेकआउटका बेला <ph name="CARD_DETAIL" /> प्रयोग गरी भुक्तानी गर्नुहोस्।</translation>
+<translation id="1642410292376109062">"Google खाताको पासवर्ड बदल्नुहोस्" बटन, आफ्नो Google खाताको पासवर्ड बदल्न Enter थिच्नुहोस्</translation>
 <translation id="1644574205037202324">इतिहास</translation>
 <translation id="1645368109819982629">असमर्थित प्रोटोकल</translation>
 <translation id="1652415888492971589">JIS B8</translation>
@@ -207,6 +212,7 @@
 <translation id="1663943134801823270">कार्ड र ठेगानाहरू Chrome बाट प्राप्त भएका हुन्। तपाईं <ph name="BEGIN_LINK" />सेटिङहरू<ph name="END_LINK" />मा गई तिनीहरूलाई व्यवस्थित गर्न सक्नुहुन्छ।</translation>
 <translation id="1671391448414634642">अब उप्रान्त <ph name="SOURCE_LANGUAGE" /> भाषाका पृष्ठहरूलाई <ph name="TARGET_LANGUAGE" /> भाषामा अनुवाद गरिने छ।</translation>
 <translation id="1676269943528358898"><ph name="SITE" /> ले सामान्यतया तपाईँको जानकारीको रक्षा गर्न इन्क्रिप्सनको प्रयोग गर्छ। Google Chrome ले यस पटक <ph name="SITE" />सँग जडान गर्न प्रयास गर्दा वेबसाइटले असामान्य र गलत प्रमाणहरू पठायो। यस्तो आक्रमणकारीले <ph name="SITE" /> हुने बहाना गर्न प्रयत्न गर्दा वा  Wi-Fi साइन इन स्क्रिनले जडानलाई  अवरोध पुर्याउँदा हुन सक्छ। कुनै पनि डेटा आदान प्रदान हुन अघि Google Chrome ले जडान रोकेकाले तपाईँको जाकारी अझैं सुरक्षित छ।</translation>
+<translation id="1677733453456569361"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome Dino गेम खेल्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1682696192498422849">पहिले छोटो किनारा</translation>
 <translation id="168693727862418163">यो नीतिको मान यसको स्किमासँग मिलेन। त्यसकारण यसलाई बेवास्ता गरिने छ।</translation>
 <translation id="168841957122794586">सर्भर प्रमाणपत्रले कमजोर क्रिप्टोग्राफिक कुञ्जी समावेश गर्छ।</translation>
@@ -248,6 +254,7 @@
 <translation id="1778646502362731194">JIS B0</translation>
 <translation id="1787142507584202372">तपाईंका खुला ट्याबहरू यहाँ देखा पर्छन्</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
+<translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="1798447301915465742"><ph name="MULTIPLE_ACTIONS_FOCUSED_FRIENDLY_MATCH_TEXT" />, एकभन्दा बढी कार्य गर्न सकिन्छ, एक एक गरी प्रत्येक कार्य गर्न Tab थिच्नुहोस्</translation>
 <translation id="1800473098294731951">B9</translation>
 <translation id="1803264062614276815">कार्डवालाको नाम</translation>
@@ -270,6 +277,7 @@
 <translation id="1898423065542865115">फिल्टर गर्दै</translation>
 <translation id="1901443836186977402">{1,plural, =1{यो सर्भरले यो <ph name="DOMAIN" /> हो भन्ने पुष्टि गर्न सकेन; यसको सुरक्षासम्बन्धी प्रमाणपत्रको म्याद अघिल्लो दिन सकिएको थियो। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा अवरोध गरिरहेका कारण यसो भएको हुन सक्छ। तपाईंको कम्प्युटरको घडीलाई हाल <ph name="CURRENT_DATE" /> मा सेट गरिएको छ। त्यो उपयुक्त देखियो? देखिएन भने तपाईंले आफ्नो प्रणालीको घडी मिलाएर यो पृष्ठलाई पुन:ताजा गर्नु पर्छ।}other{यो सर्भरले यो <ph name="DOMAIN" /> हो भनेर प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रको म्याद # दिन अघि सकिएको थियो। गलत कन्फिगुरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा अवरोध गरिरहेका कारण यसो भएको हुन सक्छ। तपाईंको कम्प्युटरको घडी हाल <ph name="CURRENT_DATE" /> मा सेट गरिएको छ। त्यो उपयुक्त देखियो? देखिएन भने तपाईंले आफ्नो प्रणालीको घडी मिलाएर यो पृष्ठलाई पुन:ताजा गर्नु पर्छ।}}</translation>
 <translation id="1902576642799138955">वैधता अवधि</translation>
+<translation id="1906155288650175567">"नयाँ टिपोट बनाउनुहोस्" बटन, Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउन Enter थिच्नुहोस्</translation>
 <translation id="1908217026282415406">क्यामेराको प्रयोग र चाल</translation>
 <translation id="191374271204266022">JSON ढाँचामा कपी गर्नुहोस्</translation>
 <translation id="1914326953223720820">सेवा अन्जिप गर्नुहोस्</translation>
@@ -322,6 +330,7 @@
 <translation id="2108755909498034140">आफ्नो कम्प्युटर पुनः सुरु गर्नुहोस्</translation>
 <translation id="2111166930115883695">प्ले गर्न space थिच्नुहोस्</translation>
 <translation id="2111256659903765347">Super-A</translation>
+<translation id="2112529237938317174">अनुमतिसम्बन्धी विवरण देखाइऊन्</translation>
 <translation id="2113977810652731515">कार्ड</translation>
 <translation id="2114841414352855701">यसलाई <ph name="POLICY_NAME" /> द्वारा ओभरराइड गरिएको हुनाले उपेक्षा गरियो।</translation>
 <translation id="2119505898009119320">जारी गरिएको सङ्गठन: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
@@ -368,6 +377,7 @@
 <translation id="2270484714375784793">फोन नम्बर</translation>
 <translation id="2276057643614339130">मुद्रणको आधार</translation>
 <translation id="2277103315734023688">अगाडि जानुहोस्</translation>
+<translation id="2277753418458118549">कनेक्सनका विवरण देखाइऊन्</translation>
 <translation id="2283340219607151381">ठेगाना सुरक्षित गरी फारम भर्नुहोस्</translation>
 <translation id="2283447177162560884">'<ph name="PAGE_TITLE" />' मेटाइएको छ</translation>
 <translation id="2288422996159078444">तपाईंले टाइप गर्ने हरेक कुरा, तपाईंले हेर्ने हरेक पृष्ठ वा तपाईंले वेबमा गर्ने अन्य कुनै पनि गतिविधिमाथि निगरानी राखिन्छ र यी साइटका सामग्री तपाईंले थाहै नपाई परिवर्तन गर्न सकिन्छ।</translation>
@@ -379,6 +389,7 @@
 <translation id="2298855485018661510">'कुकीहरू व्यवस्थापन गर्नुहोस्' नामक बटन, Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्न Enter थिच्नुहोस्</translation>
 <translation id="2300306941146563769">अपलोड नगरिएको</translation>
 <translation id="2310021320168182093">Chou2 (Envelope)</translation>
+<translation id="2314184656092908234">"इन्कोग्निटो विन्डो बन्द गर्नुहोस्" बटन, हालको इन्कोग्निटो प्रोफाइलका सबै इन्कोग्निटो विन्डो बन्द गर्न Enter थिच्नुहोस्</translation>
 <translation id="2316887270356262533">१ एम.बि. भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> लाई एक-पटके टेक्स्ट म्यासेज र पासवर्ड आवश्यक हुन्छ।</translation>
 <translation id="2328651992442742497">अनुमति दिइयोस् (डिफल्ट)</translation>
@@ -410,6 +421,8 @@
 <translation id="2413155254802890957">पुरानो</translation>
 <translation id="2413528052993050574">यो सर्भरले यो <ph name="DOMAIN" /> को भनि प्रमाणित गर्न सकेन; यसको सुरक्षा प्रमाणपत्रलाई रद्द गरिएको हुन सक्छ। यो कुनै एउटा मिसकन्फिगरेसन वा कुनै आक्रमणकारीले तपाईंको जडानमा गरेको हस्तक्षेपको कारणले गर्दा भएको हुन सक्छ।</translation>
 <translation id="2414886740292270097">अँध्यारो</translation>
+<translation id="2417466718237453711">हालको इन्कोग्निटो प्रोफाइलका सबै इन्कोग्निटो विन्डो बन्द गर्नुहोस्</translation>
+<translation id="2430968933669123598">Google खाता व्यवस्थापन गर्नुहोस्, आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्न Enter थिच्नुहोस्</translation>
 <translation id="2438874542388153331">दायाँतिर चार प्वाल</translation>
 <translation id="245044156129055925">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium तपाईंलाई अहिले नै आफ्नो पासवर्ड परिवर्तन गर्न सिफारिस गर्दछ।</translation>
 <translation id="2463739503403862330">पूर्ण जानकारी भर्नुहोस्</translation>
@@ -433,6 +446,7 @@
 <translation id="2512101340618156538">अनुमति नदिइयोस् (डिफल्ट)</translation>
 <translation id="2515629240566999685">आफ्नो क्षेत्रको सिग्नल जाँच गर्नुहोस्</translation>
 <translation id="2521385132275182522">फेदको दायाँपट्टि स्टिच</translation>
+<translation id="2521736961081452453">फाराम बनाउनुहोस्</translation>
 <translation id="2523886232349826891">यो डिभाइसमा भने यस कार्डलाई अझै पनि सुरक्षित गरिन्छ</translation>
 <translation id="2524461107774643265">थप जानकारी थप्नुहोस्</translation>
 <translation id="2529899080962247600">यो फिल्डमा <ph name="MAX_ITEMS_LIMIT" /> भन्दा बढी प्रविष्टि हुनु हुँदैन। थप सबै प्रविष्टि बेवास्ता गरिने छन्।</translation>
@@ -475,6 +489,7 @@
 <translation id="2676271551327853224">Roc-8K</translation>
 <translation id="2677748264148917807">छोड्नुहोस्</translation>
 <translation id="2684561033061424857">11x12</translation>
+<translation id="2686059030904417278">"Chrome Dino गेम खेल्नुहोस्" बटन, Chrome Dino गेम खेल्न Enter थिच्नुहोस्</translation>
 <translation id="2687555958734450033">सबैभन्दा मिल्ने</translation>
 <translation id="2688969097326701645">अँ, जारी राख्नुहोस्</translation>
 <translation id="2691924980723297736">सुरक्षासम्बन्धी चेतावनी</translation>
@@ -552,6 +567,7 @@
 <translation id="2991174974383378012">वेबसाइटहरूसँग साझेदारी</translation>
 <translation id="2991571918955627853">उक्त वेबसाइटले HSTS प्रयोग गर्ने हुनाले तपाईं अहिले नै <ph name="SITE" /> मा जान सक्नुहुन्न। नेटवर्कसम्बन्धी त्रुटि र आक्रमणहरू सामान्यतया अस्थायी हुन्छन्, त्यसैले यो पृष्ठले पछि सम्भवतः काम गर्नसक्नेछ।</translation>
 <translation id="2995517112308048736">फाइलको आकार:</translation>
+<translation id="2997344996471412501">Chrome Dino खेल्नुहोस्</translation>
 <translation id="3002501248619246229">इनपुट ट्रेको मिडिया जाँच्नुहोस्</translation>
 <translation id="3005723025932146533">बचत गरिएको प्रति देखाउनुहोस्</translation>
 <translation id="3008447029300691911"><ph name="CREDIT_CARD" /> को CVC प्रविष्टि गर्नुहोस्। तपाईंले पुष्टि गर्ने बित्तिकै, तपाईंको कार्डका विवरणहरू यस साइटमा साझेदारी गरिने छन्।</translation>
@@ -612,6 +628,7 @@
 <translation id="3234666976984236645">सधैं यस साइटमा महत्वपूर्ण सामग्री पत्ता लगाउनुहोस्</translation>
 <translation id="3249845759089040423">सानदार</translation>
 <translation id="3252266817569339921">फ्रेन्च</translation>
+<translation id="3259648571731540213"><ph name="CREATE_GOOGLE_CALENDAR_EVENT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3266793032086590337">मान (बेमेल)</translation>
 <translation id="3268451620468152448">ट्याबहरू खोल्नुहोस्</translation>
 <translation id="3270847123878663523">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
@@ -733,6 +750,7 @@
 <translation id="3640766068866876100">Index-4x6-Ext</translation>
 <translation id="3642638418806704195">एप:</translation>
 <translation id="3650584904733503804">प्रमाणीकरण सफल भयो</translation>
+<translation id="3655241534245626312">अनुमतिसम्बन्धी सेटिङमा जानुहोस्</translation>
 <translation id="3655670868607891010">यदि तपाईं यो बारम्बार रूपमा देखिरहनुभएको छ भने, यिनीहरू गर्ने प्रयास गर्नुहोस् <ph name="HELP_LINK" />।</translation>
 <translation id="3658742229777143148">संशोधन</translation>
 <translation id="3664782872746246217">किवर्डहरू:</translation>
@@ -753,6 +771,7 @@
 <translation id="3715597595485130451">Wi-Fi मा कनेक्ट गर्नुहोस्</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />प्रोक्सी, फायरवाल र DNS को कन्फिगरेसनलाई जाँच गर्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">यो त्रुटि उत्पन्न गराउन सक्ने एपहरूमा एन्टिभाइरस, फायरवाल र वेब-फिल्टर वा प्रोक्सी सफ्टवेयर पर्दछन्।</translation>
+<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="373042150751172459">B4 (Envelope)</translation>
 <translation id="3736520371357197498">यदि तपाईं आफ्नो सुरक्षामा भएका जोखिमहरूलाई बुझ्नुहुन्छ भने, तपाईं खतरनाक कार्यक्रमहरू हटाइनु भन्दा पहिले तपाईं <ph name="BEGIN_LINK" />यो असुरक्षित साइट भ्रमण<ph name="END_LINK" /> गर्न सक्नुहुन्छ।</translation>
 <translation id="3738166223076830879">तपाईंका एड्मिन तपाईंको ब्राउजर व्यवस्थापन गर्नुहुन्छ।</translation>
@@ -767,6 +786,7 @@
 <translation id="3765032636089507299">सुरक्षित ब्राउजिङ पृष्ठ निर्माणाधीन अवस्थामा छ।</translation>
 <translation id="3765588406864124894">मेलबक्स ९</translation>
 <translation id="3767485424735936570">एड्मिनले तोक्नुभएको नीतिअनुसार यो सामग्री <ph name="VM_NAME" /> मा कपी र पेस्ट गर्न सिफारिस गरिँदैन</translation>
+<translation id="377451872037045164"><ph name="CREATE_GOOGLE_KEEP_NOTE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="3778403066972421603">तपाईं यो कार्डलाई आफ्नो Google खाता र यस यन्त्रमा सुरक्षित गर्न चाहनुहुन्छ?</translation>
 <translation id="3780694243617746492">आउटपुट बिन</translation>
 <translation id="3781428340399460090">गाढा गुलाबी</translation>
@@ -790,6 +810,7 @@
 <translation id="3832522519263485449">बायाँपट्टि एकभन्दा बढी प्वाल</translation>
 <translation id="3835233591525155343">तपाईंको डिभाइसको प्रयोग</translation>
 <translation id="3841184659773414994">फाइल ह्यान्ड्लरहरू</translation>
+<translation id="3848487483475744267"><ph name="CREATE_GOOGLE_DOC_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Docs प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="385051799172605136">पछाडि जानुहोस्</translation>
 <translation id="3858027520442213535">मिति र समय अपडेट गर्नुहोस्</translation>
 <translation id="3881478300875776315">कम हरफ देखाउनुहोस्</translation>
@@ -841,12 +862,15 @@
 <translation id="4079302484614802869">प्रोक्सी विन्यासले .प्याक स्क्रिप्ट युआरएल प्रयोग गर्न सेट गरिएको छ, निश्चित प्रोक्सी सर्भरहरू होइन।</translation>
 <translation id="4082393374666368382">सेटिङहरू - व्यवस्थापन</translation>
 <translation id="4084120443451129199">खोज मोड, <ph name="KEYWORD_SUFFIX" /> खोज्न 'इन्टर' थिच्नुहोस्</translation>
+<translation id="4087296516249690906">"कार्यक्रम बनाउनुहोस्" बटन, Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउन Enter थिच्नुहोस्</translation>
 <translation id="4088981014127559358">सतह १ मा रहेको छविको Y सिफ्ट</translation>
 <translation id="4098354747657067197">अगाडि धोकेबाज साइट</translation>
 <translation id="4101413244023615925">पाठ र ग्राफिक</translation>
 <translation id="4103249731201008433">यन्त्र सिरियल नम्बर अवैध छ</translation>
+<translation id="4106133539597032659">"साइट बनाउनुहोस्" बटन, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन Enter थिच्नुहोस्</translation>
 <translation id="4110652170750985508">आफ्नो भुक्तानीको समीक्षा गर्नुहोस्</translation>
 <translation id="4112140312785995938">पछाडि जानुहोस्</translation>
+<translation id="4114146879518089587">साइटमा जानुहोस्</translation>
 <translation id="4116663294526079822">सधैं यस साइटमा अनुमति दिनुहोस्</translation>
 <translation id="4116701314593212016">JIS B7</translation>
 <translation id="4117700440116928470">नीति क्षेत्र समर्थित छैन।</translation>
@@ -854,6 +878,7 @@
 <translation id="4123572138124678573">फेदमा तीन प्वाल</translation>
 <translation id="4129401438321186435">{COUNT,plural, =1{अन्य १ वस्तु}other{अन्य # वस्तुहरू}}</translation>
 <translation id="4130226655945681476">नेटवर्कका केबलहरू, मोडेम र राउटरको जाँँच गर्नुहोस्</translation>
+<translation id="4134123981501319574">डकुमेन्ट बनाउनुहोस्</translation>
 <translation id="413544239732274901">थप जान्नुहोस्</translation>
 <translation id="4142935452406587478">ट्रे १०</translation>
 <translation id="4148925816941278100">अमेरिकन एक्स्प्रेस</translation>
@@ -937,6 +962,7 @@
 <translation id="4340982228985273705">यो कम्प्युटरलाई इन्टरप्राइजद्वारा व्यवस्थापन नगरिएको हुनाले नीति अनुसार Chrome को वेबस्टोरले होस्ट गरेका विस्तारहरू स्वतः स्थापना गर्न सकिन्छ। Chrome को वेबस्टोरको अद्यावधिक URL "<ph name="CWS_UPDATE_URL" />" हो।</translation>
 <translation id="4346197816712207223">स्वीकार गरिने क्रेडिट कार्डहरू</translation>
 <translation id="4346833872170306413">Roc-16K</translation>
+<translation id="4348834659292907206"><ph name="SITE" /> सँगको कनेक्सन सुरक्षित छैन</translation>
 <translation id="4349531505348777662">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome ले <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> र तपाईंले यो पासवर्ड प्रयोग गर्ने अन्य साइटहरूमा गई आफ्नो पासवर्ड अहिले नै बदल्न सिफारिस गर्छ।</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> वरपरका ब्लुटुथ यन्त्रहरू खोज्न स्क्यान गर्न चाहन्छ। निम्न यन्त्रहरू फेला परेका छन्:</translation>
 <translation id="4356973930735388585">यो साइटमा रहेका आक्रमणकारीहरूले तपाईंको कम्प्युटरमा (तस्बिर, पासवर्ड, सन्देश, र क्रेडिट कार्डहरू जस्तो) तपाईंको जानकारी चोरी गर्ने वा मेट्ने खतरनाक प्रोग्रामहरू स्थापना गर्ने प्रयास गर्न सक्छन्।</translation>
@@ -998,6 +1024,8 @@
 <translation id="4597348597567598915">आकार ८</translation>
 <translation id="4600854749408232102">C6/C5 (Envelope)</translation>
 <translation id="4606870351894164739">प्रभावशाली</translation>
+<translation id="4607603470419975064">"Chrome का सुझावहरू हेर्नुहोस्" बटन, Chrome का सुविधाहरूका बारेमा जान्न Enter थिच्नुहोस्</translation>
+<translation id="4607608436550361748">Chrome का सुझावहरू हेर्नुहोस्</translation>
 <translation id="4628948037717959914">तस्बिर</translation>
 <translation id="4631649115723685955">यो कार्डमार्फत भुक्तानी गर्दा क्यासब्याक पाइन्छ</translation>
 <translation id="4636930964841734540">जानकारी</translation>
@@ -1033,9 +1061,11 @@
 <translation id="473775607612524610">अपडेट गर्नुहोस्</translation>
 <translation id="4738601419177586157"><ph name="TEXT" /> को खोजसम्बन्धी सुझाव</translation>
 <translation id="4742407542027196863">पासवर्डहरूको व्यवस्थापन गर्नुहोस्…</translation>
+<translation id="4744514002166662487">प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="4744603770635761495">कार्यान्वयनयोग्य मार्ग</translation>
 <translation id="4749011317274908093">तपाईं इन्कोग्निटो मोडमा जानुभएको छ</translation>
 <translation id="4750917950439032686">यस साइटमा तपाईँको जानकारी (उदाहरणका लागि पासवर्ड वा क्रेडिट कार्डको नम्बर) पठाउँदा त्यो निजी रहन्छ।</translation>
+<translation id="4754461935447132332">असुरक्षित साइटका हकमा अनुमति दिइँदैन</translation>
 <translation id="4756388243121344051">&amp;इतिहास</translation>
 <translation id="4758311279753947758">सम्पर्क बारे जानकारी थप्नुहोस्</translation>
 <translation id="4761104368405085019">आफ्नो माइक्रोफोन प्रयोग गर्नुहोस्</translation>
@@ -1045,6 +1075,7 @@
 <translation id="4771973620359291008">एउटा अज्ञात त्रुटि देखापर्यो ।</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{पप-अपमाथि रोक लगाइयो}other{# पप-अपहरूमाथि रोक लगाइयो}}</translation>
 <translation id="4780366598804516005">मेलबक्स १</translation>
+<translation id="4785376858512657294">Google खाता व्यवस्थापन गर्नुहोस्</translation>
 <translation id="4785689107224900852">यो ट्याबमा लैजानुहोस्</translation>
 <translation id="4791134497475588553">स्थापना गरिएका Linux एप र यिनीहरूलाई अन्तिम पटक प्रयोग गरिएको समय</translation>
 <translation id="4792686369684665359">तपाईंले पेस गर्न लाग्नुभएको जानकारी सुरक्षित छैन</translation>
@@ -1058,12 +1089,14 @@
 <translation id="4813512666221746211">सञ्जाल त्रुटि</translation>
 <translation id="4816492930507672669">पृष्ठमा अटाउनुहोस्</translation>
 <translation id="4819347708020428563">एनोटेसनहरू डिफल्ट भ्यूमा सम्पादन गर्ने हो?</translation>
+<translation id="4825496307559726072"><ph name="CREATE_GOOGLE_SHEET_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="4825507807291741242">शक्तिशाली</translation>
 <translation id="4838327282952368871">स्वप्निल</translation>
 <translation id="484462545196658690">स्वतः</translation>
 <translation id="4850886885716139402">हेर्नुहोस्</translation>
 <translation id="485316830061041779">जर्मन</translation>
 <translation id="4854362297993841467">डेलिभरीको यो विधि उपलब्ध छैन। फरक विधि चयन गर्ने प्रयास गर्नुहोस्।</translation>
+<translation id="4854853140771946034">Google Keep प्रयोग गरी तुरुन्तै नयाँ टिपोट बनाउनुहोस्</translation>
 <translation id="4876188919622883022">सरलीकृत हेराइको सुविधा</translation>
 <translation id="4876305945144899064">कुनै पनि प्रयोगकर्ता नाम छैन</translation>
 <translation id="4877083676943085827">{COUNT,plural, =0{कुनै पनि होइन}=1{<ph name="EXAMPLE_DOMAIN_1" />}=2{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />}other{<ph name="EXAMPLE_DOMAIN_1" />, <ph name="EXAMPLE_DOMAIN_2" />, <ph name="AND_MORE" />}}</translation>
@@ -1134,8 +1167,10 @@
 <translation id="5095208057601539847">प्रदेश</translation>
 <translation id="5097099694988056070">CPU/RAM को प्रयोग जस्ता यन्त्रसम्बन्धी तथ्याङ्क</translation>
 <translation id="5097501891273180634">A2</translation>
+<translation id="5108881358339761672">यो साइट सुरक्षित छैन</translation>
 <translation id="5112422516732747637">A5</translation>
 <translation id="5115216390227830982">European-Edp</translation>
+<translation id="5115232566827194440">व्यवस्थापन गरिएका प्रतिबन्धित अतिथिको सत्रको ओभरराइड</translation>
 <translation id="5115563688576182185">(64-बिट)</translation>
 <translation id="5123063207673082822">सप्ताहान्त</translation>
 <translation id="5125394840236832993">B-Plus</translation>
@@ -1172,6 +1207,7 @@
 <translation id="5230815978613972521">B8</translation>
 <translation id="5233045608889518621">12x19</translation>
 <translation id="5250209940322997802">"नेटवर्कमा कनेक्ट गर्नुहोस्‌"</translation>
+<translation id="52517543715119994">Chrome का सुविधाहरूका बारेमा जान्नुहोस्</translation>
 <translation id="5251803541071282808">क्लाउड</translation>
 <translation id="5252000469029418751">C7 (Envelope)</translation>
 <translation id="5254043433801397071">छाप्ने सामग्री अनुकूलन गर्नुहोस्</translation>
@@ -1216,6 +1252,7 @@
 <translation id="5363309033720083897">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको सिरियल पोर्ट</translation>
 <translation id="5371425731340848620">कार्ड अपडेट गर्नुहोस्</translation>
 <translation id="5377026284221673050">"तपाईंको घडी ढिला छ" वा "तपाईंको घडी छिटो छ" अथवा "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379027395132364855">"प्रेजेन्टेसन बनाउनुहोस्" बटन, Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउन Enter थिच्नुहोस्</translation>
 <translation id="5386426401304769735">यस साइटको प्रमाणपत्र श्रृंखलामा SHA-१ प्रयोग गरी हस्ताक्षर गरिएको प्रमाणपत्र समावेश छ।</translation>
 <translation id="538659543871111977">A4-Tab</translation>
 <translation id="5396631636586785122">दायाँ किनारमा स्टिच</translation>
@@ -1373,6 +1410,7 @@
 <translation id="598637245381783098">भुक्तानी एप खोल्न सकिँदैन</translation>
 <translation id="5989320800837274978">न त निश्चित प्रोक्सी सर्भरहरू न त .प्याक स्क्रिप्ट युआरएलहरू तोकिएका छन्।</translation>
 <translation id="5992691462791905444">इन्जिनियरिङ जेड फोल्ड</translation>
+<translation id="5995727681868049093">आफ्नो Google खातामा गई तपाईंको जानकारी, गोपनीयता र सुरक्षाको व्यवस्थापन गर्नुहोस्</translation>
 <translation id="6000758707621254961">'<ph name="SEARCH_TEXT" />' मध्ये <ph name="RESULT_COUNT" /></translation>
 <translation id="6006484371116297560">क्लासिक</translation>
 <translation id="6008122969617370890">N देखि १ सम्मको क्रम</translation>
@@ -1408,6 +1446,7 @@
 <translation id="6080696365213338172">तपाइँले प्रशासक-प्रदान गरिएको प्रमाणपत्र प्रयोग गर्दै सामग्री पहुँच गर्नुभएको छ। तपाइँले <ph name="DOMAIN" /> लाई उपलब्ध गर्नुभएको लगत तपाइँको प्रशासकद्वारा अन्तर्खण्ड गर्न सकिन्छ।</translation>
 <translation id="6094273045989040137">एनोटेसन गर्नुहोस्</translation>
 <translation id="6104072995492677441">JIS B6</translation>
+<translation id="6105460996796456817">साइट बनाउनुहोस्</translation>
 <translation id="6106989379647458772"><ph name="PAGE" /> को वेबपृष्ठ अस्थायी रूपमा बन्द भएको हुन सक्छ वा त्यो स्थायी रूपमा एउटा नयाँ वेब ठेगानामा सरेको हुन सक्छ।</translation>
 <translation id="6107012941649240045">लाई जारी गरिएको</translation>
 <translation id="610911394827799129">तपाईंको Google खाताको <ph name="BEGIN_LINK" />myactivity.google.com<ph name="END_LINK" /> मा ब्राउजिङ इतिहासका अन्य ढाँचाहरू रहेका हुनसक्छन्।</translation>
@@ -1490,6 +1529,7 @@
 <translation id="6427730057873428458">गेट फोल्ड</translation>
 <translation id="6428146287756735566">Chrome को ब्राउजिङ इतिहासमा सान्दर्भिक गतिविधि हेर्न खोज्ने क्रम सुचारु गर्नुहोस्</translation>
 <translation id="6428450836711225518">आफ्नो फोन नम्बरको पुष्टि गर्नुहोस्</translation>
+<translation id="643051589346665201">Google खाताको पासवर्ड बदल्नुहोस्</translation>
 <translation id="6433490469411711332">सम्पर्क सम्बन्धी जानकारीलाई सम्पादन गर्नुहोस्</translation>
 <translation id="6433595998831338502"><ph name="HOST_NAME" /> ले जडान गर्न अस्वीकार गर्यो।</translation>
 <translation id="6440503408713884761">उपेक्षित</translation>
@@ -1509,6 +1549,7 @@
 <translation id="6493924760403974580">यो एप यो आकारमा मात्र चल्छ।</translation>
 <translation id="6499038740797743453">पासवर्ड रिसेट गर्ने हो?</translation>
 <translation id="6502991525169604759">तपाईंले गर्नुभएका परिवर्तन लागू नगरी</translation>
+<translation id="6505563257409036437">इन्कोग्निटो विन्डोहरू बन्द गर्नुहोस्</translation>
 <translation id="6508722015517270189">Chrome पुनः सुरु गर्नुहोस्</translation>
 <translation id="6517596291481585650">चेतावनी: यो नीति कुनै सूची नभएका कारण यसलाई नीतिले तोकेअनुसार सूचीका रूपमा गाभिएन।</translation>
 <translation id="6518133107902771759">रुजू गर्नुहोस्</translation>
@@ -1606,6 +1647,7 @@
 <translation id="6945221475159498467">चयन गर्नुहोस्</translation>
 <translation id="6948051842255602737">गेम सकियो, तपाईंले <ph name="SCORE" /> अङ्क ल्याउनुभएको छ।</translation>
 <translation id="6948701128805548767">पिकअपका विधि र मापदण्डहरू हेर्न, ठेगाना चयन गर्नुहोस्</translation>
+<translation id="6949479070119158594">यो साइटमा HTTPS नचल्ने भएकाले तपाईंलाई यो चेतावनी देखाइएको हो।</translation>
 <translation id="6949872517221025916">पासवर्ड रिसेट गर्नुहोस्</translation>
 <translation id="6950684638814147129">JSON को मान पार्स गर्दा त्रुटि भयो: <ph name="ERROR" /></translation>
 <translation id="695140971690006676">सबै रिसेट गर्नुहोस्</translation>
@@ -1616,6 +1658,7 @@
 <translation id="6965978654500191972">यन्त्र</translation>
 <translation id="696703987787944103">बोधात्मक</translation>
 <translation id="6970216967273061347">जिल्ला</translation>
+<translation id="6971439137020188025">Google Slides प्रयोग गरी तुरुन्तै नयाँ प्रेजेन्टेसन बनाउनुहोस्</translation>
 <translation id="6972629891077993081">HID यन्त्रहरू</translation>
 <translation id="6973656660372572881">दुवै तय प्रोक्सी सर्भर र एक .Pac स्क्रिप्ट यूआरएल निर्दिष्ट गरिएको छ।</translation>
 <translation id="6973932557599545801">माफ गर्नुहोस्, म मद्दत गर्न सक्दिन, कृपया अब आफैँ अघि बढ्नुहोस्।</translation>
@@ -1698,6 +1741,7 @@
 <translation id="725866823122871198"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" />मा एक निजी जडान स्थापना गर्न सक्दैन किनकि तपाईँको कम्प्युटरको मिति र समय (<ph name="DATE_AND_TIME" />) गलत छन्।</translation>
 <translation id="7260504762447901703">पहुँच रद्द गर्नुहोस्</translation>
 <translation id="7275334191706090484">व्यवस्थित पृष्ठमञ्जूषाहरू</translation>
+<translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफ्नो Google खाताको पासवर्ड बदल्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="7292031607255951991">प्रापकको नाम</translation>
 <translation id="7298195798382681320">सिफारिस गरिएको</translation>
 <translation id="7300012071106347854">कोबाल्ट निलो</translation>
@@ -1762,7 +1806,9 @@
 <translation id="7473891865547856676">पर्दैन, धन्यवाद</translation>
 <translation id="7481312909269577407">अगाडि</translation>
 <translation id="7485870689360869515">कुनैपनि डाटा भेटिएन।</translation>
+<translation id="7487775554425430039">Chrome Dino गेम खेल्नुहोस्</translation>
 <translation id="7495528107193238112">यो सामग्रीलाई रोक लगाइएको छ। यो समस्या समाधान गर्न उक्त साइटका मालिकसँग सम्पर्क गर्नुहोस्।</translation>
+<translation id="7497998058912824456">"डकुमेन्ट बनाउनुहोस्" नामक बटन, Google डकुमेन्ट प्रयोग गरी तुरुन्तै नयाँ डकुमेन्ट बनाउन Enter थिच्नुहोस्</translation>
 <translation id="7503664977220660814">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium तपाईंलाई अहिले नै <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> र तपाईंले हाल यो पासवर्ड प्रयोग गर्ने अन्य साइटका सुरक्षित गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="7508255263130623398">फिर्ता गरिएको नीति सम्बन्धी यन्त्र खाली छ वा हालको यन्त्रको id सँग मेल खाँदैन</translation>
 <translation id="7508870219247277067">गाढा हरियो</translation>
@@ -1794,6 +1840,7 @@
 <translation id="7575207903026901870">सुझावको बटन हटाउनुहोस्, यो सुझाव हटाउन Enter थिच्नुहोस्</translation>
 <translation id="7578104083680115302">तपाईंले Google मार्फत सुरक्षित गर्नुभएका कार्डहरू प्रयोग गर्दै साइट र एपहरूमा द्रुत रूपमा भुक्तानी गर्नुहोस्।</translation>
 <translation id="7581199239021537589">सतह २ मा रहेको छविको Y सिफ्ट</translation>
+<translation id="7582602800368606489">Google पात्रो प्रयोग गरी तुरुन्तै नयाँ कार्यक्रम बनाउनुहोस्</translation>
 <translation id="7591636454931265313"><ph name="EMBEDDED_URL" /> <ph name="TOP_LEVEL_URL" /> मा कुकी र साइटको डेटा प्रयोग गर्न चाहन्छ</translation>
 <translation id="7592362899630581445">सर्भरको प्रमाणपत्रले नाम प्रतिबन्धहरूलाई उल्लङ्घन गर्छ।</translation>
 <translation id="7598391785903975535"><ph name="UPPER_ESTIMATE" /> भन्दा कम</translation>
@@ -1818,6 +1865,7 @@
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
 <translation id="7662298039739062396">कुनै विस्तारले नियन्त्रित गरेको सेटिङ</translation>
 <translation id="7663736086183791259">प्रमाणपत्र <ph name="CERTIFICATE_VALIDITY" /></translation>
+<translation id="7666397036351755929">इन्कोग्निटो मोडमा अनुमति दिइँदैन</translation>
 <translation id="7667346355482952095">फिर्ता गरिएको नीतिको टोकन खाली छ वा हालको टोकनसँग मेल खाँदैन</translation>
 <translation id="7668654391829183341">अज्ञात यन्त्र</translation>
 <translation id="7669271284792375604">यो साइटमा रहेका आक्रमणकारीहरूले तपाईंलाई झुक्याएर (उदाहरणका लागि तपाईंको गृहपृष्ठ परिवर्तन गरेर वा तपाईं जाने साइटहरूमा अतिरिक्त विज्ञापनहरू देखाएर) तपाईंको ब्राउजिङको अनुभवलाई हानि पुर्‍याउने प्रोग्रामहरू स्थापना गर्न लगाउने प्रयास गर्न सक्छन्।</translation>
@@ -1837,6 +1885,7 @@
 <translation id="7716375162095500223">हालसम्म पनि अपलोड गरिएको छैन वा बेवास्ता गरिएको छ</translation>
 <translation id="7716424297397655342">यो साइट क्यासबाट लोड गर्न सकिँदैन</translation>
 <translation id="7723047071702270851">कार्ड सम्पादन गर्नुहोस्</translation>
+<translation id="7734285854693414638">Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउनुहोस्</translation>
 <translation id="773466115871691567"><ph name="SOURCE_LANGUAGE" /> मा रहेका पृष्ठहरूलाई सधैँ अनुवाद गर्नुहोस्‌</translation>
 <translation id="7740996059027112821">मानक</translation>
 <translation id="774634243536837715">खतरनाक सामग्रीमाथि रोक लगाइयो।</translation>
@@ -1870,6 +1919,7 @@
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">साइट छाड्ने हो?</translation>
 <translation id="7865448901209910068">उत्कृष्ट गति</translation>
+<translation id="7871445724586827387">आफ्नो Google खाताको पासवर्ड बदल्नुहोस्</translation>
 <translation id="7874263914261512992">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chrome तपाईंलाई अहिले नै <ph name="WEBSITE_1" />, <ph name="WEBSITE_2" /> र तपाईंले हाल यो पासवर्ड प्रयोग गर्ने अन्य साइटका सुरक्षित गरिएका पासवर्डहरूको जाँच गर्न सिफारिस गर्छ।</translation>
 <translation id="7878562273885520351">तपाईंको पासवर्ड जोखिममा पर्न सक्छ</translation>
 <translation id="7880146494886811634">ठेगाना सेभ गर्नुहोस्</translation>
@@ -1891,6 +1941,7 @@
 <translation id="7938958445268990899">सर्भरको प्रमाणपत्र</translation>
 <translation id="7942349550061667556">रातो</translation>
 <translation id="7947285636476623132">आफ्नो म्याद सकिने वर्षको जाँच गरी फेरि प्रयास गर्नुहोस्</translation>
+<translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome का सुविधाहरूका बारेमा जान्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="7950027195171824198">Chrome का सेटिङमा गई कुकीसम्बन्धी आफ्ना प्राथमिकताहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7953569069500808819">सिरानको किनारमा स्टिच</translation>
@@ -1911,6 +1962,7 @@
 <translation id="8012116502927253373">{NUM_CARDS,plural, =1{यो कार्ड र यसको बिलिङ ठेगाना सुरक्षित गरिने छ। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यसको प्रयोग गर्न सक्नु हुने छ।}other{यी कार्ड र यिनका बिलिङ ठेगाना सुरक्षित गरिने छन्। तपाईं <ph name="USER_EMAIL" /> मार्फत साइन इन हुँदा यिनको प्रयोग गर्न सक्नु हुने छ।}}</translation>
 <translation id="8025119109950072390">यस साइटका आक्रमणकारीहरूले तपाईंलाई झुक्याएर सफ्टवेयर स्थापना गर्ने वा तपाईंका व्यक्तिगत जानकारी (उदाहरणका लागि पासवर्ड, फोन नम्बर वा क्रेडिट कार्डहरू) खुलासा गर्ने जस्ता कार्यहरू गराउन सक्छन्।</translation>
 <translation id="8026334261755873520">ब्राउजिङ लगत खालि गर्नुहोस्</translation>
+<translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Forms प्रयोग गरी तुरुन्तै नयाँ फाराम बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8028960012888758725">काम सकेपछि छाँटकाँट गर्नुहोस्</translation>
 <translation id="8034522405403831421">यो पृष्ठ <ph name="SOURCE_LANGUAGE" /> मा छ। यसलाई <ph name="TARGET_LANGUAGE" /> मा अनुवाद गर्ने?</translation>
 <translation id="8035152190676905274">कलम</translation>
@@ -1925,6 +1977,7 @@
 <translation id="8067872629359326442">तपाईंले भर्खरै कुनै भ्रामक साइटमा आफ्नो पासवर्ड प्रविष्टि गर्नुभएको छ। Chromium ले मद्दत गर्न सक्छ। आफ्नो पासवर्ड परिवर्तन गर्न र आफ्नो खाता जोखिममा हुन सक्छ भनेर Google लाई सूचित गर्न खाता सेभ गर्नुहोस् नामक विकल्पमा क्लिक गर्नुहोस्।</translation>
 <translation id="8070439594494267500">एपको आइकन</translation>
 <translation id="8074253406171541171">10x13 (Envelope)</translation>
+<translation id="8075736640322370409">Google Sheets प्रयोग गरी तुरुन्तै नयाँ पाना बनाउनुहोस्</translation>
 <translation id="8075898834294118863">साइटसम्बन्धी सेटिङ मिलाउनुहोस्</translation>
 <translation id="8078141288243656252">घुमाइएका बेला एनोटेसन गर्न मिल्दैन</translation>
 <translation id="8079031581361219619">साइट पुनः लोड गर्ने हो?</translation>
@@ -2047,6 +2100,7 @@
 <translation id="8503559462189395349">Chrome का पासवर्डहरू</translation>
 <translation id="8503813439785031346">एक-पटके टेक्स्ट म्यासेज</translation>
 <translation id="8507227106804027148">कमान्ड लाइन</translation>
+<translation id="8507258803558481268"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, हालको इन्कोग्निटो प्रोफाइलका सबै इन्कोग्निटो विन्डो बन्द गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="8508648098325802031">खोज आइकन</translation>
 <translation id="8511402995811232419">कुकीहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
@@ -2148,6 +2202,7 @@
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8957210676456822347">क्याप्टिभ पोर्टल प्राधिकरण</translation>
 <translation id="8962950042226115166">शङ्कास्पद साइट</translation>
+<translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>
 <translation id="8963213021028234748"><ph name="MARKUP_1" />सुझावहरू:<ph name="MARKUP_2" />तपाईँसँग डेटा जडान रहेको निश्चित गर्नुहोस्<ph name="MARKUP_3" />यो वेबपृष्ठ पछि पुन:लोड गर्नुहोस्<ph name="MARKUP_4" />तपाईँले प्रविष्ट गर्नुभएको ठेगानाको जाँच गर्नुहोस्<ph name="MARKUP_5" /></translation>
 <translation id="8968766641738584599">कार्ड सेभ गर्नुहोस्</translation>
 <translation id="8971063699422889582">सर्भरको प्रमाणपत्रको म्याद सकिएको छ।</translation>
@@ -2236,6 +2291,7 @@
 <translation id="939736085109172342">नयाँ फोल्डर</translation>
 <translation id="945522503751344254">पृष्ठपोषण पठाउनुहोस्</translation>
 <translation id="945855313015696284">तल दिइएको जानकारीको जाँच गर्नुहोस् र सबै अमान्य कार्ड मेट्नुहोस्</translation>
+<translation id="947370374845726940"><ph name="CREATE_GOOGLE_SITE_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google Sites प्रयोग गरी तुरुन्तै नयाँ साइट बनाउन Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="950736567201356821">सिरानमा तीन प्वाल</translation>
 <translation id="961663415146723894">फेदको बाइन्ड</translation>
 <translation id="962484866189421427">यो सामग्रीले आफूलाई अर्कै रूपमा प्रस्तुत गर्ने भ्रामक अनुप्रयोगहरूको स्थापना गर्न वा तपाईंलाई ट्र्याक गर्ने कार्यमा प्रयोग गर्न सकिने डेटाको सङ्कलन गर्ने प्रयास गर्न सक्छ। <ph name="BEGIN_LINK" />जे भए पनि देखाउनुहोस्<ph name="END_LINK" /></translation>

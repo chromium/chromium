@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">ലിങ്ക് സൃഷ്‌ടിക്കാനാകുന്നില്ല</translation>
 <translation id="2800683595868705743">ടാബ് സ്വിച്ചർ വിടുക</translation>
 <translation id="2815198996063984598">2. ഡിഫോൾട്ട് ബ്രൗസർ ആപ്പ് ടാപ്പ് ചെയ്യുക</translation>
+<translation id="2820289420301699633">നിങ്ങളുടെ അഡ്‌മിൻ ആണ് Chrome നിയന്ത്രിക്കുന്നത്, അവർക്ക് അതിന്റെ ഡാറ്റ ആക്‌സസ് ചെയ്യാനാകും</translation>
 <translation id="2830972654601096923">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">പ്രാഥമിക സമന്വയ സജ്ജീകരണം പൂർത്തിയാക്കിയിട്ടില്ല</translation>
@@ -268,7 +269,6 @@
 <translation id="3607167657931203000">സ്വയമേവ പൂരിപ്പിക്കൽ ഡാറ്റ</translation>
 <translation id="3609785682760573515">സമന്വയിപ്പിക്കുന്നു...</translation>
 <translation id="3638472932233958418">മുമ്പ് ലോഡുചെയ്‌ത വെബ്‌പേജുകൾ</translation>
-<translation id="3648013730801605241">നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ, <ph name="BEGIN_LINK" />തിരയൽ ചരിത്രവും<ph name="END_LINK" /> <ph name="BEGIN_LINK" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റിയും<ph name="END_LINK" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. നിങ്ങൾക്ക് ഏതുസമയത്തും ഇവ ഇല്ലാതാക്കാം.</translation>
 <translation id="3661160521073045932">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ലഭ്യമാണ്</translation>
 <translation id="3670030362669914947">നമ്പർ</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" /> ഫോൾഡറിലേക്ക് ബുക്ക്മാർക്ക് ചെയ്‌തു</translation>
@@ -648,10 +648,6 @@
 <translation id="734758817008927353">കാർഡ് സംരക്ഷിക്കാനുള്ള ഓപ്ഷനുകൾ</translation>
 <translation id="7348502496356775519">ബുക്ക്‌മാർക്ക് ചെയ്യുക</translation>
 <translation id="7353432112255316844">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് പരിശോധിച്ചുറപ്പിക്കുക</translation>
-<translation id="7376492662175718683">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യില്ല. നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റി<ph name="END_LINK" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. നിങ്ങൾക്ക് ഏതുസമയത്തും ഇവ ഇല്ലാതാക്കാം.
-
-        
-<ph name="DSE_NAME" /> ആണ് നിങ്ങളുടെ തിരയൽ യന്ത്രം. ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള അതിലെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="7383797227493018512">വായനാ ലിസ്‌റ്റ്</translation>
 <translation id="7398893703713203428">ലിങ്ക് സൃഷ്ടിക്കുക</translation>
 <translation id="739941347996872055">മുമ്പത്തെ ടാബ്</translation>
@@ -794,10 +790,6 @@
 <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8840513115188359703">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ആകില്ല.</translation>
-<translation id="8851300969441660830">നിങ്ങൾ Google അക്കൗണ്ടിൽ നിന്ന് സൈൻ ഔട്ട് ചെയ്യില്ല. നിങ്ങൾ സൈൻ ഇൻ ചെയ്‌തിരിക്കുമ്പോൾ <ph name="BEGIN_LINK" />മറ്റ് തരത്തിലുള്ള ആക്റ്റിവിറ്റി<ph name="END_LINK" /> Google അക്കൗണ്ടിൽ സംരക്ഷിച്ചേക്കാം. നിങ്ങൾക്ക് ഏതുസമയത്തും ഇവ ഇല്ലാതാക്കാം.
-
-
-ബാധകമെങ്കിൽ, നിങ്ങളുടെ തിരയൽ ചരിത്രം ഇല്ലാതാക്കാനുള്ള തിരയൽ യന്ത്രത്തിന്റെ നിർദ്ദേശങ്ങൾ കാണുക.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} ടാബ്}other{{count} ടാബുകൾ}}</translation>
 <translation id="8870413625673593573">സമീപകാലത്ത് അടച്ചവ</translation>
 <translation id="8876882697946675716">നിങ്ങളുടെ ഉപകരണങ്ങൾ സമന്വയിപ്പിച്ച് നിലനിർത്തുക</translation>

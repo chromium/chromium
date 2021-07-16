@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
 <translation id="2161394479394250669">Cancel·la la tasca d'impressió</translation>
+<translation id="2209788852729124853">Restableix els comptadors de trànsit</translation>
 <translation id="2217935453350629363">Velocitat actual</translation>
 <translation id="2224337661447660594">Sense connexió a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Bateria carregada.</translation>
 <translation id="360565022852130722">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP 802.1x</translation>
 <translation id="3689839747745352263">Prova <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Torna a escanejar la pàgina}=1{Torna a escanejar la pàgina {PAGE_NUMBER}}other{Torna a escanejar les pàgines {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ressenyes)</translation>
 <translation id="3748026146096797577">Desconnectat</translation>
 <translation id="3749289110408117711">Nom del fitxer</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">La meva unitat</translation>
 <translation id="4429881212383817840">El tiquet de Kerberos caducarà aviat</translation>
 <translation id="4431821876790500265">Mostra l'informe</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Suprimeix la pàgina}=1{Suprimeix la pàgina {PAGE_NUMBER}}other{Suprimeix la pàgina {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Contrasenya antiga</translation>
 <translation id="4453205916657964690">Màscara de subxarxa</translation>
 <translation id="4454245904991689773">Desa a</translation>
@@ -248,6 +251,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="5916084858004523819">Prohibit</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{El fitxer s'ha escanejat correctament i s'ha desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Els fitxers s'han escanejat correctament i s'han desat a <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">No s'ha trobat el fitxer</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">L'alimentador de documents de l'escàner està buit. Afegeix documents i torna-ho a provar.</translation>
 <translation id="6040143037577758943">Tanca</translation>
 <translation id="6040852767465482106">Identitat anònima</translation>
@@ -285,6 +289,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="6527081081771465939">Protocol de seguretat Wi-Fi desconegut</translation>
 <translation id="65587193855025101">Finestra plana</translation>
 <translation id="6564646048574748301">Error: no es pot accedir a la impressora</translation>
+<translation id="6574762126505704998">Emplena</translation>
 <translation id="6603230386432466813">Tens problemes per connectar-te?</translation>
 <translation id="6618744767048954150">Comprovació en curs</translation>
 <translation id="6620487321149975369">Les tasques d'impressió es mostraran a l'historial tret que se suprimeixin manualment</translation>
@@ -316,6 +321,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7216409898977639127">Proveïdor de dades mòbils</translation>
 <translation id="7271040990581020067">L'escàner s'està utilitzant en aquests moments. Torna-ho a provar més tard.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Col·leccions de fons de pantalla</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositius de xarxa</translation>
 <translation id="7359657277149375382">Tipus de fitxer</translation>
@@ -332,6 +338,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Temps restant: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Més informació al Centre d'ajuda</translation>
+<translation id="763165478673169849">Hora del darrer restabliment</translation>
 <translation id="7648838807254605802">La latència d'HTTPS és alta</translation>
 <translation id="7658239707568436148">Cancel·la</translation>
 <translation id="7690294790491645610">Confirma la contrasenya nova</translation>
@@ -353,6 +360,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8075838845814659848">Càrrega restant</translation>
 <translation id="808894953321890993">Canvia la contrasenya</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Sol·licita els comptadors de trànsit</translation>
 <translation id="8206859287963243715">Cel·lular</translation>
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8214184102975786227">Escaneja múltiples pàgines en un PDF</translation>
@@ -374,8 +382,10 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8475690821716466388">La xarxa Wi-Fi està protegida amb el protocol dèbil WEP PSK</translation>
 <translation id="8477551185774834963">La latència DNS supera lleugerament el llindar permès</translation>
 <translation id="8483248364096924578">Adreça IP</translation>
+<translation id="8498220429738806196">Comptadors de trànsit</translation>
 <translation id="8503813439785031346">Nom d'usuari</translation>
 <translation id="8503836310948963452">Només queden uns quants minuts...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">El teu operador pot requerir aquesta opció per connectar-te a la seva xarxa. Contacta-hi per obtenir-ne més informació.</translation>
 <translation id="8576249514688522074">No s'ha inicialitzat</translation>
 <translation id="8620617069779373398">Estat d'itinerància</translation>
@@ -392,6 +402,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fons de pantalla</translation>
 <translation id="8845001906332463065">Obteniu ajuda</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">La prova s'ha superat</translation>
 <translation id="8898840733695078011">Intensitat del senyal</translation>
 <translation id="8910721771319628100">La xarxa predeterminada supera el llindar de latència</translation>
@@ -407,6 +418,7 @@ Toca el micròfon per demanar-me qualsevol cosa.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Ús actual</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualitza el tiquet de: <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">S'està cercant la pàgina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloqueja</translation>

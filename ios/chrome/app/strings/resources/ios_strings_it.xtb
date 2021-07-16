@@ -175,6 +175,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2783054063075604403">Impossibile creare il link</translation>
 <translation id="2800683595868705743">Chiudi selettore di schede</translation>
 <translation id="2815198996063984598">2. Tocca App browser predefinita</translation>
+<translation id="2820289420301699633">L'amministratore ha il controllo di Chrome e può accedere ai relativi dati</translation>
 <translation id="2830972654601096923">Gestisci indirizzi…</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Configurazione iniziale della sincronizzazione non terminata</translation>
@@ -195,6 +196,7 @@ I siti non possono utilizzare i cookie per conoscere la tua attività di navigaz
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2952581218264071393">1. Apri le Impostazioni di Chrome</translation>
 <translation id="2958718410589002129">Password</translation>
+<translation id="2961210776189273067">Titolo</translation>
 <translation id="2964349545761222050">Blocca cookie di terze parti</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
 <translation id="2975121486251958312">Disponibile solo la modalità in incognito</translation>
@@ -268,7 +270,6 @@ Svolgi i passaggi che seguono:</translation>
 <translation id="3607167657931203000">Dati della Compilazione automatica</translation>
 <translation id="3609785682760573515">Sincronizzazione in corso...</translation>
 <translation id="3638472932233958418">Precarica pagine web</translation>
-<translation id="3648013730801605241">La <ph name="BEGIN_LINK" />cronologia delle ricerche<ph name="END_LINK" /> e <ph name="BEGIN_LINK" />altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.</translation>
 <translation id="3661160521073045932">Profilo di configurazione disponibile</translation>
 <translation id="3670030362669914947">Numero</translation>
 <translation id="3691593122358196899">Preferito aggiunto in: <ph name="FOLDER_TITLE" /></translation>
@@ -648,10 +649,6 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="734758817008927353">Opzioni per salvare la carta</translation>
 <translation id="7348502496356775519">Aggiungi ai preferiti</translation>
 <translation id="7353432112255316844">Verifica la tua identità</translation>
-<translation id="7376492662175718683">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.
-
-        
-Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzioni per eliminare la tua cronologia delle ricerche, se possibile.</translation>
 <translation id="7383797227493018512">Elenco di lettura</translation>
 <translation id="7398893703713203428">Crea link</translation>
 <translation id="739941347996872055">Scheda precedente</translation>
@@ -794,10 +791,6 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="8840513115188359703">Non verrai disconnesso dal tuo Account Google.</translation>
-<translation id="8851300969441660830">Non verrà eseguita la disconnessione dal tuo Account Google. <ph name="BEGIN_LINK" />Altri tipi di attività<ph name="END_LINK" /> potrebbero essere salvati nel tuo Account Google se hai eseguito l'accesso. Puoi eliminare queste informazioni in qualsiasi momento.
-
-
-Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia delle ricerche, se possibile.</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} scheda}other{{count} schede}}</translation>
 <translation id="8870413625673593573">Chiusi di recente</translation>
 <translation id="8876882697946675716">Mantieni sincronizzati i tuoi dispositivi</translation>

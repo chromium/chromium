@@ -599,7 +599,6 @@
 <translation id="4881695831933465202">Открыть</translation>
 <translation id="488187801263602086">Необходимо переименовать файл</translation>
 <translation id="4885273946141277891">Конфликт версий Chrome</translation>
-<translation id="4905269543817054577">История не сохраняется</translation>
 <translation id="4908869848243824489">Рекомендации от Google</translation>
 <translation id="4910889077668685004">Платежные приложения</translation>
 <translation id="4913161338056004800">Сбросить статистику</translation>
@@ -1036,7 +1035,6 @@
 <translation id="7630202231528827509">URL поставщика</translation>
 <translation id="7638584964844754484">Неверная кодовая фраза</translation>
 <translation id="7641339528570811325">Очистить историю...</translation>
-<translation id="764170292089748542">В режиме инкогнито история браузера не сохраняется. Однако вы по-прежнему можете использовать закладки для доступа к любимым сайтам.</translation>
 <translation id="7646772052135772216">Синхронизация паролей не работает</translation>
 <translation id="7655900163790317559">Включение Bluetooth…</translation>
 <translation id="7658239707568436148">Отмена</translation>
@@ -1047,7 +1045,6 @@
 <translation id="7704317875155739195">Заполнять поисковые запросы и URL автоматически</translation>
 <translation id="7707922173985738739">Использовать мобильный Интернет</translation>
 <translation id="7725024127233776428">Здесь будут страницы, которые вы добавляете в закладки.</translation>
-<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Другие действия<ph name="END_LINK1" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.</translation>
 <translation id="7757787379047923882">Текст с устройства <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Выбрать дату и время</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1292,7 +1289,6 @@
 <translation id="9209888181064652401">Звонки недоступны</translation>
 <translation id="9212845824145208577">Не удается прокрутить дальше вниз. Начните делать скриншот ниже на этой странице.</translation>
 <translation id="9219103736887031265">Картинки</translation>
-<translation id="923957533152125119"><ph name="BEGIN_LINK1" />История поиска<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />другие действия<ph name="END_LINK2" /> могут сохраняться в аккаунте Google, если вы в него вошли. Их можно удалить в любой момент.</translation>
 <translation id="926205370408745186">Удалить данные о действиях в Chrome из сервиса "Цифровое благополучие"</translation>
 <translation id="927968626442779827">Попробуйте упрощенный режим в Google Chrome.</translation>
 <translation id="932327136139879170">Главная страница</translation>

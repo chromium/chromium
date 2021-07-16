@@ -598,7 +598,6 @@
 <translation id="4881695831933465202">खोल्नुहोस्</translation>
 <translation id="488187801263602086">फाइलको पुनः नामकरण गर्नुहोस्</translation>
 <translation id="4885273946141277891">असमर्थित संख्याका Chrome दृष्टान्तहरू।</translation>
-<translation id="4905269543817054577">इन्कोग्निटो मोडमा ब्राउज गर्दा इतिहास सेभ गरिँदैन</translation>
 <translation id="4908869848243824489">Google को Discover</translation>
 <translation id="4910889077668685004">भुक्तानी सम्बन्धी एपहरू</translation>
 <translation id="4913161338056004800">तथ्याङ्कहरू रिसेट गर्नुहोस्</translation>
@@ -1035,7 +1034,6 @@
 <translation id="7630202231528827509">सेवा प्रदायकको URL</translation>
 <translation id="7638584964844754484">गलत पासफ्रेज</translation>
 <translation id="7641339528570811325">ब्राउजिङको डेटा मेटाउनुहोस्…</translation>
-<translation id="764170292089748542">तपाईंले गोप्य रूपमा ब्राउज गर्दा Chrome ले तपाईंको ब्राउजिङ इतिहास सेभ गर्दैन। तपाईं बुकमार्क प्रयोग गरी आफ्ना मन पर्ने साइटहरूमा जान भने सक्नुहुन्छ।</translation>
 <translation id="7646772052135772216">पासवर्ड सिंक गर्ने सुविधाले काम गर्दै छैन</translation>
 <translation id="7655900163790317559">ब्लुटुथ अन गरिँदै छ…</translation>
 <translation id="7658239707568436148">रद्द गर्नुहोस्</translation>
@@ -1046,7 +1044,6 @@
 <translation id="7704317875155739195">खोज तथा URL हरू स्वतः पूर्ण गर्नुहोस्</translation>
 <translation id="7707922173985738739">मोबाइल डेटा प्रयोग गर्नुहोस्‌</translation>
 <translation id="7725024127233776428">तपाईंले पुस्तक चिन्ह लगाउनुभएका पृष्ठहरू यहाँ देखिन्छन्</translation>
-<translation id="7731260005404856143">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK1" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK1" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला ती क्रियाकलाप मेटाउन सक्नुहुन्छ।</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> ले आदान प्रदान गरेको पाठ</translation>
 <translation id="7761849928583394409">मिति र समय रोज्नुहोस्</translation>
 <translation id="7762668264895820836">SD कार्ड <ph name="SD_CARD_NUMBER" /></translation>
@@ -1291,7 +1288,6 @@
 <translation id="9209888181064652401">कल गर्न सकिएन</translation>
 <translation id="9212845824145208577">योभन्दा तल जान मिल्दैन। यो पेजको अझै तल्लो भागबाट ड्रयाग गरी हेर्नुहोस्।</translation>
 <translation id="9219103736887031265">फोटो</translation>
-<translation id="923957533152125119">तपाईंले आफ्नो Google खातामा साइन इन गर्नुभएका बेला सो खातामा <ph name="BEGIN_LINK1" />खोजको इतिहास<ph name="END_LINK1" /> र <ph name="BEGIN_LINK2" />अन्य किसिमका क्रियाकलाप<ph name="END_LINK2" /> सेभ गरिन सक्छ। तपाईं जुनसुकै बेला तिनलाई मेटाउन सक्नुहुन्छ।</translation>
 <translation id="926205370408745186">आफूले Chrome मा गरेका क्रियाकलाप डिजिटल वेलबिइङबाट हटाउनुहोस्</translation>
 <translation id="927968626442779827">Google Chrome को लाइट मोड प्रयोग गर्नुहोस्</translation>
 <translation id="932327136139879170">गृहपृष्ठ</translation>

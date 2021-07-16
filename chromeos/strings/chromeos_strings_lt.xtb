@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> proc.</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2161394479394250669">Atšaukti spausdinimo užduotį</translation>
+<translation id="2209788852729124853">Iš naujo nustatyti srauto skaitiklius</translation>
 <translation id="2217935453350629363">Dabartinė sparta</translation>
 <translation id="2224337661447660594">Nėra interneto ryšio</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Akumuliatorius įkrautas</translation>
 <translation id="360565022852130722">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP 802.1x</translation>
 <translation id="3689839747745352263">Bandymas „<ph name="TEST_NAME" />“</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Iš naujo nuskaityti puslapį}=1{Iš naujo nuskaityti {PAGE_NUMBER} puslapį}one{Iš naujo nuskaityti {PAGE_NUMBER} puslapį}few{Iš naujo nuskaityti {PAGE_NUMBER} puslapį}many{Iš naujo nuskaityti {PAGE_NUMBER} puslapį}other{Iš naujo nuskaityti {PAGE_NUMBER} puslapį}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (apžvalgų: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Neprisijungta</translation>
 <translation id="3749289110408117711">Failo pavadinimas</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Mano Diskas</translation>
 <translation id="4429881212383817840">„Kerberos“ bilietas netrukus baigs galioti</translation>
 <translation id="4431821876790500265">Žr. ataskaitą</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Pašalinti puslapį}=1{Pašalinti {PAGE_NUMBER} puslapį}one{Pašalinti {PAGE_NUMBER} puslapį}few{Pašalinti {PAGE_NUMBER} puslapį}many{Pašalinti {PAGE_NUMBER} puslapį}other{Pašalinti {PAGE_NUMBER} puslapį}}</translation>
 <translation id="445059817448385655">Senas slaptažodis</translation>
 <translation id="4453205916657964690">Potinklio kaukė</translation>
 <translation id="4454245904991689773">Nuskaityti į</translation>
@@ -248,6 +251,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="5916084858004523819">Draudžiama</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Failas sėkmingai nuskaitytas ir išsaugotas aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}one{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}few{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}many{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}other{Failai sėkmingai nuskaityti ir išsaugoti aplanke <ph name="LINK_BEGIN" />„<ph name="FOLDER_NAME" />“<ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Failas nerastas</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Skaitytuvo dokumentų tiektuvas tuščias. Pridėkite dokumentų ir bandykite dar kartą.</translation>
 <translation id="6040143037577758943">Uždaryti</translation>
 <translation id="6040852767465482106">Anoniminė tapatybė</translation>
@@ -285,6 +289,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="6527081081771465939">Nežinomas „Wi-Fi“ saugos protokolas</translation>
 <translation id="65587193855025101">Plokščiasis</translation>
 <translation id="6564646048574748301">Nepavyko – spausdintuvas nepasiekiamas</translation>
+<translation id="6574762126505704998">Užpildyti</translation>
 <translation id="6603230386432466813">Kyla sunkumų prisijungiant?</translation>
 <translation id="6618744767048954150">Vykdoma</translation>
 <translation id="6620487321149975369">Spausdinimo užduotys bus rodomos istorijoje, nebent bus pašalintos neautomatiškai</translation>
@@ -316,6 +321,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7216409898977639127">Mobiliojo ryšio teikėjas</translation>
 <translation id="7271040990581020067">Skaitytuvas šiuo metu naudojamas. Vėliau bandykite dar kartą.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Ekrano fonų rinkiniai</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Tinklo įrenginiai</translation>
 <translation id="7359657277149375382">Failo tipas</translation>
@@ -332,6 +338,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Liko <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Sužinokite daugiau pagalbos centre</translation>
+<translation id="763165478673169849">Paskutinio nustatymo iš naujo laikas</translation>
 <translation id="7648838807254605802">Didelė HTTPS delsa</translation>
 <translation id="7658239707568436148">Atšaukti</translation>
 <translation id="7690294790491645610">Patvirtinkite naują slaptažodį</translation>
@@ -353,6 +360,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8075838845814659848">Likusio įkrovimo rodiklis</translation>
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Pateikti srauto skaitiklių užklausą</translation>
 <translation id="8206859287963243715">Mobilusis</translation>
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8214184102975786227">Kelis puslapius nuskaityti kaip vieną PDF</translation>
@@ -374,8 +382,10 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8475690821716466388">„Wi-Fi“ tinklas apsaugotas naudojant nepatikimą protokolą WEP PSK</translation>
 <translation id="8477551185774834963">DNS delsa šiek tiek viršija leistiną slenksčio vertę</translation>
 <translation id="8483248364096924578">IP adresas</translation>
+<translation id="8498220429738806196">Srauto skaitikliai</translation>
 <translation id="8503813439785031346">Vartotojo vardas</translation>
 <translation id="8503836310948963452">Dar kelios minutės...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatoriui gali būti reikalinga ši parinktis, kad būtų galima prisijungti prie tinklo. Jei reikia išsamios informacijos, susisiekite su operatoriumi.</translation>
 <translation id="8576249514688522074">Neinicijuota</translation>
 <translation id="8620617069779373398">Tarptinklinio ryšio būsena</translation>
@@ -392,6 +402,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="8814190375133053267">WI-Fi</translation>
 <translation id="8818152010000655963">Ekrano fonas</translation>
 <translation id="8845001906332463065">Gauti pagalbos</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Bandymas sėkmingas</translation>
 <translation id="8898840733695078011">Signalo stiprumas</translation>
 <translation id="8910721771319628100">Numatytojo tinklo delsa viršija slenksčio vertę</translation>
@@ -407,6 +418,7 @@ Palieskite mikrofoną, kad užduotumėte reikiamus klausimus.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Dabartinis naudojimas</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Atnaujinkite <ph name="PRINCIPAL_NAME" /> bilietą</translation>
 <translation id="9106415115617144481">Nuskaitomas <ph name="PAGE_NUMBER" /> psl.</translation>
 <translation id="9111102763498581341">Atrakinti</translation>
