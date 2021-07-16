@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<!--
+Tests that an iframe added after activation starts out with
+document.prerendering false.
+
+This file cannot be upstreamed to WPT until:
+* startPrerendering() usage is replaced with a WebDriver API
+-->
+<title>iframe added after activation</title>
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+promise_test(async t => {
+  const channel = new BroadcastChannel('test-channel');
+  let messages = [];
+  let resolves = [];
+
+  channel.addEventListener('message', e => {
+    if (resolves.length > 0) {
+      const fn = resolves.shift();
+      fn(e.data);
+    } else {
+      messages.push(e.data);
+    }
+  });
+
+  function nextMessage() {
+    return new Promise(resolve => {
+      if (messages.length > 0)
+        resolve(messages.shift())
+      else
+        resolves.push(resolve);
+    });
+  }
+
+
+  // Make the window to start the prerender.
+  const url = `resources/iframe-added-post-activation.html`;
+  window.open(url, '_blank', 'noopener');
+
+  // Wait for done.
+  const msg = await nextMessage();
+  assert_equals(msg, 'PASS');
+}, 'iframe added after activation has false document.prerendering');
+</script>
+</body>

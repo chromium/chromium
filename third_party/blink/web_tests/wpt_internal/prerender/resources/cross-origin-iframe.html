@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<script src="/common/utils.js"></script>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="utils.js"></script>
+<script src="deferred-promise-utils.js"></script>
+<body>
+<script>
+
+async function main() {
+  const crossOriginUrl =
+      new URL('cross-origin-iframe-src.html',
+              get_host_info()['HTTPS_REMOTE_ORIGIN'] +
+                  window.location.pathname);
+
+  // Start loading a cross-origin iframe. The iframe messages us with the
+  // value of its document.prerendering, which should be false since load
+  // is delayed until after activation.
+  const iframe = document.createElement('iframe');
+
+  const gotMessage = new Promise((resolve, reject) => {
+    window.addEventListener('message', (e) => {
+     if (e.data == 'document.prerendering: false')
+       resolve();
+     else
+       reject('bad message: ' + e.data);
+    });
+  });
+
+  iframe.src = crossOriginUrl.href;
+  document.body.appendChild(iframe);
+
+  // Start the event collector to trigger activation.
+  const prerenderEventCollector = new PrerenderEventCollector();
+  prerenderEventCollector.start(gotMessage,
+                                'iframe loaded');
+
+}
+
+// The main test page (cross-origin-iframe.https.html) loads the initiator
+// page, then the initiator page will prerender itself with the
+// `prerendering` parameter.
+const params = new URLSearchParams(location.search);
+if (!params.has('prerendering')) {
+  loadInitiatorPage();
+} else {
+  main();
+}
+</script>
+</body>
