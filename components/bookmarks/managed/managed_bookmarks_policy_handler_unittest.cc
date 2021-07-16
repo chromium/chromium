@@ -87,12 +87,11 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettings) {
 
   // Make sure the kManagedBookmarksFolderName pref is set correctly.
   const base::Value* folder_value = nullptr;
-  std::string folder_name;
   EXPECT_TRUE(
       store_->GetValue(prefs::kManagedBookmarksFolderName, &folder_value));
   ASSERT_TRUE(folder_value);
-  ASSERT_TRUE(folder_value->GetAsString(&folder_name));
-  EXPECT_EQ("abc 123", folder_name);
+  ASSERT_TRUE(folder_value->is_string());
+  EXPECT_EQ("abc 123", folder_value->GetString());
 
   // Note the protocols and ending slashes added to urls, which were not in the
   // value set earlier.
@@ -153,12 +152,11 @@ TEST_F(ManagedBookmarksPolicyHandlerTest, ApplyPolicySettingsNoTitle) {
 
   // Make sure the kManagedBookmarksFolderName pref is set correctly.
   const base::Value* folder_value = nullptr;
-  std::string folder_name;
   EXPECT_TRUE(
       store_->GetValue(prefs::kManagedBookmarksFolderName, &folder_value));
   ASSERT_TRUE(folder_value);
-  ASSERT_TRUE(folder_value->GetAsString(&folder_name));
-  EXPECT_EQ("", folder_name);
+  ASSERT_TRUE(folder_value->is_string());
+  EXPECT_EQ("", folder_value->GetString());
 
   // Note the protocol and ending slash added to url, which was not in the value
   // set earlier.
