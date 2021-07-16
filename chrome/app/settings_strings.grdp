@@ -1632,7 +1632,7 @@
     Always use secure connections
   </message>
   <message name="IDS_SETTINGS_HTTPS_ONLY_MODE_DESCRIPTION" desc="Secondary, continued explanation of HTTPS-Only Mode in Security settings">
-    Upgrade all navigations to HTTPS and warn you before loading sites that don't support it
+    Upgrade navigations to HTTPS and warn you before loading sites that don't support it
   </message>
   <message name="IDS_SETTINGS_MANAGE_CERTIFICATES" desc="Text for manage certificates button in Privacy options">
     Manage certificates

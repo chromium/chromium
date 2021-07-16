@@ -1434,9 +1434,9 @@ const char kHostedAppShimCreationName[] =
 const char kHostedAppShimCreationDescription[] =
     "Create app shims on Mac when creating a hosted app.";
 
-const char kHttpsOnlyModeName[] = "HTTPS-Only Mode Setting";
+const char kHttpsOnlyModeName[] = "HTTPS-First Mode Setting";
 const char kHttpsOnlyModeDescription[] =
-    "Adds a setting under chrome://settings/security to opt-in to HTTPS-Only "
+    "Adds a setting under chrome://settings/security to opt-in to HTTPS-First "
     "Mode.";
 
 const char kIgnoreGpuBlocklistName[] = "Override software rendering list";

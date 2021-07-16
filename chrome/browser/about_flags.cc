@@ -7508,6 +7508,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(ash::features::kBorealisDiskManagement)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+    {"https-only-mode-setting", flag_descriptions::kHttpsOnlyModeName,
+     flag_descriptions::kHttpsOnlyModeDescription, kOsDesktop | kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kHttpsOnlyMode)},
+
 #if defined(OS_ANDROID)
     {"dynamic-color-android", flag_descriptions::kDynamicColorAndroidName,
      flag_descriptions::kDynamicColorAndroidDescription, kOsAndroid,
