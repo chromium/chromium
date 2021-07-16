@@ -20,23 +20,19 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
-
-using AuthToken = quick_unlock::AuthToken;
-using QuickUnlockStorage = quick_unlock::QuickUnlockStorage;
-
+namespace quick_unlock {
 namespace {
 
-void SetConfirmationFrequency(
-    PrefService* pref_service,
-    quick_unlock::PasswordConfirmationFrequency frequency) {
+void SetConfirmationFrequency(PrefService* pref_service,
+                              PasswordConfirmationFrequency frequency) {
   pref_service->SetInteger(prefs::kQuickUnlockTimeout,
                            static_cast<int>(frequency));
 }
 
 base::TimeDelta GetExpirationTime(PrefService* pref_service) {
   int frequency = pref_service->GetInteger(prefs::kQuickUnlockTimeout);
-  return quick_unlock::PasswordConfirmationFrequencyToTimeDelta(
-      static_cast<quick_unlock::PasswordConfirmationFrequency>(frequency));
+  return PasswordConfirmationFrequencyToTimeDelta(
+      static_cast<PasswordConfirmationFrequency>(frequency));
 }
 
 }  // namespace
@@ -47,12 +43,11 @@ class QuickUnlockStorageUnitTest : public testing::Test {
   ~QuickUnlockStorageUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override { quick_unlock::EnabledForTesting(true); }
-  void TearDown() override { quick_unlock::EnabledForTesting(false); }
+  void SetUp() override { EnabledForTesting(true); }
+  void TearDown() override { EnabledForTesting(false); }
 
   void ExpireAuthToken() {
-    quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get())
-        ->auth_token_->Reset();
+    QuickUnlockFactory::GetForProfile(profile_.get())->auth_token_->Reset();
   }
 
   content::BrowserTaskEnvironment task_environment_;
@@ -88,7 +83,7 @@ class QuickUnlockStorageTestApi {
 TEST_F(QuickUnlockStorageUnitTest,
        TimeSinceLastStrongAuthReturnsPositiveValue) {
   QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get());
+      QuickUnlockFactory::GetForProfile(profile_.get());
   PrefService* pref_service = profile_->GetPrefs();
   QuickUnlockStorageTestApi test_api(quick_unlock_storage);
 
@@ -109,7 +104,7 @@ TEST_F(QuickUnlockStorageUnitTest,
 TEST_F(QuickUnlockStorageUnitTest,
        QuickUnlockPasswordConfirmationFrequencyPreference) {
   QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get());
+      QuickUnlockFactory::GetForProfile(profile_.get());
   PrefService* pref_service = profile_->GetPrefs();
   QuickUnlockStorageTestApi test_api(quick_unlock_storage);
 
@@ -130,8 +125,8 @@ TEST_F(QuickUnlockStorageUnitTest,
   // not trigger a request for strong auth, but moving it by an additional 3
   // hours will.
   quick_unlock_storage->MarkStrongAuth();
-  SetConfirmationFrequency(
-      pref_service, quick_unlock::PasswordConfirmationFrequency::SIX_HOURS);
+  SetConfirmationFrequency(pref_service,
+                           PasswordConfirmationFrequency::SIX_HOURS);
   expiration_time = GetExpirationTime(pref_service);
   test_api.ReduceRemainingStrongAuthTimeBy(expiration_time / 2);
   EXPECT_TRUE(quick_unlock_storage->HasStrongAuth());
@@ -141,33 +136,33 @@ TEST_F(QuickUnlockStorageUnitTest,
   // A valid strong auth becomes invalid if the confirmation frequency is
   // shortened to less than the expiration time.
   quick_unlock_storage->MarkStrongAuth();
-  SetConfirmationFrequency(
-      pref_service, quick_unlock::PasswordConfirmationFrequency::TWELVE_HOURS);
+  SetConfirmationFrequency(pref_service,
+                           PasswordConfirmationFrequency::TWELVE_HOURS);
   expiration_time = GetExpirationTime(pref_service);
   EXPECT_TRUE(quick_unlock_storage->HasStrongAuth());
   test_api.ReduceRemainingStrongAuthTimeBy(expiration_time / 2);
   EXPECT_TRUE(quick_unlock_storage->HasStrongAuth());
-  SetConfirmationFrequency(
-      pref_service, quick_unlock::PasswordConfirmationFrequency::SIX_HOURS);
+  SetConfirmationFrequency(pref_service,
+                           PasswordConfirmationFrequency::SIX_HOURS);
   EXPECT_FALSE(quick_unlock_storage->HasStrongAuth());
 
   // An expired strong auth becomes usable if the confirmation frequency gets
   // extended past the expiration time.
   quick_unlock_storage->MarkStrongAuth();
-  SetConfirmationFrequency(
-      pref_service, quick_unlock::PasswordConfirmationFrequency::SIX_HOURS);
+  SetConfirmationFrequency(pref_service,
+                           PasswordConfirmationFrequency::SIX_HOURS);
   expiration_time = GetExpirationTime(pref_service);
   EXPECT_TRUE(quick_unlock_storage->HasStrongAuth());
   test_api.ReduceRemainingStrongAuthTimeBy(expiration_time);
   EXPECT_FALSE(quick_unlock_storage->HasStrongAuth());
-  SetConfirmationFrequency(
-      pref_service, quick_unlock::PasswordConfirmationFrequency::TWELVE_HOURS);
+  SetConfirmationFrequency(pref_service,
+                           PasswordConfirmationFrequency::TWELVE_HOURS);
   EXPECT_TRUE(quick_unlock_storage->HasStrongAuth());
 }
 
 TEST_F(QuickUnlockStorageUnitTest, AuthToken) {
   QuickUnlockStorage* quick_unlock_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get());
+      QuickUnlockFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(quick_unlock_storage->GetAuthToken());
 
   chromeos::UserContext context;
@@ -180,4 +175,5 @@ TEST_F(QuickUnlockStorageUnitTest, AuthToken) {
   EXPECT_FALSE(quick_unlock_storage->GetAuthToken());
 }
 
+}  // namespace quick_unlock
 }  // namespace chromeos

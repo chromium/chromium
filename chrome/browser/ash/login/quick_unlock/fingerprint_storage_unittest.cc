@@ -16,6 +16,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chromeos {
+namespace quick_unlock {
 namespace {
 
 class FingerprintStorageUnitTest : public testing::Test {
@@ -24,9 +25,9 @@ class FingerprintStorageUnitTest : public testing::Test {
   ~FingerprintStorageUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override { quick_unlock::EnabledForTesting(true); }
+  void SetUp() override { EnabledForTesting(true); }
 
-  void TearDown() override { quick_unlock::EnabledForTesting(false); }
+  void TearDown() override { EnabledForTesting(false); }
 
   void SetRecords(int records_number) {
     profile_->GetPrefs()->SetInteger(prefs::kQuickUnlockFingerprintRecord,
@@ -45,8 +46,7 @@ class FingerprintStorageUnitTest : public testing::Test {
 class FingerprintStorageTestApi {
  public:
   // Does *not* take ownership over `fingerprint_storage`.
-  explicit FingerprintStorageTestApi(
-      quick_unlock::FingerprintStorage* fingerprint_storage)
+  explicit FingerprintStorageTestApi(FingerprintStorage* fingerprint_storage)
       : fingerprint_storage_(fingerprint_storage) {}
 
   bool IsFingerprintAvailable() const {
@@ -54,7 +54,7 @@ class FingerprintStorageTestApi {
   }
 
  private:
-  quick_unlock::FingerprintStorage* fingerprint_storage_;
+  FingerprintStorage* fingerprint_storage_;
 
   DISALLOW_COPY_AND_ASSIGN(FingerprintStorageTestApi);
 };
@@ -64,9 +64,8 @@ class FingerprintStorageTestApi {
 // 2. Attempting unlock attempts correctly increases unlock attempt count.
 // 3. Resetting unlock attempt count correctly sets attempt count to 0.
 TEST_F(FingerprintStorageUnitTest, UnlockAttemptCount) {
-  quick_unlock::FingerprintStorage* fingerprint_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get())
-          ->fingerprint_storage();
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
 
   EXPECT_EQ(0, fingerprint_storage->unlock_attempt_count());
 
@@ -83,9 +82,8 @@ TEST_F(FingerprintStorageUnitTest, UnlockAttemptCount) {
 // 1. No fingerprint records registered.
 // 2. Too many authentication attempts.
 TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
-  quick_unlock::FingerprintStorage* fingerprint_storage =
-      quick_unlock::QuickUnlockFactory::GetForProfile(profile_.get())
-          ->fingerprint_storage();
+  FingerprintStorage* fingerprint_storage =
+      QuickUnlockFactory::GetForProfile(profile_.get())->fingerprint_storage();
   FingerprintStorageTestApi test_api(fingerprint_storage);
 
   EXPECT_FALSE(fingerprint_storage->HasRecord());
@@ -104,8 +102,7 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
 
   // Too many authentication attempts make fingerprint authentication
   // unavailable.
-  for (int i = 0; i < quick_unlock::FingerprintStorage::kMaximumUnlockAttempts;
-       ++i) {
+  for (int i = 0; i < FingerprintStorage::kMaximumUnlockAttempts; ++i) {
     fingerprint_storage->AddUnlockAttempt();
   }
   EXPECT_FALSE(test_api.IsFingerprintAvailable());
@@ -113,4 +110,5 @@ TEST_F(FingerprintStorageUnitTest, AuthenticationUnAvailable) {
   EXPECT_TRUE(test_api.IsFingerprintAvailable());
 }
 
+}  // namespace quick_unlock
 }  // namespace chromeos

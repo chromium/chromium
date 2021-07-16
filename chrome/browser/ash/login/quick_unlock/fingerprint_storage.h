@@ -14,11 +14,7 @@ class PrefRegistrySimple;
 class Profile;
 
 namespace chromeos {
-
-class FingerprintStorageTestApi;
-
 namespace quick_unlock {
-
 class FingerprintMetricsReporter;
 class QuickUnlockStorage;
 
@@ -77,7 +73,7 @@ class FingerprintStorage : public feature_usage::FeatureUsageMetrics::Delegate {
   void OnGetRecords(const base::flat_map<std::string, std::string>&
                         fingerprints_list_mapping);
 
-  friend class chromeos::FingerprintStorageTestApi;
+  friend class FingerprintStorageTestApi;
   friend class QuickUnlockStorage;
 
   Profile* const profile_;

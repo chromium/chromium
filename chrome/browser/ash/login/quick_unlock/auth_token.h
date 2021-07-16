@@ -14,9 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
-
 class UserContext;
-class QuickUnlockStorageUnitTest;
 
 namespace quick_unlock {
 
@@ -45,7 +43,7 @@ class AuthToken {
   }
 
  private:
-  friend class chromeos::QuickUnlockStorageUnitTest;
+  friend class QuickUnlockStorageUnitTest;
 
   // Expires the token. In particular this makes the identifier string
   // inaccessible from outside the class.
