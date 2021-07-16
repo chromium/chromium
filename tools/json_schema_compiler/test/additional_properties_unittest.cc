@@ -15,17 +15,16 @@ namespace ap = test::api::additional_properties;
 TEST(JsonSchemaCompilerAdditionalPropertiesTest,
     AdditionalPropertiesTypePopulate) {
   {
-    base::ListValue list_value;
-    list_value.AppendString("asdf");
-    list_value.AppendInteger(4);
-    auto type_value = std::make_unique<base::DictionaryValue>();
-    type_value->SetString("string", "value");
-    type_value->SetInteger("other", 9);
-    type_value->SetKey("another", std::move(list_value));
+    base::Value list_value(base::Value::Type::LIST);
+    list_value.Append("asdf");
+    list_value.Append(4);
+    base::Value type_value(base::Value::Type::DICTIONARY);
+    type_value.SetStringPath("string", "value");
+    type_value.SetIntPath("other", 9);
+    type_value.SetKey("another", std::move(list_value));
     auto type = std::make_unique<ap::AdditionalPropertiesType>();
-    ASSERT_TRUE(
-        ap::AdditionalPropertiesType::Populate(*type_value, type.get()));
-    EXPECT_TRUE(type->additional_properties.Equals(type_value.get()));
+    ASSERT_TRUE(ap::AdditionalPropertiesType::Populate(type_value, type.get()));
+    EXPECT_EQ(type->additional_properties, type_value);
   }
   {
     auto type_value = std::make_unique<base::DictionaryValue>();

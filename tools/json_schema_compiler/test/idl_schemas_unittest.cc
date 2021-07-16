@@ -40,7 +40,7 @@ TEST(IdlCompiler, Basics) {
 
   // Test Function2, which takes an integer parameter.
   base::ListValue list;
-  list.AppendInteger(5);
+  list.Append(5);
   std::unique_ptr<Function2::Params> f2_params =
       Function2::Params::Create(list);
   EXPECT_EQ(5, f2_params->x);
@@ -86,20 +86,20 @@ TEST(IdlCompiler, OptionalArguments) {
   base::ListValue list;
   std::unique_ptr<Function7::Params> f7_params =
       Function7::Params::Create(list);
-  EXPECT_EQ(NULL, f7_params->arg.get());
-  list.AppendInteger(7);
+  EXPECT_EQ(nullptr, f7_params->arg.get());
+  list.Append(7);
   f7_params = Function7::Params::Create(list);
   EXPECT_EQ(7, *(f7_params->arg));
 
   // Similar to above, but a function with one required and one optional
   // argument.
   list.ClearList();
-  list.AppendInteger(8);
+  list.Append(8);
   std::unique_ptr<Function8::Params> f8_params =
       Function8::Params::Create(list);
   EXPECT_EQ(8, f8_params->arg1);
-  EXPECT_EQ(NULL, f8_params->arg2.get());
-  list.AppendString("foo");
+  EXPECT_EQ(nullptr, f8_params->arg2.get());
+  list.Append("foo");
   f8_params = Function8::Params::Create(list);
   EXPECT_EQ(8, f8_params->arg1);
   EXPECT_EQ("foo", *(f8_params->arg2));
@@ -108,7 +108,7 @@ TEST(IdlCompiler, OptionalArguments) {
   list.ClearList();
   std::unique_ptr<Function9::Params> f9_params =
       Function9::Params::Create(list);
-  EXPECT_EQ(NULL, f9_params->arg.get());
+  EXPECT_EQ(nullptr, f9_params->arg.get());
   list.ClearList();
   std::unique_ptr<base::DictionaryValue> tmp(new base::DictionaryValue());
   tmp->SetInteger("x", 17);
@@ -119,7 +119,7 @@ TEST(IdlCompiler, OptionalArguments) {
   tmp->SetString("c", "cstring");
   list.Append(std::move(tmp));
   f9_params = Function9::Params::Create(list);
-  ASSERT_TRUE(f9_params->arg.get() != NULL);
+  ASSERT_TRUE(f9_params->arg.get() != nullptr);
   MyType1* t1 = f9_params->arg.get();
   EXPECT_EQ(17, t1->x);
   EXPECT_EQ("hello", t1->y);
@@ -129,23 +129,23 @@ TEST(IdlCompiler, ArrayTypes) {
   // Tests of a function that takes an integer and an array of integers. First
   // use an empty array.
   base::ListValue list;
-  list.AppendInteger(33);
+  list.Append(33);
   list.Append(std::make_unique<base::ListValue>());
   std::unique_ptr<Function10::Params> f10_params =
       Function10::Params::Create(list);
-  ASSERT_TRUE(f10_params != NULL);
+  ASSERT_TRUE(f10_params != nullptr);
   EXPECT_EQ(33, f10_params->x);
   EXPECT_TRUE(f10_params->y.empty());
 
   // Same function, but this time with 2 values in the array.
   list.ClearList();
-  list.AppendInteger(33);
+  list.Append(33);
   std::unique_ptr<base::ListValue> sublist(new base::ListValue);
-  sublist->AppendInteger(34);
-  sublist->AppendInteger(35);
+  sublist->Append(34);
+  sublist->Append(35);
   list.Append(std::move(sublist));
   f10_params = Function10::Params::Create(list);
-  ASSERT_TRUE(f10_params != NULL);
+  ASSERT_TRUE(f10_params != nullptr);
   EXPECT_EQ(33, f10_params->x);
   ASSERT_EQ(2u, f10_params->y.size());
   EXPECT_EQ(34, f10_params->y[0]);
@@ -165,7 +165,7 @@ TEST(IdlCompiler, ArrayTypes) {
   list.Append(std::move(sublist2));
   std::unique_ptr<Function11::Params> f11_params =
       Function11::Params::Create(list);
-  ASSERT_TRUE(f11_params != NULL);
+  ASSERT_TRUE(f11_params != nullptr);
   ASSERT_EQ(2u, f11_params->arg.size());
   EXPECT_EQ(5, f11_params->arg[0].x);
   EXPECT_EQ("foo", f11_params->arg[0].y);
@@ -202,7 +202,7 @@ TEST(IdlCompiler, ObjectTypes) {
   list.Append(std::move(icon_props));
   std::unique_ptr<ObjectFunction1::Params> params =
       ObjectFunction1::Params::Create(list);
-  ASSERT_TRUE(params.get() != NULL);
+  ASSERT_TRUE(params.get() != nullptr);
   std::string tmp;
   EXPECT_TRUE(params->icon.additional_properties.GetString("hello", &tmp));
   EXPECT_EQ("world", tmp);

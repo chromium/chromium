@@ -15,9 +15,9 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsObjectResultCreate) {
   base::Value results(
       test::api::callbacks::ReturnsObject::Results::Create(some_object));
 
-  auto expected_dict = std::make_unique<base::DictionaryValue>();
-  expected_dict->SetString("state", "foo");
-  base::ListValue expected;
+  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  expected_dict.SetStringPath("state", "foo");
+  base::Value expected(base::Value::Type::LIST);
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }
@@ -28,10 +28,10 @@ TEST(JsonSchemaCompilerCallbacksTest, ReturnsMultipleResultCreate) {
   base::Value results(
       test::api::callbacks::ReturnsMultiple::Results::Create(5, some_object));
 
-  auto expected_dict = std::make_unique<base::DictionaryValue>();
-  expected_dict->SetString("state", "foo");
-  base::ListValue expected;
-  expected.AppendInteger(5);
+  base::Value expected_dict(base::Value::Type::DICTIONARY);
+  expected_dict.SetStringPath("state", "foo");
+  base::Value expected(base::Value::Type::LIST);
+  expected.Append(5);
   expected.Append(std::move(expected_dict));
   EXPECT_EQ(expected, results);
 }

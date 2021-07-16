@@ -21,14 +21,14 @@ TEST(JsonSchemaCompilerFunctionsOnTypesTest, StorageAreaGetParamsCreate) {
   }
   {
     auto params_value = std::make_unique<base::ListValue>();
-    params_value->AppendInteger(9);
+    params_value->Append(9);
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(*params_value));
     EXPECT_FALSE(params);
   }
   {
     auto params_value = std::make_unique<base::ListValue>();
-    params_value->AppendString("test");
+    params_value->Append("test");
     std::unique_ptr<functions_on_types::StorageArea::Get::Params> params(
         functions_on_types::StorageArea::Get::Params::Create(*params_value));
     ASSERT_TRUE(params);
