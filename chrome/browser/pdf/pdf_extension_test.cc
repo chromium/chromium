@@ -394,7 +394,23 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
+// Parameterized version of `PDFExtensionTest` for testing identical behavior
+// with the unseasoned PDF feature disabled and enabled.
+//
+// If a behavior is specific to one of these states, consider testing with
+// `PDFExtensionUnseasonedDisabledTest` or `PDFExtensionUnseasonedEnabledTest`
+// instead. Tests can also be conditional on `IsParamFeatureEnabled()`, but only
+// use this if the tests are almost identical.
+class PDFExtensionTestWithUnseasonedOverride
+    : public base::test::WithFeatureOverride,
+      public PDFExtensionTest {
+ public:
+  PDFExtensionTestWithUnseasonedOverride()
+      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
+};
+
+class PDFExtensionTestWithTestGuestViewManager
+    : public PDFExtensionTestWithUnseasonedOverride {
  public:
   PDFExtensionTestWithTestGuestViewManager() {
     GuestViewManager::set_factory_for_testing(&factory_);
@@ -425,27 +441,12 @@ class PDFExtensionTestWithTestGuestViewManager : public PDFExtensionTest {
   TestGuestViewManagerFactory factory_;
 };
 
-// Parameterized version of `PDFExtensionTest` for testing identical behavior
-// with the unseasoned PDF feature disabled and enabled.
-//
-// If a behavior is specific to one of these states, consider testing with
-// `PDFExtensionUnseasonedDisabledTest` or `PDFExtensionUnseasonedEnabledTest`
-// instead. Tests can also be conditional on `IsParamFeatureEnabled()`, but only
-// use this if the tests are almost identical.
-class PDFExtensionTestWithUnseasonedOverride
-    : public base::test::WithFeatureOverride,
-      public PDFExtensionTest {
- public:
-  PDFExtensionTestWithUnseasonedOverride()
-      : base::test::WithFeatureOverride(chrome_pdf::features::kPdfUnseasoned) {}
-};
-
 // This test is a re-implementation of
 // WebPluginContainerTest.PluginDocumentPluginIsFocused, which was introduced
 // for https://crbug.com/536637. The original implementation checked that the
 // BrowserPlugin hosting the pdf extension was focused; in this re-write, we
 // make sure the guest view's WebContents has focus.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        PdfInMainFrameHasFocus) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -470,7 +471,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // has the correct URL for the PDF extension.
 // TODO(wjmaclean): Are there any attributes we can/should test with respect to
 // the extension's loaded html?
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        PdfExtensionLoadedInGuest) {
   // Load test HTML, and verify the text area has focus.
   GURL main_url(embedded_test_server()->GetURL("/pdf/test.pdf"));
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that when a PDF is served with a restrictive
 // Content-Security-Policy, the embed tag is still sized correctly.
 // Regression test for https://crbug.com/271452.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPDoesNotBlockEmbedStyles) {
   GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -541,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that when a PDF is served with
 // Content-Security-Policy: sandbox, this is ignored and the PDF is displayed.
 // Regression test for https://crbug.com/1187122.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPWithSandboxDoesNotBlockPDF) {
   GURL main_url(embedded_test_server()->GetURL("/pdf/test-csp-sandbox.pdf"));
   ui_test_utils::NavigateToURL(browser(), main_url);
@@ -565,7 +566,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that Content-Security-Policy's frame-ancestors 'none'
 // directive is effective on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPFrameAncestorsCanBlockEmbedding) {
   WebContents* web_contents = GetActiveWebContents();
   content::WebContentsConsoleObserver console_observer(web_contents);
@@ -586,7 +587,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
 // This test verifies that Content-Security-Policy's frame-ancestors directive
 // overrides an X-Frame-Options header on a PDF response.
 // Regression test for https://crbug.com/1107535.
-IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
+IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithTestGuestViewManager,
                        CSPFrameAncestorsOverridesXFrameOptions) {
   GURL main_url(
       embedded_test_server()->GetURL("/pdf/frame-test-csp-and-xfo.html"));
@@ -3484,88 +3485,7 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
   ASSERT_EQ(web_contents->GetURL(), pdf_url);
 }
 
-// TODO(crbug.com/1123621): Probably can get rid of these tests once the
-// unseasoned PDF viewer loads end-to-end.
-class PDFExtensionUnseasonedTest
-    : public PDFExtensionTestWithTestGuestViewManager {
- protected:
-  static extensions::StreamContainer* GetStreamContainer(
-      WebContents* guest_contents) {
-    extensions::MimeHandlerViewGuest* guest =
-        extensions::MimeHandlerViewGuest::FromWebContents(guest_contents);
-    if (!guest) {
-      ADD_FAILURE() << "No MimeHandlerViewGuest";
-      return nullptr;
-    }
-
-    extensions::StreamContainer* container = guest->GetStreamWeakPtr().get();
-    EXPECT_TRUE(container);
-    return container;
-  }
-
-  // Loads a PDF viewer's guest `WebContents`. Unlike `EnsurePDFHasLoaded()`,
-  // this does not require that the PDF viewer loads completely, which is useful
-  // for testing the (currently) incomplete unseasoned PDF viewer.
-  WebContents* LoadGuestContentsOnly() {
-    if (!ui_test_utils::NavigateToURL(
-            browser(), embedded_test_server()->GetURL("/pdf/test.pdf"))) {
-      ADD_FAILURE() << "Initial navigation failed";
-      return nullptr;
-    }
-
-    WebContents* guest_contents =
-        GetGuestViewManager()->WaitForSingleGuestCreated();
-    if (!guest_contents) {
-      ADD_FAILURE() << "No guest WebContents";
-      return nullptr;
-    }
-
-    WaitForLoadStart(guest_contents);
-    EXPECT_TRUE(content::WaitForLoadStop(guest_contents));
-    return guest_contents;
-  }
-};
-
-class PDFExtensionUnseasonedDisabledTest : public PDFExtensionUnseasonedTest {
- protected:
-  std::vector<base::Feature> GetDisabledFeatures() const override {
-    std::vector<base::Feature> disabled =
-        PDFExtensionUnseasonedTest::GetDisabledFeatures();
-    disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
-    return disabled;
-  }
-};
-
-class PDFExtensionUnseasonedEnabledTest : public PDFExtensionUnseasonedTest {
- protected:
-  std::vector<base::Feature> GetEnabledFeatures() const override {
-    std::vector<base::Feature> enabled =
-        PDFExtensionUnseasonedTest::GetEnabledFeatures();
-    enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
-    return enabled;
-  }
-};
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionUnseasonedDisabledTest,
-                       StreamLoaderRegisteredAsSubresource) {
-  WebContents* guest_contents = LoadGuestContentsOnly();
-  ASSERT_TRUE(guest_contents);
-
-  extensions::StreamContainer* container = GetStreamContainer(guest_contents);
-  ASSERT_TRUE(container);
-
-  EXPECT_FALSE(container->TakeTransferrableURLLoader());
-}
-
-IN_PROC_BROWSER_TEST_F(PDFExtensionUnseasonedEnabledTest,
-                       StreamLoaderNotRegisteredAsSubresource) {
-  WebContents* guest_contents = LoadGuestContentsOnly();
-  ASSERT_TRUE(guest_contents);
-
-  extensions::StreamContainer* container = GetStreamContainer(guest_contents);
-  ASSERT_TRUE(container);
-
-  EXPECT_TRUE(container->TakeTransferrableURLLoader());
-}
-
+// TODO(crbug.com/702993): Stop testing both modes after unseasoned launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTestWithUnseasonedOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionTestWithTestGuestViewManager);
