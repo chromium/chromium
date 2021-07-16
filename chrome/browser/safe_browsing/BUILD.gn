@@ -426,6 +426,7 @@ source_set("test_support") {
 
     deps = [
       ":safe_browsing",
+      "//chrome/common",
       "//chrome/common/safe_browsing:proto",
       "//components/enterprise/common/proto:connectors_proto",
       "//components/safe_browsing:buildflags",

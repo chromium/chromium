@@ -22,6 +22,7 @@
 #include "chrome/browser/signin/test_signin_client_builder.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -314,7 +315,8 @@ class ChromePasswordProtectionServiceTest
         new SafeBrowsingUIManager(
             static_cast<safe_browsing::SafeBrowsingService*>(
                 SafeBrowsingService::CreateSafeBrowsingService()),
-            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()),
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+            GURL(chrome::kChromeUINewTabURL)),
         sync_password_hash_provider, cache_manager_.get());
   }
 

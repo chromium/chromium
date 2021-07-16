@@ -164,7 +164,8 @@ class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
   SafeBrowsingUIManagerTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {
     ui_manager_ = new SafeBrowsingUIManager(
-        nullptr, std::make_unique<TestSafeBrowsingBlockingPageFactory>());
+        nullptr, std::make_unique<TestSafeBrowsingBlockingPageFactory>(),
+        GURL("chrome://new-tab-page/"));
   }
 
   ~SafeBrowsingUIManagerTest() override {}

@@ -58,7 +58,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   SafeBrowsingUIManager(
       const scoped_refptr<SafeBrowsingService>& service,
-      std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory);
+      std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
+      const GURL& default_safe_page);
 
   // Displays a SafeBrowsing interstitial.
   // |ui_manager| is the manager which eventually displays the blocking page.
@@ -141,6 +142,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
   scoped_refptr<SafeBrowsingService> sb_service_;
 
   std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory_;
+
+  GURL default_safe_page_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 

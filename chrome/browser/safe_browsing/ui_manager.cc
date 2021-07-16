@@ -18,7 +18,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
-#include "chrome/common/url_constants.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
@@ -50,9 +49,11 @@ namespace safe_browsing {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
     const scoped_refptr<SafeBrowsingService>& service,
-    std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
+    std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
+    const GURL& default_safe_page)
     : sb_service_(service),
-      blocking_page_factory_(std::move(blocking_page_factory)) {}
+      blocking_page_factory_(std::move(blocking_page_factory)),
+      default_safe_page_(default_safe_page) {}
 
 SafeBrowsingUIManager::~SafeBrowsingUIManager() {}
 
@@ -234,7 +235,7 @@ history::HistoryService* SafeBrowsingUIManager::history_service(
 
 const GURL SafeBrowsingUIManager::default_safe_page() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return GURL(chrome::kChromeUINewTabURL);
+  return default_safe_page_;
 }
 
 // If the user had opted-in to send ThreatDetails, this gets called

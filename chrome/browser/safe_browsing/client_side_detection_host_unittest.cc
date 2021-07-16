@@ -24,6 +24,7 @@
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -151,7 +152,8 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   explicit MockSafeBrowsingUIManager(SafeBrowsingService* service)
       : SafeBrowsingUIManager(
             service,
-            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()) {}
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+            GURL(chrome::kChromeUINewTabURL)) {}
 
   MOCK_METHOD1(DisplayBlockingPage, void(const UnsafeResource& resource));
 

@@ -39,6 +39,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/url_constants.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/buildflags.h"
@@ -276,7 +277,8 @@ void SafeBrowsingService::AddDownloadManager(
 
 SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
   return new SafeBrowsingUIManager(
-      this, std::make_unique<ChromeSafeBrowsingBlockingPageFactory>());
+      this, std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+      GURL(chrome::kChromeUINewTabURL));
 }
 
 void SafeBrowsingService::RegisterAllDelayedAnalysis() {

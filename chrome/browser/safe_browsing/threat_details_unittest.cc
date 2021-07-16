@@ -17,6 +17,7 @@
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/history/core/browser/history_backend.h"
@@ -164,7 +165,8 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   MockSafeBrowsingUIManager()
       : SafeBrowsingUIManager(
             nullptr,
-            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>()),
+            std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+            GURL(chrome::kChromeUINewTabURL)),
         report_sent_(false) {}
 
   // When the serialized report is sent, this is called.
