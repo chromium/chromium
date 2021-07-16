@@ -25,8 +25,9 @@ class VaapiWrapper;
 // VaapiWrapper, and pass them to this class.
 class MEDIA_GPU_EXPORT VaapiJpegEncoder {
  public:
-  // |vaapi_wrapper| should be initialized in VaapiWrapper::kEncode
-  // mode with VAProfileJPEGBaseline profile.
+  // |vaapi_wrapper| should be initialized in
+  // VaapiWrapper::kEncodeConstantBitrate mode with VAProfileJPEGBaseline
+  // profile.
   explicit VaapiJpegEncoder(scoped_refptr<VaapiWrapper> vaapi_wrapper);
   ~VaapiJpegEncoder();
 

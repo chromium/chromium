@@ -218,8 +218,8 @@ class VaapiVideoEncodeAcceleratorTest
   MOCK_METHOD0(OnError, void());
 
   void SetUp() override {
-    mock_vaapi_wrapper_ =
-        base::MakeRefCounted<MockVaapiWrapper>(VaapiWrapper::kEncode);
+    mock_vaapi_wrapper_ = base::MakeRefCounted<MockVaapiWrapper>(
+        VaapiWrapper::kEncodeConstantBitrate);
 
     ResetEncoder();
   }

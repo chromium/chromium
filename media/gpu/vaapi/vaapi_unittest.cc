@@ -305,10 +305,10 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
   std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
       VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
-          VaapiWrapper::kEncode);
+          VaapiWrapper::kEncodeConstantBitrate);
 
   for (const auto& codec_mode :
-       {VaapiWrapper::kEncode,
+       {VaapiWrapper::kEncodeConstantBitrate,
         VaapiWrapper::kEncodeConstantQuantizationParameter}) {
     std::map<VAProfile, std::vector<VAEntrypoint>> configurations =
         VaapiWrapper::GetSupportedConfigurationsForCodecModeForTesting(
@@ -317,8 +317,8 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
     for (const auto& profile_and_entrypoints : configurations) {
       const VAProfile va_profile = profile_and_entrypoints.first;
       scoped_refptr<VaapiWrapper> wrapper = VaapiWrapper::Create(
-          VaapiWrapper::kEncode, va_profile, EncryptionScheme::kUnencrypted,
-          base::DoNothing());
+          VaapiWrapper::kEncodeConstantBitrate, va_profile,
+          EncryptionScheme::kUnencrypted, base::DoNothing());
 
       // Depending on the GPU Gen, flags and policies, we may or may not utilize
       // all entrypoints (e.g. we might always want VAEntrypointEncSliceLP if

@@ -267,7 +267,7 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
     }
     VaapiWrapper::CodecMode mode =
         codec == kCodecVP9 ? VaapiWrapper::kEncodeConstantQuantizationParameter
-                           : VaapiWrapper::kEncode;
+                           : VaapiWrapper::kEncodeConstantBitrate;
     vaapi_wrapper_ = VaapiWrapper::CreateForVideoCodec(
         mode, config.output_profile, EncryptionScheme::kUnencrypted,
         base::BindRepeating(&ReportVaapiErrorToUMA,

@@ -499,7 +499,7 @@ VaapiJpegEncodeAccelerator::Initialize(
 
   client_ = client;
   scoped_refptr<VaapiWrapper> vaapi_wrapper = VaapiWrapper::Create(
-      VaapiWrapper::kEncode, VAProfileJPEGBaseline,
+      VaapiWrapper::kEncodeConstantBitrate, VAProfileJPEGBaseline,
       EncryptionScheme::kUnencrypted,
       base::BindRepeating(&ReportVaapiErrorToUMA,
                           "Media.VaapiJpegEncodeAccelerator.VAAPIError"));

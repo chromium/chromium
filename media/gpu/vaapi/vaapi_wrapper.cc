@@ -318,7 +318,7 @@ bool IsLowPowerIntelProcessor() {
 }
 
 bool IsModeEncoding(VaapiWrapper::CodecMode mode) {
-  return mode == VaapiWrapper::CodecMode::kEncode ||
+  return mode == VaapiWrapper::CodecMode::kEncodeConstantBitrate ||
          mode == VaapiWrapper::CodecMode::kEncodeConstantQuantizationParameter;
 }
 
@@ -783,7 +783,7 @@ std::vector<VAEntrypoint> GetEntryPointsForProfile(const base::Lock* va_lock,
     {VAEntrypointVLD, VAEntrypointProtectedContent},  // kDecodeProtected.
 #endif
     {VAEntrypointEncSlice, VAEntrypointEncPicture,
-     VAEntrypointEncSliceLP},  // kEncode.
+     VAEntrypointEncSliceLP},  // kEncodeConstantBitrate.
     {VAEntrypointEncSlice,
      VAEntrypointEncSliceLP},  // kEncodeConstantQuantizationParameter.
     {VAEntrypointVideoProc}    // kVideoProcess.
@@ -846,7 +846,7 @@ bool GetRequiredAttribs(const base::Lock* va_lock,
   if (profile == VAProfileJPEGBaseline)
     return true;
 
-  if (mode == VaapiWrapper::kEncode)
+  if (mode == VaapiWrapper::kEncodeConstantBitrate)
     required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CBR});
   if (mode == VaapiWrapper::kEncodeConstantQuantizationParameter)
     required_attribs->push_back({VAConfigAttribRateControl, VA_RC_CQP});
@@ -1014,7 +1014,7 @@ void VASupportedProfiles::FillSupportedProfileInfos(base::Lock* va_lock,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     VaapiWrapper::kDecodeProtected,
 #endif
-    VaapiWrapper::kEncode,
+    VaapiWrapper::kEncodeConstantBitrate,
     VaapiWrapper::kEncodeConstantQuantizationParameter,
     VaapiWrapper::kVideoProcess
   };
@@ -1379,7 +1379,8 @@ bool IsLowPowerEncSupported(VAProfile va_profile) {
   }
 
   if (VASupportedProfiles::Get().IsProfileSupported(
-          VaapiWrapper::kEncode, va_profile, VAEntrypointEncSliceLP)) {
+          VaapiWrapper::kEncodeConstantBitrate, va_profile,
+          VAEntrypointEncSliceLP)) {
     return true;
   }
   return false;
@@ -1449,7 +1450,8 @@ VaapiWrapper::GetSupportedEncodeProfiles() {
     DCHECK(va_profile != VAProfileNone);
 
     const VASupportedProfiles::ProfileInfo* profile_info =
-        VASupportedProfiles::Get().IsProfileSupported(kEncode, va_profile);
+        VASupportedProfiles::Get().IsProfileSupported(kEncodeConstantBitrate,
+                                                      va_profile);
     if (!profile_info)
       continue;
 
@@ -1664,7 +1666,7 @@ bool VaapiWrapper::IsVppSupportedForJpegDecodedSurfaceToFourCC(
 
 // static
 bool VaapiWrapper::IsJpegEncodeSupported() {
-  return VASupportedProfiles::Get().IsProfileSupported(kEncode,
+  return VASupportedProfiles::Get().IsProfileSupported(kEncodeConstantBitrate,
                                                        VAProfileJPEGBaseline);
 }
 
@@ -1703,7 +1705,7 @@ VAEntrypoint VaapiWrapper::GetDefaultVaEntryPoint(CodecMode mode,
         return VAEntrypointProtectedContent;
       return VAEntrypointVLD;
 #endif
-    case VaapiWrapper::kEncode:
+    case VaapiWrapper::kEncodeConstantBitrate:
     case VaapiWrapper::kEncodeConstantQuantizationParameter:
       if (profile == VAProfileJPEGBaseline)
         return VAEntrypointEncPicture;
@@ -2626,7 +2628,8 @@ bool VaapiWrapper::DownloadFromVABuffer(VABufferID buffer_id,
 
 bool VaapiWrapper::GetVAEncMaxNumOfRefFrames(VideoCodecProfile profile,
                                              size_t* max_ref_frames) {
-  const VAProfile va_profile = ProfileToVAProfile(profile, CodecMode::kEncode);
+  const VAProfile va_profile =
+      ProfileToVAProfile(profile, CodecMode::kEncodeConstantBitrate);
   VAConfigAttrib attrib;
   attrib.type = VAConfigAttribEncMaxRefFrames;
 

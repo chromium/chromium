@@ -34,7 +34,7 @@ VideoEncodeAccelerator::Config kDefaultVEAConfig(
 
 class MockVaapiWrapper : public VaapiWrapper {
  public:
-  MockVaapiWrapper() : VaapiWrapper(kEncode) {}
+  MockVaapiWrapper() : VaapiWrapper(kEncodeConstantBitrate) {}
 
  protected:
   ~MockVaapiWrapper() override = default;

@@ -117,7 +117,7 @@ class MEDIA_GPU_EXPORT VaapiWrapper
     // be submitted.
     kDecodeProtected,  // Decrypt + decode to protected surface.
 #endif
-    kEncode,  // Encode with Constant Bitrate algorithm.
+    kEncodeConstantBitrate,  // Encode with Constant Bitrate algorithm.
     kEncodeConstantQuantizationParameter,  // Encode with Constant Quantization
                                            // Parameter algorithm.
     kVideoProcess,
