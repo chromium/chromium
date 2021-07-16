@@ -258,13 +258,15 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   int url_index = api_info->arg_url_index;
 
   if (!action->args() || url_index < 0 ||
-      static_cast<size_t>(url_index) >= action->args()->GetSize())
+      static_cast<size_t>(url_index) >= action->args()->GetList().size())
     return;
 
   // Do not overwrite an existing arg_url value in the Action, so that callers
   // have the option of doing custom arg_url extraction.
   if (action->arg_url().is_valid())
     return;
+
+  base::Value::ConstListView args_list = action->args()->GetList();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -305,14 +307,15 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
       // multiple tabs are manipulated).
       int tab_id;
 
-      if (action->args()->GetInteger(url_index, &tab_id)) {
+      if (args_list[url_index].is_int()) {
+        tab_id = args_list[url_index].GetInt();
         // Single tab ID to translate.
         GetUrlForTabId(tab_id, profile, &arg_url, &arg_incognito);
         if (arg_url.is_valid()) {
           action->mutable_args()->Set(
               url_index, std::make_unique<base::Value>(kArgUrlPlaceholder));
         }
-      } else if (action->args()->GetList()[url_index].is_list()) {
+      } else if (args_list[url_index].is_list()) {
         base::Value::ListView tab_list =
             action->mutable_args()->GetList()[url_index].GetList();
         // A list of possible IDs to translate.  Work through in reverse order

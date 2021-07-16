@@ -1037,12 +1037,11 @@ IN_PROC_BROWSER_TEST_F(DownloadExtensionTest,
   EXPECT_EQ(0UL, items.size());
   ASSERT_TRUE(result);
   download_item = NULL;
-  base::ListValue* result_list = NULL;
-  ASSERT_TRUE(result->GetAsList(&result_list));
-  ASSERT_EQ(1UL, result_list->GetSize());
-  int element = -1;
-  ASSERT_TRUE(result_list->GetInteger(0, &element));
-  EXPECT_EQ(id, element);
+  ASSERT_TRUE(result->is_list());
+  base::Value::ListView result_list = result->GetList();
+  ASSERT_EQ(1UL, result_list.size());
+  ASSERT_TRUE(result_list[0].is_int());
+  EXPECT_EQ(id, result_list[0].GetInt());
 }
 
 scoped_refptr<ExtensionFunction> MockedGetFileIconFunction(

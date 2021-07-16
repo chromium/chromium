@@ -39,13 +39,15 @@ DesktopCaptureChooseDesktopMediaFunction::
 
 ExtensionFunction::ResponseAction
 DesktopCaptureChooseDesktopMediaFunction::Run() {
-  EXTENSION_FUNCTION_VALIDATE(args_->GetSize() > 0);
-
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id_));
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_VALIDATE(list.size() > 0);
+  const auto& request_id_value = list[0];
+  EXTENSION_FUNCTION_VALIDATE(request_id_value.is_int());
+  request_id_ = request_id_value.GetInt();
   DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
                                                             request_id_, this);
 
-  args_->EraseListIter(args_->GetList().begin());
+  args_->EraseListIter(list.begin());
 
   std::unique_ptr<api::desktop_capture::ChooseDesktopMedia::Params> params =
       api::desktop_capture::ChooseDesktopMedia::Params::Create(*args_);

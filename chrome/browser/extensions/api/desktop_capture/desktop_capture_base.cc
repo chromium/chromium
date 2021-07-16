@@ -212,11 +212,12 @@ DesktopCaptureCancelChooseDesktopMediaFunctionBase::
 
 ExtensionFunction::ResponseAction
 DesktopCaptureCancelChooseDesktopMediaFunctionBase::Run() {
-  int request_id;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id));
+  EXTENSION_FUNCTION_VALIDATE(args_->GetList().size() >= 1);
+  absl::optional<int> request_id = args_->GetList()[0].GetIfInt();
+  EXTENSION_FUNCTION_VALIDATE(request_id.has_value());
 
   DesktopCaptureRequestsRegistry::GetInstance()->CancelRequest(
-      source_process_id(), request_id);
+      source_process_id(), *request_id);
   return RespondNow(NoArguments());
 }
 
