@@ -138,8 +138,7 @@ std::unique_ptr<TextLogUploadList::UploadInfo> TryParseJsonLogEntry(
     const base::Value& dict) {
   // Parse upload_id.
   const base::Value* upload_id_value = dict.FindKey(kJsonLogKeyUploadId);
-  std::string upload_id;
-  if (upload_id_value && !upload_id_value->GetAsString(&upload_id))
+  if (upload_id_value && !upload_id_value->is_string())
     return nullptr;
 
   // Parse upload_time.
@@ -151,7 +150,8 @@ std::unique_ptr<TextLogUploadList::UploadInfo> TryParseJsonLogEntry(
     return nullptr;
 
   auto info = std::make_unique<TextLogUploadList::UploadInfo>(
-      upload_id, base::Time::FromDoubleT(upload_time_double));
+      upload_id_value ? upload_id_value->GetString() : std::string(),
+      base::Time::FromDoubleT(upload_time_double));
 
   // Parse local_id.
   const std::string* local_id = dict.FindStringKey(kJsonLogKeyLocalId);
