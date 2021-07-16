@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sessions/session_service_factory.h"
 
-#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
@@ -13,28 +12,18 @@
 
 // static
 SessionService* SessionServiceFactory::GetForProfile(Profile* profile) {
-#if defined(OS_ANDROID)
-  // For Android we do not store sessions in the SessionService.
-  return nullptr;
-#else
   if (profile->IsOffTheRecord() || profile->IsGuestSession())
     return nullptr;
 
   return static_cast<SessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, true));
-#endif
 }
 
 // static
 SessionService* SessionServiceFactory::GetForProfileIfExisting(
     Profile* profile) {
-#if defined(OS_ANDROID)
-  // For Android we do not store sessions in the SessionService.
-  return nullptr;
-#else
   return static_cast<SessionService*>(
       GetInstance()->GetServiceForBrowserContext(profile, false));
-#endif
 }
 
 // static
