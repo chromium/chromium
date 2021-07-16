@@ -65,6 +65,12 @@ wtf_size_t Highlight::size() const {
   return highlight_ranges_.size();
 }
 
+void Highlight::setPriority(const int32_t& priority) {
+  priority_ = priority;
+  if (times_registered_)
+    highlight_registry_->ScheduleRepaint();
+}
+
 bool Highlight::Contains(AbstractRange* range) const {
   return highlight_ranges_.Contains(range);
 }

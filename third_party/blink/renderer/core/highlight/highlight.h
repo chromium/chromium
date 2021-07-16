@@ -36,7 +36,7 @@ class CORE_EXPORT Highlight : public ScriptWrappable,
   wtf_size_t size() const;
 
   const int32_t& priority() const { return priority_; }
-  void setPriority(const int32_t& priority) { priority_ = priority; }
+  void setPriority(const int32_t&);
 
   bool Contains(AbstractRange*) const;
 
