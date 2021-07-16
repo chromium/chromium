@@ -2941,7 +2941,6 @@ crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCDataChannel-close.html [ Tim
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/vp8.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/handover-datachannel.html [ Timeout ]
-crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/simulcast/setParameters-active.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc-encoded-transform/RTCPeerConnection-insertable-streams-errors.https.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/RTCPeerConnection-helper-test.html [ Timeout ]
 crbug.com/626703 [ Mac11.0 ] external/wpt/webrtc/protocol/candidate-exchange.https.html [ Timeout ]
@@ -3202,7 +3201,6 @@ crbug.com/626703 [ Mac ] external/wpt/web-locks/query-ordering.tentative.https.h
 crbug.com/626703 external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Timeout ]
 crbug.com/626703 [ Win10 ] virtual/plz-dedicated-worker/external/wpt/fetch/connection-pool/network-partition-key.html [ Failure Pass Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/browsers/the-window-object/apis-for-creating-and-navigating-browsing-contexts-by-name/open-features-tokenization-top-left.html [ Timeout ]
-crbug.com/626703 [ Mac ] external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Failure Pass Timeout ]
 crbug.com/626703 [ Mac10.15 ] virtual/threaded/external/wpt/animation-worklet/worklet-animation-with-scroll-timeline-root-scroller.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/valid-image-before-load.https.html [ Failure ]
 crbug.com/626703 [ Win7 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Failure Timeout ]
@@ -5287,9 +5285,6 @@ crbug.com/919789 paint/invalidation/window-resize/* [ Pass Timeout ]
 crbug.com/1021627 fast/dom/rtl-scroll-to-leftmost-and-resize.html [ Failure Pass Timeout ]
 crbug.com/1130876 fast/dynamic/window-resize-scrollbars-test.html [ Failure Pass ]
 
-# Sheriff 2019-03-27
-crbug.com/835943 [ Release ] http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
-
 # Sheriff 2019-03-28
 crbug.com/946890 external/wpt/html/semantics/embedded-content/media-elements/location-of-the-media-resource/currentSrc.html [ Crash Failure Pass ]
 crbug.com/946711 [ Release ] http/tests/devtools/editor/text-editor-search-switch-editor.js [ Crash Failure Pass Timeout ]
@@ -5395,7 +5390,6 @@ crbug.com/985232 [ Win7 ] external/wpt/html/semantics/scripting-1/the-script-ele
 crbug.com/986282 external/wpt/client-hints/accept-ch-lifetime.tentative.https.html [ Failure Pass ]
 
 # Sheriff 2019-07-26
-crbug.com/835943 [ Debug ] http/tests/appcache/non-html.xhtml [ Crash Pass ]
 crbug.com/874866 [ Debug Linux ] media/controls/doubletap-to-jump-backwards.html [ Failure ]
 crbug.com/988246 external/wpt/cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.tentative.https.any.serviceworker.html [ Skip ]
 crbug.com/959129 http/tests/devtools/tracing/timeline-script-parse.js [ Failure Pass ]
@@ -6464,14 +6458,12 @@ crbug.com/1181667 [ Linux ] external/wpt/css/selectors/focus-visible-011.html [ 
 crbug.com/1045052 [ Linux ] virtual/split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
 crbug.com/1045052 [ Linux ] virtual/not-split-http-cache-not-site-per-process/http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Failure Pass Timeout ]
 crbug.com/1181857 external/wpt/webaudio/the-audio-api/the-analysernode-interface/test-analyser-output.html [ Failure Pass ]
-crbug.com/1181886 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html [ Pass Timeout ]
 
 # Sheriff 2021-02-25
 crbug.com/1182673 [ Win7 ] http/tests/devtools/profiler/live-line-level-heap-profile.js [ Timeout ]
 crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
 crbug.com/1182677 [ Linux ] external/wpt/mediacapture-insertable-streams/MediaStreamTrackGenerator-video.https.html [ Failure Pass ]
 crbug.com/1182682 [ Linux ] http/tests/devtools/service-workers/service-workers-view.js [ Failure Pass ]
-crbug.com/1182511 [ Linux ] external/wpt/pointerevents/pointerevent_movementxy.html?touch [ Failure Pass Timeout ]
 
 # Sheriff 2021-03-01
 crbug.com/1183243 [ Linux ] http/tests/devtools/console/console-external-array.js [ Failure Pass ]
@@ -7361,3 +7353,10 @@ crbug.com/1229701 virtual/synchronous_html_parser/http/tests/inspector-protocol/
 crbug.com/1229708 fast/events/pointerevents/pointer-event-in-slop-region.html [ Skip ]
 crbug.com/1229711 [ Linux ] http/tests/devtools/console-resource-errors.js [ Pass Failure ]
 crbug.com/1229725 http/tests/devtools/sources/debugger-pause/pause-on-elements-panel.js [ Pass Failure Crash ]
+crbug.com/1229785 external/wpt/webrtc/simulcast/setParameters-active.https.html [ Pass Timeout ]
+crbug.com/1085647 external/wpt/pointerevents/compat/pointerevent_mouse-pointer-preventdefault.html [ Pass Timeout ]
+crbug.com/1087232 http/tests/devtools/network/network-worker-fetch-blocked.js [ Pass Failure ]
+crbug.com/1229801 http/tests/devtools/elements/css-rule-hover-highlights-selectors.js [ Pass Failure ]
+crbug.com/1229802 fast/events/pointerevents/multi-touch-events.html [ Pass Failure ]
+crbug.com/835943 http/tests/appcache/non-html.xhtml [ Crash Failure Pass Timeout ]
+crbug.com/1181886 external/wpt/pointerevents/pointerevent_movementxy.html?* [ Failure Pass Timeout ]
