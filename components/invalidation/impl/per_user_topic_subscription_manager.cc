@@ -248,11 +248,10 @@ void PerUserTopicSubscriptionManager::Init() {
   // Load subscribed topics from prefs.
   for (auto it : update->DictItems()) {
     Topic topic = it.first;
-    std::string private_topic_name;
-    if (it.second.GetAsString(&private_topic_name) &&
-        !private_topic_name.empty()) {
-      topic_to_private_topic_[topic] = private_topic_name;
-      private_topic_to_topic_[private_topic_name] = topic;
+    const std::string* private_topic_name = it.second.GetIfString();
+    if (private_topic_name && !private_topic_name->empty()) {
+      topic_to_private_topic_[topic] = *private_topic_name;
+      private_topic_to_topic_[*private_topic_name] = topic;
     } else {
       // Couldn't decode the pref value; remove it.
       keys_to_remove.push_back(topic);

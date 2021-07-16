@@ -645,9 +645,8 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
     const base::Value* private_topic_value =
         topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
-    std::string private_topic;
-    private_topic_value->GetAsString(&private_topic);
-    EXPECT_EQ(private_topic, "old-token-topic");
+    ASSERT_TRUE(private_topic_value->is_string());
+    EXPECT_EQ("old-token-topic", private_topic_value->GetString());
   }
 
   EXPECT_EQ(kFakeInstanceIdToken,
@@ -672,9 +671,8 @@ TEST_F(PerUserTopicSubscriptionManagerTest,
     const base::Value* private_topic_value =
         topics->FindKeyOfType(topic.first, base::Value::Type::STRING);
     ASSERT_NE(private_topic_value, nullptr);
-    std::string private_topic;
-    private_topic_value->GetAsString(&private_topic);
-    EXPECT_EQ(private_topic, "new-token-topic");
+    ASSERT_TRUE(private_topic_value->is_string());
+    EXPECT_EQ("new-token-topic", private_topic_value->GetString());
   }
 }
 

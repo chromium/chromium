@@ -98,9 +98,7 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
       handler_name_to_subscribed_topics_map_[handler->GetString()].insert(
           TopicData(topic_name, is_public->GetBool()));
     } else if (it.second.is_string()) {
-      std::string handler_name;
-      it.second.GetAsString(&handler_name);
-      handler_name_to_subscribed_topics_map_[handler_name].insert(
+      handler_name_to_subscribed_topics_map_[it.second.GetString()].insert(
           TopicData(topic_name, false));
     }
   }
