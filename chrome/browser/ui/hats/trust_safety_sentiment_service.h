@@ -74,11 +74,15 @@ class TrustSafetySentimentService : public KeyedService,
   // is not associated with any survey, but rather represents the collection of
   // features for which interaction with should also be considered when
   // determining elibigility for a survey.
+
+  // These values are persisted to logs and entries should not be renumbered or
+  // reused.
   enum class FeatureArea {
     kIneligible = 0,
-    kPrivacySettings,
-    kTrustedSurface,
-    kTransactions
+    kPrivacySettings = 1,
+    kTrustedSurface = 2,
+    kTransactions = 3,
+    kMaxValue = kTransactions,
   };
 
  private:

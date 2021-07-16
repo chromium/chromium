@@ -6114,6 +6114,27 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Records the source that requested showing the feedback app.</summary>
 </histogram>
 
+<histogram name="Feedback.TrustSafetySentiment.SurveyRequested"
+    enum="TrustSafetySentimentFeatureArea" expires_after="M98">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-hats-eng@google.com</owner>
+  <summary>
+    Records the associated feature area when the Trust and Safety Sentiment
+    service requests a survey be shown from the HaTS service.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.TrustSafetySentiment.TriggerOccured"
+    enum="TrustSafetySentimentFeatureArea" expires_after="M98">
+  <owner>sauski@google.com</owner>
+  <owner>chrome-hats-eng@google.com</owner>
+  <summary>
+    Records the associated feature area when the Trust and Safety sentiment
+    service detects that the user has performed a trigger action. This is
+    recorded after the associated probability check.
+  </summary>
+</histogram>
+
 <histogram name="FirstRun.IOSFirebaseConfigured" enum="FirebaseConfiguredState"
     expires_after="M89">
   <owner>ghendel@chromium.org</owner>
