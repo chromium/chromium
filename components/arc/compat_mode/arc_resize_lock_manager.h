@@ -69,7 +69,8 @@ class ArcResizeLockManager : public KeyedService,
   void EnableResizeLock(aura::Window* window);
   void DisableResizeLock(aura::Window* window);
 
-  void UpdateCompatModeButton(aura::Window* window);
+  // virtual for testing.
+  virtual void UpdateCompatModeButton(aura::Window* window);
 
   ArcResizeLockPrefDelegate* pref_delegate_{nullptr};
 

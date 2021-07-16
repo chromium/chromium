@@ -51,6 +51,23 @@ class ScopedWindowPropertyObserver : public aura::WindowObserver {
   base::ScopedObservation<aura::Window, aura::WindowObserver> observer_{this};
 };
 
+class TestArcResizeLockManager : public ArcResizeLockManager {
+ public:
+  TestArcResizeLockManager() : ArcResizeLockManager(nullptr, nullptr) {}
+
+  bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
+    return update_compat_mode_button_called.contains(window);
+  }
+
+  // ArcResizeLockManager:
+  void UpdateCompatModeButton(aura::Window* window) override {
+    update_compat_mode_button_called.insert(window);
+  }
+
+ private:
+  base::flat_set<const aura::Window*> update_compat_mode_button_called;
+};
+
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
 
 }  // namespace
@@ -80,8 +97,12 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
         window);
   }
 
+  bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
+    return arc_resize_lock_manager_.IsUpdateCompatModeButtonCalled(window);
+  }
+
  private:
-  ArcResizeLockManager arc_resize_lock_manager_{nullptr, nullptr};
+  TestArcResizeLockManager arc_resize_lock_manager_;
 };
 
 TEST_F(ArcResizeLockManagerTest, ConstructDestruct) {}
@@ -331,6 +352,23 @@ TEST_F(ArcResizeLockManagerTest, TestWindowDestruction) {
     // We don't want to hold the freed window ptr.
     EXPECT_FALSE(IsResizeLockEnabled(arc_window_freed_ptr));
   }
+}
+
+// Test that UpdateCompatModeButton is called properly according to the property
+// changes.
+TEST_F(ArcResizeLockManagerTest, UpdateCompatModeButton) {
+  auto arc_window = CreateFakeWindow(true);
+
+  // Test for RESIZABLE.
+  EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+  EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+
+  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
+  EXPECT_TRUE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+
+  // TODO(b/191956214): Add more test cases.
 }
 
 }  // namespace arc
