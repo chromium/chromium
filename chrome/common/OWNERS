@@ -34,9 +34,6 @@ per-file chrome_content_client_constants.h=*
 per-file chrome_content_client.h=*
 per-file chrome_content_client_unittest.cc=*
 
-# Content settings
-per-file content_settings*=markusheintz@chromium.org
-
 # Pepper files.
 per-file pepper_*=bbudge@chromium.org
 per-file pepper_*=raymes@chromium.org

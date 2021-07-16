@@ -2,7 +2,6 @@
 # core files like metrics_web_contents_observer.cc and
 # page_load_tracker.cc to bmcquade or skobes.
 
-bmcquade@chromium.org
 skobes@chromium.org
 npm@chromium.org
 sullivan@chromium.org

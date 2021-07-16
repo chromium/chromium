@@ -2,9 +2,6 @@ chrisha@chromium.org
 fdoray@chromium.org
 
 # Emeritus:
-haraken@chromium.org
-lpy@chromium.org
 oysteine@chromium.org
-zhenw@chromium.org
 
 per-file BUILD.gn=file://services/resource_coordinator/memory_instrumentation/OWNERS

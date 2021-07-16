@@ -1,4 +1,3 @@
 mdjones@chromium.org
 
 per-file DataReductionPromoInfoBar*=file://components/data_reduction_proxy/OWNERS
-per-file GeneratedPasswordSavedInfoBar*=rouslan@chromium.org

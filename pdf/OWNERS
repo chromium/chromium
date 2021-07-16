@@ -1,12 +1,8 @@
 set noparent
 dhoss@chromium.org
 dsinclair@chromium.org
-hnakashima@chromium.org
 kmoon@chromium.org
 thestig@chromium.org
-
-# Pepper-related questions/reviews only.
-raymes@chromium.org
 
 # Security/XFA-related questions/reviews only.
 tsepez@chromium.org

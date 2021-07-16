@@ -1,8 +1,5 @@
 sky@chromium.org
 
-# For WebRTC files.
-tommi@chromium.org
-
 # For download tests support review.
 per-file *download*=file://components/download/OWNERS
 

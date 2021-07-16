@@ -12,7 +12,6 @@ per-file *.mojom=file://ipc/SECURITY_OWNERS
 # For trivial changes only, like adding a new enum value or attribute.
 # New APIs or changes to existing APIs should be approved by an
 # extensions OWNER from //extensions/common/api/API_OWNERS.
-per-file automation*.idl=aboxhall@chromium.org
 per-file automation*.idl=dmazzoni@chromium.org
 per-file automation*.idl=dtseng@chromium.org
 per-file automation*.idl=nektar@chromium.org

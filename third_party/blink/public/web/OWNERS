@@ -3,7 +3,6 @@ per-file web_ax_object.h=file://third_party/blink/renderer/modules/accessibility
 per-file web_ax_enums.h=file://third_party/blink/renderer/modules/accessibility/OWNERS
 
 # Page load metrics
-per-file web_performance.h=bmcquade@chromium.org
 per-file web_performance.h=csharrison@chromium.org
 
 # Workers

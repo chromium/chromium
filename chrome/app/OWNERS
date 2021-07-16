@@ -51,7 +51,6 @@ per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
 
 per-file *.plist=file://chrome/browser/ui/cocoa/OWNERS
 
-per-file chrome_crash_reporter_client*=scottmg@chromium.org
 per-file chrome_crash_reporter_client*=rsesek@chromium.org
 
 per-file chrome_exe_main_mac.cc=kerrnel@chromium.org

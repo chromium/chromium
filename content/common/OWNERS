@@ -1,7 +1,3 @@
-# For Linux sandboxing related changes only. Regular content/
-# OWNERS own content/common/.
-jln@chromium.org
-
 # For security review of Windows sandbox.
 per-file sandbox_init_win.cc=set noparent
 per-file sandbox_init_win.cc=file://sandbox/win/OWNERS

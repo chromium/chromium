@@ -1,6 +1,4 @@
 file://components/sync/OWNERS
 
 per-file consent_auditor_factory.*=jlebel@chromium.org
-per-file consent_auditor_factory.*=markusheintz@chromium.org
 per-file consent_auditor_factory.*=msarda@chromium.org
-per-file consent_auditor_factory.*=msramek@chromium.org

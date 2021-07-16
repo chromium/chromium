@@ -5,5 +5,4 @@ per-file DeviceSensorsTest.java=timvolodine@chromium.org
 per-file MediaSession*.java=steimel@chromium.org
 
 # Java Bridge
-per-file JavaBridge*=michaelbai@chromium.org
 per-file JavaBridge*=torne@chromium.org

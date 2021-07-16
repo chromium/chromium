@@ -7,5 +7,4 @@ wez@chromium.org
 per-file desktop*=joedow@chromium.org
 per-file screen_capture*=joedow@chromium.org
 
-per-file image_capture*=mcasas@chromium.org
 per-file web_contents_*=ilnik@chromium.org

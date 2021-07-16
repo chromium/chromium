@@ -8,7 +8,6 @@ ericwilligers@chromium.org
 glenrob@chromium.org
 loyso@chromium.org
 mgiuca@chromium.org
-nigeltao@chromium.org
 ortuno@chromium.org
 
 # OS shortcuts
@@ -16,4 +15,3 @@ tapted@chromium.org
 
 per-file web_app_file_handler*=davidbienvenu@chromium.org
 per-file web_app_file_handler*=jessemckenna@google.com
-per-file web_app_file_handler*=oyiptong@chromium.org

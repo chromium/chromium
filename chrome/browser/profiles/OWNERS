@@ -10,8 +10,6 @@ skuhne@chromium.org
 per-file profile_keep_alive_types.*=nicolaso@chromium.org
 per-file scoped_profile_keep_alive.*=nicolaso@chromium.org
 
-per-file incognito_mode_policy_handler*=atwilson@chromium.org
-
 per-file host_zoom_map_browsertest.cc=wjmaclean@chromium.org
 
 per-file gaia_info_update_service*=msalama@chromium.org

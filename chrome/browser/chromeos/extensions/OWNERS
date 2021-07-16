@@ -10,16 +10,10 @@ per-file preinstalled_web_app_ids.h=jshikaram@chromium.org
 
 per-file *wallpaper*=file://ash/wallpaper/OWNERS
 
-# input method related reviewers. keithlee@ is primary, and shuchen@ and googleo@ are backup.
-per-file input_method*=googleo@chromium.org
+# input method related reviewers.
 per-file input_method*=keithlee@chromium.org
-per-file input_method*=shuchen@chromium.org
 per-file ime_menu*=keithlee@chromium.org
-per-file ime_menu*=shuchen@chromium.org
 
 # DeviceLocalAccount reviewers. emaxx@ is primary, others are backup.
 per-file device_local_account*=emaxx@chromium.org
-per-file device_local_account*=isandrk@chromium.org
-per-file device_local_account*=atwilson@chromium.org
-per-file device_local_account*=bartfab@chromium.org
 per-file device_local_account*=poromov@chromium.org

@@ -1,8 +1,5 @@
 sky@chromium.org
 
-# For WebRTC files.
-tommi@chromium.org
-
 # For RenderFrameHost/RenderWidgetHost/RenderViewHost-related test harnesses
 # and NavigationSimulator.
 file://content/browser/renderer_host/OWNERS
@@ -18,9 +15,6 @@ per-file renderer_audio_output_stream_factory_context_impl_unittest.cc=file://co
 
 # For Notification related files.
 per-file mock_platform_notification_service.*=file://content/browser/notifications/OWNERS
-
-# DirectWrite Font Code
-per-file dwrite_*=drott@chromium.org
 
 # Badging related files.
 per-file mock_badge_service.*=file://chrome/browser/badging/OWNERS

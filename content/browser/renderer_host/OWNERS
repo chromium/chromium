@@ -28,8 +28,6 @@ per-file *mac*=ccameron@chromium.org
 per-file *android*=boliu@chromium.org
 
 # Embedded Frame Sinks (eg. Offscreen Canvas).
-per-file embedded_frame_sink*.*=xlai@chromium.org
-per-file embedded_frame_sink*.*=junov@chromium.org
 per-file embedded_frame_sink*.*=kylechar@chromium.org
 
 # DirectWrite font code.

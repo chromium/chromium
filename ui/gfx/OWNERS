@@ -24,7 +24,6 @@ per-file screen*=oshima@chromium.org
 per-file canvas*=danakj@chromium.org
 
 # Overlay transforms.
-per-file overlay*=alexst@chromium.org
 per-file overlay*=spang@chromium.org
 
 # Transform, interpolated transform and transform util.
