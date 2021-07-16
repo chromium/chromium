@@ -144,6 +144,11 @@ class MockBluetoothDevice : public BluetoothDevice {
 
   void AddUUID(const BluetoothUUID& uuid) { uuids_.insert(uuid); }
 
+  void SetServiceDataForUUID(const BluetoothUUID& uuid,
+                             const std::vector<uint8_t>& service_data) {
+    service_data_[uuid] = service_data;
+  }
+
   // Updates the device's Manufacturer Data that are returned by
   // BluetoothDevice::GetManufacturerData().
   void SetManufacturerData(ManufacturerDataMap manufacturer_data) {
