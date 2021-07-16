@@ -20,7 +20,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceScreen;
 import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
-import org.chromium.base.annotations.RemovableInRelease;
+import org.chromium.build.BuildConfig;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 
@@ -82,11 +82,12 @@ public class ChosenObjectSettings extends SiteSettingsPreferenceFragment {
      * returns the same value. This must be true because this activity is displaying permissions
      * for a single object. Each instance varies only in which site it represents.
      */
-    @RemovableInRelease
     private void checkObjectConsistency() {
-        String exampleObject = mObjectInfos.get(0).getObject();
-        for (ChosenObjectInfo info : mObjectInfos) {
-            assert info.getObject().equals(exampleObject);
+        if (BuildConfig.ENABLE_ASSERTS) {
+            String exampleObject = mObjectInfos.get(0).getObject();
+            for (ChosenObjectInfo info : mObjectInfos) {
+                assert info.getObject().equals(exampleObject);
+            }
         }
     }
 
