@@ -417,6 +417,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_WrongTaget) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"AXRole"},
+             R"~~(AXRole=ERROR:FAILED_TO_PARSE
+)~~");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",
