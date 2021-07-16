@@ -207,6 +207,21 @@
             ]
         }
     ],
+    "AndroidDynamicColor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210714",
+                    "enable_features": [
+                        "DynamicColorAndroid"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidDynamicWideColorGamut": [
         {
             "platforms": [
@@ -715,6 +730,21 @@
                     "name": "EnablePerfettoSystemTracing",
                     "enable_features": [
                         "EnablePerfettoSystemTracing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AndroidThemeRefactor": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20210714",
+                    "enable_features": [
+                        "ThemeRefactorAndroid"
                     ]
                 }
             ]
