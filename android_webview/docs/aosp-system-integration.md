@@ -190,7 +190,7 @@ is_official_build = true
 
 # Use the default production settings for field trials, instead of the testing
 # defaults.
-fieldtrial_testing_like_official_build = true
+disable_fieldtrial_testing_config = true
 
 # WebView's efficient native library loading mechanism is not compatible with
 # component builds of Chromium.

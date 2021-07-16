@@ -9,13 +9,11 @@ declare_args() {
   # Set to true make a build that disables activation of field trial tests
   # specified in testing/variations/fieldtrial_testing_config.json.
   # Note: this setting is ignored if is_chrome_branded.
-  # TODO(thakis): It's strange this is called "_like_official_build" but then
-  # checks is_chrome_branded, not is_official_build.
-  fieldtrial_testing_like_official_build = is_chrome_branded
+  disable_fieldtrial_testing_config = false
 }
 
 fieldtrial_testing_enabled =
-    !fieldtrial_testing_like_official_build && !is_chrome_branded
+    !disable_fieldtrial_testing_config && !is_chrome_branded
 
 buildflag_header("buildflags") {
   header = "buildflags.h"

@@ -14,7 +14,7 @@ sync_integration_tests). It is not used by unit test targets.
 
 > Note: Non-developer builds of Chromium (for example, non-Chrome browsers,
 > or Chromium builds provided by Linux distros) should disable the testing
-> config via the GN flag `fieldtrial_testing_like_official_build=true`.
+> config via the GN flag `disable_fieldtrial_testing_config=true`.
 
 ## Config File Format
 
