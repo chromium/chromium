@@ -230,6 +230,7 @@ class MODULES_EXPORT AXObjectCacheImpl
   void ChildrenChangedWithCleanLayout(Node* optional_node_for_relation_update,
                                       AXObject*);
 
+  void MarkAXObjectDirty(AXObject*);
   void MarkAXObjectDirtyWithCleanLayout(AXObject*);
   void MarkAXSubtreeDirtyWithCleanLayout(AXObject*);
 
@@ -438,7 +439,6 @@ class MODULES_EXPORT AXObjectCacheImpl
   ax::mojom::blink::EventFrom ComputeEventFrom();
 
   void MarkAXObjectDirtyWithCleanLayoutHelper(AXObject* obj, bool subtree);
-  void MarkAXObjectDirty(AXObject*);
   void MarkAXSubtreeDirty(AXObject*);
   void MarkElementDirty(const Node*);
   void MarkElementDirtyWithCleanLayout(const Node*);
