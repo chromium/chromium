@@ -12,16 +12,29 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 
-namespace base {
-class Environment;
-}  // namespace base
-
 namespace remoting {
 
 // A helper to allow the standalone open URL binary to open a URL remotely and
 // handle local fallback.
 class RemoteOpenUrlClient final {
  public:
+  // An interface to support platform-specific implementation.
+  class Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
+
+    virtual bool IsInRemoteDesktopSession() = 0;
+
+    // Opens |url| on the fallback browser. If |url| is empty, simply opens the
+    // browser without a URL.
+    virtual void OpenUrlOnFallbackBrowser(const GURL& url) = 0;
+
+    // Shows an error message that indicates that |url| fails to be opened
+    // remotely.
+    virtual void ShowOpenUrlError(const GURL& url) = 0;
+  };
+
   RemoteOpenUrlClient();
   ~RemoteOpenUrlClient();
 
@@ -38,11 +51,8 @@ class RemoteOpenUrlClient final {
   void OnOpenUrlResponse(mojom::OpenUrlResult result);
   void OnRequestTimeout();
 
-  void OpenOnFallbackBrowserInternal();
-
+  std::unique_ptr<Delegate> delegate_;
   base::OneShotTimer timeout_timer_;
-
-  std::unique_ptr<base::Environment> environment_;
   GURL url_;
   base::OnceClosure done_;
   mojo::Remote<mojom::RemoteUrlOpener> remote_;
