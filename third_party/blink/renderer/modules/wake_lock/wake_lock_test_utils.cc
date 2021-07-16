@@ -37,28 +37,19 @@ void RunWithStack(base::RunLoop* run_loop) {
 
 // Helper class for WaitForPromise{Fulfillment,Rejection}(). It provides a
 // function that invokes |callback| when a ScriptPromise is resolved.
-class ClosureRunnerFunction final : public ScriptFunction {
+class ClosureRunnerCallable final : public NewScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(
-      ScriptState* script_state,
-      base::RepeatingClosure callback) {
-    auto* function = MakeGarbageCollected<ClosureRunnerFunction>(
-        script_state, std::move(callback));
-    return function->BindToV8Function();
-  }
+  explicit ClosureRunnerCallable(base::OnceClosure callback)
+      : callback_(std::move(callback)) {}
 
-  ClosureRunnerFunction(ScriptState* script_state,
-                        base::RepeatingClosure callback)
-      : ScriptFunction(script_state), callback_(std::move(callback)) {}
-
- private:
-  ScriptValue Call(ScriptValue) override {
+  ScriptValue Call(ScriptState*, ScriptValue) override {
     if (callback_)
       std::move(callback_).Run();
     return ScriptValue();
   }
 
-  base::RepeatingClosure callback_;
+ private:
+  base::OnceClosure callback_;
 };
 
 WakeLockType ToBlinkWakeLockType(device::mojom::blink::WakeLockType type) {
@@ -295,25 +286,25 @@ MockPermissionService& WakeLockTestingContext::GetPermissionService() {
   return permission_service_;
 }
 
-ScriptPromise WakeLockTestingContext::WaitForPromiseFulfillment(
-    ScriptPromise promise) {
+void WakeLockTestingContext::WaitForPromiseFulfillment(ScriptPromise promise) {
   base::RunLoop run_loop;
-  ScriptPromise return_promise =
-      promise.Then(ClosureRunnerFunction::CreateFunction(
-          GetScriptState(), run_loop.QuitClosure()));
+  promise.Then(MakeGarbageCollected<NewScriptFunction>(
+      GetScriptState(),
+      MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   v8::MicrotasksScope::PerformCheckpoint(GetScriptState()->GetIsolate());
   RunWithStack(&run_loop);
-  return return_promise;
 }
 
 // Synchronously waits for |promise| to be rejected.
 void WakeLockTestingContext::WaitForPromiseRejection(ScriptPromise promise) {
   base::RunLoop run_loop;
-  promise.Then(v8::Local<v8::Function>(),
-               ClosureRunnerFunction::CreateFunction(GetScriptState(),
-                                                     run_loop.QuitClosure()));
+  promise.Then(
+      nullptr,
+      MakeGarbageCollected<NewScriptFunction>(
+          GetScriptState(),
+          MakeGarbageCollected<ClosureRunnerCallable>(run_loop.QuitClosure())));
   // Execute pending microtasks, otherwise it can take a few seconds for the
   // promise to resolve.
   v8::MicrotasksScope::PerformCheckpoint(GetScriptState()->GetIsolate());

@@ -160,7 +160,7 @@ class WakeLockTestingContext final {
   MockPermissionService& GetPermissionService();
 
   // Synchronously waits for |promise| to be fulfilled.
-  ScriptPromise WaitForPromiseFulfillment(ScriptPromise promise);
+  void WaitForPromiseFulfillment(ScriptPromise promise);
 
   // Synchronously waits for |promise| to be rejected.
   void WaitForPromiseRejection(ScriptPromise promise);
