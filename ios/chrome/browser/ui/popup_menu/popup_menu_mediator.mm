@@ -1000,7 +1000,8 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
       @"popup_menu_translate", kToolsMenuTranslateId);
   if (self.engagementTracker &&
       self.engagementTracker->ShouldTriggerHelpUI(
-          feature_engagement::kIPHBadgedTranslateManualTriggerFeature)) {
+          feature_engagement::kIPHBadgedTranslateManualTriggerFeature) &&
+      self.isTranslateEnabled) {
     self.translateItem.badgeText = l10n_util::GetNSStringWithFixup(
         IDS_IOS_TOOLS_MENU_CELL_NEW_FEATURE_BADGE);
   }
