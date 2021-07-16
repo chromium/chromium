@@ -302,6 +302,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cryptohome.LegacyCodePathUsage.{Location}"
+    enum="BooleanCodePathUsage" expires_after="2022-01-09">
+  <owner>hardikgoyal@chromium.org</owner>
+  <owner>kerrnel@chromium.org</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    This will report usage of {Location} paths to see if it is actually being
+    used or not to enable us to decide if we want to continue supporting
+    {Location} or not.
+  </summary>
+  <token key="Location">
+    <variant name="AddKeyResetSeedGeneration"
+        summary="Reset seed generated during Add Key operation"/>
+  </token>
+</histogram>
+
 <histogram name="Cryptohome.MigrationToGaiaId"
     enum="CryptohomeMigrationToGaiaId" expires_after="M97">
   <owner>alemate@chromium.org</owner>

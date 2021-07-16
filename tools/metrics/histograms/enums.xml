@@ -8559,6 +8559,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="1" label="coalesced"/>
 </enum>
 
+<enum name="BooleanCodePathUsage">
+  <summary>The result if a code path is being used.</summary>
+  <int value="0" label="Unused Code Path"/>
+  <int value="1" label="Used Code Path"/>
+</enum>
+
 <enum name="BooleanColorSpaceSupported">
   <int value="0" label="Color space not supported"/>
   <int value="1" label="Color space supported"/>
