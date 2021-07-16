@@ -31,8 +31,6 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using base::ListValue;
-
 namespace {
 
 const char kSomeSpecificBasePage[] = "http://some.specific.host.name.com/";
@@ -508,12 +506,13 @@ TEST_F(ContextualSearchDelegateTest, ContractSelectionInvalid) {
 }
 
 TEST_F(ContextualSearchDelegateTest, ExtractMentionsStartEnd) {
-  ListValue mentions_list;
-  mentions_list.AppendInteger(1);
-  mentions_list.AppendInteger(2);
+  base::Value mentions_list(base::Value::Type::LIST);
+  mentions_list.Append(1);
+  mentions_list.Append(2);
   int start = 0;
   int end = 0;
-  delegate_->ExtractMentionsStartEnd(mentions_list, &start, &end);
+  delegate_->ExtractMentionsStartEnd(std::move(mentions_list).TakeList(),
+                                     &start, &end);
   EXPECT_EQ(1, start);
   EXPECT_EQ(2, end);
 }

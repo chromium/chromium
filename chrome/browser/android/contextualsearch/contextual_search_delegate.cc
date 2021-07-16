@@ -58,7 +58,7 @@ const char kContextualSearchResponseLanguageParam[] = "lang";
 const char kContextualSearchResponseMidParam[] = "mid";
 const char kContextualSearchResponseResolvedTermParam[] = "resolved_term";
 const char kContextualSearchPreventPreload[] = "prevent_preload";
-const char kContextualSearchMentions[] = "mentions";
+const char kContextualSearchMentionsKey[] = "mentions";
 const char kContextualSearchCaption[] = "caption";
 const char kContextualSearchThumbnail[] = "thumbnail";
 const char kContextualSearchAction[] = "action";
@@ -467,10 +467,13 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 
   // Extract mentions for selection expansion.
   if (!field_trial_->IsDecodeMentionsDisabled()) {
-    base::ListValue* mentions_list = nullptr;
-    dict->GetList(kContextualSearchMentions, &mentions_list);
-    if (mentions_list && mentions_list->GetSize() >= 2)
-      ExtractMentionsStartEnd(*mentions_list, mention_start, mention_end);
+    base::Value* mentions_list =
+        dict->FindListKey(kContextualSearchMentionsKey);
+    // Note that because we've deserialized the json and it's not used later, we
+    // can just take the list without worrying about putting it back.
+    if (mentions_list && mentions_list->GetList().size() >= 2)
+      ExtractMentionsStartEnd(std::move(*mentions_list).TakeList(),
+                              mention_start, mention_end);
   }
 
   // If either the selected text or the resolved term is not the search term,
@@ -556,14 +559,13 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
 // Extract the Start/End of the mentions in the surrounding text
 // for selection-expansion.
 void ContextualSearchDelegate::ExtractMentionsStartEnd(
-    const base::ListValue& mentions_list,
+    const std::vector<base::Value>& mentions_list,
     int* startResult,
     int* endResult) {
-  int int_value;
-  if (mentions_list.GetInteger(0, &int_value))
-    *startResult = std::max(0, int_value);
-  if (mentions_list.GetInteger(1, &int_value))
-    *endResult = std::max(0, int_value);
+  if (mentions_list.size() >= 1 && mentions_list[0].is_int())
+    *startResult = std::max(0, mentions_list[0].GetInt());
+  if (mentions_list.size() >= 2 && mentions_list[1].is_int())
+    *endResult = std::max(0, mentions_list[1].GetInt());
 }
 
 std::u16string ContextualSearchDelegate::SampleSurroundingText(

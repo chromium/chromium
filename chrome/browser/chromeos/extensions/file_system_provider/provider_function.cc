@@ -151,10 +151,15 @@ bool FileSystemProviderInternalFunction::PreRunValidation(std::string* error) {
   if (!ExtensionFunction::PreRunValidation(error))
     return false;
 
-  std::string file_system_id;
+  const auto& list = args_->GetList();
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(list.size() >= 2);
 
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetString(0, &file_system_id));
-  EXTENSION_FUNCTION_PRERUN_VALIDATE(args_->GetInteger(1, &request_id_));
+  const auto& file_system_id_value = list[0];
+  const auto& request_id_value = list[1];
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(file_system_id_value.is_string());
+  EXTENSION_FUNCTION_PRERUN_VALIDATE(request_id_value.is_int());
+  std::string file_system_id = file_system_id_value.GetString();
+  request_id_ = request_id_value.GetInt();
 
   Service* service = Service::Get(browser_context());
   if (!service) {
