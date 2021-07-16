@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <unistd.h>
 #include <unordered_set>
@@ -61,7 +61,9 @@ class BASE_EXPORT FileEnumerator {
     // Note that the cAlternateFileName (used to hold the "short" 8.3 name)
     // of the WIN32_FIND_DATA will be empty. Since we don't use short file
     // names, we tell Windows to omit it which speeds up the query slightly.
-    const WIN32_FIND_DATA& find_data() const { return find_data_; }
+    const WIN32_FIND_DATA& find_data() const {
+      return *ChromeToWindowsType(&find_data_);
+    }
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     const stat_wrapper_t& stat() const { return stat_; }
 #endif
@@ -70,7 +72,7 @@ class BASE_EXPORT FileEnumerator {
     friend class FileEnumerator;
 
 #if defined(OS_WIN)
-    WIN32_FIND_DATA find_data_;
+    CHROME_WIN32_FIND_DATA find_data_;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     stat_wrapper_t stat_;
     FilePath filename_;
@@ -177,9 +179,13 @@ class BASE_EXPORT FileEnumerator {
   bool IsPatternMatched(const FilePath& src) const;
 
 #if defined(OS_WIN)
+  const WIN32_FIND_DATA& find_data() const {
+    return *ChromeToWindowsType(&find_data_);
+  }
+
   // True when find_data_ is valid.
   bool has_find_data_ = false;
-  WIN32_FIND_DATA find_data_;
+  CHROME_WIN32_FIND_DATA find_data_;
   HANDLE find_handle_ = INVALID_HANDLE_VALUE;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
   // The files in the current directory

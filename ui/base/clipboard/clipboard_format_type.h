@@ -14,7 +14,7 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <objidl.h>
+#include "base/win/windows_types.h"
 #endif
 
 #if defined(OS_APPLE)
@@ -103,7 +103,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
   // if the format isn't found.
   std::string GetName() const;
 #if defined(OS_WIN)
-  const FORMATETC& ToFormatEtc() const { return data_; }
+  const FORMATETC& ToFormatEtc() const { return *ChromeToWindowsType(&data_); }
 #elif defined(OS_APPLE)
   NSString* ToNSString() const { return data_; }
   // Custom copy and assignment constructor to handle NSString.
@@ -139,7 +139,7 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD_TYPES) ClipboardFormatType {
 
   // FORMATETC:
   // https://docs.microsoft.com/en-us/windows/desktop/com/the-formatetc-structure
-  FORMATETC data_;
+  CHROME_FORMATETC data_;
 #elif defined(USE_AURA) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
   explicit ClipboardFormatType(const std::string& native_format);
   std::string data_;

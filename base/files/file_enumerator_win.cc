@@ -41,24 +41,24 @@ FileEnumerator::FileInfo::FileInfo() {
 }
 
 bool FileEnumerator::FileInfo::IsDirectory() const {
-  return (find_data_.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+  return (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
 }
 
 FilePath FileEnumerator::FileInfo::GetName() const {
-  return FilePath(find_data_.cFileName);
+  return FilePath(find_data().cFileName);
 }
 
 int64_t FileEnumerator::FileInfo::GetSize() const {
   ULARGE_INTEGER size;
-  size.HighPart = find_data_.nFileSizeHigh;
-  size.LowPart = find_data_.nFileSizeLow;
+  size.HighPart = find_data().nFileSizeHigh;
+  size.LowPart = find_data().nFileSizeLow;
   DCHECK_LE(size.QuadPart,
             static_cast<ULONGLONG>(std::numeric_limits<int64_t>::max()));
   return static_cast<int64_t>(size.QuadPart);
 }
 
 Time FileEnumerator::FileInfo::GetLastModifiedTime() const {
-  return Time::FromFileTime(find_data_.ftLastWriteTime);
+  return Time::FromFileTime(find_data().ftLastWriteTime);
 }
 
 // FileEnumerator --------------------------------------------------------------
@@ -140,12 +140,13 @@ FilePath FileEnumerator::Next() {
           BuildSearchFilter(folder_search_policy_, root_path_, pattern_);
       find_handle_ = FindFirstFileEx(src.value().c_str(),
                                      FindExInfoBasic,  // Omit short name.
-                                     &find_data_, FindExSearchNameMatch,
-                                     nullptr, FIND_FIRST_EX_LARGE_FETCH);
+                                     ChromeToWindowsType(&find_data_),
+                                     FindExSearchNameMatch, nullptr,
+                                     FIND_FIRST_EX_LARGE_FETCH);
       has_find_data_ = true;
     } else {
       // Search for the next file/directory.
-      if (!FindNextFile(find_handle_, &find_data_)) {
+      if (!FindNextFile(find_handle_, ChromeToWindowsType(&find_data_))) {
         FindClose(find_handle_);
         find_handle_ = INVALID_HANDLE_VALUE;
       }
@@ -175,12 +176,12 @@ FilePath FileEnumerator::Next() {
       return FilePath();
     }
 
-    const FilePath filename(find_data_.cFileName);
+    const FilePath filename(find_data().cFileName);
     if (ShouldSkip(filename))
       continue;
 
     const bool is_dir =
-        (find_data_.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
+        (find_data().dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0;
     const FilePath abs_path = root_path_.Append(filename);
 
     // Check if directory should be processed recursive.
