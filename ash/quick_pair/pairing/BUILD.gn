@@ -9,6 +9,10 @@ assert(is_chromeos_ash,
 
 source_set("pairing") {
   sources = [
+    "fast_pair/decrypted_response.cc",
+    "fast_pair/decrypted_response.h",
+    "fast_pair/fast_pair_data_parser.cc",
+    "fast_pair/fast_pair_data_parser.h",
     "fast_pair/fast_pair_pairer.cc",
     "fast_pair/fast_pair_pairer.h",
     "pairer_broker.h",
@@ -19,6 +23,7 @@ source_set("pairing") {
   deps = [
     "//ash/quick_pair/common",
     "//base",
+    "//crypto:crypto",
     "//device/bluetooth",
   ]
 }
@@ -43,7 +48,10 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "fast_pair/fast_pair_pairer_unittest.cc" ]
+  sources = [
+    "fast_pair/fast_pair_data_parser_unittest.cc",
+    "fast_pair/fast_pair_pairer_unittest.cc",
+  ]
 
   deps = [
     ":pairing",
