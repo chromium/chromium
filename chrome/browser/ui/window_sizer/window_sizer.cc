@@ -77,7 +77,7 @@ class DefaultStateProvider : public WindowSizer::StateProvider {
       ui::WindowShowState* show_state) const override {
     DCHECK(show_state);
     // Applications are always restored with the same position.
-    if (browser_ && browser_->deprecated_is_app())
+    if (browser_ && (browser_->is_type_app() || browser_->is_type_app_popup()))
       return false;
 
     // If a reference browser is set, use its window. Otherwise find last
@@ -359,7 +359,8 @@ ui::WindowShowState WindowSizer::GetWindowDefaultShowState(
 
 #if defined(USE_AURA)
   // We use the apps save state as well on aura.
-  use_command_line = use_command_line || browser->deprecated_is_app();
+  use_command_line = use_command_line || browser->is_type_app() ||
+                     browser->is_type_app_popup();
 #endif
 
   if (use_command_line && base::CommandLine::ForCurrentProcess()->HasSwitch(
