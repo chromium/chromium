@@ -32,6 +32,7 @@
 #include "base/test/test_switches.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/typed_macros.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/test/pixel_test_utils.h"
@@ -2957,6 +2958,9 @@ TestNavigationManager::~TestNavigationManager() {
 }
 
 void TestNavigationManager::WaitForFirstYieldAfterDidStartNavigation() {
+  TRACE_EVENT(
+      "test",
+      "TestNavigationManager::WaitForFirstYieldAfterDidStartNavigation");
   if (current_state_ >= NavigationState::WILL_START)
     return;
 
@@ -2965,11 +2969,13 @@ void TestNavigationManager::WaitForFirstYieldAfterDidStartNavigation() {
 }
 
 bool TestNavigationManager::WaitForRequestStart() {
+  TRACE_EVENT("test", "TestNavigationManager::WaitForRequestStart");
   desired_state_ = NavigationState::STARTED;
   return WaitForDesiredState();
 }
 
 void TestNavigationManager::ResumeNavigation() {
+  TRACE_EVENT("test", "TestNavigationManager::ResumeNavigation");
   DCHECK(current_state_ == NavigationState::STARTED ||
          current_state_ == NavigationState::RESPONSE);
   DCHECK_EQ(current_state_, desired_state_);
@@ -2982,11 +2988,13 @@ NavigationHandle* TestNavigationManager::GetNavigationHandle() {
 }
 
 bool TestNavigationManager::WaitForResponse() {
+  TRACE_EVENT("test", "TestNavigationManager::WaitForResponse");
   desired_state_ = NavigationState::RESPONSE;
   return WaitForDesiredState();
 }
 
 void TestNavigationManager::WaitForNavigationFinished() {
+  TRACE_EVENT("test", "TestNavigationManager::WaitForNavigationFinished");
   desired_state_ = NavigationState::FINISHED;
   WaitForDesiredState();
 }
