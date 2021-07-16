@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
+#include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "ui/base/ime/ime_text_span.h"
@@ -514,11 +515,27 @@ void EditContext::DeleteForward() {
 }
 
 void EditContext::DeleteWordBackward() {
-  // TODO(shihken): Implement backward word delete.
+  if (selection_start_ == selection_end_) {
+    String text16bit(text_);
+    text16bit.Ensure16Bit();
+    // TODO(shihken): implement platform behaviors when the spec is finalized.
+    selection_start_ = FindNextWordBackward(text16bit.Characters16(),
+                                            text16bit.length(), selection_end_);
+  }
+
+  DeleteCurrentSelection();
 }
 
 void EditContext::DeleteWordForward() {
-  // TODO(shihken): Implement forward word delete.
+  if (selection_start_ == selection_end_) {
+    String text16bit(text_);
+    text16bit.Ensure16Bit();
+    // TODO(shihken): implement platform behaviors when the spec is finalized.
+    selection_end_ = FindNextWordForward(text16bit.Characters16(),
+                                         text16bit.length(), selection_start_);
+  }
+
+  DeleteCurrentSelection();
 }
 
 bool EditContext::CommitText(const WebString& text,
