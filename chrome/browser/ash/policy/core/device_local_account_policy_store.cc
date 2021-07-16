@@ -135,6 +135,7 @@ void DeviceLocalAccountPolicyStore::UpdatePolicy(
     return;
   }
 
+  policy_fetch_response_ = std::move(validator->policy());
   InstallPolicy(std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 signature_validation_public_key);

@@ -22,6 +22,7 @@
 #include "chrome/browser/ash/crosapi/crosapi_id.h"
 #include "chrome/browser/ash/crosapi/environment_provider.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "components/policy/core/common/cloud/cloud_policy_store.h"
 #include "components/session_manager/core/session_manager_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -41,7 +42,8 @@ class TestMojoConnectionManager;
 // Manages the lifetime of lacros-chrome, and its loading status. This class is
 // a part of ash-chrome.
 class BrowserManager : public session_manager::SessionManagerObserver,
-                       public BrowserServiceHostObserver {
+                       public BrowserServiceHostObserver,
+                       public policy::CloudPolicyStore::Observer {
  public:
   // Static getter of BrowserManager instance. In real use cases,
   // BrowserManager instance should be unique in the process.
@@ -277,6 +279,16 @@ class BrowserManager : public session_manager::SessionManagerObserver,
 
   // session_manager::SessionManagerObserver:
   void OnSessionStateChanged() override;
+
+  // Sets user policy to be propagated to Lacros and subsribes to the user
+  // policy updates in Ash.
+  void PrepareLacrosPolicies();
+  policy::CloudPolicyStore* GetDeviceAccountPolicyStore();
+
+  // policy::CloudPolicyStore::Observer:
+  void OnStoreLoaded(policy::CloudPolicyStore* store) override;
+  void OnStoreError(policy::CloudPolicyStore* store) override;
+  void OnStoreDestruction(policy::CloudPolicyStore* store) override;
 
   // Called on load completion.
   void OnLoadComplete(const base::FilePath& path);

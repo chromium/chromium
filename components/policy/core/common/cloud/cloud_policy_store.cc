@@ -10,13 +10,15 @@
 
 namespace policy {
 
-CloudPolicyStore::Observer::~Observer() {}
+CloudPolicyStore::Observer::~Observer() = default;
+void CloudPolicyStore::Observer::OnStoreDestruction(CloudPolicyStore* store) {}
 
 CloudPolicyStore::CloudPolicyStore() = default;
 
 CloudPolicyStore::~CloudPolicyStore() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!external_data_manager_);
+  NotifyStoreDestruction();
 }
 
 bool CloudPolicyStore::is_managed() const {
@@ -71,6 +73,11 @@ void CloudPolicyStore::NotifyStoreError() {
 
   for (auto& observer : observers_)
     observer.OnStoreError(this);
+}
+
+void CloudPolicyStore::NotifyStoreDestruction() {
+  for (auto& observer : observers_)
+    observer.OnStoreDestruction(this);
 }
 
 void CloudPolicyStore::SetExternalDataManager(

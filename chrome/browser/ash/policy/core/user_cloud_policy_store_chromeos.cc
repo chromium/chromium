@@ -269,21 +269,11 @@ void UserCloudPolicyStoreChromeOS::OnRetrievedPolicyValidated(
     return;
   }
 
+  policy_fetch_response_ = std::move(validator->policy());
   InstallPolicy(std::move(validator->policy_data()),
                 std::move(validator->payload()),
                 cached_policy_key_loader_->cached_policy_key());
   status_ = STATUS_OK;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (crosapi::BrowserManager::Get()) {
-    std::string policy_blob;
-    // Since the policy have passed all the validations, the serialization must
-    // succeed.
-    bool success = validator->policy()->SerializeToString(&policy_blob);
-    DCHECK(success);
-    crosapi::BrowserManager::Get()->SetDeviceAccountPolicy(policy_blob);
-  }
-#endif
 
   NotifyStoreLoaded();
 }
