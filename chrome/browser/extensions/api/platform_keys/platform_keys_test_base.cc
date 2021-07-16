@@ -121,10 +121,9 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
         &user_policy, account_id_, user_affiliation_ids));
   }
 
-  ON_CALL(mock_policy_provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(mock_policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
+  mock_policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
   mock_policy_provider_.SetAutoRefresh();
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
       &mock_policy_provider_);

@@ -30,7 +30,6 @@
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/crx_file/id_util.h"
-#include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/notification_service.h"
@@ -180,7 +179,6 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   std::unique_ptr<Browser> browser_;
 
   std::vector<std::unique_ptr<TestExtensionDir>> test_extension_dirs_;
-  policy::MockConfigurationPolicyProvider mock_policy_provider_;
 
   DISALLOW_COPY_AND_ASSIGN(DeveloperPrivateApiUnitTest);
 };

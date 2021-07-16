@@ -52,7 +52,7 @@ class ForceInstalledAffiliatedExtensionApiTest
                      const GURL& page_url,
                      const base::Value& custom_arg_value);
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   chromeos::ScopedStubInstallAttributes test_install_attributes_;
   policy::DevicePolicyCrosTestHelper test_helper_;
   policy::AffiliationMixin affiliation_mixin_{&mixin_host_, &test_helper_};

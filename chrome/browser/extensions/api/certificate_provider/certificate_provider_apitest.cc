@@ -175,9 +175,9 @@ class CertificateProviderApiTest : public extensions::ExtensionApiTest {
   CertificateProviderApiTest() {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(_))
-        .WillByDefault(Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();

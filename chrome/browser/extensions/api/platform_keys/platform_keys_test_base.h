@@ -97,7 +97,8 @@ class PlatformKeysTestBase : public extensions::MixinBasedExtensionApiTest {
 
   policy::DevicePolicyCrosTestHelper device_policy_test_helper_;
   std::unique_ptr<crypto::ScopedTestSystemNSSKeySlot> test_system_slot_;
-  policy::MockConfigurationPolicyProvider mock_policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider>
+      mock_policy_provider_;
   FakeGaia fake_gaia_;
   chromeos::HTTPSForwarder gaia_https_forwarder_;
   chromeos::ScopedStubInstallAttributes install_attributes_;

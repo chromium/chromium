@@ -79,10 +79,9 @@ class ExtensionSettingsApiTest : public ExtensionApiTest {
   void SetUpInProcessBrowserTestFixture() override {
     ExtensionApiTest::SetUpInProcessBrowserTestFixture();
 
-    ON_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillByDefault(Return(true));
-    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(_))
-        .WillByDefault(Return(true));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy_provider_.SetAutoRefresh();
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
