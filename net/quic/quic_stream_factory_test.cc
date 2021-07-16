@@ -2087,8 +2087,11 @@ TEST_P(QuicStreamFactoryTest, MaxOpenStream) {
         ASYNC, server_maker_.MakeRstPacket(1, false, stream_id,
                                            quic::QUIC_STREAM_CANCELLED));
     socket_data.AddRead(
-        ASYNC, server_maker_.MakeMaxStreamsPacket(4, true, 52,
+        ASYNC, server_maker_.MakeMaxStreamsPacket(2, true, 52,
                                                   /*unidirectional=*/false));
+    socket_data.AddWrite(SYNCHRONOUS,
+                         client_maker_.MakeAckPacket(packet_num++, 2, 1));
+
   } else {
     socket_data.AddWrite(
         SYNCHRONOUS, client_maker_.MakeRstPacket(1, true, stream_id,
