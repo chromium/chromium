@@ -363,7 +363,7 @@ absl::optional<std::string> AutomationInternalEnableTreeFunction::EnableTree(
   content::RenderFrameHost* rfh =
       content::RenderFrameHost::FromAXTreeID(ax_tree_id);
   if (!rfh)
-    return "unable to load tab";
+    return absl::nullopt;
 
   content::WebContents* contents =
       content::WebContents::FromRenderFrameHost(rfh);
