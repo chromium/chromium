@@ -7355,6 +7355,9 @@ crbug.com/1225643 [ Mac ] external/wpt/webrtc/simulcast/basic.https.html [ Pass 
 # Test fails due to more accurate size reporting in heap snapshots.
 crbug.com/1229212 inspector-protocol/heap-profiler/heap-samples-in-snapshot.js [ Failure ]
 
+# Pass or fail depending on field trial testing config.
+crbug.com/1197989 wpt_internal/resource-timing/initiator-type-early-hints-preload.h2.window.html [ Pass Failure ]
+
 # Sheriff 2021-07-15
 crbug.com/1229666 external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
 crbug.com/1229666 virtual/synchronous_html_parser/external/wpt/html/semantics/forms/form-submission-0/urlencoded2.window.html [ Pass Timeout ]
