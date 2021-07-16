@@ -2,17 +2,19 @@
 <!-- Copyright 2021 The Chromium Authors. All rights reserved.
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
-<org.chromium.components.browser_ui.widget.FadingEdgeScrollView
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:fadeScrollbars="false">
+    android:layout_height="match_parent">
 
   <RelativeLayout
       android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+      android:layout_height="wrap_content"
+      android:focusable="true"
+      android:focusableInTouchMode="true"
+      android:importantForAccessibility="no">
 
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/edit_button"
@@ -29,6 +31,7 @@
         tools:src="@drawable/edit_icon" />
 
     <LinearLayout
+        android:id="@+id/address_data"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toStartOf="@id/edit_button"
@@ -59,6 +62,34 @@
           android:layout_height="wrap_content"
           android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
           tools:text="+1 858 230 4000" />
+
     </LinearLayout>
+
+    <!-- TODO(crbug.com/1167061): Use localized strings. -->
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/nickname_input_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="6dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="21dp"
+        android:layout_marginEnd="21dp"
+        android:layout_below="@id/address_data"
+        android:paddingStart="0dp"
+        android:paddingEnd="0dp"
+        android:hint="Add a label"
+        app:placeholderText="Home, Work, etc."
+        app:placeholderTextAppearance="@style/TextAppearance.TextMedium.Secondary"
+        tools:ignore="HardcodedText">
+
+      <com.google.android.material.textfield.TextInputEditText
+          android:id="@+id/nickname_input"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:imeOptions="flagNoExtractUi"
+          android:minHeight="48dp"
+          android:singleLine="true"
+          android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
+    </com.google.android.material.textfield.TextInputLayout>
   </RelativeLayout>
-</org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
+</ScrollView>

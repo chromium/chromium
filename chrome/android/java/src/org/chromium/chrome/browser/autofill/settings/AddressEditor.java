@@ -66,6 +66,8 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
     @Nullable
     private EditorFieldModel mEmailField;
     @Nullable
+    private EditorFieldModel mNicknameField;
+    @Nullable
     private List<AddressUiComponent> mAddressUiComponents;
     @Nullable
     private String mCustomDoneButtonText;
@@ -134,6 +136,7 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
      * [ an address field    ] /
      * [ phone number field  ] <----- phone is always present.
      * [ email address field ] <----- only present if purpose is Purpose.AUTOFILL_SETTINGS.
+     * [ address nickname    ] <----- only present if nickname support is enabled.
      */
     @Override
     public void edit(@Nullable final AutofillAddress toEdit,
@@ -268,6 +271,15 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
             }
             // Retrieve and set the email address field.
             mEmailField.setValue(mProfile.getEmailAddress());
+        }
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT)) {
+            if (mNicknameField == null) {
+                mNicknameField = EditorFieldModel.createTextInput();
+                // TODO(crbug.com/1167061): Use localized string.
+                mNicknameField.setLabel("Label");
+            }
         }
 
         // If the user clicks [Cancel], send |toEdit| address back to the caller, which was the
@@ -430,9 +442,10 @@ public class AddressEditor extends EditorBase<AutofillAddress> {
 
             mEditor.addField(field);
         }
-        // Phone number (and email if applicable) are the last fields of the address.
+        // Phone number (and email/nickname if applicable) are the last fields of the address.
         mEditor.addField(mPhoneField);
         if (mEmailField != null) mEditor.addField(mEmailField);
+        if (mNicknameField != null) mEditor.addField(mNicknameField);
     }
 
     /** Country based phone number validator. */
