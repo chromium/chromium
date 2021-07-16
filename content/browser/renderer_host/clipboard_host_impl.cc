@@ -503,7 +503,7 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
     std::move(callback).Run(ClipboardPasteContentAllowed(true));
     return;
   }
-
+  const size_t data_size = data.size();
   auto policy_cb =
       base::BindOnce(&ClipboardHostImpl::PasteIfPolicyAllowedCallback,
                      weak_ptr_factory_.GetWeakPtr(), clipboard_buffer,
@@ -517,7 +517,8 @@ void ClipboardHostImpl::PasteIfPolicyAllowed(
 
     ui::DataTransferPolicyController::Get()->PasteIfAllowed(
         ui::Clipboard::GetForCurrentThread()->GetSource(clipboard_buffer),
-        CreateDataEndpoint().get(), web_contents, std::move(policy_cb));
+        CreateDataEndpoint().get(), data_size, web_contents,
+        std::move(policy_cb));
     return;
   }
   std::move(policy_cb).Run(/*is_allowed=*/true);

@@ -24860,6 +24860,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:89-93', 'chrome_os:89-93'],
+      'deprecated': True,
       'features': {
         'dynamic_refresh': True,
         'per_profile': True,
@@ -24882,6 +24883,25 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'desc': '''This policy controls whether any available privet printers are shown to users in the print preview dialog.
       Setting this policy to Enabled will show available privet printers.
       Setting this policy to Disabled or leaving it unset will result in privet printers not appearing in print preview, as this printing method is deprecated.''',
+    },
+    {
+      'name': 'DataLeakPreventionClipboardCheckSizeLimit',
+      'owners': ['file://chrome/browser/ash/policy/dlp/OWNERS', 'poromov@chromium.org'],
+      'type': 'int',
+      'schema': { 'type': 'integer' , 'minimum' : 0 },
+      'supported_on': ['chrome_os:93-'],
+      'features': {
+        'can_be_recommended': False,
+        'dynamic_refresh': False,
+        'per_profile': False
+      },
+      'example_value': 50,
+      'default': 0,
+      'id': 877,
+      'caption': '''Set minimal size limit for data leak prevention clipboard restriction''',
+      'tags': [],
+      'desc': '''This policy sets the minimal data size (in bytes) of the data in the clipboard that will be checked against clipboard restriction rules defined in DataLeakPreventionRulesList policy.
+      If not set, it defaults to 0 that means that all pastes from the clipboard will be checked according to the configured rules.'''
     },
     {
       'name': 'DataLeakPreventionReportingEnabled',
@@ -27523,6 +27543,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 876,
+  'highest_id_currently_used': 877,
   'highest_atomic_group_id_currently_used': 40
 }

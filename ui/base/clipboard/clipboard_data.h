@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -45,6 +46,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardData {
 
   // Bitmask of ClipboardInternalFormat types.
   int format() const { return format_; }
+
+  // Returns the total size of the data in clipboard, or absl::nullopt if it
+  // can't be determined.
+  absl::optional<size_t> size() const;
 
   const std::string& text() const { return text_; }
   void set_text(const std::string& text) {

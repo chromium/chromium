@@ -119,6 +119,10 @@ class DlpRulesManager : public KeyedService {
   virtual std::string GetSourceUrlPattern(const GURL& source_url,
                                           Restriction restriction,
                                           Level level) const = 0;
+
+  // Returns the admin-configured limit for the minimal size of data in the
+  // clipboard to be checked against DLP rules.
+  virtual int GetClipboardCheckSizeLimitInBytes() const = 0;
 };
 
 }  // namespace policy

@@ -204,6 +204,7 @@ DlpRulesManagerImpl::~DlpRulesManagerImpl() {
 void DlpRulesManagerImpl::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(policy_prefs::kDlpReportingEnabled, false);
   registry->RegisterListPref(policy_prefs::kDlpRulesList);
+  registry->RegisterIntegerPref(policy_prefs::kDlpClipboardCheckSizeLimit, 0);
 }
 
 DlpRulesManager::Level DlpRulesManagerImpl::IsRestricted(
@@ -384,6 +385,11 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
     }
   }
   return std::string();
+}
+
+int DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
+  return pref_change_registrar_.prefs()->GetInteger(
+      policy_prefs::kDlpClipboardCheckSizeLimit);
 }
 
 void DlpRulesManagerImpl::OnPolicyUpdate() {

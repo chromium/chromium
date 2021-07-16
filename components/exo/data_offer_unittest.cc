@@ -84,9 +84,9 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 
  private:
   // ui::DataTransferPolicyController:
-  bool IsClipboardReadAllowed(
-      const ui::DataTransferEndpoint* const data_src,
-      const ui::DataTransferEndpoint* const data_dst) override {
+  bool IsClipboardReadAllowed(const ui::DataTransferEndpoint* const data_src,
+                              const ui::DataTransferEndpoint* const data_dst,
+                              const absl::optional<size_t> size) override {
     if (data_src)
       last_src_type_ = data_src->type();
     last_dst_type_ = data_dst->type();
@@ -95,6 +95,7 @@ class TestDataTransferPolicyController : ui::DataTransferPolicyController {
 
   void PasteIfAllowed(const ui::DataTransferEndpoint* const data_src,
                       const ui::DataTransferEndpoint* const data_dst,
+                      const absl::optional<size_t> size,
                       content::WebContents* web_contents,
                       base::OnceCallback<void(bool)> callback) override {}
 
