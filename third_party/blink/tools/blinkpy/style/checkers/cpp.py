@@ -39,11 +39,14 @@ import math  # for log
 import os
 import os.path
 import re
+import six
 import sre_compile
 import unicodedata
 
 from blinkpy.common.memoized import memoized
 from blinkpy.common.system.filesystem import FileSystem
+
+xrange = six.moves.xrange
 
 # Headers that we consider STL headers.
 _STL_HEADERS = frozenset([
@@ -369,6 +372,12 @@ class Position(object):
 
     def __cmp__(self, other):
         return self.row.__cmp__(other.row) or self.column.__cmp__(other.column)
+
+    if six.PY3:
+
+        def __gt__(self, other):
+            return self.row.__gt__(other.row) or self.column.__gt__(
+                other.column)
 
 
 class SingleLineView(object):

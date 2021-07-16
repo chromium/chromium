@@ -215,7 +215,7 @@ class GlobalVariablesTest(unittest.TestCase):
     def test_max_reports_per_category(self):
         """Check that _MAX_REPORTS_PER_CATEGORY is valid."""
         all_categories = self._all_categories()
-        for category in _MAX_REPORTS_PER_CATEGORY.iterkeys():
+        for category in _MAX_REPORTS_PER_CATEGORY.keys():
             self.assertIn(category, all_categories,
                           'Key "%s" is not a category' % category)
 

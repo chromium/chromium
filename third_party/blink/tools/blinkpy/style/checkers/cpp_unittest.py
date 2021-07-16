@@ -266,7 +266,7 @@ class CppStyleTestBase(unittest.TestCase):
         tuple_position: a tuple (row, column) to compare against.
         """
         self.assertEqual(
-            position, cpp_style.Position(tuple_position[0], tuple_position[1]),
+            (position.row, position.column), tuple_position,
             'position %s, tuple_position %s' % (position, tuple_position))
 
 
@@ -1360,10 +1360,9 @@ class CppStyleTest(CppStyleTestBase):
     def test_invalid_utf8(self):
         def do_test(self, raw_bytes, has_invalid_utf8):
             error_collector = ErrorCollector(self.assertTrue)
-            self.process_file_data(
-                'foo.cpp', 'cpp',
-                unicode(raw_bytes, 'utf8', 'replace').split('\n'),
-                error_collector)
+            unicode_string = raw_bytes.decode('utf8', 'replace').split('\n')
+            self.process_file_data('foo.cpp', 'cpp', unicode_string,
+                                   error_collector)
             # The warning appears only once.
             self.assertEqual(
                 int(has_invalid_utf8),
@@ -1372,12 +1371,12 @@ class CppStyleTest(CppStyleTestBase):
                     ' (or Unicode replacement character).'
                     '  [readability/utf8] [5]'))
 
-        do_test(self, 'Hello world\n', False)
-        do_test(self, '\xe9\x8e\xbd\n', False)
-        do_test(self, '\xe9x\x8e\xbd\n', True)
+        do_test(self, b'Hello world\n', False)
+        do_test(self, b'\xe9\x8e\xbd\n', False)
+        do_test(self, b'\xe9x\x8e\xbd\n', True)
         # This is the encoding of the replacement character itself (which
         # you can see by evaluating codecs.getencoder('utf8')(u'\ufffd')).
-        do_test(self, '\xef\xbf\xbd\n', True)
+        do_test(self, b'\xef\xbf\xbd\n', True)
 
     def test_is_blank_line(self):
         self.assertTrue(cpp_style.is_blank_line(''))
