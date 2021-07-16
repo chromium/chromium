@@ -316,7 +316,6 @@
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
-#include "chrome/browser/spellchecker/spellcheck_service.h"
 #include "components/spellcheck/browser/pref_names.h"
 #include "components/spellcheck/common/spellcheck_features.h"
 #endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
@@ -499,11 +498,8 @@ ChromeBrowserMainParts::ChromeBrowserMainParts(
     StartupData* startup_data)
     : parameters_(parameters),
       parsed_command_line_(parameters.command_line),
-      result_code_(content::RESULT_CODE_NORMAL_EXIT),
       should_call_pre_main_loop_start_startup_on_variations_service_(
           !parameters.ui_task),
-      profile_(nullptr),
-      run_message_loop_(true),
       startup_data_(startup_data) {
   DCHECK(startup_data_);
   // If we're running tests (ui_task is non-null).
@@ -1408,30 +1404,16 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   StartupProfileInfo profile_info = CreatePrimaryProfile(
       parameters(), /*cur_dir=*/base::FilePath(), parsed_command_line());
 
-  switch (profile_info.mode) {
-    case StartupProfileMode::kBrowserWindow:
-    case StartupProfileMode::kProfilePicker:
-      profile_ = profile_info.profile;
-      break;
-    case StartupProfileMode::kError:
-      return content::RESULT_CODE_NORMAL_EXIT;
-  }
+  profile_ = profile_info.profile;
+  if (profile_info.mode == StartupProfileMode::kError)
+    return content::RESULT_CODE_NORMAL_EXIT;
 
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
-  if (first_run::IsChromeFirstRun()) {
-    // The installed Windows language packs aren't determined until
-    // the spellcheck service is initialized. Make sure the primary
-    // preferred language is enabled for spellchecking until the user
-    // opts out later. If there is no dictionary support for the language
-    // then it will later be automatically disabled.
-    SpellcheckService::EnableFirstUserLanguageForSpellcheck(
-        profile_->GetPrefs());
-  }
-
   // Create the spellcheck service. This will asynchronously retrieve the
   // Windows platform spellcheck dictionary language tags used to populate the
   // context menu for editable content.
-  if (spellcheck::UseBrowserSpellChecker() &&
+  if (profile_info.mode == StartupProfileMode::kBrowserWindow &&
+      spellcheck::UseBrowserSpellChecker() &&
       profile_->GetPrefs()->GetBoolean(spellcheck::prefs::kSpellCheckEnable) &&
       !base::FeatureList::IsEnabled(
           spellcheck::kWinDelaySpellcheckServiceInit)) {

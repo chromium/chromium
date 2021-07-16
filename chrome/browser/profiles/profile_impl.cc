@@ -144,6 +144,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_isolation/site_isolation_policy.h"
+#include "components/spellcheck/spellcheck_buildflags.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
@@ -241,6 +242,10 @@
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "components/signin/public/base/signin_switches.h"
+#endif
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#include "chrome/browser/spellchecker/spellcheck_service.h"
 #endif
 
 using base::TimeDelta;
@@ -755,6 +760,17 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
 
   content::URLDataSource::Add(this,
                               std::make_unique<PrefsInternalsSource>(this));
+
+#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+  if (IsNewProfile()) {
+    // The installed Windows language packs aren't determined until
+    // the spellcheck service is initialized. Make sure the primary
+    // preferred language is enabled for spellchecking until the user
+    // opts out later. If there is no dictionary support for the language
+    // then it will later be automatically disabled.
+    SpellcheckService::EnableFirstUserLanguageForSpellcheck(prefs_.get());
+  }
+#endif
 
   if (delegate_) {
     TRACE_EVENT0("browser",

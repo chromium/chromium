@@ -20,6 +20,7 @@
 #include "chrome/common/buildflags.h"
 #include "content/public/browser/browser_main_parts.h"
 #include "content/public/common/main_function_params.h"
+#include "content/public/common/result_codes.h"
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
 #include "chrome/browser/downgrade/downgrade_manager.h"
@@ -142,7 +143,7 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // TODO(sky): remove this. This class (and related calls), may mutate the
   // CommandLine, so it is misleading keeping a const ref here.
   const base::CommandLine& parsed_command_line_;
-  int result_code_;
+  int result_code_ = content::RESULT_CODE_NORMAL_EXIT;
 
 #if !defined(OS_ANDROID)
   // Create ShutdownWatcherHelper object for watching jank during shutdown.
@@ -199,8 +200,8 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<first_run::MasterPrefs> master_prefs_;
 #endif
 
-  Profile* profile_;
-  bool run_message_loop_;
+  Profile* profile_ = nullptr;
+  bool run_message_loop_ = true;
 
   base::FilePath user_data_dir_;
 
