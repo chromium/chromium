@@ -26,6 +26,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/base/escape.h"
 #include "net/base/parse_number.h"
@@ -150,6 +151,13 @@ struct HttpResponseHeaders::ParsedHeader {
   std::string::const_iterator name_end;
   std::string::const_iterator value_begin;
   std::string::const_iterator value_end;
+
+  // Write a representation of this object into a tracing proto.
+  void WriteIntoTrace(perfetto::TracedValue context) const {
+    auto dict = std::move(context).WriteDictionary();
+    dict.Add("name", base::MakeStringPiece(name_begin, name_end));
+    dict.Add("value", base::MakeStringPiece(value_begin, value_end));
+  }
 };
 
 //-----------------------------------------------------------------------------
@@ -1380,6 +1388,12 @@ bool HttpResponseHeaders::IsCookieResponseHeader(base::StringPiece name) {
       return true;
   }
   return false;
+}
+
+void HttpResponseHeaders::WriteIntoTrace(perfetto::TracedValue context) const {
+  perfetto::TracedDictionary dict = std::move(context).WriteDictionary();
+  dict.Add("response_code", response_code_);
+  dict.Add("headers", parsed_);
 }
 
 }  // namespace net

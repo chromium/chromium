@@ -14,11 +14,13 @@
 
 #include "base/pickle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "base/values.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
 #include "net/log/net_log_capture_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"
 
 namespace net {
 
@@ -1823,6 +1825,16 @@ TEST(HttpResponseHeadersTest, SetHeader) {
       "Content-Length: 42\n"
       "connection: close\n",
       ToSimpleString(headers));
+}
+
+TEST(HttpResponseHeadersTest, TracingSupport) {
+  scoped_refptr<HttpResponseHeaders> headers = HttpResponseHeaders::TryToCreate(
+      "HTTP/1.1 200 OK\n"
+      "connection: keep-alive\n");
+  ASSERT_TRUE(headers);
+
+  EXPECT_EQ(perfetto::TracedValueToString(headers),
+            "{response_code:200,headers:[{name:connection,value:keep-alive}]}");
 }
 
 struct RemoveHeaderTestData {

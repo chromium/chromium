@@ -7,6 +7,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -166,6 +167,31 @@ struct TraceFormatTraits<const wchar_t*> {
                              const wchar_t* value) {
     return std::move(context).WriteString(
         ::base::WideToUTF8(::base::WStringPiece(value)));
+  }
+};
+
+// base::StringPiece support.
+template <>
+struct TraceFormatTraits<::base::StringPiece> {
+  static void WriteIntoTrace(perfetto::TracedValue context,
+                             ::base::StringPiece value) {
+    return std::move(context).WriteString(value.data(), value.length());
+  }
+};
+
+template <>
+struct TraceFormatTraits<::base::StringPiece16> {
+  static void WriteIntoTrace(perfetto::TracedValue context,
+                             ::base::StringPiece16 value) {
+    return std::move(context).WriteString(::base::UTF16ToUTF8(value));
+  }
+};
+
+template <>
+struct TraceFormatTraits<::base::WStringPiece> {
+  static void WriteIntoTrace(perfetto::TracedValue context,
+                             ::base::WStringPiece value) {
+    return std::move(context).WriteString(::base::WideToUTF8(value));
   }
 };
 

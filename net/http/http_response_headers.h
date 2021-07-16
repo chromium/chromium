@@ -20,6 +20,7 @@
 #include "net/base/net_export.h"
 #include "net/http/http_version.h"
 #include "net/log/net_log_capture_mode.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 namespace base {
 class Pickle;
@@ -332,6 +333,9 @@ class NET_EXPORT HttpResponseHeaders
   // Returns true if |name| is a cookie related header name. This is consistent
   // with |PERSIST_SANS_COOKIES|.
   static bool IsCookieResponseHeader(base::StringPiece name);
+
+  // Write a representation of this object into tracing proto.
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend class base::RefCountedThreadSafe<HttpResponseHeaders>;
