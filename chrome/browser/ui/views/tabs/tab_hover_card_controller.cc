@@ -334,6 +334,11 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
   UpdateCardContent(target_tab_);
   MaybeStartThumbnailObservation(target_tab_, is_initial);
 
+  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
+  // by other secondary UI Widgets (such as the omnibox Widget, see
+  // crbug.com/1226536).
+  hover_card_->GetWidget()->StackAtTop();
+
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
     hover_card_->GetWidget()->Show();

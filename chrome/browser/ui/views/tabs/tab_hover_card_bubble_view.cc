@@ -486,10 +486,6 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
 
   views::BubbleDialogDelegateView::CreateBubble(this);
   set_adjust_if_offscreen(true);
-  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
-  // by other secondary UI Widgets (such as the omnibox Widget, see
-  // crbug.com/1226536).
-  GetWidget()->StackAtTop();
 
   constexpr int kFootnoteVerticalMargin = 8;
   GetBubbleFrameView()->SetFootnoteMargins(
