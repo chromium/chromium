@@ -16,6 +16,7 @@
 namespace blink {
 
 class MediaStreamComponent;
+struct MediaStreamDevice;
 
 class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
     : public VideoFrameQueueUnderlyingSource,
@@ -23,6 +24,8 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
  public:
   using CrossThreadFrameQueueSource =
       CrossThreadPersistent<TransferredVideoFrameQueueUnderlyingSource>;
+  static const int kMaxMonitoredFrameCount;
+  static const int kMinMonitoredFrameCount;
 
   explicit MediaStreamVideoTrackUnderlyingSource(
       ScriptState*,
@@ -42,7 +45,14 @@ class MODULES_EXPORT MediaStreamVideoTrackUnderlyingSource
   GetStreamTransferOptimizer();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoTrackUnderlyingSourceTest,
+                           DeviceIdAndMaxFrameCountForMonitoring);
+  FRIEND_TEST_ALL_PREFIXES(MediaStreamVideoTrackUnderlyingSourceTest,
+                           FrameLimiter);
+
   scoped_refptr<base::SequencedTaskRunner> GetIOTaskRunner();
+  static std::string GetDeviceIdForMonitoring(const MediaStreamDevice& device);
+  static wtf_size_t GetFramePoolSize(const MediaStreamDevice& device);
 
   // FrameQueueUnderlyingSource implementation.
   bool StartFrameDelivery() override;

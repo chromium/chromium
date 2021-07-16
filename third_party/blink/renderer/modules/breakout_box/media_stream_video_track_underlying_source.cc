@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/breakout_box/media_stream_video_track_underlying_source.h"
 
+#include "base/feature_list.h"
+#include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/breakout_box/frame_queue_transferring_optimizer.h"
@@ -16,12 +18,35 @@
 
 namespace blink {
 
+namespace {
+constexpr char kScreenPrefix[] = "screen:";
+constexpr char kWindowPrefix[] = "window:";
+
+bool IsScreenOrWindowCapture(const std::string& device_id) {
+  return base::StartsWith(device_id, kScreenPrefix,
+                          base::CompareCase::SENSITIVE) ||
+         base::StartsWith(device_id, kWindowPrefix,
+                          base::CompareCase::SENSITIVE);
+}
+}  // namespace
+
+const base::Feature kBreakoutBoxFrameLimiter{"BreakoutBoxFrameLimiter",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
+const int MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount = 20;
+const int MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount = 2;
+
 MediaStreamVideoTrackUnderlyingSource::MediaStreamVideoTrackUnderlyingSource(
     ScriptState* script_state,
     MediaStreamComponent* track,
     ScriptWrappable* media_stream_track_processor,
     wtf_size_t max_queue_size)
-    : FrameQueueUnderlyingSource(script_state, max_queue_size),
+    : FrameQueueUnderlyingSource(
+          script_state,
+          max_queue_size,
+          GetDeviceIdForMonitoring(
+              track->Source()->GetPlatformSource()->device()),
+          GetFramePoolSize(track->Source()->GetPlatformSource()->device())),
       media_stream_track_processor_(media_stream_track_processor),
       track_(track) {
   DCHECK(track_);
@@ -87,6 +112,53 @@ bool MediaStreamVideoTrackUnderlyingSource::StartFrameDelivery() {
 void MediaStreamVideoTrackUnderlyingSource::StopFrameDelivery() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DisconnectFromTrack();
+}
+
+// static
+std::string MediaStreamVideoTrackUnderlyingSource::GetDeviceIdForMonitoring(
+    const MediaStreamDevice& device) {
+  if (!base::FeatureList::IsEnabled(kBreakoutBoxFrameLimiter))
+    return std::string();
+
+  switch (device.type) {
+    case mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      return device.id;
+    case mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+      if (IsScreenOrWindowCapture(device.id))
+        return device.id;
+      U_FALLTHROUGH;
+    default:
+      return std::string();
+  }
+}
+
+// static
+wtf_size_t MediaStreamVideoTrackUnderlyingSource::GetFramePoolSize(
+    const MediaStreamDevice& device) {
+  switch (device.type) {
+    case mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+      return static_cast<wtf_size_t>(std::min(
+          MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount,
+          std::max(
+              MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount,
+              std::max(media::kVideoCaptureDefaultMaxBufferPoolSize / 2,
+                       media::DeviceVideoCaptureMaxBufferPoolSize() / 3))));
+    case mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+      if (IsScreenOrWindowCapture(device.id)) {
+        return static_cast<wtf_size_t>(std::min(
+            MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount,
+            std::max(
+                MediaStreamVideoTrackUnderlyingSource::kMinMonitoredFrameCount,
+                media::kVideoCaptureDefaultMaxBufferPoolSize / 2)));
+      }
+      U_FALLTHROUGH;
+    default:
+      // There will be no monitoring and no frame pool size. Return 0 to signal
+      // that the returned value will not be used.
+      return 0u;
+  }
 }
 
 }  // namespace blink

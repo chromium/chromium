@@ -6,7 +6,9 @@
 
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
+#include "media/capture/video/video_capture_buffer_pool_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/web/web_heap.h"
@@ -21,6 +23,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
 #include "third_party/blink/renderer/modules/mediastream/mock_media_stream_video_sink.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
+#include "third_party/blink/renderer/modules/webcodecs/video_frame_monitor.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -78,6 +81,22 @@ class MediaStreamVideoTrackUnderlyingSourceTest : public testing::Test {
       frame->set_timestamp(*timestamp);
     pushable_video_source_->PushFrame(frame, base::TimeTicks());
     platform_->RunUntilIdle();
+  }
+
+  static PushableMediaStreamVideoSource* CreateDevicePushableSource(
+      const std::string& device_id) {
+    auto* media_stream_source = MakeGarbageCollected<MediaStreamSource>(
+        "dummy_source_id", MediaStreamSource::kTypeVideo, "dummy_source_name",
+        false /* remote */);
+    auto* pushable_video_source = new PushableMediaStreamVideoSource(
+        scheduler::GetSingleThreadTaskRunnerForTesting());
+    MediaStreamDevice device(mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE,
+                             device_id, "My window device");
+    pushable_video_source->SetDevice(device);
+    media_stream_source->SetPlatformSource(
+        base::WrapUnique(pushable_video_source));
+
+    return pushable_video_source;
   }
 
   ScopedTestingPlatformSupport<IOTaskRunnerTestingPlatformSupport> platform_;
@@ -243,6 +262,277 @@ TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, CloseBeforeStart) {
       v8_scope.GetScriptState(), source, 0);
   EXPECT_TRUE(source->IsClosed());
   EXPECT_TRUE(stream->IsClosed());
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest,
+       DeviceIdAndMaxFrameCountForMonitoring) {
+  using M = MediaStreamVideoTrackUnderlyingSource;
+  const std::string window_id = "window:a-window";
+  const std::string screen_id = "screen:a-screen";
+  const std::string tab_id = "web-contents-media-stream://5:1";
+  const std::string camera_id = "my-camera";
+  const std::string mic_id = "my-mic";
+
+  MediaStreamDevice device;
+  device.type = mojom::MediaStreamType::NO_SERVICE;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  device.id = mic_id;
+  device.type = mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  device.id = tab_id;
+  device.type = mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+  device.type = mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  device.type = mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE;
+  device.id = screen_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+  device.id = window_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  device.type = mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  device.id = screen_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+  device.id = window_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+  device.id = tab_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  device.type = mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+  device.id = tab_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+
+  // Camera capture is subject to monitoring.
+  device.type = mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
+  device.id = camera_id;
+  EXPECT_FALSE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device),
+            static_cast<size_t>(
+                std::max(media::kVideoCaptureDefaultMaxBufferPoolSize / 2,
+                         media::DeviceVideoCaptureMaxBufferPoolSize() / 3)));
+
+  // Screen and Window capture with the desktop capture extension API are
+  // subject to monitoring.
+  device.type = mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
+  device.id = screen_id;
+  EXPECT_FALSE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(
+      M::GetFramePoolSize(device),
+      static_cast<size_t>(media::kVideoCaptureDefaultMaxBufferPoolSize / 2));
+  device.id = window_id;
+  EXPECT_FALSE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(
+      M::GetFramePoolSize(device),
+      static_cast<size_t>(media::kVideoCaptureDefaultMaxBufferPoolSize / 2));
+
+  // Screen and Window capture with getDisplayMedia are subject to monitoring,
+  // but not tab capture.
+  device.type = mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  device.id = screen_id;
+  EXPECT_FALSE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(
+      M::GetFramePoolSize(device),
+      static_cast<size_t>(media::kVideoCaptureDefaultMaxBufferPoolSize / 2));
+  device.id = window_id;
+  EXPECT_FALSE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(
+      M::GetFramePoolSize(device),
+      static_cast<size_t>(media::kVideoCaptureDefaultMaxBufferPoolSize / 2));
+  device.id = tab_id;
+  EXPECT_TRUE(M::GetDeviceIdForMonitoring(device).empty());
+  EXPECT_EQ(M::GetFramePoolSize(device), 0u);
+}
+
+TEST_F(MediaStreamVideoTrackUnderlyingSourceTest, FrameLimiter) {
+  const std::string device_id = "window:my-window";
+  auto* pushable_video_source = CreateDevicePushableSource(device_id);
+  V8TestingScope v8_scope;
+  ScriptState* script_state = v8_scope.GetScriptState();
+  auto* track = MakeGarbageCollected<MediaStreamTrack>(
+      v8_scope.GetExecutionContext(),
+      MediaStreamVideoTrack::CreateVideoTrack(
+          pushable_video_source,
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  // Use a large buffer so that the effective buffer size is guaranteed to be
+  // the one set by frame monitoring.
+  auto* source = CreateSource(
+      script_state, track,
+      MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount);
+  const wtf_size_t max_frame_count =
+      MediaStreamVideoTrackUnderlyingSource::GetFramePoolSize(
+          pushable_video_source->device());
+
+  // This test assumes that |max_frame_count| is 2, for simplicity.
+  ASSERT_EQ(max_frame_count, 2u);
+
+  VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      v8_scope.GetScriptState(), source, 0);
+
+  // Add a sink to the track to make it possible to wait until a pushed frame
+  // is delivered to sinks, including |source|, which is a sink of the track.
+  MockMediaStreamVideoSink mock_sink;
+  mock_sink.ConnectToTrack(WebMediaStreamTrack(source->Track()));
+  auto push_frame_sync = [&](scoped_refptr<media::VideoFrame> video_frame) {
+    base::RunLoop sink_loop;
+    EXPECT_CALL(mock_sink, OnVideoFrame(_))
+        .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
+    pushable_video_source->PushFrame(std::move(video_frame),
+                                     base::TimeTicks::Now());
+    sink_loop.Run();
+  };
+
+  Vector<scoped_refptr<media::VideoFrame>> frames;
+  auto create_video_frame = [&]() {
+    auto frame = media::VideoFrame::CreateBlackFrame(gfx::Size(10, 10));
+    frames.push_back(frame);
+    return frame;
+  };
+  auto get_frame_id = [&](int idx) { return frames[idx]->unique_id(); };
+
+  EXPECT_TRUE(monitor.IsEmpty());
+  // These frames are queued, pending to be read.
+  for (size_t i = 0; i < max_frame_count; ++i) {
+    auto video_frame = create_video_frame();
+    int frame_id = video_frame->unique_id();
+    push_frame_sync(std::move(video_frame));
+    EXPECT_EQ(monitor.NumFrames(device_id), i + 1);
+    EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 1);
+  }
+  {
+    // Push another video frame with the limit reached.
+    auto video_frame = create_video_frame();
+    int frame_id = video_frame->unique_id();
+    push_frame_sync(std::move(video_frame));
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 1);
+
+    // The oldest frame should have been removed from the queue.
+    EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(0)), 0);
+  }
+
+  auto* reader = stream->GetDefaultReaderForTesting(
+      script_state, v8_scope.GetExceptionState());
+  VideoFrame* video_frame1 = ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+  EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(1)), 1);
+
+  VideoFrame* clone_frame1 = video_frame1->clone(v8_scope.GetExceptionState());
+  EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(1)), 2);
+
+  VideoFrame* video_frame2 = ReadObjectFromStream<VideoFrame>(v8_scope, reader);
+  EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(2)), 1);
+
+  // A new frame arrives, but the limit has been reached and there is nothing
+  // that can be replaced.
+  {
+    auto video_frame = create_video_frame();
+    int frame_id = video_frame->unique_id();
+    push_frame_sync(std::move(video_frame));
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_EQ(monitor.NumRefs(device_id, frame_id), 0);
+  }
+
+  // One of the JS VideoFrames backed by frames[1] is closed.
+  clone_frame1->close();
+  EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(1)), 1);
+
+  // A new source connected to the same device is created and started in another
+  // execution context.
+  auto* pushable_video_source2 = CreateDevicePushableSource(device_id);
+  V8TestingScope v8_scope2;
+  ScriptState* script_state2 = v8_scope2.GetScriptState();
+  auto* track2 = MakeGarbageCollected<MediaStreamTrack>(
+      v8_scope2.GetExecutionContext(),
+      MediaStreamVideoTrack::CreateVideoTrack(
+          pushable_video_source2,
+          MediaStreamVideoSource::ConstraintsOnceCallback(),
+          /*enabled=*/true));
+  auto* source2 = CreateSource(
+      script_state2, track2,
+      MediaStreamVideoTrackUnderlyingSource::kMaxMonitoredFrameCount);
+  ReadableStream::CreateWithCountQueueingStrategy(script_state2, source2, 0);
+
+  MockMediaStreamVideoSink mock_sink2;
+  mock_sink2.ConnectToTrack(WebMediaStreamTrack(source2->Track()));
+  auto push_frame_sync2 = [&](scoped_refptr<media::VideoFrame> video_frame) {
+    base::RunLoop sink_loop;
+    EXPECT_CALL(mock_sink2, OnVideoFrame(_))
+        .WillOnce(base::test::RunOnceClosure(sink_loop.QuitClosure()));
+    pushable_video_source2->PushFrame(std::move(video_frame),
+                                      base::TimeTicks::Now());
+    sink_loop.Run();
+  };
+
+  // The system delivers the last two created frames to the new source.
+  {
+    int idx = frames.size() - 2;
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_GT(monitor.NumRefs(device_id, get_frame_id(idx)), 0);
+    int num_refs = monitor.NumRefs(device_id, get_frame_id(idx));
+    // The limit has been reached, but this frame is already monitored,
+    // so it is queued.
+    push_frame_sync2(frames[idx]);
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(idx)), num_refs + 1);
+  }
+  {
+    int idx = frames.size() - 1;
+    // The limit has been reached, and this frame was dropped by the other
+    // source, so it is dropped by this one too.
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(idx)), 0);
+    push_frame_sync2(frames[idx]);
+    EXPECT_EQ(monitor.NumFrames(device_id), max_frame_count);
+    EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(idx)), 0);
+  }
+
+  // The first context closes its source, but its VideoFrame objects are still
+  // open.
+  source->Close();
+
+  // At this point, the only monitored frames are frames[1] and frames[2], both
+  // open in context 1. frames[2] is also queued in context 2.
+  EXPECT_EQ(monitor.NumFrames(device_id), 2u);
+
+  // video_frame1 is the only reference to frames[1].
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(1)), 1);
+
+  // video_frame2 is frames[2] and is open in context 1 and queued in context 2.
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(2)), 2);
+
+  // Context 1 closes its video_frame1.
+  video_frame1->close();
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(1)), 0);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(2)), 2);
+
+  // Context 1 closes its video_frame2, after which the only monitored frame is
+  // the one queued by source 2.
+  video_frame2->close();
+  EXPECT_EQ(monitor.NumFrames(device_id), 1u);
+  EXPECT_EQ(monitor.NumRefs(device_id, get_frame_id(2)), 1);
+
+  // Context 2 closes its source, which should clear everything in the monitor.
+  source2->Close();
+  EXPECT_TRUE(monitor.IsEmpty());
 }
 
 }  // namespace blink

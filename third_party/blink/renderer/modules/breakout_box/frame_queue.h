@@ -20,22 +20,48 @@ class FrameQueue
   explicit FrameQueue(wtf_size_t max_size)
       : max_size_(std::max(1u, max_size)) {}
 
-  void Push(NativeFrameType frame) {
+  Mutex& GetMutex() { return lock_; }
+
+  absl::optional<NativeFrameType> Push(NativeFrameType frame) {
     MutexLocker locker_(lock_);
+    return PushLocked(std::move(frame));
+  }
+
+  absl::optional<NativeFrameType> PushLocked(NativeFrameType frame) {
+    lock_.AssertAcquired();
+    absl::optional<NativeFrameType> ret;
     if (queue_.size() == max_size_)
-      queue_.pop_front();
+      ret = queue_.TakeFirst();
     queue_.push_back(std::move(frame));
+    return ret;
   }
 
   absl::optional<NativeFrameType> Pop() {
     MutexLocker locker_(lock_);
+    return PopLocked();
+  }
+
+  absl::optional<NativeFrameType> PopLocked() {
+    lock_.AssertAcquired();
     if (queue_.empty())
       return absl::nullopt;
     return queue_.TakeFirst();
   }
 
+  absl::optional<NativeFrameType> PeekLocked() {
+    lock_.AssertAcquired();
+    if (queue_.empty())
+      return absl::nullopt;
+    return queue_.front();
+  }
+
   bool IsEmpty() {
     MutexLocker locker_(lock_);
+    return IsEmptyLocked();
+  }
+
+  bool IsEmptyLocked() {
+    lock_.AssertAcquired();
     return queue_.empty();
   }
 
