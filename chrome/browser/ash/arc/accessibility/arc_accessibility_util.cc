@@ -228,8 +228,8 @@ ax::mojom::Action ConvertToChromeAction(
     case arc::mojom::AccessibilityActionType::CLICK:
       return ax::mojom::Action::kDoDefault;
     case arc::mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS:
-      // TODO: there are multiple actions converted to ACCESSIBILITY_FOCUS.
-      //  Consider if this is appropriate.
+      // TODO(hirokisato): there are multiple actions converted to
+      // ACCESSIBILITY_FOCUS. Consider if this is appropriate.
       return ax::mojom::Action::kSetSequentialFocusNavigationStartingPoint;
     case arc::mojom::AccessibilityActionType::SHOW_ON_SCREEN:
       return ax::mojom::Action::kScrollToMakeVisible;

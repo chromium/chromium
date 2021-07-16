@@ -5,6 +5,9 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
 #define CHROME_BROWSER_ASH_ARC_ACCESSIBILITY_ARC_ACCESSIBILITY_TEST_UTIL_H_
 
+#include <string>
+#include <vector>
+
 #include "base/containers/flat_map.h"
 #include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

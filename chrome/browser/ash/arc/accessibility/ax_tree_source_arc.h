@@ -131,7 +131,8 @@ class AXTreeSourceArc : public ui::AXTreeSource<AccessibilityInfoDataWrapper*>,
   void ComputeEnclosingBoundsInternal(AccessibilityInfoDataWrapper* info_data,
                                       gfx::Rect* computed_bounds) const;
 
-  // Find the most top-left focusable node under the given node in full focus mode.
+  // Find the most top-left focusable node under the given node in full focus
+  // mode.
   AccessibilityInfoDataWrapper* FindFirstFocusableNodeInFullFocusMode(
       AccessibilityInfoDataWrapper* info_data) const;
 

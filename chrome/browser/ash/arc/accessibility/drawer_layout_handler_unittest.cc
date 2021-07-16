@@ -7,6 +7,7 @@
 #include <map>
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_node_info_data_wrapper.h"

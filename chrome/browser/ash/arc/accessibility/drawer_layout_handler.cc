@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/arc/accessibility/drawer_layout_handler.h"
 
+#include <vector>
+
 #include "base/strings/string_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
