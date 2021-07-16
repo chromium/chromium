@@ -34,6 +34,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.STORE_HOURS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_CONTINUATION_ANDROID;
 import static org.chromium.chrome.browser.tasks.tab_management.MessageCardViewProperties.MESSAGE_TYPE;
@@ -1118,6 +1119,71 @@ public class TabListMediatorUnitTest {
      */
     private void prepareForPriceDrop() {
         PriceTrackingUtilities.ENABLE_PRICE_TRACKING.setForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        PersistedTabDataConfiguration.setUseTestConfig(true);
+        initAndAssertAllProperties();
+        setUpForTabGroupOperation(TabListMediatorType.TAB_SWITCHER);
+    }
+
+    @Test
+    public void testStoreHoursFetcherActiveForForUngroupedTabs() {
+        prepareForStoreHours();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testStoreHoursFetcherInactiveForForGroupedTabs() {
+        prepareForStoreHours();
+        resetWithRegularTabs(true);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    @Test
+    public void testStoreHoursFetcherGroupedThenUngrouped() {
+        prepareForStoreHours();
+        resetWithRegularTabs(true);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+        resetWithRegularTabs(false);
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+    }
+
+    @Test
+    public void testStoreHoursFetcherUngroupedThenGrouped() {
+        prepareForStoreHours();
+        resetWithRegularTabs(false);
+
+        assertThat(mModel.size(), equalTo(2));
+        assertThat(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+        assertThat(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER),
+                instanceOf(TabListMediator.StorePersistedTabDataFetcher.class));
+        resetWithRegularTabs(true);
+        assertThat(mModel.size(), equalTo(2));
+        assertNull(mModel.get(0).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+        assertNull(mModel.get(1).model.get(TabProperties.STORE_PERSISTED_TAB_DATA_FETCHER));
+    }
+
+    /**
+     * Set flags and initialize for verifying store hours behavior
+     */
+    private void prepareForStoreHours() {
+        CachedFeatureFlags.setForTesting(STORE_HOURS, true);
         PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
         PersistedTabDataConfiguration.setUseTestConfig(true);
         initAndAssertAllProperties();
