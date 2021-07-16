@@ -55,6 +55,7 @@ class Model:
     <project name="MyProject">
       <owner>owner@chromium.org</owner>
       <id>none</id>
+      <scope>profile</scope>
       <summary> My project. </summary>
 
       <event name="MyEvent">
@@ -73,6 +74,7 @@ class Model:
   NAME_REGEX = r'^[A-Za-z0-9_.]+$'
   TYPE_REGEX = r'^(hmac-string|int)$'
   ID_REGEX = r'^(none|per-project|uma)$'
+  SCOPE_REGEX = r'^(profile|device)$'
 
   def __init__(self, xml_string):
     elem = ET.fromstring(xml_string)
@@ -103,6 +105,7 @@ class Project:
     <project name="MyProject">
       <owner>owner@chromium.org</owner>
       <id>none</id>
+      <scope>project</scope>
       <summary> My project. </summary>
 
       <event name="MyEvent">
@@ -118,11 +121,12 @@ class Project:
 
   def __init__(self, elem):
     util.check_attributes(elem, {'name'})
-    util.check_children(elem, {'id', 'summary', 'owner', 'event'})
+    util.check_children(elem, {'id', 'scope', 'summary', 'owner', 'event'})
     util.check_child_names_unique(elem, 'event')
 
     self.name = util.get_attr(elem, 'name', Model.NAME_REGEX)
     self.id = util.get_text_child(elem, 'id', Model.ID_REGEX)
+    self.scope = util.get_text_child(elem, 'scope', Model.SCOPE_REGEX)
     self.summary = util.get_text_child(elem, 'summary')
     self.owners = util.get_text_children(elem, 'owner', Model.OWNER_REGEX)
 
@@ -138,6 +142,7 @@ class Project:
                <project name="{name}">
                {owners}
                  <id>{id}</id>
+                 <scope>{scope}</scope>
                  <summary>
                {summary}
                  </summary>
@@ -147,6 +152,7 @@ class Project:
     return result.format(name=self.name,
                          owners=owners,
                          id=self.id,
+                         scope=self.scope,
                          summary=summary,
                          events=events)
 

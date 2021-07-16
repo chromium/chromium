@@ -41,7 +41,13 @@ constexpr char kExternalMetricsDir[] = "/var/lib/metrics/structured/events";
 
 int StructuredMetricsProvider::kMaxEventsPerUpload = 100;
 
-char StructuredMetricsProvider::kStorageDirectory[] = "structured_metrics";
+char StructuredMetricsProvider::kProfileKeyDataPath[] =
+    "structured_metrics/keys";
+
+char StructuredMetricsProvider::kDeviceKeyDataPath[] =
+    "/var/lib/metrics/structured/chromium/keys";
+
+char StructuredMetricsProvider::kUnsentLogsPath[] = "structured_metrics/events";
 
 StructuredMetricsProvider::StructuredMetricsProvider() {
   Recorder::GetInstance()->AddObserver(this);
@@ -63,15 +69,9 @@ void StructuredMetricsProvider::OnExternalMetricsCollected(
 void StructuredMetricsProvider::OnKeyDataInitialized() {
   DCHECK(base::CurrentUIThread::IsSet());
 
-  switch (init_state_) {
-    case InitState::kProfileAdded:
-      init_state_ = InitState::kKeysInitialized;
-      break;
-    case InitState::kEventsInitialized:
-      init_state_ = InitState::kInitialized;
-      break;
-    default:
-      NOTREACHED();
+  ++init_count_;
+  if (init_count_ == kTargetInitCount) {
+    init_state_ = InitState::kInitialized;
   }
 }
 
@@ -90,15 +90,9 @@ void StructuredMetricsProvider::OnRead(const ReadStatus status) {
       break;
   }
 
-  switch (init_state_) {
-    case InitState::kProfileAdded:
-      init_state_ = InitState::kEventsInitialized;
-      break;
-    case InitState::kKeysInitialized:
-      init_state_ = InitState::kInitialized;
-      break;
-    default:
-      NOTREACHED();
+  ++init_count_;
+  if (init_count_ == kTargetInitCount) {
+    init_state_ = InitState::kInitialized;
   }
 }
 
@@ -129,14 +123,25 @@ void StructuredMetricsProvider::OnProfileAdded(
     return;
   init_state_ = InitState::kProfileAdded;
 
-  const auto storage_directory = profile_path.Append(kStorageDirectory);
   const auto save_delay = base::TimeDelta::FromMilliseconds(kSaveDelayMs);
-  key_data_ = std::make_unique<KeyData>(
-      storage_directory.Append("keys"), save_delay,
+
+  profile_key_data_ = std::make_unique<KeyData>(
+      profile_path.Append(kProfileKeyDataPath), save_delay,
       base::BindOnce(&StructuredMetricsProvider::OnKeyDataInitialized,
                      weak_factory_.GetWeakPtr()));
+
+  // TODO(crbug.com/1148168): Change this to receive the key data path in the
+  // constructor and avoid the test-specific logic.
+  const auto device_key_data_path = device_key_data_path_for_test_.has_value()
+                                        ? device_key_data_path_for_test_.value()
+                                        : base::FilePath(kDeviceKeyDataPath);
+  device_key_data_ = std::make_unique<KeyData>(
+      base::FilePath(device_key_data_path), save_delay,
+      base::BindOnce(&StructuredMetricsProvider::OnKeyDataInitialized,
+                     weak_factory_.GetWeakPtr()));
+
   events_ = std::make_unique<PersistentProto<EventsProto>>(
-      storage_directory.Append("events"), save_delay,
+      profile_path.Append(kUnsentLogsPath), save_delay,
       base::BindOnce(&StructuredMetricsProvider::OnRead,
                      weak_factory_.GetWeakPtr()),
       base::BindRepeating(&StructuredMetricsProvider::OnWrite,
@@ -171,7 +176,8 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
   if (!recording_enabled_ || init_state_ != InitState::kInitialized)
     return;
 
-  DCHECK(key_data_->is_initialized());
+  DCHECK(profile_key_data_->is_initialized());
+  DCHECK(device_key_data_->is_initialized());
 
   // TODO(crbug.com/1148168): We are transitioning to new upload behaviour for
   // non-client_id-identified metrics. See structured_metrics_features.h for
@@ -197,7 +203,38 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
     event_proto = events_.get()->get()->add_non_uma_events();
   }
 
-  event_proto->set_profile_event_id(key_data_->Id(event.project_name_hash()));
+  // Choose which KeyData to use for this event.
+  KeyData* key_data;
+  switch (event.id_scope()) {
+    case EventBase::IdScope::kPerProfile:
+      key_data = profile_key_data_.get();
+      break;
+    case EventBase::IdScope::kPerDevice:
+      key_data = device_key_data_.get();
+      break;
+    default:
+      // In case id_scope is uninitialized.
+      NOTREACHED();
+  }
+
+  // Set the ID for this event, if any.
+  switch (event.id_type()) {
+    case EventBase::IdType::kProjectId:
+      event_proto->set_profile_event_id(
+          key_data->Id(event.project_name_hash()));
+      break;
+    case EventBase::IdType::kUmaId:
+      // TODO(crbug.com/1148168): Unimplemented.
+      break;
+    case EventBase::IdType::kUnidentified:
+      // Do nothing.
+      break;
+    default:
+      // In case id_type is uninitialized.
+      NOTREACHED();
+      break;
+  }
+
   event_proto->set_event_name_hash(event.name_hash());
   for (const auto& metric : event.metrics()) {
     auto* metric_proto = event_proto->add_metrics();
@@ -208,7 +245,7 @@ void StructuredMetricsProvider::OnRecord(const EventBase& event) {
         metric_proto->set_value_int64(metric.int_value);
         break;
       case EventBase::MetricType::kString:
-        const int64_t hmac = key_data_->HmacMetric(
+        const int64_t hmac = key_data->HmacMetric(
             event.project_name_hash(), metric.name_hash, metric.string_value);
         metric_proto->set_value_hmac(hmac);
         break;
@@ -316,6 +353,14 @@ void StructuredMetricsProvider::SetExternalMetricsDirForTest(
       base::BindRepeating(
           &StructuredMetricsProvider::OnExternalMetricsCollected,
           weak_factory_.GetWeakPtr()));
+}
+
+void StructuredMetricsProvider::SetDeviceKeyDataPathForTest(
+    const base::FilePath& path) {
+  // Updating the path after a profile has been added will have no effect, so
+  // make it an error.
+  DCHECK_EQ(init_state_, InitState::kUninitialized);
+  device_key_data_path_for_test_ = path;
 }
 
 }  // namespace structured

@@ -11,10 +11,12 @@ namespace structured {
 
 EventBase::EventBase(uint64_t event_name_hash,
                      uint64_t project_name_hash,
-                     IdType id_type)
+                     IdType id_type,
+                     IdScope id_scope)
     : event_name_hash_(event_name_hash),
       project_name_hash_(project_name_hash),
-      id_type_(id_type) {}
+      id_type_(id_type),
+      id_scope_(id_scope) {}
 EventBase::EventBase(const EventBase& other) = default;
 EventBase::~EventBase() = default;
 

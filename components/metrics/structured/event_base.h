@@ -29,6 +29,13 @@ class EventBase {
     kUnidentified = 2,
   };
 
+  // Specifies whether an identifier is used different for each profile, or is
+  // shared for all profiles on a device.
+  enum class IdScope {
+    kPerProfile = 0,
+    kPerDevice = 1,
+  };
+
   // Specifies which value type a Metric object holds.
   enum class MetricType {
     kString = 0,
@@ -68,10 +75,13 @@ class EventBase {
 
   IdType id_type() const { return id_type_; }
 
+  IdScope id_scope() const { return id_scope_; }
+
  protected:
-  explicit EventBase(uint64_t event_name_hash,
-                     uint64_t project_name_hash,
-                     IdType id_type);
+  EventBase(uint64_t event_name_hash,
+            uint64_t project_name_hash,
+            IdType id_type,
+            IdScope id_scope);
 
   void AddStringMetric(uint64_t name_hash, const std::string& value);
 
@@ -96,6 +106,8 @@ class EventBase {
   uint64_t project_name_hash_;
 
   IdType id_type_;
+
+  IdScope id_scope_;
 
   std::vector<Metric> metrics_;
 };

@@ -83,6 +83,15 @@ class ProjectInfo:
       self.id_type = 'kProjectId'
     elif project.id == 'none':
       self.id_type = 'kUnidentified'
+    else:
+      raise ValueError('Invalid id type.')
+
+    if project.scope == 'profile':
+      self.id_scope = 'kPerProfile'
+    elif project.scope == 'device':
+      self.id_scope = 'kPerDevice'
+    else:
+      raise ValueError('Invalid id scope.')
 
 
 class EventInfo:

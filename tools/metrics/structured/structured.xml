@@ -4,6 +4,7 @@
   <owner>charleszhao@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
+  <scope>profile</scope>
   <summary>
     Project for recording CrOSActions.
   </summary>
@@ -192,6 +193,7 @@
 <project name="LauncherUsage">
   <owner>tby@chromium.org</owner>
   <id>per-project</id>
+  <scope>profile</scope>
   <summary>
     See event summary.
   </summary>
@@ -254,7 +256,8 @@
 
 <project name="TestProjectOne">
   <owner>tby@chromium.org</owner>
-  <id>none</id>
+  <id>per-project</id>
+  <scope>profile</scope>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -278,7 +281,8 @@
 
 <project name="TestProjectTwo">
   <owner>tby@chromium.org</owner>
-  <id>none</id>
+  <id>per-project</id>
+  <scope>profile</scope>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -309,6 +313,7 @@
 <project name="TestProjectThree">
   <owner>tby@chromium.org</owner>
   <id>uma</id>
+  <scope>profile</scope>
   <summary>
     Project for unit testing, do not use.
   </summary>
@@ -320,6 +325,26 @@
     <metric name="TestMetricFour" type="int">
       <summary>
         An unhashed value, recorded as-is.
+      </summary>
+    </metric>
+  </event>
+</project>
+
+<project name="TestProjectFour">
+  <owner>tby@chromium.org</owner>
+  <id>per-project</id>
+  <scope>device</scope>
+  <summary>
+    Project for unit testing, do not use.
+  </summary>
+
+  <event name="TestEventFive">
+    <summary>
+      Event for unit testing, do not use.
+    </summary>
+    <metric name="TestMetricFive" type="hmac-string">
+      <summary>
+        An per-device keyed hashed value.
       </summary>
     </metric>
   </event>
