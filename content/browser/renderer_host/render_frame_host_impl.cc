@@ -11569,12 +11569,16 @@ RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
 blink::mojom::AuthenticatorStatus
 RenderFrameHostImpl::PerformMakeCredentialWebAuthSecurityChecks(
     const std::string& relying_party_id,
-    const url::Origin& effective_origin) {
+    const url::Origin& effective_origin,
+    bool is_payment_credential_creation) {
   bool is_cross_origin;
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
           effective_origin,
-          WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
+          is_payment_credential_creation
+              ? WebAuthRequestSecurityChecker::RequestType::
+                    kMakePaymentCredential
+              : WebAuthRequestSecurityChecker::RequestType::kMakeCredential,
           &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
     return status;

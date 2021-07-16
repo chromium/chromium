@@ -397,7 +397,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const url::Origin& effective_origin) override;
   blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
-      const url::Origin& effective_origin) override;
+      const url::Origin& effective_origin,
+      bool is_payment_credential_creation) override;
   void SetIsXrOverlaySetup() override;
   ukm::SourceId GetPageUkmSourceId() override;
   StoragePartition* GetStoragePartition() override;

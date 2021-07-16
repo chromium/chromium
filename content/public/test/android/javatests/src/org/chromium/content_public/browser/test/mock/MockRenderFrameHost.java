@@ -75,7 +75,7 @@ public class MockRenderFrameHost implements RenderFrameHost {
 
     @Override
     public int performMakeCredentialWebAuthSecurityChecks(
-            String relyingPartyId, Origin effectiveOrigin) {
+            String relyingPartyId, Origin effectiveOrigin, boolean isPaymentCredentialCreation) {
         return 0;
     }
 

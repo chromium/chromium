@@ -877,6 +877,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // For requests originating from the render process, |effective_origin| will
   // be the same as the last committed origin. However, for request originating
   // from the browser process, this may be different.
+  // |is_payment_credential_creation| indicates whether MakeCredential is making
+  // a payment credential.
   virtual blink::mojom::AuthenticatorStatus
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
@@ -884,7 +886,8 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual blink::mojom::AuthenticatorStatus
   PerformMakeCredentialWebAuthSecurityChecks(
       const std::string& relying_party_id,
-      const url::Origin& effective_origin) = 0;
+      const url::Origin& effective_origin,
+      bool is_payment_credential_creation) = 0;
 
   // Tells the host that this is part of setting up a WebXR DOM Overlay. This
   // starts a short timer that permits entering fullscreen mode, similar to a
