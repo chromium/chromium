@@ -227,16 +227,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GeolocationDisclosure.InfoBarVisibleTime" units="ms"
-    expires_after="M90">
-  <owner>benwells@chromium.org</owner>
+    expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records how long the search geolocation disclosure infobar was visible for.
   </summary>
 </histogram>
 
 <histogram name="GeolocationDisclosure.PostDisclosureDSESetting"
-    enum="BooleanAllowed" expires_after="M90">
-  <owner>benwells@chromium.org</owner>
+    enum="BooleanAllowed" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the geolocation default search engine setting after the search
     geolocation disclosure has been shown and won't be shown again. This metric
@@ -245,8 +247,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="GeolocationDisclosure.PreDisclosureDSESetting"
-    enum="BooleanAllowed" expires_after="M90">
-  <owner>benwells@chromium.org</owner>
+    enum="BooleanAllowed" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Records the geolocation default search engine setting immediately before the
     search geolocation disclosure has been shown. This metric is only recorded

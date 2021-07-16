@@ -73,9 +73,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoPromptSuppression"
-    enum="PermissionEmbargoStatus" expires_after="M90">
-  <owner>dominickn@chromium.org</owner>
-  <owner>kcarattini@chromium.org</owner>
+    enum="PermissionEmbargoStatus" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     For every permission request that would show a prompt to the user, this
     metric tracks whether the request is suppressed by embargo (and the source
@@ -90,9 +90,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Permissions.AutoBlocker.EmbargoStatus"
-    enum="PermissionEmbargoStatus" expires_after="M90">
-  <owner>dominickn@chromium.org</owner>
-  <owner>kcarattini@chromium.org</owner>
+    enum="PermissionEmbargoStatus" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Tracks the reason that an (origin, permission) pair has been placed under
     embargo (blocked from making requests for that permission for a period of

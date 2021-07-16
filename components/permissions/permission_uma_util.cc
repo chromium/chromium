@@ -357,18 +357,8 @@ void PermissionUmaUtil::PermissionRequested(ContentSettingsType content_type,
   bool success = PermissionUtil::GetPermissionType(content_type, &permission);
   DCHECK(success);
 
-  bool secure_origin = network::IsUrlPotentiallyTrustworthy(requesting_origin);
   base::UmaHistogramEnumeration("ContentSettings.PermissionRequested",
                                 permission, PermissionType::NUM);
-  if (secure_origin) {
-    base::UmaHistogramEnumeration(
-        "ContentSettings.PermissionRequested_SecureOrigin", permission,
-        PermissionType::NUM);
-  } else {
-    base::UmaHistogramEnumeration(
-        "ContentSettings.PermissionRequested_InsecureOrigin", permission,
-        PermissionType::NUM);
-  }
 }
 
 void PermissionUmaUtil::PermissionRevoked(

@@ -389,8 +389,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExtensionEmbeddedSettingSet"
-    enum="ContentType" expires_after="M90">
-  <owner>raymes@chromium.org</owner>
+    enum="ContentType" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Count of how often a specific content setting is set for an embedded URL by
     an extension. Only counts settings when the secondary pattern is different
@@ -401,8 +402,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.ExtensionNonEmbeddedSettingSet"
-    enum="ContentType" expires_after="M90">
-  <owner>raymes@chromium.org</owner>
+    enum="ContentType" expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Count of how often a specific content setting is set when only a single
     pattern is specified. Exactly one of this or
@@ -421,8 +423,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.NumberOfExceptions" units="units"
-    expires_after="2021-11-21">
-  <owner>battre@chromium.org</owner>
+    expires_after="M100">
+  <owner>engedy@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     The number of user defined hostname patterns for content settings at browser
     start.
@@ -430,10 +433,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="ContentSettings.PermissionRequested" enum="PermissionType"
-    expires_after="M90">
-  <owner>dominickn@chromium.org</owner>
+    expires_after="M100">
   <owner>engedy@chromium.org</owner>
-  <owner>hkamila@chromium.org</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
   <summary>
     Number of times a given permission was requested by a website and the user
     has the permission set to prompt (i.e. not blocked or allowed).
@@ -454,6 +456,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSettings.PermissionRequested_InsecureOrigin"
     enum="PermissionType" expires_after="M90">
+  <obsolete>
+    Removed as of July 2021. No permissions are supported for insecure origins.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
@@ -477,6 +482,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="ContentSettings.PermissionRequested_SecureOrigin"
     enum="PermissionType" expires_after="M90">
+  <obsolete>
+    Removed as of July 2021. No permissions are supported for insecure origins.
+    So we don't need to differentiate between Secure and Insecure origins.
+    ContentSettings.PermissionRequested histogram is enough.
+  </obsolete>
   <owner>dominickn@chromium.org</owner>
   <owner>engedy@chromium.org</owner>
   <owner>hkamila@chromium.org</owner>
