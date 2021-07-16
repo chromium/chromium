@@ -4,7 +4,6 @@
 
 import("//build/config/nacl/config.gni")
 import("//build/config/nacl/rules.gni")
-import("//build/config/python.gni")
 import("//components/nacl/features.gni")
 
 assert(enable_nacl)
