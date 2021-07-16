@@ -17,6 +17,7 @@
 class ApplicationContextImpl;
 class HeapProfilerController;
 class PrefService;
+class IOSThreadProfiler;
 
 class IOSChromeMainParts : public web::WebMainParts {
  public:
@@ -54,6 +55,10 @@ class IOSChromeMainParts : public web::WebMainParts {
   PrefService* local_state_;
 
   IOSChromeFieldTrials ios_field_trials_;
+
+  // A profiler that periodically samples stack traces. Used to understand
+  // thread and process startup and normal behavior.
+  std::unique_ptr<IOSThreadProfiler> sampling_profiler_;
 
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   // Manages heap (memory) profiling. Requires the allocator shim to be enabled.

@@ -749,8 +749,9 @@ TimeTicks StackSamplingProfiler::TestPeer::GetNextSampleTime(
 // The profiler is currently supported for Windows x64, MacOSX x64, and Android
 // ARM32.
 bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
-#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
+#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) ||  \
+    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) ||  \
+    (defined(OS_IOS) && defined(ARCH_CPU_64_BITS)) || \
     (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
 #if defined(OS_MAC)
   // TODO(https://crbug.com/1098119): Fix unwinding on macOS 11. The OS has

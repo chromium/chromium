@@ -48,6 +48,7 @@
 #import "ios/chrome/browser/first_run/first_run.h"
 #include "ios/chrome/browser/flags/about_flags.h"
 #include "ios/chrome/browser/install_time_util.h"
+#include "ios/chrome/browser/ios_thread_profiler.h"
 #include "ios/chrome/browser/metrics/ios_chrome_metrics_service_accessor.h"
 #include "ios/chrome/browser/metrics/ios_expired_histograms_array.h"
 #include "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
@@ -55,6 +56,7 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
+#include "ios/chrome/common/channel_info.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -140,6 +142,15 @@ void IOSChromeMainParts::PreCreateMainMessageLoop() {
 }
 
 void IOSChromeMainParts::PreCreateThreads() {
+  // Create and start the stack sampling profiler if CANARY or DEV. The warning
+  // below doesn't apply.
+  if (::GetChannel() == version_info::Channel::CANARY ||
+      ::GetChannel() == version_info::Channel::DEV) {
+    sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
+    IOSThreadProfiler::SetMainThreadTaskRunner(
+        base::ThreadTaskRunnerHandle::Get());
+  }
+
   // IMPORTANT
   // Calls in this function should not post tasks or create threads as
   // components used to handle those tasks are not yet available. This work
@@ -187,6 +198,10 @@ void IOSChromeMainParts::PreCreateThreads() {
   // initialization is handled in PreMainMessageLoopRun since it posts tasks.
   SetupFieldTrials();
 
+  // Set metrics upload for stack/heap profiles.
+  IOSThreadProfiler::SetBrowserProcessReceiverCallback(base::BindRepeating(
+      &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
+
   // Sync the crashpad field tral state to NSUserDefaults.  Called immediately
   // after setting up field trials.
   crash_helper::SyncCrashpadEnabledOnNextRun();
@@ -204,9 +219,6 @@ void IOSChromeMainParts::PreCreateThreads() {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
       heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
-      metrics::CallStackProfileBuilder::SetBrowserProcessReceiverCallback(
-          base::BindRepeating(
-              &metrics::CallStackProfileMetricsProvider::ReceiveProfile));
       heap_profiler_controller_->Start();
     }
   }

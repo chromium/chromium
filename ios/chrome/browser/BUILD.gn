@@ -183,6 +183,8 @@ source_set("browser_impl") {
     "application_context_impl.mm",
     "ios_chrome_main_parts.h",
     "ios_chrome_main_parts.mm",
+    "ios_thread_profiler.cc",
+    "ios_thread_profiler.h",
   ]
   deps = [
     ":browser",
@@ -201,6 +203,7 @@ source_set("browser_impl") {
     "//components/language/core/browser",
     "//components/metrics",
     "//components/metrics:child_call_stack_profile_builder",
+    "//components/metrics/public/mojom:call_stack_mojo_bindings",
     "//components/metrics_services_manager",
     "//components/net_log",
     "//components/network_time",
@@ -242,6 +245,7 @@ source_set("browser_impl") {
     "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//ios/web/public/init",
+    "//mojo/public/cpp/bindings",
     "//net",
     "//rlz/buildflags",
     "//services/network:network_service",

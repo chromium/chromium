@@ -37,13 +37,20 @@ UnwindResult NativeUnwinderIOS::TryUnwind(RegisterContext* thread_context,
   uintptr_t next_frame = thread_context->__rbp;
 #endif
 
+  const auto is_fp_valid = [&](uintptr_t fp) {
+    return fp >= stack_bottom && fp < stack_top && (fp & align_mask) == 0;
+  };
+
+  if (!is_fp_valid(next_frame)) {
+    return UnwindResult::ABORTED;
+  }
+
   for (;;) {
     uintptr_t retaddr;
     uintptr_t frame = next_frame;
     next_frame = pthread_stack_frame_decode_np(frame, &retaddr);
 
-    if (frame < stack_bottom || frame > stack_top ||
-        (frame & align_mask) != 0 || next_frame <= frame) {
+    if (!is_fp_valid(frame) || next_frame <= frame) {
       return UnwindResult::COMPLETED;
     }
 
