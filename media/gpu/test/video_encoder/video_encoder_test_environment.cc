@@ -56,10 +56,10 @@ const std::vector<base::Feature> kEnabledFeaturesForVideoEncoderTest = {
     media::kVaapiLowPowerEncoderGen9x,
     // TODO(crbug.com/811912): remove once enabled by default.
     kVaapiVP9Encoder,
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1186051): remove once enabled by default.
-    kVp9kSVCHWEncoding,
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+    kVaapiVp9kSVCHWEncoding,
+#endif
 #endif
 };
 

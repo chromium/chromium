@@ -7158,7 +7158,7 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-vaapi-vp9-kSVC-encode-acceleration",
      flag_descriptions::kVaapiVP9kSVCEncoderName,
      flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(media::kVp9kSVCHWEncoding)},
+     FEATURE_VALUE_TYPE(media::kVaapiVp9kSVCHWEncoding)},
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \

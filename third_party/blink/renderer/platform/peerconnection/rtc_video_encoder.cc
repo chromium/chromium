@@ -1594,9 +1594,8 @@ bool RTCVideoEncoder::Vp9HwSupportForSpatialLayers() {
   // encoder instead of checking OS.
   // Underlying encoder will check the spatial SVC encoding capability on CrOS.
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-  if (base::FeatureList::IsEnabled(media::kVp9kSVCHWEncoding))
-    return true;
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+  return base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWEncoding);
+#endif
   // Spatial layers are not supported by hardware encoders.
   return false;
 }
