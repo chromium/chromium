@@ -219,7 +219,6 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
     for (size_t i = 0; i < web_hosts.size(); i++) {
       ui::AXNodeData node_data;
       tree->SerializeNode(web_hosts[i], &node_data);
-      LOG(ERROR) << i << ": " << node_data.ToString();
     }
   }
 }
@@ -592,4 +591,36 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
   manager->Enable();
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, GetFocusOnChildTree) {
+  views::AXAuraObjCache cache;
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  cache.set_focused_widget_for_testing(widget);
+
+  // No focus falls back on root view.
+  EXPECT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
+
+  // A child of the client view results in a focus if it has a tree id.
+  views::View* child =
+      widget->non_client_view()->client_view()->children().front();
+  ASSERT_NE(nullptr, child);
+
+  // No tree id yet.
+  EXPECT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
+
+  // Now, there's a tree id.
+  child->GetViewAccessibility().OverrideChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
+  EXPECT_EQ(cache.GetOrCreate(child), cache.GetFocus());
+
+  cache.set_focused_widget_for_testing(nullptr);
+
+  AddFailureOnWidgetAccessibilityError(widget);
 }
