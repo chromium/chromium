@@ -670,11 +670,11 @@ class ExtensionWebRequestEventRouter {
                            int extra_info_spec);
 
   // Processes the generated deltas from blocked_requests_ on the specified
-  // request. If |call_back| is true, the callback registered in
+  // request. If |call_callback| is true, the callback registered in
   // |blocked_requests_| is called.
   // The function returns the error code for the network request. This is
   // mostly relevant in case the caller passes |call_callback| = false
-  // and wants to return the correct network error code himself.
+  // and wants to return the correct network error code themself.
   int ExecuteDeltas(content::BrowserContext* browser_context,
                     const WebRequestInfo* request,
                     bool call_callback);
