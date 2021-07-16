@@ -15,13 +15,13 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/web/public/browser_state.h"
 #include "ios/web/public/navigation/navigation_manager.h"
+#import "net/base/mac/url_conversions.h"
 #include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -55,7 +55,7 @@ NSString* const kMessageTextViewBulletSuffix = @"\n";
 NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 }  // namespace
 
-@interface SadTabView () {
+@interface SadTabView () <UITextViewDelegate> {
   UITextView* _messageTextView;
   MDCFlatButton* _actionButton;
 }
@@ -69,10 +69,7 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 // Displays the Sad Tab title.
 @property(nonatomic, readonly, strong) UILabel* titleLabel;
 // Displays the Sad Tab footer message (including a link to more help).
-@property(nonatomic, readonly, strong) UILabel* footerLabel;
-// Provides Link functionality to the footerLabel.
-@property(nonatomic, readonly, strong)
-    LabelLinkController* footerLabelLinkController;
+@property(nonatomic, readonly, strong) UITextView* footerLabel;
 // The bounds of |containerView|, with a height updated to CGFLOAT_MAX to allow
 // text to be laid out using as many lines as necessary.
 @property(nonatomic, readonly) CGRect containerBounds;
@@ -106,11 +103,6 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 // Returns the string to be used for the main action button.
 - (nonnull NSString*)buttonText;
 
-// Attaches a link controller to |label|, finding the |linkString|
-// within the |label| text to use as the link.
-- (void)attachLinkControllerToLabel:(nonnull UILabel*)label
-                        forLinkText:(nonnull NSString*)linkText;
-
 // The action selector for |_actionButton|.
 - (void)handleActionButtonTapped;
 
@@ -123,14 +115,10 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 @implementation SadTabView
 
-@synthesize offTheRecord = _offTheRecord;
 @synthesize imageView = _imageView;
 @synthesize containerView = _containerView;
 @synthesize titleLabel = _titleLabel;
 @synthesize footerLabel = _footerLabel;
-@synthesize footerLabelLinkController = _footerLabelLinkController;
-@synthesize mode = _mode;
-@synthesize delegate = _delegate;
 
 - (instancetype)initWithMode:(SadTabViewMode)mode
                 offTheRecord:(BOOL)offTheRecord {
@@ -292,26 +280,6 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   return label;
 }
 
-- (void)attachLinkControllerToLabel:(nonnull UILabel*)label
-                        forLinkText:(nonnull NSString*)linkText {
-  __weak __typeof(self) weakSelf = self;
-  _footerLabelLinkController = [[LabelLinkController alloc]
-      initWithLabel:label
-             action:^(const GURL& URL) {
-               [weakSelf.delegate sadTabView:weakSelf
-                   showSuggestionsPageWithURL:URL];
-             }];
-
-  _footerLabelLinkController.linkFont =
-      [[MDCTypography fontLoader] boldFontOfSize:kFooterLabelFontSize];
-  _footerLabelLinkController.linkUnderlineStyle = NSUnderlineStyleSingle;
-  NSRange linkRange = [label.text rangeOfString:linkText];
-  DCHECK(linkRange.location != NSNotFound);
-  DCHECK(linkRange.length > 0);
-  [_footerLabelLinkController addLinkWithRange:linkRange
-                                           url:GURL(kCrashReasonURL)];
-}
-
 #pragma mark Accessors
 
 - (UIView*)containerView {
@@ -347,18 +315,34 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
   return _titleLabel;
 }
 
-- (UILabel*)footerLabel {
+- (UITextView*)footerLabel {
   if (!_footerLabel) {
-    _footerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-    [_footerLabel setBackgroundColor:self.backgroundColor];
-    [_footerLabel setNumberOfLines:0];
-    [_footerLabel setFont:[[MDCTypography fontLoader]
-                              regularFontOfSize:kFooterLabelFontSize]];
-    [_footerLabel setTextColor:[UIColor colorNamed:kTextSecondaryColor]];
+    _footerLabel = [[UITextView alloc] initWithFrame:CGRectZero];
+    _footerLabel.backgroundColor = self.backgroundColor;
+    _footerLabel.delegate = self;
 
-    [_footerLabel setText:[self footerLabelText]];
-    [self attachLinkControllerToLabel:_footerLabel
-                          forLinkText:[self footerLinkText]];
+    // Set base text styling for footer.
+    NSDictionary<NSAttributedStringKey, id>* footerAttributes = @{
+      NSFontAttributeName :
+          [[MDCTypography fontLoader] regularFontOfSize:kFooterLabelFontSize],
+      NSForegroundColorAttributeName : [UIColor colorNamed:kTextSecondaryColor],
+    };
+    NSMutableAttributedString* footerText =
+        [[NSMutableAttributedString alloc] initWithString:[self footerLabelText]
+                                               attributes:footerAttributes];
+
+    // Add link to footer.
+    NSURL* linkURL = net::NSURLWithGURL(GURL(kCrashReasonURL));
+    NSDictionary<NSAttributedStringKey, id>* linkAttributes = @{
+      NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+      NSLinkAttributeName : linkURL,
+    };
+    NSRange linkRange = [footerText.string rangeOfString:[self footerLinkText]];
+    DCHECK(linkRange.location != NSNotFound);
+    DCHECK(linkRange.length > 0);
+    [footerText addAttributes:linkAttributes range:linkRange];
+
+    _footerLabel.attributedText = footerText;
   }
   return _footerLabel;
 }
@@ -525,6 +509,21 @@ NSString* const kMessageTextViewBulletRTLFormat = @"\u202E%@\u202C";
 
 + (UIColor*)sadTabBackgroundColor {
   return [UIColor colorNamed:kBackgroundColor];
+}
+
+#pragma mark - UITextViewDelegate
+
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(self.footerLabel == textView);
+  DCHECK(URL);
+
+  [self.delegate sadTabView:self
+      showSuggestionsPageWithURL:net::GURLWithNSURL(URL)];
+  // Returns NO as the app is handling the opening of the URL.
+  return NO;
 }
 
 @end
