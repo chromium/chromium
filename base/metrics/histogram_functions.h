@@ -218,16 +218,6 @@ BASE_EXPORT void UmaHistogramMicrosecondsTimes(const std::string& name,
 BASE_EXPORT void UmaHistogramMicrosecondsTimes(const char* name,
                                                TimeDelta sample);
 
-// For microseconds timings from 1 microsecond up to 10 ms (50 buckets).
-// TODO(crbug.com/983261) Remove this method after moving to
-// UmaHistogramMicrosecondsTimes.
-BASE_EXPORT void UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
-    const std::string& name,
-    TimeDelta sample);
-BASE_EXPORT void UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
-    const char* name,
-    TimeDelta sample);
-
 // For recording memory related histograms.
 // Used to measure common KB-granularity memory stats. Range is up to 500M.
 BASE_EXPORT void UmaHistogramMemoryKB(const std::string& name, int sample);

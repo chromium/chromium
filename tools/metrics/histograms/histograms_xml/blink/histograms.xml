@@ -139,11 +139,32 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Blink.Canvas.DrawImage.Duration"
+    units="microseconds" expires_after="2021-07-14">
+  <obsolete>
+    Retired in M93, replaced by Blink.Canvas.DrawImage.Duration2 which has a
+    wider range.
+  </obsolete>
+  <owner>fserb@chromium.org</owner>
+  <owner>aaronhk@chromium.org</owner>
+  <summary>
+    Time spent on the main thread during a 2D canvas drawImage API call.
+
+    Note: This metric drops reports on clients with low-resolution clocks, which
+    means these reports will be biased against a portion of the population on
+    Windows. See Windows.HasHighResolutionTimeTicks for the affected sample.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Blink.Canvas.DrawImage.Duration2"
     units="microseconds" expires_after="2022-01-09">
   <owner>fserb@chromium.org</owner>
   <owner>aaronhk@chromium.org</owner>
   <summary>
     Time spent on the main thread during a 2D canvas drawImage API call.
+
+    This differs from Blink.Canvas.DrawImage.Duration in that it uses buckets up
+    to ten seconds rather than ten milliseconds (due to a change in the
+    underlying histogramming function called).
 
     Note: This metric drops reports on clients with low-resolution clocks, which
     means these reports will be biased against a portion of the population on

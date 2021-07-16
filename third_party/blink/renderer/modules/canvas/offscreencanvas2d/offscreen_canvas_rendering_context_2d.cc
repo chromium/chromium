@@ -432,8 +432,8 @@ void OffscreenCanvasRenderingContext2D::setFont(const String& new_font) {
   GetState().SetUnparsedFont(new_font);
   if (bernoulli_distribution_(random_generator_)) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
-        "OffscreenCanvas.TextMetrics.SetFont", elapsed);
+    base::UmaHistogramMicrosecondsTimes("OffscreenCanvas.TextMetrics.SetFont2",
+                                        elapsed);
   }
 }
 

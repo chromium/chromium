@@ -2101,12 +2101,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Canvas.TextMetrics.SetFont" units="microseconds"
+    expires_after="2021-07-14">
+  <obsolete>
+    Retired in M93, replaced by Canvas.TextMetrics.SetFont2 which has a wider
+    range.
+  </obsolete>
+  <owner>yiyix@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    Time spent in microseconds to perform calls to SetFont in Canvas for
+    Canvas2d. It's measured each time SetFont is called.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="Canvas.TextMetrics.SetFont2" units="microseconds"
     expires_after="2022-01-31">
   <owner>yiyix@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
     Time spent in microseconds to perform calls to SetFont in Canvas for
     Canvas2d. It's measured each time SetFont is called.
+
+    This differs from Canvas.TextMetrics.SetFont in that it uses buckets up to
+    ten seconds rather than ten milliseconds (due to a change in the underlying
+    histogramming function called).
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
@@ -11013,12 +11037,36 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="OffscreenCanvas.TextMetrics.SetFont" units="microseconds"
+    expires_after="2021-07-14">
+  <obsolete>
+    Retired in M93, replaced by OffscreenCanvas.TextMetrics.SetFont2 which has a
+    wider range.
+  </obsolete>
+  <owner>yiyix@chromium.org</owner>
+  <owner>fserb@chromium.org</owner>
+  <summary>
+    Time spent in microseconds to perform call SetFont in canvas for
+    OffscreenCanvas. It's measured each time SetFont is called.
+
+    Warning: This metric may include reports from clients with low-resolution
+    clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
+    will cause this metric to have an abnormal distribution. When considering
+    revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
+    solution.
+  </summary>
+</histogram>
+
+<histogram name="OffscreenCanvas.TextMetrics.SetFont2" units="microseconds"
     expires_after="2022-01-31">
   <owner>yiyix@chromium.org</owner>
   <owner>fserb@chromium.org</owner>
   <summary>
     Time spent in microseconds to perform call SetFont in canvas for
     OffscreenCanvas. It's measured each time SetFont is called.
+
+    This differs from OffscreenCanvas.TextMetrics.SetFont in that it uses
+    buckets up to ten seconds rather than ten milliseconds (due to a change in
+    the underlying histogramming function called).
 
     Warning: This metric may include reports from clients with low-resolution
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports

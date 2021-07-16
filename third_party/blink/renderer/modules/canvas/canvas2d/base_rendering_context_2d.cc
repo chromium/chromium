@@ -1690,7 +1690,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
     }
 
     std::string duration_histogram_name =
-        "Blink.Canvas.DrawImage.Duration." + image_source_name;
+        "Blink.Canvas.DrawImage.Duration2." + image_source_name;
     std::string size_histogram_name =
         "Blink.Canvas.DrawImage.SqrtNumberOfPixels." + image_source_name;
 
@@ -1706,9 +1706,7 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
 
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
 
-    // TODO(crbug.com/983261) Change this to use UmaHistogramMicrosecondsTimes.
-    base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
-        duration_histogram_name, elapsed);
+    base::UmaHistogramMicrosecondsTimes(duration_histogram_name, elapsed);
 
     float sqrt_pixels_float =
         std::sqrt(dst_rect.Width()) * std::sqrt(dst_rect.Height());

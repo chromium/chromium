@@ -568,8 +568,7 @@ void CanvasRenderingContext2D::setFont(const String& new_font) {
   GetState().SetUnparsedFont(new_font_safe_copy);
   if (bernoulli_distribution_(random_generator_)) {
     base::TimeDelta elapsed = base::TimeTicks::Now() - start_time;
-    base::UmaHistogramMicrosecondsTimesUnderTenMilliseconds(
-        "Canvas.TextMetrics.SetFont", elapsed);
+    base::UmaHistogramMicrosecondsTimes("Canvas.TextMetrics.SetFont2", elapsed);
   }
 }
 

@@ -1820,6 +1820,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix base="true" name="Unknown" label=""/>
   <suffix base="true" name="Video" label=""/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="BlinkCanvasDurationBySource" separator=".">
@@ -1838,6 +1839,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.Canvas.DrawImage.Duration.SVG"/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration.Unknown"/>
   <affected-histogram name="Blink.Canvas.DrawImage.Duration.Video"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Canvas"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.CssImage"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.ImageBitmap"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.ImageElement"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.OffscreenCanvas"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.SVG"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Unknown"/>
+  <affected-histogram name="Blink.Canvas.DrawImage.Duration2.Video"/>
   <affected-histogram name="Blink.Canvas.GetImageData"/>
   <affected-histogram name="Blink.Canvas.PutImageData"/>
 </histogram_suffixes>
