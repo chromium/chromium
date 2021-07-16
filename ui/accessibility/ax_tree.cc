@@ -2417,7 +2417,7 @@ AXTree::Selection AXTree::GetUnignoredSelection() const {
 
   // Null positions are never ignored.
   if (anchor_position->IsIgnored()) {
-    anchor_position = anchor_position->AsUnignoredPosition(
+    anchor_position = anchor_position->AsValidPosition()->AsUnignoredPosition(
         data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
                                : AXPositionAdjustmentBehavior::kMoveBackward);
 
@@ -2473,7 +2473,7 @@ AXTree::Selection AXTree::GetUnignoredSelection() const {
 
   // Null positions are never ignored.
   if (focus_position->IsIgnored()) {
-    focus_position = focus_position->AsUnignoredPosition(
+    focus_position = focus_position->AsValidPosition()->AsUnignoredPosition(
         !data().sel_is_backward ? AXPositionAdjustmentBehavior::kMoveForward
                                 : AXPositionAdjustmentBehavior::kMoveBackward);
 

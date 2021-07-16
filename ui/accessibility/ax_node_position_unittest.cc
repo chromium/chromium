@@ -11334,6 +11334,86 @@ TEST_F(AXPositionTest, TextNavigationWithCollapsedCombobox) {
   EXPECT_EQ(2, position->text_offset());
 }
 
+TEST_F(AXPositionTest, GetUnignoredSelectionWithLeafNodes) {
+  testing::ScopedAXEmbeddedObjectBehaviorSetter ax_embedded_object_behavior(
+      AXEmbeddedObjectBehavior::kExposeCharacter);
+
+  AXNodeData root_data;
+  root_data.id = 1;
+  root_data.role = ax::mojom::Role::kRootWebArea;
+
+  AXNodeData parent_data;
+  parent_data.id = 2;
+  parent_data.role = ax::mojom::Role::kGenericContainer;
+
+  AXNodeData child_1_data;
+  child_1_data.id = 3;
+  child_1_data.role = ax::mojom::Role::kGenericContainer;
+  child_1_data.AddState(ax::mojom::State::kIgnored);
+
+  AXNodeData child_2_data;
+  child_2_data.id = 4;
+  child_2_data.role = ax::mojom::Role::kGenericContainer;
+  child_2_data.AddState(ax::mojom::State::kIgnored);
+
+  root_data.child_ids = {parent_data.id};
+  parent_data.child_ids = {child_1_data.id, child_2_data.id};
+
+  AXTreeData data;
+  data.tree_id = AXTreeID::CreateNewAXTreeID();
+  data.parent_tree_id = AXTreeID();
+  data.sel_anchor_object_id = child_1_data.id;
+  data.sel_anchor_offset = 0;
+  data.sel_focus_object_id = child_1_data.id;
+  data.sel_focus_offset = 0;
+
+  AXTreeUpdate update;
+  update.tree_data = data;
+  update.has_tree_data = true;
+  update.root_id = root_data.id;
+  update.nodes = {root_data, parent_data, child_1_data, child_2_data};
+
+  SetTree(std::make_unique<AXTree>(update));
+  AXTree* tree = GetTree();
+
+  TestPositionType parent_at_0 =
+      AXNodePosition::CreateTreePosition(GetTreeID(), parent_data.id, 0);
+  TestPositionType parent_at_1 =
+      AXNodePosition::CreateTreePosition(GetTreeID(), parent_data.id, 1);
+  TestPositionType parent_at_2 =
+      AXNodePosition::CreateTreePosition(GetTreeID(), parent_data.id, 2);
+  TestPositionType child_1_at_0 =
+      AXNodePosition::CreateTreePosition(GetTreeID(), child_1_data.id, 0);
+  TestPositionType child_2_at_0 =
+      AXNodePosition::CreateTreePosition(GetTreeID(), child_2_data.id, 0);
+
+  EXPECT_EQ(*parent_at_0, *parent_at_0->AsValidPosition());
+  EXPECT_EQ(*parent_at_1, *parent_at_1->AsValidPosition());
+  EXPECT_EQ(*parent_at_2, *parent_at_2->AsValidPosition());
+  EXPECT_EQ(*parent_at_0, *child_1_at_0->AsValidPosition());
+  EXPECT_EQ(*parent_at_0, *child_2_at_0->AsValidPosition());
+
+  for (TestPositionType::pointer position :
+       {parent_at_0.get(), child_1_at_0.get(), child_2_at_0.get()}) {
+    AXNodePosition::AXPositionInstance valid = position->AsValidPosition();
+    EXPECT_TRUE(position->IsLeaf());
+    EXPECT_TRUE(valid->IsLeaf());
+
+    data.sel_anchor_object_id = position->anchor_id();
+    data.sel_anchor_offset = position->child_index();
+    data.sel_focus_object_id = position->anchor_id();
+    data.sel_focus_offset = position->child_index();
+    tree->UpdateDataForTesting(data);
+
+    // Should not crash.
+    AXNode::OwnerTree::Selection s = tree->GetUnignoredSelection();
+    EXPECT_EQ(valid->anchor_id(), s.anchor_object_id);
+    EXPECT_EQ(valid->child_index(), s.anchor_offset);
+    EXPECT_EQ(valid->anchor_id(), s.focus_object_id);
+    EXPECT_EQ(valid->child_index(), s.focus_offset);
+  }
+}
+
 //
 // Parameterized tests.
 //
