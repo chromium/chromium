@@ -113,8 +113,8 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
         String key = "";
         String value;
         while (cursor.moveToNext()) {
-            String id = cursor.getString(cursor.getColumnIndex(idColumn));
-            value = cursor.getString(cursor.getColumnIndex(dataColumn));
+            String id = cursor.getString(cursor.getColumnIndexOrThrow(idColumn));
+            value = cursor.getString(cursor.getColumnIndexOrThrow(dataColumn));
             if (value == null) value = "";
             if (key.isEmpty()) {
                 key = id;
@@ -172,17 +172,17 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
         String key = "";
 
         while (cursor.moveToNext()) {
-            String id = cursor.getString(cursor.getColumnIndex(
+            String id = cursor.getString(cursor.getColumnIndexOrThrow(
                     ContactsContract.CommonDataKinds.StructuredPostal.CONTACT_ID));
-            String city = cursor.getString(
-                    cursor.getColumnIndex(ContactsContract.CommonDataKinds.StructuredPostal.CITY));
-            String country = cursor.getString(cursor.getColumnIndex(
+            String city = cursor.getString(cursor.getColumnIndexOrThrow(
+                    ContactsContract.CommonDataKinds.StructuredPostal.CITY));
+            String country = cursor.getString(cursor.getColumnIndexOrThrow(
                     ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY));
-            String formattedAddress = cursor.getString(cursor.getColumnIndex(
+            String formattedAddress = cursor.getString(cursor.getColumnIndexOrThrow(
                     ContactsContract.CommonDataKinds.StructuredPostal.FORMATTED_ADDRESS));
-            String postcode = cursor.getString(cursor.getColumnIndex(
+            String postcode = cursor.getString(cursor.getColumnIndexOrThrow(
                     ContactsContract.CommonDataKinds.StructuredPostal.POSTCODE));
-            String region = cursor.getString(cursor.getColumnIndex(
+            String region = cursor.getString(cursor.getColumnIndexOrThrow(
                     ContactsContract.CommonDataKinds.StructuredPostal.REGION));
             PaymentAddress address =
                     createAddress(city, country, formattedAddress, postcode, region);
@@ -240,9 +240,10 @@ class ContactsFetcherWorkerTask extends AsyncTask<ArrayList<ContactDetails>> {
 
         ArrayList<ContactDetails> contacts = new ArrayList<ContactDetails>(cursor.getCount());
         do {
-            String id = cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts._ID));
+            String id =
+                    cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.Contacts._ID));
             String name = cursor.getString(
-                    cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
+                    cursor.getColumnIndexOrThrow(ContactsContract.Contacts.DISPLAY_NAME_PRIMARY));
             List<String> email = mIncludeEmails ? emailMap.get(id) : null;
             List<String> tel = mIncludeTel ? phoneMap.get(id) : null;
             List<PaymentAddress> address = mIncludeAddresses ? addressMap.get(id) : null;

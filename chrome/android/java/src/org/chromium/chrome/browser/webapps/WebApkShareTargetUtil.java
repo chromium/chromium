@@ -74,8 +74,8 @@ public class WebApkShareTargetUtil {
             try (Cursor cursor = ContextUtils.getApplicationContext().getContentResolver().query(
                          uri, null, null, null, null)) {
                 if (cursor != null && cursor.moveToFirst()) {
-                    String result =
-                            cursor.getString(cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME));
+                    String result = cursor.getString(
+                            cursor.getColumnIndexOrThrow(OpenableColumns.DISPLAY_NAME));
                     if (result != null) {
                         return result;
                     }

@@ -210,8 +210,8 @@ public class HttpAuthDatabase {
                     new String[] { host, realm }, null, null, null);
             if (cursor.moveToFirst()) {
                 ret = new String[] {
-                        cursor.getString(cursor.getColumnIndex(HTTPAUTH_USERNAME_COL)),
-                        cursor.getString(cursor.getColumnIndex(HTTPAUTH_PASSWORD_COL)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_USERNAME_COL)),
+                        cursor.getString(cursor.getColumnIndexOrThrow(HTTPAUTH_PASSWORD_COL)),
                 };
             }
         } catch (IllegalStateException e) {

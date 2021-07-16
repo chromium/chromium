@@ -791,7 +791,7 @@ public class DownloadManagerService implements DownloadController.Observer,
                          uri, null, null, null, null)) {
                 if (cursor == null || cursor.getCount() == 0) return null;
                 cursor.moveToNext();
-                mimeType = cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE));
+                mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.MIME_TYPE));
                 cursor.close();
             }
         }

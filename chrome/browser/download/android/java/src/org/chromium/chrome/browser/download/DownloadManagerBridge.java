@@ -169,17 +169,20 @@ public class DownloadManagerBridge {
             }
             result.downloadStatus = DownloadStatus.IN_PROGRESS;
             if (c.moveToNext()) {
-                int status = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                int status = c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_STATUS));
                 result.downloadStatus = getDownloadStatus(status);
-                result.fileName = c.getString(c.getColumnIndex(DownloadManager.COLUMN_TITLE));
-                result.failureReason = c.getInt(c.getColumnIndex(DownloadManager.COLUMN_REASON));
-                result.lastModifiedTime =
-                        c.getLong(c.getColumnIndex(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
-                result.bytesDownloaded =
-                        c.getLong(c.getColumnIndex(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
+                result.fileName =
+                        c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TITLE));
+                result.failureReason =
+                        c.getInt(c.getColumnIndexOrThrow(DownloadManager.COLUMN_REASON));
+                result.lastModifiedTime = c.getLong(
+                        c.getColumnIndexOrThrow(DownloadManager.COLUMN_LAST_MODIFIED_TIMESTAMP));
+                result.bytesDownloaded = c.getLong(
+                        c.getColumnIndexOrThrow(DownloadManager.COLUMN_BYTES_DOWNLOADED_SO_FAR));
                 result.bytesTotal =
-                        c.getLong(c.getColumnIndex(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
-                String localUri = c.getString(c.getColumnIndex(DownloadManager.COLUMN_LOCAL_URI));
+                        c.getLong(c.getColumnIndexOrThrow(DownloadManager.COLUMN_TOTAL_SIZE_BYTES));
+                String localUri =
+                        c.getString(c.getColumnIndexOrThrow(DownloadManager.COLUMN_LOCAL_URI));
                 if (!TextUtils.isEmpty(localUri)) {
                     Uri uri = Uri.parse(localUri);
                     result.filePath = uri.getPath();

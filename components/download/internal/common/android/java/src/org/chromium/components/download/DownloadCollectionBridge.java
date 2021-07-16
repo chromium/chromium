@@ -190,7 +190,7 @@ public class DownloadCollectionBridge {
             cursor = resolver.query(Uri.parse(intermediateUri),
                     new String[] {MediaColumns.MIME_TYPE}, null, null, null);
             if (cursor != null && cursor.getCount() != 0 && cursor.moveToNext()) {
-                mimeType = cursor.getString(cursor.getColumnIndex(MediaColumns.MIME_TYPE));
+                mimeType = cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.MIME_TYPE));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to get mimeType.", e);
@@ -277,9 +277,9 @@ public class DownloadCollectionBridge {
             List<DisplayNameInfo> infos = new ArrayList<DisplayNameInfo>();
             while (cursor.moveToNext()) {
                 String displayName =
-                        cursor.getString(cursor.getColumnIndex(MediaColumns.DISPLAY_NAME));
+                        cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
                 Uri downloadUri = ContentUris.withAppendedId(
-                        uri, cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+                        uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
                 infos.add(new DisplayNameInfo(downloadUri.toString(), displayName));
             }
             return infos.toArray(new DisplayNameInfo[0]);
@@ -314,7 +314,7 @@ public class DownloadCollectionBridge {
             if (cursor == null) return null;
             if (cursor.moveToNext()) {
                 return ContentUris.withAppendedId(
-                        uri, cursor.getInt(cursor.getColumnIndex(BaseColumns._ID)));
+                        uri, cursor.getInt(cursor.getColumnIndexOrThrow(BaseColumns._ID)));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to check file name existence.", e);
@@ -428,7 +428,7 @@ public class DownloadCollectionBridge {
                     new String[] {MediaColumns.DISPLAY_NAME}, null, null, null);
             if (cursor == null || cursor.getCount() == 0) return null;
             if (cursor.moveToNext()) {
-                return cursor.getString(cursor.getColumnIndex(MediaColumns.DISPLAY_NAME));
+                return cursor.getString(cursor.getColumnIndexOrThrow(MediaColumns.DISPLAY_NAME));
             }
         } catch (Exception e) {
             Log.e(TAG, "Unable to get display name for download.", e);
