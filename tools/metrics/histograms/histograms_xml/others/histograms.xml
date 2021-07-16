@@ -9158,7 +9158,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.Distro.Debian" enum="LinuxDistroDebianVersion"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
@@ -9168,7 +9170,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.Distro.Fedora" enum="LinuxDistroFedoraVersion"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
@@ -9178,7 +9182,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.Distro.Mint" enum="LinuxDistroMintVersion"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
@@ -9188,7 +9194,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.Distro.OpenSuseLeap"
-    enum="LinuxDistroOpenSuseLeapVersion" expires_after="2021-10-25">
+    enum="LinuxDistroOpenSuseLeapVersion" expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
@@ -9198,7 +9206,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Linux.Distro.Ubuntu" enum="LinuxDistroUbuntuVersion"
-    expires_after="2021-10-25">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
@@ -9207,14 +9217,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Linux.Distro2" enum="LinuxDistro2" expires_after="2021-12-26">
+<histogram name="Linux.Distro2" enum="LinuxDistro2" expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>The Linux distro used. Logged on each start up.</summary>
 </histogram>
 
 <histogram name="Linux.GlibcVersion" enum="LinuxGlibcVersion"
-    expires_after="2021-08-15">
+    expires_after="never">
+<!-- expires-never: Needed to measure Linux ecosystem. -->
+
   <owner>thestig@chromium.org</owner>
   <owner>thomasanderson@chromium.org</owner>
   <summary>
