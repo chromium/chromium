@@ -723,6 +723,9 @@ void BrowserTestBase::SetUp() {
 }
 
 void BrowserTestBase::TearDown() {
+  if (embedded_test_server()->Started())
+    ASSERT_TRUE(embedded_test_server()->ShutdownAndWaitUntilComplete());
+
 #if defined(USE_AURA) || defined(OS_MAC)
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       ui::test::EventGeneratorDelegate::FactoryFunction());
