@@ -11,7 +11,7 @@
 
     <application
             android:label="MemConsumer">
-        <activity android:name=".MemConsumer" android:icon="@drawable/icon" android:launchMode="singleTop">
+        <activity android:name=".MemConsumer" android:icon="@drawable/icon" android:launchMode="singleTop" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

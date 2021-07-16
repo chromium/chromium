@@ -27,6 +27,7 @@
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:windowSoftInputMode="adjustPan|stateUnspecified"
+                  android:exported="true"
                   android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

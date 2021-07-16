@@ -31,6 +31,7 @@ found in the LICENSE file.
         <activity android:name=".NativeUnitTestActivity"
                 android:label="NativeTest"
                 android:configChanges="orientation|keyboardHidden"
+                android:exported="true"
                 android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

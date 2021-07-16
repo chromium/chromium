@@ -15,7 +15,8 @@
         <activity android:name="WebLayerShellActivity"
                   android:launchMode="singleTask"
                   android:theme="@style/ShellTheme"
-                  android:windowSoftInputMode="adjustResize">
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -31,7 +32,8 @@
         </activity>
         <activity android:name="InstrumentationActivity"
                   android:theme="@style/Theme.AppCompat.DayNight"
-                  android:windowSoftInputMode="adjustResize">
+                  android:windowSoftInputMode="adjustResize"
+                  android:exported="true">
             <!-- Add these intent filters so tests can resolve these intents. -->
             <intent-filter>
                 <action android:name="android.provider.MediaStore.RECORD_SOUND" />

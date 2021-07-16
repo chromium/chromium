@@ -18,7 +18,8 @@
         <activity android:name=".Main"
             android:launchMode="singleTask"
             android:process=":main"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize">
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

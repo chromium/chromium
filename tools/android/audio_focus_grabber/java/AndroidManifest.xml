@@ -13,7 +13,8 @@
 
         <activity
             android:name="org.chromium.tools.audio_focus_grabber.AudioFocusGrabberActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

@@ -18,7 +18,8 @@
                   android:launchMode="singleTask"
                   android:theme="@style/Theme.AppCompat.Light"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
-                  android:hardwareAccelerated="true">
+                  android:hardwareAccelerated="true"
+                  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>

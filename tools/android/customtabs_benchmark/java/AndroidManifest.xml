@@ -12,7 +12,8 @@
 
     <application android:label="CustomTabsBenchmark">
       <activity android:name="org.chromium.customtabs.test.MainActivity"
-                android:label="CustomTabsBenchmark">
+                android:label="CustomTabsBenchmark"
+                android:exported="true">
         <intent-filter>
           <action android:name="android.intent.action.MAIN" />
           <category android:name="android.intent.category.LAUNCHER" />
