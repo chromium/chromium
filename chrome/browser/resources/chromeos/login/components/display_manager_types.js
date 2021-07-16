@@ -12,7 +12,7 @@
  *   resetAllowed: (boolean|undefined),
  * }}
  */
-var DisplayManagerScreenAttributes = {};
+let DisplayManagerScreenAttributes = {};
 
 /**
  * True if device reset is allowed on the screen.
@@ -24,7 +24,7 @@ DisplayManagerScreenAttributes.resetAllowed;
  * Possible types of UI.
  * @enum {string}
  */
-var DISPLAY_TYPE = {
+const DISPLAY_TYPE = {
   UNKNOWN: 'unknown',
   OOBE: 'oobe',
   LOGIN: 'login',
@@ -38,7 +38,7 @@ var DISPLAY_TYPE = {
  * Should be in sync with login_types.h
  * @enum {number}
  */
-/* #export */ var OOBE_UI_STATE = {
+/* #export */ const OOBE_UI_STATE = {
   HIDDEN: 0, /* Any OOBE screen without specific state */
   GAIA_SIGNIN: 1,
   ACCOUNT_PICKER: 2,
@@ -59,7 +59,7 @@ var DISPLAY_TYPE = {
  * Possible UI states of the error screen.
  * @enum {string}
  */
-var ERROR_SCREEN_UI_STATE = {
+const ERROR_SCREEN_UI_STATE = {
   UNKNOWN: 'ui-state-unknown',
   UPDATE: 'ui-state-update',
   SIGNIN: 'ui-state-signin',
@@ -69,3 +69,47 @@ var ERROR_SCREEN_UI_STATE = {
   ROLLBACK_ERROR: 'ui-state-rollback-error',
   SUPERVISED_USER_CREATION_FLOW: 'ui-state-supervised',
 };
+
+// TODO(crbug.com/1229130) - Refactor/remove these constants.
+const SCREEN_WELCOME = 'connect';
+const SCREEN_OOBE_NETWORK = 'network-selection';
+const SCREEN_OOBE_HID_DETECTION = 'hid-detection';
+const SCREEN_OOBE_ENABLE_DEBUGGING = 'debugging';
+const SCREEN_OOBE_UPDATE = 'oobe-update';
+const SCREEN_OOBE_RESET = 'reset';
+const SCREEN_OOBE_ENROLLMENT = 'enterprise-enrollment';
+const SCREEN_OOBE_DEMO_SETUP = 'demo-setup';
+const SCREEN_OOBE_DEMO_PREFERENCES = 'demo-preferences';
+const SCREEN_OOBE_KIOSK_ENABLE = 'kiosk-enable';
+const SCREEN_PACKAGED_LICENSE = 'packaged-license';
+const SCREEN_GAIA_SIGNIN = 'gaia-signin';
+const SCREEN_ERROR_MESSAGE = 'error-message';
+const SCREEN_PASSWORD_CHANGED = 'gaia-password-changed';
+const SCREEN_APP_LAUNCH_SPLASH = 'app-launch-splash';
+const SCREEN_CONFIRM_PASSWORD = 'saml-confirm-password';
+const SCREEN_FATAL_ERROR = 'fatal-error';
+const SCREEN_KIOSK_ENABLE = 'kiosk-enable';
+const SCREEN_TERMS_OF_SERVICE = 'terms-of-service';
+const SCREEN_ARC_TERMS_OF_SERVICE = 'arc-tos';
+const SCREEN_DEVICE_DISABLED = 'device-disabled';
+const SCREEN_UPDATE_REQUIRED = 'update-required';
+const SCREEN_ACTIVE_DIRECTORY_PASSWORD_CHANGE =
+'ad-password-change';
+const SCREEN_SYNC_CONSENT = 'sync-consent';
+const SCREEN_FINGERPRINT_SETUP = 'fingerprint-setup';
+const SCREEN_RECOMMEND_APPS = 'recommend-apps';
+const SCREEN_APP_DOWNLOADING = 'app-downloading';
+const SCREEN_PIN_SETUP = 'pin-setup';
+const SCREEN_MARKETING_OPT_IN = 'marketing-opt-in';
+
+/* Accelerator identifiers.
+ * Must be kept in sync with webui_accelerator_mapping.cc.
+ */
+const ACCELERATOR_CANCEL = 'cancel';
+const ACCELERATOR_VERSION = 'version';
+const ACCELERATOR_RESET = 'reset';
+const ACCELERATOR_APP_LAUNCH_BAILOUT = 'app_launch_bailout';
+const ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
+    'app_launch_network_config';
+
+const USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';

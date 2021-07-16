@@ -6,50 +6,6 @@
  * @fileoverview Display manager for WebUI OOBE and login.
  */
 
-// TODO(xiyuan): Find a better to share those constants.
-/** @const */ var SCREEN_WELCOME = 'connect';
-/** @const */ var SCREEN_OOBE_NETWORK = 'network-selection';
-/** @const */ var SCREEN_OOBE_HID_DETECTION = 'hid-detection';
-/** @const */ var SCREEN_OOBE_ENABLE_DEBUGGING = 'debugging';
-/** @const */ var SCREEN_OOBE_UPDATE = 'oobe-update';
-/** @const */ var SCREEN_OOBE_RESET = 'reset';
-/** @const */ var SCREEN_OOBE_ENROLLMENT = 'enterprise-enrollment';
-/** @const */ var SCREEN_OOBE_DEMO_SETUP = 'demo-setup';
-/** @const */ var SCREEN_OOBE_DEMO_PREFERENCES = 'demo-preferences';
-/** @const */ var SCREEN_OOBE_KIOSK_ENABLE = 'kiosk-enable';
-/** @const */ var SCREEN_PACKAGED_LICENSE = 'packaged-license';
-/** @const */ var SCREEN_GAIA_SIGNIN = 'gaia-signin';
-/** @const */ var SCREEN_ERROR_MESSAGE = 'error-message';
-/** @const */ var SCREEN_PASSWORD_CHANGED = 'gaia-password-changed';
-/** @const */ var SCREEN_APP_LAUNCH_SPLASH = 'app-launch-splash';
-/** @const */ var SCREEN_CONFIRM_PASSWORD = 'saml-confirm-password';
-/** @const */ var SCREEN_FATAL_ERROR = 'fatal-error';
-/** @const */ var SCREEN_KIOSK_ENABLE = 'kiosk-enable';
-/** @const */ var SCREEN_TERMS_OF_SERVICE = 'terms-of-service';
-/** @const */ var SCREEN_ARC_TERMS_OF_SERVICE = 'arc-tos';
-/** @const */ var SCREEN_DEVICE_DISABLED = 'device-disabled';
-/** @const */ var SCREEN_UPDATE_REQUIRED = 'update-required';
-/** @const */ var SCREEN_ACTIVE_DIRECTORY_PASSWORD_CHANGE =
-    'ad-password-change';
-/** @const */ var SCREEN_SYNC_CONSENT = 'sync-consent';
-/** @const */ var SCREEN_FINGERPRINT_SETUP = 'fingerprint-setup';
-/** @const */ var SCREEN_RECOMMEND_APPS = 'recommend-apps';
-/** @const */ var SCREEN_APP_DOWNLOADING = 'app-downloading';
-/** @const */ var SCREEN_PIN_SETUP = 'pin-setup';
-/** @const */ var SCREEN_MARKETING_OPT_IN = 'marketing-opt-in';
-
-/* Accelerator identifiers.
- * Must be kept in sync with webui_accelerator_mapping.cc.
- */
-/** @const */ var ACCELERATOR_CANCEL = 'cancel';
-/** @const */ var ACCELERATOR_VERSION = 'version';
-/** @const */ var ACCELERATOR_RESET = 'reset';
-/** @const */ var ACCELERATOR_APP_LAUNCH_BAILOUT = 'app_launch_bailout';
-/** @const */ var ACCELERATOR_APP_LAUNCH_NETWORK_CONFIG =
-    'app_launch_network_config';
-
-/** @const */ var USER_ACTION_ROLLBACK_TOGGLED = 'rollback-toggled';
-
 cr.define('cr.ui.login', function() {
   /**
    * Maximum time in milliseconds to wait for step transition to finish.
