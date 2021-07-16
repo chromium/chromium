@@ -252,8 +252,9 @@ Status JwkReader::GetString(const std::string& member_name,
   const base::Value* value = nullptr;
   if (!dict_.Get(member_name, &value))
     return Status::ErrorJwkMemberMissing(member_name);
-  if (!value->GetAsString(result))
+  if (!value->is_string())
     return Status::ErrorJwkMemberWrongType(member_name, "string");
+  *result = value->GetString();
   return Status::Success();
 }
 
@@ -265,9 +266,10 @@ Status JwkReader::GetOptionalString(const std::string& member_name,
   if (!dict_.Get(member_name, &value))
     return Status::Success();
 
-  if (!value->GetAsString(result))
+  if (!value->is_string())
     return Status::ErrorJwkMemberWrongType(member_name, "string");
 
+  *result = value->GetString();
   *member_exists = true;
   return Status::Success();
 }
