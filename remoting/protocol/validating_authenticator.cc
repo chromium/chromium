@@ -111,6 +111,11 @@ void ValidatingAuthenticator::OnValidateComplete(base::OnceClosure callback,
   }
 
   state_ = Authenticator::REJECTED;
+
+  // Clear the pending message so the signal strategy will generate a new
+  // SESSION_REJECT message in response to this state change.
+  pending_auth_message_.reset();
+
   std::move(callback).Run();
 }
 

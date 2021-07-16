@@ -227,6 +227,33 @@ TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorRejectedByUser) {
             validating_authenticator_->rejection_reason());
 }
 
+TEST_F(ValidatingAuthenticatorTest,
+       ValidConnectionMessageWaiting_ErrorRejectedByUser) {
+  EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
+      .Times(1)
+      .WillOnce(InvokeCallbackArgument<1>());
+
+  EXPECT_CALL(*mock_authenticator_, state())
+      .WillOnce(Return(Authenticator::MESSAGE_READY))
+      .WillOnce(Return(Authenticator::ACCEPTED));
+
+  // This dance is needed because GMock doesn't handle unique_ptrs very well.
+  // The mock method receives a raw pointer which it wraps and returns when
+  // GetNextMessage() is called.
+  std::unique_ptr<jingle_xmpp::XmlElement> next_message(
+      Authenticator::CreateEmptyAuthenticatorMessage());
+  EXPECT_CALL(*mock_authenticator_, GetNextMessagePtr())
+      .WillOnce(Return(next_message.release()));
+
+  validation_result_ = ValidationResult::ERROR_REJECTED_BY_USER;
+
+  SendMessageAndWaitForCallback();
+  ASSERT_TRUE(validate_complete_called_);
+  ASSERT_EQ(Authenticator::REJECTED, validating_authenticator_->state());
+  ASSERT_EQ(Authenticator::REJECTED_BY_USER,
+            validating_authenticator_->rejection_reason());
+}
+
 TEST_F(ValidatingAuthenticatorTest, ValidConnection_ErrorTooManyConnections) {
   EXPECT_CALL(*mock_authenticator_, ProcessMessage(_, _))
       .Times(1)
