@@ -133,7 +133,8 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
       const PolicyNamespace& ns,
       std::unique_ptr<enterprise_management::PolicyFetchResponse> proto,
       enterprise_management::PolicyData* policy_data,
-      enterprise_management::ExternalPolicyData* payload);
+      enterprise_management::ExternalPolicyData* payload,
+      std::string* error);
 
  private:
   // Validates the JSON policy serialized in |data|, and verifies its hash
@@ -141,11 +142,14 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   // parsed policies in |policy|.
   bool ValidateData(const std::string& data,
                     const std::string& secure_hash,
-                    PolicyMap* policy);
+                    PolicyMap* policy,
+                    std::string* error);
 
   // Parses the JSON policy in |data| into |policy|, and returns true if the
   // parse was successful.
-  bool ParsePolicy(const std::string& data, PolicyMap* policy);
+  bool ParsePolicy(const std::string& data,
+                   PolicyMap* policy,
+                   std::string* error);
 
   Delegate* const delegate_;
   ResourceCache* const cache_;

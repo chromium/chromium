@@ -76,8 +76,11 @@ void ComponentCloudPolicyUpdater::UpdateExternalPolicy(
   // Validate the policy before doing anything else.
   auto policy_data = std::make_unique<em::PolicyData>();
   em::ExternalPolicyData data;
-  if (!store_->ValidatePolicy(ns, std::move(response), policy_data.get(),
-                              &data)) {
+  std::string error;
+  if (!store_->ValidatePolicy(ns, std::move(response), policy_data.get(), &data,
+                              &error)) {
+    LOG(ERROR) << "Discarding policy for component " << ns.component_id
+               << " due to policy validation failure: " << error;
     return;
   }
 
