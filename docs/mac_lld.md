@@ -62,8 +62,7 @@ There are a few open issues:
 
 ## Hacking on LLD
 
-If you want to work on LLD, follow
-[this paragraph](https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/clang.md#Using-a-custom-clang-binary).
+If you want to work on LLD, follow [this paragraph](clang.md#Using-a-custom-clang-binary).
 
 ## Creating stand-alone repros for bugs
 
