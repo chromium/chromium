@@ -14,6 +14,11 @@ interface UserspaceSwapInitialization {
   TransferUserfaultFD(uint64 error, handle<platform> uffd_handle) => ();
 };
 
+struct MemoryRegion {
+  uint64 address;
+  uint64 length;
+};
+
 // The UserspaceSwap interface are the messages the browser will send to a
 // renderer to prepare for and complete userspace swap.
 interface UserspaceSwap {
@@ -44,4 +49,11 @@ interface UserspaceSwap {
   // with it's neighboring previously split VMAs. A single mmap(2)
   // can accomplish all of these things.
   MapArea(uint64 address, uint64 length);
+
+  // GetPartitionAllocAreasUsed will return ranges of memory which are in
+  // use and also in core. The memory will be tested using mincore(2) before
+  // being included. |max_superpages| can be used to limited the number of
+  // items returned.
+  GetPartitionAllocSuperPagesUsed(int32 max_superpages)
+    => (array<MemoryRegion> superpages);
 };

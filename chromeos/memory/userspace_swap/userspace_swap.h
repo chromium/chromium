@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "chromeos/chromeos_export.h"
 #include "chromeos/memory/userspace_swap/region.h"
+#include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/memory_instrumentation.mojom.h"
 
@@ -183,6 +184,12 @@ class CHROMEOS_EXPORT RendererSwapData {
 // SwapRegions will swap at most |number_of_regions| on the renderer belonging
 // to the associated RendererSwapData.
 CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int number_of_regions);
+
+// GetPartitionAllocSuperPagesInUse will return |max_superpages| worth of
+// regions that are currently allocated by partition alloc.
+CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
+    int32_t max_superpages,
+    std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions);
 
 // A swap eligible VMA is one that meets the required swapping criteria,
 // which are:

@@ -30,6 +30,9 @@ class UserspaceSwapImpl : public userspace_swap::mojom::UserspaceSwap {
                               uint64_t length,
                               uint64_t dest) override;
   void MapArea(uint64_t address, uint64_t length) override;
+  void GetPartitionAllocSuperPagesUsed(
+      int32_t max_superpages,
+      GetPartitionAllocSuperPagesUsedCallback callback) override;
 };
 
 }  // namespace mechanism

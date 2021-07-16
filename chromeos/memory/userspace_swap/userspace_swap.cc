@@ -5,13 +5,19 @@
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 
 #include <atomic>
+#include <cstdint>
 #include <vector>
 
+#include "base/allocator/partition_allocator/address_pool_manager.h"
+#include "base/allocator/partition_allocator/partition_address_space.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
+#include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/memory/page_size.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
+#include "base/template_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chromeos/memory/userspace_swap/region.h"
@@ -118,6 +124,8 @@ class RendererSwapDataImpl : public RendererSwapData {
   mojo::PendingRemote<::userspace_swap::mojom::UserspaceSwap> remote_;
 };
 
+RendererSwapDataImpl::~RendererSwapDataImpl() = default;
+
 int RendererSwapDataImpl::render_process_host_id() const {
   return render_process_host_id_;
 }
@@ -163,8 +171,6 @@ void RendererSwapDataImpl::UnaccountSwapSpace(int64_t reclaimed,
                                               int64_t swap_size) {
   AccountSwapSpace(-reclaimed, -swap_size);
 }
-
-RendererSwapDataImpl::~RendererSwapDataImpl() {}
 
 }  // namespace
 
@@ -212,6 +218,7 @@ CHROMEOS_EXPORT const UserspaceSwapConfig& UserspaceSwapConfig::Get() {
 
     return config;
   }();
+
   return config;
 }
 
@@ -247,9 +254,14 @@ std::ostream& operator<<(std::ostream& out, const UserspaceSwapConfig& c) {
   return out;
 }
 
-// KernelSupportsUserspaceSwap will test for all features necessary to enbable
+// KernelSupportsUserspaceSwap will test for all features necessary to enable
 // userspace swap.
 CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !defined(PA_HAS_64_BITS_POINTERS)
+  // We currently only support 64bit partition alloc.
+  return false;
+#else
   static bool userfault_fd_supported = chromeos::memory::userspace_swap::
       UserfaultFD::KernelSupportsUserfaultFD();
 
@@ -257,7 +269,7 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
   // MREMAP_DONTUNMAP.
   static bool mremap_dontunmap_supported = []() -> bool {
     const size_t allocation_size = base::GetPageSize();
-    void* source_mapping = mmap(NULL, allocation_size, PROT_NONE,
+    void* source_mapping = mmap(nullptr, allocation_size, PROT_NONE,
                                 MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
     if (source_mapping == MAP_FAILED) {
       return false;
@@ -279,10 +291,12 @@ CHROMEOS_EXPORT bool KernelSupportsUserspaceSwap() {
   }();
 
   return userfault_fd_supported && mremap_dontunmap_supported;
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
+        // !defined(PA_HAS_64_BITS_POINTERS)
 }
 
-RendererSwapData::RendererSwapData() {}
-RendererSwapData::~RendererSwapData() {}
+RendererSwapData::RendererSwapData() = default;
+RendererSwapData::~RendererSwapData() = default;
 
 // static
 CHROMEOS_EXPORT std::unique_ptr<RendererSwapData> RendererSwapData::Create(
@@ -307,6 +321,61 @@ CHROMEOS_EXPORT bool SwapRegions(RendererSwapData* data, int num_regions) {
   VLOG(1) << "SwapRegions for rphid " << impl->render_process_host_id()
           << " at most " << num_regions << " regions";
   return true;
+}
+
+CHROMEOS_EXPORT bool GetPartitionAllocSuperPagesInUse(
+    int32_t max_superpages,
+    std::vector<::userspace_swap::mojom::MemoryRegionPtr>& regions) {
+  regions.clear();
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) || \
+    !defined(PA_HAS_64_BITS_POINTERS)
+  return false;
+#else
+
+  uint32_t superpages_remaining =
+      max_superpages >= 0 ? max_superpages : UINT32_MAX;
+
+  auto* pool_manager = base::internal::AddressPoolManager::GetInstance();
+  DCHECK(pool_manager);
+
+  for (base::internal::pool_handle ph :
+       {base::internal::PartitionAddressSpace::GetNonBRPPool(),
+        base::internal::PartitionAddressSpace::GetBRPPool()}) {
+    uintptr_t pool_base = pool_manager->GetPoolBaseAddress(ph);
+    DCHECK(pool_base);
+
+    uintptr_t current_area = 0;
+    uint64_t current_area_length = 0;
+
+    std::bitset<base::kMaxSuperPages> alloc_bitset;
+    pool_manager->GetPoolUsedSuperPages(ph, alloc_bitset);
+
+    for (size_t i = 0; i < alloc_bitset.size() && superpages_remaining; ++i) {
+      if (alloc_bitset.test(i)) {
+        superpages_remaining--;
+        if (!current_area) {
+          current_area = pool_base + (i * base::kSuperPageSize);
+        }
+
+        current_area_length += base::kSuperPageSize;
+      } else {
+        if (current_area) {
+          regions.emplace_back(base::in_place, current_area,
+                               current_area_length);
+          current_area = 0;
+          current_area_length = 0;
+        }
+      }
+    }
+
+    if (current_area) {
+      regions.emplace_back(base::in_place, current_area, current_area_length);
+    }
+  }
+
+  return true;
+#endif  // !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) ||
+        // !defined(PA_HAS_64_BITS_POINTERS)
 }
 
 CHROMEOS_EXPORT bool IsVMASwapEligible(

@@ -10,6 +10,8 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <vector>
+
 #include "base/threading/scoped_blocking_call.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.h"
 #include "chromeos/memory/userspace_swap/userspace_swap.mojom.h"
@@ -79,6 +81,15 @@ void UserspaceSwapImpl::MapArea(uint64_t address, uint64_t length) {
   void* dest_mapping = mmap(reinterpret_cast<void*>(address), length, PROT_NONE,
                             MAP_FIXED | MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
   PCHECK(dest_mapping != MAP_FAILED) << "Unable to map area";
+}
+
+void UserspaceSwapImpl::GetPartitionAllocSuperPagesUsed(
+    int32_t max_superpages,
+    UserspaceSwapImpl::GetPartitionAllocSuperPagesUsedCallback callback) {
+  std::vector<::userspace_swap::mojom::MemoryRegionPtr> areas;
+  chromeos::memory::userspace_swap::GetPartitionAllocSuperPagesInUse(
+      max_superpages, areas);
+  std::move(callback).Run(std::move(areas));
 }
 
 }  // namespace mechanism
