@@ -91,7 +91,7 @@ export function reimagingProvisioningPageTest() {
     service.triggerProvisioningObserver(
         ProvisioningStep.kProvisioningComplete, 1.0, 0);
     await flushTasks();
-    service.getNextState = () => {
+    service.transitionNextState = () => {
       return resolver.promise;
     };
 

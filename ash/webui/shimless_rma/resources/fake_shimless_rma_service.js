@@ -52,9 +52,9 @@ export class FakeShimlessRmaService {
    * Set the ordered list of states end error codes for this fake.
    * Setting an empty list (the default) returns kRmaNotRequired for any state
    * function.
-   * getNextState and getPrevState will move through the fake state through the
-   * list, and return kTransitionFailed if it would move off either end.
-   * getCurrentState always return the state at the current index.
+   * transitionNextState and transitionPreviousState will move through the fake
+   * state through the list, and return kTransitionFailed if it would move off
+   * either end. getCurrentState always return the state at the current index.
    *
    * @param {!Array<!StateResult>} states
    */
@@ -67,8 +67,8 @@ export class FakeShimlessRmaService {
    * @return {!Promise<!StateResult>}
    */
   getCurrentState() {
-    // As getNextState and getPrevState can modify the result of this function
-    // the result must be set at the time of the call.
+    // As transitionNextState and transitionPreviousState can modify the result
+    // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
       this.setFakeCurrentState_(
           RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
@@ -85,9 +85,9 @@ export class FakeShimlessRmaService {
   /**
    * @return {!Promise<!StateResult>}
    */
-  getNextState() {
-    // As getNextState and getPrevState can modify the result of this function
-    // the result must be set at the time of the call.
+  transitionNextState() {
+    // As transitionNextState and transitionPreviousState can modify the result
+    // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
       this.setFakeNextState_(RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
     } else if (this.stateIndex_ >= this.states_.length - 1) {
@@ -101,15 +101,15 @@ export class FakeShimlessRmaService {
       let state = this.states_[this.stateIndex_];
       this.setFakeNextState_(state.state, state.error);
     }
-    return this.methods_.resolveMethod('getNextState');
+    return this.methods_.resolveMethod('transitionNextState');
   }
 
   /**
    * @return {!Promise<!StateResult>}
    */
-  getPrevState() {
-    // As getNextState and getPrevState can modify the result of this function
-    // the result must be set at the time of the call.
+  transitionPreviousState() {
+    // As transitionNextState and transitionPreviousState can modify the result
+    // of this function the result must be set at the time of the call.
     if (this.states_.length === 0) {
       this.setFakePrevState_(RmaState.kUnknown, RmadErrorCode.kRmaNotRequired);
     } else if (this.stateIndex_ === 0) {
@@ -123,7 +123,7 @@ export class FakeShimlessRmaService {
       let state = this.states_[this.stateIndex_];
       this.setFakePrevState_(state.state, state.error);
     }
-    return this.methods_.resolveMethod('getPrevState');
+    return this.methods_.resolveMethod('transitionPreviousState');
   }
 
   /**
@@ -639,8 +639,8 @@ export class FakeShimlessRmaService {
     this.methods_ = new FakeMethodResolver();
 
     this.methods_.register('getCurrentState');
-    this.methods_.register('getNextState');
-    this.methods_.register('getPrevState');
+    this.methods_.register('transitionNextState');
+    this.methods_.register('transitionPreviousState');
 
     this.methods_.register('abortRma');
 
@@ -738,23 +738,24 @@ export class FakeShimlessRmaService {
   }
 
   /**
-   * Sets the value that will be returned when calling getNextState().
+   * Sets the value that will be returned when calling transitionNextState().
    * @private
    * @param {!RmaState} state
    * @param {!RmadErrorCode} error
    */
   setFakeNextState_(state, error) {
-    this.setFakeStateForMethod_('getNextState', state, error);
+    this.setFakeStateForMethod_('transitionNextState', state, error);
   }
 
   /**
-   * Sets the value that will be returned when calling getPrevState().
+   * Sets the value that will be returned when calling
+   * transitionPreviousState().
    * @private
    * @param {!RmaState} state
    * @param {!RmadErrorCode} error
    */
   setFakePrevState_(state, error) {
-    this.setFakeStateForMethod_('getPrevState', state, error);
+    this.setFakeStateForMethod_('transitionPreviousState', state, error);
   }
 
   /**

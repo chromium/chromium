@@ -104,7 +104,7 @@ export class OnboardingWaitForManualWpDisablePageElement extends
     if (!this.hwwpEnabled_) {
       // TODO(crbug.com/1218180): Replace with a state specific function e.g.
       // WriteProtectManuallyDisabled()
-      return this.shimlessRmaService_.getNextState();
+      return this.shimlessRmaService_.transitionNextState();
     } else {
       return Promise.reject(
           new Error('Hardware Write Protection is not disabled.'));

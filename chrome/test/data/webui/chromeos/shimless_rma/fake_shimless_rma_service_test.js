@@ -51,69 +51,69 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('GetNextStateDefaultRmaNotRequired', () => {
-    return service.getNextState().then((state) => {
+  test('TransitionNextStateDefaultRmaNotRequired', () => {
+    return service.transitionNextState().then((state) => {
       assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
 
-  test('GetNextStateConfigureNetworkOk', () => {
+  test('TransitionNextStateConfigureNetworkOk', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.getNextState().then((state) => {
+    return service.transitionNextState().then((state) => {
       assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('GetNextStateConfigureNetworkTransitionFailed', () => {
+  test('TransitionNextStateConfigureNetworkTransitionFailed', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.getNextState().then((state) => {
+    return service.transitionNextState().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kTransitionFailed);
     });
   });
 
-  test('GetPrevStateDefaultRmaNotRequired', () => {
-    return service.getPrevState().then((state) => {
+  test('TransitionPreviousStateDefaultRmaNotRequired', () => {
+    return service.transitionPreviousState().then((state) => {
       assertEquals(state.state, RmaState.kUnknown);
       assertEquals(state.error, RmadErrorCode.kRmaNotRequired);
     });
   });
 
-  test('GetPrevStateWelcomeOk', () => {
+  test('TransitionPreviousStateWelcomeOk', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
       {state: RmaState.kUpdateChrome, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    service.getNextState().then((state) => {
+    service.transitionNextState().then((state) => {
       assertEquals(state.state, RmaState.kUpdateChrome);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
-    return service.getPrevState().then((state) => {
+    return service.transitionPreviousState().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kOk);
     });
   });
 
-  test('GetPrevStateWelcomeTransitionFailed', () => {
+  test('TransitionPreviousStateWelcomeTransitionFailed', () => {
     let states = [
       {state: RmaState.kWelcomeScreen, error: RmadErrorCode.kOk},
     ];
     service.setStates(states);
 
-    return service.getPrevState().then((state) => {
+    return service.transitionPreviousState().then((state) => {
       assertEquals(state.state, RmaState.kWelcomeScreen);
       assertEquals(state.error, RmadErrorCode.kTransitionFailed);
     });

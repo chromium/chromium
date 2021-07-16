@@ -247,12 +247,12 @@ interface ShimlessRmaService {
   // Returns the next state to display and an error code.
   // TODO(crbug.com/1218180): For development only. Remove when all state
   // specific functions implemented.
-  GetNextState() => (RmaState state, RmadErrorCode error);
+  TransitionNextState() => (RmaState state, RmadErrorCode error);
   // Attempt to roll back to the previous RMA state.
   // Returns the updated state to display and an error code.
   // TODO(crbug.com/1218175): Rename TransitionNextState for consistency with
   // rmad d-bus API.
-  GetPrevState() => (RmaState state, RmadErrorCode error);
+  TransitionPreviousState() => (RmaState state, RmadErrorCode error);
 
   // Attempts to abort the RMA.
   AbortRma() => (RmadErrorCode error);

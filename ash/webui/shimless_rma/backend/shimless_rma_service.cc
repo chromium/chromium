@@ -55,13 +55,15 @@ void ShimlessRmaService::GetCurrentState(GetCurrentStateCallback callback) {
 
 // TODO(crbug.com/1218180): For development only. Remove when all state
 // specific functions implemented.
-void ShimlessRmaService::GetNextState(GetNextStateCallback callback) {
-  GetNextStateGeneric(std::move(callback));
+void ShimlessRmaService::TransitionNextState(
+    TransitionNextStateCallback callback) {
+  TransitionNextStateGeneric(std::move(callback));
 }
 
-void ShimlessRmaService::GetPrevState(GetPrevStateCallback callback) {
+void ShimlessRmaService::TransitionPreviousState(
+    TransitionPreviousStateCallback callback) {
   chromeos::RmadClient::Get()->TransitionPreviousState(base::BindOnce(
-      &ShimlessRmaService::OnGetStateResponse<GetPrevStateCallback>,
+      &ShimlessRmaService::OnGetStateResponse<TransitionPreviousStateCallback>,
       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
@@ -74,7 +76,7 @@ void ShimlessRmaService::AbortRma(AbortRmaCallback callback) {
 void ShimlessRmaService::CheckForNetworkConnection(
     CheckForNetworkConnectionCallback callback) {
   // TODO(joonbug): actually check for network
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetCurrentChromeVersion(
@@ -99,7 +101,7 @@ void ShimlessRmaService::UpdateChrome(UpdateChromeCallback callback) {
   }
   state_proto_.mutable_update_chrome()->set_update(
       rmad::UpdateChromeState::RMAD_UPDATE_STATE_UPDATE);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::UpdateChromeSkipped(UpdateChromeCallback callback) {
@@ -112,7 +114,7 @@ void ShimlessRmaService::UpdateChromeSkipped(UpdateChromeCallback callback) {
   }
   state_proto_.mutable_update_chrome()->set_update(
       rmad::UpdateChromeState::RMAD_UPDATE_STATE_SKIP);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetSameOwner(SetSameOwnerCallback callback) {
@@ -125,7 +127,7 @@ void ShimlessRmaService::SetSameOwner(SetSameOwnerCallback callback) {
   }
   state_proto_.mutable_device_destination()->set_destination(
       rmad::DeviceDestinationState::RMAD_DESTINATION_SAME);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetDifferentOwner(SetDifferentOwnerCallback callback) {
@@ -138,7 +140,7 @@ void ShimlessRmaService::SetDifferentOwner(SetDifferentOwnerCallback callback) {
   }
   state_proto_.mutable_device_destination()->set_destination(
       rmad::DeviceDestinationState::RMAD_DESTINATION_DIFFERENT);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
@@ -153,7 +155,7 @@ void ShimlessRmaService::ChooseManuallyDisableWriteProtect(
   }
   state_proto_.mutable_wp_disable_method()->set_disable_method(
       rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_PHYSICAL);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ChooseRsuDisableWriteProtect(
@@ -167,7 +169,7 @@ void ShimlessRmaService::ChooseRsuDisableWriteProtect(
   }
   state_proto_.mutable_wp_disable_method()->set_disable_method(
       rmad::WriteProtectDisableMethodState::RMAD_WP_DISABLE_RSU);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::SetRsuDisableWriteProtectCode(
@@ -181,7 +183,7 @@ void ShimlessRmaService::SetRsuDisableWriteProtectCode(
     return;
   }
   state_proto_.mutable_wp_disable_rsu()->set_unlock_code(code);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetComponentList(GetComponentListCallback callback) {
@@ -217,7 +219,7 @@ void ShimlessRmaService::SetComponentList(
     proto_component->set_name(component.name());
     proto_component->set_repair_state(component.repair_state());
   }
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReworkMainboard(ReworkMainboardCallback callback) {
@@ -274,7 +276,7 @@ void ShimlessRmaService::ReimageSkipped(ReimageSkippedCallback callback) {
   }
   state_proto_.mutable_update_ro_firmware()->set_update(
       rmad::UpdateRoFirmwareState::RMAD_UPDATE_SKIP);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReimageFromDownload(
@@ -288,7 +290,7 @@ void ShimlessRmaService::ReimageFromDownload(
   }
   state_proto_.mutable_update_ro_firmware()->set_update(
       rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_DOWNLOAD);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::ReimageFromUsb(ReimageFromUsbCallback callback) {
@@ -301,7 +303,7 @@ void ShimlessRmaService::ReimageFromUsb(ReimageFromUsbCallback callback) {
   }
   state_proto_.mutable_update_ro_firmware()->set_update(
       rmad::UpdateRoFirmwareState::RMAD_UPDATE_FIRMWARE_RECOVERY_UTILITY);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::GetRegionList(GetRegionListCallback callback) {}
@@ -356,7 +358,7 @@ void ShimlessRmaService::SetDeviceInformation(
   state_proto_.mutable_update_device_info()->set_serial_number(serial_number);
   state_proto_.mutable_update_device_info()->set_region_index(region_index);
   state_proto_.mutable_update_device_info()->set_sku_index(sku_index);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {
@@ -369,7 +371,7 @@ void ShimlessRmaService::FinalizeAndReboot(FinalizeAndRebootCallback callback) {
   }
   state_proto_.mutable_finalize()->set_shutdown(
       rmad::FinalizeState::RMAD_FINALIZE_REBOOT);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::FinalizeAndShutdown(
@@ -383,7 +385,7 @@ void ShimlessRmaService::FinalizeAndShutdown(
   }
   state_proto_.mutable_finalize()->set_shutdown(
       rmad::FinalizeState::RMAD_FINALIZE_SHUTDOWN);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 void ShimlessRmaService::CutoffBattery(CutoffBatteryCallback callback) {
@@ -396,7 +398,7 @@ void ShimlessRmaService::CutoffBattery(CutoffBatteryCallback callback) {
   }
   state_proto_.mutable_finalize()->set_shutdown(
       rmad::FinalizeState::RMAD_FINALIZE_BATERY_CUTOFF);
-  GetNextStateGeneric(std::move(callback));
+  TransitionNextStateGeneric(std::move(callback));
 }
 
 ////////////////////////////////
@@ -471,7 +473,7 @@ void ShimlessRmaService::BindInterface(
 ////////////////////////////////
 // RmadClient response handlers.
 template <class Callback>
-void ShimlessRmaService::GetNextStateGeneric(Callback callback) {
+void ShimlessRmaService::TransitionNextStateGeneric(Callback callback) {
   chromeos::RmadClient::Get()->TransitionNextState(
       state_proto_,
       base::BindOnce(&ShimlessRmaService::OnGetStateResponse<Callback>,

@@ -28,8 +28,9 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   ~ShimlessRmaService() override;
 
   void GetCurrentState(GetCurrentStateCallback callback) override;
-  void GetNextState(GetNextStateCallback callback) override;
-  void GetPrevState(GetPrevStateCallback callback) override;
+  void TransitionNextState(TransitionNextStateCallback callback) override;
+  void TransitionPreviousState(
+      TransitionPreviousStateCallback callback) override;
 
   void AbortRma(AbortRmaCallback callback) override;
 
@@ -106,7 +107,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
 
  private:
   template <class Callback>
-  void GetNextStateGeneric(Callback callback);
+  void TransitionNextStateGeneric(Callback callback);
   template <class Callback>
   void OnGetStateResponse(Callback callback,
                           absl::optional<rmad::GetStateReply> response);

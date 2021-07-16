@@ -189,7 +189,7 @@ TEST_F(ShimlessRmaServiceTest, GetCurrentStateNoRma) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetNextState) {
+TEST_F(ShimlessRmaServiceTest, TransitionNextState) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK));
@@ -203,7 +203,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextState) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  shimless_rma_provider_->GetNextState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kSelectNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -212,7 +212,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextState) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetNextStateWithoutCurrentStateInvalid) {
+TEST_F(ShimlessRmaServiceTest, TransitionNextStateWithoutCurrentStateInvalid) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK));
@@ -220,7 +220,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextStateWithoutCurrentStateInvalid) {
       CreateStateReply(rmad::RmadState::kSelectNetwork, rmad::RMAD_ERROR_OK));
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
-  shimless_rma_provider_->GetNextState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kWelcome);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
@@ -229,7 +229,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextStateWithoutCurrentStateInvalid) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetNextStateWithNoNextStateFails) {
+TEST_F(ShimlessRmaServiceTest, TransitionNextStateWithNoNextStateFails) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -240,7 +240,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextStateWithNoNextStateFails) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  shimless_rma_provider_->GetNextState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kWelcome);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);
@@ -249,7 +249,7 @@ TEST_F(ShimlessRmaServiceTest, GetNextStateWithNoNextStateFails) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetPrevState) {
+TEST_F(ShimlessRmaServiceTest, TransitionPreviousState) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK));
@@ -263,13 +263,13 @@ TEST_F(ShimlessRmaServiceTest, GetPrevState) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  shimless_rma_provider_->GetNextState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionNextState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kSelectNetwork);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  shimless_rma_provider_->GetPrevState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kWelcome);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
@@ -278,7 +278,8 @@ TEST_F(ShimlessRmaServiceTest, GetPrevState) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetPrevStateWithoutCurrentStateFails) {
+TEST_F(ShimlessRmaServiceTest,
+       TransitionPreviousStateWithoutCurrentStateFails) {
   std::vector<rmad::GetStateReply> fake_states;
   fake_states.push_back(
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK));
@@ -286,7 +287,7 @@ TEST_F(ShimlessRmaServiceTest, GetPrevStateWithoutCurrentStateFails) {
       CreateStateReply(rmad::RmadState::kSelectNetwork, rmad::RMAD_ERROR_OK));
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
   base::RunLoop run_loop;
-  shimless_rma_provider_->GetPrevState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kWelcome);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);
@@ -295,7 +296,7 @@ TEST_F(ShimlessRmaServiceTest, GetPrevStateWithoutCurrentStateFails) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, GetPrevStateWithNoPrevStateFails) {
+TEST_F(ShimlessRmaServiceTest, TransitionPreviousStateWithNoPrevStateFails) {
   std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kWelcome, rmad::RMAD_ERROR_OK)};
   fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
@@ -306,7 +307,7 @@ TEST_F(ShimlessRmaServiceTest, GetPrevStateWithNoPrevStateFails) {
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
       }));
   run_loop.RunUntilIdle();
-  shimless_rma_provider_->GetPrevState(base::BindLambdaForTesting(
+  shimless_rma_provider_->TransitionPreviousState(base::BindLambdaForTesting(
       [&](rmad::RmadState::StateCase state, rmad::RmadErrorCode error) {
         EXPECT_EQ(state, rmad::RmadState::kWelcome);
         EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_TRANSITION_FAILED);

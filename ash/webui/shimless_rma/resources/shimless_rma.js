@@ -191,12 +191,12 @@ export class ShimlessRmaElement extends PolymerElement {
 
   /** @private */
   fetchNextState_() {
-    return this.shimlessRmaService_.getNextState();
+    return this.shimlessRmaService_.transitionNextState();
   }
 
   /** @private */
   fetchPrevState_() {
-    return this.shimlessRmaService_.getPrevState();
+    return this.shimlessRmaService_.transitionPreviousState();
   }
 
   /**
