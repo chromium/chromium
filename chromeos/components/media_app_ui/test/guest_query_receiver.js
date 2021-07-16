@@ -57,11 +57,36 @@ function currentFile() {
 }
 
 /**
+ * Flatten out primitives from the file object for transfer over message pipe.
+ * @param {!mediaApp.AbstractFile} file
+ * @return {!FileSnapshot}
+ */
+function flattenFile(file) {
+  const hasDelete = !!file.deleteOriginalFile;
+  const hasRename = !!file.renameOriginalFile;
+  const lastModified = /** @type{!File} */ (file.blob).lastModified;
+  const {blob, name, size, mimeType, fromClipboard, error, token} = file;
+  return {
+    blob,
+    name,
+    size,
+    mimeType,
+    fromClipboard,
+    error,
+    token,
+    lastModified,
+    hasDelete,
+    hasRename
+  };
+}
+
+/**
  * Handlers for simple tests run in the guest that return a string result.
- * @type{!Object<string, function(!TestMessageQueryData): Promise<string>>}
+ * @type{!Object<string, function(!TestMessageQueryData, !Object):
+ * Promise<string>>}
  */
 const SIMPLE_TEST_QUERIES = {
-  requestSaveFile: async (data) => {
+  requestSaveFile: async (data, resultData) => {
     // Call requestSaveFile on the delegate.
     const existingFile = assertLastReceivedFileList().item(0);
     if (!existingFile) {
@@ -72,13 +97,17 @@ const SIMPLE_TEST_QUERIES = {
         data.simpleArgs ? data.simpleArgs.accept : []);
     return assertCast(pickedFile.token).toString();
   },
-  getExportFile: async (data) => {
+  getExportFile: async (data, resultData) => {
     const existingFile = assertLastReceivedFileList().item(0);
     if (!existingFile) {
       return 'getExportFile failed, no file loaded';
     }
     const pickedFile = await existingFile.getExportFile(data.simpleArgs.accept);
     return pickedFile.token.toString();
+  },
+  getLastFile: async (data, resultData) => {
+    Object.assign(resultData, flattenFile(currentFile()));
+    return resultData.name;
   }
 };
 
@@ -89,7 +118,7 @@ const SIMPLE_TEST_QUERIES = {
  */
 async function runTestQuery(data) {
   let result = 'no result';
-  let extraResultData;
+  let extraResultData = {};
   if (data.testQuery) {
     const element = await waitForNode(data.testQuery, data.pathToRoot || []);
     result = element.tagName;
@@ -105,7 +134,7 @@ async function runTestQuery(data) {
       }
     }
   } else if (data.simple !== undefined && data.simple in SIMPLE_TEST_QUERIES) {
-    result = await SIMPLE_TEST_QUERIES[data.simple](data);
+    result = await SIMPLE_TEST_QUERIES[data.simple](data, extraResultData);
   } else if (data.navigate !== undefined) {
     // Simulate a user navigating to the next/prev file.
     if (data.navigate.direction === 'next') {
@@ -186,8 +215,6 @@ async function runTestQuery(data) {
   } else if (data.openFile) {
     // Call open file on file list, simulating a user trying to open a new file.
     await assertLastReceivedFileList().openFile();
-  } else if (data.getLastFileName) {
-    result = currentFile().name;
   } else if (data.suppressCrashReports) {
     // TODO(b/172981864): Remove this once we stop triggering crash reports for
     // NotAFile errors.
@@ -270,27 +297,8 @@ function installTestHandlers() {
   parentMessagePipe.registerHandler('get-last-loaded-files', () => {
     //  Note: the `ReceivedFileList` has methods stripped since it gets sent
     //  over a pipe so just send the underlying files.
-    /**
-     * @param {!mediaApp.AbstractFile} file
-     * @return {!FileSnapshot}
-     */
-    function snapshot(file) {
-      const hasDelete = !!file.deleteOriginalFile;
-      const hasRename = !!file.renameOriginalFile;
-      const {blob, name, size, mimeType, fromClipboard, error} = file;
-      return {
-        blob,
-        name,
-        size,
-        mimeType,
-        fromClipboard,
-        error,
-        hasDelete,
-        hasRename
-      };
-    }
     return /** @type {!LastLoadedFilesResponse} */ (
-        {fileList: assertLastReceivedFileList().files.map(snapshot)});
+        {fileList: assertLastReceivedFileList().files.map(flattenFile)});
   });
 
   // Log errors, rather than send them to console.error. This allows the error

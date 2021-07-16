@@ -563,6 +563,13 @@ MediaAppUIBrowserTest.OverwriteOriginalIPC = async () => {
   assertEquals(handle.lastWritable.writes.length, 1);
   assertDeepEquals(
       handle.lastWritable.writes[0], {position: 0, size: 'Foo'.length});
+
+  // Ensure there's a last modified property on the file after overwriting. The
+  // time should be "now", but there isn't a non-flaky way to test that. Just
+  // check that it's defined and is strictly positive.
+  const loadedFiles = await getLoadedFiles();
+  assertEquals(loadedFiles.length, 1);
+  assertGE(loadedFiles[0].lastModified, 1);
 };
 
 MediaAppUIBrowserTest.RejectZeroByteWrites = async () => {
@@ -919,8 +926,9 @@ MediaAppUIBrowserTest.RenameOriginalIPC = async () => {
   assertEquals(currentFiles[getEntryIndex()].file, null);
 
   // The new file has the right name in the untrusted context.
-  testResponse = await sendTestMessage({getLastFileName: true});
-  assertEquals(testResponse.testQueryResult, 'new_file_name.png');
+  testResponse = await sendTestMessage({simple: 'getLastFile'});
+  const result = /** @type{!FileSnapshot} */ (testResponse.testQueryResultData);
+  assertEquals(result.name, 'new_file_name.png');
   // The new file uses the same token as the old file.
   assertEquals(currentFiles[getEntryIndex()].token, file2Token);
   // Check the new file written has the correct data.
@@ -1105,6 +1113,10 @@ MediaAppUIBrowserTest.SaveAsIPC = async () => {
   assertEquals(receivedFilesBefore[0].hasDelete, true);
   assertEquals(receivedFilesAfter[0].hasRename, false);
   assertEquals(receivedFilesAfter[0].hasDelete, false);
+
+  // Ensure there's a last modified property on the file after swapping in the
+  // picked file.
+  assertGE(receivedFilesAfter[0].lastModified, 1);
 };
 
 // Tests the error handling behind the saveAs function on received files.

@@ -60,9 +60,7 @@ class ReceivedFile {
       delete this.renameOriginalFile;
     }
     this.error = result.errorName || '';
-    this.blob = blob;
-    this.size = blob.size;
-    this.mimeType = blob.type;
+    this.updateFile(blob, this.name);
   }
 
   /**
@@ -100,10 +98,7 @@ class ReceivedFile {
     const message = {blob, oldFileToken: this.token, pickedFileToken};
     const result = /** @type {!SaveAsResponse} */ (
         await parentMessagePipe.sendMessage(Message.SAVE_AS, message));
-    this.name = result.newFilename;
-    this.blob = blob;
-    this.size = blob.size;
-    this.mimeType = blob.type;
+    this.updateFile(blob, result.newFilename);
     // Files obtained by a file picker currently can not be renamed/deleted.
     // TODO(b/163285659): Detect when the new file is in the same folder as an
     // on-launch file. Those should still be able to be renamed/deleted.
@@ -129,6 +124,21 @@ class ReceivedFile {
             await parentMessagePipe.sendMessage(
                 Message.REQUEST_SAVE_FILE, msg));
     return new ReceivedFile(response.pickedFileContext);
+  }
+
+  /**
+   * Updates the wrapped file to reflect a change written to disk.
+   * @private
+   * @param {!Blob} blob
+   * @param {string} name
+   */
+  updateFile(blob, name) {
+    // Wrap the blob to acquire "now()" as the lastModified time. Note this may
+    // differ from the actual mtime recorded on the inode.
+    this.blob = new File([blob], name, {type: blob.type});
+    this.size = blob.size;
+    this.mimeType = blob.type;
+    this.name = name;
   }
 }
 

@@ -16,7 +16,6 @@ let TestMessageResponseData;
  * @typedef {{
  *     deleteLastFile: (boolean|undefined),
  *     getFileErrors: (boolean|undefined),
- *     getLastFileName: (boolean|undefined),
  *     navigate: ({direction: string, token: number}|undefined),
  *     openFile: (boolean|undefined),
  *     overwriteLastFile: (string|undefined),
@@ -48,6 +47,8 @@ let TestMessageRunTestCase;
  *    mimeType: string,
  *    fromClipboard: (boolean|undefined),
  *    error: (string|undefined),
+ *    token: (number|undefined),
+ *    lastModified: number,
  *    hasDelete: boolean,
  *    hasRename: boolean,
  * }}
