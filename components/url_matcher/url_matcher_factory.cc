@@ -188,12 +188,12 @@ URLMatcherCondition URLMatcherFactory::CreateURLMatcherCondition(
     const std::string& condition_attribute_name,
     const base::Value* value,
     std::string* error) {
-  std::string str_value;
-  if (!value->GetAsString(&str_value)) {
+  if (!value->is_string()) {
     *error = base::StringPrintf(kAttributeExpectedString,
                                 condition_attribute_name.c_str());
     return URLMatcherCondition();
   }
+  const std::string& str_value = value->GetString();
   if (condition_attribute_name == keys::kHostContainsKey ||
       condition_attribute_name == keys::kHostPrefixKey ||
       condition_attribute_name == keys::kHostSuffixKey ||
