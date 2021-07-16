@@ -18,7 +18,7 @@
 
     <!-- Null content description for now because UX in flux. -->
     <ImageView
-        android:id="@+id/visibility_indicator"
+        android:id="@+id/status_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_visibility_off_black"
@@ -35,12 +35,20 @@
         android:layout_marginVertical="5dp"
         style="@style/NtpHeaderTabLayoutStyle" />
 
+    <TextView
+        android:id="@+id/header_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:visibility="gone" />
+
     <org.chromium.components.browser_ui.widget.listmenu.ListMenuButton
         android:id="@+id/header_menu"
         android:layout_width="@dimen/feed_v2_header_menu_width"
-        android:layout_height="@dimen/snippets_article_header_menu_size"
+        android:layout_height="@dimen/snippets_article_header_height"
         android:scaleType="fitXY"
-        android:paddingVertical="15dp"
+        android:paddingVertical="11dp"
         android:layout_marginStart="15dp"
         android:background="@null"
         android:src="@drawable/ic_settings_gear_24dp"

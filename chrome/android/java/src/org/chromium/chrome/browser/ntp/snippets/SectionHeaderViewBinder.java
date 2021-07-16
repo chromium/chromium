@@ -39,6 +39,13 @@ public class SectionHeaderViewBinder
                 || key == SectionHeaderListProperties.MENU_MODEL_LIST_KEY) {
             view.setMenuDelegate(model.get(SectionHeaderListProperties.MENU_MODEL_LIST_KEY),
                     model.get(SectionHeaderListProperties.MENU_DELEGATE_KEY));
+        } else if (key == SectionHeaderListProperties.IS_TAB_MODE_KEY) {
+            view.setTabMode(model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        } else if (key == SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY) {
+            view.setIndicatorVisibility(
+                    model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+        } else if (key == SectionHeaderListProperties.IS_LOGO_KEY) {
+            view.setIsLogo(model.get(SectionHeaderListProperties.IS_LOGO_KEY));
         }
     }
 

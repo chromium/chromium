@@ -207,13 +207,149 @@ public class FeedSurfaceMediatorTest {
     }
 
     @Test
-    public void testOnSurfaceClosed_nolaunchInProgress() {
+    public void testOnSurfaceClosed_noLaunchInProgress() {
         mFeedSurfaceMediator = createMediator();
         mFeedSurfaceMediator.bindStream(mStream);
 
         when(mLaunchReliabilityLogger.isLaunchInProgress()).thenReturn(false);
         mFeedSurfaceMediator.onSurfaceClosed();
         verify(mLaunchReliabilityLogger, never()).logLaunchFinished(anyLong(), anyInt());
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedInGseOn() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.INVISIBLE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedInGseOff() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.VISIBLE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedOutGseOn() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.GONE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedOutGseOff() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(true);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.GONE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedInNonGseOn() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(true, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.VISIBLE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedInNonGseOff() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(true);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(false);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(true, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.VISIBLE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedOutNonGseOn() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.GONE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
+    }
+
+    @Test
+    public void testUpdateSectionHeader_signedOutNonGseOff() {
+        PropertyModel model = SectionHeaderListProperties.create();
+        mFeedSurfaceMediator = createMediator(FeedSurfaceCoordinator.StreamTabId.FOR_YOU, model);
+        mFeedSurfaceMediator.updateContent();
+        when(mIdentityManager.hasPrimaryAccount()).thenReturn(false);
+        when(mUrlService.isDefaultSearchEngineGoogle()).thenReturn(false);
+        when(mPrefService.getBoolean(Pref.ARTICLES_LIST_VISIBLE)).thenReturn(true);
+
+        mFeedSurfaceMediator.updateSectionHeader();
+
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_TAB_MODE_KEY));
+        assertEquals(false, model.get(SectionHeaderListProperties.IS_LOGO_KEY));
+        assertEquals(SectionHeaderListProperties.ViewVisibility.GONE,
+                model.get(SectionHeaderListProperties.INDICATOR_VIEW_VISIBILITY_KEY));
     }
 
     private FeedSurfaceMediator createMediator() {

@@ -14,6 +14,17 @@ import org.chromium.ui.modelutil.PropertyModel;
  * Properties for a list of {@link SectionHeaderProperties} models.
  */
 public class SectionHeaderListProperties {
+    /**
+     * Constants for visibility of a view.
+     *
+     * Maps to View.VISIBLE, View.INVISIBLE, and View.GONE.
+     */
+    public enum ViewVisibility {
+        VISIBLE,
+        INVISIBLE,
+        GONE;
+    }
+
     public static final PropertyModel.WritableBooleanPropertyKey IS_SECTION_ENABLED_KEY =
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
@@ -30,12 +41,27 @@ public class SectionHeaderListProperties {
     public static final PropertyModel
             .WritableObjectPropertyKey<ListMenu.Delegate> MENU_DELEGATE_KEY =
             new PropertyModel.WritableObjectPropertyKey<>();
+    /**
+     * Whether to show tabs or not. Tabs will have all headers shown each in a TabLayout.
+     * No tabs means only the 1st header will be shown in a left-aligned TextView.
+     */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_TAB_MODE_KEY =
+            new PropertyModel.WritableBooleanPropertyKey();
+    /** Whether to show logo (true) or normal visibility indicator (false). */
+    public static final PropertyModel.WritableBooleanPropertyKey IS_LOGO_KEY =
+            new PropertyModel.WritableBooleanPropertyKey();
+    /** Visibility state for the logo/feed visibility indicator. */
+    public static final PropertyModel
+            .WritableObjectPropertyKey<ViewVisibility> INDICATOR_VIEW_VISIBILITY_KEY =
+            new PropertyModel.WritableObjectPropertyKey<>();
 
     public static PropertyModel create() {
         return new PropertyModel
                 .Builder(IS_SECTION_ENABLED_KEY, SECTION_HEADERS_KEY, CURRENT_TAB_INDEX_KEY,
-                        ON_TAB_SELECTED_CALLBACK_KEY, MENU_MODEL_LIST_KEY, MENU_DELEGATE_KEY)
+                        ON_TAB_SELECTED_CALLBACK_KEY, MENU_MODEL_LIST_KEY, MENU_DELEGATE_KEY,
+                        IS_TAB_MODE_KEY, IS_LOGO_KEY, INDICATOR_VIEW_VISIBILITY_KEY)
                 .with(SECTION_HEADERS_KEY, new PropertyListModel<>())
+                .with(INDICATOR_VIEW_VISIBILITY_KEY, ViewVisibility.INVISIBLE)
                 .build();
     }
 }
