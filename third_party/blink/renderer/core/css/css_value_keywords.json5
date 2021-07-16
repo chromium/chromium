@@ -430,9 +430,65 @@
     "inside",
     //
     // list-style-type
+    // The order of this enum must match the order found in CSSParserFastPaths::IsValidKeywordPropertyAndValue().
     //
     "disc",
+    "circle",
+    "square",
+    "disclosure-open",
+    "disclosure-closed",
     "decimal",
+    "decimal-leading-zero",
+    "arabic-indic",
+    "bengali",
+    "cambodian",
+    "khmer",
+    "devanagari",
+    "gujarati",
+    "gurmukhi",
+    "kannada",
+    "lao",
+    "malayalam",
+    "mongolian",
+    "myanmar",
+    "oriya",
+    "persian",
+    "urdu",
+    "telugu",
+    "tibetan",
+    "thai",
+    "lower-roman",
+    "upper-roman",
+    "lower-greek",
+    "lower-alpha",
+    "lower-latin",
+    "upper-alpha",
+    "upper-latin",
+    "cjk-earthly-branch",
+    "cjk-heavenly-stem",
+    "ethiopic-halehame",
+    "ethiopic-halehame-am",
+    "ethiopic-halehame-ti-er",
+    "ethiopic-halehame-ti-et",
+    "hangul",
+    "hangul-consonant",
+    "korean-hangul-formal",
+    "korean-hanja-formal",
+    "korean-hanja-informal",
+    "hebrew",
+    "armenian",
+    "lower-armenian",
+    "upper-armenian",
+    "georgian",
+    "cjk-ideographic",
+    "simp-chinese-formal",
+    "simp-chinese-informal",
+    "trad-chinese-formal",
+    "trad-chinese-informal",
+    "hiragana",
+    "katakana",
+    "hiragana-iroha",
+    "katakana-iroha",
     //none
     //
     // The order must match the order found in IsDisplayOutside().
@@ -955,7 +1011,7 @@
     "filled",
     "open",
     "dot",
-    "circle",
+    // circle
     "double-circle",
     "triangle",
     "sesame",
@@ -1086,7 +1142,7 @@
     // stroke-linecap
     "butt",
     // round
-    "square",
+    // square
 
     // stroke-linejoin
     "miter",
