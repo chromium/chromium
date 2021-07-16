@@ -192,6 +192,7 @@ bool PrintViewManager::RejectPrintPreviewRequestIfRestricted(
   if (!IsPrintingRestricted())
     return false;
   GetPrintRenderFrame(rfh)->OnPrintPreviewDialogClosed();
+  PrintPreviewDone();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   policy::ShowDlpPrintDisabledNotification();
 #endif
@@ -227,13 +228,6 @@ bool PrintViewManager::PrintPreview(
   // Don't print / print preview crashed tabs.
   if (IsCrashed())
     return false;
-
-  if (IsPrintingRestricted()) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    policy::ShowDlpPrintDisabledNotification();
-#endif
-    return false;
-  }
 
   GetPrintRenderFrame(rfh)->InitiatePrintPreview(std::move(print_renderer),
                                                  has_selection);
