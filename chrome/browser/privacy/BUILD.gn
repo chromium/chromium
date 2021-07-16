@@ -93,11 +93,15 @@ if (is_win || is_linux) {
     ]
     proto_deps = [ "//components/policy:full_runtime_code_generate" ]
     proto_out_dir = "/chrome/browser/privacy"
+    generate_cc = false
+    generate_library = false
   }
 
   proto_library("traffic_annotation_proto") {
     sources = [ "traffic_annotation.proto" ]
     proto_deps = [ ":chrome_settings_full_runtime" ]
     import_dirs = [ "$root_gen_dir" + "/components/policy/proto" ]
+    generate_cc = false
+    generate_library = false
   }
 }

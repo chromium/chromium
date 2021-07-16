@@ -28,6 +28,9 @@
 #   generate_javascript (optional, default false)
 #       Generate Javascript protobuf stubs.
 #
+#   generate_library (optional, default true)
+#       Generate a "static_library" target for linking with the generated code.
+#
 #   cc_generator_options (optional)
 #       List of extra flags passed to the protocol compiler.  If you need to
 #       add an EXPORT macro to a protobuf's C++ header, set the
@@ -266,14 +269,21 @@ template("proto_library") {
   protogens_cc = []
   protogens_js = []
 
+  # Whether source code bindings should be generated.
+  generate_sources = generate_cc || generate_python || generate_with_plugin ||
+                     generate_javascript
+
   # Whether library should be generated.
   # Library is not needed when proto_library is used to generate binary descriptor, in which case
   # corresponding library target should be omitted entirely.
-  generate_library = generate_cc || generate_python || generate_with_plugin ||
-                     generate_javascript
+  if (defined(invoker.generate_library)) {
+    generate_library = invoker.generate_library
+  } else {
+    generate_library = generate_sources
+  }
 
   # List output files.
-  if (generate_library) {
+  if (generate_sources) {
     foreach(proto, protos) {
       proto_dir = get_path_info(proto, "dir")
       proto_name = get_path_info(proto, "name")
