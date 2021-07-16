@@ -107,10 +107,11 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   model->AddItemWithStringId(IDC_RELOAD, IDS_APP_MENU_RELOAD);
   if (!web_app::AppBrowserController::IsWebApp(browser())) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
-    if (browser()->deprecated_is_app())
+    if (browser()->is_type_app() || browser()->is_type_app_popup()) {
       model->AddItemWithStringId(IDC_NEW_TAB, IDS_APP_MENU_NEW_WEB_PAGE);
-    else
+    } else {
       model->AddItemWithStringId(IDC_SHOW_AS_TAB, IDS_SHOW_AS_TAB);
+    }
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_CUT, IDS_CUT);
     model->AddItemWithStringId(IDC_COPY, IDS_COPY);
@@ -122,7 +123,8 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
     model->AddSubMenuWithStringId(IDC_ZOOM_MENU, IDS_ZOOM_MENU,
                                   zoom_menu_contents_.get());
   }
-  if (browser()->deprecated_is_app() && chrome::CanOpenTaskManager()) {
+  if ((browser()->is_type_app() || browser()->is_type_app_popup()) &&
+      chrome::CanOpenTaskManager()) {
     model->AddSeparator(ui::NORMAL_SEPARATOR);
     model->AddItemWithStringId(IDC_TASK_MANAGER, IDS_TASK_MANAGER);
   }
