@@ -444,11 +444,6 @@ void RenderAccessibilityImpl::Reset(int32_t reset_token) {
   }
 }
 
-void RenderAccessibilityImpl::HandleWebAccessibilityEvent(
-    const ui::AXEvent& event) {
-  HandleAXEvent(event);
-}
-
 void RenderAccessibilityImpl::MarkWebAXObjectDirty(
     const WebAXObject& obj,
     bool subtree,

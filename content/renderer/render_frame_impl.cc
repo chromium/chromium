@@ -4508,8 +4508,8 @@ void RenderFrameImpl::PostAccessibilityEvent(const ui::AXEvent& event) {
   if (!IsAccessibilityEnabled())
     return;
 
-  render_accessibility_manager_->GetRenderAccessibilityImpl()
-      ->HandleWebAccessibilityEvent(event);
+  render_accessibility_manager_->GetRenderAccessibilityImpl()->HandleAXEvent(
+      event);
 }
 
 void RenderFrameImpl::MarkWebAXObjectDirty(

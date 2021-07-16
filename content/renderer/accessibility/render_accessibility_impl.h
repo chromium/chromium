@@ -120,14 +120,13 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void Reset(int32_t reset_token);
 
   // Called when an accessibility notification occurs in Blink.
-  void HandleWebAccessibilityEvent(const ui::AXEvent& event);
+  void HandleAXEvent(const ui::AXEvent& event);
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
       bool subtree,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
       std::vector<ui::AXEventIntent> event_intents = {});
 
-  void HandleAXEvent(const ui::AXEvent& event);
 
   // Returns the main top-level document for this page, or NULL if there's
   // no view or frame.
