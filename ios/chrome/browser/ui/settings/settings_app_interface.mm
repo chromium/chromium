@@ -96,7 +96,7 @@ bool HostToLocalHostRewrite(GURL* url, web::BrowserState* browser_state) {
 }
 
 + (void)setFirstLunchState:(BOOL)firstLaunch {
-  chrome_test_util::SetFirstLaunchStateTo(NO);
+  chrome_test_util::SetFirstLaunchStateTo(firstLaunch);
 }
 
 + (BOOL)settingsRegisteredKeyboardCommands {
