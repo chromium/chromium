@@ -94,8 +94,16 @@ public class NoteCreationDialog extends DialogFragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
 
+        // There is a corner case where this function can be triggered by toggling the battery saver
+        // state, resulting in all the variables being reset. The only way out is to destroy this
+        // dialog to bring the user back to the web page.
+        if (getNoteViewAt(0) == null) {
+            onDestroyView();
+            return;
+        }
+
         // Re-calculate the left/right paddings for first/last items.
-        if (getNoteViewAt(0) != null) setPadding(true, false, getNoteViewAt(0));
+        setPadding(true, false, getNoteViewAt(0));
 
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
         int lastIndex = noteCarousel.getAdapter().getItemCount() - 1;
@@ -156,6 +164,7 @@ public class NoteCreationDialog extends DialogFragment {
     public View getNoteViewAt(int index) {
         RecyclerView noteCarousel = mContentView.findViewById(R.id.note_carousel);
         LinearLayoutManager layoutManager = (LinearLayoutManager) noteCarousel.getLayoutManager();
+        if (layoutManager == null) return null;
         View noteContainerView = layoutManager.findViewByPosition(index);
         return noteContainerView == null ? null : noteContainerView.findViewById(R.id.item);
     }
