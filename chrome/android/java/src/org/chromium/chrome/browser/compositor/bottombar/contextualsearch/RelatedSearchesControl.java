@@ -40,15 +40,6 @@ public class RelatedSearchesControl {
     private static final int INVALID_VIEW_ID = 0;
     private static final int NO_SELECTED_CHIP = -1;
 
-    /**
-     * Whether the UI is displaying the TTS query that's based on the selection
-     * in the first position of the RS carousel. See https://crbug.com/1216593.
-     */
-    private static final boolean DO_DISPLAY_DEFAULT_SELECTION_QUERY = false;
-    /** The position of the first Related Searches suggestion in the carousel UI. */
-    private static final int FIRST_RELATED_SEARCHES_CAROUSEL_INDEX =
-            DO_DISPLAY_DEFAULT_SELECTION_QUERY ? 1 : 0;
-
     /** The Android {@link Context} used to inflate the View. */
     private final Context mContext;
     /** The container View used to inflate the View. */
@@ -73,6 +64,9 @@ public class RelatedSearchesControl {
     /** The query suggestions for this feature, or {@code null} if we don't have any. */
     private @Nullable List<String> mRelatedSearchesSuggestions;
     private List<Chip> mChips;
+
+    /** Whether the first query is the default query. */
+    private boolean mDisplayDefaultQuery;
 
     /** Whether the view is visible. */
     private boolean mIsVisible;
@@ -153,7 +147,7 @@ public class RelatedSearchesControl {
     /** Returns whether the SERP is showing due to a Related Searches suggestion. */
     public boolean isShowingRelatedSearchSerp() {
         if (!mIsEnabled) return false;
-        return mSelectedChip >= FIRST_RELATED_SEARCHES_CAROUSEL_INDEX;
+        return mSelectedChip >= firstRelatedSearchesCarouselIndex();
     }
 
     // ============================================================================================
@@ -188,8 +182,10 @@ public class RelatedSearchesControl {
     /**
      * Sets the Related Searches suggestions to show in this view.
      * @param relatedSearches An {@code List} of suggested queries or {@code null} when none.
+     * @param firstQueryIsDefault Whether the first query is the default query.
      */
-    void setRelatedSearchesSuggestions(@Nullable List<String> relatedSearches) {
+    void setRelatedSearchesSuggestions(
+            @Nullable List<String> relatedSearches, boolean displayDefaultQuery) {
         if (mControlView == null) {
             int layoutId = mIsInBarControl
                     ? R.layout.contextual_search_related_searches_view
@@ -203,6 +199,7 @@ public class RelatedSearchesControl {
         assert mChipsSelected == 0 || hasReleatedSearchesToShow();
         mRelatedSearchesSuggestions = relatedSearches;
         mChips = null;
+        mDisplayDefaultQuery = displayDefaultQuery;
         if (hasReleatedSearchesToShow()) {
             show();
         } else {
@@ -212,9 +209,19 @@ public class RelatedSearchesControl {
         mSelectedChip = NO_SELECTED_CHIP;
     }
 
+    void onPanelCollapsed() {
+        clearSelectedSuggestions();
+    }
+
     /** Un-selects any currently selected chip. */
     void clearSelectedSuggestions() {
         if (mControlView != null) mControlView.clearSelectedSuggestions();
+    }
+
+    /** Returns whether we have Related Searches to show or not.  */
+    boolean hasReleatedSearchesToShow() {
+        return mIsEnabled && mRelatedSearchesSuggestions != null
+                && mRelatedSearchesSuggestions.size() > 0;
     }
 
     @VisibleForTesting
@@ -230,6 +237,11 @@ public class RelatedSearchesControl {
     @VisibleForTesting
     public void selectChipForTest(int chipIndex) {
         mControlView.selectChipForTest(chipIndex);
+    }
+
+    @VisibleForTesting
+    public int getSelectedChipForTest() {
+        return mSelectedChip;
     }
 
     // ============================================================================================
@@ -249,7 +261,7 @@ public class RelatedSearchesControl {
 
         // Only the Bar is on screen, so show if this is an in-bar control and hide otherwise.
         if (mIsInBarControl) {
-            showView();
+            showView(true);
         } else {
             hideView();
         }
@@ -305,7 +317,7 @@ public class RelatedSearchesControl {
         // We should show the View only when the Panel has reached the exact height.
         // If not exact then the non-interactive native code draws the Panel during the transition.
         if (percentage == 1.f) {
-            showView();
+            showView(false);
         } else {
             // If the View is still showing, capture a new snapshot in case anything changed.
             // TODO(donnd): grab snapshots when the view changes instead.
@@ -340,8 +352,9 @@ public class RelatedSearchesControl {
      * View to be interactive. Since snapshots are not interactive (they are just a bitmap),
      * we need to temporarily show the Android View on top of the snapshot, so the user will
      * be able to click in the View button.
+     * @param fromCloseToPeek Whether the view is shown from states Closed to Peeked.
      */
-    private void showView() {
+    private void showView(boolean fromCloseToPeek) {
         if (mControlView == null) return;
 
         float y = mPanelSectionHost.getYPositionPx();
@@ -353,6 +366,12 @@ public class RelatedSearchesControl {
         float offsetX = mOverlayPanel.getOffsetX() * mDpToPx;
         if (LocalizationUtils.isLayoutRtl()) {
             offsetX = -offsetX;
+        }
+
+        if (mDisplayDefaultQuery && mSelectedChip == NO_SELECTED_CHIP && !fromCloseToPeek) {
+            mSelectedChip = 0;
+            mChips.get(mSelectedChip).selected = true;
+            mControlView.onChipsChanged();
         }
 
         view.setTranslationX(offsetX);
@@ -424,15 +443,14 @@ public class RelatedSearchesControl {
         // not need to be logged using the call below since it's not an RS suggestion.
         // See https://crbug.com/1216593.
         RelatedSearchesUma.logSelectedSuggestionIndex(
-                suggestionIndex + (DO_DISPLAY_DEFAULT_SELECTION_QUERY ? 0 : 1));
+                suggestionIndex + (mDisplayDefaultQuery ? 0 : 1));
         mChipsSelected++;
         ContextualSearchUma.logAllSearches(/* isRelatedSearches */ true);
     }
 
-    /** Returns whether we have Related Searches to show or not.  */
-    boolean hasReleatedSearchesToShow() {
-        return mIsEnabled && mRelatedSearchesSuggestions != null
-                && mRelatedSearchesSuggestions.size() > 0;
+    /** The position of the first Related Searches suggestion in the carousel UI. */
+    private int firstRelatedSearchesCarouselIndex() {
+        return mDisplayDefaultQuery ? 1 : 0;
     }
 
     // ============================================================================================
@@ -485,12 +503,17 @@ public class RelatedSearchesControl {
             if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;
             mSelectedChip = tappedChipIndex;
             mChips.get(tappedChipIndex).selected = true;
-            for (Observer observer : mObservers) observer.onChipsChanged();
+            onChipsChanged();
         }
 
         /** Un-selects any currently selected chip. */
         void clearSelectedSuggestions() {
             if (mSelectedChip != NO_SELECTED_CHIP) mChips.get(mSelectedChip).selected = false;
+            mSelectedChip = NO_SELECTED_CHIP;
+            onChipsChanged();
+        }
+
+        void onChipsChanged() {
             for (Observer observer : mObservers) observer.onChipsChanged();
         }
 
@@ -566,6 +589,10 @@ public class RelatedSearchesControl {
         /** Un-selects any currently selected chip. */
         void clearSelectedSuggestions() {
             mChipsProvider.clearSelectedSuggestions();
+        }
+
+        void onChipsChanged() {
+            mChipsProvider.onChipsChanged();
         }
 
         @Override

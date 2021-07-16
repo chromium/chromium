@@ -257,14 +257,12 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 if (getBarBannerControl().isVisible()) {
                     getBarBannerControl().animateAppearance();
                 }
+                mManagementDelegate.onPanelFinishedShowing();
             } else if (fromState == PanelState.EXPANDED || fromState == PanelState.MAXIMIZED) {
                 mManagementDelegate.onPanelCollapsed();
+                getRelatedSearchesInBarControl().onPanelCollapsed();
+                getRelatedSearchesInContentControl().onPanelCollapsed();
             }
-        }
-
-        if ((fromState == PanelState.UNDEFINED || fromState == PanelState.CLOSED)
-                && toState == PanelState.PEEKED) {
-            mManagementDelegate.onPanelFinishedShowing();
         }
 
         super.setPanelState(toState, reason);
@@ -706,18 +704,22 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
      * @param cardTagEnum The {@link CardTag} that the server returned if there was a card,
      *        or {@code 0}.
      * @param relatedSearchesInBar Related Searches suggestions to be displayed in the Bar.
+     * @param showDefaultSearchInBar Whether the first query is the default query in the bar.
      * @param relatedSearchesInContent Related Searches suggestions to be displayed in the content
      *        portion of the Panel.
+     * @param showDefaultSearchInContent Whether the first query is the default query in the
+     *         content.
      */
     @Override
     public void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> relatedSearchesInBar,
-            @Nullable List<String> relatedSearchesInContent) {
+            @Nullable List<String> relatedSearchesInBar, boolean showDefaultSearchInBar,
+            @Nullable List<String> relatedSearchesInContent, boolean showDefaultSearchInContent) {
         boolean hadInBarSuggestions = getRelatedSearchesInBarControl().hasReleatedSearchesToShow();
-        getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(relatedSearchesInBar);
+        getRelatedSearchesInBarControl().setRelatedSearchesSuggestions(
+                relatedSearchesInBar, showDefaultSearchInBar);
         getRelatedSearchesInContentControl().setRelatedSearchesSuggestions(
-                relatedSearchesInContent);
+                relatedSearchesInContent, showDefaultSearchInContent);
         mPanelMetrics.onSearchTermResolved();
         if (cardTagEnum == CardTag.CT_DEFINITION
                 || cardTagEnum == CardTag.CT_CONTEXTUAL_DEFINITION) {

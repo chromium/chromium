@@ -839,12 +839,17 @@ public class ContextualSearchManager
             doPreventPreload = true;
         }
 
-        List<String> inBarRelatedSearches = buildRelatedSearches(true, searchTerm);
-        List<String> inPanelRelatedSearches = buildRelatedSearches(false, searchTerm);
+        boolean showDefaultSearchInBar = ContextualSearchFieldTrial.showDefaultChipInBar();
+        boolean showDefaultSearchInPanel = ContextualSearchFieldTrial.showDefaultChipInPanel();
+        List<String> inBarRelatedSearches =
+                buildRelatedSearches(true, searchTerm, showDefaultSearchInBar);
+        List<String> inPanelRelatedSearches =
+                buildRelatedSearches(false, searchTerm, showDefaultSearchInPanel);
 
         mSearchPanel.onSearchTermResolved(message, resolvedSearchTerm.thumbnailUrl(),
                 resolvedSearchTerm.quickActionUri(), resolvedSearchTerm.quickActionCategory(),
-                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, inPanelRelatedSearches);
+                resolvedSearchTerm.cardTagEnum(), inBarRelatedSearches, showDefaultSearchInBar,
+                inPanelRelatedSearches, showDefaultSearchInPanel);
         if (!TextUtils.isEmpty(resolvedSearchTerm.caption())) {
             // Call #onSetCaption() to set the caption. For entities, the caption should not be
             // regarded as an answer. In the future, when quick actions are added, doesAnswer will
@@ -2021,11 +2026,12 @@ public class ContextualSearchManager
      * @param isInBarSuggestion Whether the query was displayed in the Bar or content area of the
      *         Panel.
      * @param defaultSearch The resolved search term..
+     * @param showDefaultSearch Whether the default query should been shown.
      * @return A {@code List<String>} of search suggestions in the bar or the Panel, or {@code null}
      *         if the feature for showing chips is not enabled.
      */
     private @Nullable List<String> buildRelatedSearches(
-            boolean isInBarSuggestion, String defaultSearch) {
+            boolean isInBarSuggestion, String defaultSearch, boolean showDefaultSearch) {
         if (!ChromeFeatureList.isEnabled(isInBarSuggestion
                             ? ChromeFeatureList.RELATED_SEARCHES_IN_BAR
                             : ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX)) {
@@ -2033,9 +2039,6 @@ public class ContextualSearchManager
         }
 
         List<String> queries = mRelatedSearches.getQueries(isInBarSuggestion);
-        boolean showDefaultSearch = isInBarSuggestion
-                ? ContextualSearchFieldTrial.showDefaultChipInBar()
-                : ContextualSearchFieldTrial.showDefaultChipInPanel();
         if (!showDefaultSearch || queries.size() == 0) {
             return queries;
         }

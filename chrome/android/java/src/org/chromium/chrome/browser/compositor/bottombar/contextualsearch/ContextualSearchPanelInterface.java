@@ -33,8 +33,8 @@ public interface ContextualSearchPanelInterface {
     void setDidSearchInvolvePromo();
     void onSearchTermResolved(String searchTerm, String thumbnailUrl, String quickActionUri,
             int quickActionCategory, @CardTag int cardTagEnum,
-            @Nullable List<String> inBarRelatedSearches,
-            @Nullable List<String> inContentRelatedSearches);
+            @Nullable List<String> inBarRelatedSearches, boolean showDefaultSearchInBar,
+            @Nullable List<String> inContentRelatedSearches, boolean showDefaultSearchInContent);
     void setCaption(String caption);
     void ensureCaption();
     void onContextualSearchPrefChanged(boolean isEnabled);
