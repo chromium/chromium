@@ -73,6 +73,10 @@ class FullRestoreService : public KeyedService,
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
 
+  FullRestoreAppLaunchHandler* app_launch_handler() {
+    return app_launch_handler_.get();
+  }
+
  private:
   // KeyedService overrides.
   void Shutdown() override;

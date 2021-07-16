@@ -144,8 +144,7 @@ void AppLaunchHandler::LaunchApp(apps::mojom::AppType app_type,
       // for ARC apps.
       return;
     case apps::mojom::AppType::kExtension:
-      ::full_restore::FullRestoreReadHandler::GetInstance()
-          ->SetNextRestoreWindowIdForChromeApp(profile_->GetPath(), app_id);
+      OnExtensionLaunching(app_id);
       // Deliberately fall through to apps::mojom::AppType::kWeb to launch the
       // app.
       FALLTHROUGH;

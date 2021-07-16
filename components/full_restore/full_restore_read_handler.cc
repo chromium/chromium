@@ -14,6 +14,7 @@
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/desk_template_read_handler.h"
 #include "components/full_restore/full_restore_file_handler.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
@@ -252,7 +253,13 @@ void FullRestoreReadHandler::ModifyWidgetParams(
                       ? arc_read_handler_->GetWindowInfo(restore_window_id)
                       : nullptr;
   } else {
-    window_info = GetWindowInfo(restore_window_id);
+    // `DeskTemplateReadHandler::GetWindowInfo()` will return nullptr if full
+    // restore is running.
+    // TODO(sammiequon): Separate full restore and desk templates logic.
+    window_info = DeskTemplateReadHandler::GetInstance()->GetWindowInfo(
+        restore_window_id);
+    if (!window_info)
+      window_info = GetWindowInfo(restore_window_id);
   }
   if (!window_info)
     return;

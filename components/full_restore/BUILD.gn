@@ -13,6 +13,8 @@ component("full_restore") {
     "arc_read_handler.h",
     "arc_save_handler.cc",
     "arc_save_handler.h",
+    "desk_template_read_handler.cc",
+    "desk_template_read_handler.h",
     "features.cc",
     "features.h",
     "full_restore_file_handler.cc",

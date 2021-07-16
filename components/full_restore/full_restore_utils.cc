@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "components/account_id/account_id.h"
 #include "components/full_restore/app_launch_info.h"
+#include "components/full_restore/desk_template_read_handler.h"
 #include "components/full_restore/features.h"
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_read_handler.h"
@@ -66,6 +67,14 @@ std::unique_ptr<WindowInfo> GetWindowInfo(aura::Window* window) {
 int32_t FetchRestoreWindowId(const std::string& app_id) {
   if (!full_restore::features::IsFullRestoreEnabled())
     return 0;
+
+  // `DeskTemplateReadHandler::FetchRestoreWindowId()` will return 0 if full
+  // restore is running.
+  // TODO(sammiequon): Separate full restore and desk templates logic.
+  const int32_t desk_template_restore_window_id =
+      DeskTemplateReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
+  if (desk_template_restore_window_id > 0)
+    return desk_template_restore_window_id;
 
   return FullRestoreReadHandler::GetInstance()->FetchRestoreWindowId(app_id);
 }
