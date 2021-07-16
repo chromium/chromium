@@ -45,13 +45,6 @@ class DiscoverFeedProvider {
   // Returns the Discover Feed ViewController.
   virtual UIViewController* NewFeedViewController(Browser* browser);
   // Returns the Discover Feed ViewController with a custom
-  // UIScrollViewDelegate.
-  // TODO(crbug.com/1222368):Remove this method when the below one with
-  // configuration is in use.
-  virtual UIViewController* NewFeedViewControllerWithScrollDelegate(
-      Browser* browser,
-      id<UIScrollViewDelegate> scrollDelegate);
-  // Returns the Discover Feed ViewController with a custom
   // DiscoverFeedViewControllerConfiguration.
   virtual UIViewController* NewFeedViewControllerWithConfiguration(
       DiscoverFeedViewControllerConfiguration* configuration);

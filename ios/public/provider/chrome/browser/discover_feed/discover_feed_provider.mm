@@ -22,12 +22,6 @@ UIViewController* DiscoverFeedProvider::NewFeedViewController(
   return nil;
 }
 
-UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithScrollDelegate(
-    Browser* browser,
-    id<UIScrollViewDelegate> scrollDelegate) {
-  return nil;
-}
-
 UIViewController* DiscoverFeedProvider::NewFeedViewControllerWithConfiguration(
     DiscoverFeedViewControllerConfiguration* configuration) {
   return nil;
