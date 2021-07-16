@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -25,6 +27,23 @@
 #include "extensions/common/extension.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
+
+namespace {
+
+bool IsAppInstalled(Profile* profile, const std::string& app_id) {
+  if (!apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)) {
+    return false;
+  }
+  auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
+  bool app_installed = false;
+  proxy->AppRegistryCache().ForOneApp(
+      app_id, [&app_installed](const apps::AppUpdate& update) {
+        app_installed = update.Readiness() == apps::mojom::Readiness::kReady;
+      });
+  return app_installed;
+}
+
+}  // namespace
 
 namespace apps {
 
@@ -58,9 +77,7 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
     DCHECK(extension->is_app());
     return true;
   }
-  web_app::WebAppRegistrar& registrar =
-      web_app::WebAppProvider::Get(profile)->registrar();
-  return registrar.IsInstalled(app_id);
+  return IsAppInstalled(profile, app_id);
 }
 
 void SetAppIdForWebContents(Profile* profile,
@@ -81,10 +98,9 @@ void SetAppIdForWebContents(Profile* profile,
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(app_id);
   } else {
-    web_app::WebAppRegistrar& registrar =
-        web_app::WebAppProvider::Get(profile)->registrar();
+    bool app_installed = IsAppInstalled(profile, app_id);
     web_app::WebAppTabHelper::FromWebContents(web_contents)
-        ->SetAppId(registrar.IsInstalled(app_id) ? app_id : std::string());
+        ->SetAppId(app_installed ? app_id : std::string());
     extensions::TabHelper::FromWebContents(web_contents)
         ->SetExtensionAppById(std::string());
   }
