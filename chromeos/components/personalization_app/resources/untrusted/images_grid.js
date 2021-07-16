@@ -33,6 +33,15 @@ class ImagesGrid extends PolymerElement {
         type: Array,
         value: [],
       },
+
+      /**
+       * @type {?bigint}
+       * @private
+       */
+      selectedAssetId_: {
+        type: Object,
+        value: null,
+      }
     };
   }
 
@@ -60,22 +69,34 @@ class ImagesGrid extends PolymerElement {
    * @private
    */
   onMessageReceived_(message) {
-    try {
-      this.images_ = validateReceivedData(message, EventType.SEND_IMAGES);
-    } catch (e) {
-      console.warn('Invalid images received', e);
-      this.images_ = [];
+    switch (message.data.type) {
+      case EventType.SEND_IMAGES:
+        try {
+          this.images_ = validateReceivedData(message, EventType.SEND_IMAGES);
+        } catch (e) {
+          console.warn('Invalid images received', e);
+          this.images_ = [];
+        }
+        return;
+      case EventType.SEND_SELECTED_WALLPAPER_ASSET_ID:
+        this.selectedAssetId_ = validateReceivedData(
+            message, EventType.SEND_SELECTED_WALLPAPER_ASSET_ID);
+        return;
+      default:
+        throw new Error('unexpected event type');
     }
   }
 
   /**
-   * TODO(b/192975897) compare with currently selected image to return correct
-   * aria-selected attribute.
-   * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {!chromeos.personalizationApp.mojom.WallpaperImage} image
+   * @param {?bigint} selectedAssetId
    * @return {string}
    */
-  getAriaSelected_(image) {
-    return 'false';
+  getAriaSelected_(image, selectedAssetId) {
+    // Make sure that both are bigint (not undefined) and equal.
+    return (typeof selectedAssetId === 'bigint' &&
+            image.assetId === selectedAssetId)
+        .toString();
   }
 
   /**

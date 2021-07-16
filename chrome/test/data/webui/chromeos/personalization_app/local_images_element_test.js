@@ -115,4 +115,38 @@ export function LocalImagesTest() {
     const ironList = localImagesElement.shadowRoot.querySelector('iron-list');
     assertFalse(!!ironList);
   });
+
+  test(
+      'sets aria-selected attribute if image name matches currently selected',
+      async () => {
+        personalizationStore.data.local = {
+          images: wallpaperProvider.localImages,
+          data: wallpaperProvider.localImageData,
+        };
+        // Done loading.
+        personalizationStore.data.loading.local = {
+          images: false,
+          data: {'100,10': false, '200,20': false},
+        };
+
+        localImagesElement = initElement(LocalImages.is, {hidden: false});
+        await waitAfterNextRender(localImagesElement);
+
+        // iron-list pre-creates some extra DOM elements but marks them as
+        // hidden. Ignore them here to only get visible images.
+        const images = localImagesElement.shadowRoot.querySelectorAll(
+            '.photo-container:not([hidden])');
+
+        assertEquals(2, images.length);
+        // Every image is aria-selected false.
+        assertTrue(Array.from(images).every(
+            image => image.getAttribute('aria-selected') === 'false'));
+
+        personalizationStore.data.selected = {key: 'LocalImage1'};
+        personalizationStore.notifyObservers();
+
+        assertEquals(2, images.length);
+        assertEquals(images[0].getAttribute('aria-selected'), 'false');
+        assertEquals(images[1].getAttribute('aria-selected'), 'true');
+      });
 }

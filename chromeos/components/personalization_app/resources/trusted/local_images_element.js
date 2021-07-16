@@ -10,8 +10,11 @@
  */
 
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
+import '../common/icons.js';
 import '../common/styles.js';
 import {assert} from '/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -69,6 +72,14 @@ export class LocalImages extends WithPersonalizationStore {
         type: Object,
       },
 
+      /**
+       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+       * @private
+       */
+      selected_: {
+        type: Object,
+      },
+
       /** @private */
       hasError_: {
         type: Boolean,
@@ -90,6 +101,7 @@ export class LocalImages extends WithPersonalizationStore {
     this.watch('imagesLoading_', state => state.loading.local.images);
     this.watch('imageData_', state => state.local.data);
     this.watch('imageDataLoading_', state => state.loading.local.data);
+    this.watch('selected_', state => state.selected);
     this.updateFromStore();
   }
 
@@ -134,13 +146,15 @@ export class LocalImages extends WithPersonalizationStore {
   }
 
   /**
-   * TODO(b/192975897) compare with currently selected image to return correct
-   * aria-selected attribute.
    * @param {!chromeos.personalizationApp.mojom.LocalImage} image
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
    * @return {string}
    */
-  getAriaSelected_(image) {
-    return 'false';
+  getAriaSelected_(image, selected) {
+    if (!image || !selected) {
+      return 'false';
+    }
+    return (!!selected && selected.key === image.name).toString();
   }
 
   /**

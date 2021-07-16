@@ -12,8 +12,9 @@
 import 'chrome://resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 import './styles.js';
 import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {sendImages} from '../common/iframe_api.js';
+import {sendImages, sendSelectedWallpaperAssetId} from '../common/iframe_api.js';
 import {isNonEmptyArray, promisifyOnload} from '../common/utils.js';
+import {WallpaperType} from './personalization_reducers.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 let sendImagesFunction = sendImages;
@@ -23,6 +24,24 @@ export function promisifySendImagesForTesting() {
   const promise = new Promise((resolve) => resolver = resolve);
   sendImagesFunction = (...args) => resolver(args);
   return promise;
+}
+
+/**
+ * If |selected| is set and is an online wallpaper, return the assetId of that
+ * image. Otherwise returns null.
+ * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+ * @return {?bigint}
+ */
+function getAssetId(selected) {
+  if (selected?.type !== WallpaperType.kOnline) {
+    return null;
+  }
+  try {
+    return BigInt(selected.key);
+  } catch (e) {
+    console.warn('Required a BigInt value here', e);
+    return null;
+  }
 }
 
 /** @polymer */
@@ -68,6 +87,13 @@ export class WallpaperImages extends WithPersonalizationStore {
         type: Object,
       },
 
+      /**
+       * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
+       */
+      selected_: {
+        type: Object,
+      },
+
       /** @private */
       hasError_: {
         type: Boolean,
@@ -85,7 +111,10 @@ export class WallpaperImages extends WithPersonalizationStore {
   }
 
   static get observers() {
-    return ['onShouldSendImages_(showImages_, collectionId)']
+    return [
+      'onShouldSendImages_(showImages_, collectionId)',
+      'onShouldSendSelectedAssetId_(showImages_, selected_)',
+    ]
   }
 
   constructor() {
@@ -100,6 +129,7 @@ export class WallpaperImages extends WithPersonalizationStore {
     this.watch('images_', state => state.backdrop.images);
     this.watch('imagesLoading_', state => state.loading.images);
     this.watch('collections_', state => state.backdrop.collections);
+    this.watch('selected_', state => state.selected);
     this.updateFromStore();
   }
 
@@ -151,6 +181,19 @@ export class WallpaperImages extends WithPersonalizationStore {
     if (showImages && collectionId) {
       const iframe = await this.iframePromise_;
       sendImagesFunction(iframe.contentWindow, this.images_[collectionId]);
+    }
+  }
+
+  /**
+   * @param {boolean} showImages
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} selected
+   */
+  async onShouldSendSelectedAssetId_(showImages, selected) {
+    if (showImages) {
+      const assetId = getAssetId(selected);
+      const iframe = await this.iframePromise_;
+      sendSelectedWallpaperAssetId(
+          /** @type {!Window} */ (iframe.contentWindow), assetId);
     }
   }
 

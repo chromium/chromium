@@ -32,7 +32,10 @@ js_library("local_images_element") {
     ":personalization_controller",
     ":styles",
     "../common:constants",
+    "../common:icons",
     "../common:styles",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
     "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -152,6 +155,7 @@ js_library("wallpaper_selected_element") {
     ":personalization_store",
     ":styles",
     "../common:styles",
+    "../common:utils",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

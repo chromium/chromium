@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {assert, assertNotReached} from '/assert.m.js';
-import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, trustedOrigin, untrustedOrigin} from './constants.js';
+import {EventType, SelectCollectionEvent, SelectImageEvent, SelectLocalCollectionEvent, SendCollectionsEvent, SendImageCountsEvent, SendImagesEvent, SendLocalImageDataEvent, SendLocalImagesEvent, SendSelectedWallpaperAssetIdEvent, trustedOrigin, untrustedOrigin} from './constants.js';
 import {isNonEmptyArray} from './utils.js';
 
 /**
@@ -68,6 +68,18 @@ export function sendLocalImages(target, images) {
 export function sendLocalImageData(target, image, data) {
   /** @type {!SendLocalImageDataEvent} */
   const event = {type: EventType.SEND_LOCAL_IMAGE_DATA, id: image.id, data};
+  target.postMessage(event, untrustedOrigin);
+}
+
+/**
+ * Send the |assetId| of the currently selected wallpaper to |target| iframe
+ * window. Sending null indicates that no image is selected.
+ * @param {!Window} target
+ * @param {?bigint} assetId
+ */
+export function sendSelectedWallpaperAssetId(target, assetId) {
+  /** @type {!SendSelectedWallpaperAssetIdEvent} */
+  const event = {type: EventType.SEND_SELECTED_WALLPAPER_ASSET_ID, assetId};
   target.postMessage(event, untrustedOrigin);
 }
 
@@ -141,7 +153,7 @@ export function selectImage(target, assetId) {
  * expected type and contains the expected data.
  * @param {!Event} event
  * @param {!EventType} expectedEventType
- * @return {!Array<!T>}
+ * @return {?T}
  * @template T
  */
 export function validateReceivedData(event, expectedEventType) {
@@ -151,7 +163,13 @@ export function validateReceivedData(event, expectedEventType) {
       event.data.type === expectedEventType,
       `Expected event type: ${expectedEventType}`);
 
-  /** @type {SendCollectionsEvent|SendImagesEvent} */
+  /**
+   * @type {
+   *   SendCollectionsEvent|
+   *   SendImagesEvent|
+   *   SendSelectedWallpaperAssetIdEvent
+   * }
+   */
   const data = event.data;
   switch (data.type) {
     case EventType.SEND_COLLECTIONS:
@@ -162,8 +180,11 @@ export function validateReceivedData(event, expectedEventType) {
       // Images array may be empty.
       assert(Array.isArray(data.images), 'Expected images array');
       return data.images;
+    case EventType.SEND_SELECTED_WALLPAPER_ASSET_ID:
+      assert(data.assetId === null || typeof data.assetId === 'bigint');
+      return data.assetId;
     default:
       assertNotReached('Unknown event type');
   }
-  return [];
+  return null;
 }

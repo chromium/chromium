@@ -9,6 +9,9 @@ js_library("constants") {
   deps = [ "../../mojom:mojom_js_library_for_compile" ]
 }
 
+js_library("icons") {
+}
+
 js_library("iframe_api") {
   deps = [
     ":constants",
@@ -38,6 +41,7 @@ preprocess_if_expr("preprocess") {
   in_files = [
     "common/constants.js",
     "common/base.css",
+    "common/icons.js",
     "common/iframe_api.js",
     "common/styles.js",
     "common/utils.js",

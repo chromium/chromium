@@ -68,7 +68,8 @@ void FakePersonalizationAppUiDelegate::GetCurrentWallpaper(
           GURL("https://test.googleusercontent.com/0"),
           std::vector<std::string>({"this is a test"}),
           ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER,
-          ash::WallpaperType::CUSTOMIZED));
+          ash::WallpaperType::CUSTOMIZED,
+          /*key=*/"fake-key"));
 }
 
 void FakePersonalizationAppUiDelegate::SelectWallpaper(

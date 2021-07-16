@@ -70,7 +70,8 @@ struct LocalImage {
   // background.
   mojo_base.mojom.UnguessableToken id;
 
-  // Name of this local asset to be displayed to the user.
+  // Name of this local asset including extension. Matched against
+  // |CurrentWallpaper.key| to check if this image is set as user wallpaper.
   string name;
 };
 
@@ -88,6 +89,10 @@ struct CurrentWallpaper {
 
   // The type of the image.
   WallpaperType type;
+
+  // A unique identifier for the image. This is used to identify which
+  // |WallpaperImage| or |LocalImage| the user has selected.
+  string key;
 };
 
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to

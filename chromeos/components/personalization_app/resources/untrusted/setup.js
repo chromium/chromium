@@ -7,9 +7,12 @@
  * they are imported in the correct order.
  */
 
-// Import built in style module before these two style modules. This will
-// guarantee that polymer is loaded globally before these style modules run.
+// Import necessary built in modules before ../common files. This will
+// guarantee that polymer and certain polymer elements are loaded first.
+import 'chrome-untrusted://personalization/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome-untrusted://personalization/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import 'chrome-untrusted://personalization/polymer/v3_0/paper-styles/color.js';
+import '../common/icons.js';
 import '../common/styles.js';
 import '../untrusted/untrusted_shared_vars_css.js';
 // Import load_time_data.js first because strings.js requires

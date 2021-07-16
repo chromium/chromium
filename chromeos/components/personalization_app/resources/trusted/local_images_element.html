@@ -19,7 +19,7 @@
       <template>
         <div class="photo-container" role="option" tabindex$="[[tabIndex]]"
             aria-posinset$="[[getAriaIndex_(index)]]"
-            aria-selected$="[[getAriaSelected_(item)]]">
+            aria-selected$="[[getAriaSelected_(item, selected_)]]">
           <div class="photo-inner-container">
             <div class="photo-images-container">
               <template is="dom-if"
@@ -27,6 +27,7 @@
                 <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
                     src="[[getImageData_(item, imageData_)]]"
                     alt="[[item.name]]">
+                <iron-icon icon="personalization:checkmark"></iron-icon>
               </template>
             </div>
           </div>

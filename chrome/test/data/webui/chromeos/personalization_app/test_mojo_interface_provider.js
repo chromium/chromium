@@ -77,9 +77,15 @@ export class TestWallpaperProvider extends TestBrowserProxy {
 
     /**
      * @public
-     * @type {!chromeos.personalizationApp.mojom.CurrentWallpaper}
+     * @type {?chromeos.personalizationApp.mojom.CurrentWallpaper}
      */
-    this.currentWallpaper = this.images_[1];
+    this.currentWallpaper = {
+      attribution: ['Image 0'],
+      layout: chromeos.personalizationApp.mojom.WallpaperLayout.kCenter,
+      key: '1',
+      type: chromeos.personalizationApp.mojom.WallpaperType.kOnline,
+      url: {url: 'https://images.googleusercontent.com/0'},
+    };
 
     /** @public */
     this.selectWallpaperResponse = true;

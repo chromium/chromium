@@ -106,7 +106,7 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
                                 base::File::Error error);
 
   void OnGetOnlineImageAttribution(const ash::WallpaperInfo& info,
-                                   const GURL& gurl,
+                                   const GURL& wallpaper_data_url,
                                    GetCurrentWallpaperCallback callback,
                                    bool success,
                                    const std::string& collection_id,
