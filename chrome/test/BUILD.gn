@@ -5374,6 +5374,7 @@ test("unit_tests") {
       "../browser/password_manager/android/generated_password_saved_message_delegate_unittest.cc",
       "../browser/password_manager/android/password_accessory_controller_impl_unittest.cc",
       "../browser/password_manager/android/password_generation_controller_impl_unittest.cc",
+      "../browser/password_manager/android/password_store_android_backend_unittest.cc",
       "../browser/password_manager/android/save_password_infobar_delegate_android_unittest.cc",
       "../browser/password_manager/android/save_password_message_delegate_unittest.cc",
       "../browser/password_manager/android/update_password_infobar_delegate_android_unittest.cc",

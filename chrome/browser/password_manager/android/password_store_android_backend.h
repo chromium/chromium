@@ -1,0 +1,70 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
+#define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
+
+#include <memory>
+
+#include "chrome/browser/password_manager/android/password_store_android_backend_bridge.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
+
+namespace password_manager {
+
+// Android-specific password store backend that delegates every request to
+// Google Mobile Service.
+// It uses a `PasswordStoreAndroidBackendBridge` to send API requests for each
+// method it implements from `PasswordStoreBackend`. The response will invoke a
+// consumer method with an originally provided `TaskId`. Based on that `TaskId`,
+// this class maps ongoing tasks to the callbacks of the methods that originally
+// required the task since JNI itself can't preserve the callbacks.
+class PasswordStoreAndroidBackend
+    : public PasswordStoreBackend,
+      public PasswordStoreAndroidBackendBridge::Consumer {
+ public:
+  explicit PasswordStoreAndroidBackend(
+      std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge);
+  ~PasswordStoreAndroidBackend() override;
+
+ private:
+  // Implements PasswordStoreBackend interface.
+  void InitBackend(RemoteChangesReceived remote_form_changes_received,
+                   base::RepeatingClosure sync_enabled_or_disabled_cb,
+                   base::OnceCallback<void(bool)> completion) override;
+  void GetAllLoginsAsync(LoginsReply callback) override;
+  void GetAutofillableLoginsAsync(LoginsReply callback) override;
+  void FillMatchingLoginsAsync(
+      LoginsReply callback,
+      const std::vector<PasswordFormDigest>& forms) override;
+  void AddLoginAsync(const PasswordForm& form,
+                     PasswordStoreChangeListReply callback) override;
+  void UpdateLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginAsync(const PasswordForm& form,
+                        PasswordStoreChangeListReply callback) override;
+  void RemoveLoginsByURLAndTimeAsync(
+      const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceCallback<void(bool)> sync_completion,
+      PasswordStoreChangeListReply callback) override;
+  void RemoveLoginsCreatedBetweenAsync(
+      base::Time delete_begin,
+      base::Time delete_end,
+      PasswordStoreChangeListReply callback) override;
+
+  // Implements PasswordStoreAndroidBackendBridge::Consumer interface.
+  void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::TaskId task_id,
+                            std::vector<PasswordForm> passwords) override;
+
+  // Observer to propagate remote form changes to.
+  RemoteChangesReceived remote_form_changes_received_;
+
+  // This object is the proxy to the JNI bridge that performs the API requests.
+  std::unique_ptr<PasswordStoreAndroidBackendBridge> bridge_;
+};
+
+}  // namespace password_manager
+
+#endif  // CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_PASSWORD_STORE_ANDROID_BACKEND_H_
