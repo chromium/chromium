@@ -247,7 +247,7 @@ bool IsV8Initialized() {
 }
 
 void SetUpV8() {
-  if (!base::FeatureList::IsEnabled(features::kPdfUnseasoned)) {
+  if (!gin::IsolateHolder::Initialized()) {
     // TODO(crbug.com/1111024): V8 flags for the Unseasoned Viewer need to be
     // set up as soon as the renderer process is created in the constructor of
     // `content::RenderProcessImpl`.

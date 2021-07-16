@@ -91,6 +91,11 @@ class GIN_EXPORT IsolateHolder {
                          v8::ArrayBuffer::Allocator* allocator,
                          const intptr_t* reference_table = nullptr);
 
+  // Returns whether `Initialize` has already been invoked in the process.
+  // Initialization is a one-way operation (i.e., this method cannot return
+  // false after returning true).
+  static bool Initialized();
+
   v8::Isolate* isolate() { return isolate_; }
 
   // This method returns if v8::Locker is needed to access isolate.

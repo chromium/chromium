@@ -55,11 +55,14 @@ IsolateHolder::IsolateHolder(
     IsolateType isolate_type,
     IsolateCreationMode isolate_creation_mode)
     : access_mode_(access_mode), isolate_type_(isolate_type) {
+  CHECK(Initialized())
+      << "You need to invoke gin::IsolateHolder::Initialize first";
+
   DCHECK(task_runner);
   DCHECK(task_runner->BelongsToCurrentThread());
 
   v8::ArrayBuffer::Allocator* allocator = g_array_buffer_allocator;
-  CHECK(allocator) << "You need to invoke gin::IsolateHolder::Initialize first";
+  DCHECK(allocator);
 
   isolate_ = v8::Isolate::Allocate();
   isolate_data_ = std::make_unique<PerIsolateData>(isolate_, allocator,
@@ -110,6 +113,11 @@ void IsolateHolder::Initialize(ScriptMode mode,
   V8Initializer::Initialize(mode);
   g_array_buffer_allocator = allocator;
   g_reference_table = reference_table;
+}
+
+// static
+bool IsolateHolder::Initialized() {
+  return g_array_buffer_allocator;
 }
 
 void IsolateHolder::EnableIdleTasks(
