@@ -111,11 +111,11 @@ OptionalNSObject AttributeInvoker::Invoke(
   // then the target is deemed (|node| is null) and we should use the default
   // target.
   if (!target) {
-    if (property_node.IsTarget() || !node) {
-      LOG(ERROR) << "Failed to resolve target in '"
-                 << property_node.ToFlatString() << "' statement";
+    if (property_node.IsTarget())
       return OptionalNSObject::Error();
-    }
+
+    if (!node)
+      return OptionalNSObject::NotApplicable();
   }
 
   // If target is deemed, then start from the given property node. Otherwise the
