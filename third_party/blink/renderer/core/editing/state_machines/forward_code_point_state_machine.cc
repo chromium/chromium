@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/editing/state_machines/forward_code_point_state_machine.h"
 
+#include <unicode/utf16.h>
+
 #include "base/notreached.h"
 
 namespace blink {

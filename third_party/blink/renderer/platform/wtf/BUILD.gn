@@ -178,6 +178,7 @@ component("wtf") {
     "text/utf8.h",
     "text/wtf_string.cc",
     "text/wtf_string.h",
+    "text/wtf_uchar.h",
     "thread_restriction_verifier.h",
     "thread_safe_ref_counted.h",
     "thread_specific.h",

@@ -25,9 +25,7 @@
 
 #include <unicode/uchar.h>
 
-// Define platform neutral 8 bit character type (L is for Latin-1).
-typedef unsigned char LChar;
-static_assert(sizeof(UChar) == 2, "UChar should be two bytes");
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace WTF {
 namespace unicode {

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
