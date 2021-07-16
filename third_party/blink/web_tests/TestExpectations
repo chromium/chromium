@@ -7247,7 +7247,6 @@ crbug.com/webrtc/8199 [ Mac10.13 ] external/wpt/webrtc-stats/supported-stats.htm
 crbug.com/webrtc/8199 [ Mac10.12 ] external/wpt/webrtc-stats/supported-stats.html [ Failure Pass ]
 
 # Sheriff
-crbug.com/1223276 external/wpt/layout-instability/input-timestamp.html [ Skip ]
 crbug.com/1223327 wpt_internal/prerender/unload.html [ Pass Timeout ]
 crbug.com/1223327 virtual/prerender/wpt_internal/prerender/unload.html [ Pass Timeout ]
 crbug.com/1222097 external/wpt/html/cross-origin-embedder-policy/blob.https.html [ Skip ]
