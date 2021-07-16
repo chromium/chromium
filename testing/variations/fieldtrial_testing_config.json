@@ -4161,21 +4161,6 @@
             ]
         }
     ],
-    "IOSPasswordReuseDetection": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PasswordReuseDetectionEnabled"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSReduceSessionSize": [
         {
             "platforms": [
