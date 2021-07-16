@@ -1212,8 +1212,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   if (g_browser_process->IsShuttingDown())
     return;
 
-  Profile* lastProfile = [self safeProfileForNewWindows:[self lastProfile]];
-
   // Handle the case where we're dispatching a command from a sender that's in a
   // browser window. This means that the command came from a background window
   // and is getting here because the foreground window is not a browser window.
@@ -1225,6 +1223,14 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     }
   }
 
+  // If not between -applicationDidFinishLaunching: and
+  // -applicationWillTerminate:, ignore. This can happen when events are sitting
+  // in the event queue while the browser is shutting down.
+  if (!_keep_alive)
+    return;
+
+  Profile* lastProfile =
+      [self safeProfileForNewWindows:[self lastProfileIfLoaded]];
   // Ignore commands during session restore's browser creation.  It uses a
   // nested run loop and commands dispatched during this operation cause
   // havoc.
@@ -1232,12 +1238,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
       base::RunLoop::IsNestedOnCurrentThread()) {
     return;
   }
-
-  // If not between -applicationDidFinishLaunching: and
-  // -applicationWillTerminate:, ignore. This can happen when events are sitting
-  // in the event queue while the browser is shutting down.
-  if (!_keep_alive)
-    return;
 
   NSInteger tag = [sender tag];
   // The task manager can be shown without profile.
