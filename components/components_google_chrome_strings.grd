@@ -256,7 +256,7 @@
       <!-- About Flags UI -->
       <if expr="not chromeos">
         <message name="IDS_FLAGS_UI_RELAUNCH_NOTICE" translateable="false" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
-          Your changes will take effect the next time you relaunch Google Chrome.
+          Your changes will take effect the next time you relaunch Chrome.
         </message>
       </if>
       <if expr="chromeos">
@@ -268,7 +268,7 @@
       <!-- about:flags/deprecated strings -->
       <if expr="not chromeos">
         <message name="IDS_DEPRECATED_FEATURES_RELAUNCH_NOTICE" desc="Notifies the user that they need to relaunch Chrome. Shown next to a button that says 'Relaunch Now'.">
-          Your changes will take effect the next time you relaunch Google Chrome.
+          Your changes will take effect the next time you relaunch Chrome.
         </message>
       </if>
       <if expr="chromeos">
@@ -288,12 +288,12 @@
       </message>
 
       <message name="IDS_VERSION_UI_LICENSE" desc="The label below the copyright message, containing the URLs.">
-        Google Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Chromium<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> open source project and other <ph name="BEGIN_LINK_OSS">&lt;a target="_blank" href="$2"&gt;</ph>open source software<ph name="END_LINK_OSS">&lt;/a&gt;</ph>.
+        Chrome is made possible by the <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Chromium<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> open source project and other <ph name="BEGIN_LINK_OSS">&lt;a target="_blank" href="$2"&gt;</ph>open source software<ph name="END_LINK_OSS">&lt;/a&gt;</ph>.
       </message>
 
       <!-- Page Info -->
       <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
-        You're viewing a secure Google Chrome page
+        You're viewing a secure Chrome page
       </message>
 
       <!-- Session Crash -->

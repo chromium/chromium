@@ -169,7 +169,7 @@ locale.  The strings in this file are specific to iOS.
         Copied to Chrome
       </message>
       <message name="IDS_IOS_BANDWIDTH_MANAGEMENT_DESCRIPTION_LEARN_MORE" desc="Description text bandwidth management panel in settings with explicit Learn More link [iOS only]">
-        Google Chrome has features that help you manage your internet data and how quickly you're able to load webpages.
+        Chrome has features that help you manage your internet data and how quickly you're able to load webpages.
 <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
       <message name="IDS_IOS_BOTTOM_TOOLBAR_IPH_PROMOTION_VOICE_OVER" desc="Text to be read by VoiceOver when the Bottom Toolbar Tip is presented to the user, explaining that the bottom toolbar can be used to reach some controls. Read by Text-to-Speech. [iOS only]">

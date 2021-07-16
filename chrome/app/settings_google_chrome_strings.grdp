@@ -9,17 +9,17 @@
     Get help with Chrome
   </message>
   <if expr="not chromeos">
-    <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Google Chrome">
-      Updating Google Chrome
+    <message name="IDS_SETTINGS_UPGRADE_UPDATING" desc="Status label: Updating Chrome">
+      Updating Chrome
     </message>
-    <message name="IDS_SETTINGS_UPGRADE_UPDATING_PERCENT" desc="Status label: Updating Google Chrome (90%)">
-      Updating Google Chrome (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
+    <message name="IDS_SETTINGS_UPGRADE_UPDATING_PERCENT" desc="Status label: Updating Chrome (90%)">
+      Updating Chrome (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
     </message>
-    <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated Google Chrome">
-      Nearly up to date! Relaunch Google Chrome to finish updating. Incognito windows won't reopen.
+    <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated Chrome">
+      Nearly up to date! Relaunch Chrome to finish updating. Incognito windows won't reopen.
     </message>
-    <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (Google Chrome)">
-      Google Chrome is up to date
+    <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (Chrome)">
+      Chrome is up to date
     </message>
   </if>
   <if expr="chromeos">
