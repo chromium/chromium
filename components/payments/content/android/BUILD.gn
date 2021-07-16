@@ -331,6 +331,7 @@ java_library("junit") {
   testonly = true
   sources = [
     "junit/src/org/chromium/components/payments/PaymentRequestServiceTest.java",
+    "junit/src/org/chromium/components/payments/secure_payment_confirmation/PaymentCredentialEnrollmentTest.java",
     "junit/src/org/chromium/components/payments/secure_payment_confirmation/SecurePaymentConfirmationAuthnTest.java",
   ]
   deps = [

@@ -10,6 +10,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.chromium.base.Callback;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -31,6 +33,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
  * coordinator.
  */
 public class PaymentCredentialEnrollmentController extends WebContentsObserver {
+    private final WebContents mWebContents;
     private Runnable mHider;
     private Callback<Boolean> mResponseCallback;
     private PaymentCredentialEnrollmentView mView;
@@ -114,20 +117,32 @@ public class PaymentCredentialEnrollmentController extends WebContentsObserver {
     };
 
     /**
+     * Constructs the SPC Enrollment UI component controller.
+     *
+     * @param webContents The WebContents of the merchant.
+     */
+    public static PaymentCredentialEnrollmentController create(WebContents webContents) {
+        return webContents != null ? new PaymentCredentialEnrollmentController(webContents) : null;
+    }
+
+    private PaymentCredentialEnrollmentController(WebContents webContents) {
+        mWebContents = webContents;
+    }
+
+    /**
      * Shows the SPC Enrollment UI.
      *
-     * @param webContents The WebContents of the merchant's page.
      * @param callback Invoked when users respond to the UI. The callback result is true when the
      *        user accepts the enrollment, false when the user dismisses
      * @param instrumentName The name of the payment instrument.
      * @param icon The icon of the payment instrument.
      * @param isIncognito Whether the tab is currently in incognito mode.
      */
-    public boolean show(WebContents webContents, Callback<Boolean> callback, String instrumentName,
-            Bitmap icon, boolean isIncognito) {
-        assert mHider == null : "Already showing payment-credential enrollment UI";
+    public boolean show(
+            Callback<Boolean> callback, String instrumentName, Bitmap icon, boolean isIncognito) {
+        if (mHider != null) return false;
 
-        WindowAndroid windowAndroid = webContents.getTopLevelNativeWindow();
+        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
         if (windowAndroid == null) return false;
 
         Context context = windowAndroid.getContext().get();
@@ -192,5 +207,15 @@ public class PaymentCredentialEnrollmentController extends WebContentsObserver {
     private void onCancel() {
         hide();
         mResponseCallback.onResult(false);
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public PaymentCredentialEnrollmentView getView() {
+        return mView;
+    }
+
+    @VisibleForTesting(otherwise = VisibleForTesting.NONE)
+    public boolean isHidden() {
+        return mHider == null;
     }
 }

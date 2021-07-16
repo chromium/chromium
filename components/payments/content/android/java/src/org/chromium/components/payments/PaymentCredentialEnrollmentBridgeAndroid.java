@@ -23,8 +23,8 @@ public class PaymentCredentialEnrollmentBridgeAndroid {
     private static void showDialog(WebContents webContents, String instrumentName,
             boolean isIncognito, Bitmap icon, final long responseCallback) {
         assert sSPCEnrollmentController == null;
-        sSPCEnrollmentController = new PaymentCredentialEnrollmentController();
-        if (!sSPCEnrollmentController.show(webContents, (accepted) -> {
+        sSPCEnrollmentController = PaymentCredentialEnrollmentController.create(webContents);
+        if (!sSPCEnrollmentController.show((accepted) -> {
                 closeDialog();
                 PaymentCredentialEnrollmentBridgeAndroidJni.get().onResponse(
                         responseCallback, accepted);
