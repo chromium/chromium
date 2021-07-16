@@ -20,6 +20,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/ranges/algorithm.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -130,6 +131,12 @@ class OperationHandler {
 }  // namespace
 
 PasswordStore::PasswordStore() = default;
+
+PasswordStore::PasswordStore(std::unique_ptr<PasswordStoreBackend> backend)
+    : PasswordStore() {
+  backend_deleter_ = std::move(backend);
+  backend_ = backend_deleter_.get();
+}
 
 bool PasswordStore::Init(PrefService* prefs,
                          base::RepeatingClosure sync_enabled_or_disabled_cb) {
@@ -449,6 +456,11 @@ PasswordStore::CreateSyncControllerDelegate() {
           base::Unretained(this)));
 }
 
+void PasswordStore::SetUnsyncedCredentialsDeletionNotifier(
+    std::unique_ptr<UnsyncedCredentialsDeletionNotifier> deletion_notifier) {
+  NOTREACHED() << "Platform doesn't support sync!";
+}
+
 PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
 }
@@ -487,6 +499,122 @@ scoped_refptr<base::SequencedTaskRunner>
 PasswordStore::CreateBackgroundTaskRunner() const {
   return base::ThreadPool::CreateSequencedTaskRunner(
       {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
+}
+
+void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
+                                      bool custom_passphrase_sync_enabled,
+                                      BulkCheckDone bulk_check_done) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+}
+
+bool PasswordStore::RemoveStatisticsByOriginAndTimeImpl(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::Time delete_begin,
+    base::Time delete_end) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return false;
+}
+
+PasswordStoreChangeList PasswordStore::DisableAutoSignInForOriginsImpl(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return PasswordStoreChangeList();
+}
+
+std::vector<std::unique_ptr<PasswordForm>> PasswordStore::FillMatchingLogins(
+    const PasswordFormDigest& form) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<std::unique_ptr<PasswordForm>>();
+}
+
+std::vector<std::unique_ptr<PasswordForm>>
+PasswordStore::FillMatchingLoginsByPassword(
+    const std::u16string& plain_text_password) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<std::unique_ptr<PasswordForm>>();
+}
+
+void PasswordStore::AddSiteStatsImpl(const InteractionsStats& stats) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+}
+
+void PasswordStore::RemoveSiteStatsImpl(const GURL& origin_domain) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+}
+
+std::vector<InteractionsStats> PasswordStore::GetSiteStatsImpl(
+    const GURL& origin_domain) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<InteractionsStats>();
+}
+
+PasswordStoreChangeList PasswordStore::AddInsecureCredentialImpl(
+    const InsecureCredential& insecure_credential) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return PasswordStoreChangeList();
+}
+
+PasswordStoreChangeList PasswordStore::RemoveInsecureCredentialsImpl(
+    const std::string& signon_realm,
+    const std::u16string& username,
+    RemoveInsecureCredentialsReason reason) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return PasswordStoreChangeList();
+}
+
+std::vector<InsecureCredential> PasswordStore::GetAllInsecureCredentialsImpl() {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<InsecureCredential>();
+}
+
+std::vector<InsecureCredential>
+PasswordStore::GetMatchingInsecureCredentialsImpl(
+    const std::string& signon_realm) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<InsecureCredential>();
+}
+
+void PasswordStore::AddFieldInfoImpl(const FieldInfo& field_info) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+}
+
+std::vector<FieldInfo> PasswordStore::GetAllFieldInfoImpl() {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return std::vector<FieldInfo>();
+}
+
+void PasswordStore::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
+                                              base::Time remove_end) {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+}
+
+bool PasswordStore::IsEmpty() {
+  // TODO(crbug.com/1217070): Move as implementation detail into backend.
+  LOG(ERROR) << "Called function without implementation: " << __func__;
+  return false;
+}
+
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+PasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
+  NOTREACHED() << "Platform doesn't support sync!";
+  return nullptr;
 }
 
 void PasswordStore::InvokeAndNotifyAboutInsecureCredentialsChange(

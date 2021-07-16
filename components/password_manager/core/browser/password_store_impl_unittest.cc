@@ -13,6 +13,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "components/os_crypt/os_crypt_mocker.h"
@@ -31,6 +32,27 @@ using testing::IsEmpty;
 namespace password_manager {
 
 namespace {
+
+constexpr const char kTestWebRealm1[] = "https://one.example.com/";
+constexpr const char kTestWebOrigin1[] = "https://one.example.com/origin";
+constexpr const char kTestWebRealm2[] = "https://two.example.com/";
+constexpr const char kTestWebOrigin2[] = "https://two.example.com/origin";
+constexpr const char kTestWebRealm3[] = "https://three.example.com/";
+constexpr const char kTestWebOrigin3[] = "https://three.example.com/origin";
+constexpr const char kTestAndroidRealm1[] =
+    "android://hash@com.example.android/";
+constexpr const char kTestAndroidRealm2[] =
+    "android://hash@com.example.two.android/";
+constexpr const char kTestAndroidRealm3[] =
+    "android://hash@com.example.three.android/";
+constexpr const time_t kTestLastUsageTime = 1546300800;  // 00:00 Jan 1 2019 UTC
+
+class MockPasswordStoreConsumer : public PasswordStoreConsumer {
+  MOCK_METHOD(void,
+              OnGetPasswordStoreResults,
+              (std::vector<std::unique_ptr<PasswordForm>> results),
+              (override));
+};
 
 class MockPasswordStoreBackendTester {
  public:
@@ -263,6 +285,49 @@ TEST_F(PasswordStoreImplTest, OperationsOnABadDatabaseSilentlyFail) {
 
   EXPECT_CALL(tester, HandleChanges(IsEmpty()));
   bad_backend->RemoveLoginAsync(*form, handle_changes);
+  RunUntilIdle();
+}
+
+TEST_F(PasswordStoreImplTest, GetAllLoginsAsync) {
+  static constexpr PasswordFormData kTestCredentials[] = {
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
+       u"username_value_1", u"", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm2, "", "", u"", u"", u"",
+       u"username_value_2", u"", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestAndroidRealm3, "", "", u"", u"", u"",
+       u"username_value_3", u"", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestWebRealm1, kTestWebOrigin1, "", u"",
+       u"", u"", u"username_value_4", u"", kTestLastUsageTime, 1},
+      // A PasswordFormData with nullptr as the username_value will be converted
+      // in a blocklisted PasswordForm in FillPasswordFormWithData().
+      {PasswordForm::Scheme::kHtml, kTestWebRealm2, kTestWebOrigin2, "", u"",
+       u"", u"", nullptr, u"", kTestLastUsageTime, 1},
+      {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", u"",
+       u"", u"", nullptr, u"", kTestLastUsageTime, 1}};
+  PasswordStoreBackend* backend = Initialize();
+
+  // Populate store with test credentials.
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  base::MockCallback<PasswordStoreChangeListReply> reply;
+  EXPECT_CALL(reply, Run).Times(6);
+  for (const auto& test_credential : kTestCredentials) {
+    all_credentials.push_back(FillPasswordFormWithData(test_credential));
+    // TODO(crbug.com/1217071): Call AddLoginAsync once it is implemented.
+    // store()->AddLogin(*all_credentials.back());
+    backend->AddLoginAsync(*all_credentials.back(), reply.Get());
+  }
+  RunUntilIdle();
+
+  // Verify that the store returns all test credentials.
+  MockPasswordStoreConsumer mock_consumer;
+  std::vector<std::unique_ptr<PasswordForm>> expected_results;
+  for (const auto& credential : all_credentials)
+    expected_results.push_back(std::make_unique<PasswordForm>(*credential));
+  base::MockCallback<LoginsReply> mock_reply;
+  EXPECT_CALL(mock_reply,
+              Run(UnorderedPasswordFormElementsAre(&expected_results)));
+  backend->GetAllLoginsAsync(mock_reply.Get());
+
   RunUntilIdle();
 }
 

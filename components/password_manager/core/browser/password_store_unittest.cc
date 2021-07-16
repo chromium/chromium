@@ -32,6 +32,7 @@
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/password_manager/core/browser/password_reuse_manager.h"
 #include "components/password_manager/core/browser/password_store.h"
+#include "components/password_manager/core/browser/password_store_backend.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_impl.h"
 #include "components/password_manager/core/browser/password_store_signin_notifier.h"
@@ -172,6 +173,55 @@ class PasswordStoreWithMockedMetadataStore : public PasswordStoreImpl {
  private:
   ~PasswordStoreWithMockedMetadataStore() override = default;
   MockMetadataStore metadata_store_;
+};
+
+class MockPasswordStoreBackend : public PasswordStoreBackend {
+ public:
+  // TODO(crbug.bom/1226042): Rename this to Init after PasswordStoreImpl no
+  // longer inherits PasswordStore.
+  MOCK_METHOD(void,
+              InitBackend,
+              (RemoteChangesReceived remote_form_changes_received,
+               base::RepeatingClosure sync_enabled_or_disabled_cb,
+               base::OnceCallback<void(bool)> completion),
+              (override));
+
+  MOCK_METHOD(void, GetAllLoginsAsync, (LoginsReply callback), (override));
+  MOCK_METHOD(void,
+              GetAutofillableLoginsAsync,
+              (LoginsReply callback),
+              (override));
+  MOCK_METHOD(void,
+              FillMatchingLoginsAsync,
+              (LoginsReply callback,
+               const std::vector<PasswordFormDigest>& forms),
+              (override));
+  MOCK_METHOD(void,
+              AddLoginAsync,
+              (const PasswordForm& form, PasswordStoreChangeListReply callback),
+              (override));
+  MOCK_METHOD(void,
+              UpdateLoginAsync,
+              (const PasswordForm& form, PasswordStoreChangeListReply callback),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLoginAsync,
+              (const PasswordForm& form, PasswordStoreChangeListReply callback),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLoginsByURLAndTimeAsync,
+              (const base::RepeatingCallback<bool(const GURL&)>& url_filter,
+               base::Time delete_begin,
+               base::Time delete_end,
+               base::OnceCallback<void(bool)> sync_completion,
+               PasswordStoreChangeListReply callback),
+              (override));
+  MOCK_METHOD(void,
+              RemoveLoginsCreatedBetweenAsync,
+              (base::Time delete_begin,
+               base::Time delete_end,
+               PasswordStoreChangeListReply callback),
+              (override));
 };
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
@@ -939,6 +989,40 @@ TEST_F(PasswordStoreTest, DISABLED_UpdatePasswordsStoredForAffiliatedWebsites) {
   }
 }
 
+TEST_F(PasswordStoreTest, DelegatesGetAllLoginsToBackend) {
+  scoped_refptr<PasswordStore> store;
+  MockPasswordStoreBackend* mock_backend;
+  {  // This scope ensures nobody tries to use `backend` after its move.
+    auto backend = std::make_unique<MockPasswordStoreBackend>();
+    mock_backend = backend.get();
+    store = new PasswordStore(std::move(backend));
+  }
+  store->Init(nullptr);
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_));
+  store->GetAllLogins(&mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
+TEST_F(PasswordStoreTest, DelegatesGetAutofillableLoginsToBackend) {
+  scoped_refptr<PasswordStore> store;
+  MockPasswordStoreBackend* mock_backend;
+  {  // This scope ensures nobody tries to use `backend` after its move.
+    auto backend = std::make_unique<MockPasswordStoreBackend>();
+    mock_backend = backend.get();
+    store = new PasswordStore(std::move(backend));
+  }
+  store->Init(nullptr);
+
+  MockPasswordStoreConsumer mock_consumer;
+  EXPECT_CALL(*mock_backend, GetAutofillableLoginsAsync(_));
+  store->GetAutofillableLogins(&mock_consumer);
+  WaitForPasswordStore();
+  store->ShutdownOnUIThread();
+}
+
 TEST_F(PasswordStoreTest, GetAllLogins) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
@@ -1043,6 +1127,15 @@ TEST_F(PasswordStoreTest, GetLogisByPassword) {
 }
 
 TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
+  scoped_refptr<PasswordStore> store;
+  MockPasswordStoreBackend* mock_backend;
+  {  // This scope ensures nobody tries to use `backend` after its move.
+    auto backend = std::make_unique<MockPasswordStoreBackend>();
+    mock_backend = backend.get();
+    store = new PasswordStore(std::move(backend));
+  }
+  store->Init(nullptr);
+
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
        u"username_value_1", u"", kTestLastUsageTime, 1},
@@ -1059,13 +1152,9 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
       {PasswordForm::Scheme::kHtml, kTestWebRealm3, kTestWebOrigin3, "", u"",
        u"", u"", nullptr, u"", kTestLastUsageTime, 1}};
 
-  scoped_refptr<PasswordStoreImpl> store = CreatePasswordStore();
-  store->Init(nullptr);
-
   std::vector<std::unique_ptr<PasswordForm>> all_credentials;
   for (const auto& test_credential : kTestCredentials) {
     all_credentials.push_back(FillPasswordFormWithData(test_credential));
-    store->AddLogin(*all_credentials.back());
   }
 
   MockPasswordStoreConsumer mock_consumer;
@@ -1098,6 +1187,11 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
+  LoginsReply callback;
+  EXPECT_CALL(*mock_backend, GetAllLoginsAsync)
+      .WillOnce([&all_credentials](LoginsReply callback) {
+        std::move(callback).Run(std::move(all_credentials));
+      });
   store->GetAllLoginsWithAffiliationAndBrandingInformation(&mock_consumer);
 
   // Since GetAutofillableLoginsWithAffiliationAndBrandingInformation
