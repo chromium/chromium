@@ -46,7 +46,7 @@ namespace arc {
 // IO thread.  FileShareConfig is a convenience subclass for containing related
 // files information needed to create a Chrome share intent.
 class ShareInfoFileHandler : public base::RefCountedThreadSafe<
-                                 ShareInfoFileStreamAdapter,
+                                 ShareInfoFileHandler,
                                  content::BrowserThread::DeleteOnIOThread> {
  public:
   // |result| signifies state of shared files after streaming has completed.
@@ -85,7 +85,7 @@ class ShareInfoFileHandler : public base::RefCountedThreadSafe<
  private:
   friend struct content::BrowserThread::DeleteOnThread<
       content::BrowserThread::IO>;
-  friend class base::DeleteHelper<ShareInfoFileStreamAdapter>;
+  friend class base::DeleteHelper<ShareInfoFileHandler>;
 
   ~ShareInfoFileHandler();
 

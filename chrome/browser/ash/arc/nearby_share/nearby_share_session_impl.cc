@@ -65,7 +65,7 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
         FROM_HERE, base::BindOnce(&NearbyShareSessionImpl::OnArcWindowFound,
                                   weak_ptr_factory_.GetWeakPtr(), arc_window));
   } else {
-    VLOG(1) << "No ARC window found for task ID " << task_id_;
+    VLOG(1) << "No ARC window found for task ID: " << task_id_;
     env_observation_.Observe(aura::Env::GetInstance());
     window_initialization_timer_.Start(FROM_HERE, kWindowInitializationTimeout,
                                        this,
@@ -285,7 +285,8 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
   aura::Window* const arc_window = GetArcWindow(task_id_);
   if (!arc_window) {
     LOG(ERROR) << "Unable to close sharesheet bubble. No ARC window found for "
-               << "task ID " << task_id_;
+               << "task ID: " << task_id_;
+    std::move(session_finished_callback_).Run(task_id_);
     return;
   }
 
@@ -295,6 +296,7 @@ void NearbyShareSessionImpl::OnSessionDisconnected() {
   if (!sharesheet_service) {
     LOG(ERROR) << "Unable to close sharesheet bubble. Cannot find sharesheet "
                   "service.";
+    std::move(session_finished_callback_).Run(task_id_);
     return;
   }
   sharesheet_service->CloseBubble(arc_window);
