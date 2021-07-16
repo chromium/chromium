@@ -105,14 +105,6 @@ bool PasswordStoreImpl::RemoveStatisticsByOriginAndTimeImpl(
 }
 
 std::vector<std::unique_ptr<PasswordForm>>
-PasswordStoreImpl::FillMatchingLogins(const PasswordFormDigest& form) {
-  std::vector<std::unique_ptr<PasswordForm>> matched_forms;
-  if (login_db_ && !login_db_->GetLogins(form, &matched_forms))
-    return std::vector<std::unique_ptr<PasswordForm>>();
-  return matched_forms;
-}
-
-std::vector<std::unique_ptr<PasswordForm>>
 PasswordStoreImpl::FillMatchingLoginsByPassword(
     const std::u16string& plain_text_password) {
   std::vector<std::unique_ptr<PasswordForm>> matched_forms;
@@ -250,12 +242,6 @@ PasswordStoreImpl::GetSyncControllerDelegateOnBackgroundSequence() {
   return sync_bridge_->change_processor()->GetControllerDelegate();
 }
 
-bool PasswordStoreImpl::IsEmpty() {
-  if (!login_db_)
-    return true;
-  return login_db_->IsEmpty();
-}
-
 PasswordStoreChangeList PasswordStoreImpl::AddLoginSync(
     const PasswordForm& form,
     AddLoginError* error) {
@@ -293,15 +279,6 @@ bool PasswordStoreImpl::UpdateInsecureCredentialsSync(
   RemoveInsecureCredentialsImpl(form.signon_realm, form.username_value,
                                 RemoveInsecureCredentialsReason::kSyncUpdate);
   return AddInsecureCredentialsSync(credentials);
-}
-
-PasswordStoreChangeList PasswordStoreImpl::RemoveLoginSync(
-    const PasswordForm& form) {
-  PasswordStoreChangeList changes;
-  if (login_db_ && login_db_->RemoveLogin(form, &changes)) {
-    return changes;
-  }
-  return PasswordStoreChangeList();
 }
 
 void PasswordStoreImpl::NotifyLoginsChanged(
@@ -603,9 +580,11 @@ PasswordStoreChangeList PasswordStoreImpl::RemoveLoginInternal(
     const PasswordForm& form) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   BeginTransaction();
-  PasswordStoreChangeList changes = RemoveLoginSync(form);
-  if (sync_bridge_ && !changes.empty())
-    sync_bridge_->ActOnPasswordStoreChanges(changes);
+  PasswordStoreChangeList changes;
+  if (login_db_ && login_db_->RemoveLogin(form, &changes)) {
+    if (sync_bridge_ && !changes.empty())
+      sync_bridge_->ActOnPasswordStoreChanges(changes);
+  }
   // Sync metadata get updated in ActOnPasswordStoreChanges(). Therefore,
   // CommitTransaction() must be called after ActOnPasswordStoreChanges(),
   // because sync codebase needs to update metadata atomically together with the

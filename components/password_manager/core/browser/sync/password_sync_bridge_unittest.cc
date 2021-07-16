@@ -362,10 +362,6 @@ class MockPasswordStoreSync : public PasswordStoreSync {
               UpdateInsecureCredentialsSync,
               (const PasswordForm&, base::span<const InsecureCredential>),
               (override));
-  MOCK_METHOD(PasswordStoreChangeList,
-              RemoveLoginSync,
-              (const PasswordForm&),
-              (override));
   MOCK_METHOD(void,
               NotifyLoginsChanged,
               (const PasswordStoreChangeList&),

@@ -51,17 +51,6 @@ namespace password_manager {
 
 namespace {
 
-void CloseTraceAndCallBack(
-    const char* trace_name,
-    PasswordStoreConsumer* consumer,
-    base::OnceCallback<void(std::vector<std::unique_ptr<PasswordForm>>)>
-        callback,
-    std::vector<std::unique_ptr<PasswordForm>> results) {
-  TRACE_EVENT_NESTABLE_ASYNC_END0("passwords", trace_name, consumer);
-
-  std::move(callback).Run(std::move(results));
-}
-
 std::vector<PasswordFormDigest> ConvertToForms(
     const std::vector<std::string>& realms) {
   std::vector<PasswordFormDigest> forms;
@@ -524,13 +513,6 @@ PasswordStoreChangeList PasswordStore::DisableAutoSignInForOriginsImpl(
   return PasswordStoreChangeList();
 }
 
-std::vector<std::unique_ptr<PasswordForm>> PasswordStore::FillMatchingLogins(
-    const PasswordFormDigest& form) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return std::vector<std::unique_ptr<PasswordForm>>();
-}
-
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStore::FillMatchingLoginsByPassword(
     const std::u16string& plain_text_password) {
@@ -605,12 +587,6 @@ void PasswordStore::RemoveFieldInfoByTimeImpl(base::Time remove_begin,
   LOG(ERROR) << "Called function without implementation: " << __func__;
 }
 
-bool PasswordStore::IsEmpty() {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return false;
-}
-
 base::WeakPtr<syncer::ModelTypeControllerDelegate>
 PasswordStore::GetSyncControllerDelegateOnBackgroundSequence() {
   NOTREACHED() << "Platform doesn't support sync!";
@@ -655,20 +631,6 @@ void PasswordStore::PostLoginsTaskAndReplyToConsumerWithResult(
       background_task_runner_.get(), FROM_HERE, std::move(task),
       base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
                      consumer->GetWeakPtr(), base::RetainedRef(this)));
-}
-
-void PasswordStore::PostLoginsTaskAndReplyToConsumerWithProcessedResult(
-    const char* trace_name,
-    PasswordStoreConsumer* consumer,
-    LoginsTask task,
-    LoginsResultProcessor processor) {
-  auto call_consumer = base::BindOnce(
-      CloseTraceAndCallBack, trace_name, consumer,
-      base::BindOnce(&PasswordStoreConsumer::OnGetPasswordStoreResultsFrom,
-                     consumer->GetWeakPtr(), base::RetainedRef(this)));
-  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
-      background_task_runner_.get(), FROM_HERE, std::move(task),
-      base::BindOnce(std::move(processor), std::move(call_consumer)));
 }
 
 void PasswordStore::PostStatsTaskAndReplyToConsumerWithResult(
@@ -757,12 +719,6 @@ void PasswordStore::RemoveFieldInfoByTimeInternal(
     main_task_runner_->PostTask(FROM_HERE, std::move(completion));
 }
 
-std::vector<std::unique_ptr<PasswordForm>> PasswordStore::GetLoginsImpl(
-    const PasswordFormDigest& form) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  return FillMatchingLogins(form);
-}
-
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStore::GetLoginsByPasswordImpl(
     const std::u16string& plain_text_password) {
@@ -811,20 +767,6 @@ void PasswordStore::ScheduleGetInsecureCredentialsWithAffiliations(
             &PasswordStore::GetInsecureCredentialsWithAffiliationsImpl, this,
             signon_realm, additional_affiliated_realms));
   }
-}
-
-std::unique_ptr<PasswordForm> PasswordStore::GetLoginImpl(
-    const PasswordForm& primary_key) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<std::unique_ptr<PasswordForm>> candidates(
-      FillMatchingLogins(PasswordFormDigest(primary_key)));
-  for (auto& candidate : candidates) {
-    if (ArePasswordFormUniqueKeysEqual(*candidate, primary_key) &&
-        !candidate->is_public_suffix_match) {
-      return std::move(candidate);
-    }
-  }
-  return nullptr;
 }
 
 }  // namespace password_manager

@@ -49,8 +49,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
       base::Time delete_begin,
       base::Time delete_end) override;
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const PasswordFormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
@@ -72,8 +70,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   std::vector<FieldInfo> GetAllFieldInfoImpl() override;
   void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
                                  base::Time remove_end) override;
-
-  bool IsEmpty() override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegateOnBackgroundSequence() override;
 
@@ -87,7 +83,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   bool UpdateInsecureCredentialsSync(
       const PasswordForm& form,
       base::span<const InsecureCredential> credentials) override;
-  PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) override;
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
   void NotifyDeletionsHaveSynced(bool success) override;
   void NotifyUnsyncedCredentialsWillBeDeleted(

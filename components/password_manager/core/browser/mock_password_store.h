@@ -71,10 +71,6 @@ class MockPasswordStore : public PasswordStore {
               DisableAutoSignInForOriginsImpl,
               (const base::RepeatingCallback<bool(const GURL&)>&),
               (override));
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const PasswordFormDigest& form) override {
-    return std::vector<std::unique_ptr<PasswordForm>>();
-  }
   MOCK_METHOD(std::vector<std::unique_ptr<PasswordForm>>,
               FillMatchingLoginsByPassword,
               (const std::u16string&),
@@ -109,7 +105,6 @@ class MockPasswordStore : public PasswordStore {
               RemoveFieldInfoByTimeImpl,
               (base::Time, base::Time),
               (override));
-  MOCK_METHOD(bool, IsEmpty, (), (override));
   MOCK_METHOD(base::WeakPtr<syncer::ModelTypeControllerDelegate>,
               GetSyncControllerDelegateOnBackgroundSequence,
               (),

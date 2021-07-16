@@ -153,9 +153,6 @@ class PasswordStoreSync {
       const PasswordForm& form,
       base::span<const InsecureCredential> credentials) = 0;
 
-  // Synchronous implementation to remove the given login.
-  virtual PasswordStoreChangeList RemoveLoginSync(const PasswordForm& form) = 0;
-
   // Synchronous implementation to remove the login with the given primary key.
   virtual PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
       FormPrimaryKey primary_key) = 0;

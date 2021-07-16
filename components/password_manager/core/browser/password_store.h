@@ -238,11 +238,6 @@ class PasswordStore : public PasswordStoreInterface,
   virtual PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
 
-  // Finds and returns all PasswordForms with the same signon_realm as |form|,
-  // or with a signon_realm that is a PSL-match to that of |form|.
-  virtual std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const PasswordFormDigest& form);
-
   // Finds and returns all not-blocklisted PasswordForms with the specified
   // |plain_text_password| stored in the credential database.
   virtual std::vector<std::unique_ptr<PasswordForm>>
@@ -273,10 +268,6 @@ class PasswordStore : public PasswordStoreInterface,
   virtual std::vector<FieldInfo> GetAllFieldInfoImpl();
   virtual void RemoveFieldInfoByTimeImpl(base::Time remove_begin,
                                          base::Time remove_end);
-
-  // Synchronous implementation provided by subclasses to check whether the
-  // store is empty.
-  virtual bool IsEmpty();
 
   // Returns the sync controller delegate for syncing passwords. It must be
   // called on the background sequence.
@@ -326,16 +317,6 @@ class PasswordStore : public PasswordStoreInterface,
   void PostLoginsTaskAndReplyToConsumerWithResult(
       PasswordStoreConsumer* consumer,
       LoginsTask task);
-
-  // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
-  // Invokes |consumer|->OnGetPasswordStoreResults() on the caller's thread with
-  // the result, after it was post-processed by |processor|.
-  // |trace_name| is the trace to be closed before calling the consumer.
-  void PostLoginsTaskAndReplyToConsumerWithProcessedResult(
-      const char* trace_name,
-      PasswordStoreConsumer* consumer,
-      LoginsTask task,
-      LoginsResultProcessor processor);
 
   // Schedules the given |task| to be run on the PasswordStore's TaskRunner.
   // Invokes |consumer|->OnGetSiteStatistics() on the caller's thread with the
@@ -407,12 +388,6 @@ class PasswordStore : public PasswordStoreInterface,
       base::WeakPtr<InsecureCredentialsConsumer> consumer,
       const std::string& signon_realm,
       const std::vector<std::string>& additional_affiliated_realms);
-
-  // Retrieves the currently stored form, if any, with the same primary key as
-  // |form|, that is, with the same signon_realm, url, username_element,
-  // username_value and password_element attributes. To be called on the
-  // background sequence.
-  std::unique_ptr<PasswordForm> GetLoginImpl(const PasswordForm& primary_key);
 
   // The local backend is currently a ref-counted type because it still inherits
   // from PasswordStore and this would be a self reference. So, if `this` is an

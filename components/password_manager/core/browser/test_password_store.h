@@ -69,7 +69,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
   // Returns true if no passwords are stored in the store. Note that this is not
   // as simple as asking whether stored_passwords().empty(), because the map can
   // have entries of size 0.
-  bool IsEmpty() override;
+  bool IsEmpty() const;
 
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetSyncControllerDelegateOnBackgroundSequence() override;
@@ -111,8 +111,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       PasswordStoreChangeListReply callback) override;
 
   // PasswordStore interface
-  std::vector<std::unique_ptr<PasswordForm>> FillMatchingLogins(
-      const PasswordFormDigest& form) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   std::vector<InteractionsStats> GetSiteStatsImpl(
@@ -149,6 +147,7 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
  private:
   LoginsResult GetAllLoginsInternal();
   LoginsResult GetAutofillableLoginsInternal();
+  LoginsResult FillMatchingLogins(const PasswordFormDigest& form);
   LoginsResult FillMatchingLoginsBulk(
       const std::vector<PasswordFormDigest>& forms);
   PasswordStoreChangeList AddLoginImpl(const PasswordForm& form);
