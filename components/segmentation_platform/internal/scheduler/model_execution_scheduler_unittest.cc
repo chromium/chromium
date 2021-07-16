@@ -6,6 +6,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
+#include "components/segmentation_platform/internal/database/mock_signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
 #include "components/segmentation_platform/internal/database/test_segment_info_database.h"
@@ -19,6 +20,10 @@ using testing::Return;
 using testing::SaveArg;
 
 namespace segmentation_platform {
+using SignalType = proto::SignalType;
+using SignalIdentifier = std::pair<uint64_t, SignalType>;
+using CleanupItem = std::tuple<uint64_t, SignalType, base::Time>;
+
 namespace {
 constexpr auto kTestOptimizationTarget =
     OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
@@ -34,15 +39,6 @@ class MockModelExecutionManager : public ModelExecutionManager {
  public:
   MockModelExecutionManager() = default;
   MOCK_METHOD(void, ExecuteModel, (OptimizationTarget, ModelExecutionCallback));
-};
-
-class MockSignalStorageConfig : public SignalStorageConfig {
- public:
-  MockSignalStorageConfig() : SignalStorageConfig(nullptr, nullptr) {}
-  MOCK_METHOD(bool,
-              MeetsSignalCollectionRequirement,
-              (const proto::SegmentationModelMetadata&),
-              (override));
 };
 
 class ModelExecutionSchedulerTest : public testing::Test {
