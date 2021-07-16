@@ -333,6 +333,8 @@
       'ios-simulator-cronet': 'ios_cronet_xctest',
       'ios-simulator-multi-window': 'ios_simulator_debug_static_bot_xctest',
       'ios-webkit-tot': 'ios_simulator_debug_static_bot_xctest',
+      'lacros-amd64-generic-rel (goma cache silo)': 'chromeos_amd64-generic_lacros_rel',
+      'lacros-amd64-generic-rel (reclient)': 'chromeos_amd64-generic_lacros_rel_reclient',
       'linux-annotator-rel': 'release_bot',
       'linux-blink-animation-use-time-delta': 'debug_bot_enable_blink_animation_use_time_delta',
       'linux-blink-heap-concurrent-marking-tsan-rel': 'release_trybot_tsan',
@@ -346,6 +348,8 @@
       'linux-example-builder': 'release_bot',
       'linux-fieldtrial-rel': 'release_bot_minimal_symbols',
       'linux-backuprefptr-x64-fyi-rel': 'release_trybot_backuprefptr_x64',
+      'linux-lacros-builder-rel (goma cache silo)': 'lacros_on_linux_release_bot',
+      'linux-lacros-builder-rel (reclient)': 'lacros_on_linux_release_bot_reclient',
       'linux-lacros-code-coverage': 'lacros_on_linux_clang_code_coverage',
       'linux-lacros-version-skew-fyi': 'lacros_on_linux_release_not_build_ash_bot',
       'linux-perfetto-rel': 'perfetto_release_bot',
@@ -1759,6 +1763,10 @@
       'chromeos_amd64-generic', 'amd64-lacros',
     ],
 
+    'chromeos_amd64-generic_lacros_rel_reclient': [
+      'chromeos_amd64-generic_reclient', 'amd64-lacros',
+    ],
+
     'chromeos_amd64-generic_lacros_dbg': [
       'chromeos_amd64-generic', 'amd64-lacros', 'debug',
     ],
@@ -2342,6 +2350,10 @@
 
     'lacros_on_linux_release_trybot': [
       'lacros_on_linux', 'release_trybot', 'also_build_ash_chrome', 'no_symbols',
+    ],
+
+    'lacros_on_linux_release_bot_reclient': [
+      'lacros_on_linux', 'release_bot_reclient', 'also_build_ash_chrome',
     ],
 
     'libfuzzer_asan_debug_bot': [

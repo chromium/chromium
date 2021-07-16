@@ -4170,6 +4170,51 @@ ci.fyi_builder(
     configure_kitchen = True,
     kitchen_emulate_gce = True,
     os = os.LINUX_BIONIC_REMOVE,
+    reclient_rewrapper_env = {"RBE_cache_silo": "chromeos-amd64-generic-rel (reclient)"},
+)
+
+ci.fyi_builder(
+    name = "lacros-amd64-generic-rel (goma cache silo)",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros x64",
+        short_name = "cgc",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
+    name = "lacros-amd64-generic-rel (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros x64",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_REMOVE,
+    reclient_rewrapper_env = {"RBE_cache_silo": "lacros-amd64-generic-rel (reclient)"},
+)
+
+ci.fyi_builder(
+    name = "linux-lacros-builder-rel (goma cache silo)",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros rel",
+        short_name = "cgc",
+    ),
+    os = os.LINUX_BIONIC_REMOVE,
+)
+
+ci.fyi_builder(
+    name = "linux-lacros-builder-rel (reclient)",
+    console_view_entry = consoles.console_view_entry(
+        category = "lacros rel",
+    ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    configure_kitchen = True,
+    kitchen_emulate_gce = True,
+    os = os.LINUX_BIONIC_REMOVE,
+    reclient_rewrapper_env = {"RBE_cache_silo": "linux-lacros-builder-rel (reclient)"},
 )
 
 ci.fyi_celab_builder(

@@ -3052,6 +3052,38 @@
           'isolated_scripts': 'ios15_sdk_simulator_tests'
         },
       },
+      'lacros-amd64-generic-rel (goma cache silo)': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
+        'os_type': 'chromeos',
+      },
+      'lacros-amd64-generic-rel (reclient)': {
+        'additional_compile_targets': [
+          'chrome',
+          'lacros_version_metadata',
+          'linux_symbols',
+          'symupload',
+          'strip_chrome_binary',
+        ],
+        'mixins': [
+          'chrome-swarming-pool',
+        ],
+        'test_suites': {
+          'isolated_scripts': 'chrome_sizes',
+        },
+        'os_type': 'chromeos',
+      },
       'lacros-amd64-generic-rel-fyi': {
         'additional_compile_targets': [
           'chrome',
