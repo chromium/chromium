@@ -24,6 +24,9 @@ const char kDeviceSelectorOpenedHistogramName[] =
     "Media.GlobalMediaControls.DeviceSelectorOpened";
 }  // anonymous namespace
 
+namespace media_router {
+class CastDialogSinkButton;
+}
 class MediaNotificationDeviceSelectorViewDelegate;
 
 class MediaNotificationDeviceSelectorView
@@ -64,6 +67,8 @@ class MediaNotificationDeviceSelectorView
   views::Button* GetExpandButtonForTesting();
   std::string GetEntryLabelForTesting(views::View* entry_view);
   bool GetEntryIsHighlightedForTesting(views::View* entry_view);
+  std::vector<media_router::CastDialogSinkButton*>
+  GetCastSinkButtonsForTesting();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaNotificationDeviceSelectorViewTest,

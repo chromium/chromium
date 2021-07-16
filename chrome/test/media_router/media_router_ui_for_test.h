@@ -33,9 +33,12 @@ class MediaRouterUiForTest
   // Cleans up after a test.
   void TearDown();
 
-  void ShowDialog();
-  void HideDialog();
-  bool IsDialogShown() const;
+  // TODO(crbug.com/1229305): Move Zenith-related code into its own class.
+  void ShowCastDialog();
+  bool IsCastDialogShown() const;
+  bool IsGMCDialogShown() const;
+  void HideCastDialog();
+  void HideGMCDialog();
 
   // Chooses the source type in the dialog. Requires that the dialog is shown.
   void ChooseSourceType(CastDialogView::SourceType source_type);
@@ -43,19 +46,19 @@ class MediaRouterUiForTest
 
   // These methods require that the dialog is shown and the specified sink is
   // shown in the dialog.
-  void StartCasting(const std::string& sink_name);
-  void StopCasting(const std::string& sink_name);
-  // Stops casting to the first active sink found on the sink list. Requires
-  // that such a sink exists.
-  void StopCasting();
+  void StartCastingFromCastDialog(const std::string& sink_name);
+  void StartCastingFromGMCDialog(const std::string& sink_name);
+  void StopCastingFromCastDialog(const std::string& sink_name);
+  void StopCastingFromGMCDialog(const std::string& sink_name);
 
   // Waits until a condition is met. Requires that the dialog is shown.
   void WaitForSink(const std::string& sink_name);
   void WaitForSinkAvailable(const std::string& sink_name);
   void WaitForAnyIssue();
   void WaitForAnyRoute();
-  void WaitForDialogShown();
-  void WaitForDialogHidden();
+  void WaitForCastDialogShown();
+  void WaitForGMCDialogShown();
+  void WaitForCastDialogHidden();
   void WaitUntilNoRoutes();
 
   // These methods require that the dialog is shown, and the sink specified by
@@ -93,7 +96,15 @@ class MediaRouterUiForTest
   // Called by MediaRouterDialogControllerViews.
   void OnDialogCreated();
 
+  void StartCasting(CastDialogSinkButton* sink_button);
+  void StopCasting(CastDialogSinkButton* sink_button);
+  void WaitForDialogShown();
+
   CastDialogSinkButton* GetSinkButton(const std::string& sink_name) const;
+  CastDialogSinkButton* GetSinkButtonFromCastDialog(
+      const std::string& sink_name) const;
+  CastDialogSinkButton* GetSinkButtonFromGMCDialog(
+      const std::string& sink_name) const;
 
   // Registers itself as an observer to the dialog, and waits until an event
   // of |watch_type| is observed. |sink_name| should be set only if observing

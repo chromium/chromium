@@ -128,6 +128,9 @@ class MediaNotificationContainerImplView
     DCHECK(!base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI));
     return static_cast<media_message_center::MediaNotificationViewImpl*>(view_);
   }
+  MediaNotificationDeviceSelectorView* device_selector_view_for_testing() {
+    return device_selector_view_;
+  }
 
   bool is_playing_for_testing() { return is_playing_; }
   bool is_expanded_for_testing() { return is_expanded_; }

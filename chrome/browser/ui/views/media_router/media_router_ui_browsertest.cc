@@ -51,8 +51,9 @@ class MediaRouterUIBrowserTest : public InProcessBrowserTest {
     action_controller_ =
         MediaRouterUIService::Get(browser()->profile())->action_controller();
 
-    routes_ = {MediaRoute("routeId1", MediaSource("sourceId"), "sinkId1",
-                          "description", true, true)};
+    routes_ = {MediaRoute("routeId1",
+                          MediaSource("urn:x-org.chromium.media:source:tab:*"),
+                          "sinkId1", "description", true, true)};
   }
 
   // Returns the dialog controller for the active WebContents.

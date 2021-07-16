@@ -19,21 +19,21 @@ namespace media_router {
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest, MANUAL_Dialog_Basic) {
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowDialog();
+  test_ui_->ShowCastDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
-  test_ui_->StartCasting(receiver_);
+  test_ui_->StartCastingFromCastDialog(receiver_);
   test_ui_->WaitForAnyRoute();
 
-  if (!test_ui_->IsDialogShown())
-    test_ui_->ShowDialog();
+  if (!test_ui_->IsCastDialogShown())
+    test_ui_->ShowCastDialog();
 
   ASSERT_EQ("Test Route", test_ui_->GetStatusTextForSink(receiver_));
 
-  test_ui_->StopCasting(receiver_);
+  test_ui_->StopCastingFromCastDialog(receiver_);
   test_ui_->WaitUntilNoRoutes();
-  // TODO(takumif): Remove the HideDialog() call once the dialog can close on
-  // its own.
-  test_ui_->HideDialog();
+  // TODO(takumif): Remove the HideCastDialog() call once the dialog can close
+  // on its own.
+  test_ui_->HideCastDialog();
 }
 
 // TODO(https://crbug.com/822231): Flaky in Chromium waterfall.
@@ -43,11 +43,11 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   // See kCreateRouteTimeoutSeconds in media_router_ui.cc.
   test_provider_->set_delay(base::TimeDelta::FromSeconds(20));
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowDialog();
+  test_ui_->ShowCastDialog();
   test_ui_->WaitForSinkAvailable(receiver_);
 
   base::TimeTicks start_time(base::TimeTicks::Now());
-  test_ui_->StartCasting(receiver_);
+  test_ui_->StartCastingFromCastDialog(receiver_);
   test_ui_->WaitForAnyIssue();
 
   base::TimeDelta elapsed(base::TimeTicks::Now() - start_time);
@@ -63,7 +63,7 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
             issue_title);
 
   ASSERT_EQ(test_ui_->GetRouteIdForSink(receiver_), "");
-  test_ui_->HideDialog();
+  test_ui_->HideCastDialog();
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
@@ -76,22 +76,22 @@ IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
   // Enable media routing and open media router dialog.
   SetEnableMediaRouter(true);
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowDialog();
-  ASSERT_TRUE(test_ui_->IsDialogShown());
-  test_ui_->HideDialog();
+  test_ui_->ShowCastDialog();
+  ASSERT_TRUE(test_ui_->IsCastDialogShown());
+  test_ui_->HideCastDialog();
 }
 
 IN_PROC_BROWSER_TEST_F(MediaRouterIntegrationBrowserTest,
                        DisableMediaRoutingWhenDialogIsOpened) {
   // Open media router dialog.
   OpenTestPage(FILE_PATH_LITERAL("basic_test.html"));
-  test_ui_->ShowDialog();
-  ASSERT_TRUE(test_ui_->IsDialogShown());
+  test_ui_->ShowCastDialog();
+  ASSERT_TRUE(test_ui_->IsCastDialogShown());
 
   // Disable media routing.
   SetEnableMediaRouter(false);
 
-  ASSERT_FALSE(test_ui_->IsDialogShown());
+  ASSERT_FALSE(test_ui_->IsCastDialogShown());
 }
 
 }  // namespace media_router

@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/global_media_controls/media_notification_container_impl.h"
 #include "chrome/browser/ui/media_router/cast_dialog_model.h"
 #include "chrome/browser/ui/views/global_media_controls/media_notification_device_selector_view_delegate.h"
+#include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/media_message_center/media_notification_item.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -254,6 +255,17 @@ std::string MediaNotificationDeviceSelectorView::GetEntryLabelForTesting(
 bool MediaNotificationDeviceSelectorView::GetEntryIsHighlightedForTesting(
     views::View* entry_view) {
   return GetDeviceEntryUI(entry_view)->GetEntryIsHighlightedForTesting();
+}
+
+std::vector<media_router::CastDialogSinkButton*>
+MediaNotificationDeviceSelectorView::GetCastSinkButtonsForTesting() {
+  std::vector<media_router::CastDialogSinkButton*> buttons;
+  for (auto* view : device_entry_views_container_->children()) {
+    if (GetDeviceEntryUI(view)->GetType() == DeviceEntryUIType::kCast) {
+      buttons.push_back(static_cast<media_router::CastDialogSinkButton*>(view));
+    }
+  }
+  return buttons;
 }
 
 void MediaNotificationDeviceSelectorView::ShowDevices() {
