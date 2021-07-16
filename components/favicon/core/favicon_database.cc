@@ -444,10 +444,11 @@ bool FaviconDatabase::GetFaviconBitmaps(
     favicon_bitmap.icon_id = icon_id;
     favicon_bitmap.last_updated = base::Time::FromDeltaSinceWindowsEpoch(
         base::TimeDelta::FromMicroseconds(statement.ColumnInt64(1)));
-    if (statement.ColumnByteLength(2) > 0) {
-      scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-      statement.ColumnBlobAsVector(2, &data->data());
-      favicon_bitmap.bitmap_data = data;
+    std::vector<uint8_t> bitmap_data_blob;
+    statement.ColumnBlobAsVector(2, &bitmap_data_blob);
+    if (!bitmap_data_blob.empty()) {
+      favicon_bitmap.bitmap_data =
+          base::RefCountedBytes::TakeVector(&bitmap_data_blob);
     }
     favicon_bitmap.pixel_size =
         gfx::Size(statement.ColumnInt(3), statement.ColumnInt(4));
@@ -479,10 +480,11 @@ bool FaviconDatabase::GetFaviconBitmap(
         base::TimeDelta::FromMicroseconds(statement.ColumnInt64(0)));
   }
 
-  if (png_icon_data && statement.ColumnByteLength(1) > 0) {
-    scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
-    statement.ColumnBlobAsVector(1, &data->data());
-    *png_icon_data = data;
+  if (png_icon_data) {
+    std::vector<uint8_t> png_data_blob;
+    statement.ColumnBlobAsVector(1, &png_data_blob);
+    if (!png_data_blob.empty())
+      *png_icon_data = base::RefCountedBytes::TakeVector(&png_data_blob);
   }
 
   if (pixel_size) {
