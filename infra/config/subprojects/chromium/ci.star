@@ -6019,7 +6019,7 @@ ci.mac_ios_builder(
     # We don't have necessary capacity to run this configuration in CQ, but it
     # is part of the main waterfall
     main_console_view = "main",
-    xcode = xcode.x13a5155e,
+    xcode = xcode.x13a5192i,
 )
 
 ci.memory_builder(

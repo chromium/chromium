@@ -1695,7 +1695,7 @@ try_.chromium_mac_ios_builder(
 
 try_.chromium_mac_ios_builder(
     name = "ios-simulator-noncq",
-    xcode = xcode.x13a5155e,
+    xcode = xcode.x13a5192i,
 )
 
 try_.chromium_mac_ios_builder(
