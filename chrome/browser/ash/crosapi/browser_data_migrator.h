@@ -113,6 +113,7 @@ class BrowserDataMigrator {
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest,
                            IsMigrationRequiredOnWorker);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, GetTargetInfo);
+  FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, CopyDirectory);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, RecordStatus);
   FRIEND_TEST_ALL_PREFIXES(BrowserDataMigratorTest, Migrate);
 
@@ -136,6 +137,14 @@ class BrowserDataMigrator {
   // Compares space available under `from_dir_` against total byte size that
   // needs to be copied.
   bool HasEnoughDiskSpace(const TargetInfo& target_info) const;
+  // Copies `item` to location pointed by `dest`. Returns true on success and
+  // false on failure.
+  bool CopyTargetItem(const BrowserDataMigrator::TargetItem& item,
+                      const base::FilePath& dest) const;
+  // Copies the contents of `from_path` to `to_path` recursively. Unlike
+  // `base::CopyDirectory()` it skips symlinks.
+  bool CopyDirectory(const base::FilePath& from_path,
+                     const base::FilePath& to_path) const;
   // Copies files from `from_dir_` to `tmp_dir_`.
   bool CopyToTmpDir(const TargetInfo& target_info) const;
   // Moves `tmp_dir_` to `to_dir_`.

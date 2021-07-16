@@ -92,6 +92,41 @@ TEST_F(BrowserDataMigratorTest, IsMigrationRequiredOnWorker) {
       user_data_dir_path, user_id_hash));
 }
 
+TEST_F(BrowserDataMigratorTest, CopyDirectory) {
+  BrowserDataMigrator browser_data_migrator(from_dir_);
+  const base::FilePath from_dir = user_data_dir_.GetPath().Append("user");
+  const base::FilePath to_dir = user_data_dir_.GetPath().Append("to_dir");
+
+  base::CreateSymbolicLink(user_data_dir_.GetPath().Append(kFirstRun),
+                           from_dir.Append(kFirstRun));
+  ASSERT_TRUE(browser_data_migrator.CopyDirectory(from_dir, to_dir));
+
+  // Setup `from_dir` as below.
+  // |- user/                   /* from_dir_ */
+  //     |- file
+  //     |- directory/
+  //         |- file
+  //         |- Downloads/file
+  //     |- Downloads/file
+  //     |- 'First Run'         /* symlink */
+  //
+  // Expected `to_dir` structure after `CopyDirectory()`.
+  // |- to_dir/
+  //     |- file
+  //     |- directory
+  //         |- file
+  //         |- Downloads/file
+  //     |- Downloads/file
+  EXPECT_TRUE(base::PathExists(to_dir));
+  EXPECT_TRUE(base::PathExists(to_dir.Append(kFileName)));
+  EXPECT_TRUE(base::PathExists(to_dir.Append(kDirName).Append(kFileName)));
+  EXPECT_TRUE(base::PathExists(
+      to_dir.Append(kDirName).Append(kDownloads).Append(kFileName)));
+  EXPECT_TRUE(base::PathExists(to_dir.Append(kDownloads).Append(kFileName)));
+  // Make sure that symlink does not get copied.
+  EXPECT_FALSE(base::PathExists(to_dir.Append(kFirstRun)));
+}
+
 TEST_F(BrowserDataMigratorTest, GetTargetInfo) {
   BrowserDataMigrator browser_data_migrator(from_dir_);
 
