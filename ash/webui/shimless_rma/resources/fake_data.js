@@ -18,6 +18,7 @@ export const fakeStates = [
   {state: RmaState.kWPDisableComplete, error: RmadErrorCode.kOk},
   {state: RmaState.kSelectComponents, error: RmadErrorCode.kOk},
   {state: RmaState.kChooseFirmwareReimageMethod, error: RmadErrorCode.kOk},
+  {state: RmaState.kUpdateDeviceInformation, error: RmadErrorCode.kOk},
   {state: RmaState.kProvisionDevice, error: RmadErrorCode.kOk},
 ];
 
@@ -49,3 +50,9 @@ export const fakeNetworks = [
   OncMojo.getDefaultNetworkState(
       chromeos.networkConfig.mojom.NetworkType.kWiFi, 'wifi0'),
 ];
+
+//** @type {!Array<string>} */
+export const fakeDeviceRegions = ['EMEA', 'APAC', 'AMER'];
+
+//** @type {!Array<string>} */
+export const fakeDeviceSkus = ['SKU 1', 'SKU 2', 'SKU 3'];

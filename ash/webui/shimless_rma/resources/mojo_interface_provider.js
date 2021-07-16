@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 
-import {fakeChromeVersion, fakeComponents, fakeStates} from './fake_data.js';
+import {fakeChromeVersion, fakeComponents, fakeDeviceRegions, fakeDeviceSkus, fakeStates} from './fake_data.js';
 import {FakeShimlessRmaService} from './fake_shimless_rma_service.js'
 import {Component, ComponentRepairState, ComponentType, NetworkConfigServiceInterface, RmadErrorCode, RmaState, ShimlessRmaService, ShimlessRmaServiceInterface} from './shimless_rma_types.js';
 
@@ -39,13 +39,21 @@ function setupFakeShimlessRmaService_() {
   let service = new FakeShimlessRmaService();
 
   service.setStates(fakeStates);
+
   service.setGetCurrentChromeVersionResult(fakeChromeVersion[0]);
   service.setCheckForChromeUpdatesResult(false);
+
   service.setGetComponentListResult(fakeComponents);
   service.setReimageRequiredResult(false);
   service.setCheckForNetworkConnection(fakeStates[2]);
   service.automaticallyTriggerDisableWriteProtectionObservation();
   service.automaticallyTriggerProvisioningObservation();
+
+  service.setGetOriginalSerialNumberResult('serial# 0001')
+  service.setGetRegionListResult(fakeDeviceRegions);
+  service.setGetOriginalRegionResult(1);
+  service.setGetSkuListResult(fakeDeviceSkus);
+  service.setGetOriginalSkuResult(1);
 
   // Set the fake service.
   setShimlessRmaServiceForTesting(service);
