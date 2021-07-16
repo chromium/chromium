@@ -203,33 +203,27 @@ bool AudioProcessingProperties::HasSameNonReconfigurableSettings(
 }
 
 media::AudioProcessingSettings
-AudioProcessingProperties::ToAudioProcessingSettings() const {
+AudioProcessingProperties::ToAudioProcessingSettings(
+    bool multi_channel_capture_processing) const {
   media::AudioProcessingSettings out;
-  auto convert_type =
-      [](EchoCancellationType type) -> media::EchoCancellationType {
-    switch (type) {
-      case EchoCancellationType::kEchoCancellationDisabled:
-        return media::EchoCancellationType::kDisabled;
-      case EchoCancellationType::kEchoCancellationAec3:
-        return media::EchoCancellationType::kAec3;
-      case EchoCancellationType::kEchoCancellationSystem:
-        return media::EchoCancellationType::kSystemAec;
-    }
-  };
-
-  out.echo_cancellation = convert_type(echo_cancellation_type);
+  out.echo_cancellation =
+      echo_cancellation_type == EchoCancellationType::kEchoCancellationAec3;
   out.noise_suppression =
-      goog_noise_suppression ? (goog_experimental_noise_suppression
-                                    ? media::NoiseSuppressionType::kExperimental
-                                    : media::NoiseSuppressionType::kDefault)
-                             : media::NoiseSuppressionType::kDisabled;
+      goog_noise_suppression && !system_noise_suppression_activated;
+  // TODO(https://bugs.webrtc.org/5298): Also toggle transient suppression when
+  // system effects are activated?
+  out.transient_noise_suppression = goog_experimental_noise_suppression;
+
   out.automatic_gain_control =
-      goog_auto_gain_control
-          ? (goog_experimental_auto_gain_control
-                 ? media::AutomaticGainControlType::kExperimental
-                 : media::AutomaticGainControlType::kDefault)
-          : media::AutomaticGainControlType::kDisabled;
+      goog_auto_gain_control && !system_gain_control_activated;
+  out.experimental_automatic_gain_control = goog_experimental_auto_gain_control;
+
   out.high_pass_filter = goog_highpass_filter;
+  out.multi_channel_capture_processing = multi_channel_capture_processing;
+  out.stereo_mirroring = goog_audio_mirroring;
+  // TODO(https://crbug.com/1215061): Deprecate this behavior. The constraint is
+  // no longer meaningful, but sees significant usage, so some care is required.
+  out.force_apm_creation = goog_experimental_echo_cancellation;
   return out;
 }
 
@@ -259,31 +253,23 @@ void StopEchoCancellationDump(AudioProcessing* audio_processing) {
 
 // TODO(bugs.webrtc.org/7494): Remove unused cases, simplify decision logic.
 void ConfigAutomaticGainControl(
-    const AudioProcessingProperties& properties,
+    const media::AudioProcessingSettings& settings,
     const absl::optional<WebRtcHybridAgcParams>& hybrid_agc_params,
     const absl::optional<WebRtcAnalogAgcClippingControlParams>&
         clipping_control_params,
     absl::optional<double> compression_gain_db,
     AudioProcessing::Config& apm_config) {
-  // If system level gain control is activated, turn off all gain control
-  // functionality in WebRTC.
-  if (properties.system_gain_control_activated) {
-    apm_config.gain_controller1.enabled = false;
-    apm_config.gain_controller2.enabled = false;
-    return;
-  }
-
   // The AGC2 fixed digital controller is always enabled when automatic gain
   // control is enabled, the experimental analog AGC is disabled and a
   // compression gain is specified.
   // TODO(bugs.webrtc.org/7494): Remove this option since it makes no sense to
   // run a fixed digital gain after AGC1 adaptive digital.
   const bool use_fixed_digital_agc2 =
-      properties.goog_auto_gain_control &&
-      !properties.goog_experimental_auto_gain_control &&
+      settings.automatic_gain_control &&
+      !settings.experimental_automatic_gain_control &&
       compression_gain_db.has_value();
   const bool use_hybrid_agc = hybrid_agc_params.has_value();
-  const bool agc1_enabled = properties.goog_auto_gain_control &&
+  const bool agc1_enabled = settings.automatic_gain_control &&
                             (use_hybrid_agc || !use_fixed_digital_agc2);
 
   // Configure AGC1.
@@ -300,7 +286,7 @@ void ConfigAutomaticGainControl(
 
   // Configure AGC2.
   auto& agc2_config = apm_config.gain_controller2;
-  if (properties.goog_experimental_auto_gain_control) {
+  if (settings.experimental_automatic_gain_control) {
     // Experimental AGC is enabled. Hybrid AGC may or may not be enabled. Config
     // AGC2 with adaptive mode and the given options, while ignoring
     // `use_fixed_digital_agc2`.
@@ -380,7 +366,7 @@ void ConfigAutomaticGainControl(
 
 void PopulateApmConfig(
     AudioProcessing::Config* apm_config,
-    const AudioProcessingProperties& properties,
+    const media::AudioProcessingSettings& settings,
     const absl::optional<std::string>& audio_processing_platform_config_json,
     absl::optional<double>* gain_control_compression_gain_db) {
   // TODO(crbug.com/895814): When Chrome uses AGC2, handle all JSON config via
@@ -394,7 +380,7 @@ void PopulateApmConfig(
                            &noise_suppression_level);
   }
 
-  apm_config->high_pass_filter.enabled = properties.goog_highpass_filter;
+  apm_config->high_pass_filter.enabled = settings.high_pass_filter;
 
   if (pre_amplifier_fixed_gain_factor.has_value()) {
     apm_config->pre_amplifier.enabled = true;
@@ -402,49 +388,42 @@ void PopulateApmConfig(
         pre_amplifier_fixed_gain_factor.value();
   }
 
-  DCHECK(!(!properties.goog_noise_suppression &&
-           properties.system_noise_suppression_activated));
-  if (properties.goog_noise_suppression &&
-      !properties.system_noise_suppression_activated) {
-    apm_config->noise_suppression.enabled = true;
-    apm_config->noise_suppression.level =
-        noise_suppression_level.value_or(NoiseSuppression::kHigh);
-  }
+  apm_config->noise_suppression.enabled = settings.noise_suppression;
+  apm_config->noise_suppression.level =
+      noise_suppression_level.value_or(NoiseSuppression::kHigh);
 
-  if (properties.EchoCancellationIsWebRtcProvided()) {
-    apm_config->echo_canceller.enabled = true;
+  apm_config->echo_canceller.enabled = settings.echo_cancellation;
 #if defined(OS_ANDROID)
-    apm_config->echo_canceller.mobile_mode = true;
+  apm_config->echo_canceller.mobile_mode = true;
 #else
-    apm_config->echo_canceller.mobile_mode = false;
+  apm_config->echo_canceller.mobile_mode = false;
 #endif
-  }
 }
 
 std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
-    const AudioProcessingProperties& properties,
-    bool use_capture_multi_channel_processing,
+    const media::AudioProcessingSettings& settings,
     absl::optional<std::string> audio_processing_platform_config_json,
     absl::optional<int> agc_startup_min_volume) {
   // Experimental options provided at creation.
+  // TODO(https://bugs.webrtc.org/5298): Replace with equivalent settings in
+  // webrtc::AudioProcessing::Config.
   webrtc::Config config;
-  config.Set<webrtc::ExperimentalNs>(new webrtc::ExperimentalNs(
-      properties.goog_experimental_noise_suppression));
+  config.Set<webrtc::ExperimentalNs>(
+      new webrtc::ExperimentalNs(settings.transient_noise_suppression));
 
   // TODO(bugs.webrtc.org/7494): Move logic below in ConfigAutomaticGainControl.
   // Retrieve the Hybrid AGC experiment parameters.
   // The hybrid AGC setup, that is AGC1 analog and AGC2 adaptive digital,
-  // requires `goog_auto_gain_control` and `goog_experimental_auto_gain_control`
-  // to be both active.
+  // requires gain control including analog AGC to be active.
   absl::optional<WebRtcHybridAgcParams> hybrid_agc_params;
   absl::optional<WebRtcAnalogAgcClippingControlParams> clipping_control_params;
-  if (properties.goog_auto_gain_control &&
-      properties.goog_experimental_auto_gain_control) {
+  if (settings.automatic_gain_control &&
+      settings.experimental_automatic_gain_control) {
     hybrid_agc_params = GetWebRtcHybridAgcParams();
     clipping_control_params = GetWebRtcAnalogAgcClippingControlParams();
   }
-  // If the experimental AGC is enabled, check for overridden config params.
-  if (properties.goog_experimental_auto_gain_control) {
+  // If the analog AGC is enabled, check for overridden config params.
+  if (settings.experimental_automatic_gain_control) {
     auto* experimental_agc = new webrtc::ExperimentalAgc(
         /*enabled=*/true, agc_startup_min_volume.value_or(0));
     // Disable the AGC1 adaptive digital controller if the hybrid AGC is enabled
@@ -455,6 +434,9 @@ std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
 #if BUILDFLAG(IS_CHROMECAST)
   } else {
     // Do not use the analog controller.
+    // This should likely be done on non-Chromecast platforms as well, but care
+    // is needed since users may be relying on the current behavior.
+    // https://crbug.com/918677#c4
     config.Set<webrtc::ExperimentalAgc>(
         new webrtc::ExperimentalAgc(/*enabled=*/false));
 #endif  // BUILDFLAG(IS_CHROMECAST)
@@ -462,7 +444,7 @@ std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
 
   // Create and configure the webrtc::AudioProcessing.
   webrtc::AudioProcessingBuilder ap_builder;
-  if (properties.EchoCancellationIsWebRtcProvided()) {
+  if (settings.echo_cancellation) {
     webrtc::EchoCanceller3Config aec3_config;
     if (audio_processing_platform_config_json) {
       aec3_config = webrtc::Aec3ConfigFromJsonString(
@@ -483,15 +465,15 @@ std::unique_ptr<webrtc::AudioProcessing> CreateWebRtcAudioProcessingModule(
       audio_processing_module->GetConfig();
   apm_config.pipeline.multi_channel_render = true;
   apm_config.pipeline.multi_channel_capture =
-      use_capture_multi_channel_processing;
+      settings.multi_channel_capture_processing;
 
   absl::optional<double> gain_control_compression_gain_db;
-  PopulateApmConfig(&apm_config, properties,
+  PopulateApmConfig(&apm_config, settings,
                     audio_processing_platform_config_json,
                     &gain_control_compression_gain_db);
 
   // Set up gain control functionalities.
-  ConfigAutomaticGainControl(properties, hybrid_agc_params,
+  ConfigAutomaticGainControl(settings, hybrid_agc_params,
                              clipping_control_params,
                              gain_control_compression_gain_db, apm_config);
 

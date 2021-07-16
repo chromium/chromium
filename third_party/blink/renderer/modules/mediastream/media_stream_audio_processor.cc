@@ -526,7 +526,8 @@ void MediaStreamAudioProcessor::InitializeAudioProcessingModule(
       Platform::Current()->GetWebRTCAudioProcessingConfiguration();
 
   audio_processing_ = CreateWebRtcAudioProcessingModule(
-      properties, use_capture_multi_channel_processing_,
+      properties.ToAudioProcessingSettings(
+          use_capture_multi_channel_processing_),
       audio_processing_platform_config_json, agc_startup_min_volume);
 
   // Register as a listener for the echo cancellation playout reference signal.

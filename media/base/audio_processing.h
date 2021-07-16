@@ -7,45 +7,54 @@
 
 #include <string>
 
-#include "base/files/file.h"
-#include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
-enum class AutomaticGainControlType {
-  kDisabled,
-  kDefault,
-  kExperimental,
-  kHybridExperimental
-};
-enum class EchoCancellationType { kDisabled, kAec3, kSystemAec };
-enum class NoiseSuppressionType { kDisabled, kDefault, kExperimental };
-
+// This struct specifies software audio processing effects to be applied by
+// Chrome to mic capture audio. If system / hardware effects replace effects in
+// this struct, then the corresponding parameters in the struct should be
+// disabled.
 struct MEDIA_EXPORT AudioProcessingSettings {
-  EchoCancellationType echo_cancellation = EchoCancellationType::kDisabled;
-  NoiseSuppressionType noise_suppression = NoiseSuppressionType::kDisabled;
-  AutomaticGainControlType automatic_gain_control =
-      AutomaticGainControlType::kDisabled;
-  bool high_pass_filter = false;
-  bool typing_detection = false;
+  bool echo_cancellation = true;
+  bool noise_suppression = true;
+  // Keytap removal, sometimes called "experimental noise suppression".
+  bool transient_noise_suppression = true;
+  bool automatic_gain_control = true;
+  // TODO(bugs.webrtc.org/7494): Remove since it is unused. On non-Chromecast
+  // platforms, it has no effect.
+  bool experimental_automatic_gain_control = true;
+  bool high_pass_filter = true;
+  // Multi-channel is not an individual audio effect, but determines whether the
+  // processing algorithms should preserve multi-channel input audio.
+  bool multi_channel_capture_processing = true;
   bool stereo_mirroring = false;
+
+  // TODO(https://crbug.com/1215061): Deprecate this setting.
+  // This flag preserves the behavior of the to-be-deprecated flag / constraint
+  // |AudioProcessingProperties::goog_experimental_echo_cancellation|: It has no
+  // effect on what effects are enabled, but for legacy reasons, it forces APM
+  // to be created and used.
+  bool force_apm_creation =
+#if defined(OS_ANDROID)
+      false;
+#else
+      true;
+#endif
 
   bool operator==(const AudioProcessingSettings& b) const {
     return echo_cancellation == b.echo_cancellation &&
            noise_suppression == b.noise_suppression &&
+           transient_noise_suppression == b.transient_noise_suppression &&
            automatic_gain_control == b.automatic_gain_control &&
+           experimental_automatic_gain_control ==
+               b.experimental_automatic_gain_control &&
            high_pass_filter == b.high_pass_filter &&
-           typing_detection == b.typing_detection &&
-           stereo_mirroring == b.stereo_mirroring;
-  }
-
-  // Indicates whether WebRTC will be required to perform the audio processing.
-  bool requires_apm() const {
-    return echo_cancellation == EchoCancellationType::kAec3 ||
-           noise_suppression != NoiseSuppressionType::kDisabled ||
-           automatic_gain_control != AutomaticGainControlType::kDisabled ||
-           high_pass_filter || typing_detection || stereo_mirroring;
+           multi_channel_capture_processing ==
+               b.multi_channel_capture_processing &&
+           stereo_mirroring == b.stereo_mirroring &&
+           force_apm_creation == b.force_apm_creation;
   }
 
   // Stringifies the settings for human-readable logging.
