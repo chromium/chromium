@@ -39,7 +39,6 @@
 #include "content/browser/bad_message.h"
 #include "content/browser/browser_interface_broker_impl.h"
 #include "content/browser/can_commit_status.h"
-#include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/net/cross_origin_opener_policy_reporter.h"
 #include "content/browser/prerender/prerender_host.h"
 #include "content/browser/renderer_host/back_forward_cache_metrics.h"
@@ -50,7 +49,6 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/site_instance_impl.h"
-#include "content/browser/webui/web_ui_impl.h"
 #include "content/common/buildflags.h"
 #include "content/common/content_export.h"
 #include "content/common/dom_automation_controller.mojom.h"
@@ -64,9 +62,9 @@
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/javascript_dialog_manager.h"
-#include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/web_ui.h"
 #include "content/public/common/javascript_dialog_type.h"
 #include "media/mojo/mojom/interface_factory.mojom-forward.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom-forward.h"
@@ -128,7 +126,6 @@
 #include "third_party/blink/public/mojom/worker/dedicated_worker_host_factory.mojom-forward.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_handler_base.h"
-#include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -148,10 +145,7 @@
 #include "content/common/pepper_plugin.mojom.h"
 #endif
 
-class GURL;
-
 namespace blink {
-class AssociatedInterfaceProvider;
 class AssociatedInterfaceRegistry;
 class DocumentPolicy;
 struct FramePolicy;
@@ -178,10 +172,6 @@ class MessageFilter;
 namespace network {
 class ResourceRequestBody;
 }  // namespace network
-
-namespace service_manager {
-class InterfaceProvider;
-}
 
 namespace ui {
 class ClipboardFormatType;
