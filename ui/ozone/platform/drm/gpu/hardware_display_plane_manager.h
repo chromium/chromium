@@ -234,7 +234,7 @@ class HardwareDisplayPlaneManager {
   // Convert |crtc/connector_id| into an index, returning -1 if the ID couldn't
   // be found.
   int LookupCrtcIndex(uint32_t crtc_id) const;
-  int LookupConnectorIndex(uint32_t connector_idx) const;
+  int LookupConnectorIndex(uint32_t connector_id) const;
 
   // Get Mutable CRTC State.
   CrtcState& CrtcStateForCrtcId(uint32_t crtc_id);
