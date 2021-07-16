@@ -138,7 +138,6 @@ class BASE_EXPORT HangWatcher : public DelegateSimpleThread::Delegate {
   static bool IsEnabled();
   static bool IsThreadPoolHangWatchingEnabled();
   static bool IsIOThreadHangWatchingEnabled();
-  static bool IsUIThreadHangWatchingEnabled();
 
   // Returns true if crash dump reporting is configured for any thread type.
   static bool IsCrashReportingEnabled();

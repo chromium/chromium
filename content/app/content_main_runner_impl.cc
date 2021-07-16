@@ -1008,6 +1008,8 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams& main_params,
     // but before the IO thread is started.
     if (base::HangWatcher::IsEnabled()) {
       hang_watcher_ = new base::HangWatcher();
+      unregister_thread_closure_ = base::HangWatcher::RegisterThread(
+          base::HangWatcher::ThreadType::kUIThread);
       hang_watcher_->Start();
       ANNOTATE_LEAKING_OBJECT_PTR(hang_watcher_);
     }

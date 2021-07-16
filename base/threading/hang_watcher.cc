@@ -274,12 +274,6 @@ bool HangWatcher::IsIOThreadHangWatchingEnabled() {
 }
 
 // static
-bool HangWatcher::IsUIThreadHangWatchingEnabled() {
-  return g_ui_thread_log_level.load(std::memory_order_relaxed) !=
-         LoggingLevel::kNone;
-}
-
-// static
 bool HangWatcher::IsCrashReportingEnabled() {
   if (g_ui_thread_log_level.load(std::memory_order_relaxed) ==
       LoggingLevel::kUmaAndCrash) {

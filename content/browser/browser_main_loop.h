@@ -327,11 +327,6 @@ class CONTENT_EXPORT BrowserMainLoop {
   // This must get destroyed before other threads that are created in |parts_|.
   std::unique_ptr<BrowserThreadImpl> main_thread_;
 
-  // Unregister UI thread from hang watching on destruction.
-  // NOTE: Hang watching should stop before the watched thread stops so this
-  // member must be after |main_thread_|.
-  base::ScopedClosureRunner unregister_thread_closure_;
-
   // Members initialized in |CreateStartupTasks()| -----------------------------
   std::unique_ptr<StartupTaskRunner> startup_task_runner_;
 
