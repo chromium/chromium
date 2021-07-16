@@ -14,6 +14,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,10 +49,12 @@ class FakePdfPrinterHandler : public PdfPrinterHandler {
   }
 
   bool StartPrintToPdf() {
-    if (!base::CreateTemporaryFileInDir(save_to_dir_.GetPath(),
-                                        &save_to_pdf_file_)) {
+    // Want the PDF file to get printed into our temporary directory, and ensure
+    // that it is a new and unique file there.
+    save_to_pdf_file_ =
+        base::GetUniquePath(save_to_dir_.GetPath().Append("print-to-pdf"));
+    if (save_to_pdf_file_.empty())
       return false;
-    }
     SetPrintToPdfPathForTesting(save_to_pdf_file_);
 
     run_loop_ = std::make_unique<base::RunLoop>();
@@ -118,10 +121,16 @@ TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
   // for the user.  It should also have group readable permissions to match the
   // behavior seen for downloaded files.  Note that this is the desired case
   // regardless of the directory permissions.
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  // `base::File::DoInitialize()` contains special permissions handling for
+  // ChromeOS variants.
+  constexpr int kExpectedFileMode = 0644;
+#else
   // TODO(crbug.com/1035572) `kExpectedFileMode` should be owner
   // readable/writable and group readable, but POSIX `base::File()` internal
   // details are such that files are created with user-only access.
   constexpr int kExpectedFileMode = 0600;
+#endif
 
   // Test against directories with varying permissions, to illustrate that this
   // does not impact the saved PDF's permissions.
