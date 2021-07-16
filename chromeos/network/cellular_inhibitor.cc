@@ -204,33 +204,15 @@ void CellularInhibitor::OnUninhibit(bool success) {
       FROM_HERE, kScanningChangeTimeout,
       base::BindOnce(&CellularInhibitor::OnScanningChangeTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
-  TransitionToState(State::kWaitingForScanningToStart);
-  CheckForScanningStarted();
-}
-
-void CellularInhibitor::CheckScanningIfNeeded() {
-  if (state_ == State::kWaitingForScanningToStart)
-    CheckForScanningStarted();
-
-  if (state_ == State::kWaitingForScanningToStop)
-    CheckForScanningStopped();
-}
-
-void CellularInhibitor::CheckForScanningStarted() {
-  DCHECK(state_ == State::kWaitingForScanningToStart);
-
-  if (!HasScanningStarted())
-    return;
-
   TransitionToState(State::kWaitingForScanningToStop);
   CheckForScanningStopped();
 }
 
-bool CellularInhibitor::HasScanningStarted() {
-  const DeviceState* cellular_device = GetCellularDevice();
-  if (!cellular_device)
-    return false;
-  return !cellular_device->inhibited() && cellular_device->scanning();
+void CellularInhibitor::CheckScanningIfNeeded() {
+  if (state_ != State::kWaitingForScanningToStop)
+    return;
+  else
+    CheckForScanningStopped();
 }
 
 void CellularInhibitor::CheckForScanningStopped() {
@@ -372,9 +354,6 @@ std::ostream& operator<<(std::ostream& stream,
       break;
     case CellularInhibitor::State::kWaitForUninhibit:
       stream << "[Waiting for Inhibit property clear]";
-      break;
-    case CellularInhibitor::State::kWaitingForScanningToStart:
-      stream << "[Waiting for scanning to start]";
       break;
     case CellularInhibitor::State::kWaitingForScanningToStop:
       stream << "[Waiting for scanning to stop]";

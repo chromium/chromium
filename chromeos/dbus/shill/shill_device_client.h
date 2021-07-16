@@ -62,9 +62,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillDeviceClient {
         const std::string& device_path,
         const std::string& error_name) = 0;
     // Determines whether or not to simulate the Scanning property changing when
-    // an Inhibit operation is complete.
-    virtual void SetSimulateUninhibitScanning(
-        bool simulate_uninhibit_scanning) = 0;
+    // an Inhibit property is updated.
+    virtual void SetSimulateInhibitScanning(bool simulate_inhibit_scanning) = 0;
     // Adds a delay before a SetProperty call will result in property value
     // change.
     virtual void SetPropertyChangeDelay(

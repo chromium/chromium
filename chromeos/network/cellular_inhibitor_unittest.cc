@@ -65,7 +65,10 @@ class CellularInhibitorTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    helper_.device_test()->SetSimulateUninhibitScanning(false);
+    // Disable inhibit scanning simulation since this test tests the
+    // intermediate state where the scanning is set to true but not set to false
+    // yet.
+    helper_.device_test()->SetSimulateInhibitScanning(false);
     helper_.device_test()->ClearDevices();
     cellular_inhibitor_.Init(helper_.network_state_handler(),
                              helper_.network_device_handler());
@@ -92,6 +95,8 @@ class CellularInhibitorTest : public testing::Test {
         inhibit_reason,
         base::BindLambdaForTesting(
             [&](std::unique_ptr<CellularInhibitor::InhibitLock> result) {
+              // Shill will start scanning before setting inhibit
+              SetScanning(/*is_scanning=*/true);
               inhibit_lock = std::move(result);
               run_loop.Quit();
             }));
@@ -107,6 +112,8 @@ class CellularInhibitorTest : public testing::Test {
         inhibit_reason,
         base::BindLambdaForTesting(
             [&](std::unique_ptr<CellularInhibitor::InhibitLock> result) {
+              // Shill will start scanning before setting inhibit
+              SetScanning(/*is_scanning=*/true);
               lock = std::move(result);
             }));
   }
@@ -206,10 +213,9 @@ TEST_F(CellularInhibitorTest, SuccessSingleRequest) {
   EXPECT_EQ(CellularInhibitor::InhibitReason::kInstallingProfile,
             GetInhibitReason());
 
-  // Start and stop scanning; this should alert observers that the inhibit
+  // Just stop scanning; this should alert observers that the inhibit
   // operation has completed.
-  SetScanning(true);
-  SetScanning(false);
+  SetScanning(/*is_scanning=*/false);
   EXPECT_EQ(2u, GetNumObserverEvents());
   EXPECT_FALSE(GetInhibitReason().has_value());
   histogram_tester().ExpectBucketCount(
@@ -249,19 +255,9 @@ TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
   EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
   EXPECT_FALSE(inhibit_lock2);
 
-  // Set the Cellular device's scanning property to true, simulating the
-  // inhibit flow within Shill. This still should not start the next inhibit
-  // flow.
-  SetScanning(true);
-  EXPECT_EQ(1u, GetNumObserverEvents());
-  EXPECT_EQ(CellularInhibitor::InhibitReason::kInstallingProfile,
-            GetInhibitReason());
-  EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
-  EXPECT_FALSE(inhibit_lock2);
-
   // Change scanning back to false, which should trigger the second lock being
   // set.
-  SetScanning(false);
+  SetScanning(/*is_scanning=*/false);
   histogram_tester().ExpectBucketCount(
       kInhibitOperationResultHistogram,
       CellularInhibitor::InhibitOperationResult::kSuccess,
@@ -280,8 +276,7 @@ TEST_F(CellularInhibitorTest, SuccessMultipleRequests) {
             GetInhibitReason());
   EXPECT_EQ(GetInhibitedPropertyResult::kFalse, GetInhibitedProperty());
 
-  SetScanning(true);
-  SetScanning(false);
+  SetScanning(/*is_scanning=*/false);
   base::RunLoop().RunUntilIdle();
   histogram_tester().ExpectBucketCount(
       kInhibitOperationResultHistogram,

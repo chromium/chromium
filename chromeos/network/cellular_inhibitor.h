@@ -121,7 +121,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
     kInhibited,
     kUninhibiting,
     kWaitForUninhibit,
-    kWaitingForScanningToStart,
     kWaitingForScanningToStop,
   };
   friend std::ostream& operator<<(std::ostream& stream, const State& state);
@@ -153,8 +152,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularInhibitor
   void OnUninhibit(bool success);
 
   void CheckScanningIfNeeded();
-  void CheckForScanningStarted();
-  bool HasScanningStarted();
   void CheckForScanningStopped();
   bool HasScanningStopped();
   void OnScanningChangeTimeout();
