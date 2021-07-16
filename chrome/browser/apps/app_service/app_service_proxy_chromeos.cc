@@ -78,7 +78,15 @@ void AppServiceProxyChromeOs::Initialize() {
   }
 
   if (full_restore::features::IsFullRestoreEnabled()) {
-    ::full_restore::SetActiveProfilePath(profile_->GetPath());
+    if (user == user_manager::UserManager::Get()->GetPrimaryUser()) {
+      ::full_restore::FullRestoreSaveHandler::GetInstance()
+          ->SetPrimaryProfilePath(profile_->GetPath());
+
+      // In Multi-Profile mode, only set for the primary user. For other users,
+      // active profile path is set when switch users.
+      ::full_restore::SetActiveProfilePath(profile_->GetPath());
+    }
+
     ::full_restore::FullRestoreSaveHandler::GetInstance()->SetAppRegistryCache(
         profile_->GetPath(), &app_registry_cache_);
   }

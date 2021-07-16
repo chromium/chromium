@@ -64,6 +64,9 @@ class FullRestoreArcTaskHandler : public KeyedService,
   void OnShelfReady();
 
  private:
+  // KeyedService:
+  void Shutdown() override;
+
   base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
       arc_prefs_observer_{this};
 

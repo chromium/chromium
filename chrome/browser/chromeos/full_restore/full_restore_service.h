@@ -10,6 +10,8 @@
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "content/public/browser/notification_observer.h"
+#include "content/public/browser/notification_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/public/cpp/notification_delegate.h"
 
@@ -52,7 +54,8 @@ enum class RestoreAction {
 // The FullRestoreService class calls AppService and Window Management
 // interfaces to restore the app launchings and app windows.
 class FullRestoreService : public KeyedService,
-                           public message_center::NotificationObserver {
+                           public message_center::NotificationObserver,
+                           public content::NotificationObserver {
  public:
   static FullRestoreService* GetForProfile(Profile* profile);
 
@@ -72,6 +75,11 @@ class FullRestoreService : public KeyedService,
   void Close(bool by_user) override;
   void Click(const absl::optional<int>& button_index,
              const absl::optional<std::u16string>& reply) override;
+
+  // content::NotificationObserver:
+  void Observe(int type,
+               const content::NotificationSource& source,
+               const content::NotificationDetails& details) override;
 
   FullRestoreAppLaunchHandler* app_launch_handler() {
     return app_launch_handler_.get();
@@ -120,6 +128,8 @@ class FullRestoreService : public KeyedService,
   std::unique_ptr<FullRestoreDataHandler> restore_data_handler_;
 
   std::unique_ptr<message_center::Notification> notification_;
+
+  content::NotificationRegistrar notification_registrar_;
 
   base::WeakPtrFactory<FullRestoreService> weak_ptr_factory_{this};
 };

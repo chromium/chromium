@@ -75,6 +75,10 @@ void FullRestoreSaveHandler::SetAppRegistryCache(
     profile_path_to_app_registry_cache_.erase(profile_path);
 }
 
+void FullRestoreSaveHandler::SetShutDown() {
+  is_shut_down_ = true;
+}
+
 void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   if (window->GetProperty(aura::client::kAppType) ==
       static_cast<int>(ash::AppType::ARC_APP)) {
@@ -459,7 +463,7 @@ void FullRestoreSaveHandler::MaybeStartSaveTimer(
 }
 
 void FullRestoreSaveHandler::Save() {
-  if (pending_save_profile_paths_.empty())
+  if (pending_save_profile_paths_.empty() || is_shut_down_)
     return;
 
   for (const auto& file_path : pending_save_profile_paths_)
