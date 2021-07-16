@@ -141,13 +141,15 @@ class SessionControllerClientImplTest : public testing::Test {
   }
 
   // Add and log in a user to the session.
-  void UserAddedToSession(const AccountId& account_id) {
-    const user_manager::User* user = user_manager()->AddUser(account_id);
+  void UserAddedToSession(const AccountId& account_id, bool is_child = false) {
+    const user_manager::User* user =
+        is_child ? user_manager()->AddChildUser(account_id)
+                 : user_manager()->AddUser(account_id);
     session_manager_.CreateSession(
         account_id,
         chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(
             account_id.GetUserEmail()),
-        false);
+        is_child);
 
     // Simulate that user profile is loaded.
     CreateTestingProfile(user);
@@ -288,6 +290,21 @@ TEST_F(SessionControllerClientImplTest, MultiProfileDisallowedByUserPolicy) {
       prefs::kMultiProfileUserBehavior,
       ash::MultiProfileUserController::kBehaviorNotAllowed);
   EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NOT_ALLOWED_PRIMARY_USER,
+            SessionControllerClientImpl::GetAddUserSessionPolicy());
+}
+
+// Make sure MultiProfile is disabled for Family Link users.
+TEST_F(SessionControllerClientImplTest,
+       MultiProfileDisallowedForFamilyLinkUsers) {
+  InitForMultiProfile();
+  EXPECT_EQ(ash::AddUserSessionPolicy::ALLOWED,
+            SessionControllerClientImpl::GetAddUserSessionPolicy());
+
+  const AccountId account_id(
+      AccountId::FromUserEmailGaiaId("child@gmail.com", "12345678"));
+  UserAddedToSession(account_id, /*is_child=*/true);
+
+  EXPECT_EQ(ash::AddUserSessionPolicy::ERROR_NO_ELIGIBLE_USERS,
             SessionControllerClientImpl::GetAddUserSessionPolicy());
 }
 

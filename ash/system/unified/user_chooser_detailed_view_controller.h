@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_UNIFIED_USER_CHOOSER_DETAILED_VIEW_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_USER_CHOOSER_DETAILED_VIEW_CONTROLLER_H_
 
+#include "ash/ash_export.h"
 #include "ash/system/unified/detailed_view_controller.h"
 #include "base/macros.h"
 
@@ -14,7 +15,8 @@ class UnifiedSystemTrayController;
 
 // Controller of the user chooser detailed view (used for multi-user sign-in) in
 // UnifiedSystemTray.
-class UserChooserDetailedViewController : public DetailedViewController {
+class ASH_EXPORT UserChooserDetailedViewController
+    : public DetailedViewController {
  public:
   explicit UserChooserDetailedViewController(
       UnifiedSystemTrayController* tray_controller);

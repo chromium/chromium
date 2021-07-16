@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/system/unified/user_chooser_detailed_view_controller.h"
+
 #include <memory>
 
 #include "ash/public/cpp/ash_view_ids.h"
@@ -54,7 +56,7 @@ class UserChooserDetailedViewControllerTest : public AshTestBase {
 
 TEST_F(UserChooserDetailedViewControllerTest,
        ShowMultiProfileLoginWithOverview) {
-  // Enter ovewview mode.
+  // Enter overview mode.
   EnterOverview();
   ASSERT_TRUE(Shell::Get()->overview_controller()->InOverviewSession());
 
@@ -78,7 +80,7 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   const AccountId secondary_user =
       AccountId::FromUserEmail("secondary@gmail.com");
   GetSessionControllerClient()->AddUserSession(secondary_user.GetUserEmail());
-  ASSERT_FALSE(GetActiveUser() == secondary_user);
+  ASSERT_NE(GetActiveUser(), secondary_user);
 
   // Create an activatable widget.
   std::unique_ptr<views::Widget> widget = CreateTestWidget();
@@ -102,7 +104,19 @@ TEST_F(UserChooserDetailedViewControllerTest, SwitchUserWithOverview) {
   tray_test_api()->ClickBubbleView(secondary_user_button_id);
 
   // Active user is switched.
-  EXPECT_TRUE(GetActiveUser() == secondary_user);
+  EXPECT_EQ(GetActiveUser(), secondary_user);
+}
+
+TEST_F(UserChooserDetailedViewControllerTest,
+       MultiProfileLoginDisabledForFamilyLinkUsers) {
+  EXPECT_TRUE(UserChooserDetailedViewController::IsUserChooserEnabled());
+
+  GetSessionControllerClient()->Reset();
+
+  // Log in as a child user.
+  SimulateUserLogin("child@gmail.com", user_manager::USER_TYPE_CHILD);
+
+  EXPECT_FALSE(UserChooserDetailedViewController::IsUserChooserEnabled());
 }
 
 }  // namespace ash
