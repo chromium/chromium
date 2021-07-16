@@ -98,10 +98,6 @@ crbug.com/dawn/722 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,r
 
 ## webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:*
 
-# 3D not implemented (crbug.com/dawn/547)
-[ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="Sample";* [ Crash ]
-[ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:dimension="3d";readMethod="Sample";* [ Crash ]
-
 # Likely precision-related
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rg11b10ufloat";* [ Failure ]
 [ Mac ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,resource_init,texture_zero:uninitialized_texture_is_zero:readMethod="Sample";format="rgb9e5ufloat";* [ Failure ]
@@ -137,10 +133,6 @@ wpt_internal/webgpu/cts.html?q=webgpu:api,validation,resource_usages,texture,in_
 ###
 ### Test bugs
 ###
-
-# NOTE: Reenable crbug.com/1087130 suppressions when these are lifted
-crbug.com/760 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:Using_defaults_validates_the_same_as_setting_values_for_more_than_1_array_layer:* [ Failure ]
-crbug.com/760 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass_descriptor:it_is_invalid_to_use_a_resolve_target_with_array_layer_count_greater_than_1:* [ Failure ]
 
 # These tests aren't working on CQ, unclear whether the test or harness (or Chrome) is broken.
 # Mac: mostly works
@@ -200,12 +192,8 @@ crbug.com/dawn/773 wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,
 
 crbug.com/dawn/746 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,shader_module,compilation_info:offset_and_length:valid=false;unicode=true [ Failure ]
 
-crbug.com/dawn/760 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:* [ Failure ]
-# NOTE: Uncomment the following when the above is lifted.
-#crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
-#crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="1d";* [ Failure ]
-#crbug.com/dawn/547 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="3d";* [ Failure ]
-#crbug.com/dawn/547 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="3d";* [ Failure ]
+crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:viewDimension="1d";* [ Failure ]
+crbug.com/dawn/129 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroup:texture_must_have_correct_dimension:dimension="1d";* [ Failure ]
 
 # Dawn is missing several validation rules about depthReadOnly/stencilReadOnly.
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass,storeOp:* [ Failure ]
@@ -315,7 +303,7 @@ crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canva
 ###
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
-#crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
+crbug.com/1087130 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
 
 # Nvidia only, worker only, very flaky
 [ Linux ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,operation,render_pass,storeop2:* [ Failure ]
@@ -325,4 +313,4 @@ crbug.com/1083478 [ Mac ] wpt_internal/webgpu/webgpu/web_platform/reftests/canva
 ###
 
 # Very flaky on Windows/Linux, especially (but not exclusively!) with backend validation
-#crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
+crbug.com/1087130 [ Win ] wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createView:* [ RetryOnFailure ]
