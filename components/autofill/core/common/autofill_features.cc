@@ -271,9 +271,6 @@ extern const base::Feature kAutofillLabelAffixRemoval{
 const base::Feature kAutofillPruneSuggestions{
     "AutofillPruneSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kAutofillMetadataUploads{"AutofillMetadataUploads",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
-
 // When enabled, Autofill will load remote patterns via the component updater.
 // TODO(crbug/1121990): Remove once launched.
 extern const base::Feature kAutofillParsingPatternsFromRemote{

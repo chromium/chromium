@@ -107,15 +107,6 @@ class FormStructureTestImpl : public test::FormStructureTest {
     return FormStructure(form).ShouldBeQueried();
   }
 
-  void SetUpForEncoder() {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        // Enabled.
-        {features::kAutofillMetadataUploads},
-        // Disabled.
-        {});
-  }
-
   FieldRendererId MakeFieldRendererId() {
     return FieldRendererId(++id_counter_);
   }
@@ -4619,7 +4610,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_IsFormTag) {
 }
 
 TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
-  SetUpForEncoder();
   struct FieldMetadata {
     const char *id, *name, *label, *placeholder, *aria_label, *aria_description,
         *css_classes;
@@ -4784,7 +4774,6 @@ TEST_F(FormStructureTestImpl, EncodeUploadRequest_RichMetadata) {
 TEST_F(FormStructureTestImpl, Metadata_OnlySendFullUrlWithUserConsent) {
   for (bool has_consent : {true, false}) {
     SCOPED_TRACE(testing::Message() << " has_consent=" << has_consent);
-    SetUpForEncoder();
     FormData form;
     form.id_attribute = u"form-id";
     form.url = GURL("http://www.foo.com/");

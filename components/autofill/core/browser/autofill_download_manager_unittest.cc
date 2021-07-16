@@ -1851,7 +1851,6 @@ using AutofillUploadTest = AutofillServerCommunicationTest;
 
 TEST_P(AutofillUploadTest, RichMetadata) {
   base::test::ScopedFeatureList local_feature;
-  local_feature.InitAndEnableFeature(features::kAutofillMetadataUploads);
 
   FormData form;
   form.url = GURL("https://origin.com");

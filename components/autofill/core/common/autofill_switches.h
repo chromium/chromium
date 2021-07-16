@@ -14,7 +14,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 extern const char kAutofillAPIKey[];
 extern const char kAutofillServerURL[];
-extern const char kAutofillMetadataUploadEncoding[];
 extern const char kAutofillUploadThrottlingPeriodInDays[];
 extern const char kIgnoreAutocompleteOffForAutofill[];
 extern const char kShowAutofillTypePredictions[];

@@ -28,9 +28,11 @@
 #include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "services/network/test/test_utils.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/third_party/mozilla/url_parse.h"
 
+using testing::Matcher;
 using version_info::GetProductNameAndVersionForUserAgent;
 
 namespace autofill {
@@ -63,7 +65,7 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
 
 class WindowedNetworkObserver {
  public:
-  explicit WindowedNetworkObserver(const std::string& expected_upload_data)
+  explicit WindowedNetworkObserver(Matcher<std::string> expected_upload_data)
       : expected_upload_data_(expected_upload_data),
         message_loop_runner_(new content::MessageLoopRunner) {
     interceptor_ =
@@ -111,14 +113,14 @@ class WindowedNetworkObserver {
             ? GetLookupContent(resource_request.url.path())
             : network::GetUploadData(resource_request);
 
-    if (data == expected_upload_data_)
+    if (expected_upload_data_.Matches(data))
       message_loop_runner_->Quit();
 
     return false;
   }
 
  private:
-  const std::string expected_upload_data_;
+  Matcher<std::string> expected_upload_data_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 
   std::unique_ptr<content::URLLoaderInterceptor> interceptor_;
@@ -138,7 +140,7 @@ class AutofillServerTest : public InProcessBrowserTest {
         // Enabled.
         {features::kAutofillAllowNonHttpActivation},
         // Disabled.
-        {features::kAutofillMetadataUploads});
+        {});
 
     // Note that features MUST be enabled/disabled before continuing with
     // SetUp(); otherwise, the feature state doesn't propagate to the test
@@ -155,6 +157,29 @@ class AutofillServerTest : public InProcessBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
+
+MATCHER_P(EqualsUploadProto, expected_const, "") {
+  AutofillUploadRequest expected = expected_const;
+  AutofillUploadRequest request;
+  if (!request.ParseFromString(arg))
+    return false;
+
+  // Remove metadata because it is randomised and won't match.
+  request.mutable_upload()->clear_randomized_form_metadata();
+  expected.mutable_upload()->clear_randomized_form_metadata();
+  if (request.upload().field_size() != expected.upload().field_size())
+    return false;
+  for (int i = 0; i < request.upload().field_size(); i++) {
+    request.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+    expected.mutable_upload()
+        ->mutable_field(i)
+        ->clear_randomized_field_metadata();
+  }
+
+  return request.SerializeAsString() == expected.SerializeAsString();
+}
 
 // Regression test for http://crbug.com/177419
 IN_PROC_BROWSER_TEST_F(AutofillServerTest,
@@ -250,6 +275,9 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   upload->set_submission_event(
       AutofillUploadContents_SubmissionIndicatorEvent_HTML_FORM_SUBMISSION);
   upload->set_has_form_tag(true);
+  // For metadata, we only set the language. The matcher will ignore the
+  // randomized metadata values.
+  upload->set_language("und");
 
   // Enabling raw form data uploading (e.g., field name) is too complicated in
   // this test. So, don't expect it in the upload.
@@ -262,10 +290,7 @@ IN_PROC_BROWSER_TEST_F(AutofillServerTest,
   test::FillUploadField(upload->add_field(), 1236501728U, nullptr, nullptr,
                         nullptr, 2U);
 
-  std::string expected_upload_string;
-  ASSERT_TRUE(request.SerializeToString(&expected_upload_string));
-
-  WindowedNetworkObserver upload_network_observer(expected_upload_string);
+  WindowedNetworkObserver upload_network_observer(EqualsUploadProto(request));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::SimulateMouseClick(web_contents, 0,
