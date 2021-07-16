@@ -154,15 +154,15 @@ if (enable_downstream_media_tests) {
     data_deps = [ "//tools/perf/contrib/media_router_benchmarks:telemetry_extension_resources" ]
   }
 
-  if (!is_android) {
-    group("media_router_perf_tests") {
-      testonly = true
-      data_deps = [
-        ":media_router_perf_tests_base",
-        "//tools/perf:perf",
-      ]
-    }
-  } else {
+  group("media_router_perf_tests") {
+    testonly = true
+    data_deps = [
+      ":media_router_perf_tests_base",
+      "//tools/perf:perf",
+    ]
+  }
+
+  if (is_android) {
     template("media_router_perf_tests_android_template") {
       forward_variables_from(invoker, [ "telemetry_target_suffix" ])
       group(target_name) {
