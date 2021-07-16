@@ -22,7 +22,6 @@ class ComputedStyle;
 class Document;
 class FillLayer;
 class FloatRoundedRect;
-class GraphicsContext;
 class ImageResourceObserver;
 class IntRect;
 class LayoutBox;
@@ -145,7 +144,7 @@ class BoxPainterBase {
   virtual LayoutRectOutsets ComputeBorders() const = 0;
   virtual LayoutRectOutsets ComputePadding() const = 0;
   LayoutRectOutsets AdjustedBorderOutsets(const FillLayerInfo&) const;
-  void PaintFillLayerTextFillBox(GraphicsContext&,
+  void PaintFillLayerTextFillBox(const PaintInfo&,
                                  const FillLayerInfo&,
                                  Image*,
                                  SkBlendMode composite_op,
@@ -153,7 +152,7 @@ class BoxPainterBase {
                                  const PhysicalRect&,
                                  const PhysicalRect& scrolled_paint_rect,
                                  bool object_has_multiple_boxes);
-  virtual void PaintTextClipMask(GraphicsContext&,
+  virtual void PaintTextClipMask(const PaintInfo&,
                                  const IntRect& mask_rect,
                                  const PhysicalOffset& paint_offset,
                                  bool object_has_multiple_boxes) = 0;

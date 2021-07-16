@@ -898,33 +898,34 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   if (rect.IsEmpty())
     return;
 
-  const FillLayerInfo info =
+  const FillLayerInfo fill_layer_info =
       GetFillLayerInfo(color, bg_layer, bleed_avoidance,
                        IsPaintingScrollingBackground(paint_info));
   // If we're not actually going to paint anything, abort early.
-  if (!info.should_paint_image && !info.should_paint_color)
+  if (!fill_layer_info.should_paint_image &&
+      !fill_layer_info.should_paint_color)
     return;
 
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver clip_with_scrolling_state_saver(
-      context, info.is_clipped_with_local_scrolling);
+      context, fill_layer_info.is_clipped_with_local_scrolling);
   auto scrolled_paint_rect =
-      AdjustRectForScrolledContent(paint_info, info, rect);
+      AdjustRectForScrolledContent(paint_info, fill_layer_info, rect);
   const auto did_adjust_paint_rect = scrolled_paint_rect != rect;
 
   scoped_refptr<Image> image;
   SkBlendMode composite_op = SkBlendMode::kSrcOver;
   absl::optional<ScopedInterpolationQuality> interpolation_quality_context;
-  if (info.should_paint_image) {
+  if (fill_layer_info.should_paint_image) {
     geometry.Calculate(paint_info.PaintContainer(), paint_info.phase, bg_layer,
                        scrolled_paint_rect);
-    image = info.image->GetImage(
+    image = fill_layer_info.image->GetImage(
         geometry.ImageClient(), geometry.ImageDocument(),
         geometry.ImageStyle(style_), FloatSize(geometry.TileSize()));
     interpolation_quality_context.emplace(context,
                                           geometry.ImageInterpolationQuality());
 
-    if (ShouldApplyBlendOperation(info, bg_layer)) {
+    if (ShouldApplyBlendOperation(fill_layer_info, bg_layer)) {
       composite_op = WebCoreCompositeToSkiaComposite(bg_layer.Composite(),
                                                      bg_layer.GetBlendMode());
     }
@@ -934,8 +935,8 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   LayoutRectOutsets padding = ComputePadding();
   LayoutRectOutsets border_padding_insets = -(border + padding);
   FloatRoundedRect border_rect = RoundedBorderRectForClip(
-      style_, info, bg_layer, rect, object_has_multiple_boxes, flow_box_size,
-      bleed_avoidance, border_padding_insets);
+      style_, fill_layer_info, bg_layer, rect, object_has_multiple_boxes,
+      flow_box_size, bleed_avoidance, border_padding_insets);
 
   // Fast path for drawing simple color backgrounds. Do not use the fast
   // path with images if the dest rect has been adjusted for scrolling
@@ -944,22 +945,22 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   // if we are shrinking the background for bleed avoidance, because this
   // adjusts the border rects in a way that breaks the optimization.
   bool disable_fast_path =
-      info.should_paint_image &&
+      fill_layer_info.should_paint_image &&
       (bleed_avoidance == kBackgroundBleedShrinkBackground ||
        did_adjust_paint_rect);
   if (!disable_fast_path &&
-      PaintFastBottomLayer(document_, node_, context, info, rect, border_rect,
-                           geometry, image.get(), composite_op)) {
+      PaintFastBottomLayer(document_, node_, context, fill_layer_info, rect,
+                           border_rect, geometry, image.get(), composite_op)) {
     return;
   }
 
   absl::optional<RoundedInnerRectClipper> clip_to_border;
-  if (info.is_rounded_fill)
+  if (fill_layer_info.is_rounded_fill)
     clip_to_border.emplace(context, rect, border_rect);
 
   if (bg_layer.Clip() == EFillBox::kText) {
-    PaintFillLayerTextFillBox(context, info, image.get(), composite_op,
-                              geometry, rect, scrolled_paint_rect,
+    PaintFillLayerTextFillBox(paint_info, fill_layer_info, image.get(),
+                              composite_op, geometry, rect, scrolled_paint_rect,
                               object_has_multiple_boxes);
     return;
   }
@@ -968,14 +969,17 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
   switch (bg_layer.Clip()) {
     case EFillBox::kPadding:
     case EFillBox::kContent: {
-      if (info.is_rounded_fill)
+      if (fill_layer_info.is_rounded_fill)
         break;
 
       // Clip to the padding or content boxes as necessary.
       PhysicalRect clip_rect = scrolled_paint_rect;
-      clip_rect.Contract(AdjustOutsetsForEdgeInclusion(border, info));
-      if (bg_layer.Clip() == EFillBox::kContent)
-        clip_rect.Contract(AdjustOutsetsForEdgeInclusion(padding, info));
+      clip_rect.Contract(
+          AdjustOutsetsForEdgeInclusion(border, fill_layer_info));
+      if (bg_layer.Clip() == EFillBox::kContent) {
+        clip_rect.Contract(
+            AdjustOutsetsForEdgeInclusion(padding, fill_layer_info));
+      }
       background_clip_state_saver.Save();
       context.Clip(PixelSnappedIntRect(clip_rect));
       break;
@@ -988,12 +992,13 @@ void BoxPainterBase::PaintFillLayer(const PaintInfo& paint_info,
       break;
   }
 
-  PaintFillLayerBackground(document_, context, info, node_, image.get(),
-                           composite_op, geometry, scrolled_paint_rect);
+  PaintFillLayerBackground(document_, context, fill_layer_info, node_,
+                           image.get(), composite_op, geometry,
+                           scrolled_paint_rect);
 }
 
 void BoxPainterBase::PaintFillLayerTextFillBox(
-    GraphicsContext& context,
+    const PaintInfo& paint_info,
     const BoxPainterBase::FillLayerInfo& info,
     Image* image,
     SkBlendMode composite_op,
@@ -1005,6 +1010,8 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   // than what we need to actually render, so we should intersect the dirty
   // rect with the border box of the background.
   IntRect mask_rect = PixelSnappedIntRect(rect);
+
+  GraphicsContext& context = paint_info.context;
 
   // We draw the background into a separate layer, to be later masked with
   // yet another layer holding the text content.
@@ -1022,7 +1029,7 @@ void BoxPainterBase::PaintFillLayerTextFillBox(
   // they should just add their contents to the clip.
   context.BeginLayer(1, SkBlendMode::kDstIn);
 
-  PaintTextClipMask(context, mask_rect, scrolled_paint_rect.offset,
+  PaintTextClipMask(paint_info, mask_rect, scrolled_paint_rect.offset,
                     object_has_multiple_boxes);
 
   context.EndLayer();  // Text mask layer.

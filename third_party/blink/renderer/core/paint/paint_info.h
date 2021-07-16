@@ -200,6 +200,7 @@ struct CORE_EXPORT PaintInfo {
     return LegacyFragmentToPaint(*fragment.GetLayoutObject());
   }
 
+  wtf_size_t FragmentID() const { return fragment_id_; }
   void SetFragmentID(wtf_size_t id) { fragment_id_ = id; }
   void SetIsInFragmentTraversal() { fragment_id_ = WTF::kNotFound; }
 

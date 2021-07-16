@@ -1705,14 +1705,15 @@ bool NGBoxFragmentPainter::ShouldPaint(
   return false;
 }
 
-void NGBoxFragmentPainter::PaintTextClipMask(GraphicsContext& context,
+void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
                                              const IntRect& mask_rect,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
-  PaintInfo paint_info(context, CullRect(mask_rect), PaintPhase::kTextClip,
-                       kGlobalPaintNormalPhase, 0);
+  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+                            PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
+  mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (!object_has_multiple_boxes) {
-    PaintObject(paint_info, paint_offset);
+    PaintObject(mask_paint_info, paint_offset);
     return;
   }
 
@@ -1720,7 +1721,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(GraphicsContext& context,
   DCHECK(box_item_);
   NGInlineBoxFragmentPainter inline_box_painter(*inline_box_cursor_,
                                                 *box_item_);
-  PaintTextClipMask(paint_info,
+  PaintTextClipMask(mask_paint_info,
                     paint_offset - box_item_->OffsetInContainerFragment(),
                     &inline_box_painter);
 }

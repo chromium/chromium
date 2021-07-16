@@ -37,7 +37,7 @@ class BoxModelObjectPainter : public BoxPainterBase {
       bool is_painting_scrolling_background) const override;
   bool IsPaintingScrollingBackground(const PaintInfo&) const override;
 
-  void PaintTextClipMask(GraphicsContext&,
+  void PaintTextClipMask(const PaintInfo&,
                          const IntRect& mask_rect,
                          const PhysicalOffset& paint_offset,
                          bool object_has_multiple_boxes) override;

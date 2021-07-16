@@ -58,12 +58,13 @@ BoxModelObjectPainter::BoxModelObjectPainter(const LayoutBoxModelObject& box,
       flow_box_(flow_box) {}
 
 void BoxModelObjectPainter::PaintTextClipMask(
-    GraphicsContext& context,
+    const PaintInfo& paint_info,
     const IntRect& mask_rect,
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
-  PaintInfo paint_info(context, CullRect(mask_rect), PaintPhase::kTextClip,
-                       kGlobalPaintNormalPhase, 0);
+  PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
+                            PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
+  mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {
     LayoutSize local_offset = ToLayoutSize(flow_box_->Location());
     if (object_has_multiple_boxes &&
@@ -75,10 +76,10 @@ void BoxModelObjectPainter::PaintTextClipMask(
     PhysicalOffset physical_local_offset(local_offset.Width(),
                                          local_offset.Height());
     const RootInlineBox& root = flow_box_->Root();
-    flow_box_->Paint(paint_info, paint_offset - physical_local_offset,
+    flow_box_->Paint(mask_paint_info, paint_offset - physical_local_offset,
                      root.LineTop(), root.LineBottom());
   } else if (auto* layout_block = DynamicTo<LayoutBlock>(box_model_)) {
-    layout_block->PaintObject(paint_info, paint_offset);
+    layout_block->PaintObject(mask_paint_info, paint_offset);
   } else {
     // We should go through the above path for LayoutInlines.
     DCHECK(!box_model_.IsLayoutInline());
