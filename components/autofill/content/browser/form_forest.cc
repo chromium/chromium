@@ -467,12 +467,14 @@ std::vector<FormData> FormForest::GetRendererFormsOfBrowserForm(
     FormGlobalId form_id = browser_field.renderer_form_id();
 
     // Finds or creates the renderer form from which |browser_field| originated.
+    // The form with |form_id| may have been removed from the tree, for example,
+    // in between of a refill.
     auto renderer_form =
         base::ranges::find(renderer_forms.rbegin(), renderer_forms.rend(),
                            form_id, &FormData::global_id);
     if (renderer_form == renderer_forms.rend()) {
       const FormData* original_form = mutable_this.GetFormData(form_id);
-      if (!original_form)
+      if (!original_form)  // The form with |form_id| may have been removed.
         continue;
       renderer_forms.push_back(*original_form);
       renderer_form = renderer_forms.rbegin();
