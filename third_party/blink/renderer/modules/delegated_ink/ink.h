@@ -10,12 +10,11 @@
 
 namespace blink {
 
-class Element;
 class ExceptionState;
+class InkPresenterParam;
 class Navigator;
 class ScriptPromise;
 class ScriptState;
-class V8PresenterType;
 
 class Ink : public ScriptWrappable, public Supplement<Navigator> {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,8 +25,7 @@ class Ink : public ScriptWrappable, public Supplement<Navigator> {
 
   explicit Ink(Navigator&);
   ScriptPromise requestPresenter(ScriptState* state,
-                                 const V8PresenterType& type,
-                                 Element* presentation_area,
+                                 InkPresenterParam* presenter_param,
                                  ExceptionState& exception_state);
 
   void Trace(blink::Visitor*) const override;

@@ -4,13 +4,9 @@
 
 // https://github.com/WICG/ink-enhancement
 
-enum PresenterType {
-    "delegated-ink-trail"
-};
-
 [
     RuntimeEnabled=DelegatedInkTrails,
     Exposed=Window
 ] interface Ink {
-    [CallWith=ScriptState, RaisesException] Promise<DelegatedInkTrailPresenter> requestPresenter(PresenterType type, optional Element? presentationArea = null);
+    [CallWith=ScriptState, RaisesException] Promise<DelegatedInkTrailPresenter> requestPresenter(optional InkPresenterParam param = {});
 };

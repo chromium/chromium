@@ -904,9 +904,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
                        FlagGetsSetFromRenderFrameMetadata) {
   ASSERT_TRUE(ExecJs(shell()->web_contents(), R"(
       let presenter = null;
-      navigator.ink.requestPresenter('delegated-ink-trail').then(e => {
-        presenter = e;
-      });
+      navigator.ink.requestPresenter().then(e => { presenter = e; });
       let style = { color: 'green', diameter: 21 };
 
       window.addEventListener('pointermove' , evt => {

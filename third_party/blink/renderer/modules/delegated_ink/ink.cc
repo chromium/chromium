@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/delegated_ink/ink.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_presenter_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ink_presenter_param.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/delegated_ink/delegated_ink_trail_presenter.h"
@@ -28,11 +28,9 @@ Ink* Ink::ink(Navigator& navigator) {
 Ink::Ink(Navigator& navigator) : Supplement<Navigator>(navigator) {}
 
 ScriptPromise Ink::requestPresenter(ScriptState* state,
-                                    const V8PresenterType& type,
-                                    Element* presentation_area,
+                                    InkPresenterParam* presenter_param,
                                     ExceptionState& exception_state) {
   DCHECK(RuntimeEnabledFeatures::DelegatedInkTrailsEnabled());
-  DCHECK_EQ(type.AsEnum(), V8PresenterType::Enum::kDelegatedInkTrail);
 
   if (!state->ContextIsValid()) {
     exception_state.ThrowException(
@@ -44,7 +42,8 @@ ScriptPromise Ink::requestPresenter(ScriptState* state,
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
   ScriptPromise promise = resolver->Promise();
   resolver->Resolve(MakeGarbageCollected<DelegatedInkTrailPresenter>(
-      presentation_area, GetSupplementable()->DomWindow()->GetFrame()));
+      presenter_param->presentationArea(),
+      GetSupplementable()->DomWindow()->GetFrame()));
   return promise;
 }
 
