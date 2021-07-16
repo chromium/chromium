@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_android.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/browser_dm_token_storage_android.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
@@ -163,6 +164,12 @@ ChromeBrowserCloudManagementControllerAndroid::GetBestEffortTaskRunner() {
   // and so must its best-effort task runner.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
+}
+
+std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerAndroid::GetReportingDelegateFactory() {
+  return std::make_unique<
+      enterprise_reporting::ReportingDelegateFactoryAndroid>();
 }
 
 void ChromeBrowserCloudManagementControllerAndroid::SetGaiaURLLoaderFactory(

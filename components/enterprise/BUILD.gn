@@ -6,8 +6,27 @@ import("//build/config/chromeos/ui_mode.gni")
 
 static_library("enterprise") {
   sources = [
+    "browser/reporting/browser_report_generator.cc",
+    "browser/reporting/browser_report_generator.h",
     "browser/reporting/common_pref_names.cc",
     "browser/reporting/common_pref_names.h",
+    "browser/reporting/policy_info.cc",
+    "browser/reporting/policy_info.h",
+    "browser/reporting/profile_report_generator.cc",
+    "browser/reporting/profile_report_generator.h",
+    "browser/reporting/real_time_report_generator.cc",
+    "browser/reporting/real_time_report_generator.h",
+    "browser/reporting/real_time_uploader.cc",
+    "browser/reporting/real_time_uploader.h",
+    "browser/reporting/report_generator.cc",
+    "browser/reporting/report_generator.h",
+    "browser/reporting/report_request_queue_generator.cc",
+    "browser/reporting/report_request_queue_generator.h",
+    "browser/reporting/report_scheduler.cc",
+    "browser/reporting/report_scheduler.h",
+    "browser/reporting/report_uploader.cc",
+    "browser/reporting/report_uploader.h",
+    "browser/reporting/reporting_delegate_factory.h",
   ]
 
   if (!is_chromeos_ash) {
@@ -23,47 +42,25 @@ static_library("enterprise") {
 
   deps = [
     "//base",
+    "//base/util/timer",
     "//build:chromeos_buildflags",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/policy/proto",
     "//components/prefs",
+    "//components/reporting/client:report_queue_provider",
+    "//components/strings",
+    "//components/version_info",
+    "//net",
     "//services/network/public/cpp",
   ]
 
   if (!is_android) {
     sources += [
-      "browser/reporting/browser_report_generator.cc",
-      "browser/reporting/browser_report_generator.h",
       "browser/reporting/cloud_reporting_policy_handler.cc",
       "browser/reporting/cloud_reporting_policy_handler.h",
-      "browser/reporting/policy_info.cc",
-      "browser/reporting/policy_info.h",
-      "browser/reporting/profile_report_generator.cc",
-      "browser/reporting/profile_report_generator.h",
-      "browser/reporting/real_time_report_generator.cc",
-      "browser/reporting/real_time_report_generator.h",
-      "browser/reporting/real_time_uploader.cc",
-      "browser/reporting/real_time_uploader.h",
-      "browser/reporting/report_generator.cc",
-      "browser/reporting/report_generator.h",
       "browser/reporting/report_request_definition.h",
-      "browser/reporting/report_request_queue_generator.cc",
-      "browser/reporting/report_request_queue_generator.h",
-      "browser/reporting/report_scheduler.cc",
-      "browser/reporting/report_scheduler.h",
       "browser/reporting/report_type.h",
-      "browser/reporting/report_uploader.cc",
-      "browser/reporting/report_uploader.h",
-      "browser/reporting/reporting_delegate_factory.h",
-    ]
-
-    deps += [
-      "//base/util/timer",
-      "//components/policy/proto",
-      "//components/reporting/client:report_queue_provider",
-      "//components/strings",
-      "//components/version_info",
-      "//net",
     ]
   }
 

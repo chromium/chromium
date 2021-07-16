@@ -16,6 +16,7 @@
 #include "ios/chrome/browser/policy/browser_dm_token_storage_ios.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -106,24 +107,16 @@ ChromeBrowserCloudManagementControllerIOS::GetSharedURLLoaderFactory() {
   return GetApplicationContext()->GetSharedURLLoaderFactory();
 }
 
-std::unique_ptr<enterprise_reporting::ReportScheduler>
-ChromeBrowserCloudManagementControllerIOS::CreateReportScheduler(
-    CloudPolicyClient* client) {
-  auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
-      &reporting_delegate_factory_);
-  auto real_time_generator =
-      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
-          &reporting_delegate_factory_);
-  return std::make_unique<enterprise_reporting::ReportScheduler>(
-      client, std::move(generator), std::move(real_time_generator),
-      &reporting_delegate_factory_);
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 ChromeBrowserCloudManagementControllerIOS::GetBestEffortTaskRunner() {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
   return base::CreateSingleThreadTaskRunner(
       {web::WebThread::UI, base::TaskPriority::BEST_EFFORT});
+}
+
+std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerIOS::GetReportingDelegateFactory() {
+  return std::make_unique<enterprise_reporting::ReportingDelegateFactoryIOS>();
 }
 
 void ChromeBrowserCloudManagementControllerIOS::SetGaiaURLLoaderFactory(

@@ -13,6 +13,7 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/enterprise/remote_commands/cbcm_remote_commands_factory.h"
+#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/policy/chrome_browser_cloud_management_register_watcher.h"
@@ -193,25 +194,18 @@ ChromeBrowserCloudManagementControllerDesktop::GetSharedURLLoaderFactory() {
       ->GetSharedURLLoaderFactory();
 }
 
-std::unique_ptr<enterprise_reporting::ReportScheduler>
-ChromeBrowserCloudManagementControllerDesktop::CreateReportScheduler(
-    CloudPolicyClient* client) {
-  auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
-      &reporting_delegate_factory_);
-  auto real_time_generator =
-      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
-          &reporting_delegate_factory_);
-  return std::make_unique<enterprise_reporting::ReportScheduler>(
-      client, std::move(generator), std::move(real_time_generator),
-      &reporting_delegate_factory_);
-}
-
 scoped_refptr<base::SingleThreadTaskRunner>
 ChromeBrowserCloudManagementControllerDesktop::GetBestEffortTaskRunner() {
   // ChromeBrowserCloudManagementControllerDesktop is bound to BrowserThread::UI
   // and so must its best-effort task runner.
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   return content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT});
+}
+
+std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+ChromeBrowserCloudManagementControllerDesktop::GetReportingDelegateFactory() {
+  return std::make_unique<
+      enterprise_reporting::ReportingDelegateFactoryDesktop>();
 }
 
 void ChromeBrowserCloudManagementControllerDesktop::SetGaiaURLLoaderFactory(

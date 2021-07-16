@@ -6,12 +6,10 @@
 
 namespace enterprise_reporting {
 
-#if !defined(OS_ANDROID)
 // Boolean that indicates whether Chrome enterprise cloud reporting is enabled
 // or not.
 const char kCloudReportingEnabled[] =
     "enterprise_reporting.chrome_cloud_reporting";
-#endif
 
 // The timestamp of the last enterprise report upload.
 const char kLastUploadTimestamp[] =

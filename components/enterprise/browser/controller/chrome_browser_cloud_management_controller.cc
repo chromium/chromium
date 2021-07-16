@@ -395,13 +395,11 @@ void ChromeBrowserCloudManagementController::NotifyBrowserUnenrolled(
     observer.OnBrowserUnenrolled(succeeded);
 }
 
-#if !defined(OS_ANDROID)
 void ChromeBrowserCloudManagementController::NotifyCloudReportingLaunched() {
   for (auto& observer : observers_) {
     observer.OnCloudReportingLaunched();
   }
 }
-#endif  // !defined(OS_ANDROID)
 
 bool ChromeBrowserCloudManagementController::GetEnrollmentTokenAndClientId(
     std::string* enrollment_token,
@@ -469,19 +467,25 @@ void ChromeBrowserCloudManagementController::
   NotifyPolicyRegisterFinished(true);
 }
 
-#if !defined(OS_ANDROID)
 void ChromeBrowserCloudManagementController::CreateReportScheduler() {
   cloud_policy_client_ = std::make_unique<policy::CloudPolicyClient>(
       delegate_->GetDeviceManagementService(),
       delegate_->GetSharedURLLoaderFactory(),
       CloudPolicyClient::DeviceDMTokenCallback());
   cloud_policy_client_->AddObserver(this);
-  report_scheduler_ =
-      delegate_->CreateReportScheduler(cloud_policy_client_.get());
+  auto reporting_delegate_factory = delegate_->GetReportingDelegateFactory();
+
+  auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
+      reporting_delegate_factory.get());
+  auto real_time_generator =
+      std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
+          reporting_delegate_factory.get());
+  report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
+      cloud_policy_client_.get(), std::move(generator),
+      std::move(real_time_generator), reporting_delegate_factory.get());
 
   NotifyCloudReportingLaunched();
 }
-#endif  // !defined(OS_ANDROID)
 
 void ChromeBrowserCloudManagementController::DeferrableCreatePolicyManagerImpl(
     ConfigurationPolicyProvider* platform_provider,

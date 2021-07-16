@@ -16,12 +16,9 @@
 #include "base/observer_list.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/policy_service.h"
-
-#if !defined(OS_ANDROID)
-#include "components/enterprise/browser/reporting/reporting_delegate_factory.h"
-#endif  // !defined(OS_ANDROID)
 
 class PrefService;
 
@@ -30,11 +27,9 @@ class NetworkConnectionTracker;
 class SharedURLLoaderFactory;
 }  // namespace network
 
-#if !defined(OS_ANDROID)
 namespace enterprise_reporting {
 class ReportScheduler;
-}
-#endif
+}  // namespace enterprise_reporting
 
 namespace policy {
 class ChromeBrowserCloudManagementRegistrar;
@@ -128,19 +123,15 @@ class ChromeBrowserCloudManagementController
     virtual scoped_refptr<network::SharedURLLoaderFactory>
     GetSharedURLLoaderFactory() = 0;
 
-#if !defined(OS_ANDROID)
-    // Creates and returns a ReportScheduler for enterprise reporting. Delegates
-    // must pass the platform-specific factory that should be used to
-    // instantiate the delegates for the reporting objects.
-    virtual std::unique_ptr<enterprise_reporting::ReportScheduler>
-    CreateReportScheduler(CloudPolicyClient* client) = 0;
-#endif
-
     // Returns a BestEffort Task Runner, bound to the UI thread like the rest of
     // this class, that is meant to be used to schedule asynchronous tasks
     // during startup.
     virtual scoped_refptr<base::SingleThreadTaskRunner>
     GetBestEffortTaskRunner() = 0;
+
+    // Gets the platform-specific reporting delegate factory.
+    virtual std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+    GetReportingDelegateFactory() = 0;
 
     // Sets the SharedURLLoaderFactory that this object will use to make
     // requests to GAIA.
@@ -174,10 +165,8 @@ class ChromeBrowserCloudManagementController
     // Called when the browser has been unenrolled.
     virtual void OnBrowserUnenrolled(bool succeeded) {}
 
-#if !defined(OS_ANDROID)
     // Called when the cloud reporting is launched.
     virtual void OnCloudReportingLaunched() {}
-#endif
   };
 
   // Directory name under the user-data-dir where the policy data is stored.
@@ -244,9 +233,7 @@ class ChromeBrowserCloudManagementController
  protected:
   void NotifyPolicyRegisterFinished(bool succeeded);
   void NotifyBrowserUnenrolled(bool succeeded);
-#if !defined(OS_ANDROID)
   void NotifyCloudReportingLaunched();
-#endif
 
  private:
   bool GetEnrollmentTokenAndClientId(std::string* enrollment_token,
@@ -258,9 +245,7 @@ class ChromeBrowserCloudManagementController
   void InvalidatePolicies();
   void InvalidateDMTokenCallback(bool success);
 
-#if !defined(OS_ANDROID)
   void CreateReportScheduler();
-#endif
 
   // Implementation of |DeferrableCreatePolicyManager| that can be invoked right
   // away or bound to a callback to be executed later.
@@ -280,9 +265,7 @@ class ChromeBrowserCloudManagementController
   // Time at which the enrollment process was started.  Used to log UMA metric.
   base::Time enrollment_start_time_;
 
-#if !defined(OS_ANDROID)
   std::unique_ptr<enterprise_reporting::ReportScheduler> report_scheduler_;
-#endif  // !defined(OS_ANDROID)
 
   std::unique_ptr<policy::CloudPolicyClient> cloud_policy_client_;
 

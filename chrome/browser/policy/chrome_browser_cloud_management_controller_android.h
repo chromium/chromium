@@ -9,8 +9,6 @@
 
 #include <memory>
 
-#include "chrome/browser/enterprise/reporting/reporting_delegate_factory_desktop.h"
-
 namespace policy {
 
 // Android implementation of the platform-specific operations of CBCMController.
@@ -48,6 +46,8 @@ class ChromeBrowserCloudManagementControllerAndroid
       override;
   scoped_refptr<base::SingleThreadTaskRunner> GetBestEffortTaskRunner()
       override;
+  std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+  GetReportingDelegateFactory() override;
   void SetGaiaURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
                                    url_loader_factory) override;
   bool ReadyToCreatePolicyManager() override;

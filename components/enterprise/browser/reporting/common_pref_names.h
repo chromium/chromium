@@ -9,9 +9,7 @@
 
 namespace enterprise_reporting {
 
-#if !defined(OS_ANDROID)
 extern const char kCloudReportingEnabled[];
-#endif
 
 extern const char kLastUploadTimestamp[];
 

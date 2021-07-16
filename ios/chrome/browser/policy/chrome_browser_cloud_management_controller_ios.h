@@ -7,8 +7,6 @@
 
 #include "components/enterprise/browser/controller/chrome_browser_cloud_management_controller.h"
 
-#include "ios/chrome/browser/policy/reporting/reporting_delegate_factory_ios.h"
-
 namespace policy {
 
 // iOS implementation of the platform-specific operations of CBCMController.
@@ -44,17 +42,14 @@ class ChromeBrowserCloudManagementControllerIOS
   DeviceManagementService* GetDeviceManagementService() override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
-  std::unique_ptr<enterprise_reporting::ReportScheduler> CreateReportScheduler(
-      CloudPolicyClient* client) override;
   scoped_refptr<base::SingleThreadTaskRunner> GetBestEffortTaskRunner()
       override;
+  std::unique_ptr<enterprise_reporting::ReportingDelegateFactory>
+  GetReportingDelegateFactory() override;
   void SetGaiaURLLoaderFactory(scoped_refptr<network::SharedURLLoaderFactory>
                                    url_loader_factory) override;
   bool ReadyToCreatePolicyManager() override;
   bool ReadyToInit() override;
-
- private:
-  enterprise_reporting::ReportingDelegateFactoryIOS reporting_delegate_factory_;
 };
 
 }  // namespace policy
