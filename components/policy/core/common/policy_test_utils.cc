@@ -14,6 +14,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
+#include "components/policy/policy_constants.h"
 
 #if defined(OS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
@@ -49,6 +50,9 @@ bool PolicyServiceIsEmpty(const PolicyService* service) {
     for (auto it = map.begin(); it != map.end(); ++it)
       dict.SetKey(it->first, it->second.value()->Clone());
     LOG(WARNING) << "There are pre-existing policies in this machine: " << dict;
+#if defined(OS_WIN)
+    LOG(WARNING) << "From: " << kRegistryChromePolicyKey;
+#endif
   }
   return map.empty();
 }
