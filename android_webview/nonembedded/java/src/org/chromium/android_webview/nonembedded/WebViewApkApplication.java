@@ -153,18 +153,16 @@ public class WebViewApkApplication extends Application {
      * Performs minimal native library initialization required when running as a stand-alone APK.
      * @return True if the library was loaded, false if running as webview stub.
      */
-    static synchronized boolean ensureNativeLoaded() {
+    static synchronized boolean ensureNativeInitialized() {
         try {
-            // TODO(https://crbug.com/1220862): Investigate calling LibraryLoader#initialize and
-            // LibraryLoader#isInitialized instead and document the findings.
-            if (LibraryLoader.getInstance().isLoaded()) {
+            if (LibraryLoader.getInstance().isInitialized()) {
                 return true;
             }
             // Should not call LibraryLoader.initialize() since this will reset UmaRecorder
             // delegate.
             LibraryLoader.getInstance().setLibraryProcessType(
                     LibraryProcessType.PROCESS_WEBVIEW_NONEMBEDDED);
-            LibraryLoader.getInstance().loadNow();
+            LibraryLoader.getInstance().ensureInitialized();
             LibraryLoader.getInstance().switchCommandLineForWebView();
             WebViewApkApplicationJni.get().initializeGlobalsAndResources();
             return true;

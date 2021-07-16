@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "android_webview/lib/webview_jni_onload.h"
+#include "base/android/base_jni_onload.h"
 #include "base/android/jni_android.h"
 #include "base/android/library_loader/library_loader_hooks.h"
 
@@ -15,6 +16,21 @@ namespace {
 
 bool NativeInit(base::android::LibraryProcessType library_process_type) {
   switch (library_process_type) {
+    case base::android::PROCESS_WEBVIEW:
+    case base::android::PROCESS_WEBVIEW_CHILD:
+
+    // TODO(crbug.com/1230005): Remove these once we stop setting these two
+    // process types from tests.
+    case base::android::PROCESS_CHILD:
+    case base::android::PROCESS_BROWSER:
+
+      return android_webview::OnJNIOnLoadInit();
+      break;
+
+    case base::android::PROCESS_WEBVIEW_NONEMBEDDED:
+      return base::android::OnJNIOnLoadInit();
+      break;
+
 #if defined(WEBVIEW_INCLUDES_WEBLAYER)
     case base::android::PROCESS_WEBLAYER:
     case base::android::PROCESS_WEBLAYER_CHILD:
@@ -23,7 +39,8 @@ bool NativeInit(base::android::LibraryProcessType library_process_type) {
 #endif
 
     default:
-      return android_webview::OnJNIOnLoadInit();
+      NOTREACHED();
+      return false;
   }
 }
 

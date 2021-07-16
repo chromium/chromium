@@ -131,7 +131,7 @@ public class AwComponentUpdateService extends JobService {
 
         // TODO(http://crbug.com/1179297) look at doing this in a task on a background thread
         // instead of the main thread.
-        if (WebViewApkApplication.ensureNativeLoaded()) {
+        if (WebViewApkApplication.ensureNativeInitialized()) {
             setUnexpectedExit(true);
             mIsUpdating = true;
             final long startTime = SystemClock.uptimeMillis();
