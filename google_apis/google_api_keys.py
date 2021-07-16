@@ -72,9 +72,9 @@ def GetAPIKey():
   return _GetToken('GOOGLE_API_KEY')
 
 
-def GetAPIKeyAndroidNonStable():
-  """Returns the API key for non-stable Android."""
-  return _GetToken('GOOGLE_API_KEY_ANDROID_NON_STABLE')
+def GetAPIKeyPhysicalWebTest():
+  """Returns the API key to test Physical Web service."""
+  return _GetToken('GOOGLE_API_KEY_PHYSICAL_WEB_TEST')
 
 
 def GetClientID(client_name):

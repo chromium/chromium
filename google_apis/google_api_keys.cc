@@ -74,8 +74,11 @@
 #define GOOGLE_CLIENT_SECRET_REMOTING_HOST DUMMY_API_TOKEN
 #endif
 
-#if !defined(GOOGLE_API_KEY_ANDROID_NON_STABLE)
-#define GOOGLE_API_KEY_ANDROID_NON_STABLE DUMMY_API_TOKEN
+// This is really the API key for non-stable channels on Android. It's
+// named after the first feature that used it.
+// TODO(jkrcal,rogerta): Rename this to GOOGLE_API_KEY_ANDROID_NON_STABLE.
+#if !defined(GOOGLE_API_KEY_PHYSICAL_WEB_TEST)
+#define GOOGLE_API_KEY_PHYSICAL_WEB_TEST DUMMY_API_TOKEN
 #endif
 
 #if !defined(GOOGLE_API_KEY_REMOTING)
@@ -129,8 +132,8 @@ class APIKeyCache {
 // A special non-stable key is at the moment defined only for Android Chrome.
 #if defined(OS_ANDROID)
     api_key_non_stable_ = CalculateKeyValue(
-        GOOGLE_API_KEY_ANDROID_NON_STABLE,
-        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_ANDROID_NON_STABLE), nullptr,
+        GOOGLE_API_KEY_PHYSICAL_WEB_TEST,
+        STRINGIZE_NO_EXPANSION(GOOGLE_API_KEY_PHYSICAL_WEB_TEST), nullptr,
         std::string(), environment.get(), command_line, gaia_config);
 #else
     api_key_non_stable_ = api_key_;
