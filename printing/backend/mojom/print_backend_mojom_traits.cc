@@ -215,12 +215,6 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-  // There should be at least one item in `papers`.
-  if (out->papers.empty()) {
-    DLOG(ERROR) << "The available papers must not be empty.";
-    return false;
-  }
-
   // There should not be duplicates in certain arrays.
   DuplicateChecker<printing::mojom::DuplexMode> duplex_modes_dup_checker;
   if (duplex_modes_dup_checker.HasDuplicates(out->duplex_modes)) {

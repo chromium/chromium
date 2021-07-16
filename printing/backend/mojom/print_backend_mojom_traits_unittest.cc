@@ -275,11 +275,15 @@ TEST(PrintBackendMojomTraitsTest,
       GenerateSamplePrinterSemanticCapsAndDefaults();
   PrinterSemanticCapsAndDefaults output;
 
-  // Override sample with empty `papers`, which is not allowed.
+  // Override sample with empty `papers`.  This is known to be possible, seen
+  // with Epson PX660 series driver.
+  const PrinterSemanticCapsAndDefaults::Papers kEmptyPapers;
   input.papers.clear();
 
-  EXPECT_FALSE(mojo::test::SerializeAndDeserialize<
-               mojom::PrinterSemanticCapsAndDefaults>(input, output));
+  EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+              mojom::PrinterSemanticCapsAndDefaults>(input, output));
+
+  EXPECT_EQ(kEmptyPapers, output.papers);
 }
 
 TEST(
