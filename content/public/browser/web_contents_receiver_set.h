@@ -18,7 +18,6 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 
-class ChromePasswordManagerClient;
 class EmbeddedSearchClientFactoryImpl;
 class LiteVideoObserver;
 class OfflinePageTabHelper;
@@ -122,7 +121,6 @@ class WebContentsFrameReceiverSetPassKey {
  private:
   WebContentsFrameReceiverSetPassKey() = default;
 
-  friend class ::ChromePasswordManagerClient;
   friend class ::EmbeddedSearchClientFactoryImpl;
   friend class ::LiteVideoObserver;
   friend class ::PluginObserver;

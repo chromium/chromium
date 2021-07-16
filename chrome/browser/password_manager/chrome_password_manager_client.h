@@ -36,9 +36,9 @@
 #include "components/prefs/pref_member.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
@@ -86,6 +86,10 @@ class ChromePasswordManagerClient
   static void CreateForWebContentsWithAutofillClient(
       content::WebContents* contents,
       autofill::AutofillClient* autofill_client);
+  static void BindPasswordGenerationDriver(
+      mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
+          receiver,
+      content::RenderFrameHost* rfh);
 
   ~ChromePasswordManagerClient() override;
 
@@ -379,8 +383,7 @@ class ChromePasswordManagerClient
   // once main frame host was created.
   password_manager::ContentCredentialManager content_credential_manager_;
 
-  content::WebContentsFrameReceiverSet<
-      autofill::mojom::PasswordGenerationDriver>
+  content::RenderFrameHostReceiverSet<autofill::mojom::PasswordGenerationDriver>
       password_generation_driver_receivers_;
 
   // Observer for password generation popup.

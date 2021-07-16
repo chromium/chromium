@@ -19,6 +19,7 @@
 #include "chrome/browser/data_reduction_proxy/data_reduction_proxy_chrome_settings_factory.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/net_benchmarking.h"
+#include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
@@ -316,6 +317,13 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
     autofill::ContentAutofillDriverFactory::BindAutofillDriver(
         mojo::PendingAssociatedReceiver<autofill::mojom::AutofillDriver>(
             std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+  if (interface_name == autofill::mojom::PasswordGenerationDriver::Name_) {
+    ChromePasswordManagerClient::BindPasswordGenerationDriver(
+        mojo::PendingAssociatedReceiver<
+            autofill::mojom::PasswordGenerationDriver>(std::move(*handle)),
         render_frame_host);
     return true;
   }

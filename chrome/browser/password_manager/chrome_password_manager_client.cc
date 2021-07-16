@@ -259,6 +259,21 @@ void ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
                             contents, autofill_client)));
 }
 
+// static
+void ChromePasswordManagerClient::BindPasswordGenerationDriver(
+    mojo::PendingAssociatedReceiver<autofill::mojom::PasswordGenerationDriver>
+        receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* tab_helper = ChromePasswordManagerClient::FromWebContents(web_contents);
+  if (!tab_helper)
+    return;
+  tab_helper->password_generation_driver_receivers_.Bind(rfh,
+                                                         std::move(receiver));
+}
+
 ChromePasswordManagerClient::~ChromePasswordManagerClient() = default;
 
 bool ChromePasswordManagerClient::IsSavingAndFillingEnabled(
@@ -1178,10 +1193,7 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
       password_reuse_detection_manager_(this),
       driver_factory_(nullptr),
       content_credential_manager_(this),
-      password_generation_driver_receivers_(
-          web_contents,
-          this,
-          content::WebContentsFrameReceiverSetPassKey()),
+      password_generation_driver_receivers_(web_contents, this),
       observer_(nullptr),
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
       credentials_filter_(
