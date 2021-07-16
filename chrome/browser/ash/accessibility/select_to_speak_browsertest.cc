@@ -565,7 +565,13 @@ IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_ContinuesReadingDuringResize) {
   sm_.Replay();
 }
 
-IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, WorksWithStickyKeys) {
+// Flaky on ChromeOS MSAN bots: https://crbug.com/1227368
+#if defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER)
+#define MAYBE_WorksWithStickyKeys DISABLED_WorksWithStickyKeys
+#else
+#define MAYBE_WorksWithStickyKeys WorksWithStickyKeys
+#endif
+IN_PROC_BROWSER_TEST_F(SelectToSpeakTest, MAYBE_WorksWithStickyKeys) {
   AccessibilityManager::Get()->EnableStickyKeys(true);
 
   ui_test_utils::NavigateToURL(
