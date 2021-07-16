@@ -90,6 +90,7 @@ js_type_check("closure_compile") {
     #":prefs_test_cases",
     #":prefs_tests",
     ":privacy_page_test",
+    ":privacy_review_page_test",
     ":privacy_sandbox_test",
 
     #":protocol_handlers_tests",
@@ -274,6 +275,7 @@ js_library("passwords_and_autofill_fake_data") {
     "$externs_path/passwords_private.js",
   ]
 }
+
 js_library("privacy_page_test") {
   deps = [
     ":test_clear_browsing_data_browser_proxy",
@@ -288,6 +290,16 @@ js_library("privacy_page_test") {
     "//chrome/browser/resources/settings:settings",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js:load_time_data.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("privacy_review_page_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_util.m",
+    "//chrome/browser/resources/settings:lazy_load",
+    "//chrome/browser/resources/settings:settings",
   ]
   externs_list = [ "$externs_path/mocha-2.5.js" ]
 }

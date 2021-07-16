@@ -541,6 +541,24 @@ TEST_F(
 GEN('#endif');
 
 // eslint-disable-next-line no-var
+var CrSettingsPrivacyReviewPageV3Test = class extends CrSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://settings/test_loader.html?module=settings/privacy_review_page_test.js';
+  }
+
+  /** @override */
+  get featureListInternal() {
+    return {enabled: ['features::kPrivacyReview']};
+  }
+};
+
+TEST_F(
+    'CrSettingsPrivacyReviewPageV3Test', 'PrivacyReviewPageTests', function() {
+      runMochaSuite('PrivacyReviewPage');
+    });
+
+// eslint-disable-next-line no-var
 var CrSettingsRouteV3Test = class extends CrSettingsV3BrowserTest {
   /** @override */
   get browsePreload() {

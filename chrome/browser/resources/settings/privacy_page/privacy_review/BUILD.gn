@@ -14,7 +14,10 @@ js_type_check("closure_compile") {
 
 js_library("privacy_review_page") {
   deps = [
+    "../..:route",
+    "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 

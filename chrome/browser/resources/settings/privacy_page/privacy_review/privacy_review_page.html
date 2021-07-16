@@ -1,1 +1,41 @@
-<div>$i18n{privacyReviewLabel}</div>
+<style include="cr-shared-style">
+  #header {
+    padding: 12px;
+  }
+
+  .privacy-review-card {
+    background-color: var(--cr-card-background-color);
+    border-radius: var(--cr-card-border-radius);
+    box-shadow: var(--cr-card-shadow);
+  }
+
+  .fragment {
+    padding: 12px;
+  }
+</style>
+<div class="privacy-review-card">
+  <div id="header"
+      hidden="[[!showHeader_(privacyReviewStep_)]]">
+    <div id="headerLabel">
+      [[computeHeaderString_(privacyReviewStep_)]]
+    </div>
+  </div>
+  <div id="welcomeFragment" class="fragment"
+      hidden="[[!showWelcomeCard_(privacyReviewStep_)]]">
+    <div>$i18n{privacyReviewWelcomeCardHeader}</div>
+  </div>
+  <div id="completionFragment" class="fragment"
+       hidden="[[!showCompletionCard_(privacyReviewStep_)]]">
+    <div>$i18n{privacyReviewCompletionCardHeader}</div>
+  </div>
+  <div id="cookiesFragment" class="fragment"
+       hidden="[[!showCookiesCard_(privacyReviewStep_)]]">
+    <div>$i18n{privacyReviewCookiesCardHeader}</div>
+  </div>
+  <div id="footer">
+    <cr-button class="cr-button" id="nextButton" role="button"
+        tabindex="0" on-click="onNextButtonClick_">
+      [[computeNextButtonLabel_(privacyReviewStep_)]]
+    </cr-button>
+  </div>
+</div>

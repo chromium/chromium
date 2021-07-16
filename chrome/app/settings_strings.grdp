@@ -1320,6 +1320,24 @@
   <message name="IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL" desc="Sublabel of the row in the Chrome privacy and security of Chrome settings that leads to the privacy review.">
     Review the most important privacy and security controls in one place
   </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON" desc="Text of a button in the privacy review that advances to the next step in the review.">
+    Next
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the privacy review, explaining to users that they can review their most important privacy and security settings in the privacy review.">
+    Review your current settings for the most critical privacy and security controls
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_START_BUTTON" desc="Text of a button in the welcome card in the privacy review that starts the privacy review.">
+    Let's go
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER" desc="A header shown at the top of the completion card in the privacy review that informs users that they completed the privacy review.">
+    Review completed!
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON" desc="Text of a button in the completion car in the privacy review that leads the user back to Chrome settings.">
+    Back to settings
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_HEADER" desc="Header of the cookies card in the privacy review.">
+    Review cookie settings
+  </message>
 
   <!-- Safety check -->
   <message name="IDS_SETTINGS_SAFETY_CHECK_SECTION_TITLE" desc="'Safety check' is a noun phrase (sentence case). 'Safety check' refers to an area of the Settings page where users can quickly check whether their safety-related settings are fully protecting them.">

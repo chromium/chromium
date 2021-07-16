@@ -20,6 +20,12 @@
       settings-collapse-radio-button:not(:first-of-type) {
         --settings-collapse-separator-line: var(--cr-separator-line);
       }
+
+      settings-privacy-review-page {
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
+      }
     </style>
     <template is="dom-if" if="[[showClearBrowsingDataDialog_]]" restamp>
       <settings-clear-browsing-data-dialog prefs="{{prefs}}"

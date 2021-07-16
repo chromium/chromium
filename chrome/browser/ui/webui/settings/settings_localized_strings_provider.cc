@@ -1577,12 +1577,20 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
 }
 
 void AddPrivacyReviewStrings(content::WebUIDataSource* html_source) {
-  // Strings used outside the privacy review. The i18n preprocessor might
-  // replace those before the corresponding flag value is checked, which is why
-  // they are included independently of the flag value.
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"privacyReviewLabel", IDS_SETTINGS_PRIVACY_REVIEW_LABEL},
       {"privacyReviewSublabel", IDS_SETTINGS_PRIVACY_REVIEW_SUBLABEL},
+      {"privacyReviewNextButton", IDS_SETTINGS_PRIVACY_REVIEW_NEXT_BUTTON},
+      {"privacyReviewWelcomeCardHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_HEADER},
+      {"privacyReviewWelcomeCardStartButton",
+       IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_START_BUTTON},
+      {"privacyReviewCompletionCardHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_HEADER},
+      {"privacyReviewCompletionCardLeaveButton",
+       IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_LEAVE_BUTTON},
+      {"privacyReviewCookiesCardHeader",
+       IDS_SETTINGS_PRIVACY_REVIEW_COOKIES_CARD_HEADER},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 }
