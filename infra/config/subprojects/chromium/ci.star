@@ -1166,6 +1166,11 @@ ci.android_fyi_builder(
         category = "emulator|12|x64",
         short_name = "rel",
     ),
+    # Bump to 6h for now since compile on x64 seems slower than x86. It could
+    # take 3h on Android-12 (For example ci.chromium.org/b/8841892751541698720)
+    # vs 1h on Android-11 (For example ci.chromium.org/b/8841899947736889024)
+    # TODO(crbug.com/1229245): Look into ways to improve the compile time.
+    execution_timeout = 6 * time.hour,
     os = os.LINUX_BIONIC_REMOVE,
 )
 
