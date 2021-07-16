@@ -5931,6 +5931,11 @@ crbug.com/1084276 [ Mac ] http/tests/security/offscreencanvas-placeholder-read-b
 crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.html [ Failure Pass ]
 crbug.com/v8/10556 external/wpt/wasm/jsapi/instance/constructor-caching.any.worker.html [ Failure Pass ]
 
+# Temporarily disabled to land the new wasm exception handling JS API
+crbug.com/v8/11992 external/wpt/wasm/jsapi/exception/* [ Skip ]
+crbug.com/v8/11992 external/wpt/wasm/jsapi/tag/* [ Skip ]
+crbug.com/v8/11992 http/tests/origin_trials/webexposed/wasm-exceptions-origin-trial-enabled.html [ Skip ]
+
 # Disabled for landing DevTools change
 crbug.com/1011811 http/tests/devtools/network/network-xhr-data-received-async-response-type-blob.js [ Failure Pass ]
 crbug.com/1011811 http/tests/devtools/network/download.js [ Failure Pass ]
