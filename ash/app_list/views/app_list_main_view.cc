@@ -212,20 +212,6 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
   }
 }
 
-void AppListMainView::SearchBoxFocusChanged(SearchBoxViewBase* sender) {
-  // A fake focus (highlight) is always set on the first search result. When the
-  // user moves focus from the search box textfield (e.g. to close button or
-  // last search result), the fake focus should be removed.
-  if (sender->search_box()->HasFocus())
-    return;
-
-  SearchResultBaseView* first_result_view =
-      contents_view_->search_result_page_view()->first_result_view();
-  if (!first_result_view || !first_result_view->selected())
-    return;
-  first_result_view->SetSelected(false, absl::nullopt);
-}
-
 void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
   app_list_view_->RedirectKeyEventToSearchBox(event);
 

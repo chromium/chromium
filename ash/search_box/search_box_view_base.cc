@@ -415,8 +415,6 @@ void SearchBoxViewBase::OnSearchBoxFocusedChanged() {
   UpdateSearchBoxBorder();
   Layout();
   SchedulePaint();
-
-  delegate_->SearchBoxFocusChanged(this);
 }
 
 bool SearchBoxViewBase::IsSearchBoxTrimmedQueryEmpty() const {

@@ -558,6 +558,14 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
   generator->MoveMouseTo(result_view->GetBoundsInScreen().CenterPoint());
   EXPECT_TRUE(action_view->GetVisible());
 
+  // Record the current result selection before clicking the remove action
+  // button.
+  ResultSelectionController* result_selection_controller =
+      search_result_page()->result_selection_controller();
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  ResultLocationDetails* result_location =
+      result_selection_controller->selected_location_details();
+
   // Ensure layout after the action view visibility has been updated.
   GetAppListView()->GetWidget()->LayoutRootViewIfNecessary();
 
@@ -582,6 +590,11 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
                   ->GetAndClearInvokedResultActions()
                   .empty());
 
+  // The result selection should be at the same position.
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_EQ(result_location,
+            result_selection_controller->selected_location_details());
+
   // Click remove suggestion action button again.
   ClickMouseAt(action_view->GetBoundsInScreen().CenterPoint());
 
@@ -593,6 +606,11 @@ TEST_P(AppListPresenterTest, RemoveSuggestionShowsConfirmDialog) {
   // closed, and result removal action should be invoked.
   GetAppListTestHelper()->CheckState(AppListViewState::kHalf);
   EXPECT_FALSE(search_result_page()->anchored_dialog_for_test());
+
+  // The result selection should be at the same position.
+  EXPECT_TRUE(result_selection_controller->selected_result()->selected());
+  EXPECT_EQ(result_location,
+            result_selection_controller->selected_location_details());
 
   std::vector<TestAppListClient::SearchResultActionId> expected_actions = {
       {kTestResultId, OmniBoxZeroStateAction::kRemoveSuggestion}};

@@ -31,9 +31,6 @@ class SearchBoxViewDelegate {
   // Invoked when search box active status has changed.
   virtual void ActiveChanged(SearchBoxViewBase* sender) = 0;
 
-  // Invoked when search box focus is changed.
-  virtual void SearchBoxFocusChanged(SearchBoxViewBase* sender) = 0;
-
   // Invoked for key events on the search box itself (e.g. arrow keys when one
   // of the buttons is focused).
   virtual void OnSearchBoxKeyEvent(ui::KeyEvent* event) = 0;

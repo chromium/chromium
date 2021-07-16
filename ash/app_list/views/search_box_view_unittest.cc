@@ -201,7 +201,6 @@ class SearchBoxViewTest : public views::test::WidgetTest,
   void BackButtonPressed() override {}
   void CloseButtonPressed() override {}
   void ActiveChanged(SearchBoxViewBase* sender) override {}
-  void SearchBoxFocusChanged(SearchBoxViewBase* sender) override {}
   void OnSearchBoxKeyEvent(ui::KeyEvent* event) override {}
   bool CanSelectSearchResults() override { return true; }
 
