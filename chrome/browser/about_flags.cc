@@ -7145,6 +7145,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
 #endif  // defined(OS_CHROMEOS)
 
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+    {"enable-vaapi-vp9-kSVC-encode-acceleration",
+     flag_descriptions::kVaapiVP9kSVCEncoderName,
+     flag_descriptions::kVaapiVP9kSVCEncoderDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(media::kVp9kSVCHWEncoding)},
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
     defined(OS_MAC)
     {

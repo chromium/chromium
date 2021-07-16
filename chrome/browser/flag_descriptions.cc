@@ -5241,6 +5241,13 @@ const char kVaapiAV1DecoderDescription[] =
     "Enable or disable decode acceleration of AV1 videos using the VA-API.";
 #endif  // defined(OS_CHROMEOS)
 
+#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+const char kVaapiVP9kSVCEncoderName[] =
+    "VA-API encode acceleration for k-SVC VP9";
+const char kVaapiVP9kSVCEncoderDescription[] =
+    "Enable or disable k-SVC VP9 encode acceleration using VA-API.";
+#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if defined(OS_CHROMEOS) && BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
 const char kChromeOSDirectVideoDecoderName[] = "ChromeOS Direct Video Decoder";
 const char kChromeOSDirectVideoDecoderDescription[] =

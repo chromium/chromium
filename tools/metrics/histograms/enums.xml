@@ -50046,6 +50046,7 @@ from previous Chrome versions.
   <int value="1033412163" label="OmniboxDisplayTitleForCurrentUrl:enabled"/>
   <int value="1033597574" label="disable-layer-squashing"/>
   <int value="1036068554" label="enable-android-pay-integration-v2"/>
+  <int value="1036511742" label="Vp9kSVCHWEncoding:enabled"/>
   <int value="1036565901" label="AssistPersonalInfo:enabled"/>
   <int value="1036958177"
       label="enable-experimental-accessibility-dictation-extension"/>
@@ -50615,6 +50616,7 @@ from previous Chrome versions.
   <int value="1473967338" label="OmniboxShortBookmarkSuggestions:enabled"/>
   <int value="1474861626" label="disable-multi-mirroring"/>
   <int value="1475210901" label="AvatarToolbarButton:disabled"/>
+  <int value="1475813759" label="Vp9kSVCHWEncoding:disabled"/>
   <int value="1478075250" label="QuickAnswersTextAnnotator:disabled"/>
   <int value="1478461926" label="GlobalMediaControlsPictureInPicture:enabled"/>
   <int value="1479248574" label="disable-voice-input"/>
