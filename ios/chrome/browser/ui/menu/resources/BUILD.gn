@@ -155,3 +155,11 @@ imageset("open") {
     "open.imageset/open@3x.png",
   ]
 }
+
+imageset("select") {
+  sources = [
+    "select.imageset/Contents.json",
+    "select.imageset/select@2x.png",
+    "select.imageset/select@3x.png",
+  ]
+}

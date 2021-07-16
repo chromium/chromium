@@ -31,7 +31,9 @@ enum class MenuActionType {
   Save = 19,
   OpenInCurrentTab = 20,
   SearchImage = 21,
-  kMaxValue = SearchImage
+  CloseAllTabs = 22,
+  SelectTabs = 23,
+  kMaxValue = SelectTabs
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_MENU_MENU_ACTION_TYPE_H_

@@ -29,6 +29,7 @@
   TabGridNewTabButton* _largeNewTabButton;
   UIBarButtonItem* _doneButton;
   UIBarButtonItem* _closeAllOrUndoButton;
+  UIBarButtonItem* _editButton;
   UIBarButtonItem* _addToButton;
   UIBarButtonItem* _closeTabsButton;
   UIBarButtonItem* _shareButton;
@@ -200,6 +201,16 @@
   _addToButton.enabled = enabled;
 }
 
+#pragma mark Edit Button
+
+- (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0)) {
+  _editButton.menu = menu;
+}
+
+- (void)setEditButtonEnabled:(BOOL)enabled {
+  _editButton.enabled = enabled;
+}
+
 #pragma mark - Private
 
 - (void)setupViews {
@@ -241,6 +252,11 @@
 
   // Create selection mode buttons
   if (IsTabsBulkActionsEnabled()) {
+    _editButton = [[UIBarButtonItem alloc] init];
+    _editButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
+    _editButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_EDIT_BUTTON);
+    _editButton.accessibilityIdentifier = kTabGridEditButtonIdentifier;
+
     _addToButton = [[UIBarButtonItem alloc] init];
     _addToButton.tintColor = UIColorFromRGB(kTabGridToolbarTextButtonColor);
     _addToButton.title = l10n_util::GetNSString(IDS_IOS_TAB_GRID_ADD_TO_BUTTON);
@@ -320,8 +336,9 @@
     [NSLayoutConstraint activateConstraints:_compactConstraints];
     return;
   }
-
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
+  if (IsTabsBulkActionsEnabled())
+    leadingButton = _editButton;
   UIBarButtonItem* trailingButton = _doneButton;
 
   if ([self shouldUseCompactLayout]) {

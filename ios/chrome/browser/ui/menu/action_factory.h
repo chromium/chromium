@@ -20,7 +20,9 @@ class GURL;
 @interface ActionFactory : NSObject
 
 // Initializes a factory instance for the current |browser| to create action
-// instances for the given |scenario|.
+// instances for the given |scenario|. |browser| can be nil, and in that case
+// only actions that doesn't require browser will work, and other actions will
+// return nil;
 - (instancetype)initWithBrowser:(Browser*)browser
                        scenario:(MenuScenario)scenario;
 
@@ -46,6 +48,7 @@ class GURL;
 
 // Creates a UIAction instance configured for opening the |URL| in a new tab and
 // which will invoke the given |completion| block after execution.
+// Will return nil if a browser was not given in the initialization.
 - (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
                               completion:(ProceduralBlock)completion;
 
@@ -62,16 +65,19 @@ class GURL;
 // Creates a UIAction instance configured for opening the |URL| in a new
 // incognito tab and which will invoke the given |completion| block after
 // execution.
+// Will return nil if a browser was not given in the initialization.
 - (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
                                        completion:(ProceduralBlock)completion;
 
 // Creates a UIAction instance whose title and icon are configured for opening a
 // URL in a new incognito tab. When triggered, the action will invoke the
 // |block| which needs to open a URL in a new incognito tab.
+// Will return nil if a browser was not given in the initialization.
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block;
 
 // Creates a UIAction instance configured for opening the |URL| in a new window
 // from |activityOrigin|.
+// Will return nil if a browser was not given in the initialization.
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin;
@@ -142,6 +148,11 @@ class GURL;
 // |title|. Invokes the given |completion| block after execution.
 - (UIAction*)actionSearchImageWithTitle:(NSString*)title
                                   Block:(ProceduralBlock)block;
+// Creates a UIAction instance for closing all tabs.
+- (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block;
+
+// Creates a UIAction instance for entering tab selection mode.
+- (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block;
 
 @end
 

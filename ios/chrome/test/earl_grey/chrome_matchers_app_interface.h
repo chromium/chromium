@@ -586,8 +586,12 @@
 
 #pragma mark - Tab Grid Edit Mode
 
-// Returns a matcher for the button to enter the tab grid tab edit mode.
+// Returns a matcher for the button to open the context menu for edit actions.
 + (id<GREYMatcher>)tabGridEditButton;
+
+// Returns a matcher for the context menu button to enter the tab grid tab
+// selection mode.
++ (id<GREYMatcher>)tabGridSelectTabsMenuButton;
 
 // Returns a matcher for the button to act on the selected tabs.
 + (id<GREYMatcher>)tabGridEditAddToButton;

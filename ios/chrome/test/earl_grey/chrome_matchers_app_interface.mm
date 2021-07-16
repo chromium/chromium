@@ -1130,10 +1130,17 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_interactable(), nullptr);
 }
 
-#pragma mark - Tab Grid Edit Mode
+#pragma mark - Tab Grid Selection Mode
 + (id<GREYMatcher>)tabGridEditButton {
   return grey_allOf(grey_accessibilityID(kTabGridEditButtonIdentifier),
                     grey_sufficientlyVisible(), nil);
+}
+
++ (id<GREYMatcher>)tabGridSelectTabsMenuButton {
+  return grey_allOf(
+      [ChromeMatchersAppInterface
+          buttonWithAccessibilityLabelID:(IDS_IOS_CONTENT_CONTEXT_SELECTTABS)],
+      grey_sufficientlyVisible(), nil);
 }
 
 + (id<GREYMatcher>)tabGridEditAddToButton {

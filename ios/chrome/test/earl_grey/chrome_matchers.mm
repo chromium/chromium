@@ -755,6 +755,10 @@ id<GREYMatcher> TabGridEditButton() {
   return [ChromeMatchersAppInterface tabGridEditButton];
 }
 
+id<GREYMatcher> TabGridSelectTabsMenuButton() {
+  return [ChromeMatchersAppInterface tabGridSelectTabsMenuButton];
+}
+
 id<GREYMatcher> TabGridEditAddToButton() {
   return [ChromeMatchersAppInterface tabGridEditAddToButton];
 }

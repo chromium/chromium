@@ -37,6 +37,7 @@ using chrome_test_util::WindowWithNumber;
 using chrome_test_util::AddToBookmarksButton;
 using chrome_test_util::AddToReadingListButton;
 using chrome_test_util::CloseTabMenuButton;
+using chrome_test_util::TabGridSelectTabsMenuButton;
 
 namespace {
 char kURL1[] = "http://firstURL";
@@ -924,6 +925,9 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
       performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
 
   // Tap tab to select.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
@@ -981,6 +985,9 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
       performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
 
   // Tap "Select all" and close selected tabs.
   [[EarlGrey
@@ -1028,6 +1035,10 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
       performAction:grey_tap()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
       performAction:grey_tap()];
 
   // Select the first and last items.

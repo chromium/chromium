@@ -29,7 +29,7 @@ bool IsTabGridContextMenuEnabled() {
 }
 
 bool IsTabsBulkActionsEnabled() {
-  if (@available(iOS 13, *)) {
+  if (@available(iOS 14, *)) {
     return base::FeatureList::IsEnabled(kTabsBulkActions);
   }
   return false;

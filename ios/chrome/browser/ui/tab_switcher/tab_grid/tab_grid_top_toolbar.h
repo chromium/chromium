@@ -38,8 +38,6 @@
 
 // Sets target/action for tapping event on new tab button.
 - (void)setNewTabButtonTarget:(id)target action:(SEL)action;
-// Sets target/action for tapping event on select tabs button.
-- (void)setSelectTabButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on select all button.
 - (void)setSelectAllButtonTarget:(id)target action:(SEL)action;
 // Sets target/action for tapping event on close all button.
@@ -48,14 +46,16 @@
 - (void)setDoneButtonTarget:(id)target action:(SEL)action;
 // Set |enabled| on the new tab button.
 - (void)setNewTabButtonEnabled:(BOOL)enabled;
-// Set |enabled| on the select tabs button.
-- (void)setSelectTabsButtonEnabled:(BOOL)enabled;
-// Set |enabled| on the close all button.
-- (void)setCloseAllButtonEnabled:(BOOL)enabled;
 // Set |enabled| on the done button.
 - (void)setDoneButtonEnabled:(BOOL)enabled;
+// Set |enabled| on the close all button.
+- (void)setCloseAllButtonEnabled:(BOOL)enabled;
 // use undo or closeAll text on the close all button based on |useUndo| value.
 - (void)useUndoCloseAll:(BOOL)useUndo;
+// Sets the |menu| displayed on tapping the Edit button.
+- (void)setEditButtonMenu:(UIMenu*)menu API_AVAILABLE(ios(14.0));
+// Set |enabled| on the Edit button.
+- (void)setEditButtonEnabled:(BOOL)enabled;
 
 // Hides components and uses a black background color for tab grid transition
 // animation.

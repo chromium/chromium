@@ -188,11 +188,20 @@ TEST_F(ActionFactoryTest, DeleteAction) {
 // Tests that the Open in New Tab actions have the right titles and images.
 TEST_F(ActionFactoryTest, OpenInNewTabAction_URL) {
   if (@available(iOS 13.0, *)) {
+    GURL testURL = GURL("https://example.com");
+
+    // Ensure that with browserless factory, a nil will be returned instead of
+    // an action.
+    ActionFactory* browserlessFactory =
+        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+    UIAction* actionFromBrowserlessFactory =
+        [browserlessFactory actionToOpenInNewTabWithURL:testURL completion:nil];
+    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
+
+    // Using an action factory with a browser should return expected action.
     ActionFactory* factory =
         [[ActionFactory alloc] initWithBrowser:test_browser_.get()
                                       scenario:kTestMenuScenario];
-
-    GURL testURL = GURL("https://example.com");
 
     UIImage* expectedImage = [UIImage imageNamed:@"open_in_new_tab"];
     NSString* expectedTitle =
@@ -213,11 +222,21 @@ TEST_F(ActionFactoryTest, OpenInNewTabAction_URL) {
 // and images.
 TEST_F(ActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
   if (@available(iOS 13.0, *)) {
+    GURL testURL = GURL("https://example.com");
+
+    // Ensure that with browserless factory, a nil will be returned instead of
+    // an action.
+    ActionFactory* browserlessFactory =
+        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+    UIAction* actionFromBrowserlessFactory =
+        [browserlessFactory actionToOpenInNewIncognitoTabWithURL:testURL
+                                                      completion:nil];
+    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
+
+    // Using an action factory with a browser should return expected action.
     ActionFactory* factory =
         [[ActionFactory alloc] initWithBrowser:test_browser_.get()
                                       scenario:kTestMenuScenario];
-
-    GURL testURL = GURL("https://example.com");
 
     UIImage* expectedImage = [UIImage imageNamed:@"open_in_incognito"];
     NSString* expectedTitle =
@@ -238,11 +257,21 @@ TEST_F(ActionFactoryTest, OpenInNewIncognitoTabAction_URL) {
 // Tests that the Open in New Window action has the right title and image.
 TEST_F(ActionFactoryTest, OpenInNewWindowAction) {
   if (@available(iOS 13.0, *)) {
+    GURL testURL = GURL("https://example.com");
+
+    // Ensure that with browserless factory, a nil will be returned instead of
+    // an action.
+    ActionFactory* browserlessFactory =
+        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+    UIAction* actionFromBrowserlessFactory = [browserlessFactory
+        actionToOpenInNewWindowWithURL:testURL
+                        activityOrigin:WindowActivityToolsOrigin];
+    EXPECT_NSEQ(nil, actionFromBrowserlessFactory);
+
+    // Using an action factory with a browser should return expected action.
     ActionFactory* factory =
         [[ActionFactory alloc] initWithBrowser:test_browser_.get()
                                       scenario:kTestMenuScenario];
-
-    GURL testURL = GURL("https://example.com");
 
     UIImage* expectedImage = [UIImage imageNamed:@"open_new_window"];
     NSString* expectedTitle =
@@ -530,6 +559,42 @@ TEST_F(ActionFactoryTest, OpenImageInNewTabAction) {
         [factory actionOpenImageInNewTabWithUrlLoadParams:testParams
                                                completion:^{
                                                }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the close all action has the right title and image.
+TEST_F(ActionFactoryTest, CloseAllTabsAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"close"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS);
+
+    UIAction* action = [factory actionToCloseAllTabsWithBlock:^{
+    }];
+
+    EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
+    EXPECT_EQ(expectedImage, action.image);
+  }
+}
+
+// Tests that the select tabs action has the right title and image.
+TEST_F(ActionFactoryTest, SelectTabsAction) {
+  if (@available(iOS 13.0, *)) {
+    ActionFactory* factory =
+        [[ActionFactory alloc] initWithBrowser:nil scenario:kTestMenuScenario];
+
+    UIImage* expectedImage = [UIImage imageNamed:@"select"];
+    NSString* expectedTitle =
+        l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS);
+
+    UIAction* action = [factory actionToSelectTabsWithBlock:^{
+    }];
 
     EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
     EXPECT_EQ(expectedImage, action.image);

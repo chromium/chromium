@@ -35,8 +35,6 @@
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        scenario:(MenuScenario)scenario {
-  DCHECK(browser);
-
   if (self = [super init]) {
     _browser = browser;
     _histogram = GetActionsHistogramName(scenario);
@@ -91,6 +89,8 @@
 
 - (UIAction*)actionToOpenInNewTabWithURL:(const GURL)URL
                               completion:(ProceduralBlock)completion {
+  if (!_browser)
+    return nil;
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   UrlLoadingBrowserAgent* loadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -120,6 +120,9 @@
 
 - (UIAction*)actionToOpenInNewIncognitoTabWithURL:(const GURL)URL
                                        completion:(ProceduralBlock)completion {
+  if (!_browser)
+    return nil;
+
   UrlLoadParams params = UrlLoadParams::InNewTab(URL);
   params.in_incognito = YES;
   UrlLoadingBrowserAgent* loadingAgent =
@@ -135,6 +138,9 @@
 - (UIAction*)actionToOpenInNewIncognitoTabWithBlock:(ProceduralBlock)block {
   // Wrap the block with the incognito auth check, if necessary.
   if (base::FeatureList::IsEnabled(kIncognitoAuthentication)) {
+    if (!_browser)
+      return nil;
+
     IncognitoReauthSceneAgent* reauthAgent = [IncognitoReauthSceneAgent
         agentFromScene:SceneStateBrowserAgent::FromBrowser(self.browser)
                            ->GetSceneState()];
@@ -160,6 +166,9 @@
 - (UIAction*)actionToOpenInNewWindowWithURL:(const GURL)URL
                              activityOrigin:
                                  (WindowActivityOrigin)activityOrigin {
+  if (!_browser)
+    return nil;
+
   id<ApplicationCommands> windowOpener = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), ApplicationCommands);
   NSUserActivity* activity = ActivityToLoadURL(activityOrigin, URL);
@@ -335,6 +344,26 @@
                                      image:[UIImage imageNamed:@"search_image"]
                                       type:MenuActionType::SearchImage
                                      block:block];
+  return action;
+}
+
+- (UIAction*)actionToCloseAllTabsWithBlock:(ProceduralBlock)block {
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_CONTENT_CONTEXT_CLOSEALLTABS)
+                      image:[UIImage imageNamed:@"close"]
+                       type:MenuActionType::CloseAllTabs
+                      block:block];
+  action.attributes = UIMenuElementAttributesDestructive;
+  return action;
+}
+
+- (UIAction*)actionToSelectTabsWithBlock:(ProceduralBlock)block {
+  UIAction* action = [self
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_SELECTTABS)
+                image:[UIImage imageNamed:@"select"]
+                 type:MenuActionType::SelectTabs
+                block:block];
   return action;
 }
 
