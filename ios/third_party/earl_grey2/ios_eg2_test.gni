@@ -36,6 +36,17 @@ template("ios_eg2_test_app_host") {
       "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTAutomationSupport.framework",
     ]
 
+    # Xcode 13 now depends on XCTestCore. To keep things future proof, copy over
+    # everything that Xcode copies.
+    if (xcode_version_int >= 1300) {
+      extra_system_frameworks += [
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCTestCore.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUIAutomation.framework",
+        "$ios_sdk_platform_path/Developer/Library/PrivateFrameworks/XCUnit.framework",
+        "$ios_sdk_platform_path/Developer/usr/lib/libXCTestSwiftSupport.dylib",
+      ]
+    }
+
     if (!defined(ldflags)) {
       ldflags = []
     }
