@@ -29,13 +29,6 @@ static_library("network") {
 
     deps += [ ":jni_headers" ]
   }
-
-  if (is_mac) {
-    sources += [
-      "network_status_listener_mac.cc",
-      "network_status_listener_mac.h",
-    ]
-  }
 }
 
 if (is_android) {
