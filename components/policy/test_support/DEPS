@@ -8,6 +8,7 @@ include_rules = [
   "+crypto",
   "+net",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
   "+services/network/test",
   "+third_party/re2",
 ]
