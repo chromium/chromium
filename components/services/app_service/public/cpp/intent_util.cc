@@ -553,9 +553,8 @@ absl::optional<base::flat_map<std::string, std::string>> GetExtrasFromDict(
 
   base::flat_map<std::string, std::string> extras;
   for (auto pair : value->DictItems()) {
-    std::string value;
-    if (pair.second.GetAsString(&value))
-      extras[pair.first] = value;
+    if (pair.second.is_string())
+      extras[pair.first] = pair.second.GetString();
   }
 
   return extras;
