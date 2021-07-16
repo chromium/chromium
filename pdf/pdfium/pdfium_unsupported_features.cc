@@ -4,7 +4,7 @@
 
 #include "pdf/pdfium/pdfium_unsupported_features.h"
 
-#include "base/notreached.h"
+#include "base/check.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "third_party/pdfium/public/fpdf_ext.h"
 
@@ -12,11 +12,13 @@ namespace chrome_pdf {
 
 namespace {
 
+// Only check `g_engine_for_unsupported` if `g_engine_available` is true.
+bool g_engine_available = true;
 PDFiumEngine* g_engine_for_unsupported = nullptr;
 
 void Unsupported_Handler(UNSUPPORT_INFO*, int type) {
   if (!g_engine_for_unsupported) {
-    NOTREACHED();
+    DCHECK(!g_engine_available);
     return;
   }
 
@@ -73,12 +75,23 @@ void InitializeUnsupportedFeaturesHandler() {
 }
 
 ScopedUnsupportedFeature::ScopedUnsupportedFeature(PDFiumEngine* engine)
-    : old_engine_(g_engine_for_unsupported) {
+    : saved_engine_available_(g_engine_available),
+      saved_engine_(g_engine_for_unsupported) {
+  DCHECK(engine);
+  g_engine_available = true;
   g_engine_for_unsupported = engine;
 }
 
+ScopedUnsupportedFeature::ScopedUnsupportedFeature(NoEngine no_engine)
+    : saved_engine_available_(g_engine_available),
+      saved_engine_(g_engine_for_unsupported) {
+  g_engine_available = false;
+  g_engine_for_unsupported = nullptr;
+}
+
 ScopedUnsupportedFeature::~ScopedUnsupportedFeature() {
-  g_engine_for_unsupported = old_engine_;
+  g_engine_for_unsupported = saved_engine_;
+  g_engine_available = saved_engine_available_;
 }
 
 }  // namespace chrome_pdf

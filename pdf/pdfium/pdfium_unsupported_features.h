@@ -15,13 +15,18 @@ void InitializeUnsupportedFeaturesHandler();
 // our global callback when an unsupported feature is reached.
 class ScopedUnsupportedFeature {
  public:
+  // For use by PDFiumEngineExports when there is no PDFiumEngine instance.
+  enum NoEngine { kNoEngine };
+
   explicit ScopedUnsupportedFeature(PDFiumEngine* engine);
+  explicit ScopedUnsupportedFeature(NoEngine no_engine);
   ScopedUnsupportedFeature(const ScopedUnsupportedFeature&) = delete;
   ScopedUnsupportedFeature& operator=(const ScopedUnsupportedFeature&) = delete;
   ~ScopedUnsupportedFeature();
 
  private:
-  PDFiumEngine* const old_engine_;
+  const bool saved_engine_available_;
+  PDFiumEngine* const saved_engine_;
 };
 
 }  // namespace chrome_pdf
