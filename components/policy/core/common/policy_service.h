@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_map.h"
@@ -147,6 +146,8 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
   // outlive |this|.
   PolicyChangeRegistrar(PolicyService* policy_service,
                         const PolicyNamespace& ns);
+  PolicyChangeRegistrar(const PolicyChangeRegistrar&) = delete;
+  PolicyChangeRegistrar& operator=(const PolicyChangeRegistrar&) = delete;
 
   ~PolicyChangeRegistrar() override;
 
@@ -167,8 +168,6 @@ class POLICY_EXPORT PolicyChangeRegistrar : public PolicyService::Observer {
   PolicyService* policy_service_;
   PolicyNamespace ns_;
   CallbackMap callback_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyChangeRegistrar);
 };
 
 }  // namespace policy

@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -44,6 +43,8 @@ class POLICY_EXPORT PolicyScheduler {
   PolicyScheduler(Task task,
                   SchedulerCallback callback,
                   base::TimeDelta interval);
+  PolicyScheduler(const PolicyScheduler&) = delete;
+  PolicyScheduler& operator=(const PolicyScheduler&) = delete;
   ~PolicyScheduler();
 
   // Schedules a task to run immediately. Deletes any previously scheduled but
@@ -89,8 +90,6 @@ class POLICY_EXPORT PolicyScheduler {
 
   // Must be last member.
   base::WeakPtrFactory<PolicyScheduler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyScheduler);
 };
 
 }  // namespace policy

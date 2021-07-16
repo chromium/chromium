@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/core/common/schema.h"
@@ -29,6 +28,8 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
  public:
   SchemaMap();
   explicit SchemaMap(DomainMap map);
+  SchemaMap(const SchemaMap&) = delete;
+  SchemaMap& operator=(const SchemaMap&) = delete;
 
   const DomainMap& GetDomains() const;
 
@@ -64,8 +65,6 @@ class POLICY_EXPORT SchemaMap : public base::RefCountedThreadSafe<SchemaMap> {
   ~SchemaMap();
 
   DomainMap map_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaMap);
 };
 
 }  // namespace policy

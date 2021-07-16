@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -50,6 +49,8 @@ class POLICY_EXPORT RegistryDict {
                             CaseInsensitiveStringCompare>;
 
   RegistryDict();
+  RegistryDict(const RegistryDict&) = delete;
+  RegistryDict& operator=(const RegistryDict&) = delete;
   ~RegistryDict();
 
   // Returns a pointer to an existing key, NULL if not present.
@@ -95,8 +96,6 @@ class POLICY_EXPORT RegistryDict {
  private:
   KeyMap keys_;
   ValueMap values_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryDict);
 };
 
 }  // namespace policy

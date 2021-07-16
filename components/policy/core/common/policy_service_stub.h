@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_STUB_H_
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_SERVICE_STUB_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/policy/policy_export.h"
@@ -17,6 +16,8 @@ namespace policy {
 class POLICY_EXPORT PolicyServiceStub : public PolicyService {
  public:
   PolicyServiceStub();
+  PolicyServiceStub(const PolicyServiceStub&) = delete;
+  PolicyServiceStub& operator=(const PolicyServiceStub&) = delete;
   ~PolicyServiceStub() override;
 
   void AddObserver(PolicyDomain domain,
@@ -34,8 +35,6 @@ class POLICY_EXPORT PolicyServiceStub : public PolicyService {
 
  private:
   const PolicyMap kEmpty_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceStub);
 };
 
 }  // namespace policy

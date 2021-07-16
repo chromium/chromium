@@ -9,7 +9,6 @@
 #include <ostream>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_details.h"
 #include "components/policy/core/common/policy_map.h"
@@ -30,6 +29,8 @@ struct PolicyNamespace;
 class PolicyDetailsMap {
  public:
   PolicyDetailsMap();
+  PolicyDetailsMap(const PolicyDetailsMap&) = delete;
+  PolicyDetailsMap& operator=(const PolicyDetailsMap&) = delete;
   ~PolicyDetailsMap();
 
   // The returned callback's lifetime is tied to |this| object.
@@ -44,8 +45,6 @@ class PolicyDetailsMap {
   const PolicyDetails* Lookup(const std::string& policy) const;
 
   PolicyDetailsMapping map_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyDetailsMap);
 };
 
 // Returns true if |service| is not serving any policies. Otherwise logs the

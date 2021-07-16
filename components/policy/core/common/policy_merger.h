@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/policy_export.h"
 
@@ -39,6 +38,8 @@ class POLICY_EXPORT PolicyMerger {
 class POLICY_EXPORT PolicyListMerger : public PolicyMerger {
  public:
   explicit PolicyListMerger(base::flat_set<std::string> policies_to_merge);
+  PolicyListMerger(const PolicyListMerger&) = delete;
+  PolicyListMerger& operator=(const PolicyListMerger&) = delete;
   ~PolicyListMerger() override;
 
   // Merges the list policies from |policies| that have multiple sources.
@@ -64,8 +65,6 @@ class POLICY_EXPORT PolicyListMerger : public PolicyMerger {
 
   bool allow_user_cloud_policy_merging_ = false;
   const base::flat_set<std::string> policies_to_merge_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyListMerger);
 };
 
 // PolicyDictionaryMerger allows the merging of policy dictionaries that have
@@ -76,6 +75,8 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
  public:
   explicit PolicyDictionaryMerger(
       base::flat_set<std::string> policies_to_merge);
+  PolicyDictionaryMerger(const PolicyDictionaryMerger&) = delete;
+  PolicyDictionaryMerger& operator=(const PolicyDictionaryMerger&) = delete;
   ~PolicyDictionaryMerger() override;
 
   // Merges the dictionary policies from |policies| that have multiple sources.
@@ -104,8 +105,6 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
   bool allow_user_cloud_policy_merging_ = false;
   const base::flat_set<std::string> policies_to_merge_;
   base::flat_set<std::string> allowed_policies_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyDictionaryMerger);
 };
 
 // PolicyGroupMerger enforces atomic policy groups. It disables the policies
@@ -113,14 +112,13 @@ class POLICY_EXPORT PolicyDictionaryMerger : public PolicyMerger {
 class POLICY_EXPORT PolicyGroupMerger : public PolicyMerger {
  public:
   PolicyGroupMerger();
+  PolicyGroupMerger(const PolicyGroupMerger&) = delete;
+  PolicyGroupMerger& operator=(const PolicyGroupMerger&) = delete;
   ~PolicyGroupMerger() override;
 
   // Disables policies from atomic groups that do not share the highest priority
   // from that group.
   void Merge(PolicyMap::PolicyMapType* result) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyGroupMerger);
 };
 
 }  // namespace policy

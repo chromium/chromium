@@ -8,7 +8,6 @@
 #include <set>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -54,6 +53,8 @@ class POLICY_EXPORT SchemaRegistry {
   };
 
   SchemaRegistry();
+  SchemaRegistry(const SchemaRegistry&) = delete;
+  SchemaRegistry& operator=(const SchemaRegistry&) = delete;
   virtual ~SchemaRegistry();
 
   const scoped_refptr<SchemaMap>& schema_map() const { return schema_map_; }
@@ -99,8 +100,6 @@ class POLICY_EXPORT SchemaRegistry {
   base::ObserverList<Observer, true>::Unchecked observers_;
   base::ObserverList<InternalObserver, true>::Unchecked internal_observers_;
   bool domains_ready_[POLICY_DOMAIN_SIZE];
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaRegistry);
 };
 
 // A registry that combines the maps of other registries.
@@ -110,6 +109,8 @@ class POLICY_EXPORT CombinedSchemaRegistry
       public SchemaRegistry::InternalObserver {
  public:
   CombinedSchemaRegistry();
+  CombinedSchemaRegistry(const CombinedSchemaRegistry&) = delete;
+  CombinedSchemaRegistry& operator=(const CombinedSchemaRegistry&) = delete;
   ~CombinedSchemaRegistry() override;
 
   void Track(SchemaRegistry* registry);
@@ -130,8 +131,6 @@ class POLICY_EXPORT CombinedSchemaRegistry
 
   std::set<SchemaRegistry*> registries_;
   scoped_refptr<SchemaMap> own_schema_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(CombinedSchemaRegistry);
 };
 
 // A registry that wraps another schema registry.
@@ -143,6 +142,8 @@ class POLICY_EXPORT ForwardingSchemaRegistry
   // This registry will stop updating its SchemaMap when |wrapped| is
   // destroyed.
   explicit ForwardingSchemaRegistry(SchemaRegistry* wrapped);
+  ForwardingSchemaRegistry(const ForwardingSchemaRegistry&) = delete;
+  ForwardingSchemaRegistry& operator=(const ForwardingSchemaRegistry&) = delete;
   ~ForwardingSchemaRegistry() override;
 
   // SchemaRegistry:
@@ -161,8 +162,6 @@ class POLICY_EXPORT ForwardingSchemaRegistry
   void UpdateReadiness();
 
   SchemaRegistry* wrapped_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingSchemaRegistry);
 };
 
 }  // namespace policy

@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_export.h"
@@ -22,6 +21,8 @@ class POLICY_EXPORT PolicyBundle {
   using const_iterator = MapType::const_iterator;
 
   PolicyBundle();
+  PolicyBundle(const PolicyBundle&) = delete;
+  PolicyBundle& operator=(const PolicyBundle&) = delete;
   virtual ~PolicyBundle();
 
   // Returns the PolicyMap for namespace |ns|. Creates a new map if necessary.
@@ -63,8 +64,6 @@ class POLICY_EXPORT PolicyBundle {
   // An empty PolicyMap that is returned by const Get() for namespaces that
   // do not exist in |policy_bundle_|.
   const PolicyMap kEmpty_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyBundle);
 };
 
 }  // namespace policy

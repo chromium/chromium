@@ -19,7 +19,6 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/stringprintf.h"
@@ -481,6 +480,9 @@ bool IsValidSchema(const base::Value& dict, int options, std::string* error) {
 class Schema::InternalStorage
     : public base::RefCountedThreadSafe<InternalStorage> {
  public:
+  InternalStorage(const InternalStorage&) = delete;
+  InternalStorage& operator=(const InternalStorage&) = delete;
+
   static scoped_refptr<const InternalStorage> Wrap(const SchemaData* data);
 
   static scoped_refptr<const InternalStorage> ParseSchema(
@@ -618,8 +620,6 @@ class Schema::InternalStorage
   std::vector<const char*> required_properties_;
   std::vector<int> int_enums_;
   std::vector<const char*> string_enums_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternalStorage);
 };
 
 Schema::InternalStorage::InternalStorage() {}

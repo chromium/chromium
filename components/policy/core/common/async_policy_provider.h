@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -35,6 +34,8 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   // should be passed later to Init().
   AsyncPolicyProvider(SchemaRegistry* registry,
                       std::unique_ptr<AsyncPolicyLoader> loader);
+  AsyncPolicyProvider(const AsyncPolicyProvider&) = delete;
+  AsyncPolicyProvider& operator=(const AsyncPolicyProvider&) = delete;
   ~AsyncPolicyProvider() override;
 
   // ConfigurationPolicyProvider implementation.
@@ -74,8 +75,6 @@ class POLICY_EXPORT AsyncPolicyProvider : public ConfigurationPolicyProvider {
   // Used to get a WeakPtr to |this| for the update callback given to the
   // loader.
   base::WeakPtrFactory<AsyncPolicyProvider> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncPolicyProvider);
 };
 
 }  // namespace policy

@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/async_policy_loader.h"
@@ -43,6 +42,8 @@ class POLICY_EXPORT PolicyLoaderMac : public AsyncPolicyLoader {
                   const base::FilePath& managed_policy_path,
                   MacPreferences* preferences,
                   CFStringRef application_id);
+  PolicyLoaderMac(const PolicyLoaderMac&) = delete;
+  PolicyLoaderMac& operator=(const PolicyLoaderMac&) = delete;
 
   ~PolicyLoaderMac() override;
 
@@ -86,8 +87,6 @@ class POLICY_EXPORT PolicyLoaderMac : public AsyncPolicyLoader {
 
   // Application ID to pass into Mac's Preference Utilities API.
   base::ScopedCFTypeRef<CFStringRef> application_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyLoaderMac);
 };
 
 }  // namespace policy

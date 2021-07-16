@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -65,6 +64,8 @@ class POLICY_EXPORT CloudPolicyCore {
                   const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                   network::NetworkConnectionTrackerGetter
                       network_connection_tracker_getter);
+  CloudPolicyCore(const CloudPolicyCore&) = delete;
+  CloudPolicyCore& operator=(const CloudPolicyCore&) = delete;
   ~CloudPolicyCore();
 
   CloudPolicyClient* client() { return client_.get(); }
@@ -140,8 +141,6 @@ class POLICY_EXPORT CloudPolicyCore {
   std::unique_ptr<RemoteCommandsService> remote_commands_service_;
   std::unique_ptr<IntegerPrefMember> refresh_delay_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyCore);
 };
 
 }  // namespace policy

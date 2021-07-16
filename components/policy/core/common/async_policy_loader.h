@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -40,6 +39,8 @@ class POLICY_EXPORT AsyncPolicyLoader {
   explicit AsyncPolicyLoader(
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       bool periodic_updates);
+  AsyncPolicyLoader(const AsyncPolicyLoader&) = delete;
+  AsyncPolicyLoader& operator=(const AsyncPolicyLoader&) = delete;
   virtual ~AsyncPolicyLoader();
 
   // Gets a SequencedTaskRunner backed by the background thread.
@@ -124,8 +125,6 @@ class POLICY_EXPORT AsyncPolicyLoader {
 
   // Used to get WeakPtrs for the periodic reload task.
   base::WeakPtrFactory<AsyncPolicyLoader> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncPolicyLoader);
 };
 
 }  // namespace policy

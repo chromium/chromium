@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,6 +37,8 @@ class POLICY_EXPORT ResourceCache {
   ResourceCache(const base::FilePath& cache_path,
                 scoped_refptr<base::SequencedTaskRunner> task_runner,
                 const absl::optional<int64_t> max_cache_size);
+  ResourceCache(const ResourceCache&) = delete;
+  ResourceCache& operator=(const ResourceCache&) = delete;
   virtual ~ResourceCache();
 
   // Stores |data| under (key, subkey). Returns file path if the store
@@ -137,8 +138,6 @@ class POLICY_EXPORT ResourceCache {
   // Note that this variable could be created on any thread, but is modified
   // only on the |task_runner_| thread.
   int64_t current_cache_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceCache);
 };
 
 }  // namespace policy
