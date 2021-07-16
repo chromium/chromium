@@ -23,7 +23,6 @@
 #include "components/history/core/browser/url_row.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/history_clusters/core/clustering_backend.h"
-#include "components/history_clusters/core/history_clusters.mojom.h"
 #include "components/history_clusters/core/history_clusters_service_test_api.h"
 #include "components/history_clusters/core/memories_features.h"
 #include "components/history_clusters/core/visit_data.h"
@@ -188,25 +187,26 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
       /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
-      base::BindLambdaForTesting(
-          [&](std::vector<mojom::ClusterPtr> clusters) {
-            ASSERT_EQ(clusters.size(), 2u);
+      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        ASSERT_EQ(clusters.size(), 2u);
 
-            ASSERT_EQ(clusters[0]->visits.size(), 1u);
-            EXPECT_EQ(clusters[0]->visits[0]->normalized_url,
-                      "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[0]->visits[0]->score, 0.1);
+        auto& visits = clusters[0].scored_annotated_visits;
+        ASSERT_EQ(visits.size(), 1u);
+        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                  "https://github.com/");
+        EXPECT_FLOAT_EQ(visits[0].score, 0.1);
 
-            ASSERT_EQ(clusters[1]->visits.size(), 2u);
-            EXPECT_EQ(clusters[1]->visits[0]->normalized_url,
-                      "https://google.com/");
-            EXPECT_FLOAT_EQ(clusters[1]->visits[0]->score, 0.9);
-            EXPECT_EQ(clusters[1]->visits[1]->normalized_url,
-                      "https://github.com/");
-            EXPECT_FLOAT_EQ(clusters[1]->visits[1]->score, 0.5);
+        visits = clusters[1].scored_annotated_visits;
+        ASSERT_EQ(visits.size(), 2u);
+        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                  "https://google.com/");
+        EXPECT_FLOAT_EQ(visits[0].score, 0.9);
+        EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
+                  "https://github.com/");
+        EXPECT_FLOAT_EQ(visits[1].score, 0.5);
 
-            run_loop_quit_.Run();
-          }),
+        run_loop_quit_.Run();
+      }),
       &task_tracker_);
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -271,70 +271,62 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
         /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
-        base::BindLambdaForTesting(
-            [&](std::vector<mojom::ClusterPtr> clusters) {
-              size_t expected_size = int(test_data[i].expect_first_cluster) +
-                                     int(test_data[i].expect_second_cluster);
-              ASSERT_EQ(clusters.size(), expected_size);
+        base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+          size_t expected_size = int(test_data[i].expect_first_cluster) +
+                                 int(test_data[i].expect_second_cluster);
+          ASSERT_EQ(clusters.size(), expected_size);
 
-              if (test_data[i].expect_first_cluster) {
-                const auto& cluster = clusters[0];
-                ASSERT_EQ(cluster->visits.size(), 2u);
-                EXPECT_EQ(cluster->visits[0]->normalized_url,
-                          "https://github.com/");
-                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
-                EXPECT_EQ(cluster->visits[0]->last_visit_time,
-                          GetHardcodedTestVisits()[1].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[0]->first_visit_time,
-                          GetHardcodedTestVisits()[1].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[0]->page_title, "Github title");
-                EXPECT_FALSE(base::Contains(
-                    cluster->visits[0]->annotations,
-                    history_clusters::mojom::Annotation::kBookmarked));
-                EXPECT_TRUE(base::Contains(
-                    cluster->visits[0]->annotations,
-                    history_clusters::mojom::Annotation::kTabGrouped));
-                EXPECT_FLOAT_EQ(cluster->visits[0]->score, 0.5);
+          if (test_data[i].expect_first_cluster) {
+            const auto& cluster = clusters[0];
+            const auto& visits = cluster.scored_annotated_visits;
+            ASSERT_EQ(visits.size(), 2u);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                      "https://github.com/");
+            EXPECT_EQ(visits[0].annotated_visit.visit_row.visit_time,
+                      GetHardcodedTestVisits()[1].visit_row.visit_time);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.title(),
+                      u"Github title");
+            EXPECT_FALSE(
+                visits[0].annotated_visit.context_annotations.is_new_bookmark);
+            EXPECT_TRUE(visits[0]
+                            .annotated_visit.context_annotations
+                            .is_existing_part_of_tab_group);
+            EXPECT_FLOAT_EQ(visits[0].score, 0.5);
 
-                EXPECT_EQ(cluster->visits[1]->normalized_url,
-                          "https://google.com/");
-                EXPECT_EQ(cluster->visits[1]->raw_urls.size(), 1u);
-                EXPECT_EQ(cluster->visits[1]->last_visit_time,
-                          GetHardcodedTestVisits()[0].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[1]->first_visit_time,
-                          GetHardcodedTestVisits()[0].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[1]->page_title, "Google title");
-                EXPECT_TRUE(base::Contains(
-                    cluster->visits[1]->annotations,
-                    history_clusters::mojom::Annotation::kBookmarked));
-                EXPECT_FALSE(base::Contains(
-                    cluster->visits[1]->annotations,
-                    history_clusters::mojom::Annotation::kTabGrouped));
-                EXPECT_FLOAT_EQ(cluster->visits[1]->score, 0.5);
+            EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
+                      "https://google.com/");
+            EXPECT_EQ(visits[1].annotated_visit.visit_row.visit_time,
+                      GetHardcodedTestVisits()[0].visit_row.visit_time);
+            EXPECT_EQ(visits[1].annotated_visit.url_row.title(),
+                      u"Google title");
+            EXPECT_TRUE(
+                visits[1].annotated_visit.context_annotations.is_new_bookmark);
+            EXPECT_FALSE(visits[1]
+                             .annotated_visit.context_annotations
+                             .is_existing_part_of_tab_group);
+            EXPECT_FLOAT_EQ(visits[1].score, 0.5);
 
-                ASSERT_EQ(cluster->keywords.size(), 2u);
-                EXPECT_EQ(cluster->keywords[0], u"apples");
-                EXPECT_EQ(cluster->keywords[1], u"Red Oranges");
-              }
+            ASSERT_EQ(cluster.keywords.size(), 2u);
+            EXPECT_EQ(cluster.keywords[0], u"apples");
+            EXPECT_EQ(cluster.keywords[1], u"Red Oranges");
+          }
 
-              if (test_data[i].expect_second_cluster) {
-                const auto& cluster = test_data[i].expect_first_cluster
-                                          ? clusters[1]
-                                          : clusters[0];
-                ASSERT_EQ(cluster->visits.size(), 1u);
-                EXPECT_EQ(cluster->visits[0]->normalized_url,
-                          "https://github.com/");
-                EXPECT_EQ(cluster->visits[0]->raw_urls.size(), 1u);
-                EXPECT_EQ(cluster->visits[0]->last_visit_time,
-                          GetHardcodedTestVisits()[1].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[0]->first_visit_time,
-                          GetHardcodedTestVisits()[1].visit_row.visit_time);
-                EXPECT_EQ(cluster->visits[0]->page_title, "Github title");
-                EXPECT_TRUE(cluster->keywords.empty());
-              }
+          if (test_data[i].expect_second_cluster) {
+            const auto& cluster =
+                test_data[i].expect_first_cluster ? clusters[1] : clusters[0];
+            const auto& visits = cluster.scored_annotated_visits;
+            ASSERT_EQ(visits.size(), 1u);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                      "https://github.com/");
+            EXPECT_EQ(visits[0].annotated_visit.visit_row.visit_time,
+                      GetHardcodedTestVisits()[1].visit_row.visit_time);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.title(),
+                      u"Github title");
+            EXPECT_TRUE(cluster.keywords.empty());
+          }
 
-              run_loop_quit.Run();
-            }),
+          run_loop_quit.Run();
+        }),
         &task_tracker_);
 
     history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());

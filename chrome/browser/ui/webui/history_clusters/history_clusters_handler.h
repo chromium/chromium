@@ -12,7 +12,8 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
-#include "components/history_clusters/core/history_clusters.mojom.h"
+#include "components/history/core/browser/history_types.h"
+#include "components/history_clusters/core/history_clusters.mojom-forward.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -31,30 +32,28 @@ class QueryResults;
 }  // namespace history
 #endif
 
+namespace history_clusters {
+
 // Handles bidirectional communication between the history clusters page and the
 // browser.
-class HistoryClustersHandler
-    : public history_clusters::mojom::PageHandler,
-      public history_clusters::HistoryClustersService::Observer {
+class HistoryClustersHandler : public mojom::PageHandler,
+                               public HistoryClustersService::Observer {
  public:
   HistoryClustersHandler(
-      mojo::PendingReceiver<history_clusters::mojom::PageHandler>
-          pending_page_handler,
+      mojo::PendingReceiver<mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents);
   HistoryClustersHandler(const HistoryClustersHandler&) = delete;
   HistoryClustersHandler& operator=(const HistoryClustersHandler&) = delete;
   ~HistoryClustersHandler() override;
 
-  // history_clusters::mojom::PageHandler:
-  void SetPage(
-      mojo::PendingRemote<history_clusters::mojom::Page> pending_page) override;
-  void QueryClusters(
-      history_clusters::mojom::QueryParamsPtr query_params) override;
-  void RemoveVisits(std::vector<history_clusters::mojom::URLVisitPtr> visits,
+  // mojom::PageHandler:
+  void SetPage(mojo::PendingRemote<mojom::Page> pending_page) override;
+  void QueryClusters(mojom::QueryParamsPtr query_params) override;
+  void RemoveVisits(std::vector<mojom::URLVisitPtr> visits,
                     RemoveVisitsCallback callback) override;
 
-  // history_clusters::HistoryClustersService::Observer:
+  // HistoryClustersService::Observer:
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
@@ -63,31 +62,28 @@ class HistoryClustersHandler
   // results of querying the HistoryClustersService are available. Subsequently
   // creates a QueryResult instance using the parameters and sends it to the JS.
   void OnClustersQueryResult(
-      history_clusters::mojom::QueryParamsPtr original_query_params,
+      mojom::QueryParamsPtr original_query_params,
       const absl::optional<base::Time>& continuation_max_time,
-      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms);
+      std::vector<mojom::ClusterPtr> cluster_mojoms);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
-  void OnVisitsRemoved(
-      std::vector<history_clusters::mojom::URLVisitPtr> visits);
+  void OnVisitsRemoved(std::vector<mojom::URLVisitPtr> visits);
 
 #if !defined(CHROME_BRANDED)
-  using QueryResultsCallback = base::OnceCallback<void(
-      const absl::optional<base::Time>&,
-      std::vector<history_clusters::mojom::ClusterPtr>)>;
-  void QueryHistoryService(
-      const std::string& query,
-      base::Time max_time,
-      size_t max_count,
-      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
-      QueryResultsCallback callback);
-  void OnHistoryQueryResults(
-      const std::string& query,
-      base::Time max_time,
-      size_t max_count,
-      std::vector<history_clusters::mojom::ClusterPtr> cluster_mojoms,
-      QueryResultsCallback callback,
-      history::QueryResults results);
+  using QueryResultsCallback =
+      base::OnceCallback<void(const absl::optional<base::Time>&,
+                              std::vector<mojom::ClusterPtr>)>;
+  void QueryHistoryService(const std::string& query,
+                           base::Time max_time,
+                           size_t max_count,
+                           std::vector<mojom::ClusterPtr> cluster_mojoms,
+                           QueryResultsCallback callback);
+  void OnHistoryQueryResults(const std::string& query,
+                             base::Time max_time,
+                             size_t max_count,
+                             std::vector<mojom::ClusterPtr> cluster_mojoms,
+                             QueryResultsCallback callback,
+                             history::QueryResults results);
 #endif
 
   Profile* profile_;
@@ -98,14 +94,16 @@ class HistoryClustersHandler
   base::CancelableTaskTracker remove_task_tracker_;
 
   // Used to observe the service.
-  base::ScopedObservation<history_clusters::HistoryClustersService,
-                          history_clusters::HistoryClustersService::Observer>
+  base::ScopedObservation<HistoryClustersService,
+                          HistoryClustersService::Observer>
       service_observation_{this};
 
-  mojo::Remote<history_clusters::mojom::Page> page_;
-  mojo::Receiver<history_clusters::mojom::PageHandler> page_handler_;
+  mojo::Remote<mojom::Page> page_;
+  mojo::Receiver<mojom::PageHandler> page_handler_;
 
   base::WeakPtrFactory<HistoryClustersHandler> weak_ptr_factory_{this};
 };
+
+}  // namespace history_clusters
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HISTORY_CLUSTERS_HISTORY_CLUSTERS_HANDLER_H_

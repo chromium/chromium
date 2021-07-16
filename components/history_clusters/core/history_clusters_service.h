@@ -19,7 +19,6 @@
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/clustering_backend.h"
-#include "components/history_clusters/core/history_clusters.mojom.h"
 #include "components/history_clusters/core/visit_data.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/query_parser/query_parser.h"
@@ -81,7 +80,7 @@ class HistoryClustersService : public KeyedService {
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
   using QueryClustersCallback =
-      base::OnceCallback<void(std::vector<mojom::ClusterPtr>)>;
+      base::OnceCallback<void(std::vector<history::Cluster>)>;
   void QueryClusters(const std::string& query,
                      base::Time end_time,
                      size_t max_count,
@@ -108,7 +107,7 @@ class HistoryClustersService : public KeyedService {
   // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
   // keywords in `clusters`.
-  void PopulateClusterKeywordCache(std::vector<mojom::ClusterPtr> clusters);
+  void PopulateClusterKeywordCache(std::vector<history::Cluster> clusters);
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history

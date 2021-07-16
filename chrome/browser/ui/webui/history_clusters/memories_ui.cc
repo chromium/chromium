@@ -81,6 +81,7 @@ MemoriesUI::~MemoriesUI() = default;
 void MemoriesUI::BindInterface(
     mojo::PendingReceiver<history_clusters::mojom::PageHandler>
         pending_page_handler) {
-  history_clusters_handler_ = std::make_unique<HistoryClustersHandler>(
-      std::move(pending_page_handler), profile_, web_contents_);
+  history_clusters_handler_ =
+      std::make_unique<history_clusters::HistoryClustersHandler>(
+          std::move(pending_page_handler), profile_, web_contents_);
 }

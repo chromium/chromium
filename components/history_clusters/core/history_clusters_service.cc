@@ -61,39 +61,9 @@ std::vector<history::Cluster> FilterClustersMatchingQuery(
   return matching_clusters;
 }
 
-// TODO(manukh): Move mojom translation to `HistoryClustersHandler` once we've
-//  created a mirror cpp struct the `MemoryService` can return instead. There's
-//  no need to do this yet, since the `HistoryClustersHandler` is the only
-//  consumer of `HistoryClustersService`, but once the omnibox comes into play,
-//  we'll need a common non-mojom response.
-// TODO(crbug.com/1179069): fill out the remaining Memories mojom fields.
-// Translate a `AnnotatedVisit` to `mojom::VisitPtr`.
-mojom::URLVisitPtr VisitToMojom(
-    const history::ScoredAnnotatedVisit& scored_annotated_visit) {
-  auto visit_mojom = mojom::URLVisit::New();
-  auto& annotated_visit = scored_annotated_visit.annotated_visit;
-  visit_mojom->normalized_url = annotated_visit.url_row.url();
-  visit_mojom->raw_urls.push_back(annotated_visit.url_row.url());
-  visit_mojom->last_visit_time = annotated_visit.visit_row.visit_time;
-  visit_mojom->first_visit_time = annotated_visit.visit_row.visit_time;
-  visit_mojom->page_title = base::UTF16ToUTF8(annotated_visit.url_row.title());
-  visit_mojom->relative_date = base::UTF16ToUTF8(ui::TimeFormat::Simple(
-      ui::TimeFormat::FORMAT_ELAPSED, ui::TimeFormat::LENGTH_SHORT,
-      base::Time::Now() - annotated_visit.visit_row.visit_time));
-  if (annotated_visit.context_annotations.is_existing_part_of_tab_group ||
-      annotated_visit.context_annotations.is_placed_in_tab_group) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kTabGrouped);
-  }
-  if (annotated_visit.context_annotations.is_existing_bookmark ||
-      annotated_visit.context_annotations.is_new_bookmark) {
-    visit_mojom->annotations.push_back(mojom::Annotation::kBookmarked);
-  }
-  visit_mojom->score = scored_annotated_visit.score;
-  return visit_mojom;
-}
-
-// Translate a vector of `Cluster`s to a vector of `mojom::ClusterPtr`s.
-std::vector<mojom::ClusterPtr> ClustersToMojom(
+// Enforces the reverse-chronological invariant of clusters, as well the
+// by-score sorting of visits within clusters.
+std::vector<history::Cluster> SortClusters(
     std::vector<history::Cluster> clusters) {
   // Within each cluster, sort visits from best to worst using score.
   // TODO(tommycli): Once cluster persistence is done, maybe we can eliminate
@@ -131,17 +101,7 @@ std::vector<mojom::ClusterPtr> ClustersToMojom(
     return c1_time > c2_time;
   });
 
-  std::vector<mojom::ClusterPtr> clusters_mojom;
-  for (const auto& cluster : clusters) {
-    auto cluster_mojom = mojom::Cluster::New();
-    cluster_mojom->id = cluster.cluster_id;
-    for (const auto& keyword : cluster.keywords)
-      cluster_mojom->keywords.push_back(keyword);
-    for (const auto& visit : cluster.scored_annotated_visits)
-      cluster_mojom->visits.push_back(VisitToMojom(visit));
-    clusters_mojom.emplace_back(std::move(cluster_mojom));
-  }
-  return clusters_mojom;
+  return clusters;
 }
 
 }  // namespace
@@ -256,7 +216,7 @@ void HistoryClustersService::QueryClusters(
   auto on_visits_callback = base::BindOnce(
       &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
       base::BindOnce(&FilterClustersMatchingQuery, query)
-          .Then(base::BindOnce(&ClustersToMojom))
+          .Then(base::BindOnce(&SortClusters))
           .Then(std::move(callback)));
 
   // TODO(tommycli): Support pagination by setting `begin_time` on `options`.
@@ -348,10 +308,10 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
-    std::vector<mojom::ClusterPtr> clusters) {
+    std::vector<history::Cluster> clusters) {
   all_keywords_cache_.clear();
   for (auto& cluster : clusters) {
-    for (auto& keyword : cluster->keywords) {
+    for (auto& keyword : cluster.keywords) {
       // Each `keyword` may itself have multiple terms that we need to extract.
       query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
                                                    &all_keywords_cache_);

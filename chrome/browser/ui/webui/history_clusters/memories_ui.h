@@ -10,12 +10,15 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class Profile;
-class HistoryClustersHandler;
 
 namespace content {
 class WebContents;
 class WebUI;
 }  // namespace content
+
+namespace history_clusters {
+class HistoryClustersHandler;
+}  // namespace history_clusters
 
 // The UI for chrome://memories/
 class MemoriesUI : public ui::MojoWebUIController {
@@ -35,7 +38,8 @@ class MemoriesUI : public ui::MojoWebUIController {
  private:
   Profile* profile_;
   content::WebContents* web_contents_;
-  std::unique_ptr<HistoryClustersHandler> history_clusters_handler_;
+  std::unique_ptr<history_clusters::HistoryClustersHandler>
+      history_clusters_handler_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };
