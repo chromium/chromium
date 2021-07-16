@@ -2509,10 +2509,10 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, SendDuplexwebEvent) {
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
-  ClientStatus status;
+  ClientStatus element_status;
   ElementFinder::Result element;
-  FindElement(Selector({"#touch_area_one"}), &status, &element);
-  ASSERT_TRUE(status.ok());
+  FindElement(Selector({"#touch_area_one"}), &element_status, &element);
+  ASSERT_TRUE(element_status.ok());
 
   // Move the element indefinitely.
   EXPECT_TRUE(ExecJs(shell(), R"(
@@ -2524,27 +2524,52 @@ IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, WaitForElementToBecomeStable) {
             `${10 * i++}px`;
         }, 100);
       })())"));
-  status = WaitUntilElementIsStable(element, 10,
-                                    base::TimeDelta::FromMilliseconds(100));
-  EXPECT_EQ(ELEMENT_UNSTABLE, status.proto_status());
+  EXPECT_EQ(ELEMENT_UNSTABLE,
+            WaitUntilElementIsStable(element, 10,
+                                     base::TimeDelta::FromMilliseconds(100))
+                .proto_status());
 
   // Stop moving the element.
   EXPECT_TRUE(ExecJs(shell(), "clearInterval(document.browserTestInterval);"));
-  status = WaitUntilElementIsStable(element, 10,
-                                    base::TimeDelta::FromMilliseconds(100));
-  EXPECT_TRUE(status.ok());
+  EXPECT_TRUE(WaitUntilElementIsStable(element, 10,
+                                       base::TimeDelta::FromMilliseconds(100))
+                  .ok());
+}
+
+IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
+                       WaitForElementToBecomeStableForEmptyBoxModel) {
+  ClientStatus element_status;
+
+  // The element has an empty box model.
+  ElementFinder::Result empty_element;
+  FindElement(Selector({"#emptydiv"}), &element_status, &empty_element);
+  ASSERT_TRUE(element_status.ok());
+  EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
+            WaitUntilElementIsStable(empty_element, 10,
+                                     base::TimeDelta::FromMilliseconds(10))
+                .proto_status());
+
+  // The element is always hidden and has no box model.
+  ElementFinder::Result hidden_element;
+  FindElement(Selector({"#hidden"}), &element_status, &hidden_element);
+  ASSERT_TRUE(element_status.ok());
+  EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
+            WaitUntilElementIsStable(hidden_element, 10,
+                                     base::TimeDelta::FromMilliseconds(10))
+                .proto_status());
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest,
                        WaitForElementToBecomeStableDevtoolsFailure) {
-  // This makes devtools action fail.
+  // This makes the devtools action fail.
   ElementFinder::Result element;
   element.dom_object.object_data.node_frame_id = "doesnotexist";
   element.container_frame_host = web_contents()->GetMainFrame();
 
-  ClientStatus status = WaitUntilElementIsStable(
-      element, 10, base::TimeDelta::FromMilliseconds(100));
-  EXPECT_EQ(UNEXPECTED_JS_ERROR, status.proto_status());
+  EXPECT_EQ(ELEMENT_POSITION_NOT_FOUND,
+            WaitUntilElementIsStable(element, 10,
+                                     base::TimeDelta::FromMilliseconds(100))
+                .proto_status());
 }
 
 IN_PROC_BROWSER_TEST_F(WebControllerBrowserTest, ElementQueryIndex) {

@@ -148,6 +148,9 @@ std::ostream& operator<<(std::ostream& out,
     case ProcessedActionStatusProto::INVALID_TARGET:
       out << "INVALID_TARGET";
       break;
+    case ProcessedActionStatusProto::ELEMENT_POSITION_NOT_FOUND:
+      out << "ELEMENT_POSITION_NOT_FOUND";
+      break;
 
       // Intentionally no default case to make compilation fail if a new value
       // was added to the enum but not to this list.

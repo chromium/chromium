@@ -87,7 +87,7 @@ message LoginOptionList {
 // a boolean field would have.
 message Empty {}
 
-// Next: 29
+// Next: 34
 enum ProcessedActionStatusProto {
   UNKNOWN_ACTION_STATUS = 0;
 
@@ -221,7 +221,11 @@ enum ProcessedActionStatusProto {
   // called on any element other than <select>.
   INVALID_TARGET = 31;
 
-  reserved 15, 23, 25;
+  // The element has no or only an empty box model. This can mean the element
+  // is not rendered (display: none) or simply empty.
+  ELEMENT_POSITION_NOT_FOUND = 33;
+
+  reserved 15, 23, 25, 32;
 }
 
 // A message to describe a chip.
