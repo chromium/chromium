@@ -51,6 +51,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/mock_web_contents_observer.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -2595,6 +2596,48 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OpenURLInPrerenderingFrame) {
   EXPECT_TRUE(iframe_observer.was_committed());
   EXPECT_TRUE(iframe_observer.was_successful());
   EXPECT_EQ(child_frame->GetLastCommittedURL(), kNewIframeUrl);
+}
+
+// Ensure that WebContentsObserver::DidFailLoad is not invoked and cancels
+// prerendering when invoked inside prerender frame tree.
+IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, DidFailLoadCancelsPrerendering) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = GetUrl("/empty.html");
+  const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
+
+  // Navigate to an initial page.
+  ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
+
+  // Initialize a MockWebContentsObserver and ensure that DidFinishLoad is not
+  // invoked inside prerender frame tree.
+  testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
+  EXPECT_CALL(observer, DidFailLoad(testing::_, testing::_, testing::_))
+      .Times(0);
+
+  // Start a prerender.
+  int prerender_host_id = AddPrerender(kPrerenderingUrl);
+  RenderFrameHostImpl* prerender_frame_host =
+      GetPrerenderedMainFrameHost(prerender_host_id);
+
+  // Trigger DidFailLoad, this should cancel prerendering.
+  prerender_frame_host->DidFailLoadWithError(kPrerenderingUrl, net::ERR_FAILED);
+
+  // The prerender host for the URL should be deleted as DidFailLoad cancels
+  // prerendering.
+  TestNavigationManager activation_observer(shell()->web_contents(),
+                                            kPrerenderingUrl);
+  EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
+
+  // Now navigate the primary page to the prerendered URL. Cancelling the
+  // prerender disables the activation due to DidFailLoad.
+  ASSERT_TRUE(ExecJs(web_contents()->GetMainFrame(),
+                     JsReplace("location = $1", kPrerenderingUrl)));
+  activation_observer.WaitForNavigationFinished();
+  EXPECT_FALSE(activation_observer.was_prerendered_page_activation());
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus",
+      PrerenderHost::FinalStatus::kDidFailLoad, 1);
 }
 
 // Ensures WebContents::OpenURL with a cross-origin URL targeting a frame in a

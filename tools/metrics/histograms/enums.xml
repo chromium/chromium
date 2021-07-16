@@ -65875,6 +65875,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="20" label="kNavigationRequestNetworkFailure"/>
   <int value="21" label="kMaxNumOfRunningPrerendersExceeded"/>
   <int value="22" label="kCancelAllHostsForTesting"/>
+  <int value="23" label="kDidFailLoad"/>
 </enum>
 
 <enum name="PrerenderHoverEvent">
