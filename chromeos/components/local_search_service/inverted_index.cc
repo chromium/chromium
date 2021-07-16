@@ -184,16 +184,18 @@ std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
     const std::unordered_set<std::u16string>& terms,
     double prefix_threshold,
     double block_threshold) const {
-  // For each document, its score is the sum of TF-IDF scores of its terms
-  // that match one of more query term.
+  // For each document, its score is the sum of the scores of its terms that
+  // match one of more query term. Each term's score is the product of its
+  // TF-IDF score and its match relevance score.
   // The map is keyed by the document id.
   std::unordered_map<std::string, ScoreWithPosting> matching_docs;
   for (const auto& kv : tfidf_cache_) {
     const std::u16string& index_term = kv.first;
     const std::vector<TfidfResult>& tfidf_results = kv.second;
     for (const auto& term : terms) {
-      if (IsRelevantApproximately(term, index_term, prefix_threshold,
-                                  block_threshold)) {
+      const float relevance = RelevanceCoefficient(
+          term, index_term, prefix_threshold, block_threshold);
+      if (relevance > 0) {
         // If the |index_term| is relevant, all of the enclosing documents will
         // have their ranking scores updated.
         for (const auto& docid_tfidf : tfidf_results) {
@@ -207,7 +209,7 @@ std::vector<Result> InvertedIndex::FindMatchingDocumentsApproximately(
 
           auto& score_posting = it->second;
           // TODO(jiameng): add position penalty.
-          score_posting.first += tfidf;
+          score_posting.first += tfidf * relevance;
           // Also update matching positions.
           auto& existing_posting = score_posting.second;
           existing_posting.insert(existing_posting.end(), posting.begin(),

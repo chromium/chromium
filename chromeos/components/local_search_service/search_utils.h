@@ -7,7 +7,6 @@
 
 #include <string>
 
-
 namespace chromeos {
 namespace local_search_service {
 
@@ -22,12 +21,13 @@ float ExactPrefixMatchScore(const std::u16string& query,
 // normalization is done.
 float BlockMatchScore(const std::u16string& query, const std::u16string& text);
 
-// |query| approximately matches |text| if its prefix score is above the
-// |prefix_threshold| or block matching score is above |block_threshold|.
-bool IsRelevantApproximately(const std::u16string& query,
-                             const std::u16string& text,
-                             float prefix_threshold,
-                             float block_threshold);
+// If the query's prefix score and block matching score are both below the
+// corresponding thresholds, then this returns zero. Otherwise, returns the
+// higher of the two scores, which will be in [0,1].
+float RelevanceCoefficient(const std::u16string& query,
+                           const std::u16string& text,
+                           float prefix_threshold,
+                           float block_threshold);
 
 // Returns whether |r1| score is higher than |r2|'s.
 bool CompareResults(const Result& r1, const Result& r2);
