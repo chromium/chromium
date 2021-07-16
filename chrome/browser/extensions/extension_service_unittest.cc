@@ -110,6 +110,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/test/browser_task_environment.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_creator.h"
@@ -3529,7 +3530,9 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   auto* prefs = ExtensionPrefs::Get(profile());
   EXPECT_FALSE(registry()->enabled_extensions().Contains(good0));
   EXPECT_TRUE(prefs->IsExtensionBlocklisted(good0));
-  EXPECT_EQ(BLOCKLISTED_MALWARE, prefs->GetExtensionBlocklistState(good0));
+  EXPECT_EQ(
+      BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(good0, prefs));
 
   // Remove the extension from the blocklist.
   test_blocklist.SetBlocklistState(good0, NOT_BLOCKLISTED, true);
@@ -3539,7 +3542,9 @@ TEST_F(ExtensionServiceTest, RemoveExtensionFromBlocklist) {
   // should be cleared.
   EXPECT_TRUE(registry()->enabled_extensions().Contains(good0));
   EXPECT_FALSE(prefs->IsExtensionBlocklisted(good0));
-  EXPECT_EQ(NOT_BLOCKLISTED, prefs->GetExtensionBlocklistState(good0));
+  EXPECT_EQ(
+      BitMapBlocklistState::NOT_BLOCKLISTED,
+      blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(good0, prefs));
 }
 #endif  // defined(ENABLE_BLOCKLIST_TESTS)
 
@@ -3609,10 +3614,12 @@ TEST_F(ExtensionServiceTest, BlocklistedInPrefsFromStartup) {
 
   InitializeGoodInstalledExtensionService();
   test_blocklist.Attach(service()->blocklist_);
-  ExtensionPrefs::Get(profile())->SetExtensionBlocklistState(
-      good0, BLOCKLISTED_MALWARE);
-  ExtensionPrefs::Get(profile())->SetExtensionBlocklistState(
-      good1, BLOCKLISTED_MALWARE);
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      good0, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      ExtensionPrefs::Get(profile()));
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      good1, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      ExtensionPrefs::Get(profile()));
 
   test_blocklist.SetBlocklistState(good1, BLOCKLISTED_MALWARE, false);
 

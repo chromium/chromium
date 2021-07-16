@@ -18,6 +18,9 @@ constexpr const char kPrefOmahaBlocklistState[] = "omaha_blocklist_state";
 constexpr const char kPrefAcknowledgedBlocklistState[] =
     "acknowledged_blocklist_state";
 
+// If extension is blocklisted or greylisted.
+constexpr const char kPrefBlocklistState[] = "blacklist_state";
+
 // The default value to use for getting blocklist state from the pref.
 constexpr BitMapBlocklistState kDefaultBitMapBlocklistState =
     BitMapBlocklistState::NOT_BLOCKLISTED;
@@ -33,6 +36,23 @@ const int kAllGreylistStates =
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY) |
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION) |
     static_cast<int>(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED);
+
+// Converts BitMapBlocklistState to BlocklistState.
+BlocklistState BitMapBlocklistStateToBlocklistState(
+    BitMapBlocklistState blocklist_state) {
+  switch (blocklist_state) {
+    case BitMapBlocklistState::NOT_BLOCKLISTED:
+      return NOT_BLOCKLISTED;
+    case BitMapBlocklistState::BLOCKLISTED_MALWARE:
+      return BLOCKLISTED_MALWARE;
+    case BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
+      return BLOCKLISTED_SECURITY_VULNERABILITY;
+    case BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
+      return BLOCKLISTED_CWS_POLICY_VIOLATION;
+    case BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
+      return BLOCKLISTED_POTENTIALLY_UNWANTED;
+  }
+}
 
 }  // namespace
 
@@ -60,8 +80,8 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 BitMapBlocklistState GetExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs) {
-  BitMapBlocklistState sb_state = BlocklistStateToBitMapBlocklistState(
-      extension_prefs->GetExtensionBlocklistState(extension_id));
+  BitMapBlocklistState sb_state =
+      GetSafeBrowsingExtensionBlocklistState(extension_id, extension_prefs);
   if (sb_state == BitMapBlocklistState::BLOCKLISTED_MALWARE ||
       HasOmahaBlocklistState(extension_id,
                              BitMapBlocklistState::BLOCKLISTED_MALWARE,
@@ -153,10 +173,8 @@ void UpdateCurrentGreylistStatesAsAcknowledged(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs) {
   for (auto state : kGreylistStates) {
-    bool is_on_sb_list =
-        (BlocklistStateToBitMapBlocklistState(
-             extension_prefs->GetExtensionBlocklistState(extension_id)) ==
-         state);
+    bool is_on_sb_list = (GetSafeBrowsingExtensionBlocklistState(
+                              extension_id, extension_prefs) == state);
     bool is_on_omaha_list =
         HasOmahaBlocklistState(extension_id, state, extension_prefs);
     if (is_on_sb_list || is_on_omaha_list) {
@@ -165,6 +183,55 @@ void UpdateCurrentGreylistStatesAsAcknowledged(
       RemoveAcknowledgedBlocklistState(extension_id, state, extension_prefs);
     }
   }
+}
+
+void SetSafeBrowsingExtensionBlocklistState(
+    const std::string& extension_id,
+    BitMapBlocklistState bitmap_blocklist_state,
+    ExtensionPrefs* extension_prefs) {
+  bool currently_blocklisted =
+      extension_prefs->IsExtensionBlocklisted(extension_id);
+  BlocklistState state =
+      BitMapBlocklistStateToBlocklistState(bitmap_blocklist_state);
+  bool is_blocklisted = state == BLOCKLISTED_MALWARE;
+  if (is_blocklisted != currently_blocklisted) {
+    // Always make sure the "acknowledged" bit is cleared since the blocklist
+    // bit is changing.
+    extension_prefs->UpdateExtensionPref(
+        extension_id, extension_prefs->GetPrefBlocklistAcknowledgedKey(),
+        nullptr);
+
+    if (is_blocklisted) {
+      extension_prefs->UpdateExtensionPref(
+          extension_id, extension_prefs->GetPrefBlocklistKey(),
+          std::make_unique<base::Value>(true));
+    } else {
+      extension_prefs->UpdateExtensionPref(
+          extension_id, extension_prefs->GetPrefBlocklistKey(), nullptr);
+      extension_prefs->DeleteExtensionPrefsIfPrefEmpty(extension_id);
+    }
+  }
+
+  extension_prefs->UpdateExtensionPref(extension_id, kPrefBlocklistState,
+                                       std::make_unique<base::Value>(state));
+}
+
+BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
+    const std::string& extension_id,
+    ExtensionPrefs* extension_prefs) {
+  if (extension_prefs->IsExtensionBlocklisted(extension_id)) {
+    return BitMapBlocklistState::BLOCKLISTED_MALWARE;
+  }
+
+  int int_value = -1;
+  if (extension_prefs->ReadPrefAsInteger(extension_id, kPrefBlocklistState,
+                                         &int_value) &&
+      int_value >= 0) {
+    return BlocklistStateToBitMapBlocklistState(
+        static_cast<BlocklistState>(int_value));
+  }
+
+  return BitMapBlocklistState::NOT_BLOCKLISTED;
 }
 
 }  // namespace blocklist_prefs

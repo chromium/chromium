@@ -24,6 +24,7 @@ BitMapBlocklistState BlocklistStateToBitMapBlocklistState(
 // is defined as follow:
 // BLOCKLISTED_MALWARE > BLOCKLISTED_CWS_POLICY_VIOLATION >
 // BLOCKLISTED_POTENTIALLY_UNWANTED > BLOCKLISTED_SECURITY_VULNERABILITY.
+// TODO(crbug.com/1193695): Replace IsExtensionBlocklisted by this method.
 BitMapBlocklistState GetExtensionBlocklistState(
     const std::string& extension_id,
     ExtensionPrefs* extension_prefs);
@@ -64,12 +65,26 @@ void ClearAcknowledgedBlocklistStates(const std::string& extension_id,
 bool HasAcknowledgedBlocklistState(const std::string& extension_id,
                                    BitMapBlocklistState state,
                                    ExtensionPrefs* extension_prefs);
-// Set all current greylist states for this `extension_id` as acknowledged.
+// Sets all current greylist states for this `extension_id` as acknowledged.
 // It will consider both Safe Browsing greylist state and Omaha attribute
 // greylist state. Previous acknowledged states will be cleared if the
 // `extension_id` is no longer in that state.
 void UpdateCurrentGreylistStatesAsAcknowledged(const std::string& extension_id,
                                                ExtensionPrefs* extension_prefs);
+
+// Sets the `bitmap_blocklist_state` to the Safe Browsing blocklist state pref.
+void SetSafeBrowsingExtensionBlocklistState(
+    const std::string& extension_id,
+    BitMapBlocklistState bitmap_blocklist_state,
+    ExtensionPrefs* extension_prefs);
+
+// Returns the current Safe Browsing blocklist state of the `extension_id`.
+// Warning: This function only takes Safe Browsing blocklist states into
+// account. If you'd like to combine both Safe Browsing and Omaha attribute
+// blocklist, please use blocklist_prefs::GetExtensionBlocklistState instead.
+BitMapBlocklistState GetSafeBrowsingExtensionBlocklistState(
+    const std::string& extension_id,
+    ExtensionPrefs* extension_prefs);
 
 }  // namespace blocklist_prefs
 }  // namespace extensions

@@ -13,6 +13,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "extensions/browser/allowlist_state.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -144,8 +145,9 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(BLOCKLISTED_MALWARE,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE |
                 disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
@@ -158,8 +160,9 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_allowlisted=*/true);
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(BLOCKLISTED_MALWARE,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_REMOTELY_FOR_MALWARE,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
@@ -171,8 +174,9 @@ TEST_F(ExtensionAllowlistUnitTest, AllowlistEnforcement) {
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(NOT_BLOCKLISTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
@@ -205,8 +209,9 @@ TEST_F(ExtensionAllowlistUnitTest, DisabledItemStaysDisabledWhenAllowlisted) {
                                       /*is_allowlisted=*/true);
   EXPECT_EQ(ALLOWLIST_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(NOT_BLOCKLISTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_USER_ACTION,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
@@ -320,16 +325,18 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(BLOCKLISTED_MALWARE,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId2));
-  EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId2));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId2, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_GREYLIST |
                 disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId2));
@@ -343,16 +350,18 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsNotAllowlistedThenBlocklisted) {
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(NOT_BLOCKLISTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId2));
-  EXPECT_EQ(NOT_BLOCKLISTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId2));
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId2, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId2));
   EXPECT_TRUE(IsDisabled(kExtensionId2));
@@ -369,8 +378,9 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsBlocklistedThenNotAllowlisted) {
   // Blocklist and greylist the two extensions respectively.
   test_blocklist.SetBlocklistState(kExtensionId1, BLOCKLISTED_MALWARE, true);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(BLOCKLISTED_MALWARE,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_TRUE(IsBlocklisted(kExtensionId1));
 
   // The extension is then also disabled from allowlist enforcement.
@@ -379,8 +389,9 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsBlocklistedThenNotAllowlisted) {
                                       /*is_allowlisted=*/false);
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(BLOCKLISTED_MALWARE,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   // The disable reason is added even if the extension is already blocklisted.
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
@@ -393,8 +404,9 @@ TEST_F(ExtensionAllowlistUnitTest, ExtensionsBlocklistedThenNotAllowlisted) {
 
   EXPECT_EQ(ALLOWLIST_NOT_ALLOWLISTED,
             allowlist()->GetExtensionAllowlistState(kExtensionId1));
-  EXPECT_EQ(NOT_BLOCKLISTED,
-            extension_prefs()->GetExtensionBlocklistState(kExtensionId1));
+  EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+            blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                kExtensionId1, extension_prefs()));
   EXPECT_EQ(disable_reason::DISABLE_NOT_ALLOWLISTED,
             extension_prefs()->GetDisableReasons(kExtensionId1));
   EXPECT_TRUE(IsDisabled(kExtensionId1));

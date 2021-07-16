@@ -81,9 +81,6 @@ constexpr const char kPrefManifestVersion[] = "manifest.version";
 // Indicates whether an extension is blocklisted.
 constexpr const char kPrefBlocklist[] = "blacklist";
 
-// If extension is greylisted.
-constexpr const char kPrefBlocklistState[] = "blacklist_state";
-
 // The count of how many times we prompted the user to acknowledge an
 // extension.
 constexpr const char kPrefAcknowledgePromptCount[] = "ack_prompt_count";
@@ -580,6 +577,13 @@ void ExtensionPrefs::DeleteExtensionPrefs(const std::string& extension_id) {
     observer.OnExtensionPrefsDeleted(extension_id);
   prefs::ScopedDictionaryPrefUpdate update(prefs_, pref_names::kExtensions);
   update->Remove(extension_id);
+}
+
+void ExtensionPrefs::DeleteExtensionPrefsIfPrefEmpty(
+    const std::string& extension_id) {
+  const base::DictionaryValue* dict = GetExtensionPref(extension_id);
+  if (dict && dict->DictEmpty())
+    DeleteExtensionPrefs(extension_id);
 }
 
 bool ExtensionPrefs::ReadPrefAsBoolean(const std::string& extension_id,
@@ -1096,6 +1100,14 @@ std::set<std::string> ExtensionPrefs::GetBlocklistedExtensions() const {
   return ids;
 }
 
+base::StringPiece ExtensionPrefs::GetPrefBlocklistAcknowledgedKey() {
+  return kPrefBlocklistAcknowledged;
+}
+
+base::StringPiece ExtensionPrefs::GetPrefBlocklistKey() {
+  return kPrefBlocklist;
+}
+
 bool ExtensionPrefs::IsExtensionBlocklisted(const std::string& id) const {
   const base::DictionaryValue* ext_prefs = GetExtensionPref(id);
   return ext_prefs && IsBlocklistBitSet(ext_prefs);
@@ -1446,42 +1458,6 @@ void ExtensionPrefs::SetExtensionDisabled(const std::string& extension_id,
                       std::make_unique<base::Value>(disable_reasons));
   for (auto& observer : observer_list_)
     observer.OnExtensionStateChanged(extension_id, false);
-}
-
-void ExtensionPrefs::SetExtensionBlocklistState(const std::string& extension_id,
-                                                BlocklistState state) {
-  bool currently_blocklisted = IsExtensionBlocklisted(extension_id);
-  bool is_blocklisted = state == BLOCKLISTED_MALWARE;
-  if (is_blocklisted != currently_blocklisted) {
-    // Always make sure the "acknowledged" bit is cleared since the blocklist
-    // bit is changing.
-    UpdateExtensionPref(extension_id, kPrefBlocklistAcknowledged, nullptr);
-
-    if (is_blocklisted) {
-      UpdateExtensionPref(extension_id, kPrefBlocklist,
-                          std::make_unique<base::Value>(true));
-    } else {
-      UpdateExtensionPref(extension_id, kPrefBlocklist, nullptr);
-      const base::DictionaryValue* dict = GetExtensionPref(extension_id);
-      if (dict && dict->DictEmpty())
-        DeleteExtensionPrefs(extension_id);
-    }
-  }
-
-  UpdateExtensionPref(extension_id, kPrefBlocklistState,
-                      std::make_unique<base::Value>(state));
-}
-
-BlocklistState ExtensionPrefs::GetExtensionBlocklistState(
-    const std::string& extension_id) const {
-  if (IsExtensionBlocklisted(extension_id))
-    return BLOCKLISTED_MALWARE;
-  const base::DictionaryValue* ext_prefs = GetExtensionPref(extension_id);
-  int int_value = 0;
-  if (ext_prefs && ext_prefs->GetInteger(kPrefBlocklistState, &int_value))
-    return static_cast<BlocklistState>(int_value);
-
-  return NOT_BLOCKLISTED;
 }
 
 std::string ExtensionPrefs::GetVersionString(

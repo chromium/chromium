@@ -13,6 +13,7 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
 #include "extensions/browser/extension_function.h"
@@ -371,8 +372,9 @@ IN_PROC_BROWSER_TEST_P(RuntimeApiTest,
   ASSERT_TRUE(extension_service()->IsExtensionEnabled(extension->id()));
 
   // Blocklist extension.
-  extensions::ExtensionPrefs::Get(profile())->SetExtensionBlocklistState(
-      extension->id(), extensions::BlocklistState::BLOCKLISTED_MALWARE);
+  extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      extensions::ExtensionPrefs::Get(profile()));
 
   // Uninstalling a blocklisted extension should not open its uninstall url.
   TestExtensionRegistryObserver observer(ExtensionRegistry::Get(profile()),

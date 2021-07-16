@@ -241,22 +241,6 @@ class ExtensionPrefs : public KeyedService {
   void SetExtensionDisabled(const std::string& extension_id,
                             int disable_reasons);
 
-  // TODO(crbug.com/1180996): Rename this function to
-  // SetSafeBrowsingExtensionBlocklistState and move it to the
-  // blocklist_extension_prefs file.
-  void SetExtensionBlocklistState(const std::string& extension_id,
-                                  BlocklistState state);
-
-  // Checks whether |extension_id| is marked as greylisted.
-  // Warning: This function only takes Safe Browsing blocklist states into
-  // account. Please use blocklist_prefs::GetExtensionBlocklistState instead.
-  // TODO(crbug.com/1180996): Rename this function to
-  // GetSafeBrowsingExtensionBlocklistState and move it to the
-  // blocklist_extension_prefs file.
-  // TODO(oleg): Replace IsExtensionBlocklisted by this method.
-  BlocklistState GetExtensionBlocklistState(
-      const std::string& extension_id) const;
-
   // Gets the value of a bit map pref. Gets the value of
   // |extension_id| from |pref_key|. If the value is not found or invalid,
   // return the |default_bit|.
@@ -316,6 +300,8 @@ class ExtensionPrefs : public KeyedService {
                            std::unique_ptr<base::Value> value);
 
   void DeleteExtensionPrefs(const std::string& id);
+
+  void DeleteExtensionPrefsIfPrefEmpty(const std::string& id);
 
   bool ReadPrefAsBoolean(const std::string& extension_id,
                          const PrefMap& pref,
@@ -388,9 +374,19 @@ class ExtensionPrefs : public KeyedService {
 
   // Gets the set of extensions that have been blocklisted in prefs. This will
   // return only the blocked extensions, not the "greylist" extensions.
-  // TODO(oleg): Make method names consistent here, in extension service and in
-  // blocklist.
+  // TODO(crbug.com/1193695): This method is not called in production, remove
+  // it.
   std::set<std::string> GetBlocklistedExtensions() const;
+
+  // Gets the key of blocklist acknowledged pref.
+  // TODO(crbug.com/1193695): Remove this method once kPrefBlocklistAcknowledged
+  // is removed.
+  base::StringPiece GetPrefBlocklistAcknowledgedKey();
+
+  // Gets the key of blocklist pref.
+  // TODO(crbug.com/1193695): Remove this method once kPrefBlocklist
+  // is removed.
+  base::StringPiece GetPrefBlocklistKey();
 
   // Returns the version string for the currently installed extension, or
   // the empty string if not found.
@@ -821,8 +817,8 @@ class ExtensionPrefs : public KeyedService {
 
   // Deprecated kPrefBlocklistAcknowledged kPrefBlocklist. Use
   // kPrefBlocklistState instead.
-  // TODO(atuchin): Remove kPrefBlocklistAcknowledged kPrefBlocklist once all
-  // clients are updated.
+  // TODO(crbug.com/1193695): Remove kPrefBlocklistAcknowledged kPrefBlocklist
+  // once all clients are updated.
 
   // Converts |set| to a list of strings and sets the |pref_key| pref belonging
   // to |extension_id|. If |set| is empty, the preference for |pref_key| is

@@ -22,6 +22,7 @@
 #include "components/metrics/metrics_state_manager.h"
 #include "components/metrics/test/test_enabled_state_provider.h"
 #include "components/prefs/testing_pref_service.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/extension.h"
@@ -388,8 +389,10 @@ TEST_F(ExtensionMetricsProviderInstallsTest, TestProtoConstruction) {
             .SetLocation(ManifestLocation::kInternal)
             .Build();
     add_extension(extension.get());
-    prefs()->SetExtensionBlocklistState(
-        extension->id(), extensions::BLOCKLISTED_SECURITY_VULNERABILITY);
+    extensions::blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(),
+        extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY,
+        prefs());
     ExtensionInstallProto install = ConstructProto(*extension);
     EXPECT_EQ(ExtensionInstallProto::BLACKLISTED_SECURITY_VULNERABILITY,
               install.blacklist_state());

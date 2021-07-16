@@ -56,6 +56,7 @@
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/blocklist_state.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
@@ -2679,8 +2680,9 @@ TEST_F(ExtensionUpdaterTest, TestUpdatingRemotelyDisabledExtensions) {
   ASSERT_EQ(1u, enabled_extensions.size());
   ASSERT_EQ(2u, blocklisted_extensions.size());
   const std::string& remotely_blocklisted_id = blocklisted_extensions[0]->id();
-  service.extension_prefs()->SetExtensionBlocklistState(remotely_blocklisted_id,
-                                                        BLOCKLISTED_MALWARE);
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      remotely_blocklisted_id, BitMapBlocklistState::BLOCKLISTED_MALWARE,
+      service.extension_prefs());
   service.extension_prefs()->AddDisableReason(
       remotely_blocklisted_id, disable_reason::DISABLE_REMOTELY_FOR_MALWARE);
 

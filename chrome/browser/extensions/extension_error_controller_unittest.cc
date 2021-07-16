@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_controller.h"
+
+#include "base/memory/ref_counted.h"
 #include "chrome/browser/extensions/extension_error_ui.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/testing_profile.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
@@ -126,7 +128,8 @@ void ExtensionErrorControllerUnitTest::SetUp() {
 testing::AssertionResult
 ExtensionErrorControllerUnitTest::AddBlocklistedExtension(
     const Extension* extension) {
-  GetPrefs()->SetExtensionBlocklistState(extension->id(), BLOCKLISTED_MALWARE);
+  blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+      extension->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, GetPrefs());
   service_->AddExtension(extension);
 
   // Make sure the extension is added to the blocklisted set.

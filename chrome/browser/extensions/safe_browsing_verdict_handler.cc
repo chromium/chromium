@@ -28,18 +28,17 @@ void SafeBrowsingVerdictHandler::Init() {
       registry_->GenerateInstalledExtensionsSet();
 
   for (const auto& extension : *all_extensions) {
-    const BlocklistState state =
-        extension_prefs_->GetExtensionBlocklistState(extension->id());
-    if (state == BLOCKLISTED_SECURITY_VULNERABILITY ||
-        state == BLOCKLISTED_POTENTIALLY_UNWANTED ||
-        state == BLOCKLISTED_CWS_POLICY_VIOLATION) {
+    const BitMapBlocklistState state =
+        blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+            extension->id(), extension_prefs_);
+    if (state == BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY ||
+        state == BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED ||
+        state == BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION) {
       // If the extension was disabled in an older Chrome version, it is
       // possible that the acknowledged state is not set. Backfill the
       // acknowledged state if that's the case.
-      blocklist_prefs::AddAcknowledgedBlocklistState(
-          extension->id(),
-          blocklist_prefs::BlocklistStateToBitMapBlocklistState(state),
-          extension_prefs_);
+      blocklist_prefs::AddAcknowledgedBlocklistState(extension->id(), state,
+                                                     extension_prefs_);
       greylist_.Insert(extension);
     }
   }
@@ -80,7 +79,7 @@ void SafeBrowsingVerdictHandler::Partition(const ExtensionIdSet& before,
   *no_longer = base::STLSetDifference<ExtensionIdSet>(*no_longer, unchanged);
 }
 
-// TODO(oleg): UMA logging
+// TODO(crbug.com/1193695): UMA logging
 void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
     const ExtensionIdSet& greylist,
     const ExtensionIdSet& unchanged,
@@ -99,8 +98,9 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
     }
 
     greylist_.Remove(id);
-    extension_prefs_->SetExtensionBlocklistState(extension->id(),
-                                                 NOT_BLOCKLISTED);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(), BitMapBlocklistState::NOT_BLOCKLISTED,
+        extension_prefs_);
     extension_service_->ClearGreylistedAcknowledgedStateAndMaybeReenable(
         extension->id());
   }
@@ -119,10 +119,12 @@ void SafeBrowsingVerdictHandler::UpdateGreylistedExtensions(
 
     greylist_.Insert(extension);
     BlocklistState greylist_state = state_map.find(id)->second;
-    extension_prefs_->SetExtensionBlocklistState(id, greylist_state);
-    extension_service_->MaybeDisableGreylistedExtension(
-        id,
-        blocklist_prefs::BlocklistStateToBitMapBlocklistState(greylist_state));
+    BitMapBlocklistState bitmap_greylist_state =
+        blocklist_prefs::BlocklistStateToBitMapBlocklistState(greylist_state);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension->id(), bitmap_greylist_state, extension_prefs_);
+    extension_service_->MaybeDisableGreylistedExtension(id,
+                                                        bitmap_greylist_state);
   }
 }
 

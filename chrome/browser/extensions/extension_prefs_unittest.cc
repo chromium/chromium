@@ -26,6 +26,7 @@
 #include "content/public/browser/notification_details.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/test/mock_notification_observer.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/install_flag.h"
@@ -810,6 +811,8 @@ PrefsPrepopulatedTestBase::~PrefsPrepopulatedTestBase() {
 }
 
 // Tests that blocklist state can be queried.
+// TODO(crbug.com/1193695): Remove this test once GetBlocklistedExtensions is
+// removed.
 class ExtensionPrefsBlocklistedExtensions : public ExtensionPrefsTest {
  public:
   ~ExtensionPrefsBlocklistedExtensions() override {}
@@ -825,17 +828,17 @@ class ExtensionPrefsBlocklistedExtensions : public ExtensionPrefsTest {
       ExtensionIdSet ids;
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
     }
-    prefs()->SetExtensionBlocklistState(extension_a_->id(),
-                                        BLOCKLISTED_MALWARE);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
     {
       ExtensionIdSet ids;
       ids.insert(extension_a_->id());
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
     }
-    prefs()->SetExtensionBlocklistState(extension_b_->id(),
-                                        BLOCKLISTED_MALWARE);
-    prefs()->SetExtensionBlocklistState(extension_c_->id(),
-                                        BLOCKLISTED_MALWARE);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_b_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_c_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
     {
       ExtensionIdSet ids;
       ids.insert(extension_a_->id());
@@ -843,15 +846,18 @@ class ExtensionPrefsBlocklistedExtensions : public ExtensionPrefsTest {
       ids.insert(extension_c_->id());
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
     }
-    prefs()->SetExtensionBlocklistState(extension_a_->id(), NOT_BLOCKLISTED);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
     {
       ExtensionIdSet ids;
       ids.insert(extension_b_->id());
       ids.insert(extension_c_->id());
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
     }
-    prefs()->SetExtensionBlocklistState(extension_b_->id(), NOT_BLOCKLISTED);
-    prefs()->SetExtensionBlocklistState(extension_c_->id(), NOT_BLOCKLISTED);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_b_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_c_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
     {
       ExtensionIdSet ids;
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
@@ -861,9 +867,10 @@ class ExtensionPrefsBlocklistedExtensions : public ExtensionPrefsTest {
     // when we're storing *just* the fact that the extension is blocklisted.
     std::string arbitrary_id = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa";
 
-    prefs()->SetExtensionBlocklistState(arbitrary_id, BLOCKLISTED_MALWARE);
-    prefs()->SetExtensionBlocklistState(extension_a_->id(),
-                                        BLOCKLISTED_MALWARE);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        arbitrary_id, BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
 
     // (And make sure that the acknowledged bit is also cleared).
     prefs()->AcknowledgeBlocklistedExtension(arbitrary_id);
@@ -874,8 +881,10 @@ class ExtensionPrefsBlocklistedExtensions : public ExtensionPrefsTest {
       ids.insert(extension_a_->id());
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
     }
-    prefs()->SetExtensionBlocklistState(arbitrary_id, NOT_BLOCKLISTED);
-    prefs()->SetExtensionBlocklistState(extension_a_->id(), NOT_BLOCKLISTED);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        arbitrary_id, BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
     {
       ExtensionIdSet ids;
       EXPECT_EQ(ids, prefs()->GetBlocklistedExtensions());
@@ -892,6 +901,7 @@ TEST_F(ExtensionPrefsBlocklistedExtensions,
 
 // Tests the blocklist state. Old "blocklist" preference should take precedence
 // over new "blocklist_state".
+// TODO(crbug.com/1193695): Remove this test once kPrefBlocklist is deprecated.
 class ExtensionPrefsBlocklistState : public ExtensionPrefsTest {
  public:
   ~ExtensionPrefsBlocklistState() override {}
@@ -902,28 +912,34 @@ class ExtensionPrefsBlocklistState : public ExtensionPrefsTest {
     ExtensionIdSet empty_ids;
     EXPECT_EQ(empty_ids, prefs()->GetBlocklistedExtensions());
 
-    prefs()->SetExtensionBlocklistState(extension_a_->id(),
-                                        BLOCKLISTED_MALWARE);
-    EXPECT_EQ(BLOCKLISTED_MALWARE,
-              prefs()->GetExtensionBlocklistState(extension_a_->id()));
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
+    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                  extension_a_->id(), prefs()));
 
-    prefs()->SetExtensionBlocklistState(extension_a_->id(),
-                                        BLOCKLISTED_POTENTIALLY_UNWANTED);
-    EXPECT_EQ(BLOCKLISTED_POTENTIALLY_UNWANTED,
-              prefs()->GetExtensionBlocklistState(extension_a_->id()));
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(),
+        BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED, prefs());
+    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
+              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                  extension_a_->id(), prefs()));
     EXPECT_FALSE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
     EXPECT_EQ(empty_ids, prefs()->GetBlocklistedExtensions());
 
-    prefs()->SetExtensionBlocklistState(extension_a_->id(),
-                                        BLOCKLISTED_MALWARE);
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::BLOCKLISTED_MALWARE, prefs());
     EXPECT_TRUE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
-    EXPECT_EQ(BLOCKLISTED_MALWARE,
-              prefs()->GetExtensionBlocklistState(extension_a_->id()));
+    EXPECT_EQ(BitMapBlocklistState::BLOCKLISTED_MALWARE,
+              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                  extension_a_->id(), prefs()));
     EXPECT_EQ(1u, prefs()->GetBlocklistedExtensions().size());
 
-    prefs()->SetExtensionBlocklistState(extension_a_->id(), NOT_BLOCKLISTED);
-    EXPECT_EQ(NOT_BLOCKLISTED,
-              prefs()->GetExtensionBlocklistState(extension_a_->id()));
+    blocklist_prefs::SetSafeBrowsingExtensionBlocklistState(
+        extension_a_->id(), BitMapBlocklistState::NOT_BLOCKLISTED, prefs());
+    EXPECT_EQ(BitMapBlocklistState::NOT_BLOCKLISTED,
+              blocklist_prefs::GetSafeBrowsingExtensionBlocklistState(
+                  extension_a_->id(), prefs()));
     EXPECT_FALSE(prefs()->IsExtensionBlocklisted(extension_a_->id()));
     EXPECT_EQ(empty_ids, prefs()->GetBlocklistedExtensions());
   }
