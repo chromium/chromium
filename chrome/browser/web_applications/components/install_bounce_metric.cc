@@ -28,12 +28,11 @@ base::Time GetTime() {
 // TODO(alancutter): Dedupe Time/Value conversion logic with
 // app_banner_settings_helper.cc and PrefService.
 absl::optional<base::Time> ParseTime(const base::Value* value) {
-  std::string delta_string;
-  if (!value || !value->GetAsString(&delta_string))
+  if (!value || !value->is_string())
     return absl::nullopt;
 
   int64_t integer;
-  if (!base::StringToInt64(delta_string, &integer))
+  if (!base::StringToInt64(value->GetString(), &integer))
     return absl::nullopt;
 
   return base::Time::FromDeltaSinceWindowsEpoch(
