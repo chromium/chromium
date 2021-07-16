@@ -391,7 +391,7 @@ void TabHelper::DidFinishNavigation(
                                      navigation_handle);
 
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
-  if (browser && browser->deprecated_is_app()) {
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup())) {
     const Extension* extension = registry->GetExtensionById(
         web_app::GetAppIdFromApplicationName(browser->app_name()),
         ExtensionRegistry::EVERYTHING);
