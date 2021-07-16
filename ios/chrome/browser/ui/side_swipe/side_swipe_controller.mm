@@ -143,6 +143,9 @@ const NSUInteger kIpadGreySwipeTabCount = 8;
 // Removes the |curtain_| if there was an active swipe, and resets
 // |inSwipe_| value.
 - (void)dismissCurtain;
+// Cleans up Browser, WebStateList, and WebState references in the instance of a
+// BrowserDestroyed BrowserObserver call.
+- (void)browserDestroyed;
 @end
 
 // A browser observer that nullifies SideSwipeController's pointer to browser
@@ -153,7 +156,7 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
       : side_swipe_controller_(controller) {}
 
   void BrowserDestroyed(Browser* browser) override {
-    side_swipe_controller_.browser = nullptr;
+    [side_swipe_controller_ browserDestroyed];
   }
 
  private:
@@ -205,6 +208,14 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
 
   _scopedWebStateObservation.reset();
   _webStateObserverBridge.reset();
+}
+
+- (void)browserDestroyed {
+  self.webStateList->RemoveObserver(_webStateListObserver.get());
+  _scopedWebStateObservation.reset();
+  _webStateObserverBridge.reset();
+  self.browser->RemoveObserver(_browserRemover.get());
+  self.browser = nullptr;
 }
 
 - (void)addHorizontalGesturesToView:(UIView*)view {
