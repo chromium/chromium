@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fake_gnubby_client.h"
+#include "chromeos/dbus/gnubby/fake_gnubby_client.h"
 
 namespace chromeos {
 

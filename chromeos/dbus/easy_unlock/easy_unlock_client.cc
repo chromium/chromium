@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 
 #include <stddef.h>
 #include <stdint.h>
@@ -52,9 +52,8 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
 
   // EasyUnlockClient override.
   void GenerateEcP256KeyPair(KeyPairCallback callback) override {
-    dbus::MethodCall method_call(
-        easy_unlock::kEasyUnlockServiceInterface,
-        easy_unlock::kGenerateEcP256KeyPairMethod);
+    dbus::MethodCall method_call(easy_unlock::kEasyUnlockServiceInterface,
+                                 easy_unlock::kGenerateEcP256KeyPairMethod);
     proxy_->CallMethod(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&EasyUnlockClientImpl::OnKeyPair,
@@ -65,9 +64,8 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
   void WrapPublicKey(const std::string& key_algorithm,
                      const std::string& public_key,
                      DataCallback callback) override {
-    dbus::MethodCall method_call(
-        easy_unlock::kEasyUnlockServiceInterface,
-        easy_unlock::kWrapPublicKeyMethod);
+    dbus::MethodCall method_call(easy_unlock::kEasyUnlockServiceInterface,
+                                 easy_unlock::kWrapPublicKeyMethod);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(key_algorithm);
     AppendStringAsByteArray(public_key, &writer);
@@ -81,9 +79,8 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
   void PerformECDHKeyAgreement(const std::string& private_key,
                                const std::string& public_key,
                                DataCallback callback) override {
-    dbus::MethodCall method_call(
-        easy_unlock::kEasyUnlockServiceInterface,
-        easy_unlock::kPerformECDHKeyAgreementMethod);
+    dbus::MethodCall method_call(easy_unlock::kEasyUnlockServiceInterface,
+                                 easy_unlock::kPerformECDHKeyAgreementMethod);
     dbus::MessageWriter writer(&method_call);
     // NOTE: DBus expects that data sent as string is UTF-8 encoded. This is
     //     not guaranteed here, so the method uses byte arrays.
@@ -99,9 +96,8 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
   void CreateSecureMessage(const std::string& payload,
                            const CreateSecureMessageOptions& options,
                            DataCallback callback) override {
-    dbus::MethodCall method_call(
-        easy_unlock::kEasyUnlockServiceInterface,
-        easy_unlock::kCreateSecureMessageMethod);
+    dbus::MethodCall method_call(easy_unlock::kEasyUnlockServiceInterface,
+                                 easy_unlock::kCreateSecureMessageMethod);
     dbus::MessageWriter writer(&method_call);
     // NOTE: DBus expects that data sent as string is UTF-8 encoded. This is
     //     not guaranteed here, so the method uses byte arrays.
@@ -123,9 +119,8 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
   void UnwrapSecureMessage(const std::string& message,
                            const UnwrapSecureMessageOptions& options,
                            DataCallback callback) override {
-    dbus::MethodCall method_call(
-        easy_unlock::kEasyUnlockServiceInterface,
-        easy_unlock::kUnwrapSecureMessageMethod);
+    dbus::MethodCall method_call(easy_unlock::kEasyUnlockServiceInterface,
+                                 easy_unlock::kUnwrapSecureMessageMethod);
     dbus::MessageWriter writer(&method_call);
     // NOTE: DBus expects that data sent as string is UTF-8 encoded. This is
     //     not guaranteed here, so the method uses byte arrays.
@@ -142,10 +137,9 @@ class EasyUnlockClientImpl : public EasyUnlockClient {
 
  protected:
   void Init(dbus::Bus* bus) override {
-    proxy_ =
-        bus->GetObjectProxy(
-            easy_unlock::kEasyUnlockServiceName,
-            dbus::ObjectPath(easy_unlock::kEasyUnlockServicePath));
+    proxy_ = bus->GetObjectProxy(
+        easy_unlock::kEasyUnlockServiceName,
+        dbus::ObjectPath(easy_unlock::kEasyUnlockServicePath));
   }
 
  private:

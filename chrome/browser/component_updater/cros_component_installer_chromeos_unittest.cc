@@ -28,7 +28,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_image_loader_client.h"
+#include "chromeos/dbus/image_loader/fake_image_loader_client.h"
 #include "components/component_updater/mock_component_updater_service.h"
 #include "components/update_client/utils.h"
 #include "components/user_manager/scoped_user_manager.h"

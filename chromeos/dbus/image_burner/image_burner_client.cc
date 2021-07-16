@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/image_burner_client.h"
+#include "chromeos/dbus/image_burner/image_burner_client.h"
 
 #include <stdint.h>
 
@@ -91,8 +91,7 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
     std::string target_path;
     bool success;
     std::string error;
-    if (!reader.PopString(&target_path) ||
-        !reader.PopBool(&success) ||
+    if (!reader.PopString(&target_path) || !reader.PopBool(&success) ||
         !reader.PopString(&error)) {
       LOG(ERROR) << "Invalid signal: " << signal->ToString();
       return;
@@ -107,8 +106,7 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
     std::string target_path;
     int64_t num_bytes_burnt;
     int64_t total_size;
-    if (!reader.PopString(&target_path) ||
-        !reader.PopInt64(&num_bytes_burnt) ||
+    if (!reader.PopString(&target_path) || !reader.PopInt64(&num_bytes_burnt) ||
         !reader.PopInt64(&total_size)) {
       LOG(ERROR) << "Invalid signal: " << signal->ToString();
       return;
@@ -122,8 +120,8 @@ class ImageBurnerClientImpl : public ImageBurnerClient {
   void OnSignalConnected(const std::string& interface,
                          const std::string& signal,
                          bool succeeded) {
-    LOG_IF(ERROR, !succeeded) << "Connect to " << interface << " " <<
-        signal << " failed.";
+    LOG_IF(ERROR, !succeeded)
+        << "Connect to " << interface << " " << signal << " failed.";
   }
 
   dbus::ObjectProxy* proxy_;

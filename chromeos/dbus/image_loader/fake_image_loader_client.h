@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_IMAGE_LOADER_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_IMAGE_LOADER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_IMAGE_LOADER_FAKE_IMAGE_LOADER_CLIENT_H_
+#define CHROMEOS_DBUS_IMAGE_LOADER_FAKE_IMAGE_LOADER_CLIENT_H_
 
 #include <map>
 #include <set>
 #include <string>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/dbus/image_loader_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 
 namespace base {
 class FilePath;
@@ -19,7 +20,7 @@ class FilePath;
 namespace chromeos {
 
 // A fake implementation of ImageLoaderClient. This class does nothing.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeImageLoaderClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) FakeImageLoaderClient
     : public ImageLoaderClient {
  public:
   FakeImageLoaderClient();
@@ -82,4 +83,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeImageLoaderClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_IMAGE_LOADER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_IMAGE_LOADER_FAKE_IMAGE_LOADER_CLIENT_H_

@@ -2,18 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_FAKE_EASY_UNLOCK_CLIENT_H_
-#define CHROMEOS_DBUS_FAKE_EASY_UNLOCK_CLIENT_H_
+#ifndef CHROMEOS_DBUS_EASY_UNLOCK_FAKE_EASY_UNLOCK_CLIENT_H_
+#define CHROMEOS_DBUS_EASY_UNLOCK_FAKE_EASY_UNLOCK_CLIENT_H_
 
 #include <string>
 
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "chromeos/dbus/easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 
 namespace chromeos {
 
 // A fake implementation of EasyUnlockClient.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeEasyUnlockClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_EASY_UNLOCK) FakeEasyUnlockClient
     : public EasyUnlockClient {
  public:
   // Tests if the provided keys belong to the same (fake) EC P256 key pair
@@ -48,4 +49,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeEasyUnlockClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_FAKE_EASY_UNLOCK_CLIENT_H_
+#endif  // CHROMEOS_DBUS_EASY_UNLOCK_FAKE_EASY_UNLOCK_CLIENT_H_

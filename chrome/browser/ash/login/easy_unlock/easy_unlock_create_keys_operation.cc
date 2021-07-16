@@ -21,7 +21,7 @@
 #include "chromeos/cryptohome/system_salt_getter.h"
 #include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/login/auth/key.h"
 #include "crypto/encryptor.h"

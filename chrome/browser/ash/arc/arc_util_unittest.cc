@@ -30,7 +30,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
-#include "chromeos/dbus/fake_oobe_configuration_client.h"
+#include "chromeos/dbus/oobe_config/fake_oobe_configuration_client.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/arc/arc_features.h"

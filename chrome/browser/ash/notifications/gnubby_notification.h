@@ -9,7 +9,7 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
-#include "chromeos/dbus/gnubby_client.h"
+#include "chromeos/dbus/gnubby/gnubby_client.h"
 
 namespace message_center {
 class Notification;

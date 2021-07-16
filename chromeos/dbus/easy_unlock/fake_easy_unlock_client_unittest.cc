@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fake_easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
 
 #include <string>
 
@@ -23,8 +23,7 @@ void RecordKeyPair(std::string* private_key_target,
 
 // Callback for |EasyUnlockClient| methods that return a single piece of data.
 // It saves the returned data in |data_target|.
-void RecordData(std::string* data_target,
-                const std::string& data_source) {
+void RecordData(std::string* data_target, const std::string& data_source) {
   *data_target = data_source;
 }
 
@@ -51,50 +50,42 @@ TEST(FakeEasyUnlockClientTest, GenerateEcP256KeyPair) {
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair) {
   ASSERT_TRUE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_private_key\": 12}",
-      "{\"ec_p256_public_key\": 12}"));
+      "{\"ec_p256_private_key\": 12}", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_KeysFromDiffrentPairs) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_private_key\": 12}",
-      "{\"ec_p256_public_key\": 34}"));
+      "{\"ec_p256_private_key\": 12}", "{\"ec_p256_public_key\": 34}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_KeyOrderSwitched) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_public_key\": 34}",
-      "{\"ec_p256_private_key\": 34}"));
+      "{\"ec_p256_public_key\": 34}", "{\"ec_p256_private_key\": 34}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PrivateKeyInvalidFormat) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "\"ec_p256_private_key\": 12",
-      "{\"ec_p256_public_key\": 12}"));
+      "\"ec_p256_private_key\": 12", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PublicKeyInvalidFormat) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_private_key\": 12}",
-      "\"ec_p256_public_key\": 12"));
+      "{\"ec_p256_private_key\": 12}", "\"ec_p256_public_key\": 12"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PrivateKeyInvalidDictKey) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"invalid\": 12}",
-      "{\"ec_p256_public_key\": 12}"));
+      "{\"invalid\": 12}", "{\"ec_p256_public_key\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_PublicKeyInvalidDictKey) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_private_key\": 12}",
-      "{\"invalid\": 12}"));
+      "{\"ec_p256_private_key\": 12}", "{\"invalid\": 12}"));
 }
 
 TEST(FakeEasyUnlockClientTest, IsEcP256KeyPair_InvalidDictValues) {
   ASSERT_FALSE(chromeos::FakeEasyUnlockClient::IsEcP256KeyPair(
-      "{\"ec_p256_private_key\": \"12\"}",
-      "{\"ec_p256_public_key\": \"12\"}"));
+      "{\"ec_p256_private_key\": \"12\"}", "{\"ec_p256_public_key\": \"12\"}"));
 }
 
 // Verifies the fake |PerformECDHKeyAgreement| method is symetric in respect to
@@ -211,14 +202,14 @@ TEST(FakeEasyUnlockClientTest, CreateSecureMessage) {
 
   const std::string expected_message(
       "{\"securemessage\": {"
-          "\"payload\": \"PAYLOAD\","
-          "\"key\": \"KEY\","
-          "\"associated_data\": \"ASSOCIATED_DATA\","
-          "\"public_metadata\": \"PUBLIC_METADATA\","
-          "\"verification_key_id\": \"VERIFICATION_KEY_ID\","
-          "\"decryption_key_id\": \"DECRYPTION_KEY_ID\","
-          "\"encryption_type\": \"ENCRYPTION_TYPE\","
-          "\"signature_type\": \"SIGNATURE_TYPE\"}"
+      "\"payload\": \"PAYLOAD\","
+      "\"key\": \"KEY\","
+      "\"associated_data\": \"ASSOCIATED_DATA\","
+      "\"public_metadata\": \"PUBLIC_METADATA\","
+      "\"verification_key_id\": \"VERIFICATION_KEY_ID\","
+      "\"decryption_key_id\": \"DECRYPTION_KEY_ID\","
+      "\"encryption_type\": \"ENCRYPTION_TYPE\","
+      "\"signature_type\": \"SIGNATURE_TYPE\"}"
       "}");
   ASSERT_EQ(expected_message, message);
 }
@@ -239,11 +230,11 @@ TEST(FakeEasyUnlockClientTest, UnwrapSecureMessage) {
 
   const std::string expected_message(
       "{\"unwrapped_securemessage\": {"
-          "\"message\": \"MESSAGE\","
-          "\"key\": \"KEY\","
-          "\"associated_data\": \"ASSOCIATED_DATA\","
-          "\"encryption_type\": \"ENCRYPTION_TYPE\","
-          "\"signature_type\": \"SIGNATURE_TYPE\"}"
+      "\"message\": \"MESSAGE\","
+      "\"key\": \"KEY\","
+      "\"associated_data\": \"ASSOCIATED_DATA\","
+      "\"encryption_type\": \"ENCRYPTION_TYPE\","
+      "\"signature_type\": \"SIGNATURE_TYPE\"}"
       "}");
   ASSERT_EQ(expected_message, message);
 }

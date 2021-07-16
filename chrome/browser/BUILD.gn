@@ -4676,6 +4676,7 @@ static_library("browser") {
       "//chromeos/crosapi/cpp",
       "//chromeos/crosapi/mojom",
       "//chromeos/dbus",
+      "//chromeos/dbus/image_loader",
       "//chromeos/dbus/session_manager",
       "//chromeos/geolocation",
       "//chromeos/login/login_state",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_OOBE_CONFIGURATION_CLIENT_H_
-#define CHROMEOS_DBUS_OOBE_CONFIGURATION_CLIENT_H_
+#ifndef CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
+#define CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_
 
 #include <string>
 
@@ -19,7 +19,7 @@ namespace chromeos {
 // This configuration comes either from the state before power wash, or from
 // USB stick during USB-based enrollment flow.
 
-class COMPONENT_EXPORT(CHROMEOS_DBUS) OobeConfigurationClient
+class COMPONENT_EXPORT(CHROMEOS_DBUS_OOBE_CONFIG) OobeConfigurationClient
     : public DBusClient {
  public:
   using ConfigurationCallback =
@@ -46,4 +46,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) OobeConfigurationClient
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_OOBE_CONFIGURATION_CLIENT_H_
+#endif  // CHROMEOS_DBUS_OOBE_CONFIG_OOBE_CONFIGURATION_CLIENT_H_

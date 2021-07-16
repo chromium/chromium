@@ -18,7 +18,7 @@
 #include "chrome/browser/component_updater/component_installer_errors.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/image_loader_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/crx_file/id_util.h"
 #include "components/version_info/version_info.h"

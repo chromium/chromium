@@ -54,7 +54,7 @@
 #include "chrome/common/pref_names.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
-#include "chromeos/dbus/image_loader_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/network/device_state.h"

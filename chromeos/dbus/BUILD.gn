@@ -27,7 +27,6 @@ component("dbus") {
   ]
   deps = [
     ":metrics_event_proto",
-    ":oobe_config_proto",
     ":plugin_vm_service_proto",
     ":runtime_probe_proto",
     ":smbprovider_proto",
@@ -44,6 +43,12 @@ component("dbus") {
     "//chromeos/dbus/chunneld",
     "//chromeos/dbus/chunneld:proto",
     "//chromeos/dbus/cros_disks",
+    "//chromeos/dbus/easy_unlock",
+    "//chromeos/dbus/gnubby",
+    "//chromeos/dbus/image_burner",
+    "//chromeos/dbus/image_loader",
+    "//chromeos/dbus/oobe_config",
+    "//chromeos/dbus/oobe_config:proto",
     "//components/account_id",
     "//components/device_event_log",
     "//components/policy/proto",
@@ -56,18 +61,6 @@ component("dbus") {
     "dbus_clients_browser.h",
     "dbus_thread_manager.cc",
     "dbus_thread_manager.h",
-    "easy_unlock_client.cc",
-    "easy_unlock_client.h",
-    "fake_easy_unlock_client.cc",
-    "fake_easy_unlock_client.h",
-    "fake_gnubby_client.cc",
-    "fake_gnubby_client.h",
-    "fake_image_burner_client.cc",
-    "fake_image_burner_client.h",
-    "fake_image_loader_client.cc",
-    "fake_image_loader_client.h",
-    "fake_oobe_configuration_client.cc",
-    "fake_oobe_configuration_client.h",
     "fake_runtime_probe_client.cc",
     "fake_runtime_probe_client.h",
     "fake_smb_provider_client.cc",
@@ -78,14 +71,6 @@ component("dbus") {
     "fake_virtual_file_provider_client.h",
     "fake_vm_plugin_dispatcher_client.cc",
     "fake_vm_plugin_dispatcher_client.h",
-    "gnubby_client.cc",
-    "gnubby_client.h",
-    "image_burner_client.cc",
-    "image_burner_client.h",
-    "image_loader_client.cc",
-    "image_loader_client.h",
-    "oobe_configuration_client.cc",
-    "oobe_configuration_client.h",
     "runtime_probe_client.cc",
     "runtime_probe_client.h",
     "smb_provider_client.cc",
@@ -156,7 +141,6 @@ source_set("unit_tests") {
   testonly = true
   deps = [
     ":dbus",
-    ":oobe_config_proto",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -168,9 +152,12 @@ source_set("unit_tests") {
     "//chromeos/dbus/cryptohome",
     "//chromeos/dbus/cryptohome:attestation_proto",
     "//chromeos/dbus/dlcservice:test_support",
+    "//chromeos/dbus/easy_unlock:unit_tests",
+    "//chromeos/dbus/gnubby:unit_tests",
     "//chromeos/dbus/hermes:test_support",
     "//chromeos/dbus/ip_peripheral:test_support",
     "//chromeos/dbus/lorgnette_manager:test_support",
+    "//chromeos/dbus/oobe_config:unit_tests",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/dbus/power:test_support",
     "//chromeos/dbus/rmad:rmad_proto",
@@ -201,10 +188,7 @@ source_set("unit_tests") {
     "biod/fake_biod_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
     "dbus_thread_manager_unittest.cc",
-    "fake_easy_unlock_client_unittest.cc",
-    "fake_gnubby_client_unittest.cc",
     "native_timer_unittest.cc",
-    "oobe_configuration_client_unittest.cc",
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
     "update_engine_client_unittest.cc",
@@ -238,13 +222,6 @@ proto_library("metrics_event_proto") {
       [ "//third_party/cros_system_api/dbus/metrics_event/metrics_event.proto" ]
 
   proto_out_dir = "chromeos/dbus/metrics_event"
-}
-
-proto_library("oobe_config_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/oobe_config/oobe_config.proto" ]
-
-  proto_out_dir = "chromeos/dbus/oobe_config"
 }
 
 proto_library("plugin_vm_service_proto") {

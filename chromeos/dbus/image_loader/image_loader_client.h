@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_DBUS_IMAGE_LOADER_CLIENT_H_
-#define CHROMEOS_DBUS_IMAGE_LOADER_CLIENT_H_
+#ifndef CHROMEOS_DBUS_IMAGE_LOADER_IMAGE_LOADER_CLIENT_H_
+#define CHROMEOS_DBUS_IMAGE_LOADER_IMAGE_LOADER_CLIENT_H_
 
 #include <memory>
 #include <string>
@@ -19,7 +19,8 @@ namespace chromeos {
 
 // ImageLoaderClient is used to communicate with the ImageLoader service, which
 // registers and loads component updates on Chrome OS.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) ImageLoaderClient : public DBusClient {
+class COMPONENT_EXPORT(CHROMEOS_DBUS_IMAGE_LOADER) ImageLoaderClient
+    : public DBusClient {
  public:
   ~ImageLoaderClient() override;
 
@@ -69,4 +70,4 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) ImageLoaderClient : public DBusClient {
 
 }  // namespace chromeos
 
-#endif  // CHROMEOS_DBUS_IMAGE_LOADER_CLIENT_H_
+#endif  // CHROMEOS_DBUS_IMAGE_LOADER_IMAGE_LOADER_CLIENT_H_

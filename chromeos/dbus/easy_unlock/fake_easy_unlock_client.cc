@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/fake_easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/fake_easy_unlock_client.h"
 
 #include <memory>
 #include <utility>
@@ -52,7 +52,7 @@ bool FakeEasyUnlockClient::IsEcP256KeyPair(const std::string& private_key,
   int public_key_index =
       ExtractKeyPairIndexFromKey(public_key, kEc256PublicKeyKey);
 
-  return private_key_index > 0  && public_key_index == private_key_index;
+  return private_key_index > 0 && public_key_index == private_key_index;
 }
 
 FakeEasyUnlockClient::FakeEasyUnlockClient() : generated_keys_count_(0) {}

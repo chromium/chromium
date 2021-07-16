@@ -8,7 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/easy_unlock_client.h"
+#include "chromeos/dbus/easy_unlock/easy_unlock_client.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {

@@ -31,6 +31,7 @@ static_library("multidevice") {
     "//base:i18n",
     "//chromeos/components/multidevice/logging",
     "//chromeos/dbus",
+    "//chromeos/dbus/easy_unlock",
     "//chromeos/services/device_sync/proto:util",
     "//components/prefs",
   ]

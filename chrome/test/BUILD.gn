@@ -2255,6 +2255,7 @@ if (!is_android) {
         "//chromeos/dbus/cros_healthd",
         "//chromeos/dbus/cryptohome",
         "//chromeos/dbus/cryptohome:cryptohome_proto",
+        "//chromeos/dbus/image_burner",
         "//chromeos/dbus/power",
         "//chromeos/dbus/services:test_support",
         "//chromeos/dbus/session_manager",
@@ -6249,6 +6250,7 @@ test("unit_tests") {
       "//chrome/services/sharing/nearby/decoder:unit_tests",
       "//chrome/services/sharing/nearby/platform:unit_tests",
       "//chromeos/assistant:buildflags",
+      "//chromeos/dbus/image_loader",
       "//chromeos/dbus/u2f",
       "//chromeos/services/nearby/public/cpp:test_support",
       "//components/arc:arc_test_support",
@@ -6320,6 +6322,7 @@ test("unit_tests") {
     }
   }
 
+  # TODO(crbug.com/1229899): Clean up and move this to a separate target.
   if (enable_extensions) {
     sources += [
       "../../apps/saved_files_service_unittest.cc",
@@ -6658,7 +6661,10 @@ test("unit_tests") {
         "../common/chromeos/extensions/manifest_tests/extension_manifests_chromeos_system_extension_unittest.cc",
         "../renderer/extensions/accessibility_private_hooks_delegate_unittest.cc",
       ]
-      deps += [ "../common/chromeos/extensions" ]
+      deps += [
+        "../common/chromeos/extensions",
+        "//chromeos/dbus/image_burner",
+      ]
     }
 
     allow_circular_includes_from = [

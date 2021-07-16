@@ -12,7 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/image_loader_client.h"
+#include "chromeos/dbus/image_loader/image_loader_client.h"
 
 namespace ash {
 namespace {
