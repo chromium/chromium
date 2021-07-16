@@ -426,6 +426,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
 )~~");
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_UnrecognizedAttribute) {
+  TestScript(R"~~(data:text/html,
+                    <input id='textbox' aria-label='input'>)~~",
+             {"textbox.AXRolio"},
+             R"~~(textbox.AXRolio=ERROR:FAILED_TO_PARSE
+)~~");
+}
+
 IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest, Script_Chain) {
   TestScript(R"~~(data:text/html,
                     <input id='input' aria-label='input'>)~~",
@@ -467,6 +476,15 @@ IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
                     <p id='p'>Paragraph</p>)~~",
              {"p.AXTextMarkerRangeForUIElement(p).focus"},
              R"~~(p.AXTextMarkerRangeForUIElement(p).focus={:2, 9, down}
+)~~");
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityTreeFormatterMacBrowserTest,
+                       Script_Chain_TextRange_Error) {
+  TestScript(R"~~(data:text/html,
+                    <p id='p'>Paragraph</p>)~~",
+             {"p.AXTextMarkerRangeForUIElement(p).haha"},
+             R"~~(p.AXTextMarkerRangeForUIElement(p).haha=ERROR:FAILED_TO_PARSE
 )~~");
 }
 

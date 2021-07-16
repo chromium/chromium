@@ -208,8 +208,16 @@ OptionalNSObject AttributeInvoker::InvokeForAXElement(
     }
   }
 
-  // Unmatched attribute.
-  return OptionalNSObject::NotApplicable();
+  // Unmatched attribute. No error for a tree dump calls because the tree dump
+  // sets generic property filters not depending on a node, so we can be called
+  // for an attribute not supported by the node.
+  if (node)
+    return OptionalNSObject::NotApplicable();
+
+  LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
+             << "' attribute called on AXElement in '"
+             << property_node.ToFlatString() << "' statement";
+  return OptionalNSObject::Error();
 }
 
 OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
@@ -223,6 +231,15 @@ OptionalNSObject AttributeInvoker::InvokeForAXTextMarkerRange(
     return OptionalNSObject(static_cast<id>(
         AXTextMarkerRangeCopyEndMarker(static_cast<CFTypeRef>(target))));
 
+  // Unmatched attribute. No error for a tree dump calls because the tree dump
+  // sets generic property filters not depending on a node, so we can be called
+  // for an attribute not supported by the node.
+  if (node)
+    return OptionalNSObject::NotApplicable();
+
+  LOG(ERROR) << "Unrecognized '" << property_node.name_or_value
+             << "' attribute called on AXTextMarkerRange in '"
+             << property_node.ToFlatString() << "' statement";
   return OptionalNSObject::Error();
 }
 
