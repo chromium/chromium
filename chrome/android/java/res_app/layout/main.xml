@@ -7,6 +7,16 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <!-- This stub is used by the bottom sheet custom tab, to add a handle and
+         make the custom tab rounded. -->
+    <ViewStub
+        android:id="@+id/custom_tabs_handle_view_stub"
+        android:inflatedId="@+id/custom_tabs_handle_view"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/custom_tabs_top_corner_round_radius"
+        android:layout="@layout/custom_tabs_handle_view"
+        android:visibility="gone" />
+
     <org.chromium.components.browser_ui.widget.CoordinatorLayoutForPointer
         android:id="@+id/coordinator"
         android:layout_width="match_parent"

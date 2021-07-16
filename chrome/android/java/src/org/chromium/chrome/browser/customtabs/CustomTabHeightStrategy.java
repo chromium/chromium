@@ -4,17 +4,21 @@
 
 package org.chromium.chrome.browser.customtabs;
 
+import android.app.Activity;
+
 import androidx.annotation.Px;
+
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 
 /**
  * The default strategy for setting the height of the custom tab.
  */
 public class CustomTabHeightStrategy {
-    public static CustomTabHeightStrategy createStrategy(
-            CustomTabActivity activity, @Px int initialHeight) {
+    public static CustomTabHeightStrategy createStrategy(Activity activity, @Px int initialHeight,
+            ActivityLifecycleDispatcher lifecycleDispatcher) {
         if (initialHeight <= 0) {
             return new CustomTabHeightStrategy();
         }
-        return new PartialCustomTabHeightStrategy(activity, initialHeight);
+        return new PartialCustomTabHeightStrategy(activity, initialHeight, lifecycleDispatcher);
     }
 }
