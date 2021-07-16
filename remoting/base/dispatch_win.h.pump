@@ -1,8 +1,5 @@
 $$ This is a pump file for generating file templates.  Pump is a python
-$$ script that is part of the Google Test suite of utilities.  Description
-$$ can be found here:
-$$
-$$ https://github.com/google/googletest/blob/master/googletest/docs/PumpManual.md
+$$ script that is part of the Google Test suite of utilities.
 
 $$ MAX_ARITY controls the number of arguments that dispatch::Invoke() supports.
 $$ It is choosen to match the number of arguments base::BindOnce() supports.

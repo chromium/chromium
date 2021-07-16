@@ -45,7 +45,7 @@ float AudioVolumeFilterWin::GetAudioLevel() {
   float level;
   hr = audio_volume_->GetMasterVolumeLevelScalar(&level);
   if (FAILED(hr) || level > 1) {
-    LOG(ERROR) << "Failed to get master volume from IAudioEndpointVolume, "
+    LOG(ERROR) << "Failed to get volume level from IAudioEndpointVolume, "
                   "error "
                << hr;
     return 1;
