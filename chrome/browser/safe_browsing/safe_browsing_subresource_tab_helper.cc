@@ -5,8 +5,6 @@
 #include "chrome/browser/safe_browsing/safe_browsing_subresource_tab_helper.h"
 
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/browser_process.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -19,21 +17,37 @@ namespace safe_browsing {
 
 SafeBrowsingSubresourceTabHelper::~SafeBrowsingSubresourceTabHelper() {}
 
+// static
+void SafeBrowsingSubresourceTabHelper::CreateForWebContents(
+    content::WebContents* web_contents,
+    SafeBrowsingUIManager* manager) {
+  if (FromWebContents(web_contents))
+    return;
+
+  web_contents->SetUserData(
+      kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey,
+      std::make_unique<SafeBrowsingSubresourceTabHelper>(web_contents,
+                                                         manager));
+}
+
+// static
+SafeBrowsingSubresourceTabHelper*
+SafeBrowsingSubresourceTabHelper::FromWebContents(
+    content::WebContents* web_contents) {
+  return static_cast<SafeBrowsingSubresourceTabHelper*>(
+      web_contents->GetUserData(
+          kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey));
+}
+
 void SafeBrowsingSubresourceTabHelper::ReadyToCommitNavigation(
     content::NavigationHandle* navigation_handle) {
   if (navigation_handle->GetNetErrorCode() == net::ERR_BLOCKED_BY_CLIENT) {
-    safe_browsing::SafeBrowsingService* service =
-        g_browser_process->safe_browsing_service();
-    if (!service)
-      return;
     security_interstitials::UnsafeResource resource;
-    scoped_refptr<safe_browsing::SafeBrowsingUIManager> manager =
-        service->ui_manager();
-    if (manager->PopUnsafeResourceForURL(navigation_handle->GetURL(),
-                                         &resource)) {
+    if (manager_->PopUnsafeResourceForURL(navigation_handle->GetURL(),
+                                          &resource)) {
       safe_browsing::SafeBrowsingBlockingPage* blocking_page =
-          manager->blocking_page_factory()->CreateSafeBrowsingPage(
-              manager.get(), navigation_handle->GetWebContents(),
+          manager_->blocking_page_factory()->CreateSafeBrowsingPage(
+              manager_, navigation_handle->GetWebContents(),
               navigation_handle->GetURL(), {resource},
               /*should_trigger_reporting=*/true);
       security_interstitials::SecurityInterstitialTabHelper::
@@ -45,9 +59,12 @@ void SafeBrowsingSubresourceTabHelper::ReadyToCommitNavigation(
 }
 
 SafeBrowsingSubresourceTabHelper::SafeBrowsingSubresourceTabHelper(
-    content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    content::WebContents* web_contents,
+    SafeBrowsingUIManager* manager)
+    : WebContentsObserver(web_contents), manager_(manager) {}
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingSubresourceTabHelper)
+const char SafeBrowsingSubresourceTabHelper::
+    kSafeBrowsingSubresourceTabHelperWebContentsUserDataKey[] =
+        "safe_browsing_subresource_tab_helper";
 
 }  // namespace safe_browsing

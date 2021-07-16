@@ -284,7 +284,7 @@ BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
     content::WebContents* contents,
     const GURL& blocked_url,
     const UnsafeResource& unsafe_resource) {
-  SafeBrowsingSubresourceTabHelper::CreateForWebContents(contents);
+  SafeBrowsingSubresourceTabHelper::CreateForWebContents(contents, this);
   // This blocking page is only used to retrieve the HTML for the page, so we
   // set |should_trigger_reporting| to false. Reports for subresources are
   // triggered when creating the blocking page that gets associated in
