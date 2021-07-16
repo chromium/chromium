@@ -205,6 +205,11 @@ PlatformThreadId PlatformThread::CurrentId() {
   }
   return g_thread_id;
 #elif defined(OS_ANDROID)
+  // Note: do not cache the return value inside a thread_local variable on
+  // Android (as above). The reasons are:
+  // - thread_local is slow on Android (goes through emutls)
+  // - gettid() is fast, since its return value is cached in pthread (in the
+  //   thread control block of pthread). See gettid.c in bionic.
   return gettid();
 #elif defined(OS_FUCHSIA)
   return zx_thread_self();
