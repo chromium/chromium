@@ -20,7 +20,6 @@ import org.chromium.chrome.browser.tab.Tab;
 public class ScreenshotShareSheetDialogCoordinator {
     private final ScreenshotShareSheetDialog mDialog;
     private final FragmentManager mFragmentManager;
-    private final Bitmap mScreenshot;
 
     /**
      * Constructs a new Screenshot Dialog.
@@ -29,16 +28,16 @@ public class ScreenshotShareSheetDialogCoordinator {
      * @param dialog The Share Sheet dialog to use as fallback.
      * @param screenshot The Bitmap of the screenshot to share.
      * @param tab The Tab which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
      * @param shareCallback Callback called when falling back to the share sheet.
      * @param installCallback Callback called when the image editor is installed and run.
      */
     public ScreenshotShareSheetDialogCoordinator(Activity activity,
-            ScreenshotShareSheetDialog dialog, Bitmap screenshot, Tab tab,
+            ScreenshotShareSheetDialog dialog, Bitmap screenshot, Tab tab, String shareUrl,
             ChromeOptionShareCallback shareCallback, Callback<Runnable> installCallback) {
         mFragmentManager = ((FragmentActivity) activity).getSupportFragmentManager();
         mDialog = dialog;
-        mScreenshot = screenshot;
-        mDialog.init(mScreenshot, tab, shareCallback, installCallback);
+        mDialog.init(screenshot, tab, shareUrl, shareCallback, installCallback);
     }
 
     /**

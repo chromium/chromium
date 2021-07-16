@@ -48,6 +48,7 @@ android_library("java") {
     "//third_party/android_deps:android_support_v7_appcompat_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.browser.content_creation.internal"
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]

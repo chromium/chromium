@@ -30,6 +30,7 @@ import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.url.GURL;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
@@ -154,8 +155,10 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                                     .build();
 
                     long shareStartTime = System.currentTimeMillis();
-                    ChromeShareExtras extras =
-                            new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+                    ChromeShareExtras extras = new ChromeShareExtras.Builder()
+                                                       .setSkipPageSharingActions(true)
+                                                       .setContentUrl(new GURL(mShareUrl))
+                                                       .build();
 
                     // Dismiss current dialog before showing the share sheet.
                     this.dismiss();
@@ -221,8 +224,10 @@ public class NoteCreationCoordinatorImpl implements NoteCreationCoordinator, Top
                 new ShareParams.Builder(mTab.getWindowAndroid(), sheetTitle, noteUrl).build();
 
         long shareStartTime = System.currentTimeMillis();
-        ChromeShareExtras extras =
-                new ChromeShareExtras.Builder().setSkipPageSharingActions(true).build();
+        ChromeShareExtras extras = new ChromeShareExtras.Builder()
+                                           .setSkipPageSharingActions(true)
+                                           .setContentUrl(new GURL(mShareUrl))
+                                           .build();
 
         // Dismiss current dialog before showing the share sheet.
         this.dismiss();

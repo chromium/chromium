@@ -894,6 +894,7 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     new ChromeShareExtras.Builder()
                             .setSaveLastUsed(true)
                             .setImageSrcUrl(mParams.getSrcUrl())
+                            .setContentUrl(mParams.getSrcUrl())
                             .build(),
                     ShareOrigin.CONTEXT_MENU);
         });

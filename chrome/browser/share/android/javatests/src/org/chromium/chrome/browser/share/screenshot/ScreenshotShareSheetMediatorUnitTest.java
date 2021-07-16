@@ -34,6 +34,7 @@ import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.JUnitTestGURLs;
 
 /**
  * Tests for {@link ScreenshotShareSheetMediator}.
@@ -75,7 +76,7 @@ public class ScreenshotShareSheetMediatorUnitTest {
                 ChromeOptionShareCallback chromeOptionShareCallback,
                 Callback<Runnable> installCallback) {
             super(context, propertyModel, deleteRunnable, saveRunnable, tab,
-                    chromeOptionShareCallback, installCallback);
+                    JUnitTestGURLs.EXAMPLE_URL, chromeOptionShareCallback, installCallback);
         }
         @Override
         protected void generateTemporaryUriFromBitmap(

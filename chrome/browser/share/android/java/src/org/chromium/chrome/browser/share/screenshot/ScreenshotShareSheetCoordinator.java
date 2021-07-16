@@ -33,15 +33,16 @@ public class ScreenshotShareSheetCoordinator {
      *
      * @param context The context to use for user permissions.
      * @param screenshot The screenshot to be shared.
-     * @param deleteRunanble The runnable to be called on cancel or delete.
+     * @param closeDialogRunnable The runnable to be called on cancel or delete.
      * @param screenshotShareSheetView the view for the screenshot share sheet.
      * @param tab The tab that launched this screenshot.
+     * @param shareUrl The URL associated with the screenshot.
      * @param shareSheetCallback The callback to be called on share.
      * @param installCallback The callback to be called on retry.
      */
     public ScreenshotShareSheetCoordinator(Context context, Bitmap screenshot,
             Runnable closeDialogRunnable, ScreenshotShareSheetView screenshotShareSheetView,
-            Tab tab, ChromeOptionShareCallback shareSheetCallback,
+            Tab tab, String shareUrl, ChromeOptionShareCallback shareSheetCallback,
             Callback<Runnable> installCallback) {
         ArrayList<PropertyKey> allProperties =
                 new ArrayList<>(Arrays.asList(ScreenshotShareSheetViewProperties.ALL_KEYS));
@@ -52,7 +53,7 @@ public class ScreenshotShareSheetCoordinator {
                 new ActivityAndroidPermissionDelegate(
                         new WeakReference<Activity>((Activity) context)));
         mMediator = new ScreenshotShareSheetMediator(context, mModel, closeDialogRunnable,
-                mSaveDelegate::save, tab, shareSheetCallback, installCallback);
+                mSaveDelegate::save, tab, shareUrl, shareSheetCallback, installCallback);
 
         PropertyModelChangeProcessor.create(
                 mModel, screenshotShareSheetView, ScreenshotShareSheetViewBinder::bind);

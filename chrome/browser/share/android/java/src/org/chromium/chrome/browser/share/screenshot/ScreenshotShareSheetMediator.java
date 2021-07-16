@@ -18,6 +18,7 @@ import org.chromium.components.browser_ui.share.ShareImageFileUtils;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.url.GURL;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -38,8 +39,8 @@ class ScreenshotShareSheetMediator {
     private final Runnable mCloseDialogRunnable;
     private final Callback<Runnable> mInstallCallback;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
-
     private final Tab mTab;
+    private final String mShareUrl;
 
     /**
      * The ScreenshotShareSheetMediator constructor.
@@ -48,12 +49,13 @@ class ScreenshotShareSheetMediator {
      * @param closeDialogRunnable The action to take to close the dialog.
      * @param saveRunnable The action to take when save is called.
      * @param tab The tab that originated this screenshot.
+     * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback The callback to share a screenshot via the share sheet.
      * @param installCallback The action to take when install is called, will call runnable on
      *         success.
      */
     ScreenshotShareSheetMediator(Context context, PropertyModel propertyModel,
-            Runnable closeDialogRunnable, Runnable saveRunnable, Tab tab,
+            Runnable closeDialogRunnable, Runnable saveRunnable, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             Callback<Runnable> installCallback) {
         mCloseDialogRunnable = closeDialogRunnable;
@@ -61,6 +63,7 @@ class ScreenshotShareSheetMediator {
         mContext = context;
         mModel = propertyModel;
         mTab = tab;
+        mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mInstallCallback = installCallback;
         mModel.set(ScreenshotShareSheetViewProperties.NO_ARG_OPERATION_LISTENER,
@@ -115,8 +118,9 @@ class ScreenshotShareSheetMediator {
                                             bitmapUri))
                             .build();
 
-            mChromeOptionShareCallback.showThirdPartyShareSheet(
-                    params, new ChromeShareExtras.Builder().build(), System.currentTimeMillis());
+            mChromeOptionShareCallback.showThirdPartyShareSheet(params,
+                    new ChromeShareExtras.Builder().setContentUrl(new GURL(mShareUrl)).build(),
+                    System.currentTimeMillis());
         };
 
         generateTemporaryUriFromBitmap(title, bitmap, callback);

@@ -38,6 +38,9 @@ public class ChromeShareExtras {
      */
     private final GURL mImageSrcUrl;
 
+    /** Url of the content being shared. */
+    private final GURL mContentUrl;
+
     /** Indicates if text property is highlighted by user. */
     private final boolean mIsUserHighlightedText;
 
@@ -54,13 +57,15 @@ public class ChromeShareExtras {
     private final RenderFrameHost mRenderFrameHost;
 
     private ChromeShareExtras(boolean saveLastUsed, boolean shareDirectly,
-            boolean isUrlOfVisiblePage, GURL imageSrcUrl, boolean isUserHighlightedText,
-            boolean sharingTabGroup, boolean isReshareHighlightedText,
-            boolean skipPageSharingActions, RenderFrameHost renderFrameHost) {
+            boolean isUrlOfVisiblePage, GURL imageSrcUrl, GURL contentUrl,
+            boolean isUserHighlightedText, boolean sharingTabGroup,
+            boolean isReshareHighlightedText, boolean skipPageSharingActions,
+            RenderFrameHost renderFrameHost) {
         mSaveLastUsed = saveLastUsed;
         mShareDirectly = shareDirectly;
         mIsUrlOfVisiblePage = isUrlOfVisiblePage;
         mImageSrcUrl = imageSrcUrl == null ? GURL.emptyGURL() : imageSrcUrl;
+        mContentUrl = contentUrl == null ? GURL.emptyGURL() : contentUrl;
         mIsUserHighlightedText = isUserHighlightedText;
         mSharingTabGroup = sharingTabGroup;
         mIsReshareHighlightedText = isReshareHighlightedText;
@@ -95,6 +100,13 @@ public class ChromeShareExtras {
      */
     public GURL getImageSrcUrl() {
         return mImageSrcUrl;
+    }
+
+    /**
+     * @return URL of the content being shared.
+     */
+    public GURL getContentUrl() {
+        return mContentUrl;
     }
 
     /**
@@ -138,6 +150,7 @@ public class ChromeShareExtras {
         private boolean mShareDirectly;
         private boolean mIsUrlOfVisiblePage;
         private GURL mImageSrcUrl;
+        private GURL mContentUrl;
         private boolean mIsUserHighlightedText;
         private boolean mSharingTabGroup;
         private boolean mIsReshareHighlightedText;
@@ -186,6 +199,14 @@ public class ChromeShareExtras {
         }
 
         /**
+         * Sets the URL of the content being shared.
+         */
+        public Builder setContentUrl(GURL contentUrl) {
+            mContentUrl = contentUrl;
+            return this;
+        }
+
+        /**
          * Sets whether text property is highlighted by user.
          */
         public Builder setIsUserHighlightedText(boolean isUserHighlightedText) {
@@ -213,7 +234,7 @@ public class ChromeShareExtras {
 
         public ChromeShareExtras build() {
             return new ChromeShareExtras(mSaveLastUsed, mShareDirectly, mIsUrlOfVisiblePage,
-                    mImageSrcUrl, mIsUserHighlightedText, mSharingTabGroup,
+                    mImageSrcUrl, mContentUrl, mIsUserHighlightedText, mSharingTabGroup,
                     mIsReshareHighlightedText, mSkipPageSharingActions, mRenderFrameHost);
         }
     }

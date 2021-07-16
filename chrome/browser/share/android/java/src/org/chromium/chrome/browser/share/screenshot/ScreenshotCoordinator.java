@@ -28,6 +28,7 @@ public class ScreenshotCoordinator {
 
     protected final Activity mActivity;
     protected final Tab mTab;
+    private final String mShareUrl;
     private final ScreenshotShareSheetDialog mDialog;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final BottomSheetController mBottomSheetController;
@@ -41,15 +42,16 @@ public class ScreenshotCoordinator {
      *
      * @param activity The parent activity.
      * @param tab The Tab which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
-    public ScreenshotCoordinator(Activity activity, Tab tab,
+    public ScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
-        this(activity, tab, new EditorScreenshotTask(activity, sheetController),
+        this(activity, tab, shareUrl, new EditorScreenshotTask(activity, sheetController),
                 new ScreenshotShareSheetDialog(), chromeOptionShareCallback, sheetController,
                 imageEditorModuleProvider);
     }
@@ -59,19 +61,21 @@ public class ScreenshotCoordinator {
      *
      * @param activity The parent activity.
      * @param tab The Tab which contains the content to share.
+     * @param shareUrl The URL associated with the screenshot.
      * @param screenshotSource The Source interface to use to take a screenshot.
      * @param dialog The Share Sheet dialog to use as fallback.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param imageEditorModuleProvider An interface to install and/or instantiate the image editor.
      */
     @VisibleForTesting
-    public ScreenshotCoordinator(Activity activity, Tab tab,
+    public ScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
             EditorScreenshotSource screenshotSource, ScreenshotShareSheetDialog dialog,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController,
             ImageEditorModuleProvider imageEditorModuleProvider) {
         mActivity = activity;
         mTab = tab;
+        mShareUrl = shareUrl;
         mDialog = dialog;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mScreenshotSource = screenshotSource;
@@ -130,14 +134,14 @@ public class ScreenshotCoordinator {
     protected void launchSharesheet() {
         ScreenshotShareSheetDialogCoordinator shareSheet =
                 new ScreenshotShareSheetDialogCoordinator(mActivity, mDialog, mScreenshot, mTab,
-                        mChromeOptionShareCallback, this::retryInstallEditor);
+                        mShareUrl, mChromeOptionShareCallback, this::retryInstallEditor);
         shareSheet.showShareSheet();
         mScreenshot = null;
     }
 
     /**
      * Runnable friendly helper function to retry the installation after going to the fallback.
-     * @param onSuccess. Runnable to run on success.
+     * @param onSuccess Runnable to run on success.
      */
     protected void retryInstallEditor(Runnable onSuccess) {
         if (mImageEditorModuleProvider == null) {

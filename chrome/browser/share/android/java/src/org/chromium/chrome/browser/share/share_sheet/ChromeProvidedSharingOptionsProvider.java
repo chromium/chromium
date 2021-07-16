@@ -293,8 +293,8 @@ public class ChromeProvidedSharingOptionsProvider {
                     recordTimeToShare(mShareStartTime);
                     mFeatureEngagementTracker.notifyEvent(EventConstants.SHARE_SCREENSHOT_SELECTED);
                     mScreenshotCoordinator = new ScreenshotCoordinator(mActivity,
-                            mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
-                            mImageEditorModuleProvider);
+                            mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                            mBottomSheetController, mImageEditorModuleProvider);
                     // Capture a screenshot once the bottom sheet is fully hidden. The
                     // observer will then remove itself.
                     mBottomSheetController.addObserver(mSheetObserver);
@@ -316,8 +316,8 @@ public class ChromeProvidedSharingOptionsProvider {
                     RecordUserAction.record("SharingHubAndroid.LongScreenshotSelected");
                     recordTimeToShare(mShareStartTime);
                     mScreenshotCoordinator = LongScreenshotsCoordinator.create(mActivity,
-                            mTabProvider.get(), mChromeOptionShareCallback, mBottomSheetController,
-                            mImageEditorModuleProvider);
+                            mTabProvider.get(), mUrl, mChromeOptionShareCallback,
+                            mBottomSheetController, mImageEditorModuleProvider);
                     // Capture a screenshot once the bottom sheet is fully hidden. The
                     // observer will then remove itself.
                     mBottomSheetController.addObserver(mSheetObserver);

@@ -7,10 +7,7 @@ package org.chromium.chrome.browser.share.long_screenshots;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.graphics.Bitmap;
-
 import androidx.fragment.app.FragmentActivity;
-import androidx.fragment.app.FragmentManager;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -22,15 +19,13 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.image_editor.ImageEditorDialogCoordinator;
 import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.EntryManager;
-import org.chromium.chrome.browser.share.long_screenshots.bitmap_generation.LongScreenshotsEntry;
-import org.chromium.chrome.browser.share.screenshot.ScreenshotShareSheetDialog;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.modules.image_editor.ImageEditorModuleProvider;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.url.JUnitTestGURLs;
 
 /** Tests for the LongScreenshotsCoordinator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -38,25 +33,15 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 @Features.EnableFeatures(ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT)
 public class LongScreenshotsCoordinatorTest {
     private LongScreenshotsCoordinator mCoordinator;
-    private Bitmap mBitmap;
 
     @Mock
     private FragmentActivity mActivity;
 
     @Mock
-    private FragmentManager mFragmentManagerMock;
-
-    @Mock
     private ChromeOptionShareCallback mChromeOptionShareCallback;
 
     @Mock
-    private ImageEditorDialogCoordinator mImageEditorDialogCoordinatorMock;
-
-    @Mock
     private ImageEditorModuleProvider mImageEditorModuleProviderMock;
-
-    @Mock
-    private ScreenshotShareSheetDialog mScreenshotShareSheetDialogMock;
 
     @Mock
     private BottomSheetController mBottomSheetControllerMock;
@@ -68,9 +53,6 @@ public class LongScreenshotsCoordinatorTest {
     private EntryManager mManager;
 
     @Mock
-    private LongScreenshotsEntry mEntry;
-
-    @Mock
     private LongScreenshotsMediator mMediator;
 
     @Before
@@ -79,7 +61,7 @@ public class LongScreenshotsCoordinatorTest {
 
         // Instantiate the object under test.
         mCoordinator = LongScreenshotsCoordinator.createForTests(mActivity, mTab,
-                mChromeOptionShareCallback, mBottomSheetControllerMock,
+                JUnitTestGURLs.EXAMPLE_URL, mChromeOptionShareCallback, mBottomSheetControllerMock,
                 mImageEditorModuleProviderMock, mManager, mMediator);
     }
 
