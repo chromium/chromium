@@ -252,6 +252,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_handler.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/upgrade_detector/upgrade_detector.h"
 #include "components/ntp_tiles/custom_links_manager_impl.h"
 #endif  // defined(OS_ANDROID)
@@ -917,6 +918,7 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   StartupBrowserCreator::RegisterLocalStatePrefs(registry);
   task_manager::TaskManagerInterface::RegisterPrefs(registry);
   UpgradeDetector::RegisterPrefs(registry);
+  WhatsNewUI::RegisterLocalStatePrefs(registry);
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

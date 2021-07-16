@@ -598,9 +598,9 @@ extern const char kShutdownNumProcessesSlow[];
 extern const char kRestartLastSessionOnShutdown[];
 #if !defined(OS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-extern const char kPromotionalTabsEnabled[];
 extern const char kCommandLineFlagSecurityWarningsEnabled[];
 #endif
+extern const char kPromotionalTabsEnabled[];
 extern const char kSuppressUnsupportedOSWarning[];
 extern const char kWasRestarted[];
 #endif  // !defined(OS_ANDROID)
@@ -1154,6 +1154,10 @@ extern const char kDeviceAttributesAllowedForOrigins[];
 
 #if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
 extern const char kDesktopSharingHubEnabled[];
+#endif
+
+#if !defined(OS_ANDROID)
+extern const char kLastWhatsNewVersion[];
 #endif
 
 }  // namespace prefs

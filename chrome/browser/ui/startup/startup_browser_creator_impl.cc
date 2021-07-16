@@ -52,6 +52,7 @@
 #include "chrome/browser/ui/startup/startup_tab_provider.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/webui/welcome/helpers.h"
+#include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/common/chrome_switches.h"
@@ -358,11 +359,9 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   // administrative policy.
   bool promotional_tabs_enabled = true;
   const PrefService::Preference* enabled_pref = nullptr;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
   PrefService* local_state = g_browser_process->local_state();
   if (local_state)
     enabled_pref = local_state->FindPreference(prefs::kPromotionalTabsEnabled);
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (enabled_pref && enabled_pref->IsManaged()) {
     // Presentation is managed; obey the policy setting.
     promotional_tabs_enabled = enabled_pref->GetValue()->GetBool();
@@ -385,10 +384,14 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     welcome_enabled = false;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+  const bool whats_new_enabled =
+      promotional_tabs_enabled && WhatsNewUI::ShouldShowForState(local_state);
+
   StartupTabs tabs = DetermineStartupTabs(
       StartupTabProviderImpl(), cmd_line_tabs, process_startup,
       is_incognito_or_guest, is_post_crash_launch,
-      has_incompatible_applications, promotional_tabs_enabled, welcome_enabled);
+      has_incompatible_applications, promotional_tabs_enabled, welcome_enabled,
+      whats_new_enabled);
 
   // Return immediately if we start an async restore, since the remainder of
   // that process is self-contained.
@@ -441,7 +444,8 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
     bool is_post_crash_launch,
     bool has_incompatible_applications,
     bool promotional_tabs_enabled,
-    bool welcome_enabled) {
+    bool welcome_enabled,
+    bool whats_new_enabled) {
   // Only the New Tab Page or command line URLs may be shown in incognito mode.
   // A similar policy exists for crash recovery launches, to prevent getting the
   // user stuck in a crash loop.
@@ -503,13 +507,24 @@ StartupTabs StartupBrowserCreatorImpl::DetermineStartupTabs(
         provider.GetPreferencesTabs(command_line_, profile_);
     AppendTabs(prefs_tabs, &tabs);
 
-    // Potentially add the New Tab Page. Onboarding content is designed to
-    // replace (and eventually funnel the user to) the NTP.
+    // Potentially add the What's New or New Tab Page. Onboarding content is
+    // designed to replace (and eventually funnel the user to) the NTP. Note
+    // that the What's New page should never be shown in the same session as any
+    // first-run onboarding tabs.
     if (onboarding_tabs.empty()) {
+      StartupTabs new_features_tabs;
+      new_features_tabs = provider.GetNewFeaturesTabs(whats_new_enabled);
+      AppendTabs(new_features_tabs, &tabs);
+
       // URLs from preferences are explicitly meant to override showing the NTP.
-      if (prefs_tabs.empty()) {
+      // The What's New page also overrides showing the NTP.
+      if (prefs_tabs.empty() && new_features_tabs.empty()) {
         AppendTabs(provider.GetNewTabPageTabs(command_line_, profile_), &tabs);
       }
+    } else {
+      // Record the current version so that What's New will not be shown until
+      // after the next major version update.
+      WhatsNewUI::SetLastVersion(g_browser_process->local_state());
     }
   }
 

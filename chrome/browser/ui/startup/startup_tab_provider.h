@@ -61,6 +61,11 @@ class StartupTabProvider {
   // applications exist.
   virtual StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const = 0;
+
+#if !defined(OS_ANDROID)
+  // Returns tabs related to the What's New UI (if applicable).
+  virtual StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const = 0;
+#endif
 };
 
 class StartupTabProviderImpl : public StartupTabProvider {
@@ -132,6 +137,11 @@ class StartupTabProviderImpl : public StartupTabProvider {
   static StartupTabs GetPostCrashTabsForState(
       bool has_incompatible_applications);
 
+#if !defined(OS_ANDROID)
+  // Determines if the what's new page should be shown.
+  static StartupTabs GetNewFeaturesTabsForState(bool whats_new_enabled);
+#endif
+
   // Gets the URL for the Welcome page. If |use_later_run_variant| is true, a
   // URL parameter will be appended so as to access the variant page used when
   // onboarding occurs after the first Chrome execution (e.g., when creating an
@@ -167,6 +177,9 @@ class StartupTabProviderImpl : public StartupTabProvider {
                                 Profile* profile) const override;
   StartupTabs GetPostCrashTabs(
       bool has_incompatible_applications) const override;
+#if !defined(OS_ANDROID)
+  StartupTabs GetNewFeaturesTabs(bool whats_new_enabled) const override;
+#endif
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_STARTUP_TAB_PROVIDER_H_

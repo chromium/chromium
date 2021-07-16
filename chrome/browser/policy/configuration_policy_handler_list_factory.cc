@@ -738,6 +738,9 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kNTPCardsVisible,
     prefs::kNtpModulesVisible,
     base::Value::Type::BOOLEAN },
+  { key::kPromotionalTabsEnabled,
+    prefs::kPromotionalTabsEnabled,
+    base::Value::Type::BOOLEAN },
 #endif  // defined(OS_ANDROID)
 
 #if !defined(OS_CHROMEOS)
@@ -1264,9 +1267,6 @@ const PolicyToPreferenceMapEntry kSimplePolicyMap[] = {
   { key::kUserDataSnapshotRetentionLimit,
     prefs::kUserDataSnapshotRetentionLimit,
     base::Value::Type::INTEGER },
-  { key::kPromotionalTabsEnabled,
-    prefs::kPromotionalTabsEnabled,
-    base::Value::Type::BOOLEAN },
   { key::kCommandLineFlagSecurityWarningsEnabled,
     prefs::kCommandLineFlagSecurityWarningsEnabled,
     base::Value::Type::BOOLEAN },

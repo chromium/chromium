@@ -138,6 +138,13 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabs(
   return GetPostCrashTabsForState(has_incompatible_applications);
 }
 
+#if !defined(OS_ANDROID)
+StartupTabs StartupTabProviderImpl::GetNewFeaturesTabs(
+    bool whats_new_enabled) const {
+  return GetNewFeaturesTabsForState(whats_new_enabled);
+}
+#endif
+
 // static
 bool StartupTabProviderImpl::CanShowWelcome(bool is_signin_allowed,
                                             bool is_supervised_user,
@@ -238,6 +245,18 @@ StartupTabs StartupTabProviderImpl::GetPostCrashTabsForState(
     AddIncompatibleApplicationsUrl(&tabs);
   return tabs;
 }
+
+#if !defined(OS_ANDROID)
+// static
+StartupTabs StartupTabProviderImpl::GetNewFeaturesTabsForState(
+    bool whats_new_enabled) {
+  StartupTabs tabs;
+  if (whats_new_enabled) {
+    tabs.emplace_back(GURL(chrome::kChromeUIWhatsNewURL), false);
+  }
+  return tabs;
+}
+#endif
 
 // static
 GURL StartupTabProviderImpl::GetWelcomePageUrl(bool use_later_run_variant) {

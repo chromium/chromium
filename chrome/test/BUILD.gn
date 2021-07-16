@@ -1023,6 +1023,7 @@ if (!is_android) {
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/web_applications/extensions",
       "//chrome/browser/webaudio:browser_tests",
+      "//chrome/common:version_header",
       "//chrome/common/privacy_budget:test_support",
       "//chrome/renderer",
       "//chrome/services/removable_storage_writer:lib",
@@ -1691,6 +1692,7 @@ if (!is_android) {
       "../browser/policy/test/policy_browsertest.cc",
       "../browser/policy/test/policy_statistics_collector_browsertest.cc",
       "../browser/policy/test/policy_test_google_browsertest.cc",
+      "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
       "../browser/policy/test/proxy_policies_browsertest.cc",
       "../browser/policy/test/restore_on_startup_policy_browsertest.cc",
       "../browser/policy/test/safe_browsing_policy_browsertest.cc",
@@ -2433,7 +2435,6 @@ if (!is_android) {
       sources += [
         "../browser/external_protocol/external_protocol_policy_browsertest.cc",
         "../browser/lifetime/application_lifetime_browsertest.cc",
-        "../browser/policy/test/promotional_tabs_enabled_policy_browsertest.cc",
       ]
     }
 

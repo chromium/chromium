@@ -1773,16 +1773,16 @@ const char kRestartLastSessionOnShutdown[] = "restart.last.session.on.shutdown";
 
 #if !defined(OS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-// Pref name for the policy controlling presentation of full-tab promotional
-// and/or educational content.
-const char kPromotionalTabsEnabled[] = "browser.promotional_tabs_enabled";
-
 // Boolean that specifies whether or not to show security warnings for some
 // potentially bad command-line flags. True by default. Controlled by the
 // CommandLineFlagSecurityWarningsEnabled policy setting.
 const char kCommandLineFlagSecurityWarningsEnabled[] =
     "browser.command_line_flag_security_warnings_enabled";
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+// Pref name for the policy controlling presentation of full-tab promotional
+// and/or educational content.
+const char kPromotionalTabsEnabled[] = "browser.promotional_tabs_enabled";
 
 // Boolean that specifies whether or not showing the unsupported OS warning is
 // suppressed. False by default. Controlled by the SuppressUnsupportedOSWarning
@@ -3227,6 +3227,12 @@ const char kDeviceAttributesAllowedForOrigins[] =
 // policy.
 const char kDesktopSharingHubEnabled[] =
     "sharing_hub.desktop_sharing_hub_enabled";
+#endif
+
+#if !defined(OS_ANDROID)
+// Pref name for the last major version where the What's New page was
+// successfully shown.
+const char kLastWhatsNewVersion[] = "browser.last_whats_new_version";
 #endif
 
 }  // namespace prefs
