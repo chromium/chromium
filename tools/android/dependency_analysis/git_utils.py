@@ -35,7 +35,7 @@ def get_last_commit_cr_position() -> str:
     """
     description: str = _get_last_commit_with_format('%b')
     # Will capture from
-    # '[lines...]Cr-Commit-Position: refs/heads/master@{#123456}' the string
+    # '[lines...]Cr-Commit-Position: refs/heads/main@{#123456}' the string
     # '123456'.
     CR_POSITION_REGEX = r'Cr-Commit-Position: .*{#([0-9]+)}'
     match: re.Match = re.search(CR_POSITION_REGEX, description)
