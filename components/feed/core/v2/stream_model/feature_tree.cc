@@ -23,7 +23,9 @@ std::string ToAsciiForTesting(const std::string& s) {
 }
 }  // namespace
 
-ContentMap::ContentMap() = default;
+ContentMap::ContentMap(ContentRevision::Generator* revision_generator)
+    : revision_generator_(revision_generator) {}
+
 ContentMap::~ContentMap() = default;
 
 ContentTag ContentMap::GetContentTag(const feedwire::ContentId& id) {
@@ -57,7 +59,7 @@ ContentRevision ContentMap::AddContent(feedstore::Content content) {
     return result.first->second;
 
   // Newly inserted.
-  const ContentRevision new_revision = revision_generator_.GenerateNextId();
+  const ContentRevision new_revision = revision_generator_->GenerateNextId();
   result.first->second = new_revision;
   if (revision_to_content_.size() <= new_revision.GetUnsafeValue()) {
     revision_to_content_.resize(new_revision.GetUnsafeValue() + 1);

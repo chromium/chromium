@@ -125,7 +125,7 @@ TEST_F(FeedApiTest, BackgroundRefreshNotAttemptedAfterModelIsLoaded) {
 
 TEST_F(FeedApiTest, SurfaceReceivesInitialContent) {
   {
-    auto model = std::make_unique<StreamModel>();
+    auto model = CreateStreamModel();
     model->Update(MakeTypicalInitialModelState());
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }
@@ -152,7 +152,7 @@ TEST_F(FeedApiTest, SurfaceReceivesInitialContentLoadedAfterAttach) {
   TestForYouSurface surface(stream_.get());
   ASSERT_FALSE(surface.initial_state);
   {
-    auto model = std::make_unique<StreamModel>();
+    auto model = CreateStreamModel();
     model->Update(MakeTypicalInitialModelState());
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }
@@ -177,7 +177,7 @@ TEST_F(FeedApiTest, SurfaceReceivesInitialContentLoadedAfterAttach) {
 
 TEST_F(FeedApiTest, SurfaceReceivesUpdatedContent) {
   {
-    auto model = std::make_unique<StreamModel>();
+    auto model = CreateStreamModel();
     model->ExecuteOperations(MakeTypicalStreamOperations());
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }
@@ -206,7 +206,7 @@ TEST_F(FeedApiTest, SurfaceReceivesUpdatedContent) {
 
 TEST_F(FeedApiTest, SurfaceReceivesSecondUpdatedContent) {
   {
-    auto model = std::make_unique<StreamModel>();
+    auto model = CreateStreamModel();
     model->ExecuteOperations(MakeTypicalStreamOperations());
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }
@@ -258,7 +258,7 @@ TEST_F(FeedApiTest, RemoveAllContentResultsInZeroState) {
 
 TEST_F(FeedApiTest, DetachSurface) {
   {
-    auto model = std::make_unique<StreamModel>();
+    auto model = CreateStreamModel();
     model->ExecuteOperations(MakeTypicalStreamOperations());
     stream_->LoadModelForTesting(kForYouStream, std::move(model));
   }

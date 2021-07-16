@@ -440,6 +440,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
 
   // Replace stream_.
   void CreateStream(bool wait_for_initialization = true);
+  std::unique_ptr<StreamModel> CreateStreamModel();
   bool IsTaskQueueIdle() const;
   void WaitForIdleTaskQueue();
   void UnloadModel(const StreamType& stream_type);
@@ -475,6 +476,7 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
               task_environment_.GetMainThreadTaskRunner()));
 
   FakeRefreshTaskScheduler refresh_scheduler_;
+  StreamModel::Context stream_model_context_;
   std::unique_ptr<FeedStream> stream_;
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;

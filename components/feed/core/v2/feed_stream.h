@@ -366,6 +366,8 @@ class FeedStream : public FeedApi,
   PersistentKeyValueStoreImpl* persistent_key_value_store_;
   const WireResponseTranslator* wire_response_translator_;
 
+  StreamModel::Context stream_model_context_;
+
   ChromeInfo chrome_info_;
 
   offline_pages::TaskQueue task_queue_;

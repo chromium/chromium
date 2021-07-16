@@ -45,11 +45,12 @@ namespace feed {
 namespace test {
 
 std::unique_ptr<StreamModel> LoadModelFromStore(const StreamType& stream_type,
-                                                FeedStore* store) {
+                                                FeedStore* store,
+                                                StreamModel::Context* context) {
   std::unique_ptr<StreamModelUpdateRequest> data =
       StoredModelData(stream_type, store);
   if (data) {
-    auto model = std::make_unique<StreamModel>();
+    auto model = std::make_unique<StreamModel>(context);
     model->Update(std::move(data));
     return model;
   }
@@ -84,7 +85,8 @@ std::string ModelStateFor(
     std::unique_ptr<StreamModelUpdateRequest> update_request,
     std::vector<feedstore::DataOperation> operations,
     std::vector<feedstore::DataOperation> more_operations) {
-  StreamModel model;
+  StreamModel::Context context;
+  StreamModel model(&context);
   model.Update(std::move(update_request));
   model.ExecuteOperations(operations);
   model.ExecuteOperations(more_operations);
@@ -92,7 +94,8 @@ std::string ModelStateFor(
 }
 
 std::string ModelStateFor(const StreamType& stream_type, FeedStore* store) {
-  auto model = LoadModelFromStore(stream_type, store);
+  StreamModel::Context context;
+  auto model = LoadModelFromStore(stream_type, store, &context);
   if (model) {
     return model->DumpStateForTesting();
   }
@@ -815,6 +818,10 @@ void FeedApiTest::CreateStream(bool wait_for_initialization) {
 
   if (wait_for_initialization)
     WaitForIdleTaskQueue();  // Wait for any initialization.
+}
+
+std::unique_ptr<StreamModel> FeedApiTest::CreateStreamModel() {
+  return std::make_unique<StreamModel>(&stream_model_context_);
 }
 
 bool FeedApiTest::IsTaskQueueIdle() const {

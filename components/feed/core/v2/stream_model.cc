@@ -21,6 +21,7 @@
 
 namespace feed {
 namespace {
+using Context = StreamModel::Context;
 using UiUpdate = StreamModel::UiUpdate;
 using StoreUpdate = StreamModel::StoreUpdate;
 
@@ -51,6 +52,8 @@ void MergeSharedStateIds(const feedstore::StreamData& model_data,
 
 }  // namespace
 
+Context::Context() = default;
+Context::~Context() = default;
 UiUpdate::UiUpdate() = default;
 UiUpdate::~UiUpdate() = default;
 UiUpdate::UiUpdate(const UiUpdate&) = default;
@@ -60,7 +63,9 @@ StoreUpdate::~StoreUpdate() = default;
 StoreUpdate::StoreUpdate(StoreUpdate&&) = default;
 StoreUpdate& StoreUpdate::operator=(StoreUpdate&&) = default;
 
-StreamModel::StreamModel() = default;
+StreamModel::StreamModel(Context* context)
+    : content_map_(&(context->revision_generator)) {}
+
 StreamModel::~StreamModel() = default;
 
 void StreamModel::SetStoreObserver(StoreObserver* store_observer) {

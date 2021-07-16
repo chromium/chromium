@@ -239,7 +239,7 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   if (result.load_type == LoadType::kManualRefresh)
     UnloadModel(result.stream_type);
   if (result.update_request) {
-    auto model = std::make_unique<StreamModel>();
+    auto model = std::make_unique<StreamModel>(&stream_model_context_);
     model->Update(std::move(result.update_request));
 
     if (!model->HasVisibleContent() &&

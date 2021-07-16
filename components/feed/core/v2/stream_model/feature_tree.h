@@ -26,7 +26,7 @@ using ContentRevision = feed::ContentRevision;
 // maps ContentId into ContentTag.
 class ContentMap {
  public:
-  ContentMap();
+  explicit ContentMap(ContentRevision::Generator* revision_generator);
   ~ContentMap();
   ContentMap(const ContentMap&) = delete;
   ContentMap& operator=(const ContentMap&) = delete;
@@ -41,7 +41,7 @@ class ContentMap {
 
  private:
   ContentTag::Generator tag_generator_;
-  ContentRevision::Generator revision_generator_;
+  ContentRevision::Generator* revision_generator_;
   std::map<feedwire::ContentId, ContentTag, ContentIdCompareFunctor> mapping_;
 
   // These two containers work together to store and index content.
