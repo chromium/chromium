@@ -5400,7 +5400,6 @@ TEST_F(URLLoaderTest, EarlyHints) {
 }
 
 TEST_F(URLLoaderTest, CookieReportingCategories) {
-
   net::test_server::EmbeddedTestServer https_server(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
   https_server.SetSSLConfig(
@@ -5409,7 +5408,7 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
       base::FilePath(FILE_PATH_LITERAL("services/test/data")));
   ASSERT_TRUE(https_server.Start());
 
-  // Upcoming deprecation warning.
+  // SameSite-by-default deprecation warning.
   {
     MockCookieObserver cookie_observer;
     TestURLLoaderClient loader_client;
@@ -5454,15 +5453,11 @@ TEST_F(URLLoaderTest, CookieReportingCategories) {
                 testing::ElementsAre(MatchesCookieDetails(
                     CookieAccessType::kChange,
                     CookieOrLine("a=b", mojom::CookieOrLine::Tag::COOKIE),
-                    !net::cookie_util::IsSameSiteByDefaultCookiesEnabled())));
-    // This is either included or rejected as implicitly-cross-site, depending
-    // on flags.
-    if (net::cookie_util::IsSameSiteByDefaultCookiesEnabled()) {
-      EXPECT_TRUE(cookie_observer.observed_cookies()[0]
-                      .status.HasExactlyExclusionReasonsForTesting(
-                          {net::CookieInclusionStatus::
-                               EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
-    }
+                    false /* is_included */)));
+    EXPECT_TRUE(cookie_observer.observed_cookies()[0]
+                    .status.HasExactlyExclusionReasonsForTesting(
+                        {net::CookieInclusionStatus::
+                             EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX}));
     EXPECT_TRUE(cookie_observer.observed_cookies()[0].status.HasWarningReason(
         net::CookieInclusionStatus::WarningReason::
             WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT));
