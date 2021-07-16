@@ -1654,18 +1654,18 @@ class raw_hash_set {
     slot_type* slot = reinterpret_cast<slot_type*>(&raw);
     for (size_t i = 0; i != capacity_; ++i) {
       if (!IsDeleted(ctrl_[i])) continue;
-      size_t hash = PolicyTraits::apply(HashElement{hash_ref()},
-                                        PolicyTraits::element(slots_ + i));
-      auto target = find_first_non_full(ctrl_, hash, capacity_);
-      size_t new_i = target.offset;
+      const size_t hash = PolicyTraits::apply(
+          HashElement{hash_ref()}, PolicyTraits::element(slots_ + i));
+      const FindInfo target = find_first_non_full(ctrl_, hash, capacity_);
+      const size_t new_i = target.offset;
       total_probe_length += target.probe_length;
 
       // Verify if the old and new i fall within the same group wrt the hash.
       // If they do, we don't need to move the object as it falls already in the
       // best probe we can.
-      const auto probe_index = [&](size_t pos) {
-        return ((pos - probe(ctrl_, hash, capacity_).offset()) & capacity_) /
-               Group::kWidth;
+      const size_t probe_offset = probe(ctrl_, hash, capacity_).offset();
+      const auto probe_index = [probe_offset, this](size_t pos) {
+        return ((pos - probe_offset) & capacity_) / Group::kWidth;
       };
 
       // Element doesn't move.

@@ -223,7 +223,7 @@ CordRepExternal* MakeFakeExternal(size_t length) {
     std::string s;
     explicit Rep(size_t len) {
       this->tag = EXTERNAL;
-      this->base = this->storage;
+      this->base = reinterpret_cast<const char*>(this->storage);
       this->length = len;
       this->releaser_invoker = [](CordRepExternal* self) {
         delete static_cast<Rep*>(self);

@@ -297,6 +297,7 @@ cc_library(
         ":platform",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/numeric:int128",
     ],
 )
 
@@ -337,6 +338,7 @@ cc_library(
         ":platform",
         "//absl/base:config",
         "//absl/base:core_headers",
+        "//absl/numeric:int128",
     ],
 )
 

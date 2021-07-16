@@ -37,12 +37,18 @@ class CordzInfo;
 
 // Default feature enable states for cord ring buffers
 enum CordFeatureDefaults {
+  kCordEnableBtreeDefault = false,
   kCordEnableRingBufferDefault = false,
   kCordShallowSubcordsDefault = false
 };
 
+extern std::atomic<bool> cord_btree_enabled;
 extern std::atomic<bool> cord_ring_buffer_enabled;
 extern std::atomic<bool> shallow_subcords_enabled;
+
+inline void enable_cord_btree(bool enable) {
+  cord_btree_enabled.store(enable, std::memory_order_relaxed);
+}
 
 inline void enable_cord_ring_buffer(bool enable) {
   cord_ring_buffer_enabled.store(enable, std::memory_order_relaxed);
@@ -193,7 +199,16 @@ struct CordRep {
   // If tag < FLAT, it represents CordRepKind and indicates the type of node.
   // Otherwise, the node type is CordRepFlat and the tag is the encoded size.
   uint8_t tag;
-  char storage[1];  // Starting point for flat array: MUST BE LAST FIELD
+
+  // `storage` provides two main purposes:
+  // - the starting point for FlatCordRep.Data() [flexible-array-member]
+  // - 3 bytes of additional storage for use by derived classes.
+  // The latter is used by CordrepConcat and CordRepBtree. CordRepConcat stores
+  // a 'depth' value in storage[0], and the (future) CordRepBtree class stores
+  // `height`, `begin` and `end` in the 3 entries. Otherwise we would need to
+  // allocate room for these in the derived class, as not all compilers reuse
+  // padding space from the base class (clang and gcc do, MSVC does not, etc)
+  uint8_t storage[3];
 
   inline CordRepRing* ring();
   inline const CordRepRing* ring() const;
@@ -228,8 +243,8 @@ struct CordRepConcat : public CordRep {
   CordRep* left;
   CordRep* right;
 
-  uint8_t depth() const { return static_cast<uint8_t>(storage[0]); }
-  void set_depth(uint8_t depth) { storage[0] = static_cast<char>(depth); }
+  uint8_t depth() const { return storage[0]; }
+  void set_depth(uint8_t depth) { storage[0] = depth; }
 };
 
 struct CordRepSubstring : public CordRep {

@@ -118,8 +118,8 @@ struct CordRepFlat : public CordRep {
   }
 
   // Returns a pointer to the data inside this flat rep.
-  char* Data() { return storage; }
-  const char* Data() const { return storage; }
+  char* Data() { return reinterpret_cast<char*>(storage); }
+  const char* Data() const { return reinterpret_cast<const char*>(storage); }
 
   // Returns the maximum capacity (payload size) of this instance.
   size_t Capacity() const { return TagToLength(tag); }

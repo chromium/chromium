@@ -2909,7 +2909,7 @@ EXPORTS
     ?concat@CordRep@cord_internal@absl@@QEBAPEBUCordRepConcat@23@XZ
     ?consumed@CordRepRingReader@cord_internal@absl@@QEBA_KXZ
     ?conversion_char@FormatConversionSpecImpl@str_format_internal@absl@@QEBA?AW4FormatConversionChar@3@XZ
-    ?cord_ring_buffer_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
+    ?cord_btree_enabled@cord_internal@absl@@3U?$atomic@_N@__1@std@@A
     ?cordz_info@InlineData@cord_internal@absl@@QEBAPEAVCordzInfo@23@XZ
     ?cordz_info@InlineRep@Cord@absl@@QEBAPEAVCordzInfo@cord_internal@3@XZ
     ?cordz_should_profile@cord_internal@absl@@YA_NXZ
