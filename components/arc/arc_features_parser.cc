@@ -91,7 +91,7 @@ absl::optional<ArcFeatures> ParseFeaturesJson(base::StringPiece input_json) {
     LOG(ERROR) << "No properties in JSON.";
     return absl::nullopt;
   }
-  for (const auto& item : properties->DictItems()) {
+  for (const auto item : properties->DictItems()) {
     if (!item.second.is_string()) {
       LOG(ERROR) << "Item in the properties mapping is not a string.";
       return absl::nullopt;

@@ -142,7 +142,7 @@ void PolicyLoaderIOS::LoadNSDictionaryToPolicyBundle(NSDictionary* dictionary,
   base::DictionaryValue* dict = NULL;
   if (value && value->GetAsDictionary(&dict)) {
     PolicyMap& map = bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, ""));
-    for (const auto& it : dict->DictItems()) {
+    for (const auto it : dict->DictItems()) {
       map.Set(it.first, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
               POLICY_SOURCE_PLATFORM,
               ConvertPolicyDataIfNecessary(it.first, it.second), nullptr);

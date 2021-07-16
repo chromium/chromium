@@ -19,13 +19,13 @@ namespace {
 
 bool ExtractStrings(const base::Value& json,
                     AutofillAssistantOnboardingFetcher::StringMap& string_map) {
-  for (const auto& intent_it : json.DictItems()) {
+  for (const auto intent_it : json.DictItems()) {
     const auto& intent = intent_it.first;
     if (!intent_it.second.is_dict()) {
       return false;
     }
     base::flat_map<std::string, std::string> strings;
-    for (const auto& string_it : intent_it.second.DictItems()) {
+    for (const auto string_it : intent_it.second.DictItems()) {
       const auto& string_id = string_it.first;
       if (!string_it.second.is_string()) {
         return false;

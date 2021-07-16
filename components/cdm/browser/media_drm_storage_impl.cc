@@ -315,7 +315,7 @@ void ClearSessionDataForTimePeriod(base::Value* sessions_dict,
   DCHECK(sessions_dict->is_dict());
 
   std::vector<std::string> sessions_to_clear;
-  for (const auto& key_value : sessions_dict->DictItems()) {
+  for (const auto key_value : sessions_dict->DictItems()) {
     const std::string& session_id = key_value.first;
 
     base::Value* session_dict = &key_value.second;
@@ -359,7 +359,7 @@ std::vector<base::UnguessableToken> ClearMatchingLicenseData(
   std::vector<std::string> origins_to_delete;
   std::vector<base::UnguessableToken> origin_ids_to_unprovision;
 
-  for (const auto& key_value : storage_dict->DictItems()) {
+  for (const auto key_value : storage_dict->DictItems()) {
     const std::string& origin_str = key_value.first;
 
     if (filter && !filter.Run(GURL(origin_str)))
@@ -439,7 +439,7 @@ bool SessionsModifiedBetween(const base::Value* sessions_dict,
                              base::Time start,
                              base::Time end) {
   DCHECK(sessions_dict->is_dict());
-  for (const auto& key_value : sessions_dict->DictItems()) {
+  for (const auto key_value : sessions_dict->DictItems()) {
     const base::Value* session_dict = &key_value.second;
     if (!session_dict->is_dict())
       continue;
@@ -613,7 +613,7 @@ std::set<GURL> MediaDrmStorageImpl::GetAllOrigins(
     return std::set<GURL>();
 
   std::set<GURL> origin_set;
-  for (const auto& key_value : storage_dict->DictItems()) {
+  for (const auto key_value : storage_dict->DictItems()) {
     GURL origin(key_value.first);
     if (origin.is_valid())
       origin_set.insert(origin);
@@ -638,7 +638,7 @@ std::vector<GURL> MediaDrmStorageImpl::GetOriginsModifiedBetween(
   // before |end|. If there are any errors in prefs::kMediaDrmStorage,
   // ignore them.
   std::vector<GURL> matching_origins;
-  for (const auto& key_value : storage_dict->DictItems()) {
+  for (const auto key_value : storage_dict->DictItems()) {
     GURL origin(key_value.first);
     if (!origin.is_valid())
       continue;

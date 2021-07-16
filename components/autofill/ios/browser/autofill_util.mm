@@ -330,7 +330,7 @@ bool ExtractFillingResults(
   if (!ids_value->GetAsDictionary(&results))
     return false;
 
-  for (const auto& result : results->DictItems()) {
+  for (const auto result : results->DictItems()) {
     std::string id_string = result.first;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);

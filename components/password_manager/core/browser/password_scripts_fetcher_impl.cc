@@ -256,7 +256,7 @@ base::flat_set<ParsingResult> PasswordScriptsFetcherImpl::ParseResponse(
     return {ParsingResult::kInvalidJson};
 
   base::flat_set<ParsingResult> warnings;
-  for (const auto& script_it : data.value->DictItems()) {
+  for (const auto script_it : data.value->DictItems()) {
     // |script_it.first| is an identifier (normally, a domain name, e.g.
     // example.com) that we don't care about.
     // |script_it.second| provides domain-specific parameters.

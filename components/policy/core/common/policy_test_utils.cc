@@ -83,7 +83,7 @@ CFPropertyListRef ValueToProperty(const base::Value& value) {
       CFMutableDictionaryRef dict = CFDictionaryCreateMutable(
           kCFAllocatorDefault, value.DictSize(), &kCFTypeDictionaryKeyCallBacks,
           &kCFTypeDictionaryValueCallBacks);
-      for (const auto& key_value_pair : value.DictItems()) {
+      for (const auto key_value_pair : value.DictItems()) {
         // CFDictionaryAddValue() retains both |key| and |value|, so make sure
         // the references are balanced.
         base::ScopedCFTypeRef<CFStringRef> key(

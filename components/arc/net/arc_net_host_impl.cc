@@ -228,7 +228,7 @@ arc::mojom::NetworkConfigurationPtr TranslateNetworkProperties(
   if (const auto* device =
           GetStateHandler()->GetDeviceState(network_state->device_path())) {
     mojo->network_interface = device->interface();
-    for (const auto& kv : device->ip_configs().DictItems())
+    for (const auto kv : device->ip_configs().DictItems())
       AddIpConfiguration(mojo.get(), &kv.second);
   }
 

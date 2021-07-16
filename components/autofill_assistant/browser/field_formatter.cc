@@ -40,7 +40,7 @@ std::map<std::string, std::string> CreateFormGroupMappings(
   std::map<std::string, std::string> mappings;
   autofill::ServerFieldTypeSet available_fields;
   form_group.GetNonEmptyTypes(locale, &available_fields);
-  for (const auto& field : available_fields) {
+  for (const auto field : available_fields) {
     mappings.emplace(base::NumberToString(static_cast<int>(field)),
                      base::UTF16ToUTF8(form_group.GetInfo(
                          autofill::AutofillType(field), locale)));
