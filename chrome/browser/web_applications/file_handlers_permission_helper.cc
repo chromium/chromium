@@ -178,6 +178,8 @@ ContentSetting FileHandlersPermissionHelper::MaybeResetPermission(
 
 void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
     const ContentSettingsPattern& pattern) {
+  ScopedRegistryUpdate update(
+      finalizer_->registry_controller().AsWebAppSyncBridge());
   for (const AppId& app_id : finalizer_->registrar().GetAppIds()) {
     const WebApp* app = finalizer_->GetWebAppRegistrar().GetAppById(app_id);
     if (!app || !app->is_locally_installed())
@@ -191,8 +193,6 @@ void FileHandlersPermissionHelper::UpdateAppsMatchingPattern(
     if (permission_blocked == app->file_handler_permission_blocked())
       continue;
 
-    ScopedRegistryUpdate update(
-        finalizer_->registry_controller().AsWebAppSyncBridge());
     WebApp* app_to_update = update->UpdateApp(app_id);
     app_to_update->SetFileHandlerPermissionBlocked(permission_blocked);
     FileHandlerUpdateAction file_handlers_need_os_update =
