@@ -67,7 +67,7 @@ PasswordCredential* PasswordCredential::Create(
 
     V8FormDataEntryValue* value =
         form_data->get(submittable_element->GetName());
-    if (!value->IsUSVString())
+    if (!value || !value->IsUSVString())
       continue;
     const String& usv_string_value = value->GetAsUSVString();
 
