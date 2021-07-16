@@ -3777,6 +3777,11 @@
     "expiry_milestone": 85
   },
   {
+    "name": "messages-for-android-chrome-survey",
+    "owners": [ "pavely", "aishwaryarj" ],
+    "expiry_milestone": 99
+  },
+  {
     "name": "messages-for-android-infrastructure",
     "owners": [ "pavely", "lazzzis" ],
     "expiry_milestone": 95

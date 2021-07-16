@@ -6792,6 +6792,10 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kWindowNaming)},
 
 #if defined(OS_ANDROID)
+    {"messages-for-android-chrome-survey",
+     flag_descriptions::kMessagesForAndroidChromeSurveyName,
+     flag_descriptions::kMessagesForAndroidChromeSurveyDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(messages::kMessagesForAndroidChromeSurvey)},
     {"messages-for-android-infrastructure",
      flag_descriptions::kMessagesForAndroidInfrastructureName,
      flag_descriptions::kMessagesForAndroidInfrastructureDescription,

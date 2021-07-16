@@ -81,6 +81,7 @@ enum class MessageIdentifier {
   ADD_TO_HOMESCREEN_IPH = 8,
   SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
+  CHROME_SURVEY = 11,
 
   // Insert new values before this line.
   COUNT

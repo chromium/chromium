@@ -81,6 +81,8 @@ public class MessagesMetrics {
                 return "SendTabToSelf";
             case MessageIdentifier.READER_MODE:
                 return "ReaderMode";
+            case MessageIdentifier.CHROME_SURVEY:
+                return "ChromeSurvey";
             default:
                 return "Unknown";
         }

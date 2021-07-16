@@ -47323,6 +47323,7 @@ from previous Chrome versions.
       label="OminboxUIExperimentUseGenericSearchEngineIcon:disabled"/>
   <int value="-1256187739" label="ClientStorageAccessContextAuditing:disabled"/>
   <int value="-1255427595" label="HomePageButtonForceEnabled:enabled"/>
+  <int value="-1254961530" label="MessagesForAndroidChromeSurvey:disabled"/>
   <int value="-1254640444"
       label="OmniboxEnableClipboardProviderTextSuggestions:disabled"/>
   <int value="-1254221389" label="AssistantBetterOnboarding:enabled"/>
@@ -49392,6 +49393,7 @@ from previous Chrome versions.
       label="enable-non-validating-reload-on-refresh-content"/>
   <int value="469999350" label="NotificationScheduleService:disabled"/>
   <int value="470011024" label="NonValidatingReloadOnNormalReload:enabled"/>
+  <int value="470307075" label="MessagesForAndroidChromeSurvey:enabled"/>
   <int value="471224152" label="WinUseHybridSpellChecker:enabled"/>
   <int value="471519375" label="NewOsSettingsSearch:disabled"/>
   <int value="471560693" label="webview-verbose-logging"/>
@@ -54458,6 +54460,7 @@ Called by update_use_counter_css.py.-->
   <int value="8" label="AddToHomescreenIPH"/>
   <int value="9" label="SendTabToSelf"/>
   <int value="10" label="ReaderMode"/>
+  <int value="11" label="ChromeSurvey"/>
 </enum>
 
 <enum name="MessageLoopProblems">

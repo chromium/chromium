@@ -63,6 +63,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <variants name="MessageIdentifiers">
   <variant name=".AddToHomescreenIPH"/>
+  <variant name=".ChromeSurvey"/>
   <variant name=".GeneratedPasswordSaved"/>
   <variant name=".MerchantTrust"/>
   <variant name=".PopupBlocked"/>

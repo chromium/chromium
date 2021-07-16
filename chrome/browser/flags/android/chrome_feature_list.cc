@@ -286,6 +286,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &language::kForceAppLanguagePrompt,
     &language::kTranslateAssistContent,
     &language::kTranslateIntent,
+    &messages::kMessagesForAndroidChromeSurvey,
     &messages::kMessagesForAndroidInfrastructure,
     &messages::kMessagesForAndroidReaderMode,
     &offline_pages::kOfflineIndicatorFeature,
