@@ -627,14 +627,6 @@ TEST_F(BubbleDialogDelegateViewTest, VisibleAnchorChanges) {
   Widget* bubble_widget =
       BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   bubble_widget->Show();
-#if defined(OS_MAC)
-  // All child widgets make the parent paint as active on Mac.
-  // See https://crbug.com/1046540
-  EXPECT_TRUE(anchor_widget->ShouldPaintAsActive());
-#else
-  EXPECT_FALSE(anchor_widget->ShouldPaintAsActive());
-#endif  // defined(OS_MAC)
-  bubble_delegate->SetAnchorView(anchor_widget->GetContentsView());
   EXPECT_TRUE(anchor_widget->ShouldPaintAsActive());
 
   bubble_widget->Hide();
@@ -879,6 +871,8 @@ class BubbleDialogDelegateViewAnchorTest : public test::WidgetTest {
 
   // Anchors a bubble widget to another widget.
   void Anchor(Widget* bubble_widget, Widget* anchor_to) {
+    Widget::ReparentNativeView(bubble_widget->GetNativeView(),
+                               anchor_to->GetNativeView());
     static_cast<AnchorTestBubbleDialogDelegateView*>(
         bubble_widget->widget_delegate())
         ->SetAnchorView(GetAnchorView(anchor_to));
@@ -974,7 +968,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 
   widget->Activate();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-  EXPECT_FALSE(bubble->ShouldPaintAsActive());
+  EXPECT_TRUE(bubble->ShouldPaintAsActive());
 
   bubble->Activate();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
@@ -996,7 +990,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 
   Anchor(bubble, widget.get());
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-  EXPECT_FALSE(bubble->ShouldPaintAsActive());
+  EXPECT_TRUE(bubble->ShouldPaintAsActive());
 
   bubble->Close();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
@@ -1017,7 +1011,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 
   widget->Activate();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-  EXPECT_FALSE(bubble->ShouldPaintAsActive());
+  EXPECT_TRUE(bubble->ShouldPaintAsActive());
 
   bubble->Close();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
@@ -1034,7 +1028,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 
   Anchor(bubble, widget.get());
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-  EXPECT_FALSE(bubble->ShouldPaintAsActive());
+  EXPECT_TRUE(bubble->ShouldPaintAsActive());
 
   bubble->Activate();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
@@ -1047,15 +1041,18 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
 TEST_F(BubbleDialogDelegateViewAnchorTest,
        ActivationPassesAcrossChainOfAnchoredBubbles) {
   auto widget = CreateTopLevelWidget();
+  auto other_widget = CreateTopLevelWidget();
   auto* bubble = CreateBubble();
   auto* bubble2 = CreateBubble();
   widget->ShowInactive();
+  // Initially, both bubbles are parented to dummy_widget().
   bubble->ShowInactive();
   bubble2->Show();
   EXPECT_FALSE(widget->ShouldPaintAsActive());
-  EXPECT_FALSE(bubble->ShouldPaintAsActive());
+  EXPECT_TRUE(bubble->ShouldPaintAsActive());
   EXPECT_TRUE(bubble2->ShouldPaintAsActive());
 
+  // Change the bubble's parent to |widget|.
   Anchor(bubble, widget.get());
   EXPECT_FALSE(widget->ShouldPaintAsActive());
   EXPECT_FALSE(bubble->ShouldPaintAsActive());
@@ -1066,7 +1063,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
   EXPECT_TRUE(bubble->ShouldPaintAsActive());
   EXPECT_TRUE(bubble2->ShouldPaintAsActive());
 
-  dummy_widget()->Activate();
+  other_widget->Show();
   EXPECT_FALSE(widget->ShouldPaintAsActive());
   EXPECT_FALSE(bubble->ShouldPaintAsActive());
   EXPECT_FALSE(bubble2->ShouldPaintAsActive());
@@ -1087,7 +1084,7 @@ TEST_F(BubbleDialogDelegateViewAnchorTest,
   auto* bubble = CreateBubble();
   auto* bubble2 = CreateBubble();
   widget->Show();
-  bubble->Show();
+  bubble->ShowInactive();
   bubble2->Show();
   Anchor(bubble, widget.get());
   Anchor(bubble2, bubble);
