@@ -199,7 +199,8 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
       const WritingDirectionMode container_writing_direction,
       PhysicalSize container_builder_size,
       LogicalOffset containing_block_relative_offset = LogicalOffset(),
-      LogicalOffset containing_block_offset = LogicalOffset());
+      LogicalOffset containing_block_offset = LogicalOffset(),
+      bool adjust_for_fragmentation = false);
 
   void LayoutCandidates(Vector<NGLogicalOutOfFlowPositionedNode>* candidates,
                         const LayoutBox* only_layout,

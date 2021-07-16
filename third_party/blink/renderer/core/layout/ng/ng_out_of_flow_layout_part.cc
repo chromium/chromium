@@ -471,7 +471,8 @@ void NGOutOfFlowLayoutPart::ComputeInlineContainingBlocksForFragmentainer(
     AddInlineContainingBlockInfo(
         inline_info.map, containing_block->StyleRef().GetWritingDirection(),
         container_builder_physical_size, inline_info.relative_offset,
-        inline_info.offset_to_fragmentation_context);
+        inline_info.offset_to_fragmentation_context,
+        /* adjust_for_fragmentation */ true);
   }
 }
 
@@ -481,7 +482,8 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
     const WritingDirectionMode container_writing_direction,
     PhysicalSize container_builder_size,
     LogicalOffset containing_block_relative_offset,
-    LogicalOffset containing_block_offset) {
+    LogicalOffset containing_block_offset,
+    bool adjust_for_fragmentation) {
   // Transform the start/end fragments into a ContainingBlockInfo.
   for (const auto& block_info : inline_container_fragments) {
     DCHECK(block_info.value.has_value());
@@ -591,6 +593,20 @@ void NGOutOfFlowLayoutPart::AddInlineContainingBlockInfo(
         end_offset.block_offset - start_offset.block_offset};
     DCHECK_GE(inline_cb_size.inline_size, LayoutUnit());
     DCHECK_GE(inline_cb_size.block_size, LayoutUnit());
+
+    if (adjust_for_fragmentation) {
+      // When fragmenting, the containing block will not be associated with the
+      // current builder. Thus, we need to adjust the start offset to take the
+      // writing mode of the builder into account.
+      PhysicalSize physical_size =
+          ToPhysicalSize(inline_cb_size, writing_mode_);
+      start_offset =
+          start_offset
+              .ConvertToPhysical(container_writing_direction,
+                                 container_builder_size, physical_size)
+              .ConvertToLogical(default_writing_direction_,
+                                container_builder_size, physical_size);
+    }
 
     // Subtract out the inline relative offset, if set, so that it can be
     // applied after fragmentation is performed on the fragmentainer
@@ -1043,16 +1059,12 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 #endif
 
   const ContainingBlockInfo container_info = GetContainingBlockInfo(oof_node);
-  const auto default_writing_direction =
-      containing_block_fragment
-          ? containing_block_fragment->Style().GetWritingDirection()
-          : default_writing_direction_;
   const ComputedStyle& oof_style = node.Style();
   const auto oof_writing_direction = oof_style.GetWritingDirection();
 
   LogicalSize container_content_size = container_info.rect.size;
   PhysicalSize container_physical_content_size = ToPhysicalSize(
-      container_content_size, default_writing_direction.GetWritingMode());
+      container_content_size, default_writing_direction_.GetWritingMode());
 
   // Adjust the |static_position| (which is currently relative to the default
   // container's border-box). ng_absolute_utils expects the static position to
@@ -1068,12 +1080,12 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
   NGLogicalStaticPosition oof_static_position =
       static_position
           .ConvertToPhysical(
-              {default_writing_direction, container_physical_content_size})
+              {default_writing_direction_, container_physical_content_size})
           .ConvertToLogical(
               {oof_writing_direction, container_physical_content_size});
 
   // Need a constraint space to resolve offsets.
-  NGConstraintSpaceBuilder builder(default_writing_direction.GetWritingMode(),
+  NGConstraintSpaceBuilder builder(default_writing_direction_.GetWritingMode(),
                                    oof_writing_direction,
                                    /* is_new_fc */ true);
   builder.SetAvailableSize(container_content_size);
@@ -1086,7 +1098,7 @@ NGOutOfFlowLayoutPart::NodeInfo NGOutOfFlowLayoutPart::SetupNodeInfo(
 
   return NodeInfo(node, builder.ToConstraintSpace(), oof_static_position,
                   container_physical_content_size, container_info,
-                  default_writing_direction,
+                  default_writing_direction_,
                   /* is_fragmentainer_descendant */ containing_block_fragment,
                   oof_node.fixedpos_containing_block,
                   oof_node.inline_container.container);

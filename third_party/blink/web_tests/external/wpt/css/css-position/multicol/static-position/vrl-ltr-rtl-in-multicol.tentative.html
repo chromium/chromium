@@ -26,32 +26,31 @@
   .ltr { direction: ltr; }
   .inline { display: inline; }
   .abs { position: absolute; }
-  .zero-inline { inset-inline-start: 0;}
-  .zero-block { inset-block-start: 0;}
 </style>
 
 There should be no red.
 <div class="multicol">
-  <div class="container rtl">
+  <div class="container ltr">
     X<span class="rtl">X<div class="abs inline">XX</div><span class="red">XX</span></span>
   </div>
 
-  <div class="container rtl">
+  <div class="container ltr">
     X<span class="rtl">X<div class="abs block">XX</div><br><span class="red">XX</span></span>
   </div>
 
-  <div class="container rtl">
+  <div class="container ltr">
     X<span class="rtl cb">X<div class="abs inline">XX</div><span class="red">XX</span></span>
   </div>
-  <div class="container rtl">
+
+  <div class="container ltr">
     X<span class="rtl cb">X<div class="abs block">XX</div><br><span class="red">XX</span></span>
   </div>
 
-  <div class="container rtl">
+  <div class="container ltr">
     <span class="cb">X<span class="rtl">X<div class="abs inline">XX</div><span class="red">XX</span></span></span>
   </div>
 
-  <div class="container rtl">
+  <div class="container ltr">
     <span class="cb">X<span class="rtl">X<div class="abs block">XX</div><br><span class="red">XX</span></span></span>
   </div>
 </div>
