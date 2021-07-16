@@ -11,8 +11,8 @@ import optparse
 import logging
 import sys
 
-import symbolize_flags
 import symbolize_trace
+import flag_utils
 
 
 def _CreateOptionParser():
@@ -22,10 +22,8 @@ def _CreateOptionParser():
                                 prog='tools/tracing/symbolize_trace',
                                 conflict_handler='resolve')
 
-  parser.add_option('-v', '--verbose', help='Increase output verbosity.',
-                    action='count', dest='verbosity')
-
-  parser = symbolize_flags.AddSymbolizeOptions(parser)
+  parser = flag_utils.AddLoggingOptions(parser)
+  parser.add_option_group(flag_utils.SymbolizeOptions(parser))
 
   return parser
 
@@ -33,13 +31,7 @@ def main():
   parser = _CreateOptionParser()
   options, args = parser.parse_args()
 
-  # Setup Logging.
-  if options.verbosity == 0:
-    logging.basicConfig(level=logging.WARNING)
-  elif options.verbosity == 1:
-    logging.basicConfig(level=logging.INFO)
-  elif options.verbosity >= 2:
-    logging.basicConfig(level=logging.DEBUG)
+  flag_utils.SetupLogging(options.verbosity)
 
   # Argument error checking
   trace_file = None

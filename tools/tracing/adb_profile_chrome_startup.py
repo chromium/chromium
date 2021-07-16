@@ -49,9 +49,6 @@ def ProfileChrome(options):
                          'required. Specify the -e flag.')
     options.device_serial_number = devices[0]
 
-  if options.verbose:
-    logging.getLogger().setLevel(logging.DEBUG)
-
   # Check if the device is healthy.
   devices = device_utils.DeviceUtils.HealthyDevices()
   device = None
@@ -71,6 +68,10 @@ def ProfileChrome(options):
   # trace_format is preferred. write_json is supported for backward
   # compatibility reasons.
   flags.ParseFormatFlags(options)
+
+  # Set to root permissions since CaptureProfile() reads app data
+  # to pull the trace.
+  adb_wrapper.AdbWrapper(options.device).Root()
 
   trace_file = profiler.CaptureProfile(options,
                                        options.trace_time,
