@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -133,6 +135,15 @@ StringView StringView::LowerASCIIMaybeUsingBuffer(
     StackBackingStore& buffer) const {
   return ConvertASCIICase(*this, LowerConverter(),
                           StackStringViewAllocator(buffer));
+}
+
+UChar32 StringView::CodepointAt(unsigned i) const {
+  SECURITY_DCHECK(i < length());
+  if (Is8Bit())
+    return (*this)[i];
+  UChar32 codepoint;
+  U16_GET(Characters16(), 0, i, length(), codepoint);
+  return codepoint;
 }
 
 unsigned StringView::NextCodePointOffset(unsigned i) const {

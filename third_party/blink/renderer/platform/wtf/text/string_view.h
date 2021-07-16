@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/platform/wtf/get_ptr.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_impl.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 #if DCHECK_IS_ON()
 #include "base/memory/scoped_refptr.h"
@@ -184,14 +183,7 @@ class WTF_EXPORT StringView {
     return {static_cast<const UChar*>(bytes_), length_};
   }
 
-  UChar32 CodepointAt(unsigned i) const {
-    SECURITY_DCHECK(i < length());
-    if (Is8Bit())
-      return (*this)[i];
-    UChar32 codepoint;
-    U16_GET(Characters16(), 0, i, length(), codepoint);
-    return codepoint;
-  }
+  UChar32 CodepointAt(unsigned i) const;
 
   // Returns i+2 if a pair of [i] and [i+1] is a valid surrogate pair.
   // Returns i+1 otherwise.
