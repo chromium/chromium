@@ -8,6 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing.h"
+#include "gpu/command_buffer/service/shared_image_backing_gl_common.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -47,6 +48,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       GLuint gl_type,
       SharedImageBatchAccessManager* batch_access_manager,
       const GpuDriverBugWorkarounds& workarounds,
+      const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
       bool use_passthrough);
 
   ~SharedImageBackingEglImage() override;
@@ -54,6 +56,8 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
   void Update(std::unique_ptr<gfx::GpuFence> in_fence) override;
   bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) override;
   void MarkForDestruction() override;
+
+  void InitializePixels(GLenum format, GLenum type, const uint8_t* data);
 
  protected:
   std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
@@ -115,6 +119,7 @@ class SharedImageBackingEglImage : public ClearTrackingSharedImageBacking {
       GUARDED_BY(lock_);
   SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
 
+  const SharedImageBackingGLCommon::UnpackStateAttribs gl_unpack_attribs_;
   const bool use_passthrough_;
 
   DISALLOW_COPY_AND_ASSIGN(SharedImageBackingEglImage);

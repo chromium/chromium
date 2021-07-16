@@ -144,7 +144,8 @@ class CreateAndValidateSharedImageRepresentations {
       SharedImageManager* shared_image_manager,
       MemoryTypeTracker* memory_type_tracker,
       SharedImageRepresentationFactory* shared_image_representation_factory,
-      SharedContextState* context_state);
+      SharedContextState* context_state,
+      bool upload_initial_data);
   ~CreateAndValidateSharedImageRepresentations();
 
   gfx::Size size() { return size_; }
@@ -165,7 +166,17 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicThreadSafe) {
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
       memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get());
+      context_state_.get(), /*upload_initial_data=*/false);
+}
+
+// Intent of this test is to create at thread safe backing with initial pixel
+// data and test if all representations are working.
+TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, BasicInitialData) {
+  CreateAndValidateSharedImageRepresentations shared_image(
+      backing_factory_.get(), get_format(), true /* is_thread_safe */,
+      &mailbox_manager_, shared_image_manager_.get(),
+      memory_type_tracker_.get(), shared_image_representation_factory_.get(),
+      context_state_.get(), /*upload_initial_data=*/true);
 }
 
 // Intent of this test is to use the shared image mailbox system by 2 different
@@ -178,7 +189,7 @@ TEST_P(SharedImageBackingFactoryEGLThreadSafeTest, OneWriterOneReader) {
       backing_factory_.get(), get_format(), true /* is_thread_safe */,
       &mailbox_manager_, shared_image_manager_.get(),
       memory_type_tracker_.get(), shared_image_representation_factory_.get(),
-      context_state_.get());
+      context_state_.get(), /*upload_initial_data=*/false);
 
   auto mailbox = shared_image.mailbox();
   auto size = shared_image.size();
@@ -252,7 +263,8 @@ CreateAndValidateSharedImageRepresentations::
         SharedImageManager* shared_image_manager,
         MemoryTypeTracker* memory_type_tracker,
         SharedImageRepresentationFactory* shared_image_representation_factory,
-        SharedContextState* context_state)
+        SharedContextState* context_state,
+        bool upload_initial_data)
     : mailbox_manager_(mailbox_manager), size_(256, 256) {
   // Make the context current.
   DCHECK(context_state);
@@ -269,9 +281,17 @@ CreateAndValidateSharedImageRepresentations::
   uint32_t usage = SHARED_IMAGE_USAGE_GLES2 | SHARED_IMAGE_USAGE_RASTER;
   if (!is_thread_safe)
     usage |= SHARED_IMAGE_USAGE_DISPLAY;
-  backing_ = backing_factory->CreateSharedImage(
-      mailbox_, format, surface_handle, size_, color_space, surface_origin,
-      alpha_type, usage, is_thread_safe);
+  if (upload_initial_data) {
+    std::vector<uint8_t> initial_data(
+        viz::ResourceSizes::CheckedSizeInBytes<unsigned int>(size_, format));
+    backing_ = backing_factory->CreateSharedImage(
+        mailbox_, format, size_, color_space, surface_origin, alpha_type, usage,
+        initial_data);
+  } else {
+    backing_ = backing_factory->CreateSharedImage(
+        mailbox_, format, surface_handle, size_, color_space, surface_origin,
+        alpha_type, usage, is_thread_safe);
+  }
 
   // As long as either |chromium_image_ar30| or |chromium_image_ab30| is
   // enabled, we can create a non-scanout SharedImage with format

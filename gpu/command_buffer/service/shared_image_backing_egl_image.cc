@@ -180,6 +180,7 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
     GLuint gl_type,
     SharedImageBatchAccessManager* batch_access_manager,
     const GpuDriverBugWorkarounds& workarounds,
+    const SharedImageBackingGLCommon::UnpackStateAttribs& attribs,
     bool use_passthrough)
     : ClearTrackingSharedImageBacking(mailbox,
                                       format,
@@ -193,6 +194,7 @@ SharedImageBackingEglImage::SharedImageBackingEglImage(
       gl_format_(gl_format),
       gl_type_(gl_type),
       batch_access_manager_(batch_access_manager),
+      gl_unpack_attribs_(attribs),
       use_passthrough_(use_passthrough) {
   DCHECK(batch_access_manager_);
   created_on_context_ = gl::g_current_gl_context;
@@ -455,6 +457,22 @@ void SharedImageBackingEglImage::MarkForDestruction() {
   if (source_texture_holder_ && !have_context())
     source_texture_holder_->MarkContextLost();
   source_texture_holder_.reset();
+}
+
+void SharedImageBackingEglImage::InitializePixels(GLenum format,
+                                                  GLenum type,
+                                                  const uint8_t* data) {
+  auto texture_holder =
+      source_texture_holder_ ? source_texture_holder_ : GenEGLImageSibling();
+  const GLenum target = texture_holder->texture()->target();
+  const unsigned int service_id = texture_holder->texture()->service_id();
+  gl::GLApi* api = gl::g_current_gl_context;
+  SharedImageBackingGLCommon::ScopedRestoreTexture scoped_restore(api, target);
+  api->glBindTextureFn(target, service_id);
+  SharedImageBackingGLCommon::ScopedResetAndRestoreUnpackState
+      scoped_unpack_state(api, gl_unpack_attribs_, true /* uploading_data */);
+  api->glTexSubImage2DFn(target, 0, 0, 0, size().width(), size().height(),
+                         format, type, data);
 }
 
 }  // namespace gpu

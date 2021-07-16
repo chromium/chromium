@@ -31,53 +31,11 @@ SharedImageBackingFactoryEGL::SharedImageBackingFactoryEGL(
     const GpuDriverBugWorkarounds& workarounds,
     const GpuFeatureInfo& gpu_feature_info,
     SharedImageBatchAccessManager* batch_access_manager)
-    : use_passthrough_(gpu_preferences.use_passthrough_cmd_decoder &&
-                       gles2::PassthroughCommandDecoderSupported()),
-      workarounds_(workarounds) {
-  batch_access_manager_ = batch_access_manager;
-  gl::GLApi* api = gl::g_current_gl_context;
-  api->glGetIntegervFn(GL_MAX_TEXTURE_SIZE, &max_texture_size_);
-  // When the passthrough command decoder is used, the max_texture_size
-  // workaround is implemented by ANGLE. Trying to adjust the max size here
-  // would cause discrepancy between what we think the max size is and what
-  // ANGLE tells the clients.
-  if (!use_passthrough_ && workarounds.max_texture_size) {
-    max_texture_size_ =
-        std::min(max_texture_size_, workarounds.max_texture_size);
-  }
-  // Ensure max_texture_size_ is less than INT_MAX so that gfx::Rect and friends
-  // can be used to accurately represent all valid sub-rects, with overflow
-  // cases, clamped to INT_MAX, always invalid.
-  max_texture_size_ = std::min(max_texture_size_, INT_MAX - 1);
-
-  // TODO(piman): Can we extract the logic out of FeatureInfo?
-  scoped_refptr<gles2::FeatureInfo> feature_info =
-      new gles2::FeatureInfo(workarounds, gpu_feature_info);
-  feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2,
-                           use_passthrough_, gles2::DisallowedFeatures());
-  const gles2::Validators* validators = feature_info->validators();
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    auto format = static_cast<viz::ResourceFormat>(i);
-    FormatInfo& info = format_info_[i];
-    if (!viz::GLSupportsFormat(format))
-      continue;
-    const GLuint image_internal_format = viz::GLInternalFormat(format);
-    const GLenum gl_format = viz::GLDataFormat(format);
-    const GLenum gl_type = viz::GLDataType(format);
-    const bool uncompressed_format_valid =
-        validators->texture_internal_format.IsValid(image_internal_format) &&
-        validators->texture_format.IsValid(gl_format);
-    const bool compressed_format_valid =
-        validators->compressed_texture_format.IsValid(image_internal_format);
-    if ((uncompressed_format_valid || compressed_format_valid) &&
-        validators->pixel_type.IsValid(gl_type)) {
-      info.enabled = true;
-      info.is_compressed = compressed_format_valid;
-      info.gl_format = gl_format;
-      info.gl_type = gl_type;
-    }
-  }
-}
+    : SharedImageBackingFactoryGLCommon(gpu_preferences,
+                                        workarounds,
+                                        gpu_feature_info,
+                                        /*progress_reporter=*/nullptr),
+      batch_access_manager_(batch_access_manager) {}
 
 SharedImageBackingFactoryEGL::~SharedImageBackingFactoryEGL() = default;
 
@@ -93,7 +51,7 @@ SharedImageBackingFactoryEGL::CreateSharedImage(
     uint32_t usage,
     bool is_thread_safe) {
   return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
-                             alpha_type, usage);
+                             alpha_type, usage, base::span<const uint8_t>());
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -106,8 +64,8 @@ SharedImageBackingFactoryEGL::CreateSharedImage(
     SkAlphaType alpha_type,
     uint32_t usage,
     base::span<const uint8_t> pixel_data) {
-  NOTIMPLEMENTED_LOG_ONCE();
-  return nullptr;
+  return MakeEglImageBacking(mailbox, format, size, color_space, surface_origin,
+                             alpha_type, usage, pixel_data);
 }
 
 std::unique_ptr<SharedImageBacking>
@@ -135,9 +93,10 @@ bool SharedImageBackingFactoryEGL::IsSupported(
     GrContextType gr_context_type,
     bool* allow_legacy_mailbox,
     bool is_pixel_used) {
-  if (is_pixel_used) {
+  if (is_pixel_used && gr_context_type != GrContextType::kGL) {
     return false;
   }
+
   // Doesn't support gmb for now
   if (gmb_type != gfx::EMPTY_BUFFER) {
     return false;
@@ -163,18 +122,13 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
     SkAlphaType alpha_type,
-    uint32_t usage) {
-  const FormatInfo& format_info = format_info_[format];
-  if (!format_info.enabled) {
-    DLOG(ERROR) << "MakeEglImageBacking: invalid format";
-    return nullptr;
-  }
-
+    uint32_t usage,
+    base::span<const uint8_t> pixel_data) {
   DCHECK(!(usage & SHARED_IMAGE_USAGE_SCANOUT));
 
-  if (size.width() < 1 || size.height() < 1 ||
-      size.width() > max_texture_size_ || size.height() > max_texture_size_) {
-    DLOG(ERROR) << "MakeEglImageBacking: Invalid size";
+  const FormatInfo& format_info = format_info_[format];
+  GLenum target = GL_TEXTURE_2D;
+  if (!CanCreateSharedImage(size, pixel_data, format_info, target)) {
     return nullptr;
   }
 
@@ -185,10 +139,16 @@ SharedImageBackingFactoryEGL::MakeEglImageBacking(
     return nullptr;
   }
 
-  return std::make_unique<SharedImageBackingEglImage>(
+  auto egl_backing = std::make_unique<SharedImageBackingEglImage>(
       mailbox, format, size, color_space, surface_origin, alpha_type, usage,
       estimated_size, format_info.gl_format, format_info.gl_type,
-      batch_access_manager_, workarounds_, use_passthrough_);
+      batch_access_manager_, workarounds_, attribs_, use_passthrough_);
+
+  if (!pixel_data.empty()) {
+    egl_backing->InitializePixels(format_info.adjusted_format,
+                                  format_info.gl_type, pixel_data.data());
+  }
+  return egl_backing;
 }
 
 }  // namespace gpu

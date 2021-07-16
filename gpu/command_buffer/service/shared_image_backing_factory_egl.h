@@ -9,6 +9,7 @@
 
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
+#include "gpu/command_buffer/service/shared_image_backing_factory_gl_common.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/buffer_types.h"
@@ -30,7 +31,7 @@ struct Mailbox;
 // Implementation of SharedImageBackingFactory that produces EGL backed
 // SharedImages.
 class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
-    : public SharedImageBackingFactory {
+    : public SharedImageBackingFactoryGLCommon {
  public:
   SharedImageBackingFactoryEGL(
       const GpuPreferences& gpu_preferences,
@@ -87,26 +88,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryEGL
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
       SkAlphaType alpha_type,
-      uint32_t usage);
-
-  struct FormatInfo {
-    // Whether this format is supported.
-    bool enabled = false;
-
-    // Whether the texture is a compressed type.
-    bool is_compressed = false;
-
-    GLenum gl_format = 0;
-    GLenum gl_type = 0;
-  };
-
-  // Whether we're using the passthrough command decoder and should generate
-  // passthrough textures.
-  const bool use_passthrough_;
-
-  FormatInfo format_info_[viz::RESOURCE_FORMAT_MAX + 1];
-  int32_t max_texture_size_ = 0;
-  GpuDriverBugWorkarounds workarounds_;
+      uint32_t usage,
+      base::span<const uint8_t> pixel_data);
 
   SharedImageBatchAccessManager* batch_access_manager_ = nullptr;
 };
