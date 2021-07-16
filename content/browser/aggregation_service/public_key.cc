@@ -21,6 +21,10 @@ PublicKey::PublicKey(std::string id,
   DCHECK_LE(not_before_time_, not_after_time_);
 }
 
+bool PublicKey::IsValidAtTime(base::Time time) {
+  return time >= not_before_time_ && time <= not_after_time_;
+}
+
 PublicKeysForOrigin::PublicKeysForOrigin() = default;
 
 PublicKeysForOrigin::PublicKeysForOrigin(url::Origin origin,

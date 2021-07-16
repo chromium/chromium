@@ -35,6 +35,8 @@ class CONTENT_EXPORT PublicKey {
 
   base::Time not_after_time() const { return not_after_time_; }
 
+  bool IsValidAtTime(base::Time time);
+
  private:
   // String identifying the key, controlled by the helper server.
   std::string id_;

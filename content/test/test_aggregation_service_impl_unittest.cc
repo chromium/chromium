@@ -45,25 +45,23 @@ TEST_F(TestAggregationServiceImplTest, SetPublicKeys) {
 
   url::Origin origin = url::Origin::Create(GURL("https://a.com"));
 
-  base::RunLoop set_loop;
   impl_->SetPublicKeys(origin, json_string,
                        base::BindLambdaForTesting([&](bool succeeded) {
                          EXPECT_TRUE(succeeded);
-                         set_loop.Quit();
                        }));
-  set_loop.Run();
 
-  base::RunLoop get_loop;
+  base::RunLoop run_loop;
   impl_->GetPublicKeys(
       origin, base::BindLambdaForTesting([&](PublicKeysForOrigin keys) {
         EXPECT_TRUE(content::aggregation_service::PublicKeysEqual(
-            {content::PublicKey("abcd", "defg",
-                                base::Time::FromJavaTime(1623000000000),
-                                base::Time::FromJavaTime(1624000000000))},
+            {content::PublicKey(
+                /*id=*/"abcd", /*key=*/"defg",
+                /*not_before_time=*/base::Time::FromJavaTime(1623000000000),
+                /*not_after_time=*/base::Time::FromJavaTime(1624000000000))},
             keys.keys));
-        get_loop.Quit();
+        run_loop.Quit();
       }));
-  get_loop.Run();
+  run_loop.Run();
 }
 
 }  // namespace content
