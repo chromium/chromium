@@ -675,10 +675,9 @@ void URLRequestContextConfig::ParseAndSetExperimentalOptions(
       }
       disable_ipv6_on_wifi = it.value().GetBool();
     } else if (it.key() == kSSLKeyLogFile) {
-      std::string ssl_key_log_file_string;
-      if (it.value().GetAsString(&ssl_key_log_file_string)) {
+      if (it.value().is_string()) {
         base::FilePath ssl_key_log_file(
-            base::FilePath::FromUTF8Unsafe(ssl_key_log_file_string));
+            base::FilePath::FromUTF8Unsafe(it.value().GetString()));
         if (!ssl_key_log_file.empty()) {
           // SetSSLKeyLogger is only safe to call before any SSLClientSockets
           // are created. This should not be used if there are multiple
