@@ -929,6 +929,7 @@ TEST_F(SQLitePersistentCookieStoreTest, SourcePortIsPersistent) {
         /*secure=*/true, false, CookieSameSite::LAX_MODE,
         COOKIE_PRIORITY_DEFAULT,
         /*same_party=*/false,
+        /*partition_key=*/absl::nullopt,
         CookieSourceScheme::kUnset /* Doesn't matter for this test. */,
         input.port));
   }

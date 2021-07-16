@@ -128,8 +128,8 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
             /*last_access=*/base::Time::Now(), is_secure.value_or(true),
             is_http_only.value_or(true), samesite_mode,
             net::StringToCookiePriority(priority ? *priority : "medium"),
-            /*same_party=*/false, net::CookieSourceScheme::kUnset,
-            url::PORT_UNSPECIFIED);
+            /*same_party=*/false, /*partition_key=*/absl::nullopt,
+            net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
     // If the unique_ptr is null, it means the cookie was not canonical.
     if (new_cookie) {
       cookies_.push_back(std::move(*new_cookie));

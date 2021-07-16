@@ -45,7 +45,8 @@ std::unique_ptr<net::CanonicalCookie> CreateCookie(base::StringPiece name,
       /*expiration_time=*/base::Time(), /*last_access_time=*/base::Time(),
       /*secure=*/true,
       /*httponly*/ false, net::CookieSameSite::NO_RESTRICTION,
-      net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false);
+      net::COOKIE_PRIORITY_MEDIUM, /*same_party=*/false,
+      /*partition_key=*/absl::nullopt);
 }
 
 class CookieManagerImplTest : public testing::Test {

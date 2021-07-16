@@ -28,13 +28,15 @@ class CanonicalCookie {
     private final int mSameSite;
     private final int mPriority;
     private final boolean mSameParty;
+    private final String mPartitionKey;
     private final int mSourceScheme;
     private final int mSourcePort;
 
     /** Constructs a CanonicalCookie */
     CanonicalCookie(String name, String value, String domain, String path, long creation,
             long expiration, long lastAccess, boolean secure, boolean httpOnly, int sameSite,
-            int priority, boolean sameParty, int sourceScheme, int sourcePort) {
+            int priority, boolean sameParty, String partitionKey, int sourceScheme,
+            int sourcePort) {
         mName = name;
         mValue = value;
         mDomain = domain;
@@ -47,6 +49,7 @@ class CanonicalCookie {
         mSameSite = sameSite;
         mPriority = priority;
         mSameParty = sameParty;
+        mPartitionKey = partitionKey;
         mSourceScheme = sourceScheme;
         mSourcePort = sourcePort;
     }
@@ -111,6 +114,11 @@ class CanonicalCookie {
         return mValue;
     }
 
+    /** @return Cookie partition key. */
+    String getPartitionKey() {
+        return mPartitionKey;
+    }
+
     /** @return Source scheme of the cookie. */
     int sourceScheme() {
         return mSourceScheme;
@@ -124,7 +132,7 @@ class CanonicalCookie {
     // Note incognito state cannot persist across app installs since the encryption key is stored
     // in the activity state bundle. So the version here is more of a guard than a real version
     // used for format migrations.
-    private static final int SERIALIZATION_VERSION = 20201111;
+    private static final int SERIALIZATION_VERSION = 20210712;
 
     static void saveListToStream(DataOutputStream out, CanonicalCookie[] cookies)
             throws IOException {
@@ -190,6 +198,7 @@ class CanonicalCookie {
         out.writeInt(mSameSite);
         out.writeInt(mPriority);
         out.writeBoolean(mSameParty);
+        out.writeUTF(mPartitionKey);
         out.writeInt(mSourceScheme);
         out.writeInt(mSourcePort);
     }
@@ -207,6 +216,7 @@ class CanonicalCookie {
                 in.readInt(), // samesite
                 in.readInt(), // priority
                 in.readBoolean(), // sameparty
+                in.readUTF(), // partition key
                 in.readInt(), // source scheme
                 in.readInt()); // source port
     }

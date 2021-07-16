@@ -328,6 +328,13 @@ NET_EXPORT CookiePort ReducePortRangeForCookieHistogram(const int port);
 // Returns the appropriate enum value for the scheme of the given GURL.
 CookieSourceSchemeName GetSchemeNameEnum(const GURL& url);
 
+// This string is used to as a placeholder for the partition_key column in
+// the SQLite database. All cookies except those set with Partitioned will
+// have this value in their column.
+//
+// Empty string was chosen because it is the smallest, non-null value.
+NET_EXPORT extern const char kEmptyCookiePartitionKey[];
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_CONSTANTS_H_

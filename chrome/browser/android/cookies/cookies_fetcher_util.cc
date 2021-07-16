@@ -50,8 +50,12 @@ void OnCookiesFetchFinished(const net::CookieList& cookies) {
         i->ExpiryDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->LastAccessDate().ToDeltaSinceWindowsEpoch().InMicroseconds(),
         i->IsSecure(), i->IsHttpOnly(), static_cast<int>(i->SameSite()),
-        i->Priority(), i->IsSameParty(), static_cast<int>(i->SourceScheme()),
-        i->SourcePort());
+        i->Priority(), i->IsSameParty(),
+        // TODO(crbug.com/1225444) Use serialized partition key instead of
+        // constant.
+        base::android::ConvertUTF8ToJavaString(env,
+                                               net::kEmptyCookiePartitionKey),
+        static_cast<int>(i->SourceScheme()), i->SourcePort());
     env->SetObjectArrayElement(joa.obj(), index++, java_cookie.obj());
   }
 
@@ -91,6 +95,7 @@ static void JNI_CookiesFetcher_RestoreCookies(
     jint same_site,
     jint priority,
     jboolean same_party,
+    const JavaParamRef<jstring>& partition_key,
     jint source_scheme,
     jint source_port) {
   if (!ProfileManager::GetPrimaryUserProfile()->HasPrimaryOTRProfile())
@@ -112,7 +117,9 @@ static void JNI_CookiesFetcher_RestoreCookies(
               base::TimeDelta::FromMicroseconds(last_access)),
           secure, httponly, static_cast<net::CookieSameSite>(same_site),
           static_cast<net::CookiePriority>(priority), same_party,
-          static_cast<net::CookieSourceScheme>(source_scheme), source_port);
+          // TODO(crbug.com/1225444) Deserialize partition key argument.
+          absl::nullopt, static_cast<net::CookieSourceScheme>(source_scheme),
+          source_port);
   if (!cookie)
     return;
 

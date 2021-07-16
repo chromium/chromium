@@ -434,7 +434,8 @@ ExtensionFunction::ResponseAction CookiesSetFunction::Run() {
               false,
           same_site,
           net::COOKIE_PRIORITY_DEFAULT,
-          /*same_party=*/false));
+          /*same_party=*/false,
+          /*partition_key=*/absl::nullopt));
   // clang-format on
   if (!cc) {
     // Return error through callbacks so that the proper error message

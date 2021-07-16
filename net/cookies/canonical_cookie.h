@@ -13,6 +13,7 @@
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
 #include "net/base/net_export.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
@@ -106,6 +107,7 @@ class NET_EXPORT CanonicalCookie {
       CookieSameSite same_site,
       CookiePriority priority,
       bool same_party,
+      absl::optional<SchemefulSite> partition_key,
       CookieInclusionStatus* status = nullptr);
 
   // FromStorage is a factory method which is meant for creating a new
@@ -128,6 +130,7 @@ class NET_EXPORT CanonicalCookie {
       CookieSameSite same_site,
       CookiePriority priority,
       bool same_party,
+      absl::optional<SchemefulSite> partition_key,
       CookieSourceScheme source_scheme,
       int source_port);
 
@@ -146,6 +149,7 @@ class NET_EXPORT CanonicalCookie {
       CookieSameSite same_site,
       CookiePriority priority,
       bool same_party,
+      absl::optional<SchemefulSite> partition_key = absl::nullopt,
       CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
       int source_port = url::PORT_UNSPECIFIED);
 
@@ -166,6 +170,13 @@ class NET_EXPORT CanonicalCookie {
   CookieSameSite SameSite() const { return same_site_; }
   CookiePriority Priority() const { return priority_; }
   bool IsSameParty() const { return same_party_; }
+  bool IsPartitioned() const { return partition_key_.has_value(); }
+  const absl::optional<SchemefulSite>& PartitionKey() const {
+    return partition_key_;
+  }
+
+  // TODO(crbug.com/1225444) Methods to serialize and deserialize partition
+  // keys.
 
   // Returns an enum indicating the scheme of the origin that
   // set this cookie. This is not part of the cookie spec but is being used to
@@ -370,6 +381,7 @@ class NET_EXPORT CanonicalCookie {
                   CookieSameSite same_site,
                   CookiePriority priority,
                   bool same_party,
+                  absl::optional<SchemefulSite> partition_key,
                   CookieSourceScheme scheme_secure = CookieSourceScheme::kUnset,
                   int source_port = url::PORT_UNSPECIFIED);
 
@@ -425,6 +437,15 @@ class NET_EXPORT CanonicalCookie {
                                      bool is_secure,
                                      CookieSameSite same_site);
 
+  // Returns false iff the cookie is a partitioned cookie that violates the
+  // semantics of the Partitioned attribute:
+  // - Cannot be SameParty
+  // - Must have a __Host- prefix
+  static bool IsCookiePartitionedValid(const ParsedCookie& parsed_cookie);
+  static bool IsCookiePartitionedValid(bool is_partitioned,
+                                       CookiePrefix prefix,
+                                       bool is_same_party);
+
   // Keep defaults here in sync with
   // services/network/public/interfaces/cookie_manager.mojom.
   std::string name_;
@@ -439,6 +460,12 @@ class NET_EXPORT CanonicalCookie {
   CookieSameSite same_site_{CookieSameSite::NO_RESTRICTION};
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
   bool same_party_{false};
+  // This will be absl::nullopt for all cookies not set with the Partitioned
+  // attribute. If the value is non-null, then the cookie will only be delivered
+  // when the top-frame site matches the partition key.
+  // If the partition key is non-null and opaque, this means the Partitioned
+  // cookie was created on an opaque origin.
+  absl::optional<SchemefulSite> partition_key_;
   CookieSourceScheme source_scheme_{CookieSourceScheme::kUnset};
   // This can be [0,65535], PORT_UNSPECIFIED, or PORT_INVALID.
   // PORT_UNSPECIFIED is used for cookies which already existed in the cookie

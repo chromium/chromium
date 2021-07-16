@@ -371,11 +371,12 @@ MakeCookieFromProtocolValues(const std::string& name,
   else if (priority == Network::CookiePriorityEnum::Low)
     cp = net::CookiePriority::COOKIE_PRIORITY_LOW;
 
+  // TODO(crbug.com/1225444) Add Partitioned to DevTools cookie structures.
   std::unique_ptr<net::CanonicalCookie> cookie =
       net::CanonicalCookie::CreateSanitizedCookie(
           url, name, value, normalized_domain, path, base::Time(),
-          expiration_date, base::Time(), secure, http_only, css, cp,
-          same_party);
+          expiration_date, base::Time(), secure, http_only, css, cp, same_party,
+          absl::nullopt);
 
   if (!cookie)
     return Response::InvalidParams("Sanitizing cookie failed");

@@ -408,7 +408,8 @@ bool OAuth2MintTokenFlow::ParseRemoteConsentResponse(
             time_now, expiration_time, time_now, is_secure ? *is_secure : false,
             is_http_only ? *is_http_only : false,
             net::StringToCookieSameSite(same_site ? *same_site : ""),
-            net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false);
+            net::COOKIE_PRIORITY_DEFAULT, /* same_party */ false,
+            /* partition_key */ absl::nullopt);
     cookies.push_back(*cookie);
   }
 

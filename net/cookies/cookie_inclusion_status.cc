@@ -226,6 +226,7 @@ std::string CookieInclusionStatus::GetDebugString() const {
            {EXCLUDE_INVALID_DOMAIN, "EXCLUDE_INVALID_DOMAIN"},
            {EXCLUDE_INVALID_PREFIX, "EXCLUDE_INVALID_PREFIX"},
            {EXCLUDE_INVALID_SAMEPARTY, "EXCLUDE_INVALID_SAMEPARTY"},
+           {EXCLUDE_INVALID_PARTITIONED, "EXCLUDE_INVALID_PARTITIONED"},
        }) {
     if (HasExclusionReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});

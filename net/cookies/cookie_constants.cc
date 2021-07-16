@@ -349,4 +349,6 @@ CookieSourceSchemeName GetSchemeNameEnum(const GURL& url) {
   return CookieSourceSchemeName::kOther;
 }
 
+const char kEmptyCookiePartitionKey[] = "";
+
 }  // namespace net

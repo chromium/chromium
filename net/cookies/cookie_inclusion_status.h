@@ -80,6 +80,10 @@ class NET_EXPORT CookieInclusionStatus {
     // other attributes. (SameParty is invalid if Secure is not present, or if
     // SameSite=Strict is present.)
     EXCLUDE_INVALID_SAMEPARTY = 17,
+    /// Cookie was set with an invalid Partitioned attribute, which is only
+    // valid if the cookie has a __Host- prefix and does not have the SameParty
+    // attribute.
+    EXCLUDE_INVALID_PARTITIONED = 18,
 
     // This should be kept last.
     NUM_EXCLUSION_REASONS

@@ -53,12 +53,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
           CookiePriority::COOKIE_PRIORITY_HIGH,
       });
 
+  auto partition_key = absl::make_optional<net::SchemefulSite>(
+      net::SchemefulSite(GURL(data_provider.ConsumeRandomLengthString(800))));
+
   const std::unique_ptr<const CanonicalCookie> sanitized_cookie =
       CanonicalCookie::CreateSanitizedCookie(
           url, name, value, domain, path, creation, expiration, last_access,
           data_provider.ConsumeBool() /* secure */,
           data_provider.ConsumeBool() /* httponly */, same_site, priority,
-          data_provider.ConsumeBool() /* same_party */);
+          data_provider.ConsumeBool() /* same_party */, partition_key);
 
   if (sanitized_cookie) {
     CHECK(sanitized_cookie->IsCanonical());

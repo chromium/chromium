@@ -6,6 +6,7 @@ module network.mojom;
 
 import "components/content_settings/core/common/content_settings.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 import "url/mojom/url.mojom";
 
 // Parameters for constructing a cookie manager.
@@ -157,6 +158,7 @@ struct CanonicalCookie {
   CookiePriority priority = MEDIUM;
   CookieSourceScheme source_scheme = kUnset;
   bool same_party = false;
+  SchemefulSite? partition_key;
   // -1 because of url::PORT_UNSPECIFIED
   // url/third_party/mozilla/url_parse.h
   int32 source_port = -1;

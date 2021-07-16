@@ -950,8 +950,10 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
         DBCookiePriorityToCookiePriority(
             static_cast<DBCookiePriority>(smt.ColumnInt(11))),  // priority
         smt.ColumnBool(16),                                     // is_same_party
-        DBToCookieSourceScheme(smt.ColumnInt(14)),              // source_scheme
-        smt.ColumnInt(15));                                     // source_port
+        // TODO(crbug.com/1225444) Ingest partition_key from the cookies table.
+        absl::nullopt,                              // partition_key
+        DBToCookieSourceScheme(smt.ColumnInt(14)),  // source_scheme
+        smt.ColumnInt(15));                         // source_port
     if (cc) {
       DLOG_IF(WARNING, cc->CreationDate() > Time::Now())
           << L"CreationDate too recent";

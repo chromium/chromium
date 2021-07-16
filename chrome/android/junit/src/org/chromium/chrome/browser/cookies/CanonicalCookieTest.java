@@ -88,15 +88,16 @@ public class CanonicalCookieTest {
         ArrayList<CanonicalCookie> cookies = new ArrayList<>();
         cookies.add(new CanonicalCookie("name", "value", "domain", "path", 0 /* creation */,
                 1 /* expiration */, 0 /* lastAccess */, false /* secure */, true /* httpOnly */,
-                0 /* sameSite */, 0 /* priority */, false /* same_party */, 1 /* sourceScheme */,
-                72 /* sourcePort */));
+                0 /* sameSite */, 0 /* priority */, false /* same_party */, "" /* partition_key */,
+                1 /* sourceScheme */, 72 /* sourcePort */));
         cookies.add(new CanonicalCookie("name2", "value2", ".domain2", "path2", 10 /* creation */,
                 20 /* expiration */, 15 /* lastAccess */, true /* secure */, false /* httpOnly */,
-                1 /* sameSite */, 1 /* priority */, true /* same_party */, 2 /* sourceScheme */,
-                445 /* sourcePort */));
+                1 /* sameSite */, 1 /* priority */, true /* same_party */, "" /* partition_key */,
+                2 /* sourceScheme */, 445 /* sourcePort */));
         cookies.add(new CanonicalCookie("name3", "value3", "domain3", "path3", 10 /* creation */,
                 20 /* expiration */, 15 /* lastAccess */, true /* secure */, false /* httpOnly */,
-                2 /* sameSite */, 2 /* priority */, false /* same_party */, 2 /* sourceScheme */,
+                2 /* sameSite */, 2 /* priority */, false /* same_party */,
+                "https://toplevelsite.com" /* partition_key */, 2 /* sourceScheme */,
                 -1 /* sourcePort */));
 
         doSaveRestoreCookiesListTest(cookies);
