@@ -273,7 +273,7 @@ base::FilePath GetWritableApplicationsDirectory() {
 
       // Create a zero-byte ".localized" file to inherit localizations from OSX
       // for folders that have special meaning.
-      base::WriteFile(path.Append(".localized"), NULL, 0);
+      base::WriteFile(path.Append(".localized"), "");
     }
     return base::PathIsWritable(path) ? path : base::FilePath();
   }
