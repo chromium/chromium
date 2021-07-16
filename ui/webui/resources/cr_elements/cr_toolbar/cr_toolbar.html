@@ -105,14 +105,17 @@
         text-align: end;
       }
 
-      #product-logo {
+      picture {
         display: none;
       }
 
-      :host-context([enable-branding-update]):host(:not([narrow])) #product-logo {
+      :host-context([enable-branding-update]):host(:not([narrow])) picture {
         display: initial;
-        height: 24px;
         margin-inline-end: 10px;
+      }
+
+      :host-context([enable-branding-update]):host(:not([narrow])) :is(picture, #product-logo) {
+        height: 24px;
         width: 24px;
       }
     </style>
@@ -125,10 +128,14 @@
               title="[[menuLabel]]">
           </cr-icon-button>
         </template>
-        <img id="product-logo"
-            srcset="chrome://theme/current-channel-logo@1x 1x,
-                    chrome://theme/current-channel-logo@2x 2x"
-            role="presentation">
+        <picture>
+          <source media="(prefers-color-scheme: dark)"
+              srcset="//resources/images/chrome_logo_dark.svg">
+          <img id="product-logo"
+              srcset="chrome://theme/current-channel-logo@1x 1x,
+                      chrome://theme/current-channel-logo@2x 2x"
+              role="presentation">
+        </picture>
         <h1>[[pageName]]</h1>
       </div>
     </div>

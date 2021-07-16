@@ -47,6 +47,7 @@ generate_grd("build_grdp") {
       "arrow_down.svg",
       "arrow_right.svg",
       "business.svg",
+      "chrome_logo_dark.svg",
       "dark/arrow_down.svg",
       "icon_arrow_back.svg",
       "icon_arrow_dropdown.svg",
