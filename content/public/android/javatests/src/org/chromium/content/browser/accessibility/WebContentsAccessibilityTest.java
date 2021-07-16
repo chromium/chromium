@@ -54,8 +54,10 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -105,7 +107,7 @@ public class WebContentsAccessibilityTest {
             "Expected bounding box to change after web contents was resized.";
 
     // Constant values for unit tests
-    private static final int UNSUPPRESSED_EXPECTED_COUNT = 25;
+    private static final int UNSUPPRESSED_EXPECTED_COUNT = 15;
 
     private AccessibilityNodeInfo mNodeInfo;
     private AccessibilityContentShellTestData mTestData;
@@ -374,9 +376,9 @@ public class WebContentsAccessibilityTest {
      * Ensure we throttle TYPE_WINDOW_CONTENT_CHANGED events for large tree updates.
      */
     @Test
-    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMaxContentChangedEventsFired_default() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");
@@ -390,18 +392,18 @@ public class WebContentsAccessibilityTest {
         // Signal end of test
         mActivityTestRule.sendEndOfTestSignal();
 
-        // Verify number of events processed
+        // Verify number of events processed, allow for multiple atomic updates.
         int eventCount = mTestData.getTypeWindowContentChangedCount();
-        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= maxEvents);
+        Assert.assertTrue(thresholdError(eventCount, maxEvents), eventCount <= (maxEvents * 3));
     }
 
     /**
      * Ensure we need to throttle TYPE_WINDOW_CONTENT_CHANGED events for some large tree updates.
      */
     @Test
-    @FlakyTest(message = "https://crbug.com/1161533")
     @SmallTest
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     public void testMaxContentChangedEventsFired_largeLimit() throws Throwable {
         // Build a simple web page with complex visibility change.
         setupTestFromFile("content/test/data/android/type_window_content_changed_events.html");

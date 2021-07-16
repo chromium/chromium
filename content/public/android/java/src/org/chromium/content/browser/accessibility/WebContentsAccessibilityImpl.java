@@ -1254,7 +1254,6 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProvider
         // The container view is indicated by a virtualViewId of NO_ID; post these events directly
         // since there's no web-specific information to attach.
         if (virtualViewId == View.NO_ID) {
-            if (mTracker != null) mTracker.addEvent(AccessibilityEvent.obtain(eventType));
             mView.sendAccessibilityEvent(eventType);
             return;
         }
