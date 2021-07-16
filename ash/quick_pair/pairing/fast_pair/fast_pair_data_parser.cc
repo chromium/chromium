@@ -9,11 +9,13 @@
 
 namespace {
 
-constexpr int kDecryptedResponseMessageTypeIndex = 0;
-constexpr int kDecryptedResponseAddressStartIndex = 1;
-constexpr int kDecryptedResponseAddressEndIndex = 7;
-constexpr int kDecryptedResponseSaltStartIndex = 7;
-constexpr uint8_t kKeyBasedPairingResponseType = 0x01;
+constexpr int kMessageTypeIndex = 0;
+constexpr int kResponseAddressStartIndex = 1;
+constexpr int kResponseSaltStartIndex = 7;
+constexpr uint8_t kKeybasedPairingResponseType = 0x01;
+constexpr uint8_t kSeekerPasskeyType = 0x02;
+constexpr uint8_t kProviderPasskeyType = 0x03;
+constexpr int kPasskeySaltStartIndex = 4;
 
 }  // namespace
 
@@ -28,51 +30,70 @@ FastPairDataParser::~FastPairDataParser() = default;
 
 absl::optional<DecryptedResponse> FastPairDataParser::ParseDecryptedResponse(
     const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
-    const std::array<uint8_t, kEncryptedResponseByteSize>&
+    const std::array<uint8_t, kEncryptedDataByteSize>&
         encrypted_response_bytes) {
-  std::array<uint8_t, kEncryptedResponseByteSize> decrypted_response_bytes =
+  std::array<uint8_t, kEncryptedDataByteSize> decrypted_response_bytes =
       DecryptBytes(aes_key_bytes, encrypted_response_bytes);
 
-  uint8_t message_type =
-      decrypted_response_bytes[kDecryptedResponseMessageTypeIndex];
+  uint8_t message_type = decrypted_response_bytes[kMessageTypeIndex];
 
   // If the message type index is not the expected fast pair message type, then
   // this is not a valid fast pair response.
-  if (message_type != kKeyBasedPairingResponseType) {
+  if (message_type != kKeybasedPairingResponseType) {
     return absl::nullopt;
   }
 
   std::array<uint8_t, kDecryptedResponseAddressByteSize> address_bytes;
-  static_assert(
-      kDecryptedResponseAddressEndIndex - kDecryptedResponseAddressStartIndex ==
-          kDecryptedResponseAddressByteSize,
-      "");
-  std::copy(
-      decrypted_response_bytes.begin() + kDecryptedResponseAddressStartIndex,
-      decrypted_response_bytes.begin() + kDecryptedResponseAddressEndIndex,
-      address_bytes.begin());
+  static_assert(kResponseSaltStartIndex - kResponseAddressStartIndex ==
+                    kDecryptedResponseAddressByteSize,
+                "");
+  std::copy(decrypted_response_bytes.begin() + kResponseAddressStartIndex,
+            decrypted_response_bytes.begin() + kResponseSaltStartIndex,
+            address_bytes.begin());
 
   std::array<uint8_t, kDecryptedResponseSaltByteSize> salt;
-  static_assert(kEncryptedResponseByteSize - kDecryptedResponseSaltStartIndex ==
+  static_assert(kEncryptedDataByteSize - kResponseSaltStartIndex ==
                     kDecryptedResponseSaltByteSize,
                 "");
-  std::copy(decrypted_response_bytes.begin() + kDecryptedResponseSaltStartIndex,
+  std::copy(decrypted_response_bytes.begin() + kResponseSaltStartIndex,
             decrypted_response_bytes.end(), salt.begin());
   return DecryptedResponse(message_type, address_bytes, salt);
 }
 
-std::array<uint8_t, kEncryptedResponseByteSize>
-FastPairDataParser::DecryptBytes(
+absl::optional<DecryptedPasskey> FastPairDataParser::ParseDecryptedPasskey(
     const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
-    const std::array<uint8_t, kEncryptedResponseByteSize>&
-        encrypted_response_bytes) {
+    const std::array<uint8_t, kEncryptedDataByteSize>&
+        encrypted_passkey_bytes) {
+  std::array<uint8_t, kEncryptedDataByteSize> decrypted_passkey_bytes =
+      DecryptBytes(aes_key_bytes, encrypted_passkey_bytes);
+  uint8_t message_type = decrypted_passkey_bytes[kMessageTypeIndex];
+  if (message_type != kSeekerPasskeyType &&
+      message_type != kProviderPasskeyType) {
+    return absl::nullopt;
+  }
+
+  uint32_t passkey = decrypted_passkey_bytes[3];
+  passkey += decrypted_passkey_bytes[2] << 8;
+  passkey += decrypted_passkey_bytes[1] << 16;
+
+  std::array<uint8_t, kDecryptedPasskeySaltByteSize> salt;
+  static_assert(kEncryptedDataByteSize - kPasskeySaltStartIndex ==
+                    kDecryptedPasskeySaltByteSize,
+                "");
+  std::copy(decrypted_passkey_bytes.begin() + kPasskeySaltStartIndex,
+            decrypted_passkey_bytes.end(), salt.begin());
+  return DecryptedPasskey(message_type, passkey, salt);
+}
+
+std::array<uint8_t, kEncryptedDataByteSize> FastPairDataParser::DecryptBytes(
+    const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
+    const std::array<uint8_t, kEncryptedDataByteSize>& encrypted_bytes) {
   AES_KEY aes_key;
   AES_set_decrypt_key(aes_key_bytes.data(), aes_key_bytes.size() * 8, &aes_key);
-  std::array<uint8_t, kEncryptedResponseByteSize> decrypted_response_bytes;
-  static_assert(kEncryptedResponseByteSize == AES_BLOCK_SIZE, "");
-  AES_decrypt(encrypted_response_bytes.data(), decrypted_response_bytes.data(),
-              &aes_key);
-  return decrypted_response_bytes;
+  std::array<uint8_t, kEncryptedDataByteSize> decrypted_bytes;
+  static_assert(kEncryptedDataByteSize == AES_BLOCK_SIZE, "");
+  AES_decrypt(encrypted_bytes.data(), decrypted_bytes.data(), &aes_key);
+  return decrypted_bytes;
 }
 
 }  // namespace quick_pair

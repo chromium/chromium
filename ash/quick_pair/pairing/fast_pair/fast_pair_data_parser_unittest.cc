@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include "ash/quick_pair/pairing/fast_pair/decrypted_passkey.h"
 #include "ash/quick_pair/pairing/fast_pair/decrypted_response.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,6 +64,7 @@ TEST_F(FastPairDataParserTest, DecryptResponseUnsuccessfully) {
 
 TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
   std::array<uint8_t, kAesBlockByteSize> response_bytes;
+
   // Message type.
   uint8_t message_type = 0x01;
   response_bytes[0] = message_type;
@@ -87,6 +89,79 @@ TEST_F(FastPairDataParserTest, DecryptResponseSuccessfully) {
   EXPECT_EQ(decrypted_response->message_type, message_type);
   EXPECT_EQ(decrypted_response->address_bytes, address_bytes);
   EXPECT_EQ(decrypted_response->salt, salt);
+}
+
+TEST_F(FastPairDataParserTest, DecryptPasskeyUnsuccessfully) {
+  std::array<uint8_t, kAesBlockByteSize> passkey_bytes = {
+    /*message_type=*/0x04,
+    /*passkey=*/0x02, 0x03, 0x04,
+    /*salt=*/0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
+             0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x0E};
+  std::array<uint8_t, kAesBlockByteSize> encrypted_bytes =
+      EncryptBytes(passkey_bytes);
+
+  absl::optional<DecryptedPasskey> decrypted_passkey =
+      data_parser().ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
+
+  EXPECT_FALSE(decrypted_passkey.has_value());
+}
+
+TEST_F(FastPairDataParserTest, DecryptSeekerPasskeySuccessfully) {
+  std::array<uint8_t, kAesBlockByteSize> passkey_bytes;
+  // Message type.
+  uint8_t message_type = 0x02;
+  passkey_bytes[0] = message_type;
+
+  // Passkey bytes.
+  uint32_t passkey = 5;
+  passkey_bytes[1] = passkey >> 16;
+  passkey_bytes[2] = passkey >> 8;
+  passkey_bytes[3] = passkey;
+
+  // Random salt
+  std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
+                                  0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
+  std::copy(salt.begin(), salt.end(), passkey_bytes.begin() + 4);
+
+  std::array<uint8_t, kAesBlockByteSize> encrypted_bytes =
+      EncryptBytes(passkey_bytes);
+
+  absl::optional<DecryptedPasskey> decrypted_passkey =
+      data_parser().ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
+
+  EXPECT_TRUE(decrypted_passkey.has_value());
+  EXPECT_EQ(decrypted_passkey->message_type, message_type);
+  EXPECT_EQ(decrypted_passkey->passkey, passkey);
+  EXPECT_EQ(decrypted_passkey->salt, salt);
+}
+
+TEST_F(FastPairDataParserTest, DecryptProviderPasskeySuccessfully) {
+  std::array<uint8_t, kAesBlockByteSize> passkey_bytes;
+  // Message type.
+  uint8_t message_type = 0x03;
+  passkey_bytes[0] = message_type;
+
+  // Passkey bytes.
+  uint32_t passkey = 5;
+  passkey_bytes[1] = passkey >> 16;
+  passkey_bytes[2] = passkey >> 8;
+  passkey_bytes[3] = passkey;
+
+  // Random salt
+  std::array<uint8_t, 12> salt = {0x08, 0x09, 0x0A, 0x08, 0x09, 0x0E,
+                                  0x0A, 0x0C, 0x0D, 0x0E, 0x05, 0x02};
+  std::copy(salt.begin(), salt.end(), passkey_bytes.begin() + 4);
+
+  std::array<uint8_t, kAesBlockByteSize> encrypted_bytes =
+      EncryptBytes(passkey_bytes);
+
+  absl::optional<DecryptedPasskey> decrypted_passkey =
+      data_parser().ParseDecryptedPasskey(aes_key_bytes, encrypted_bytes);
+
+  EXPECT_TRUE(decrypted_passkey.has_value());
+  EXPECT_EQ(decrypted_passkey->message_type, message_type);
+  EXPECT_EQ(decrypted_passkey->passkey, passkey);
+  EXPECT_EQ(decrypted_passkey->salt, salt);
 }
 
 }  // namespace quick_pair

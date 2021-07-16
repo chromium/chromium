@@ -11,12 +11,13 @@
 #include <array>
 #include <vector>
 
+#include "ash/quick_pair/pairing/fast_pair/decrypted_passkey.h"
 #include "ash/quick_pair/pairing/fast_pair/decrypted_response.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
-constexpr int kEncryptedResponseByteSize = 16;
+constexpr int kEncryptedDataByteSize = 16;
 constexpr int kAesBlockByteSize = 16;
 
 }  // namespace
@@ -34,13 +35,18 @@ class FastPairDataParser {
 
   absl::optional<DecryptedResponse> ParseDecryptedResponse(
       const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
-      const std::array<uint8_t, kEncryptedResponseByteSize>&
+      const std::array<uint8_t, kEncryptedDataByteSize>&
           encrypted_response_bytes);
 
- private:
-  std::array<uint8_t, kEncryptedResponseByteSize> DecryptBytes(
+  absl::optional<DecryptedPasskey> ParseDecryptedPasskey(
       const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
-      const std::array<uint8_t, kEncryptedResponseByteSize>& encrypted_bytes);
+      const std::array<uint8_t, kEncryptedDataByteSize>&
+          encrypted_passkey_bytes);
+
+ private:
+  std::array<uint8_t, kEncryptedDataByteSize> DecryptBytes(
+      const std::array<uint8_t, kAesBlockByteSize>& aes_key_bytes,
+      const std::array<uint8_t, kEncryptedDataByteSize>& encrypted_bytes);
 };
 
 }  // namespace quick_pair

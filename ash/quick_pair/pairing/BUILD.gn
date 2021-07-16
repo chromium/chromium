@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 source_set("pairing") {
   sources = [
+    "fast_pair/decrypted_passkey.cc",
+    "fast_pair/decrypted_passkey.h",
     "fast_pair/decrypted_response.cc",
     "fast_pair/decrypted_response.h",
     "fast_pair/fast_pair_data_parser.cc",
