@@ -262,7 +262,7 @@ void ChromeBrowserCloudManagementController::Init(
     // Not registered already, so do it now.
     cloud_management_registrar_->RegisterForCloudManagementWithEnrollmentToken(
         enrollment_token, client_id,
-        base::BindRepeating(
+        base::BindOnce(
             &ChromeBrowserCloudManagementController::
                 RegisterForCloudManagementWithEnrollmentTokenCallback,
             weak_factory_.GetWeakPtr()));

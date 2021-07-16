@@ -39,16 +39,15 @@ class ChromeBrowserCloudManagementRegistrar {
   // The callback invoked once policy registration is complete. Passed
   // |dm_token| and |client_id| parameters are empty if policy registration
   // failed.
-  // TODO(crbug.com/825321): Update this to OnceCallback.
   using CloudManagementRegistrationCallback =
-      base::RepeatingCallback<void(const std::string& dm_token,
-                                   const std::string& client_id)>;
+      base::OnceCallback<void(const std::string& dm_token,
+                              const std::string& client_id)>;
 
   // Registers a CloudPolicyClient for fetching machine level user policy.
   void RegisterForCloudManagementWithEnrollmentToken(
       const std::string& enrollment_token,
       const std::string& client_id,
-      const CloudManagementRegistrationCallback& callback);
+      CloudManagementRegistrationCallback callback);
 
  private:
   void CallCloudManagementRegistrationCallback(

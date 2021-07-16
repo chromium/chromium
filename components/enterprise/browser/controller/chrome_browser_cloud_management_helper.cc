@@ -46,7 +46,7 @@ void ChromeBrowserCloudManagementRegistrar::
     RegisterForCloudManagementWithEnrollmentToken(
         const std::string& enrollment_token,
         const std::string& client_id,
-        const CloudManagementRegistrationCallback& callback) {
+        CloudManagementRegistrationCallback callback) {
   DCHECK(!enrollment_token.empty());
   DCHECK(!client_id.empty());
 
@@ -74,7 +74,7 @@ void ChromeBrowserCloudManagementRegistrar::
       base::BindOnce(&ChromeBrowserCloudManagementRegistrar::
                          CallCloudManagementRegistrationCallback,
                      base::Unretained(this), std::move(policy_client),
-                     callback));
+                     std::move(callback)));
 }
 
 void ChromeBrowserCloudManagementRegistrar::
@@ -83,7 +83,7 @@ void ChromeBrowserCloudManagementRegistrar::
         CloudManagementRegistrationCallback callback) {
   registration_helper_.reset();
   if (callback)
-    callback.Run(client->dm_token(), client->client_id());
+    std::move(callback).Run(client->dm_token(), client->client_id());
 }
 
 /* MachineLevelUserCloudPolicyFetcher */
