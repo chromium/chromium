@@ -653,11 +653,9 @@ class CONTENT_EXPORT RenderFrameHostImpl
     // Whether the currently committed document went through the special path
     // for loadDataWithBaseURL navigations that sets the "loading URL" to the
     // data: URL used to commit, instead of defaulting the "loading URL" to the
-    // document URL (which in most cases will be the base URL). This is tracked
-    // to simulate error page replacement calculation in the renderer, which
-    // depends on the "loading URL". Soon this will be used to simulate
-    // calculations for DidCommitProvisionalLoadParams' `url`, which uses the
-    // loading URL's value.
+    // document URL (which in most cases will be the base URL). This is used to
+    // simulate calculations for DidCommitProvisionalLoadParams' `url`, which
+    // uses the "loading URL"'s value.
     // See handling of loadDataWithBaseURL navigations in RenderFrameImpl's
     // GetLoadingUrl() and BuildDocumentStateFromParams() for more details.
     // TODO(https://crbug.com/1223408): Remove this once the loading URL

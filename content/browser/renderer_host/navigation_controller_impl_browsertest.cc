@@ -18260,6 +18260,27 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
   EXPECT_FALSE(navigation);
 }
 
+// All non-about:blank/about:srcdoc about: URLs reported by the renderer should
+// get rewritten to about:blank#blocked (browser-initiated navigations will be
+// blocked from starting entirely, and trying to trigger the navigation in test
+// will hit a NOTREACHED() in the NavigationRequest constructor).
+// See ChildProcessSecurityPolicyImpl::CanRequestURL() for a discussion.
+IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest, FilterAbout) {
+  NavigationControllerImpl& controller =
+      static_cast<NavigationControllerImpl&>(contents()->GetController());
+  // Navigate to the initial page.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL("a.com", "/empty.html")));
+  EXPECT_EQ(1, controller.GetEntryCount());
+
+  // Renderer-initiated navigation will be rewritten to "about:blank#blocked".
+  EXPECT_TRUE(NavigateToURLFromRenderer(shell(), GURL("about:cache"),
+                                        GURL(kBlockedURL)));
+  EXPECT_EQ(2, controller.GetEntryCount());
+  ASSERT_TRUE(controller.GetVisibleEntry());
+  EXPECT_EQ(GURL(kBlockedURL), controller.GetVisibleEntry()->GetURL());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     All,
     NavigationControllerAlertDialogBrowserTest,

@@ -5618,7 +5618,7 @@ bool NavigationRequest::IsLoadDataWithBaseURLAndHasUnreachableURL() {
   // the renderer, unless the navigation is not treated as a loadDataWithBaseURL
   // navigation (and instead treated like a normal data: URL navigation).
   return IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer() &&
-         !common_params_->history_url_for_data_url.is_empty();
+         common_params_->history_url_for_data_url.is_valid();
 }
 
 bool NavigationRequest::

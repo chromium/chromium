@@ -811,7 +811,8 @@ enum class VerifyDidCommitParamsDifference {
   kShouldUpdateHistory = 7,
   kGesture = 8,
   kShouldReplaceCurrentEntry = 9,
-  kMaxValue = kShouldReplaceCurrentEntry,
+  kURL = 10,
+  kMaxValue = kURL,
 };
 
 bool ValidateCSPAttribute(const std::string& value) {
@@ -1046,6 +1047,22 @@ const GURL& GetLastDocumentLoadingURL(
     return last_committed_url;
   // Otherwise, return the last document URL.
   return last_document_url;
+}
+
+// Whether the navigation went through the special path for loadDataWithBaseURL
+// navigations that sets the "loading URL" to the data: URL used to commit,
+// instead of defaulting the "loading URL" to the document URL (which in most
+// cases will be the "base URL").
+// See RenderFrameImpl::GetLoadingUrl() and BuildDocumentStateFromParams() for
+// more details. Note that the checks are a bit different: it checks for
+// validity instead of whether the URL is empty or not, as the URL received
+// by the renderer would have gone through reparsing, so invalid URLs will also
+// end up as empty in the renderer.
+bool LoadingURLForDocumentIsDataURL(
+    const blink::mojom::CommonNavigationParams& common_params) {
+  return common_params.base_url_for_data_url.is_valid() &&
+         common_params.history_url_for_data_url.is_valid() &&
+         common_params.url.SchemeIs(url::kDataScheme);
 }
 
 }  // namespace
@@ -10131,17 +10148,9 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   renderer_url_info_.document_has_unreachable_url_from_load_data_with_base_url =
       navigation_request->IsLoadDataWithBaseURLAndHasUnreachableURL();
 
-  // Mark whether the document went through the special path for
-  // loadDataWithBaseURL navigations that sets the "loading URL" to the data:
-  // URL used to commit, instead of defaulting the "loading URL" to the document
-  // URL (which in most cases will be the base URL).
-  // See RenderFrameImpl::GetLoadingUrl() and BuildDocumentStateFromParams() for
-  // more details.
+  // See comment in LoadingURLForDocumentIsDataURL().
   renderer_url_info_.loading_url_for_document_is_data_url =
-      !navigation_request->common_params().base_url_for_data_url.is_empty() &&
-      !navigation_request->common_params()
-           .history_url_for_data_url.is_empty() &&
-      navigation_request->common_params().url.SchemeIs(url::kDataScheme);
+      LoadingURLForDocumentIsDataURL(navigation_request->common_params());
 
   // If we still have a PeakGpuMemoryTracker, then the loading it was observing
   // never completed. Cancel it's callback so that we don't report partial
@@ -10957,6 +10966,71 @@ bool CalculateShouldReplaceCurrentEntry(
   return result;
 }
 
+// Calculates the "loading" URL for a given navigation. This tries to replicate
+// RenderFrameImpl::GetLoadingUrl() and is used to predict the value of "url" in
+// DidCommitProvisionalLoadParams. Note that this is a bit different from
+// GetLastDocumentLoadingURL(), which predicts the loading URL of an
+// already-committed document for URL comparison purposes.
+GURL CalculateLoadingURL(
+    NavigationRequest* request,
+    const mojom::DidCommitProvisionalLoadParams& params,
+    const RenderFrameHostImpl::RendererURLInfo& last_renderer_url_info,
+    bool last_document_is_error_page,
+    const GURL& last_committed_url) {
+  if (params.url.IsAboutBlank() && params.url.ref_piece() == "blocked") {
+    // Some navigations can still be blocked by the renderer during the commit,
+    // changing the URL to "about:blank#blocked". Currently we have no way of
+    // predicting this in the browser, so just return the URL given by the
+    // renderer in this case.
+    // TODO(https://crbug.com/1131832): Block the navigations in the browser
+    // instead and remove |params| as a parameter to this function.
+    return params.url;
+  }
+
+  if (!request->common_params().url.is_valid()) {
+    // Empty URL (and invalid URLs, which are converted to the empty URL due
+    // to IPC URL reparsing) will be rewritten to "about:blank" in the renderer.
+    // TODO(https://crbug.com/1131832): Do the rewrite in the browser.
+    return GURL(url::kAboutBlankURL);
+  }
+
+  if (request->IsSameDocument()) {
+    // Documents that have an "override" URL (some loadDataWithBaseURL
+    // navigations, error pages) will continue using that URL even after
+    // same-document navigations.
+    if (last_renderer_url_info.loading_url_for_document_is_data_url ||
+        last_document_is_error_page)
+      return last_committed_url;
+
+    // For all other same-document navigations, return the
+    // CommonNavigationParams' url.
+    return request->common_params().url;
+  }
+
+  if (request->IsNavigationTreatedAsLoadDataWithBaseURLInTheRenderer()) {
+    // Handle loadDataWithBaseURL navigations. See MaybeGetOverriddenURL() in
+    // render_frame_impl.cc.
+    // If the navigation qualifies, the URL returned will be the URL in
+    // CommonNavigationParams (the data: URL).
+    if (LoadingURLForDocumentIsDataURL(request->common_params()))
+      return request->common_params().url;
+
+    // Otherwise, the "unreachable URL" (history URL) will be used if it's set.
+    if (request->common_params().history_url_for_data_url.is_valid())
+      return request->common_params().history_url_for_data_url;
+
+    // Finally, the "document URL" will be used for all other cases. If the
+    // base URL is set, the document URL will be the base URL. If not, it will
+    // use the CommonNavigationParams' URL, which is handled further below.
+    if (request->common_params().base_url_for_data_url.is_valid())
+      return request->common_params().base_url_for_data_url;
+  }
+
+  // For all other navigations, the returned URL should be the same as the URL
+  // in CommonNavigationParams.
+  return request->common_params().url;
+}
+
 bool ShouldVerify(const std::string& param) {
 #if DCHECK_IS_ON()
   return true;
@@ -10994,6 +11068,7 @@ void RenderFrameHostImpl::
   // - should_update_history
   // - gesture
   // - should_replace_current_entry
+  // - url
   // TODO(crbug.com/1131832): Verify more params.
   // We can know if we're going to be in an error page after this navigation
   // if the net error code is not net::OK, or if we're doing a same-document
@@ -11050,6 +11125,9 @@ void RenderFrameHostImpl::
               is_error_page_, last_committed_url_,
               renderer_url_info_.last_document_url));
 
+  const GURL browser_url = CalculateLoadingURL(
+      request, params, renderer_url_info_, is_error_page_, last_committed_url_);
+
   if ((!ShouldVerify("intended_as_new_entry") ||
        request->commit_params().intended_as_new_entry ==
            params.intended_as_new_entry) &&
@@ -11066,7 +11144,8 @@ void RenderFrameHostImpl::
       (!ShouldVerify("gesture") || browser_gesture == renderer_gesture) &&
       (!ShouldVerify("should_replace_current_entry") ||
        browser_should_replace_current_entry ==
-           params.should_replace_current_entry)) {
+           params.should_replace_current_entry) &&
+      (!ShouldVerify("url") || browser_url == params.url)) {
     return;
   }
 
@@ -11148,6 +11227,11 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "replace_renderer",
                         params.should_replace_current_entry);
 
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "url_browser",
+                             browser_url.possibly_invalid_spec());
+  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "url_renderer",
+                             params.url.possibly_invalid_spec());
+
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_same_document",
                         is_same_document_navigation);
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "is_history_api",
@@ -11194,8 +11278,6 @@ void RenderFrameHostImpl::
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "was_click",
                         request->WasInitiatedByLinkClick());
 
-  SCOPED_CRASH_KEY_STRING256("VerifyDidCommit", "navigation_url",
-                             params.url.possibly_invalid_spec());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_blank",
                         params.url.IsAboutBlank());
   SCOPED_CRASH_KEY_BOOL("VerifyDidCommit", "nav_url_srcdoc",
@@ -11261,6 +11343,7 @@ void RenderFrameHostImpl::
   DCHECK_EQ(browser_gesture, renderer_gesture);
   DCHECK_EQ(browser_should_replace_current_entry,
             params.should_replace_current_entry);
+  DCHECK_EQ(browser_url, params.url);
 
   // Log histograms to trigger Chrometto slow reports, allowing us to see traces
   // to analyze what happened in these navigations.
@@ -11301,6 +11384,10 @@ void RenderFrameHostImpl::
       params.should_replace_current_entry) {
     LogVerifyDidCommitParamsDifference(
         VerifyDidCommitParamsDifference::kShouldReplaceCurrentEntry);
+  }
+
+  if (browser_url != params.url) {
+    LogVerifyDidCommitParamsDifference(VerifyDidCommitParamsDifference::kURL);
   }
 
   base::debug::DumpWithoutCrashing();

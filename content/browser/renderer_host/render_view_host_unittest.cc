@@ -71,15 +71,6 @@ class RenderViewHostTest : public RenderViewHostImplTestHarness {
   DISALLOW_COPY_AND_ASSIGN(RenderViewHostTest);
 };
 
-// All about URLs reported by the renderer should get rewritten to about:blank.
-// See RenderViewHost::OnNavigate for a discussion.
-TEST_F(RenderViewHostTest, FilterAbout) {
-  NavigationSimulator::NavigateAndCommitFromDocument(GURL("about:cache"),
-                                                     main_test_rfh());
-  ASSERT_TRUE(controller().GetVisibleEntry());
-  EXPECT_EQ(GURL(kBlockedURL), controller().GetVisibleEntry()->GetURL());
-}
-
 // Ensure we do not grant bindings to a process shared with unprivileged views.
 TEST_F(RenderViewHostTest, DontGrantBindingsToSharedProcess) {
   // Create another view in the same process.
