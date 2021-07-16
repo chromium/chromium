@@ -140,6 +140,17 @@ luci.realm(
     ],
 )
 
+luci.realm(
+    name = "webrtc",
+    bindings = [
+        # Allow WebRTC builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-ci-task-accounts",
+        ),
+    ],
+)
+
 # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
 luci.builder.defaults.experiments.set({"luci.use_realms": 100})
 luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
