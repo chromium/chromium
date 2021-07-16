@@ -43,6 +43,8 @@ using SendFeedbackCallback = base::OnceCallback<void(bool)>;
 class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
  public:
   explicit FeedbackService(content::BrowserContext* browser_context);
+  FeedbackService(content::BrowserContext* browser_context,
+                  FeedbackPrivateDelegate* delegate);
   FeedbackService(const FeedbackService&) = delete;
   FeedbackService& operator=(const FeedbackService&) = delete;
 
@@ -71,7 +73,6 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   void FetchExtraLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
                       FetchExtraLogsCallback callback);
   void OnExtraLogsFetched(const FeedbackParams& params,
-                          SendFeedbackCallback callback,
                           scoped_refptr<feedback::FeedbackData> feedback_data);
 
   using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
@@ -81,14 +82,13 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
   void OnLacrosHistogramsFetched(
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
-      SendFeedbackCallback callback,
       const std::string& compressed_histograms);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   void OnAllLogsFetched(const FeedbackParams& params,
-                        scoped_refptr<feedback::FeedbackData> feedback_data,
-                        SendFeedbackCallback callback);
+                        scoped_refptr<feedback::FeedbackData> feedback_data);
 
   content::BrowserContext* browser_context_;
+  FeedbackPrivateDelegate* delegate_;
 };
 
 }  // namespace extensions

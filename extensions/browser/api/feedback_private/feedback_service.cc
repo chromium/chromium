@@ -57,10 +57,19 @@ constexpr char kLacrosHistogramsFilename[] = "lacros_histograms.zip";
 }  // namespace
 
 FeedbackService::FeedbackService(content::BrowserContext* browser_context)
-    : browser_context_(browser_context) {}
+    : FeedbackService(
+          browser_context,
+          ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate()) {}
+
+FeedbackService::FeedbackService(content::BrowserContext* browser_context,
+                                 FeedbackPrivateDelegate* delegate)
+    : browser_context_(browser_context), delegate_(delegate) {}
 
 FeedbackService::~FeedbackService() = default;
 
+// After the attached file and screenshot if available are fetched, the callback
+// will be invoked. Other further processing will be done in background. The
+// report will be sent out once all data are in place.
 void FeedbackService::SendFeedback(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
@@ -117,55 +126,55 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
     scoped_refptr<feedback::FeedbackData> feedback_data,
     SendFeedbackCallback callback) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  FetchExtraLogs(feedback_data,
-                 base::BindOnce(&FeedbackService::OnExtraLogsFetched, this,
-                                params, std::move(callback)));
+  FetchExtraLogs(
+      feedback_data,
+      base::BindOnce(&FeedbackService::OnExtraLogsFetched, this, params));
 #else
-  OnAllLogsFetched(params, feedback_data, std::move(callback));
+  OnAllLogsFetched(params, feedback_data);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // True means report will be sent shortly.
+  // False means report will be sent once the device is online.
+  const bool status = !net::NetworkChangeNotifier::IsOffline();
+  // Notify client that data submitted has been received successfully. The
+  // report will be sent out once further processing is done.
+  std::move(callback).Run(status);
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FeedbackService::FetchExtraLogs(
     scoped_refptr<feedback::FeedbackData> feedback_data,
     FetchExtraLogsCallback callback) {
-  FeedbackPrivateDelegate* feedback_private_delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  feedback_private_delegate->FetchExtraLogs(feedback_data, std::move(callback));
+  delegate_->FetchExtraLogs(feedback_data, std::move(callback));
 }
 
 void FeedbackService::OnExtraLogsFetched(
     const FeedbackParams& params,
-    SendFeedbackCallback callback,
     scoped_refptr<feedback::FeedbackData> feedback_data) {
   FetchLacrosHistograms(
       base::BindOnce(&FeedbackService::OnLacrosHistogramsFetched, this, params,
-                     feedback_data, std::move(callback)));
+                     feedback_data));
 }
 
 void FeedbackService::FetchLacrosHistograms(GetHistogramsCallback callback) {
-  FeedbackPrivateDelegate* feedback_private_delegate =
-      ExtensionsAPIClient::Get()->GetFeedbackPrivateDelegate();
-  feedback_private_delegate->GetLacrosHistograms(std::move(callback));
+  delegate_->GetLacrosHistograms(std::move(callback));
 }
 
 void FeedbackService::OnLacrosHistogramsFetched(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
-    SendFeedbackCallback callback,
     const std::string& compressed_histograms) {
   if (!compressed_histograms.empty()) {
     feedback_data->AddFile(kLacrosHistogramsFilename,
                            std::move(compressed_histograms));
   }
-  OnAllLogsFetched(params, feedback_data, std::move(callback));
+  OnAllLogsFetched(params, feedback_data);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void FeedbackService::OnAllLogsFetched(
     const FeedbackParams& params,
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    SendFeedbackCallback callback) {
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
   if (!params.send_tab_titles) {
     feedback_data->RemoveLog(
         feedback::FeedbackReport::kMemUsageWithTabTitlesKey);
@@ -212,11 +221,6 @@ void FeedbackService::OnAllLogsFetched(
   // Signal the feedback object that the data from the feedback page has been
   // filled - the object will manage sending of the actual report.
   feedback_data->OnFeedbackPageDataComplete();
-
-  // True means report will be sent shortly.
-  // False means report will be sent once the device is online.
-  const bool status = !net::NetworkChangeNotifier::IsOffline();
-  std::move(callback).Run(status);
 }
 
 }  // namespace extensions

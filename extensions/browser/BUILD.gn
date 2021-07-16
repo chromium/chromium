@@ -801,6 +801,7 @@ source_set("unit_tests") {
     "api/declarative_net_request/ruleset_matcher_unittest.cc",
     "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
     "api/declarative_webrequest/webrequest_condition_unittest.cc",
+    "api/feedback_private/feedback_service_unittest.cc",
     "api/file_handlers/app_file_handler_util_unittest.cc",
     "api/file_handlers/directory_util_unittest.cc",
     "api/file_handlers/mime_util_unittest.cc",
