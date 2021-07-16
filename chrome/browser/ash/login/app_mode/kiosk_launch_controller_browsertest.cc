@@ -391,7 +391,7 @@ class KioskLaunchControllerWithExtensionTest
     force_installed_tracker()->OnExtensionReady(profile(), ext.get());
   }
 
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_P(KioskLaunchControllerWithExtensionTest,
@@ -440,10 +440,9 @@ class KioskLaunchControllerWithInvalidExtensionTest
  public:
   void SetUpInProcessBrowserTestFixture() override {
     base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(_))
-        .WillRepeatedly(testing::Return(true));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
         &policy_provider_);
   }

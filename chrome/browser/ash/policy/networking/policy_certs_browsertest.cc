@@ -323,10 +323,9 @@ class MultiProfilePolicyProviderHelper {
     // Set the overridden policy provider for the first Profile (|profile_1_|).
     // Note that the first ptofile will be created automatically by the
     // browser initialization.
-    EXPECT_CALL(policy_for_profile_1_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(policy_for_profile_1_, IsFirstPolicyLoadComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    policy_for_profile_1_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::PushProfilePolicyConnectorProviderForTesting(
         &policy_for_profile_1_);
   }
@@ -348,10 +347,9 @@ class MultiProfilePolicyProviderHelper {
     ASSERT_FALSE(profile_2_);
 
     // Prepare policy provider for second profile.
-    EXPECT_CALL(policy_for_profile_2_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(policy_for_profile_2_, IsFirstPolicyLoadComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    policy_for_profile_2_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::PushProfilePolicyConnectorProviderForTesting(
         &policy_for_profile_2_);
 
@@ -402,8 +400,8 @@ class MultiProfilePolicyProviderHelper {
   Profile* profile_1_ = nullptr;
   Profile* profile_2_ = nullptr;
 
-  MockConfigurationPolicyProvider policy_for_profile_1_;
-  MockConfigurationPolicyProvider policy_for_profile_2_;
+  testing::NiceMock<MockConfigurationPolicyProvider> policy_for_profile_1_;
+  testing::NiceMock<MockConfigurationPolicyProvider> policy_for_profile_2_;
 };
 
 // Verifies |certificate| with |storage_partition|'s CertVerifier and returns

@@ -917,7 +917,7 @@ class SAMLPolicyTest : public SamlTest {
  protected:
   policy::DevicePolicyCrosTestHelper test_helper_;
   policy::DevicePolicyBuilder* device_policy_;
-  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
+  NiceMock<policy::MockConfigurationPolicyProvider> provider_;
   net::CookieList cookie_list_;
 
   // Add a fake user so the login screen does not show GAIA auth by default.
@@ -955,10 +955,8 @@ void SAMLPolicyTest::SetUpInProcessBrowserTestFixture() {
       &test_helper_, device_affiliation_ids)));
 
   // Initialize user policy.
-  ON_CALL(provider_, IsInitializationComplete(testing::_))
-      .WillByDefault(testing::Return(true));
-  ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillByDefault(testing::Return(true));
+  provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                              /*is_first_policy_load_complete_return=*/true);
   policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 

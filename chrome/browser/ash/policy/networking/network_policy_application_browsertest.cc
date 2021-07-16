@@ -134,10 +134,9 @@ class NetworkPolicyApplicationTest : public ash::LoginManagerTest {
  protected:
   // InProcessBrowserTest:
   void SetUp() override {
-    ON_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     BrowserPolicyConnector::SetPolicyProviderForTesting(&policy_provider_);
 
     LoginManagerTest::SetUp();

@@ -195,10 +195,9 @@ void CloudExternalDataPolicyObserverTest::SetUp() {
           base::ThreadTaskRunnerHandle::Get(),
           base::ThreadTaskRunnerHandle::Get(), shared_url_loader_factory_);
 
-  ON_CALL(user_policy_provider_, IsInitializationComplete(_))
-      .WillByDefault(Return(true));
-  ON_CALL(user_policy_provider_, IsFirstPolicyLoadComplete(_))
-      .WillByDefault(Return(true));
+  user_policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
   user_policy_provider_.Init();
 
   ConstructAvatarPolicy("avatar1.jpg", kAvatar1URL, &avatar_policy_1_data_,
