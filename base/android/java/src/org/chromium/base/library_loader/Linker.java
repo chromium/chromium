@@ -78,8 +78,8 @@ abstract class Linker {
     // Name of the library that contains the JNI code.
     protected static final String LINKER_JNI_LIBRARY = "chromium_android_linker";
 
-    // Set to true to enable debug logs.
-    protected static final boolean DEBUG = false;
+    // Constant guarding debug logging.
+    protected static final boolean DEBUG = LibraryLoader.DEBUG;
 
     // Constants used to pass the shared RELRO Bundle through Binder.
     private static final String SHARED_RELROS = "org.chromium.base.android.linker.shared_relros";

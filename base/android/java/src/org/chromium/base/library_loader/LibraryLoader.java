@@ -63,6 +63,9 @@ import javax.annotation.concurrent.ThreadSafe;
 public class LibraryLoader {
     private static final String TAG = "LibraryLoader";
 
+    // Constant guarding debug logging in this class.
+    static final boolean DEBUG = false;
+
     // Shared preferences key for the reached code profiler.
     private static final String DEPRECATED_REACHED_CODE_PROFILER_KEY =
             "reached_code_profiler_enabled";
@@ -318,9 +321,7 @@ public class LibraryLoader {
 
         mUseChromiumLinker = useChromiumLinker;
         mUseModernLinker = useModernLinker;
-
-        Log.d(TAG, "Configuration: useChromiumLinker() = %b, mUseModernLinker = %b",
-                useChromiumLinker(), mUseModernLinker);
+        if (DEBUG) logLinkersUsed();
         mConfigurationSet = true;
     }
 
@@ -332,7 +333,13 @@ public class LibraryLoader {
         // since they don't have a NativeLibraries class.
         mUseChromiumLinker = NativeLibraries.sUseLinker;
         mUseModernLinker = NativeLibraries.sUseModernLinker;
+        if (DEBUG) logLinkersUsed();
         mConfigurationSet = true;
+    }
+
+    private void logLinkersUsed() {
+        Log.i(TAG, "Configuration: useChromiumLinker() = %b, mUseModernLinker = %b",
+                useChromiumLinker(), mUseModernLinker);
     }
 
     // LegacyLinker is buggy on Android 10, causing crashes (see crbug.com/980304).
@@ -345,14 +352,7 @@ public class LibraryLoader {
     // Note: This cannot be done in the build configuration, as otherwise chrome_public_apk cannot
     // both be used as the basis to ship on L, and the default APK used by developers on 10+.
     private boolean forceSystemLinker() {
-        boolean result =
-                mUseChromiumLinker && !mUseModernLinker && Build.VERSION.SDK_INT >= VERSION_CODES.Q;
-        if (result) {
-            Log.d(TAG,
-                    "Forcing system linker, relocations will not be shared. "
-                            + "This negatively impacts memory usage.");
-        }
-        return result;
+        return mUseChromiumLinker && !mUseModernLinker && Build.VERSION.SDK_INT >= VERSION_CODES.Q;
     }
 
     private boolean useChromiumLinker() {
@@ -660,6 +660,11 @@ public class LibraryLoader {
                 String fullPath = zipFilePath + "!/"
                         + makeLibraryPathInZipFile(library, crazyPrefix, is64Bit);
                 Log.i(TAG, "libraryName: %s", fullPath);
+                if (crazyPrefix) {
+                    Log.w(TAG,
+                            "Forcing system linker, relocations will not be shared. "
+                                    + "This negatively impacts memory usage.");
+                }
                 System.load(fullPath);
             }
         }
@@ -679,21 +684,20 @@ public class LibraryLoader {
             long startTime = SystemClock.uptimeMillis();
 
             if (useChromiumLinker() && !inZygote) {
-                Log.d(TAG, "Loading with the Chromium linker.");
+                if (DEBUG) Log.i(TAG, "Loading with the Chromium linker.");
                 // See base/android/linker/config.gni, the chromium linker is only enabled when
                 // we have a single library.
                 assert NativeLibraries.LIBRARIES.length == 1;
                 String library = NativeLibraries.LIBRARIES[0];
                 loadWithChromiumLinker(appInfo, library);
             } else {
-                Log.d(TAG, "Loading with the System linker.");
+                if (DEBUG) Log.i(TAG, "Loading with the System linker.");
                 loadWithSystemLinkerAlreadyLocked(appInfo, inZygote);
             }
 
             long stopTime = SystemClock.uptimeMillis();
             mLibraryLoadTimeMs = stopTime - startTime;
-            Log.d(TAG, "Time to load native libraries: %d ms", mLibraryLoadTimeMs);
-
+            if (DEBUG) Log.i(TAG, "Time to load native libraries: %d ms", mLibraryLoadTimeMs);
             mLoadState = LoadState.MAIN_DEX_LOADED;
         } catch (UnsatisfiedLinkError e) {
             throw new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED, e);
