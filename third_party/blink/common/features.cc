@@ -1028,5 +1028,10 @@ const base::Feature kAllowDropAlphaForMediaStream{
 const base::Feature kThirdPartyStoragePartitioning{
     "ThirdPartyStoragePartitioning", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// API that allows installed PWAs to add additional shortcuts by means of
+// installing sub app components.
+const base::Feature kDesktopPWAsSubApps{"DesktopPWAsSubApps",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace blink

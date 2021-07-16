@@ -353,6 +353,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"ComputePressure", blink::features::kComputePressure,
            kSetOnlyIfOverridden},
           {"DeclarativeShadowDOM", blink::features::kDeclarativeShadowDOM},
+          {"DesktopPWAsSubApps", blink::features::kDesktopPWAsSubApps},
           {"DocumentTransition", blink::features::kDocumentTransition},
           // TODO(crbug.com/649162): Remove DialogFocusNewSpecBehavior after
           // the feature is in stable with no issues.

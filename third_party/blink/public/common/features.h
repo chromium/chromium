@@ -441,6 +441,8 @@ BLINK_COMMON_EXPORT extern const base::Feature kAllowDropAlphaForMediaStream;
 
 BLINK_COMMON_EXPORT extern const base::Feature kThirdPartyStoragePartitioning;
 
+BLINK_COMMON_EXPORT extern const base::Feature kDesktopPWAsSubApps;
+
 }  // namespace features
 }  // namespace blink
 

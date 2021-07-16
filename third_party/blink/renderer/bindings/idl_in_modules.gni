@@ -710,6 +710,8 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/storage/storage_event.idl",
           "//third_party/blink/renderer/modules/storage/storage_event_init.idl",
           "//third_party/blink/renderer/modules/storage/window_storage.idl",
+          "//third_party/blink/renderer/modules/subapps/navigator_sub_apps.idl",
+          "//third_party/blink/renderer/modules/subapps/sub_apps.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern_component_result.idl",
           "//third_party/blink/renderer/modules/url_pattern/url_pattern_init.idl",
