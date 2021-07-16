@@ -390,12 +390,6 @@ class AssistantOverlayDrawable extends Drawable
         invalidateSelf();
     }
 
-    @Override
-    public void onAndroidVisibilityChanged(int visibility) {
-        // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8 causing
-        // AbstractMethodErrors in some cases once fixed upstream.
-    }
-
     /**
      * Trims {@code text} until its width is smaller or equal {@code width} when rendered with
      * {@code paint}. If characters are removed, an ellipsis ('…') is appended.

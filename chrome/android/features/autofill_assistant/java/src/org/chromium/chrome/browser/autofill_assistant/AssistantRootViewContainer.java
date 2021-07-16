@@ -56,12 +56,6 @@ public class AssistantRootViewContainer
         invalidate();
     }
 
-    @Override
-    public void onAndroidVisibilityChanged(int visibility) {
-        // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8 causing
-        // AbstractMethodErrors in some cases once fixed upstream.
-    }
-
     public void disableTalkbackViewResizing() {
         mTalkbackResizingDisabled = true;
     }

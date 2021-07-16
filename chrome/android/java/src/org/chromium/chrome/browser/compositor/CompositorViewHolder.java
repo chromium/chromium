@@ -956,12 +956,6 @@ public class CompositorViewHolder extends FrameLayout
         onViewportChanged();
     }
 
-    @Override
-    public void onAndroidVisibilityChanged(int visibility) {
-        // TODO(crbug/1223069): Remove this workaround for default method desugaring in D8 causing
-        // AbstractMethodErrors in some cases once fixed upstream.
-    }
-
     /**
      * Notify the {@link WebContents} of the browser controls height changes. Unlike #setSize, this
      * will make sure the renderer's properties are updated even if the size didn't change.
