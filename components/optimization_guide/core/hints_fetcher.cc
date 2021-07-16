@@ -151,7 +151,7 @@ void HintsFetcher::ClearSingleFetchedHost(PrefService* pref_service,
                                           const std::string& host) {
   DictionaryPrefUpdate hosts_fetched_list(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
-  hosts_fetched_list->Remove(HashHostForDictionary(host), nullptr);
+  hosts_fetched_list->RemovePath(HashHostForDictionary(host));
 }
 
 // static
@@ -375,7 +375,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
     }
   }
   for (const auto& host : entries_to_remove) {
-    hosts_fetched_list->Remove(host, nullptr);
+    hosts_fetched_list->RemovePath(host);
   }
 
   if (hosts_fetched_.empty())
@@ -395,7 +395,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
       entries_to_remove.emplace_back(it.first);
     }
     for (const auto& host : entries_to_remove) {
-      hosts_fetched_list->Remove(host, nullptr);
+      hosts_fetched_list->RemovePath(host);
     }
   }
 

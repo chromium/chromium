@@ -159,11 +159,12 @@ void ConfigDirPolicyLoader::LoadFromPath(const base::FilePath& path,
     }
 
     // Detach the "3rdparty" node.
-    std::unique_ptr<base::Value> third_party;
-    if (dictionary_value->Remove("3rdparty", &third_party)) {
-      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+    absl::optional<base::Value> third_party =
+        dictionary_value->ExtractKey("3rdparty");
+    if (third_party.has_value()) {
+      Merge3rdPartyPolicy(&*third_party, level, bundle,
                           /*signin_profile=*/true);
-      Merge3rdPartyPolicy(third_party.get(), level, bundle,
+      Merge3rdPartyPolicy(&*third_party, level, bundle,
                           /*signin_profile=*/false);
     }
 

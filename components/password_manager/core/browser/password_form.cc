@@ -334,7 +334,7 @@ std::ostream& operator<<(std::ostream& os, const PasswordForm& form) {
     const base::Value* actual_value;
     if (form_json.Get(it_default_key_values.key(), &actual_value) &&
         it_default_key_values.value() == *actual_value) {
-      form_json.Remove(it_default_key_values.key(), nullptr);
+      form_json.RemoveKey(it_default_key_values.key());
     }
   }
 

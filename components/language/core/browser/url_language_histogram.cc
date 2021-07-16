@@ -53,7 +53,7 @@ void DiscountAndCleanCounters(base::DictionaryValue* dict) {
   }
 
   for (const std::string& lang_to_remove : remove_keys)
-    dict->Remove(lang_to_remove, nullptr);
+    dict->RemoveKey(lang_to_remove);
 }
 
 // Transforms the counters from prefs into a list of LanguageInfo structs.

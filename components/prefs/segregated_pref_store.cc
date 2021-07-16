@@ -96,7 +96,7 @@ std::unique_ptr<base::DictionaryValue> SegregatedPrefStore::GetValues() const {
     if (selected_pref_store_values->Get(key, &value)) {
       values->SetPath(key, value->Clone());
     } else {
-      values->Remove(key, nullptr);
+      values->RemoveKey(key);
     }
   }
   return values;

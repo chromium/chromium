@@ -160,17 +160,17 @@ class ToValueVisitor {
       const sync_pb::AutofillWalletSpecifics& proto) const {
     auto value = ToValueImpl(proto);
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
-      value->Remove("address", nullptr);
+      value->RemoveKey("address");
     }
     if (proto.type() != sync_pb::AutofillWalletSpecifics::MASKED_CREDIT_CARD) {
-      value->Remove("masked_card", nullptr);
+      value->RemoveKey("masked_card");
     }
     if (proto.type() != sync_pb::AutofillWalletSpecifics::CUSTOMER_DATA) {
-      value->Remove("customer_data", nullptr);
+      value->RemoveKey("customer_data");
     }
     if (proto.type() !=
         sync_pb::AutofillWalletSpecifics::CREDIT_CARD_CLOUD_TOKEN_DATA) {
-      value->Remove("cloud_token_data", nullptr);
+      value->RemoveKey("cloud_token_data");
     }
     return value;
   }

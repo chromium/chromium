@@ -791,7 +791,7 @@ TEST(SchemaTest, Validate) {
   TestSchemaValidation(schema, bundle,
                        SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
   TestSchemaValidationWithPath(schema, bundle, "");
-  bundle.Remove("boom", nullptr);
+  bundle.RemoveKey("boom");
 
   // Invalid top level property.
   bundle.SetInteger("Boolean", 12345);
@@ -815,7 +815,7 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
     TestSchemaValidationWithPath(subschema, root, "Object");
-    root.Remove("Object.three", nullptr);
+    root.RemovePath("Object.three");
 
     // Invalid property.
     root.SetInteger("Object.one", 12345);
@@ -824,7 +824,7 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, false);
     TestSchemaValidationWithPath(subschema, root, "Object.one");
-    root.Remove("Object.one", nullptr);
+    root.RemovePath("Object.one");
   }
 
   // Tests on ArrayOfObjects.
@@ -943,13 +943,13 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     root.SetBoolean("fooo", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.Remove("fooo", nullptr);
+    root.RemoveKey("fooo");
 
     root.SetInteger("foo", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
     root.SetBoolean("foo", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.Remove("foo", nullptr);
+    root.RemoveKey("foo");
 
     root.SetString("barr", "one");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
@@ -957,7 +957,7 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     root.SetBoolean("barr", false);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.Remove("barr", nullptr);
+    root.RemoveKey("barr");
 
     root.SetString("bar", "one");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, true);
@@ -965,14 +965,14 @@ TEST(SchemaTest, Validate) {
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     root.SetString("bar", "three");
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
-    root.Remove("bar", nullptr);
+    root.RemoveKey("bar");
 
     root.SetInteger("foobar", 123);
     TestSchemaValidation(subschema, root, SCHEMA_STRICT, false);
     TestSchemaValidation(subschema, root, SCHEMA_ALLOW_UNKNOWN, true);
     TestSchemaValidation(subschema, root,
                          SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY, true);
-    root.Remove("foobar", nullptr);
+    root.RemoveKey("foobar");
   }
 
   // Tests on ObjectWithRequiredProperties
