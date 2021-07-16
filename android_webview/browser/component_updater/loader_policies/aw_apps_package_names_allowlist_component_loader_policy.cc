@@ -93,6 +93,7 @@ void SetAppPackageNameLoggingRule(
 
   if (!record.has_value()) {
     VLOG(2) << "Failed to load WebView apps package allowlist";
+    return;
   }
 
   VLOG(2) << "WebView apps package allowlist version "
