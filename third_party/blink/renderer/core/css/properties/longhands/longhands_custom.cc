@@ -5743,7 +5743,7 @@ const CSSValue* Scale::CSSValueFromComputedStyleInternal(
 }
 
 // https://www.w3.org/TR/css-overflow-4
-// auto | stable && mirror?
+// auto | stable && both-edges?
 const CSSValue* ScrollbarGutter::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
@@ -5755,7 +5755,7 @@ const CSSValue* ScrollbarGutter::ParseSingleValue(
     return value;
 
   CSSIdentifierValue* stable = nullptr;
-  CSSIdentifierValue* mirror = nullptr;
+  CSSIdentifierValue* both_edges = nullptr;
 
   while (!range.AtEnd()) {
     if (!stable) {
@@ -5764,17 +5764,17 @@ const CSSValue* ScrollbarGutter::ParseSingleValue(
         continue;
     }
     CSSValueID id = range.Peek().Id();
-    if (id == CSSValueID::kMirror && !mirror)
-      mirror = css_parsing_utils::ConsumeIdent(range);
+    if (id == CSSValueID::kBothEdges && !both_edges)
+      both_edges = css_parsing_utils::ConsumeIdent(range);
     else
       return nullptr;
   }
   if (!stable)
     return nullptr;
-  if (mirror) {
+  if (both_edges) {
     CSSValueList* list = CSSValueList::CreateSpaceSeparated();
     list->Append(*stable);
-    list->Append(*mirror);
+    list->Append(*both_edges);
     return list;
   }
   return stable;
@@ -5794,13 +5794,13 @@ const CSSValue* ScrollbarGutter::CSSValueFromComputedStyleInternal(
   if (scrollbar_gutter & kScrollbarGutterStable)
     stable = CSSIdentifierValue::Create(CSSValueID::kStable);
 
-  if (!(scrollbar_gutter & kScrollbarGutterMirror))
+  if (!(scrollbar_gutter & kScrollbarGutterBothEdges))
     return stable;
 
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   list->Append(*stable);
-  if (scrollbar_gutter & kScrollbarGutterMirror)
-    list->Append(*CSSIdentifierValue::Create(kScrollbarGutterMirror));
+  if (scrollbar_gutter & kScrollbarGutterBothEdges)
+    list->Append(*CSSIdentifierValue::Create(kScrollbarGutterBothEdges));
   return list;
 }
 

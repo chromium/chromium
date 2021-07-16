@@ -1628,11 +1628,11 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         *this, kVerticalScrollbar, /* include_overlay_thickness */ true));
     if (ShouldPlaceVerticalScrollbarOnLeft()) {
       scrollbars.left = gutter_size;
-      if (StyleRef().IsScrollbarGutterMirror())
+      if (StyleRef().IsScrollbarGutterBothEdges())
         scrollbars.right = gutter_size;
     } else {
       scrollbars.right = gutter_size;
-      if (StyleRef().IsScrollbarGutterMirror())
+      if (StyleRef().IsScrollbarGutterBothEdges())
         scrollbars.left = gutter_size;
     }
   } else if (scrollable_area) {
@@ -1651,7 +1651,7 @@ NGPhysicalBoxStrut LayoutBox::ComputeScrollbarsInternal(
         HypotheticalScrollbarThickness(*this, kHorizontalScrollbar,
                                        /* include_overlay_thickness */ true));
     scrollbars.bottom = gutter_size;
-    if (StyleRef().IsScrollbarGutterMirror())
+    if (StyleRef().IsScrollbarGutterBothEdges())
       scrollbars.top = gutter_size;
   } else if (scrollable_area) {
     scrollbars.bottom = LayoutUnit(scrollable_area->HorizontalScrollbarHeight(

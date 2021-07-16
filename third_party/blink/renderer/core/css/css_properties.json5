@@ -3465,7 +3465,7 @@
       type_name: "unsigned",
       converter: "ConvertScrollbarGutter",
       keywords: [
-        "auto", "stable", "always"
+        "auto", "stable", "both-edges"
       ],
       typedom_types: ["Keyword"],
       runtime_flag: "ScrollbarGutter",

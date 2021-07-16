@@ -1456,7 +1456,7 @@
     // scrollbar-gutter
     // auto
     "stable",
-    "mirror",
+    "both-edges",
 
     // (prefers-contrast:) media feature
     // no-preference

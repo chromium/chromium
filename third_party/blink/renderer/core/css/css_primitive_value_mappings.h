@@ -1611,8 +1611,8 @@ inline CSSIdentifierValue::CSSIdentifierValue(ScrollbarGutter scrollbar_gutter)
     case kScrollbarGutterStable:
       value_id_ = CSSValueID::kStable;
       break;
-    case kScrollbarGutterMirror:
-      value_id_ = CSSValueID::kMirror;
+    case kScrollbarGutterBothEdges:
+      value_id_ = CSSValueID::kBothEdges;
       break;
   }
 }
@@ -1624,8 +1624,8 @@ inline ScrollbarGutter CSSIdentifierValue::ConvertTo() const {
       return kScrollbarGutterAuto;
     case CSSValueID::kStable:
       return kScrollbarGutterStable;
-    case CSSValueID::kMirror:
-      return kScrollbarGutterMirror;
+    case CSSValueID::kBothEdges:
+      return kScrollbarGutterBothEdges;
     default:
       break;
   }

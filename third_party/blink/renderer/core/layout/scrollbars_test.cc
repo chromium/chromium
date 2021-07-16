@@ -3016,13 +3016,13 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
       #stable {
         scrollbar-gutter: stable;
       }
-      #stable_mirror {
-        scrollbar-gutter: stable mirror;
+      #stable_both_edges {
+        scrollbar-gutter: stable both-edges;
       }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
-    <div id="stable_mirror"></div>
+    <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3045,16 +3045,16 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndClassicScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 15);
 
-  auto* stable_mirror = GetDocument().getElementById("stable_mirror");
-  auto* box_stable_mirror = stable_mirror->GetLayoutBox();
-  EXPECT_EQ(box_stable_mirror->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable_mirror->ClientWidth(), 70);
-  NGPhysicalBoxStrut box_stable_mirror_scrollbars =
-      box_stable_mirror->ComputeScrollbars();
-  EXPECT_EQ(box_stable_mirror_scrollbars.top, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.bottom, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.left, 15);
-  EXPECT_EQ(box_stable_mirror_scrollbars.right, 15);
+  auto* stable_both_edges = GetDocument().getElementById("stable_both_edges");
+  auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
+  EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both_edges->ClientWidth(), 70);
+  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+      box_stable_both_edges->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.left, 15);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.right, 15);
 }
 
 // Test scrollbar-gutter values with classic scrollbars and vertical-rl text.
@@ -3080,13 +3080,13 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
       #stable {
         scrollbar-gutter: stable;
       }
-      #stable_mirror {
-        scrollbar-gutter: stable mirror;
+      #stable_both_edges {
+        scrollbar-gutter: stable both-edges;
       }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
-    <div id="stable_mirror"></div>
+    <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3109,16 +3109,16 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndClassicScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_mirror = GetDocument().getElementById("stable_mirror");
-  auto* box_stable_mirror = stable_mirror->GetLayoutBox();
-  EXPECT_EQ(box_stable_mirror->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable_mirror->ClientHeight(), 70);
-  NGPhysicalBoxStrut box_stable_mirror_scrollbars =
-      box_stable_mirror->ComputeScrollbars();
-  EXPECT_EQ(box_stable_mirror_scrollbars.top, 15);
-  EXPECT_EQ(box_stable_mirror_scrollbars.bottom, 15);
-  EXPECT_EQ(box_stable_mirror_scrollbars.left, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.right, 0);
+  auto* stable_both_edges = GetDocument().getElementById("stable_both_edges");
+  auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
+  EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both_edges->ClientHeight(), 70);
+  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+      box_stable_both_edges->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_edges_scrollbars.top, 15);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 15);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.right, 0);
 }
 
 // Test scrollbar-gutter values with overlay scrollbars and horizontal-tb text.
@@ -3145,13 +3145,13 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
       #stable {
         scrollbar-gutter: stable;
       }
-      #stable_mirror {
-        scrollbar-gutter: stable mirror;
+      #stable_both_edges {
+        scrollbar-gutter: stable both-edges;
       }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
-    <div id="stable_mirror"></div>
+    <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3174,16 +3174,16 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithHorizontalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_mirror = GetDocument().getElementById("stable_mirror");
-  auto* box_stable_mirror = stable_mirror->GetLayoutBox();
-  EXPECT_EQ(box_stable_mirror->OffsetWidth(), 100);
-  EXPECT_EQ(box_stable_mirror->ClientWidth(), 100);
-  NGPhysicalBoxStrut box_stable_mirror_scrollbars =
-      box_stable_mirror->ComputeScrollbars();
-  EXPECT_EQ(box_stable_mirror_scrollbars.top, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.bottom, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.left, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.right, 0);
+  auto* stable_both_edges = GetDocument().getElementById("stable_both_edges");
+  auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
+  EXPECT_EQ(box_stable_both_edges->OffsetWidth(), 100);
+  EXPECT_EQ(box_stable_both_edges->ClientWidth(), 100);
+  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+      box_stable_both_edges->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.right, 0);
 }
 
 // Test scrollbar-gutter values with overlay scrollbars and vertical-rl text.
@@ -3210,13 +3210,13 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
       #stable {
         scrollbar-gutter: stable;
       }
-      #stable_mirror {
-        scrollbar-gutter: stable mirror;
+      #stable_both_edges {
+        scrollbar-gutter: stable both-edges;
       }
     </style>
     <div id="auto"></div>
     <div id="stable"></div>
-    <div id="stable_mirror"></div>
+    <div id="stable_both_edges"></div>
   )HTML");
   Compositor().BeginFrame();
   auto* auto_ = GetDocument().getElementById("auto");
@@ -3239,21 +3239,21 @@ TEST_P(ScrollbarsTest, ScrollbarGutterWithVerticalTextAndOverlayScrollbars) {
   EXPECT_EQ(box_stable_scrollbars.left, 0);
   EXPECT_EQ(box_stable_scrollbars.right, 0);
 
-  auto* stable_mirror = GetDocument().getElementById("stable_mirror");
-  auto* box_stable_mirror = stable_mirror->GetLayoutBox();
-  EXPECT_EQ(box_stable_mirror->OffsetHeight(), 100);
-  EXPECT_EQ(box_stable_mirror->ClientHeight(), 100);
-  NGPhysicalBoxStrut box_stable_mirror_scrollbars =
-      box_stable_mirror->ComputeScrollbars();
-  EXPECT_EQ(box_stable_mirror_scrollbars.top, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.bottom, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.left, 0);
-  EXPECT_EQ(box_stable_mirror_scrollbars.right, 0);
+  auto* stable_both_edges = GetDocument().getElementById("stable_both_edges");
+  auto* box_stable_both_edges = stable_both_edges->GetLayoutBox();
+  EXPECT_EQ(box_stable_both_edges->OffsetHeight(), 100);
+  EXPECT_EQ(box_stable_both_edges->ClientHeight(), 100);
+  NGPhysicalBoxStrut box_stable_both_edges_scrollbars =
+      box_stable_both_edges->ComputeScrollbars();
+  EXPECT_EQ(box_stable_both_edges_scrollbars.top, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.bottom, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.left, 0);
+  EXPECT_EQ(box_stable_both_edges_scrollbars.right, 0);
 }
 
-// Test events on the additional gutter created by the "mirror" keyword of
+// Test events on the additional gutter created by the "both-edges" keyword of
 // scrollbar-gutter.
-TEST_P(ScrollbarsTest, ScrollbarGutterMirrorKeywordWithClassicScrollbars) {
+TEST_P(ScrollbarsTest, ScrollbarGutterBothEdgesKeywordWithClassicScrollbars) {
   // This test requires that scrollbars take up space.
   ENABLE_OVERLAY_SCROLLBARS(false);
 
@@ -3267,7 +3267,7 @@ TEST_P(ScrollbarsTest, ScrollbarGutterMirrorKeywordWithClassicScrollbars) {
         margin: 0;
       }
       #container {
-        scrollbar-gutter: stable mirror;
+        scrollbar-gutter: stable both-edges;
         width: 200px;
         height: 200px;
         overflow: auto;
