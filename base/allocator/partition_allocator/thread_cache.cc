@@ -580,6 +580,19 @@ void ThreadCache::ClearBucket(ThreadCache::Bucket& bucket, size_t limit) {
   if (!bucket.count || bucket.count <= limit)
     return;
 
+  // This serves two purposes: error checking and avoiding stalls when grabbing
+  // the lock:
+  // 1. Error checking: this is pretty clear. Since this path is taken
+  //    infrequently, and is going to walk the entire freelist anyway, its
+  //    incremental cost should be very small. Indeed, we free from the tail of
+  //    the list, so all calls here will end up walking the entire freelist, and
+  //    incurring the same amount of cache misses.
+  // 2. Avoiding stalls: If one of the freelist accesses in |FreeAfter()|
+  //    triggers a major page fault, and we are running on a low-priority
+  //    thread, we don't want the thread to be blocked while holding the lock,
+  //    causing a priority inversion.
+  bucket.freelist_head->CheckFreeList(bucket.slot_size);
+
   uint8_t count_before = bucket.count;
   if (limit == 0) {
     FreeAfter(bucket.freelist_head, bucket.slot_size);
