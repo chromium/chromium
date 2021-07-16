@@ -316,7 +316,7 @@ CHAR_LIMIT guidelines:
         Allow Chrome sign-in
       </message>
       <message name="IDS_ALLOW_CHROME_SIGNIN_SUMMARY" desc="Summary for a checkbox in Google services that controls sign-in and sync prompts.">
-        Show Chrome sign-in prompts when you sign in to your Google Account
+        Shows prompts to sign in to Chrome
       </message>
       <message name="IDS_AUTOCOMPLETE_SEARCHES_AND_URLS_TITLE" desc="Title for a checkbox in Settings that controls URL and search autocompletion and informs the user about the data shared by this feature.">
         Autocomplete searches and URLs
