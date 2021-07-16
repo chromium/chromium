@@ -206,7 +206,8 @@ void CreateAndShowNewWindowWithContents(
     std::unique_ptr<content::WebContents> contents,
     const Browser* original_browser) {
   Browser* new_browser = nullptr;
-  if (original_browser->deprecated_is_app()) {
+  DCHECK(!original_browser->is_type_app_popup());
+  if (original_browser->is_type_app()) {
     new_browser = Browser::Create(Browser::CreateParams::CreateForApp(
         original_browser->app_name(), original_browser->is_trusted_source(),
         gfx::Rect(), original_browser->profile(), true));
@@ -574,7 +575,7 @@ void Home(Browser* browser, WindowOpenDisposition disposition) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // With bookmark apps enabled, hosted apps should return to their launch page
   // when the home button is pressed.
-  if (browser->deprecated_is_app()) {
+  if (browser->is_type_app() || browser->is_type_app_popup()) {
     const extensions::Extension* extension = GetExtensionForBrowser(browser);
     if (!extension)
       return;
