@@ -1161,6 +1161,12 @@ PasswordFormManager* PasswordManager::GetSubmittedManager() const {
   return nullptr;
 }
 
+void PasswordManager::SaveSubmittedManager() {
+  PasswordFormManager* submitted_manager = GetSubmittedManager();
+  DCHECK(submitted_manager);
+  submitted_manager->Save();
+}
+
 void PasswordManager::ResetSubmittedManager() {
   if (owned_submitted_form_manager_) {
     owned_submitted_form_manager_.reset();

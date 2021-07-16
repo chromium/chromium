@@ -4108,6 +4108,39 @@ TEST_P(PasswordManagerTest, IsFormManagerPendingPasswordUpdate) {
   EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
 }
 
+TEST_P(PasswordManagerTest, SaveSubmittedManager) {
+  PasswordForm form(MakeSimpleForm());
+  std::vector<FormData> observed = {form.form_data};
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(*store_, GetLogins)
+      .WillOnce(WithArg<1>(InvokeConsumer(store_.get(), form)));
+  manager()->OnPasswordFormsParsed(&driver_, observed);
+  manager()->OnPasswordFormsRendered(&driver_, observed, true);
+
+  // Password was not updated yet.
+  EXPECT_FALSE(manager()->IsFormManagerPendingPasswordUpdate());
+
+  // The user updates the password.
+  FormData updated_data(form.form_data);
+  updated_data.fields[1].value = u"new_password";
+  manager()->OnInformAboutUserInput(&driver_, updated_data);
+  EXPECT_TRUE(manager()->IsFormManagerPendingPasswordUpdate());
+
+  // The user submits the form.
+  OnPasswordFormSubmitted(updated_data);
+  EXPECT_TRUE(manager()->GetSubmittedManagerForTest());
+
+  PasswordForm saved_form;
+  EXPECT_CALL(*store_, AddLogin(_)).Times(0);
+  EXPECT_CALL(*store_, UpdateLoginWithPrimaryKey).Times(0);
+  PasswordForm expected_form(form);
+  // The expected form with a new password.
+  expected_form.password_value = updated_data.fields[1].value;
+  EXPECT_CALL(*store_, UpdateLogin(FormMatches(expected_form)));
+  // The form is saved.
+  manager()->SaveSubmittedManager();
+}
+
 // Test submission of "PasswordManager.FormVisited.PerProfileType" and
 // "PasswordManager.FormSubmission.PerProfileType" for Incognito mode.
 TEST_P(PasswordManagerTest, IncognitoProfileTypeMetricSubmission) {

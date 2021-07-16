@@ -209,6 +209,10 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns true if a form manager is processing a password update.
   bool IsFormManagerPendingPasswordUpdate() const;
 
+  // Saves the current submitted password to the disk. Password manager must
+  // have a submitted manager.
+  void SaveSubmittedManager();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PasswordManagerTest,
