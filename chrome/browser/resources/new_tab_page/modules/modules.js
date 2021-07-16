@@ -342,7 +342,7 @@ export class ModulesElement extends mixinBehaviors
     };
 
     const dragEnter = e => {
-      const moduleContainers = Array.from(this.$.modules.childNodes);
+      const moduleContainers = [...this.$.modules.childNodes];
       const dragIndex = moduleContainers.indexOf(dragElement.parentElement);
       const dropIndex = moduleContainers.indexOf(e.target.parentElement);
 
@@ -355,8 +355,8 @@ export class ModulesElement extends mixinBehaviors
     };
 
     const undraggedModuleWrappers =
-        Array.from(this.shadowRoot.querySelectorAll('ntp-module-wrapper'))
-            .filter(moduleWrapper => moduleWrapper !== dragElement);
+        [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].filter(
+            moduleWrapper => moduleWrapper !== dragElement);
 
     undraggedModuleWrappers.forEach(moduleWrapper => {
       moduleWrapper.addEventListener('dragenter', dragEnter);
@@ -373,6 +373,11 @@ export class ModulesElement extends mixinBehaviors
       dragElement.removeAttribute('dragging');
       dragElement.style.removeProperty('left');
       dragElement.style.removeProperty('top');
+
+      const moduleIds =
+          [...this.shadowRoot.querySelectorAll('ntp-module-wrapper')].map(
+              moduleWrapper => moduleWrapper.module.descriptor.id);
+      NewTabPageProxy.getInstance().handler.setModulesOrder(moduleIds);
     }, {once: true});
   }
 }

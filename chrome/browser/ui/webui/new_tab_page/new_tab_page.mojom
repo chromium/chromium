@@ -247,6 +247,8 @@ interface PageHandler {
   UpdateDisabledModules();
   // Called when at least one module has loaded with data.
   OnModulesLoadedWithData();
+  // Sets the order of modules.
+  SetModulesOrder(array<string> module_ids);
 
   // ======= METRICS =======
   // Logs that the One Google Bar was added to the DOM / loaded in an iframe at
