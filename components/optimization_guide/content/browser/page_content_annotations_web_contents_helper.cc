@@ -39,7 +39,10 @@ std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
 PageContentAnnotationsWebContentsHelper::MaybeRequestFrameTextDump(
     content::NavigationHandle* navigation_handle) {
   DCHECK(navigation_handle->HasCommitted());
-  DCHECK(navigation_handle->IsInMainFrame());
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  DCHECK(navigation_handle->IsInPrimaryMainFrame());
 
   if (!navigation_handle->GetURL().SchemeIsHTTPOrHTTPS())
     return nullptr;

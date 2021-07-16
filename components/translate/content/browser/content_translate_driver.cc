@@ -245,7 +245,10 @@ void ContentTranslateDriver::DidFinishNavigation(
 
   InitiateTranslationIfReload(navigation_handle);
 
-  if (navigation_handle->IsInMainFrame())
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame())
     finish_navigation_time_ = base::TimeTicks::Now();
 
   // Let the LanguageState clear its state.
@@ -263,9 +266,13 @@ void ContentTranslateDriver::DidFinishNavigation(
                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
        IsAutoHrefTranslateAllOriginsEnabled());
 
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   translate_manager_->GetLanguageState()->DidNavigate(
-      navigation_handle->IsSameDocument(), navigation_handle->IsInMainFrame(),
-      reload, navigation_handle->GetHrefTranslate(), navigation_from_google);
+      navigation_handle->IsSameDocument(),
+      navigation_handle->IsInPrimaryMainFrame(), reload,
+      navigation_handle->GetHrefTranslate(), navigation_from_google);
 }
 
 bool ContentTranslateDriver::IsAutoHrefTranslateAllOriginsEnabled() const {

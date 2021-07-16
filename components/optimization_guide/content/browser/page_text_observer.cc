@@ -332,7 +332,10 @@ PageTextObserver* PageTextObserver::GetOrCreateForWebContents(
 }
 
 void PageTextObserver::DidStartNavigation(content::NavigationHandle* handle) {
-  if (!handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
   }
 
@@ -344,7 +347,10 @@ void PageTextObserver::DidStartNavigation(content::NavigationHandle* handle) {
 
 void PageTextObserver::DidFinishNavigation(content::NavigationHandle* handle) {
   // Only main frames are supported for right now.
-  if (!handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!handle->IsInPrimaryMainFrame()) {
     return;
   }
 

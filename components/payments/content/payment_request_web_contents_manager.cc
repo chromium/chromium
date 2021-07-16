@@ -43,7 +43,10 @@ void PaymentRequestWebContentsManager::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Navigations that are not in the main frame (e.g. iframe) or that are in the
   // same document do not close the Payment Request. Disregard those.
-  if (!navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }

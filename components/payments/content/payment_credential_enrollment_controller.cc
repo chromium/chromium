@@ -126,8 +126,11 @@ void PaymentCredentialEnrollmentController::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Close the dialog if either the initiator frame (which may be an iframe) or
   // main frame was navigated away.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsSameDocument() &&
-      (navigation_handle->IsInMainFrame() ||
+      (navigation_handle->IsInPrimaryMainFrame() ||
        navigation_handle->GetPreviousRenderFrameHostId() ==
            initiator_frame_routing_id_)) {
     CloseDialog();

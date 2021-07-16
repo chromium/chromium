@@ -171,11 +171,14 @@ void ContentAutofillDriverFactory::RenderFrameDeleted(
 void ContentAutofillDriverFactory::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // TODO(crbug/1117451): Clean up experiment code.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   if (base::FeatureList::IsEnabled(
           features::kAutofillProbableFormSubmissionInBrowser) &&
       navigation_handle->IsRendererInitiated() &&
       !navigation_handle->WasInitiatedByLinkClick() &&
-      navigation_handle->IsInMainFrame()) {
+      navigation_handle->IsInPrimaryMainFrame()) {
     content::GlobalRenderFrameHostId id =
         navigation_handle->GetPreviousRenderFrameHostId();
     content::RenderFrameHost* render_frame_host =

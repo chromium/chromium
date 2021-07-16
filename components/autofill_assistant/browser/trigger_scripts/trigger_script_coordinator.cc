@@ -337,7 +337,11 @@ void TriggerScriptCoordinator::DidFinishNavigation(
   // - not in the main frame.
   // - document does not change (e.g., same page history navigation).
   // - WebContents stays at the existing URL (e.g., downloads).
-  if (!is_checking_trigger_conditions_ || !navigation_handle->IsInMainFrame() ||
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (!is_checking_trigger_conditions_ ||
+      !navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument() ||
       !navigation_handle->HasCommitted()) {
     return;

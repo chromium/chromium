@@ -152,8 +152,11 @@ void PaymentCredential::OnWebDataServiceRequestDone(
 void PaymentCredential::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Reset the service before the page navigates away.
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsSameDocument() &&
-      (navigation_handle->IsInMainFrame() ||
+      (navigation_handle->IsInPrimaryMainFrame() ||
        navigation_handle->GetPreviousRenderFrameHostId() ==
            initiator_frame_routing_id_)) {
     Reset();

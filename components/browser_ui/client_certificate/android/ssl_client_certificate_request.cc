@@ -272,7 +272,10 @@ void SSLClientCertPendingRequests::ReadyToCommitNavigation(
   // navigation is user-initiated. Note that |HasUserGesture| does not capture
   // browser-initiated navigations. The negation of |IsRendererInitiated| tells
   // us whether the navigation is browser-generated.
-  if (navigation_handle->IsInMainFrame() &&
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       (navigation_handle->HasUserGesture() ||
        !navigation_handle->IsRendererInitiated())) {
     // Flush any remaining dialogs before resetting the counter.
