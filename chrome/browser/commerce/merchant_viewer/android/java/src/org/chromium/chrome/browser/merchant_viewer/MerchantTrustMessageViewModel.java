@@ -54,7 +54,7 @@ class MerchantTrustMessageViewModel {
         SpannableStringBuilder builder = new SpannableStringBuilder();
         NumberFormat numberFormatter = NumberFormat.getIntegerInstance();
         numberFormatter.setMaximumFractionDigits(1);
-        if (MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR.getValue()) {
+        if (MerchantViewerConfig.doesTrustSignalsMessageUseRatingBar()) {
             builder.append(numberFormatter.format(trustSignals.getMerchantStarRating()));
             builder.append(" ");
             builder.append(getRatingBarSpan(context, trustSignals.getMerchantStarRating()));

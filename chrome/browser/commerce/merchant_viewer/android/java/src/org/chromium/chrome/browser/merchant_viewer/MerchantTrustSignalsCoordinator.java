@@ -91,7 +91,7 @@ public class MerchantTrustSignalsCoordinator {
                 mMessageScheduler.schedule(
                         MerchantTrustMessageViewModel.create(mContext, trustSignals,
                                 this::onMessageDismissed, this::onMessagePrimaryAction),
-                        item, MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY.getValue(),
+                        item, MerchantViewerConfig.getDefaultTrustSignalsMessageDelay(),
                         this::onMessageEnqueued);
             });
         }
@@ -124,8 +124,7 @@ public class MerchantTrustSignalsCoordinator {
                 mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
             } else if (System.currentTimeMillis() - event.getTimestamp()
                     > TimeUnit.SECONDS.toMillis(
-                            MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_WINDOW_DURATION_SECONDS
-                                    .getValue())) {
+                            MerchantViewerConfig.getTrustSignalsMessageWindowDurationSeconds())) {
                 storage.delete(event);
                 mDataProvider.getDataForNavigationHandle(navigationHandle, callback);
             } else {

@@ -18,11 +18,13 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOuterClass.MerchantTrustSignals;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.DummyUiChromeActivityTestCase;
@@ -105,7 +107,7 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderMessage_UseRatingBar() throws IOException {
-        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR.setForTesting(true);
+        setUseRatingBarParam("true");
         createModelAndSetView();
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_use_rating_bar");
     }
@@ -114,8 +116,15 @@ public class MerchantTrustMessageViewTest extends DummyUiChromeActivityTestCase 
     @MediumTest
     @Feature({"RenderTest"})
     public void testRenderMessage_NotUseRatingBar() throws IOException {
-        MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR.setForTesting(false);
+        setUseRatingBarParam("false");
         createModelAndSetView();
         mRenderTestRule.render(mMessageBannerView, "merchant_trust_message_not_use_rating_bar");
+    }
+
+    private void setUseRatingBarParam(String useRatingBar) {
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFieldTrialParamOverride(ChromeFeatureList.COMMERCE_MERCHANT_VIEWER,
+                MerchantViewerConfig.TRUST_SIGNALS_MESSAGE_USE_RATING_BAR_PARAM, useRatingBar);
+        FeatureList.setTestValues(testValues);
     }
 }

@@ -17,7 +17,6 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,7 +28,6 @@ import org.mockito.stubbing.Answer;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -39,7 +37,6 @@ import org.chromium.chrome.browser.merchant_viewer.proto.MerchantTrustSignalsOut
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.messages.DismissReason;
 import org.chromium.content_public.browser.NavigationHandle;
@@ -53,18 +50,13 @@ import java.util.concurrent.TimeUnit;
  * Tests for {@link MerchantTrustSignalsCoordinator}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@Batch(Batch.PER_CLASS)
 @EnableFeatures({ChromeFeatureList.COMMERCE_MERCHANT_VIEWER + "<Study"})
 @CommandLineFlags.
 Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE, "force-fieldtrials=Study/Group"})
 public class MerchantTrustSignalsCoordinatorTest {
-    @ClassRule
-    public static final ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     @Rule
-    public final BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public final ChromeTabbedActivityTestRule mActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -136,7 +128,8 @@ public class MerchantTrustSignalsCoordinatorTest {
         setMockTrustSignalsData(mDummyMerchantTrustSignals);
         setMockTrustSignalsEventData("fake_host", mMockMerchantTrustSignalsEvent);
 
-        mActivity = sActivityTestRule.getActivity();
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivity = mActivityTestRule.getActivity();
         mCoordinator = new MerchantTrustSignalsCoordinator(mActivity, mMockMerchantMessageScheduler,
                 mMockTabProvider, mMockMerchantTrustDataProvider, mMockMetrics,
                 mMockDetailsTabCoordinator, mMockMerchantTrustStorageFactory);
@@ -164,8 +157,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(1))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 
@@ -189,8 +181,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(0))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 
@@ -212,8 +203,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(1))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 
@@ -235,8 +225,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(0))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 
@@ -258,8 +247,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(0))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 
@@ -280,8 +268,7 @@ public class MerchantTrustSignalsCoordinatorTest {
                 .getDataForNavigationHandle(eq(mMockNavigationHandle), any(Callback.class));
         verify(mMockMerchantMessageScheduler, times(0))
                 .schedule(any(PropertyModel.class), any(MerchantTrustMessageContext.class),
-                        eq((long) MerchantViewerConfig.DEFAULT_TRUST_SIGNALS_MESSAGE_DELAY
-                                        .getValue()),
+                        eq((long) MerchantViewerConfig.getDefaultTrustSignalsMessageDelay()),
                         any(Callback.class));
     }
 

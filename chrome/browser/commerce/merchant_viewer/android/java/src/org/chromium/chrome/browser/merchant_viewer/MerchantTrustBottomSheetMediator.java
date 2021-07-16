@@ -79,7 +79,7 @@ public class MerchantTrustBottomSheetMediator {
 
             @Override
             public void titleWasSet(String title) {
-                if (!MerchantViewerConfig.TRUST_SIGNALS_SHEET_USE_PAGE_TITLE.getValue()) return;
+                if (!MerchantViewerConfig.doesTrustSignalsSheetUsePageTitle()) return;
                 mToolbarModel.set(BottomSheetToolbarProperties.TITLE, title);
             }
 
