@@ -798,7 +798,7 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) {
 
 void AXObjectCacheImpl::Invalidate(Document& document, AXID ax_id) {
   if (GetInvalidatedIds(document).insert(ax_id).is_new_entry)
-    ScheduleVisualUpdate();
+    ScheduleVisualUpdate(document);
 }
 
 AXID AXObjectCacheImpl::GetAXID(Node* node) {
@@ -1573,7 +1573,7 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
 
   // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a document lifecycle update scheduled.
-  ScheduleVisualUpdate();
+  ScheduleVisualUpdate(*tree_update_document);
 }
 
 void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
@@ -1618,7 +1618,7 @@ void AXObjectCacheImpl::DeferTreeUpdateInternal(base::OnceClosure callback,
 
   // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a document lifecycle update scheduled.
-  ScheduleVisualUpdate();
+  ScheduleVisualUpdate(tree_update_document);
 }
 
 void AXObjectCacheImpl::DeferTreeUpdate(
@@ -2353,6 +2353,7 @@ void AXObjectCacheImpl::ProcessCleanLayoutCallbacks(Document& document) {
           DCHECK_EQ(node, obj->GetNode());
           DCHECK_EQ(GetWithoutInvalidation(node), obj);
         }
+        DCHECK_EQ(obj->GetDocument(), document);
       }
     }
 #endif
@@ -2446,28 +2447,29 @@ void AXObjectCacheImpl::PostNotification(AXObject* object,
 
   // These events are fired during DocumentLifecycle::kInAccessibility,
   // ensure there is a visual update scheduled.
-  ScheduleVisualUpdate();
+  ScheduleVisualUpdate(document);
 }
 
-void AXObjectCacheImpl::ScheduleVisualUpdate() {
+void AXObjectCacheImpl::ScheduleVisualUpdate(Document& document) {
   // Scheduling visual updates before the document is finished loading can
-  // interfere with event ordering.
-  if (!GetDocument().IsLoadCompleted())
+  // interfere with event ordering. In any case, at least one visual update will
+  // occur between now and when the document load is complete.
+  if (!document.IsLoadCompleted())
     return;
 
   // If there was a document change that doesn't trigger a lifecycle update on
   // its own, (e.g. because it doesn't make layout dirty), make sure we run
   // lifecycle phases to update the computed accessibility tree.
-  LocalFrameView* frame_view = GetDocument().View();
-  Page* page = GetDocument().GetPage();
+  LocalFrameView* frame_view = document.View();
+  Page* page = document.GetPage();
   if (!frame_view || !page)
     return;
 
   if (!frame_view->CanThrottleRendering() &&
-      (!GetDocument().GetPage()->Animator().IsServicingAnimations() ||
-       GetDocument().Lifecycle().GetState() >=
+      (!document.GetPage()->Animator().IsServicingAnimations() ||
+       document.Lifecycle().GetState() >=
            DocumentLifecycle::kInAccessibility)) {
-    page->Animator().ScheduleVisualUpdate(GetDocument().GetFrame());
+    page->Animator().ScheduleVisualUpdate(document.GetFrame());
   }
 }
 
