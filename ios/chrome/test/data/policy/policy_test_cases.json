@@ -1,30 +1,41 @@
 {
   "-- Instructions --": "See https://chromium.googlesource.com/chromium/src/+/refs/heads/main/docs/enterprise/policy_pref_mapping_test.md (This file is interpreted by //ios/chrome/browser/policy/policy_unittest.mm)",
-
   "AutofillAddressEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "AutofillAddressEnabled": false },
-        "prefs": { "autofill.profile_enabled": {} }
+        "policies": {
+          "AutofillAddressEnabled": false
+        },
+        "prefs": {
+          "autofill.profile_enabled": {}
+        }
       }
     ]
   },
-
   "AutofillCreditCardEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "AutofillCreditCardEnabled": false },
-        "prefs": { "autofill.credit_card_enabled": {} }
+        "policies": {
+          "AutofillCreditCardEnabled": false
+        },
+        "prefs": {
+          "autofill.credit_card_enabled": {}
+        }
       }
     ]
   },
-
   "BrowserSignin.SigninDisabled": {
-    "os": ["ios"],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
@@ -38,348 +49,492 @@
       }
     ]
   },
-
   "CloudManagementEnrollmentToken": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
-
   "CloudReportingEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "CloudReportingEnabled": true },
-        "prefs": { "enterprise_reporting.chrome_cloud_reporting": { "location": "local_state" } }
+        "policies": {
+          "CloudReportingEnabled": true
+        },
+        "prefs": {
+          "enterprise_reporting.chrome_cloud_reporting": {
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
-
- "ChromeVariations": {
-    "os": [ "ios" ],
+  "ChromeVariations": {
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "ChromeVariations": 1
         },
-        "prefs": { "variations_restrictions_by_policy": { "location": "local_state" } }
+        "prefs": {
+          "variations_restrictions_by_policy": {
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
-
   "CloudPolicyOverridesPlatformPolicy": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
-
   "DefaultPopupsSetting": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
     "policy_pref_mapping_tests": [
       {
-        "policies": { "DefaultPopupsSetting": 1 },
-        "prefs": { "profile.managed_default_content_settings.popups": {} }
+        "policies": {
+          "DefaultPopupsSetting": 1
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.popups": {}
+        }
       },
       {
-        "policies": { "DefaultPopupsSetting": 2 },
-        "prefs": { "profile.managed_default_content_settings.popups": {} }
+        "policies": {
+          "DefaultPopupsSetting": 2
+        },
+        "prefs": {
+          "profile.managed_default_content_settings.popups": {}
+        }
       }
     ]
   },
-
   "DefaultSearchProviderEnabled": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderName": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderKeyword": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderSearchURL": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderSuggestURL": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderIconURL": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderEncodings": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderAlternateURLs": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderImageURL": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderNewTabURL": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderSearchURLPostParams": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderSuggestURLPostParams": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DefaultSearchProviderImageURLPostParams": {
     "reason_for_missing_test": "complex mapping that includes timestamps as well, see PolicyTest.DefaultSearchProvider for a full policy browser test"
   },
-
   "DisableSafeBrowsingProceedAnyway": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {"DisableSafeBrowsingProceedAnyway": true},
-        "prefs": { "safebrowsing.proceed_anyway_disabled": {}}
+        "policies": {
+          "DisableSafeBrowsingProceedAnyway": true
+        },
+        "prefs": {
+          "safebrowsing.proceed_anyway_disabled": {}
+        }
       }
     ]
   },
-
   "EditBookmarksEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "EditBookmarksEnabled": false },
-        "prefs": { "bookmarks.editing_enabled": {} }
+        "policies": {
+          "EditBookmarksEnabled": false
+        },
+        "prefs": {
+          "bookmarks.editing_enabled": {}
+        }
       }
     ]
   },
-
   "IncognitoModeAvailability": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "IncognitoModeAvailability": 1 },
-        "prefs": { "incognito.mode_availability": {} }
+        "policies": {
+          "IncognitoModeAvailability": 1
+        },
+        "prefs": {
+          "incognito.mode_availability": {}
+        }
       },
       {
-        "policies": { "IncognitoModeAvailability": 2 },
-        "prefs": { "incognito.mode_availability": {} }
+        "policies": {
+          "IncognitoModeAvailability": 2
+        },
+        "prefs": {
+          "incognito.mode_availability": {}
+        }
       }
     ]
   },
-
   "MetricsReportingEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "MetricsReportingEnabled": false },
-        "prefs": { "user_experience_metrics.reporting_enabled": { "location": "local_state" } }
+        "policies": {
+          "MetricsReportingEnabled": false
+        },
+        "prefs": {
+          "user_experience_metrics.reporting_enabled": {
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
-
   "NTPContentSuggestionsEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "NTPContentSuggestionsEnabled": false },
-        "prefs": { "ios.ntp.content_suggestions_enabled": {} }
+        "policies": {
+          "NTPContentSuggestionsEnabled": false
+        },
+        "prefs": {
+          "ios.ntp.content_suggestions_enabled": {}
+        }
       }
     ]
   },
-
   "PasswordManagerEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "PasswordManagerEnabled": false },
-        "prefs": { "credentials_enable_service": {} }
+        "policies": {
+          "PasswordManagerEnabled": false
+        },
+        "prefs": {
+          "credentials_enable_service": {}
+        }
       }
     ]
   },
   "PolicyRefreshRate": {
-    "os": ["ios"],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "PolicyRefreshRate": 300000
         },
-        "prefs": { "policy.user_refresh_rate": { "location": "local_state", "value": 300000 } }
-      }
-    ]
-  },
-  "PopupsAllowedForUrls": {
-    "os": [ "ios" ],
-    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "PopupsAllowedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_popups_allowed_for_urls": {} }
-      }
-    ]
-  },
-
-  "PopupsBlockedForUrls": {
-    "os": [ "ios" ],
-    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "PopupsBlockedForUrls": ["[*.]google.com"]},
-        "prefs": { "profile.managed_popups_blocked_for_urls": {} }
-       }
-     ]
-   },
-
-  "PrintingEnabled":{
-      "os":["ios"],
-      "policy_pref_mapping_tests":[
-          {
-              "policies":{"PrintingEnabled": true},
-              "prefs":{
-                "printing.enabled":{
-                  "value": true
-              }
-            }
-          },
-          {
-              "policies":{"PrintingEnabled": false},
-              "prefs":{
-                "printing.enabled":{
-                  "value": false
-              }
-            }
-          }
-      ]
-  },
-
-  "SafeBrowsingEnabled": {
-    "os": [ "ios" ],
-    "can_be_recommended": true,
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "SafeBrowsingEnabled": false },
-        "prefs": { "safebrowsing.enabled": {} }
-      },
-      {
-        "policies": { "SafeBrowsingEnabled": true },
-        "prefs": { "safebrowsing.enabled": {} }
-      }
-    ]
-  },
-
-  "SafeBrowsingProtectionLevel": {
-    "os": [ "ios" ],
-    "can_be_recommended": true,
-    "policy_pref_mapping_tests": [
-      {
-        "policies": { "SafeBrowsingProtectionLevel": 2 },
         "prefs": {
-          "safebrowsing.enabled": { "value": true },
-          "safebrowsing.enhanced": { "value": true }
+          "policy.user_refresh_rate": {
+            "location": "local_state",
+            "value": 300000
+          }
         }
       }
     ]
   },
-
-  "SavingBrowserHistoryDisabled": {
-    "os": [ "ios" ],
-    "can_be_recommended": true,
+  "PopupsAllowedForUrls": {
+    "os": [
+      "ios"
+    ],
+    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
     "policy_pref_mapping_tests": [
       {
-        "policies": { "SavingBrowserHistoryDisabled": false },
-        "prefs": { "history.saving_disabled": {} }
-      },
-      {
-        "policies": { "SavingBrowserHistoryDisabled": true },
-        "prefs": { "history.saving_disabled": {} }
+        "policies": {
+          "PopupsAllowedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_popups_allowed_for_urls": {}
+        }
       }
     ]
   },
-
-  "SearchSuggestEnabled": {
-	"os": [ "ios" ],
+  "PopupsBlockedForUrls": {
+    "os": [
+      "ios"
+    ],
+    "note": "TODO(crbug.com/106682): Flag this with can_be_recommended",
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PopupsBlockedForUrls": [
+            "[*.]google.com"
+          ]
+        },
+        "prefs": {
+          "profile.managed_popups_blocked_for_urls": {}
+        }
+      }
+    ]
+  },
+  "PrintingEnabled": {
+    "os": [
+      "ios"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "PrintingEnabled": true
+        },
+        "prefs": {
+          "printing.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "PrintingEnabled": false
+        },
+        "prefs": {
+          "printing.enabled": {
+            "value": false
+          }
+        }
+      }
+    ]
+  },
+  "SafeBrowsingEnabled": {
+    "os": [
+      "ios"
+    ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "SearchSuggestEnabled": false },
-        "prefs": { "search.suggest_enabled": {} }
+        "policies": {
+          "SafeBrowsingEnabled": false
+        },
+        "prefs": {
+          "safebrowsing.enabled": {}
+        }
+      },
+      {
+        "policies": {
+          "SafeBrowsingEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.enabled": {}
+        }
+      }
+    ]
+  },
+  "SafeBrowsingProtectionLevel": {
+    "os": [
+      "ios"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SafeBrowsingProtectionLevel": 2
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          },
+          "safebrowsing.enhanced": {
+            "value": true
+          }
+        }
+      }
+    ]
+  },
+  "SavingBrowserHistoryDisabled": {
+    "os": [
+      "ios"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SavingBrowserHistoryDisabled": false
+        },
+        "prefs": {
+          "history.saving_disabled": {}
+        }
+      },
+      {
+        "policies": {
+          "SavingBrowserHistoryDisabled": true
+        },
+        "prefs": {
+          "history.saving_disabled": {}
+        }
+      }
+    ]
+  },
+  "SearchSuggestEnabled": {
+    "os": [
+      "ios"
+    ],
+    "can_be_recommended": true,
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {
+          "SearchSuggestEnabled": false
+        },
+        "prefs": {
+          "search.suggest_enabled": {}
+        }
       }
     ]
   },
   "SyncDisabled": {
-    "os": ["ios"],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": { "SyncDisabled": true },
-        "prefs": { "sync.managed": { "value": true } }
+        "policies": {
+          "SyncDisabled": true
+        },
+        "prefs": {
+          "sync.managed": {
+            "value": true
+          }
+        }
       },
       {
-        "policies": { "SyncDisabled": false },
-        "prefs": { "sync.managed": { "default_value": false } }
+        "policies": {
+          "SyncDisabled": false
+        },
+        "prefs": {
+          "sync.managed": {
+            "default_value": false
+          }
+        }
       },
       {
-        "policies": { },
-        "prefs": { "sync.managed": { "default_value": false } }
+        "policies": {},
+        "prefs": {
+          "sync.managed": {
+            "default_value": false
+          }
+        }
       }
     ]
   },
   "TranslateEnabled": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "can_be_recommended": true,
     "policy_pref_mapping_tests": [
       {
-        "policies": {"TranslateEnabled": false},
-        "prefs": { "translate.enabled": {} }
+        "policies": {
+          "TranslateEnabled": false
+        },
+        "prefs": {
+          "translate.enabled": {}
+        }
       }
     ]
   },
-
   "URLBlocklist": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {"URLBlocklist": ["google.com"]},
-        "prefs": { "policy.url_blocklist": {}}
+        "policies": {
+          "URLBlocklist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_blocklist": {}
+        }
       }
     ]
   },
-
   "URLAllowlist": {
-    "os": [ "ios" ],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {"URLAllowlist": ["google.com"]},
-        "prefs": { "policy.url_allowlist": {}}
+        "policies": {
+          "URLAllowlist": [
+            "google.com"
+          ]
+        },
+        "prefs": {
+          "policy.url_allowlist": {}
+        }
       }
     ]
   },
-
   "UrlKeyedAnonymizedDataCollectionEnabled": {
-    "os": ["ios"],
+    "os": [
+      "ios"
+    ],
     "policy_pref_mapping_tests": [
       {
         "policies": {
           "UrlKeyedAnonymizedDataCollectionEnabled": true
         },
-        "prefs": { "url_keyed_anonymized_data_collection.enabled": { "value": true } }
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": true
+          }
+        }
       },
       {
         "policies": {
           "UrlKeyedAnonymizedDataCollectionEnabled": false
         },
-        "prefs": { "url_keyed_anonymized_data_collection.enabled": { "value": false } }
+        "prefs": {
+          "url_keyed_anonymized_data_collection.enabled": {
+            "value": false
+          }
+        }
       }
     ]
   },
-
   "ManagedBookmarks": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
   },
-
-  "EnableExperimentalPolicies":{
+  "EnableExperimentalPolicies": {
     "reason_for_missing_test": "This policy has no pref as it is only directly read by the policy system."
   }
 }
