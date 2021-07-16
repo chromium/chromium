@@ -23,4 +23,13 @@ DeskTemplate::DeskTemplate(const std::string& uuid,
 
 DeskTemplate::~DeskTemplate() = default;
 
+std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
+  std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
+      uuid_.AsLowercaseString(), base::UTF16ToUTF8(template_name_),
+      created_time_);
+  if (desk_restore_data_)
+    desk_template->set_desk_restore_data(desk_restore_data_->Clone());
+  return desk_template;
+}
+
 }  // namespace ash
