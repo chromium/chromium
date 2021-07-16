@@ -130,7 +130,6 @@ source_set("chromeos") {
     "//chrome/browser/ui/webui/chromeos/crostini_upgrader:mojo_bindings",
     "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/browser/webshare:storage",
     "//chrome/common",
@@ -489,7 +488,6 @@ source_set("chromeos") {
     "//chrome/browser/ash/crosapi",
     "//chrome/browser/extensions",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications/components",
   ]
 
   sources = [
@@ -3532,7 +3530,7 @@ static_library("test_support") {
     ":chromeos",
     "//ash/constants",
     "//chrome/browser:browser_process",
-    "//chrome/browser/web_applications/components",
+    "//chrome/browser/web_applications",
     "//chrome/common:constants",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
@@ -4356,7 +4354,7 @@ source_set("unit_tests") {
     "//chrome/browser/resources/chromeos/zip_archiver:char_coding",
     "//chrome/browser/ui",
     "//chrome/browser/ui:ash_test_support",
-    "//chrome/browser/web_applications/components",
+    "//chrome/browser/web_applications",
     "//chrome/common",
     "//chrome/services/keymaster/public/mojom",
     "//chrome/services/wilco_dtc_supportd/public/mojom",

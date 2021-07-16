@@ -80,7 +80,7 @@ source_set("unit_tests") {
   deps = [
     ":util",
     "//base/test:test_support",
-    "//chrome/browser/web_applications/components",
+    "//chrome/browser/web_applications",
     "//chrome/test:test_support",
     "//components/version_info:generate_version_info",
     "//content/test:test_support",
