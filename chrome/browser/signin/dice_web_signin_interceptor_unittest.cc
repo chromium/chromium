@@ -614,7 +614,7 @@ TEST_F(DiceWebSigninInterceptorTest, HeuristicDefaultsToGmail) {
 }
 
 // Checks that no heuristic is returned if signin interception is disabled.
-TEST_F(DiceWebSigninInterceptorTest, InterceptionDsiabled) {
+TEST_F(DiceWebSigninInterceptorTest, InterceptionDisabled) {
   // Setup for profile switch interception.
   std::string email = "bob@gmail.com";
   Profile* profile_2 = CreateTestingProfile("Profile 2");
@@ -634,6 +634,16 @@ TEST_F(DiceWebSigninInterceptorTest, InterceptionDsiabled) {
           /*is_new_account=*/true, /*is_sync_signin=*/false, "bob@example.com",
           /*entry=*/nullptr),
       SigninInterceptionHeuristicOutcome::kAbortInterceptionDisabled);
+}
+
+TEST_F(DiceWebSigninInterceptorTest, TabClosed) {
+  base::HistogramTester histogram_tester;
+  interceptor()->MaybeInterceptWebSignin(
+      /*web_contents=*/nullptr, CoreAccountId(),
+      /*is_new_account=*/true, /*is_sync_signin=*/false);
+  histogram_tester.ExpectUniqueSample(
+      "Signin.Intercept.HeuristicOutcome",
+      SigninInterceptionHeuristicOutcome::kAbortTabClosed, 1);
 }
 
 TEST_F(DiceWebSigninInterceptorTest, InterceptionInProgress) {

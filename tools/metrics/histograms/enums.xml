@@ -74877,6 +74877,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="13" label="Abort: password update pending"/>
   <int value="14" label="Abort: user declined new profile for this account"/>
   <int value="15" label="Abort: signin interception disabled by policy"/>
+  <int value="16" label="Intercept: forced enterprise interception"/>
+  <int value="17" label="Intercept: forced enterprise profile switch"/>
+  <int value="18" label="Abort: tab closed"/>
 </enum>
 
 <enum name="SigninInterceptResult">

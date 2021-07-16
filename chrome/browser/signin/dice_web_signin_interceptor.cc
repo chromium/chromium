@@ -208,6 +208,14 @@ void DiceWebSigninInterceptor::MaybeInterceptWebSignin(
     return;
   }
 
+  if (!web_contents) {
+    // The tab has been closed (typically during the token exchange, which may
+    // take some time).
+    RecordSigninInterceptionHeuristicOutcome(
+        SigninInterceptionHeuristicOutcome::kAbortTabClosed);
+    return;
+  }
+
   if (HasNoBrowser(web_contents)) {
     // Do not intercept from the profile creation flow.
     RecordSigninInterceptionHeuristicOutcome(

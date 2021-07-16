@@ -86,7 +86,10 @@ enum class SigninInterceptionHeuristicOutcome {
   kInterceptEnterpriseForced = 16,
   kInterceptEnterpriseForcedProfileSwitch = 17,
 
-  kMaxValue = kInterceptEnterpriseForcedProfileSwitch,
+  // The interceptor is not triggered if the tab has already been closed.
+  kAbortTabClosed = 18,
+
+  kMaxValue = kAbortTabClosed,
 };
 
 // User selection in the interception bubble.
