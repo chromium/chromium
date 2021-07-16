@@ -21,7 +21,6 @@ static_library("base") {
     "extensions_activity.h",
     "hash_util.cc",
     "hash_util.h",
-    "immutable.h",
     "invalidation_adapter.cc",
     "invalidation_adapter.h",
     "invalidation_helper.cc",
