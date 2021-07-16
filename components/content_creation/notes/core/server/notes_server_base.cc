@@ -23,7 +23,7 @@ NotesServerBase::NotesServerBase(
 NotesServerBase::~NotesServerBase() {}
 
 signin::ScopeSet NotesServerBase::GetAuthScopes() {
-  return {GaiaConstants::kOAuth1LoginScope};
+  return {"https://www.googleapis.com/auth/googlenow"};
 }
 
 GURL NotesServerBase::GetNotesServerURL() {
