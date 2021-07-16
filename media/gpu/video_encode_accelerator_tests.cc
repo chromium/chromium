@@ -605,8 +605,15 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   // Set 1/4 of the original bitrate because the area of |output_resolution| is
   // 1/4 of the original resolution.
   uint32_t new_bitrate = g_env->Bitrate().GetSumBps() / 4;
+  auto spatial_layers = g_env->SpatialLayers();
+  if (!spatial_layers.empty()) {
+    CHECK_EQ(spatial_layers.size(), 1u);
+    spatial_layers[0].width = output_resolution.width();
+    spatial_layers[0].height = output_resolution.height();
+    spatial_layers[0].bitrate_bps /= 4;
+  }
   VideoEncoderClientConfig config(
-      nv12_video, g_env->Profile(), g_env->SpatialLayers(),
+      nv12_video, g_env->Profile(), spatial_layers,
       g_env->GetDefaultVideoBitrateAllocation(new_bitrate));
   config.output_resolution = output_resolution;
   config.input_storage_type =
