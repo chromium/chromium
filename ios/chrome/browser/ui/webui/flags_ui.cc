@@ -59,9 +59,7 @@ web::WebUIIOSDataSource* CreateFlagsUIHTMLSource() {
 // The handler for Javascript messages for the about:flags page.
 class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  public:
-  FlagsDOMHandler()
-      : access_(flags_ui::kGeneralAccessFlagsOnly),
-        experimental_features_requested_(false) {}
+  FlagsDOMHandler() : access_(flags_ui::kGeneralAccessFlagsOnly) {}
   ~FlagsDOMHandler() override {}
 
   // Initializes the DOM handler with the provided flags storage and flags
@@ -88,7 +86,6 @@ class FlagsDOMHandler : public web::WebUIIOSMessageHandler {
  private:
   std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
   flags_ui::FlagAccess access_;
-  bool experimental_features_requested_;
 
   DISALLOW_COPY_AND_ASSIGN(FlagsDOMHandler);
 };
@@ -118,39 +115,32 @@ void FlagsDOMHandler::Init(
     flags_ui::FlagAccess access) {
   flags_storage_ = std::move(flags_storage);
   access_ = access;
-
-  if (experimental_features_requested_)
-    HandleRequestExperimentalFeatures(NULL);
 }
 
 void FlagsDOMHandler::HandleRequestExperimentalFeatures(
     const base::ListValue* args) {
+  DCHECK(flags_storage_);
+  DCHECK(!args->GetList().empty());
   const base::Value& callback_id = args->GetList()[0];
-  experimental_features_requested_ = true;
-  // Bail out if the handler hasn't been initialized yet. The request will be
-  // handled after the initialization.
-  if (!flags_storage_) {
-    web_ui()->ResolveJavascriptCallback(callback_id, base::Value());
-    return;
-  }
-
-  base::DictionaryValue results;
 
   std::vector<base::Value> supported_features;
   std::vector<base::Value> unsupported_features;
   GetFlagFeatureEntries(flags_storage_.get(), access_, supported_features,
                         unsupported_features);
 
-  results.SetKey(flags_ui::kSupportedFeatures, base::Value(supported_features));
+  base::Value results(base::Value::Type::DICTIONARY);
+  results.SetKey(flags_ui::kSupportedFeatures,
+                 base::Value(std::move(supported_features)));
   results.SetKey(flags_ui::kUnsupportedFeatures,
-                 base::Value(unsupported_features));
+                 base::Value(std::move(unsupported_features)));
+
   // Cannot restart the browser on iOS.
-  results.SetBoolean(flags_ui::kNeedsRestart, false);
-  results.SetBoolean(flags_ui::kShowOwnerWarning,
+  results.SetBoolKey(flags_ui::kNeedsRestart, false);
+  results.SetBoolKey(flags_ui::kShowOwnerWarning,
                      access_ == flags_ui::kGeneralAccessFlagsOnly);
 
-  results.SetBoolean(flags_ui::kShowBetaChannelPromotion, false);
-  results.SetBoolean(flags_ui::kShowDevChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowBetaChannelPromotion, false);
+  results.SetBoolKey(flags_ui::kShowDevChannelPromotion, false);
 
   web_ui()->ResolveJavascriptCallback(callback_id, results);
 }
