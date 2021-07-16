@@ -2015,29 +2015,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Blink.WaitForCommit.UpdateTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="BluetoothPairedStates" separator=".">
-  <suffix name="NotPaired" label=""/>
-  <suffix name="Paired" label=""/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.DeviceSelectionDuration.Settings"/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.DeviceSelectionDuration.SystemTray"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="BluetoothTransportTypes" separator=".">
-  <suffix name="BLE" label=""/>
-  <suffix name="Classic" label=""/>
-  <suffix name="Dual" label=""/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.DeviceSelectionDuration.Settings.NotPaired"/>
-  <affected-histogram
-      name="Bluetooth.ChromeOS.DeviceSelectionDuration.SystemTray.NotPaired"/>
-  <affected-histogram name="Bluetooth.ChromeOS.Pairing.Duration.Failure"/>
-  <affected-histogram name="Bluetooth.ChromeOS.Pairing.Duration.Success"/>
-  <affected-histogram name="Bluetooth.ChromeOS.Pairing.Result"/>
-  <affected-histogram name="Bluetooth.ChromeOS.Pairing.Result.FailureReason"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="BlueZPerProfileResult" separator="."
     ordering="prefix,2">
   <suffix name="A2DPSink"

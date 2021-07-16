@@ -21,9 +21,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="BluetoothPairedStates">
+  <variant name=".NotPaired"/>
+  <variant name=".Paired"/>
+</variants>
+
+<variants name="BluetoothTransportTypes">
+  <variant name=".BLE"/>
+  <variant name=".Classic"/>
+  <variant name=".Dual"/>
+</variants>
+
 <variants name="BluetoothUISurfaces">
-  <variant name=".Settings" summary=""/>
-  <variant name=".SystemTray" summary=""/>
+  <variant name=".Settings"/>
+  <variant name=".SystemTray"/>
 </variants>
 
 <histogram name="Bluetooth.Android.GATTConnection.Disconnected.Result"
@@ -77,9 +88,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}"
-    units="ms" expires_after="2021-03-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+    units="ms" expires_after="2022-07-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
@@ -90,40 +101,88 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.Pairing.Duration.Failure" units="ms"
-    expires_after="2022-03-05">
-<!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
+<histogram
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}.NotPaired{BluetoothTransportTypes}"
+    units="ms" expires_after="2022-07-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records how long it takes for the user to select a device either after they
+    open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
+    open. {BluetoothUISurfaces}{BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces"/>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes"/>
+</histogram>
 
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+<histogram
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}{BluetoothPairedStates}"
+    units="ms" expires_after="2022-07-01">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Records how long it takes for the user to select a device either after they
+    open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
+    open. {BluetoothUISurfaces}{BluetoothPairedStates}
+  </summary>
+  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces"/>
+  <token key="BluetoothPairedStates" variants="BluetoothPairedStates"/>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.Pairing.Duration.Failure{BluetoothTransportTypes}"
+    units="ms" expires_after="2022-03-05">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for a failed pairing attempt, initiated from
     Bluetooth Settings or System Tray, to finish. If the user needed to go
     through an auth process during pairing, the time the user took to confirm
-    that is not included.
+    that is not included. {BluetoothTransportTypes}
   </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.Pairing.Duration.Success" units="ms"
-    expires_after="2022-03-05">
-<!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
-
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+<histogram
+    name="Bluetooth.ChromeOS.Pairing.Duration.Success{BluetoothTransportTypes}"
+    units="ms" expires_after="2022-03-05">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for a successful pairing attempt, initiated from
     Bluetooth Settings or System Tray, to finish. If the user needed to go
     through an auth process during pairing, the time the user took to confirm
-    that is not included.
+    that is not included. {BluetoothTransportTypes}
   </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.Pairing.Result" enum="BooleanSuccess"
-    expires_after="2021-09-12">
-<!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
+<histogram
+    name="Bluetooth.ChromeOS.Pairing.Result.FailureReason{BluetoothTransportTypes}"
+    enum="BluetoothConnectionFailureReason" expires_after="2021-09-19">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
+  <summary>
+    Breaks down why a pairing attempt to a peripheral failed (see
+    'Bluetooth.ChromeOS.Pairing.Result').
 
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+    Suffixed by Bluetooth transport type. View the base histogram to see results
+    for all transport types aggregated together, and suffixed histograms for the
+    results of just that particular transport type. {BluetoothTransportTypes}
+  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.Pairing.Result{BluetoothTransportTypes}"
+    enum="BooleanSuccess" expires_after="2021-09-12">
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Records success or failure of a pairing attempt (initiated in the UI) to a
     peripheral after the user taps that device in the list of discovered
@@ -131,30 +190,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Suffixed by Bluetooth transport type. View the base histogram to see results
     for all transport types aggregated together, and suffixed histograms for the
-    results of just that particular transport type.
+    results of just that particular transport type. {BluetoothTransportTypes}
   </summary>
-</histogram>
-
-<histogram name="Bluetooth.ChromeOS.Pairing.Result.FailureReason"
-    enum="BluetoothConnectionFailureReason" expires_after="2021-09-19">
-<!-- Name completed by histogram_suffixes name="BluetoothTransportTypes" -->
-
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
-  <summary>
-    Breaks down why a pairing attempt to a peripheral failed (see
-    'Bluetooth.ChromeOS.Pairing.Result').
-
-    Suffixed by Bluetooth transport type. View the base histogram to see results
-    for all transport types aggregated together, and suffixed histograms for the
-    results of just that particular transport type.
-  </summary>
+  <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Bluetooth.ChromeOS.Pairing.TransportType"
     enum="BluetoothTransportType" expires_after="2022-03-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     An enumerated histogram which captures the transport type of devices which
     are paired with. Reports of transport types other than classic, BLE, or dual
@@ -176,8 +222,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{BluetoothUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Breaks down why a user-initiated reconnection attempt to a peripheral failed
     (see 'Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result').
@@ -194,8 +240,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram
     name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{BluetoothUISurfaces}"
     enum="BooleanSuccess" expires_after="2021-11-14">
-  <owner>hansberry@chromium.org</owner>
-  <owner>cros-system-services-networking@google.com</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <owner>cros-connectivity@google.com</owner>
   <summary>
     Records success or failure of a reconnection attempt to an already paired
     peripheral after the user taps that device in the list of peripherals in
