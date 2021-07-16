@@ -10,7 +10,7 @@ import sys
 
 from common import GetHostArchFromPlatform
 
-BUILTIN_TARGET_NAMES = ['aemu', 'qemu', 'device']
+BUILTIN_TARGET_NAMES = ['aemu', 'qemu', 'device', 'fvdl']
 
 
 def _AddTargetSpecificationArgs(arg_parser):

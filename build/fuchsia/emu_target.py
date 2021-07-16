@@ -68,8 +68,8 @@ class EmuTarget(target.Target):
       temporary_log_file = tempfile.NamedTemporaryFile('w')
       stdout = temporary_log_file
 
-    _LogProcessStatistics('proc_stat_start_log')
-    _LogSystemStatistics('system_statistics_start_log')
+    LogProcessStatistics('proc_stat_start_log')
+    LogSystemStatistics('system_statistics_start_log')
 
     self._emu_process = subprocess.Popen(emu_command,
                                          stdin=open(os.devnull),
@@ -79,7 +79,7 @@ class EmuTarget(target.Target):
 
     try:
       self._WaitUntilReady()
-      _LogProcessStatistics('proc_stat_ready_log')
+      LogProcessStatistics('proc_stat_ready_log')
     except target.FuchsiaTargetException:
       if temporary_log_file:
         logging.info('Kernel logs:\n' +
@@ -109,8 +109,8 @@ class EmuTarget(target.Target):
       logging.error('%s quit unexpectedly with exit code %d' %
                     (self.EMULATOR_NAME, returncode))
 
-    _LogProcessStatistics('proc_stat_end_log')
-    _LogSystemStatistics('system_statistics_end_log')
+    LogProcessStatistics('proc_stat_end_log')
+    LogSystemStatistics('system_statistics_end_log')
 
 
   def _IsEmuStillRunning(self):
@@ -127,7 +127,7 @@ class EmuTarget(target.Target):
     return boot_data.GetSSHConfigPath(self._out_dir)
 
 
-def _LogSystemStatistics(log_file_name):
+def LogSystemStatistics(log_file_name):
   statistics_log = runner_logs.FileStreamFor(log_file_name)
   # Log the cpu load and process information.
   subprocess.call(['top', '-b', '-n', '1'],
@@ -140,7 +140,7 @@ def _LogSystemStatistics(log_file_name):
                   stderr=subprocess.STDOUT)
 
 
-def _LogProcessStatistics(log_file_name):
+def LogProcessStatistics(log_file_name):
   statistics_log = runner_logs.FileStreamFor(log_file_name)
   subprocess.call(['cat', '/proc/stat'],
                   stdin=open(os.devnull),
