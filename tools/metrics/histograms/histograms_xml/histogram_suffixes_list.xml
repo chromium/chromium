@@ -5373,7 +5373,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Comcast" label="Comcast."/>
   <suffix name="Cznic" label="CZ.NIC ODVR."/>
   <suffix name="Dnssb" label="DNS.SB."/>
-  <suffix name="DnssbUserSelected" label="DNS.SB (user-selected)."/>
+  <suffix name="DnssbUserSelected" label="DNS.SB (user-selected).">
+    <obsolete>
+      Usage merged with &quot;Dnssb&quot;.
+    </obsolete>
+  </suffix>
   <suffix name="Google" label="Google."/>
   <suffix name="GoogleDns64" label="Google DNS64."/>
   <suffix name="Iij" label="Iij."/>

@@ -102,23 +102,13 @@ const DohProviderEntry::List& DohProviderEntry::GetList() {
           "https://www.nic.cz/odvr/" /* privacy_policy */,
           false /* display_globally */, {"CZ"} /* display_countries */,
           LoggingLevel::kNormal),
-      // Note: DNS.SB has separate entries for autoupgrade and settings UI to
-      // allow the extra |no_ecs| parameter for autoupgrade. This parameter
-      // disables EDNS Client Subnet (ECS) handling in order to match the
-      // behavior of the upgraded-from classic DNS server.
       new DohProviderEntry(
-          "Dnssb", absl::nullopt /* provider_id_for_histogram */,
-          {"185.222.222.222", "185.184.222.222", "2a09::", "2a09::1"},
-          {"dns.sb"} /* dns_over_tls_hostnames */,
-          "https://doh.dns.sb/dns-query?no_ecs=true{&dns}", "" /* ui_name */,
-          "" /* privacy_policy */, false /* display_globally */,
-          {} /* display_countries */, LoggingLevel::kNormal),
-      new DohProviderEntry(
-          "DnssbUserSelected", DohProviderIdForHistogram::kDnsSb,
-          {} /* ip_strs */, {} /* dns_over_tls_hostnames */,
-          "https://doh.dns.sb/dns-query{?dns}", "DNS.SB" /* ui_name */,
-          "https://dns.sb/privacy/" /* privacy_policy */,
-          false /* display_globally */, {"EE", "DE"} /* display_countries */,
+          "Dnssb", DohProviderIdForHistogram::kDnsSb,
+          {"185.222.222.222", "45.11.45.11", "2a09::", "2a11::"},
+          /*dns_over_tls_hostnames=*/{"dns.sb"},
+          "https://doh.dns.sb/dns-query{?dns}", /*ui_name=*/"DNS.SB",
+          /*privacy_policy=*/"https://dns.sb/privacy/",
+          /*display_globally=*/false, /*display_countries=*/{"EE", "DE"},
           LoggingLevel::kNormal),
       new DohProviderEntry("Google", DohProviderIdForHistogram::kGoogle,
                            {"8.8.8.8", "8.8.4.4", "2001:4860:4860::8888",
