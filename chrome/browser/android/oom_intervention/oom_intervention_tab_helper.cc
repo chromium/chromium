@@ -133,13 +133,8 @@ void OomInterventionTabHelper::RenderProcessGone(
 
 void OomInterventionTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  load_finished_ = false;
-
-  // Filter out sub-frame's navigation or if the navigation happens without
-  // changing document.
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
+  // Filter out sub-frame's navigation, non-primary page's navigation, or if the
+  // navigation happens without changing document.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
@@ -166,6 +161,13 @@ void OomInterventionTabHelper::DidStartNavigation(
   }
 }
 
+void OomInterventionTabHelper::PrimaryPageChanged(content::Page& page) {
+  if (!page.GetMainDocument().IsDocumentOnLoadCompletedInMainFrame())
+    return;
+  if (IsLastVisibleWebContents(web_contents()))
+    StartMonitoringIfNeeded();
+}
+
 void OomInterventionTabHelper::OnVisibilityChanged(
     content::Visibility visibility) {
   if (visibility == content::Visibility::VISIBLE) {
@@ -178,7 +180,8 @@ void OomInterventionTabHelper::OnVisibilityChanged(
 
 void OomInterventionTabHelper::DocumentOnLoadCompletedInMainFrame(
     content::RenderFrameHost* render_frame_host) {
-  load_finished_ = true;
+  if (!render_frame_host->GetPage().IsPrimary())
+    return;
   if (IsLastVisibleWebContents(web_contents()))
     StartMonitoringIfNeeded();
 }
@@ -227,7 +230,7 @@ void OomInterventionTabHelper::StartMonitoringIfNeeded() {
   if (near_oom_detected_time_)
     return;
 
-  if (!load_finished_)
+  if (!web_contents()->IsDocumentOnLoadCompletedInMainFrame())
     return;
 
   auto* config = OomInterventionConfig::GetInstance();

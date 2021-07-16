@@ -58,6 +58,7 @@ class OomInterventionTabHelper
   void RenderProcessGone(base::TerminationStatus status) override;
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
+  void PrimaryPageChanged(content::Page& page) override;
   void OnVisibilityChanged(content::Visibility visibility) override;
   void DocumentOnLoadCompletedInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
@@ -87,7 +88,6 @@ class OomInterventionTabHelper
   void ResetInterfaces();
 
   bool navigation_started_ = false;
-  bool load_finished_ = false;
   absl::optional<base::TimeTicks> near_oom_detected_time_;
   base::CallbackListSubscription subscription_;
   base::OneShotTimer renderer_detection_timer_;
