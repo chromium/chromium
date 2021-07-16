@@ -3262,8 +3262,7 @@ TEST_P(ArcAppModelBuilderTest, PackageSyncableServiceDisabled) {
           .Has(syncer::ARC_PACKAGE));
 }
 
-// Disabled due to flakiness https://crbug.com/1229496.
-TEST_P(ArcDefaultAppTest, DISABLED_DefaultApps) {
+TEST_P(ArcDefaultAppTest, DefaultApps) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_NE(nullptr, prefs);
 
@@ -3348,8 +3347,7 @@ TEST_P(ArcDefaultAppTest, DISABLED_DefaultApps) {
 
 // Test that validates disabling default app removes app from the list and this
 // is persistent in next sessions.
-// Disabled due to flakiness https://crbug.com/1229496.
-TEST_P(ArcDefaultAppTest, DISABLED_DisableDefaultApps) {
+TEST_P(ArcDefaultAppTest, DisableDefaultApps) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_.get());
   ASSERT_TRUE(prefs);
 
