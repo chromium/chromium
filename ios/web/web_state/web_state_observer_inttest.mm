@@ -1301,6 +1301,10 @@ TEST_F(WebStateObserverTest, WebViewUnsupportedSchemeNavigation) {
 // Tests failed navigation because URL with a space is not supported by
 // WKWebView (crbug.com/934379).
 TEST_F(WebStateObserverTest, WebViewUnsupportedUrlNavigation) {
+  // TODO(crbug.com/1230089): This is now crashing the WebProcess on iOS15beta3.
+  if (@available(iOS 15, *))
+    return;
+
   GURL url("http:// .test");
 
   // Perform a navigation to url with unsupported url, which will fail.
