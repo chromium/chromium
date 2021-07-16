@@ -105,6 +105,14 @@ gfx::Size GetPreviewImageSize(gfx::Size preview_size,
   return preview_size;
 }
 
+bool UseAlternateHoverCardFormat() {
+  static const int use_alternate_format =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kTabHoverCardImages, features::kTabHoverCardAlternateFormat,
+          0);
+  return use_alternate_format != 0;
+}
+
 }  // namespace
 
 // This is a label with two tweaks:
@@ -426,10 +434,17 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   domain_fade_label_->GetViewAccessibility().OverrideIsIgnored(true);
 
   if (TabHoverCardController::AreHoverCardImagesEnabled()) {
-    thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>());
-    thumbnail_view_->SetRoundedCorners(
-        ThumbnailView::RoundedCorners::kBottomCorners,
-        corner_radius_.value_or(0));
+    if (UseAlternateHoverCardFormat()) {
+      thumbnail_view_ = AddChildViewAt(std::make_unique<ThumbnailView>(), 0);
+      thumbnail_view_->SetRoundedCorners(
+          ThumbnailView::RoundedCorners::kTopCorners,
+          corner_radius_.value_or(0));
+    } else {
+      thumbnail_view_ = AddChildView(std::make_unique<ThumbnailView>());
+      thumbnail_view_->SetRoundedCorners(
+          ThumbnailView::RoundedCorners::kBottomCorners,
+          corner_radius_.value_or(0));
+    }
   }
 
   // Set up layout.
@@ -560,7 +575,7 @@ void TabHoverCardBubbleView::UpdateCardContent(const Tab* tab) {
   }
 
   // We only clip the corners of the fade image when there isn't a footer.
-  if (thumbnail_view_) {
+  if (thumbnail_view_ && !UseAlternateHoverCardFormat()) {
     thumbnail_view_->SetRoundedCorners(
         GetBubbleFrameView()->GetFootnoteView()
             ? ThumbnailView::RoundedCorners::kNone

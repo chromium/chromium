@@ -1541,6 +1541,11 @@ const FeatureEntry::FeatureParam
         {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
         {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
         {features::kTabHoverCardAdditionalMaxWidthDelay, "500"}};
+const FeatureEntry::FeatureParam kTabHoverCardImagesAlternateFormat[] = {
+    {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+    {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+    {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+    {features::kTabHoverCardAlternateFormat, "1"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
     {" capture speed", kTabHoverCardImagesOptimizationCaptureSpeed,
@@ -1564,7 +1569,9 @@ const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
      base::size(kTabHoverCardImagesSmallAdditionalFullWidthDelay), nullptr},
     {" large full width show delay",
      kTabHoverCardImagesLargeAdditionalFullWidthDelay,
-     base::size(kTabHoverCardImagesLargeAdditionalFullWidthDelay), nullptr}};
+     base::size(kTabHoverCardImagesLargeAdditionalFullWidthDelay), nullptr},
+    {" alternate hover card format", kTabHoverCardImagesAlternateFormat,
+     base::size(kTabHoverCardImagesAlternateFormat), nullptr}};
 
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};

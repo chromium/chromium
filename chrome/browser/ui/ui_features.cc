@@ -152,6 +152,7 @@ const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
     "crossfade_preview_at";
 const char kTabHoverCardAdditionalMaxWidthDelay[] =
     "additional_max_width_delay";
+const char kTabHoverCardAlternateFormat[] = "alternate_format";
 
 // Enables tab outlines in additional situations for accessibility.
 const base::Feature kTabOutlinesInLowContrastThemes{

@@ -94,6 +94,7 @@ extern const char kTabHoverCardImagesLoadingDelayParameterName[];
 extern const char kTabHoverCardImagesLoadedDelayParameterName[];
 extern const char kTabHoverCardImagesCrossfadePreviewAtParameterName[];
 extern const char kTabHoverCardAdditionalMaxWidthDelay[];
+extern const char kTabHoverCardAlternateFormat[];
 
 extern const base::Feature kTabOutlinesInLowContrastThemes;
 
