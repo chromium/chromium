@@ -615,13 +615,13 @@ VirtualCtap2Device::VirtualCtap2Device(scoped_refptr<State> state,
     device_info_->max_credential_id_length = config.max_credential_id_length;
   }
 
-  if (config.support_invalid_for_testing_algorithm) {
-    device_info_->algorithms->push_back(
-        static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting));
-  }
-
-  if (config.advertised_algorithms.has_value()) {
-    device_info_->algorithms = *config.advertised_algorithms;
+  if (!config.advertised_algorithms.empty()) {
+    device_info_->algorithms.emplace();
+    std::transform(
+        config.advertised_algorithms.begin(),
+        config.advertised_algorithms.end(),
+        std::back_inserter(device_info_->algorithms.value()),
+        [](auto algo) -> int32_t { return static_cast<int32_t>(algo); });
   }
 
   if (config.pin_support || config.pin_uv_auth_token_support) {
@@ -791,11 +791,6 @@ base::WeakPtr<FidoDevice> VirtualCtap2Device::GetWeakPtr() {
 void VirtualCtap2Device::Init(std::vector<ProtocolVersion> versions) {
   device_info_ = AuthenticatorGetInfoResponse(
       std::move(versions), config_.ctap2_versions, kDeviceAaguid);
-  device_info_->algorithms = {
-      static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256),
-      static_cast<int32_t>(CoseAlgorithmIdentifier::kEdDSA),
-      static_cast<int32_t>(CoseAlgorithmIdentifier::kRs256),
-  };
 }
 
 absl::optional<CtapDeviceResponseCode>
@@ -1058,9 +1053,19 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
   std::unique_ptr<PrivateKey> private_key;
   for (const auto& param :
        request.public_key_credential_params.public_key_credential_params()) {
+    // (Can't use base::Contains because that would mean casting to
+    // |CoseAlgorithmIdentifier|, but we don't know that |param.algorithm| is a
+    // valid enum value.)
+    const bool advertised = std::any_of(
+        config_.advertised_algorithms.begin(),
+        config_.advertised_algorithms.end(), [&](auto algo) -> bool {
+          return static_cast<int32_t>(algo) == param.algorithm;
+        });
+    if (!advertised && !config_.advertised_algorithms.empty()) {
+      continue;
+    }
+
     switch (param.algorithm) {
-      default:
-        continue;
       case static_cast<int32_t>(CoseAlgorithmIdentifier::kEs256):
         private_key = PrivateKey::FreshP256Key();
         break;
@@ -1071,7 +1076,9 @@ absl::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnMakeCredential(
         private_key = PrivateKey::FreshEd25519Key();
         break;
       case static_cast<int32_t>(CoseAlgorithmIdentifier::kInvalidForTesting):
-        if (!config_.support_invalid_for_testing_algorithm) {
+        if (!advertised) {
+          // Uniquely, the kInvalidForTesting algorithm has to be explicitly
+          // enabled. Setting an empty |advertised_algorithms| doesn't do it.
           continue;
         }
         private_key = PrivateKey::FreshInvalidForTestingKey();
