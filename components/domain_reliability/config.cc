@@ -13,10 +13,9 @@
 namespace {
 
 bool ConvertURL(const base::Value* value, GURL* url) {
-  std::string url_string;
-  if (!value->GetAsString(&url_string))
+  if (!value->is_string())
     return false;
-  *url = GURL(url_string);
+  *url = GURL(value->GetString());
   return url->is_valid();
 }
 
