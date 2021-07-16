@@ -17,6 +17,7 @@ namespace ash {
 class ApplicationDragAndDropHost;
 class AppListA11yAnnouncer;
 class AppListViewDelegate;
+class ContinueSectionView;
 class RecentAppsView;
 class ScrollableAppsGridView;
 
@@ -43,6 +44,7 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View {
   friend class AppListTestHelper;
 
   std::unique_ptr<AppListA11yAnnouncer> a11y_announcer_;
+  ContinueSectionView* continue_section_ = nullptr;
   RecentAppsView* recent_apps_ = nullptr;
   views::ScrollView* scroll_view_ = nullptr;
   ScrollableAppsGridView* scrollable_apps_grid_view_ = nullptr;

@@ -13,8 +13,8 @@
 #include "ash/app_list/bubble/scrollable_apps_grid_view.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_a11y_announcer.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/bubble/bubble_utils.h"
-#include "ash/bubble/simple_grid_layout.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "base/check.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -29,15 +29,6 @@
 using views::BoxLayout;
 
 namespace ash {
-namespace {
-
-std::unique_ptr<views::Label> CreateLabel(const std::u16string& text) {
-  auto label = std::make_unique<views::Label>(text);
-  bubble_utils::ApplyStyle(label.get(), bubble_utils::LabelStyle::kBody);
-  return label;
-}
-
-}  // namespace
 
 AppListBubbleAppsPage::AppListBubbleAppsPage(
     AppListViewDelegate* view_delegate,
@@ -64,23 +55,9 @@ AppListBubbleAppsPage::AppListBubbleAppsPage(
       std::make_unique<BoxLayout>(BoxLayout::Orientation::kVertical));
   layout->set_cross_axis_alignment(BoxLayout::CrossAxisAlignment::kStretch);
 
-  // TODO(https://crbug.com/1204551): Localized strings.
-  // TODO(https://crbug.com/1204551): Styling.
-  auto* continue_label = scroll_contents->AddChildView(CreateLabel(u"Label"));
-  continue_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  auto* continue_section =
-      scroll_contents->AddChildView(std::make_unique<views::View>());
-
-  const int kContinueColumnCount = 2;
-  const int kContinueColumnSpacing = 16;
-  const int kContinueRowSpacing = 10;
-  continue_section->SetLayoutManager(std::make_unique<SimpleGridLayout>(
-      kContinueColumnCount, kContinueColumnSpacing, kContinueRowSpacing));
-
-  for (int i = 0; i < 4; ++i) {
-    continue_section->AddChildView(CreateLabel(u"Item"));
-  }
+  // Continue section row.
+  continue_section_ = scroll_contents->AddChildView(
+      std::make_unique<ContinueSectionView>(view_delegate));
 
   // Recent apps row.
   recent_apps_ = scroll_contents->AddChildView(
