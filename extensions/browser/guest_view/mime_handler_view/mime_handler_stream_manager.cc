@@ -228,7 +228,10 @@ void MimeHandlerStreamManager::EmbedderObserver::ReadyToCommitNavigation(
 void MimeHandlerStreamManager::EmbedderObserver::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // If the top level frame is navigating away, clean up the stream.
-  if (navigation_handle->IsInMainFrame() &&
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
       !navigation_handle->IsSameDocument()) {
     AbortStream();
   }

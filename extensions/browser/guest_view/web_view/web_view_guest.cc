@@ -922,7 +922,10 @@ void WebViewGuest::DidFinishNavigation(
       return;
   }
 
-  if (navigation_handle->IsInMainFrame() && pending_zoom_factor_) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (navigation_handle->IsInPrimaryMainFrame() && pending_zoom_factor_) {
     // Handle a pending zoom if one exists.
     SetZoom(pending_zoom_factor_);
     pending_zoom_factor_ = 0.0;
@@ -969,7 +972,10 @@ void WebViewGuest::DocumentOnLoadCompletedInMainFrame(
 void WebViewGuest::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   WebViewGuest* opener = GetOpener();
-  if (opener && navigation_handle->IsInMainFrame()) {
+  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
+  // frames. This caller was converted automatically to the primary main frame
+  // to preserve its semantics. Follow up to confirm correctness.
+  if (opener && navigation_handle->IsInPrimaryMainFrame()) {
     auto it = opener->pending_new_windows_.find(this);
     if (it != opener->pending_new_windows_.end()) {
       NewWindowInfo& info = it->second;
