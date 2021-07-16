@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_utils.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_app_definition_utils.h"
 
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"

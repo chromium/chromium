@@ -7,8 +7,8 @@ import("//chrome/browser/buildflags.gni")
 
 source_set("preinstalled_web_apps") {
   sources = [
-    "preinstalled_web_app_utils.cc",
-    "preinstalled_web_app_utils.h",
+    "preinstalled_web_app_definition_utils.cc",
+    "preinstalled_web_app_definition_utils.h",
     "preinstalled_web_apps.cc",
     "preinstalled_web_apps.h",
   ]
@@ -58,7 +58,7 @@ source_set("preinstalled_web_apps") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "preinstalled_web_app_utils_unittest.cc" ]
+  sources = [ "preinstalled_web_app_definition_utils_unittest.cc" ]
 
   deps = [
     "//chrome/browser:browser_process",
