@@ -255,45 +255,38 @@ std::string DeskSyncBridge::GetStorageKey(
   return entity_data.specifics.workspace_desk().uuid();
 }
 
-void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
+void DeskSyncBridge::GetAllUuids(GetAllUuidsCallback callback) {
   if (!IsReady()) {
-    std::move(callback).Run(std::make_unique<GetAllEntriesResult>(
-        GetAllEntriesStatus::kFailure, std::vector<DeskTemplate*>()));
+    std::move(callback).Run(GetAllUuidsStatus::kFailure, {});
     return;
   }
 
-  std::vector<DeskTemplate*> entries;
-  for (const auto& it : entries_) {
-    DCHECK_EQ(it.first, it.second->uuid());
-    entries.push_back(it.second.get());
-  }
-
-  std::move(callback).Run(std::make_unique<GetAllEntriesResult>(
-      GetAllEntriesStatus::kOk, std::move(entries)));
+  std::move(callback).Run(GetAllUuidsStatus::kOk, GetAllUuids());
 }
 
 void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
                                     GetEntryByUuidCallback callback) {
   if (!IsReady()) {
-    std::move(callback).Run(std::make_unique<GetEntryByUuidResult>(
-        GetEntryByUuidStatus::kFailure, std::unique_ptr<DeskTemplate>()));
+    std::move(callback).Run(GetEntryByUuidStatus::kFailure,
+                            std::unique_ptr<DeskTemplate>());
     return;
   }
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (uuid.is_valid()) {
-    std::move(callback).Run(std::make_unique<GetEntryByUuidResult>(
-        GetEntryByUuidStatus::kInvalidUuid, std::unique_ptr<DeskTemplate>()));
+    std::move(callback).Run(GetEntryByUuidStatus::kInvalidUuid,
+                            std::unique_ptr<DeskTemplate>());
     return;
   }
 
   auto it = entries_.find(uuid);
   if (it == entries_.end()) {
-    std::move(callback).Run(std::make_unique<GetEntryByUuidResult>(
-        GetEntryByUuidStatus::kNotFound, std::unique_ptr<DeskTemplate>()));
+    std::move(callback).Run(GetEntryByUuidStatus::kNotFound,
+                            std::unique_ptr<DeskTemplate>());
   } else {
-    std::move(callback).Run(std::make_unique<GetEntryByUuidResult>(
-        GetEntryByUuidStatus::kOk, it->second.get()->Clone()));
+    std::move(callback).Run(GetEntryByUuidStatus::kOk,
+                            DeskSyncBridge::FromProto(
+                                DeskSyncBridge::AsSyncProto(it->second.get())));
   }
 }
 

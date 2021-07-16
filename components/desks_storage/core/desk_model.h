@@ -19,71 +19,6 @@ class DeskTemplate;
 namespace desks_storage {
 
 class DeskModelObserver;
-
-// TODO: As part of a potential refactor these enums may be moved back into
-// the DeskModel definition. They are outside now in order to account
-// for the result classes which need to know about the statuses.
-
-// Status codes for listing all desk template entries. kPartialFailure indicates
-// that one or more entries failed to load.
-enum class GetAllEntriesStatus {
-  kOk,
-  kPartialFailure,
-  kFailure,
-};
-
-// Status codes for getting desk template by UUID.
-enum class GetEntryByUuidStatus {
-  kOk,
-  kFailure,
-  kNotFound,
-  kInvalidUuid,
-};
-
-// Status codes for adding or updating a desk template.
-enum class AddOrUpdateEntryStatus {
-  kOk,
-  kFailure,
-  kInvalidArgument,
-};
-
-// Status codes for deleting desk templates.
-enum class DeleteEntryStatus {
-  kOk,
-  kFailure,
-};
-
-// TODO: As part of a potential re-factor these result classes may
-// be removed.
-
-// Result structure for GetAllEntries, contains a status and a vector
-// of entry pointers.
-class GetAllEntriesResult {
- public:
-  GetAllEntriesResult(GetAllEntriesStatus status,
-                      std::vector<ash::DeskTemplate*> entries);
-  GetAllEntriesResult(const GetAllEntriesResult&) = delete;
-  GetAllEntriesResult& operator=(const GetAllEntriesResult&) = delete;
-  ~GetAllEntriesResult();
-
-  GetAllEntriesStatus status;
-  std::vector<ash::DeskTemplate*> entries;
-};
-
-// Result structure for GetEntryByUuid, contains a status and a unique
-// pointer to an entry.
-class GetEntryByUuidResult {
- public:
-  GetEntryByUuidResult(GetEntryByUuidStatus status,
-                       std::unique_ptr<ash::DeskTemplate> entry);
-  GetEntryByUuidResult(const GetEntryByUuidResult&) = delete;
-  GetEntryByUuidResult& operator=(const GetEntryByUuidResult&) = delete;
-  ~GetEntryByUuidResult();
-
-  GetEntryByUuidStatus status;
-  std::unique_ptr<ash::DeskTemplate> entry;
-};
-
 // The DeskModel is an interface for accessing desk templates.
 // Actual desk template storage backend (e.g. local file system backend and Sync
 // backend) classes should implement this interface. Desk template accessor
@@ -91,18 +26,47 @@ class GetEntryByUuidResult {
 // to use asynchronous I/O.
 class DeskModel {
  public:
+  // Status codes for listing all desk template UUIDs.
+  enum class GetAllUuidsStatus {
+    kOk,
+    kFailure,
+  };
+
+  // Status codes for getting desk template by UUID.
+  enum class GetEntryByUuidStatus {
+    kOk,
+    kFailure,
+    kNotFound,
+    kInvalidUuid,
+  };
+
+  // Status codes for adding or updating a desk template.
+  enum class AddOrUpdateEntryStatus {
+    kOk,
+    kFailure,
+    kInvalidArgument,
+  };
+
+  // Status codes for deleting desk templates.
+  enum class DeleteEntryStatus {
+    kOk,
+    kFailure,
+  };
+
   DeskModel();
   DeskModel(const DeskModel&) = delete;
   DeskModel& operator=(const DeskModel&) = delete;
   virtual ~DeskModel();
 
-  using GetAllEntriesCallback = base::OnceCallback<void(
-      const std::unique_ptr<GetAllEntriesResult> result)>;
-  // Returns a vector of entries in the model.
-  virtual void GetAllEntries(GetAllEntriesCallback callback) = 0;
+  using GetAllUuidsCallback =
+      base::OnceCallback<void(GetAllUuidsStatus status,
+                              const std::vector<std::string>&)>;
+  // Returns a vector of entry IDs in the model.
+  virtual void GetAllUuids(GetAllUuidsCallback callback) = 0;
 
-  using GetEntryByUuidCallback = base::OnceCallback<void(
-      const std::unique_ptr<GetEntryByUuidResult> result)>;
+  using GetEntryByUuidCallback =
+      base::OnceCallback<void(GetEntryByUuidStatus status,
+                              std::unique_ptr<ash::DeskTemplate>)>;
   // Get a specific desk template by |uuid|. Actual storage backend does not
   // need to keep desk templates in memory. The storage backend could load the
   // specified desk template into memory and then call the |callback| with a

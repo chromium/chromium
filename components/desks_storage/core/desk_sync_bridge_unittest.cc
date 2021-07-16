@@ -95,16 +95,18 @@ class DeskSyncBridgeTest : public testing::Test {
   DeskSyncBridgeTest& operator=(const DeskSyncBridgeTest&) = delete;
 
  protected:
-  static void VerifyAddOrUpdateEntrySuccess(AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, AddOrUpdateEntryStatus::kOk);
+  static void VerifyAddOrUpdateEntrySuccess(
+      DeskModel::AddOrUpdateEntryStatus status) {
+    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kOk);
   }
 
-  static void VerifyAddOrUpdateEntryFailure(AddOrUpdateEntryStatus status) {
-    EXPECT_EQ(status, AddOrUpdateEntryStatus::kFailure);
+  static void VerifyAddOrUpdateEntryFailure(
+      DeskModel::AddOrUpdateEntryStatus status) {
+    EXPECT_EQ(status, DeskSyncBridge::AddOrUpdateEntryStatus::kFailure);
   }
 
-  static void VerifyDeleteEntrySuccess(DeleteEntryStatus status) {
-    EXPECT_EQ(status, DeleteEntryStatus::kOk);
+  static void VerifyDeleteEntrySuccess(DeskModel::DeleteEntryStatus status) {
+    EXPECT_EQ(status, DeskSyncBridge::DeleteEntryStatus::kOk);
   }
 
   DeskSyncBridgeTest()

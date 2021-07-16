@@ -29,8 +29,7 @@ namespace {
 constexpr char kJunkFileName[] = "01.template";
 constexpr char kJunkData[] = "dsjadsueAUWLKD293958";
 
-// Search |entry_list| for |entry_query| as a uuid  returns true if
-// found false if not.
+// Search |uuid_list| for |uuid_query| returns true if found false if not.
 //
 // we don't know what order the dir_reader will read the files back to us so
 // instead of relying on the operation returning the uuids in order we can
@@ -39,10 +38,9 @@ constexpr char kJunkData[] = "dsjadsueAUWLKD293958";
 // we don't use std::find here because we want to run each member through
 // the string compare method.
 bool FindUuidInUuidList(const std::string& uuid_query,
-                        const std::vector<ash::DeskTemplate*>& entry_list) {
-  for (auto* entry : entry_list) {
-    if (entry->uuid() ==
-        base::GUID::ParseCaseInsensitive(std::string(uuid_query)))
+                        const std::vector<std::string>& uuid_list) {
+  for (const std::string& uuid : uuid_list) {
+    if (uuid.compare(uuid_query) == 0)
       return true;
   }
 
@@ -50,8 +48,8 @@ bool FindUuidInUuidList(const std::string& uuid_query,
 }
 
 // Verifies that the status passed into it is kOk
-void VerifyEntryAddedCorrectly(AddOrUpdateEntryStatus status) {
-  EXPECT_EQ(status, AddOrUpdateEntryStatus::kOk);
+void VerifyEntryAddedCorrectly(DeskModel::AddOrUpdateEntryStatus status) {
+  EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kOk);
 }
 
 void WriteJunkData(const base::FilePath& temp_dir) {
@@ -137,17 +135,18 @@ TEST_F(LocalDeskDataManagerTest, CanGetAllUuids) {
 
   // Because we're using a SequencedTaskRunner we can assume that all of the
   // previous tasks have been completed by the time we actually attempt to
-  // read the templates.
-  data_manager.GetAllEntries(base::BindLambdaForTesting(
-      [](std::unique_ptr<GetAllEntriesResult> result) {
-        EXPECT_EQ(result->status, GetAllEntriesStatus::kOk);
-        EXPECT_EQ(result->entries.size(), static_cast<unsigned long>(3));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("01"), result->entries));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("02"), result->entries));
-        EXPECT_TRUE(FindUuidInUuidList(std::string("03"), result->entries));
+  // read the UUIDs.
+  data_manager.GetAllUuids(
+      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
+                                    const std::vector<std::string>& uuids) {
+        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
+        EXPECT_EQ(uuids.size(), static_cast<unsigned long>(3));
+        EXPECT_TRUE(FindUuidInUuidList(std::string("01"), uuids));
+        EXPECT_TRUE(FindUuidInUuidList(std::string("02"), uuids));
+        EXPECT_TRUE(FindUuidInUuidList(std::string("03"), uuids));
 
         // Sanity check for the search function.
-        EXPECT_FALSE(FindUuidInUuidList(std::string("04"), result->entries));
+        EXPECT_FALSE(FindUuidInUuidList(std::string("04"), uuids));
       }));
 }
 
@@ -163,14 +162,15 @@ TEST_F(LocalDeskDataManagerTest, CanGetEntryByUuid) {
   data_manager.GetEntryByUUID(
       std::string("01"),
       base::BindLambdaForTesting(
-          [](std::unique_ptr<GetEntryByUuidResult> result) {
-            EXPECT_EQ(GetEntryByUuidStatus::kOk, result->status);
+          [](DeskModel::GetEntryByUuidStatus status,
+             std::unique_ptr<ash::DeskTemplate> result_template) {
+            EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-            EXPECT_EQ(result->entry->uuid(),
+            EXPECT_EQ(result_template->uuid(),
                       base::GUID::ParseCaseInsensitive(std::string("01")));
-            EXPECT_EQ(result->entry->template_name(),
+            EXPECT_EQ(result_template->template_name(),
                       base::UTF8ToUTF16(std::string("desk_01")));
-            EXPECT_EQ(result->entry->created_time(), base::Time());
+            EXPECT_EQ(result_template->created_time(), base::Time());
           }));
 }
 
@@ -181,11 +181,11 @@ TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryDoesntExist) {
   LocalDeskDataManager data_manager(temp_dir_.GetPath());
 
   data_manager.GetEntryByUUID(
-      std::string("01"), base::BindLambdaForTesting(
-                             [](std::unique_ptr<GetEntryByUuidResult> result) {
-                               EXPECT_EQ(GetEntryByUuidStatus::kNotFound,
-                                         result->status);
-                             }));
+      std::string("01"),
+      base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
+                                    std::unique_ptr<ash::DeskTemplate> _) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kNotFound, status);
+      }));
 }
 
 TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryHasBadData) {
@@ -199,11 +199,11 @@ TEST_F(LocalDeskDataManagerTest, GetEntryByUuidFailsIfEntryHasBadData) {
   LocalDeskDataManager data_manager(temp_dir_.GetPath());
 
   data_manager.GetEntryByUUID(
-      std::string("01"), base::BindLambdaForTesting(
-                             [](std::unique_ptr<GetEntryByUuidResult> result) {
-                               EXPECT_EQ(GetEntryByUuidStatus::kFailure,
-                                         result->status);
-                             }));
+      std::string("01"),
+      base::BindLambdaForTesting([](DeskModel::GetEntryByUuidStatus status,
+                                    std::unique_ptr<ash::DeskTemplate> _) {
+        EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kFailure, status);
+      }));
 }
 
 TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
@@ -221,14 +221,15 @@ TEST_F(LocalDeskDataManagerTest, CanUpdateEntry) {
   data_manager.GetEntryByUUID(
       std::string("01"),
       base::BindLambdaForTesting(
-          [](std::unique_ptr<GetEntryByUuidResult> result) {
-            EXPECT_EQ(GetEntryByUuidStatus::kOk, result->status);
+          [](DeskModel::GetEntryByUuidStatus status,
+             std::unique_ptr<ash::DeskTemplate> result_template) {
+            EXPECT_EQ(DeskModel::GetEntryByUuidStatus::kOk, status);
 
-            EXPECT_EQ(result->entry->uuid(),
+            EXPECT_EQ(result_template->uuid(),
                       base::GUID::ParseCaseInsensitive(std::string("01")));
-            EXPECT_EQ(result->entry->template_name(),
+            EXPECT_EQ(result_template->template_name(),
                       base::UTF8ToUTF16(std::string("desk_01_mod")));
-            EXPECT_EQ(result->entry->created_time(), base::Time());
+            EXPECT_EQ(result_template->created_time(), base::Time());
           }));
 }
 
@@ -243,14 +244,15 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteEntry) {
 
   data_manager.DeleteEntry(
       std::string("01"),
-      base::BindLambdaForTesting([](DeleteEntryStatus status) {
-        EXPECT_EQ(status, DeleteEntryStatus::kOk);
+      base::BindLambdaForTesting([](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager.GetAllEntries(base::BindLambdaForTesting(
-      [](std::unique_ptr<GetAllEntriesResult> result) {
-        EXPECT_EQ(result->status, GetAllEntriesStatus::kOk);
-        EXPECT_EQ(result->entries.size(), 0ul);
+  data_manager.GetAllUuids(
+      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
+                                    const std::vector<std::string>& uuids) {
+        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
+        EXPECT_EQ(uuids.size(), 0ul);
       }));
 }
 
@@ -270,14 +272,15 @@ TEST_F(LocalDeskDataManagerTest, CanDeleteAllEntries) {
                                 base::BindOnce(&VerifyEntryAddedCorrectly));
 
   data_manager.DeleteAllEntries(
-      base::BindLambdaForTesting([](DeleteEntryStatus status) {
-        EXPECT_EQ(status, DeleteEntryStatus::kOk);
+      base::BindLambdaForTesting([](DeskModel::DeleteEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::DeleteEntryStatus::kOk);
       }));
 
-  data_manager.GetAllEntries(base::BindLambdaForTesting(
-      [](std::unique_ptr<GetAllEntriesResult> result) {
-        EXPECT_EQ(result->status, GetAllEntriesStatus::kOk);
-        EXPECT_EQ(result->entries.size(), 0ul);
+  data_manager.GetAllUuids(
+      base::BindLambdaForTesting([](DeskModel::GetAllUuidsStatus status,
+                                    const std::vector<std::string>& uuids) {
+        EXPECT_EQ(status, DeskModel::GetAllUuidsStatus::kOk);
+        EXPECT_EQ(uuids.size(), 0ul);
       }));
 }
 

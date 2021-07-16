@@ -29,12 +29,6 @@ class ASH_PUBLIC_EXPORT DeskTemplate {
   DeskTemplate& operator=(const DeskTemplate&) = delete;
   ~DeskTemplate();
 
-  // Used in cases where copies of a DeskTemplate are needed to be made.
-  // This specifically used in the DeskSyncBridge which requires a map
-  // of DeskTemplate unique pointers to be valid and needs to pass
-  // that information in DeskModel callbacks.
-  std::unique_ptr<DeskTemplate> Clone();
-
   base::GUID uuid() const { return uuid_; }
   base::Time created_time() const { return created_time_; }
   const std::u16string& template_name() const { return template_name_; }

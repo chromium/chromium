@@ -34,7 +34,7 @@ class LocalDeskDataManager : public DeskModel {
   ~LocalDeskDataManager() override;
 
   // DeskModel:
-  void GetAllEntries(GetAllEntriesCallback callback) override;
+  void GetAllUuids(GetAllUuidsCallback callback) override;
   void DeleteAllEntries(DeleteEntryCallback callback) override;
   void GetEntryByUUID(const std::string& uuid,
                       GetEntryByUuidCallback callback) override;
@@ -48,12 +48,6 @@ class LocalDeskDataManager : public DeskModel {
   // This file path points to the user data directory's subdirectory:
   // "/path/to/user/data/dir/templates"
   const base::FilePath local_path_;
-  // This vector is used so that this class will own desk_templates
-  // retrieved via GetAllEntries.
-  //
-  // TODO implement full cache model instead of using this for just
-  // GetAllEntries.
-  std::vector<std::unique_ptr<ash::DeskTemplate>> desk_template_entries_;
 };
 
 }  // namespace desks_storage
