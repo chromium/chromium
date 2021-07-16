@@ -6,10 +6,12 @@
 #define COMPONENTS_PERFORMANCE_MANAGER_TEST_SUPPORT_PERFORMANCE_MANAGER_BROWSERTEST_HARNESS_H_
 
 #include "base/run_loop.h"
+#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "components/performance_manager/embedder/graph_features_helper.h"
 #include "components/performance_manager/public/performance_manager.h"
 #include "content/public/test/content_browser_test.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace performance_manager {
 
@@ -50,6 +52,18 @@ class PerformanceManagerBrowserTestHarness
 
   // Starts a navigation for the given |contents|.
   void StartNavigation(content::WebContents* contents, const GURL& url);
+
+  // Navigates the given |contents| to |url|, and waits for |console_pattern|
+  // to appear on the console. This can be used with test files like
+  // components/test/data/performance_manager/a_embeds_a.html, to wait for both
+  // the main frame and the embedded subframe to load. Returns
+  // ::testing::AssertionFailure if the navigation fails. If the navigation
+  // succeeds, will wait (potentially forever) for |console_pattern| to appear
+  // and then return ::testing::AssertionSuccess.
+  ::testing::AssertionResult NavigateAndWaitForConsoleMessage(
+      content::WebContents* contents,
+      const GURL& url,
+      base::StringPiece console_pattern);
 
   // Waits for an ongoing navigation to terminate on the given |contents|.
   void WaitForLoad(content::WebContents* contents);

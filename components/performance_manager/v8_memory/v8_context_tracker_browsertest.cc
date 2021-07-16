@@ -60,15 +60,16 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, AboutBlank) {
 
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), urla));
+  auto* contents = shell()->web_contents();
+  ASSERT_TRUE(
+      NavigateAndWaitForConsoleMessage(contents, urla, "a.html loaded"));
 
   // Get pointers to the RFHs for each frame.
-  auto* contents = shell()->web_contents();
   content::RenderFrameHost* main_rfh = contents->GetMainFrame();
   content::RenderFrameHost* child_rfh = nullptr;
   auto frames = contents->GetAllFrames();
   ASSERT_EQ(2u, frames.size());
-  for (auto* rfh : contents->GetAllFrames()) {
+  for (auto* rfh : frames) {
     if (rfh != main_rfh)
       child_rfh = rfh;
   }
@@ -88,15 +89,16 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameOriginIframeAttributionData) {
 
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), urla));
+  auto* contents = shell()->web_contents();
+  ASSERT_TRUE(
+      NavigateAndWaitForConsoleMessage(contents, urla, "b.html loaded"));
 
   // Get pointers to the RFHs for each frame.
-  auto* contents = shell()->web_contents();
   content::RenderFrameHost* main_rfh = contents->GetMainFrame();
   content::RenderFrameHost* child_rfh = nullptr;
   auto frames = contents->GetAllFrames();
   ASSERT_EQ(2u, frames.size());
-  for (auto* rfh : contents->GetAllFrames()) {
+  for (auto* rfh : frames) {
     if (rfh != main_rfh)
       child_rfh = rfh;
   }
@@ -119,17 +121,18 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, CrossOriginIframeAttributionData) {
 
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameDocNavigation) {
   ExpectCounts(0, 0, 0, 0);
+  auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_b.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), urla));
+  ASSERT_TRUE(
+      NavigateAndWaitForConsoleMessage(contents, urla, "b.html loaded"));
   ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
-  auto* contents = shell()->web_contents();
   content::RenderFrameHost* rfha = contents->GetMainFrame();
   content::RenderFrameHost* rfhb = nullptr;
   auto frames = contents->GetAllFrames();
   ASSERT_EQ(2u, frames.size());
-  for (auto* rfh : contents->GetAllFrames()) {
+  for (auto* rfh : frames) {
     if (rfh != rfha)
       rfhb = rfh;
   }
@@ -148,12 +151,13 @@ IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, SameDocNavigation) {
 
 IN_PROC_BROWSER_TEST_F(V8ContextTrackerTest, DetachedContext) {
   ExpectCounts(0, 0, 0, 0);
+  auto* contents = shell()->web_contents();
   GURL urla(embedded_test_server()->GetURL("a.com", "/a_embeds_a.html"));
-  ASSERT_TRUE(NavigateToURL(shell(), urla));
+  ASSERT_TRUE(
+      NavigateAndWaitForConsoleMessage(contents, urla, "a.html loaded"));
   ExpectCounts(2, 2, 0, 0);
 
   // Get pointers to the RFHs for each frame.
-  auto* contents = shell()->web_contents();
   content::RenderFrameHost* rfha = contents->GetMainFrame();
 
   // Keep a pointer to the window associated with the child iframe, but

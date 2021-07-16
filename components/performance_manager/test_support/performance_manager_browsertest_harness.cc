@@ -12,6 +12,7 @@
 #include "components/performance_manager/embedder/performance_manager_lifetime.h"
 #include "components/performance_manager/performance_manager_impl.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
@@ -89,6 +90,19 @@ void PerformanceManagerBrowserTestHarness::StartNavigation(
       ui::PAGE_TRANSITION_TYPED | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
   contents->GetController().LoadURLWithParams(params);
   contents->Focus();
+}
+
+::testing::AssertionResult
+PerformanceManagerBrowserTestHarness::NavigateAndWaitForConsoleMessage(
+    content::WebContents* contents,
+    const GURL& url,
+    base::StringPiece console_pattern) {
+  content::WebContentsConsoleObserver console_observer(contents);
+  console_observer.SetPattern(std::string(console_pattern));
+  if (!NavigateToURL(contents, url))
+    return ::testing::AssertionFailure();
+  console_observer.Wait();
+  return ::testing::AssertionSuccess();
 }
 
 namespace {
