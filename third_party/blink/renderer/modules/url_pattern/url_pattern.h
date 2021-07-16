@@ -7,6 +7,7 @@
 
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/liburlpattern/parse.h"
 
@@ -21,7 +22,7 @@ namespace url_pattern {
 class Component;
 }  // namespace url_pattern
 
-class URLPattern : public ScriptWrappable {
+class MODULES_EXPORT URLPattern : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   using Component = url_pattern::Component;
 
