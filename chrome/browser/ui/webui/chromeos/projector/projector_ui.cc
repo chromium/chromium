@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/chromeos/projector/projector_ui.h"
 
 #include "ash/public/cpp/projector/projector_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
@@ -38,7 +39,7 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
   // content::WebUIMessageHandler:
   void RegisterMessages() override {
     web_ui()->RegisterMessageCallback(
-        "launchScreenCapture",
+        "launchProjectorRecording",
         base::BindRepeating(
             &ProjectorMessageHandler::HandleShowHideProjectorToolbar,
             base::Unretained(this)));
@@ -50,15 +51,25 @@ class ProjectorMessageHandler : public content::WebUIMessageHandler {
 
     CHECK_EQ(1u, args->GetSize());
 
-    bool is_visible = true;
     // This code only shows and hides the Projector toolbar.
     // TODO(crbug/1206720): Integrate with screen capture.
     auto* projector_controller = ash::ProjectorController::Get();
-    if (projector_controller && projector_controller->IsEligible()) {
-      is_visible = projector_controller->AreProjectorToolsVisible();
-      projector_controller->SetProjectorToolsVisible(!is_visible);
+    if (!projector_controller || !projector_controller->IsEligible()) {
+      ResolveJavascriptCallback(args->GetList()[0],
+                                /*is_visible=*/base::Value(false));
+      return;
     }
-    ResolveJavascriptCallback(args->GetList()[0], base::Value(!is_visible));
+    auto* projector_session = ash::ProjectorSession::Get();
+    DCHECK(projector_session);
+    bool should_show = false;
+    if (projector_session->is_active()) {
+      projector_session->Stop();
+    } else {
+      projector_session->Start(ash::SourceType::kUnset);
+      should_show = true;
+    }
+    projector_controller->SetProjectorToolsVisible(should_show);
+    ResolveJavascriptCallback(args->GetList()[0], base::Value(should_show));
   }
 };
 

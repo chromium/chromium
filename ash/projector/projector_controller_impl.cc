@@ -57,18 +57,18 @@ void ProjectorControllerImpl::SetProjectorToolsVisible(bool is_visible) {
   // available.
   if (is_visible) {
     ui_controller_->ShowToolbar();
+    // TODO(crbug/1206720): Move elsewhere once screen capture integration
+    // finalized.
     OnRecordingStarted();
     return;
   }
 
+  // TODO(crbug/1206720): Move elsewhere once screen capture integration
+  // finalized.
   OnRecordingEnded();
   if (client_->IsSelfieCamVisible())
     client_->CloseSelfieCam();
   ui_controller_->CloseToolbar();
-}
-
-bool ProjectorControllerImpl::AreProjectorToolsVisible() const {
-  return ui_controller_->IsToolbarVisible();
 }
 
 bool ProjectorControllerImpl::IsEligible() const {
@@ -89,7 +89,6 @@ void ProjectorControllerImpl::MarkKeyIdea() {
 }
 
 void ProjectorControllerImpl::OnRecordingStarted() {
-  projector_session_->Start();
   StartSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(true /* started */);
   metadata_controller_->OnRecordingStarted();
@@ -98,7 +97,6 @@ void ProjectorControllerImpl::OnRecordingStarted() {
 void ProjectorControllerImpl::OnRecordingEnded() {
   if (!projector_session_->is_active())
     return;
-  projector_session_->Stop();
   StopSpeechRecognition();
   ui_controller_->OnRecordingStateChanged(false /* started */);
 

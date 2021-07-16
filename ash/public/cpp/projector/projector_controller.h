@@ -53,7 +53,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
 
   // Sets Projector toolbar visibility.
   virtual void SetProjectorToolsVisible(bool is_visible) = 0;
-  virtual bool AreProjectorToolsVisible() const = 0;
 
   // Returns true if Projector is eligible to start a new session.
   // TODO(yilkal): Rename to something more descriptive, like CanStart().

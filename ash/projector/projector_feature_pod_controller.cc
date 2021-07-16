@@ -4,8 +4,10 @@
 
 #include "ash/projector/projector_feature_pod_controller.h"
 
+#include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/projector_controller_impl.h"
 #include "ash/projector/projector_ui_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -56,10 +58,17 @@ void ProjectorFeaturePodController::OnIconPressed() {
   tray_controller_->CloseBubble();
 
   auto* projector_controller = Shell::Get()->projector_controller();
+  auto* projector_session = projector_controller->projector_session();
   DCHECK(projector_controller);
+  DCHECK(projector_session);
 
-  bool is_visible = projector_controller->AreProjectorToolsVisible();
-  projector_controller->SetProjectorToolsVisible(!is_visible);
+  if (projector_session->is_active()) {
+    projector_session->Stop();
+    projector_controller->SetProjectorToolsVisible(false);
+  } else {
+    projector_session->Start(SourceType::kUnset);
+    projector_controller->SetProjectorToolsVisible(true);
+  }
 }
 
 SystemTrayItemUmaType ProjectorFeaturePodController::GetUmaType() const {

@@ -37,7 +37,6 @@ class ASH_EXPORT ProjectorControllerImpl : public ProjectorController {
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
   void SetProjectorToolsVisible(bool is_visible) override;
-  bool AreProjectorToolsVisible() const override;
   bool IsEligible() const override;
 
   // Sets Caption bubble state to become opened/closed.

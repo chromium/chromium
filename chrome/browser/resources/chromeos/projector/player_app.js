@@ -4,10 +4,10 @@
 
 import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
-// TODO(crbug/1213937): Launch Projector toolbar and integrate with screen
+// TODO(crbug/1206720): Launch Projector toolbar and integrate with screen
 // capture.
 function onLaunchClick() {
-  sendWithPromise('launchScreenCapture').then(function(isVisible) {
+  sendWithPromise('launchProjectorRecording').then(function(isVisible) {
     var button = document.body.querySelector('button');
     // TODO(crbug/1213937): Use $i18n{}.
     if (isVisible) {
@@ -19,6 +19,8 @@ function onLaunchClick() {
 }
 
 function initialize() {
+  // TODO(crbug/1213937): Migrate to Google3 and conditionally set button
+  // visibility.
   document.body.querySelector('button').onclick = onLaunchClick;
 }
 

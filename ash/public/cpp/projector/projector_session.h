@@ -11,6 +11,7 @@
 namespace ash {
 
 // The recording source type.
+// TODO(crbug/1199163): Record metrics for most common source type.
 enum class SourceType { kUnset = 0, kFullscreen = 1, kTab = 2, kWindow = 3 };
 
 // A checked observer which receives notification of changes to the
@@ -31,6 +32,10 @@ class ASH_PUBLIC_EXPORT ProjectorSession {
   virtual ~ProjectorSession();
 
   static ProjectorSession* Get();
+
+  // Starts or stops the projector session active state.
+  virtual void Start(SourceType preset_source_type) = 0;
+  virtual void Stop() = 0;
 
   // Adds/removes the specified |observer|.
   virtual void AddObserver(ProjectorSessionObserver* observer) = 0;

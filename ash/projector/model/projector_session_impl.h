@@ -19,11 +19,10 @@ class ASH_EXPORT ProjectorSessionImpl : public ProjectorSession {
   ProjectorSessionImpl& operator=(const ProjectorSessionImpl&) = delete;
   ~ProjectorSessionImpl() override;
 
-  // Starts or stops the projector session.
-  void Start(SourceType preset_source_type = SourceType::kUnset);
-  void Stop();
-
   // ProjectorSession:
+  void Start(SourceType preset_source_type) override;
+  void Stop() override;
+
   void AddObserver(ProjectorSessionObserver* observer) override;
   void RemoveObserver(ProjectorSessionObserver* observer) override;
 

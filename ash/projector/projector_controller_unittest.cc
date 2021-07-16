@@ -10,9 +10,11 @@
 #include <vector>
 
 #include "ash/constants/ash_features.h"
+#include "ash/projector/model/projector_session_impl.h"
 #include "ash/projector/test/mock_projector_client.h"
 #include "ash/projector/test/mock_projector_metadata_controller.h"
 #include "ash/projector/test/mock_projector_ui_controller.h"
+#include "ash/public/cpp/projector/projector_session.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
@@ -234,12 +236,11 @@ TEST_F(ProjectorControllerTest, RecordingStarted) {
 }
 
 TEST_F(ProjectorControllerTest, RecordingEnded) {
+  controller_->projector_session()->Start(SourceType::kUnset);
   controller_->OnRecordingStarted();
-  mock_client_.SetSelfieCamVisible(/*visible=*/true);
   EXPECT_CALL(mock_client_, StopSpeechRecognition());
   EXPECT_CALL(*mock_ui_controller_, OnRecordingStateChanged(/*started=*/false));
-  EXPECT_CALL(mock_client_, CloseSelfieCam());
-  controller_->SetProjectorToolsVisible(/*is_visible=*/false);
+  controller_->OnRecordingEnded();
 }
 
 }  // namespace ash

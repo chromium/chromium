@@ -4,6 +4,7 @@
 
 #include "ash/projector/model/projector_session_impl.h"
 
+#include "ash/public/cpp/projector/projector_session.h"
 #include "base/dcheck_is_on.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -24,7 +25,7 @@ class ProjectorSessionImplTest : public testing::Test {
 };
 
 TEST_F(ProjectorSessionImplTest, Start) {
-  session_->Start();
+  session_->Start(SourceType::kUnset);
   EXPECT_TRUE(session_->is_active());
   ASSERT_EQ(SourceType::kUnset, session_->preset_source_type());
 
@@ -45,8 +46,8 @@ TEST_F(ProjectorSessionImplTest, StartWithPresetSourceType) {
 
 #if DCHECK_IS_ON()
 TEST_F(ProjectorSessionImplTest, OnlyOneProjectorSessionAllowed) {
-  session_->Start();
-  EXPECT_DEATH_IF_SUPPORTED(session_->Start(), "");
+  session_->Start(SourceType::kUnset);
+  EXPECT_DEATH_IF_SUPPORTED(session_->Start(SourceType::kUnset), "");
 }
 #endif
 
