@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/macros.h"
-#include "base/notreached.h"
+#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
 #include "chromeos/dbus/chromebox_for_meetings/cfm_hotline_client.h"
 
 namespace chromeos {
@@ -46,8 +46,9 @@ bool NetworkSettingsService::IsInitialized() {
 }
 
 void NetworkSettingsService::ShowDialog() {
-  // TODO(b/35772861): Displays the dialog if not already open.
-  NOTIMPLEMENTED();
+  if (!NetworkSettingsDialog::IsShown()) {
+    NetworkSettingsDialog::ShowDialog();
+  }
 }
 
 bool NetworkSettingsService::ServiceRequestReceived(

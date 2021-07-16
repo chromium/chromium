@@ -14,6 +14,7 @@ import("//build/config/ui.gni")
 import("//chrome/browser/buildflags.gni")
 import("//chrome/common/features.gni")
 import("//chromeos/assistant/assistant.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//chromeos/dbus/use_real_dbus_clients.gni")
 import("//components/feed/features.gni")
 import("//components/nacl/features.gni")
@@ -2899,6 +2900,13 @@ static_library("ui") {
     if (use_cras) {
       defines += [ "USE_CRAS" ]
     }
+  }
+
+  if (is_cfm) {
+    sources += [
+      "webui/chromeos/chromebox_for_meetings/network_settings_dialog.cc",
+      "webui/chromeos/chromebox_for_meetings/network_settings_dialog.h",
+    ]
   }
 
   if (is_chromeos_ash || is_chromeos_lacros) {

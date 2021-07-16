@@ -329,6 +329,10 @@
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 
+#if BUILDFLAG(PLATFORM_CFM)
+#include "chrome/browser/ui/webui/chromeos/chromebox_for_meetings/network_settings_dialog.h"
+#endif  // BUILDFLAG(PLATFORM_CFM)
+
 using content::WebUI;
 using content::WebUIController;
 using ui::WebDialogUI;
@@ -1092,6 +1096,11 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == chrome::kChromeUIDiceWebSigninInterceptHost)
     return &NewWebUI<DiceWebSigninInterceptUI>;
 #endif
+
+#if BUILDFLAG(PLATFORM_CFM)
+  if (url.host_piece() == chrome::kCfmNetworkSettingsHost)
+    return &NewWebUI<chromeos::cfm::NetworkSettingsDialogUi>;
+#endif  // BUILDFLAG(PLATFORM_CFM)
 
   return nullptr;
 }
