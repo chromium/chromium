@@ -198,6 +198,10 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
             map.set(routes.SITE_SETTINGS.path, '#permissionsLinkRow');
           }
 
+          if (routes.PRIVACY_REVIEW) {
+            map.set(routes.PRIVACY_REVIEW.path, '#privacyReviewLinkRow');
+          }
+
           return map;
         },
       },
@@ -357,7 +361,8 @@ export class SettingsPrivacyPageElement extends SettingsPrivacyPageElementBase {
 
   /** @private */
   onPrivacyReviewClick_() {
-    // TODO(crbug/1215630): Implement navigation and metrics.
+    // TODO(crbug/1215630): Implement metrics.
+    Router.getInstance().navigateTo(routes.PRIVACY_REVIEW);
   }
 
   /** @private */

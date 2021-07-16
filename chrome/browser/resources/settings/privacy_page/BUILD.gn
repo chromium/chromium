@@ -114,6 +114,7 @@ js_library("privacy_page") {
     "..:router",
     "../controls:settings_toggle_button",
     "../prefs:prefs_behavior",
+    "../privacy_page/privacy_review:privacy_review_page",
     "../site_settings:constants",
     "../site_settings:site_data_details_subpage",
     "../site_settings:site_settings_prefs_browser_proxy",

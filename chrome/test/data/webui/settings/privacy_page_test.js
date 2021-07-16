@@ -246,12 +246,6 @@ suite('PrivacyReviewEnabled', function() {
   /** @type {!SettingsPrivacyPageElement} */
   let page;
 
-  suiteSetup(function() {
-    loadTimeData.overrideValues({
-      privacyReviewEnabled: true,
-    });
-  });
-
   setup(function() {
     document.body.innerHTML = '';
     page = /** @type {!SettingsPrivacyPageElement} */
@@ -262,6 +256,12 @@ suite('PrivacyReviewEnabled', function() {
 
   test('privacyReviewRowVisible', function() {
     assertTrue(isChildVisible(page, '#privacyReviewLinkRow'));
+  });
+
+  test('privacyReviewRowClick', function() {
+    page.shadowRoot.querySelector('#privacyReviewLinkRow').click();
+    // Ensure the correct Settings page is shown.
+    assertEquals(routes.PRIVACY_REVIEW, Router.getInstance().getCurrentRoute());
   });
 
   test('clearBrowsingDataClass', function() {

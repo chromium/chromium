@@ -10,6 +10,7 @@ import './autofill_page/passwords_device_section.js';
 import './autofill_page/payments_section.js';
 import './clear_browsing_data_dialog/clear_browsing_data_dialog.js';
 import './search_engines_page/search_engines_page.js';
+import './privacy_page/privacy_review/privacy_review_page.js';
 import './privacy_page/security_keys_subpage.js';
 import './privacy_page/security_page.js';
 import './site_settings/all_sites.js';
@@ -80,6 +81,7 @@ export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_pag
 export {SettingsCollapseRadioButtonElement} from './privacy_page/collapse_radio_button.js';
 export {SettingsCookiesPageElement} from './privacy_page/cookies_page.js';
 export {SettingsDoNotTrackToggleElement} from './privacy_page/do_not_track_toggle.js';
+export {SettingsPrivacyReviewPageElement} from './privacy_page/privacy_review/privacy_review_page.js';
 export {BioEnrollDialogPage} from './privacy_page/security_keys_bio_enroll_dialog.js';
 export {Ctap2Status, SampleStatus, SecurityKeysBioEnrollProxyImpl, SecurityKeysCredentialBrowserProxyImpl, SecurityKeysPINBrowserProxyImpl, SecurityKeysResetBrowserProxyImpl} from './privacy_page/security_keys_browser_proxy.js';
 export {CredentialManagementDialogPage} from './privacy_page/security_keys_credential_management_dialog.js';

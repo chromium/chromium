@@ -36,6 +36,7 @@ import {Route} from './router.js';
  *   PAYMENTS: !Route,
  *   PEOPLE: !Route,
  *   PRIVACY: !Route,
+ *   PRIVACY_REVIEW: !Route,
  *   RESET: !Route,
  *   RESET_DIALOG: !Route,
  *   SAFETY_CHECK: !Route,

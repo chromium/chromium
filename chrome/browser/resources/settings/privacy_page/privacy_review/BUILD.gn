@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+import("../../settings.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = settings_closure_flags
+  deps = [ ":privacy_review_page" ]
+}
+
+js_library("privacy_review_page") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [ "privacy_review_page.js" ]
+}

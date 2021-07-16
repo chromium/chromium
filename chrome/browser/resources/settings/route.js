@@ -17,6 +17,9 @@ function addPrivacyChildRoutes(r) {
   r.CLEAR_BROWSER_DATA = r.PRIVACY.createChild('/clearBrowserData');
   r.CLEAR_BROWSER_DATA.isNavigableDialog = true;
 
+  if (loadTimeData.getBoolean('privacyReviewEnabled')) {
+    r.PRIVACY_REVIEW = r.PRIVACY.createChild('review');
+  }
   r.SITE_SETTINGS = r.PRIVACY.createChild('/content');
   r.COOKIES = r.PRIVACY.createChild('/cookies');
   r.SECURITY = r.PRIVACY.createChild('/security');
