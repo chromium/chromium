@@ -191,25 +191,23 @@ bool OmniboxPedal::SynonymGroup::EraseMatchesIn(
 
 void OmniboxPedal::SynonymGroup::AddSynonym(
     OmniboxPedal::TokenSequence synonym) {
-  // TODO(orinj): Only sort once after all synonyms are loaded.
-  //  When runtime data was preprocessed by pedal_processor,
-  //  it avoided the need to sort at runtime in Chromium, but with
-  //  the TC-based l10n technique, data loading needs to be robust
-  //  enough to handle various forms and orders in translation data.
-  if (OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
-    synonyms_.push_back(std::move(synonym));
-    std::sort(synonyms_.begin(), synonyms_.end(),
-              [](const TokenSequence& a, const TokenSequence& b) {
-                return a.Size() > b.Size();
-              });
-  } else {
 #if DCHECK_IS_ON()
-    if (synonyms_.size() > size_t{0}) {
-      DCHECK_GE(synonyms_.back().Size(), synonym.Size());
-    }
-#endif
-    synonyms_.push_back(std::move(synonym));
+  // Note, this check is only relevant when loading data known
+  // to have been preprocessed/pre-sorted. For the translation
+  // console data flow, we sort once after all synonyms are loaded.
+  if (!OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled() &&
+      synonyms_.size() > size_t{0}) {
+    DCHECK_GE(synonyms_.back().Size(), synonym.Size());
   }
+#endif
+  synonyms_.push_back(std::move(synonym));
+}
+
+void OmniboxPedal::SynonymGroup::SortSynonyms() {
+  std::sort(synonyms_.begin(), synonyms_.end(),
+            [](const TokenSequence& a, const TokenSequence& b) {
+              return a.Size() > b.Size();
+            });
 }
 
 size_t OmniboxPedal::SynonymGroup::EstimateMemoryUsage() const {

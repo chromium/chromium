@@ -135,6 +135,15 @@ class OmniboxPedal : public OmniboxAction {
     // Add a synonym token sequence to this group.
     void AddSynonym(TokenSequence synonym);
 
+    // When runtime data was preprocessed by pedal_processor,
+    // it avoided the need to sort at runtime in Chromium, but with
+    // the TC-based l10n technique, data loading needs to be robust
+    // enough to handle various forms and orders in translation data.
+    // Hence, a call to `SortSynonyms` is required after all calls
+    // to `AddSynonym` are complete. We may eliminate this step
+    // if we implement post-processing of the .xtb translation files.
+    void SortSynonyms();
+
     // Estimates RAM usage in bytes for this synonym group.
     size_t EstimateMemoryUsage() const;
 

@@ -376,6 +376,8 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
     }
     synonym_group.AddSynonym(std::move(synonym_all_tokens));
   }
+  // Note: Here would be the place to call `SortSynonyms`, but it isn't
+  // needed when loading from a Value because such values are preprocessed.
   return synonym_group;
 }
 
@@ -390,5 +392,6 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
     TokenizeAndExpandDictionary(sequence, tokenizer.token());
     group.AddSynonym(std::move(sequence));
   }
+  group.SortSynonyms();
   return group;
 }
