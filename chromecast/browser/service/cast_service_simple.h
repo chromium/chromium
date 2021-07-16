@@ -45,7 +45,6 @@ class CastServiceSimple : public CastService, public CastWebView::Delegate {
   void ConsumeGesture(GestureType gesture_type,
                       GestureHandledCallback handled_callback) override;
   void OnVisibilityChange(VisibilityType visibility_type) override;
-  std::string GetId() override;
 
  private:
   const std::unique_ptr<CastWebViewFactory> web_view_factory_;

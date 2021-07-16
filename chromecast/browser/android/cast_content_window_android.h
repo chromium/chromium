@@ -21,8 +21,8 @@ namespace chromecast {
 // CastWebContentsActivity.
 class CastContentWindowAndroid : public CastContentWindow {
  public:
-  explicit CastContentWindowAndroid(
-      const CastContentWindow::CreateParams& params);
+  CastContentWindowAndroid(base::WeakPtr<Delegate> delegate,
+                           mojom::CastWebViewParamsPtr params);
   ~CastContentWindowAndroid() override;
 
   // CastContentWindow implementation:

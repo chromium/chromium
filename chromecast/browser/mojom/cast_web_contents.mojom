@@ -1,0 +1,112 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chromecast.mojom;
+
+import "url/mojom/url.mojom";
+
+// Page state for the main frame.
+enum PageState {
+  IDLE,       // Main frame has not started yet.
+  LOADING,    // Main frame is loading resources.
+  LOADED,     // Main frame is loaded, but sub-frames may still be loading.
+  CLOSED,     // Page is closed and should be cleaned up.
+  DESTROYED,  // The WebContents is destroyed and can no longer be used.
+  ERROR,      // Main frame is in an error state.
+};
+
+// Observer interface for CastWebContents.
+interface CastWebContentsObserver {
+  // Advertises page state for the CastWebContents.
+  PageStateChanged(PageState state);
+
+  // Called when the page has stopped. e.g.: A 404 occurred when loading the
+  // page or if the render process for the main frame crashes. |error_code|
+  // will return a net::Error describing the failure, or net::OK if the page
+  // closed intentionally.
+  //
+  // After this method, the page state will be one of the following:
+  // CLOSED: Page was closed as expected and the WebContents exists. The page
+  //     should generally not be reloaded, since the page closure was
+  //     triggered intentionally.
+  // ERROR: Page is in an error state. It should be reloaded or deleted.
+  // DESTROYED: Page was closed due to deletion of WebContents. The
+  //     CastWebContents instance is no longer usable and should be deleted.
+  PageStopped(PageState state, int32 error_code);
+
+  // A navigation has finished in the WebContents' main frame.
+  MainFrameFinishedNavigation();
+
+  // Forwarded from WebContentsObserver.
+  UpdateTitle(string title);
+
+  // Forwarded from WebContentsObserver.
+  UpdateFaviconURL(url.mojom.Url url);
+
+  // Forwarded from WebContentsObserver.
+  DidFirstVisuallyNonEmptyPaint();
+
+  // Propagates the process information via observer, in particular to
+  // the underlying OnRendererProcessStarted() method.
+  OnRenderProcessReady(int32 pid);
+
+  // Notify media playback state changes for the underlying WebContents. Media
+  // events in sub-frames will also generate this notification event.
+  MediaPlaybackChanged(bool media_playing);
+};
+
+// Wraps a content::WebContents hosted in the Cast Web Service. The lifetime
+// of the WebContents is constrained by the lifetime of the mojo::Remote on the
+// client side.
+interface CastWebContents {
+  // ===========================================================================
+  // Page Lifetime
+  // ===========================================================================
+
+  // Navigates the underlying WebContents to |url|. Delegate will be notified of
+  // page progression events via OnPageStateChanged().
+  LoadUrl(url.mojom.Url url);
+
+  // Initiate closure of the page. This invokes the appropriate unload handlers.
+  // Eventually the delegate will be notified with OnPageStopped().
+  ClosePage();
+
+  // ===========================================================================
+  // Visibility
+  // ===========================================================================
+
+  // Specify if the WebContents should be treated as visible. This triggers a
+  // document "visibilitychange" change event, and will paint the WebContents
+  // quad if |visible| is true (otherwise it will be blank). Note that this does
+  // *not* guarantee the page is visible on the screen, as that depends on if
+  // the WebContents quad is present in the screen layout and isn't obscured by
+  // another window.
+  SetWebVisibilityAndPaint(bool visible);
+
+  // ===========================================================================
+  // Media Management
+  // ===========================================================================
+
+  // Block/unblock media from loading in all RenderFrames for the WebContents.
+  BlockMediaLoading(bool blocked);
+
+  // Block/unblock media from starting in all RenderFrames for the WebContents.
+  // As opposed to |BlockMediaLoading|,  |BlockMediaStarting| allows media to
+  // load while in blocking state.
+  BlockMediaStarting(bool blocked);
+
+  // Allow the page to play media while in a hidden background state.
+  EnableBackgroundVideoPlayback(bool enabled);
+
+  // ===========================================================================
+  // Utility Methods
+  // ===========================================================================
+
+  // Add an observer. The observer can remove itself by unbinding the receiver.
+  AddObserver(pending_remote<CastWebContentsObserver> observer);
+
+  // Enable or disable devtools remote debugging for this WebContents and any
+  // inner WebContents that are spawned from it.
+  SetEnabledForRemoteDebugging(bool enabled);
+};

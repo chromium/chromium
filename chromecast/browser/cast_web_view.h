@@ -36,62 +36,18 @@ class CastWebView {
   using Scoped =
       std::unique_ptr<CastWebView, std::function<void(CastWebView*)>>;
 
-  enum class RendererPool {
-    // Don't use a renderer pool for prelaunching. This means launching the
-    // render process eagerly is un-restricted and will always succeed.
-    NONE,
-    // Pool for overlay apps, which allows up to one pre-cached site.
-    OVERLAY,
-  };
-
   // The parameters used to create a CastWebView instance. Passed to
-  // CastWebService::CreateWebView().
+  // CastWebService::CreateWebView(). All delegate WeakPtrs will be invalidated
+  // on the main UI thread if they are destroyed before CastWebView.
   struct CreateParams {
-    // The delegate for the CastWebView. Must be non-null. If the delegate is
-    // destroyed before CastWebView, the WeakPtr will be invalidated on the main
-    // UI thread.
+    // CastWebView delegate. Must be non-null.
     base::WeakPtr<Delegate> delegate = nullptr;
 
-    // Parameters for initializing CastWebContents. These will be passed as-is
-    // to a CastWebContents instance, which should be used by all CastWebView
-    // implementations.
-    CastWebContents::InitParams web_contents_params;
+    // CastWebContents delegate. This may be null.
+    base::WeakPtr<CastWebContents::Delegate> web_contents_delegate = nullptr;
 
-    // Parameters for creating the content window for this CastWebView.
-    CastContentWindow::CreateParams window_params;
-
-    // Identifies the activity that is hosted by this CastWebView.
-    std::string activity_id = "";
-
-    // Sdk version of the application (if available) hosted by this CastWebView.
-    std::string sdk_version = "";
-
-    // Whether this CastWebView is granted media access.
-    bool allow_media_access = false;
-
-    // Enable/Force 720p resolution for this CastWebView instance.
-    bool force_720p_resolution = false;
-
-    // Whether this CastWebView should be managed by web ui window manager.
-    bool managed = true;
-
-    // Whether JS console logs should be appended to the device logs.
-    bool log_js_console_messages = false;
-
-    // Prefix for JS console logs. This can be used to help identify the source
-    // of console log messages.
-    std::string log_prefix = "";
-
-    // Delays CastWebView deletion after CastWebView::Scoped is reset. The
-    // default value is zero, which means the CastWebView will be deleted
-    // immediately and synchronously.
-    base::TimeDelta shutdown_delay = base::TimeDelta();
-
-    // Pool for pre-launched renderers.
-    RendererPool renderer_pool = RendererPool::NONE;
-
-    // Eagerly pre-launches a render process for |prelaunch_url| if it is valid.
-    GURL prelaunch_url;
+    // CastContentWindow delegate. This may be null.
+    base::WeakPtr<CastContentWindow::Delegate> window_delegate = nullptr;
 
     CreateParams();
     CreateParams(const CreateParams& other);
@@ -108,6 +64,10 @@ class CastWebView {
   virtual CastWebContents* cast_web_contents() = 0;
 
   virtual base::TimeDelta shutdown_delay() const = 0;
+
+  void BindReceivers(
+      mojo::PendingReceiver<mojom::CastWebContents> web_contents_receiver,
+      mojo::PendingReceiver<mojom::CastContentWindow> window_receiver);
 
  private:
   DISALLOW_COPY_AND_ASSIGN(CastWebView);

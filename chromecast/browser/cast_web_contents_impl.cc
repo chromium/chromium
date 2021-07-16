@@ -69,6 +69,17 @@ void RemoveCastWebContents(CastWebContents* instance) {
   }
 }
 
+content::mojom::RendererType ToContentRendererType(mojom::RendererType type) {
+  switch (type) {
+    case mojom::RendererType::DEFAULT_RENDERER:
+      return content::mojom::RendererType::DEFAULT_RENDERER;
+    case mojom::RendererType::MOJO_RENDERER:
+      return content::mojom::RendererType::MOJO_RENDERER;
+    case mojom::RendererType::REMOTING_RENDERER:
+      return content::mojom::RendererType::REMOTING_RENDERER;
+  }
+}
+
 }  // namespace
 
 // static
@@ -95,8 +106,8 @@ CastWebContents* CastWebContents::FromWebContents(
 void CastWebContentsImpl::RenderProcessReady(content::RenderProcessHost* host) {
   DCHECK(host->IsReady());
   const base::Process& process = host->GetProcess();
-  for (auto& observer : observer_list_) {
-    observer.OnRenderProcessReady(process);
+  for (auto& observer : observers_) {
+    observer->OnRenderProcessReady(process.Pid());
   }
 }
 
@@ -118,26 +129,21 @@ void CastWebContentsImpl::RemoveRenderProcessHostObserver() {
 }
 
 CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
-                                         const InitParams& init_params)
+                                         base::WeakPtr<Delegate> delegate,
+                                         mojom::CastWebViewParamsPtr params)
     : web_contents_(web_contents),
-      delegate_(init_params.delegate),
+      delegate_(delegate),
+      params_(std::move(params)),
       page_state_(PageState::IDLE),
       last_state_(PageState::IDLE),
-      enabled_for_dev_(init_params.enabled_for_dev),
-      renderer_type_(init_params.renderer_type),
-      handle_inner_contents_(init_params.handle_inner_contents),
-      view_background_color_(init_params.background_color),
       remote_debugging_server_(
           shell::CastBrowserProcess::GetInstance()->remote_debugging_server()),
-      media_blocker_(init_params.use_media_blocker
+      media_blocker_(params_->use_media_blocker
                          ? std::make_unique<CastMediaBlocker>(web_contents_)
                          : nullptr),
-      activity_url_filter_(std::move(init_params.url_filters)),
       main_process_host_(nullptr),
-      tab_id_(init_params.is_root_window ? 0 : next_tab_id++),
+      tab_id_(params_->is_root_window ? 0 : next_tab_id++),
       id_(next_id++),
-      is_websql_enabled_(init_params.enable_websql),
-      is_mixer_audio_enabled_(init_params.enable_mixer_audio),
       main_frame_loaded_(false),
       closing_(false),
       stopped_(false),
@@ -157,18 +163,18 @@ CastWebContentsImpl::CastWebContentsImpl(content::WebContents* web_contents,
 
   CastWebContents::GetAll().push_back(this);
   content::WebContentsObserver::Observe(web_contents_);
-  if (enabled_for_dev_) {
+  if (params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
   }
 
   // TODO(yucliu): Change the flag name to kDisableCmaRenderer in a latter diff.
   if (GetSwitchValueBoolean(switches::kDisableMojoRenderer, false) &&
-      renderer_type_ == content::mojom::RendererType::MOJO_RENDERER) {
-    renderer_type_ = content::mojom::RendererType::DEFAULT_RENDERER;
+      params_->renderer_type == mojom::RendererType::MOJO_RENDERER) {
+    params_->renderer_type = mojom::RendererType::DEFAULT_RENDERER;
   }
 
-  if (init_params.webrtc_allow_legacy_tls_protocols) {
+  if (params_->webrtc_allow_legacy_tls_protocols) {
     web_contents_->GetMutableRendererPrefs()
         ->webrtc_allow_legacy_tls_protocols = true;
   }
@@ -202,7 +208,7 @@ content::WebContents* CastWebContentsImpl::web_contents() const {
   return web_contents_;
 }
 
-CastWebContents::PageState CastWebContentsImpl::page_state() const {
+PageState CastWebContentsImpl::page_state() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return page_state_;
 }
@@ -425,14 +431,14 @@ void CastWebContentsImpl::RemoveObserver(CastWebContents::Observer* observer) {
 void CastWebContentsImpl::SetEnabledForRemoteDebugging(bool enabled) {
   DCHECK(remote_debugging_server_);
 
-  if (enabled && !enabled_for_dev_) {
+  if (enabled && !params_->enabled_for_dev) {
     LOG(INFO) << "Enabling dev console for CastWebContentsImpl";
     remote_debugging_server_->EnableWebContentsForDebugging(web_contents_);
-  } else if (!enabled && enabled_for_dev_) {
+  } else if (!enabled && params_->enabled_for_dev) {
     LOG(INFO) << "Disabling dev console for CastWebContentsImpl";
     remote_debugging_server_->DisableWebContentsForDebugging(web_contents_);
   }
-  enabled_for_dev_ = enabled;
+  params_->enabled_for_dev = enabled;
 
   // Propagate setting change to inner contents.
   for (auto& inner : inner_contents_) {
@@ -477,11 +483,11 @@ void CastWebContentsImpl::RegisterInterfaceProvider(
 }
 
 bool CastWebContentsImpl::is_websql_enabled() {
-  return is_websql_enabled_;
+  return params_->enable_websql;
 }
 
 bool CastWebContentsImpl::is_mixer_audio_enabled() {
-  return is_mixer_audio_enabled_;
+  return params_->enable_mixer_audio;
 }
 
 bool CastWebContentsImpl::can_bind_interfaces() {
@@ -532,7 +538,8 @@ void CastWebContentsImpl::RenderFrameCreated(
       media_playback_options;
   frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
       &media_playback_options);
-  media_playback_options->SetRendererType(renderer_type_);
+  media_playback_options->SetRendererType(
+      ToContentRendererType(params_->renderer_type));
 
   // Send queryable values
   mojo::Remote<chromecast::shell::mojom::QueryableDataStore>
@@ -545,23 +552,24 @@ void CastWebContentsImpl::RenderFrameCreated(
   }
 
   // Set up URL filter
-  if (activity_url_filter_) {
+  if (params_->url_filters) {
     mojo::AssociatedRemote<chromecast::mojom::ActivityUrlFilterConfiguration>
         activity_filter_setter;
     frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
         &activity_filter_setter);
     activity_filter_setter->SetFilter(
         chromecast::mojom::ActivityUrlFilterCriteria::New(
-            activity_url_filter_.value()));
+            params_->url_filters.value()));
   }
 
   // Set the background color for main frames.
   if (!frame_host->GetParent()) {
-    if (view_background_color_ == BackgroundColor::WHITE) {
+    if (params_->background_color == mojom::BackgroundColor::WHITE) {
       frame_host->GetView()->SetBackgroundColor(SK_ColorWHITE);
-    } else if (view_background_color_ == BackgroundColor::BLACK) {
+    } else if (params_->background_color == mojom::BackgroundColor::BLACK) {
       frame_host->GetView()->SetBackgroundColor(SK_ColorBLACK);
-    } else if (view_background_color_ == BackgroundColor::TRANSPARENT) {
+    } else if (params_->background_color ==
+               mojom::BackgroundColor::TRANSPARENT) {
       frame_host->GetView()->SetBackgroundColor(SK_ColorTRANSPARENT);
     } else {
       frame_host->GetView()->SetBackgroundColor(chromecast::GetSwitchValueColor(
@@ -763,6 +771,9 @@ void CastWebContentsImpl::DidFinishNavigation(
   for (Observer& observer : observer_list_) {
     observer.MainFrameFinishedNavigation();
   }
+  for (auto& observer : observers_) {
+    observer->MainFrameFinishedNavigation();
+  }
 }
 
 void CastWebContentsImpl::DidFinishLoad(
@@ -884,12 +895,12 @@ void CastWebContentsImpl::NotifyPageState() {
   notifying_ = true;
   if (stopped_ && !stop_notified_) {
     stop_notified_ = true;
-    for (auto& observer : observer_list_) {
-      observer.OnPageStopped(this, last_error_);
+    for (auto& observer : observers_) {
+      observer->PageStopped(page_state_, last_error_);
     }
   } else {
-    for (auto& observer : observer_list_) {
-      observer.OnPageStateChanged(this);
+    for (auto& observer : observers_) {
+      observer->PageStateChanged(page_state_);
     }
   }
   notifying_ = false;
@@ -927,14 +938,14 @@ void CastWebContentsImpl::ResourceLoadComplete(
 
 void CastWebContentsImpl::InnerWebContentsCreated(
     content::WebContents* inner_web_contents) {
-  if (!handle_inner_contents_ || !delegate_)
+  if (!params_->handle_inner_contents || !delegate_)
     return;
-  InitParams params;
-  params.delegate = delegate_;
-  params.enabled_for_dev = enabled_for_dev_;
-  params.background_color = view_background_color_;
-  auto result = inner_contents_.insert(
-      std::make_unique<CastWebContentsImpl>(inner_web_contents, params));
+
+  mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  params->enabled_for_dev = params_->enabled_for_dev;
+  params->background_color = params_->background_color;
+  auto result = inner_contents_.insert(std::make_unique<CastWebContentsImpl>(
+      inner_web_contents, delegate_, std::move(params)));
   delegate_->InnerContentsCreated(result.first->get(), this);
 }
 
@@ -943,8 +954,8 @@ void CastWebContentsImpl::TitleWasSet(content::NavigationEntry* entry) {
 
   if (!entry)
     return;
-  for (Observer& observer : observer_list_) {
-    observer.UpdateTitle(entry->GetTitle());
+  for (auto& observer : observers_) {
+    observer->UpdateTitle(base::UTF16ToUTF8(entry->GetTitle()));
   }
 }
 
@@ -954,6 +965,9 @@ void CastWebContentsImpl::DidFirstVisuallyNonEmptyPaint() {
 
   for (Observer& observer : observer_list_) {
     observer.DidFirstVisuallyNonEmptyPaint();
+  }
+  for (auto& observer : observers_) {
+    observer->DidFirstVisuallyNonEmptyPaint();
   }
 }
 
@@ -997,8 +1011,8 @@ void CastWebContentsImpl::DidUpdateFaviconURL(
     }
   }
 
-  for (Observer& observer : observer_list_) {
-    observer.UpdateFaviconURL(icon_url);
+  for (auto& observer : observers_) {
+    observer->UpdateFaviconURL(icon_url);
   }
 }
 
@@ -1037,28 +1051,10 @@ void CastWebContentsImpl::TracePageLoadEnd(const GURL& url) {
 
 void CastWebContentsImpl::DisableDebugging() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_for_dev_ || !web_contents_)
+  if (!params_->enabled_for_dev || !web_contents_)
     return;
   LOG(INFO) << "Disabling dev console for CastWebContentsImpl";
   remote_debugging_server_->DisableWebContentsForDebugging(web_contents_);
-}
-
-std::ostream& operator<<(std::ostream& os,
-                         CastWebContentsImpl::PageState state) {
-#define CASE(state)                           \
-  case CastWebContentsImpl::PageState::state: \
-    os << #state;                             \
-    return os;
-
-  switch (state) {
-    CASE(IDLE);
-    CASE(LOADING);
-    CASE(LOADED);
-    CASE(CLOSED);
-    CASE(DESTROYED);
-    CASE(ERROR);
-  }
-#undef CASE
 }
 
 }  // namespace chromecast

@@ -93,8 +93,7 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
   void UpdateTree();
 
   // CastWebContents::Observer
-  void OnPageStopped(CastWebContents* cast_web_contents,
-                     int error_code) override;
+  void PageStopped(PageState page_state, int error_code) override;
 
   void SetAccessibilityEnabled(bool value);
 
@@ -206,6 +205,9 @@ class AXTreeSourceFlutter : public ui::AXTreeSource<FlutterSemanticsNode*>,
   // Maps web contents id to the web contents observer
   base::flat_map<int32_t, std::unique_ptr<AXTreeWebContentsObserver>>
       child_tree_observers_;
+
+  // Observed CastWebContents for this tree node.
+  CastWebContents* cast_web_contents_;
 
   // Copy of most recent tree data
   gallium::castos::OnAccessibilityEventRequest last_event_data_;

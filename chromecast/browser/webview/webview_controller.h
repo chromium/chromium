@@ -83,12 +83,9 @@ class WebviewController : public CastWebContents::Delegate,
 
   webview::AsyncPageEvent_State current_state();
 
-  // CastWebContents::Delegate
-  void OnPageStateChanged(CastWebContents* cast_web_contents) override;
-  void OnPageStopped(CastWebContents* cast_web_contents,
-                     int error_code) override;
-
   // CastWebContents::Observer
+  void PageStateChanged(PageState page_state) override;
+  void PageStopped(PageState page_state, int error_code) override;
   void ResourceLoadFailed(CastWebContents* cast_web_contents) override;
 
   // content::WebContentsObserver
@@ -101,6 +98,7 @@ class WebviewController : public CastWebContents::Delegate,
   const bool enabled_for_dev_;
   std::unique_ptr<content::WebContents> contents_;
   std::unique_ptr<CastWebContents> cast_web_contents_;
+  PageState page_state_ = PageState::IDLE;
   bool stopped_ = false;
 
   // The navigation throttle for the current navigation event, if any.

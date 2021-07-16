@@ -57,22 +57,19 @@ void NamedMessagePortConnectorCast::OnPageLoaded() {
                                              std::move(ports));
 }
 
-void NamedMessagePortConnectorCast::OnPageStateChanged(
-    CastWebContents* cast_web_contents) {
-  auto page_state = cast_web_contents->page_state();
-
+void NamedMessagePortConnectorCast::PageStateChanged(PageState page_state) {
   switch (page_state) {
-    case CastWebContents::PageState::DESTROYED:
-    case CastWebContents::PageState::ERROR:
+    case PageState::DESTROYED:
+    case PageState::ERROR:
       CastWebContents::Observer::Observe(nullptr);
       cast_web_contents_ = nullptr;
       break;
-    case CastWebContents::PageState::LOADED:
+    case PageState::LOADED:
       OnPageLoaded();
       break;
-    case CastWebContents::PageState::IDLE:
-    case CastWebContents::PageState::LOADING:
-    case CastWebContents::PageState::CLOSED:
+    case PageState::IDLE:
+    case PageState::LOADING:
+    case PageState::CLOSED:
       break;
   }
 }

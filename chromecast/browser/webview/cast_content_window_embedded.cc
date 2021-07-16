@@ -25,11 +25,11 @@ constexpr char kKeyRemoteControlModeEnabled[] = "remoteControlModeEnabled";
 }  // namespace
 
 CastContentWindowEmbedded::CastContentWindowEmbedded(
-    const CastContentWindow::CreateParams& params,
+    base::WeakPtr<CastContentWindow::Delegate> delegate,
+    mojom::CastWebViewParamsPtr params,
     CastWindowEmbedder* cast_window_embedder,
     bool force_720p_resolution)
-    : CastContentWindow(params),
-      is_touch_enabled_(params.enable_touch_input),
+    : CastContentWindow(delegate, std::move(params)),
       cast_window_embedder_(cast_window_embedder),
       force_720p_resolution_(force_720p_resolution) {
   DCHECK(delegate_);
@@ -275,7 +275,7 @@ CastContentWindowEmbedded::PopulateCastWindowProperties() {
   window_properties.session_id = session_id_;
   window_properties.app_id = app_id_;
   window_properties.is_system_setup_window = false;
-  window_properties.is_touch_enabled = is_touch_enabled_;
+  window_properties.is_touch_enabled = params_->enable_touch_input;
   window_properties.is_remote_control = is_remote_control_;
   window_properties.visibility_priority = visibility_priority_;
   window_properties.force_720p_resolution = force_720p_resolution_;

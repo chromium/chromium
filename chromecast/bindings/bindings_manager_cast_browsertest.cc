@@ -82,11 +82,10 @@ class TitleChangeObserver : public CastWebContents::Observer {
   }
 
   // CastWebContents::Observer implementation:
-  void UpdateTitle(const std::u16string& title) override {
+  void UpdateTitle(const std::string& title) override {
     // Resumes execution of RunUntilTitleEquals() if |title| matches
     // expectations.
-    std::string title_utf8 = base::UTF16ToUTF8(title);
-    current_title_ = title_utf8;
+    current_title_ = title;
     if (!quit_closure_.is_null() && current_title_ == expected_title_) {
       std::move(quit_closure_).Run();
     }
@@ -161,12 +160,12 @@ class BindingsManagerCastBrowserTest : public content::BrowserTestBase {
 
     // CastWebContents::Delegate must be set for receiving PageStateChanged
     // event.
-    CastWebContents::InitParams init_params;
-    init_params.delegate = mock_cast_wc_delegate_.AsWeakPtr();
-    init_params.is_root_window = true;
+    mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+    params->is_root_window = true;
 
-    cast_web_contents_ =
-        std::make_unique<CastWebContentsImpl>(web_contents_.get(), init_params);
+    cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
+        web_contents_.get(), mock_cast_wc_delegate_.AsWeakPtr(),
+        std::move(params));
     title_change_observer_.Observe(cast_web_contents_.get());
     bindings_manager_ = std::make_unique<bindings::BindingsManagerCast>();
     cast_web_contents_->ConnectToBindingsService(

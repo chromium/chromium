@@ -32,7 +32,7 @@ class NamedMessagePortConnectorCast
   void OnPageLoaded();
 
   // CastWebContents::Observer implementation.
-  void OnPageStateChanged(CastWebContents* cast_web_contents) override;
+  void PageStateChanged(PageState page_state) override;
 
   chromecast::CastWebContents* cast_web_contents_;
 };

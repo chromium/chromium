@@ -14,6 +14,7 @@
 #include "chromecast/base/version.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_preferences.h"
+#include "chromecast/browser/web_types.h"
 #include "chromecast/browser/webview/proto/webview.pb.h"
 #include "chromecast/browser/webview/webview_navigation_throttle.h"
 #include "content/public/browser/browser_context.h"
@@ -90,13 +91,12 @@ WebviewController::WebviewController(content::BrowserContext* browser_context,
   // existing view.
   cast_prefs->preferences()->supports_multiple_windows = false;
 
-  CastWebContents::InitParams cast_contents_init;
-  cast_contents_init.is_root_window = true;
-  cast_contents_init.enabled_for_dev = enabled_for_dev;
-  cast_contents_init.delegate = weak_ptr_factory_.GetWeakPtr();
+  mojom::CastWebViewParamsPtr params = mojom::CastWebViewParams::New();
+  params->is_root_window = true;
+  params->enabled_for_dev = enabled_for_dev;
   cast_web_contents_ = std::make_unique<CastWebContentsImpl>(
-      contents_.get(), cast_contents_init);
-  cast_web_contents_->AddObserver(this);
+      contents_.get(), weak_ptr_factory_.GetWeakPtr(), std::move(params));
+  CastWebContents::Observer::Observe(cast_web_contents_.get());
 
   content::WebContentsObserver::Observe(contents_.get());
 
@@ -115,7 +115,7 @@ WebviewController::WebviewController(content::BrowserContext* browser_context,
 }
 
 WebviewController::~WebviewController() {
-  cast_web_contents_->RemoveObserver(this);
+  CastWebContents::Observer::Observe(nullptr);
 }
 
 std::unique_ptr<content::NavigationThrottle>
@@ -297,12 +297,11 @@ content::WebContents* WebviewController::GetWebContents() {
 }
 
 webview::AsyncPageEvent_State WebviewController::current_state() {
-  // The PB enum is defined identically.
-  return static_cast<webview::AsyncPageEvent_State>(
-      cast_web_contents_->page_state());
+  return ToGrpcPageState(page_state_);
 }
 
-void WebviewController::OnPageStateChanged(CastWebContents* cast_web_contents) {
+void WebviewController::PageStateChanged(PageState page_state) {
+  page_state_ = page_state;
   if (client_) {
     std::unique_ptr<webview::WebviewResponse> response =
         std::make_unique<webview::WebviewResponse>();
@@ -313,8 +312,8 @@ void WebviewController::OnPageStateChanged(CastWebContents* cast_web_contents) {
   }
 }
 
-void WebviewController::OnPageStopped(CastWebContents* cast_web_contents,
-                                      int error_code) {
+void WebviewController::PageStopped(PageState page_state, int error_code) {
+  page_state_ = page_state;
   stopped_ = true;
   if (client_) {
     std::unique_ptr<webview::WebviewResponse> response =

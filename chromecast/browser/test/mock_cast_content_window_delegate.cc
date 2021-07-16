@@ -10,8 +10,4 @@ MockCastContentWindowDelegate::MockCastContentWindowDelegate() {}
 
 MockCastContentWindowDelegate::~MockCastContentWindowDelegate() = default;
 
-std::string MockCastContentWindowDelegate::GetId() {
-  return "mockContentWindowDelegate";
-}
-
 }  // namespace chromecast

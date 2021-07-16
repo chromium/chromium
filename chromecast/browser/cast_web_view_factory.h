@@ -12,7 +12,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromecast/browser/cast_web_view.h"
-#include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
@@ -28,9 +27,9 @@ class CastWebViewFactory {
   virtual ~CastWebViewFactory();
 
   virtual std::unique_ptr<CastWebView> CreateWebView(
-      const CastWebView::CreateParams& params,
-      CastWebService* web_service,
-      const GURL& initial_url);
+      const CastWebView::CreateParams& create_params,
+      mojom::CastWebViewParamsPtr params,
+      CastWebService* web_service);
 
   content::BrowserContext* browser_context() const { return browser_context_; }
 

@@ -82,6 +82,8 @@ message NavigateRequest {
 }
 
 message AsyncPageEvent {
+  // These values *must* be kept in sync with ::chromecast::PageState in
+  // chromecast/browser/web_types.h.
   enum State {
     IDLE = 0;
     LOADING = 1;

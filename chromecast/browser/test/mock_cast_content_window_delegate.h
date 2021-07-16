@@ -26,8 +26,6 @@ class MockCastContentWindowDelegate
   MOCK_METHOD2(GestureProgress,
                void(GestureType gesture_type,
                     const gfx::Point& touch_location));
-
-  std::string GetId() override;
 };
 
 }  // namespace chromecast

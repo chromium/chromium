@@ -86,6 +86,7 @@ AXTreeSourceFlutter::AXTreeSourceFlutter(
       event_router_(event_router
                         ? event_router
                         : extensions::AutomationEventRouter::GetInstance()),
+      cast_web_contents_(nullptr),
       accessibility_enabled_(false) {
   DCHECK(delegate_);
 }
@@ -224,7 +225,8 @@ void AXTreeSourceFlutter::NotifyAccessibilityEvent(
               child_tree_observers_[contents->id()] = std::make_unique<
                   AXTreeSourceFlutter::AXTreeWebContentsObserver>(
                   contents->web_contents(), this);
-              contents->AddObserver(this);
+              CastWebContents::Observer::Observe(contents);
+              cast_web_contents_ = contents;
               break;
             }
           }
@@ -735,11 +737,11 @@ void AXTreeSourceFlutter::UpdateTree() {
   NotifyAccessibilityEvent(&last_event_data_);
 }
 
-void AXTreeSourceFlutter::OnPageStopped(CastWebContents* cast_web_contents,
-                                        int error_code) {
+void AXTreeSourceFlutter::PageStopped(PageState page_state, int error_code) {
   // Webview is gone. Stop observing.
-  cast_web_contents->RemoveObserver(this);
-  child_tree_observers_.erase(cast_web_contents->id());
+  CastWebContents::Observer::Observe(nullptr);
+  child_tree_observers_.erase(cast_web_contents_->id());
+  cast_web_contents_ = nullptr;
 }
 
 void AXTreeSourceFlutter::SetAccessibilityEnabled(bool value) {

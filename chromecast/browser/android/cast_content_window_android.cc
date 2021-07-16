@@ -74,14 +74,15 @@ class GestureConsumedCallbackWrapper {
 }  // namespace
 
 CastContentWindowAndroid::CastContentWindowAndroid(
-    const CastContentWindow::CreateParams& params)
-    : CastContentWindow(params),
+    base::WeakPtr<Delegate> delegate,
+    mojom::CastWebViewParamsPtr params)
+    : CastContentWindow(delegate, std::move(params)),
       web_contents_attached_(false),
       java_window_(CreateJavaWindow(reinterpret_cast<jlong>(this),
-                                    params.enable_touch_input,
-                                    params.is_remote_control_mode,
-                                    params.turn_on_screen,
-                                    params.session_id)) {}
+                                    params_->enable_touch_input,
+                                    params_->is_remote_control_mode,
+                                    params_->turn_on_screen,
+                                    params_->session_id)) {}
 
 CastContentWindowAndroid::~CastContentWindowAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -101,7 +102,7 @@ void CastContentWindowAndroid::CreateWindow(
 
   Java_CastContentWindowAndroid_createWindowForWebContents(
       env, java_window_, java_web_contents,
-      ConvertUTF8ToJavaString(env, delegate_->GetId()),
+      ConvertUTF8ToJavaString(env, params_->activity_id),
       static_cast<int>(visibility_priority));
   web_contents_attached_ = true;
   cast_web_contents()->web_contents()->Focus();

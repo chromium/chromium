@@ -18,6 +18,23 @@
 
 namespace chromecast {
 
+namespace {
+
+CastGestureHandler::Priority ToGestureHandlerPriority(
+    mojom::GesturePriority priority) {
+  switch (priority) {
+    case mojom::GesturePriority::NONE:
+      return CastGestureHandler::Priority::NONE;
+    case mojom::GesturePriority::ROOT_UI:
+      return CastGestureHandler::Priority::ROOT_UI;
+    case mojom::GesturePriority::MAIN_ACTIVITY:
+      return CastGestureHandler::Priority::MAIN_ACTIVITY;
+    case mojom::GesturePriority::SETTINGS_UI:
+      return CastGestureHandler::Priority::SETTINGS_UI;
+  }
+}
+
+}  // namespace
 class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
  public:
   TouchBlocker(aura::Window* window, bool activated)
@@ -69,15 +86,13 @@ class TouchBlocker : public ui::EventHandler, public aura::WindowObserver {
   DISALLOW_COPY_AND_ASSIGN(TouchBlocker);
 };
 
-CastContentWindowAura::CastContentWindowAura(
-    const CastContentWindow::CreateParams& params,
-    CastWindowManager* window_manager)
-    : CastContentWindow(params),
+CastContentWindowAura::CastContentWindowAura(base::WeakPtr<Delegate> delegate,
+                                             mojom::CastWebViewParamsPtr params,
+                                             CastWindowManager* window_manager)
+    : CastContentWindow(delegate, std::move(params)),
       window_manager_(window_manager),
       gesture_dispatcher_(
           std::make_unique<CastContentGestureHandler>(delegate_)),
-      gesture_priority_(params.gesture_priority),
-      is_touch_enabled_(params.enable_touch_input),
       window_(nullptr),
       has_screen_access_(false),
       resize_window_when_navigation_starts_(true) {}
@@ -108,7 +123,8 @@ void CastContentWindowAura::CreateWindow(
   window_manager_->AddWindow(window_);
   window_manager_->AddGestureHandler(gesture_dispatcher_.get());
 
-  touch_blocker_ = std::make_unique<TouchBlocker>(window_, !is_touch_enabled_);
+  touch_blocker_ =
+      std::make_unique<TouchBlocker>(window_, !params_->enable_touch_input);
   media_controls_ = std::make_unique<MediaControlUi>(window_manager_);
 
   if (has_screen_access_) {
@@ -175,7 +191,8 @@ void CastContentWindowAura::RequestMoveOut() {}
 void CastContentWindowAura::OnWindowVisibilityChanged(aura::Window* window,
                                                       bool visible) {
   if (visible) {
-    gesture_dispatcher_->SetPriority(gesture_priority_);
+    gesture_dispatcher_->SetPriority(
+        ToGestureHandlerPriority(params_->gesture_priority));
   } else {
     gesture_dispatcher_->SetPriority(CastGestureHandler::Priority::NONE);
   }

@@ -13,9 +13,14 @@
 #include "base/observer_list.h"
 #include "base/process/process.h"
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
+#include "chromecast/browser/mojom/cast_web_contents.mojom.h"
+#include "chromecast/browser/web_types.h"
 #include "chromecast/common/mojom/feature_manager.mojom.h"
 #include "content/public/common/media_playback_renderer_type.mojom.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote_set.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -104,7 +109,7 @@ struct RendererFeature {
 // CastWebContents can be deleted at any time, *except* during Observer
 // notifications. If the owner wants to destroy CastWebContents as a result of
 // an Observer event, it should post a task to destroy CastWebContents.
-class CastWebContents {
+class CastWebContents : public mojom::CastWebContents {
  public:
   class Delegate {
    public:
@@ -118,16 +123,25 @@ class CastWebContents {
     virtual ~Delegate() {}
   };
 
-  // Observer class. The Observer should *not* destroy CastWebContents during
-  // any of these events, otherwise other observers might try to use a freed
-  // pointer to |cast_web_contents|.
-  class Observer {
+  // Observers must use Observer::Observe(cast_web_contents | nullptr) to
+  // add/remove themselves from the observer list. The Observer must not destroy
+  // CastWebContents during any of these events, otherwise other observers might
+  // try to use a freed pointer to |cast_web_contents|.
+  class Observer : public mojom::CastWebContentsObserver {
    public:
     Observer();
 
+    // Adds |this| to the CastWebContents observer list. Observe(nullptr) will
+    // remove |this| from the observer list of the current CastWebContents being
+    // observed.
+    void Observe(CastWebContents* cast_web_contents);
+
+    // =========================================================================
+    // Observer Methods
+    // =========================================================================
+
     // Advertises page state for the CastWebContents.
-    // Use CastWebContents::page_state() to get the new state.
-    virtual void OnPageStateChanged(CastWebContents* cast_web_contents) {}
+    void PageStateChanged(PageState page_state) override {}
 
     // Called when the page has stopped. e.g.: A 404 occurred when loading the
     // page or if the render process for the main frame crashes. |error_code|
@@ -141,8 +155,7 @@ class CastWebContents {
     // ERROR: Page is in an error state. It should be reloaded or deleted.
     // DESTROYED: Page was closed due to deletion of WebContents. The
     //     CastWebContents instance is no longer usable and should be deleted.
-    virtual void OnPageStopped(CastWebContents* cast_web_contents,
-                               int error_code) {}
+    void PageStopped(PageState page_state, int error_code) override {}
 
     // A new RenderFrame was created for the WebContents. |frame_interfaces| are
     // provided by the new frame.
@@ -158,27 +171,23 @@ class CastWebContents {
         content::NavigationHandle* navigation_handle) {}
 
     // A navigation has finished in the WebContents' main frame.
-    virtual void MainFrameFinishedNavigation() {}
+    void MainFrameFinishedNavigation() override {}
 
     // These methods are calls forwarded from WebContentsObserver.
+    void UpdateTitle(const std::string& title) override {}
+    void UpdateFaviconURL(const GURL& url) override {}
+    void DidFirstVisuallyNonEmptyPaint() override {}
     virtual void MainFrameResized(const gfx::Rect& bounds) {}
-    virtual void UpdateTitle(const std::u16string& title) {}
-    virtual void UpdateFaviconURL(GURL icon_url) {}
-    virtual void DidFirstVisuallyNonEmptyPaint() {}
 
     // Notifies that a resource for the main frame failed to load.
     virtual void ResourceLoadFailed(CastWebContents* cast_web_contents) {}
 
     // Propagates the process information via observer, in particular to
     // the underlying OnRendererProcessStarted() method.
-    virtual void OnRenderProcessReady(const base::Process& process) {}
+    void OnRenderProcessReady(int pid) override {}
 
     // Notify media playback state changes for the underlying WebContents.
-    virtual void MediaPlaybackChanged(bool media_playing) {}
-
-    // Adds |this| to the ObserverList in the implementation of
-    // |cast_web_contents|.
-    void Observe(CastWebContents* cast_web_contents);
+    void MediaPlaybackChanged(bool media_playing) override {}
 
     // Removes |this| from the ObserverList in the implementation of
     // |cast_web_contents_|. This is only invoked by CastWebContents and is used
@@ -188,70 +197,10 @@ class CastWebContents {
     void ResetCastWebContents();
 
    protected:
-    virtual ~Observer();
+    ~Observer() override;
 
     CastWebContents* cast_web_contents_;
-  };
-
-  enum class BackgroundColor {
-    NONE,
-    WHITE,
-    BLACK,
-    TRANSPARENT,
-  };
-
-  // Initialization parameters for CastWebContents.
-  struct InitParams {
-    // The delegate for the CastWebContents. Must be non-null. If the delegate
-    // is destroyed before CastWebContents, the WeakPtr will be invalidated on
-    // the main UI thread.
-    base::WeakPtr<Delegate> delegate = nullptr;
-    // Enable development mode for this CastWebContents. Whitelists
-    // certain functionality for the WebContents, like remote debugging and
-    // debugging interfaces.
-    bool enabled_for_dev = false;
-    // Chooses a media renderer for the WebContents.
-    content::mojom::RendererType renderer_type =
-        content::mojom::RendererType::DEFAULT_RENDERER;
-    // Whether the WebContents is a root native window, or if it is embedded in
-    // another WebContents (see Delegate::InnerContentsCreated()).
-    bool is_root_window = false;
-    // Whether inner WebContents events should be handled. If this is set to
-    // true, then inner WebContents will automatically have a CastWebContents
-    // created and notify the delegate.
-    bool handle_inner_contents = false;
-    // Construct internal media blocker and enable BlockMediaLoading().
-    bool use_media_blocker = false;
-    // Background color for the WebContents view. If not provided, the color
-    // will fall back to the platform default.
-    BackgroundColor background_color = BackgroundColor::NONE;
-    // Enable WebSQL database for this CastWebContents.
-    bool enable_websql = false;
-    // Enable mixer audio support for this CastWebContents.
-    bool enable_mixer_audio = false;
-    // Whether to provide a URL filter applied to network requests for the
-    // activity hosted by this CastWebContents.
-    // No filters implies no restrictions.
-    absl::optional<std::vector<std::string>> url_filters = absl::nullopt;
-    // Whether WebRTC peer connections are allowed to use legacy versions of the
-    // TLS/DTLS protocols.
-    bool webrtc_allow_legacy_tls_protocols = false;
-    // Enable NamedMessagePortConnectorCast JS APIs. This is only meant to be
-    // modified by testing targets.
-
-    InitParams();
-    InitParams(const InitParams& other);
-    ~InitParams();
-  };
-
-  // Page state for the main frame.
-  enum class PageState {
-    IDLE,       // Main frame has not started yet.
-    LOADING,    // Main frame is loading resources.
-    LOADED,     // Main frame is loaded, but sub-frames may still be loading.
-    CLOSED,     // Page is closed and should be cleaned up.
-    DESTROYED,  // The WebContents is destroyed and can no longer be used.
-    ERROR,      // Main frame is in an error state.
+    mojo::Receiver<mojom::CastWebContentsObserver> receiver_{this};
   };
 
   static std::vector<CastWebContents*>& GetAll();
@@ -260,8 +209,8 @@ class CastWebContents {
   // if the CastWebContents does not exist.
   static CastWebContents* FromWebContents(content::WebContents* web_contents);
 
-  CastWebContents() = default;
-  virtual ~CastWebContents() = default;
+  CastWebContents();
+  ~CastWebContents() override;
 
   // Tab identifier for the WebContents, mainly used by the tabs extension API.
   // Tab IDs may be re-used, but no two live CastWebContents should have the
@@ -279,6 +228,17 @@ class CastWebContents {
   // Returns the PID of the main frame process if valid.
   virtual absl::optional<pid_t> GetMainFrameRenderProcessPid() const = 0;
 
+  // mojom::CastWebContents implementation:
+  void LoadUrl(const GURL& url) override = 0;
+  void ClosePage() override = 0;
+  void SetWebVisibilityAndPaint(bool visible) override = 0;
+  void BlockMediaLoading(bool blocked) override = 0;
+  void BlockMediaStarting(bool blocked) override = 0;
+  void EnableBackgroundVideoPlayback(bool enabled) override = 0;
+  void SetEnabledForRemoteDebugging(bool enabled) override = 0;
+  void AddObserver(
+      mojo::PendingRemote<mojom::CastWebContentsObserver> observer) override;
+
   // ===========================================================================
   // Initialization and Setup
   // ===========================================================================
@@ -287,6 +247,7 @@ class CastWebContents {
   // configured when `CastWebContents::RenderFrameCreated` is invoked.
   virtual void AddRendererFeatures(std::vector<RendererFeature> features) = 0;
 
+  // TODO(b/149041392): This can be an initialization parameter.
   virtual void AllowWebAndMojoWebUiBindings() = 0;
   virtual void ClearRenderWidgetHostView() = 0;
 
@@ -303,43 +264,11 @@ class CastWebContents {
   // Page Lifetime
   // ===========================================================================
 
-  // Navigates the underlying WebContents to |url|. Delegate will be notified of
-  // page progression events via OnPageStateChanged().
-  virtual void LoadUrl(const GURL& url) = 0;
-
-  // Initiate closure of the page. This invokes the appropriate unload handlers.
-  // Eventually the delegate will be notified with OnPageStopped().
-  virtual void ClosePage() = 0;
-
   // Stop the page immediately. This will automatically invoke
   // Delegate::OnPageStopped(error_code), allowing the delegate to delete or
   // reload the page without waiting for the WebContents owner to tear down the
   // page.
   virtual void Stop(int error_code) = 0;
-
-  // ===========================================================================
-  // Visibility
-  // ===========================================================================
-
-  // Specify if the WebContents should be treated as visible. This triggers a
-  // document "visibilitychange" change event, and will paint the WebContents
-  // quad if |visible| is true (otherwise it will be blank). Note that this does
-  // *not* guarantee the page is visible on the screen, as that depends on if
-  // the WebContents quad is present in the screen layout and isn't obscured by
-  // another window.
-  virtual void SetWebVisibilityAndPaint(bool visible) = 0;
-
-  // ===========================================================================
-  // Media Management
-  // ===========================================================================
-
-  // Block/unblock media from loading in all RenderFrames for the WebContents.
-  virtual void BlockMediaLoading(bool blocked) = 0;
-  // Block/unblock media from starting in all RenderFrames for the WebContents.
-  // As opposed to |BlockMediaLoading|,  |BlockMediaStarting| allows media to
-  // load while in blocking state.
-  virtual void BlockMediaStarting(bool blocked) = 0;
-  virtual void EnableBackgroundVideoPlayback(bool enabled) = 0;
 
   // ===========================================================================
   // Page Communication
@@ -394,16 +323,6 @@ class CastWebContents {
   // Utility Methods
   // ===========================================================================
 
-  // Used to add or remove |observer| to the ObserverList in the implementation.
-  // These functions should only be invoked by CastWebContents::Observer in a
-  // valid sequence, enforced via SequenceChecker.
-  virtual void AddObserver(Observer* observer) = 0;
-  virtual void RemoveObserver(Observer* observer) = 0;
-
-  // Enable or disable devtools remote debugging for this WebContents and any
-  // inner WebContents that are spawned from it.
-  virtual void SetEnabledForRemoteDebugging(bool enabled) = 0;
-
   // Used to expose CastWebContents's |binder_registry_| to Delegate.
   // Delegate should register its mojo interface binders via this function
   // when it is ready.
@@ -432,11 +351,23 @@ class CastWebContents {
   // binding interfaces.
   virtual bool can_bind_interfaces() = 0;
 
+  // Binds a receiver for remote control of CastWebContents.
+  void BindReceiver(mojo::PendingReceiver<mojom::CastWebContents> receiver);
+
+ protected:
+  mojo::Receiver<mojom::CastWebContents> receiver_{this};
+  mojo::RemoteSet<mojom::CastWebContentsObserver> observers_;
+
  private:
+  friend class Observer;
+
+  // These functions should only be invoked by CastWebContents::Observer in a
+  // valid sequence, enforced via SequenceChecker.
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
   DISALLOW_COPY_AND_ASSIGN(CastWebContents);
 };
-
-std::ostream& operator<<(std::ostream& os, CastWebContents::PageState state);
 
 }  // namespace chromecast
 

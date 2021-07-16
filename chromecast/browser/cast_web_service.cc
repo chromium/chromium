@@ -13,6 +13,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
@@ -60,15 +61,24 @@ CastWebService::CastWebService(content::BrowserContext* browser_context,
 
 CastWebService::~CastWebService() = default;
 
-CastWebView::Scoped CastWebService::CreateWebView(
-    const CastWebView::CreateParams& params,
-    const GURL& initial_url) {
+CastWebView::Scoped CastWebService::CreateWebViewInternal(
+    const CastWebView::CreateParams& create_params,
+    mojom::CastWebViewParamsPtr params) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto web_view = web_view_factory_->CreateWebView(params, this, initial_url);
+  auto web_view =
+      web_view_factory_->CreateWebView(create_params, std::move(params), this);
   CastWebView::Scoped scoped(web_view.release(), [this](CastWebView* web_view) {
     OwnerDestroyed(web_view);
   });
   return scoped;
+}
+
+void CastWebService::CreateWebView(
+    mojom::CastWebViewParamsPtr params,
+    mojo::PendingReceiver<mojom::CastWebContents> web_contents,
+    mojo::PendingReceiver<mojom::CastContentWindow> window) {
+  // TODO(b/149041392): Implement this.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 void CastWebService::FlushDomLocalStorage() {

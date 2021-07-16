@@ -64,13 +64,17 @@ void CastServiceSimple::StartInternal() {
     return;
   }
 
-  CastWebView::CreateParams params;
-  params.delegate = weak_factory_.GetWeakPtr();
-  params.web_contents_params.delegate = weak_factory_.GetWeakPtr();
-  params.web_contents_params.enabled_for_dev = true;
-  params.window_params.delegate = weak_factory_.GetWeakPtr();
+  CastWebView::CreateParams create_params;
+  create_params.delegate = weak_factory_.GetWeakPtr();
+  create_params.web_contents_delegate = weak_factory_.GetWeakPtr();
+  create_params.window_delegate = weak_factory_.GetWeakPtr();
+
+  ::chromecast::mojom::CastWebViewParamsPtr params =
+      ::chromecast::mojom::CastWebViewParams::New();
+  params->enabled_for_dev = true;
+
   cast_web_view_ =
-      web_service_->CreateWebView(params, GURL() /* initial_url */);
+      web_service_->CreateWebViewInternal(create_params, std::move(params));
   cast_web_view_->cast_web_contents()->LoadUrl(startup_url_);
   cast_web_view_->window()->GrantScreenAccess();
   cast_web_view_->window()->CreateWindow(
@@ -98,10 +102,6 @@ void CastServiceSimple::ConsumeGesture(
 }
 
 void CastServiceSimple::OnVisibilityChange(VisibilityType visibility_type) {}
-
-std::string CastServiceSimple::GetId() {
-  return "";
-}
 
 }  // namespace shell
 }  // namespace chromecast

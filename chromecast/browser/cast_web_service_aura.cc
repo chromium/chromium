@@ -11,8 +11,10 @@
 namespace chromecast {
 
 std::unique_ptr<CastContentWindow> CastWebService::CreateWindow(
-    const CastContentWindow::CreateParams& params) {
-  return std::make_unique<CastContentWindowAura>(params, window_manager_);
+    base::WeakPtr<CastContentWindow::Delegate> delegate,
+    mojom::CastWebViewParamsPtr params) {
+  return std::make_unique<CastContentWindowAura>(delegate, std::move(params),
+                                                 window_manager_);
 }
 
 }  // namespace chromecast

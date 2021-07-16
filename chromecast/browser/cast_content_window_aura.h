@@ -8,6 +8,7 @@
 #include "base/macros.h"
 #include "chromecast/browser/cast_content_gesture_handler.h"
 #include "chromecast/browser/cast_content_window.h"
+#include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/ui/media_control_ui.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -26,7 +27,8 @@ class CastContentWindowAura : public CastContentWindow,
                               public content::WebContentsObserver,
                               public aura::WindowObserver {
  public:
-  CastContentWindowAura(const CastContentWindow::CreateParams& params,
+  CastContentWindowAura(base::WeakPtr<Delegate> delegate,
+                        mojom::CastWebViewParamsPtr params,
                         CastWindowManager* window_manager);
   ~CastContentWindowAura() override;
 
@@ -62,11 +64,7 @@ class CastContentWindowAura : public CastContentWindow,
 
   // Utility class for detecting and dispatching gestures to delegates.
   std::unique_ptr<CastContentGestureHandler> gesture_dispatcher_;
-  CastContentGestureHandler::Priority const gesture_priority_;
-
-  const bool is_touch_enabled_;
   std::unique_ptr<TouchBlocker> touch_blocker_;
-
   std::unique_ptr<MediaControlUi> media_controls_;
 
   aura::Window* window_;

@@ -44,7 +44,8 @@ class CastContentWindowEmbedded
   // |force_720p_resolution|: Whether 720p resolution is enabled/forced for
   // this window's hosted web page (i.e. a CastWebView).
   explicit CastContentWindowEmbedded(
-      const CastContentWindow::CreateParams& params,
+      base::WeakPtr<CastContentWindow::Delegate> delegate,
+      mojom::CastWebViewParamsPtr params,
       CastWindowEmbedder* cast_window_embedder,
       bool force_720p_resolution);
   ~CastContentWindowEmbedded() override;
@@ -119,7 +120,6 @@ class CastContentWindowEmbedded
   std::string session_id_;
   int window_id_ = -1;
   bool is_remote_control_ = false;
-  const bool is_touch_enabled_ = false;
   CastWindowEmbedder* cast_window_embedder_ = nullptr;
   const bool force_720p_resolution_ = false;
 

@@ -22,6 +22,7 @@
 #include "chromecast/bindings/public/mojom/api_bindings.mojom.h"
 #include "chromecast/browser/cast_media_blocker.h"
 #include "chromecast/browser/cast_web_contents.h"
+#include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "chromecast/browser/named_message_port_connector_cast.h"
 #include "components/on_load_script_injector/browser/on_load_script_injector_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -49,7 +50,8 @@ class CastWebContentsImpl : public CastWebContents,
                             public content::WebContentsObserver {
  public:
   CastWebContentsImpl(content::WebContents* web_contents,
-                      const InitParams& init_params);
+                      base::WeakPtr<Delegate> delegate,
+                      mojom::CastWebViewParamsPtr params);
   ~CastWebContentsImpl() override;
 
   content::WebContents* web_contents() const override;
@@ -159,12 +161,9 @@ class CastWebContentsImpl : public CastWebContents,
 
   content::WebContents* web_contents_;
   base::WeakPtr<Delegate> delegate_;
+  mojom::CastWebViewParamsPtr params_;
   PageState page_state_;
   PageState last_state_;
-  bool enabled_for_dev_;
-  content::mojom::RendererType renderer_type_;
-  const bool handle_inner_contents_;
-  BackgroundColor view_background_color_;
   shell::RemoteDebuggingServer* const remote_debugging_server_;
   std::unique_ptr<CastMediaBlocker> media_blocker_;
   absl::optional<std::vector<std::string>> activity_url_filter_;
@@ -177,8 +176,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   const int tab_id_;
   const int id_;
-  bool is_websql_enabled_;
-  bool is_mixer_audio_enabled_;
   base::TimeTicks start_loading_ticks_;
 
   // True once the main frame finishes loading and there are no outstanding
@@ -219,9 +216,6 @@ class CastWebContentsImpl : public CastWebContents,
 
   DISALLOW_COPY_AND_ASSIGN(CastWebContentsImpl);
 };
-
-std::ostream& operator<<(std::ostream& os,
-                         CastWebContentsImpl::PageState state);
 
 }  // namespace chromecast
 

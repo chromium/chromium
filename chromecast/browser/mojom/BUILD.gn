@@ -5,9 +5,39 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [ "cast_web_service.mojom" ]
-  deps = [
+  sources = [
+    "cast_content_window.mojom",
+    "cast_web_contents.mojom",
+    "cast_web_service.mojom",
+  ]
+
+  public_deps = [
     "//chromecast/browser/webui/mojom",
     "//chromecast/common/mojom",
+    "//chromecast/ui/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chromecast.mojom.VisibilityPriority"
+          cpp = "::chromecast::VisibilityPriority"
+        },
+      ]
+      traits_headers = [ "visibility_mojom_traits.h" ]
+      traits_public_deps = [ "//chromecast/browser:base_types" ]
+    },
+    {
+      types = [
+        {
+          mojom = "chromecast.mojom.PageState"
+          cpp = "::chromecast::PageState"
+        },
+      ]
+      traits_headers = [ "web_mojom_traits.h" ]
+      traits_public_deps = [ "//chromecast/browser:base_types" ]
+    },
   ]
 }

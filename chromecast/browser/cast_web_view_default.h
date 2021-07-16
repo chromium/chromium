@@ -15,6 +15,7 @@
 #include "chromecast/browser/cast_content_window.h"
 #include "chromecast/browser/cast_web_contents_impl.h"
 #include "chromecast/browser/cast_web_view.h"
+#include "chromecast/browser/mojom/cast_web_service.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "url/gurl.h"
@@ -37,7 +38,8 @@ class CastWebViewDefault : public CastWebView,
   // |cast_content_window| is not provided, an instance will be constructed from
   // |web_service|.
   CastWebViewDefault(
-      const CreateParams& params,
+      const CreateParams& create_params,
+      mojom::CastWebViewParamsPtr params,
       CastWebService* web_service,
       content::BrowserContext* browser_context,
       std::unique_ptr<CastContentWindow> cast_content_window = nullptr);
@@ -76,18 +78,8 @@ class CastWebViewDefault : public CastWebView,
                                          const GURL& resource_url) override;
 
   base::WeakPtr<Delegate> delegate_;
+  mojom::CastWebViewParamsPtr params_;
   CastWebService* const web_service_;
-
-  base::TimeDelta shutdown_delay_;
-  const RendererPool renderer_pool_;
-  const GURL prelaunch_url_;
-
-  const std::string activity_id_;
-  const std::string session_id_;
-  const std::string sdk_version_;
-  const bool allow_media_access_;
-  const bool log_js_console_messages_;
-  const std::string log_prefix_;
 
   std::unique_ptr<RendererPrelauncher> renderer_prelauncher_;
   scoped_refptr<content::SiteInstance> site_instance_;
