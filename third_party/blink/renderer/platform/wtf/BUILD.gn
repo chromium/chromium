@@ -118,6 +118,7 @@ component("wtf") {
     "text/atomic_string_table.h",
     "text/base64.cc",
     "text/base64.h",
+    "text/case_folding_hash.h",
     "text/case_map.cc",
     "text/case_map.h",
     "text/character_names.h",
