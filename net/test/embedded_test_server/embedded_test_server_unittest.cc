@@ -326,7 +326,13 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
   EXPECT_TRUE(connection_listener_.DidReadFromSocket());
 }
 
-TEST_P(EmbeddedTestServerTest, ConnectionListenerComplete) {
+// TODO(http://crbug.com/1166868): Flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_ConnectionListenerComplete DISABLED_ConnectionListenerComplete
+#else
+#define MAYBE_ConnectionListenerComplete ConnectionListenerComplete
+#endif
+TEST_P(EmbeddedTestServerTest, MAYBE_ConnectionListenerComplete) {
   ASSERT_TRUE(server_->Start());
 
   TestDelegate delegate;
