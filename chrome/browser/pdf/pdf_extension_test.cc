@@ -6,6 +6,8 @@
 
 #include <map>
 #include <set>
+#include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -102,6 +104,7 @@
 #include "pdf/pdf_features.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/context_menu_data/untrustworthy_context_menu_params.h"
 #include "third_party/blink/public/mojom/context_menu/context_menu.mojom.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -264,41 +267,6 @@ class PDFExtensionTest : public extensions::ExtensionApiTest {
   // the loaded PDF in a new tab. Returns nullptr if the load fails.
   WebContents* LoadPdfInNewTabGetGuestContents(const GURL& url) {
     return LoadPdfGetGuestContentsHelper(url, /*new_tab=*/true);
-  }
-
-  // Load all the PDFs contained in chrome/test/data/<dir_name>. This only runs
-  // the test if base::PersistentHash(filename) mod kNumberLoadTestParts == k in
-  // order to shard the files evenly across values of k in [0,
-  // kNumberLoadTestParts).
-  void LoadAllPdfsTest(const std::string& dir_name, size_t k) {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath test_data_dir;
-    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
-    base::FileEnumerator file_enumerator(test_data_dir.AppendASCII(dir_name),
-                                         false, base::FileEnumerator::FILES,
-                                         FILE_PATH_LITERAL("*.pdf"));
-
-    size_t count = 0;
-    for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
-         file_path = file_enumerator.Next()) {
-      std::string filename = file_path.BaseName().MaybeAsASCII();
-      ASSERT_FALSE(filename.empty());
-
-      std::string pdf_file = dir_name + "/" + filename;
-      SCOPED_TRACE(pdf_file);
-      if (base::PersistentHash(filename) % kNumberLoadTestParts == k) {
-        LOG(INFO) << "Loading: " << pdf_file;
-        testing::AssertionResult success =
-            LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
-        if (pdf_file == "pdf_private/cfuzz5.pdf")
-          continue;
-        EXPECT_EQ(PdfIsExpectedToLoad(pdf_file), success) << pdf_file;
-      }
-      ++count;
-    }
-    // Assume that there is at least 1 pdf in the directory to guard against
-    // someone deleting the directory and silently making the test pass.
-    ASSERT_GE(count, 1u);
   }
 
   void TestGetSelectedTextReply(GURL url, bool expect_success) {
@@ -640,33 +608,85 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionTestWithTestGuestViewManager,
   EXPECT_EQ(main_url, embedder_web_contents->GetURL());
 }
 
-class PDFExtensionLoadTest : public PDFExtensionTest,
-                             public testing::WithParamInterface<int> {
- public:
-  PDFExtensionLoadTest() = default;
+class PDFExtensionLoadTest
+    : public PDFExtensionTest,
+      public testing::WithParamInterface<std::tuple<int, bool>> {
+ protected:
+  int part() const { return std::get<0>(GetParam()); }
+  bool is_unseasoned() const { return std::get<1>(GetParam()); }
+
+  std::vector<base::Feature> GetEnabledFeatures() const override {
+    std::vector<base::Feature> enabled = PDFExtensionTest::GetEnabledFeatures();
+    if (is_unseasoned())
+      enabled.push_back(chrome_pdf::features::kPdfUnseasoned);
+    return enabled;
+  }
+
+  std::vector<base::Feature> GetDisabledFeatures() const override {
+    std::vector<base::Feature> disabled =
+        PDFExtensionTest::GetDisabledFeatures();
+    if (!is_unseasoned())
+      disabled.push_back(chrome_pdf::features::kPdfUnseasoned);
+    return disabled;
+  }
+
+  // Load all the PDFs contained in chrome/test/data/<dir_name>. The files are
+  // sharded across kNumberLoadTestParts using base::PersistentHash(filename).
+  void LoadAllPdfsTest(const std::string& dir_name) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    base::FilePath test_data_dir;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir));
+    base::FileEnumerator file_enumerator(test_data_dir.AppendASCII(dir_name),
+                                         false, base::FileEnumerator::FILES,
+                                         FILE_PATH_LITERAL("*.pdf"));
+
+    size_t count = 0;
+    for (base::FilePath file_path = file_enumerator.Next(); !file_path.empty();
+         file_path = file_enumerator.Next()) {
+      std::string filename = file_path.BaseName().MaybeAsASCII();
+      ASSERT_FALSE(filename.empty());
+
+      std::string pdf_file = dir_name + "/" + filename;
+      SCOPED_TRACE(pdf_file);
+      if (base::PersistentHash(filename) % kNumberLoadTestParts == part()) {
+        LOG(INFO) << "Loading: " << pdf_file;
+        testing::AssertionResult success =
+            LoadPdf(embedded_test_server()->GetURL("/" + pdf_file));
+        if (pdf_file == "pdf_private/cfuzz5.pdf")
+          continue;
+        EXPECT_EQ(PdfIsExpectedToLoad(pdf_file), success) << pdf_file;
+      }
+      ++count;
+    }
+    // Assume that there is at least 1 pdf in the directory to guard against
+    // someone deleting the directory and silently making the test pass.
+    ASSERT_GE(count, 1u);
+  }
 };
 
 // Disabled because it's flaky.
 // See the issue for details: https://crbug.com/826055.
 #if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(ADDRESS_SANITIZER)
-#define MAYBE_Load DISABLED_Load
+#define MAYBE_Load(suffix) DISABLED_Load##suffix
 #else
-#define MAYBE_Load Load
+#define MAYBE_Load(suffix) Load##suffix
 #endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Load private PDFs.
-  LoadAllPdfsTest("pdf_private", GetParam());
-#endif
-  // Load public PDFs.
-  LoadAllPdfsTest("pdf", GetParam());
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load()) {
+  LoadAllPdfsTest("pdf");
 }
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load(Private)) {
+  LoadAllPdfsTest("pdf_private");
+}
+#endif
+
 // We break PDFExtensionLoadTest up into kNumberLoadTestParts.
-INSTANTIATE_TEST_SUITE_P(PDFTestFiles,
-                         PDFExtensionLoadTest,
-                         testing::Range(0, kNumberLoadTestParts));
+INSTANTIATE_TEST_SUITE_P(
+    PDFTestFiles,
+    PDFExtensionLoadTest,
+    testing::Combine(testing::Range(0, kNumberLoadTestParts), testing::Bool()));
 
 class DownloadAwaiter : public content::DownloadManager::Observer {
  public:
