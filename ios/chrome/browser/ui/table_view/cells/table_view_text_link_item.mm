@@ -8,11 +8,11 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "net/base/mac/url_conversions.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -38,7 +38,7 @@
   [super configureCell:tableCell withStyler:styler];
   TableViewTextLinkCell* cell =
       base::mac::ObjCCastStrict<TableViewTextLinkCell>(tableCell);
-  cell.textLabel.text = self.text;
+  cell.textView.text = self.text;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   if (!self.linkURL.is_empty())
     [cell setLinkURL:self.linkURL];
@@ -48,49 +48,41 @@
 
 #pragma mark - TableViewTextLinkCell
 
-@interface TableViewTextLinkCell ()
-// Array that holds all LabelLinkController for this Cell.
-@property(nonatomic, strong)
-    NSMutableArray<LabelLinkController*>* labelLinkControllers;
-
+@interface TableViewTextLinkCell () <UITextViewDelegate>
 @end
 
 @implementation TableViewTextLinkCell
-@synthesize delegate = _delegate;
-@synthesize textLabel = _textLabel;
 
 - (instancetype)initWithStyle:(UITableViewCellStyle)style
               reuseIdentifier:(NSString*)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
     // Text Label, set font sizes using dynamic type.
-    _textLabel = [[UILabel alloc] init];
-    _textLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    _textLabel.numberOfLines = 0;
-    _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
-    _textLabel.font =
+    _textView = [[UITextView alloc] init];
+    _textView.scrollEnabled = NO;
+    _textView.editable = NO;
+    _textView.delegate = self;
+    _textView.translatesAutoresizingMaskIntoConstraints = NO;
+    _textView.font =
         [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
-    _textLabel.textColor = UIColor.cr_secondaryLabelColor;
+    _textView.textColor = UIColor.cr_secondaryLabelColor;
 
     // Add subviews to View Hierarchy.
-    [self.contentView addSubview:_textLabel];
-
-    // Create labelLinkController array.
-    self.labelLinkControllers = [NSMutableArray array];
+    [self.contentView addSubview:_textView];
 
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
       // Title Label Constraints.
-      [_textLabel.leadingAnchor
+      [_textView.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
                          constant:kTableViewHorizontalSpacing],
-      [_textLabel.topAnchor
+      [_textView.topAnchor
           constraintEqualToAnchor:self.contentView.topAnchor
                          constant:kTableViewLabelVerticalTopSpacing],
-      [_textLabel.bottomAnchor
+      [_textView.bottomAnchor
           constraintEqualToAnchor:self.contentView.bottomAnchor
                          constant:0],
-      [_textLabel.trailingAnchor
+      [_textView.trailingAnchor
           constraintEqualToAnchor:self.contentView.trailingAnchor
                          constant:-kTableViewHorizontalSpacing]
     ]];
@@ -99,48 +91,50 @@
 }
 
 - (void)setLinkURL:(const GURL&)URL {
-  LabelLinkController* labelLinkController =
-      [self labelLinkControllerForURL:URL];
-
-  // Remove link delimiter from text and get ranges for links. Must be parsed
-  // before being added to the controller because modifying the label text
-  // clears all added links.
   if (URL.is_valid()) {
-    // TODO(crbug.com/1184151): Move to use AttributedStringFromStringWithLink.
-    const StringWithTag parsedString = ParseStringWithLink(self.textLabel.text);
-    DCHECK(parsedString.range != NSMakeRange(NSNotFound, 0));
-    self.textLabel.text = parsedString.string;
-    [labelLinkController addLinkWithRange:parsedString.range url:URL];
+    UITextView* textView = self.textView;
+    DCHECK(textView.text.length > 0);
+    // Attribute form of the font/color given to the text view on init.
+    NSDictionary<NSAttributedStringKey, id>* textAttributes =
+        [textView.attributedText attributesAtIndex:0 effectiveRange:nullptr];
+    textView.attributedText = AttributedStringFromStringWithLink(
+        textView.text, textAttributes, [self linkAttributesForURL:URL]);
   }
-  [self.labelLinkControllers addObject:labelLinkController];
 }
 
 - (void)setLinkURL:(const GURL&)URL forRange:(NSRange)range {
-  LabelLinkController* labelLinkController =
-      [self labelLinkControllerForURL:URL];
   if (URL.is_valid()) {
-    [labelLinkController addLinkWithRange:range url:URL];
+    NSMutableAttributedString* text = [[NSMutableAttributedString alloc]
+        initWithAttributedString:self.textView.attributedText];
+    [text addAttributes:[self linkAttributesForURL:URL] range:range];
+    self.textView.attributedText = text;
   }
-  [self.labelLinkControllers addObject:labelLinkController];
+}
+
+- (NSDictionary<NSAttributedStringKey, id>*)linkAttributesForURL:
+    (const GURL&)URL {
+  NSURL* linkURL = net::NSURLWithGURL(URL);
+  return @{
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
+    NSLinkAttributeName : linkURL,
+  };
 }
 
 - (void)prepareForReuse {
   [super prepareForReuse];
-  self.labelLinkControllers = [NSMutableArray array];
   self.delegate = nil;
 }
 
-// Returns a configured labelLinkController.
-- (LabelLinkController*)labelLinkControllerForURL:(const GURL&)URL {
-  __weak TableViewTextLinkCell* weakSelf = self;
-  LabelLinkController* labelLinkController = [[LabelLinkController alloc]
-      initWithLabel:self.textLabel
-             action:^(const GURL& URL) {
-               [[weakSelf delegate] tableViewTextLinkCell:weakSelf
-                                        didRequestOpenURL:URL];
-             }];
-  [labelLinkController setLinkColor:[UIColor colorNamed:kBlueColor]];
-  return labelLinkController;
+- (BOOL)textView:(UITextView*)textView
+    shouldInteractWithURL:(NSURL*)URL
+                  inRange:(NSRange)characterRange
+              interaction:(UITextItemInteraction)interaction {
+  DCHECK(self.textView == textView);
+  DCHECK(URL);
+  [self.delegate tableViewTextLinkCell:self
+                     didRequestOpenURL:net::GURLWithNSURL(URL)];
+  // Returns NO as the app is handling the opening of the URL.
+  return NO;
 }
 
 @end

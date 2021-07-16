@@ -15,7 +15,6 @@
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/authentication/views/identity_button_control.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
-#import "ios/chrome/browser/ui/util/label_link_controller.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/UIColor+cr_semantic_colors.h"
@@ -67,8 +66,6 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
 // Constraint for the maximum height of the header view (also used to hide the
 // the header view if needed).
 @property(nonatomic, strong) NSLayoutConstraint* headerViewMaxHeightConstraint;
-// Settings link controller.
-@property(nonatomic, strong) LabelLinkController* settingsLinkController;
 // Text description that may show link to advanced Sync settings.
 @property(nonatomic, strong) UITextView* syncSettingsTextView;
 
