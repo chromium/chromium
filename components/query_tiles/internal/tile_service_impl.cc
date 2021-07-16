@@ -50,12 +50,12 @@ void TileServiceImpl::OnTileManagerInitialized(SuccessCallback callback,
 }
 
 void TileServiceImpl::GetQueryTiles(GetTilesCallback callback) {
-  tile_manager_->GetTiles(std::move(callback));
+  tile_manager_->GetTiles(true /*shuffle_tiles*/, std::move(callback));
 }
 
 void TileServiceImpl::GetTile(const std::string& tile_id,
                               TileCallback callback) {
-  tile_manager_->GetTile(tile_id, std::move(callback));
+  tile_manager_->GetTile(tile_id, true /*shuffle_tiles*/, std::move(callback));
 }
 
 void TileServiceImpl::StartFetchForTiles(

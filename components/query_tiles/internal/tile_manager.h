@@ -36,10 +36,12 @@ class TileManager {
   virtual void Init(TileGroupStatusCallback callback) = 0;
 
   // Returns tiles to the caller in the given |locale|.
-  virtual void GetTiles(GetTilesCallback callback) = 0;
+  virtual void GetTiles(bool shuffle_tiles, GetTilesCallback callback) = 0;
 
   // Returns the tile associated with |tile_id| to the caller.
-  virtual void GetTile(const std::string& tile_id, TileCallback callback) = 0;
+  virtual void GetTile(const std::string& tile_id,
+                       bool shuffle_tiles,
+                       TileCallback callback) = 0;
 
   // Save the query tiles into database.
   virtual void SaveTiles(std::unique_ptr<TileGroup> tile_group,

@@ -17,8 +17,7 @@ namespace {
 // Class to reverse shuffle a list of tiles, starting at a given position.
 class ReverseTileShuffler : public TileShuffler {
  public:
-  void Shuffle(std::vector<std::unique_ptr<Tile>>* tiles,
-               int start) const override {
+  void Shuffle(std::vector<Tile>* tiles, int start) const override {
     std::reverse(tiles->begin() + start, tiles->end());
   }
 };
@@ -30,8 +29,7 @@ TEST(TileUtilsTest, SortEmptyTileGroup) {
   tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.7);
   tile_stats["guid-1-4"] = TileStats(group.last_updated_ts, 0.4);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(tile_stats["guid-1-3"].score, 0.7);
   EXPECT_EQ(tile_stats["guid-1-4"].score, 0.4);
 }
@@ -40,8 +38,7 @@ TEST(TileUtilsTest, Sort) {
   TileGroup group;
   test::ResetTestGroup(&group);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &group.tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &group.tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
@@ -57,58 +54,12 @@ TEST(TileUtilsTest, SortWithEmptyTileStats) {
 
   std::map<std::string, TileStats> tile_stats;
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-1");
   EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-2");
-}
-
-TEST(TileUtilsTest, SortWithEmptyTileStatsAndShuffle) {
-  base::test::ScopedFeatureList feature_list;
-  // Shuffle the 2nd and 3rd tile.
-  std::map<std::string, std::string> params = {{kTileShufflePositionKey, "1"}};
-  feature_list.InitAndEnableFeatureWithParameters(features::kQueryTiles,
-                                                  params);
-  TileGroup group;
-  test::ResetTestGroup(&group);
-
-  std::map<std::string, TileStats> tile_stats;
-
-  // First tile should be in place.
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
-  EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
-  EXPECT_EQ(group.tiles[1]->id, "guid-1-3");
-  EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
-  EXPECT_EQ(group.tiles[0]->sub_tiles[0]->id, "guid-2-1");
-  EXPECT_EQ(group.tiles[0]->sub_tiles[1]->id, "guid-2-2");
-}
-
-TEST(TileUtilsTest, SortWithTrendingTilesAndShuffle) {
-  base::test::ScopedFeatureList feature_list;
-  TileGroup group;
-  test::ResetTestGroup(&group);
-  std::vector<std::unique_ptr<Tile>> trending = test::GetTestTrendingTileList();
-  // Insert trending tiles after the first tile.
-  group.tiles.insert(group.tiles.begin() + 1,
-                     std::make_move_iterator(trending.begin()),
-                     std::make_move_iterator(trending.end()));
-  std::map<std::string, TileStats> tile_stats;
-
-  // First two tile should be in place.
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
-  EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
-  EXPECT_EQ(group.tiles[1]->id, "trending_1");
-
-  // Remaining tiles are reversed.
-  EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
-  EXPECT_EQ(group.tiles[3]->id, "guid-1-2");
-  EXPECT_EQ(group.tiles[4]->id, "trending_3");
-  EXPECT_EQ(group.tiles[5]->id, "trending_2");
 }
 
 // If new tiles are at the front, tile ordering should be kept after
@@ -122,8 +73,7 @@ TEST(TileUtilsTest, SortWithNewTilesAtTheFront) {
   tile_stats["guid-1-4"] = TileStats(group.last_updated_ts, 0.4);
   tile_stats["guid-2-2"] = TileStats(group.last_updated_ts, 0.6);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
@@ -149,8 +99,7 @@ TEST(TileUtilsTest, SortWithNewTilesAtTheEnd) {
   tile_stats["guid-1-2"] = TileStats(group.last_updated_ts, 0.2);
   tile_stats["guid-2-1"] = TileStats(group.last_updated_ts, 0.3);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-2");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-3");
@@ -169,8 +118,7 @@ TEST(TileUtilsTest, SortWithNewTilesInTheMiddle) {
   tile_stats["guid-1-1"] = TileStats(group.last_updated_ts, 0.5);
   tile_stats["guid-1-3"] = TileStats(group.last_updated_ts, 0.7);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
@@ -191,8 +139,7 @@ TEST(TileUtilsTest, SortWithTilesNotClickedRecently) {
   tile_stats["guid-2-1"] = TileStats(past_time, 0.3);
   tile_stats["guid-2-2"] = TileStats(group.last_updated_ts, 0.3);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
@@ -212,8 +159,7 @@ TEST(TileUtilsTest, UnusedTilesCleared) {
   // Stats for a tile that is no longer used.
   tile_stats[unsed_tile_id] = TileStats(group.last_updated_ts, 0.1);
 
-  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats,
-                               ReverseTileShuffler());
+  SortTilesAndClearUnusedStats(&group.tiles, &tile_stats);
   EXPECT_EQ(group.tiles[0]->id, "guid-1-3");
   EXPECT_EQ(group.tiles[1]->id, "guid-1-1");
   EXPECT_EQ(group.tiles[2]->id, "guid-1-2");
@@ -239,6 +185,29 @@ TEST(TileUtilsTest, IsTrendingTile) {
   EXPECT_FALSE(IsTrendingTile("Trending_news"));
   EXPECT_FALSE(IsTrendingTile("trendingnews"));
   EXPECT_FALSE(IsTrendingTile("news"));
+}
+
+TEST(TileUtilsTest, ShuffleTiles) {
+  std::vector<Tile> tiles;
+  Tile tile1;
+  tile1.id = "t1";
+  Tile tile2;
+  tile2.id = "t2";
+  Tile tile3;
+  tile3.id = "t3";
+  Tile tile4;
+  tile4.id = "t4";
+
+  tiles.push_back(tile1);
+  tiles.push_back(tile2);
+  tiles.push_back(tile3);
+  tiles.push_back(tile4);
+
+  ShuffleTiles(&tiles, ReverseTileShuffler());
+  EXPECT_EQ(tiles[0].id, "t1");
+  EXPECT_EQ(tiles[1].id, "t2");
+  EXPECT_EQ(tiles[2].id, "t4");
+  EXPECT_EQ(tiles[3].id, "t3");
 }
 
 }  // namespace
