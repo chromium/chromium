@@ -19,8 +19,8 @@
         android:paddingTop="24dp"
         android:paddingBottom="24dp"
         android:background="@color/signin_header_animation_background"
+        android:contentDescription="@string/adaptive_toolbar_edit_shortcut"
         android:scaleType="center"
-        app:srcCompat="@drawable/adaptive_toolbar_preference_header"
-        tools:ignore="ContentDescription" />
+        app:srcCompat="@drawable/adaptive_toolbar_preference_header"/>
 
 </RelativeLayout>
