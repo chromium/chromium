@@ -4873,7 +4873,12 @@ void RenderFrameHostImpl::ViewSource() {
   delegate_->ViewSource(this);
 }
 
-void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting() {
+void RenderFrameHostImpl::FlushNetworkAndNavigationInterfacesForTesting(
+    bool do_nothing_if_no_network_service_connection) {
+  if (do_nothing_if_no_network_service_connection &&
+      !network_service_disconnect_handler_holder_) {
+    return;
+  }
   DCHECK(network_service_disconnect_handler_holder_);
   network_service_disconnect_handler_holder_.FlushForTesting();  // IN-TEST
 

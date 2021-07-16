@@ -43,6 +43,7 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
@@ -4646,19 +4647,60 @@ class SubresourceLoadingTest : public NavigationBrowserTest {
   void VerifyImageSubresourceLoads(
       const ToRenderFrameHost& target,
       const std::string& target_document = "document") {
-    VerifySingleImageSubresourceLoad(target, target_document);
+    RenderFrameHostImpl* target_frame =
+        static_cast<RenderFrameHostImpl*>(target.render_frame_host());
+    VerifySingleImageSubresourceLoad(target_frame, target_document);
 
     // Verify detecting and recovering from a NetworkService crash (e.g. via the
     // `network_service_disconnect_handler_holder_mojo` field and the
     // UpdateSubresourceLoaderFactories method of RenderFrameHostImpl).
     if (!IsInProcessNetworkService() && test_network_service_crashes_) {
       SimulateNetworkServiceCrash();
-      VerifySingleImageSubresourceLoad(target, target_document);
+
+      // In addition to waiting (inside SimulateNetworkServiceCrash above) for
+      // getting notified about being disconnected from
+      // network::mojom::NetworkServiceTest, we also want to make sure that the
+      // relevant RenderFrameHost realizes that the NetworkService has crashed.
+      // Which RenderFrameHost is relevant varies from test to test, so we
+      // flush multiple frames and use kDoNothingIfNoNetworkServiceConnection.
+      FlushNetworkInterfacesInOpenerChain(target_frame);
+
+      // Rerun the test after the NetworkService crash.
+      VerifySingleImageSubresourceLoad(target_frame, target_document);
     }
   }
 
  private:
-  void VerifySingleImageSubresourceLoad(const ToRenderFrameHost& target,
+  void FlushNetworkInterfacesInOpenerChain(RenderFrameHostImpl* current_frame) {
+    std::set<WebContents*> visited_contents;
+    while (true) {
+      // Check if we've already visited the current frame tree.
+      DCHECK(current_frame);
+      WebContents* current_contents =
+          WebContents::FromRenderFrameHost(current_frame);
+      DCHECK(current_contents);
+      if (base::Contains(visited_contents, current_contents))
+        break;
+      visited_contents.insert(current_contents);
+
+      // Flush all the frames in the `current_frame`'s frame tree.
+      for (RenderFrameHost* frame_to_flush : current_contents->GetAllFrames()) {
+        constexpr bool kDoNothingIfNoNetworkServiceConnection = true;
+        frame_to_flush->FlushNetworkAndNavigationInterfacesForTesting(
+            kDoNothingIfNoNetworkServiceConnection);
+      }
+
+      // Traverse the `current_frame`'s opener chain.
+      if (FrameTreeNode* opener_node =
+              current_frame->frame_tree_node()->opener()) {
+        current_frame = opener_node->current_frame_host();
+      } else {
+        break;  // Break out of the loop if there is no opener.
+      }
+    }
+  }
+
+  void VerifySingleImageSubresourceLoad(RenderFrameHost* target,
                                         const std::string& target_document) {
     // Use a random, GUID-based hostname, to avoid hitting the network cache.
     GURL image_url = embedded_test_server()->GetURL(
@@ -4951,17 +4993,9 @@ IN_PROC_BROWSER_TEST_F(SubresourceLoadingTest,
 
 // See the doc comment for the
 // URLLoaderFactoryInInitialEmptyDoc_NewFrameWithoutSrc test case.
-// crbug.com/1224893: Test flaky on Mac.
-#if defined(OS_MAC)
-#define MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank \
-  DISABLED_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank
-#else
-#define MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank \
-  URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank
-#endif
 IN_PROC_BROWSER_TEST_F(
     SubresourceLoadingTest,
-    MAYBE_URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank) {
+    URLLoaderFactoryInInitialEmptyDoc_NewFrameWithAboutBlank) {
   GURL opener_url(embedded_test_server()->GetURL("/title1.html"));
   EXPECT_TRUE(NavigateToURL(shell(), opener_url));
 

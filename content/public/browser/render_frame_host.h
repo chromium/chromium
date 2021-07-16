@@ -794,7 +794,13 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // Calls |FlushForTesting()| on Network Service and FrameNavigationControl
   // related interfaces to make sure all in-flight mojo messages have been
   // received by the other end. For test use only.
-  virtual void FlushNetworkAndNavigationInterfacesForTesting() = 0;
+  //
+  // It is usually an error to call this method when the frame doesn't have any
+  // NetworkService connection.  OTOH, tests that can't easily tell when this
+  // may happen can set `do_nothing_if_no_network_service_connection` to true
+  // (this should be needed relatively rarely).
+  virtual void FlushNetworkAndNavigationInterfacesForTesting(
+      bool do_nothing_if_no_network_service_connection = false) = 0;
 
   // Retrieve the back/forward cache CanStoreNow debug string.
   virtual std::string GetBackForwardCanStoreNowDebugStringForTesting() = 0;

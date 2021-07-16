@@ -377,7 +377,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
       const base::flat_set<url::Origin>& isolated_world_origins,
       bool push_to_renderer_now) override;
   bool IsSandboxed(network::mojom::WebSandboxFlags flags) override;
-  void FlushNetworkAndNavigationInterfacesForTesting() override;
+  void FlushNetworkAndNavigationInterfacesForTesting(
+      bool do_nothing_if_no_network_service_connection = false) override;
   std::string GetBackForwardCanStoreNowDebugStringForTesting() override;
   void PrepareForInnerWebContentsAttach(
       PrepareForInnerWebContentsAttachCallback callback) override;
