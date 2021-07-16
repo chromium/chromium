@@ -664,20 +664,12 @@ class PDFExtensionLoadTest
   }
 };
 
-// Disabled because it's flaky.
-// See the issue for details: https://crbug.com/826055.
-#if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
-    defined(ADDRESS_SANITIZER)
-#define MAYBE_Load(suffix) DISABLED_Load##suffix
-#else
-#define MAYBE_Load(suffix) Load##suffix
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load()) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, Load) {
   LoadAllPdfsTest("pdf");
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, MAYBE_Load(Private)) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionLoadTest, LoadPrivate) {
   LoadAllPdfsTest("pdf_private");
 }
 #endif
