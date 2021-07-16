@@ -23,6 +23,7 @@
 
 namespace chrome_pdf {
 struct AccessibilityDocInfo;
+struct AccessibilityPageInfo;
 struct AccessibilityViewportInfo;
 }  // namespace chrome_pdf
 
@@ -63,7 +64,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   void SetAccessibilityDocInfo(
       const chrome_pdf::AccessibilityDocInfo& doc_info);
   void SetAccessibilityPageInfo(
-      const PP_PrivateAccessibilityPageInfo& page_info,
+      const chrome_pdf::AccessibilityPageInfo& page_info,
       const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
       const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects);

@@ -53,10 +53,6 @@ gfx::RectF PpFloatRectToGfxRectF(const PP_FloatRect& r) {
   return gfx::RectF(r.point.x, r.point.y, r.size.width, r.size.height);
 }
 
-gfx::RectF PPRectToGfxRectF(const PP_Rect& r) {
-  return gfx::RectF(r.point.x, r.point.y, r.size.width, r.size.height);
-}
-
 // This class is used as part of our heuristic to determine which text runs live
 // on the same "line".  As we process runs, we keep a weighted average of the
 // top and bottom coordinates of the line, and if a new run falls within that
@@ -1320,7 +1316,7 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
 }
 
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
-    const PP_PrivateAccessibilityPageInfo& page_info,
+    const chrome_pdf::AccessibilityPageInfo& page_info,
     const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
     const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
@@ -1355,7 +1351,7 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   page_node->AddBoolAttribute(ax::mojom::BoolAttribute::kIsPageBreakingObject,
                               true);
 
-  gfx::RectF page_bounds = PPRectToGfxRectF(page_info.bounds);
+  gfx::RectF page_bounds(page_info.bounds);
   page_node->relative_bounds.bounds = page_bounds;
   doc_node_->relative_bounds.bounds.Union(page_node->relative_bounds.bounds);
   doc_node_->child_ids.push_back(page_node->id);

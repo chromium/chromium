@@ -9,6 +9,7 @@
 #include "base/lazy_instance.h"
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
 #include "content/public/renderer/pepper_plugin_instance.h"
+#include "content/public/renderer/ppapi_gfx_conversion.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
@@ -285,13 +286,16 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityDocInfo(
 
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
     ppapi::host::HostMessageContext* context,
-    const PP_PrivateAccessibilityPageInfo& page_info,
+    const PP_PrivateAccessibilityPageInfo& pp_page_info,
     const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_run_info,
     const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
   CreatePdfAccessibilityTreeIfNeeded();
+  chrome_pdf::AccessibilityPageInfo page_info = {
+      pp_page_info.page_index, content::PP_ToGfxRect(pp_page_info.bounds),
+      pp_page_info.text_run_count, pp_page_info.char_count};
   pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_info,
                                                     chars, page_objects);
   return PP_OK;

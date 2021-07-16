@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace pdf {
 
@@ -186,13 +187,13 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.page_index = 0;
     page_info_.text_run_count = 0;
     page_info_.char_count = 0;
-    page_info_.bounds = PP_MakeRectFromXYWH(0, 0, 1, 1);
+    page_info_.bounds = gfx::Rect(0, 0, 1, 1);
   }
 
  protected:
   chrome_pdf::AccessibilityViewportInfo viewport_info_;
   chrome_pdf::AccessibilityDocInfo doc_info_;
-  PP_PrivateAccessibilityPageInfo page_info_;
+  chrome_pdf::AccessibilityPageInfo page_info_;
   std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs_;
   std::vector<PP_PrivateAccessibilityCharInfo> chars_;
   ppapi::PdfAccessibilityPageObjects page_objects_;
@@ -253,9 +254,7 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
     if (i == 2)
       page_bounds.Transpose();
 
-    page_info_.bounds =
-        PP_MakeRectFromXYWH(page_bounds.x(), page_bounds.y(),
-                            page_bounds.width(), page_bounds.height());
+    page_info_.bounds = gfx::ToEnclosingRect(page_bounds);
     pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
     pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
     pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
