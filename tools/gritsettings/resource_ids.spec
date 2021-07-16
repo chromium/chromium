@@ -492,6 +492,10 @@
     "META": {"sizes": {"includes": [50],}},
    "includes": [2700],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chromeos/components/projector_app/resources/chromeos_projector_app_untrusted_resources.grd": {
+    "META": {"sizes": {"includes": [50],}},
+    "includes": [2705],
+  },
   # END chromeos/ section.
 
   # START components/ section.

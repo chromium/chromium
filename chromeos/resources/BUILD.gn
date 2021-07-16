@@ -86,6 +86,12 @@ chromeos_generated_grit("personalization_app_resources") {
   deps = [ "//chromeos/components/personalization_app/resources:build_grd" ]
 }
 
+# Resources used by chrome-untrusted://projector SWA.
+chromeos_generated_grit("projector_app_untrusted_resources") {
+  source = "$root_gen_dir/chromeos/components/projector_app/resources/chromeos_projector_app_untrusted_resources.grd"
+  deps = [ "//chromeos/components/projector_app/resources:build_untrusted_grd" ]
+}
+
 if (!is_official_build) {
   # Resources used by chrome://sample-system-web-app
   chromeos_generated_grit("sample_system_web_app_resources") {

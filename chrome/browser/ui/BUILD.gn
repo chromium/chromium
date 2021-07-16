@@ -2781,6 +2781,7 @@ static_library("ui") {
       "//chromeos/components/phonehub",
       "//chromeos/components/phonehub:debug",
       "//chromeos/components/print_management",
+      "//chromeos/components/projector_app",
       "//chromeos/components/proximity_auth",
       "//chromeos/components/quick_answers",
       "//chromeos/components/string_matching",
