@@ -406,122 +406,51 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
       requestURL.SchemeIs(url::kAboutScheme) ||
       requestURL.SchemeIs(url::kBlobScheme);
 
-  if (policyDecision.ShouldAllowNavigation()) {
-    BOOL userInteractedWithRequestMainFrame =
-        self.userInteractionState->HasUserTappedRecently(webView) &&
-        net::GURLWithNSURL(action.request.mainDocumentURL) ==
-            self.userInteractionState->LastUserInteraction()->main_document_url;
-    BOOL isCrossOriginTargetFrame = NO;
-    if (action.sourceFrame && action.targetFrame &&
-        action.sourceFrame != action.targetFrame) {
-      url::Origin sourceOrigin =
-          url::Origin::Create(web::GURLOriginWithWKSecurityOrigin(
-              action.sourceFrame.securityOrigin));
-      url::Origin targetOrigin =
-          url::Origin::Create(web::GURLOriginWithWKSecurityOrigin(
-              action.targetFrame.securityOrigin));
-      isCrossOriginTargetFrame = !sourceOrigin.IsSameOriginWith(targetOrigin);
-    }
-    web::WebStatePolicyDecider::RequestInfo requestInfo(
-        transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
-        userInteractedWithRequestMainFrame);
-
-    policyDecision =
-        self.webStateImpl->ShouldAllowRequest(action.request, requestInfo);
-
-    // The WebState may have been closed in the ShouldAllowRequest callback.
-    if (self.beingDestroyed) {
-      decisionHandler(WKNavigationActionPolicyCancel);
-      return;
-    }
-  }
-
-  if (!webControllerCanShow) {
-    policyDecision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
-  }
-
-  if (policyDecision.ShouldAllowNavigation()) {
-    if ([[action.request HTTPMethod] isEqualToString:@"POST"]) {
-      // Display the confirmation dialog if a form repost is detected.
-      if (action.navigationType == WKNavigationTypeFormResubmitted) {
-        self.webStateImpl->ShowRepostFormWarningDialog(
-            base::BindOnce(^(bool shouldContinue) {
-              if (self.beingDestroyed) {
-                decisionHandler(WKNavigationActionPolicyCancel);
-              } else if (shouldContinue) {
-                decisionHandler(WKNavigationActionPolicyAllow);
-              } else {
-                decisionHandler(WKNavigationActionPolicyCancel);
-                if (action.targetFrame.mainFrame) {
-                  [self.pendingNavigationInfo setCancelled:YES];
-                }
-              }
-            }));
-        return;
-      }
-
-      web::NavigationItemImpl* item =
-          self.navigationManagerImpl->GetCurrentItemImpl();
-      // TODO(crbug.com/570699): Remove this check once it's no longer possible
-      // to have no current entries.
-      if (item)
-        [self cachePOSTDataForRequest:action.request inNavigationItem:item];
-    }
-  } else {
-    if (action.targetFrame.mainFrame) {
-      if (!self.beingDestroyed && policyDecision.ShouldDisplayError()) {
-        DCHECK(policyDecision.GetDisplayError());
-
-        // Navigation was blocked by |ShouldProvisionallyFailRequest|. Cancel
-        // load of page.
-        decisionHandler(WKNavigationActionPolicyCancel);
-
-        // Handling presentation of policy decision error is dependent on
-        // |web::features::kUseJSForErrorPage| feature.
-        if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
+  __weak CRWWKNavigationHandler* weakSelf = self;
+  auto callback = base::BindOnce(
+      ^(web::WebStatePolicyDecider::PolicyDecision policyDecision) {
+        __strong CRWWKNavigationHandler* strongSelf = weakSelf;
+        // The WebState may have been closed in the ShouldAllowRequest callback.
+        if (!strongSelf || strongSelf.beingDestroyed) {
+          decisionHandler(WKNavigationActionPolicyCancel);
           return;
         }
 
-        [self displayError:policyDecision.GetDisplayError()
-            forCancelledNavigationToURL:action.request.URL
-                              inWebView:webView
-                         withTransition:transition];
-        return;
-      }
+        if (!webControllerCanShow) {
+          policyDecision = web::WebStatePolicyDecider::PolicyDecision::Cancel();
+        }
 
-      [self.pendingNavigationInfo setCancelled:YES];
-      if (self.navigationManagerImpl->GetPendingItemIndex() == -1) {
-        // Discard the new pending item to ensure that the current URL is not
-        // different from what is displayed on the view. There is no need to
-        // reset pending item index for a different pending back-forward
-        // navigation.
-        self.navigationManagerImpl->DiscardNonCommittedItems();
-      }
+        [strongSelf answerDecisionHandler:decisionHandler
+                      forNavigationAction:action
+                       withPolicyDecision:policyDecision
+                                  webView:webView
+                 forceBlockUniversalLinks:forceBlockUniversalLinks];
+      });
 
-      web::NavigationContextImpl* context =
-          [self contextForPendingMainFrameNavigationWithURL:requestURL];
-      if (context) {
-        // Destroy associated pending item, because this will be the last
-        // WKWebView callback for this navigation context.
-        context->ReleaseItem();
-      }
-
-      if (!self.beingDestroyed &&
-          [self shouldClosePageOnNativeApplicationLoad]) {
-        self.webStateImpl->CloseWebState();
-        decisionHandler(WKNavigationActionPolicyCancel);
-        return;
-      }
-    }
-  }
-
-  if (policyDecision.ShouldCancelNavigation()) {
-    decisionHandler(WKNavigationActionPolicyCancel);
+  if (!policyDecision.ShouldAllowNavigation()) {
+    std::move(callback).Run(policyDecision);
     return;
   }
-  BOOL isOffTheRecord = self.webStateImpl->GetBrowserState()->IsOffTheRecord();
-  decisionHandler(web::GetAllowNavigationActionPolicy(
-      isOffTheRecord || forceBlockUniversalLinks));
+
+  BOOL userInteractedWithRequestMainFrame =
+      self.userInteractionState->HasUserTappedRecently(webView) &&
+      net::GURLWithNSURL(action.request.mainDocumentURL) ==
+          self.userInteractionState->LastUserInteraction()->main_document_url;
+  BOOL isCrossOriginTargetFrame = NO;
+  if (action.sourceFrame && action.targetFrame &&
+      action.sourceFrame != action.targetFrame) {
+    url::Origin sourceOrigin = url::Origin::Create(
+        web::GURLOriginWithWKSecurityOrigin(action.sourceFrame.securityOrigin));
+    url::Origin targetOrigin = url::Origin::Create(
+        web::GURLOriginWithWKSecurityOrigin(action.targetFrame.securityOrigin));
+    isCrossOriginTargetFrame = !sourceOrigin.IsSameOriginWith(targetOrigin);
+  }
+  web::WebStatePolicyDecider::RequestInfo requestInfo(
+      transition, isMainFrameNavigationAction, isCrossOriginTargetFrame,
+      userInteractedWithRequestMainFrame);
+
+  self.webStateImpl->ShouldAllowRequest(action.request, requestInfo,
+                                        std::move(callback));
 }
 
 - (void)webView:(WKWebView*)webView
@@ -1642,6 +1571,105 @@ void ReportOutOfSyncURLInDidStartProvisionalNavigation(
 - (void)forgetNullWKNavigation:(WKNavigation*)navigation {
   if (!navigation)
     [self.navigationStates removeNavigation:navigation];
+}
+
+// This method should be called on deciding policy for navigation action. It
+// Answers the |decisionHandler| with a final decision caculated with passed
+// |policyDecision|. The passed |policyDecision| should be determined by some
+// conditions and policy deciders
+- (void)answerDecisionHandler:
+            (void (^)(WKNavigationActionPolicy))decisionHandler
+          forNavigationAction:(WKNavigationAction*)action
+           withPolicyDecision:
+               (web::WebStatePolicyDecider::PolicyDecision)policyDecision
+                      webView:(WKWebView*)webView
+     forceBlockUniversalLinks:(BOOL)forceBlockUniversalLinks {
+  if (policyDecision.ShouldAllowNavigation()) {
+    if ([[action.request HTTPMethod] isEqualToString:@"POST"]) {
+      // Display the confirmation dialog if a form repost is detected.
+      if (action.navigationType == WKNavigationTypeFormResubmitted) {
+        self.webStateImpl->ShowRepostFormWarningDialog(
+            base::BindOnce(^(bool shouldContinue) {
+              if (self.beingDestroyed) {
+                decisionHandler(WKNavigationActionPolicyCancel);
+              } else if (shouldContinue) {
+                decisionHandler(WKNavigationActionPolicyAllow);
+              } else {
+                decisionHandler(WKNavigationActionPolicyCancel);
+                if (action.targetFrame.mainFrame) {
+                  [self.pendingNavigationInfo setCancelled:YES];
+                }
+              }
+            }));
+        return;
+      }
+
+      web::NavigationItemImpl* item =
+          self.navigationManagerImpl->GetCurrentItemImpl();
+      // TODO(crbug.com/570699): Remove this check once it's no longer
+      // possible to have no current entries.
+      if (item)
+        [self cachePOSTDataForRequest:action.request inNavigationItem:item];
+    }
+  } else {
+    if (action.targetFrame.mainFrame) {
+      if (!self.beingDestroyed && policyDecision.ShouldDisplayError()) {
+        DCHECK(policyDecision.GetDisplayError());
+
+        // Navigation was blocked by |ShouldProvisionallyFailRequest|. Cancel
+        // load of page.
+        decisionHandler(WKNavigationActionPolicyCancel);
+
+        // Handling presentation of policy decision error is dependent on
+        // |web::features::kUseJSForErrorPage| feature.
+        if (!base::FeatureList::IsEnabled(web::features::kUseJSForErrorPage)) {
+          return;
+        }
+
+        ui::PageTransition transition =
+            [self pageTransitionFromNavigationType:action.navigationType];
+
+        [self displayError:policyDecision.GetDisplayError()
+            forCancelledNavigationToURL:action.request.URL
+                              inWebView:webView
+                         withTransition:transition];
+        return;
+      }
+
+      [self.pendingNavigationInfo setCancelled:YES];
+      if (self.navigationManagerImpl->GetPendingItemIndex() == -1) {
+        // Discard the new pending item to ensure that the current URL is not
+        // different from what is displayed on the view. There is no need to
+        // reset pending item index for a different pending back-forward
+        // navigation.
+        self.navigationManagerImpl->DiscardNonCommittedItems();
+      }
+
+      web::NavigationContextImpl* context = [self
+          contextForPendingMainFrameNavigationWithURL:net::GURLWithNSURL(
+                                                          action.request.URL)];
+      if (context) {
+        // Destroy associated pending item, because this will be the last
+        // WKWebView callback for this navigation context.
+        context->ReleaseItem();
+      }
+
+      if (!self.beingDestroyed &&
+          [self shouldClosePageOnNativeApplicationLoad]) {
+        self.webStateImpl->CloseWebState();
+        decisionHandler(WKNavigationActionPolicyCancel);
+        return;
+      }
+    }
+  }
+
+  if (policyDecision.ShouldCancelNavigation()) {
+    decisionHandler(WKNavigationActionPolicyCancel);
+    return;
+  }
+  BOOL isOffTheRecord = self.webStateImpl->GetBrowserState()->IsOffTheRecord();
+  decisionHandler(web::GetAllowNavigationActionPolicy(
+      isOffTheRecord || forceBlockUniversalLinks));
 }
 
 #pragma mark - Auth Challenge

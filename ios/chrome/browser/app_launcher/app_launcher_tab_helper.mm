@@ -161,15 +161,16 @@ void AppLauncherTabHelper::RequestToLaunchApp(const GURL& url,
   }
 }
 
-web::WebStatePolicyDecider::PolicyDecision
-AppLauncherTabHelper::ShouldAllowRequest(
+void AppLauncherTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+    const web::WebStatePolicyDecider::RequestInfo& request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   GURL request_url = net::GURLWithNSURL(request.URL);
   if (!IsAppUrl(request_url)) {
     // This URL can be handled by the WebState and doesn't require App launcher
     // handling.
-    return web::WebStatePolicyDecider::PolicyDecision::Allow();
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
   if (IsURLBlocklistEnabled()) {
@@ -179,15 +180,17 @@ AppLauncherTabHelper::ShouldAllowRequest(
             web_state()->GetBrowserState());
     if (blocklistService->GetURLBlocklistState(request_url) ==
         policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
-      return web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
-          policy_url_blocking_util::CreateBlockedUrlError());
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::CancelAndDisplayError(
+              policy_url_blocking_util::CreateBlockedUrlError()));
     }
   }
 
   // Disallow navigations to tel: URLs from cross-origin frames.
   if (request_url.SchemeIs(url::kTelScheme) &&
       request_info.target_frame_is_cross_origin) {
-    return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
   }
 
   ExternalURLRequestStatus request_status =
@@ -205,11 +208,15 @@ AppLauncherTabHelper::ShouldAllowRequest(
   UMA_HISTOGRAM_ENUMERATION("WebController.ExternalURLRequestBlocking",
                             request_status, ExternalURLRequestStatus::kCount);
   // Request is blocked.
-  if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked)
-    return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  if (request_status == ExternalURLRequestStatus::kSubFrameRequestBlocked) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  }
 
-  if (!IsValidAppUrl(request_url))
-    return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  if (!IsValidAppUrl(request_url)) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Cancel());
+  }
 
   // If this is a Universal 2nd Factor (U2F) call, the origin needs to be
   // checked to make sure it's secure and then update the |request_url| with
@@ -222,8 +229,10 @@ AppLauncherTabHelper::ShouldAllowRequest(
     U2FTabHelper* u2f_helper = U2FTabHelper::FromWebState(web_state_);
     request_url = u2f_helper->GetXCallbackUrl(request_url, origin);
     // If the URL was rejected by the U2F handler, |request_url| will be empty.
-    if (!request_url.is_valid())
-      return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+    if (!request_url.is_valid()) {
+      return std::move(callback).Run(
+          web::WebStatePolicyDecider::PolicyDecision::Cancel());
+    }
   }
 
   GURL last_committed_url = web_state_->GetLastCommittedURL();
@@ -252,7 +261,7 @@ AppLauncherTabHelper::ShouldAllowRequest(
     // tab.
     RequestToLaunchApp(request_url, last_committed_url, is_link_transition);
   }
-  return web::WebStatePolicyDecider::PolicyDecision::Cancel();
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(AppLauncherTabHelper)

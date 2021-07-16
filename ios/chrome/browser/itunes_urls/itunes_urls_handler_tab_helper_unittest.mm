@@ -46,10 +46,19 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
         ui::PageTransition::PAGE_TRANSITION_LINK, main_frame,
         /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/false);
-    web::WebStatePolicyDecider::PolicyDecision request_policy =
-        web_state_.ShouldAllowRequest(
-            [NSURLRequest requestWithURL:[NSURL URLWithString:url_string]],
-            request_info);
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision request_policy =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          request_policy = decision;
+          callback_called = true;
+        });
+    web_state_.ShouldAllowRequest(
+        [NSURLRequest requestWithURL:[NSURL URLWithString:url_string]],
+        request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
     return request_policy.ShouldCancelNavigation() &&
            (fake_launcher_.launchedProductID != nil ||
             fake_launcher_.launchedProductParams != nil);

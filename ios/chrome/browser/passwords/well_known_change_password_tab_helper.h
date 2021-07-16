@@ -31,8 +31,10 @@ class WellKnownChangePasswordTabHelper
  public:
   ~WellKnownChangePasswordTabHelper() override;
   // web::WebStatePolicyDecider:
-  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
-                                    const RequestInfo& request_info) override;
+  void ShouldAllowRequest(
+      NSURLRequest* request,
+      const web::WebStatePolicyDecider::RequestInfo& request_info,
+      web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void ShouldAllowResponse(
       NSURLResponse* response,
       bool for_main_frame,

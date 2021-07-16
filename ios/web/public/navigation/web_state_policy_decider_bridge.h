@@ -9,27 +9,28 @@
 
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 
+typedef void (^PolicyDecisionHandler)(
+    web::WebStatePolicyDecider::PolicyDecision);
+
 // Objective-C interface for web::WebStatePolicyDecider.
 @protocol CRWWebStatePolicyDecider <NSObject>
 @optional
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
-- (web::WebStatePolicyDecider::PolicyDecision)
-    shouldAllowRequest:(NSURLRequest*)request
-           requestInfo:
-               (const web::WebStatePolicyDecider::RequestInfo&)requestInfo;
+- (void)shouldAllowRequest:(NSURLRequest*)request
+               requestInfo:
+                   (const web::WebStatePolicyDecider::RequestInfo&)requestInfo
+           decisionHandler:(PolicyDecisionHandler)decisionHandler;
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowRequest|.
 - (bool)shouldAllowErrorPageToBeDisplayed:(NSURLResponse*)response
                              forMainFrame:(BOOL)forMainFrame;
 
 // Invoked by |WebStatePolicyDeciderBridge::ShouldAllowResponse|.
-- (void)
-    decidePolicyForNavigationResponse:(NSURLResponse*)response
-                         forMainFrame:(BOOL)forMainFrame
-                    completionHandler:
-                        (void (^)(web::WebStatePolicyDecider::PolicyDecision))
-                            completionHandler;
+- (void)decidePolicyForNavigationResponse:(NSURLResponse*)response
+                             forMainFrame:(BOOL)forMainFrame
+                          decisionHandler:
+                              (PolicyDecisionHandler)decisionHandler;
 @end
 
 namespace web {
@@ -43,13 +44,13 @@ class WebStatePolicyDeciderBridge : public web::WebStatePolicyDecider {
   ~WebStatePolicyDeciderBridge() override;
 
   // web::WebStatePolicyDecider methods.
-  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
-                                    const RequestInfo& request_info) override;
+  void ShouldAllowRequest(NSURLRequest* request,
+                          const RequestInfo& request_info,
+                          PolicyDecisionCallback callback) override;
 
-  void ShouldAllowResponse(
-      NSURLResponse* response,
-      bool for_main_frame,
-      base::OnceCallback<void(PolicyDecision)> callback) override;
+  void ShouldAllowResponse(NSURLResponse* response,
+                           bool for_main_frame,
+                           PolicyDecisionCallback callback) override;
 
   bool ShouldAllowErrorPageToBeDisplayed(NSURLResponse* response,
                                          bool for_main_frame) override;

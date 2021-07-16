@@ -92,13 +92,14 @@ class TestWebStatePolicyDecider : public WebStatePolicyDecider {
   const std::string& allowed_page_text() const { return allowed_query_; }
 
   // WebStatePolicyDecider overrides
-  PolicyDecision ShouldAllowRequest(NSURLRequest* request,
-                                    const RequestInfo& request_info) override {
+  void ShouldAllowRequest(NSURLRequest* request,
+                          const RequestInfo& request_info,
+                          PolicyDecisionCallback callback) override {
     PolicyDecision decision = PolicyDecision::Allow();
     GURL URL = net::GURLWithNSURL(request.URL);
     if (URL.path() != path_ || URL.query() == blocked_request_query_)
       decision = PolicyDecision::CancelAndDisplayError(CreateEmbedderError());
-    return decision;
+    std::move(callback).Run(decision);
   }
   void ShouldAllowResponse(NSURLResponse* response,
                            bool for_main_frame,

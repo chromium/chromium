@@ -40,7 +40,7 @@ TEST_F(WebStatePolicyDeciderBridgeTest, ShouldAllowRequest) {
   WebStatePolicyDecider::RequestInfo request_info(
       transition_type, target_frame_is_main, target_frame_is_cross_origin,
       has_user_gesture);
-  decider_bridge_.ShouldAllowRequest(request, request_info);
+  decider_bridge_.ShouldAllowRequest(request, request_info, base::DoNothing());
   FakeShouldAllowRequestInfo* should_allow_request_info =
       [decider_ shouldAllowRequestInfo];
   ASSERT_TRUE(should_allow_request_info);

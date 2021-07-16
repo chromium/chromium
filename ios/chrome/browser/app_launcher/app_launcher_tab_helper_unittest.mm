@@ -126,9 +126,19 @@ class AppLauncherTabHelperTest : public PlatformTest {
     web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,
         has_user_gesture);
-    return tab_helper_
-        ->ShouldAllowRequest([NSURLRequest requestWithURL:url], request_info)
-        .ShouldAllowNavigation();
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          policy_decision = decision;
+          callback_called = true;
+        });
+    tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
+                                    request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
+    return policy_decision.ShouldAllowNavigation();
   }
 
   // Initialize reading list model and its required tab helpers.
@@ -175,10 +185,19 @@ class AppLauncherTabHelperTest : public PlatformTest {
         transition_type,
         /*target_frame_is_main=*/true, /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/true);
-    EXPECT_TRUE(tab_helper_
-                    ->ShouldAllowRequest([NSURLRequest requestWithURL:url],
-                                         request_info)
-                    .ShouldCancelNavigation());
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision policy_decision =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          policy_decision = decision;
+          callback_called = true;
+        });
+    tab_helper_->ShouldAllowRequest([NSURLRequest requestWithURL:url],
+                                    request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
+    EXPECT_TRUE(policy_decision.ShouldCancelNavigation());
 
     const ReadingListEntry* entry = model->GetEntryByURL(pending_url);
     return entry->IsRead() == expected_read_status;
