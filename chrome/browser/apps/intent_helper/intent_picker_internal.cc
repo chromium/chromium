@@ -54,7 +54,7 @@ bool ShouldCheckAppsForUrl(content::WebContents* web_contents) {
   // find a browser at this moment, skip the check and this will be handled
   // in later stage.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (browser && browser->deprecated_is_app())
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup()))
     return false;
 
   return true;
@@ -116,7 +116,7 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
 
 bool InAppBrowser(content::WebContents* web_contents) {
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  return !browser || browser->deprecated_is_app();
+  return !browser || browser->is_type_app() || browser->is_type_app_popup();
 }
 
 // Compares the host name of the referrer and target URL to decide whether
