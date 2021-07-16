@@ -20,6 +20,7 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/unique_position.h"
 #include "components/sync/engine/net/server_connection_manager.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

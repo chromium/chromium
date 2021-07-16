@@ -14,6 +14,7 @@ sync_protocol_bases = [
   "bookmark_specifics",
   "client_commands",
   "client_debug_info",
+  "data_type_progress_marker",
   "device_info_specifics",
   "dictionary_specifics",
   "encryption",

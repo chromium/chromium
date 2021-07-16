@@ -36,6 +36,10 @@ extern const char kDisableFakeServerFailureOutput[];
 
 }  // namespace switches
 
+namespace sync_pb {
+class DataTypeProgressMarker;
+}  // namespace sync_pb
+
 namespace fake_server {
 
 // This function only compares one part of the markers, the time-independent

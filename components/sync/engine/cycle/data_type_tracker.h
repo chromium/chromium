@@ -14,7 +14,11 @@
 #include "base/time/time.h"
 #include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class DataTypeProgressMarker;
+class GetUpdateTriggers;
+}  // namespace sync_pb
 
 namespace syncer {
 

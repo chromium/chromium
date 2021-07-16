@@ -8,6 +8,7 @@
 #include "base/compiler_specific.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/engine/update_handler.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 
 namespace syncer {

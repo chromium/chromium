@@ -12,7 +12,12 @@
 #include "components/sync/engine/cycle/status_controller.h"
 #include "components/sync/engine/events/protocol_event.h"
 #include "components/sync/engine/model_type_registry.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/sync_enums.pb.h"
+
+namespace sync_pb {
+class GetUpdatesMessage;
+class ClientToServerMessage;
+}  // namespace sync_pb
 
 namespace syncer {
 

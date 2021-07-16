@@ -17,6 +17,7 @@
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
 #include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"

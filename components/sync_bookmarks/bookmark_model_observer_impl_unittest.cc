@@ -19,6 +19,7 @@
 #include "components/favicon_base/favicon_types.h"
 #include "components/sync/base/time.h"
 #include "components/sync/base/unique_position.h"
+#include "components/sync/protocol/sync.pb.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
 #include "components/sync_bookmarks/synced_bookmark_tracker.h"
 #include "components/undo/bookmark_undo_service.h"

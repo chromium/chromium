@@ -14,7 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "components/sync/protocol/sync.proto";
+import "components/sync/protocol/data_type_progress_marker.proto";
 
 // Sync proto to store data type global metadata in model type storage.
 message ModelTypeState {

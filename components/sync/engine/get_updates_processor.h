@@ -10,10 +10,10 @@
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/syncer_error.h"
 #include "components/sync/engine/model_type_registry.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace sync_pb {
 class GetUpdatesResponse;
+class ClientToServerMessage;
 }  // namespace sync_pb
 
 namespace syncer {
