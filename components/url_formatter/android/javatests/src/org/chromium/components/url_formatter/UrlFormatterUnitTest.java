@@ -59,6 +59,20 @@ public class UrlFormatterUnitTest {
 
     @Test
     @SmallTest
+    public void testFormatUrlForDisplayOmitSchemeOmitTrivialSubdomains() {
+        Function<String, String> f =
+                UrlFormatter::formatUrlForDisplayOmitSchemeOmitTrivialSubdomains;
+
+        assertEquals("google.com/path", f.apply("http://user:pass@google.com/path"));
+        assertEquals("chrome://version", f.apply("chrome://version"));
+        assertEquals("äää.de", f.apply("https://äää.de"));
+        assertEquals("xn--4caaa.com", f.apply("https://äää.com"));
+        assertEquals("مثال.إختبار", f.apply("https://xn--mgbh0fb.xn--kgbechtv/"));
+        assertEquals("example.com/ test", f.apply("http://user:password@example.com/%20test"));
+    }
+
+    @Test
+    @SmallTest
     public void testFormatUrlForDisplayOmitSchemePathAndTrivialSubdomains() {
         Function<GURL, String> f =
                 UrlFormatter::formatUrlForDisplayOmitSchemePathAndTrivialSubdomains;
