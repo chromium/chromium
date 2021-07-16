@@ -78,9 +78,12 @@ void ArcMetricsServiceProxy::OnTaskDestroyed(int32_t task_id) {
 void ArcMetricsServiceProxy::OnArcSessionStopped(ArcStopReason stop_reason) {
   const auto* profile = ProfileManager::GetPrimaryUserProfile();
   if (arc::IsArcAllowedForProfile(profile)) {
-    base::UmaHistogramEnumeration(
-        GetHistogramNameByUserType("Arc.Session.StopReason", profile),
-        stop_reason);
+    std::string metric_name =
+        GetHistogramNameByUserType("Arc.Session.StopReason", profile);
+    base::UmaHistogramEnumeration(metric_name, stop_reason);
+    // Log the metric to facilitate finding feedback reports in Xamine.
+    VLOG(1) << metric_name << ": "
+            << static_cast<std::underlying_type_t<ArcStopReason>>(stop_reason);
   }
 }
 
