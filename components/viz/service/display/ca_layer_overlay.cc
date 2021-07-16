@@ -374,7 +374,7 @@ bool CALayerOverlayProcessor::AreClipSettingsValid(
   return true;
 }
 
-void CALayerOverlayProcessor::PutForcedOverlayContentIntoOverlays(
+void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPass* render_pass,
     const gfx::RectF& display_rect,

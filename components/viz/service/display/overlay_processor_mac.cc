@@ -97,14 +97,19 @@ void OverlayProcessorMac::ProcessForOverlays(
     // RenderPass overlays still point into that list. So instead, to avoid
     // drawing the root RenderPass, we set |damage_rect| to be empty.
     *damage_rect = gfx::Rect();
+  } else {
+    CALayerOverlayList underlays;
+    ca_layer_overlay_processor_->PutForcedOverlayContentIntoUnderlays(
+        resource_provider, render_pass.get(),
+        gfx::RectF(render_pass->output_rect), &render_pass->quad_list,
+        render_pass_filters, render_pass_backdrop_filters, &underlays);
+    // Put underlays at the beginning of the list of CALayers
+    underlays.reserve(underlays.size() + candidates->size());
+    for (auto&& candidate : *candidates) {
+      underlays.push_back(std::move(candidate));
+    }
+    candidates->swap(underlays);
   }
-
-  // TODO(crbug.com/1204555): uncomment the following call once underlay
-  // mechanism is properly implemented on MacOS.
-  // ca_layer_overlay_processor_->PutForcedOverlayContentIntoOverlays(
-  //    resource_provider, render_pass.get(),
-  //    gfx::RectF(render_pass->output_rect), &render_pass->quad_list,
-  //    render_pass_filters, render_pass_backdrop_filters, candidates);
 }
 
 void OverlayProcessorMac::AdjustOutputSurfaceOverlay(

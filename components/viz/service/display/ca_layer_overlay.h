@@ -101,7 +101,7 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
 
   bool AreClipSettingsValid(const CALayerOverlay& ca_layer_overlay,
                             CALayerOverlayList* ca_layer_overlay_list) const;
-  void PutForcedOverlayContentIntoOverlays(
+  void PutForcedOverlayContentIntoUnderlays(
       DisplayResourceProvider* resource_provider,
       AggregatedRenderPass* render_pass,
       const gfx::RectF& display_rect,
