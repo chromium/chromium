@@ -10,10 +10,14 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "services/network/public/mojom/early_hints.mojom-forward.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/navigation_policy.h"
+#include "url/origin.h"
 
 namespace net {
 class NetworkIsolationKey;
@@ -97,6 +101,12 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   // a certificate error.
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
+
+  // Creates a URLLoaderFactory for Early Hints preloads. Also calculates and
+  // returns the origin to be used for network::ResourceRequest.
+  virtual url::Origin CreateURLLoaderFactoryForEarlyHintsPreload(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+      const network::mojom::EarlyHints& early_hints) = 0;
 
  protected:
   NavigationURLLoaderDelegate() {}

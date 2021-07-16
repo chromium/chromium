@@ -67,6 +67,7 @@
 #include "content/browser/service_worker/service_worker_main_resource_handle.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/browser/web_package/subresource_web_bundle_navigation_info.h"
 #include "content/browser/web_package/web_bundle_handle_tracker.h"
@@ -2824,7 +2825,8 @@ void NavigationRequest::OnResponseStarted(
 
   {
     const url::Origin origin =
-        GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+        GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+            sandbox_flags_to_commit_.value());
     const PolicyContainerPolicies& policies =
         policy_container_navigation_bundle_->FinalPolicies();
     coop_status_.EnforceCOOP(policies.cross_origin_opener_policy, origin,
@@ -3227,6 +3229,47 @@ void NavigationRequest::OnRequestFailed(
       status, false /* skip_throttles */,
       absl::nullopt /* error_page_content */,
       status.should_collapse_initiator /* collapse_frame */);
+}
+
+url::Origin NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+    const network::mojom::EarlyHints& early_hints) {
+  // Early Hints preloads should happen only before the final response is
+  // received, and limited only in the main frame for now.
+  CHECK(!render_frame_host_);
+  CHECK(loader_);
+  CHECK_LT(state_, WILL_PROCESS_RESPONSE);
+  CHECK(!IsSameDocument());
+  CHECK(IsInMainFrame());
+  DCHECK(!IsPageActivation());
+
+  RenderProcessHost* process = frame_tree_node_->render_manager()
+                                   ->GetSiteInstanceForNavigationRequest(this)
+                                   ->GetProcess();
+
+  // Compute sandbox flags. Currently just inherit from the frame.
+  // TODO(crbug.com/1225556): Think about the right way the specification should
+  // handle sandbox flags with Early Hints.
+  network::mojom::WebSandboxFlags sandbox_flags =
+      commit_params_->frame_policy.sandbox_flags;
+
+  const url::Origin tentative_origin =
+      GetOriginForURLLoaderFactoryWithoutFinalFrameHost(sandbox_flags);
+
+  mojo::PendingRemote<network::mojom::CookieAccessObserver> cookie_observer;
+  Clone(cookie_observer.InitWithNewPipeAndPassReceiver());
+
+  network::mojom::URLLoaderFactoryParamsPtr url_loader_factory_params =
+      URLLoaderFactoryParamsHelper::CreateForEarlyHintsPreload(
+          process, tentative_origin, *this, early_hints,
+          std::move(cookie_observer));
+
+  // TODO(crbug.com/1225556): Support DevTools instrumentation and extension's
+  // WebRequest API in a way similar to
+  // RenderFrameHostImpl::WillCreateURLLoaderFactory.
+  process->CreateURLLoaderFactory(std::move(factory_receiver),
+                                  std::move(url_loader_factory_params));
+  return tentative_origin;
 }
 
 void NavigationRequest::OnRequestFailedInternal(
@@ -5603,7 +5646,8 @@ url::Origin NavigationRequest::GetOriginToCommit() {
 }
 
 url::Origin
-NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost() {
+NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+    network::mojom::WebSandboxFlags sandbox_flags) {
   // Calculate an approximation of the origin. The sandbox/csp are ignored.
   url::Origin origin = GetOriginForURLLoaderFactoryUnchecked(this);
 
@@ -5617,9 +5661,9 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithoutFinalFrameHost() {
   // This flag also prevents script from reading from or writing to the
   // document.cookie IDL attribute, and blocks access to localStorage.
   // ```
-  bool use_opaque_origin = (sandbox_flags_to_commit_.value() &
-                            network::mojom::WebSandboxFlags::kOrigin) ==
-                           network::mojom::WebSandboxFlags::kOrigin;
+  bool use_opaque_origin =
+      (sandbox_flags & network::mojom::WebSandboxFlags::kOrigin) ==
+      network::mojom::WebSandboxFlags::kOrigin;
   // TODO(https://crbug.com/1158370): Move special-casing error pages into
   // ComputeSandboxFlagsToCommit (and renderer-side origin calculations) so that
   // the most strict sandbox flags are applied.
@@ -5639,7 +5683,12 @@ NavigationRequest::GetOriginForURLLoaderFactoryWithFinalFrameHost() {
   if (IsSameDocument() || IsPageActivation())
     return GetRenderFrameHost()->GetLastCommittedOrigin();
 
-  url::Origin origin = GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+  url::Origin origin = GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+      sandbox_flags_to_commit_.value());
+
+  // MHTML documents should commit as an opaque origin. They should not be able
+  // to make network request on behalf of the real origin.
+  DCHECK(!IsMhtmlOrSubframe() || origin.opaque());
 
   // MHTML documents should commit as an opaque origin. They should not be able
   // to make network request on behalf of the real origin.

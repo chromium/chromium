@@ -1009,6 +1009,9 @@ class CONTENT_EXPORT NavigationRequest
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
+  url::Origin CreateURLLoaderFactoryForEarlyHintsPreload(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+      const network::mojom::EarlyHints& early_hints) override;
 
   // To be called whenever a navigation request fails. If |skip_throttles| is
   // true, the registered NavigationThrottle(s) won't get a chance to intercept
@@ -1426,7 +1429,8 @@ class CONTENT_EXPORT NavigationRequest
   // from RenderFrameHostImpl (e.g. CSPs are ignored). Should be used only in
   // situations where the final frame host hasn't been determined but the origin
   // is needed to create URLLoaderFactory.
-  url::Origin GetOriginForURLLoaderFactoryWithoutFinalFrameHost();
+  url::Origin GetOriginForURLLoaderFactoryWithoutFinalFrameHost(
+      network::mojom::WebSandboxFlags sandbox_flags);
 
   // Superset of GetOriginForURLLoaderFactoryWithoutFinalFrameHost(). Calculates
   // the origin with information from the final frame host. Can be called only

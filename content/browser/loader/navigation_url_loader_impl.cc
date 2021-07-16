@@ -765,13 +765,11 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     return;
 
   if (!early_hints_manager_) {
-    // TODO(crbug.com/1225556): Create URLLoaderFactory via
-    // URLLoaderFactoryParams of which values are calculated from `early_hints`
-    // and `this`. Then add browsertests which check whether the resulting
-    // factory cannot fetch subresources from the private network.
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
+    url::Origin origin = delegate_->CreateURLLoaderFactoryForEarlyHintsPreload(
+        loader_factory.BindNewPipeAndPassReceiver(), *early_hints);
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
-        *browser_context_,
-        storage_partition_->GetURLLoaderFactoryForBrowserProcess(),
+        *browser_context_, std::move(loader_factory), origin,
         frame_tree_node_id_);
   }
 

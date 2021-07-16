@@ -8,8 +8,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
@@ -44,6 +46,8 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
     // Completion error code. Set only when network request is completed.
     absl::optional<int> error_code;
+    // Optional CORS error details.
+    absl::optional<network::CorsErrorStatus> cors_error_status;
     // True when the preload was canceled. When true, the response was already
     // in the disk cache.
     bool was_canceled = false;
@@ -52,7 +56,8 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
 
   NavigationEarlyHintsManager(
       BrowserContext& browser_context,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      mojo::Remote<network::mojom::URLLoaderFactory> loader_factory,
+      url::Origin origin,
       int frame_tree_node_id);
 
   ~NavigationEarlyHintsManager();
@@ -92,7 +97,9 @@ class CONTENT_EXPORT NavigationEarlyHintsManager {
   void OnPreloadComplete(const GURL& url, const PreloadedResource& result);
 
   BrowserContext& browser_context_;
-  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> shared_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory_;
+  const url::Origin origin_;
   const int frame_tree_node_id_;
 
   struct InflightPreload {

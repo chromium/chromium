@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
 #include "services/network/public/mojom/link_header.mojom.h"
 #include "services/network/public/mojom/parsed_headers.mojom.h"
@@ -39,13 +38,13 @@ const std::string kPreloadBody = "/*empty*/";
 class NavigationEarlyHintsManagerTest : public testing::Test {
  public:
   NavigationEarlyHintsManagerTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
-        shared_loader_factory_(
-            base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-                &loader_factory_)),
-        early_hints_manager_(browser_context_,
-                             shared_loader_factory_,
-                             FrameTreeNode::kFrameTreeNodeInvalidId) {}
+      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {
+    mojo::Remote<network::mojom::URLLoaderFactory> remote;
+    loader_factory_.Clone(remote.BindNewPipeAndPassReceiver());
+    early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
+        browser_context_, std::move(remote), url::Origin(),
+        FrameTreeNode::kFrameTreeNodeInvalidId);
+  }
 
   ~NavigationEarlyHintsManagerTest() override = default;
 
@@ -58,7 +57,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   network::TestURLLoaderFactory& loader_factory() { return loader_factory_; }
 
   NavigationEarlyHintsManager& early_hints_manager() {
-    return early_hints_manager_;
+    return *early_hints_manager_;
   }
 
   network::mojom::URLResponseHeadPtr CreatePreloadResponseHead() {
@@ -106,9 +105,7 @@ class NavigationEarlyHintsManagerTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   network::TestURLLoaderFactory loader_factory_;
-  scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
-      shared_loader_factory_;
-  NavigationEarlyHintsManager early_hints_manager_;
+  std::unique_ptr<NavigationEarlyHintsManager> early_hints_manager_;
 };
 
 TEST_F(NavigationEarlyHintsManagerTest, SimpleResponse) {

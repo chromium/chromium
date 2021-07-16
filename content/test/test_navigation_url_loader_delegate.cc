@@ -84,4 +84,12 @@ void TestNavigationURLLoaderDelegate::OnRequestFailed(
     request_failed_->Quit();
 }
 
+url::Origin
+TestNavigationURLLoaderDelegate::CreateURLLoaderFactoryForEarlyHintsPreload(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
+    const network::mojom::EarlyHints& early_hints) {
+  NOTREACHED();
+  return url::Origin();
+}
+
 }  // namespace content

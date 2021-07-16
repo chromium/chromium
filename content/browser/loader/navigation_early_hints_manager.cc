@@ -19,6 +19,7 @@
 #include "net/url_request/url_request_job.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -120,6 +121,7 @@ network::mojom::RequestMode CalculateRequestMode(
     const network::mojom::LinkHeaderPtr& link) {
   if (link->rel == network::mojom::LinkRelAttribute::kModulePreload) {
     // When fetching a module script, mode is always "cors".
+    // https://html.spec.whatwg.org/multipage/webappapis.html#fetch-a-single-module-script
     return network::mojom::RequestMode::kCors;
   }
 
@@ -225,6 +227,7 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
       return;
     }
     result_.error_code = status.error_code;
+    result_.cors_error_status = status.cors_error_status;
     MaybeCompletePreload();
   }
 
@@ -260,12 +263,16 @@ class NavigationEarlyHintsManager::PreloadURLLoaderClient
 
 NavigationEarlyHintsManager::NavigationEarlyHintsManager(
     BrowserContext& browser_context,
-    scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+    mojo::Remote<network::mojom::URLLoaderFactory> loader_factory,
+    url::Origin origin,
     int frame_tree_node_id)
     : browser_context_(browser_context),
       loader_factory_(std::move(loader_factory)),
+      origin_(origin),
       frame_tree_node_id_(frame_tree_node_id) {
-  DCHECK(loader_factory_);
+  shared_loader_factory_ =
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          loader_factory_.get());
 }
 
 NavigationEarlyHintsManager::~NavigationEarlyHintsManager() = default;
@@ -322,18 +329,17 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   }
 
   DCHECK(navigation_request.url.SchemeIsHTTPOrHTTPS());
-  auto top_frame_origin = url::Origin::Create(navigation_request.url);
   auto preload_origin = url::Origin::Create(link->href);
 
   net::SiteForCookies site_for_cookies =
-      net::SiteForCookies(net::SchemefulSite(top_frame_origin));
+      net::SiteForCookies::FromOrigin(origin_);
   network::ResourceRequest request;
   request.method = net::HttpRequestHeaders::kGetMethod;
   request.priority = CalculateRequestPriority(link);
   request.destination = LinkAsAttributeToRequestDestination(link);
   request.url = link->href;
   request.site_for_cookies = site_for_cookies;
-  request.request_initiator = top_frame_origin;
+  request.request_initiator = origin_;
   request.referrer = net::URLRequestJob::ComputeReferrerForPolicy(
       navigation_request.referrer_policy, navigation_request.url, request.url);
   request.referrer_policy = navigation_request.referrer_policy;
@@ -342,17 +348,6 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
       static_cast<int>(blink::mojom::ResourceType::kSubResource);
   request.mode = CalculateRequestMode(link);
   request.credentials_mode = CalculateCredentialsMode(link);
-
-  request.trusted_params = network::ResourceRequest::TrustedParams();
-  // Ideally, IsolationInfo for preloading subresources should be created by
-  // RenderFrameHostImpl::ComputeIsolationInfoForSubresourcesForPendingCommit()
-  // but RenderFrameHostImpl isn't available at this point because the final
-  // response is needed to determine the host. Using `top_frame_origin`
-  // should create the same IsolationInfo as RenderFrameHostImpl creates for
-  // top-level frames with HTTP/HTTPS URLs.
-  request.trusted_params->isolation_info = net::IsolationInfo::Create(
-      net::IsolationInfo::RequestType::kOther, top_frame_origin,
-      /*frame_origin=*/top_frame_origin, site_for_cookies);
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
       CreateContentBrowserURLLoaderThrottles(
@@ -364,7 +359,7 @@ void NavigationEarlyHintsManager::MaybePreloadHintedResource(
   auto loader_client =
       std::make_unique<PreloadURLLoaderClient>(*this, request.url);
   auto loader = blink::ThrottlingURLLoader::CreateLoaderAndStart(
-      loader_factory_, std::move(throttles),
+      shared_loader_factory_, std::move(throttles),
       content::GlobalRequestID::MakeBrowserInitiated().request_id,
       network::mojom::kURLLoadOptionNone, &request, loader_client.get(),
       kEarlyHintsPreloadTrafficAnnotation, base::ThreadTaskRunnerHandle::Get());
