@@ -397,7 +397,6 @@ class VIEWS_EXPORT BubbleDialogDelegateView : public BubbleDialogDelegate,
   // View:
   Widget* GetWidget() override;
   const Widget* GetWidget() const override;
-  void AddedToWidget() override;
 
  protected:
   // Disallow overrides of GetMinimumSize and GetMaximumSize(). These would only

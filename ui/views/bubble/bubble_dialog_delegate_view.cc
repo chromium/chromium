@@ -346,7 +346,7 @@ class BubbleDialogDelegate::BubbleWidgetObserver : public WidgetObserver {
   }
 
  private:
-  BubbleDialogDelegate* owner_;
+  BubbleDialogDelegate* const owner_;
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
 };
@@ -482,13 +482,6 @@ Widget* BubbleDialogDelegateView::GetWidget() {
 
 const Widget* BubbleDialogDelegateView::GetWidget() const {
   return View::GetWidget();
-}
-
-void BubbleDialogDelegateView::AddedToWidget() {
-  if (ui::IsAlert(GetAccessibleWindowRole())) {
-    GetWidget()->GetRootView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kAlert, true);
-  }
 }
 
 View* BubbleDialogDelegateView::GetContentsView() {
@@ -717,8 +710,12 @@ gfx::Rect BubbleDialogDelegate::GetBubbleBounds() {
 }
 
 ax::mojom::Role BubbleDialogDelegate::GetAccessibleWindowRole() {
-  if (WidgetDelegate::GetAccessibleWindowRole() == ax::mojom::Role::kNone)
-    return ax::mojom::Role::kNone;
+  const ax::mojom::Role accessible_role =
+      WidgetDelegate::GetAccessibleWindowRole();
+  // If the accessible role has been explicitly set to anything else than its
+  // default, use it. The rest translates kWindow to kDialog or kAlertDialog.
+  if (accessible_role != ax::mojom::Role::kWindow)
+    return accessible_role;
 
   // If something in the dialog has initial focus, use the dialog role.
   // Screen readers understand what to announce when focus moves within one.
@@ -843,11 +840,9 @@ void BubbleDialogDelegate::OnBubbleWidgetVisibilityChanged(bool visible) {
   // ax::mojom::Role::kAlertDialog; this instructs accessibility tools to read
   // the bubble in its entirety rather than just its title and initially focused
   // view.  See http://crbug.com/474622 for details.
-  if (visible) {
-    if (ui::IsAlert(GetAccessibleWindowRole())) {
-      GetWidget()->GetRootView()->NotifyAccessibilityEvent(
-          ax::mojom::Event::kAlert, true);
-    }
+  if (visible && ui::IsAlert(GetAccessibleWindowRole())) {
+    GetWidget()->GetRootView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kAlert, true);
   }
 }
 

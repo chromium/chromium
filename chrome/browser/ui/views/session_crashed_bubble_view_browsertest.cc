@@ -21,8 +21,8 @@
 
 class SessionCrashedBubbleViewTest : public DialogBrowserTest {
  public:
-  SessionCrashedBubbleViewTest() {}
-  ~SessionCrashedBubbleViewTest() override {}
+  SessionCrashedBubbleViewTest() = default;
+  ~SessionCrashedBubbleViewTest() override = default;
 
   void ShowUi(const std::string& name) override {
     // TODO(pbos): Set up UMA opt-in conditions instead of providing this bool.

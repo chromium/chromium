@@ -101,7 +101,9 @@ IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest,
 IN_PROC_BROWSER_TEST_F(PasswordBubbleBrowserTest, AlertAccessibleEvent) {
   views::test::AXEventCounter counter(views::AXEventManager::Get());
   EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kAlert));
-  ShowUi("ManagePasswordBubble");
-  // TODO(crbug.com/1082217): This should only produce one event
-  EXPECT_LT(0, counter.GetCount(ax::mojom::Event::kAlert));
+  // This needs to show a password bubble that does not trigger as a user
+  // gesture in order to fire an alert event. See
+  // LocationBarBubbleDelegateView::GetAccessibleWindowRole().
+  ShowUi("AutomaticPasswordBubble");
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kAlert));
 }
