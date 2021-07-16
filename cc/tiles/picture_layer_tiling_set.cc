@@ -15,6 +15,7 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/record_replay.h"
 #include "base/stl_util.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/raster/raster_source.h"
@@ -70,9 +71,13 @@ PictureLayerTilingSet::PictureLayerTilingSet(
           skewport_extrapolation_limit_in_screen_pixels),
       tree_(tree),
       client_(client),
-      max_preraster_distance_(max_preraster_distance) {}
+      max_preraster_distance_(max_preraster_distance) {
+  recordreplay::RegisterPointer(this);
+}
 
-PictureLayerTilingSet::~PictureLayerTilingSet() = default;
+PictureLayerTilingSet::~PictureLayerTilingSet() {
+  recordreplay::UnregisterPointer(this);
+}
 
 void PictureLayerTilingSet::CopyTilingsAndPropertiesFromPendingTwin(
     const PictureLayerTilingSet* pending_twin_set,
@@ -165,6 +170,9 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit(
     const Region& layer_invalidation,
     float minimum_contents_scale,
     float maximum_contents_scale) {
+  recordreplay::Assert("PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit %d",
+                       recordreplay::PointerId(this));
+
   RemoveTilingsBelowScaleKey(minimum_contents_scale);
   RemoveTilingsAboveScaleKey(maximum_contents_scale);
 

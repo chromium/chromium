@@ -75,6 +75,7 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
       needs_show_scrollbars_(false),
       raster_even_if_not_drawn_(false),
       has_transform_node_(false) {
+  recordreplay::RegisterPointer(this);
   DCHECK_GT(layer_id_, 0);
 
   DCHECK(layer_tree_impl_);
@@ -85,6 +86,7 @@ LayerImpl::LayerImpl(LayerTreeImpl* tree_impl,
 }
 
 LayerImpl::~LayerImpl() {
+  recordreplay::UnregisterPointer(this);
   layer_tree_impl_->UnregisterLayer(this);
   layer_tree_impl_->RemoveFromElementLayerList(element_id_);
   TRACE_EVENT_OBJECT_DELETED_WITH_ID(

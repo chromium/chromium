@@ -10,6 +10,7 @@
 #include "base/auto_reset.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/record_replay.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer_impl.h"
@@ -50,6 +51,8 @@ std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
 }
 
 void PictureLayer::PushPropertiesTo(LayerImpl* base_layer) {
+  recordreplay::Assert("PictureLayer::PushPropertiesTo %d", recordreplay::PointerId(base_layer));
+
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
 
