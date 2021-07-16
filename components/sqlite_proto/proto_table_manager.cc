@@ -9,6 +9,7 @@
 #include "sql/database.h"
 #include "sql/meta_table.h"
 #include "sql/statement.h"
+#include "sql/transaction.h"
 
 namespace sqlite_proto {
 
@@ -56,7 +57,8 @@ void ProtoTableManager::CreateOrClearTablesIfNecessary() {
       db, /*lowest_supported_version=*/schema_version_,
       /*current_version=*/schema_version_);
 
-  bool success = db->BeginTransaction();
+  sql::Transaction transaction(db);
+  bool success = transaction.Begin();
 
   // No-ops if there's already a version stored.
   sql::MetaTable meta_table;
@@ -72,12 +74,7 @@ void ProtoTableManager::CreateOrClearTablesIfNecessary() {
                          .c_str()));
   }
 
-  if (success)
-    success = db->CommitTransaction();
-  else
-    db->RollbackTransaction();
-
-  if (!success)
+  if (!success || !transaction.Commit())
     ResetDB();  // Resets our non-owning pointer; doesn't mutate the database
                 // object.
 }
