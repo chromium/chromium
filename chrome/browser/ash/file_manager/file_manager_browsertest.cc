@@ -607,7 +607,10 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("dirRenameWithoutChangingCurrent"),
         TestCase("dirRenameToEmptyString").InGuestMode(),
         TestCase("dirRenameToEmptyString"),
+#if !defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
+        // TODO(http://crbug.com/1230054): Flaky on ASan non-DEBUG.
         TestCase("dirRenameToExisting").InGuestMode(),
+#endif
         TestCase("dirRenameToExisting"),
         TestCase("dirRenameRemovableWithKeyboard"),
         TestCase("dirRenameRemovableWithKeyboard").InGuestMode(),
