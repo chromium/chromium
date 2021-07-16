@@ -20,9 +20,6 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
 
 import static org.chromium.ui.test.util.ViewUtils.VIEW_NULL;
 import static org.chromium.ui.test.util.ViewUtils.waitForView;
@@ -128,12 +125,13 @@ public class FeedV2NewTabPageTest {
             Swipe.FAST, GeneralLocation.CENTER, GeneralLocation.CENTER_LEFT, Press.FINGER);
 
     private boolean mIsCachePopulatedInAccountManagerFacade = true;
+    private boolean mCanOfferExtendedSyncPromos = true;
 
     private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
     private final FakeAccountManagerFacade mFakeAccountManagerFacade =
-            spy(new FakeAccountManagerFacade(null) {
+            new FakeAccountManagerFacade(null) {
                 @Override
                 public Promise<List<Account>> getAccounts() {
                     // Attention. When cache is not populated, the Promise shouldn't be fulfilled.
@@ -142,7 +140,12 @@ public class FeedV2NewTabPageTest {
                     }
                     return new Promise<>();
                 }
-            });
+
+                @Override
+                public Optional<Boolean> canOfferExtendedSyncPromos(Account account) {
+                    return Optional.of(mCanOfferExtendedSyncPromos);
+                }
+            };
 
     @Rule
     public final SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
@@ -358,13 +361,10 @@ public class FeedV2NewTabPageTest {
     @MediumTest
     @Feature({"FeedNewTabPage"})
     @EnableFeatures(ChromeFeatureList.MINOR_MODE_SUPPORT)
-    @DisabledTest(message = "Flaky -- crbug.com/1225429")
     public void testSignInPromoWhenDefaultAccountCanNotOfferExtendedSyncPromos() {
         mAccountManagerTestRule.addAccount("test@gmail.com");
         mIsCachePopulatedInAccountManagerFacade = true;
-        doReturn(Optional.of(false))
-                .when(mFakeAccountManagerFacade)
-                .canOfferExtendedSyncPromos(any());
+        mCanOfferExtendedSyncPromos = false;
 
         openNewTabPage();
         onView(withId(R.id.feed_stream_recycler_view))
