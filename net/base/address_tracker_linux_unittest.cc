@@ -5,6 +5,7 @@
 #include "net/base/address_tracker_linux.h"
 
 #include <linux/if.h>
+#include <sched.h>
 
 #include <memory>
 #include <unordered_set>
@@ -12,13 +13,19 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/command_line.h"
+#include "base/files/file_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/test/multiprocess_test.h"
 #include "base/test/spin_wait.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/multiprocess_func_list.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/build_info.h"
@@ -763,6 +770,168 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 }
 
 }  // namespace
+
+// This is a regression test for https://crbug.com/1224428.
+//
+// This test initializes two instances of `AddressTrackerLinux` in the same
+// process. The test will fail if the implementation reuses the value of
+// `sockaddr_nl::nl_pid`.
+//
+// Note: consumers generally should not need to create two tracking instances of
+// `AddressTrackerLinux` in the same process.
+TEST(AddressTrackerLinuxNetlinkTest, DISABLED_TestInitializeTwoTrackers) {
+  base::test::TaskEnvironment task_env(
+      base::test::TaskEnvironment::MainThreadType::IO);
+  AddressTrackerLinux tracker1(base::DoNothing(), base::DoNothing(),
+                               base::DoNothing(), {});
+  AddressTrackerLinux tracker2(base::DoNothing(), base::DoNothing(),
+                               base::DoNothing(), {});
+  tracker1.Init();
+  tracker2.Init();
+  EXPECT_TRUE(tracker1.DidTrackingInitSucceedForTesting());
+  EXPECT_TRUE(tracker2.DidTrackingInitSucceedForTesting());
+}
+
+// These tests use `base::LaunchOptions::clone_flags` for fine-grained control
+// over the clone syscall, but the field is only defined on Linux and ChromeOS.
+// Unfortunately, this means these tests do not have coverage on Android.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// These tests require specific flag values defined in <sched.h>.
+#if defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
+
+namespace {
+const char* const kSwitchParentWriteFd = "addresstrackerlinux_parent_write_fd";
+const char* const kSwitchReadFd = "addresstrackerlinux_read_fd";
+
+enum IPCMessage {
+  // Sent from child to parent once the child has initialized its tracker.
+  kChildInitializedAndWaiting,
+  // Sent from child to parent when it was unable to initialize its tracker.
+  kChildFailed,
+  // Sent from parent to child when all children are permitted to exit.
+  kChildMayExit,
+};
+
+base::File GetSwitchValueFile(const base::CommandLine* command_line,
+                              base::StringPiece name) {
+  std::string value = command_line->GetSwitchValueASCII(name);
+  int fd;
+  CHECK(base::StringToInt(value, &fd));
+  return base::File(fd);
+}
+}  // namespace
+
+// This is a regression test for https://crbug.com/1224428.
+//
+// This test creates multiple concurrent `AddressTrackerLinux` instances in
+// separate processes, each in their own PID namespaces.
+TEST(AddressTrackerLinuxNetlinkTest,
+     DISABLED_TestInitializeTwoTrackersInPidNamespaces) {
+  // This test initializes `kNumChildren` instances of `AddressTrackerLinux` in
+  // tracking mode, each in their own child process running in a PID namespace.
+  // The test will fail if the implementation reuses the value of
+  // `sockaddr_nl::nl_pid`.
+  //
+  // The child processes use pipes to synchronize. Each child initializes a
+  // tracker, sends a message to the parent, and waits for the parent to
+  // respond, indicating that all children are done setting up. This ensures
+  // that the tracker objects have overlapping lifetimes, and thus that the
+  // underlying netlink sockets have overlapping lifetimes. This coexistence is
+  // necessary, but not sufficient, for a `sockaddr_nl::nl_pid` value collision.
+  constexpr size_t kNumChildren = 2;
+
+  base::ScopedFD parent_read_fd, parent_write_fd;
+  ASSERT_TRUE(base::CreatePipe(&parent_read_fd, &parent_write_fd));
+
+  struct Child {
+    base::ScopedFD read_fd;
+    base::ScopedFD write_fd;
+    base::Process process;
+  } children[kNumChildren];
+
+  for (Child& child : children) {
+    ASSERT_TRUE(base::CreatePipe(&child.read_fd, &child.write_fd));
+
+    // Since the child process will wipe its address space by calling execvp, we
+    // must share the file descriptors via its command line.
+    base::CommandLine command_line(
+        base::GetMultiProcessTestChildBaseCommandLine());
+    command_line.AppendSwitchASCII(kSwitchParentWriteFd,
+                                   base::NumberToString(parent_write_fd.get()));
+    command_line.AppendSwitchASCII(kSwitchReadFd,
+                                   base::NumberToString(child.read_fd.get()));
+
+    base::LaunchOptions options;
+    // Indicate that the child process requires these file descriptors.
+    // Otherwise, they will be closed. See `base::CloseSuperfluousFds`.
+    options.fds_to_remap = {{child.read_fd.get(), child.read_fd.get()},
+                            {parent_write_fd.get(), parent_write_fd.get()}};
+    // Clone into a new PID namespace. Making it a new user namespace as well to
+    // skirt the CAP_SYS_ADMIN requirement.
+    options.clone_flags = CLONE_NEWPID | CLONE_NEWUSER;
+
+    child.process = base::SpawnMultiProcessTestChild(
+        "ChildProcessInitializeTrackerForTesting", command_line, options);
+  }
+
+  // Wait for all children to finish initializing their tracking
+  // AddressTrackerLinuxes.
+  base::File parent_reader(std::move(parent_read_fd));
+  for (const Child& child : children) {
+    ASSERT_TRUE(child.process.IsValid());
+
+    uint8_t message[] = {0};
+    ASSERT_TRUE(parent_reader.ReadAtCurrentPosAndCheck(message));
+    ASSERT_EQ(message[0], kChildInitializedAndWaiting);
+  }
+
+  // Tell children to exit and wait for them to exit.
+  for (Child& child : children) {
+    base::File child_writer(std::move(child.write_fd));
+    const uint8_t kMessage[] = {kChildMayExit};
+    ASSERT_TRUE(child_writer.WriteAtCurrentPosAndCheck(kMessage));
+
+    int exit_code = 0;
+    ASSERT_TRUE(child.process.WaitForExit(&exit_code));
+    ASSERT_EQ(exit_code, 0);
+  }
+}
+
+MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
+  base::test::TaskEnvironment task_env(
+      base::test::TaskEnvironment::MainThreadType::IO);
+
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  base::File reader = GetSwitchValueFile(command_line, kSwitchReadFd);
+  base::File parent_writer =
+      GetSwitchValueFile(command_line, kSwitchParentWriteFd);
+
+  // Initialize an `AddressTrackerLinux` in tracking mode and ensure that it
+  // created a netlink socket.
+  AddressTrackerLinux tracker(base::DoNothing(), base::DoNothing(),
+                              base::DoNothing(), {});
+  tracker.Init();
+  if (!tracker.DidTrackingInitSucceedForTesting()) {
+    const uint8_t kMessage[] = {kChildFailed};
+    parent_writer.WriteAtCurrentPosAndCheck(kMessage);
+    return 1;
+  }
+
+  // Signal to the parent that we have initialized the tracker.
+  const uint8_t kMessage[] = {kChildInitializedAndWaiting};
+  if (!parent_writer.WriteAtCurrentPosAndCheck(kMessage))
+    return 1;
+
+  // Block until the parent says all children have initialized their trackers.
+  uint8_t message[] = {0};
+  if (!reader.ReadAtCurrentPosAndCheck(message) || message[0] != kChildMayExit)
+    return 1;
+  return 0;
+}
+
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
 }  // namespace internal
 }  // namespace net

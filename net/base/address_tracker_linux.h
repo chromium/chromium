@@ -21,6 +21,7 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/files/scoped_file.h"
+#include "base/gtest_prod_util.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
@@ -88,6 +89,11 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
 
  private:
   friend class AddressTrackerLinuxTest;
+  FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
+                           TestInitializeTwoTrackers);
+  FRIEND_TEST_ALL_PREFIXES(AddressTrackerLinuxNetlinkTest,
+                           TestInitializeTwoTrackersInPidNamespaces);
+  friend int ChildProcessInitializeTrackerForTesting();
 
   // In tracking mode, holds |lock| while alive. In non-tracking mode,
   // enforces single-threaded access.
@@ -145,6 +151,10 @@ class NET_EXPORT_PRIVATE AddressTrackerLinux {
   // Used by AddressTrackerLinuxTest, returns the number of threads waiting
   // for |connection_type_initialized_cv_|.
   int GetThreadsWaitingForConnectionTypeInitForTesting();
+
+  // Used by AddressTrackerLinuxNetlinkTest, returns true iff `Init` succeeded.
+  // Undefined for non-tracking mode.
+  bool DidTrackingInitSucceedForTesting() const;
 
   // Gets the name of an interface given the interface index |interface_index|.
   // May return empty string if it fails but should not return NULL. This is

@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
@@ -274,6 +275,11 @@ void AddressTrackerLinux::Init() {
         base::BindRepeating(&AddressTrackerLinux::OnFileCanReadWithoutBlocking,
                             base::Unretained(this)));
   }
+}
+
+bool AddressTrackerLinux::DidTrackingInitSucceedForTesting() const {
+  CHECK(tracking_);
+  return watcher_ != nullptr;
 }
 
 void AddressTrackerLinux::AbortAndForceOnline() {
