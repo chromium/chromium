@@ -29,6 +29,7 @@ public class StubbedHistoryProvider implements HistoryProvider {
     private int mLastQueryEndPosition;
     private String mLastQuery;
     private int mPaging = 5;
+    private boolean mHostOnly;
 
     @Override
     public void setObserver(BrowsingHistoryObserver observer) {
@@ -37,6 +38,17 @@ public class StubbedHistoryProvider implements HistoryProvider {
 
     @Override
     public void queryHistory(String query) {
+        mHostOnly = false;
+        query(query);
+    }
+
+    @Override
+    public void queryHistoryForHost(String hostName) {
+        mHostOnly = true;
+        query(hostName);
+    }
+
+    private void query(String query) {
         mLastQueryEndPosition = 0;
         mLastQuery = query;
         queryHistoryContinuation();
@@ -50,10 +62,21 @@ public class StubbedHistoryProvider implements HistoryProvider {
         if (!isSearch) {
             mSearchItems.clear();
         } else if (mLastQueryEndPosition == 0) {
+            mSearchItems.clear();
             // Start a new search; simulate basic search.
             mLastQuery = mLastQuery.toLowerCase(Locale.getDefault());
             for (HistoryItem item : mItems) {
-                if (item.getUrl().getSpec().toLowerCase(Locale.getDefault()).contains(mLastQuery)
+                if (mHostOnly) {
+                    if (item.getUrl()
+                                    .getHost()
+                                    .toLowerCase(Locale.getDefault())
+                                    .equals(mLastQuery)) {
+                        mSearchItems.add(item);
+                    }
+                } else if (item.getUrl()
+                                   .getSpec()
+                                   .toLowerCase(Locale.getDefault())
+                                   .contains(mLastQuery)
                         || item.getTitle().toLowerCase(Locale.getDefault()).contains(mLastQuery)) {
                     mSearchItems.add(item);
                 }

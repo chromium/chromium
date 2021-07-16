@@ -28,7 +28,8 @@ class BrowsingHistoryBridge : public ProfileBasedBrowsingHistoryDriver {
   void QueryHistory(JNIEnv* env,
                     const JavaParamRef<jobject>& obj,
                     const JavaParamRef<jobject>& j_result_obj,
-                    jstring j_query);
+                    jstring j_query,
+                    jboolean j_host_only);
 
   void QueryHistoryContinuation(JNIEnv* env,
                                 const JavaParamRef<jobject>& obj,

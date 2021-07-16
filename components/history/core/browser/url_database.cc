@@ -404,20 +404,18 @@ bool URLDatabase::FindShortestURLFromBase(const std::string& base,
   return true;
 }
 
-bool URLDatabase::GetTextMatches(const std::u16string& query,
-                                 URLRows* results) {
-  return GetTextMatchesWithAlgorithm(
-      query, query_parser::MatchingAlgorithm::DEFAULT, results);
+URLRows URLDatabase::GetTextMatches(const std::u16string& query) {
+  return GetTextMatchesWithAlgorithm(query,
+                                     query_parser::MatchingAlgorithm::DEFAULT);
 }
 
-bool URLDatabase::GetTextMatchesWithAlgorithm(
+URLRows URLDatabase::GetTextMatchesWithAlgorithm(
     const std::u16string& query,
-    query_parser::MatchingAlgorithm algorithm,
-    URLRows* results) {
+    query_parser::MatchingAlgorithm algorithm) {
   query_parser::QueryNodeVector query_nodes;
   query_parser::QueryParser::ParseQueryNodes(query, algorithm, &query_nodes);
 
-  results->clear();
+  URLRows results;
   sql::Statement statement(GetDB().GetCachedStatement(SQL_FROM_HERE,
       "SELECT" HISTORY_URL_ROW_FIELDS "FROM urls WHERE hidden = 0"));
 
@@ -440,10 +438,10 @@ bool URLDatabase::GetTextMatchesWithAlgorithm(
       URLResult info;
       FillURLRow(statement, &info);
       if (info.url().is_valid())
-        results->push_back(info);
+        results.push_back(info);
     }
   }
-  return !results->empty();
+  return results;
 }
 
 bool URLDatabase::InitKeywordSearchTermsTable() {
