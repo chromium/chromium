@@ -13,18 +13,17 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "net/http/http_network_session.h"
 #include "net/socket/ssl_client_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
-#include "services/network/public/mojom/tls_socket.mojom.h"
+#include "services/network/public/mojom/tls_socket.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class ClientSocketFactory;
 class SSLConfigService;
 class StreamSocket;
+class URLRequestContext;
 }  // namespace net
 
 namespace network {
@@ -49,12 +48,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) TLSSocketFactory {
   // Constructs a TLSSocketFactory. If |net_log| is non-null, it is used to
   // log NetLog events when logging is enabled. |net_log| used to must outlive
   // |this|.  Sockets will be created using, the earliest available from:
-  // 1) A ClientSocketFactory set on a non-null |http_context|.
-  // 2) A ClientSocketFactory set on |url_request_context|'s
+  // 1) A ClientSocketFactory set on |url_request_context|'s
   //    HttpNetworkSession::Context
-  // 3) The default ClientSocketFactory.
-  TLSSocketFactory(net::URLRequestContext* url_request_context,
-                   const net::HttpNetworkSession::Context* http_context);
+  // 2) The default ClientSocketFactory.
+  explicit TLSSocketFactory(net::URLRequestContext* url_request_context);
   virtual ~TLSSocketFactory();
 
   // Upgrades an existing socket to TLS. The previous pipes and data pump

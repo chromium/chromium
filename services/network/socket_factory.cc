@@ -29,7 +29,7 @@ SocketFactory::SocketFactory(net::NetLog* net_log,
                              net::URLRequestContext* url_request_context)
     : net_log_(net_log),
       client_socket_factory_(nullptr),
-      tls_socket_factory_(url_request_context, nullptr /*http_context*/) {
+      tls_socket_factory_(url_request_context) {
   if (url_request_context->GetNetworkSessionContext()) {
     client_socket_factory_ =
         url_request_context->GetNetworkSessionContext()->client_socket_factory;

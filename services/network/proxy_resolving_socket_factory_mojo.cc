@@ -17,9 +17,7 @@ namespace network {
 
 ProxyResolvingSocketFactoryMojo::ProxyResolvingSocketFactoryMojo(
     net::URLRequestContext* request_context)
-    : factory_impl_(request_context),
-      tls_socket_factory_(request_context,
-                          &factory_impl_.network_session()->context()) {}
+    : factory_impl_(request_context), tls_socket_factory_(request_context) {}
 
 ProxyResolvingSocketFactoryMojo::~ProxyResolvingSocketFactoryMojo() {}
 

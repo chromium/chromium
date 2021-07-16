@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "net/base/net_errors.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/socket_data_pump.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

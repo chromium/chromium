@@ -18,6 +18,8 @@
 #include "net/ssl/ssl_config.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/url_request/url_request_context.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/ssl_config_type_converter.h"
 #include "services/network/tls_client_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -43,9 +45,7 @@ class FakeCertVerifier : public net::CertVerifier {
 };
 }  // namespace
 
-TLSSocketFactory::TLSSocketFactory(
-    net::URLRequestContext* url_request_context,
-    const net::HttpNetworkSession::Context* http_context)
+TLSSocketFactory::TLSSocketFactory(net::URLRequestContext* url_request_context)
     : ssl_client_context_(url_request_context->ssl_config_service(),
                           url_request_context->cert_verifier(),
                           url_request_context->transport_security_state(),
@@ -54,12 +54,7 @@ TLSSocketFactory::TLSSocketFactory(
                           url_request_context->sct_auditing_delegate()),
       client_socket_factory_(nullptr),
       ssl_config_service_(url_request_context->ssl_config_service()) {
-  if (http_context) {
-    client_socket_factory_ = http_context->client_socket_factory;
-  }
-
-  if (!client_socket_factory_ &&
-      url_request_context->GetNetworkSessionContext()) {
+  if (url_request_context->GetNetworkSessionContext()) {
     client_socket_factory_ =
         url_request_context->GetNetworkSessionContext()->client_socket_factory;
   }

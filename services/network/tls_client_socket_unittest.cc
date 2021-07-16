@@ -32,6 +32,7 @@
 #include "services/network/mojo_socket_test_util.h"
 #include "services/network/proxy_resolving_socket_factory_mojo.h"
 #include "services/network/public/mojom/network_service.mojom.h"
+#include "services/network/public/mojom/tls_socket.mojom.h"
 #include "services/network/socket_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

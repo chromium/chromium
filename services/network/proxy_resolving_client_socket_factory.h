@@ -54,10 +54,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
       const net::NetworkIsolationKey& network_isolation_key,
       bool use_tls);
 
-  const net::HttpNetworkSession* network_session() const {
-    return network_session_.get();
-  }
-
  private:
   std::unique_ptr<net::HttpNetworkSession> network_session_;
   std::unique_ptr<net::CommonConnectJobParams> common_connect_job_params_;
