@@ -579,7 +579,15 @@ bool DeviceInfoSyncBridge::IsPulseTimerRunningForTest() const {
 }
 
 void DeviceInfoSyncBridge::ForcePulseForTest() {
-  SendLocalData();
+  if (pulse_timer_.IsRunning()) {
+    pulse_timer_.FireNow();
+    return;
+  }
+
+  // If |pulse_timer_| is not running, it means that the bridge is not
+  // initialized. Set the flag to indicate that the local device info should be
+  // reuploaded after initialization has finished.
+  force_reupload_for_test_ = true;
 }
 
 void DeviceInfoSyncBridge::NotifyObservers() {
@@ -760,7 +768,8 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
   // Convert |iter->second| to a DeviceInfo for comparison.
   std::unique_ptr<DeviceInfo> previous_device_info =
       SpecificsToModel(*iter->second);
-  if (StoredDeviceInfoStillAccurate(previous_device_info.get(), current_info)) {
+  if (StoredDeviceInfoStillAccurate(previous_device_info.get(), current_info) &&
+      !force_reupload_for_test_) {
     if (pulse_timer_.IsRunning()) {
       // No need to update the |pulse_timer| since nothing has changed.
       return false;
@@ -785,6 +794,9 @@ bool DeviceInfoSyncBridge::ReconcileLocalAndStored() {
     device_info_synced_callback_list_.push_back(
         base::BindOnce(new_interested_data_types_callback_, new_data_types));
   }
+
+  // If there was a force-upload request, it has been satisfied now.
+  force_reupload_for_test_ = false;
 
   // Either the local data was updated, or it's time for a pulse update.
   SendLocalData();

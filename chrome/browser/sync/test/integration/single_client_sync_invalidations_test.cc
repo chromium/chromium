@@ -4,8 +4,8 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
-#include "base/time/time_override.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/sync/device_info_sync_service_factory.h"
 #include "chrome/browser/sync/sync_invalidations_service_factory.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/device_info_helper.h"
@@ -21,6 +21,8 @@
 #include "components/sync/protocol/sync.pb.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
 #include "components/sync/test/fake_server/entity_builder_factory.h"
+#include "components/sync_device_info/device_info_sync_service.h"
+#include "components/sync_device_info/device_info_tracker.h"
 #include "components/sync_device_info/device_info_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_launcher.h"
@@ -37,14 +39,14 @@ using testing::AllOf;
 using testing::ElementsAre;
 using testing::Not;
 using testing::NotNull;
+using testing::SizeIs;
 using testing::UnorderedElementsAre;
 
 const char kSyncedBookmarkURL[] = "http://www.mybookmark.com";
 
-MATCHER(HasBeenRecentlyUpdated, "") {
-  return syncer::ProtoTimeToTime(
-             arg.specifics().device_info().last_updated_timestamp()) >
-         base::Time::Now() - base::TimeDelta::FromMinutes(10);
+MATCHER_P(HasBeenUpdatedAfter, last_updated_timestamp, "") {
+  return arg.specifics().device_info().last_updated_timestamp() >
+         last_updated_timestamp;
 }
 
 MATCHER_P(HasCacheGuid, expected_cache_guid, "") {
@@ -235,6 +237,11 @@ class SingleClientWithUseSyncInvalidationsTest : public SyncTest {
             specifics.device_info().last_updated_timestamp()));
   }
 
+  std::string GetLocalCacheGuid() {
+    syncer::SyncTransportDataPrefs prefs(GetProfile(0)->GetPrefs());
+    return prefs.GetCacheGuid();
+  }
+
  private:
   base::test::ScopedFeatureList override_features_;
 
@@ -302,31 +309,40 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        PRE_ShouldNotSendAdditionalGetUpdates) {
-  base::subtle::ScopedTimeClockOverrides time_clock_overrides(
-      []() {
-        const base::TimeDelta time_delta = base::TimeDelta::FromDays(2);
-        return base::subtle::TimeNowIgnoringOverride() - time_delta;
-      },
-      nullptr, nullptr);
-
   ASSERT_TRUE(SetupSync());
 }
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
                        ShouldNotSendAdditionalGetUpdates) {
-  // Verify that DeviceInfo has been updated long time ago.
-  ASSERT_THAT(fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO),
-              ElementsAre(testing::Not(HasBeenRecentlyUpdated())));
+  const std::vector<sync_pb::SyncEntity> server_device_infos_before =
+      fake_server_->GetSyncEntitiesByModelType(syncer::DEVICE_INFO);
+
+  // Check here for size only, cache GUID will be verified after SetupcClients()
+  // call.
+  ASSERT_THAT(server_device_infos_before, SizeIs(1));
+  const int64_t last_updated_timestamp = server_device_infos_before.front()
+                                             .specifics()
+                                             .device_info()
+                                             .last_updated_timestamp();
 
   GetUpdatesTriggeredObserver observer(GetFakeServer(),
                                        syncer::ModelType::AUTOFILL);
   ASSERT_TRUE(SetupClients());
+  ASSERT_THAT(server_device_infos_before,
+              ElementsAre(HasCacheGuid(GetLocalCacheGuid())));
+
+  // Trigger DeviceInfo reupload once it has been initialized. This is mimics
+  // the case when DeviceInfo is outdated on browser startup.
+  DeviceInfoSyncServiceFactory::GetForProfile(GetProfile(0))
+      ->GetDeviceInfoTracker()
+      ->ForcePulseForTest();
   ASSERT_TRUE(GetClient(0)->AwaitEngineInitialization());
   ASSERT_TRUE(GetClient(0)->AwaitSyncSetupCompletion());
 
   // Wait until DeviceInfo is updated.
   ASSERT_TRUE(ServerDeviceInfoMatchChecker(
-                  GetFakeServer(), ElementsAre(HasBeenRecentlyUpdated()))
+                  GetFakeServer(),
+                  ElementsAre(HasBeenUpdatedAfter(last_updated_timestamp)))
                   .Wait());
 
   // Perform an additional sync cycle to be sure that there will be at least one

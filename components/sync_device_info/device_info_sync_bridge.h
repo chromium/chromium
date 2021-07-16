@@ -180,6 +180,10 @@ class DeviceInfoSyncBridge : public ModelTypeSyncBridge,
   // Used to update our local device info once every pulse interval.
   base::OneShotTimer pulse_timer_;
 
+  // Used to force upload of local device info after initialization. Used in
+  // tests only.
+  bool force_reupload_for_test_ = false;
+
   std::vector<base::OnceClosure> device_info_synced_callback_list_;
 
   // Called when a new interested data type list has been committed. Only newly
