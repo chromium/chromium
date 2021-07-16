@@ -150,6 +150,8 @@ const char kTabHoverCardImagesLoadingDelayParameterName[] =
 const char kTabHoverCardImagesLoadedDelayParameterName[] = "page_loaded_delay";
 const char kTabHoverCardImagesCrossfadePreviewAtParameterName[] =
     "crossfade_preview_at";
+const char kTabHoverCardAdditionalMaxWidthDelay[] =
+    "additional_max_width_delay";
 
 // Enables tab outlines in additional situations for accessibility.
 const base::Feature kTabOutlinesInLowContrastThemes{

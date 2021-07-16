@@ -1529,6 +1529,18 @@ const FeatureEntry::FeatureParam kTabHoverCardImagesLatePlaceholderCrossfade[] =
      {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
      {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
      {features::kTabHoverCardImagesCrossfadePreviewAtParameterName, "1.0"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesSmallAdditionalFullWidthDelay[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+        {features::kTabHoverCardAdditionalMaxWidthDelay, "200"}};
+const FeatureEntry::FeatureParam
+    kTabHoverCardImagesLargeAdditionalFullWidthDelay[] = {
+        {features::kTabHoverCardImagesNotReadyDelayParameterName, "500"},
+        {features::kTabHoverCardImagesLoadingDelayParameterName, "100"},
+        {features::kTabHoverCardImagesLoadedDelayParameterName, "0"},
+        {features::kTabHoverCardAdditionalMaxWidthDelay, "500"}};
 
 const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
     {" capture speed", kTabHoverCardImagesOptimizationCaptureSpeed,
@@ -1546,7 +1558,13 @@ const FeatureEntry::FeatureVariation kTabHoverCardImagesVariations[] = {
      base::size(kTabHoverCardImagesMidSlidePlaceholderCrossfade), nullptr},
     {" placeholder crossfade on land",
      kTabHoverCardImagesLatePlaceholderCrossfade,
-     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr}};
+     base::size(kTabHoverCardImagesImmediatePlaceholderCrossfade), nullptr},
+    {" small full width show delay",
+     kTabHoverCardImagesSmallAdditionalFullWidthDelay,
+     base::size(kTabHoverCardImagesSmallAdditionalFullWidthDelay), nullptr},
+    {" large full width show delay",
+     kTabHoverCardImagesLargeAdditionalFullWidthDelay,
+     base::size(kTabHoverCardImagesLargeAdditionalFullWidthDelay), nullptr}};
 
 const FeatureEntry::FeatureParam kPromoBrowserCommandUnknownCommandParam[] = {
     {features::kPromoBrowserCommandIdParam, "0"}};

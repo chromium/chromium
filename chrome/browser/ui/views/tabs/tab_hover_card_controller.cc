@@ -57,6 +57,11 @@ base::TimeDelta GetPreviewImageCaptureDelay(
 }
 
 base::TimeDelta GetShowDelay(int tab_width) {
+  static const int max_width_additiona_delay =
+      base::GetFieldTrialParamByFeatureAsInt(
+          features::kTabHoverCardImages,
+          features::kTabHoverCardAdditionalMaxWidthDelay, 0);
+
   // Delay is calculated as a logarithmic scale and bounded by a minimum width
   // based on the width of a pinned tab and a maximum of the standard width.
   //
@@ -87,6 +92,8 @@ base::TimeDelta GetShowDelay(int tab_width) {
   base::TimeDelta scaling_factor = kMaximumTriggerDelay - kMinimumTriggerDelay;
   base::TimeDelta delay =
       logarithmic_fraction * scaling_factor + kMinimumTriggerDelay;
+  if (tab_width >= TabStyle::GetStandardWidth())
+    delay += base::TimeDelta::FromMilliseconds(max_width_additiona_delay);
   return delay;
 }
 
