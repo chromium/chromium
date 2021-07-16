@@ -34,6 +34,8 @@ std::string GetStringNameForOptimizationTarget(
       return "SegmentationVoice";
     case proto::OPTIMIZATION_TARGET_MODEL_VALIDATION:
       return "ModelValidation";
+    case proto::OPTIMIZATION_TARGET_PAGE_ENTITIES:
+      return "PageEntities";
   }
   NOTREACHED();
   return std::string();

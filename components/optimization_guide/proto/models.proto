@@ -254,6 +254,8 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
   // Target for model validation.
   OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
+  // Target for determining entities present on a page.
+  OPTIMIZATION_TARGET_PAGE_ENTITIES = 8;
 }
 
 // The types of models that can be evaluated.
