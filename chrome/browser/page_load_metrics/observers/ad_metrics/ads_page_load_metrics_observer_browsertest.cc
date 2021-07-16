@@ -713,7 +713,7 @@ IN_PROC_BROWSER_TEST_F(CreativeOriginAdsPageLoadMetricsObserverBrowserTest,
 }
 
 // Disabled due to flakiness on Linux https://crbug.com/1229601
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || (defined(OS_CHROMEOS) && defined(MEMORY_SANITIZER))
 #define MAYBE_CreativeOriginStatusWithThrottlingNestedThrottled \
   DISABLED_CreativeOriginStatusWithThrottlingNestedThrottled
 #else
