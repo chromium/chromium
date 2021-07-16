@@ -19,7 +19,12 @@ namespace net {
 // anchors for path building. This TrustStore is thread-safe.
 class NET_EXPORT TrustStoreNSS : public TrustStore {
  public:
+  // TODO(hchao): this won't work when we try to get this working for ChromeOS
+  // as we will likely need to be able to specify multiple options (trust_type,
+  // user_slot, ignoring_system_certs_unless_distrusted), so we'll need to
+  // re-engineer to not get combinatorial explosion for constructors.
   struct DisallowTrustForCertsOnUserSlots {};
+  struct IgnoreSystemTrustSettings {};
 
   // Creates a TrustStoreNSS which will find anchors that are trusted for
   // |trust_type|.
@@ -44,6 +49,15 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
       SECTrustType trust_type,
       DisallowTrustForCertsOnUserSlots disallow_trust_for_certs_on_user_slots);
 
+  // Creates a TrustStoreNSS which will find anchors that are trusted for
+  // |trust_type|.
+  // The created TrustStoreNSS will ignore system trust settings (but will
+  // respect user-added certs).
+  //
+  // TODO(hchao, sleevi): Only ignore builtin trust settings for these certs.
+  TrustStoreNSS(SECTrustType trust_type,
+                IgnoreSystemTrustSettings ignore_system_trust_settings);
+
   ~TrustStoreNSS() override;
 
   // CertIssuerSource implementation:
@@ -59,6 +73,13 @@ class NET_EXPORT TrustStoreNSS : public TrustStore {
   bool IsCertAllowedForTrust(CERTCertificate* cert) const;
 
   SECTrustType trust_type_;
+
+  // |ignore_system_certs_trust_settings_| specifies if the system trust
+  // settings should be considered when determining a cert's trustworthiness.
+  //
+  // TODO(hchao, sleevi): Figure out how to ignore built-in trust settings,
+  // while respecting user-configured trust settings, for these certificates.
+  const bool ignore_system_trust_settings_ = false;
 
   // |filter_trusted_certs_by_slot_| and |user_slot_| together specify which
   // slots certificates must be stored on to be allowed to be trusted. The

@@ -55,9 +55,11 @@ absl::optional<std::string> DecodePEM(base::StringPiece pem) {
 }
 
 absl::optional<RootStore> ReadTextRootStore(
-    const base::FilePath& root_store_dir) {
+    const base::FilePath& root_store_dir,
+    const std::string certs_sub_dir,
+    const std::string root_store_filename) {
   base::FilePath root_store_path =
-      root_store_dir.AppendASCII("root_store.textproto");
+      root_store_dir.AppendASCII(root_store_filename);
   std::string root_store_text;
   if (!base::ReadFileToString(root_store_path, &root_store_text)) {
     LOG(ERROR) << "Could not read " << root_store_path;
@@ -72,7 +74,7 @@ absl::optional<RootStore> ReadTextRootStore(
   }
 
   // Replace the filenames with the actual certificate contents.
-  base::FilePath certs_dir = root_store_dir.AppendASCII("certs");
+  base::FilePath certs_dir = root_store_dir.AppendASCII(certs_sub_dir);
   for (auto& anchor : *root_store.mutable_trust_anchors()) {
     base::FilePath pem_path = certs_dir.AppendASCII(anchor.filename());
 
@@ -131,6 +133,9 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  // TODO(hchao): simplify command line options to just specify a single
+  // directory which stores the textproto and certs (possibly in different
+  // subdirectories), and have tool assume a structure from there.
   base::FilePath root_store_dir =
       command_line.GetSwitchValuePath("root-store-dir");
   if (root_store_dir.empty()) {
@@ -141,8 +146,19 @@ int main(int argc, char** argv) {
                          .AppendASCII("ssl")
                          .AppendASCII("chrome_root_store");
   }
+  std::string certs_sub_dir = command_line.GetSwitchValueASCII("certs-sub-dir");
+  if (certs_sub_dir.empty()) {
+    certs_sub_dir = "certs";
+  }
 
-  absl::optional<RootStore> root_store = ReadTextRootStore(root_store_dir);
+  std::string root_store_filename =
+      command_line.GetSwitchValueASCII("root-store-filename");
+  if (root_store_filename.empty()) {
+    root_store_filename = "root_store.textproto";
+  }
+
+  absl::optional<RootStore> root_store =
+      ReadTextRootStore(root_store_dir, certs_sub_dir, root_store_filename);
   if (!root_store) {
     return 1;
   }

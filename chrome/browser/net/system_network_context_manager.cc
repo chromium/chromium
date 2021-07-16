@@ -198,6 +198,18 @@ bool ShouldUseBuiltinCertVerifier(PrefService* local_state) {
 }
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// TODO(https://crbug.com/1228958): update function with enterprise policy for
+// Chrome root store usage once this is created.
+bool ShouldUseChromeRootStore(PrefService* local_state) {
+  // Note: intentionally checking the feature state here rather than falling
+  // back to ChromeRootImpl::kRootDefault, as browser-side network context
+  // initializition for TrialComparisonCertVerifier depends on knowing which
+  // verifier will be used.
+  return base::FeatureList::IsEnabled(net::features::kChromeRootStoreUsed);
+}
+#endif
+
 }  // namespace
 
 // SharedURLLoaderFactory backed by a SystemNetworkContextManager and its
@@ -692,6 +704,15 @@ void SystemNetworkContextManager::ConfigureDefaultNetworkContextParams(
                 kBuiltin
           : cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kSystem;
+#endif
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  cert_verifier_creation_params->use_chrome_root_store =
+      ShouldUseChromeRootStore(local_state_)
+          ? cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootChrome
+          : cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootSystem;
 #endif
 }
 

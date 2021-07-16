@@ -284,7 +284,12 @@ NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
 NET_EXPORT extern const base::FeatureParam<int>
     kCertDualVerificationTrialCacheSize;
 #endif /* defined(OS_MAC) */
-#endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
+#endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
+
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+// When enabled, use the Chrome Root Store instead of the system root store
+NET_EXPORT extern const base::Feature kChromeRootStoreUsed;
+#endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
 
 // Turns off streaming media caching to disk when on battery power.
 NET_EXPORT extern const base::Feature kTurnOffStreamingMediaCachingOnBattery;

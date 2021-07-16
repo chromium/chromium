@@ -11,6 +11,7 @@
 #include "crypto/nss_util.h"
 #include "net/cert/internal/cert_errors.h"
 #include "net/cert/internal/parsed_certificate.h"
+#include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_util.h"
@@ -33,6 +34,13 @@ TrustStoreNSS::TrustStoreNSS(
     SECTrustType trust_type,
     DisallowTrustForCertsOnUserSlots disallow_trust_for_certs_on_user_slots)
     : trust_type_(trust_type), filter_trusted_certs_by_slot_(true) {}
+
+TrustStoreNSS::TrustStoreNSS(
+    SECTrustType trust_type,
+    IgnoreSystemTrustSettings ignore_system_trust_settings)
+    : trust_type_(trust_type),
+      ignore_system_trust_settings_(true),
+      filter_trusted_certs_by_slot_(false) {}
 
 TrustStoreNSS::~TrustStoreNSS() = default;
 
@@ -118,9 +126,23 @@ void TrustStoreNSS::GetTrust(const scoped_refptr<ParsedCertificate>& cert,
   }
 
   // Determine if the certificate is a trust anchor.
+  //
+  // We may not use the result of this if it is a known root and we're ignoring
+  // system certs.
   if ((trust_flags & CERTDB_TRUSTED_CA) == CERTDB_TRUSTED_CA) {
-    *out_trust = CertificateTrust::ForTrustAnchor();
-    return;
+    // If its a user root, or its a system root and we're not ignoring system
+    // roots than return root as trusted.
+    //
+    // TODO(hchao, sleevi): CERT_GetCertTrust combines the trust settings from
+    // all tokens and slots, meaning it doesn't allow us to distinguish between
+    // CKO_NSS_TRUST objects the user manually configured versus CKO_NSS_TRUST
+    // objects from the builtin token (system trust settings). Properly
+    // handling this may require iterating all the slots and manually computing
+    // the trust settings directly, rather than CERT_GetCertTrust.
+    if (!ignore_system_trust_settings_ || !IsKnownRoot(nss_cert.get())) {
+      *out_trust = CertificateTrust::ForTrustAnchor();
+      return;
+    }
   }
 
   // Trusted server certs (CERTDB_TERMINAL_RECORD + CERTDB_TRUSTED) are

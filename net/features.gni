@@ -45,4 +45,8 @@ declare_args() {
   # flag. This does not include platforms where the builtin cert verifier is
   # the only verifier supported.
   builtin_cert_verifier_feature_supported = is_mac
+
+  # Platforms for which the builtin cert verifier can use the Chrome Root Store.
+  # See https://crbug.com/1216547 for status.
+  chrome_root_store_supported = false
 }

@@ -22,4 +22,8 @@ mojom("mojom") {
   if (builtin_cert_verifier_feature_supported) {
     enabled_features += [ "is_builtin_cert_verifier_feature_supported" ]
   }
+
+  if (chrome_root_store_supported) {
+    enabled_features += [ "is_chrome_root_store_supported" ]
+  }
 }

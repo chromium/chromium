@@ -186,6 +186,11 @@ const base::FeatureParam<int> kCertDualVerificationTrialCacheSize{
 #endif /* defined(OS_MAC) */
 #endif
 
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+const base::Feature kChromeRootStoreUsed{"ChromeRootStoreUsed",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+#endif /* BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED) */
+
 const base::Feature kTurnOffStreamingMediaCachingOnBattery{
     "TurnOffStreamingMediaCachingOnBattery", base::FEATURE_DISABLED_BY_DEFAULT};
 

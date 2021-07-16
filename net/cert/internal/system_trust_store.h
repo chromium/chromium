@@ -38,6 +38,10 @@ class SystemTrustStore {
   // unsupported platforms. In the case where this returns false, the trust
   // store returned by GetTrustStore() is made up solely of the manually added
   // trust anchors (via AddTrustAnchor()).
+  //
+  // TODO(hchao): Rename this to something more sensible now that we're
+  // introducing the idea of a Chrome Root Store that doesn't use all parts of a
+  // system's trust store.
   virtual bool UsesSystemTrustStore() const = 0;
 
   // IsKnownRoot() returns true if the given certificate originated from the
@@ -49,10 +53,27 @@ class SystemTrustStore {
 
 // Creates an instance of SystemTrustStore that wraps the current platform's SSL
 // trust store. This cannot return nullptr, even in the case where system trust
-// store integration is not supported. In this latter case, the SystemTrustStore
-// will only give access to the manually added trust anchors. This can be
-// inspected by testing whether UsesSystemTrustStore() returns false.
+// store integration is not supported.
+//
+// In cases where system trust store integration is not supported, the
+// SystemTrustStore will not give access to the platform's SSL trust store, to
+// avoid trusting a CA that the user has disabled on their system. In this
+// case, UsesSystemTrustStore() will return false, and only manually-added trust
+// anchors will be used.
 NET_EXPORT std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStore();
+
+// Creates an instance of SystemTrustStore that wraps the current platform's SSL
+// trust store for user added roots, but uses the Chrome Root Store trust
+// anchors. This cannot return nullptr, even in the case where system trust
+// store integration is not supported.
+//
+// In cases where system trust store integration is not supported, the
+// SystemTrustStore will not give access to the Chrome Root Store, to avoid
+// trusting a CA that the user has disabled on their system. In this case,
+// UsesSystemTrustStore() will return false, and only manually-added trust
+// anchors will be used.
+NET_EXPORT std::unique_ptr<SystemTrustStore>
+CreateSslSystemTrustStoreChromeRoot();
 
 // Creates an instance of SystemTrustStore that initially does not have any
 // trust roots. (This is the same trust store implementation that will be

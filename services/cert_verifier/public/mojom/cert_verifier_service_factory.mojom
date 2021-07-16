@@ -23,13 +23,37 @@ struct CertVerifierCreationParams {
   string username_hash;
 
   // Specifies which cert verifier implementation to use.
-  //   kDefault - Decided by base::Feature
-  //   kBuiltin - Use CertVerifyProcBuiltin
-  //   kSystem  - Use the system CertVerifyProc implementation
   [EnableIf=is_builtin_cert_verifier_feature_supported]
-  enum CertVerifierImpl {kDefault, kBuiltin, kSystem};
+  enum CertVerifierImpl {
+    // kDefault - Decided by base::Feature
+    kDefault,
+    // kBuiltin - Use CertVerifyProcBuiltin
+    kBuiltin,
+    // kSystem  - Use the system CertVerifyProc implementation
+    kSystem,
+  };
+
   [EnableIf=is_builtin_cert_verifier_feature_supported]
   CertVerifierImpl use_builtin_cert_verifier = kDefault;
+
+  // Specifies which root store to use
+  //
+  // This is a temporary interface until the Chrome Root Store is rolled out
+  // for all platforms; embedders should not use it.
+  // See https://crbug.com/1216547
+  // TODO(hchao, sleevi): remove after full launch of Chrome Root Store
+  [EnableIf=is_chrome_root_store_supported]
+  enum ChromeRootImpl {
+    // kRootDefault - Decided by base::Feature
+    kRootDefault,
+    // kRootChrome  - Use Chrome root store
+    kRootChrome,
+    // kRootSystem  - Use the system root store
+    kRootSystem,
+  };
+
+  [EnableIf=is_chrome_root_store_supported]
+  ChromeRootImpl use_chrome_root_store = kRootDefault;
 
   // Parameters for the cert verifier comparison trial. This is a temporary
   // interface and embedders should not use it.

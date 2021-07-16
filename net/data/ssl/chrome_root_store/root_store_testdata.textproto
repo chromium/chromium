@@ -1,0 +1,22 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Test certificates for the Chrome Root Store. This file should not be used for
+# anything other than testing.
+#
+# TODO(hchao): create test certs instead of using real certs.
+
+# Starfield Services Root Certificate Authority - G2
+trust_anchors {
+  filename: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5.pem"
+}
+
+# OISTE WISeKey Global Root GB CA
+trust_anchors {
+  filename: "6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6.pem"
+}
+
+# Leaving cert in
+# filename: "c45d7bb08e6d67e62e4235110b564e5f78fd92ef058c840aea4e6455d7585c60.pem"
+# (GTS Root R2) out intentionally

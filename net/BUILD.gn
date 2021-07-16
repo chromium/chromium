@@ -82,6 +82,7 @@ buildflag_header("buildflags") {
     "USE_EXTERNAL_GSSAPI=$use_external_gssapi",
     "TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED=$trial_comparison_cert_verifier_supported",
     "BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED=$builtin_cert_verifier_feature_supported",
+    "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
   ]
 }
 
@@ -1386,6 +1387,14 @@ component("net") {
       "base/network_interfaces_getifaddrs.cc",
       "base/network_interfaces_getifaddrs.h",
     ]
+  }
+
+  if (chrome_root_store_supported) {
+    sources += [
+      "cert/internal/trust_store_chrome.cc",
+      "cert/internal/trust_store_chrome.h",
+    ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_inc" ]
   }
 
   if (use_nss_certs) {
@@ -4740,6 +4749,11 @@ test("net_unittests") {
       "url_request/url_request_job_unittest.cc",
       "url_request/url_request_unittest.cc",
     ]
+  }
+
+  if (chrome_root_store_supported) {
+    sources += [ "cert/internal/trust_store_chrome_unittest.cc" ]
+    deps += [ "//net/data/ssl/chrome_root_store:gen_root_store_test_inc" ]
   }
 
   if (!disable_brotli_filter) {

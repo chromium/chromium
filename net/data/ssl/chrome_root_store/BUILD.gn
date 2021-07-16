@@ -139,3 +139,24 @@ compiled_action("gen_root_store_inc") {
            rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
                        root_build_dir) ]
 }
+
+compiled_action("gen_root_store_test_inc") {
+  tool = "//net/tools/root_store_tool:root_store_tool"
+
+  # It'd be really nice to list an input as "certs/*", but it doesn't seem to
+  # work. So we list them all out.
+  inputs = [
+    "root_store_testdata.textproto",
+    "testdata/568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5.pem",
+    "testdata/6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6.pem",
+    "testdata/c45d7bb08e6d67e62e4235110b564e5f78fd92ef058c840aea4e6455d7585c60.pem",
+  ]
+  outputs = [ "${target_gen_dir}/chrome-root-store-test-data-inc.cc" ]
+  args = [
+    "--root-store-filename=root_store_testdata.textproto",
+    "--certs-sub-dir=testdata",
+    "--write-cpp=" +
+        rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
+                    root_build_dir),
+  ]
+}

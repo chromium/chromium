@@ -327,6 +327,36 @@ INSTANTIATE_TEST_SUITE_P(
                       SlotFilterType::kDoNotAllowUserSlots,
                       SlotFilterType::kAllowSpecifiedUserSlot));
 
+// Tests a TrustStoreNSS that ignores root certs
+class TrustStoreNSSTestIgnoreSystemCerts : public TrustStoreNSSTestBase {
+ public:
+  TrustStoreNSSTestIgnoreSystemCerts() = default;
+  ~TrustStoreNSSTestIgnoreSystemCerts() override = default;
+
+  std::unique_ptr<TrustStoreNSS> CreateTrustStoreNSS() override {
+    return std::make_unique<TrustStoreNSS>(
+        trustSSL, TrustStoreNSS::IgnoreSystemTrustSettings());
+  }
+};
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootTrusted) {
+  AddCertsToNSS();
+  TrustCert(newroot_.get());
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::TRUSTED_ANCHOR));
+}
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, UserRootDistrusted) {
+  AddCertsToNSS();
+  DistrustCert(newroot_.get());
+  EXPECT_TRUE(HasTrust({newroot_}, CertificateTrustType::DISTRUSTED));
+}
+
+TEST_F(TrustStoreNSSTestIgnoreSystemCerts, SystemRootCertsIgnored) {
+  scoped_refptr<ParsedCertificate> system_root = GetASSLTrustedBuiltinRoot();
+  ASSERT_TRUE(system_root);
+  EXPECT_TRUE(HasTrust({system_root}, CertificateTrustType::UNSPECIFIED));
+}
+
 // Tests a TrustStoreNSS that does not filter which certificates
 class TrustStoreNSSTestWithoutSlotFilter : public TrustStoreNSSTestBase {
  public:

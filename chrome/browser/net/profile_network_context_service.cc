@@ -752,17 +752,43 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
   network_context_params->ct_policy = GetCTPolicy();
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
-  // Require the use_builtin_cert_verifier to be explicitly initialized, as
-  // using the TrialComparisonCertVerifier requires knowing whether Chrome is
-  // using the system verifier.
+  // In order for the TrialComparisonCertVerifier to be useful, it needs to
+  // provide comparisons between two well-defined verifier configurations; this
+  // means the currently launched cert verifier (and root store) and the
+  // prospective cert verifier (and root store).
+  //
+  // It's possible that, due to user configuration, such as enterprise policies,
+  // the user may be requesting a non-standard configuration from the current
+  // default. In these cases, the trial verifier is also disabled,
+  // because all users in the trial should be running in the same configuration.
+  //
+  // To avoid any potential ambiguities between different layers of the network
+  // stack, running the trial requires the `cert_verifier_creation_params` be
+  // explicitly initialized, rather than using `kDefault` / `kRootDefault`, to
+  // guarantee that the primary verifier is initialized as requested and
+  // expected.  These checks here simply ensure that the caller explicitly
+  // provided the expected default value.
   DCHECK(cert_verifier_creation_params);
+  bool is_trial_comparison_supported = !in_memory;
+#if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
   DCHECK_NE(cert_verifier_creation_params->use_builtin_cert_verifier,
             cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
                 kDefault);
-  if (!in_memory &&
+  is_trial_comparison_supported &=
       cert_verifier_creation_params->use_builtin_cert_verifier ==
-          cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
-              kSystem &&
+      cert_verifier::mojom::CertVerifierCreationParams::CertVerifierImpl::
+          kSystem;
+#endif
+#if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+  DCHECK_NE(cert_verifier_creation_params->use_chrome_root_store,
+            cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+                kRootDefault);
+  is_trial_comparison_supported &=
+      cert_verifier_creation_params->use_chrome_root_store ==
+      cert_verifier::mojom::CertVerifierCreationParams::ChromeRootImpl::
+          kRootSystem;
+#endif
+  if (is_trial_comparison_supported &&
       TrialComparisonCertVerifierController::MaybeAllowedForProfile(profile_)) {
     mojo::PendingRemote<
         cert_verifier::mojom::TrialComparisonCertVerifierConfigClient>
