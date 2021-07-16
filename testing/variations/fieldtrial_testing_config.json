@@ -906,6 +906,27 @@
             ]
         }
     ],
+    "AutocompleteFilterForMeaningfulNames": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutocompleteFilterForMeaningfulNames"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillAPIServer": [
         {
             "platforms": [
@@ -1222,6 +1243,27 @@
                     "name": "Enabled",
                     "enable_features": [
                         "AutofillRefillWithRendererIds"
+                    ]
+                }
+            ]
+        }
+    ],
+    "AutofillServerTypeTakesPrecedence": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "ios",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillServerTypeTakesPrecedence"
                     ]
                 }
             ]
