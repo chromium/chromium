@@ -150,6 +150,9 @@ class ArcSupportHost : public arc::ArcSupportMessageHost::Observer,
   void SetTermsOfServiceDelegate(TermsOfServiceDelegate* delegate);
   void SetErrorDelegate(ErrorDelegate* delegate);
 
+  // Returns the should_show_run_network_tests_ field.
+  bool GetShouldShowRunNetworkTests();
+
   bool HasAuthDelegate() const { return auth_delegate_ != nullptr; }
 
   // Called when the communication to arc_support Chrome App is ready.

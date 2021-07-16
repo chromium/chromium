@@ -81,6 +81,10 @@ void UpdateOptInFlowResultUMA(OptInFlowResult result) {
   LogStabilityUmaEnum("Arc.OptInResult", result);
 }
 
+void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type) {
+  base::UmaHistogramEnumeration("Arc.OptInNetworkErrorAction", type);
+}
+
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile) {
   DCHECK_NE(status, ProvisioningStatus::CHROME_SERVER_COMMUNICATION_ERROR);

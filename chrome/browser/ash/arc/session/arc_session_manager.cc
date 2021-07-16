@@ -1647,6 +1647,11 @@ void ArcSessionManager::StartMiniArc() {
 
 void ArcSessionManager::OnWindowClosed() {
   CancelAuthCode();
+
+  // If network-related error occured, collect UMA stats on user action.
+  if (support_host_ && support_host_->GetShouldShowRunNetworkTests())
+    UpdateOptInNetworkErrorActionUMA(
+        arc::OptInNetworkErrorActionType::WINDOW_CLOSED);
 }
 
 void ArcSessionManager::OnRetryClicked() {
@@ -1685,16 +1690,29 @@ void ArcSessionManager::OnRetryClicked() {
     // TODO(hidehiko): consider removing this case after fixing the bug.
     MaybeStartTermsOfServiceNegotiation();
   }
+
+  // If network-related error occured, collect UMA stats on user action.
+  if (support_host_ && support_host_->GetShouldShowRunNetworkTests())
+    UpdateOptInNetworkErrorActionUMA(arc::OptInNetworkErrorActionType::RETRY);
 }
 
 void ArcSessionManager::OnSendFeedbackClicked() {
   DCHECK(support_host_);
   chrome::OpenFeedbackDialog(nullptr, chrome::kFeedbackSourceArcApp);
+
+  // If network-related error occured, collect UMA stats on user action.
+  if (support_host_->GetShouldShowRunNetworkTests())
+    UpdateOptInNetworkErrorActionUMA(
+        arc::OptInNetworkErrorActionType::SEND_FEEDBACK);
 }
 
 void ArcSessionManager::OnRunNetworkTestsClicked() {
   DCHECK(support_host_);
   chromeos::DiagnosticsDialog::ShowDialog();
+
+  // Network-related error occured so collect UMA stats on user action.
+  UpdateOptInNetworkErrorActionUMA(
+      arc::OptInNetworkErrorActionType::CHECK_NETWORK);
 }
 
 void ArcSessionManager::SetArcSessionRunnerForTesting(

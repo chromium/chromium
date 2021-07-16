@@ -826,6 +826,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>Arc OptIn cancelation reason.</summary>
 </histogram>
 
+<histogram name="Arc.OptInNetworkErrorAction" enum="ArcOptInNetworkErrorAction"
+    expires_after="M98">
+  <owner>mhasank@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Records user action on the optin dialog when a network-related provisioning
+    failure occurs by type: close window, retry, send feedback and check network
+    connection.
+  </summary>
+</histogram>
+
 <histogram name="Arc.OptInResult" enum="ArcOptInResult"
     expires_after="2021-12-26">
   <owner>elijahtaylor@google.com</owner>

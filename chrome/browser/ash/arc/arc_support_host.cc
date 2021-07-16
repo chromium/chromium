@@ -238,6 +238,10 @@ void ArcSupportHost::SetErrorDelegate(ErrorDelegate* delegate) {
   error_delegate_ = delegate;
 }
 
+bool ArcSupportHost::GetShouldShowRunNetworkTests() {
+  return should_show_run_network_tests_;
+}
+
 void ArcSupportHost::SetArcManaged(bool is_arc_managed) {
   DCHECK(!message_host_);
   is_arc_managed_ = is_arc_managed;

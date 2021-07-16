@@ -75,6 +75,24 @@ enum class OptInCancelReason {
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+enum class OptInNetworkErrorActionType {
+  // User closed the optin dialog.
+  WINDOW_CLOSED = 0,
+
+  // User asked to retry optin.
+  RETRY = 1,
+
+  // User asked to send feedback.
+  SEND_FEEDBACK = 2,
+
+  // User wants to diagnose network.
+  CHECK_NETWORK = 3,
+
+  kMaxValue = CHECK_NETWORK,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class OptInSilentAuthCode {
   // Silent auth code feature is disabled.
   DISABLED = 0,
@@ -222,6 +240,7 @@ void UpdateEnabledStateByUserTypeUMA();
 void UpdateOptInActionUMA(OptInActionType type);
 void UpdateOptInCancelUMA(OptInCancelReason reason);
 void UpdateOptInFlowResultUMA(OptInFlowResult result);
+void UpdateOptInNetworkErrorActionUMA(OptInNetworkErrorActionType type);
 void UpdateProvisioningStatusUMA(ProvisioningStatus status,
                                  const Profile* profile);
 void UpdateCloudProvisionFlowErrorUMA(mojom::CloudProvisionFlowError error,
