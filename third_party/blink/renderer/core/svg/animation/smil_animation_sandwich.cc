@@ -45,7 +45,9 @@ struct PriorityCompare {
 
 }  // namespace
 
-SMILAnimationSandwich::SMILAnimationSandwich() = default;
+SMILAnimationSandwich::SMILAnimationSandwich() {
+  recordreplay::RegisterPointer(this);
+}
 
 void SMILAnimationSandwich::Add(SVGAnimationElement* animation) {
   DCHECK(!sandwich_.Contains(animation));
@@ -89,6 +91,9 @@ void SMILAnimationSandwich::UpdateActiveAnimationStack(
 }
 
 bool SMILAnimationSandwich::ApplyAnimationValues() {
+  recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues Start %d",
+                       recordreplay::PointerId(this));
+
   if (active_.IsEmpty())
     return false;
 
@@ -108,17 +113,25 @@ bool SMILAnimationSandwich::ApplyAnimationValues() {
   // element in the sandwich will do.
   SVGAnimationElement* animation = sandwich_.front();
 
+  recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues #1");
+
   // Only reset the animated type to the base value once for
   // the lowest priority animation that animates and
   // contributes to a particular element/attribute pair.
   SMILAnimationValue animation_value = animation->CreateAnimationValue();
 
+  recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues #2");
+
   for (auto* sandwich_it = sandwich_start; sandwich_it != active_.end();
        sandwich_it++) {
+    recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues #3");
     (*sandwich_it)->ApplyAnimation(animation_value);
+    recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues #4");
   }
 
   animation->ApplyResultsToTarget(animation_value);
+
+  recordreplay::Assert("SMILAnimationSandwich::ApplyAnimationValues Done");
   return true;
 }
 
