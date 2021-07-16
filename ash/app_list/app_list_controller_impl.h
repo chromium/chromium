@@ -110,6 +110,7 @@ class ASH_EXPORT AppListControllerImpl
       std::vector<std::unique_ptr<SearchResultMetadata>> results) override;
   void SetItemMetadata(const std::string& id,
                        std::unique_ptr<AppListItemMetadata> data) override;
+  void SetItemIconVersion(const std::string& id, int icon_version) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemNotificationBadgeColor(const std::string& id,
                                      const SkColor color) override;
@@ -227,6 +228,7 @@ class ASH_EXPORT AppListControllerImpl
   void OnStateTransitionAnimationCompleted(AppListViewState state) override;
   void OnViewStateChanged(AppListViewState state) override;
   int AdjustAppListViewScrollOffset(int offset, ui::EventType type) override;
+  void LoadIcon(const std::string& app_id) override;
 
   void GetAppLaunchedMetricParams(
       AppLaunchedMetricParams* metric_params) override;

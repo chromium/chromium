@@ -65,6 +65,7 @@ class TestAppListClient : public AppListClient {
       const SearchResultIdWithPositionIndices& results,
       int position_index) override {}
   AppListNotifier* GetNotifier() override;
+  void LoadIcon(int profile_id, const std::string& app_id) override {}
 
   std::u16string last_search_query() { return last_search_query_; }
 

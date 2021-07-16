@@ -74,8 +74,8 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
   }
 
   if (in_constructor || app_update.IconKeyChanged()) {
-    constexpr bool allow_placeholder_icon = true;
-    CallLoadIcon(allow_placeholder_icon);
+    // Increment icon version to indicate icon needs to be updated.
+    IncrementIconVersion();
   }
 
   if (in_constructor || app_update.IsPlatformAppChanged()) {
@@ -93,6 +93,11 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
       SetAppStatus(ash::AppStatus::kReady);
     }
   }
+}
+
+void AppServiceAppItem::LoadIcon() {
+  constexpr bool allow_placeholder_icon = true;
+  CallLoadIcon(allow_placeholder_icon);
 }
 
 void AppServiceAppItem::Activate(int event_flags) {

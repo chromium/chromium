@@ -161,6 +161,13 @@ void ChromeAppListModelUpdater::ActivateChromeItem(const std::string& id,
   item->PerformActivate(event_flags);
 }
 
+void ChromeAppListModelUpdater::LoadAppIcon(const std::string& id) {
+  ChromeAppListItem* item = FindItem(id);
+  if (!item)
+    return;
+  item->LoadIcon();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Methods for updating Chrome items that never talk to ash.
 
@@ -186,6 +193,14 @@ void ChromeAppListModelUpdater::MoveChromeItemToFolder(
 
 ////////////////////////////////////////////////////////////////////////////////
 // Methods only used by ChromeAppListItem that talk to ash directly.
+
+void ChromeAppListModelUpdater::SetItemIconVersion(const std::string& id,
+                                                   int icon_version) {
+  if (!app_list_controller_)
+    return;
+
+  app_list_controller_->SetItemIconVersion(id, icon_version);
+}
 
 void ChromeAppListModelUpdater::SetItemIcon(const std::string& id,
                                             const gfx::ImageSkia& icon) {

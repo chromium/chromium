@@ -67,6 +67,7 @@ class AppListModelUpdater {
   virtual std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest();
 
   // Item field setters only used by ChromeAppListItem and its derived classes.
+  virtual void SetItemIconVersion(const std::string& id, int icon_version) {}
   virtual void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) {}
   virtual void SetItemName(const std::string& id, const std::string& name) {}
   virtual void SetItemNameAndShortName(const std::string& id,
@@ -89,6 +90,7 @@ class AppListModelUpdater {
   virtual void SetSearchResultBadgeIcon(const std::string& id,
                                         const gfx::ImageSkia& badge_icon) {}
   virtual void ActivateChromeItem(const std::string& id, int event_flags) {}
+  virtual void LoadAppIcon(const std::string& id) {}
 
   // For AppListModel:
   virtual ChromeAppListItem* FindItem(const std::string& id) = 0;

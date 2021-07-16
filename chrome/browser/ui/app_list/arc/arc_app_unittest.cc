@@ -97,6 +97,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/event_constants.h"
@@ -946,11 +947,18 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
         icon_requests = app_instance()->icon_requests();
     ASSERT_EQ(2U, icon_requests.size());
     ASSERT_TRUE(icon_requests[0]->IsForApp(app));
-    ASSERT_EQ(GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_100P),
-              icon_requests[0]->dimension());
     ASSERT_TRUE(icon_requests[1]->IsForApp(app));
-    ASSERT_EQ(GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_200P),
-              icon_requests[1]->dimension());
+
+    // testing::UnorderedElementsAre because icon requests could be out of order
+    // when going through  base::ThreadPool::PostTaskAndReplyWithResult in
+    // ArcAppIcon::LoadForScaleFactor.
+    const std::vector<int> requested_dims = {icon_requests[0]->dimension(),
+                                             icon_requests[1]->dimension()};
+    ASSERT_THAT(
+        requested_dims,
+        testing::UnorderedElementsAre(
+            GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_100P),
+            GetAppListIconDimensionForScaleFactor(ui::SCALE_FACTOR_200P)));
 
     WaitForIconUpdates(profile_.get(), app_id, expected_update_count);
   }
@@ -1007,6 +1015,11 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
       std::string app_id = InstallExtraPackage(3 + current_count);
       app_ids.emplace_back(app_id);
 
+      // Trigger icon loading. This is needed because icon loading is triggered
+      // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+      FlushMojoCallsForAppService();
+      model_updater()->LoadAppIcon(app_id);
+
       // Wait AppServiceAppItem to finish loading icon.
       model_updater()->WaitForIconUpdates(1);
       content::RunAllTasksUntilIdle();
@@ -1045,6 +1058,11 @@ class ArcAppModelIconTest : public ArcAppModelBuilderRecreate,
     while (current_count < total_count) {
       std::string app_id = InstallExtraPackage(start_id + current_count);
       app_ids.emplace_back(app_id);
+
+      // Trigger icon loading. This is needed because icon loading is triggered
+      // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+      FlushMojoCallsForAppService();
+      model_updater()->LoadAppIcon(app_id);
 
       icon_loader.FetchImage(app_id);
 
@@ -1720,6 +1738,11 @@ TEST_P(ArcAppModelBuilderTest, RequestIcons) {
     for (auto& app : fake_apps()) {
       AppServiceAppItem* app_item = FindArcItem(ArcAppTest::GetAppId(app));
       ASSERT_NE(nullptr, app_item);
+
+      // Explicitly load icon. Cast because LoadIcon is private in
+      // AppServiceAppItem.
+      static_cast<ChromeAppListItem*>(app_item)->LoadIcon();
+
       const float scale = ui::GetScaleForResourceScaleFactor(scale_factor);
       app_item->icon().GetRepresentation(scale);
 
@@ -2444,6 +2467,9 @@ TEST_P(ArcAppModelBuilderTest, IconLoaderForShelfGroup) {
 
   SendRefreshAppList(std::vector<arc::mojom::AppInfo>(fake_apps().begin(),
                                                       fake_apps().begin() + 1));
+  // Trigger icon loading. This is needed because icon loading is triggered
+  // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+  model_updater()->LoadAppIcon(app_id);
   content::RunAllTasksUntilIdle();
 
   // Store number of requests generated during the App List item creation. Same
@@ -2657,10 +2683,16 @@ TEST_P(ArcAppModelBuilderTest, IconLoader) {
   app_instance()->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(
       fake_apps().begin(), fake_apps().begin() + 1));
 
+  // Ensure AppServiceAppItem is created then trigger an app icon loading. This
+  // is needed because icon loading is triggered when AppServiceAppItem is added
+  // to UI but there is no UI in unit tests.
+  FlushMojoCallsForAppService();
+  model_updater()->LoadAppIcon(app_id);
+
   // Wait AppServiceAppItem to finish loading icon, otherwise, the test result
   // could be flaky, because the update image count could include the icon
   // updates by AppServiceAppItem.
-  model_updater()->WaitForIconUpdates(1 + scale_factors.size());
+  model_updater()->WaitForIconUpdates(1);
 
   FakeAppIconLoaderDelegate delegate;
   AppServiceAppIconLoader icon_loader(
@@ -2703,12 +2735,10 @@ TEST_P(ArcDefaultAppTest, LoadAdaptiveIcon) {
 
   SendRefreshAppList(fake_default_apps());
 
-  // Wait AppServiceAppItem to finish loading icon for the 3 fake default
-  // installed apps.
-  do {
-    content::RunAllTasksUntilIdle();
-  } while (model_updater()->update_image_count() <
-           ui::GetSupportedResourceScaleFactors().size() * 3);
+  // Trigger icon loading. This is needed because icon loading is triggered when
+  // AppServiceAppItem is added to UI but there is no UI in unit tests.
+  model_updater()->LoadAppIcon(app_id);
+  model_updater()->WaitForIconUpdates(1);
 
   gfx::ImageSkia src_image_skia;
   GenerateAppIcon(src_image_skia);
@@ -2864,6 +2894,12 @@ TEST_P(ArcAppModelIconTest, IconInvalidation) {
   // Send new apps for the package. This should invalidate package icons.
   UpdatePackage(2 /* package_version */);
 
+  // Trigger icon loading. This is needed because icon loading is triggered when
+  // AppServiceAppItem is added to UI but there is no UI in unit tests.
+  FlushMojoCallsForAppService();
+  model_updater()->LoadAppIcon(app_id);
+  content::RunAllTasksUntilIdle();
+
   EnsureIconsUpdated();
 
   // Simulate ARC restart again.
@@ -2916,8 +2952,14 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnFrameworkUpdate) {
       CreatePackageWithVersion(kFrameworkPackageName, kFrameworkPiVersion));
   app_instance()->SendRefreshPackageList(std::move(packages));
 
+  // Trigger icon loading. This is needed because icon loading is triggered
+  // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+  FlushMojoCallsForAppService();
+  model_updater()->LoadAppIcon(app_id);
+  content::RunAllTasksUntilIdle();
+
   EXPECT_FALSE(app_instance()->icon_requests().empty());
-  EnsureIconsUpdated(scale_factors.size() + kDefaultIconUpdateCount);
+  EnsureIconsUpdated();
 }
 
 // This verifies that app icons are invalidated in case icon version was
@@ -2927,6 +2969,10 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnIconVersionUpdate) {
   ASSERT_TRUE(prefs);
 
   const std::string app_id = StartApp(1 /* package_version */);
+
+  // Trigger icon loading. This is needed because icon loading is triggered
+  // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+  model_updater()->LoadAppIcon(app_id);
   WaitForIconUpdate();
 
   // Simulate ARC restart.
@@ -2934,6 +2980,11 @@ TEST_P(ArcAppModelIconTest, IconInvalidationOnIconVersionUpdate) {
   // Simulate new icons version.
   ArcAppListPrefs::UprevCurrentIconsVersionForTesting();
   StartApp(1 /* package_version */);
+
+  // Trigger icon loading. This is needed because icon loading is triggered
+  // when AppServiceAppItem is added to UI but there is no UI in unit tests.
+  FlushMojoCallsForAppService();
+  model_updater()->LoadAppIcon(app_id);
   WaitForIconUpdate();
 
   // Requests to reload icons are issued for all supported scales.
