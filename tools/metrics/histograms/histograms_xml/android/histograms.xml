@@ -3463,8 +3463,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>mvanouwerkerk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
-    Time spent on a page. This is measured from navigation commit to the start
-    of the next navigation.
+    Time spent on a page with a {Scheme} scheme. This is measured from
+    navigation commit to the start of the next navigation.
   </summary>
   <token key="Scheme">
     <variant name="Data"/>
