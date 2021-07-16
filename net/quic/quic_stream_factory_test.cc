@@ -10643,21 +10643,15 @@ TEST_P(QuicStreamFactoryTest, NoRetransmittableOnWireTimeout) {
   // Spin up the message loop to read incoming data from server till the ACK.
   base::RunLoop().RunUntilIdle();
 
-  // Ack delay time.
-  base::TimeDelta delay = task_runner->NextPendingTaskDelay();
-  EXPECT_GT(kDefaultRetransmittableOnWireTimeout, delay);
-  // Fire the ack alarm, since ack has been sent, no ack will be sent.
-  context_.AdvanceTime(
-      quic::QuicTime::Delta::FromMilliseconds(delay.InMilliseconds()));
-  task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
-
-  // Verify that the ping alarm is not set with any default value.
-  base::TimeDelta wrong_delay = kDefaultRetransmittableOnWireTimeout - delay;
-  delay = task_runner->NextPendingTaskDelay();
-  EXPECT_NE(wrong_delay, delay);
-  context_.AdvanceTime(
-      quic::QuicTime::Delta::FromMilliseconds(delay.InMilliseconds()));
-  task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
+  // Verify the ping alarm is set, but not with the default timeout.
+  const quic::QuicAlarm* const ping_alarm =
+      quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
+  ASSERT_TRUE(ping_alarm);
+  ASSERT_TRUE(ping_alarm->IsSet());
+  quic::QuicTime::Delta delay =
+      ping_alarm->deadline() - context_.clock()->ApproximateNow();
+  EXPECT_NE(kDefaultRetransmittableOnWireTimeout.InMilliseconds(),
+            delay.ToMilliseconds());
 
   // Verify that response headers on the migrated socket were delivered to the
   // stream.
@@ -10928,21 +10922,15 @@ TEST_P(QuicStreamFactoryTest,
   // Spin up the message loop to read incoming data from server till the ACK.
   base::RunLoop().RunUntilIdle();
 
-  // Ack delay time.
-  base::TimeDelta delay = task_runner->NextPendingTaskDelay();
-  EXPECT_GT(kDefaultRetransmittableOnWireTimeout, delay);
-  // Fire the ack alarm, since ack has been sent, no ack will be sent.
-  context_.AdvanceTime(
-      quic::QuicTime::Delta::FromMilliseconds(delay.InMilliseconds()));
-  task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
-
-  // Verify the ping alarm is not set with default value.
-  base::TimeDelta wrong_delay = kDefaultRetransmittableOnWireTimeout - delay;
-  delay = task_runner->NextPendingTaskDelay();
-  EXPECT_NE(wrong_delay, delay);
-  context_.AdvanceTime(
-      quic::QuicTime::Delta::FromMilliseconds(delay.InMilliseconds()));
-  task_runner->FastForwardBy(task_runner->NextPendingTaskDelay());
+  // Verify the ping alarm is set, but not with the default timeout.
+  const quic::QuicAlarm* const ping_alarm =
+      quic::test::QuicConnectionPeer::GetPingAlarm(session->connection());
+  ASSERT_TRUE(ping_alarm);
+  ASSERT_TRUE(ping_alarm->IsSet());
+  quic::QuicTime::Delta delay =
+      ping_alarm->deadline() - context_.clock()->ApproximateNow();
+  EXPECT_NE(kDefaultRetransmittableOnWireTimeout.InMilliseconds(),
+            delay.ToMilliseconds());
 
   // Verify that response headers on the migrated socket were delivered to the
   // stream.
