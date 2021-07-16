@@ -484,8 +484,13 @@ void TabSearchPageHandler::TabChangedAt(content::WebContents* contents,
   Browser* browser = chrome::FindBrowserWithWebContents(contents);
   if (!browser)
     return;
+  Browser* active_browser = chrome::FindLastActive();
   TRACE_EVENT0("browser", "TabSearchPageHandler:TabChangedAt");
-  page_->TabUpdated(GetTab(browser->tab_strip_model(), contents, index));
+
+  auto tab_update_info = tab_search::mojom::TabUpdateInfo::New();
+  tab_update_info->in_active_window = (browser == active_browser);
+  tab_update_info->tab = GetTab(browser->tab_strip_model(), contents, index);
+  page_->TabUpdated(std::move(tab_update_info));
 }
 
 void TabSearchPageHandler::ScheduleDebounce() {

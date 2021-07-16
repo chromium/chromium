@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {keyDownOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {ProfileData, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField} from 'chrome://tab-search.top-chrome/tab_search.js';
+import {ProfileData, Tab, TabGroup, TabGroupColor, TabSearchApiProxyImpl, TabSearchAppElement, TabSearchSearchField, TabUpdateInfo} from 'chrome://tab-search.top-chrome/tab_search.js';
 
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
@@ -448,7 +448,11 @@ suite('TabSearchAppTest', () => {
       lastActiveTimeTicks: {internalValue: BigInt(5)},
       lastActiveElapsedText: '',
     });
-    testProxy.getCallbackRouterRemote().tabUpdated(updatedTab);
+    const tabUpdateInfo = /** @type {!TabUpdateInfo} */ ({
+      inActiveWindow: true,
+      tab: updatedTab,
+    });
+    testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
     await flushTasks();
     // tabIds are not changed after tab updated.
     verifyTabIds(queryRows(), [1, 5, 6, 2, 3, 4]);
@@ -458,6 +462,36 @@ suite('TabSearchAppTest', () => {
     assertEquals(updatedTab.title, tabSearchItem.data.tab.title);
     assertEquals(updatedTab.url, tabSearchItem.data.tab.url);
     assertEquals('example.com', tabSearchItem.data.hostname);
+  });
+
+  test('tab update for tab not in profile data adds tab to list', async () => {
+    await setupTest({
+      windows: [{
+        active: true,
+        height: SAMPLE_WINDOW_HEIGHT,
+        tabs: generateSampleTabsFromSiteNames(['OpenTab1'], true),
+      }],
+      recentlyClosedTabs: [],
+      tabGroups: [],
+      recentlyClosedTabGroups: [],
+    });
+    verifyTabIds(queryRows(), [1]);
+
+    const updatedTab = /** @type {!Tab} */ ({
+      index: 1,
+      tabId: 2,
+      title: 'Example',
+      url: 'https://example.com',
+      lastActiveTimeTicks: {internalValue: BigInt(5)},
+      lastActiveElapsedText: '',
+    });
+    const tabUpdateInfo = /** @type {!TabUpdateInfo} */ ({
+      inActiveWindow: true,
+      tab: updatedTab,
+    });
+    testProxy.getCallbackRouterRemote().tabUpdated(tabUpdateInfo);
+    await flushTasks();
+    verifyTabIds(queryRows(), [2, 1]);
   });
 
   test('refresh on tabs removed', async () => {

@@ -133,6 +133,15 @@ struct SwitchToTabInfo {
   int32 tab_id;
 };
 
+// Information about a tab update.
+struct TabUpdateInfo {
+  // Whether the tab is in the active window.
+  bool in_active_window;
+
+  // The tab that was updated.
+  Tab tab;
+};
+
 // Used by the WebUI page to bootstrap bidirectional communication.
 interface PageHandlerFactory {
   // The WebUI calls this method when the page is first initialized.
@@ -169,9 +178,9 @@ interface Page {
 
   // Called when a tab's data has changed and we need only issue an update for
   // that specific tab in the JS's data structures. Typically used for url,
-  // title, or favicon changes. `tab` is always populated with the latest data
-  // for the affected tab.
-  TabUpdated(Tab tab);
+  // title, or favicon changes. The TabUpdateInfo's `tab` is always populated
+  // with the latest data for the affected tab.
+  TabUpdated(TabUpdateInfo tabUpdateInfo);
 
   // Callback when tabs are removed.
   TabsRemoved(array<int32> tab_ids);

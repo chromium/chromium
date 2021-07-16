@@ -56,7 +56,7 @@ class MockPage : public tab_search::mojom::Page {
   mojo::Receiver<tab_search::mojom::Page> receiver_{this};
 
   MOCK_METHOD1(TabsChanged, void(tab_search::mojom::ProfileDataPtr));
-  MOCK_METHOD1(TabUpdated, void(tab_search::mojom::TabPtr));
+  MOCK_METHOD1(TabUpdated, void(tab_search::mojom::TabUpdateInfoPtr));
   MOCK_METHOD1(TabsRemoved, void(const std::vector<int32_t>& tab_ids));
 };
 
@@ -548,7 +548,9 @@ TEST_F(TabSearchPageHandlerTest, TabsNotChanged) {
   ASSERT_FALSE(IsTimerRunning());
 }
 
-bool VerifyTabUpdated(const tab_search::mojom::TabPtr& tab) {
+bool VerifyTabUpdated(
+    const tab_search::mojom::TabUpdateInfoPtr& tab_update_info) {
+  const tab_search::mojom::TabPtr& tab = tab_update_info->tab;
   ExpectNewTab(tab.get(), kTabUrl1, kTabName1, 1);
   return true;
 }

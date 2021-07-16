@@ -23,7 +23,7 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {fuzzySearch} from './fuzzy_search.js';
 import {InfiniteList, NO_SELECTION, selectorNavigationKeys} from './infinite_list.js';
 import {ariaLabel, ItemData, TabData, TabGroupData, TabItemType, tokenEquals, tokenToString} from './tab_data.js';
-import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, Window} from './tab_search.mojom-webui.js';
+import {ProfileData, RecentlyClosedTab, RecentlyClosedTabGroup, Tab, TabGroup, TabUpdateInfo, Window} from './tab_search.mojom-webui.js';
 import {TabSearchApiProxy, TabSearchApiProxyImpl} from './tab_search_api_proxy.js';
 import {TitleItem} from './title_item.js';
 
@@ -182,7 +182,8 @@ export class TabSearchAppElement extends PolymerElement {
     this.listenerIds_.push(
         callbackRouter.tabsChanged.addListener(
             profileData => this.tabsChanged_(profileData)),
-        callbackRouter.tabUpdated.addListener(tab => this.onTabUpdated_(tab)),
+        callbackRouter.tabUpdated.addListener(
+            tabUpdateInfo => this.onTabUpdated_(tabUpdateInfo)),
         callbackRouter.tabsRemoved.addListener(
             tabIds => this.onTabsRemoved_(tabIds)));
 
@@ -261,22 +262,26 @@ export class TabSearchAppElement extends PolymerElement {
   }
 
   /**
-   * TODO(crbug.com/1222365): updatedTab should be added to the `openTabs_` if
-   * its tabId is not found in the existing list.
-   * @param {!Tab} updatedTab
+   * @param {!TabUpdateInfo} tabUpdateInfo
    * @private
    */
-  onTabUpdated_(updatedTab) {
+  onTabUpdated_(tabUpdateInfo) {
+    const {tab, inActiveWindow} = tabUpdateInfo;
+    const tabData = this.tabData_(
+        tab, inActiveWindow, TabItemType.OPEN_TAB, this.tabGroupsMap_);
     // Replace the tab with the same tabId and trigger rerender.
     for (let i = 0; i < this.openTabs_.length; ++i) {
-      if (this.openTabs_[i].tab.tabId === updatedTab.tabId) {
-        this.openTabs_[i] = this.tabData_(
-            updatedTab, this.openTabs_[i].inActiveWindow, TabItemType.OPEN_TAB,
-            this.tabGroupsMap_);
+      if (this.openTabs_[i].tab.tabId === tab.tabId) {
+        this.openTabs_[i] = tabData;
         this.updateFilteredTabs_();
         return;
       }
     }
+
+    // If the updated tab's id is not found in the existing open tabs, add it
+    // to the list.
+    this.openTabs_.push(tabData);
+    this.updateFilteredTabs_();
   }
 
   /**
