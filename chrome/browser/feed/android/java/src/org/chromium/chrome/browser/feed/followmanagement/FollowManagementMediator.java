@@ -195,10 +195,8 @@ class FollowManagementMediator {
                 subscribed = true;
             }
             OnClickListener clickListener = (new ClickListener(id)).getClickListener();
-            // TODO(187319361): Once the service is returning proper paths, instead of displaying
-            // just the host of the URL, display everything in the URL except the scheme.
             PropertyModel pageModel =
-                    generateListItem(title, url.getHost(), status, subscribed, clickListener);
+                    generateListItem(title, url.getSpec(), status, subscribed, clickListener);
             SimpleRecyclerViewAdapter.ListItem listItem = new SimpleRecyclerViewAdapter.ListItem(
                     FollowManagementItemProperties.DEFAULT_ITEM_TYPE, pageModel);
             mModelList.add(listItem);

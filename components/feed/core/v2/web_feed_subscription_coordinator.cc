@@ -36,7 +36,12 @@ WebFeedMetadata MakeWebFeedMetadata(
   result.web_feed_id = web_feed_info.web_feed_id();
   result.is_active = web_feed_info.state() ==
                      feedstore::WebFeedInfo::State::WebFeedInfo_State_ACTIVE;
-  result.publisher_url = GURL(web_feed_info.visit_uri());
+
+  if (!web_feed_info.rss_uri().empty()) {
+    result.publisher_url = GURL(web_feed_info.rss_uri());
+  } else {
+    result.publisher_url = GURL(web_feed_info.visit_uri());
+  }
   result.title = web_feed_info.title();
   result.subscription_status = subscribe_status;
   return result;
