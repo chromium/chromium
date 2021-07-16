@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/auto_reset.h"
-#include "base/bind.h"
 #include "base/check_op.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
@@ -287,26 +286,8 @@ void Widget::ReparentNativeView(gfx::NativeView native_view,
   Widget* child_widget = GetWidgetForNativeView(native_view);
   Widget* parent_widget =
       new_parent ? GetWidgetForNativeView(new_parent) : nullptr;
-  if (child_widget) {
+  if (child_widget)
     child_widget->parent_ = parent_widget;
-
-    // Release the paint-as-active lock on the old parent.
-    bool has_lock_on_parent = !!child_widget->parent_paint_as_active_lock_;
-    child_widget->parent_paint_as_active_lock_.reset();
-    child_widget->parent_paint_as_active_subscription_ =
-        base::CallbackListSubscription();
-
-    // Lock and subscribe to parent's paint-as-active.
-    if (parent_widget) {
-      if (has_lock_on_parent)
-        child_widget->parent_paint_as_active_lock_ =
-            parent_widget->LockPaintAsActive();
-      child_widget->parent_paint_as_active_subscription_ =
-          parent_widget->RegisterPaintAsActiveChangedCallback(
-              base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
-                                  base::Unretained(child_widget)));
-    }
-  }
 }
 
 // static
@@ -349,14 +330,6 @@ void Widget::Init(InitParams params) {
   }
 
   parent_ = params.parent ? GetWidgetForNativeView(params.parent) : nullptr;
-
-  // Subscripbe to parent's paint-as-active change.
-  if (parent_) {
-    parent_paint_as_active_subscription_ =
-        parent_->RegisterPaintAsActiveChangedCallback(
-            base::BindRepeating(&Widget::OnParentShouldPaintAsActiveChanged,
-                                base::Unretained(this)));
-  }
 
   params.child |= (params.type == InitParams::TYPE_CONTROL);
   is_top_level_ = !params.child;
@@ -1197,11 +1170,8 @@ base::CallbackListSubscription Widget::RegisterPaintAsActiveChangedCallback(
 std::unique_ptr<Widget::PaintAsActiveLock> Widget::LockPaintAsActive() {
   const bool was_paint_as_active = ShouldPaintAsActive();
   ++paint_as_active_refcount_;
-  if (ShouldPaintAsActive() != was_paint_as_active) {
+  if (ShouldPaintAsActive() != was_paint_as_active)
     paint_as_active_callbacks_.Notify();
-    if (parent() && !parent_paint_as_active_lock_)
-      parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
-  }
   return std::make_unique<PaintAsActiveLockImpl>(
       weak_ptr_factory_.GetWeakPtr());
 }
@@ -1211,21 +1181,7 @@ base::WeakPtr<Widget> Widget::GetWeakPtr() {
 }
 
 bool Widget::ShouldPaintAsActive() const {
-  return native_widget_active_ || paint_as_active_refcount_ ||
-         (parent() && parent()->ShouldPaintAsActive());
-}
-
-void Widget::OnParentShouldPaintAsActiveChanged() {
-  DCHECK(parent());
-  // |native_widget_active| is being updated in
-  // OnNativeWidgetActivationChanged(). Notification will be handled there.
-  if (native_widget_active_ != native_widget_->IsActive())
-    return;
-
-  // this->ShouldPaintAsActive() changes iff the native widget is
-  // inactive and there's no lock on this widget.
-  if (!(native_widget_active_ || paint_as_active_refcount_))
-    paint_as_active_callbacks_.Notify();
+  return native_widget_active_ || paint_as_active_refcount_;
 }
 
 void Widget::SetNativeTheme(ui::NativeTheme* native_theme) {
@@ -1336,18 +1292,7 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
     observer.OnWidgetActivationChanged(this, active);
 
   const bool was_paint_as_active = ShouldPaintAsActive();
-
-  // Widgets in a widget tree should share the same ShouldPaintAsActive().
-  // Lock the parent as paint-as-active when this widget becomes active.
-  if (!active && !paint_as_active_refcount_)
-    parent_paint_as_active_lock_.reset();
-  else if (parent())
-    parent_paint_as_active_lock_ = parent()->LockPaintAsActive();
-
   native_widget_active_ = active;
-
-  // Notify controls (e.g. LabelButton) and children widgets about the
-  // paint-as-active change.
   if (ShouldPaintAsActive() != was_paint_as_active)
     paint_as_active_callbacks_.Notify();
 
@@ -1886,10 +1831,6 @@ void Widget::UnlockPaintAsActive() {
   const bool was_paint_as_active = ShouldPaintAsActive();
   DCHECK_GT(paint_as_active_refcount_, 0U);
   --paint_as_active_refcount_;
-
-  if (!paint_as_active_refcount_ && !native_widget_active_)
-    parent_paint_as_active_lock_.reset();
-
   if (ShouldPaintAsActive() != was_paint_as_active)
     paint_as_active_callbacks_.Notify();
 }

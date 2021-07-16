@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_list.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -975,21 +974,13 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // returned lock can safely outlive the associated widget.
   std::unique_ptr<PaintAsActiveLock> LockPaintAsActive();
 
-  // Undoes LockPaintAsActive(). Called by PaintAsActiveLock destructor.
-  void UnlockPaintAsActive();
-
-  // Returns true if the window should paint as active.
-  bool ShouldPaintAsActive() const;
-
-  // Called when the ShouldPaintAsActive() of parent changes.
-  void OnParentShouldPaintAsActiveChanged();
-
   base::WeakPtr<Widget> GetWeakPtr();
 
   // Overridden from NativeWidgetDelegate:
   bool IsModal() const override;
   bool IsDialogBox() const override;
   bool CanActivate() const override;
+  bool ShouldPaintAsActive() const override;
   bool IsNativeWidgetInitialized() const override;
   bool OnNativeWidgetActivationChanged(bool active) override;
   void OnNativeFocus() override;
@@ -1131,6 +1122,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // layer.
   const View::Views& GetViewsWithLayers();
 
+  // Undoes LockPaintAsActive(). Called by PaintAsActiveLock destructor.
+  void UnlockPaintAsActive();
+
   // If a descendent of |root_view_| is focused, then clear the focus.
   void ClearFocusFromWidget();
 
@@ -1142,6 +1136,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   base::ObserverList<WidgetObserver> observers_;
 
   base::ObserverList<WidgetRemovalsObserver>::Unchecked removals_observers_;
+
+  PaintAsActiveCallbackList paint_as_active_callbacks_;
 
   // Non-owned pointer to the Widget's delegate. If a NULL delegate is supplied
   // to Init() a default WidgetDelegate is created.
@@ -1186,18 +1182,8 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
   // Tracks whether the native widget is active.
   bool native_widget_active_ = false;
 
-  // Count of paint-as-active locks on this widget. See LockPaintAsActive().
+  // Tracks locks on the paint-as-active behavior. See LockPaintAsActive().
   size_t paint_as_active_refcount_ = 0;
-
-  // Callbacks to notify when the ShouldPaintAsActive() changes.
-  PaintAsActiveCallbackList paint_as_active_callbacks_;
-
-  // Lock on the parent widget when this widget is active.
-  // When this widget is destroyed, the lock is automatically released.
-  std::unique_ptr<PaintAsActiveLock> parent_paint_as_active_lock_;
-
-  // Subscription to parent's ShouldPaintAsActive() change.
-  base::CallbackListSubscription parent_paint_as_active_subscription_;
 
   // Set to true if the widget is in the process of closing.
   bool widget_closed_ = false;

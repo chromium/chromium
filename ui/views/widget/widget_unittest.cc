@@ -30,7 +30,6 @@
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/style/platform_style.h"
 #include "ui/views/test/native_widget_factory.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/test_widget_observer.h"
@@ -2101,90 +2100,6 @@ TEST_F(WidgetTest, LockPaintAsActive_BecomesActive) {
   // Remove lock has no effect.
   lock.reset();
   EXPECT_TRUE(widget->ShouldPaintAsActive());
-}
-
-class PaintAsActiveCallbackCounter {
- public:
-  explicit PaintAsActiveCallbackCounter(Widget* widget) {
-    // Subscribe to |widget|'s paint-as-active change.
-    paint_as_active_subscription_ =
-        widget->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-            &PaintAsActiveCallbackCounter::Call, base::Unretained(this)));
-  }
-  void Call() { count_++; }
-  int CallCount() { return count_; }
-
- private:
-  int count_ = 0;
-  base::CallbackListSubscription paint_as_active_subscription_;
-};
-
-TEST_F(WidgetTest, LockParentPaintAsActive) {
-  if (!PlatformStyle::kInactiveWidgetControlsAppearDisabled)
-    return;
-
-  WidgetAutoclosePtr parent(CreateTopLevelPlatformWidget());
-  WidgetAutoclosePtr child(CreateChildPlatformWidget(parent->GetNativeView()));
-  WidgetAutoclosePtr grandchild(
-      CreateChildPlatformWidget(child->GetNativeView()));
-  WidgetAutoclosePtr other(CreateTopLevelPlatformWidget());
-  child->widget_delegate()->SetCanActivate(true);
-  grandchild->widget_delegate()->SetCanActivate(true);
-
-  PaintAsActiveCallbackCounter parent_control(parent.get());
-  PaintAsActiveCallbackCounter child_control(child.get());
-  PaintAsActiveCallbackCounter grandchild_control(grandchild.get());
-  PaintAsActiveCallbackCounter other_control(other.get());
-
-  parent->Show();
-  EXPECT_TRUE(parent->ShouldPaintAsActive());
-  EXPECT_TRUE(child->ShouldPaintAsActive());
-  EXPECT_TRUE(grandchild->ShouldPaintAsActive());
-  EXPECT_FALSE(other->ShouldPaintAsActive());
-  EXPECT_EQ(parent_control.CallCount(), 1);
-  EXPECT_EQ(child_control.CallCount(), 1);
-  EXPECT_EQ(grandchild_control.CallCount(), 1);
-  EXPECT_EQ(other_control.CallCount(), 0);
-
-  other->Show();
-  EXPECT_FALSE(parent->ShouldPaintAsActive());
-  EXPECT_FALSE(child->ShouldPaintAsActive());
-  EXPECT_FALSE(grandchild->ShouldPaintAsActive());
-  EXPECT_TRUE(other->ShouldPaintAsActive());
-  EXPECT_EQ(parent_control.CallCount(), 2);
-  EXPECT_EQ(child_control.CallCount(), 2);
-  EXPECT_EQ(grandchild_control.CallCount(), 2);
-  EXPECT_EQ(other_control.CallCount(), 1);
-
-  child->Show();
-  EXPECT_TRUE(parent->ShouldPaintAsActive());
-  EXPECT_TRUE(child->ShouldPaintAsActive());
-  EXPECT_TRUE(grandchild->ShouldPaintAsActive());
-  EXPECT_FALSE(other->ShouldPaintAsActive());
-  EXPECT_EQ(parent_control.CallCount(), 3);
-  EXPECT_EQ(child_control.CallCount(), 3);
-  EXPECT_EQ(grandchild_control.CallCount(), 3);
-  EXPECT_EQ(other_control.CallCount(), 2);
-
-  other->Show();
-  EXPECT_FALSE(parent->ShouldPaintAsActive());
-  EXPECT_FALSE(child->ShouldPaintAsActive());
-  EXPECT_FALSE(grandchild->ShouldPaintAsActive());
-  EXPECT_TRUE(other->ShouldPaintAsActive());
-  EXPECT_EQ(parent_control.CallCount(), 4);
-  EXPECT_EQ(child_control.CallCount(), 4);
-  EXPECT_EQ(grandchild_control.CallCount(), 4);
-  EXPECT_EQ(other_control.CallCount(), 3);
-
-  grandchild->Show();
-  EXPECT_TRUE(parent->ShouldPaintAsActive());
-  EXPECT_TRUE(child->ShouldPaintAsActive());
-  EXPECT_TRUE(grandchild->ShouldPaintAsActive());
-  EXPECT_FALSE(other->ShouldPaintAsActive());
-  EXPECT_EQ(parent_control.CallCount(), 5);
-  EXPECT_EQ(child_control.CallCount(), 5);
-  EXPECT_EQ(grandchild_control.CallCount(), 5);
-  EXPECT_EQ(other_control.CallCount(), 4);
 }
 
 // Widget used to destroy itself when OnNativeWidgetDestroyed is called.

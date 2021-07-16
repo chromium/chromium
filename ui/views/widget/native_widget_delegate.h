@@ -49,6 +49,9 @@ class VIEWS_EXPORT NativeWidgetDelegate {
   // Returns true if the window can be activated.
   virtual bool CanActivate() const = 0;
 
+  // Returns true if the window should paint as active.
+  virtual bool ShouldPaintAsActive() const = 0;
+
   // Returns true if the native widget has been initialized.
   virtual bool IsNativeWidgetInitialized() const = 0;
 
