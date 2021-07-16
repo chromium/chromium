@@ -248,6 +248,9 @@ source_set("unit_tests") {
       "bluetooth_scanning_prompt_controller_unittest.cc",
     ]
   }
+  if (is_android) {
+    sources += [ "android/permission_dialog_delegate_unittest.cc" ]
+  }
   deps = [
     ":permissions",
     ":test_support",

@@ -4,17 +4,13 @@
 
 #include "components/permissions/android/permission_dialog_delegate.h"
 
-#include <utility>
-
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/feature_list.h"
-#include "build/build_config.h"
 #include "components/permissions/android/jni_headers/PermissionDialogController_jni.h"
 #include "components/permissions/android/jni_headers/PermissionDialogDelegate_jni.h"
+#include "components/permissions/android/permission_prompt_android.h"
 #include "components/permissions/permissions_client.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -23,25 +19,17 @@ using base::android::ConvertUTF16ToJavaString;
 
 namespace permissions {
 
-// static
-void PermissionDialogDelegate::Create(
+PermissionDialogJavaDelegate::PermissionDialogJavaDelegate(
+    PermissionPromptAndroid* permission_prompt)
+    : permission_prompt_(permission_prompt) {}
+PermissionDialogJavaDelegate::~PermissionDialogJavaDelegate() = default;
+
+void PermissionDialogJavaDelegate::CreateJavaDelegate(
     content::WebContents* web_contents,
-    PermissionPromptAndroid* permission_prompt) {
-  DCHECK(web_contents);
-
-  // If we don't have a window, just act as though the prompt was dismissed.
-  if (!web_contents->GetTopLevelNativeWindow()) {
-    permission_prompt->Closing();
-    return;
-  }
-
-  // Dispatch the dialog to Java, which manages the lifetime of this object.
-  new PermissionDialogDelegate(web_contents, permission_prompt);
-}
-
-void PermissionDialogDelegate::CreateJavaDelegate(
-    JNIEnv* env,
-    content::WebContents* web_contents) {
+    PermissionDialogDelegate* owner) {
+  // Create our Java counterpart, which manages the lifetime of
+  // PermissionDialogDelegate.
+  JNIEnv* env = base::android::AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jstring> primaryButtonText =
       ConvertUTF16ToJavaString(env,
                                l10n_util::GetStringUTF16(IDS_PERMISSION_ALLOW));
@@ -56,7 +44,7 @@ void PermissionDialogDelegate::CreateJavaDelegate(
   }
 
   j_delegate_.Reset(Java_PermissionDialogDelegate_create(
-      env, reinterpret_cast<uintptr_t>(this),
+      env, reinterpret_cast<uintptr_t>(owner),
       web_contents->GetTopLevelNativeWindow()->GetJavaObject(),
       base::android::ToJavaIntArray(env, content_settings_types),
       PermissionsClient::Get()->MapToJavaDrawableId(
@@ -65,18 +53,60 @@ void PermissionDialogDelegate::CreateJavaDelegate(
       primaryButtonText, secondaryButtonText));
 }
 
+void PermissionDialogJavaDelegate::CreateDialog() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  // Send the Java delegate to the Java PermissionDialogController for display.
+  // The controller takes over lifetime management; when the Java delegate is no
+  // longer needed it will in turn free the native delegate
+  // (PermissionDialogDelegate).
+  Java_PermissionDialogController_createDialog(env, j_delegate_);
+}
+
+void PermissionDialogJavaDelegate::DismissDialog() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
+}
+
+// static
+void PermissionDialogDelegate::Create(
+    content::WebContents* web_contents,
+    PermissionPromptAndroid* permission_prompt) {
+  DCHECK(web_contents);
+  // If we don't have a window, just act as though the prompt was dismissed.
+  if (!web_contents->GetTopLevelNativeWindow()) {
+    permission_prompt->Closing();
+    return;
+  }
+  std::unique_ptr<PermissionDialogJavaDelegate> java_delegate(
+      std::make_unique<PermissionDialogJavaDelegate>(permission_prompt));
+  new PermissionDialogDelegate(web_contents, permission_prompt,
+                               std::move(java_delegate));
+}
+
+// static
+PermissionDialogDelegate* PermissionDialogDelegate::CreateForTesting(
+    content::WebContents* web_contents,
+    PermissionPromptAndroid* permission_prompt,
+    std::unique_ptr<PermissionDialogJavaDelegate> java_delegate) {
+  return new PermissionDialogDelegate(web_contents, permission_prompt,
+                                      std::move(java_delegate));
+}
+
 void PermissionDialogDelegate::Accept(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
+  DCHECK(permission_prompt_);
   permission_prompt_->Accept();
 }
 
 void PermissionDialogDelegate::Cancel(JNIEnv* env,
                                       const JavaParamRef<jobject>& obj) {
+  DCHECK(permission_prompt_);
   permission_prompt_->Deny();
 }
 
 void PermissionDialogDelegate::Dismissed(JNIEnv* env,
                                          const JavaParamRef<jobject>& obj) {
+  DCHECK(permission_prompt_);
   permission_prompt_->Closing();
 }
 
@@ -87,39 +117,26 @@ void PermissionDialogDelegate::Destroy(JNIEnv* env,
 
 PermissionDialogDelegate::PermissionDialogDelegate(
     content::WebContents* web_contents,
-    PermissionPromptAndroid* permission_prompt)
+    PermissionPromptAndroid* permission_prompt,
+    std::unique_ptr<PermissionDialogJavaDelegate> java_delegate)
     : content::WebContentsObserver(web_contents),
-      permission_prompt_(permission_prompt) {
-  DCHECK(permission_prompt_);
+      permission_prompt_(permission_prompt),
+      java_delegate_(std::move(java_delegate)) {
+  DCHECK(java_delegate_);
 
   // Create our Java counterpart, which manages our lifetime.
-  JNIEnv* env = base::android::AttachCurrentThread();
-  CreateJavaDelegate(env, web_contents);
-
-  // Send the Java delegate to the Java PermissionDialogController for display.
-  // The controller takes over lifetime management; when the Java delegate is no
-  // longer needed it will in turn free the native delegate.
-  Java_PermissionDialogController_createDialog(env, j_delegate_);
+  java_delegate_->CreateJavaDelegate(web_contents, this);
+  // Open the Permission Dialog.
+  java_delegate_->CreateDialog();
 }
 
-PermissionDialogDelegate::~PermissionDialogDelegate() {}
+PermissionDialogDelegate::~PermissionDialogDelegate() = default;
 
 void PermissionDialogDelegate::DismissDialog() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_PermissionDialogDelegate_dismissFromNative(env, j_delegate_);
+  java_delegate_->DismissDialog();
 }
 
-void PermissionDialogDelegate::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
+void PermissionDialogDelegate::PrimaryPageChanged(content::Page& page) {
   DismissDialog();
 }
 
