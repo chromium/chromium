@@ -15,20 +15,13 @@
 #include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "content/browser/bad_message.h"
-#include "content/browser/bluetooth/bluetooth_allowed_devices.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager.h"
 #include "content/browser/bluetooth/web_bluetooth_pairing_manager_delegate.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/bluetooth_delegate.h"
 #include "content/public/browser/bluetooth_scanning_prompt.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/bluetooth/bluetooth_adapter.h"
-#include "device/bluetooth/bluetooth_discovery_session.h"
-#include "device/bluetooth/bluetooth_gatt_connection.h"
-#include "device/bluetooth/bluetooth_gatt_notify_session.h"
-#include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
-#include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,14 +33,22 @@ namespace url {
 class Origin;
 }  // namespace url
 
+namespace device {
+class BluetoothDiscoverySession;
+class BluetoothGattConnection;
+class BluetoothGattNotifySession;
+class BluetoothRemoteGattCharacteristic;
+class BluetoothUUID;
+}  // namespace device
+
 namespace content {
 
+class BluetoothAllowedDevices;
 class BluetoothDeviceChooserController;
 class BluetoothDeviceScanningPromptController;
 struct CacheQueryResult;
 class FrameConnectedBluetoothDevices;
 struct GATTNotifySessionAndCharacteristicClient;
-class RenderFrameHost;
 class RenderProcessHost;
 
 bool HasValidFilter(
