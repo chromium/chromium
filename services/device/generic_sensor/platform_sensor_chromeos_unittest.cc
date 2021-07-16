@@ -60,15 +60,7 @@ class PlatformSensorChromeOSTestBase {
   void DisableFirstChannel() {
     DCHECK(sensor_device_.get());
 
-    sensor_device_->SetChannelsEnabled(
-        {0}, false,
-        base::BindOnce(
-            &PlatformSensorChromeOSTestBase::SetChannelsEnabledCallback,
-            base::Unretained(this)));
-  }
-
-  void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices) {
-    EXPECT_EQ(failed_indices.size(), 0u);
+    sensor_device_->SetChannelsEnabledWithId(receiver_id_, {0}, false);
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorDevice> sensor_device_;

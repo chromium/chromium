@@ -88,6 +88,24 @@ void FakeSensorDevice::ResetObserverRemote(mojo::ReceiverId id) {
   it->second.observer.reset();
 }
 
+void FakeSensorDevice::SetChannelsEnabledWithId(
+    mojo::ReceiverId id,
+    const std::vector<int32_t>& iio_chn_indices,
+    bool en) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto it = clients_.find(id);
+  DCHECK(it != clients_.end());
+
+  for (int32_t index : iio_chn_indices) {
+    DCHECK_LT(static_cast<size_t>(index), it->second.channels_enabled.size());
+
+    it->second.channels_enabled[index] = en;
+  }
+
+  SendSampleIfReady(it->second);
+}
+
 void FakeSensorDevice::GetAttributes(const std::vector<std::string>& attr_names,
                                      GetAttributesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

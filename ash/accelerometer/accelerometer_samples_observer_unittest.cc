@@ -58,16 +58,8 @@ class AccelerometerSamplesObserverTest : public ::testing::Test {
     ++num_samples_;
   }
 
-  void DisableFirstChannel() {
-    sensor_device_->SetChannelsEnabled(
-        {0}, false,
-        base::BindOnce(
-            &AccelerometerSamplesObserverTest::SetChannelsEnabledCallback,
-            base::Unretained(this)));
-  }
-
-  void SetChannelsEnabledCallback(const std::vector<int32_t>& failed_indices) {
-    EXPECT_EQ(failed_indices.size(), 0u);
+  void DisableFirstChannel(mojo::ReceiverId id) {
+    sensor_device_->SetChannelsEnabledWithId(id, {0}, false);
   }
 
   std::unique_ptr<chromeos::sensors::FakeSensorDevice> sensor_device_;
@@ -114,7 +106,8 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   SetChannels(kNumberOfAxes);
 
   mojo::Remote<chromeos::sensors::mojom::SensorDevice> accelerometer;
-  sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
+  auto id =
+      sensor_device_->AddReceiver(accelerometer.BindNewPipeAndPassReceiver());
 
   SetObserver(std::move(accelerometer));
   observer_->SetEnabled(true);
@@ -125,7 +118,7 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_TRUE(sensor_device_->HasReceivers());
   EXPECT_EQ(num_samples_, 1);
 
-  DisableFirstChannel();
+  DisableFirstChannel(id);
 
   // Wait until a sample is received.
   base::RunLoop().RunUntilIdle();
@@ -135,7 +128,7 @@ TEST_F(AccelerometerSamplesObserverTest, GetSamples) {
   EXPECT_EQ(num_samples_, 1);
 
   // Simulate a disconnection of the observer's mojo channel in IIO Service.
-  sensor_device_->StopReadingSamples();
+  sensor_device_->ResetObserverRemote(id);
 
   // Wait until the disconnection is done.
   base::RunLoop().RunUntilIdle();
