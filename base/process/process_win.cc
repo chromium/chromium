@@ -208,8 +208,7 @@ Process::WaitExitStatus Process::WaitForExitOrEvent(
 }
 
 bool Process::WaitForExit(int* exit_code) const {
-  return WaitForExitWithTimeout(TimeDelta::FromMilliseconds(INFINITE),
-                                exit_code);
+  return WaitForExitWithTimeout(TimeDelta::Max(), exit_code);
 }
 
 bool Process::WaitForExitWithTimeout(TimeDelta timeout, int* exit_code) const {
