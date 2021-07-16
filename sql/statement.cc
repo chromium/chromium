@@ -7,6 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/containers/span.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
@@ -489,7 +490,7 @@ std::u16string Statement::ColumnString16(int column_index) {
   return string.empty() ? std::u16string() : base::UTF8ToUTF16(string);
 }
 
-int Statement::ColumnByteLength(int column_index) {
+base::span<const uint8_t> Statement::ColumnBlob(int column_index) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
 #if DCHECK_IS_ON()
@@ -498,29 +499,18 @@ int Statement::ColumnByteLength(int column_index) {
 #endif  // DCHECK_IS_ON()
 
   if (!CheckValid())
-    return 0;
+    return base::span<const uint8_t>();
   DCHECK_GE(column_index, 0);
   DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
       << "Invalid column index";
 
-  return sqlite3_column_bytes(ref_->stmt(), column_index);
-}
+  int result_size = sqlite3_column_bytes(ref_->stmt(), column_index);
+  const void* result_buffer = sqlite3_column_blob(ref_->stmt(), column_index);
+  DCHECK(result_size == 0 || result_buffer != nullptr)
+      << "sqlite3_column_blob() returned a null buffer for a non-empty BLOB";
 
-const void* Statement::ColumnBlob(int column_index) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-#if DCHECK_IS_ON()
-  DCHECK(!run_called_) << __func__ << " can be used after Step(), not Run()";
-  DCHECK(step_called_) << __func__ << " can only be used after Step()";
-#endif  // DCHECK_IS_ON()
-
-  if (!CheckValid())
-    return nullptr;
-  DCHECK_GE(column_index, 0);
-  DCHECK_LT(column_index, sqlite3_data_count(ref_->stmt()))
-      << "Invalid column index";
-
-  return sqlite3_column_blob(ref_->stmt(), column_index);
+  return base::make_span(static_cast<const uint8_t*>(result_buffer),
+                         result_size);
 }
 
 bool Statement::ColumnBlobAsString(int column_index, std::string* result) {

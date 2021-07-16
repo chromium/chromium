@@ -85,12 +85,8 @@ void KeyValueTable<T>::GetAllData(std::map<std::string, T>* data_map,
       ::sqlite_proto::internal::GetSelectAllSql(table_name_).c_str()));
   while (reader.Step()) {
     auto it = data_map->emplace(reader.ColumnString(0), T()).first;
-    int size = reader.ColumnByteLength(1);
-    const void* blob = reader.ColumnBlob(1);
-    // Annoyingly, a nullptr result means either that an error occurred or that
-    // the blob was empty; partially disambiguate based on the length.
-    DCHECK(size && blob || !size && !blob) << !!size << !!blob;
-    it->second.ParseFromArray(blob, size);
+    base::span<const uint8_t> blob = reader.ColumnBlob(1);
+    it->second.ParseFromArray(blob.data(), blob.size());
   }
 }
 

@@ -181,11 +181,16 @@ class COMPONENT_EXPORT(SQL) Statement {
   //                          then remove the migration details above.
   base::Time ColumnTime(int column_index);
 
-  // When reading a blob, you can get a raw pointer to the underlying data,
-  // along with the length, or you can just ask us to copy the blob into a
-  // vector. Danger! ColumnBlob may return nullptr if there is no data!
-  int ColumnByteLength(int column_index);
-  const void* ColumnBlob(int column_index);
+  // Returns a span pointing to a buffer containing the blob data.
+  //
+  // The span's contents should be copied to a caller-owned buffer immediately.
+  // Any method call on the Statement may invalidate the span.
+  //
+  // The span will be empty (and may have a null data) if the underlying blob is
+  // empty. Code that needs to distinguish between empty blobs and NULL should
+  // call GetColumnType() before calling ColumnBlob().
+  base::span<const uint8_t> ColumnBlob(int column_index);
+
   bool ColumnBlobAsString(int column_index, std::string* result);
   bool ColumnBlobAsVector(int column_index, std::vector<char>* result);
   bool ColumnBlobAsVector(int column_index, std::vector<uint8_t>* result);

@@ -200,6 +200,10 @@ base::span<const uint8_t> PickleToSpan(const base::Pickle& pickle) {
                          pickle.size());
 }
 
+base::Pickle PickleFromSpan(base::span<const uint8_t> data) {
+  return base::Pickle(reinterpret_cast<const char*>(data.data()), data.size());
+}
+
 void BindAddStatement(const PasswordForm& form, sql::Statement* s) {
   s->BindString(COLUMN_ORIGIN_URL, form.url.spec());
   s->BindString(COLUMN_ACTION_URL, form.action.spec());
@@ -1512,17 +1516,16 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
   form->scheme = static_cast<PasswordForm::Scheme>(s.ColumnInt(COLUMN_SCHEME));
   form->type =
       static_cast<PasswordForm::Type>(s.ColumnInt(COLUMN_PASSWORD_TYPE));
-  if (s.ColumnByteLength(COLUMN_POSSIBLE_USERNAME_PAIRS)) {
-    base::Pickle pickle(
-        static_cast<const char*>(s.ColumnBlob(COLUMN_POSSIBLE_USERNAME_PAIRS)),
-        s.ColumnByteLength(COLUMN_POSSIBLE_USERNAME_PAIRS));
+  base::span<const uint8_t> possible_username_pairs_blob =
+      s.ColumnBlob(COLUMN_POSSIBLE_USERNAME_PAIRS);
+  if (!possible_username_pairs_blob.empty()) {
+    base::Pickle pickle = PickleFromSpan(possible_username_pairs_blob);
     form->all_possible_usernames = DeserializeValueElementPairs(pickle);
   }
   form->times_used = s.ColumnInt(COLUMN_TIMES_USED);
-  if (s.ColumnByteLength(COLUMN_FORM_DATA)) {
-    base::Pickle form_data_pickle(
-        static_cast<const char*>(s.ColumnBlob(COLUMN_FORM_DATA)),
-        s.ColumnByteLength(COLUMN_FORM_DATA));
+  base::span<const uint8_t> form_data_blob = s.ColumnBlob(COLUMN_FORM_DATA);
+  if (!form_data_blob.empty()) {
+    base::Pickle form_data_pickle = PickleFromSpan(form_data_blob);
     base::PickleIterator form_data_iter(form_data_pickle);
     bool success =
         autofill::DeserializeFormData(&form_data_iter, &form->form_data);
@@ -1543,10 +1546,10 @@ LoginDatabase::EncryptionResult LoginDatabase::InitPasswordFormFromStatement(
           s.ColumnInt(COLUMN_GENERATION_UPLOAD_STATUS));
   form->date_last_used = base::Time::FromDeltaSinceWindowsEpoch(
       base::TimeDelta::FromMicroseconds(s.ColumnInt64(COLUMN_DATE_LAST_USED)));
-  if (s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR)) {
-    base::Pickle pickle(
-        static_cast<const char*>(s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR)),
-        s.ColumnByteLength(COLUMN_MOVING_BLOCKED_FOR));
+  base::span<const uint8_t> moving_blocked_for_blob =
+      s.ColumnBlob(COLUMN_MOVING_BLOCKED_FOR);
+  if (!moving_blocked_for_blob.empty()) {
+    base::Pickle pickle = PickleFromSpan(moving_blocked_for_blob);
     form->moving_blocked_for_list = DeserializeGaiaIdHashVector(pickle);
   }
   PopulateFormWithPasswordIssues(FormPrimaryKey(*primary_key), form);
