@@ -36,9 +36,6 @@ namespace client {
 // Alphabetical sort.
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool,
-                             kAccessibilityFocusFallsbackToWidgetKey,
-                             true)
-DEFINE_UI_CLASS_PROPERTY_KEY(bool,
                              kAccessibilityTouchExplorationPassThrough,
                              false)
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kActivateOnPointerKey, true)

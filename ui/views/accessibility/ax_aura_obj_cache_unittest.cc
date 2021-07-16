@@ -208,12 +208,14 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
 
   // Note that AXAuraObjCache::GetFocusedView has some logic to force focus on
   // the first child of the client view when one cannot be found from the
-  // FocusManager.
+  // FocusManager if it has a child tree id.
   auto* client = widget->non_client_view()->client_view();
   ASSERT_NE(nullptr, client);
   auto* client_child = client->children().front();
   ASSERT_NE(nullptr, client_child);
   client_child->GetViewAccessibility().OverrideRole(ax::mojom::Role::kDialog);
+  client_child->GetViewAccessibility().OverrideChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
 
   View* parent = new View();
   widget->GetRootView()->AddChildView(parent);

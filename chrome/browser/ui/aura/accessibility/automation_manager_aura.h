@@ -91,6 +91,8 @@ class AutomationManagerAura : public ui::AXActionHandler,
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, TableView);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, WebAppearsOnce);
   FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest, EventFromAction);
+  FRIEND_TEST_ALL_PREFIXES(AutomationManagerAuraBrowserTest,
+                           GetFocusOnChildTree);
 
   AutomationManagerAura();
   ~AutomationManagerAura() override;

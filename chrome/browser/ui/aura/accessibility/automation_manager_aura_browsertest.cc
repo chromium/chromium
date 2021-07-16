@@ -98,11 +98,14 @@ class AutomationEventWaiter
     run_loop_ = std::make_unique<base::RunLoop>();
   }
 
-  std::unique_ptr<ui::AXEvent> WaitForEvent(ax::mojom::Event event_type) {
+  std::unique_ptr<ui::AXEvent> WaitForEvent(
+      ax::mojom::Event event_type,
+      ui::AXNodeID target_node_id = ui::kInvalidAXNodeID) {
     event_type_to_wait_for_ = event_type;
+    event_target_node_id_to_wait_for_ = target_node_id;
     run_loop_->Run();
     run_loop_ = std::make_unique<base::RunLoop>();
-    return std::move(most_recent_event_);
+    return std::move(matched_wait_for_event_);
   }
 
   bool WasNodeIdFocused(int node_id) {
@@ -140,8 +143,10 @@ class AutomationEventWaiter
       return;
 
     for (const ui::AXEvent& event : events) {
-      if (event.event_type == event_type_to_wait_for_) {
-        most_recent_event_ = std::make_unique<ui::AXEvent>(event);
+      if (event.event_type == event_type_to_wait_for_ &&
+          (event_target_node_id_to_wait_for_ == ui::kInvalidAXNodeID ||
+           event_target_node_id_to_wait_for_ == event.id)) {
+        matched_wait_for_event_ = std::make_unique<ui::AXEvent>(event);
         event_type_to_wait_for_ = ax::mojom::Event::kNone;
         run_loop_->Quit();
       }
@@ -165,8 +170,9 @@ class AutomationEventWaiter
   ui::AXNodeID node_id_to_wait_for_ = ui::kInvalidAXNodeID;
   std::vector<int> focused_node_ids_;
 
-  std::unique_ptr<ui::AXEvent> most_recent_event_;
+  std::unique_ptr<ui::AXEvent> matched_wait_for_event_;
   ax::mojom::Event event_type_to_wait_for_ = ax::mojom::Event::kNone;
+  ui::AXNodeID event_target_node_id_to_wait_for_ = ui::kInvalidAXNodeID;
 
   DISALLOW_COPY_AND_ASSIGN(AutomationEventWaiter);
 };
@@ -219,7 +225,6 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, WebAppearsOnce) {
     for (size_t i = 0; i < web_hosts.size(); i++) {
       ui::AXNodeData node_data;
       tree->SerializeNode(web_hosts[i], &node_data);
-      LOG(ERROR) << i << ": " << node_data.ToString();
     }
   }
 }
@@ -530,7 +535,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   // Focus view1, simulating the non-accessibility action, block until we get an
   // accessibility event that shows this view is focused.
   view1->RequestFocus();
-  auto event_from_views = waiter.WaitForEvent(ax::mojom::Event::kFocus);
+  auto event_from_views = waiter.WaitForEvent(
+      ax::mojom::Event::kFocus, view1->GetViewAccessibility().GetUniqueId());
   ASSERT_NE(nullptr, event_from_views.get());
   EXPECT_EQ(ax::mojom::EventFrom::kNone, event_from_views->event_from);
 
@@ -542,7 +548,8 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, EventFromAction) {
   action_data.target_node_id = wrapper2->GetUniqueId();
 
   manager->PerformAction(action_data);
-  auto event_from_action = waiter.WaitForEvent(ax::mojom::Event::kFocus);
+  auto event_from_action = waiter.WaitForEvent(
+      ax::mojom::Event::kFocus, view2->GetViewAccessibility().GetUniqueId());
   ASSERT_NE(nullptr, event_from_action.get());
   EXPECT_EQ(ax::mojom::EventFrom::kAction, event_from_action->event_from);
 
@@ -592,4 +599,36 @@ IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest,
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
   manager->Enable();
   EXPECT_NE(nullptr, registry->GetActionHandler(tree_id));
+}
+
+IN_PROC_BROWSER_TEST_F(AutomationManagerAuraBrowserTest, GetFocusOnChildTree) {
+  views::AXAuraObjCache cache;
+  views::Widget* widget = new views::Widget;
+  views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
+  params.bounds = {0, 0, 200, 200};
+  widget->Init(std::move(params));
+  widget->Show();
+  widget->Activate();
+
+  cache.set_focused_widget_for_testing(widget);
+
+  // No focus falls back on root view.
+  EXPECT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
+
+  // A child of the client view results in a focus if it has a tree id.
+  views::View* child =
+      widget->non_client_view()->client_view()->children().front();
+  ASSERT_NE(nullptr, child);
+
+  // No tree id yet.
+  EXPECT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
+
+  // Now, there's a tree id.
+  child->GetViewAccessibility().OverrideChildTreeID(
+      ui::AXTreeID::CreateNewAXTreeID());
+  EXPECT_EQ(cache.GetOrCreate(child), cache.GetFocus());
+
+  cache.set_focused_widget_for_testing(nullptr);
+
+  AddFailureOnWidgetAccessibilityError(widget);
 }
