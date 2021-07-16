@@ -56,6 +56,7 @@ source_set("unit_tests") {
 
   deps = [
     ":scanning",
+    "//ash/quick_pair/common",
     "//base/test:test_support",
     "//device/bluetooth",
     "//device/bluetooth:mocks",
