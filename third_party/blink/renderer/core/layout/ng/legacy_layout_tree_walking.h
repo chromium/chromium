@@ -76,6 +76,8 @@ inline bool IsLayoutNGContainingBlock(const LayoutBlock* containing_block) {
 inline bool IsManagedByLayoutNG(const LayoutObject& object) {
   if (!object.IsLayoutNGMixin())
     return false;
+  if (object.IsOutOfFlowPositioned())
+    return true;
   const auto* containing_block = object.ContainingBlock();
   if (UNLIKELY(!containing_block))
     return false;
