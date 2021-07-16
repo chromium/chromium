@@ -1220,25 +1220,6 @@ RenderFrameHostImpl* WebContentsImpl::GetFocusedFrame() {
   return focused_node->current_frame_host();
 }
 
-RenderFrameHostImpl* WebContentsImpl::FindFrameByFrameTreeNodeId(
-    int frame_tree_node_id,
-    int process_id) {
-  OPTIONAL_TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("content.verbose"),
-                        "WebContentsImpl::FindFrameByFrameTreeNodeId",
-                        "frame_tree_node_id", frame_tree_node_id, "process_id",
-                        process_id);
-  FrameTreeNode* frame = frame_tree_.FindByID(frame_tree_node_id);
-
-  // Sanity check that this is in the caller's expected process. Otherwise a
-  // recent cross-process navigation may have led to a privilege change that the
-  // caller is not expecting.
-  if (!frame ||
-      frame->current_frame_host()->GetProcess()->GetID() != process_id)
-    return nullptr;
-
-  return frame->current_frame_host();
-}
-
 RenderFrameHostImpl* WebContentsImpl::UnsafeFindFrameByFrameTreeNodeId(
     int frame_tree_node_id) {
   OPTIONAL_TRACE_EVENT1("content",

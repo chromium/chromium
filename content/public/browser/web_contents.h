@@ -361,21 +361,14 @@ class WebContents : public PageNavigator,
   // if nothing is focused.
   virtual RenderFrameHost* GetFocusedFrame() = 0;
 
+  // NOTE: This is generally unsafe to use. A frame's RenderFrameHost may
+  // change over its lifetime, such as during cross-process navigation (and
+  // thus privilege change). Use RenderFrameHost::FromID instead wherever
+  // possible.
+  //
   // Returns the current RenderFrameHost for a given FrameTreeNode ID if it is
   // part of this frame tree, not including frames in any inner WebContents.
-  // Returns nullptr if |process_id| does not match the current
-  // RenderFrameHost's process ID, to avoid security bugs where callers do not
-  // realize a cross-process navigation (and thus privilege change) has taken
-  // place. See RenderFrameHost::GetFrameTreeNodeId for documentation on
-  // frame_tree_node_id.
-  virtual RenderFrameHost* FindFrameByFrameTreeNodeId(int frame_tree_node_id,
-                                                      int process_id) = 0;
-
-  // NOTE: This is generally unsafe to use. Use FindFrameByFrameTreeNodeId
-  // instead.
-  // Returns the current RenderFrameHost for a given FrameTreeNode ID if it is
-  // part of this frame tree. This may not match the caller's expectation, if a
-  // cross-process navigation (and thus privilege change) has taken place.
+  //
   // See RenderFrameHost::GetFrameTreeNodeId for documentation on this ID.
   virtual RenderFrameHost* UnsafeFindFrameByFrameTreeNodeId(
       int frame_tree_node_id) = 0;
