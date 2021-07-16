@@ -457,7 +457,8 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultKeyRetrievalDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        SyncService.get().recordKeyRetrievalTrigger(TrustedVaultUserActionTriggerForUMA.SETTINGS);
+        TrustedVaultClient.get().recordKeyRetrievalTrigger(
+                TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
                 TrustedVaultClient.get().createKeyRetrievalIntent(accountInfo));
     }
@@ -473,7 +474,7 @@ public class SyncSettingsUtils {
      */
     public static void openTrustedVaultRecoverabilityDegradedDialog(
             Fragment fragment, CoreAccountInfo accountInfo, int requestCode) {
-        SyncService.get().recordRecoverabilityDegradedFixTrigger(
+        TrustedVaultClient.get().recordRecoverabilityDegradedFixTrigger(
                 TrustedVaultUserActionTriggerForUMA.SETTINGS);
         openTrustedVaultDialogForPendingIntent(fragment, accountInfo, requestCode,
                 TrustedVaultClient.get().createRecoverabilityDegradedIntent(accountInfo));

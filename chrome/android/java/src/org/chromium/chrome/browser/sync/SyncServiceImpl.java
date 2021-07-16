@@ -18,7 +18,6 @@ import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.sync.ModelType;
 import org.chromium.components.sync.PassphraseType;
-import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -333,18 +332,6 @@ public class SyncServiceImpl extends SyncService {
     }
 
     @Override
-    public void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger) {
-        SyncServiceImplJni.get().recordKeyRetrievalTrigger(mSyncServiceAndroidBridge, trigger);
-    }
-
-    @Override
-    public void recordRecoverabilityDegradedFixTrigger(
-            @TrustedVaultUserActionTriggerForUMA int trigger) {
-        SyncServiceImplJni.get().recordRecoverabilityDegradedFixTrigger(
-                mSyncServiceAndroidBridge, trigger);
-    }
-
-    @Override
     public boolean shouldOfferTrustedVaultOptIn() {
         return SyncServiceImplJni.get().shouldOfferTrustedVaultOptIn(mSyncServiceAndroidBridge);
     }
@@ -455,9 +442,6 @@ public class SyncServiceImpl extends SyncService {
                 long nativeSyncServiceAndroidBridge);
         void markPassphrasePromptMutedForCurrentProductVersion(long nativeSyncServiceAndroidBridge);
         boolean hasKeepEverythingSynced(long nativeSyncServiceAndroidBridge);
-        void recordKeyRetrievalTrigger(long nativeSyncServiceAndroidBridge, int trigger);
-        void recordRecoverabilityDegradedFixTrigger(
-                long nativeSyncServiceAndroidBridge, int trigger);
         boolean shouldOfferTrustedVaultOptIn(long nativeSyncServiceAndroidBridge);
         void triggerRefresh(long nativeSyncServiceAndroidBridge);
         long getLastSyncedTimeForDebugging(long nativeSyncServiceAndroidBridge);

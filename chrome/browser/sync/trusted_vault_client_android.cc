@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/notreached.h"
 #include "chrome/android/chrome_jni_headers/TrustedVaultClient_jni.h"
+#include "components/sync/driver/sync_service_utils.h"
 #include "content/public/browser/browser_thread.h"
 
 TrustedVaultClientAndroid::OngoingFetchKeys::OngoingFetchKeys(
@@ -212,4 +213,17 @@ TrustedVaultClientAndroid::GetAndUnregisterOngoingRequest(RequestId id) {
   OngoingRequest request = std::move(it->second);
   ongoing_requests_.erase(it);
   return request;
+}
+
+static void JNI_TrustedVaultClient_RecordKeyRetrievalTrigger(JNIEnv* env,
+                                                             int trigger) {
+  syncer::RecordKeyRetrievalTrigger(
+      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
+}
+
+static void JNI_TrustedVaultClient_RecordRecoverabilityDegradedFixTrigger(
+    JNIEnv* env,
+    int trigger) {
+  syncer::RecordRecoverabilityDegradedFixTrigger(
+      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
 }

@@ -356,21 +356,6 @@ jboolean SyncServiceAndroidBridge::HasKeepEverythingSynced(JNIEnv* env) {
   return native_sync_service_->GetUserSettings()->IsSyncEverythingEnabled();
 }
 
-void SyncServiceAndroidBridge::RecordKeyRetrievalTrigger(JNIEnv* env,
-                                                         jint trigger) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  syncer::RecordKeyRetrievalTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
-}
-
-void SyncServiceAndroidBridge::RecordRecoverabilityDegradedFixTrigger(
-    JNIEnv* env,
-    jint trigger) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  syncer::RecordRecoverabilityDegradedFixTrigger(
-      static_cast<syncer::TrustedVaultUserActionTriggerForUMA>(trigger));
-}
-
 jboolean SyncServiceAndroidBridge::ShouldOfferTrustedVaultOptIn(JNIEnv* env) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   return syncer::ShouldOfferTrustedVaultOptIn(native_sync_service_);

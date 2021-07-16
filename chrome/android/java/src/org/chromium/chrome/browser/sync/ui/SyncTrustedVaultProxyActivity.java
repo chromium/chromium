@@ -11,7 +11,6 @@ import android.content.IntentSender;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.sync.TrustedVaultClient;
 import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
@@ -129,11 +128,11 @@ public class SyncTrustedVaultProxyActivity extends AsyncInitializationActivity {
         // notifications (SyncErrorNotifier), because the user may ignore or dismiss a notification.
         switch (mRequestCode) {
             case REQUEST_CODE_TRUSTED_VAULT_KEY_RETRIEVAL:
-                SyncService.get().recordKeyRetrievalTrigger(mUserActionTrigger);
+                TrustedVaultClient.get().recordKeyRetrievalTrigger(mUserActionTrigger);
                 break;
 
             case REQUEST_CODE_TRUSTED_VAULT_RECOVERABILITY_DEGRADED:
-                SyncService.get().recordRecoverabilityDegradedFixTrigger(mUserActionTrigger);
+                TrustedVaultClient.get().recordRecoverabilityDegradedFixTrigger(mUserActionTrigger);
                 break;
 
             default:

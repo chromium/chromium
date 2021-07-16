@@ -85,8 +85,6 @@ class SyncServiceAndroidBridge : public syncer::SyncServiceObserver {
   jboolean IsPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   void MarkPassphrasePromptMutedForCurrentProductVersion(JNIEnv* env);
   jboolean HasKeepEverythingSynced(JNIEnv* env);
-  void RecordKeyRetrievalTrigger(JNIEnv* env, jint trigger);
-  void RecordRecoverabilityDegradedFixTrigger(JNIEnv* env, jint trigger);
   jboolean ShouldOfferTrustedVaultOptIn(JNIEnv* env);
   void TriggerRefresh(JNIEnv* env);
   // Returns a timestamp for when a sync was last executed. The return value is

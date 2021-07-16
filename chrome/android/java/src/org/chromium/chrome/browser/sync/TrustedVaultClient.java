@@ -13,6 +13,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.AppHooks;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.TrustedVaultUserActionTriggerForUMA;
 
 import java.util.Collections;
 import java.util.List;
@@ -226,6 +227,21 @@ public class TrustedVaultClient {
     }
 
     /**
+     * Records TrustedVaultKeyRetrievalTrigger histogram.
+     */
+    public void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger) {
+        TrustedVaultClientJni.get().recordKeyRetrievalTrigger(trigger);
+    }
+
+    /**
+     * Records TrustedVaultRecoverabilityDegradedFixTrigger histogram.
+     */
+    public void recordRecoverabilityDegradedFixTrigger(
+            @TrustedVaultUserActionTriggerForUMA int trigger) {
+        TrustedVaultClientJni.get().recordRecoverabilityDegradedFixTrigger(trigger);
+    }
+
+    /**
      * Convenience function to check if a native client has been registered.
      */
     private static boolean isNativeRegistered(long nativeTrustedVaultClientAndroid) {
@@ -326,5 +342,8 @@ public class TrustedVaultClient {
                 long nativeTrustedVaultClientAndroid, int requestId, boolean result);
         void notifyKeysChanged(long nativeTrustedVaultClientAndroid);
         void notifyRecoverabilityChanged(long nativeTrustedVaultClientAndroid);
+        void recordKeyRetrievalTrigger(@TrustedVaultUserActionTriggerForUMA int trigger);
+        void recordRecoverabilityDegradedFixTrigger(
+                @TrustedVaultUserActionTriggerForUMA int trigger);
     }
 }
