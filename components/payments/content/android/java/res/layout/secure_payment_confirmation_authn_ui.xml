@@ -101,7 +101,7 @@
                     android:importantForAccessibility="no"
                     android:layout_height="@dimen/secure_payment_confirmation_ui_icon_width"
                     android:layout_width="@dimen/secure_payment_confirmation_ui_icon_height"
-                    android:scaleType="centerInside"/>
+                    android:scaleType="fitCenter"/>
 
                 <TextView
                     android:id="@+id/payment"
