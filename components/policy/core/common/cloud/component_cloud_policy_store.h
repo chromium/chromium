@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -65,6 +64,9 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
                             ResourceCache* cache,
                             const std::string& policy_type,
                             PolicySource policy_source);
+  ComponentCloudPolicyStore(const ComponentCloudPolicyStore&) = delete;
+  ComponentCloudPolicyStore& operator=(const ComponentCloudPolicyStore&) =
+      delete;
   ~ComponentCloudPolicyStore();
 
   // Helper that returns true for PolicyDomains that can be managed by this
@@ -176,8 +178,6 @@ class POLICY_EXPORT ComponentCloudPolicyStore {
   const PolicySource policy_source_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyStore);
 };
 
 }  // namespace policy

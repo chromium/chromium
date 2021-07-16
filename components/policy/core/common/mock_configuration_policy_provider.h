@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MOCK_CONFIGURATION_POLICY_PROVIDER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MOCK_CONFIGURATION_POLICY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -21,6 +20,10 @@ namespace policy {
 class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
  public:
   MockConfigurationPolicyProvider();
+  MockConfigurationPolicyProvider(const MockConfigurationPolicyProvider&) =
+      delete;
+  MockConfigurationPolicyProvider& operator=(
+      const MockConfigurationPolicyProvider&) = delete;
   ~MockConfigurationPolicyProvider() override;
 
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
@@ -67,8 +70,6 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
   void RefreshWithSamePolicies();
 
   SchemaRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConfigurationPolicyProvider);
 };
 
 class MockConfigurationPolicyObserver

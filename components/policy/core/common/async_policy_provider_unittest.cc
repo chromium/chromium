@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
@@ -43,6 +42,8 @@ class MockPolicyLoader : public AsyncPolicyLoader {
  public:
   explicit MockPolicyLoader(
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  MockPolicyLoader(const MockPolicyLoader&) = delete;
+  MockPolicyLoader& operator=(const MockPolicyLoader&) = delete;
   ~MockPolicyLoader() override;
 
   // Load() returns a std::unique_ptr<PolicyBundle> but it can't be mocked
@@ -54,9 +55,6 @@ class MockPolicyLoader : public AsyncPolicyLoader {
   MOCK_METHOD0(MockLoad, const PolicyBundle*());
   MOCK_METHOD0(InitOnBackgroundThread, void());
   MOCK_METHOD0(LastModificationTime, base::Time());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPolicyLoader);
 };
 
 MockPolicyLoader::MockPolicyLoader(
@@ -78,6 +76,10 @@ std::unique_ptr<PolicyBundle> MockPolicyLoader::Load() {
 }  // namespace
 
 class AsyncPolicyProviderTest : public testing::Test {
+ public:
+  AsyncPolicyProviderTest(const AsyncPolicyProviderTest&) = delete;
+  AsyncPolicyProviderTest& operator=(const AsyncPolicyProviderTest&) = delete;
+
  protected:
   AsyncPolicyProviderTest();
   ~AsyncPolicyProviderTest() override;
@@ -90,9 +92,6 @@ class AsyncPolicyProviderTest : public testing::Test {
   PolicyBundle initial_bundle_;
   MockPolicyLoader* loader_;
   std::unique_ptr<AsyncPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsyncPolicyProviderTest);
 };
 
 AsyncPolicyProviderTest::AsyncPolicyProviderTest() {}

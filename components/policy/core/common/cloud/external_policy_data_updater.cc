@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/external_policy_data_fetcher.h"
@@ -119,6 +118,8 @@ class ExternalPolicyDataUpdater::FetchJob
            const std::string& key,
            const ExternalPolicyDataUpdater::Request& request,
            const ExternalPolicyDataUpdater::FetchSuccessCallback& callback);
+  FetchJob(const FetchJob&) = delete;
+  FetchJob& operator=(const FetchJob&) = delete;
   virtual ~FetchJob();
 
   const std::string& key() const;
@@ -164,8 +165,6 @@ class ExternalPolicyDataUpdater::FetchJob
   net::BackoffEntry retry_soon_entry_{&kRetrySoonPolicy};
   net::BackoffEntry retry_later_entry_{&kRetryLaterPolicy};
   net::BackoffEntry retry_much_later_entry_{&kRetryMuchLaterPolicy};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchJob);
 };
 
 ExternalPolicyDataUpdater::Request::Request() = default;

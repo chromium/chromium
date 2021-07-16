@@ -10,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
@@ -31,6 +30,8 @@ class ExternalPolicyDataFetcher::Job
       base::WeakPtr<ExternalPolicyDataFetcher> fetcher,
       scoped_refptr<base::SequencedTaskRunner> fetcher_task_runner,
       ExternalPolicyDataFetcher::FetchCallback callback);
+  Job(const Job&) = delete;
+  Job& operator=(const Job&) = delete;
 
   void Start(const GURL& url, int64_t max_size);
   void Cancel();
@@ -56,8 +57,6 @@ class ExternalPolicyDataFetcher::Job
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   std::string response_body_;
   int64_t max_size_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(Job);
 };
 
 ExternalPolicyDataFetcher::Job::Job(

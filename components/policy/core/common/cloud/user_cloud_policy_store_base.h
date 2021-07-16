@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -30,6 +29,8 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
       scoped_refptr<base::SequencedTaskRunner> background_task_runner,
       PolicyScope policy_scope,
       PolicySource policy_source);
+  UserCloudPolicyStoreBase(const UserCloudPolicyStoreBase&) = delete;
+  UserCloudPolicyStoreBase& operator=(const UserCloudPolicyStoreBase&) = delete;
   ~UserCloudPolicyStoreBase() override;
 
   PolicySource source() {
@@ -60,8 +61,6 @@ class POLICY_EXPORT UserCloudPolicyStoreBase : public CloudPolicyStore {
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
   PolicyScope policy_scope_;
   PolicySource policy_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreBase);
 };
 
 }  // namespace policy

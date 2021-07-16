@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -47,6 +46,9 @@ class POLICY_EXPORT RemoteCommandJob {
   };
 
   using FinishedCallback = base::OnceClosure;
+
+  RemoteCommandJob(const RemoteCommandJob&) = delete;
+  RemoteCommandJob& operator=(const RemoteCommandJob&) = delete;
 
   virtual ~RemoteCommandJob();
 
@@ -181,8 +183,6 @@ class POLICY_EXPORT RemoteCommandJob {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<RemoteCommandJob> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandJob);
 };
 
 }  // namespace policy

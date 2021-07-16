@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/external_data_manager.h"
@@ -41,6 +40,8 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
   typedef std::map<std::string, MetadataEntry> Metadata;
 
   CloudExternalDataManager();
+  CloudExternalDataManager(const CloudExternalDataManager&) = delete;
+  CloudExternalDataManager& operator=(const CloudExternalDataManager&) = delete;
   virtual ~CloudExternalDataManager();
 
   // Sets the source of external data references to |policy_store|. The manager
@@ -66,9 +67,6 @@ class POLICY_EXPORT CloudExternalDataManager : public ExternalDataManager {
   CloudPolicyStore* policy_store_;  // Not owned.
 
   base::WeakPtrFactory<CloudExternalDataManager> weak_factory_{this};
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataManager);
 };
 
 }  // namespace policy

@@ -14,7 +14,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -71,6 +70,9 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
   ExternalPolicyDataFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
+  ExternalPolicyDataFetcher(const ExternalPolicyDataFetcher&) = delete;
+  ExternalPolicyDataFetcher& operator=(const ExternalPolicyDataFetcher&) =
+      delete;
   ~ExternalPolicyDataFetcher();
 
   // Fetch data from |url| and invoke |callback| with the result. See the
@@ -109,8 +111,6 @@ class POLICY_EXPORT ExternalPolicyDataFetcher {
   JobSet jobs_;
 
   base::WeakPtrFactory<ExternalPolicyDataFetcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataFetcher);
 };
 
 }  // namespace policy

@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/policy_export.h"
@@ -38,6 +37,8 @@ class POLICY_EXPORT CloudExternalDataStore {
   CloudExternalDataStore(const std::string& cache_key,
                          scoped_refptr<base::SequencedTaskRunner> task_runner,
                          ResourceCache* cache);
+  CloudExternalDataStore(const CloudExternalDataStore&) = delete;
+  CloudExternalDataStore& operator=(const CloudExternalDataStore&) = delete;
   ~CloudExternalDataStore();
 
   // Removes all entries from the store whose (policy, hash) pair is not found
@@ -67,8 +68,6 @@ class POLICY_EXPORT CloudExternalDataStore {
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   ResourceCache* cache_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataStore);
 };
 
 }  // namespace policy

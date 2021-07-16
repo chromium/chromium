@@ -8,7 +8,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -35,6 +34,8 @@ namespace {
 class TestHarness : public PolicyProviderTestHarness {
  public:
   explicit TestHarness(PolicyLevel level);
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -62,8 +63,6 @@ class TestHarness : public PolicyProviderTestHarness {
 
  private:
   MockCloudPolicyStore store_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness(PolicyLevel level)
@@ -149,16 +148,15 @@ class TestCloudPolicyManager : public CloudPolicyManager {
             store,
             task_runner,
             network::TestNetworkConnectionTracker::CreateGetter()) {}
-  ~TestCloudPolicyManager() override {}
+  TestCloudPolicyManager(const TestCloudPolicyManager&) = delete;
+  TestCloudPolicyManager& operator=(const TestCloudPolicyManager&) = delete;
+  ~TestCloudPolicyManager() override = default;
 
   // Publish the protected members for testing.
   using CloudPolicyManager::client;
   using CloudPolicyManager::store;
   using CloudPolicyManager::service;
   using CloudPolicyManager::CheckAndPublishPolicy;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestCloudPolicyManager);
 };
 
 MATCHER_P(ProtoMatches, proto, std::string()) {
@@ -166,6 +164,10 @@ MATCHER_P(ProtoMatches, proto, std::string()) {
 }
 
 class CloudPolicyManagerTest : public testing::Test {
+ public:
+  CloudPolicyManagerTest(const CloudPolicyManagerTest&) = delete;
+  CloudPolicyManagerTest& operator=(const CloudPolicyManagerTest&) = delete;
+
  protected:
   CloudPolicyManagerTest()
       : policy_type_(dm_protocol::kChromeUserPolicyType) {}
@@ -207,9 +209,6 @@ class CloudPolicyManagerTest : public testing::Test {
   MockConfigurationPolicyObserver observer_;
   MockCloudPolicyStore store_;
   std::unique_ptr<TestCloudPolicyManager> manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyManagerTest);
 };
 
 TEST_F(CloudPolicyManagerTest, InitAndShutdown) {

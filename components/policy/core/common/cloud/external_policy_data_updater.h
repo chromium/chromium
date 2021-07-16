@@ -14,7 +14,6 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/policy_export.h"
@@ -70,6 +69,9 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher,
       size_t max_parallel_fetches);
+  ExternalPolicyDataUpdater(const ExternalPolicyDataUpdater&) = delete;
+  ExternalPolicyDataUpdater& operator=(const ExternalPolicyDataUpdater&) =
+      delete;
   ~ExternalPolicyDataUpdater();
 
   // Fetches the external data specified in the |request|. The |key| is an
@@ -123,8 +125,6 @@ class POLICY_EXPORT ExternalPolicyDataUpdater {
   // |true| once the destructor starts. Prevents jobs from being started during
   // shutdown.
   bool shutting_down_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataUpdater);
 };
 
 }  // namespace policy

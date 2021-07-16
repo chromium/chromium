@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/policy/policy_export.h"
@@ -43,6 +42,8 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  UserCloudPolicyManager(const UserCloudPolicyManager&) = delete;
+  UserCloudPolicyManager& operator=(const UserCloudPolicyManager&) = delete;
   ~UserCloudPolicyManager() override;
 
   // ConfigurationPolicyProvider overrides:
@@ -94,8 +95,6 @@ class POLICY_EXPORT UserCloudPolicyManager : public CloudPolicyManager {
 
   // Manages external data referenced by policies.
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManager);
 };
 
 }  // namespace policy

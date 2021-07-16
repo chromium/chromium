@@ -5,7 +5,6 @@
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 
 #include "base/base64.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
@@ -22,6 +21,10 @@ namespace policy {
 
 class CloudPolicyCoreTest : public testing::Test,
                             public CloudPolicyCore::Observer {
+ public:
+  CloudPolicyCoreTest(const CloudPolicyCoreTest&) = delete;
+  CloudPolicyCoreTest& operator=(const CloudPolicyCoreTest&) = delete;
+
  protected:
   CloudPolicyCoreTest()
       : core_(dm_protocol::kChromeUserPolicyType,
@@ -75,9 +78,6 @@ class CloudPolicyCoreTest : public testing::Test,
   int refresh_scheduler_started_callback_count_;
   int core_disconnecting_callback_count_;
   int bad_callback_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyCoreTest);
 };
 
 TEST_F(CloudPolicyCoreTest, ConnectAndDisconnect) {

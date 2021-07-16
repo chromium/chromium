@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/external_policy_data_updater.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -40,6 +39,9 @@ class POLICY_EXPORT ComponentCloudPolicyUpdater {
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       std::unique_ptr<ExternalPolicyDataFetcher> external_policy_data_fetcher,
       ComponentCloudPolicyStore* store);
+  ComponentCloudPolicyUpdater(const ComponentCloudPolicyUpdater&) = delete;
+  ComponentCloudPolicyUpdater& operator=(const ComponentCloudPolicyUpdater&) =
+      delete;
   ~ComponentCloudPolicyUpdater();
 
   // |response| is the latest policy information fetched for component
@@ -57,8 +59,6 @@ class POLICY_EXPORT ComponentCloudPolicyUpdater {
  private:
   ComponentCloudPolicyStore* const store_;
   ExternalPolicyDataUpdater external_policy_data_updater_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyUpdater);
 };
 
 }  // namespace policy

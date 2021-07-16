@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "components/policy/policy_export.h"
@@ -46,6 +45,8 @@ class POLICY_EXPORT RemoteCommandsQueue {
   };
 
   RemoteCommandsQueue();
+  RemoteCommandsQueue(const RemoteCommandsQueue&) = delete;
+  RemoteCommandsQueue& operator=(const RemoteCommandsQueue&) = delete;
   ~RemoteCommandsQueue();
 
   void AddObserver(Observer* observer);
@@ -82,8 +83,6 @@ class POLICY_EXPORT RemoteCommandsQueue {
   base::OneShotTimer execution_timeout_timer_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsQueue);
 };
 
 }  // namespace policy

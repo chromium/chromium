@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/dm_auth.h"
@@ -27,6 +26,10 @@ class MockDeviceManagementServiceConfiguration
   MockDeviceManagementServiceConfiguration();
   explicit MockDeviceManagementServiceConfiguration(
       const std::string& server_url);
+  MockDeviceManagementServiceConfiguration(
+      const MockDeviceManagementServiceConfiguration&) = delete;
+  MockDeviceManagementServiceConfiguration& operator=(
+      const MockDeviceManagementServiceConfiguration&) = delete;
   ~MockDeviceManagementServiceConfiguration() override;
 
   std::string GetDMServerUrl() const override;
@@ -39,8 +42,6 @@ class MockDeviceManagementServiceConfiguration
 
  private:
   const std::string server_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockDeviceManagementServiceConfiguration);
 };
 
 class MockJobCreationHandler {

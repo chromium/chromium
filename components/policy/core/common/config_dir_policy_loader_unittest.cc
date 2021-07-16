@@ -11,7 +11,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,6 +32,8 @@ const base::FilePath::CharType kMandatoryPath[] = FILE_PATH_LITERAL("managed");
 class TestHarness : public PolicyProviderTestHarness {
  public:
   TestHarness();
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -70,8 +71,6 @@ class TestHarness : public PolicyProviderTestHarness {
  private:
   base::ScopedTempDir test_dir_;
   int next_policy_file_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness()

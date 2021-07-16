@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -42,6 +41,8 @@ extern const char kKeyDictionary[];
 class PolicyTestBase : public testing::Test {
  public:
   PolicyTestBase();
+  PolicyTestBase(const PolicyTestBase&) = delete;
+  PolicyTestBase& operator=(const PolicyTestBase&) = delete;
   ~PolicyTestBase() override;
 
   // testing::Test:
@@ -55,9 +56,6 @@ class PolicyTestBase : public testing::Test {
   // Needs to be the first member
   base::test::TaskEnvironment task_environment_;
   SchemaRegistry schema_registry_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyTestBase);
 };
 
 // An interface for creating a test policy provider and creating a policy
@@ -70,6 +68,9 @@ class PolicyProviderTestHarness {
   PolicyProviderTestHarness(PolicyLevel level,
                             PolicyScope scope,
                             PolicySource source);
+  PolicyProviderTestHarness(const PolicyProviderTestHarness&) = delete;
+  PolicyProviderTestHarness& operator=(const PolicyProviderTestHarness&) =
+      delete;
   virtual ~PolicyProviderTestHarness();
 
   // Actions to run at gtest SetUp() time.
@@ -107,8 +108,6 @@ class PolicyProviderTestHarness {
   PolicyLevel level_;
   PolicyScope scope_;
   PolicySource source_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyProviderTestHarness);
 };
 
 // A factory method for creating a test harness.
@@ -120,9 +119,15 @@ typedef PolicyProviderTestHarness* (*CreatePolicyProviderTestHarness)();
 class ConfigurationPolicyProviderTest
     : public PolicyTestBase,
       public testing::WithParamInterface<CreatePolicyProviderTestHarness> {
+ public:
+  ConfigurationPolicyProviderTest(const ConfigurationPolicyProviderTest&) =
+      delete;
+  ConfigurationPolicyProviderTest& operator=(
+      const ConfigurationPolicyProviderTest&) = delete;
+
  protected:
   ConfigurationPolicyProviderTest();
-  virtual ~ConfigurationPolicyProviderTest();
+  ~ConfigurationPolicyProviderTest() override;
 
   void SetUp() override;
   void TearDown() override;
@@ -135,9 +140,6 @@ class ConfigurationPolicyProviderTest
 
   std::unique_ptr<PolicyProviderTestHarness> test_harness_;
   std::unique_ptr<ConfigurationPolicyProvider> provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyProviderTest);
 };
 
 // An extension of ConfigurationPolicyProviderTest that also tests loading of
@@ -145,12 +147,15 @@ class ConfigurationPolicyProviderTest
 // 3rd party policy should also instantiate these tests.
 class Configuration3rdPartyPolicyProviderTest
     : public ConfigurationPolicyProviderTest {
+ public:
+  Configuration3rdPartyPolicyProviderTest(
+      const Configuration3rdPartyPolicyProviderTest&) = delete;
+  Configuration3rdPartyPolicyProviderTest& operator=(
+      const Configuration3rdPartyPolicyProviderTest&) = delete;
+
  protected:
   Configuration3rdPartyPolicyProviderTest();
   virtual ~Configuration3rdPartyPolicyProviderTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Configuration3rdPartyPolicyProviderTest);
 };
 
 }  // namespace policy

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -103,6 +102,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
       std::unique_ptr<ResourceCache> cache,
 #endif
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
+  ComponentCloudPolicyService(const ComponentCloudPolicyService&) = delete;
+  ComponentCloudPolicyService& operator=(const ComponentCloudPolicyService&) =
+      delete;
   ~ComponentCloudPolicyService() override;
 
   // Returns true if |domain| is supported by the service.
@@ -179,8 +181,6 @@ class POLICY_EXPORT ComponentCloudPolicyService
 
   // Must be the last member.
   base::WeakPtrFactory<ComponentCloudPolicyService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentCloudPolicyService);
 };
 
 }  // namespace policy
