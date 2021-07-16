@@ -11,7 +11,6 @@
 #include "base/no_destructor.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
-#include "components/ui_devtools/buildflags.h"
 #include "components/viz/service/main/viz_compositor_thread_runner.h"
 
 namespace base {
@@ -63,10 +62,6 @@ class VizCompositorThreadRunnerWebView : public viz::VizCompositorThreadRunner {
                               gpu::CommandBufferTaskExecutor* task_executor,
                               viz::GpuServiceImpl* gpu_service,
                               gfx::RenderingPipeline* gpu_pipeline) override;
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  void CreateVizDevTools(viz::mojom::VizDevToolsParamsPtr params) override;
-#endif
-
  private:
   friend class base::NoDestructor<VizCompositorThreadRunnerWebView>;
 

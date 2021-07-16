@@ -44,7 +44,6 @@ viz_component("host") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
-    "//components/ui_devtools:buildflags",
     "//gpu/ipc/client",
     "//gpu/ipc/common",
     "//services/viz/privileged/mojom",

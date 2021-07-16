@@ -80,7 +80,6 @@ source_set("gfx") {
     "//android_webview/public",
     "//base",
     "//components/power_scheduler",
-    "//components/ui_devtools:buildflags",
     "//components/viz/service",
     "//components/viz/service/main",
     "//content/public/browser",

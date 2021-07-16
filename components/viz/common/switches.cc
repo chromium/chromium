@@ -42,10 +42,6 @@ const char kEnableDeJelly[] = "enable-de-jelly";
 // fullscreen overlay and use it as main framebuffer where possible.
 const char kEnableHardwareOverlays[] = "enable-hardware-overlays";
 
-// Enables inspecting Viz Display Compositor objects. Default port is 9229.
-// For local inspection use chrome://inspect#other
-const char kEnableVizDevTools[] = "enable-viz-devtools";
-
 // Enables hit-test debug logging.
 const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 

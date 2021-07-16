@@ -10,7 +10,6 @@ import("//build/config/linux/pangocairo/pangocairo.gni")
 import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//chromeos/assistant/assistant.gni")
-import("//components/ui_devtools/devtools.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//content/common/features.gni")
 import("//content/public/common/zygote/features.gni")
@@ -2968,13 +2967,6 @@ source_set("browser") {
       "net/cross_origin_opener_policy_reporter.h",
       "net/reporting_service_proxy.cc",
       "net/reporting_service_proxy.h",
-    ]
-  }
-
-  if (use_viz_devtools) {
-    sources += [
-      "gpu/viz_devtools_connector.cc",
-      "gpu/viz_devtools_connector.h",
     ]
   }
 

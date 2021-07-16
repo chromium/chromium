@@ -26,7 +26,6 @@ include_rules = [
   # Only allow this header in spellchecking since allowing all of spellchecking
   # would include both browser and renderer components.
   "+components/spellcheck/spellcheck_buildflags.h",
-  "+components/ui_devtools/buildflags.h",
   "+content/public/common",
   "+crypto",
   "+gpu",

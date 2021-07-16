@@ -30,9 +30,8 @@ class TracingAgent;
 class UI_DEVTOOLS_EXPORT UiDevToolsServer
     : public network::server::HttpServer::Delegate {
  public:
-  // Network tags to be used for the UI and the Viz devtools servers.
+  // Network tags to be used for the UI devtools servers.
   static const net::NetworkTrafficAnnotationTag kUIDevtoolsServerTag;
-  static const net::NetworkTrafficAnnotationTag kVizDevtoolsServerTag;
 
   ~UiDevToolsServer() override;
 
@@ -45,12 +44,6 @@ class UI_DEVTOOLS_EXPORT UiDevToolsServer
       network::mojom::NetworkContext* network_context,
       int port,
       const base::FilePath& active_port_output_directory = base::FilePath());
-
-  // Assumes that the devtools flag is enabled, and was checked when the socket
-  // was created. If |port| is 0, the server will choose an available port.
-  static std::unique_ptr<UiDevToolsServer> CreateForViz(
-      mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
-      int port);
 
   // Creates a TCPServerSocket to be used by a UiDevToolsServer.
   static void CreateTCPServerSocket(

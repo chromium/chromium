@@ -30,13 +30,6 @@
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "ui/gfx/switches.h"
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-#include "components/ui_devtools/css_agent.h"
-#include "components/ui_devtools/devtools_server.h"
-#include "components/ui_devtools/viz/dom_agent_viz.h"
-#include "components/ui_devtools/viz/overlay_agent_viz.h"
-#endif
-
 #if defined(USE_OZONE)
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -157,19 +150,6 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManager(
                                 base::Unretained(gpu_pipeline)));
 }
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-void VizCompositorThreadRunnerImpl::CreateVizDevTools(
-    mojom::VizDevToolsParamsPtr params) {
-  // It is safe to use Unretained(this) because |this| owns the |task_runner_|,
-  // and will outlive it.
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &VizCompositorThreadRunnerImpl::CreateVizDevToolsOnCompositorThread,
-          base::Unretained(this), std::move(params)));
-}
-#endif
-
 void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
     mojom::FrameSinkManagerParamsPtr params,
     gpu::CommandBufferTaskExecutor* task_executor,
@@ -229,42 +209,7 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   frame_sink_manager_->BindAndSetClient(
       std::move(params->frame_sink_manager), nullptr,
       std::move(params->frame_sink_manager_client));
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  if (pending_viz_dev_tools_params_)
-    InitVizDevToolsOnCompositorThread(std::move(pending_viz_dev_tools_params_));
-#endif
 }
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-void VizCompositorThreadRunnerImpl::CreateVizDevToolsOnCompositorThread(
-    mojom::VizDevToolsParamsPtr params) {
-  if (!frame_sink_manager_) {
-    DCHECK(!pending_viz_dev_tools_params_);
-    pending_viz_dev_tools_params_ = std::move(params);
-    return;
-  }
-  InitVizDevToolsOnCompositorThread(std::move(params));
-}
-
-void VizCompositorThreadRunnerImpl::InitVizDevToolsOnCompositorThread(
-    mojom::VizDevToolsParamsPtr params) {
-  DCHECK(frame_sink_manager_);
-  devtools_server_ = ui_devtools::UiDevToolsServer::CreateForViz(
-      std::move(params->server_socket), params->server_port);
-  auto dom_agent =
-      std::make_unique<ui_devtools::DOMAgentViz>(frame_sink_manager_.get());
-  auto css_agent = std::make_unique<ui_devtools::CSSAgent>(dom_agent.get());
-  auto overlay_agent =
-      std::make_unique<ui_devtools::OverlayAgentViz>(dom_agent.get());
-  auto devtools_client = std::make_unique<ui_devtools::UiDevToolsClient>(
-      "VizDevToolsClient", devtools_server_.get());
-  devtools_client->AddAgent(std::move(dom_agent));
-  devtools_client->AddAgent(std::move(css_agent));
-  devtools_client->AddAgent(std::move(overlay_agent));
-  devtools_server_->AttachClient(std::move(devtools_client));
-}
-#endif
 
 void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
   DCHECK(task_runner_->BelongsToCurrentThread());
@@ -274,9 +219,6 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
         server_shared_bitmap_manager_.get());
   }
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  devtools_server_.reset();
-#endif
   frame_sink_manager_.reset();
   output_surface_provider_.reset();
   server_shared_bitmap_manager_.reset();

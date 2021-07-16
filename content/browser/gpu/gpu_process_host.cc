@@ -257,7 +257,6 @@ static const char* const kSwitchNames[] = {
     switches::kDeJellyScreenWidth,
     switches::kDoubleBufferCompositing,
     switches::kDrawPredictedInkPoint,
-    switches::kEnableVizDevTools,
     switches::kHeadless,
     switches::kLoggingLevel,
     switches::kEnableLowEndDeviceMode,
@@ -910,16 +909,6 @@ bool GpuProcessHost::Init() {
     // Fake a callback that the process is ready.
     OnProcessLaunched();
   }
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kEnableVizDevTools)) {
-    // Start creating a socket for the Viz DevTools server. If it is created
-    // before the FrameSinkManager, the socket will be stashed.
-    devtools_connector_ = std::make_unique<VizDevToolsConnector>();
-    devtools_connector_->ConnectVizDevTools();
-  }
-#endif
 
 #if defined(OS_MAC)
   ca_transaction_gpu_coordinator_ = CATransactionGPUCoordinator::Create(this);

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/ui_devtools/devtools.gni")
 
 _inspector_protocol = "//third_party/inspector_protocol"
 import("$_inspector_protocol/inspector_protocol.gni")
@@ -57,11 +56,6 @@ inspector_protocol_generate("protocol_generated_sources") {
   outputs = _protocol_generated
 }
 
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "USE_VIZ_DEVTOOLS=$use_viz_devtools" ]
-}
-
 component("ui_devtools") {
   sources = rebase_path(_protocol_generated, ".", target_gen_dir)
   sources += [
@@ -111,7 +105,6 @@ component("ui_devtools") {
   ]
 
   public_deps = [
-    ":buildflags",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//services/service_manager/public/cpp",

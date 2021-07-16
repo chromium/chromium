@@ -25,7 +25,6 @@ VIZ_COMMON_EXPORT extern const char kDraw2Points3Ms[];
 VIZ_COMMON_EXPORT extern const char kDrawPredictedInkPoint[];
 VIZ_COMMON_EXPORT extern const char kEnableDeJelly[];
 VIZ_COMMON_EXPORT extern const char kEnableHardwareOverlays[];
-VIZ_COMMON_EXPORT extern const char kEnableVizDevTools[];
 VIZ_COMMON_EXPORT extern const char kEnableVizHitTestDebug[];
 
 #if defined(OS_CHROMEOS)

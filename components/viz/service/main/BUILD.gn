@@ -24,7 +24,6 @@ source_set("main") {
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
     "//components/ui_devtools",
-    "//components/ui_devtools/viz",
     "//components/viz/service",
     "//gpu/ipc:gl_in_process_context",
     "//gpu/ipc/common",

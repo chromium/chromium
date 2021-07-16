@@ -20,7 +20,6 @@
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/ui_devtools/buildflags.h"
 #include "components/viz/host/gpu_host_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
@@ -41,10 +40,6 @@
 
 #if defined(OS_WIN)
 #include "services/viz/privileged/mojom/gl/info_collection_gpu_service.mojom.h"
-#endif
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-#include "content/browser/gpu/viz_devtools_connector.h"
 #endif
 
 namespace base {
@@ -252,10 +247,6 @@ class GpuProcessHost : public BrowserChildProcessHostDelegate,
 #endif
 
   std::unique_ptr<viz::GpuHostImpl> gpu_host_;
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  std::unique_ptr<VizDevToolsConnector> devtools_connector_;
-#endif
 
   SEQUENCE_CHECKER(sequence_checker_);
 

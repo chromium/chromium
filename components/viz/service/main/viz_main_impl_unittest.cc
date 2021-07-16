@@ -59,10 +59,6 @@ class MockVizCompositorThreadRunner : public VizCompositorThreadRunner {
                     gpu::CommandBufferTaskExecutor*,
                     GpuServiceImpl*,
                     gfx::RenderingPipeline*));
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  MOCK_METHOD1(CreateVizDevTools, void(mojom::VizDevToolsParamsPtr));
-#endif
-
  private:
   base::SingleThreadTaskRunner* const task_runner_;
 };

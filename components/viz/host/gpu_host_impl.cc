@@ -218,12 +218,6 @@ void GpuHostImpl::ConnectFrameSinkManager(
   viz_main_->CreateFrameSinkManager(std::move(params));
 }
 
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-void GpuHostImpl::ConnectVizDevTools(mojom::VizDevToolsParamsPtr params) {
-  viz_main_->CreateVizDevTools(std::move(params));
-}
-#endif
-
 void GpuHostImpl::EstablishGpuChannel(int client_id,
                                       uint64_t client_tracing_id,
                                       bool is_gpu_host,

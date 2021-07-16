@@ -125,7 +125,6 @@ class VizMainImpl : public mojom::VizMain,
       override;
 #endif
   void CreateFrameSinkManager(mojom::FrameSinkManagerParamsPtr params) override;
-  void CreateVizDevTools(mojom::VizDevToolsParamsPtr params) override;
 #if BUILDFLAG(USE_VIZ_DEBUGGER)
   void FilterDebugStream(base::Value filter_data) override;
   void StartDebugStream(

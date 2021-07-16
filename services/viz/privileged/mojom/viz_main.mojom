@@ -6,7 +6,6 @@ module viz.mojom;
 
 import "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom";
 import "mojo/public/mojom/base/values.mojom";
-import "services/network/public/mojom/tcp_socket.mojom";
 import "services/viz/public/mojom/compositing/compositing_mode_watcher.mojom";
 import "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom";
 import "services/viz/privileged/mojom/compositing/renderer_settings.mojom";
@@ -36,14 +35,6 @@ struct FrameSinkManagerParams {
   DebugRendererSettings debug_renderer_settings;
 };
 
-struct VizDevToolsParams {
-  // Socket for viz devtools server.
-  pending_remote<network.mojom.TCPServerSocket> server_socket;
-
-  // Port the devtools server socket is bound to.
-  uint16 server_port;
-};
-
 // This interface provides mechanism for the Viz Debugger to output data.
 [EnableIf=use_viz_debugger]
 interface VizDebugOutput {
@@ -68,11 +59,6 @@ interface VizMain {
   [EnableIf=is_win]
   CreateInfoCollectionGpuService(
       pending_receiver<InfoCollectionGpuService> info_collection_gpu_service);
-
-  // The viz devtools server is for use by developers to observe the
-  // FrameSinkManager in the viz compositor. This is only called if the flag
-  // --enable-viz-devtools is used.
-  CreateVizDevTools(VizDevToolsParams params);
 
   // Initiates the devtools enabled stream connection for the Viz Debugger.
   // This is only called if the flag --enable-viz-devtools is used.

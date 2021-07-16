@@ -22,7 +22,6 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/discardable_memory/public/mojom/discardable_shared_memory_manager.mojom.h"
-#include "components/ui_devtools/buildflags.h"
 #include "components/viz/common/buildflags.h"
 #include "components/viz/host/viz_host_export.h"
 #include "gpu/command_buffer/common/activity_flags.h"
@@ -165,11 +164,6 @@ class VIZ_HOST_EXPORT GpuHostImpl : public mojom::GpuHost
       mojo::PendingReceiver<mojom::FrameSinkManager> receiver,
       mojo::PendingRemote<mojom::FrameSinkManagerClient> client,
       const DebugRendererSettings& debug_renderer_settings);
-
-#if BUILDFLAG(USE_VIZ_DEVTOOLS)
-  // Connects to Viz DevTools running in the Viz service.
-  void ConnectVizDevTools(mojom::VizDevToolsParamsPtr params);
-#endif
 
   // Tells the GPU service to create a new channel for communication with a
   // client. Once the GPU service responds asynchronously with the channel

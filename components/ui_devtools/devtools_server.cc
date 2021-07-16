@@ -67,27 +67,6 @@ const net::NetworkTrafficAnnotationTag UiDevToolsServer::kUIDevtoolsServerTag =
           "Not implemented, only used in Devtools and is behind a switch."
       })");
 
-const net::NetworkTrafficAnnotationTag UiDevToolsServer::kVizDevtoolsServerTag =
-    net::DefineNetworkTrafficAnnotation("viz_devtools_server", R"(
-      semantics {
-        sender: "Viz Devtools Server"
-        description:
-          "Backend for Viz DevTools, to inspect FrameSink hierarchies."
-        trigger:
-          "Run with '--enable-viz-devtools' switch."
-        data: "Debugging data, including any data on the active frame sinks."
-        destination: OTHER
-        destination_other: "The data can be sent to any destination."
-      }
-      policy {
-        cookies_allowed: NO
-        setting:
-          "This request cannot be disabled in settings. However it will never "
-          "be made if user does not run with '--enable-viz-devtools' switch."
-        policy_exception_justification:
-          "Not implemented, only used in Devtools and is behind a switch."
-      })");
-
 UiDevToolsServer::UiDevToolsServer(
     int port,
     net::NetworkTrafficAnnotationTag tag,
@@ -118,16 +97,6 @@ std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViews(
                         base::BindOnce(&UiDevToolsServer::MakeServer,
                                        server->weak_ptr_factory_.GetWeakPtr(),
                                        std::move(server_socket)));
-  return server;
-}
-
-// static
-std::unique_ptr<UiDevToolsServer> UiDevToolsServer::CreateForViz(
-    mojo::PendingRemote<network::mojom::TCPServerSocket> server_socket,
-    int port) {
-  auto server = base::WrapUnique(
-      new UiDevToolsServer(port, kVizDevtoolsServerTag, base::FilePath()));
-  server->MakeServer(std::move(server_socket), net::OK, absl::nullopt);
   return server;
 }
 
