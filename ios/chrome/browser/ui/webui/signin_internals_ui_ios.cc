@@ -90,7 +90,7 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
   about_signin_internals->AddSigninObserver(this);
-  base::Value status = about_signin_internals->GetSigninStatus()->Clone();
+  const base::Value status = about_signin_internals->GetSigninStatus();
   std::vector<const base::Value*> return_args{&callback, &success, &status};
   web_ui()->CallJavascriptFunction("cr.webUIResponse", return_args);
   signin::IdentityManager* identity_manager =
@@ -104,15 +104,14 @@ void SignInInternalsHandlerIOS::HandleGetSignInInfo(
   }
 }
 
-void SignInInternalsHandlerIOS::OnSigninStateChanged(
-    const base::DictionaryValue* info) {
+void SignInInternalsHandlerIOS::OnSigninStateChanged(const base::Value* info) {
   base::Value event_name("signin-info-changed");
   std::vector<const base::Value*> args{&event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);
 }
 
 void SignInInternalsHandlerIOS::OnCookieAccountsFetched(
-    const base::DictionaryValue* info) {
+    const base::Value* info) {
   base::Value event_name("update-cookie-accounts");
   std::vector<const base::Value*> args{&event_name, info};
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback", args);

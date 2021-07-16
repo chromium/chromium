@@ -109,7 +109,7 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
   // empty in incognito mode. Alternatively, we could force about:signin to
   // open in non-incognito mode always (like about:settings for ex.).
   ResolveJavascriptCallback(base::Value(callback_id),
-                            *about_signin_internals->GetSigninStatus());
+                            about_signin_internals->GetSigninStatus());
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
   signin::AccountsInCookieJarInfo accounts_in_cookie_jar =
@@ -121,12 +121,10 @@ void SignInInternalsHandler::HandleGetSignInInfo(const base::ListValue* args) {
   }
 }
 
-void SignInInternalsHandler::OnSigninStateChanged(
-    const base::DictionaryValue* info) {
+void SignInInternalsHandler::OnSigninStateChanged(const base::Value* info) {
   FireWebUIListener("signin-info-changed", *info);
 }
 
-void SignInInternalsHandler::OnCookieAccountsFetched(
-    const base::DictionaryValue* info) {
+void SignInInternalsHandler::OnCookieAccountsFetched(const base::Value* info) {
   FireWebUIListener("update-cookie-accounts", *info);
 }

@@ -39,10 +39,10 @@ class SignInInternalsHandler : public content::WebUIMessageHandler,
   void HandleGetSignInInfo(const base::ListValue* args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
-  void OnSigninStateChanged(const base::DictionaryValue* info) override;
+  void OnSigninStateChanged(const base::Value* info) override;
 
   // Notification that the cookie accounts are ready to be displayed.
-  void OnCookieAccountsFetched(const base::DictionaryValue* info) override;
+  void OnCookieAccountsFetched(const base::Value* info) override;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_H_

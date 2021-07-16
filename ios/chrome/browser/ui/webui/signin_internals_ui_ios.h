@@ -16,7 +16,7 @@
 // The implementation for the chrome://signin-internals page.
 class SignInInternalsUIIOS : public web::WebUIIOSController {
  public:
-  explicit SignInInternalsUIIOS(web::WebUIIOS* web_ui, const std::string& host);
+  SignInInternalsUIIOS(web::WebUIIOS* web_ui, const std::string& host);
   ~SignInInternalsUIIOS() override;
   SignInInternalsUIIOS(const SignInInternalsUIIOS&) = delete;
   SignInInternalsUIIOS& operator=(const SignInInternalsUIIOS&) = delete;
@@ -38,10 +38,10 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   void HandleGetSignInInfo(const base::ListValue* args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
-  void OnSigninStateChanged(const base::DictionaryValue* info) override;
+  void OnSigninStateChanged(const base::Value* info) override;
 
   // Notification that the cookie accounts are ready to be displayed.
-  void OnCookieAccountsFetched(const base::DictionaryValue* info) override;
+  void OnCookieAccountsFetched(const base::Value* info) override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_SIGNIN_INTERNALS_UI_IOS_H_
