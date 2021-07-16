@@ -1910,7 +1910,7 @@
   },
   {
     "name": "enable-extended-sync-promos-capability",
-    "owners": ["fernandex", "msarda"],
+    "owners": ["fernandex", "msarda", "aliceywang"],
     "expiry_milestone": 100
   },
   {
