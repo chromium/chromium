@@ -1056,10 +1056,9 @@ class WebAppFileHandlingPolicyBrowserTest
 
  private:
   void SetFileHandlingBlockPolicy() {
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 
