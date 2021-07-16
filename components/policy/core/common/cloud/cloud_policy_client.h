@@ -15,7 +15,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
@@ -178,6 +177,8 @@ class POLICY_EXPORT CloudPolicyClient {
       DeviceManagementService* service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceDMTokenCallback device_dm_token_callback);
+  CloudPolicyClient(const CloudPolicyClient&) = delete;
+  CloudPolicyClient& operator=(const CloudPolicyClient&) = delete;
 
   virtual ~CloudPolicyClient();
 
@@ -841,8 +842,6 @@ class POLICY_EXPORT CloudPolicyClient {
 
   // Used to create tasks which run delayed on the UI thread.
   base::WeakPtrFactory<CloudPolicyClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyClient);
 };
 
 }  // namespace policy

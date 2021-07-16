@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -36,6 +35,8 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   MockCloudPolicyClient(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       DeviceManagementService* service);
+  MockCloudPolicyClient(const MockCloudPolicyClient&) = delete;
+  MockCloudPolicyClient& operator=(const MockCloudPolicyClient&) = delete;
   ~MockCloudPolicyClient() override;
 
   MOCK_METHOD3(SetupRegistration,
@@ -180,22 +181,19 @@ class MockCloudPolicyClient : public CloudPolicyClient {
   using CloudPolicyClient::public_key_version_;
   using CloudPolicyClient::public_key_version_valid_;
   using CloudPolicyClient::types_to_fetch_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyClient);
 };
 
 class MockCloudPolicyClientObserver : public CloudPolicyClient::Observer {
  public:
   MockCloudPolicyClientObserver();
+  MockCloudPolicyClientObserver(const MockCloudPolicyClientObserver&) = delete;
+  MockCloudPolicyClientObserver& operator=(
+      const MockCloudPolicyClientObserver&) = delete;
   ~MockCloudPolicyClientObserver() override;
 
   MOCK_METHOD1(OnPolicyFetched, void(CloudPolicyClient*));
   MOCK_METHOD1(OnRegistrationStateChanged, void(CloudPolicyClient*));
   MOCK_METHOD1(OnClientError, void(CloudPolicyClient*));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyClientObserver);
 };
 
 }  // namespace policy

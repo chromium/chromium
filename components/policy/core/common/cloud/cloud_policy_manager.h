@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -49,6 +48,8 @@ class POLICY_EXPORT CloudPolicyManager
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  CloudPolicyManager(const CloudPolicyManager&) = delete;
+  CloudPolicyManager& operator=(const CloudPolicyManager&) = delete;
   ~CloudPolicyManager() override;
 
   CloudPolicyCore* core() { return &core_; }
@@ -112,8 +113,6 @@ class POLICY_EXPORT CloudPolicyManager
   // Whether there's a policy refresh operation pending, in which case all
   // policy update notifications are deferred until after it completes.
   bool waiting_for_policy_refresh_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyManager);
 };
 
 }  // namespace policy

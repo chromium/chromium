@@ -19,7 +19,6 @@
 
 #include "base/callback.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/process/process_handle.h"
 #include "base/sequenced_task_runner.h"
@@ -142,6 +141,10 @@ bool InstallValue(const base::Value& value,
 class ScopedGroupPolicyRegistrySandbox {
  public:
   ScopedGroupPolicyRegistrySandbox();
+  ScopedGroupPolicyRegistrySandbox(const ScopedGroupPolicyRegistrySandbox&) =
+      delete;
+  ScopedGroupPolicyRegistrySandbox& operator=(
+      const ScopedGroupPolicyRegistrySandbox&) = delete;
   ~ScopedGroupPolicyRegistrySandbox();
 
   // Activates the registry keys overrides. This must be called before doing any
@@ -161,14 +164,14 @@ class ScopedGroupPolicyRegistrySandbox {
   // the sandboxed HKCU and HKLM hives, respectively.
   RegKey temp_hkcu_hive_key_;
   RegKey temp_hklm_hive_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedGroupPolicyRegistrySandbox);
 };
 
 // A test harness that feeds policy via the Chrome GPO registry subtree.
 class RegistryTestHarness : public PolicyProviderTestHarness {
  public:
   RegistryTestHarness(HKEY hive, PolicyScope scope);
+  RegistryTestHarness(const RegistryTestHarness&) = delete;
+  RegistryTestHarness& operator=(const RegistryTestHarness&) = delete;
   ~RegistryTestHarness() override;
 
   // PolicyProviderTestHarness:
@@ -201,8 +204,6 @@ class RegistryTestHarness : public PolicyProviderTestHarness {
   HKEY hive_;
 
   ScopedGroupPolicyRegistrySandbox registry_sandbox_;
-
-  DISALLOW_COPY_AND_ASSIGN(RegistryTestHarness);
 };
 
 ScopedGroupPolicyRegistrySandbox::ScopedGroupPolicyRegistrySandbox() {}

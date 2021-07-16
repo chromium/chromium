@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -38,6 +37,8 @@ namespace {
 class TestHarness : public PolicyProviderTestHarness {
  public:
   TestHarness(bool encode_complex_data_as_json);
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -71,8 +72,6 @@ class TestHarness : public PolicyProviderTestHarness {
   // If true, the test harness will encode complex data (dicts and lists) as
   // JSON strings.
   bool encode_complex_data_as_json_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness(bool encode_complex_data_as_json)

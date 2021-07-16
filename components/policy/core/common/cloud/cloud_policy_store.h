@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -66,6 +65,8 @@ class POLICY_EXPORT CloudPolicyStore {
   };
 
   CloudPolicyStore();
+  CloudPolicyStore(const CloudPolicyStore&) = delete;
+  CloudPolicyStore& operator=(const CloudPolicyStore&) = delete;
   virtual ~CloudPolicyStore();
 
   // Indicates whether the store has been fully initialized. This is
@@ -213,8 +214,6 @@ class POLICY_EXPORT CloudPolicyStore {
   bool is_initialized_ = false;
 
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyStore);
 };
 
 }  // namespace policy

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "components/policy/core/common/policy_bundle.h"
@@ -30,6 +29,9 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   };
 
   ConfigurationPolicyProvider();
+  ConfigurationPolicyProvider(const ConfigurationPolicyProvider&) = delete;
+  ConfigurationPolicyProvider& operator=(const ConfigurationPolicyProvider&) =
+      delete;
 
   // Policy providers can be deleted quite late during shutdown of the browser,
   // and it's not guaranteed that the message loops will still be running when
@@ -102,8 +104,6 @@ class POLICY_EXPORT ConfigurationPolicyProvider
   SchemaRegistry* schema_registry_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigurationPolicyProvider);
 };
 
 }  // namespace policy

@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
-
 namespace policy {
 
 struct ValueValidationIssue {
@@ -27,16 +25,15 @@ struct ValueValidationIssue {
 template <typename PayloadProto>
 class PolicyValueValidator {
  public:
-  PolicyValueValidator() {}
-  virtual ~PolicyValueValidator() {}
+  PolicyValueValidator() = default;
+  PolicyValueValidator(const PolicyValueValidator&) = delete;
+  PolicyValueValidator& operator=(const PolicyValueValidator&) = delete;
+  virtual ~PolicyValueValidator() = default;
 
   // Returns false if the value validation failed with errors.
   virtual bool ValidateValues(
       const PayloadProto& policy_payload,
       std::vector<ValueValidationIssue>* out_validation_issues) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyValueValidator);
 };
 
 }  // namespace policy

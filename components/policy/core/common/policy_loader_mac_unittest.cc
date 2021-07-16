@@ -36,6 +36,8 @@ namespace {
 class TestHarness : public PolicyProviderTestHarness {
  public:
   TestHarness();
+  TestHarness(const TestHarness&) = delete;
+  TestHarness& operator=(const TestHarness&) = delete;
   ~TestHarness() override;
 
   void SetUp() override;
@@ -61,8 +63,6 @@ class TestHarness : public PolicyProviderTestHarness {
 
  private:
   MockPreferences* prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestHarness);
 };
 
 TestHarness::TestHarness()

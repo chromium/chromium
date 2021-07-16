@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -143,6 +142,8 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   // Returns a human-readable representation of |status|.
   static const char* StatusToString(Status status);
 
+  CloudPolicyValidatorBase(const CloudPolicyValidatorBase&) = delete;
+  CloudPolicyValidatorBase& operator=(const CloudPolicyValidatorBase&) = delete;
   virtual ~CloudPolicyValidatorBase();
 
   // Validation status which can be read after completion has been signaled.
@@ -377,8 +378,6 @@ class POLICY_EXPORT CloudPolicyValidatorBase {
   std::string owning_domain_;
   bool allow_key_rotation_;
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyValidatorBase);
 };
 
 // A simple type-parameterized extension of CloudPolicyValidator that
@@ -398,6 +397,8 @@ class POLICY_EXPORT CloudPolicyValidator final
       scoped_refptr<base::SequencedTaskRunner> background_task_runner)
       : CloudPolicyValidatorBase(std::move(policy_response),
                                  background_task_runner) {}
+  CloudPolicyValidator(const CloudPolicyValidator&) = delete;
+  CloudPolicyValidator& operator=(const CloudPolicyValidator&) = delete;
 
   void ValidateValues(
       std::unique_ptr<PolicyValueValidator<PayloadProto>> value_validator) {
@@ -436,8 +437,6 @@ class POLICY_EXPORT CloudPolicyValidator final
 
   std::vector<std::unique_ptr<PolicyValueValidator<PayloadProto>>>
       value_validators_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyValidator);
 };
 
 using UserCloudPolicyValidator =

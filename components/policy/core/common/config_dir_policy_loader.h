@@ -7,7 +7,6 @@
 
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/async_policy_loader.h"
 #include "components/policy/core/common/policy_types.h"
@@ -29,6 +28,8 @@ class POLICY_EXPORT ConfigDirPolicyLoader : public AsyncPolicyLoader {
   ConfigDirPolicyLoader(scoped_refptr<base::SequencedTaskRunner> task_runner,
                         const base::FilePath& config_dir,
                         PolicyScope scope);
+  ConfigDirPolicyLoader(const ConfigDirPolicyLoader&) = delete;
+  ConfigDirPolicyLoader& operator=(const ConfigDirPolicyLoader&) = delete;
   ~ConfigDirPolicyLoader() override;
 
   // AsyncPolicyLoader implementation.
@@ -65,8 +66,6 @@ class POLICY_EXPORT ConfigDirPolicyLoader : public AsyncPolicyLoader {
   // |config_dir_|.
   base::FilePathWatcher mandatory_watcher_;
   base::FilePathWatcher recommended_watcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConfigDirPolicyLoader);
 };
 
 }  // namespace policy

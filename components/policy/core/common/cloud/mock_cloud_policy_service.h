@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_CLOUD_MOCK_CLOUD_POLICY_SERVICE_H_
 #define COMPONENTS_POLICY_CORE_COMMON_CLOUD_MOCK_CLOUD_POLICY_SERVICE_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -17,6 +16,8 @@ class CloudPolicyStore;
 class MockCloudPolicyService : public CloudPolicyService {
  public:
   MockCloudPolicyService(CloudPolicyClient* client, CloudPolicyStore* store);
+  MockCloudPolicyService(const MockCloudPolicyService&) = delete;
+  MockCloudPolicyService& operator=(const MockCloudPolicyService&) = delete;
   ~MockCloudPolicyService() override;
 
   MOCK_METHOD1(RefreshPolicy, void(RefreshPolicyCallback));
@@ -24,19 +25,18 @@ class MockCloudPolicyService : public CloudPolicyService {
  private:
   // Invokes real RefreshPolicy() method.
   void InvokeRefreshPolicy(RefreshPolicyCallback callback);
-
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyService);
 };
 
 class MockCloudPolicyServiceObserver : public CloudPolicyService::Observer {
  public:
   MockCloudPolicyServiceObserver();
+  MockCloudPolicyServiceObserver(const MockCloudPolicyServiceObserver&) =
+      delete;
+  MockCloudPolicyServiceObserver& operator=(
+      const MockCloudPolicyServiceObserver&) = delete;
   ~MockCloudPolicyServiceObserver() override;
 
   MOCK_METHOD0(OnCloudPolicyServiceInitializationCompleted, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudPolicyServiceObserver);
 };
 
 }  // namespace policy

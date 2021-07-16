@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
@@ -113,6 +112,8 @@ class MockPolicyMigrator : public PolicyMigrator {
 class PolicyServiceTest : public testing::Test {
  public:
   PolicyServiceTest() = default;
+  PolicyServiceTest(const PolicyServiceTest&) = delete;
+  PolicyServiceTest& operator=(const PolicyServiceTest&) = delete;
   void SetUp() override {
     EXPECT_CALL(provider0_, IsInitializationComplete(_))
         .WillRepeatedly(Return(true));
@@ -183,9 +184,6 @@ class PolicyServiceTest : public testing::Test {
   PolicyMap policy1_;
   PolicyMap policy2_;
   std::unique_ptr<PolicyServiceImpl> policy_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceTest);
 };
 
 TEST_F(PolicyServiceTest, LoadsPoliciesBeforeProvidersRefresh) {

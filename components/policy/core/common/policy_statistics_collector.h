@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_POLICY_STATISTICS_COLLECTOR_H_
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/policy_details.h"
@@ -37,6 +36,9 @@ class POLICY_EXPORT PolicyStatisticsCollector {
                             PolicyService* policy_service,
                             PrefService* prefs,
                             const scoped_refptr<base::TaskRunner>& task_runner);
+  PolicyStatisticsCollector(const PolicyStatisticsCollector&) = delete;
+  PolicyStatisticsCollector& operator=(const PolicyStatisticsCollector&) =
+      delete;
   virtual ~PolicyStatisticsCollector();
 
   // Completes initialization and starts periodical statistic updates.
@@ -62,8 +64,6 @@ class POLICY_EXPORT PolicyStatisticsCollector {
   base::CancelableOnceClosure update_callback_;
 
   const scoped_refptr<base::TaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyStatisticsCollector);
 };
 
 }  // namespace policy
