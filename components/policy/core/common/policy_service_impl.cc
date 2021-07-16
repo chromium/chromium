@@ -280,6 +280,8 @@ bool PolicyServiceImpl::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
 void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  VLOG(2) << "Policy refresh starting";
+
   if (!callback.is_null())
     refresh_callbacks_.push_back(std::move(callback));
 
@@ -290,6 +292,8 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&PolicyServiceImpl::MergeAndTriggerUpdates,
                                   update_task_ptr_factory_.GetWeakPtr()));
+
+    VLOG(2) << "Policy refresh has no providers";
   } else {
     // Some providers might invoke OnUpdatePolicy synchronously while handling
     // RefreshPolicies. Mark all as pending before refreshing.
@@ -545,6 +549,10 @@ void PolicyServiceImpl::MaybeNotifyPolicyDomainStatusChange(
 }
 
 void PolicyServiceImpl::CheckRefreshComplete() {
+  if (refresh_pending_.empty()) {
+    VLOG(2) << "Policy refresh complete";
+  }
+
   // Invoke all the callbacks if a refresh has just fully completed.
   if (refresh_pending_.empty() && !refresh_callbacks_.empty()) {
     std::vector<base::OnceClosure> callbacks;

@@ -349,6 +349,11 @@ void CloudPolicyClient::FetchPolicy() {
   CHECK(is_registered());
   CHECK(!types_to_fetch_.empty());
 
+  VLOG(2) << "Policy fetch starting";
+  for (const auto& type : types_to_fetch_) {
+    VLOG(2) << "Fetching policy type: " << type.first << " -> " << type.second;
+  }
+
   std::unique_ptr<DMServerJobConfiguration> config =
       std::make_unique<DMServerJobConfiguration>(
           DeviceManagementService::JobConfiguration::TYPE_POLICY_FETCH, this,
@@ -1163,8 +1168,12 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
     }
     state_keys_to_upload_.clear();
     NotifyPolicyFetched();
+
+    VLOG(2) << "Policy fetch success";
   } else {
     NotifyClientError();
+
+    VLOG(2) << "Policy fetch error: " << status;
 
     if (status == DM_STATUS_SERVICE_DEVICE_NOT_FOUND) {
       // Mark as unregistered and initialize re-registration flow.

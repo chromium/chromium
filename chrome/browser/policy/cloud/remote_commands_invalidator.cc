@@ -83,6 +83,8 @@ void RemoteCommandsInvalidator::OnIncomingInvalidation(
   DCHECK_EQ(STARTED, state_);
   DCHECK(thread_checker_.CalledOnValidThread());
 
+  VLOG(2) << "Received remote command invalidation";
+
   if (!invalidation_service_enabled_)
     LOG(WARNING) << "Unexpected invalidation received.";
 
