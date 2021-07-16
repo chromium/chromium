@@ -133,16 +133,18 @@ class ContentSubresourceFilterThrottleManager
     return ruleset_handle_.get();
   }
 
-  // Returns whether |frame_host| is considered to be an ad.
-  bool IsFrameTaggedAsAd(content::RenderFrameHost* frame_host) const;
+  // Returns whether the identified frame is considered to be an ad.
+  bool IsFrameTaggedAsAd(int frame_tree_node_id) const;
+  // Returns whether |frame_host| is in a frame considered to be an ad.
+  bool IsRenderFrameHostTaggedAsAd(content::RenderFrameHost* frame_host) const;
 
-  // Returns whether the last navigation resource in |frame_host| was detected
-  // to be an ad. A null optional indicates there was no previous navigation or
-  // the last navigation was not evaluated by the subresource filter in
-  // |frame_host|. Load policy is determined by presence of the navigation url
-  // in the filter list.
+  // Returns whether the last navigation resource in the given frame was
+  // detected to be an ad. A null optional indicates there was no previous
+  // navigation or the last navigation was not evaluated by the subresource
+  // filter. Load policy is determined by presence of the navigation url in the
+  // filter list.
   absl::optional<LoadPolicy> LoadPolicyForLastCommittedNavigation(
-      content::RenderFrameHost* frame_host) const;
+      int frame_tree_node_id) const;
 
   // Called when the user has requested a reload of a page with
   // blocked ads (e.g., via an infobar).

@@ -188,10 +188,9 @@ class AdsPageLoadMetricsObserver
       const subresource_filter::mojom::ActivationState& activation_state)
       override;
 
-  void UpdateAdFrameData(FrameTreeNodeId ad_id,
+  void UpdateAdFrameData(content::NavigationHandle* navigation_handle,
                          bool is_adframe,
-                         bool should_ignored_detected_ad,
-                         content::RenderFrameHost* ad_host);
+                         bool should_ignored_detected_ad);
 
   // Gets the number of bytes that we may have not attributed to ad
   // resources due to the resource being reported as an ad late.
@@ -218,9 +217,10 @@ class AdsPageLoadMetricsObserver
   void RecordPerFrameHistogramsForHeavyAds(const FrameTreeData& ad_frame_data);
 
   // Checks to see if a resource is waiting for a navigation in the given
-  // RenderFrameHost to commit before it can be processed. If so, call
+  // frame to commit before it can be processed. If so, call
   // OnResourceDataUpdate for the delayed resource.
-  void ProcessOngoingNavigationResource(content::RenderFrameHost* rfh);
+  void ProcessOngoingNavigationResource(
+      content::NavigationHandle* navigation_handle);
 
   // Records whether an ad frame was ignored by the Restricted Navigation
   // AdTagging feature. For frames that are ignored, this is recorded when a

@@ -27,6 +27,7 @@
 #include "components/subresource_filter/core/common/common_features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -265,21 +266,26 @@ void ContentSubresourceFilterThrottleManager::DidFinishNavigation(
     return;
   }
 
-  int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
-
-  // Cannot get the RFH from |navigation_handle| if there's no committed load.
-  content::RenderFrameHost* frame_host =
-      navigation_handle->HasCommitted()
-          ? navigation_handle->GetRenderFrameHost()
-          : navigation_handle->GetWebContents()
-                ->UnsafeFindFrameByFrameTreeNodeId(frame_tree_node_id);
-  if (!frame_host) {
-    DCHECK(!navigation_handle->HasCommitted());
+  // Do nothing if the frame was destroyed.
+  if (navigation_handle->IsWaitingToCommit() &&
+      navigation_handle->GetRenderFrameHost()->GetLifecycleState() ==
+          content::RenderFrameHost::LifecycleState::kPendingDeletion) {
     return;
   }
 
+  content::RenderFrameHost* frame_host =
+      (navigation_handle->HasCommitted() ||
+       navigation_handle->IsWaitingToCommit())
+          ? navigation_handle->GetRenderFrameHost()
+          : content::RenderFrameHost::FromID(
+                navigation_handle->GetPreviousRenderFrameHostId());
+  if (!frame_host)
+    return;
+
   RecordExperimentalUmaHistogramsForNavigation(navigation_handle,
                                                passed_through_ready_to_commit);
+
+  const int frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
 
   // Do nothing if the navigation was uncommitted and this frame has had a
   // previous navigation. We will keep using the existing activation.
@@ -367,6 +373,7 @@ void ContentSubresourceFilterThrottleManager::
       navigation_handle->HasCommitted());
   blink::mojom::FilterListResult latest_filter_list_result =
       EnsureFrameAdEvidence(navigation_handle).latest_filter_list_result();
+  // TODO(1061899): Calculate this without using the WebContents.
   bool is_same_domain_to_main_frame =
       net::registry_controlled_domains::SameDomainOrHost(
           navigation_handle->GetURL(),
@@ -566,17 +573,22 @@ void ContentSubresourceFilterThrottleManager::MaybeAppendNavigationThrottles(
 }
 
 bool ContentSubresourceFilterThrottleManager::IsFrameTaggedAsAd(
+    int frame_tree_node_id) const {
+  return base::Contains(ad_frames_, frame_tree_node_id);
+}
+
+bool ContentSubresourceFilterThrottleManager::IsRenderFrameHostTaggedAsAd(
     content::RenderFrameHost* frame_host) const {
-  return frame_host &&
-         base::Contains(ad_frames_, frame_host->GetFrameTreeNodeId());
+  if (!frame_host)
+    return false;
+
+  return IsFrameTaggedAsAd(frame_host->GetFrameTreeNodeId());
 }
 
 absl::optional<LoadPolicy>
 ContentSubresourceFilterThrottleManager::LoadPolicyForLastCommittedNavigation(
-    content::RenderFrameHost* frame_host) const {
-  if (!frame_host)
-    return absl::nullopt;
-  auto it = navigation_load_policies_.find(frame_host->GetFrameTreeNodeId());
+    int frame_tree_node_id) const {
+  auto it = navigation_load_policies_.find(frame_tree_node_id);
   if (it == navigation_load_policies_.end())
     return absl::nullopt;
   return it->second;

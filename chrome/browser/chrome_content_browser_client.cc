@@ -5544,7 +5544,8 @@ void ChromeContentBrowserClient::AugmentNavigationDownloadPolicy(
     blink::NavigationDownloadPolicy* download_policy) {
   const auto* throttle_manager = subresource_filter::
       ContentSubresourceFilterThrottleManager::FromWebContents(web_contents);
-  if (throttle_manager && throttle_manager->IsFrameTaggedAsAd(frame_host)) {
+  if (throttle_manager &&
+      throttle_manager->IsRenderFrameHostTaggedAsAd(frame_host)) {
     download_policy->SetAllowed(blink::NavigationDownloadType::kAdFrame);
     if (!user_gesture) {
       if (base::FeatureList::IsEnabled(

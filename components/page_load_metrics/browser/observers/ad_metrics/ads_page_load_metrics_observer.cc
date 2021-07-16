@@ -33,6 +33,7 @@
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/global_request_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
@@ -88,17 +89,6 @@ namespace {
       hist_macro("PageLoad.Clients.Ads." suffix, value);            \
       break;                                                        \
   }
-
-// Finds the RenderFrameHost for the handle, possibly using the FrameTreeNode
-// ID directly if the the handle has not been committed.
-// NOTE: Unsafe with respect to security privileges.
-content::RenderFrameHost* FindFrameMaybeUnsafe(
-    content::NavigationHandle* handle) {
-  return handle->HasCommitted()
-             ? handle->GetRenderFrameHost()
-             : handle->GetWebContents()->UnsafeFindFrameByFrameTreeNodeId(
-                   handle->GetFrameTreeNodeId());
-}
 
 std::string GetHeavyAdReportMessage(const FrameTreeData& frame_data,
                                     bool will_unload_adframe) {
@@ -276,7 +266,7 @@ PageLoadMetricsObserver::ObservePolicy AdsPageLoadMetricsObserver::OnCommit(
       std::forward_as_tuple(navigation_handle->GetFrameTreeNodeId()),
       std::forward_as_tuple());
 
-  ProcessOngoingNavigationResource(navigation_handle->GetRenderFrameHost());
+  ProcessOngoingNavigationResource(navigation_handle);
 
   // If the frame is blocked by the subresource filter, we don't want to record
   // any AdsPageLoad metrics.
@@ -337,10 +327,10 @@ void AdsPageLoadMetricsObserver::OnCpuTimingUpdate(
 // Given an ad being triggered for a frame or navigation, get its FrameTreeData
 // and record it into the appropriate data structures.
 void AdsPageLoadMetricsObserver::UpdateAdFrameData(
-    FrameTreeNodeId ad_id,
+    content::NavigationHandle* navigation_handle,
     bool is_adframe,
-    bool should_ignore_detected_ad,
-    content::RenderFrameHost* ad_host) {
+    bool should_ignore_detected_ad) {
+  const FrameTreeNodeId ad_id = navigation_handle->GetFrameTreeNodeId();
   // If an existing subframe is navigating and it was an ad previously that
   // hasn't navigated yet, then we need to update it.
   const auto& id_and_data = ad_frames_data_.find(ad_id);
@@ -375,14 +365,14 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
 
     // As the frame has already navigated, we need to process the new navigation
     // resource in the frame.
-    ProcessOngoingNavigationResource(ad_host);
+    ProcessOngoingNavigationResource(navigation_handle);
     return;
   }
 
   // Determine who the parent frame's ad ancestor is.  If we don't know who it
   // is, return, such as with a frame from a previous navigation.
   content::RenderFrameHost* parent_frame_host =
-      ad_host ? ad_host->GetParent() : nullptr;
+      navigation_handle->GetParentFrame();
   const auto& parent_id_and_data =
       parent_frame_host
           ? ad_frames_data_.find(parent_frame_host->GetFrameTreeNodeId())
@@ -401,6 +391,15 @@ void AdsPageLoadMetricsObserver::UpdateAdFrameData(
   if (!ad_data && is_adframe && should_ignore_detected_ad) {
     RecordAdFrameIgnoredByRestrictedAdTagging(true);
   }
+
+  // NOTE: Frame look-up only used for determining cross-origin
+  // status for metrics, not granting security permissions.
+  content::RenderFrameHost* ad_host =
+      (navigation_handle->HasCommitted() ||
+       navigation_handle->IsWaitingToCommit())
+          ? navigation_handle->GetRenderFrameHost()
+          : content::RenderFrameHost::FromID(
+                navigation_handle->GetPreviousRenderFrameHostId());
 
   if (should_create_new_frame_data) {
     // Construct a new FrameTreeData to track this ad frame, and update it for
@@ -456,24 +455,20 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
       subresource_filter::ContentSubresourceFilterThrottleManager::
           FromWebContents(navigation_handle->GetWebContents());
   DCHECK(throttle_manager);
-  FrameTreeNodeId frame_tree_node_id = navigation_handle->GetFrameTreeNodeId();
 
-  // NOTE: Frame look-up only used for determining cross-origin status, not
-  // granting security permissions.
-  content::RenderFrameHost* frame_host =
-      FindFrameMaybeUnsafe(navigation_handle);
+  const bool is_adframe = throttle_manager->IsFrameTaggedAsAd(
+      navigation_handle->GetFrameTreeNodeId());
 
-  bool is_adframe = throttle_manager->IsFrameTaggedAsAd(frame_host);
-
-  // TODO(https://crbug.com): The following block is a hack to ignore certain
-  // frames that are detected by AdTagging. These frames are ignored
+  // TODO(https://crbug.com/1030325): The following block is a hack to ignore
+  // certain frames that are detected by AdTagging. These frames are ignored
   // specifically for ad metrics and for the heavy ad intervention. The frames
   // ignored here are still considered ads by the heavy ad intervention. This
   // logic should be moved into /subresource_filter/ and applied to all of ad
   // tagging, rather than being implemented in AdsPLMO.
   bool should_ignore_detected_ad = false;
   absl::optional<subresource_filter::LoadPolicy> load_policy =
-      throttle_manager->LoadPolicyForLastCommittedNavigation(frame_host);
+      throttle_manager->LoadPolicyForLastCommittedNavigation(
+          navigation_handle->GetFrameTreeNodeId());
 
   // Only un-tag frames as ads if the navigation has committed. This prevents
   // frames from being untagged that have an aborted navigation to allowlist
@@ -486,23 +481,27 @@ void AdsPageLoadMetricsObserver::OnDidFinishSubFrameNavigation(
     bool navigation_is_explicitly_allowed =
         *load_policy == subresource_filter::LoadPolicy::EXPLICITLY_ALLOW;
 
+    const GURL& last_committed_url =
+        navigation_handle->GetRenderFrameHost()->GetLastCommittedURL();
+    const GURL& main_frame_last_committed_url =
+        navigation_handle->GetRenderFrameHost()
+            ->GetMainFrame()
+            ->GetLastCommittedURL();
     // If a frame is detected to be an ad, but is same domain to the top frame,
     // and does not match a disallowed rule, ignore it.
     bool should_ignore_same_domain_ad =
         (*load_policy != subresource_filter::LoadPolicy::DISALLOW) &&
         (*load_policy != subresource_filter::LoadPolicy::WOULD_DISALLOW) &&
         net::registry_controlled_domains::SameDomainOrHost(
-            frame_host->GetLastCommittedURL(),
-            navigation_handle->GetWebContents()->GetLastCommittedURL(),
+            last_committed_url, main_frame_last_committed_url,
             net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
     should_ignore_detected_ad =
         navigation_is_explicitly_allowed || should_ignore_same_domain_ad;
   }
 
-  UpdateAdFrameData(frame_tree_node_id, is_adframe, should_ignore_detected_ad,
-                    frame_host);
+  UpdateAdFrameData(navigation_handle, is_adframe, should_ignore_detected_ad);
 
-  ProcessOngoingNavigationResource(frame_host);
+  ProcessOngoingNavigationResource(navigation_handle);
 }
 
 void AdsPageLoadMetricsObserver::FrameReceivedUserActivation(
@@ -1119,13 +1118,20 @@ void AdsPageLoadMetricsObserver::RecordPerFrameHistogramsForHeavyAds(
 }
 
 void AdsPageLoadMetricsObserver::ProcessOngoingNavigationResource(
-    content::RenderFrameHost* rfh) {
-  if (!rfh)
-    return;
-  const auto& frame_id_and_request =
-      ongoing_navigation_resources_.find(rfh->GetFrameTreeNodeId());
+    content::NavigationHandle* navigation_handle) {
+  const auto& frame_id_and_request = ongoing_navigation_resources_.find(
+      navigation_handle->GetFrameTreeNodeId());
   if (frame_id_and_request == ongoing_navigation_resources_.end())
     return;
+
+  // NOTE: Frame look-up is not for granting security permissions.
+  content::RenderFrameHost* rfh =
+      (navigation_handle->HasCommitted() ||
+       navigation_handle->IsWaitingToCommit())
+          ? navigation_handle->GetRenderFrameHost()
+          : content::RenderFrameHost::FromID(
+                navigation_handle->GetPreviousRenderFrameHostId());
+
   ProcessResourceForFrame(rfh, frame_id_and_request->second);
   ongoing_navigation_resources_.erase(frame_id_and_request);
 }

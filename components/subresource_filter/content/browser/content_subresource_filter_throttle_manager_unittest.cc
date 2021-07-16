@@ -1094,7 +1094,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   content::RenderFrameHost* subframe = CreateSubframeWithTestNavigation(
       GURL("https://www.example.com/allowed.html"), main_rfh());
 
-  EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+  EXPECT_FALSE(throttle_manager()->IsRenderFrameHostTaggedAsAd(subframe));
   throttle_manager()->OnSubframeWasCreatedByAdScript(subframe);
   throttle_manager()->OnFrameIsAdSubframe(subframe);
 
@@ -1104,7 +1104,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
             SimulateCommitAndGetResult(navigation_simulator()));
   subframe = navigation_simulator()->GetFinalRenderFrameHost();
   EXPECT_TRUE(subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(subframe));
   ExpectActivationSignalForFrame(subframe, true /* expect_activation */,
                                  true /* is_ad_subframe */);
 
@@ -1149,7 +1149,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(final_subframe);
   EXPECT_NE(initial_subframe, final_subframe);
 
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(final_subframe));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(final_subframe));
   ExpectActivationSignalForFrame(final_subframe, true /* expect_activation */,
                                  true /* is_ad_subframe */);
 }
@@ -1189,7 +1189,8 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   grandchild_frame = navigation_simulator()->GetFinalRenderFrameHost();
   ExpectActivationSignalForFrame(grandchild_frame, true /* expect_activation */,
                                  true /* is_ad_subframe */);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(grandchild_frame));
+  EXPECT_TRUE(
+      throttle_manager()->IsRenderFrameHostTaggedAsAd(grandchild_frame));
 }
 
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
@@ -1217,7 +1218,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   // But it should still be activated.
   ExpectActivationSignalForFrame(child, true /* expect_activation */,
                                  true /* is_ad_subframe */);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(child));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(child));
 
   // Create a subframe which is allowed as per ruleset but should still be
   // tagged as ad because of its parent.
@@ -1232,7 +1233,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(grandchild);
   ExpectActivationSignalForFrame(grandchild, true /* expect_activation */,
                                  true /* is_ad_subframe */);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(grandchild));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(grandchild));
 
   // Verify that a 2nd level nested frame should also be tagged.
   CreateSubframeWithTestNavigation(
@@ -1247,7 +1248,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(greatGrandchild);
   ExpectActivationSignalForFrame(greatGrandchild, true /* expect_activation */,
                                  true /* is_ad_subframe */);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(greatGrandchild));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(greatGrandchild));
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
 #if defined(OS_ANDROID)
@@ -1271,7 +1272,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(child);
   ExpectActivationSignalForFrame(child, true /* expect_activation */,
                                  false /* is_ad_subframe */);
-  EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(child));
+  EXPECT_FALSE(throttle_manager()->IsRenderFrameHostTaggedAsAd(child));
 
   // Create a subframe which is allowed as per ruleset and should not be tagged
   // as ad because its parent is not tagged as well.
@@ -1286,7 +1287,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   EXPECT_TRUE(grandchild);
   ExpectActivationSignalForFrame(grandchild, true /* expect_activation */,
                                  false /* is_ad_subframe */);
-  EXPECT_FALSE(throttle_manager()->IsFrameTaggedAsAd(grandchild));
+  EXPECT_FALSE(throttle_manager()->IsRenderFrameHostTaggedAsAd(grandchild));
 
   EXPECT_FALSE(ads_blocked_in_content_settings());
 #if defined(OS_ANDROID)
@@ -1352,7 +1353,7 @@ TEST_P(
     navigation_simulator()->Commit();
     subframe = navigation_simulator()->GetFinalRenderFrameHost();
     EXPECT_TRUE(subframe);
-    EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+    EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(subframe));
 
     // Navigate to an allowlisted URL to make it a 'restricted' navigation.
     base::HistogramTester tester;
@@ -1386,7 +1387,7 @@ TEST_P(ContentSubresourceFilterThrottleManagerTest,
   navigation_simulator()->Commit();
   subframe = navigation_simulator()->GetFinalRenderFrameHost();
   EXPECT_TRUE(subframe);
-  EXPECT_TRUE(throttle_manager()->IsFrameTaggedAsAd(subframe));
+  EXPECT_TRUE(throttle_manager()->IsRenderFrameHostTaggedAsAd(subframe));
 
   // Navigate to an allowlisted URL to make it a 'restricted' navigation.
   base::HistogramTester tester;
