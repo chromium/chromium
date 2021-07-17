@@ -100,14 +100,18 @@ TEST_F(SQLiteFeaturesTest, FTS3) {
 // prefix search, though the icu tokenizer would return it as two tokens {"foo",
 // "*"}.  Test that fts3 works correctly.
 TEST_F(SQLiteFeaturesTest, FTS3_Prefix) {
-  static const char kCreateSql[] =
-      "CREATE VIRTUAL TABLE foo USING fts3(x, tokenize icu)";
-  ASSERT_TRUE(db_.Execute(kCreateSql));
+  db_.Close();
+  sql::Database db({.enable_virtual_tables_discouraged = true});
+  ASSERT_TRUE(db.Open(db_path_));
 
-  ASSERT_TRUE(db_.Execute("INSERT INTO foo (x) VALUES ('test')"));
+  static constexpr char kCreateSql[] =
+      "CREATE VIRTUAL TABLE foo USING fts3(x, tokenize icu)";
+  ASSERT_TRUE(db.Execute(kCreateSql));
+
+  ASSERT_TRUE(db.Execute("INSERT INTO foo (x) VALUES ('test')"));
 
   EXPECT_EQ("test",
-            ExecuteWithResult(&db_, "SELECT x FROM foo WHERE x MATCH 'te*'"));
+            ExecuteWithResult(&db, "SELECT x FROM foo WHERE x MATCH 'te*'"));
 }
 
 // Verify that Chromium's SQLite is compiled with HAVE_USLEEP defined.  With

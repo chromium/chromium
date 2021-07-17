@@ -344,6 +344,10 @@ makes them very difficult to reason about and maintain. Furthermore, the virtual
 table implementations don't receive the same level of fuzzing coverage as the
 SQLite core.
 
+Access to virtual tables is disabled by default for SQLite databases opened with
+Chrome's `sql::Database` infrastructure. This is intended to steer feature
+developers away from the discouraged feature.
+
 Chrome's SQLite build has virtual table functionality reduced to the minimum
 needed to support [FTS3](https://www.sqlite.org/fts3.html) in WebSQL, and an
 internal feature.

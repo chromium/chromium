@@ -1413,6 +1413,45 @@ TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
   EXPECT_TRUE(db_->Execute("DROP TRIGGER IF EXISTS trigger"));
 }
 
+TEST_P(SQLDatabaseTest, VirtualTablesDisabledByDefault) {
+  EXPECT_FALSE(GetDBOptions().enable_virtual_tables_discouraged);
+
+  // sqlite3_prepare_v3() currently only disables accessing virtual tables.
+  // Schema operations on virtual tables are still allowed.
+  ASSERT_TRUE(db_->Execute(
+      "CREATE VIRTUAL TABLE fts_table USING fts3(data_table, content TEXT)"));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    Statement select_from_vtable(db_->GetUniqueStatement(
+        "SELECT content FROM fts_table WHERE content MATCH 'pattern'"));
+    EXPECT_FALSE(select_from_vtable.is_valid());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  // sqlite3_prepare_v3() currently only disables accessing virtual tables.
+  // Schema operations on virtual tables are still allowed.
+  EXPECT_TRUE(db_->Execute("DROP TABLE IF EXISTS fts_table"));
+}
+
+TEST_P(SQLDatabaseTest, VirtualTablesEnabled) {
+  DatabaseOptions options = GetDBOptions();
+  options.enable_virtual_tables_discouraged = true;
+  db_ = std::make_unique<Database>(options);
+  ASSERT_TRUE(db_->Open(db_path_));
+
+  ASSERT_TRUE(db_->Execute(
+      "CREATE VIRTUAL TABLE fts_table USING fts3(data_table, content TEXT)"));
+
+  Statement select_from_vtable(db_->GetUniqueStatement(
+      "SELECT content FROM fts_table WHERE content MATCH 'pattern'"));
+  ASSERT_TRUE(select_from_vtable.is_valid());
+  EXPECT_FALSE(select_from_vtable.Step());
+
+  EXPECT_TRUE(db_->Execute("DROP TABLE IF EXISTS fts_table"));
+}
+
 class SQLDatabaseTestExclusiveMode : public testing::Test,
                                      public testing::WithParamInterface<bool> {
  public:

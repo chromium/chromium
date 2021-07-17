@@ -68,7 +68,12 @@ void Recovery::Rollback(std::unique_ptr<Recovery> r) {
 
 Recovery::Recovery(Database* connection)
     : db_(connection),
-      recover_db_({.exclusive_locking = false, .page_size = db_->page_size()}) {
+      recover_db_({
+          .exclusive_locking = false,
+          .page_size = db_->page_size(),
+          // The interface to the recovery module is a virtual table.
+          .enable_virtual_tables_discouraged = true,
+      }) {
   // Files with I/O errors cannot be safely memory-mapped.
   recover_db_.set_mmap_disabled();
 

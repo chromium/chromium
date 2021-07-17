@@ -9,6 +9,7 @@
 
 #include "base/files/scoped_temp_dir.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "sql/test/database_test_peer.h"
@@ -34,7 +35,13 @@ class RecoverModuleTest : public testing::Test {
 
  protected:
   base::ScopedTempDir temp_dir_;
-  sql::Database db_;
+  sql::Database db_{sql::DatabaseOptions{
+#if defined(OS_FUCHSIA)
+      // TODO(pwnall): Figure out the vfs_wrapper_fuchsia.cc DCHECK.
+      .exclusive_locking = false,
+#endif  // defined(OS_FUCHSIA)
+      .enable_virtual_tables_discouraged = true,
+  }};
 };
 
 TEST_F(RecoverModuleTest, CreateVtable) {

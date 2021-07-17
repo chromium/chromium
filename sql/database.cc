@@ -742,6 +742,11 @@ size_t Database::GetAppropriateMmapSize() {
   return mmap_ofs;
 }
 
+int Database::SqlitePrepareFlags() const {
+  return options_.enable_virtual_tables_discouraged ? 0
+                                                    : SQLITE_PREPARE_NO_VTAB;
+}
+
 void Database::TrimMemory() {
   TRACE_EVENT0("sql", "Database::TrimMemory");
 
@@ -781,6 +786,8 @@ bool Database::Raze() {
       .exclusive_locking = true,
       .page_size = options_.page_size,
       .cache_size = 0,
+      .enable_virtual_tables_discouraged =
+          options_.enable_virtual_tables_discouraged,
   });
   if (!null_db.OpenInMemory()) {
     DLOG(DCHECK) << "Unable to open in-memory database.";
@@ -1120,7 +1127,7 @@ int Database::ExecuteAndReturnErrorCode(const char* sql) {
   while ((rc == SQLITE_OK) && *sql) {
     sqlite3_stmt* sqlite_statement;
     const char* leftover_sql;
-    rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+    rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
                             &sqlite_statement, &leftover_sql);
     // Stop if an error is encountered.
     if (rc != SQLITE_OK)
@@ -1248,7 +1255,7 @@ scoped_refptr<Database::StatementRef> Database::GetStatementImpl(
   // TODO(pwnall): Cached statements (but not unique statements) should be
   //               prepared with prepFlags set to SQLITE_PREPARE_PERSISTENT.
   sqlite3_stmt* sqlite_statement;
-  int rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+  int rc = sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
                               &sqlite_statement, /* pzTail= */ nullptr);
   if (rc != SQLITE_OK) {
     OnSqliteError(rc, nullptr, sql);
@@ -1305,7 +1312,7 @@ bool Database::IsSQLValid(const char* sql) {
   }
 
   sqlite3_stmt* sqlite_statement = nullptr;
-  if (sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, /* prepFlags= */ 0,
+  if (sqlite3_prepare_v3(db_, sql, /* nByte= */ -1, SqlitePrepareFlags(),
                          &sqlite_statement,
                          /* pzTail= */ nullptr) != SQLITE_OK) {
     return false;

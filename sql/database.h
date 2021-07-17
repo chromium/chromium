@@ -141,6 +141,15 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // Like any other schema change, changing the mmap status invalidates all
   // pre-compiled SQL statements.
   bool mmap_alt_status_discouraged = false;
+
+  // If true, enables virtual tables (a discouraged feature) for this database.
+  //
+  // The use of views is discouraged for Chrome code. See README.md for details
+  // and recommended replacements.
+  //
+  // If this option is false, CREATE VIRTUAL TABLE and DROP VIRTUAL TABLE
+  // succeed, but statements targeting virtual tables fail.
+  bool enable_virtual_tables_discouraged = false;
 };
 
 // Handle to an open SQLite database.
@@ -717,6 +726,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // Helpers for GetAppropriateMmapSize().
   bool GetMmapAltStatus(int64_t* status);
   bool SetMmapAltStatus(int64_t status);
+
+  // sqlite3_prepare_v3() flags for this database.
+  int SqlitePrepareFlags() const;
 
   // The actual sqlite database. Will be null before Init has been called or if
   // Init resulted in an error.
