@@ -44,9 +44,10 @@ import org.chromium.url.JUnitTestGURLs;
  * Tests for {@link LinkToTextCoordinator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
 public class LinkToTextCoordinatorTest {
     // Mock class for |LinkToTextCoordinator| that disables |startRequestSelector| call.
-    private class MockLinkToTextCoordinator extends LinkToTextCoordinator {
+    private static class MockLinkToTextCoordinator extends LinkToTextCoordinator {
         public MockLinkToTextCoordinator(Context context, Tab tab,
                 ChromeOptionShareCallback chromeOptionShareCallback, String visibleUrl,
                 String selectedText) {
@@ -81,7 +82,7 @@ public class LinkToTextCoordinatorTest {
     @Mock
     private DomDistillerUrlUtils.Natives mDistillerUrlUtilsJniMock;
 
-    private Activity mAcivity;
+    private Activity mActivity;
     private static final String SELECTED_TEXT = "selection";
     private static final String VISIBLE_URL = JUnitTestGURLs.EXAMPLE_URL;
     private static final String AMP_URL = JUnitTestGURLs.AMP_URL;
@@ -94,7 +95,7 @@ public class LinkToTextCoordinatorTest {
 
     @Before
     public void setUpTest() {
-        mAcivity = Robolectric.setupActivity(Activity.class);
+        mActivity = Robolectric.setupActivity(Activity.class);
         MockitoAnnotations.initMocks(this);
         jniMocker.mock(DomDistillerUrlUtilsJni.TEST_HOOKS, mDistillerUrlUtilsJniMock);
         when(mDistillerUrlUtilsJniMock.getOriginalUrlFromDistillerUrl(any(String.class)))
@@ -112,7 +113,7 @@ public class LinkToTextCoordinatorTest {
         String selector = "selector";
         String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
     }
 
@@ -122,7 +123,7 @@ public class LinkToTextCoordinatorTest {
         String selector = "selector";
         String expectedUrlToShare = VISIBLE_URL + "#:~:text=selector";
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL + "#elementid", SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL + "#elementid", SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
     }
 
@@ -132,7 +133,7 @@ public class LinkToTextCoordinatorTest {
         String selector = "";
         String expectedUrlToShare = VISIBLE_URL;
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         Assert.assertEquals(expectedUrlToShare, coordinator.getUrlToShare(selector));
     }
 
@@ -141,7 +142,7 @@ public class LinkToTextCoordinatorTest {
     @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
         coordinator.onSelectorReady("selector");
         verify(mShareCallback).showThirdPartyShareSheet(any(), any(), anyLong());
@@ -152,7 +153,7 @@ public class LinkToTextCoordinatorTest {
     @Features.DisableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest_EmptySelector() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
         coordinator.onSelectorReady("");
         verify(mShareCallback).showThirdPartyShareSheet(any(), any(), anyLong());
@@ -163,7 +164,7 @@ public class LinkToTextCoordinatorTest {
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest_PreemptiveLinkToTextGeneration() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
         coordinator.onSelectorReady("selector");
         verify(mShareCallback).showShareSheet(any(), any(), anyLong());
@@ -174,7 +175,7 @@ public class LinkToTextCoordinatorTest {
     @Features.EnableFeatures({ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION})
     public void onSelectorReadyTest_EmptySelector_PreemptiveLinkToTextGeneration() {
         MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
-                mAcivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
+                mActivity, mTab, mShareCallback, VISIBLE_URL, SELECTED_TEXT);
         // OnSelectorReady should call back the share sheet.
         coordinator.onSelectorReady("");
         verify(mShareCallback).showShareSheet(any(), any(), anyLong());
