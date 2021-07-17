@@ -78,13 +78,11 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingTable) {
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
-TEST_F(RecoverModuleTest, DISABLED_CreateVtableFailsOnMissingDatabase) {
-  // TODO(pwnall): Enable test after removing incorrect DLOG(FATAL) from
-  //               sql::Statement::Execute().
+TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingDatabase) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_ERROR);
+    error_expecter.ExpectError(SQLITE_CORRUPT);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(db.backing, t TEXT)"));
@@ -102,13 +100,11 @@ TEST_F(RecoverModuleTest, CreateVtableFailsOnTableWithInvalidQualifier) {
     EXPECT_TRUE(error_expecter.SawExpectedErrors());
   }
 }
-TEST_F(RecoverModuleTest, DISABLED_CreateVtableFailsOnMissingTableName) {
-  // TODO(pwnall): Enable test after removing incorrect DLOG(FATAL) from
-  //               sql::Statement::Execute().
+TEST_F(RecoverModuleTest, CreateVtableFailsOnMissingTableName) {
   ASSERT_TRUE(db_.Execute("CREATE TABLE backing(t TEXT)"));
   {
     sql::test::ScopedErrorExpecter error_expecter;
-    error_expecter.ExpectError(SQLITE_ERROR);
+    error_expecter.ExpectError(SQLITE_MISUSE);
     EXPECT_FALSE(
         db_.Execute("CREATE VIRTUAL TABLE temp.recover_backing "
                     "USING recover(main., t TEXT)"));
