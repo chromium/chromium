@@ -14,7 +14,6 @@
 #include "base/strings/stringprintf.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/accessibility/ax_common.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_serializable_tree.h"
 
@@ -339,10 +338,9 @@ TEST_F(AXTreeSerializerTest, MaximumSerializedNodeCount) {
   ASSERT_EQ(5u, update.nodes.size());
 }
 
-#if !defined(AX_FAIL_FAST_BUILD)
-// If duplicate ids are encountered, it returns an error and the next
-// update will re-send the entire tree.
-TEST_F(AXTreeSerializerTest, DuplicateIdsReturnsErrorAndFlushes) {
+#if defined(GTEST_HAS_DEATH_TEST)
+// If duplicate ids are encountered, it crashes via CHECK(false).
+TEST_F(AXTreeSerializerTest, DuplicateIdsCrashes) {
   // (1 (2 (3 (4) 5)))
   treedata0_.root_id = 1;
   treedata0_.nodes.resize(5);
@@ -381,18 +379,16 @@ TEST_F(AXTreeSerializerTest, DuplicateIdsReturnsErrorAndFlushes) {
   tree1_->GetFromId(2)->SwapChildren(&node2_children);
 
   AXTreeUpdate update;
-  ASSERT_FALSE(serializer_->SerializeChanges(tree1_->GetFromId(7), &update));
+  EXPECT_DEATH(serializer_->SerializeChanges(tree1_->GetFromId(7), &update),
+               "");
 
-  // Swap it back, fixing the tree.
+  // Swap it back, fixing the tree. Given the above crash, this is just to
+  // ensure the test can clean up properly and avoid a different failure.
   tree1_->GetFromId(2)->SwapChildren(&node2_children);
-
-  // Now try to serialize again. We should get the whole tree because the
-  // previous failed call to SerializeChanges reset it.
   update = AXTreeUpdate();
-  serializer_->SerializeChanges(tree1_->GetFromId(7), &update);
-  ASSERT_EQ(5u, update.nodes.size());
+  EXPECT_TRUE(serializer_->SerializeChanges(tree1_->GetFromId(7), &update));
 }
-#endif  // !defined(AX_FAIL_FAST_BUILD)
+#endif
 
 // If a tree serializer is reset, that means it doesn't know about
 // the state of the client tree anymore. The safest thing to do in

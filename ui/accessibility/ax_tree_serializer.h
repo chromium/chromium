@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/debug/crash_logging.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/time/time.h"
 #include "base/timer/elapsed_timer.h"
@@ -424,10 +423,7 @@ ClientTreeNode* AXTreeSerializer<AXSourceNode>::GetClientTreeNodeParent(
         "ax_ts_missing_parent_err", base::debug::CrashKeySize::Size256);
     base::debug::SetCrashKeyString(missing_parent_err,
                                    error.str().substr(0, 230));
-#if defined(AX_FAIL_FAST_BUILD)
     CHECK(false) << error.str();
-#endif  // defined(AX_FAIL_FAST_BUILD)
-    base::debug::DumpWithoutCrashing();
   }
   return parent;
 }
@@ -633,7 +629,6 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
 
     ClientTreeNode* client_child = ClientTreeNodeById(new_child_id);
     if (client_child && GetClientTreeNodeParent(client_child) != client_node) {
-#if defined(AX_FAIL_FAST_BUILD)
       // This condition leads to performance problems. It will
       // also reset virtual buffers, causing users to lose their place.
       std::ostringstream error;
@@ -647,16 +642,6 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
           "ax_ts_reparent_err", base::debug::CrashKeySize::Size256);
       base::debug::SetCrashKeyString(reparent_err, error.str().substr(0, 230));
       CHECK(false) << error.str();
-#endif  // defined(AX_FAIL_FAST_BUILD)
-      static bool has_sent_reparent_err = false;
-      if (!has_sent_reparent_err) {
-        std::srand(std::time(nullptr));  // use current time as seed.
-        if (std::rand() % 50 == 0) {     // Roughly 2% of the time.
-          base::debug::DumpWithoutCrashing();
-          has_sent_reparent_err = true;  // Only send once.
-        }
-      }
-      Reset();
       return false;
     }
   }
@@ -749,18 +734,7 @@ bool AXTreeSerializer<AXSourceNode>::SerializeChangedNodes(
         static auto* dupe_id_err = base::debug::AllocateCrashKeyString(
             "ax_ts_dupe_id_err", base::debug::CrashKeySize::Size256);
         base::debug::SetCrashKeyString(dupe_id_err, error.str().substr(0, 230));
-#if defined(AX_FAIL_FAST_BUILD)
         CHECK(false) << error.str();
-#endif  // defined(AX_FAIL_FAST_BUILD)
-        static bool has_sent_dupe_id_err = false;
-        if (!has_sent_dupe_id_err) {
-          std::srand(std::time(nullptr));  // use current time as seed.
-          if (std::rand() % 50 == 0) {     // Roughly 2% of the time.
-            base::debug::DumpWithoutCrashing();
-            has_sent_dupe_id_err = true;  // Only send once.
-          }
-        }
-        Reset();
         return false;
       }
       client_id_map_[child_id] = new_child;
