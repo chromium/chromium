@@ -107,7 +107,7 @@ class OmniboxResultSelectionIndicator : public views::View {
   void OnThemeChanged() override {
     views::View::OnThemeChanged();
 
-    color_ = result_view_->GetColor(OmniboxPart::RESULTS_FOCUS_BAR);
+    color_ = result_view_->GetColor(OmniboxPart::RESULTS_SELECTION_INDICATOR);
   }
 
  private:
@@ -161,12 +161,10 @@ OmniboxResultView::OmniboxResultView(
       std::make_unique<views::FillLayout>());
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(suggestion_container_);
 
-  if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
-    // TODO(olesiamarukhno): Consider making it a decoration instead of separate
-    // view (painting it in a layer).
-    selection_indicator_ = suggestion_container_->AddChildView(
-        std::make_unique<OmniboxResultSelectionIndicator>(this));
-  }
+  // TODO(olesiamarukhno): Consider making it a decoration instead of separate
+  // view (painting it in a layer).
+  selection_indicator_ = suggestion_container_->AddChildView(
+      std::make_unique<OmniboxResultSelectionIndicator>(this));
 
   views::View* suggestion_button_container =
       suggestion_container_->AddChildView(std::make_unique<views::View>());
@@ -354,14 +352,12 @@ void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
   button_row_->OnOmniboxBackgroundChange(GetOmniboxColor(
       GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND, GetThemeState()));
 
-  if (OmniboxFieldTrial::IsRefinedFocusStateEnabled()) {
-    // The focus bar indicates when the suggestion is focused. Do not show the
-    // focus bar if an auxiliary button is selected.
-    selection_indicator_->SetVisible(
-        GetMatchSelected() &&
-        popup_contents_view_->model()->selected_line_state() ==
-            OmniboxPopupModel::NORMAL);
-  }
+  // The selection indicator indicates when the suggestion is focused. Do not
+  // show the selection indicator if an auxiliary button is selected.
+  selection_indicator_->SetVisible(
+      GetMatchSelected() &&
+      popup_contents_view_->model()->selected_line_state() ==
+          OmniboxPopupModel::NORMAL);
 }
 
 void OmniboxResultView::OnSelectionStateChanged() {

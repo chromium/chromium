@@ -636,9 +636,7 @@ absl::optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
         {{dark ? gfx::kGoogleBlue050 : gfx::kGoogleBlue900, false}});
   };
   const auto results_bg_selected_color = [&]() {
-    return blend_toward_max_contrast(
-        results_bg_color(),
-        OmniboxFieldTrial::IsRefinedFocusStateEnabled() ? 0x1A : 0x29);
+    return blend_toward_max_contrast(results_bg_color(), 0x1A);
   };
   const auto blend_with_clamped_contrast = [&](OmniboxColor bg) {
     return blend_for_min_contrast(fg, fg, blend_for_min_contrast(bg, bg));
@@ -680,7 +678,7 @@ absl::optional<ThemeHelper::OmniboxColor> ThemeHelper::GetOmniboxColorImpl(
       return url_color(results_bg_hovered_color());
     case TP::COLOR_OMNIBOX_RESULTS_URL_SELECTED:
       return url_color(results_bg_selected_color());
-    case TP::COLOR_OMNIBOX_RESULTS_FOCUS_BAR:
+    case TP::COLOR_OMNIBOX_RESULTS_SELECTION_INDICATOR:
       return {{dark ? gfx::kGoogleBlue300 : gfx::kGoogleBlue600, false}};
     case TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER:
       return blend_toward_max_contrast(bg, gfx::kGoogleGreyAlpha400);

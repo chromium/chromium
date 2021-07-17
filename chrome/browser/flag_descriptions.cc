@@ -3831,10 +3831,6 @@ const char kOmniboxKeywordSearchButtonDescription[] =
     "Enable the omnibox keyword search button which offers a way to search "
     "on specific sites from the omnibox.";
 
-const char kOmniboxRefinedFocusStateName[] = "Omnibox refined focus state UI";
-const char kOmniboxRefinedFocusStateDescription[] =
-    "Enables new changes to the UI indicating focus and hover states.";
-
 const char kOmniboxShortBookmarkSuggestionsName[] =
     "Omnibox short bookmark suggestions";
 const char kOmniboxShortBookmarkSuggestionsDescription[] =

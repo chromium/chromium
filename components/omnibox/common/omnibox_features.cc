@@ -276,10 +276,6 @@ const base::Feature kOmniboxPedalsTranslationConsole{
 const base::Feature kOmniboxKeywordSearchButton{
     "OmniboxKeywordSearchButton", enabled_by_default_desktop_only};
 
-// Enables new UI changes indicating focus and hover states.
-const base::Feature kOmniboxRefinedFocusState{"OmniboxRefinedFocusState",
-                                              enabled_by_default_desktop_only};
-
 // If enabled, uses WebUI to render the omnibox suggestions popup, similar to
 // how the NTP "realbox" is implemented.
 const base::Feature kWebUIOmniboxPopup{"WebUIOmniboxPopup",

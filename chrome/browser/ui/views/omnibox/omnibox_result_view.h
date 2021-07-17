@@ -146,8 +146,7 @@ class OmniboxResultView : public views::View,
   OmniboxMatchCellView* suggestion_view_;  // The leading (or left) view.
   OmniboxMatchCellView* keyword_view_;     // The trailing (or right) view.
 
-  // The blue bar used to indicate selection. This is currently only used if
-  // omnibox-refined-focus-state flag is enabled.
+  // The blue bar used to indicate selection.
   OmniboxResultSelectionIndicator* selection_indicator_ = nullptr;
 
   // The "X" button at the end of the match cell, used to remove suggestions.

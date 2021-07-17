@@ -2195,9 +2195,6 @@ extern const char kOmniboxPedalsDefaultIconColoredDescription[];
 extern const char kOmniboxKeywordSearchButtonName[];
 extern const char kOmniboxKeywordSearchButtonDescription[];
 
-extern const char kOmniboxRefinedFocusStateName[];
-extern const char kOmniboxRefinedFocusStateDescription[];
-
 extern const char kSCTAuditingName[];
 extern const char kSCTAuditingDescription[];
 

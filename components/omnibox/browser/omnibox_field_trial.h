@@ -383,9 +383,6 @@ bool IsKeywordSearchButtonEnabled();
 // assortment of keyword mode experiments.
 bool IsExperimentalKeywordModeEnabled();
 
-// Returns true if the new focus UI is enabled.
-bool IsRefinedFocusStateEnabled();
-
 // On Device Head Suggestions feature and its helper functions.
 bool IsOnDeviceHeadSuggestEnabledForIncognito();
 bool IsOnDeviceHeadSuggestEnabledForNonIncognito();

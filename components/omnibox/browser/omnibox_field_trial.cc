@@ -633,10 +633,6 @@ bool OmniboxFieldTrial::IsExperimentalKeywordModeEnabled() {
   return base::FeatureList::IsEnabled(omnibox::kExperimentalKeywordMode);
 }
 
-bool OmniboxFieldTrial::IsRefinedFocusStateEnabled() {
-  return base::FeatureList::IsEnabled(omnibox::kOmniboxRefinedFocusState);
-}
-
 bool OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito() {
   return base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProviderIncognito);
 }

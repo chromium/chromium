@@ -4206,11 +4206,6 @@
     "expiry_milestone": 95
   },
   {
-    "name": "omnibox-refined-focus-state",
-    "owners": [ "yoangela", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "omnibox-rich-autocompletion",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
     "expiry_milestone": 95
