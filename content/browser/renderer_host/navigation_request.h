@@ -1422,7 +1422,13 @@ class CONTENT_EXPORT NavigationRequest
   bool ShouldRenderFallbackContentForResponse(
       const net::HttpResponseHeaders& response_head) const;
 
+  // Whether this is a same-URL navigation that should replace the current entry
+  // or not. Called when the navigation just started.
   bool ShouldReplaceCurrentEntryForSameUrlNavigation() const;
+
+  // Whether a failed navigation should replace the current entry or not. Called
+  // when an error page is about to be committed.
+  bool ShouldReplaceCurrentEntryForFailedNavigation() const;
 
   // Calculates the origin that this NavigationRequest may commit. See also the
   // comment of GetOriginToCommit(). Performs calculation without information

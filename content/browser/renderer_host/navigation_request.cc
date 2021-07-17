@@ -3998,6 +3998,9 @@ void NavigationRequest::CommitErrorPage(
 
   UpdateCommitNavigationParamsHistory();
 
+  common_params_->should_replace_current_entry =
+      ShouldReplaceCurrentEntryForFailedNavigation();
+
   // Error pages commit in an opaque origin in the renderer process. If this
   // NavigationRequest resulted in committing an error page, set
   // |origin_to_commit| to an opaque origin that has precursor information
@@ -6723,6 +6726,7 @@ bool NavigationRequest::ShouldRenderFallbackContentForResponse(
 
 // https://html.spec.whatwg.org/multipage/browsing-the-web.html#navigating-across-documents:hh-replace
 bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
+  DCHECK_LE(state_, WILL_START_NAVIGATION);
   // Not a same-url navigation. Note that this is comparing against the last
   // history URL since this is what was used in the renderer check that was
   // moved here. This means for error pages we will compare against the URL
@@ -6763,6 +6767,41 @@ bool NavigationRequest::ShouldReplaceCurrentEntryForSameUrlNavigation() const {
 
   // Otherwise, replace current entry.
   return true;
+}
+
+bool NavigationRequest::ShouldReplaceCurrentEntryForFailedNavigation() const {
+  DCHECK(state_ == CANCELING || state_ == WILL_FAIL_REQUEST);
+
+  if (common_params_->should_replace_current_entry)
+    return true;
+
+  // Never replace if there is no NavigationEntry to replace.
+  if (!frame_tree_node_->navigator().controller().GetEntryCount())
+    return false;
+
+  auto page_state =
+      blink::PageState::CreateFromEncodedData(commit_params_->page_state);
+  // Failed history navigations with valid PageState should not do replacement.
+  if (page_state.IsValid())
+    return false;
+
+  bool is_reload_or_history =
+      NavigationTypeUtils::IsReload(common_params_->navigation_type) ||
+      NavigationTypeUtils::IsHistory(common_params_->navigation_type);
+  // Otherwise, these navigations should do replacement:
+  // - Failed history/reloads with invalid PageState (e.g. same-URL navigations
+  //   that got converted to a reload).
+  // - Same-URL navigations. Note that even though we had a same-URL check
+  //   earlier in the navigation's lifetime (which would convert same-URL
+  //   navigations to reload or replacement), those compare against the initial
+  //   URL instead of the final URL, which is what we're using here. Also, this
+  //   is using the "loading URL", since that is the URL that was used in the
+  //   renderer before we moved the replacement conversion here.
+  // TODO(https://crbug.com/1188956): Reconsider whether these two cases should
+  // do replacement or not, since we're just preserving old behavior here.
+  return is_reload_or_history ||
+         (common_params_->url == frame_tree_node_->current_frame_host()
+                                     ->GetLastLoadingURLInRenderer());
 }
 
 void NavigationRequest::RenderFallbackContentForObjectTag() {

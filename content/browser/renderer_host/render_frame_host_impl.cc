@@ -1026,29 +1026,6 @@ GURL GetLastHistoryURL(
   return params.url;
 }
 
-// Returns the "loading" URL given the last committed URL and the last document
-// URL. This tries to replicate RenderFrameImpl::GetLoadingUrl(), and is used
-// to simulate calculations done in the renderer (e.g. URL comparisons to
-// determine the navigation type) on the browser side.
-const GURL& GetLastDocumentLoadingURL(
-    bool loading_url_for_last_document_is_data_url,
-    bool last_document_is_error_page,
-    const GURL& last_committed_url,
-    const GURL& last_document_url) {
-  // Handle some special cases:
-  // - The "loading URL" for an error page commit is the URL that it failed to
-  // load. This will be retained as long as the document stays the same.
-  // - For some loadDataWithBaseURL() navigations where the renderer decides to
-  // return CommitNavigationParams's URL (the data: URL) instead of the document
-  // URL (which might be set to the base URL), the "loading URL" will be the
-  // last committed URL. This will also be retained as long as the document
-  // stays the same.
-  if (last_document_is_error_page || loading_url_for_last_document_is_data_url)
-    return last_committed_url;
-  // Otherwise, return the last document URL.
-  return last_document_url;
-}
-
 // Whether the navigation went through the special path for loadDataWithBaseURL
 // navigations that sets the "loading URL" to the data: URL used to commit,
 // instead of defaulting the "loading URL" to the document URL (which in most
@@ -2113,6 +2090,22 @@ const GURL& RenderFrameHostImpl::GetLastCommittedURL() {
 
 const url::Origin& RenderFrameHostImpl::GetLastCommittedOrigin() {
   return last_committed_origin_;
+}
+
+const GURL& RenderFrameHostImpl::GetLastLoadingURLInRenderer() const {
+  // Handle some special cases:
+  // - The "loading URL" for an error page commit is the URL that it failed to
+  // load. This will be retained as long as the document stays the same.
+  // - For some loadDataWithBaseURL() navigations where the renderer decides to
+  // return CommitNavigationParams's URL (the data: URL) instead of the document
+  // URL (which might be set to the base URL), the "loading URL" will be the
+  // last committed URL. This will also be retained as long as the document
+  // stays the same.
+  if (is_error_page_ || renderer_url_info_.loading_url_for_document_is_data_url)
+    return last_committed_url_;
+  // Otherwise, return the last history URL (which will fall back to the
+  // document URL if it's the same).
+  return renderer_url_info_.last_history_url;
 }
 
 const net::NetworkIsolationKey& RenderFrameHostImpl::GetNetworkIsolationKey() {
@@ -10865,8 +10858,7 @@ int CalculateHTTPStatusCode(NavigationRequest* request,
 bool CalculateShouldReplaceCurrentEntry(
     NavigationRequest* request,
     const mojom::DidCommitSameDocumentNavigationParamsPtr same_document_params,
-    FrameTreeNode* node,
-    const GURL& previous_loading_url) {
+    FrameTreeNode* node) {
   // We want to predict the value of DidCommitProvisionalLoadParams'
   // should_replace_current_entry. We use the value from CommonNavigationParams
   // to start off. This is what the browser sent the renderer at commit time,
@@ -10940,16 +10932,6 @@ bool CalculateShouldReplaceCurrentEntry(
     // handled.
     result |= will_be_classified_as_back_forward_navigation;
   } else {
-    if (is_error_page) {
-      // For error page commits: reloads, history, and same-url navigations
-      // (comparing the last "loading URL" with the commit URL)  will
-      // result in replacement if the navigation doesn't have a valid
-      // PageState. See RenderFrameImpl::CommitFailedNavigation().
-      result |=
-          !has_valid_page_state && (is_reload || is_history ||
-                                    previous_loading_url == request->GetURL());
-    }
-
     // Simulate FrameLoader::DetermineFrameLoadType()'s handling of
     // navigations after the subframe's initial empty document.
     if (!will_be_classified_as_back_forward_navigation && !is_reload) {
@@ -11132,12 +11114,8 @@ void RenderFrameHostImpl::
       (params.gesture == NavigationGesture::NavigationGestureUser);
 
   const bool browser_should_replace_current_entry =
-      CalculateShouldReplaceCurrentEntry(
-          request, same_document_params.Clone(), frame_tree_node_,
-          GetLastDocumentLoadingURL(
-              renderer_url_info_.loading_url_for_document_is_data_url,
-              is_error_page_, last_committed_url_,
-              renderer_url_info_.last_document_url));
+      CalculateShouldReplaceCurrentEntry(request, same_document_params.Clone(),
+                                         frame_tree_node_);
 
   const GURL browser_url = CalculateLoadingURL(
       request, params, renderer_url_info_, is_error_page_, last_committed_url_);

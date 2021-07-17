@@ -597,6 +597,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
     return renderer_url_info_.last_history_url;
   }
 
+  // Returns the "loading" URL in the renderer. This tries to replicate
+  // RenderFrameImpl::GetLoadingUrl(), and should only be used to preserve
+  // calculations that were previously done in the renderer but got moved to
+  // the browser (e.g. URL comparisons to determine if a navigation should do
+  // a replacement or not).
+  const GURL& GetLastLoadingURLInRenderer() const;
+
   // Saves the URLs and other URL-related information used in the renderer.
   // These values can be used to know the current state of URLs in the renderer.
   // Currently these values are used to simulate calculations in the renderer

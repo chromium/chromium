@@ -3011,24 +3011,6 @@ void RenderFrameImpl::CommitFailedNavigation(
     NotifyObserversOfFailedProvisionalLoad();
   }
 
-  // Replace the current history entry in reloads, and loads of the same url.
-  // This corresponds to Blink's notion of a standard commit.
-  // Also replace the current history entry if the browser asked for it
-  // specifically.
-  // TODO(clamy): see if initial commits in subframes should be handled
-  // separately.
-  bool is_reload_or_history =
-      NavigationTypeUtils::IsReload(common_params->navigation_type) ||
-      NavigationTypeUtils::IsHistory(common_params->navigation_type);
-  bool replace = is_reload_or_history ||
-                 common_params->url == GetLoadingUrl() ||
-                 common_params->should_replace_current_entry;
-  std::unique_ptr<blink::WebHistoryEntry> history_entry;
-  auto page_state =
-      blink::PageState::CreateFromEncodedData(commit_params->page_state);
-  if (page_state.IsValid())
-    history_entry = PageStateToHistoryEntry(page_state);
-
   std::string error_html;
   std::string* error_html_ptr = &error_html;
   if (error_code == net::ERR_HTTP_RESPONSE_CODE_FAILURE) {
@@ -3051,10 +3033,15 @@ void RenderFrameImpl::CommitFailedNavigation(
   // Make sure we never show errors in view source mode.
   frame_->EnableViewSourceMode(false);
 
+  std::unique_ptr<blink::WebHistoryEntry> history_entry;
+  auto page_state =
+      blink::PageState::CreateFromEncodedData(commit_params->page_state);
+  if (page_state.IsValid())
+    history_entry = PageStateToHistoryEntry(page_state);
   if (history_entry) {
     navigation_params->frame_load_type = WebFrameLoadType::kBackForward;
     navigation_params->history_item = history_entry->root();
-  } else if (replace) {
+  } else if (common_params->should_replace_current_entry) {
     navigation_params->frame_load_type = WebFrameLoadType::kReplaceCurrentItem;
   }
   navigation_params->service_worker_network_provider =
