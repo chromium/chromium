@@ -39,7 +39,6 @@
 <meta name=variant content='?worker=1&q=webgpu:api,operation,render_pass,storeOp:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,render_pass,storeop2:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,operation,onSubmittedWorkDone:*'>
-<meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,create:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,destroy:*'>
 <meta name=variant content='?worker=1&q=webgpu:api,validation,buffer,mapping:*'>
 

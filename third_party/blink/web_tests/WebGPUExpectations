@@ -289,6 +289,11 @@ crbug.com/1197369 wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTextu
 crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:out_of_bounds:* [ Skip ]
 crbug.com/dawn/808 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,index_access:out_of_bounds_zero_sized_index_buffer:* [ Skip ]
 
+crbug.com/dawn/995 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,buffer,create:createBuffer_invalid_and_oom:* [ Failure ]
+
+# Max dispatch size validation. Nasty crash (possibly whole system crash?) on Mac+Intel and Linux+Intel.
+crbug.com/dawn/1006 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,encoding,cmds,compute_pass:dispatch_sizes:* [ Skip ]
+
 ###
 ### Mac (Metal) specific
 ###
