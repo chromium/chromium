@@ -776,7 +776,7 @@
     },
     {
       name: "DelegatedInkTrails",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "DesktopCaptureDisableLocalEchoControl",
