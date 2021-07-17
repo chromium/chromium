@@ -157,7 +157,7 @@ void BlobURLLoader::Start(const std::string& method,
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
   options.capacity_num_bytes =
-      blink::BlobUtils::GetDataPipeCapacity(blink::BlobUtils::kUnknownSize);
+      blink::BlobUtils::GetDataPipeCapacity(blob_handle_->size());
   if (mojo::CreateDataPipe(&options, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     OnComplete(net::ERR_INSUFFICIENT_RESOURCES, 0);
