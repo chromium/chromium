@@ -6035,9 +6035,6 @@ crbug.com/1097005 http/tests/devtools/console/console-search.js [ Crash Failure 
 crbug.com/1093445 http/tests/loading/pdf-commit-load-callbacks.html [ Failure Pass ]
 crbug.com/1093497 http/tests/history/client-redirect-after-push-state.html [ Failure Pass ]
 
-# Sheriff 2020-06-23
-crbug.com/1098136 [ Linux ] virtual/android/fullscreen/video-fixed-background.html [ Failure ]
-
 # Sheriff 2020-06-24
 crbug.com/1098676 http/tests/devtools/console-xhr-logging.js [ Failure Pass ]
 
