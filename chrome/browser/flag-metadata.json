@@ -3035,12 +3035,12 @@
   },
   {
     "name": "file-handling-api",
-    "owners": [ "huangdarwin", "mgiuca", "cmp" ],
+    "owners": [ "estade", "mgiuca", "cmp" ],
     "expiry_milestone": 95
   },
   {
     "name": "file-handling-icons",
-    "owners": [ "huangdarwin", "mgiuca", "cmp" ],
+    "owners": [ "estade", "mgiuca", "cmp" ],
     "expiry_milestone": 95
   },
   {

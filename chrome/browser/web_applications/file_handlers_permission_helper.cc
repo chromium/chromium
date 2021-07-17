@@ -65,9 +65,8 @@ FileHandlerUpdateAction FileHandlersPermissionHelper::WillUpdateApp(
 
   // Omit file handler removal and permission downgrade for the ChromeOS Media
   // and Camera System Web Apps (SWAs), which have permissions granted by
-  // default.
-  // TODO(huangdarwin): Find a better architecture to structure this exception
-  // and check relevant only in ChromeOS (outside of LaCrOS).
+  // default. This exception and check is only relevant in ChromeOS, the only
+  // platform where SWAs are in use.
   if (url == kChromeUIMediaAppURL || url == kChromeUICameraAppURL) {
     return FileHandlerUpdateAction::kUpdate;
   }
