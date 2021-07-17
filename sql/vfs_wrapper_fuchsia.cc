@@ -84,13 +84,19 @@ int FuchsiaVfsLock(sqlite3_file* sqlite_file, int file_lock) {
 int FuchsiaVfsUnlock(sqlite3_file* sqlite_file, int file_lock) {
   VfsFile* vfs_file = reinterpret_cast<VfsFile*>(sqlite_file);
 
+  // No-op if the file is already unlocked or at the requested mode.
+  if (vfs_file->lock_level == file_lock ||
+      vfs_file->lock_level == SQLITE_LOCK_NONE) {
+    return SQLITE_OK;
+  }
+
+  DCHECK(FuchsiaFileLockManager::Instance()->IsLocked(vfs_file->file_name));
+
   if (file_lock == SQLITE_LOCK_NONE) {
-    if (vfs_file->lock_level != SQLITE_LOCK_NONE)
-      FuchsiaFileLockManager::Instance()->Unlock(vfs_file->file_name);
+    FuchsiaFileLockManager::Instance()->Unlock(vfs_file->file_name);
   } else {
     // Keep the file locked for the shared lock.
-    DCHECK(file_lock == SQLITE_LOCK_SHARED);
-    DCHECK(FuchsiaFileLockManager::Instance()->IsLocked(vfs_file->file_name));
+    DCHECK_EQ(file_lock, SQLITE_LOCK_SHARED);
   }
   vfs_file->lock_level = file_lock;
 
@@ -102,6 +108,8 @@ int FuchsiaVfsCheckReservedLock(sqlite3_file* sqlite_file, int* result) {
   switch (vfs_file->lock_level) {
     case SQLITE_LOCK_NONE:
     case SQLITE_LOCK_SHARED:
+      // Fuchsia only has exclusive locks. If this sqlite3_file has a shared
+      // lock, no other sqlite3_file can get any kind of lock.
       *result = 0;
       return SQLITE_OK;
     case SQLITE_LOCK_RESERVED:
