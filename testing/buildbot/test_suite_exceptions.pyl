@@ -993,6 +993,8 @@
               'machine_type': 'n1-standard-8', # use 8-core to shorten runtime
             },
           ],
+          # See https://crbug.com/1230192, runs of 40-60 minutes at 20 shards.
+          'shards': 30,
         },
       },
     },
