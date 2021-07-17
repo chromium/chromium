@@ -920,6 +920,7 @@ public class StartSurfaceLayoutTest {
     @Test
     @MediumTest
     @Feature("TabSuggestion")
+    @FlakyTest(message = "https://crbug.com/1230107")
     // clang-format off
     @EnableFeatures({ChromeFeatureList.CLOSE_TAB_SUGGESTIONS + "<Study",
             ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study"})
