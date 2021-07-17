@@ -197,7 +197,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
         table_writing_direction, cell, cell_borders,
         {cell_inline_size, kIndefiniteSize}, cell_percentage_inline_size,
         /* alignment_baseline */ absl::nullopt, start_column,
-        /* is_initial_block_size_indefinite */ false,
+        /* is_initial_block_size_indefinite */ true,
         is_table_block_size_specified,
         /* is_hidden_for_paint */ false, has_collapsed_borders,
         NGCacheSlot::kMeasure);
@@ -482,10 +482,9 @@ NGConstraintSpace NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
 
   builder.SetAvailableSize(cell_size);
   builder.SetIsFixedInlineSize(true);
-  if (cell_size.block_size != kIndefiniteSize) {
+  if (cell_size.block_size != kIndefiniteSize)
     builder.SetIsFixedBlockSize(true);
-    builder.SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
-  }
+  builder.SetIsInitialBlockSizeIndefinite(is_initial_block_size_indefinite);
 
   // Standard:
   // https://www.w3.org/TR/css-tables-3/#computing-the-table-height "the

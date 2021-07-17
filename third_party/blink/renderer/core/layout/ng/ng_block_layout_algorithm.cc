@@ -2599,14 +2599,6 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (ConstraintSpace().IsTableCell()) {
     builder.SetIsTableCellChild(true);
 
-    // Only apply the restricted block-size behaviour if we are in the
-    // measuring phase, or we are in the layout phase and the %-block-size is
-    // indefinite.
-    const bool is_measuring_or_indefinite =
-        !ConstraintSpace().IsFixedBlockSize() ||
-        (ConstraintSpace().IsFixedBlockSize() &&
-         child_percentage_size_.block_size == kIndefiniteSize);
-
     // Some scrollable percentage-sized children of table-cells use their
     // min-size (instead of sizing normally).
     //
@@ -2615,7 +2607,8 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     // only child of the cell, and that is the only cell in the row, we'd end
     // up with zero block size.
     if (ConstraintSpace().IsRestrictedBlockSizeTableCell() &&
-        is_measuring_or_indefinite && !child.ShouldBeConsideredAsReplaced() &&
+        child_percentage_size_.block_size == kIndefiniteSize &&
+        !child.ShouldBeConsideredAsReplaced() &&
         child_style.LogicalHeight().IsPercentOrCalc() &&
         (child_style.OverflowBlockDirection() == EOverflow::kAuto ||
          child_style.OverflowBlockDirection() == EOverflow::kScroll))

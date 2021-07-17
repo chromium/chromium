@@ -322,13 +322,6 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatusWithGeometry(
   }
 
   if (has_descendant_that_depends_on_percentage_block_size) {
-    // %-block-size children of table-cells have different behavior if they are
-    // in the "measure" or "layout" phase.
-    // Instead of trying to capture that logic here, we always miss the cache.
-    if (new_space.IsTableCell() &&
-        new_space.IsFixedBlockSize() != old_space.IsFixedBlockSize())
-      return NGLayoutCacheStatus::kNeedsLayout;
-
     // If our initial block-size is definite, we know that if we change our
     // block-size we'll affect any descendant that depends on the resulting
     // percentage block-size.
