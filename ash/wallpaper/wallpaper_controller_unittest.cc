@@ -3036,7 +3036,7 @@ TEST_F(WallpaperControllerTest, NoAnimationForNewRootWindowWhenLocked) {
 }
 
 TEST_F(WallpaperControllerTest, GetWallpaperInfo) {
-  WallpaperInfo expected_info{InfoWithType(DAILY)};
+  WallpaperInfo expected_info = InfoWithType(DAILY);
   controller_->SetUserWallpaperInfo(account_id_1, expected_info);
 
   WallpaperInfo actual_info;
@@ -3053,10 +3053,30 @@ TEST_F(WallpaperControllerTest, SetWallpaperInfoSynced) {
   base::test::ScopedFeatureList scoped_features;
   scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
 
-  WallpaperInfo info{InfoWithType(CUSTOMIZED)};
+  WallpaperInfo info = InfoWithType(ONLINE);
   EXPECT_TRUE(controller_->SetUserWallpaperInfo(account_id_1, info));
   AssertWallpaperInfoInPrefs(GetProfilePrefService(account_id_1),
                              prefs::kSyncableWallpaperInfo, account_id_1, info);
+}
+
+TEST_F(WallpaperControllerTest, SetWallpaperInfoCustom) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo synced_info = InfoWithType(ONLINE);
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
+                          GetProfilePrefService(account_id_1),
+                          prefs::kSyncableWallpaperInfo);
+
+  WallpaperInfo info = InfoWithType(CUSTOMIZED);
+  EXPECT_TRUE(controller_->SetUserWallpaperInfo(account_id_1, info));
+
+  // Custom wallpaper infos should not be propagated to synced preferences until
+  // the image is uploaded to drivefs. That is not done in
+  // |SetUserWallpaperInfo|.
+  AssertWallpaperInfoInPrefs(GetProfilePrefService(account_id_1),
+                             prefs::kSyncableWallpaperInfo, account_id_1,
+                             synced_info);
 }
 
 TEST_F(WallpaperControllerTest, SetWallpaperInfoLocal) {
@@ -3075,7 +3095,7 @@ TEST_F(WallpaperControllerTest, MigrateWallpaperInfo) {
   TestWallpaperControllerClient client;
   controller_->SetClient(&client);
 
-  WallpaperInfo expected_info{InfoWithType(CUSTOMIZED)};
+  WallpaperInfo expected_info = InfoWithType(CUSTOMIZED);
   PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);
   SimulateUserLogin(account_id_1.GetUserEmail());
@@ -3094,10 +3114,10 @@ TEST_F(WallpaperControllerTest,
 
   SetBypassDecode();
 
-  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(CUSTOMIZED),
+  PutWallpaperInfoInPrefs(account_id_1, InfoWithType(ONLINE),
                           GetLocalPrefService(), prefs::kUserWallpaperInfo);
 
-  WallpaperInfo synced_info{InfoWithType(ONLINE)};
+  WallpaperInfo synced_info = InfoWithType(ONLINE);
   PutWallpaperInfoInPrefs(account_id_1, synced_info,
                           GetProfilePrefService(account_id_1),
                           prefs::kSyncableWallpaperInfo);
@@ -3436,6 +3456,138 @@ TEST_F(WallpaperControllerTest,
   // Lave a little wiggle room.
   ASSERT_GE(delay, one_hour - TimeDelta::FromMinutes(1));
   ASSERT_LE(delay, one_hour + TimeDelta::FromMinutes(1));
+}
+
+TEST_F(WallpaperControllerTest, MigrateCustomWallpaper) {
+  gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
+  WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+  SimulateUserLogin(kUser1);
+
+  controller_->SetCustomWallpaper(account_id_1, wallpaper_files_id_1,
+                                  file_name_1, layout, image,
+                                  false /*preview_mode=*/);
+  RunAllTasksUntilIdle();
+  ClearLogin();
+
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  SimulateUserLogin(account_id_1.GetUserEmail());
+  EXPECT_EQ(account_id_1, client.get_save_wallpaper_to_drive_fs_account_id());
+}
+
+TEST_F(WallpaperControllerTest, OnGoogleDriveMounted) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo local_info = InfoWithType(CUSTOMIZED);
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+  controller_->OnGoogleDriveMounted();
+  EXPECT_EQ(account_id_1, client.get_save_wallpaper_to_drive_fs_account_id());
+}
+
+TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_WallpaperIsntCustom) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo local_info = InfoWithType(ONLINE);
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  controller_->OnGoogleDriveMounted();
+  EXPECT_TRUE(client.get_save_wallpaper_to_drive_fs_account_id().empty());
+}
+
+TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_AlreadySynced) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo local_info = InfoWithType(CUSTOMIZED);
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+
+  gfx::ImageSkia image = CreateImage(640, 480, kWallpaperColor);
+  WallpaperLayout layout = WALLPAPER_LAYOUT_CENTER;
+
+  controller_->SetCustomWallpaper(account_id_1, wallpaper_files_id_1,
+                                  file_name_1, layout, image,
+                                  false /*preview_mode=*/);
+  RunAllTasksUntilIdle();
+
+  client.ResetCounts();
+
+  // Should not reupload image if it has already been synced.
+  controller_->OnGoogleDriveMounted();
+  EXPECT_FALSE(client.get_save_wallpaper_to_drive_fs_account_id().is_valid());
+}
+
+TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_OldLocalInfo) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo local_info =
+      WallpaperInfo("a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, CUSTOMIZED,
+                    DayBeforeYesterdayish());
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+
+  WallpaperInfo synced_info =
+      WallpaperInfo("b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, CUSTOMIZED,
+                    base::Time::Now().LocalMidnight());
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
+                          GetProfilePrefService(account_id_1),
+                          prefs::kSyncableWallpaperInfo);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+
+  controller_->OnGoogleDriveMounted();
+  EXPECT_FALSE(client.get_save_wallpaper_to_drive_fs_account_id().is_valid());
+}
+
+TEST_F(WallpaperControllerTest, OnGoogleDriveMounted_NewLocalInfo) {
+  base::test::ScopedFeatureList scoped_features;
+  scoped_features.InitAndEnableFeature(features::kWallpaperWebUI);
+
+  WallpaperInfo local_info =
+      WallpaperInfo("a_url", WALLPAPER_LAYOUT_CENTER_CROPPED, CUSTOMIZED,
+                    base::Time::Now().LocalMidnight());
+  PutWallpaperInfoInPrefs(account_id_1, local_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+
+  WallpaperInfo synced_info =
+      WallpaperInfo("b_url", WALLPAPER_LAYOUT_CENTER_CROPPED, CUSTOMIZED,
+                    DayBeforeYesterdayish());
+  PutWallpaperInfoInPrefs(account_id_1, synced_info,
+                          GetProfilePrefService(account_id_1),
+                          prefs::kSyncableWallpaperInfo);
+
+  TestWallpaperControllerClient client;
+  controller_->SetClient(&client);
+
+  SimulateUserLogin(kUser1);
+
+  controller_->OnGoogleDriveMounted();
+  EXPECT_EQ(account_id_1, client.get_save_wallpaper_to_drive_fs_account_id());
 }
 
 }  // namespace ash

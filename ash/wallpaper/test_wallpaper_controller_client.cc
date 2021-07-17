@@ -46,10 +46,11 @@ void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
                                                           : "fun_image_url");
 }
 
-void TestWallpaperControllerClient::SaveWallpaperToDriveFs(
+bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const AccountId& account_id,
     const base::FilePath& origin) {
   save_wallpaper_to_drive_fs_account_id = account_id;
+  return true;
 }
 
 }  // namespace ash

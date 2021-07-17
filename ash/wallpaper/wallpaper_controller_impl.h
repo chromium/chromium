@@ -297,6 +297,7 @@ class ASH_EXPORT WallpaperControllerImpl
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
+  void OnGoogleDriveMounted() override;
 
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;

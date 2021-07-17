@@ -909,8 +909,12 @@ bool WallpaperControllerImpl::SetUserWallpaperInfo(const AccountId& account_id,
     wallpaper_colors_update->RemoveKey(old_info.location);
   }
   bool success = SetLocalWallpaperInfo(account_id, info);
-  if (IsWallpaperTypeSyncable(info.type))
+  // Although |CUSTOMIZED| typed wallpapers are syncable, we don't set synced
+  // info until the image is stored in drivefs, so we know when to retry
+  // saving it on failure.
+  if (IsWallpaperTypeSyncable(info.type) && info.type != CUSTOMIZED) {
     SetSyncedWallpaperInfo(account_id, info);
+  }
 
   return success;
 }
@@ -1611,7 +1615,13 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
   if (!GetSyncedWallpaperInfo(account_id, &synced_info) &&
       GetLocalWallpaperInfo(account_id, &local_info) &&
       IsWallpaperTypeSyncable(local_info.type)) {
-    SetSyncedWallpaperInfo(account_id, local_info);
+    if (local_info.type == CUSTOMIZED) {
+      base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+                                  .Append(local_info.location);
+      SaveWallpaperToDriveFs(account_id, source);
+    } else {
+      SetSyncedWallpaperInfo(account_id, local_info);
+    }
   }
 
   if (!pref_service->FindPreference(kWallpaperCollectionId)->HasUserSetting())
@@ -2449,6 +2459,25 @@ void WallpaperControllerImpl::SetDailyRefreshCollectionId(
   pref_service->SetString(kWallpaperCollectionId, collection_id);
 }
 
+void WallpaperControllerImpl::OnGoogleDriveMounted() {
+  AccountId account_id = GetActiveAccountId();
+  WallpaperInfo local_info;
+  if (!GetLocalWallpaperInfo(account_id, &local_info))
+    return;
+  if (local_info.type != CUSTOMIZED)
+    return;
+
+  WallpaperInfo synced_info;
+  if (GetSyncedWallpaperInfo(account_id, &synced_info) &&
+      (local_info == synced_info || local_info.date < synced_info.date)) {
+    return;
+  }
+
+  base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
+                              .Append(local_info.location);
+  SaveWallpaperToDriveFs(account_id, source);
+}
+
 bool WallpaperControllerImpl::IsDailyRefreshEnabled() const {
   return features::IsWallpaperWebUIEnabled() && !GetCollectionId().empty();
 }
@@ -2544,10 +2573,17 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
 void WallpaperControllerImpl::SaveWallpaperToDriveFs(
     const AccountId& account_id,
     const base::FilePath& origin_path) {
-  if (features::IsWallpaperWebUIEnabled() && wallpaper_controller_client_) {
-    wallpaper_controller_client_->SaveWallpaperToDriveFs(account_id,
-                                                         origin_path);
+  if (!features::IsWallpaperWebUIEnabled())
+    return;
+  if (!wallpaper_controller_client_)
+    return;
+  if (!wallpaper_controller_client_->SaveWallpaperToDriveFs(account_id,
+                                                            origin_path)) {
+    return;
   }
+  WallpaperInfo local_info;
+  CHECK(GetLocalWallpaperInfo(account_id, &local_info));
+  SetSyncedWallpaperInfo(account_id, local_info);
 }
 
 }  // namespace ash

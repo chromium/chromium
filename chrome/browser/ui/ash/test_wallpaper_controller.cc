@@ -230,3 +230,7 @@ void TestWallpaperController::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
   collection_id_ = collection_id;
 }
+
+void TestWallpaperController::OnGoogleDriveMounted() {
+  NOTIMPLEMENTED();
+}

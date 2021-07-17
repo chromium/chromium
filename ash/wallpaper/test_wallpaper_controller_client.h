@@ -51,7 +51,7 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) override;
-  void SaveWallpaperToDriveFs(const AccountId& account_id,
+  bool SaveWallpaperToDriveFs(const AccountId& account_id,
                               const base::FilePath& origin) override;
 
  private:

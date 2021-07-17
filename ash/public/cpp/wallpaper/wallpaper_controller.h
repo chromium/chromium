@@ -289,6 +289,9 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   virtual void SetDailyRefreshCollectionId(
       const std::string& collection_id) = 0;
 
+  // DriveFS is available for the active user.
+  virtual void OnGoogleDriveMounted() = 0;
+
   // Returns a suffix to be appended to the base url of Backdrop (online)
   // wallpapers.
   static std::string GetBackdropWallpaperSuffix();

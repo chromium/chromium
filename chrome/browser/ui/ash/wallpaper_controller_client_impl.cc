@@ -18,6 +18,7 @@
 #include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/unguessable_token.h"
 #include "base/values.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -65,6 +66,7 @@ constexpr char kChromeAppCollectionId[] = "collectionId";
 constexpr char kDriveFsWallpaperDirName[] = "Chromebook Wallpaper";
 // Encoded in |WallpaperControllerImpl.ResizeAndEncodeImage|.
 constexpr char kDriveFsWallpaperFileName[] = "wallpaper.jpg";
+constexpr char kDriveFsTempWallpaperFileName[] = "wallpaper-tmp.jpg";
 
 WallpaperControllerClientImpl* g_wallpaper_controller_client_instance = nullptr;
 
@@ -204,6 +206,7 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
 }
 
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
+  user_manager::UserManager::Get()->RemoveSessionStateObserver(this);
   wallpaper_controller_->SetClient(nullptr);
   weak_factory_.InvalidateWeakPtrs();
   DCHECK_EQ(this, g_wallpaper_controller_client_instance);
@@ -218,6 +221,8 @@ void WallpaperControllerClientImpl::Init() {
           &WallpaperControllerClientImpl::DeviceWallpaperImageFilePathChanged,
           weak_factory_.GetWeakPtr()));
   wallpaper_controller_ = ash::WallpaperController::Get();
+  user_manager::UserManager::Get()->AddSessionStateObserver(this);
+
   InitController();
 }
 
@@ -503,23 +508,50 @@ bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
 }
 
-void WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
+bool WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
     const AccountId& account_id,
     const base::FilePath& origin) {
   Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   base::FilePath destination_directory = GetDriveFsWallpaperDir(profile);
   if (destination_directory.empty())
-    return;
+    return false;
 
   if (!base::DirectoryExists(destination_directory) &&
       !base::CreateDirectory(destination_directory)) {
-    return;
+    return false;
+  }
+
+  std::string temp_file_name =
+      base::UnguessableToken::Create().ToString().append(
+          kDriveFsTempWallpaperFileName);
+  base::FilePath temp_destination =
+      destination_directory.Append(temp_file_name);
+  if (!base::CopyFile(origin, temp_destination)) {
+    base::DeleteFile(temp_destination);
+    return false;
   }
 
   base::FilePath destination =
       destination_directory.Append(kDriveFsWallpaperFileName);
-  base::CopyFile(origin, destination);
+  bool success = base::ReplaceFile(temp_destination, destination, nullptr);
+  base::DeleteFile(temp_destination);
+  return success;
+}
+
+void WallpaperControllerClientImpl::ActiveUserChanged(
+    user_manager::User* active_user) {
+  active_user->AddProfileCreatedObserver(base::BindOnce(
+      &WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser,
+      weak_factory_.GetWeakPtr()));
+}
+
+void WallpaperControllerClientImpl::OnVolumeMounted(
+    chromeos::MountError error_code,
+    const file_manager::Volume& volume) {
+  if (volume.type() == file_manager::VolumeType::VOLUME_TYPE_GOOGLE_DRIVE) {
+    wallpaper_controller_->OnGoogleDriveMounted();
+  }
 }
 
 void WallpaperControllerClientImpl::MigrateCollectionIdFromValueStoreForTesting(
@@ -703,4 +735,13 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
     std::move(callback).Run(std::string());
   }
   surprise_me_image_fetcher_.reset();
+}
+
+void WallpaperControllerClientImpl::ObserveVolumeManagerForActiveUser() {
+  Profile* profile = ProfileManager::GetActiveUserProfile();
+  DCHECK(profile);
+
+  volume_manager_observation_.Reset();
+  volume_manager_observation_.Observe(
+      file_manager::VolumeManager::Get(profile));
 }

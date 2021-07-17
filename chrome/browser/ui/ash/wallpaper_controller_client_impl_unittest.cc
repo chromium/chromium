@@ -9,6 +9,8 @@
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "components/user_manager/fake_user_manager.h"
+#include "components/user_manager/scoped_user_manager.h"
 #include "extensions/browser/value_store/testing_value_store.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,13 +21,18 @@ constexpr char kChromeAppDailyRefreshInfoKey[] = "daily-refresh-info-key";
 class WallpaperControllerClientImplTest : public testing::Test {
  public:
   WallpaperControllerClientImplTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+      : local_state_(TestingBrowserProcess::GetGlobal()) {
+    auto fake_user_manager = std::make_unique<user_manager::FakeUserManager>();
+    user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
+  }
   ~WallpaperControllerClientImplTest() override = default;
 
  private:
   ScopedTestingLocalState local_state_;
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<user_manager::ScopedUserManager> user_manager_;
 
   DISALLOW_COPY_AND_ASSIGN(WallpaperControllerClientImplTest);
 };
