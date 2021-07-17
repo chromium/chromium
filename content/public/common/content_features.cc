@@ -229,6 +229,11 @@ const base::Feature kDesktopCaptureChangeSource{
 const base::Feature kDesktopPWAsTabStrip{"DesktopPWAsTabStrip",
                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enable the device posture API.
+// Tracking bug for enabling device posture API: https://crbug.com/1066842.
+const base::Feature kDevicePosture{"DevicePosture",
+                                   base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable document policy for configuring and restricting feature behavior.
 const base::Feature kDocumentPolicy{"DocumentPolicy",
                                     base::FEATURE_ENABLED_BY_DEFAULT};

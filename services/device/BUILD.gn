@@ -37,6 +37,7 @@ source_set("lib") {
   deps = [
     ":binder_overrides",
     "//build:chromeos_buildflags",
+    "//services/device/device_posture",
     "//services/device/fingerprint",
     "//services/device/generic_sensor",
     "//services/device/geolocation",

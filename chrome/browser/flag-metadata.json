@@ -1059,6 +1059,11 @@
     "expiry_milestone": 89
   },
   {
+    "name": "device-posture",
+    "owners": [ "alexis.menard@intel.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
     "expiry_milestone": 92

@@ -12,6 +12,7 @@ mojom("mojom") {
     "battery_monitor.mojom",
     "battery_status.mojom",
     "bluetooth_system.mojom",
+    "device_posture_provider.mojom",
     "fingerprint.mojom",
     "geolocation.mojom",
     "geolocation_config.mojom",
@@ -92,6 +93,13 @@ mojom("device_service") {
 
   if (!is_android) {
     enabled_features += [ "enable_hid" ]
+  }
+
+  # While the device posture API applies to all platforms, only Android and
+  # Windows can fetch posture information so we only build mojo bindings on
+  # these platforms
+  if (is_android || is_win) {
+    enabled_features += [ "enable_device_posture" ]
   }
 
   public_deps = [

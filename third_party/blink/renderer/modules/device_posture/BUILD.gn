@@ -11,4 +11,6 @@ blink_modules_sources("device_posture") {
     "navigator_device_posture.cc",
     "navigator_device_posture.h",
   ]
+
+  deps = [ "//services/device/public/mojom" ]
 }

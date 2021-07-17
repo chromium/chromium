@@ -24,6 +24,9 @@ import "services/device/public/mojom/wake_lock_provider.mojom";
 [EnableIf=is_android]
 import "services/device/public/mojom/nfc_provider.mojom";
 
+[EnableIf=enable_device_posture]
+import "services/device/public/mojom/device_posture_provider.mojom";
+
 [EnableIf=is_chromeos_ash]
 import "services/device/public/mojom/bluetooth_system.mojom";
 
@@ -39,6 +42,11 @@ import "services/device/public/mojom/input_service.mojom";
 // The main interface to the Device Service. This is bound only by the browser
 // process and is used to broker connections to more specific device APIs.
 interface DeviceService {
+
+  // Binds a DevicePostureProvider endpoint.
+  [EnableIf=enable_device_posture]
+  BindDevicePostureProvider(pending_receiver<DevicePostureProvider> receiver);
+
   // Binds a Fingerprint endpoint.
   BindFingerprint(pending_receiver<Fingerprint> receiver);
 

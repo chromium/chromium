@@ -18,6 +18,8 @@
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "services/device/binder_overrides.h"
 #include "services/device/bluetooth/bluetooth_system_factory.h"
+#include "services/device/device_posture/device_posture_platform_provider.h"
+#include "services/device/device_posture/device_posture_provider_impl.h"
 #include "services/device/fingerprint/fingerprint.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "services/device/generic_sensor/sensor_provider_impl.h"
@@ -303,6 +305,20 @@ void DeviceService::BindSensorProvider(
   }
   sensor_provider_->Bind(std::move(receiver));
 }
+
+#if defined(OS_ANDROID) || defined(OS_WIN)
+void DeviceService::BindDevicePostureProvider(
+    mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) {
+  if (!device_posture_provider_) {
+    auto posture_platform_provider_ = DevicePosturePlatformProvider::Create();
+    if (!posture_platform_provider_)
+      return;
+    device_posture_provider_ = std::make_unique<DevicePostureProviderImpl>(
+        std::move(posture_platform_provider_));
+  }
+  device_posture_provider_->Bind(std::move(receiver));
+}
+#endif
 
 void DeviceService::BindSerialPortManager(
     mojo::PendingReceiver<mojom::SerialPortManager> receiver) {

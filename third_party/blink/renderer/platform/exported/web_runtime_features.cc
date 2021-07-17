@@ -210,6 +210,10 @@ void WebRuntimeFeatures::EnableDecodeLossyWebPImagesToYUV(bool enable) {
   RuntimeEnabledFeatures::SetDecodeLossyWebPImagesToYUVEnabled(enable);
 }
 
+void WebRuntimeFeatures::EnableDevicePosture(bool enable) {
+  RuntimeEnabledFeatures::SetDevicePostureEnabled(enable);
+}
+
 void WebRuntimeFeatures::EnableRemoveMobileViewportDoubleTap(bool enable) {
   RuntimeEnabledFeatures::SetRemoveMobileViewportDoubleTapEnabled(enable);
 }

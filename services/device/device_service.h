@@ -18,6 +18,7 @@
 #include "services/device/geolocation/geolocation_provider_impl.h"
 #include "services/device/geolocation/public_ip_address_geolocation_provider.h"
 #include "services/device/public/mojom/battery_monitor.mojom.h"
+#include "services/device/public/mojom/device_posture_provider.mojom.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 #include "services/device/public/mojom/geolocation.mojom.h"
@@ -69,6 +70,10 @@ namespace device {
 #if !defined(OS_ANDROID)
 class HidManagerImpl;
 class SerialPortManagerImpl;
+#endif
+
+#if defined(OS_ANDROID) || defined(OS_WIN)
+class DevicePostureProviderImpl;
 #endif
 
 class DeviceService;
@@ -175,6 +180,11 @@ class DeviceService : public mojom::DeviceService {
   void BindSensorProvider(
       mojo::PendingReceiver<mojom::SensorProvider> receiver) override;
 
+#if defined(OS_ANDROID) || defined(OS_WIN)
+  void BindDevicePostureProvider(
+      mojo::PendingReceiver<mojom::DevicePostureProvider> receiver) override;
+#endif
+
   void BindSerialPortManager(
       mojo::PendingReceiver<mojom::SerialPortManager> receiver) override;
 
@@ -231,6 +241,10 @@ class DeviceService : public mojom::DeviceService {
   // be destroyed on that sequence.
   std::unique_ptr<SerialPortManagerImpl> serial_port_manager_;
   scoped_refptr<base::SequencedTaskRunner> serial_port_manager_task_runner_;
+#endif
+
+#if defined(OS_ANDROID) || defined(OS_WIN)
+  std::unique_ptr<DevicePostureProviderImpl> device_posture_provider_;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

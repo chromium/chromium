@@ -1,0 +1,22 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "services/device/device_posture/device_posture_platform_provider_android.h"
+
+namespace device {
+
+DevicePosturePlatformProviderAndroid::DevicePosturePlatformProviderAndroid() =
+    default;
+
+DevicePosturePlatformProviderAndroid::~DevicePosturePlatformProviderAndroid() =
+    default;
+
+device::mojom::DevicePostureType
+DevicePosturePlatformProviderAndroid::GetDevicePosture() {
+  return device::mojom::DevicePostureType::kNoFold;
+}
+
+void DevicePosturePlatformProviderAndroid::Shutdown() {}
+
+}  // namespace device

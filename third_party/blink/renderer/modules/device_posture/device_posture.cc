@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/device_posture/device_posture.h"
 
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 
@@ -11,20 +12,19 @@ namespace blink {
 
 namespace {
 
-String PostureToString(
-    mojom::blink::DevicePostureType posture) {
+String PostureToString(device::mojom::blink::DevicePostureType posture) {
   switch (posture) {
-    case mojom::blink::DevicePostureType::kNoFold:
+    case device::mojom::blink::DevicePostureType::kNoFold:
       return "no-fold";
-    case mojom::blink::DevicePostureType::kLaptop:
+    case device::mojom::blink::DevicePostureType::kLaptop:
       return "laptop";
-    case mojom::blink::DevicePostureType::kFlat:
+    case device::mojom::blink::DevicePostureType::kFlat:
       return "flat";
-    case mojom::blink::DevicePostureType::kTent:
+    case device::mojom::blink::DevicePostureType::kTent:
       return "tent";
-    case mojom::blink::DevicePostureType::kTablet:
+    case device::mojom::blink::DevicePostureType::kTablet:
       return "tablet";
-    case mojom::blink::DevicePostureType::kBook:
+    case device::mojom::blink::DevicePostureType::kBook:
       return "book";
   }
   NOTREACHED();
@@ -34,12 +34,42 @@ String PostureToString(
 }  // namespace
 
 DevicePosture::DevicePosture(LocalDOMWindow* window)
-    : ExecutionContextClient(window) {}
+    : ExecutionContextClient(window),
+      service_(GetExecutionContext()),
+      receiver_(this, GetExecutionContext()) {}
 
 DevicePosture::~DevicePosture() = default;
 
-String DevicePosture::type() const {
+String DevicePosture::type() {
+  EnsureServiceConnection();
   return PostureToString(posture_);
+}
+
+void DevicePosture::OnPostureChanged(
+    device::mojom::blink::DevicePostureType posture) {
+  if (posture_ == posture)
+    return;
+
+  posture_ = posture;
+  DispatchEvent(*Event::CreateBubble(event_type_names::kChange));
+}
+
+void DevicePosture::EnsureServiceConnection() {
+  auto* context = GetExecutionContext();
+  if (!context)
+    return;
+
+  if (service_.is_bound())
+    return;
+
+  auto task_runner =
+      GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI);
+  GetExecutionContext()->GetBrowserInterfaceBroker().GetInterface(
+      service_.BindNewPipeAndPassReceiver(task_runner));
+
+  service_->SetListener(
+      receiver_.BindNewPipeAndPassRemote(task_runner),
+      WTF::Bind(&DevicePosture::OnPostureChanged, WrapPersistent(this)));
 }
 
 ExecutionContext* DevicePosture::GetExecutionContext() const {
@@ -51,6 +81,8 @@ const AtomicString& DevicePosture::InterfaceName() const {
 }
 
 void DevicePosture::Trace(blink::Visitor* visitor) const {
+  visitor->Trace(service_);
+  visitor->Trace(receiver_);
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
 }
