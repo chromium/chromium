@@ -88,7 +88,7 @@ SVGUseElement::SVGUseElement(Document& document)
   AddToPropertyMap(width_);
   AddToPropertyMap(height_);
 
-  AttachShadowRootInternal(ShadowRootType::kClosed);
+  CreateUserAgentShadowRoot();
 }
 
 SVGUseElement::~SVGUseElement() = default;

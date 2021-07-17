@@ -92,8 +92,8 @@ class SVGUseElement final : public SVGGraphicsElement,
   bool SelfHasRelativeLengths() const override;
 
   ShadowRoot& UseShadowRoot() const {
-    CHECK(ClosedShadowRoot());
-    return *ClosedShadowRoot();
+    CHECK(UserAgentShadowRoot());
+    return *UserAgentShadowRoot();
   }
 
   Element* ResolveTargetElement();
