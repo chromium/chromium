@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">IN CODA</translation>
 <translation id="2161394479394250669">Annulla processo di stampa</translation>
+<translation id="2209788852729124853">Reimposta contatori di traffico</translation>
 <translation id="2217935453350629363">Velocità attuale</translation>
 <translation id="2224337661447660594">Nessuna connessione a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Batteria carica</translation>
 <translation id="360565022852130722">la rete Wi-Fi è protetta con un protocollo WEP 802.1x inefficace</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Scansiona di nuovo la pagina}=1{Scansiona di nuovo la pagina {PAGE_NUMBER}}other{Scansiona di nuovo la pagina {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensioni)</translation>
 <translation id="3748026146096797577">Non connesso</translation>
 <translation id="3749289110408117711">Nome file</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">I miei file</translation>
 <translation id="4429881212383817840">La richiesta di Kerberos scade a breve</translation>
 <translation id="4431821876790500265">Visualizza rapporto</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Rimuovi pagina}=1{Rimuovi pagina {PAGE_NUMBER}}other{Rimuovi pagina {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Vecchia password</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Salva scansioni in</translation>
@@ -248,6 +251,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="5916084858004523819">Non consentito</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Il file è stato scansionato correttamente e salvato in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{I file sono stati scansionati correttamente e salvati in <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File non trovato</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">L'alimentatore di documenti dello scanner è vuoto. Aggiungi documenti e riprova.</translation>
 <translation id="6040143037577758943">Chiudi</translation>
 <translation id="6040852767465482106">Identità anonima</translation>
@@ -285,6 +289,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="6527081081771465939">protocollo di sicurezza Wi-Fi sconosciuto</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Operazione non riuscita - Stampante non raggiungibile</translation>
+<translation id="6574762126505704998">Riempi</translation>
 <translation id="6603230386432466813">Hai problemi di connessione?</translation>
 <translation id="6618744767048954150">In corso</translation>
 <translation id="6620487321149975369">I processi di stampa verranno mostrati nella cronologia a meno che non vengano rimossi manualmente</translation>
@@ -316,6 +321,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7216409898977639127">Fornitore del servizio di telefonia mobile</translation>
 <translation id="7271040990581020067">Lo scanner è attualmente in uso. Riprova più tardi.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Raccolte di sfondi</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Dispositivi di rete</translation>
 <translation id="7359657277149375382">Tipo di file</translation>
@@ -332,6 +338,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Tempo rimanente: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Scopri di più nel Centro assistenza</translation>
+<translation id="763165478673169849">Data/ora ultima reimpostazione</translation>
 <translation id="7648838807254605802">Latenza HTTPS elevata</translation>
 <translation id="7658239707568436148">Annulla</translation>
 <translation id="7690294790491645610">Conferma nuova password</translation>
@@ -353,6 +360,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8075838845814659848">Carica rimanente</translation>
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Richiedi contatori di traffico</translation>
 <translation id="8206859287963243715">Cellulare</translation>
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8214184102975786227">Scansiona più pagine creando un solo PDF</translation>
@@ -374,8 +382,10 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8475690821716466388">la rete Wi-Fi è protetta con un protocollo WEP PSK inefficace</translation>
 <translation id="8477551185774834963">la latenza DNS è leggermente al di sopra della soglia consentita</translation>
 <translation id="8483248364096924578">Indirizzo IP</translation>
+<translation id="8498220429738806196">Contatori di traffico</translation>
 <translation id="8503813439785031346">Nome utente</translation>
 <translation id="8503836310948963452">Solo qualche altro minuto…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Il tuo operatore potrebbe richiedere questa opzione per consentire di collegarsi alla sua rete. Contatta l'operatore per avere informazioni dettagliate.</translation>
 <translation id="8576249514688522074">Non inizializzato</translation>
 <translation id="8620617069779373398">Stato roaming</translation>
@@ -392,6 +402,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Sfondo</translation>
 <translation id="8845001906332463065">Richiedi assistenza</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test effettuato correttamente</translation>
 <translation id="8898840733695078011">Intensità del segnale</translation>
 <translation id="8910721771319628100">la rete predefinita è al di sopra della soglia di latenza</translation>
@@ -407,6 +418,7 @@ Prova a toccare il microfono per chiedermi qualcosa.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Spazio utilizzato</translation>
+<translation id="9095775724867566971">PluginVm</translation>
 <translation id="910415269708673980">Aggiorna la richiesta per <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Scansione pagina <ph name="PAGE_NUMBER" />…</translation>
 <translation id="9111102763498581341">Sblocca</translation>

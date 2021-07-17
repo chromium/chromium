@@ -599,7 +599,6 @@
 <translation id="4881695831933465202">తెరువు</translation>
 <translation id="488187801263602086">ఫైల్ పేరు మార్చండి</translation>
 <translation id="4885273946141277891">మద్దతు లేనన్ని సార్లు Chromeను ప్రారంభించడానికి ప్రయత్నించారు.</translation>
-<translation id="4905269543817054577">అజ్ఞాత మోడ్‌లో హిస్టరీ సేవ్ అవ్వదు</translation>
 <translation id="4908869848243824489">Google ద్వారా Discover</translation>
 <translation id="4910889077668685004">చెల్లింపు యాప్‌లు</translation>
 <translation id="4913161338056004800">గణాంకాలను రీసెట్ చేయి</translation>
@@ -1036,7 +1035,6 @@
 <translation id="7630202231528827509">ప్రొవైడర్ URL</translation>
 <translation id="7638584964844754484">రహస్య పదబంధం చెల్లదు</translation>
 <translation id="7641339528570811325">బ్రౌజింగ్ డేటాను తీసివేయి…</translation>
-<translation id="764170292089748542">ప్రైవేట్‌గా బ్రౌజ్ చేయాలని మీరు ఎంచుకున్నప్పుడు Chrome మీ బ్రౌజింగ్ హిస్టరీని సేవ్ చేయదు. అయినప్పటికీ, మీకు ఇష్టమైన సైట్‌లను యాక్సెస్ చేయడానికి బుక్‌మార్క్‌లను ఉపయోగించవచ్చు.</translation>
 <translation id="7646772052135772216">పాస్‌వర్డ్ సింక్ పనిచేయడం లేదు</translation>
 <translation id="7655900163790317559">బ్లూటూత్ ఆన్ అవుతోంది…</translation>
 <translation id="7658239707568436148">రద్దు చేయి</translation>
@@ -1047,7 +1045,6 @@
 <translation id="7704317875155739195">ఆటో-ఫిల్ సెర్చ్‌లు, URLలు</translation>
 <translation id="7707922173985738739">మొబైల్ డేటాను ఉపయోగిస్తుంది</translation>
 <translation id="7725024127233776428">మీరు బుక్‌మార్క్ చేసే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
-<translation id="7731260005404856143">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK1" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. వాటిని మీరు ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="7757787379047923882"><ph name="DEVICE_NAME" /> నుండి షేర్ చేయబడిన వచనం</translation>
 <translation id="7761849928583394409">తేదీ, సమయం ఎంచుకోండి</translation>
 <translation id="7762668264895820836">SD కార్డ్ <ph name="SD_CARD_NUMBER" /></translation>
@@ -1292,7 +1289,6 @@
 <translation id="9209888181064652401">కాల్‌లను చేయడం సాధ్యం కాదు</translation>
 <translation id="9212845824145208577">ఇంతకంటే కిందకు వెళ్లడం సాధ్యపడదు. పేజీ మరింత కింద నుండి ప్రారంభించడానికి ట్రై చేయండి.</translation>
 <translation id="9219103736887031265">ఇమేజ్‌లు</translation>
-<translation id="923957533152125119">మీరు సైన్ ఇన్ చేసినప్పుడు, <ph name="BEGIN_LINK1" />సెర్చ్ హిస్టరీ<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />ఇతర రకాల యాక్టివిటీ<ph name="END_LINK2" /> మీ Google ఖాతాలో సేవ్ చేయబడవచ్చు. వాటిని మీరు ఎప్పుడైనా తొలగించవచ్చు.</translation>
 <translation id="926205370408745186">డిజిటల్ సంక్షేమం నుండి మీ Chrome కార్యకలాపాన్ని తీసివేస్తుంది</translation>
 <translation id="927968626442779827">Google Chromeలోని లైట్ మోడ్‌ను ఉపయోగించండి</translation>
 <translation id="932327136139879170">హోమ్</translation>
@@ -1301,6 +1297,7 @@
 <translation id="948039501338975565">బుక్‌మార్క్ ఫోల్డర్‌ల లిస్ట్</translation>
 <translation id="95817756606698420">చైనాలో వెతకడానికి <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ను Chrome ఉపయోగించవచ్చు. మీరు దీనిని <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" />లో మార్చవచ్చు.</translation>
 <translation id="962979164594783469">ఈ యాప్‌ను ఇన్‌స్టాల్ చేయండి</translation>
+<translation id="96681097142096641">సరళంగా తయారయిన పేజీని చూపించాలా?</translation>
 <translation id="968900484120156207">మీరు సందర్శించే పేజీలు ఇక్కడ కనిపిస్తాయి</translation>
 <translation id="970715775301869095"><ph name="MINUTES" /> నిమిషాలు మిగిలి ఉంది</translation>
 <translation id="981121421437150478">ఆఫ్‌లైన్</translation>

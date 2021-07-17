@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
 <translation id="2161394479394250669">Batalkan tugas cetak</translation>
+<translation id="2209788852729124853">Tetapkan Semula Pembilang Trafik</translation>
 <translation id="2217935453350629363">Kelajuan semasa</translation>
 <translation id="2224337661447660594">Tiada Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Bateri penuh</translation>
 <translation id="360565022852130722">Rangkaian Wi-Fi selamat dengan protokol lemah WEP 802.1x</translation>
 <translation id="3689839747745352263">Ujian <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Imbas semula halaman}=1{Imbas semula {PAGE_NUMBER} halaman}other{Imbas semula {PAGE_NUMBER} halaman}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Disambung</translation>
 <translation id="3749289110408117711">Nama fail</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Tiket Kerberos akan tamat tempoh tidak lama lagi</translation>
 <translation id="4431821876790500265">Lihat laporan</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Alih keluar halaman}=1{Alih keluar {PAGE_NUMBER} halaman}other{Alih keluar {PAGE_NUMBER} halaman}}</translation>
 <translation id="445059817448385655">Kata laluan lama</translation>
 <translation id="4453205916657964690">Topeng subnet</translation>
 <translation id="4454245904991689773">Imbas dan simpan pada</translation>
@@ -248,6 +251,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="5916084858004523819">Dilarang</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Fail anda telah berjaya diimbas dan disimpan pada <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Fail tidak dijumpai</translation>
+<translation id="5972388717451707488">Enjin Kemaskinian</translation>
 <translation id="6037291330010597344">Penyuap dokumen pengimbas kosong. Tambah dokumen dan cuba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identiti Tanpa Nama</translation>
@@ -285,6 +289,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="6527081081771465939">Protokol keselamatan Wi-Fi tidak diketahui</translation>
 <translation id="65587193855025101">Dasar rata</translation>
 <translation id="6564646048574748301">Gagal - Pencetak tidak dapat dicapai</translation>
+<translation id="6574762126505704998">Isi</translation>
 <translation id="6603230386432466813">Ada masalah membuat sambungan?</translation>
 <translation id="6618744767048954150">Berjalan</translation>
 <translation id="6620487321149975369">Tugas cetak akan dipaparkan dalam sejarah melainkan dialih keluar secara manual</translation>
@@ -316,6 +321,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7216409898977639127">Penyedia selular</translation>
 <translation id="7271040990581020067">Pengimbas sedang digunakan. Cuba lagi nanti.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Koleksi Kertas Dinding</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Peranti Rangkaian</translation>
 <translation id="7359657277149375382">Jenis fail</translation>
@@ -332,6 +338,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7620771111601174153">Ketahui lebih lanjut dalam Pusat Bantuan</translation>
+<translation id="763165478673169849">Masa Terakhir Ditetapkan Semula</translation>
 <translation id="7648838807254605802">Kependaman HTTPS tinggi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Sahkan kata laluan baharu</translation>
@@ -353,6 +360,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8075838845814659848">Baki cas</translation>
 <translation id="808894953321890993">Tukar kata laluan</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">Minta Pembilang Trafik</translation>
 <translation id="8206859287963243715">Selular</translation>
 <translation id="8208861521865154048">Manfaat</translation>
 <translation id="8214184102975786227">Imbas berbilang halaman menjadi satu PDF</translation>
@@ -374,8 +382,10 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8475690821716466388">Rangkaian Wi-Fi selamat dengan protokol lemah WEP PSK</translation>
 <translation id="8477551185774834963">Kependaman DNS sedikit melebihi ambang yang dibenarkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
+<translation id="8498220429738806196">Pembilang Trafik</translation>
 <translation id="8503813439785031346">Nama pengguna</translation>
 <translation id="8503836310948963452">Hanya beberapa minit lagi…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Pembawa anda mungkin memerlukan pilihan ini untuk menyambung kepada rangkaian mereka. Hubungi pembawa anda untuk mendapatkan butiran.</translation>
 <translation id="8576249514688522074">Tidak diasalkan</translation>
 <translation id="8620617069779373398">Status perayauan</translation>
@@ -392,6 +402,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Kertas dinding</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Ujian berjaya</translation>
 <translation id="8898840733695078011">Kekuatan isyarat</translation>
 <translation id="8910721771319628100">Rangkaian lalai melebihi ambang kependaman</translation>
@@ -407,6 +418,7 @@ Cuba ketik mikrofon untuk bertanyakan sebarang perkara kepada saya.</translation
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Penggunaan semasa</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Muat semula tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Mengimbas halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>

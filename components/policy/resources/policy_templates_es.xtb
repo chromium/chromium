@@ -2443,6 +2443,12 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 <translation id="398884292557092447">Si se asigna el valor "True" a esta política o no se le asigna ninguno, los usuarios podrán controlar las sugerencias de Autocompletar para la información de tarjetas de crédito en la interfaz.
 
       Si se le asigna el valor "False", la función Autocompletar nunca sugerirá ni completará información de tarjetas de crédito, ni tampoco guardará la información adicional de tarjetas de crédito que puedan enviar los usuarios mientras navegan por la Web.</translation>
+<translation id="3996594590700242138">Si se habilita esta política o no se establece, se habilitarán las actualizaciones de todos los componentes de <ph name="PRODUCT_NAME" />.
+
+      Si se inhabilita esta política, se inhabilitarán las actualizaciones de los componentes. Sin embargo, algunos componentes quedan exentos de esta política: no se inhabilitarán las actualizaciones de los componentes que no contengan código ejecutable, que no influyan de forma significativa en el funcionamiento del navegador o que sean esenciales para proteger su seguridad.
+      Entre los ejemplos de estos componentes se incluyen las listas de revocación de certificados y los datos de Navegación segura.
+      Visita https://developers.google.com/safe-browsing para consultar más información sobre Navegación segura.
+      Ten en cuenta que, si se inhabilita esta política, es posible que se impida que los desarrolladores de <ph name="PRODUCT_NAME" /> proporcionen correcciones de seguridad importantes a su debido tiempo. Por ello, no se recomienda inhabilitarla.</translation>
 <translation id="3997519162482760140">URLs a las que los dispositivos de captura de vídeo podrán acceder en las páginas de inicio de sesión con SAML</translation>
 <translation id="4007646377576030214"> Ten en cuenta que esta política está obsoleta en M87 y se ha retirado en M89. Usa <ph name="MANAGED_GUEST_SESSION_PRIVACY_WARNINGS_POLICY_NAME" /> para configurar las advertencias de privacidad para las sesiones de invitado gestionadas.
 
@@ -5072,7 +5078,6 @@ Estas políticas te permiten configurar el comportamiento de <ph name="PRODUCT_O
 <translation id="7458437477941640506">No vuelve a instalar la versión de destino si la versión del SO es más reciente que la de destino. También inhabilita las actualizaciones.</translation>
 <translation id="7459601923199346224">Controla las políticas de usuarios y dispositivos para gestionar certificados.</translation>
 <translation id="7459633275230216698">Permitir cuadros de diálogo de selección de archivos</translation>
-<translation id="7460710589177177376">Si se le asigna el valor true, esta extensión podrá usar todas las claves designadas para uso corporativo para firmar datos arbitrarios. Si se le asigna el valor false, no podrá acceder a esas claves y los usuarios tampoco podrán conceder este permiso.</translation>
 <translation id="7464991223784276288">Limitar las cookies de las URL coincidentes de la sesión actual</translation>
 <translation id="7468182772656807573">Si se define esta política, determinará la frecuencia con la que se envían paquetes de red de monitorización (en milisegundos). Los intervalos se sitúan entre 30 segundos y 24 horas. Cualquier valor fuera de este intervalo se ajustará al límite correspondiente.
 

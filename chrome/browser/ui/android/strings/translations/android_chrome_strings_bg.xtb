@@ -306,6 +306,7 @@
 <translation id="2942036813789421260">Разделът за визуализация е затворен</translation>
 <translation id="2956410042958133412">Този профил се управлява от <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочетена страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочетени страници}}</translation>
+<translation id="2961210776189273067">Обръщение</translation>
 <translation id="2979025552038692506">Избран раздел в режим „инкогнито“</translation>
 <translation id="2979448359891869301">Екранната снимка не може да се разшири. Опитайте отново, когато телефонът не се използва за други цели.</translation>
 <translation id="2979639724566107830">Отваряне в нов прозорец</translation>
@@ -599,7 +600,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="4881695831933465202">Отваряне</translation>
 <translation id="488187801263602086">Преименуване на файла</translation>
 <translation id="4885273946141277891">Неподдържан брой екземпляри на Chrome.</translation>
-<translation id="4905269543817054577">В режим „инкогнито“ историята не се запазва</translation>
 <translation id="4908869848243824489">Discover от Google</translation>
 <translation id="4910889077668685004">Приложения за плащане</translation>
 <translation id="4913161338056004800">Нулиране на статистическите данни</translation>
@@ -618,6 +618,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="497421865427891073">Преминаване напред</translation>
 <translation id="4988210275050210843">Изтегля се файл (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Страници</translation>
+<translation id="5001388021414335527">Следене на този сайт тук</translation>
 <translation id="5004416275253351869">Контроли за активността в Google</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> иска да се свърже</translation>
@@ -988,6 +989,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделяне на 1 избран елемент}other{Споделяне на # избрани елемента}}</translation>
 <translation id="7359002509206457351">Достъп до начините на плащане</translation>
 <translation id="7375125077091615385">Тип:</translation>
+<translation id="7386842512861524348">Връзката със сайта е защитена, освен ако Chrome не ви съобщи друго.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL адрес</translation>
 <translation id="7403691278183511381">Представяне при първо стартиране на Chrome</translation>
@@ -1036,7 +1038,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7630202231528827509">URL адрес на доставчика</translation>
 <translation id="7638584964844754484">Неправилен пропуск</translation>
 <translation id="7641339528570811325">Изчистване на данните за сърфирането…</translation>
-<translation id="764170292089748542">Chrome не запазва съответната ви история, когато сърфирате частно. Пак можете да използвате отметки, за да посещавате любимите си сайтове.</translation>
 <translation id="7646772052135772216">Синхронизирането на паролите не работи.</translation>
 <translation id="7655900163790317559">Bluetooth се включва…</translation>
 <translation id="7658239707568436148">Отказ</translation>
@@ -1047,7 +1048,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="7704317875155739195">Автоматично довършване на заявки за търсене и URL адреси</translation>
 <translation id="7707922173985738739">Използване на мобилни данни</translation>
 <translation id="7725024127233776428">Запазените от вас отметки към страници се показват тук</translation>
-<translation id="7731260005404856143">Възможно е <ph name="BEGIN_LINK1" />други видове активност<ph name="END_LINK1" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="7757787379047923882">Текст, споделен от <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Избиране на дата и час</translation>
 <translation id="7762668264895820836">SD карта <ph name="SD_CARD_NUMBER" /></translation>
@@ -1150,6 +1150,7 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="8284326494547611709">Надписи</translation>
 <translation id="829672787777123339">Установява се връзка с устройството ви…</translation>
 <translation id="8310344678080805313">Стандартни раздели</translation>
+<translation id="831192587911042850">Добавя текущия уебсайт към списъка с тези, които следвате.</translation>
 <translation id="8327155640814342956">За оптимално сърфиране отворете, за да актуализирате Chrome</translation>
 <translation id="834313815369870491">Сайтове, които никога да не се превеждат</translation>
 <translation id="8349013245300336738">Сортиране по количеството използвани данни</translation>
@@ -1292,7 +1293,6 @@ Privacy Sandbox продължава да се разработва активн
 <translation id="9209888181064652401">Не могат да се извършват обаждания</translation>
 <translation id="9212845824145208577">Придвижването по-надолу не е възможно. Започнете от по-долна част на страницата.</translation>
 <translation id="9219103736887031265">Изображения</translation>
-<translation id="923957533152125119">Възможно е <ph name="BEGIN_LINK1" />историята на търсенията<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други видове активност<ph name="END_LINK2" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="926205370408745186">Премахване на активността ви в Chrome от „Дигитално благополучие“</translation>
 <translation id="927968626442779827">Използване на олекотения режим в Google Chrome</translation>
 <translation id="932327136139879170">Начална страница</translation>

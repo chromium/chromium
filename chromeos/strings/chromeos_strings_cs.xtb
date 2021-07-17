@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">VE FRONTĚ</translation>
 <translation id="2161394479394250669">Zrušit tiskovou úlohu</translation>
+<translation id="2209788852729124853">Resetovat počítadla návštěvnosti</translation>
 <translation id="2217935453350629363">Aktuální rychlost</translation>
 <translation id="2224337661447660594">Nejste připojeni k internetu</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Baterie je nabitá</translation>
 <translation id="360565022852130722">Síť Wi-Fi je zabezpečena slabým protokolem WEP 802.1x</translation>
 <translation id="3689839747745352263">Test <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Znovu naskenovat stránku}=1{Znovu naskenovat stránku {PAGE_NUMBER}}few{Znovu naskenovat stránku {PAGE_NUMBER}}many{Znovu naskenovat stránku {PAGE_NUMBER}}other{Znovu naskenovat stránku {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (recenze: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Nepřipojeno</translation>
 <translation id="3749289110408117711">Název souboru</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Můj disk</translation>
 <translation id="4429881212383817840">Platnost lístku Kerberos brzy vyprší</translation>
 <translation id="4431821876790500265">Zobrazit přehled</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Odstranit stránku}=1{Odstranit stránku {PAGE_NUMBER}}few{Odstranit stránku {PAGE_NUMBER}}many{Odstranit stránku {PAGE_NUMBER}}other{Odstranit stránku {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Staré heslo</translation>
 <translation id="4453205916657964690">Maska podsítě</translation>
 <translation id="4454245904991689773">Uložit do</translation>
@@ -248,6 +251,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="5916084858004523819">Zakázáno</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Soubor byl úspěšně naskenován a uložen do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Soubory byly úspěšně naskenovány a uloženy do složky <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Soubor nebyl nalezen</translation>
+<translation id="5972388717451707488">Modul aktualizací</translation>
 <translation id="6037291330010597344">Podavač dokumentů skeneru je prázdný. Vložte do něj dokumenty a zkuste to znovu.</translation>
 <translation id="6040143037577758943">Zavřít</translation>
 <translation id="6040852767465482106">Anonymní identita</translation>
@@ -285,6 +289,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="6527081081771465939">Neznámý bezpečnostní protokol Wi-Fi</translation>
 <translation id="65587193855025101">Předlohové sklo</translation>
 <translation id="6564646048574748301">Tisk selhal – tiskárna není dostupná</translation>
+<translation id="6574762126505704998">Vyplnit</translation>
 <translation id="6603230386432466813">Máte problémy s připojením?</translation>
 <translation id="6618744767048954150">Probíhá</translation>
 <translation id="6620487321149975369">Tiskové úlohy se budou zobrazovat v historii, pokud je ručně neodstraníte</translation>
@@ -316,6 +321,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7216409898977639127">Poskytovatel mobilních dat</translation>
 <translation id="7271040990581020067">Skener je aktuálně používán. Zkuste to znovu později.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Sbírky tapet</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Síťová zařízení</translation>
 <translation id="7359657277149375382">Typ souboru</translation>
@@ -332,6 +338,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Zbývá <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Další informace v centru nápovědy</translation>
+<translation id="763165478673169849">Čas posledního resetování</translation>
 <translation id="7648838807254605802">Vysoká latence HTTPS</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7690294790491645610">Potvrďte nové heslo</translation>
@@ -353,6 +360,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8075838845814659848">Zbývající kapacita</translation>
 <translation id="808894953321890993">Změnit heslo</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Požadovat počítadla návštěvnosti</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8214184102975786227">Skenovat různé stránky do jednoho PDF</translation>
@@ -374,8 +382,10 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8475690821716466388">Síť Wi-Fi je zabezpečena slabým protokolem WEP PSK</translation>
 <translation id="8477551185774834963">DNS má latenci mírně nad prahovou hodnotou</translation>
 <translation id="8483248364096924578">IP adresa</translation>
+<translation id="8498220429738806196">Počítadla návštěvnosti</translation>
 <translation id="8503813439785031346">Uživatelské jméno</translation>
 <translation id="8503836310948963452">Ještě pár minut…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Někteří operátoři k připojení k síti vyžadují tuto možnost. Na podrobnosti se zeptejte mobilního operátora.</translation>
 <translation id="8576249514688522074">Neinicializováno</translation>
 <translation id="8620617069779373398">Stav roamingu</translation>
@@ -392,6 +402,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Tapeta</translation>
 <translation id="8845001906332463065">Nápověda</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test byl úspěšný</translation>
 <translation id="8898840733695078011">Síla signálu</translation>
 <translation id="8910721771319628100">Výchozí síť má latenci nad prahovou hodnotou</translation>
@@ -407,6 +418,7 @@ Zkuste klepnout na mikrofon a zeptat se.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Současné využití</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Obnovte lístek pro <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skenování stránky <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Odemknout</translation>

@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2161394479394250669">Çap işini ləğv edin</translation>
+<translation id="2209788852729124853">Nəqliyyat Sayğaclarını sıfırlayın</translation>
 <translation id="2217935453350629363">Cari sürət</translation>
 <translation id="2224337661447660594">İnternet yoxdur</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Batareya doludur</translation>
 <translation id="360565022852130722">WiFi şəbəkəsi zəif protokol WEP 802.1x ilə qorunur</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> testi</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Səhifəni yenidən skanlayın}=1{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}other{{PAGE_NUMBER} saylı səhifəni yenidən skanlayın}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> rəy)</translation>
 <translation id="3748026146096797577">Qoşulmayıb</translation>
 <translation id="3749289110408117711">Fayl adı</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Diskim</translation>
 <translation id="4429881212383817840">Kerberos biletinin vaxtı tezliklə başa çatacaq</translation>
 <translation id="4431821876790500265">Hesabata baxın</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Səhifəni silin}=1{{PAGE_NUMBER} saylı səhifəni silin}other{{PAGE_NUMBER} saylı səhifəni silin}}</translation>
 <translation id="445059817448385655">Köhnə parol</translation>
 <translation id="4453205916657964690">Alt şəbəkə maskası</translation>
 <translation id="4454245904991689773">Skanı burada saxlayın</translation>
@@ -247,6 +250,7 @@
 <translation id="5916084858004523819">Qadağan olunub</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Faylınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}other{Fayllarınız uğurla skanlandı və <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> qovluğunda saxlanıldı.}}</translation>
 <translation id="5931523347251946569">Fayl tapılmadı</translation>
+<translation id="5972388717451707488">Güncəlləmə Mexanizmi</translation>
 <translation id="6037291330010597344">Skanerin sənəd ötürücüsü boşdur. Sənəd əlavə edib yenidən sınayın.</translation>
 <translation id="6040143037577758943">Qapat</translation>
 <translation id="6040852767465482106">Anonim Kimlik</translation>
@@ -284,6 +288,7 @@
 <translation id="6527081081771465939">Naməlum Wi-Fi güvənlik protokolu</translation>
 <translation id="65587193855025101">Yastı</translation>
 <translation id="6564646048574748301">Alınmadı - Printer əlçatan deyil</translation>
+<translation id="6574762126505704998">Doldurma</translation>
 <translation id="6603230386432466813">Bağlantı problemi var?</translation>
 <translation id="6618744767048954150">İcra olunur</translation>
 <translation id="6620487321149975369">Manual olaraq silinməsə, çap işləri tarixçədə görünəcək</translation>
@@ -315,6 +320,7 @@
 <translation id="7216409898977639127">Mobil provayder</translation>
 <translation id="7271040990581020067">Skaner hazırda istifadə olunur. Sonra cəhd edin.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Divar kağızı kolleksiyaları</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Şəbəkə Cihazları</translation>
 <translation id="7359657277149375382">Fayl növü</translation>
@@ -331,6 +337,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> qalıb</translation>
 <translation id="7620771111601174153">Yardım Mərkəzində ətraflı məlumat əldə edin</translation>
+<translation id="763165478673169849">Son Sıfırlama Vaxtı</translation>
 <translation id="7648838807254605802">Yüksək HTTPS gecikməsi</translation>
 <translation id="7658239707568436148">Ləğv edin</translation>
 <translation id="7690294790491645610">Yeni parolu təsdiq edin</translation>
@@ -352,6 +359,7 @@
 <translation id="8075838845814659848">Qalan şarj</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Nəqliyyat Sayğacları Sorğulayın</translation>
 <translation id="8206859287963243715">Mobil</translation>
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8214184102975786227">Birdən çox səhifəni bir PDF-ə skan edin</translation>
@@ -373,8 +381,10 @@
 <translation id="8475690821716466388">WiFi şəbəkəsi zəif protokol WEP PSK ilə qorunur</translation>
 <translation id="8477551185774834963">DNS gecikməsi icazə verilən həddən azca yuxarıdır</translation>
 <translation id="8483248364096924578">IP ünvanı</translation>
+<translation id="8498220429738806196">Nəqliyyat Sayğacları</translation>
 <translation id="8503813439785031346">İstifadəçi adı</translation>
 <translation id="8503836310948963452">Bir neçə dəqiqə daha...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operatorunuz şəbəkəsinə qoşulmaq üçün bu seçimi tələb edə bilər. Ətraflı məlumat üçün operatorunuzla əlaqə saxlayın.</translation>
 <translation id="8576249514688522074">Başladılmayıb</translation>
 <translation id="8620617069779373398">Rominq statusu</translation>
@@ -391,6 +401,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Divar kağızı</translation>
 <translation id="8845001906332463065">Yardım alın</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Test uğurlu oldu</translation>
 <translation id="8898840733695078011">Siqnal gücü</translation>
 <translation id="8910721771319628100">Defolt şəbəkə gecikmə həddindən yuxarıdır</translation>
@@ -406,6 +417,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Cari istifadə</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> üçün bileti yeniləyin</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> saylı səhifə skanlanır</translation>
 <translation id="9111102763498581341">Kiliddən çıxarın</translation>

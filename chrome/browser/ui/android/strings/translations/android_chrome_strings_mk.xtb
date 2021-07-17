@@ -306,6 +306,7 @@
 <translation id="2942036813789421260">Картичката за преглед е затворена</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" /> управуваат со оваа сметка.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитана страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитана страница}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитани страници}}</translation>
+<translation id="2961210776189273067">Наслов</translation>
 <translation id="2979025552038692506">Избрана инкогнито-картичка</translation>
 <translation id="2979448359891869301">Не може да се прошири сликата од екранот. Обидете се повторно кога вашиот телефон нема да биде зафатен.</translation>
 <translation id="2979639724566107830">Отвори во нов прозорец</translation>
@@ -599,7 +600,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="4881695831933465202">Отвори</translation>
 <translation id="488187801263602086">Преименување датотеката</translation>
 <translation id="4885273946141277891">Неподдржан број примероци на Chrome.</translation>
-<translation id="4905269543817054577">Историјата не се зачувува кога сте во „Инкогнито“</translation>
 <translation id="4908869848243824489">Discover од Google</translation>
 <translation id="4910889077668685004">Апликации за плаќање</translation>
 <translation id="4913161338056004800">Ресетирај ја статистиката</translation>
@@ -618,6 +618,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="497421865427891073">Оди напред</translation>
 <translation id="4988210275050210843">Се презема датотека (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Страници</translation>
+<translation id="5001388021414335527">Следете го сајтов тука</translation>
 <translation id="5004416275253351869">Контроли на активноста на Google</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> сака да се поврзе</translation>
@@ -988,6 +989,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Споделете 1 избрана ставка}one{Споделете # избрана ставка}other{Споделете # избрани ставки}}</translation>
 <translation id="7359002509206457351">Пристап до начините на плаќање</translation>
 <translation id="7375125077091615385">Тип:</translation>
+<translation id="7386842512861524348">Врската со сајтот е бебедна, освен ако Chrome не ве извести поинаку.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Искуство при првото извршување на Chrome</translation>
@@ -1036,7 +1038,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7630202231528827509">URL на операторот</translation>
 <translation id="7638584964844754484">Погрешна лозинка-фраза</translation>
 <translation id="7641339528570811325">Исчисти податоци од прелистување…</translation>
-<translation id="764170292089748542">Chrome не ја зачувува историјата на прелистувањето кога ќе изберете да прелистувате приватно. Сѐ уште може да користите обележувачи за да пристапувате до омилените сајтови.</translation>
 <translation id="7646772052135772216">Синхронизацијата на лозинките не работи</translation>
 <translation id="7655900163790317559">Се вклучува Bluetooth…</translation>
 <translation id="7658239707568436148">Откажи</translation>
@@ -1047,7 +1048,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="7704317875155739195">Автоматски довршувај ги пребарувањата и URL-адресите</translation>
 <translation id="7707922173985738739">Ќе користи мобилен интернет</translation>
 <translation id="7725024127233776428">Страниците што ќе ги обележите се појавуваат тука</translation>
-<translation id="7731260005404856143"><ph name="BEGIN_LINK1" />Други форми на активност<ph name="END_LINK1" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="7757787379047923882">Текстот е споделен од <ph name="DEVICE_NAME" /></translation>
 <translation id="7761849928583394409">Изберете датум и време</translation>
 <translation id="7762668264895820836">SD-картичка <ph name="SD_CARD_NUMBER" /></translation>
@@ -1150,6 +1150,7 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="8284326494547611709">Титлови</translation>
 <translation id="829672787777123339">Се поврзуваме со уредот…</translation>
 <translation id="8310344678080805313">Стандардни картички</translation>
+<translation id="831192587911042850">Го додава тековниот веб-сајт на списокот со веб-сајтови што ги следите.</translation>
 <translation id="8327155640814342956">За најдобро искуство при прелистувањето, отворете го за да го ажурирате Chrome</translation>
 <translation id="834313815369870491">Никогаш не преведувај сајтови</translation>
 <translation id="8349013245300336738">Подреди по количина на искористен сообраќај</translation>
@@ -1292,7 +1293,6 @@ Privacy Sandbox сѐ уште активно се развива и таа е д
 <translation id="9209888181064652401">Не може да се упатуваат повици</translation>
 <translation id="9212845824145208577">Не може да одите пониско. Почнете од подолу на страницата.</translation>
 <translation id="9219103736887031265">Слики</translation>
-<translation id="923957533152125119"><ph name="BEGIN_LINK1" />Историјата на пребарување<ph name="END_LINK1" /> и <ph name="BEGIN_LINK2" />други форми на активност<ph name="END_LINK2" /> може да се зачувуваат во вашата сметка на Google кога сте најавени. Може да ги избришете во секое време.</translation>
 <translation id="926205370408745186">Отстранете ја вашата активност на Chrome од „Дигитална благосостојба“</translation>
 <translation id="927968626442779827">Користете „Лесен режим“ на Google Chrome</translation>
 <translation id="932327136139879170">Дома</translation>

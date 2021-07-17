@@ -22,6 +22,7 @@
 <translation id="2064538373111010176">Aktibo ang <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Mga custom na parameter ng video</translation>
 <translation id="2175927920773552910">QR Code</translation>
+<translation id="2268107369530950373">Lumipat sa scanner mode</translation>
 <translation id="229579744168541441">I-export sa disk</translation>
 <translation id="2320741269052147773">Mag-pan sa kaliwa</translation>
 <translation id="2501278716633472235">Bumalik</translation>
@@ -64,6 +65,7 @@
 <translation id="5057360777601936059">Kasalukuyang hindi available ang iyong camera.
         Pakitingnan kung maayos na nakakonekta ang camera.</translation>
 <translation id="5152121255775685072">Pumunta sa gallery</translation>
+<translation id="5268823927180092501">I-enable ang document mode sa lahat ng camera</translation>
 <translation id="5422455049771430511">May bago nang lugar para sa iyong mga larawan at video</translation>
 <translation id="5671277269877808209">Parisukat</translation>
 <translation id="5753488212459587150">I-enable ang expert mode</translation>

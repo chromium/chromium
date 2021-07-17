@@ -182,6 +182,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2243633977138166243">Bonyeza kishale cha kushoto au kulia ili usogeze; bonyeza enter ili ufungue</translation>
 <translation id="224426591676115802">Hakuna sauti inayopatikana katika: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Inafunga Hali ya Mafunzo</translation>
+<translation id="2247870315273396641">Sehemu ya kukagua sauti</translation>
 <translation id="225732394367814946">Ongeza kasi ya usemi</translation>
 <translation id="2267538686624070261">Unaacha neno lenye kosa la tahajia</translation>
 <translation id="2267945578749931355">Herufi Inayofuata</translation>
@@ -198,6 +199,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="2390264819538553347">Ili uendelee, bonyeza kitufe cha Enter, ili urudi nyuma, bonyeza kitufe cha Backspace.</translation>
 <translation id="2398579267367951220">Andika ili utafute kwenye ukurasa. Bonyeza Enter ili uende kwenye matokeo, vishale vya juu au chini ili upitie matokeo, endelea kuandika ili ubadilishe utafutaji wako au bonyeza Escape ili ughairi.</translation>
 <translation id="240709722712693803">Urujuani ya Samawati</translation>
+<translation id="2410298923485357543">Tumia sauti ya kawaida kifaa kikiwa mtandaoni</translation>
 <translation id="2416512023405990736">Kisanduku cha kuteua ambacho hakijateuliwa</translation>
 <translation id="2417569100218200841">Maelezo ya maudhui</translation>
 <translation id="2417948780551741035">Maelezo ya mwisho wa kitabu</translation>
@@ -299,6 +301,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="3046838483509668188">Chaguo za ChromeVox</translation>
 <translation id="3060756054951570867">Menyu <ph name="TITLE" /> imefunguliwa</translation>
 <translation id="3060880924447482063">Telezesha kidole kushoto au kulia ili usogeza kulingana na kipengee</translation>
+<translation id="3061302636956643119">Maandishi yatatumwa kwa Google ili yachakatwe.</translation>
 <translation id="3070245424257836917">Telezesha vidole vitatu kuelekea juu</translation>
 <translation id="307516670110542567">Maelekezo ya haraka</translation>
 <translation id="3078345202707391975">Kichwa cha ngazi ya 2 kinachofuata</translation>
@@ -428,6 +431,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="3887399638190992181">Vitufe muhimu</translation>
 <translation id="3887576927692165210">ed</translation>
 <translation id="3897092660631435901">Menyu</translation>
+<translation id="3898233949376129212">Lugha inayotumika kwenye kifaa</translation>
 <translation id="3907138069015388678">lstgrd</translation>
 <translation id="3909320334364316587">Kichwa cha ngazi ya 6 kilichotangulia</translation>
 <translation id="3914173277599553213">Inahitajika</translation>
@@ -604,6 +608,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="5263344797180442561">h2</translation>
 <translation id="528468243742722775">Mwisho</translation>
 <translation id="5290220123487191192">Hebu tuanze kwa ishara kadhaa utakazotumia mara kwa mara. Ukifikia kipengee unachotaka kufungua, gusa skrini mara mbili kwa kutumia kidole kimoja. Ili uendelee, gusa mara mbili sasa.</translation>
+<translation id="5302048478445481009">Lugha</translation>
 <translation id="5302089807023311274">Marejeleo ya bibliografia</translation>
 <translation id="530391007967514163">Jaribu kuruka kulingana na vichwa ili uende kwenye sehemu mbalimbali za maandishi yaliyo hapo chini.</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, kichupo</translation>
@@ -636,6 +641,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="5452267669091857717">Hakuna kichwa cha kiwango cha kwanza kinachofuata</translation>
 <translation id="5455441614648621694">Nyongeza</translation>
 <translation id="5462510922370980473">Orodha ya kurasa</translation>
+<translation id="5471768120198416576">Hujambo! Mimi ni sauti yako inayobadilisha maandishi kwenda usemi.</translation>
 <translation id="5495517933067991341">Vitufe Muhimu: Shift</translation>
 <translation id="549602578321198708">Neno</translation>
 <translation id="5513242761114685513">Menyu</translation>
@@ -735,6 +741,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6150023170003443621">Kijani cha Manjano</translation>
 <translation id="6158882249329863701">safu mlalo <ph name="TABLECELLROWINDEX" /> safu wima <ph name="TABLECELLCOLUMNINDEX" /></translation>
 <translation id="6164829606128959761">mita</translation>
+<translation id="6165508094623778733">Pata maelezo zaidi</translation>
 <translation id="6166362019018438352">Manukuu ya nukta nundu yamezimwa</translation>
 <translation id="6186305613600865047">Ruka hadi mwisho wa ukurasa</translation>
 <translation id="6187190722927752226">Mchanganyiko wa Kijani na Samawati</translation>
@@ -803,6 +810,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="6759710362319508545">Nyenzo</translation>
 <translation id="67862343314499040">Zambarau iliyokolea</translation>
 <translation id="6786800275320335305">Makala</translation>
+<translation id="6790428901817661496">Cheza</translation>
 <translation id="6790781785997195160">Ukishafanya mazoezi, tafuta kitufe cha somo linalofuata. Kisha gusa mara mbili ili uendelee.</translation>
 <translation id="6793101435925451627">lstbx</translation>
 <translation id="6815255864998354418">Manjano Hafifu</translation>
@@ -932,6 +940,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="7693840228159394336">Kitufe cha mviringo kilichotangulia</translation>
 <translation id="7701040980221191251">Hamna</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Sauti ya kawaida</translation>
 <translation id="7714340021005120797">Hakuna kisanduku mseto kinachofuata</translation>
 <translation id="772146615414628379">Hongera! Umejifunza mambo muhimu kuhusu jinsi ya kutumia ChromeVox. Kumbuka kwamba unaweza kufungua menyu ya amri za ChromeVox wakati wowote kwa kubonyeza Search+Period. Ili upate maelezo zaidi kuhusu ChromeVox na Mfumo wa Uendeshaji wa Chrome, soma makala yafuatayo.
     Ikiwa umemaliza mafunzo, tumia ChromeVox kwenda kwenye kitufe cha Kufunga na ukibofye.</translation>
@@ -962,6 +971,7 @@ Ili ufungue menyu ya kivinjari cha Chrome, bonyeza Alt+F.</translation>
 <translation id="7939428177581522200">zimeongezwa kwenye uchaguzi</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{katika}other{alama # za katika}}</translation>
 <translation id="7942349550061667556">Nyekundu</translation>
+<translation id="7945703887991230167">Sauti unayopendelea</translation>
 <translation id="7948364528129376623">Hakuna kiungo kilichofunguliwa kinachofuata</translation>
 <translation id="7952460583030260752">Marejeleo kuhusu amri</translation>
 <translation id="7965147473449754028">menyu imefungwa</translation>

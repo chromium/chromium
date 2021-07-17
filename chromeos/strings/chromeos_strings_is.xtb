@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">Í BIÐRÖÐ</translation>
 <translation id="2161394479394250669">Hætta við prentverk</translation>
+<translation id="2209788852729124853">Endurstilla talningu umferðar</translation>
 <translation id="2217935453350629363">Núverandi hraði</translation>
 <translation id="2224337661447660594">Engin nettenging</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Rafhlaða fullhlaðin</translation>
 <translation id="360565022852130722">Wi-Fi netið er varið með veikum samskiptareglum, WEP 802.1x</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> prófun</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Skanna aftur síðu}=1{Skanna aftur síðu {PAGE_NUMBER}}one{Skanna aftur síðu {PAGE_NUMBER}}other{Skanna aftur síðu {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> umsagnir)</translation>
 <translation id="3748026146096797577">Ótengt</translation>
 <translation id="3749289110408117711">Skráarheiti</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Drifið mitt</translation>
 <translation id="4429881212383817840">Kerberos-miði rennur út fljótlega</translation>
 <translation id="4431821876790500265">Skoða skýrslu</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Fjarlægja síðu}=1{Fjarlægja síðu {PAGE_NUMBER}}one{Fjarlægja síðu {PAGE_NUMBER}}other{Fjarlægja síðu {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Eldra aðgangsorð</translation>
 <translation id="4453205916657964690">Undirnetssía</translation>
 <translation id="4454245904991689773">Skanna í</translation>
@@ -248,6 +251,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="5916084858004523819">Bannað</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Skráin var skönnuð og vistuð í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Skrárnar voru skannaðar og vistaðar í <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Skráin fannst ekki</translation>
+<translation id="5972388717451707488">Uppfæra vél</translation>
 <translation id="6037291330010597344">Skjalamatarinn á skannanum er tómur. Bættu við skjölum og reyndu aftur.</translation>
 <translation id="6040143037577758943">Loka</translation>
 <translation id="6040852767465482106">Nafnlaust auðkenni</translation>
@@ -285,6 +289,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="6527081081771465939">Óþekkt Wi-Fi öryggisregla</translation>
 <translation id="65587193855025101">Flatur skanni</translation>
 <translation id="6564646048574748301">Mistókst – ekki næst í prentara</translation>
+<translation id="6574762126505704998">Fylling</translation>
 <translation id="6603230386432466813">Áttu í vandræðum með að tengjast?</translation>
 <translation id="6618744767048954150">Í gangi</translation>
 <translation id="6620487321149975369">Prentverk birtast í ferli nema þau séu fjarlægð handvirkt</translation>
@@ -316,6 +321,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7216409898977639127">Farsímafyrirtæki</translation>
 <translation id="7271040990581020067">Skanninn er í notkun núna. Reyndu aftur síðar.</translation>
 <translation id="7274587244503383581"><ph name="PRINTED_PAGES_NUMBER" />/<ph name="TOTAL_PAGES_NUMBER" /></translation>
+<translation id="7287310195820267359">Veggfóðurssöfn</translation>
 <translation id="7302860742311162920">ICCID</translation>
 <translation id="7343649194310845056">Netkerfistæki</translation>
 <translation id="7359657277149375382">Skráargerð</translation>
@@ -332,6 +338,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> eftir</translation>
 <translation id="7620771111601174153">Fáðu frekari upplýsingar í hjálparmiðstöðinni</translation>
+<translation id="763165478673169849">Tími síðustu endurstillingar</translation>
 <translation id="7648838807254605802">Langur HTTPS-biðtími</translation>
 <translation id="7658239707568436148">Hætta við</translation>
 <translation id="7690294790491645610">Staðfestu nýtt aðgangsorð</translation>
@@ -353,6 +360,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8075838845814659848">Hleðsla eftir</translation>
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Biðja um talningu umferðar</translation>
 <translation id="8206859287963243715">Farsímakerfi</translation>
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8214184102975786227">Skanna margar síður í eitt PDF</translation>
@@ -374,8 +382,10 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8475690821716466388">Wi-Fi netið er varið með veikum samskiptareglum, WEP PSK</translation>
 <translation id="8477551185774834963">DNS-biðtími er aðeins yfir leyfðum þröskuldi</translation>
 <translation id="8483248364096924578">IP-tala</translation>
+<translation id="8498220429738806196">Talning umferðar</translation>
 <translation id="8503813439785031346">Notandanafn</translation>
 <translation id="8503836310948963452">Aðeins nokkrar mínútur í viðbót…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Símafyrirtæki kunna að biðja þig um slíkt til að tengjast neti þeirra. Hafðu samband við símafyrirtækið til að fá frekari upplýsingar.</translation>
 <translation id="8576249514688522074">Ekki frumstillt</translation>
 <translation id="8620617069779373398">Reikistaða</translation>
@@ -392,6 +402,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Veggfóður</translation>
 <translation id="8845001906332463065">Fá hjálp</translation>
+<translation id="8868741746785112895">GUID-kenni</translation>
 <translation id="8881098542468797602">Próf tókst</translation>
 <translation id="8898840733695078011">Sendistyrkur</translation>
 <translation id="8910721771319628100">Sjálfgefið net er yfir biðþröskuldi</translation>
@@ -407,6 +418,7 @@ Prófaðu að ýta á hljóðnemann til að spyrja mig að hverju sem er.</trans
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Núverandi notkun</translation>
+<translation id="9095775724867566971">VM-viðbót</translation>
 <translation id="910415269708673980">Endurnýja miða fyrir <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Skannar síðu <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Taka úr lás</translation>

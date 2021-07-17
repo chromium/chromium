@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">လင့်ခ်ကို ပြုလုပ်၍မရပါ</translation>
 <translation id="2800683595868705743">တဘ် ခလုတ်ကို ထားရစ်ခဲ့ရန်</translation>
 <translation id="2815198996063984598">၂။ 'မူရင်း ဘရောင်ဇာအက်ပ်' ကို တို့ပါ</translation>
+<translation id="2820289420301699633">သင့်စီမံခန့်ခွဲသူက Chrome ကို ထိန်းချုပ်ခွင့်ရှိပြီး ၎င်း၏ဒေတာများကို ဝင်ကြည့်နိုင်သည်</translation>
 <translation id="2830972654601096923">လိပ်စာများ စီမံရန်...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />၊ <ph name="STATE" />၊ <ph name="URL" /></translation>
 <translation id="2840687315230832938">စင့်ခ် စတင်လုပ်ရန် စီစဉ်သတ်မှတ်ခြင်းကို အပြီးသတ်၍ မရပါ</translation>
@@ -195,6 +196,7 @@
 <translation id="2932085390869194046">စကားဝှက် အကြံပြုပါ…</translation>
 <translation id="2952581218264071393">၁။ 'Chrome ဆက်တင်များ' ဖွင့်ပါ</translation>
 <translation id="2958718410589002129">စကားဝှက်များ</translation>
+<translation id="2961210776189273067">ဂုဏ်ပုဒ်</translation>
 <translation id="2964349545761222050">ပြင်ပအဖွဲ့အစည်း၏ ကွတ်ကီးများကို ပိတ်ခြင်း</translation>
 <translation id="2969979262385602596">လက်မှတ်ထိုးဝင်ရောက်ခြင်းမအောင်မြင်ပါ။ ကျေးဇူးပြု၍ နောက်မှ ထပ်မံကြိုးစားပါ။</translation>
 <translation id="2975121486251958312">'ရုပ်ဖျက်မုဒ်' သာ အသုံးပြုနိုင်သည်</translation>
@@ -268,7 +270,6 @@
 <translation id="3607167657931203000">အလိုအလျောက် ဖြည့်စွက်ရန်ဒေတာ</translation>
 <translation id="3609785682760573515">စင့်က် လုပ်နေ...</translation>
 <translation id="3638472932233958418">ဝက်ဘ်စာမျက်နှာများ ကြိုခေါ်ထားရန်</translation>
-<translation id="3648013730801605241">သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK" />ရှာဖွေမှတ်တမ်း<ph name="END_LINK" /> နှင့် <ph name="BEGIN_LINK" />အခြားပုံစံဖြင့် လုပ်ဆောင်ချက်<ph name="END_LINK" /> တို့ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။</translation>
 <translation id="3661160521073045932">စီစဉ်သတ်မှတ်ချက် ပရိုဖိုင် ရနိုင်သည်</translation>
 <translation id="3670030362669914947">နံပါတ်</translation>
 <translation id="3691593122358196899"><ph name="FOLDER_TITLE" />သို့ စာညှပ်ကို ထည့်ထားပါသည်</translation>
@@ -647,10 +648,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="734758817008927353">'ကတ်သိမ်းရန်' ရွေးချယ်မှုများ</translation>
 <translation id="7348502496356775519">လိပ်စာ</translation>
 <translation id="7353432112255316844">သင်ဖြစ်ကြောင်း အတည်ပြုရန်</translation>
-<translation id="7376492662175718683">သင့် Google Account မှ ထွက်သွားမည် မဟုတ်ပါ။ သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK" />အခြားပုံစံဖြင့် လုပ်ဆောင်ချက်<ph name="END_LINK" /> ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။
-
-        
-သင်၏ရှာဖွေရေး အင်ဂျင်သည် <ph name="DSE_NAME" /> ဖြစ်သည်။ သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် ၎င်း၏ ညွှန်ကြားချက်များကို ကြည့်ပါ။</translation>
 <translation id="7383797227493018512">ဖတ်ရန် စာရင်း</translation>
 <translation id="7398893703713203428">လင့်ခ် ပြုလုပ်ရန်</translation>
 <translation id="739941347996872055">ယခင်တဘ်</translation>
@@ -793,10 +790,6 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">စာညှပ်များ</translation>
 <translation id="8840513115188359703">Google အကောင့်မှ သင်ထွက်သွားမည် မဟုတ်ပါ။</translation>
-<translation id="8851300969441660830">သင့် Google Account မှ ထွက်သွားမည် မဟုတ်ပါ။ သင်လက်မှတ်ထိုးဝင်သောအခါ <ph name="BEGIN_LINK" />အခြားပုံစံဖြင့် လုပ်ဆောင်ချက်<ph name="END_LINK" /> ကို သင်၏ Google Account တွင် သိမ်းထားနိုင်သည်။ ၎င်းတို့ကို အချိန်မရွေး ဖျက်နိုင်သည်။
-
-
-သက်ဆိုင်မှုရှိပါက သင်၏ရှာဖွေမှတ်တမ်းကို ဖျက်ရန်အတွက် သင့်ရှာဖွေရေး အင်ဂျင်၏ ညွှန်ကြားချက်များကို ကြည့်ပါ။</translation>
 <translation id="8868471676553493380">{count,plural, =1{တဘ် {count} ခု}other{တဘ် {count} ခု}}</translation>
 <translation id="8870413625673593573">မကြာမီက ပိတ်ခဲ့</translation>
 <translation id="8876882697946675716">သင့်စက်များကို စင့်ခ်လုပ်ထားခြင်း</translation>

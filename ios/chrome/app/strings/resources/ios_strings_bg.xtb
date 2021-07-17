@@ -175,6 +175,7 @@
 <translation id="2783054063075604403">Не може да се създаде връзка</translation>
 <translation id="2800683595868705743">Излизане от превключвателя на раздели</translation>
 <translation id="2815198996063984598">2. Докоснете „Стандартно прилож. за браузър“.</translation>
+<translation id="2820289420301699633">Администраторът ви контролира Chrome и има достъп до данните в браузъра</translation>
 <translation id="2830972654601096923">Управление на адресите...</translation>
 <translation id="2834956026595107950"><ph name="TITLE" />, <ph name="STATE" />, <ph name="URL" /></translation>
 <translation id="2840687315230832938">Първоначалното настройване на синхронизирането не бе завършено</translation>
@@ -195,6 +196,7 @@
 <translation id="2932085390869194046">Предложение за парола...</translation>
 <translation id="2952581218264071393">1. Отворете настройките на Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
+<translation id="2961210776189273067">Обръщение</translation>
 <translation id="2964349545761222050">Блокиране на „бисквитките“ на трети страни</translation>
 <translation id="2969979262385602596">Влизането не бе успешно. Моля, опитайте пак по-късно.</translation>
 <translation id="2975121486251958312">Налице е само режим „инкогнито“</translation>
@@ -268,7 +270,6 @@
 <translation id="3607167657931203000">Автоматично попълване на данни</translation>
 <translation id="3609785682760573515">Синхронизира се...</translation>
 <translation id="3638472932233958418">Предв. зареждане на уеб стр.</translation>
-<translation id="3648013730801605241">Възможно е <ph name="BEGIN_LINK" />историята на търсенията<ph name="END_LINK" /> и <ph name="BEGIN_LINK" />други видове активност<ph name="END_LINK" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.</translation>
 <translation id="3661160521073045932">Налице е конфигурационен профил</translation>
 <translation id="3670030362669914947">Номер</translation>
 <translation id="3691593122358196899">Отметката бе запазена в/ъв „<ph name="FOLDER_TITLE" />“</translation>
@@ -648,10 +649,6 @@
 <translation id="734758817008927353">Опции за запазване на картата</translation>
 <translation id="7348502496356775519">Отметка</translation>
 <translation id="7353432112255316844">Потвърдете, че сте вие</translation>
-<translation id="7376492662175718683">Няма да излезете от профила си в Google. Възможно е <ph name="BEGIN_LINK" />други видове активност<ph name="END_LINK" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.
-
-        
-Търсещата ви машина е <ph name="DSE_NAME" />. Вижте инструкциите ѝ относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="7383797227493018512">Списък за четене</translation>
 <translation id="7398893703713203428">Създаване на връзка</translation>
 <translation id="739941347996872055">Предишният раздел</translation>
@@ -794,10 +791,6 @@
 <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="8840513115188359703">Няма да излезете от профила си в Google.</translation>
-<translation id="8851300969441660830">Няма да излезете от профила си в Google. Възможно е <ph name="BEGIN_LINK" />други видове активност<ph name="END_LINK" /> да се запазват в профила ви в Google, когато сте влезли в него. Можете да изтриете съответните данни по всяко време.
-
-
-Вижте инструкциите на търсещата си машина относно изтриването на историята на търсенията ви (ако е приложимо).</translation>
 <translation id="8868471676553493380">{count,plural, =1{{count} раздел}other{{count} раздела}}</translation>
 <translation id="8870413625673593573">Наскоро затворени</translation>
 <translation id="8876882697946675716">Синхронизирайте устройствата си</translation>

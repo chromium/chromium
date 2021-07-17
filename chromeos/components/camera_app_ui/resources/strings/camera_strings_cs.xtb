@@ -22,6 +22,7 @@
 <translation id="2064538373111010176">Aktivní: <ph name="CAMERA" /></translation>
 <translation id="2144806332417375165">Vlastní parametry videa</translation>
 <translation id="2175927920773552910">QR kód</translation>
+<translation id="2268107369530950373">Přepnout na režim skeneru</translation>
 <translation id="229579744168541441">Exportovat na disk</translation>
 <translation id="2320741269052147773">Posunout doleva</translation>
 <translation id="2501278716633472235">Zpět</translation>
@@ -64,6 +65,7 @@
 <translation id="5057360777601936059">Fotoaparát momentálně není dostupný.
         Zkontrolujte, zda je fotoaparát správně připojen.</translation>
 <translation id="5152121255775685072">Přejít do galerie</translation>
+<translation id="5268823927180092501">Aktivovat režim dokumentu na všech fotoaparátech</translation>
 <translation id="5422455049771430511">Vaše fotky a videa mají nový domov</translation>
 <translation id="5671277269877808209">Čtverec</translation>
 <translation id="5753488212459587150">Aktivovat režim pro experty</translation>
