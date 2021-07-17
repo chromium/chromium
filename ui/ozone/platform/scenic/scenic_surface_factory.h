@@ -42,7 +42,7 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   void Shutdown();
 
   // SurfaceFactoryOzone implementation.
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<PlatformWindowSurface> CreatePlatformWindowSurface(
       gfx::AcceleratedWidget widget) override;

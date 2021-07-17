@@ -175,13 +175,13 @@ void ScenicSurfaceFactory::Shutdown() {
   scenic_ = nullptr;
 }
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 ScenicSurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{
-      gl::kGLImplementationEGLANGLE,
-      gl::kGLImplementationSwiftShaderGL,
-      gl::kGLImplementationEGLGLES2,
-      gl::kGLImplementationStubGL,
+  return std::vector<gl::GLImplementationParts>{
+      gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::kGLImplementationStubGL),
   };
 }
 

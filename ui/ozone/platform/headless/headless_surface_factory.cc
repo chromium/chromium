@@ -224,9 +224,10 @@ HeadlessSurfaceFactory::HeadlessSurfaceFactory(base::FilePath base_path)
 
 HeadlessSurfaceFactory::~HeadlessSurfaceFactory() = default;
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{gl::kGLImplementationSwiftShaderGL};
+  return std::vector<gl::GLImplementationParts>{
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL)};
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(

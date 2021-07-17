@@ -24,9 +24,9 @@ SurfaceFactoryOzone::SurfaceFactoryOzone() {}
 
 SurfaceFactoryOzone::~SurfaceFactoryOzone() {}
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 SurfaceFactoryOzone::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>();
+  return std::vector<gl::GLImplementationParts>();
 }
 
 GLOzone* SurfaceFactoryOzone::GetGLOzone(

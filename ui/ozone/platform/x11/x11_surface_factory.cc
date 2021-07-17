@@ -99,11 +99,13 @@ X11SurfaceFactory::X11SurfaceFactory(
 
 X11SurfaceFactory::~X11SurfaceFactory() = default;
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 X11SurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{
-      gl::kGLImplementationDesktopGL, gl::kGLImplementationEGLGLES2,
-      gl::kGLImplementationEGLANGLE, gl::kGLImplementationSwiftShaderGL};
+  return std::vector<gl::GLImplementationParts>{
+      gl::GLImplementationParts(gl::kGLImplementationDesktopGL),
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL)};
 }
 
 GLOzone* X11SurfaceFactory::GetGLOzone(

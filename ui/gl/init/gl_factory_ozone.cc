@@ -27,7 +27,7 @@
 namespace gl {
 namespace init {
 
-std::vector<GLImplementation> GetAllowedGLImplementations() {
+std::vector<GLImplementationParts> GetAllowedGLImplementations() {
 #if defined(USE_X11)
   if (!features::IsUsingOzonePlatform())
     return gl::init::GetAllowedGLImplementationsX11();

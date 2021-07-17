@@ -66,11 +66,12 @@ WindowsSurfaceFactory::WindowsSurfaceFactory()
 
 WindowsSurfaceFactory::~WindowsSurfaceFactory() = default;
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 WindowsSurfaceFactory::GetAllowedGLImplementations() {
-  return std::vector<gl::GLImplementation>{gl::kGLImplementationEGLGLES2,
-                                           gl::kGLImplementationSwiftShaderGL,
-                                           gl::kGLImplementationEGLANGLE};
+  return std::vector<gl::GLImplementationParts>{
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::kGLImplementationEGLANGLE)};
 }
 
 GLOzone* WindowsSurfaceFactory::GetGLOzone(

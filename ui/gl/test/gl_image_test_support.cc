@@ -45,13 +45,13 @@ void GLImageTestSupport::InitializeGL(
   }
 #endif
 
-  std::vector<GLImplementation> allowed_impls =
+  std::vector<GLImplementationParts> allowed_impls =
       init::GetAllowedGLImplementations();
   DCHECK(!allowed_impls.empty());
 
   GLImplementationParts impl =
-      prefered_impl ? *prefered_impl : GLImplementationParts(allowed_impls[0]);
-  DCHECK(base::Contains(allowed_impls, impl.gl));
+      prefered_impl ? *prefered_impl : allowed_impls[0];
+  DCHECK(impl.IsAllowed(allowed_impls));
 
   GLSurfaceTestSupport::InitializeOneOffImplementation(impl, true);
 #if defined(USE_OZONE)

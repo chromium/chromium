@@ -34,7 +34,7 @@ namespace init {
 
 // Returns a list of allowed GL implementations. The default implementation will
 // be the first item.
-std::vector<GLImplementation> GetAllowedGLImplementationsX11();
+std::vector<GLImplementationParts> GetAllowedGLImplementationsX11();
 
 // Initializes GL bindings and extension settings.
 bool InitializeGLOneOffX11();

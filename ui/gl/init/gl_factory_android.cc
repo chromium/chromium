@@ -65,10 +65,10 @@ bool GLNonOwnedContext::MakeCurrentImpl(GLSurface* surface) {
 
 }  // namespace
 
-std::vector<GLImplementation> GetAllowedGLImplementations() {
-  std::vector<GLImplementation> impls;
-  impls.push_back(kGLImplementationEGLGLES2);
-  impls.push_back(kGLImplementationEGLANGLE);
+std::vector<GLImplementationParts> GetAllowedGLImplementations() {
+  std::vector<GLImplementationParts> impls;
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
   return impls;
 }
 

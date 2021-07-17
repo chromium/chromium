@@ -29,7 +29,7 @@ class SurfaceFactoryCast : public SurfaceFactoryOzone {
   ~SurfaceFactoryCast() override;
 
   // SurfaceFactoryOzone implementation:
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
   GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
       gfx::AcceleratedWidget widget) override;

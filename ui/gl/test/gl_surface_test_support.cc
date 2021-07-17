@@ -61,11 +61,11 @@ void InitializeOneOffHelper(bool init_extensions) {
   use_software_gl = false;
 #endif
 
-  std::vector<GLImplementation> allowed_impls =
+  std::vector<GLImplementationParts> allowed_impls =
       init::GetAllowedGLImplementations();
   DCHECK(!allowed_impls.empty());
 
-  GLImplementationParts impl = GLImplementationParts(allowed_impls[0]);
+  GLImplementationParts impl = allowed_impls[0];
   if (use_software_gl) {
     impl = gl::init::GetSoftwareGLForTestsImplementation();
   }

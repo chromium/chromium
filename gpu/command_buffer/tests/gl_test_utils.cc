@@ -402,7 +402,7 @@ bool GpuCommandBufferTestEGL::InitializeEGL(int width, int height) {
       new_impl = gl::GLImplementationParts(gl::kGLImplementationEGLANGLE);
 
     const auto allowed_impls = gl::init::GetAllowedGLImplementations();
-    if (!base::Contains(allowed_impls, new_impl.gl)) {
+    if (!new_impl.IsAllowed(allowed_impls)) {
       LOG(INFO) << "Skip test, no EGL implementation is available";
       return false;
     }

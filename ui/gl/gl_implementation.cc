@@ -46,7 +46,7 @@ GLImplementationParts::GLImplementationParts(
 
 GLImplementationParts::GLImplementationParts(const GLImplementation gl_impl)
     : gl(gl_impl),
-      angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kNone)) {}
+      angle(MakeANGLEImplementation(gl_impl, ANGLEImplementation::kDefault)) {}
 
 bool GLImplementationParts::IsValid() const {
   if (angle == ANGLEImplementation::kNone) {
@@ -54,6 +54,26 @@ bool GLImplementationParts::IsValid() const {
   } else {
     return (gl == kGLImplementationEGLANGLE);
   }
+}
+
+bool GLImplementationParts::IsAllowed(
+    const std::vector<GLImplementationParts>& allowed_impls) const {
+  // Given a vector of GLImplementationParts, this function checks if "this"
+  // GLImplementation is found in the list, with a special case where if the
+  // list contains ANGLE/kDefault, "this" may be any ANGLE implementation.
+  for (const GLImplementationParts& impl_iter : allowed_impls) {
+    if (gl == kGLImplementationEGLANGLE &&
+        impl_iter.gl == kGLImplementationEGLANGLE) {
+      if (impl_iter.angle == ANGLEImplementation::kDefault) {
+        return true;
+      } else if (angle == impl_iter.angle) {
+        return true;
+      }
+    } else if (gl == impl_iter.gl) {
+      return true;
+    }
+  }
+  return false;
 }
 
 namespace {
@@ -75,21 +95,39 @@ const struct {
      GLImplementationParts(kGLImplementationEGLGLES2)},
     {kGLImplementationANGLEName, kANGLEImplementationNoneName,
      GLImplementationParts(ANGLEImplementation::kDefault)},
+    {kGLImplementationANGLEName, kANGLEImplementationDefaultName,
+     GLImplementationParts(ANGLEImplementation::kDefault)},
     {kGLImplementationANGLEName, kANGLEImplementationD3D9Name,
      GLImplementationParts(ANGLEImplementation::kD3D9)},
     {kGLImplementationANGLEName, kANGLEImplementationD3D11Name,
      GLImplementationParts(ANGLEImplementation::kD3D11)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D11on12Name,
+     GLImplementationParts(ANGLEImplementation::kD3D11)},
+    {kGLImplementationANGLEName, kANGLEImplementationD3D11NULLName,
+     GLImplementationParts(ANGLEImplementation::kD3D11)},
     {kGLImplementationANGLEName, kANGLEImplementationOpenGLName,
+     GLImplementationParts(ANGLEImplementation::kOpenGL)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLEGLName,
+     GLImplementationParts(ANGLEImplementation::kOpenGL)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLNULLName,
      GLImplementationParts(ANGLEImplementation::kOpenGL)},
     {kGLImplementationANGLEName, kANGLEImplementationOpenGLESName,
      GLImplementationParts(ANGLEImplementation::kOpenGLES)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLESEGLName,
+     GLImplementationParts(ANGLEImplementation::kOpenGLES)},
+    {kGLImplementationANGLEName, kANGLEImplementationOpenGLESNULLName,
+     GLImplementationParts(ANGLEImplementation::kOpenGLES)},
     {kGLImplementationANGLEName, kANGLEImplementationVulkanName,
+     GLImplementationParts(ANGLEImplementation::kVulkan)},
+    {kGLImplementationANGLEName, kANGLEImplementationVulkanNULLName,
      GLImplementationParts(ANGLEImplementation::kVulkan)},
     {kGLImplementationANGLEName, kANGLEImplementationMetalName,
      GLImplementationParts(ANGLEImplementation::kMetal)},
-    {kGLImplementationANGLEName, kANGLEImplementationDefaultName,
-     GLImplementationParts(ANGLEImplementation::kDefault)},
+    {kGLImplementationANGLEName, kANGLEImplementationMetalNULLName,
+     GLImplementationParts(ANGLEImplementation::kMetal)},
     {kGLImplementationANGLEName, kANGLEImplementationSwiftShaderName,
+     GLImplementationParts(ANGLEImplementation::kSwiftShader)},
+    {kGLImplementationANGLEName, kANGLEImplementationSwiftShaderForWebGLName,
      GLImplementationParts(ANGLEImplementation::kSwiftShader)},
     {kGLImplementationANGLEName, kANGLEImplementationNullName,
      GLImplementationParts(ANGLEImplementation::kNull)},

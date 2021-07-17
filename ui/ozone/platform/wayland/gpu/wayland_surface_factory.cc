@@ -142,12 +142,14 @@ WaylandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
   return std::make_unique<WaylandCanvasSurface>(buffer_manager_, widget);
 }
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
-  std::vector<gl::GLImplementation> impls;
+  std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    impls.push_back(gl::kGLImplementationEGLGLES2);
-    impls.push_back(gl::kGLImplementationSwiftShaderGL);
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL));
   }
   return impls;
 }

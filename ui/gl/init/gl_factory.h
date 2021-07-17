@@ -30,7 +30,7 @@ namespace init {
 
 // Returns a list of allowed GL implementations. The default implementation will
 // be the first item.
-GL_INIT_EXPORT std::vector<GLImplementation> GetAllowedGLImplementations();
+GL_INIT_EXPORT std::vector<GLImplementationParts> GetAllowedGLImplementations();
 
 // Returns the software GL implementation used for tests
 GL_INIT_EXPORT GLImplementationParts GetSoftwareGLForTestsImplementation();

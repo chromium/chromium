@@ -97,11 +97,12 @@ SurfaceFactoryCast::SurfaceFactoryCast(
 
 SurfaceFactoryCast::~SurfaceFactoryCast() {}
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 SurfaceFactoryCast::GetAllowedGLImplementations() {
-  std::vector<gl::GLImplementation> impls;
+  std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_)
-    impls.push_back(gl::kGLImplementationEGLGLES2);
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
   return impls;
 }
 

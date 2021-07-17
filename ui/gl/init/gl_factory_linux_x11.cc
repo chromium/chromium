@@ -23,12 +23,12 @@
 namespace gl {
 namespace init {
 
-std::vector<GLImplementation> GetAllowedGLImplementationsX11() {
-  std::vector<GLImplementation> impls;
-  impls.push_back(kGLImplementationDesktopGL);
-  impls.push_back(kGLImplementationEGLGLES2);
-  impls.push_back(kGLImplementationEGLANGLE);
-  impls.push_back(kGLImplementationSwiftShaderGL);
+std::vector<GLImplementationParts> GetAllowedGLImplementationsX11() {
+  std::vector<GLImplementationParts> impls;
+  impls.emplace_back(GLImplementationParts(kGLImplementationDesktopGL));
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
+  impls.emplace_back(GLImplementationParts(kGLImplementationSwiftShaderGL));
   return impls;
 }
 
