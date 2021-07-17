@@ -107,6 +107,14 @@ void NativeTheme::NotifyOnCaptionStyleUpdated() {
     observer.OnCaptionStyleUpdated();
 }
 
+float NativeTheme::AdjustBorderRadiusByZoom(Part part,
+                                            float border_radius,
+                                            float zoom) const {
+  if (part == kCheckbox)
+    return border_radius * zoom;
+  return border_radius;
+}
+
 NativeTheme::NativeTheme(bool should_use_dark_colors)
     : should_use_dark_colors_(should_use_dark_colors || IsForcedDarkMode()),
       forced_colors_(IsForcedHighContrast()),

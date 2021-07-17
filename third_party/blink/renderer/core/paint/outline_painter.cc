@@ -282,11 +282,9 @@ float GetFocusRingBorderRadius(const ComputedStyle& style,
               part.value(), style.Width().GetFloatValue(),
               style.Height().GetFloatValue());
 
-      // Form controls send to NativeTheme have zoom applied. But the focus ring
-      // outline does not. Apply zoom to checkbox focus ring.
-      return (style.EffectiveAppearance() == kCheckboxPart)
-                 ? border_radius * style.EffectiveZoom()
-                 : border_radius;
+      border_radius =
+          ui::NativeTheme::GetInstanceForWeb()->AdjustBorderRadiusByZoom(
+              part.value(), border_radius, style.EffectiveZoom());
     }
   }
 
