@@ -353,7 +353,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size natural_size = coded_size;
 
   scoped_refptr<media::VideoFrame> frame;
-  if (image->IsTextureBacked() && image->HasDefaultOrientation()) {
+  if (image->IsTextureBacked()) {
     DCHECK(image->IsStaticBitmapImage());
     auto format = media::VideoPixelFormatFromSkColorType(
         sk_image->colorType(),
@@ -377,17 +377,15 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
         format, mailbox_holders, std::move(release_cb), coded_size,
         visible_rect, natural_size, timestamp);
 
-    if (frame && !is_origin_top_left) {
-      frame->metadata().transformation = media::VideoTransformation(
-          media::VIDEO_ROTATION_180, /*mirrored=*/true);
-    }
+    if (frame)
+      frame->metadata().texture_origin_is_top_left = is_origin_top_left;
 
     // Drop the SkImage, we don't want it in the VideoFrameHandle.
     // (We did need it to get the color space though.)
     //
-    // Note: We could add the PaintImage to the VideoFrameHandle so we can round
-    // trip through VideoFrame back to canvas w/o any copies, but this doesn't
-    // seem like a common use case.
+    // Note: We could add the StaticBitmapImage to the VideoFrameHandle so we
+    // can round trip through VideoFrame back to canvas w/o any copies, but
+    // this doesn't seem like a common use case.
     sk_image.reset();
   } else {
     if (image->IsTextureBacked()) {

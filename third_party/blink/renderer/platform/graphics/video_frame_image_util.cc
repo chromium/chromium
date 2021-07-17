@@ -174,7 +174,8 @@ scoped_refptr<StaticBitmapImage> CreateImageFromVideoFrame(
 
     return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
         frame->mailbox_holder(0).mailbox, frame->mailbox_holder(0).sync_token,
-        0u, sk_image_info, frame->mailbox_holder(0).texture_target, true,
+        0u, sk_image_info, frame->mailbox_holder(0).texture_target,
+        frame->metadata().texture_origin_is_top_left,
         // Pass nullptr for |context_provider_wrapper|, because we don't
         // know which context the mailbox came from. It is used only to
         // detect when the mailbox is invalid due to context loss, and is

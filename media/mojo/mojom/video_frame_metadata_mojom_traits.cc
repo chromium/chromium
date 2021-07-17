@@ -44,6 +44,7 @@ bool StructTraits<media::mojom::VideoFrameMetadataDataView,
   output->power_efficient = input.power_efficient();
   output->read_lock_fences_enabled = input.read_lock_fences_enabled();
   output->interactive_content = input.interactive_content();
+  output->texture_origin_is_top_left = input.texture_origin_is_top_left();
 
   // double.
   DESERIALIZE_INTO_OPT(device_scale_factor);
