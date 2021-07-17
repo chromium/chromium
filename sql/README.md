@@ -435,6 +435,20 @@ After
 to disable SQLite's VIEW support using
 [SQLITE_OMIT_VIEW](https://www.sqlite.org/compile.html#omit_view).
 
+#### Double-quoted string literals {#no-double-quoted-strings}
+
+String literals should always be single-quoted. That being said, string literals
+should be rare in Chrome code, because any user input must be injected using
+statement parameters and the `Statement::Bind*()` methods.
+
+Double-quoted string literals are non-standard SQL syntax. The SQLite authors
+[currently consider this be a misfeature](https://www.sqlite.org/quirks.html#double_quoted_string_literals_are_accepted).
+
+After
+[WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
+to disable SQLite's support for double-quoted string literals using
+[SQLITE_DQS=0](https://www.sqlite.org/compile.html#dqs).
+
 #### Compound SELECT statements {#no-compound-queries}
 
 [Compound SELECT statements](https://www.sqlite.org/lang_select.html#compound_select_statements)
