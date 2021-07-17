@@ -1006,12 +1006,13 @@ class LocationBarMediator
 
     private boolean shouldShowLensButton() {
         if (mIsTablet && mShouldShowButtonsWhenUnfocused) {
-            return isLensEnabled(LensEntryPoint.OMNIBOX) && mNativeInitialized
-                    && (mUrlHasFocus || mIsUrlFocusChangeInProgress);
+            return mNativeInitialized && (mUrlHasFocus || mIsUrlFocusChangeInProgress)
+                    && isLensEnabled(LensEntryPoint.OMNIBOX);
         }
-        return isLensEnabled(LensEntryPoint.OMNIBOX) && !shouldShowDeleteButton()
+        return !shouldShowDeleteButton()
                 && (mUrlHasFocus || mIsUrlFocusChangeInProgress || mUrlFocusChangeFraction > 0f
-                        || mShouldShowLensButtonWhenUnfocused);
+                        || mShouldShowLensButtonWhenUnfocused)
+                && isLensEnabled(LensEntryPoint.OMNIBOX);
     }
 
     private boolean shouldShowSaveOfflineButton() {
