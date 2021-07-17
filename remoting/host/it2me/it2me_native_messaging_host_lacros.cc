@@ -21,7 +21,7 @@
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -155,15 +155,15 @@ void It2MeNativeMessagingHostLacros::Start(Client* client) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   client_ = client;
 
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (!lacros_chrome_service->IsAvailable<crosapi::mojom::Remoting>()) {
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (!lacros_service->IsAvailable<crosapi::mojom::Remoting>()) {
     LOG(ERROR) << "Remoting is not available in this version of the browser.";
     client_->CloseChannel(std::string());
     return;
   }
 
-  lacros_chrome_service->GetRemote<crosapi::mojom::Remoting>()
-      ->GetSupportHostDetails(base::BindOnce(
+  lacros_service->GetRemote<crosapi::mojom::Remoting>()->GetSupportHostDetails(
+      base::BindOnce(
           &It2MeNativeMessagingHostLacros::OnSupportHostDetailsReceived,
           weak_factory_.GetWeakPtr()));
 }
@@ -379,13 +379,11 @@ void It2MeNativeMessagingHostLacros::ProcessConnect(int message_id,
   // testing purposes. This should probably be encapsulated in a check that the
   // machine is in developer-mode and/or !NDEBUG.
 
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  lacros_chrome_service->GetRemote<crosapi::mojom::Remoting>()
-      ->StartSupportSession(
-          std::move(session_params),
-          base::BindOnce(
-              &It2MeNativeMessagingHostLacros::OnSupportSessionStarted,
-              base::Unretained(this)));
+  auto* lacros_service = chromeos::LacrosService::Get();
+  lacros_service->GetRemote<crosapi::mojom::Remoting>()->StartSupportSession(
+      std::move(session_params),
+      base::BindOnce(&It2MeNativeMessagingHostLacros::OnSupportSessionStarted,
+                     base::Unretained(this)));
 }
 
 void It2MeNativeMessagingHostLacros::ProcessDisconnect(int message_id) {

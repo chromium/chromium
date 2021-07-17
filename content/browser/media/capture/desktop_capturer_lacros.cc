@@ -4,7 +4,7 @@
 
 #include "content/browser/media/capture/desktop_capturer_lacros.h"
 
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -84,16 +84,16 @@ void DesktopCapturerLacros::Start(Callback* callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   callback_ = callback;
 
-  // The lacros chrome service exists at all times except during early start-up
-  // and late shut-down. This class should never be used in those two times.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  DCHECK(lacros_chrome_service);
-  lacros_chrome_service->BindScreenManagerReceiver(
+  // The lacros service exists at all times except during early start-up and
+  // late shut-down. This class should never be used in those two times.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  DCHECK(lacros_service);
+  lacros_service->BindScreenManagerReceiver(
       screen_manager_.BindNewPipeAndPassReceiver());
 
   // Lacros can assume that Ash is at least M88.
-  int version = lacros_chrome_service->GetInterfaceVersion(
-      crosapi::mojom::ScreenManager::Uuid_);
+  int version =
+      lacros_service->GetInterfaceVersion(crosapi::mojom::ScreenManager::Uuid_);
   CHECK_GE(version, 1);
 
   if (capture_type_ == kScreen) {

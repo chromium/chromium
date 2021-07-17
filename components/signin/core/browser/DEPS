@@ -14,7 +14,7 @@ specific_include_rules = {
   ],
   # TODO(crbug.com/1198528): remove Lacros deps after the rollout.
   "chrome_connected_header_helper.cc": [
-    "+chromeos/lacros/lacros_chrome_service_impl.h",
+    "+chromeos/lacros/lacros_service.h",
     "+chromeos/crosapi/mojom/crosapi.mojom.h"
   ],
   "signin_header_helper_unittest.cc": [

@@ -38,7 +38,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/video_capture.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "services/video_capture/lacros/device_factory_adapter_lacros.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -191,17 +191,16 @@ void VideoCaptureServiceImpl::LazyInitializeDeviceFactory() {
               gpu_dependencies_context_->GetWeakPtr()),
           gpu_dependencies_context_->GetTaskRunner()));
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  // LacrosChromeServiceImpl might be null in unit tests.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  // LacrosService might be null in unit tests.
+  auto* lacros_service = chromeos::LacrosService::Get();
 
   // For requests for fake (including file) video capture device factory, we
   // don't need to forward the request to Ash-Chrome.
-  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() &&
-      lacros_chrome_service &&
-      lacros_chrome_service->IsVideoCaptureDeviceFactoryAvailable()) {
+  if (!media::ShouldUseFakeVideoCaptureDeviceFactory() && lacros_service &&
+      lacros_service->IsVideoCaptureDeviceFactoryAvailable()) {
     mojo::PendingRemote<crosapi::mojom::VideoCaptureDeviceFactory>
         device_factory_ash;
-    lacros_chrome_service->BindVideoCaptureDeviceFactory(
+    lacros_service->BindVideoCaptureDeviceFactory(
         device_factory_ash.InitWithNewPipeAndPassReceiver());
     device_factory_ = std::make_unique<VirtualDeviceEnabledDeviceFactory>(
         std::make_unique<DeviceFactoryAdapterLacros>(

@@ -22,7 +22,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) NativeThemeCache
   ~NativeThemeCache() override;
 
   // Start observing native theme info changes in ash-chrome.
-  // This is a post-construction step to decouple from LacrosChromeServiceImpl.
+  // This is a post-construction step to decouple from LacrosService.
   void Start();
 
  private:

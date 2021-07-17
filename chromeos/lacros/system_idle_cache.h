@@ -34,7 +34,7 @@ class COMPONENT_EXPORT(CHROMEOS_LACROS) SystemIdleCache
   ~SystemIdleCache() override;
 
   // Streaming mode only: Start observing idle info changes in ash-chrome.
-  // This is a post-construction step to decouple from LacrosChromeServiceImpl.
+  // This is a post-construction step to decouple from LacrosService.
   void Start();
 
   // Getters: These can be used even before Start() gets called.

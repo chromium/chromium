@@ -14,7 +14,7 @@
 #include "base/check.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/cloud/cloud_policy_validator.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_proto_decoders.h"
@@ -27,9 +27,9 @@ PolicyLoaderLacros::PolicyLoaderLacros(
     scoped_refptr<base::SequencedTaskRunner> task_runner)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
       task_runner_(task_runner) {
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_service = chromeos::LacrosService::Get();
   const crosapi::mojom::BrowserInitParams* init_params =
-      lacros_chrome_service->init_params();
+      lacros_service->init_params();
   if (!init_params) {
     LOG(ERROR) << "No init params";
     return;
@@ -43,9 +43,9 @@ PolicyLoaderLacros::PolicyLoaderLacros(
 
 PolicyLoaderLacros::~PolicyLoaderLacros() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service) {
-    lacros_chrome_service->RemoveObserver(this);
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service) {
+    lacros_service->RemoveObserver(this);
   }
 }
 
@@ -55,10 +55,10 @@ void PolicyLoaderLacros::InitOnBackgroundThread() {
   // We add this as observer on background thread to avoid a situation when
   // notification comes after the object is destroyed, but not removed from the
   // list yet.
-  // TODO(crbug.com/1114069): Set up LacrosChromeServiceImpl in tests.
-  auto* lacros_chrome_service = chromeos::LacrosChromeServiceImpl::Get();
-  if (lacros_chrome_service) {
-    lacros_chrome_service->AddObserver(this);
+  // TODO(crbug.com/1114069): Set up LacrosService in tests.
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service) {
+    lacros_service->AddObserver(this);
   }
 }
 

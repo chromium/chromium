@@ -1,6 +1,6 @@
 specific_include_rules = {
   "it2me_native_messaging_host_lacros.cc": [
     "+chromeos/crosapi/mojom/remoting.mojom.h",
-    "+chromeos/lacros/lacros_chrome_service_impl.h",
+    "+chromeos/lacros/lacros_service.h",
   ],
 }
