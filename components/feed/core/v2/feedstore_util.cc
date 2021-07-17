@@ -21,7 +21,7 @@ base::StringPiece StreamId(const StreamType& stream_type) {
   return kFollowStreamId;
 }
 
-feed::StreamType StreamTypeFromId(base::StringPiece id) {
+StreamType StreamTypeFromId(base::StringPiece id) {
   if (id == kForYouStreamId)
     return feed::kForYouStream;
   if (id == kFollowStreamId)
@@ -58,6 +58,15 @@ void SetSessionId(Metadata& metadata,
   session_id->set_token(std::move(token));
   session_id->set_expiry_time_ms(
       expiry_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
+}
+
+void SetContentLifetime(
+    feedstore::Metadata& metadata,
+    const StreamType& stream_type,
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime) {
+  feedstore::Metadata::StreamMetadata& stream_metadata =
+      feedstore::MetadataForStream(metadata, stream_type);
+  *stream_metadata.mutable_content_lifetime() = std::move(content_lifetime);
 }
 
 absl::optional<Metadata> MaybeUpdateSessionId(
@@ -127,8 +136,7 @@ void SetStreamViewContentIds(Metadata& metadata,
                                                   content_ids.values().end());
 }
 
-bool IsKnownStale(const Metadata& metadata,
-                  const feed::StreamType& stream_type) {
+bool IsKnownStale(const Metadata& metadata, const StreamType& stream_type) {
   const Metadata::StreamMetadata* sm =
       FindMetadataForStream(metadata, stream_type);
   return sm ? sm->is_known_stale() : false;
@@ -143,7 +151,7 @@ feedstore::Metadata MakeMetadata(const std::string& gaia) {
 
 absl::optional<Metadata> SetStreamViewContentIds(
     const Metadata& metadata,
-    const feed::StreamType& stream_type,
+    const StreamType& stream_type,
     const feed::ContentIdSet& content_ids) {
   absl::optional<Metadata> result;
   if (!(GetViewContentIds(metadata, stream_type) == content_ids)) {
@@ -158,7 +166,7 @@ feed::ContentIdSet GetContentIds(const StreamData& stream_data) {
       {stream_data.content_ids().begin(), stream_data.content_ids().end()}};
 }
 feed::ContentIdSet GetViewContentIds(const Metadata& metadata,
-                                     const feed::StreamType& stream_type) {
+                                     const StreamType& stream_type) {
   const Metadata::StreamMetadata* stream_metadata =
       FindMetadataForStream(metadata, stream_type);
   if (stream_metadata) {

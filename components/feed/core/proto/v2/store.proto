@@ -86,6 +86,12 @@ message Metadata {
     // has already seen a stored stream's data.
     repeated int64 view_content_ids = 4;
 
+    message ContentLifetime {
+      int64 stale_age_ms = 1;
+      int64 invalid_age_ms = 2;
+    }
+    ContentLifetime content_lifetime = 5;
+
     reserved 2;
   }
 

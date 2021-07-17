@@ -33,6 +33,16 @@ bool ValueToVector(const base::Value& value,
   }
   return true;
 }
+
+base::TimeDelta GetThresholdTime(base::TimeDelta default_threshold,
+                                 base::TimeDelta server_threshold) {
+  if (server_threshold <= base::TimeDelta() ||
+      server_threshold > default_threshold) {
+    return default_threshold;
+  }
+  return server_threshold;
+}
+
 }  // namespace
 
 RequestSchedule::RequestSchedule() = default;
@@ -89,15 +99,40 @@ base::Time NextScheduledRequestTime(base::Time now, RequestSchedule* schedule) {
 
 bool ShouldWaitForNewContent(const feedstore::Metadata& metadata,
                              const StreamType& stream_type,
-                             bool has_content,
                              base::TimeDelta content_age) {
-  if (!has_content)
-    return true;
   const feedstore::Metadata::StreamMetadata* stream_metadata =
       feedstore::FindMetadataForStream(metadata, stream_type);
   if (stream_metadata && stream_metadata->is_known_stale())
     return true;
-  return content_age > GetFeedConfig().GetStalenessThreshold(stream_type);
+
+  base::TimeDelta staleness_threshold =
+      GetFeedConfig().GetStalenessThreshold(stream_type);
+  if (stream_metadata && stream_metadata->has_content_lifetime()) {
+    staleness_threshold = GetThresholdTime(
+        staleness_threshold,
+        base::TimeDelta::FromMilliseconds(
+            stream_metadata->content_lifetime().stale_age_ms()));
+  }
+
+  return content_age > staleness_threshold;
+}
+
+bool ContentInvalidFromAge(const feedstore::Metadata& metadata,
+                           const StreamType& stream_type,
+                           base::TimeDelta content_age) {
+  const feedstore::Metadata::StreamMetadata* stream_metadata =
+      feedstore::FindMetadataForStream(metadata, stream_type);
+
+  base::TimeDelta content_expiration_threshold =
+      GetFeedConfig().content_expiration_threshold;
+  if (stream_metadata && stream_metadata->has_content_lifetime()) {
+    content_expiration_threshold = GetThresholdTime(
+        content_expiration_threshold,
+        base::TimeDelta::FromMilliseconds(
+            stream_metadata->content_lifetime().invalid_age_ms()));
+  }
+
+  return content_age > content_expiration_threshold;
 }
 
 }  // namespace feed

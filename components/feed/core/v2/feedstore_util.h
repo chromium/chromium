@@ -46,6 +46,10 @@ feedstore::Metadata MakeMetadata(const std::string& gaia);
 void SetSessionId(feedstore::Metadata& metadata,
                   std::string token,
                   base::Time expiry_time);
+void SetContentLifetime(
+    feedstore::Metadata& metadata,
+    const feed::StreamType& stream_type,
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime);
 absl::optional<Metadata> MaybeUpdateSessionId(
     const feedstore::Metadata& metadata,
     absl::optional<std::string> token);

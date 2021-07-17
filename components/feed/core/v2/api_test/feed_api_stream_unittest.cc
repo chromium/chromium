@@ -512,6 +512,95 @@ TEST_F(FeedApiTest, ForceRefreshIfMissedScheduledRefresh) {
             metrics_reporter_->load_stream_from_store_status);
 }
 
+TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsStale_NetworkStaleAge) {
+  base::TimeDelta default_staleness_threshold =
+      GetFeedConfig().GetStalenessThreshold(kForYouStream);
+  base::TimeDelta server_staleness_threshold = default_staleness_threshold / 2;
+
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime;
+    content_lifetime.set_stale_age_ms(
+        server_staleness_threshold.InMilliseconds());
+    injected_response.content_lifetime = std::move(content_lifetime);
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+
+  // Fast forward enough to pass the server stale age but not the default stale
+  // age.
+  task_environment_.FastForwardBy(server_staleness_threshold +
+                                  base::TimeDelta::FromSeconds(1));
+
+  // Set up the response translator to be prepared for another request (which we
+  // expect to happen).
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  ASSERT_FALSE(response_translator_.InjectedResponseConsumed());
+  CreateStream();
+
+  // Store is stale, so we should fallback to a network request.
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent);
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_TRUE(surface.initial_state);
+}
+
+TEST_F(FeedApiTest, LoadFromNetworkBecauseStoreIsExpired_NetworkExpiredAge) {
+  base::HistogramTester histograms;
+
+  base::TimeDelta default_content_expiration_threshold =
+      GetFeedConfig().content_expiration_threshold;
+  base::TimeDelta server_content_expiration_threshold =
+      default_content_expiration_threshold / 2;
+
+  {
+    RefreshResponseData injected_response;
+    injected_response.model_update_request = MakeTypicalInitialModelState();
+    feedstore::Metadata::StreamMetadata::ContentLifetime content_lifetime;
+    content_lifetime.set_invalid_age_ms(
+        server_content_expiration_threshold.InMilliseconds());
+    injected_response.content_lifetime = std::move(content_lifetime);
+    response_translator_.InjectResponse(std::move(injected_response));
+
+    TestForYouSurface surface(stream_.get());
+    WaitForIdleTaskQueue();
+    ASSERT_TRUE(response_translator_.InjectedResponseConsumed());
+  }
+
+  base::TimeDelta content_age =
+      server_content_expiration_threshold + base::TimeDelta::FromSeconds(1);
+
+  // Fast forward enough to pass the server expiration age but not the default
+  // expiration age.
+  task_environment_.FastForwardBy(content_age);
+
+  // Set up the response translator to be prepared for another request (which we
+  // expect to happen).
+  response_translator_.InjectResponse(MakeTypicalInitialModelState());
+  ASSERT_FALSE(response_translator_.InjectedResponseConsumed());
+  CreateStream();
+
+  // Store is stale, so we should fallback to a network request.
+  TestForYouSurface surface(stream_.get());
+  WaitForIdleTaskQueue();
+
+  ASSERT_TRUE(network_.query_request_sent);
+  EXPECT_TRUE(response_translator_.InjectedResponseConsumed());
+  ASSERT_TRUE(surface.initial_state);
+
+  EXPECT_EQ(LoadStreamStatus::kDataInStoreIsExpired,
+            metrics_reporter_->load_stream_from_store_status);
+  histograms.ExpectUniqueTimeSample(
+      "ContentSuggestions.Feed.ContentAgeOnLoad.BlockingRefresh", content_age,
+      1);
+}
+
 TEST_P(FeedStreamTestForAllStreamTypes, LoadFromNetworkBecauseStoreIsStale) {
   // Fill the store with stream data that is just barely stale, and verify we
   // fetch new data over the network.

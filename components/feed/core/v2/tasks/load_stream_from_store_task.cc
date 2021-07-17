@@ -70,15 +70,16 @@ void LoadStreamFromStoreTask::LoadStreamDone(
     content_age_ =
         base::Time::Now() - feedstore::GetLastAddedTime(result.stream_data);
 
-    if (content_age_ > GetFeedConfig().content_expiration_threshold) {
+    const feedstore::Metadata& metadata = feed_stream_.GetMetadata();
+
+    if (ContentInvalidFromAge(metadata, result.stream_type, content_age_)) {
       Complete(LoadStreamStatus::kDataInStoreIsExpired,
                feedwire::DiscoverCardReadCacheResult::STALE);
       return;
     }
     if (content_age_ < base::TimeDelta()) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStaleTimestampInFuture;
-    } else if (ShouldWaitForNewContent(feed_stream_.GetMetadata(),
-                                       result.stream_type, true,
+    } else if (ShouldWaitForNewContent(metadata, result.stream_type,
                                        content_age_)) {
       stale_reason_ = LoadStreamStatus::kDataInStoreIsStale;
     } else if (missed_last_refresh_) {

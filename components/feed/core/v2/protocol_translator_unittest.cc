@@ -231,6 +231,28 @@ TEST(ProtocolTranslatorTest, TranslateRenderData) {
       translated.model_update_request->shared_states[0].shared_state_data());
 }
 
+TEST(ProtocolTranslatorTest, TranslateContentLifetime) {
+  feedwire::Response wire_response = EmptyWireResponse();
+  feedwire::ContentLifetime* content_lifetime =
+      wire_response.mutable_feed_response()
+          ->mutable_feed_response_metadata()
+          ->mutable_content_lifetime();
+  content_lifetime->set_stale_age_ms(123);
+  content_lifetime->set_invalid_age_ms(456);
+  RefreshResponseData translated = TranslateWireResponse(wire_response);
+  ASSERT_TRUE(translated.content_lifetime.has_value());
+  EXPECT_EQ(translated.content_lifetime->stale_age_ms(),
+            content_lifetime->stale_age_ms());
+  EXPECT_EQ(translated.content_lifetime->invalid_age_ms(),
+            content_lifetime->invalid_age_ms());
+}
+
+TEST(ProtocolTranslatorTest, TranslateMissingContentLifetime) {
+  feedwire::Response wire_response = EmptyWireResponse();
+  RefreshResponseData translated = TranslateWireResponse(wire_response);
+  EXPECT_FALSE(translated.content_lifetime.has_value());
+}
+
 TEST(ProtocolTranslatorTest, TranslateRenderDataFailsWithUnknownType) {
   feedwire::Response wire_response = EmptyWireResponse();
   feedwire::DataOperation wire_operation = MakeDataOperationWithRenderData(

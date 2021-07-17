@@ -358,6 +358,13 @@ void LoadStreamTask::ProcessNetworkResponse(
   absl::optional<feedstore::Metadata> updated_metadata =
       feedstore::MaybeUpdateSessionId(stream_.GetMetadata(),
                                       response_data.session_id);
+  if (response_data.content_lifetime) {
+    if (!updated_metadata) {
+      updated_metadata = stream_.GetMetadata();
+    }
+    feedstore::SetContentLifetime(*updated_metadata, options_.stream_type,
+                                  *response_data.content_lifetime);
+  }
   if (updated_metadata) {
     stream_.SetMetadata(std::move(*updated_metadata));
   }

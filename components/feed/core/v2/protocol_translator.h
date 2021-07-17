@@ -66,6 +66,10 @@ struct RefreshResponseData {
   // Server-defined request schedule, if provided.
   absl::optional<RequestSchedule> request_schedule;
 
+  // Server-defined content lifetime, if provided.
+  absl::optional<feedstore::Metadata::StreamMetadata::ContentLifetime>
+      content_lifetime;
+
   // Server-defined session id token, if provided.
   absl::optional<std::string> session_id;
 

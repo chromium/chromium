@@ -59,6 +59,15 @@ feedstore::StreamStructure::Type TranslateNodeType(
   }
 }
 
+feedstore::Metadata::StreamMetadata::ContentLifetime TranslateContentLifetime(
+    feedwire::ContentLifetime content_lifetime) {
+  feedstore::Metadata::StreamMetadata::ContentLifetime store_lifetime;
+  store_lifetime.set_stale_age_ms(content_lifetime.stale_age_ms());
+  store_lifetime.set_invalid_age_ms(content_lifetime.invalid_age_ms());
+
+  return store_lifetime;
+}
+
 base::TimeDelta TranslateDuration(const feedwire::Duration& v) {
   return base::TimeDelta::FromSeconds(v.seconds()) +
          base::TimeDelta::FromNanoseconds(v.nanos());
@@ -303,12 +312,22 @@ RefreshResponseData TranslateWireResponse(
   }
   feedstore::SetLastAddedTime(current_time, result->stream_data);
 
-  const auto& response_metadata =
-      feed_response->feed_response_metadata().chrome_feed_response_metadata();
+  const auto& response_metadata = feed_response->feed_response_metadata();
+
+  absl::optional<feedstore::Metadata::StreamMetadata::ContentLifetime>
+      content_lifetime;
+  if (response_metadata.has_content_lifetime()) {
+    content_lifetime =
+        TranslateContentLifetime(response_metadata.content_lifetime());
+  }
+
+  const auto& chrome_response_metadata =
+      response_metadata.chrome_feed_response_metadata();
   result->stream_data.set_signed_in(was_signed_in_request);
-  result->stream_data.set_logging_enabled(response_metadata.logging_enabled());
+  result->stream_data.set_logging_enabled(
+      chrome_response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
-      response_metadata.privacy_notice_fulfilled());
+      chrome_response_metadata.privacy_notice_fulfilled());
   for (const feedstore::Content& content : result->content) {
     result->stream_data.add_content_ids(content.content_id().id());
   }
@@ -318,29 +337,31 @@ RefreshResponseData TranslateWireResponse(
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
-  } else if (response_metadata.has_session_id()) {
+  } else if (chrome_response_metadata.has_session_id()) {
     // Signed-out requests can set a new session token; otherwise, we leave
     // the default absl::nullopt value to keep whatever token is already in
     // play.
-    session_id = response_metadata.session_id();
+    session_id = chrome_response_metadata.session_id();
   }
 
   absl::optional<Experiments> experiments = absl::nullopt;
-  if (response_metadata.experiments_size() > 0) {
+  if (chrome_response_metadata.experiments_size() > 0) {
     Experiments e;
-    for (feedwire::Experiment exp : response_metadata.experiments()) {
+    for (feedwire::Experiment exp : chrome_response_metadata.experiments()) {
       e[exp.trial_name()] = exp.group_name();
     }
     experiments = std::move(e);
   }
 
-  MetricsReporter::ActivityLoggingEnabled(response_metadata.logging_enabled());
+  MetricsReporter::ActivityLoggingEnabled(
+      chrome_response_metadata.logging_enabled());
   MetricsReporter::NoticeCardFulfilledObsolete(
-      response_metadata.privacy_notice_fulfilled());
+      chrome_response_metadata.privacy_notice_fulfilled());
 
   RefreshResponseData response_data;
   response_data.model_update_request = std::move(result);
   response_data.request_schedule = std::move(global_data.request_schedule);
+  response_data.content_lifetime = std::move(content_lifetime);
   response_data.session_id = std::move(session_id);
   response_data.experiments = std::move(experiments);
   response_data.server_request_received_timestamp_ns =
