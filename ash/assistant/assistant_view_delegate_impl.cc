@@ -26,7 +26,6 @@ namespace ash {
 namespace {
 
 using assistant::ui::kOnboardingMaxSessionsShown;
-using chromeos::assistant::features::IsBetterOnboardingEnabled;
 
 }  // namespace
 
@@ -122,9 +121,6 @@ void AssistantViewDelegateImpl::OnSuggestionPressed(
 }
 
 bool AssistantViewDelegateImpl::ShouldShowOnboarding() const {
-  if (!IsBetterOnboardingEnabled())
-    return false;
-
   // Once a user has had an interaction with Assistant, we will no longer show
   // onboarding in that user session.
   auto* interaction_controller = AssistantInteractionController::Get();

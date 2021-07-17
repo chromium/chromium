@@ -33,7 +33,6 @@ namespace {
 
 using chromeos::assistant::AssistantSuggestion;
 using chromeos::assistant::AssistantSuggestionType;
-using chromeos::assistant::features::IsBetterOnboardingEnabled;
 using chromeos::assistant::features::IsConversationStartersV2Enabled;
 using chromeos::assistant::prefs::AssistantOnboardingMode;
 
@@ -150,9 +149,7 @@ void AssistantSuggestionsControllerImpl::OnAssistantContextEnabled(
 
 void AssistantSuggestionsControllerImpl::OnAssistantOnboardingModeChanged(
     AssistantOnboardingMode onboarding_mode) {
-  // Onboarding suggestions are only applicable if the feature is enabled.
-  if (IsBetterOnboardingEnabled())
-    UpdateOnboardingSuggestions();
+  UpdateOnboardingSuggestions();
 }
 
 void AssistantSuggestionsControllerImpl::UpdateConversationStarters() {
@@ -260,8 +257,6 @@ void AssistantSuggestionsControllerImpl::ProvideConversationStarters() {
 }
 
 void AssistantSuggestionsControllerImpl::UpdateOnboardingSuggestions() {
-  DCHECK(IsBetterOnboardingEnabled());
-
   auto CreateIconResourceLink = [](int message_id) {
     switch (message_id) {
       case IDS_ASH_ASSISTANT_ONBOARDING_SUGGESTION_CONVERSION:

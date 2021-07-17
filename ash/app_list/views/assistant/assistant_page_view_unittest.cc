@@ -19,7 +19,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/event.h"
@@ -34,7 +33,6 @@ namespace {
 
 using chromeos::assistant::AssistantInteractionMetadata;
 using chromeos::assistant::AssistantInteractionType;
-using chromeos::assistant::features::IsBetterOnboardingEnabled;
 
 // The min/max height of the embedded Assistant.
 constexpr int kMaxHeightDip = 440;
@@ -220,6 +218,12 @@ class AssistantPageViewTest : public AssistantAshTestBase {
     return main_view()->GetFocusManager()->GetFocusedView();
   }
 
+  // Ensures the onboarding views will not be shown.
+  void DoNotShowOnboardingViews() {
+    SetNumberOfSessionsWhereOnboardingShown(
+        assistant::ui::kOnboardingMaxSessionsShown);
+  }
+
  private:
   DISALLOW_COPY_AND_ASSIGN(AssistantPageViewTest);
 };
@@ -253,9 +257,7 @@ class AssistantInteractionCounter
 }  // namespace
 
 TEST_F(AssistantPageViewTest, ShouldStartInPeekingState) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
@@ -263,9 +265,6 @@ TEST_F(AssistantPageViewTest, ShouldStartInPeekingState) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldStartInHalfState) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
   SetOnboardingMode(AssistantOnboardingMode::kEducation);
 
   ShowAssistantUi();
@@ -274,9 +273,7 @@ TEST_F(AssistantPageViewTest, ShouldStartInHalfState) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldStartAtMinimumHeight) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
@@ -286,9 +283,7 @@ TEST_F(AssistantPageViewTest, ShouldStartAtMinimumHeight) {
 
 TEST_F(AssistantPageViewTest,
        ShouldRemainAtMinimumHeightWhenDisplayingOneLiner) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
@@ -400,14 +395,6 @@ TEST_F(AssistantPageViewTest,
        FocusShouldCycleThroughOnboardingSuggestionsWhenPressingTab) {
   constexpr int kMaxIterations = 100;
 
-  // Enable the |kAssistantBetterOnboarding| feature and change onboarding mode
-  // to force suggestion generation. We have to force suggestion generation in
-  // this way since the feature wasn't enabled prior to controller creation.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-  SetOnboardingMode(AssistantOnboardingMode::kEducation);
-
   // Show Assistant UI and verify onboarding suggestions exist.
   ShowAssistantUi();
   auto onboarding_suggestions = GetOnboardingSuggestionViews();
@@ -444,21 +431,15 @@ TEST_F(AssistantPageViewTest, ShouldFocusMicWhenOpeningWithHotword) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelWhenOpening) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
-  EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
+  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   ShowAssistantUi();
 
   EXPECT_TRUE(onboarding_view()->IsDrawn());
@@ -466,23 +447,17 @@ TEST_F(AssistantPageViewTest, ShouldShowOnboardingWhenOpening) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldDismissGreetingLabelAfterQuery) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse("The response");
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
-  EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
+  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   ShowAssistantUi();
 
   MockTextInteraction().WithTextResponse("The response");
@@ -492,9 +467,7 @@ TEST_F(AssistantPageViewTest, ShouldDismissOnboardingAfterQuery) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
@@ -507,27 +480,21 @@ TEST_F(AssistantPageViewTest, ShouldShowGreetingLabelAgainAfterReopening) {
   ShowAssistantUi();
 
   EXPECT_TRUE(greeting_label()->IsDrawn());
-  EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
+  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest,
        ShouldNotShowGreetingLabelWhenOpeningFromSearchResult) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
   EXPECT_FALSE(greeting_label()->IsDrawn());
-  EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
+  EXPECT_FALSE(onboarding_view()->IsDrawn());
 }
 
 TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingWhenOpeningFromSearchResult) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   ShowAssistantUi(AssistantEntryPoint::kLauncherSearchResult);
 
   EXPECT_FALSE(onboarding_view()->IsDrawn());
@@ -535,10 +502,6 @@ TEST_F(AssistantPageViewTest,
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   // A user is considered new if they haven't had an Assistant interaction in
   // the past 28 days.
   const base::Time new_user_cutoff =
@@ -562,10 +525,6 @@ TEST_F(AssistantPageViewTest, ShouldShowOnboardingForNewUsers) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   SetTimeOfLastInteraction(base::Time::Now() - base::TimeDelta::FromDays(28));
   ShowAssistantUi();
 
@@ -592,10 +551,6 @@ TEST_F(AssistantPageViewTest, ShouldShowOnboardingUntilInteractionOccurs) {
 
 TEST_F(AssistantPageViewTest,
        ShouldShowOnboardingToExistingUsersIfShownPreviouslyInDifferentSession) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   SetTimeOfLastInteraction(base::Time::Now());
   SetNumberOfSessionsWhereOnboardingShown(1);
 
@@ -618,10 +573,6 @@ TEST_F(AssistantPageViewTest,
 
 TEST_F(AssistantPageViewTest,
        ShouldNotShowOnboardingToExistingUsersIfShownPreviouslyInMaxSessions) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   SetTimeOfLastInteraction(base::Time::Now());
   SetNumberOfSessionsWhereOnboardingShown(
       assistant::ui::kOnboardingMaxSessionsShown);
@@ -872,22 +823,16 @@ TEST_F(AssistantPageViewTest, ShouldNotClearQueryWhenSwitchingToTabletMode) {
 }
 
 TEST_F(AssistantPageViewTest, ShouldHaveConversationStarters) {
-  // Ensure that better onboarding is not shown (if enabled).
-  SetNumberOfSessionsWhereOnboardingShown(
-      assistant::ui::kOnboardingMaxSessionsShown);
+  DoNotShowOnboardingViews();
 
   ShowAssistantUi();
 
-  EXPECT_EQ(onboarding_view() != nullptr, IsBetterOnboardingEnabled());
+  EXPECT_FALSE(onboarding_view()->IsDrawn());
   EXPECT_FALSE(GetSuggestionChips().empty());
 }
 
 TEST_F(AssistantPageViewTest,
        ShouldNotHaveConversationStartersWhenShowingOnboarding) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      chromeos::assistant::features::kAssistantBetterOnboarding);
-
   ShowAssistantUi();
 
   EXPECT_TRUE(onboarding_view()->IsDrawn());

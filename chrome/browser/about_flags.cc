@@ -2500,11 +2500,6 @@ const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
      nullptr}};
 #endif  // defined(OS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr char kAssistantBetterOnboardingInternalName[] =
-    "enable-assistant-better-onboarding";
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 const FeatureEntry::FeatureParam
     kSendWebUIJavaScriptErrorReportsVariationSendToStaging[] = {
@@ -5331,12 +5326,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-quick-answers-v2", flag_descriptions::kEnableQuickAnswersV2Name,
      flag_descriptions::kEnableQuickAnswersV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kQuickAnswersV2)},
-
-    {kAssistantBetterOnboardingInternalName,
-     flag_descriptions::kEnableAssistantBetterOnboardingName,
-     flag_descriptions::kEnableAssistantBetterOnboardingDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         chromeos::assistant::features::kAssistantBetterOnboarding)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if defined(OS_ANDROID)
@@ -7626,11 +7615,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kWebAppsCrosapiInternalName, entry.internal_name)) {
     return !crosapi::browser_util::IsLacrosAllowedToBeEnabled(channel);
-  }
-
-  // The following flags are only available to teamfooders.
-  if (!strcmp(kAssistantBetterOnboardingInternalName, entry.internal_name)) {
-    return !base::FeatureList::IsEnabled(features::kTeamfoodFlags);
   }
 
   // wallpaper-webui is only available for Unknown/Canary/Dev channels.

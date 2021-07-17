@@ -17,9 +17,6 @@ const base::Feature kAssistantAudioEraser{"AssistantAudioEraser",
 const base::Feature kAssistantAppSupport{"AssistantAppSupport",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kAssistantBetterOnboarding{
-    "AssistantBetterOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kAssistantConversationStartersV2{
     "AssistantConversationStartersV2", base::FEATURE_DISABLED_BY_DEFAULT};
 
@@ -71,10 +68,6 @@ bool IsAudioEraserEnabled() {
 
 bool IsBetterAssistantEnabled() {
   return base::FeatureList::IsEnabled(kEnableBetterAssistant);
-}
-
-bool IsBetterOnboardingEnabled() {
-  return base::FeatureList::IsEnabled(kAssistantBetterOnboarding);
 }
 
 bool IsConversationStartersV2Enabled() {

@@ -29,8 +29,6 @@ namespace ash {
 
 namespace {
 
-using chromeos::assistant::features::IsBetterOnboardingEnabled;
-
 // Appearance.
 constexpr int kGreetingLabelTopMarginDip = 28;
 constexpr int kOnboardingViewTopMarginDip = 48;
@@ -96,12 +94,10 @@ void AssistantZeroStateView::InitLayout() {
   layout->SetIncludeHiddenViews(false);
 
   // Onboarding.
-  if (IsBetterOnboardingEnabled()) {
-    onboarding_view_ =
-        AddChildView(std::make_unique<AssistantOnboardingView>(delegate_));
-    onboarding_view_->SetBorder(
-        views::CreateEmptyBorder(kOnboardingViewTopMarginDip, 0, 0, 0));
-  }
+  onboarding_view_ =
+      AddChildView(std::make_unique<AssistantOnboardingView>(delegate_));
+  onboarding_view_->SetBorder(
+      views::CreateEmptyBorder(kOnboardingViewTopMarginDip, 0, 0, 0));
 
   // Greeting.
   greeting_label_ = AddChildView(std::make_unique<views::Label>());
@@ -121,9 +117,6 @@ void AssistantZeroStateView::InitLayout() {
 }
 
 void AssistantZeroStateView::UpdateLayout() {
-  if (!IsBetterOnboardingEnabled())
-    return;
-
   const bool show_onboarding = delegate_->ShouldShowOnboarding();
   onboarding_view_->SetVisible(show_onboarding);
   greeting_label_->SetVisible(!show_onboarding);

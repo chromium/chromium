@@ -24,10 +24,8 @@
 #include "ash/shell.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
-#include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -133,10 +131,7 @@ class AssistantOnboardingViewTest : public AssistantAshTestBase {
  public:
   AssistantOnboardingViewTest()
       : AssistantAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    feature_list_.InitAndEnableFeature(
-        chromeos::assistant::features::kAssistantBetterOnboarding);
-  }
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   ~AssistantOnboardingViewTest() override = default;
 
@@ -161,7 +156,6 @@ class AssistantOnboardingViewTest : public AssistantAshTestBase {
 
  private:
   base::test::ScopedRestoreICUDefaultLocale locale_{"en_US"};
-  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace
