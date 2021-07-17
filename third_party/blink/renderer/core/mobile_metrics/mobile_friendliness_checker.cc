@@ -174,10 +174,9 @@ int ExtractAndCountAllTapTargets(
       const int bottom = clampTo<int>(rect.MaxY() + finger_radius);
       const int left = clampTo<int>(rect.X() - finger_radius);
       const int right = clampTo<int>(rect.MaxX() + finger_radius);
-      const int center = left + (right - left) / 2;
+      const int center = right / 2 + left / 2;
       vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
-      vertices.emplace_back(top + (bottom - top) / 2,
-                            EdgeOrCenter::Center(center));
+      vertices.emplace_back(bottom / 2 + top / 2, EdgeOrCenter::Center(center));
       vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
       x_positions.push_back(left);
       x_positions.push_back(right);
@@ -316,7 +315,7 @@ void MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
 
   if (all_tap_targets > 0) {
     mobile_friendliness_.bad_tap_targets_ratio =
-        bad_tap_targets * 100 / all_tap_targets;
+        bad_tap_targets * 100.0 / all_tap_targets;
   } else {
     mobile_friendliness_.bad_tap_targets_ratio = 0;
   }
