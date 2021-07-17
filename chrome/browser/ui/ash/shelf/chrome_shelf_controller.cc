@@ -489,7 +489,7 @@ void ChromeShelfController::UpdateAppState(content::WebContents* contents,
 
 void ChromeShelfController::UpdateV1AppState(const std::string& app_id) {
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (browser->deprecated_is_app() || !browser->is_type_normal() ||
+    if (!browser->is_type_normal() ||
         !multi_user_util::IsProfileFromActiveUser(browser->profile())) {
       continue;
     }
@@ -1353,7 +1353,7 @@ void ChromeShelfController::CloseWindowedAppsFromRemovedExtension(
            browser_list->begin_last_active();
        it != browser_list->end_last_active(); ++it) {
     Browser* browser = *it;
-    if (browser->deprecated_is_app() &&
+    if ((browser->is_type_app() || browser->is_type_app_popup()) &&
         app_id == web_app::GetAppIdFromApplicationName(browser->app_name()) &&
         profile == browser->profile()) {
       browser_to_close.push_back(browser);

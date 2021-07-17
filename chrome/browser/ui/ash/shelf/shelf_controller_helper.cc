@@ -104,7 +104,7 @@ absl::optional<std::string> GetAppIdForTab(Profile* profile,
   Browser* browser = chrome::FindBrowserWithWebContents(tab);
 
   // Use the Browser's app name.
-  if (browser && browser->deprecated_is_app())
+  if (browser && (browser->is_type_app() || browser->is_type_app_popup()))
     return web_app::GetAppIdFromApplicationName(browser->app_name());
 
   const extensions::Extension* extension = GetExtensionForTab(profile, tab);

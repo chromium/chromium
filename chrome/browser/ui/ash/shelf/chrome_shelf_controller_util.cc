@@ -137,7 +137,7 @@ bool IsBrowserRepresentedInBrowserList(Browser* browser,
   if (!browser || !multi_user_util::IsProfileFromActiveUser(browser->profile()))
     return false;
 
-  if (browser->deprecated_is_app()) {
+  if (browser->is_type_app() || browser->is_type_app_popup()) {
     // V1 App popup windows may have their own item.
     ash::ShelfID id(web_app::GetAppIdFromApplicationName(browser->app_name()));
     if (model->ItemByID(id))
