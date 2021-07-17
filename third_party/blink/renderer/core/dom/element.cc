@@ -655,7 +655,7 @@ bool Element::IsFocusableStyle() const {
 Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
   if (flag == CloneChildrenFlag::kSkip)
     return &CloneWithoutChildren(&factory);
-  Element* copy = &CloneWithChildren(&factory);
+  Element* copy = &CloneWithChildren(flag, &factory);
   // 7. If node is a shadow host and the clone shadows flag is set, run these
   // steps:
   if (flag == CloneChildrenFlag::kCloneWithShadows) {
@@ -693,7 +693,8 @@ Node* Element::Clone(Document& factory, CloneChildrenFlag flag) const {
   return copy;
 }
 
-Element& Element::CloneWithChildren(Document* nullable_factory) const {
+Element& Element::CloneWithChildren(CloneChildrenFlag flag,
+                                    Document* nullable_factory) const {
   Element& clone = CloneWithoutAttributesAndChildren(
       nullable_factory ? *nullable_factory : GetDocument());
   // This will catch HTML elements in the wrong namespace that are not correctly
@@ -701,8 +702,8 @@ Element& Element::CloneWithChildren(Document* nullable_factory) const {
   DCHECK_EQ(IsHTMLElement(), clone.IsHTMLElement());
 
   clone.CloneAttributesFrom(*this);
-  clone.CloneNonAttributePropertiesFrom(*this, CloneChildrenFlag::kClone);
-  clone.CloneChildNodesFrom(*this, CloneChildrenFlag::kClone);
+  clone.CloneNonAttributePropertiesFrom(*this, flag);
+  clone.CloneChildNodesFrom(*this, flag);
   return clone;
 }
 

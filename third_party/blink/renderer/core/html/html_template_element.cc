@@ -68,7 +68,6 @@ void HTMLTemplateElement::CloneNonAttributePropertiesFrom(
     CloneChildrenFlag flag) {
   if (flag == CloneChildrenFlag::kSkip || !GetExecutionContext())
     return;
-  DCHECK_NE(flag, CloneChildrenFlag::kCloneWithShadows);
   auto& html_template_element = To<HTMLTemplateElement>(source);
   if (html_template_element.content())
     content()->CloneChildNodesFrom(*html_template_element.content(), flag);
