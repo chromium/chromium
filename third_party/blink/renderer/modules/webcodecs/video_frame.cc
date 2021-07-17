@@ -351,6 +351,7 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size coded_size(sk_image_info.width(), sk_image_info.height());
   const gfx::Rect visible_rect(coded_size);
   const gfx::Size natural_size = coded_size;
+  const auto orientation = image->CurrentFrameOrientation().Orientation();
 
   scoped_refptr<media::VideoFrame> frame;
   if (image->IsTextureBacked()) {
@@ -388,12 +389,6 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     // this doesn't seem like a common use case.
     sk_image.reset();
   } else {
-    if (image->IsTextureBacked()) {
-      sk_image = sk_image->makeRasterImage();
-      if (auto new_cs = sk_image_info.refColorSpace())
-        gfx_color_space = gfx::ColorSpace(*new_cs);
-    }
-
     const bool force_opaque =
         init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
 
@@ -411,6 +406,10 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   if (init->hasDuration()) {
     frame->metadata().frame_duration =
         base::TimeDelta::FromMicroseconds(init->duration());
+  }
+  if (orientation != ImageOrientationEnum::kDefault) {
+    frame->metadata().transformation =
+        ImageOrientationToVideoTransformation(orientation);
   }
   return MakeGarbageCollected<VideoFrame>(
       base::MakeRefCounted<VideoFrameHandle>(
