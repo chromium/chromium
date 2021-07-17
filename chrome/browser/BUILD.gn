@@ -1974,6 +1974,7 @@ static_library("browser") {
     "//chrome/common/net",
     "//chrome/common/performance_manager/mojom",
     "//chrome/installer/util:with_no_strings",
+    "//chromeos/components/chromebox_for_meetings/buildflags",
     "//components/assist_ranker",
     "//components/autofill/content/browser",
     "//components/autofill/core/browser",
