@@ -763,52 +763,91 @@ TEST_F(SQLRecoveryTest, RecoverDatabase) {
   // As a side effect, AUTOINCREMENT creates the sqlite_sequence table for
   // RecoverDatabase() to handle.
   ASSERT_TRUE(db_.Execute(
-      "CREATE TABLE x (id INTEGER PRIMARY KEY AUTOINCREMENT, v TEXT)"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO x (v) VALUES ('turtle')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO x (v) VALUES ('truck')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO x (v) VALUES ('trailer')"));
+      "CREATE TABLE table1(id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('turtle')"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('truck')"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('trailer')"));
 
   // This table needs index and a unique index to work.
-  ASSERT_TRUE(db_.Execute("CREATE TABLE y (name TEXT, v TEXT)"));
-  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX y_name ON y(name)"));
-  ASSERT_TRUE(db_.Execute("CREATE INDEX y_v ON y(v)"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO y VALUES ('jim', 'telephone')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO y VALUES ('bob', 'truck')"));
-  EXPECT_TRUE(db_.Execute("INSERT INTO y VALUES ('dean', 'trailer')"));
-
-  // View which is the intersection of [x.v] and [y.v].
-  ASSERT_TRUE(
-      db_.Execute("CREATE VIEW v AS SELECT x.v FROM x, y WHERE x.v = y.v"));
+  ASSERT_TRUE(db_.Execute("CREATE TABLE table2(name TEXT, value TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX table2_name ON table2(name)"));
+  ASSERT_TRUE(db_.Execute("CREATE INDEX table2_value ON table2(value)"));
+  EXPECT_TRUE(db_.Execute(
+      "INSERT INTO table2(name, value) VALUES('jim', 'telephone')"));
+  EXPECT_TRUE(
+      db_.Execute("INSERT INTO table2(name, value) VALUES('bob', 'truck')"));
+  EXPECT_TRUE(
+      db_.Execute("INSERT INTO table2(name, value) VALUES('dean', 'trailer')"));
 
   // Save aside a copy of the original schema, verifying that it has the created
   // items plus the sqlite_sequence table.
-  const std::string orig_schema(GetSchema(&db_));
-  ASSERT_EQ(5, std::count(orig_schema.begin(), orig_schema.end(), '\n'));
+  const std::string original_schema = GetSchema(&db_);
+  ASSERT_EQ(4, std::count(original_schema.begin(), original_schema.end(), '\n'))
+      << original_schema;
 
-  static const char kXSql[] = "SELECT * FROM x ORDER BY 1";
-  static const char kYSql[] = "SELECT * FROM y ORDER BY 1";
-  static const char kVSql[] = "SELECT * FROM v ORDER BY 1";
+  static constexpr char kTable1Sql[] = "SELECT * FROM table1 ORDER BY 1";
+  static constexpr char kTable2Sql[] = "SELECT * FROM table2 ORDER BY 1";
   EXPECT_EQ("1|turtle\n2|truck\n3|trailer",
-            ExecuteWithResults(&db_, kXSql, "|", "\n"));
+            ExecuteWithResults(&db_, kTable1Sql, "|", "\n"));
   EXPECT_EQ("bob|truck\ndean|trailer\njim|telephone",
-            ExecuteWithResults(&db_, kYSql, "|", "\n"));
-  EXPECT_EQ("trailer\ntruck", ExecuteWithResults(&db_, kVSql, "|", "\n"));
+            ExecuteWithResults(&db_, kTable2Sql, "|", "\n"));
 
   // Database handle is valid before recovery, poisoned after.
-  static const char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
   EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
   Recovery::RecoverDatabase(&db_, db_path_);
   EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
 
-  // Since the database was not corrupt, the entire schema and all
-  // data should be recovered.
+  // Since the database was not corrupt, the entire schema and all data should
+  // be recovered.
   ASSERT_TRUE(Reopen());
-  ASSERT_EQ(orig_schema, GetSchema(&db_));
+  ASSERT_EQ(original_schema, GetSchema(&db_));
   EXPECT_EQ("1|turtle\n2|truck\n3|trailer",
-            ExecuteWithResults(&db_, kXSql, "|", "\n"));
+            ExecuteWithResults(&db_, kTable1Sql, "|", "\n"));
   EXPECT_EQ("bob|truck\ndean|trailer\njim|telephone",
-            ExecuteWithResults(&db_, kYSql, "|", "\n"));
-  EXPECT_EQ("trailer\ntruck", ExecuteWithResults(&db_, kVSql, "|", "\n"));
+            ExecuteWithResults(&db_, kTable2Sql, "|", "\n"));
+}
+
+TEST_F(SQLRecoveryTest, RecoverDatabaseWithView) {
+  ASSERT_TRUE(db_.Execute(
+      "CREATE TABLE table1(id INTEGER PRIMARY KEY AUTOINCREMENT, value TEXT)"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('turtle')"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('truck')"));
+  EXPECT_TRUE(db_.Execute("INSERT INTO table1(value) VALUES('trailer')"));
+
+  ASSERT_TRUE(db_.Execute("CREATE TABLE table2(name TEXT, value TEXT)"));
+  ASSERT_TRUE(db_.Execute("CREATE UNIQUE INDEX table2_name ON table2(name)"));
+  EXPECT_TRUE(db_.Execute(
+      "INSERT INTO table2(name, value) VALUES('jim', 'telephone')"));
+  EXPECT_TRUE(
+      db_.Execute("INSERT INTO table2(name, value) VALUES('bob', 'truck')"));
+  EXPECT_TRUE(
+      db_.Execute("INSERT INTO table2(name, value) VALUES('dean', 'trailer')"));
+
+  // View which is the intersection of [table1.value] and [table2.value].
+  ASSERT_TRUE(db_.Execute(
+      "CREATE VIEW view_table12 AS SELECT table1.value FROM table1, table2 "
+      "WHERE table1.value = table2.value"));
+
+  static constexpr char kViewSql[] = "SELECT * FROM view_table12 ORDER BY 1";
+  EXPECT_EQ("trailer\ntruck", ExecuteWithResults(&db_, kViewSql, "|", "\n"));
+
+  // Save aside a copy of the original schema, verifying that it has the created
+  // items plus the sqlite_sequence table.
+  const std::string original_schema = GetSchema(&db_);
+  ASSERT_EQ(4, std::count(original_schema.begin(), original_schema.end(), '\n'))
+      << original_schema;
+
+  // Database handle is valid before recovery, poisoned after.
+  static constexpr char kTrivialSql[] = "SELECT COUNT(*) FROM sqlite_master";
+  EXPECT_TRUE(db_.IsSQLValid(kTrivialSql));
+  Recovery::RecoverDatabase(&db_, db_path_);
+  EXPECT_FALSE(db_.IsSQLValid(kTrivialSql));
+
+  // Since the database was not corrupt, the entire schema and all data should
+  // be recovered.
+  ASSERT_TRUE(Reopen());
+  EXPECT_EQ("trailer\ntruck", ExecuteWithResults(&db_, kViewSql, "|", "\n"));
 }
 
 // When RecoverDatabase() encounters SQLITE_NOTADB, the database is deleted.
