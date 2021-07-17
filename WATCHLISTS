@@ -2436,7 +2436,7 @@
                     'peter@chromium.org',
                     'pshmakov+watch@chromium.org'],
     'dark_mode' : ['prashant@chromium.org',
-                   'prashant.n@samsung.com'],
+                   'pnevase@microsoft.com'],
     'data_decoder': ['mbarowsky+watch-data-decoder@chromium.org'],
     'dbus': ['hashimoto+watch@chromium.org'],
     'demo_mode': ['cros-essential-apps-dev+watch@chromium.org'],
