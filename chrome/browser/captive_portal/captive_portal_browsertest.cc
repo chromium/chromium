@@ -3102,30 +3102,15 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
 
 // Test that CaptivePortalTabHelper does not support the redirect navigation on
 // non-primary trees.
-// Flaky. See https://crbug.com/1224288.
 IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
-                       DISABLED_DontFireOnRedirectDuringPrerendering) {
+                       DontFireOnRedirectDuringPrerendering) {
   GURL initial_url = embedded_test_server()->GetURL("/empty.html");
-  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  GURL redirect_url =
+      embedded_test_server()->GetURL(CreateServerRedirect(initial_url.spec()));
   ASSERT_NE(ui_test_utils::NavigateToURL(browser(), initial_url), nullptr);
 
-  // Use an HTTPS server for the top level page.
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(GetChromeTestDataDir());
-  ASSERT_TRUE(https_server.Start());
-
-  int host_id = prerender_helper().AddPrerender(prerender_url);
-  content::RenderFrameHost* prerender_render_frame_host =
-      prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  EXPECT_NE(prerender_render_frame_host, nullptr);
-  prerender_helper().NavigatePrerenderedPage(
-      host_id, https_server.GetURL(CreateServerRedirect(prerender_url.spec())));
-  EXPECT_EQ(prerender_url, prerender_render_frame_host->GetLastCommittedURL());
-
-  // Only the primary main frame supports the redirect navigation. So, Crash
-  // should not occur when navigating the prerendered page with the redirect
-  // URL because CaptivePortalTabHelper::DidRedirectNavigation should not be
-  // called during prerendering.
+  // The redirect navigation on prerendering should not generate an assert.
+  prerender_helper().AddPrerender(redirect_url);
 
   // Set CaptivePortalTabReloader's state to STATE_TIMER_RUNNING to check if
   // the state is changed after activating the prerendered page. The state
@@ -3133,8 +3118,11 @@ IN_PROC_BROWSER_TEST_F(CaptivePortalForPrerenderingTest,
   // after activating.
   SetState(captive_portal::CaptivePortalTabReloader::STATE_TIMER_RUNNING);
   // Activate the prerendered page.
-  prerender_helper().NavigatePrimaryPage(
-      https_server.GetURL(CreateServerRedirect(prerender_url.spec())));
+  prerender_helper().NavigatePrimaryPage(redirect_url);
+
+  // Only the primary main frame supports the redirect navigation. So, Crash
+  // should not occur after navigating the primary page with the redirect URL.
+
   captive_portal::CaptivePortalTabReloader::State new_state =
       GetStateOfTabReloader(GetWebContents());
   EXPECT_EQ(captive_portal::CaptivePortalTabReloader::STATE_NONE, new_state);
