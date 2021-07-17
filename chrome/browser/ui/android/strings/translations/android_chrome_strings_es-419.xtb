@@ -224,7 +224,6 @@ Para buscar una palabra, presiónala. Si quieres definir mejor la búsqueda, man
 
 Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqueda, selecciona más o menos palabras. Si quieres editar la búsqueda, abre el panel, presiona el ícono para abrir una pestaña nueva y realiza los cambios que quieras en el cuadro de búsqueda.</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
-<translation id="246532703174860178">Compartir</translation>
 <translation id="247737702124049222">Las descripciones de imágenes están activadas.</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalación</translation>
@@ -296,7 +295,6 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2901411048554510387">Se muestran sugerencias para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La lista de dispositivos con los que se puede compartir una pestaña está totalmente abierta.</translation>
-<translation id="2905036901251765993">Para permitir el uso compartido con personas cercanas, permíteles que escaneen este código QR</translation>
 <translation id="2908243544703713905">Hay contenido disponible sin leer</translation>
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
 <translation id="2912296070571964914">Administra los temas que te interesan</translation>
@@ -306,6 +304,7 @@ Para buscar una palabra, mantenla presionada. Si quieres definir mejor la búsqu
 <translation id="2942036813789421260">Se cerró la pestaña de vista previa</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> y <ph name="PARENT_NAME_2" /> administran esta cuenta.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
+<translation id="2961210776189273067">Cargo</translation>
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2979448359891869301">No se puede extender la captura de pantalla. Vuelve a intentarlo cuando el teléfono tenga más memoria disponible.</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -617,6 +616,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando archivo (<ph name="MEGABYTES" />)</translation>
 <translation id="4988526792673242964">Páginas</translation>
+<translation id="5001388021414335527">Sigue este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> desea conectarse</translation>
@@ -722,7 +722,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />restablece la sincroni
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723735397759933332">El modo lite ahora ahorra más datos gracias a que optimiza las imágenes de las páginas HTTPS.</translation>
 <translation id="5726692708398506830">Agrandar todos los elementos de la página</translation>
-<translation id="5733983706093266635">No se puede crear un código QR. La dirección URL tiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Se seleccionaron las pestañas estándar</translation>
 <translation id="5749068826913805084">Chrome necesita acceder al almacenamiento para descargar archivos.</translation>
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> No se recomienda</translation>
@@ -878,7 +877,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="6590680911007613645">Asegúrate de que la contraseña que guardes coincida con la de <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Sitio de escritorio</translation>
 <translation id="6595046016124923392">Se envían las imágenes a Google para proporcionarte mejores descripciones.</translation>
-<translation id="6597891566292541626">Coloca el código QR o de barras en este recuadro.</translation>
 <translation id="6600954340915313787">Se copió en Chrome.</translation>
 <translation id="661266467055912436">Mejora la seguridad para ti y todos los usuarios de la Web.</translation>
 <translation id="6618554661997243500">Para ver los sitios que más visitas y las historias que más lees, presiona el botón de la página principal</translation>
@@ -987,6 +985,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Comparte 1 elemento seleccionado}other{Comparte # elementos seleccionados}}</translation>
 <translation id="7359002509206457351">Acceder a formas de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
+<translation id="7386842512861524348">La conexión del sitio es segura a menos que Chrome te indique lo contrario.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" /></translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Primera experiencia de ejecución de Chrome</translation>
@@ -1087,7 +1086,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Inhabilitaste el acceso al almacenamiento. Ve a la Configuración para habilitarlo.</translation>
 <translation id="7963646190083259054">Proveedor:</translation>
-<translation id="7967911570373677897">Si quieres escanear un código QR, cambia la configuración para que Chrome pueda usar la cámara</translation>
 <translation id="7968014550143838305">Se agregó a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Vista previa de página <ph name="BEGIN_NEW" />Nueva<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Para que tus favoritos estén en todos tus dispositivos, activa la sincronización</translation>
 <translation id="8110087112193408731">¿Quieres que se muestre tu actividad de Chrome en Bienestar digital?</translation>
-<translation id="8115259494083109761">Si quieres escanear un código QR, permite que Chrome use la cámara</translation>
 <translation id="8127542551745560481">Editar la página principal</translation>
 <translation id="813082847718468539">Consulta la información del sitio</translation>
 <translation id="8137558756159375272">La función Tocar para buscar envía la palabra seleccionada y la página actual como contexto a la Búsqueda de Google. Para desactivarla, accede a <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
@@ -1136,7 +1133,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8218622182176210845">Administra tu cuenta</translation>
 <translation id="8223642481677794647">Menú de la tarjeta de feed</translation>
 <translation id="8224471946457685718">Descargar artículos para ti mediante Wi-Fi</translation>
-<translation id="8233540874193135768">Para escanear un código QR, utiliza un dispositivo con cámara.</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Chrome quitó parte del contenido de esta página porque usa demasiada memoria.</translation>
 <translation id="8260126382462817229">Intenta volver a acceder</translation>
@@ -1147,6 +1143,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="829672787777123339">Estableciendo conexión con el dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
+<translation id="831192587911042850">Agrega el sitio web actual a la lista de sitios web que sigues.</translation>
 <translation id="8327155640814342956">A fin de obtener la mejor experiencia de navegación, abre Chrome para actualizarlo</translation>
 <translation id="834313815369870491">Nunca traducir sitios</translation>
 <translation id="8349013245300336738">Ordenar por cantidad de datos utilizados</translation>
@@ -1252,7 +1249,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mediante anuncio
 <translation id="8970887620466824814">Se produjo un error</translation>
 <translation id="8972098258593396643">¿Deseas descargarlo a la carpeta predeterminada?</translation>
 <translation id="8988028529677883095">Usa el teléfono como llave de seguridad</translation>
-<translation id="8990209962746788689">No se puede crear el código QR</translation>
 <translation id="8993760627012879038">Abrir ventana nueva en modo de navegación incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998729206196772491">Estás accediendo con una cuenta administrada por <ph name="MANAGED_DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chrome. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chrome, tus datos se borrarán en este dispositivo, pero quedarán guardados en tu cuenta de Google.</translation>

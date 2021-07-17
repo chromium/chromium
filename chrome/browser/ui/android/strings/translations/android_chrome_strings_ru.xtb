@@ -224,7 +224,6 @@
 
 Чтобы начать поиск, нажмите и удерживайте любое слово. Чтобы уточнить поиск, выделите нужное слово или фразу. Для изменения запроса откройте панель и нажмите на значок приложения, чтобы открыть его в новой вкладке. Затем внесите изменения в окне поиска.</translation>
 <translation id="2459390580524506445">Улучшенный голосовой поиск</translation>
-<translation id="246532703174860178">Отправка</translation>
 <translation id="247737702124049222">Описания изображений включены.</translation>
 <translation id="2482878487686419369">Уведомления</translation>
 <translation id="2485422356828889247">Удалить</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">Создать мероприятие</translation>
 <translation id="2901411048554510387">Показ подсказок для сайта "<ph name="WEBSITE_TITLE" />"</translation>
 <translation id="2904414404539560095">Список устройств для отправки вкладки развернут на весь экран.</translation>
-<translation id="2905036901251765993">Чтобы предоставить доступ пользователю поблизости, попросите его отсканировать этот QR-код.</translation>
 <translation id="2908243544703713905">Есть непрочитанные истории</translation>
 <translation id="2909615210195135082">Платформа уведомлений Google</translation>
 <translation id="2912296070571964914">Настройте темы, которые вас интересуют</translation>
@@ -306,6 +304,7 @@
 <translation id="2942036813789421260">Вкладка предпросмотра закрыта</translation>
 <translation id="2956410042958133412">Этим аккаунтом управляют <ph name="PARENT_NAME_1" /> и <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> непрочитанная страница}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанная страница}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанные страницы}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанных страниц}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> непрочитанной страницы}}</translation>
+<translation id="2961210776189273067">Обращение</translation>
 <translation id="2979025552038692506">Выбранная вкладка инкогнито</translation>
 <translation id="2979448359891869301">Невозможно расширить скриншот. Освободите память телефона и повторите попытку.</translation>
 <translation id="2979639724566107830">Открыть в новом окне</translation>
@@ -617,6 +616,7 @@
 <translation id="497421865427891073">Вперед</translation>
 <translation id="4988210275050210843">Скачивание файла (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Страницы</translation>
+<translation id="5001388021414335527">Подписаться на этот сайт</translation>
 <translation id="5004416275253351869">Отслеживание действий в Google</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5011311129201317034">Сайт <ph name="SITE" /> запрашивает подключение</translation>
@@ -722,7 +722,6 @@
 <translation id="572328651809341494">Недавние вкладки</translation>
 <translation id="5723735397759933332">Упрощенный режим позволяет экономить больше трафика благодаря оптимизации изображений на страницах с поддержкой HTTPS.</translation>
 <translation id="5726692708398506830">Увеличить масштаб страницы</translation>
-<translation id="5733983706093266635">Не удалось создать QR-код. Количество символов в URL больше допустимого (<ph name="CHARACTER_LIMIT" />).</translation>
 <translation id="5748802427693696783">Переключено на обычные вкладки</translation>
 <translation id="5749068826913805084">Для скачивания файлов браузеру Chrome требуется доступ к хранилищу.</translation>
 <translation id="5749237766298580851">Отключено <ph name="SEPARATOR" /> Не рекомендуется</translation>
@@ -878,7 +877,6 @@
 <translation id="6590680911007613645">Убедитесь, что пароль, который вы сохраняете, совпадает с паролем для сайта <ph name="SITE" />.</translation>
 <translation id="6593061639179217415">Версия для ПК</translation>
 <translation id="6595046016124923392">Изображения передаются в Google, чтобы сгенерировать их описание.</translation>
-<translation id="6597891566292541626">Поместите QR-код или штрихкод в эту рамку.</translation>
 <translation id="6600954340915313787">Скопировано в Chrome</translation>
 <translation id="661266467055912436">Делает Интернет безопаснее для вас и других пользователей.</translation>
 <translation id="6618554661997243500">Нажмите эту кнопку, чтобы увидеть интересные вам сайты и новости</translation>
@@ -987,6 +985,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Поделиться 1 выбранным объектом}one{Поделиться # выбранным объектом}few{Поделиться # выбранными объектами}many{Поделиться # выбранными объектами}other{Поделиться # выбранного объекта}}</translation>
 <translation id="7359002509206457351">Доступ к способам оплаты</translation>
 <translation id="7375125077091615385">Тип:</translation>
+<translation id="7386842512861524348">Если подключение к сайту небезопасно, браузер Chrome предупредит вас об этом.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" /></translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Первый запуск Chrome</translation>
@@ -1087,7 +1086,6 @@
 <translation id="7961015016161918242">Нет</translation>
 <translation id="7961926449547174351">Откройте доступ к хранилищу в настройках устройства.</translation>
 <translation id="7963646190083259054">Поставщик:</translation>
-<translation id="7967911570373677897">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере в настройках.</translation>
 <translation id="7968014550143838305">Добавлено в список для чтения.</translation>
 <translation id="7971136598759319605">Последние действия: 1 день назад</translation>
 <translation id="7975379999046275268">Просмотреть страницу <ph name="BEGIN_NEW" />Новинка<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Чтобы получить доступ к закладкам на всех устройствах, включите синхронизацию.</translation>
 <translation id="8110087112193408731">Показать данные о ваших действиях в Chrome в сервисе "Цифровое благополучие"?</translation>
-<translation id="8115259494083109761">Чтобы отсканировать QR-код, разрешите Chrome доступ к камере.</translation>
 <translation id="8127542551745560481">Изменить главную страницу</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8137558756159375272">Функция "Нажмите для поиска" отправляет в Google выбранное слово, а также текущую страницу в качестве контекста. Включить или отключить эту функцию можно в <ph name="BEGIN_LINK" />настройках<ph name="END_LINK" />.</translation>
@@ -1136,7 +1133,6 @@
 <translation id="8218622182176210845">Управление аккаунтом</translation>
 <translation id="8223642481677794647">Меню карточки из ленты</translation>
 <translation id="8224471946457685718">Скачивать "Статьи для вас" только по Wi-Fi</translation>
-<translation id="8233540874193135768">Для сканирования QR-кодов требуется устройство с камерой.</translation>
 <translation id="8250920743982581267">Документы</translation>
 <translation id="825412236959742607">Эта страница расходовала слишком много памяти, поэтому часть контента была удалена.</translation>
 <translation id="8260126382462817229">Снова войдите в аккаунт</translation>
@@ -1147,6 +1143,7 @@
 <translation id="8284326494547611709">Титры</translation>
 <translation id="829672787777123339">Подключение…</translation>
 <translation id="8310344678080805313">Обычные вкладки</translation>
+<translation id="831192587911042850">Добавляет текущий сайт в список сайтов, на которые вы подписаны.</translation>
 <translation id="8327155640814342956">Чтобы работать в браузере было удобнее, откройте Chrome и установите обновление.</translation>
 <translation id="834313815369870491">Никогда не переводить сайты</translation>
 <translation id="8349013245300336738">Сортировать по объему использованного трафика</translation>
@@ -1252,7 +1249,6 @@
 <translation id="8970887620466824814">Произошла ошибка</translation>
 <translation id="8972098258593396643">Скачать в папку по умолчанию?</translation>
 <translation id="8988028529677883095">Использовать телефон в качестве электронного ключа</translation>
-<translation id="8990209962746788689">Не удалось создать QR-код.</translation>
 <translation id="8993760627012879038">Открыть новое окно в режиме инкогнито</translation>
 <translation id="8996847606757455498">Выбрать другого поставщика</translation>
 <translation id="8998729206196772491">Вы входите в аккаунт, которым управляет администратор домена <ph name="MANAGED_DOMAIN" />. Он может контролировать ваши данные Chrome, которые теперь будут связаны с управляемым аккаунтом. При выходе из системы все данные Chrome, хранящиеся на этом устройстве, будут удалены, но останутся в вашем аккаунте Google.</translation>

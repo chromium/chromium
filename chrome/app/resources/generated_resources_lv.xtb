@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Lietotājs</translation>
 <translation id="1125550662859510761">Noteiktā izšķirtspēja: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (iebūvētā)</translation>
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
-<translation id="112752777279960360">Lai iestatītu Android tālruni, kas šajā datorā pirmo reizi tiks izmantots kā drošības atslēga, tālrunī atveriet pārlūkprogrammu Chrome un pārejiet uz sadaļu Iestatījumi &gt; Paroles &gt; Izmantot tālruni kā drošības atslēgu. Pēc tam pieskarieties vienumam “Savienojuma izveide ar jaunu ierīci” un noskenējiet šo QR kodu.</translation>
 <translation id="1128109161498068552">Neļaut nevienai vietnei izmantot ekskluzīvus sistēmas ziņojumus, lai piekļūtu MIDI ierīcēm</translation>
 <translation id="1128591060186966949">Meklētājprogrammas rediģēšana</translation>
 <translation id="1129850422003387628">Lietotņu pārvaldība</translation>
@@ -505,6 +504,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1542514202066550870">Šajā cilnē skatītājam tiek nodrošināts VR saturs.</translation>
 <translation id="1543284117603151572">Importētas no pārlūkprogrammas Edge</translation>
 <translation id="1545177026077493356">Automātiskais kioska režīms</translation>
+<translation id="1545749641540134597">Skenējiet QR kodu</translation>
 <translation id="1545775234664667895">Instalēts motīvs “<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">Šis paplašinājums mainīja iestatījumu, kura lapa tiek parādīta, noklikšķinot uz pogas Sākums.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vēlas instalēt paplašinājumu <ph name="EXTENSION_TYPE" />, kas varēs veikt tālāk norādītās darbības.</translation>
@@ -947,7 +947,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="1992924914582925289">Noņemt no ierīces</translation>
 <translation id="1994173015038366702">Vietnes URL</translation>
 <translation id="1995916364271252349">Tiek kontrolēts, kādu informāciju vietnes var izmantot un rādīt (piekļuve atrašanās vietai un kamerai, atļauja rādīt uznirstošos logus u.c.).</translation>
-<translation id="1997437640397887843">Ierīces kamera ir ieslēgta. Novietojiet eSIM QR kodu pretī kamerai.</translation>
 <translation id="1997616988432401742">Jūsu sertifikāti</translation>
 <translation id="1999115740519098545">Sākumlapā</translation>
 <translation id="2000419248597011803">Nosūta dažus sīkfailus un meklēšanas vaicājumus no adreses joslas un meklēšanas lodziņa uz jūsu noklusējuma meklētājprogrammu.</translation>
@@ -967,7 +966,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="2019718679933488176">Atvērt audi&amp;o jaunā cilnē</translation>
 <translation id="2020183425253392403">Rādīt tīkla adrešu iestatījumus</translation>
 <translation id="2020225359413970060">Pārbaudīt failu</translation>
-<translation id="2022953316617983419">QR kods</translation>
 <translation id="2023167225947895179">PIN var viegli uzminēt.</translation>
 <translation id="202352106777823113">Lejupielāde tika veikta pārāk ilgi, un to apturēja tīkls.</translation>
 <translation id="2025115093177348061">Papildinātā realitāte</translation>
@@ -1124,6 +1122,7 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2174948148799307353">Kontu pārvalda <ph name="PARENT_EMAIL" />. Lai izrakstītos no primārā konta šajā ierīcē, ekrānā noklikšķiniet uz laika. Parādītajā izvēlnē noklikšķiniet uz “Izrakstīties”.</translation>
 <translation id="2175607476662778685">Ātrās darbības josla</translation>
 <translation id="217576141146192373">Nevar pievienot printeri. Lūdzu, pārbaudiet printera konfigurāciju un mēģiniet vēlreiz.</translation>
+<translation id="2175927920773552910">QR kods</translation>
 <translation id="2177950615300672361">Inkognito režīma cilne: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA drošības politikas apdraudējums</translation>
 <translation id="2179416702468739594">Notiek pieejamu profilu meklēšana… Uz dažām minūtēm var tikt pārtraukts savienojums ar mobilo tīklu.</translation>
@@ -4338,7 +4337,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5712153969432126546">Dažkārt vietnēs tiek publicēti PDF faili, piemēram, dokumenti, līgumi un veidlapas.</translation>
 <translation id="5715711091495208045">Spraudņa starpnieks: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Noklusējuma meklētājprogrammas</translation>
-<translation id="5719637365829998022">QR kods ir noskenēts.</translation>
 <translation id="5719854774000914513">Atļaut vietnēm pieprasīt atļauju veidot savienojumu ar HID ierīcēm</translation>
 <translation id="572155275267014074">Android iestatījumi</translation>
 <translation id="5722086096420375088">Zaļa un balta</translation>
@@ -4531,7 +4529,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="5941711191222866238">Minimizēt</translation>
 <translation id="5942779427914696408">Ierīces redzamība</translation>
 <translation id="5943127421590245687">Verifikācija veikta sekmīgi. Lai atbloķētu un atjaunotu lokālos datus, lūdzu, ievadiet savu iepriekšējo ierīces <ph name="DEVICE_TYPE" /> paroli.</translation>
-<translation id="5944869793365969636">QR koda skenēšana</translation>
 <translation id="5945002094477276055">Fails <ph name="FILE_NAME" />, iespējams, ir bīstams. Vai nosūtīt to pārbaudīšanai Google drošas pārlūkošanas programmā?</translation>
 <translation id="5945363896952315544">Jūsu drošības atslēgā nevar saglabāt papildu ciparnospiedumus. Lai pievienotu jaunu ciparnospiedumu, vispirms dzēsiet kādu no esošajiem ciparnospiedumiem.</translation>
 <translation id="5946591249682680882">Pārskata ID: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4655,7 +4652,6 @@ Vai vēlaties palaist rīku <ph name="CONTROL_PANEL_APPLET_NAME" />?</translatio
 <translation id="6077131872140550515">Noņemt no vēlamajiem</translation>
 <translation id="6077189836672154517">Padomi un atjauninājumi <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Rakstīšana, izmantojot balss ievadi</translation>
-<translation id="6078045608615316905">Izveidot QR kodu šim attēlam</translation>
 <translation id="6078121669093215958">{0,plural, =1{Viesis}zero{# atvērti viesa režīma logi}one{# atvērts viesa režīma logs}other{# atvērti viesa režīma logi}}</translation>
 <translation id="6078323886959318429">Pievienot saīsni</translation>
 <translation id="6078752646384677957">Lūdzu, pārbaudiet savu mikrofonu un audio skaļuma līmeni.</translation>
@@ -5197,14 +5193,12 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6680650203439190394">Ātrums</translation>
 <translation id="6681668084120808868">Uzņemt fotoattēlu</translation>
 <translation id="6683087162435654533">Atjaunot visas cilnes</translation>
-<translation id="6683948477137300040">Rādīt ierīces EID un ātrās atbildes koda uznirstošo logu</translation>
 <translation id="6684827949542560880">Notiek jaunākā atjauninājuma lejupielāde</translation>
 <translation id="668599234725812620">Atvērt pakalpojumu Google Play</translation>
 <translation id="6686490380836145850">Aizvērt cilnes pa labi</translation>
 <translation id="6686665106869989887">Cilne tika pārvietota pa labi</translation>
 <translation id="6686817083349815241">Saglabājiet savu paroli</translation>
 <translation id="6687079240787935001">Paslēpt moduli “<ph name="MODULE_TITLE" />”</translation>
-<translation id="6688285987813868112">Izveidot QR kodu šim attēlam</translation>
 <translation id="6690659332373509948">Nevar parsēt failu: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Pārvaldīt sinhronizētos datus Google informācijas panelī</translation>
 <translation id="6691541770654083180">Earth</translation>
@@ -5408,7 +5402,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6914783257214138813">Jūsu paroles būs redzamas ikvienam, kas var skatīt eksportēto failu.</translation>
 <translation id="6916590542764765824">Paplašinājumu pārvaldība</translation>
 <translation id="6919868320029503575">Nedrošas paroles</translation>
-<translation id="6920262510368602827">Izveidot QR kodu šai lapai</translation>
 <translation id="6920989436227028121">Atvērt kā parastu cilni</translation>
 <translation id="6921104647315081813">Notīrīt darbības</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> neizdevās atvērt</translation>
@@ -6134,7 +6127,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7691698019618282776">Crostini jaunināšana</translation>
 <translation id="7696063401938172191">Jūsu tālrunī “<ph name="PHONE_NAME" />”:</translation>
 <translation id="7697166915480294040">Detalizēta informācija ir paslēpta uz ekrāna kopīgošanas laiku</translation>
-<translation id="7697598343108519171">Skenēt QR kodu, izmantojot kameru</translation>
 <translation id="7701040980221191251">Nav</translation>
 <translation id="7701869757853594372">USER apstrādātāji</translation>
 <translation id="7701928712056789451">Šie vienumi var būt bīstami</translation>
@@ -6240,7 +6232,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="7800518121066352902">Pagriezt &amp;pretēji pulksteņrādītāju kustības virzienam</translation>
 <translation id="780301667611848630">Nē, paldies</translation>
 <translation id="7804072833593604762">Cilne ir aizvērta</translation>
-<translation id="7805759469263222011">Skenējiet QR kodu, izmantojot ierīces kameru, vai ievadiet mobilo sakaru operatora norādīto aktivizācijas kodu</translation>
 <translation id="7805768142964895445">Statuss</translation>
 <translation id="7807067443225230855">Meklēšana un Asistents</translation>
 <translation id="7807711621188256451">Vienmēr ļaut vietnei <ph name="HOST" /> piekļūt kamerai</translation>
@@ -6797,7 +6788,6 @@ Nospiediet piešķirtu slēdzi, lai noņemtu piešķiršanu.</translation>
 <translation id="8386091599636877289">Politika netika atrasta.</translation>
 <translation id="8387361103813440603">Nedrīkst skatīt jūsu atrašanās vietu</translation>
 <translation id="8388770971141403598">Sekundārie profili netiek atbalstīti</translation>
-<translation id="8389416080014625855">Izveidot QR kodu šai lapai</translation>
 <translation id="8389492867173948260">Ļaut šim paplašinājumam lasīt un mainīt visus jūsu datus jūsu apmeklētajās vietnēs:</translation>
 <translation id="8390449457866780408">Serveris nav pieejams.</translation>
 <translation id="8391218455464584335">Vinils</translation>
@@ -7356,7 +7346,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="8986494364107987395">Automātiski sūtīt lietošanas statistiku un avāriju pārskatus uzņēmumam Google</translation>
 <translation id="8987927404178983737">Mēnesis</translation>
 <translation id="8988879467270412492">Vai vēlaties aktivizēt Chrome OS ierīcēs iebūvēto ekrāna lasītāju ChromeVox? Ja vēlaties to darīt, nospiediet un piecas sekundes turiet nospiestus abus skaļuma taustiņus.</translation>
-<translation id="8990209962746788689">Nevar izveidot QR kodu</translation>
 <translation id="8991520179165052608">Vietne var izmantot jūsu mikrofonu.</translation>
 <translation id="899384117894244799">Lietotāja ar ierobežotām iespējām noņemšana</translation>
 <translation id="899403249577094719">Netscape sertifikāta Base URL</translation>

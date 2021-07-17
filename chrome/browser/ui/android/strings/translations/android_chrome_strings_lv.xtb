@@ -224,7 +224,6 @@ Pieskarieties jebkuram vārdam, lai to meklētu. Ja vēlaties precizēt meklēš
 
 Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu, atlasiet mazāk vai vairāk vārdu. Ja vēlaties rediģēt meklēšanas vaicājumu, atveriet paneli, pieskarieties ikonai, lai atvērtu meklēšanas vaicājumu jaunā cilnē, un veiciet izmaiņas meklēšanas lodziņā.</translation>
 <translation id="2459390580524506445">Uzlabota meklēšana ar balsi</translation>
-<translation id="246532703174860178">Kopīgot</translation>
 <translation id="247737702124049222">Attēlu aprakstu pievienošana ir ieslēgta</translation>
 <translation id="2482878487686419369">Paziņojumi</translation>
 <translation id="2485422356828889247">Atinstalēt</translation>
@@ -296,7 +295,6 @@ Nospiediet un turiet jebkuru vārdu, lai to meklētu. Lai precizētu meklēšanu
 <translation id="2900528713135656174">Izveidot pasākumu</translation>
 <translation id="2901411048554510387">Tiek rādīti ar vietni <ph name="WEBSITE_TITLE" /> saistīti ieteikumi</translation>
 <translation id="2904414404539560095">Ierīču saraksts, ar ko kopīgot cilni, ir atvērts pilna ekrāna augstumā.</translation>
-<translation id="2905036901251765993">Lai kopīgotu saturu ar tuvumā esošajiem cilvēkiem, ļaujiet viņiem skenēt šo ātrās atbildes kodu</translation>
 <translation id="2908243544703713905">Ir pieejami nelasīti raksti</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Pārvaldiet tēmas, kuras jums interesē</translation>
@@ -724,7 +722,6 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />atiestatiet sinhronizāci
 <translation id="572328651809341494">Nesen atvērtas cilnes</translation>
 <translation id="5723735397759933332">Tagad vienkāršotajā režīmā tiek vēl vairāk samazināts datu lietojums, optimizējot attēlus HTTPS lapās.</translation>
 <translation id="5726692708398506830">Palielināt visu lapas saturu</translation>
-<translation id="5733983706093266635">Nevar izveidot QR kodu. URL garums pārsniedz <ph name="CHARACTER_LIMIT" /> rakstzīmes.</translation>
 <translation id="5748802427693696783">Notika pārslēgšanās uz standarta cilnēm</translation>
 <translation id="5749068826913805084">Chrome ir nepieciešama piekļuve krātuvei, lai varētu lejupielādēt failus.</translation>
 <translation id="5749237766298580851">Izslēgta <ph name="SEPARATOR" /> Nav ieteicams</translation>
@@ -880,7 +877,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="6590680911007613645">Parolei, kuru vēlaties saglabāt, ir jāatbilst vietnē <ph name="SITE" /> izmantotajai parolei</translation>
 <translation id="6593061639179217415">Vietne datoriem</translation>
 <translation id="6595046016124923392">Attēli tiek sūtīti uz Google serveriem, lai uzlabotu aprakstus.</translation>
-<translation id="6597891566292541626">Novietojiet QR kodu vai svītrkodu šajā ietvarā.</translation>
 <translation id="6600954340915313787">Nokopēta pārlūkā Chrome.</translation>
 <translation id="661266467055912436">Šis režīms efektīvāk aizsargā gan jūs, gan visus citus tīmekļa lietotājus.</translation>
 <translation id="6618554661997243500">Lai skatītu vietnes, ko apmeklējat visbiežāk, un ieteicamos rakstus, pieskarieties pogai Sākumlapa</translation>
@@ -1090,7 +1086,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7961015016161918242">Nekad</translation>
 <translation id="7961926449547174351">Jūs esat atspējojis piekļuvi krātuvei. Lai to iespējotu, pārejiet uz iestatījumiem.</translation>
 <translation id="7963646190083259054">Nodrošina:</translation>
-<translation id="7967911570373677897">Lai varētu skenēt QR kodu, iestatījumos atļaujiet Chrome izmantot jūsu kameru</translation>
 <translation id="7968014550143838305">Pievienota lasīšanas sarakstam</translation>
 <translation id="7971136598759319605">Aktīva pirms 1 dienas</translation>
 <translation id="7975379999046275268">Priekšskatīt lapu <ph name="BEGIN_NEW" />Jauna<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Lai grāmatzīmes būtu pieejamas visās jūsu ierīcēs, ieslēdziet sinhronizāciju.</translation>
 <translation id="8110087112193408731">Vai rādīt jūsu Chrome darbības Digitālajā labjutībā?</translation>
-<translation id="8115259494083109761">Lai skenētu QR kodu, atļaujiet pārlūkprogrammai Chrome izmantot jūsu kameru</translation>
 <translation id="8127542551745560481">Rediģēt sākumlapu</translation>
 <translation id="813082847718468539">Skatīt informāciju par vietni</translation>
 <translation id="8137558756159375272">Izmantojot meklēšanu pieskaroties, atlasītais vārds un pašreiz skatītā lapa tiek nosūtīta kā konteksts pakalpojumam Google meklēšana. Varat to izslēgt lapā <ph name="BEGIN_LINK" />Iestatījumi<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8218622182176210845">Konta pārvaldība</translation>
 <translation id="8223642481677794647">Plūsmas kartītes izvēlne</translation>
 <translation id="8224471946457685718">Rakstu lejupielāde tikai pa Wi-Fi</translation>
-<translation id="8233540874193135768">Lai varētu skenēt QR kodu, izmantojiet ierīci ar kameru.</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Šī lapa izmanto pārāk daudz atmiņas, tādēļ pārlūks Chrome noņēma daļu satura.</translation>
 <translation id="8260126382462817229">Mēģiniet pierakstīties vēlreiz</translation>
@@ -1256,7 +1249,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8972098258593396643">Vai lejupielādēt noklusējuma mapē?</translation>
 <translation id="8988028529677883095">Izmantot tālruni kā drošības atslēgu</translation>
-<translation id="8990209962746788689">Nevar izveidot QR kodu</translation>
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>
 <translation id="8996847606757455498">Izvēlēties citu nodrošinātāju</translation>
 <translation id="8998729206196772491">Jūs pierakstāties kontā, kas tiek pārvaldīts domēnā <ph name="MANAGED_DOMAIN" />, un sniedzat tā administratoram kontroli pār saviem Chrome datiem. Jūsu dati tiks neatgriezeniski saistīti ar šo kontu. Izrakstoties no pārlūka Chrome, jūsu dati tiks dzēsti no šīs ierīces, taču tie tiks saglabāti jūsu Google kontā.</translation>

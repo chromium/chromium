@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">משתמש</translation>
 <translation id="1125550662859510761">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (במקור)</translation>
 <translation id="1126809382673880764">‏במצב הזה המערכת לא מגינה עליך מפני אתרים, הורדות ותוספים מסוכנים. גלישה בטוחה עדיין תגן עליך בשירותים אחרים של Google שבהם היא זמינה, כמו Gmail והחיפוש.</translation>
-<translation id="112752777279960360">‏כדי להגדיר בפעם הראשונה את השימוש בטלפון Android כמפתח אבטחה עבור המחשב הזה, יש לפתוח את Chrome בטלפון ולעבור אל "הגדרות &gt; סיסמאות &gt; שימוש בטלפון כמפתח אבטחה". לאחר מכן יש להקיש על "חיבור מכשיר חדש" ולסרוק את קוד ה-QR הזה.</translation>
 <translation id="1128109161498068552">‏אין לאפשר לאף אתר להשתמש בהודעות בלעדיות של המערכת כדי לגשת למכשירי MIDI.</translation>
 <translation id="1128591060186966949">עריכת מנוע חיפוש</translation>
 <translation id="1129850422003387628">ניהול אפליקציות</translation>
@@ -503,6 +502,7 @@
 <translation id="1542514202066550870">‏הכרטיסייה הזו מציגה תוכן VR במשקפי VR.</translation>
 <translation id="1543284117603151572">‏ייבוא מ-Edge</translation>
 <translation id="1545177026077493356">מצב קיוסק אוטומטי</translation>
+<translation id="1545749641540134597">‏סריקת קוד QR</translation>
 <translation id="1545775234664667895">נושא שהותקן "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">התוסף הזה שינה את הדף שמוצג כשלוחצים על הלחצן 'דף הבית'.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> רוצה להתקין <ph name="EXTENSION_TYPE" /> שיכול:</translation>
@@ -953,7 +953,6 @@
 <translation id="1992924914582925289">הסרה מהמכשיר</translation>
 <translation id="1994173015038366702">כתובת אתר</translation>
 <translation id="1995916364271252349">בדף הזה אפשר לשלוט על המידע שאתרים יכולים להשתמש בו ולהציג אותו (מיקום, מצלמה, חלונות קופצים ועוד)</translation>
-<translation id="1997437640397887843">‏המצלמה של המכשיר הופעלה. עליך למקם את קוד ה-QR של ה-eSIM מול המצלמה.</translation>
 <translation id="1997616988432401742">האישורים שלך</translation>
 <translation id="1999115740519098545">בעת ההפעלה</translation>
 <translation id="2000419248597011803">‏שליחה של חלק מקובצי ה-Cookie והחיפושים משורת כתובת האתר ומתיבת החיפוש אל מנוע החיפוש שהוגדר כברירת מחדל</translation>
@@ -973,7 +972,6 @@
 <translation id="2019718679933488176">&amp;פתיחת אודיו בכרטיסייה חדשה</translation>
 <translation id="2020183425253392403">הצגת ההגדרות של כתובת הרשת</translation>
 <translation id="2020225359413970060">סריקת קובץ</translation>
-<translation id="2022953316617983419">‏קוד QR</translation>
 <translation id="2023167225947895179">‏ייתכן שיהיה קל לנחש את ה-PIN</translation>
 <translation id="202352106777823113">ההורדה נמשכה זמן רב מדי, והיא נעצרה על ידי הרשת.</translation>
 <translation id="2025115093177348061">מציאות רבודה</translation>
@@ -1128,6 +1126,7 @@
 <translation id="2174948148799307353">החשבון מנוהל על ידי <ph name="PARENT_EMAIL" />. כדי לצאת מהחשבון הראשי במכשיר הזה, יש ללחוץ על השעה במסך. בתפריט שיופיע יש ללחוץ על "יציאה".</translation>
 <translation id="2175607476662778685">סרגל הפעלה מהירה</translation>
 <translation id="217576141146192373">לא ניתן להוסיף מדפסת. יש לבדוק את הגדרת המדפסת ולנסות שוב.</translation>
+<translation id="2175927920773552910">‏קוד QR</translation>
 <translation id="2177950615300672361">כרטיסייה אנונימית: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">‏רשות האישורים (CA) בסכנה</translation>
 <translation id="2179416702468739594">מתבצע חיפוש של פרופילים זמינים. הפעולה עשויה לגרום לניתוק הרשת הסלולרית למשך מספר דקות.</translation>
@@ -4338,7 +4337,6 @@
 <translation id="5712153969432126546">‏לפעמים אתרים מפרסמים קובצי PDF, כמו מסמכים, חוזים וטפסים</translation>
 <translation id="5715711091495208045">מתווך פלאגין: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">מנועי חיפוש המוגדרים כברירת מחדל</translation>
-<translation id="5719637365829998022">‏קוד ה-QR נסרק.</translation>
 <translation id="5719854774000914513">‏אתרים יכולים לבקש הרשאה להתחבר למכשירי HID</translation>
 <translation id="572155275267014074">‏הגדרות Android</translation>
 <translation id="5722086096420375088">ירוק ולבן</translation>
@@ -4531,7 +4529,6 @@
 <translation id="5941711191222866238">מזעור</translation>
 <translation id="5942779427914696408">הרשאות גישה למכשיר</translation>
 <translation id="5943127421590245687">האימות הסתיים בהצלחה. כדי לבטל את הנעילה של הנתונים המקומיים ולשחזר אותם, יש להזין את הסיסמה הקודמת שלך עבור <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">‏סריקת קוד QR</translation>
 <translation id="5945002094477276055">‏הקובץ <ph name="FILE_NAME" /> עלול להיות מסוכן. לשלוח אותו לשירות הגלישה הבטוחה של Google לצורך סריקה?</translation>
 <translation id="5945363896952315544">אין מקום לטביעות אצבע נוספות במפתח האבטחה שלך. כדי להוסיף טביעת אצבע חדשה, קודם צריך למחוק אחת מהקיימות.</translation>
 <translation id="5946591249682680882">מזהה דיווח <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4655,7 +4652,6 @@
 <translation id="6077131872140550515">הסרה מרשימת הרשתות המועדפות</translation>
 <translation id="6077189836672154517">טיפים ועדכונים בנושא <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">דיבור להקלדה</translation>
-<translation id="6078045608615316905">‏יצירת קוד QR לתמונה הזו</translation>
 <translation id="6078121669093215958">{0,plural, =1{מצב אורח}two{# חלונות אורחים פתוחים}many{# חלונות אורחים פתוחים}other{# חלונות אורחים פתוחים}}</translation>
 <translation id="6078323886959318429">הוספת קיצור דרך</translation>
 <translation id="6078752646384677957">יש לבדוק את עוצמת הקול למיקרופון ולאודיו.</translation>
@@ -5192,14 +5188,12 @@
 <translation id="6680650203439190394">קצב</translation>
 <translation id="6681668084120808868">צילום תמונה</translation>
 <translation id="6683087162435654533">ש&amp;חזור כל הכרטיסיות</translation>
-<translation id="6683948477137300040">‏הצגת החלון הקופץ של מספר ה-EID וקוד ה-QR של המכשיר</translation>
 <translation id="6684827949542560880">המערכת מורידה את העדכון האחרון</translation>
 <translation id="668599234725812620">‏פתיחת Google Play</translation>
 <translation id="6686490380836145850">סגירת הכרטיסיות משמאל</translation>
 <translation id="6686665106869989887">הכרטיסייה הועברה שמאלה</translation>
 <translation id="6686817083349815241">שמירת הסיסמה שלך</translation>
 <translation id="6687079240787935001">הסתרה של <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">‏יצירת קוד QR לתמונה הזו</translation>
 <translation id="6690659332373509948">לא ניתן לנתח את הקובץ: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">‏ניהול נתונים מסוכרנים במרכז השליטה של Google</translation>
 <translation id="6691541770654083180">כדור הארץ</translation>
@@ -5401,7 +5395,6 @@
 <translation id="6914783257214138813">כל מי שיוכל לגשת אל הקובץ המיוצא יוכל לראות את הסיסמאות שלך.</translation>
 <translation id="6916590542764765824">ניהול תוספים</translation>
 <translation id="6919868320029503575">סיסמאות חלשות</translation>
-<translation id="6920262510368602827">‏יצירת קוד QR לדף הזה</translation>
 <translation id="6920989436227028121">פתיחה ככרטיסייה רגילה</translation>
 <translation id="6921104647315081813">ניקוי הפעילויות</translation>
 <translation id="692114467174262153">לא ניתן היה לפתוח את <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6122,7 +6115,6 @@
 <translation id="7691698019618282776">‏שדרוג של Crostini</translation>
 <translation id="7696063401938172191">ב-'<ph name="PHONE_NAME" />' שלך:</translation>
 <translation id="7697166915480294040">הפרטים מוסתרים בזמן שיתוף המסך</translation>
-<translation id="7697598343108519171">‏סריקת קוד QR באמצעות המצלמה</translation>
 <translation id="7701040980221191251">אין</translation>
 <translation id="7701869757853594372">מזהים ייחודיים של משתמשים</translation>
 <translation id="7701928712056789451">הפריטים האלה עשויים להיות מסוכנים</translation>
@@ -6228,7 +6220,6 @@
 <translation id="7800518121066352902">סיבוב נ&amp;גד כיוון השעון</translation>
 <translation id="780301667611848630">לא תודה</translation>
 <translation id="7804072833593604762">הכרטיסייה נסגרה</translation>
-<translation id="7805759469263222011">‏יש לסרוק את קוד ה-QR באמצעות המצלמה של המכשיר או להזין את קוד ההפעלה שקיבלת מהספק</translation>
 <translation id="7805768142964895445">סטטוס</translation>
 <translation id="7807067443225230855">‏חיפוש ו-Assistant</translation>
 <translation id="7807711621188256451">התרה תמיד ל-<ph name="HOST" /> לגשת למצלמה שלך</translation>
@@ -6785,7 +6776,6 @@
 <translation id="8386091599636877289">המדיניות לא נמצאה.</translation>
 <translation id="8387361103813440603">לא מורשים לראות את המיקום</translation>
 <translation id="8388770971141403598">אין תמיכה בפרופילים משניים</translation>
-<translation id="8389416080014625855">‏יצירת קוד QR לדף הזה</translation>
 <translation id="8389492867173948260">מתן הרשאה לתוסף הזה לקרוא ולשנות את כל הנתונים שלך באתרים שאליהם נכנסת:</translation>
 <translation id="8390449457866780408">השרת אינו זמין.</translation>
 <translation id="8391218455464584335">וייניל</translation>
@@ -7342,7 +7332,6 @@
 <translation id="8986494364107987395">‏שליחה אוטומטית של דוחות קריסה וסטטיסטיקות שימוש ל-Google</translation>
 <translation id="8987927404178983737">חודש</translation>
 <translation id="8988879467270412492">‏רוצה להפעיל את ChromeVox, קורא המסך המובנה של Chrome OS? אם כן, יש ללחוץ על שני הלחצנים של עוצמת הקול למשך חמש שניות.</translation>
-<translation id="8990209962746788689">‏לא ניתן ליצור קוד QR</translation>
 <translation id="8991520179165052608">האתר רשאי להשתמש במיקרופון</translation>
 <translation id="899384117894244799">הסרה של משתמש מוגבל</translation>
 <translation id="899403249577094719">‏כתובת אתר בסיסית של אישור Netscape</translation>

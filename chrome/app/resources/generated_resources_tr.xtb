@@ -117,7 +117,6 @@
 <translation id="1124772482545689468">Kullanıcı</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> şeklinde görünür (Yerel)</translation>
 <translation id="1126809382673880764">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Gmail ve Arama gibi diğer Google hizmetlerinde, mümkün olduğunda Güvenli Tarama korumasından yararlanmaya devam edersiniz.</translation>
-<translation id="112752777279960360">Bu bilgisayarda güvenlik anahtarı olarak kullanmak istediğiniz Android telefonu ilk kez ayarlamak için; telefonunuzda Chrome'u açın ve "Ayarlar &gt; Şifreler &gt; Telefonu güvenlik anahtarı olarak kullan" bölümüne gidin. Daha sonra "Yeni cihaz bağla"ya dokunun ve bu QR kodunu tarayın.</translation>
 <translation id="1128109161498068552">Hiçbir sitenin MIDI cihazlarına erişmek için sisteme özel mesajları kullanmasına izin verme</translation>
 <translation id="1128591060186966949">Arama motorunu düzenleyin</translation>
 <translation id="1129850422003387628">Uygulamaları yönet</translation>
@@ -501,6 +500,7 @@
 <translation id="1542514202066550870">Bu sekme bir başlığa VR içeriği sunuyor.</translation>
 <translation id="1543284117603151572">Edge'den Aktarıldı</translation>
 <translation id="1545177026077493356">Otomatik Kiosk Modu</translation>
+<translation id="1545749641540134597">QR Kodunu Tara</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" teması yüklendi</translation>
 <translation id="1546280085599573572">Bu uzantı, Ana Sayfa düğmesini tıkladığınızda gösterilecek sayfayı değiştirdi.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />, aşağıdakileri yapabilecek bir <ph name="EXTENSION_TYPE" /> yüklemek istiyor:</translation>
@@ -942,7 +942,6 @@
 <translation id="1992924914582925289">Cihazdan kaldır</translation>
 <translation id="1994173015038366702">Site URL'si</translation>
 <translation id="1995916364271252349">Sitelerin hangi bilgileri kullanabileceğini ve gösterebileceğini kontrol eder (konum, kamera, pop-up'lar ve diğerleri)</translation>
-<translation id="1997437640397887843">Cihaz kamerası açıldı. Lütfen eSIM QR kodunuzu kameranın önüne yerleştirin.</translation>
 <translation id="1997616988432401742">Sertifikalarınız</translation>
 <translation id="1999115740519098545">Başlangıçta</translation>
 <translation id="2000419248597011803">Adres çubuğundan ve arama kutusundan bazı çerezleri ve aramaları varsayılan arama motorunuza gönderir</translation>
@@ -962,7 +961,6 @@
 <translation id="2019718679933488176">Sesi Yeni Sekmede &amp;Aç</translation>
 <translation id="2020183425253392403">Ağ adresi ayarlarını göster</translation>
 <translation id="2020225359413970060">Dosyayı tara</translation>
-<translation id="2022953316617983419">QR kodu</translation>
 <translation id="2023167225947895179">PIN kolayca tahmin edilebilir</translation>
 <translation id="202352106777823113">İndirme çok uzun süreceği için ağ tarafından durduruldu.</translation>
 <translation id="2025115093177348061">Artırılmış gerçeklik</translation>
@@ -1117,6 +1115,7 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2174948148799307353">Hesap, <ph name="PARENT_EMAIL" /> tarafından yönetiliyor Bu cihazda birincil hesabın oturumunu kapatmak için ekranınızdaki saati tıklayın. Görüntülenen menüde "Oturumu kapat"ı tıklayın.</translation>
 <translation id="2175607476662778685">Hızlı başlat çubuğu</translation>
 <translation id="217576141146192373">Yazıcı eklenemiyor. Lütfen yazıcınızın yapılandırmasını kontrol edip tekrar deneyin.</translation>
+<translation id="2175927920773552910">QR Kodu</translation>
 <translation id="2177950615300672361">Gizli Sekmesi: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA Uzlaşması</translation>
 <translation id="2179416702468739594">Mevcut profiller aranıyor. Bu işlem, mobil ağınızın birkaç dakikalığına kopmasına neden olabilir.</translation>
@@ -4322,7 +4321,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5712153969432126546">Siteler, bazen doküman, sözleşme ve form gibi PDF'ler yayınlar</translation>
 <translation id="5715711091495208045">Eklenti Aracısı: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Varsayılan arama motorları</translation>
-<translation id="5719637365829998022">QR kodu tarandı.</translation>
 <translation id="5719854774000914513">Siteler, HID cihazlarına bağlanmak isteyebilir</translation>
 <translation id="572155275267014074">Android ayarları</translation>
 <translation id="5722086096420375088">Yeşil ve beyaz</translation>
@@ -4515,7 +4513,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5942779427914696408">Cihaz görünürlüğü</translation>
 <translation id="5943127421590245687">Doğrulama işleminiz başarıyla tamamlandı. Kilidini açıp yerel verilerinizi geri yüklemek için lütfen eski <ph name="DEVICE_TYPE" /> cihazınızın şifresini girin.</translation>
-<translation id="5944869793365969636">QR kodunu tara</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> tehlikeli olabilir. Taranmak üzere Google Güvenli Tarama'ya gönderilsin mi?</translation>
 <translation id="5945363896952315544">Güvenlik anahtarınız, daha fazla parmak izi depolayamaz. Yeni bir parmak izi eklemek için önce mevcut bir tanesini silin.</translation>
 <translation id="5946591249682680882">Rapor kimliği <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4639,7 +4636,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6077131872140550515">Tercih edilenlerden kaldır</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> ile ilgili ipuçları ve güncellemeler</translation>
 <translation id="6077476112742402730">Sesle yazma</translation>
-<translation id="6078045608615316905">Bu Resim için QR kodu oluştur</translation>
 <translation id="6078121669093215958">{0,plural, =1{Misafir}other{# misafir penceresi açık}}</translation>
 <translation id="6078323886959318429">Kısayol ekle</translation>
 <translation id="6078752646384677957">Lütfen mikrofonunuzu ve ses seviyelerini kontrol edin.</translation>
@@ -5176,14 +5172,12 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6680650203439190394">Hız</translation>
 <translation id="6681668084120808868">Fotoğraf çek</translation>
 <translation id="6683087162435654533">Tüm Sekmeleri Geri Yükle</translation>
-<translation id="6683948477137300040">Cihaz EID numarası ve QR kodu pop-up'ını göster</translation>
 <translation id="6684827949542560880">En son güncelleme indiriliyor</translation>
 <translation id="668599234725812620">Google Play'i aç</translation>
 <translation id="6686490380836145850">Sağdaki sekmeleri kapat</translation>
 <translation id="6686665106869989887">Sekme sağa taşındı</translation>
 <translation id="6686817083349815241">Şifrenizi kaydedin</translation>
 <translation id="6687079240787935001">Gizle: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Bu resim için QR kodu oluştur</translation>
 <translation id="6690659332373509948">Dosya ayrıştırılamıyor: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google Hesap Özeti'nde senkronize edilen verileri yönet</translation>
 <translation id="6691541770654083180">Dünya</translation>
@@ -5385,7 +5379,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="6914783257214138813">Şifreleriniz, dışa aktarılan dosyayı görebilen herkes tarafından görülebilir.</translation>
 <translation id="6916590542764765824">Uzantıları yönet</translation>
 <translation id="6919868320029503575">Zayıf şifreler</translation>
-<translation id="6920262510368602827">Bu sayfa için QR kodu oluştur</translation>
 <translation id="6920989436227028121">Normal sekme olarak aç</translation>
 <translation id="6921104647315081813">Etkinlikleri temizle</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> açılamadı</translation>
@@ -6106,7 +6099,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7691698019618282776">Crostini'yi yeni sürüme geçir</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
 <translation id="7697166915480294040">Ekranınızı paylaşırken ayrıntılar gizlenir</translation>
-<translation id="7697598343108519171">QR kodunu taramak için kamerayı kullan</translation>
 <translation id="7701040980221191251">Yok</translation>
 <translation id="7701869757853594372">KULLANICI İşleyicileri</translation>
 <translation id="7701928712056789451">Bu öğeler tehlikeli olabilir</translation>
@@ -6213,7 +6205,6 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7800518121066352902">Saat Yönünün &amp;Tersine Döndür</translation>
 <translation id="780301667611848630">Hayır, teşekkürler</translation>
 <translation id="7804072833593604762">Sekme Kapatıldı</translation>
-<translation id="7805759469263222011">Cihazınızın kamerasını kullanarak QR kodunu tarayın veya operatörünüz tarafından sağlanan etkinleştirme kodunu girin</translation>
 <translation id="7805768142964895445">Durum</translation>
 <translation id="7807067443225230855">Arama ve Asistan</translation>
 <translation id="7807711621188256451">Kameranıza <ph name="HOST" /> tarafından erişilmesine her zaman izin verin</translation>
@@ -6766,7 +6757,6 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8386091599636877289">Politika bulunamadı.</translation>
 <translation id="8387361103813440603">Konumunuzu görmesine izin verilmeyen siteler</translation>
 <translation id="8388770971141403598">İkincil profiller desteklenmiyor</translation>
-<translation id="8389416080014625855">Bu Sayfa için QR kodu oluştur</translation>
 <translation id="8389492867173948260">Bu uzantının ziyaret ettiğiniz web sitelerindeki tüm verilerinizi okuması ve değiştirmesine izin verin:</translation>
 <translation id="8390449457866780408">Sunucu kullanılamıyor.</translation>
 <translation id="8391218455464584335">Vinil</translation>
@@ -7321,7 +7311,6 @@ Atamayı kaldırmak için atanmış bir anahtara basın</translation>
 <translation id="8986494364107987395">Kullanım istatistiklerini ve çökme raporlarını otomatik olarak Google'a gönder</translation>
 <translation id="8987927404178983737">Ay</translation>
 <translation id="8988879467270412492">Chrome OS'in yerleşik ekran okuyucusu olan ChromeVox'u etkinleştirmek istiyor musunuz? Cevabınız evet ise ses seviyesi tuşlarının ikisini birden beş saniyeliğine basılı tutun.</translation>
-<translation id="8990209962746788689">QR kodu oluşturulamıyor</translation>
 <translation id="8991520179165052608">Site, mikrofonunuzu kullanabilir</translation>
 <translation id="899384117894244799">Kısıtlanmış kullanıcıyı kaldır</translation>
 <translation id="899403249577094719">Netscape Sertifikası Temel URL'si</translation>

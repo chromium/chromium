@@ -224,7 +224,6 @@ Tippen Sie auf ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche 
 
 Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können Ihre Suche verfeinern, indem Sie weitere Wörter auswählen oder Wörter ausschließen. Sie können Ihre Suche auch bearbeiten, indem Sie das Feld öffnen, auf das Symbol "In neuem Tab öffnen" tippen und dann im Suchfeld Ihre Änderungen vornehmen.</translation>
 <translation id="2459390580524506445">Verbesserte Sprachsuche</translation>
-<translation id="246532703174860178">Teilen</translation>
 <translation id="247737702124049222">Bildbeschreibungen sind aktiviert</translation>
 <translation id="2482878487686419369">Benachrichtigungen</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
@@ -296,7 +295,6 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2900528713135656174">Termin erstellen</translation>
 <translation id="2901411048554510387">Vorschläge für <ph name="WEBSITE_TITLE" /> werden angezeigt</translation>
 <translation id="2904414404539560095">Die Liste von Geräten, mit denen ein Tab geteilt werden kann, ist ganz geöffnet.</translation>
-<translation id="2905036901251765993">Bitten Sie Leute in der Nähe, diesen QR-Code zu scannen, um Inhalte mit Ihnen zu teilen</translation>
 <translation id="2908243544703713905">Ungelesene Inhalte verfügbar</translation>
 <translation id="2909615210195135082">Google-Benachrichtigungsplattform</translation>
 <translation id="2912296070571964914">Themen verwalten, an denen Sie interessiert sind</translation>
@@ -306,6 +304,7 @@ Berühren und halten Sie ein Wort, um eine Suche damit zu starten. Sie können I
 <translation id="2942036813789421260">Vorschau-Tab ist geschlossen</translation>
 <translation id="2956410042958133412">Dieses Konto wird von <ph name="PARENT_NAME_1" /> und <ph name="PARENT_NAME_2" /> verwaltet.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> ungelesene Seite}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> ungelesene Seiten}}</translation>
+<translation id="2961210776189273067">Anrede</translation>
 <translation id="2979025552038692506">Ausgewählter Inkognitotab</translation>
 <translation id="2979448359891869301">Screenshot kann nicht erweitert werden. Versuchen Sie es noch einmal, wenn die Speicherauslastung Ihres Smartphones geringer ist.</translation>
 <translation id="2979639724566107830">In neuem Fenster öffnen</translation>
@@ -617,6 +616,7 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="497421865427891073">Weiter</translation>
 <translation id="4988210275050210843">Datei wird heruntergeladen (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Seiten</translation>
+<translation id="5001388021414335527">Dieser Website folgen</translation>
 <translation id="5004416275253351869">Google-Aktivitätseinstellungen</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> möchte eine Verbindung herstellen</translation>
@@ -722,7 +722,6 @@ Wenn Sie diese Einstellung ändern möchten, <ph name="BEGIN_LINK" />setzen Sie 
 <translation id="572328651809341494">Zuletzt geöffnete Tabs</translation>
 <translation id="5723735397759933332">Der Lite-Modus spart nun durch die Optimierung von Bildern auf HTTPS-Seiten noch mehr Daten.</translation>
 <translation id="5726692708398506830">Gesamten Seiteninhalt vergrößern</translation>
-<translation id="5733983706093266635">QR-Code konnte nicht erstellt werden. Die URL ist länger als <ph name="CHARACTER_LIMIT" /> Zeichen.</translation>
 <translation id="5748802427693696783">Zu Standard-Tabs gewechselt</translation>
 <translation id="5749068826913805084">Chrome benötigt Speicherzugriff, um Dateien herunterladen zu können.</translation>
 <translation id="5749237766298580851">Aus <ph name="SEPARATOR" /> Nicht empfohlen</translation>
@@ -878,7 +877,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="6590680911007613645">Das Passwort, das Sie speichern, muss mit dem Passwort für <ph name="SITE" /> übereinstimmen</translation>
 <translation id="6593061639179217415">Desktopwebsite</translation>
 <translation id="6595046016124923392">Bilder werden an Google gesendet, um die Beschreibungen für Sie zu verbessern.</translation>
-<translation id="6597891566292541626">Positionieren Sie den QR- oder Barcode in diesem Bereich.</translation>
 <translation id="6600954340915313787">In Chrome kopiert</translation>
 <translation id="661266467055912436">Verbessert die Sicherheit für Sie und alle im Internet.</translation>
 <translation id="6618554661997243500">Auf die Schaltfläche "Startseite" tippen, um Ihre Top-Websites und Meldungen aufzurufen</translation>
@@ -987,6 +985,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 ausgewähltes Element teilen}other{# ausgewählte Elemente teilen}}</translation>
 <translation id="7359002509206457351">Auf Zahlungsmethoden zugreifen</translation>
 <translation id="7375125077091615385">Typ:</translation>
+<translation id="7386842512861524348">Websiteverbindungen sind sicher, solange Chrome Sie nicht auf eine unsichere Verbindung hinweist.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Eindruck beim ersten Ausführen von Chrome</translation>
@@ -1087,7 +1086,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7961015016161918242">Nie</translation>
 <translation id="7961926449547174351">Sie haben den Speicherzugriff deaktiviert. Gehen Sie zu den Einstellungen, um ihn zu aktivieren.</translation>
 <translation id="7963646190083259054">Anbieter:</translation>
-<translation id="7967911570373677897">Wenn Sie einen QR-Code scannen möchten, ändern Sie die Einstellungen, damit Chrome Ihre Kamera verwenden kann</translation>
 <translation id="7968014550143838305">Zur Leseliste hinzugefügt</translation>
 <translation id="7971136598759319605">Vor 1 Tag aktiv</translation>
 <translation id="7975379999046275268">Seitenvorschau <ph name="BEGIN_NEW" />Neu<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Aktivieren Sie die Synchronisierung, um Ihre Lesezeichen auf allen Ihren Geräten zu sehen</translation>
 <translation id="8110087112193408731">Ihre Chrome-Aktivitäten in Digital Wellbeing anzeigen?</translation>
-<translation id="8115259494083109761">Wenn Sie einen QR-Code scannen möchten, erlauben Sie Chrome, Ihre Kamera zu verwenden</translation>
 <translation id="8127542551745560481">Startseite bearbeiten</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8137558756159375272">Mit "Zum Suchen antippen" werden das ausgewählte Wort und die aktuelle Seite als Kontext an die Google Suche gesendet. Sie können die Funktion in den <ph name="BEGIN_LINK" />Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
@@ -1136,7 +1133,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8218622182176210845">Konto verwalten</translation>
 <translation id="8223642481677794647">Feedkartenmenü</translation>
 <translation id="8224471946457685718">"Artikel für mich" bei bestehender WLAN-Verbindung herunterladen</translation>
-<translation id="8233540874193135768">Verwenden Sie zum Scannen eines QR-Codes ein Gerät mit einer Kamera.</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="825412236959742607">Diese Seite benötigt zu viel Arbeitsspeicher. Darum hat Chrome einige Inhalte entfernt.</translation>
 <translation id="8260126382462817229">Melden Sie sich noch einmal an</translation>
@@ -1147,6 +1143,7 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8284326494547611709">Untertitel</translation>
 <translation id="829672787777123339">Verbindung zu Ihrem Gerät wird hergestellt…</translation>
 <translation id="8310344678080805313">Standard-Tabs</translation>
+<translation id="831192587911042850">Fügt die aktuell geöffnete Website der Liste mit Websites hinzu, denen Sie folgen.</translation>
 <translation id="8327155640814342956">Noch besser und komfortabler surfen – jetzt Chrome öffnen und aktualisieren</translation>
 <translation id="834313815369870491">Websites nie übersetzen</translation>
 <translation id="8349013245300336738">Nach Menge der verwendeten Daten sortieren</translation>
@@ -1252,7 +1249,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8972098258593396643">In Standardordner herunterladen?</translation>
 <translation id="8988028529677883095">Smartphone als Sicherheitsschlüssel verwenden</translation>
-<translation id="8990209962746788689">QR-Code konnte nicht erstellt werden</translation>
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>
 <translation id="8996847606757455498">Anderen Anbieter auswählen</translation>
 <translation id="8998729206196772491">Sie melden sich mit einem von <ph name="MANAGED_DOMAIN" /> verwalteten Konto an und geben dem Administrator der Domain Kontrolle über Ihre Chrome-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn Sie sich von Chrome abmelden, werden Ihre Daten auf dem Gerät gelöscht, bleiben jedoch in Ihrem Google-Konto erhalten.</translation>

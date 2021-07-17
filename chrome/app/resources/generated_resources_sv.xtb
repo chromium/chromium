@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Användare</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> × <ph name="HEIGHT" /> (fast)</translation>
 <translation id="1126809382673880764">Skyddar inte mot farliga webbplatser, nedladdningar och tillägg. Där funktionen är tillgänglig får du fortfarande skydd med Säker webbsökning i andra tjänster från Google, till exempel Gmail och Sök.</translation>
-<translation id="112752777279960360">Om du vill konfigurera att en Android-telefon ska användas som säkerhetsnyckel med datorn för första gången öppnar du Chrome på telefonen och trycker på Inställningar &gt; Lösenord &gt; Använd telefonen som säkerhetsnyckel. Sedan trycker du på Anslut en ny enhet och skannar QR-koden.</translation>
 <translation id="1128109161498068552">Tillåt inte att några webbplatser använder systemexklusiva meddelanden för att komma åt MIDI-enheter</translation>
 <translation id="1128591060186966949">Redigera sökmotor</translation>
 <translation id="1129850422003387628">Hantera appar</translation>
@@ -506,6 +505,7 @@
 <translation id="1542514202066550870">På den här fliken visas VR-innehåll avsett för en VR-kikare.</translation>
 <translation id="1543284117603151572">Importerade från Edge</translation>
 <translation id="1545177026077493356">Automatiskt kioskläge</translation>
+<translation id="1545749641540134597">Skanna QR-kod</translation>
 <translation id="1545775234664667895">Installerat tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Det här tillägget har ändrat vilken sida som visas när du klickar på hemknappen.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vill installera ett <ph name="EXTENSION_TYPE" /> som kan göra följande:</translation>
@@ -957,7 +957,6 @@
 <translation id="1992924914582925289">Ta bort från enheten</translation>
 <translation id="1994173015038366702">Webbadress</translation>
 <translation id="1995916364271252349">Styr vilken information webbplatser kan använda och visa (plats, kamera, popup-fönster med mera)</translation>
-<translation id="1997437640397887843">Enhetens kamera är aktiverad. Placera QR-koden för ditt eSIM framför kameran.</translation>
 <translation id="1997616988432401742">Dina certifikat</translation>
 <translation id="1999115740519098545">Vid start</translation>
 <translation id="2000419248597011803">Skickar vissa cookies och sökningar från adressfältet och sökrutan till standardsökmotorn</translation>
@@ -977,7 +976,6 @@
 <translation id="2019718679933488176">&amp;Öppna ljud på ny flik</translation>
 <translation id="2020183425253392403">Visa inställningar för nätverksadress</translation>
 <translation id="2020225359413970060">Genomsöka filen</translation>
-<translation id="2022953316617983419">QR-kod</translation>
 <translation id="2023167225947895179">Pinkoden kan vara lätt att lista ut</translation>
 <translation id="202352106777823113">Nedladdningen tog för lång tid och avbröts av nätverket.</translation>
 <translation id="2025115093177348061">Förstärkt verklighet</translation>
@@ -1134,6 +1132,7 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2174948148799307353">Kontot hanteras av <ph name="PARENT_EMAIL" />. Klicka på klockan på skärmen om du vill logga ut från det primära kontot på den här enheten. Klicka på Logga ut i menyn som visas.</translation>
 <translation id="2175607476662778685">Fältet Snabbstart</translation>
 <translation id="217576141146192373">Det gick inte att lägga till en skrivare. Kontrollera skrivarens konfiguration och försök igen.</translation>
+<translation id="2175927920773552910">QR-kod</translation>
 <translation id="2177950615300672361">Fliken Inkognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA-kompromiss</translation>
 <translation id="2179416702468739594">Söker efter tillgängliga profiler. Mobilnätverket kan kopplas från i några minuter.</translation>
@@ -4352,7 +4351,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5712153969432126546">Ibland publicerar webbplatser PDF-filer, som dokument, avtal och formulär</translation>
 <translation id="5715711091495208045">Agent för pluginprogram: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsökmotorer</translation>
-<translation id="5719637365829998022">QR-koden har skannats.</translation>
 <translation id="5719854774000914513">Webbplatser får begära tillstånd att ansluta till HID-enheter</translation>
 <translation id="572155275267014074">Android-inställningar</translation>
 <translation id="5722086096420375088">Grön och vit</translation>
@@ -4545,7 +4543,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="5941711191222866238">Minimera</translation>
 <translation id="5942779427914696408">Enhetens synlighet</translation>
 <translation id="5943127421590245687">Verifieringen lyckades. Lås upp och återställ lokal data genom att ange ditt gamla lösenord för <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Skanna QR-kod</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Google Säker webbsökning för genomsökning?</translation>
 <translation id="5945363896952315544">Det går inte att spara fler fingeravtryck på den här säkerhetsnyckeln. Ta bort ett befintligt fingeravtryck först om du vill lägga till ett nytt.</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4669,7 +4666,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6077131872140550515">Ta bort från prioriterade nätverk</translation>
 <translation id="6077189836672154517">Tips och uppdateringar om <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Diktamen</translation>
-<translation id="6078045608615316905">Skapa QR-kod för den här bilden</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gäst}other{# öppna gästfönster}}</translation>
 <translation id="6078323886959318429">Lägg till genväg</translation>
 <translation id="6078752646384677957">Kontrollera mikrofonen och ljudnivåerna.</translation>
@@ -5211,14 +5207,12 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6681668084120808868">Ta foto</translation>
 <translation id="6683087162435654533">Åt&amp;erställ alla flikar</translation>
-<translation id="6683948477137300040">Popup-fönster för att visa enhetens EID eller QR-kod</translation>
 <translation id="6684827949542560880">Den senaste uppdateringen laddas ned</translation>
 <translation id="668599234725812620">Öppna Google Play</translation>
 <translation id="6686490380836145850">Stäng flikar till höger</translation>
 <translation id="6686665106869989887">Fliken flyttades åt höger</translation>
 <translation id="6686817083349815241">Spara lösenordet</translation>
 <translation id="6687079240787935001">Dölj <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Skapa QR-kod för den här bilden</translation>
 <translation id="6690659332373509948">Det gick inte att analysera filen: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Hantera synkroniserad data via Google Översikt</translation>
 <translation id="6691541770654083180">Jorden</translation>
@@ -5422,7 +5416,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="6914783257214138813">Alla med tillgång till den exporterade filen kan läsa dina lösenord.</translation>
 <translation id="6916590542764765824">Hantera tillägg</translation>
 <translation id="6919868320029503575">Svaga lösenord</translation>
-<translation id="6920262510368602827">Skapa QR-kod för den här sidan</translation>
 <translation id="6920989436227028121">Öppna som en vanlig flik</translation>
 <translation id="6921104647315081813">Rensa aktiviteter</translation>
 <translation id="692114467174262153">Det gick inte att öppna <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -6148,7 +6141,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7691698019618282776">Uppgradering av Crostini</translation>
 <translation id="7696063401938172191">Gör så här på din <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Informationen är dold medan du delar skärmen</translation>
-<translation id="7697598343108519171">Skanna QR-koden med kameran</translation>
 <translation id="7701040980221191251">Inga</translation>
 <translation id="7701869757853594372">USER-handtag</translation>
 <translation id="7701928712056789451">Dessa objekt kan vara skadliga</translation>
@@ -6255,7 +6247,6 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="7800518121066352902">Rotera m&amp;oturs</translation>
 <translation id="780301667611848630">Nej tack</translation>
 <translation id="7804072833593604762">Fliken har stängts</translation>
-<translation id="7805759469263222011">Skanna QR-koden med enhetens kamera eller ange aktiveringskoden du fick från operatören.</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Sök och Assistent</translation>
 <translation id="7807711621188256451">Låt alltid <ph name="HOST" /> använda din kamera</translation>
@@ -6812,7 +6803,6 @@ Tryck på en brytare som redan tilldelats en åtgärd om du vill ta bort tilldel
 <translation id="8386091599636877289">Policyn hittades inte.</translation>
 <translation id="8387361103813440603">Får inte se var du befinner dig</translation>
 <translation id="8388770971141403598">Sekundära profiler stöds inte</translation>
-<translation id="8389416080014625855">Skapa QR-kod för den här sidan</translation>
 <translation id="8389492867173948260">Tillåt det här tillägget att läsa och ändra all din data på webbplatser du besöker</translation>
 <translation id="8390449457866780408">Servern är inte tillgänglig.</translation>
 <translation id="8391218455464584335">Vinylskiva</translation>
@@ -7369,7 +7359,6 @@ Tryck på en brytare som redan tilldelats en åtgärd om du vill ta bort tilldel
 <translation id="8986494364107987395">Skicka användningsstatistik och kraschrapporter till Google automatiskt</translation>
 <translation id="8987927404178983737">Månad</translation>
 <translation id="8988879467270412492">Vill du aktivera ChromeVox, den inbyggda skärmläsaren för Chrome OS? I så fall håller du båda volymknapparna nedtryckta i fem sekunder.</translation>
-<translation id="8990209962746788689">Det gick inte att skapa QR-koden</translation>
 <translation id="8991520179165052608">Webbplatsen har åtkomst till din mikrofon</translation>
 <translation id="899384117894244799">Ta bort begränsad användare</translation>
 <translation id="899403249577094719">Basadress för Netscape-certifikat</translation>

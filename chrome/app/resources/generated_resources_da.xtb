@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Bruger</translation>
 <translation id="1125550662859510761">Ligner <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oprindelig)</translation>
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
-<translation id="112752777279960360">Hvis det er første gang, du konfigurerer en Android-telefon, der skal bruges som sikkerhedsnøgle til denne computer, skal du åbne Chrome på din telefon og gå til "Indstillinger &gt; Adgangskoder &gt; Brug telefonen som en sikkerhedsnøgle". Tryk derefter på "Forbind en ny enhed", og scan denne QR-kode.</translation>
 <translation id="1128109161498068552">Tillad ikke, at websites bruger interne systemmeddelelser til at få adgang til MIDI-enheder</translation>
 <translation id="1128591060186966949">Rediger søgemaskine</translation>
 <translation id="1129850422003387628">Administrer apps</translation>
@@ -507,6 +506,7 @@
 <translation id="1542514202066550870">Denne fane viser VR-indhold til et headset.</translation>
 <translation id="1543284117603151572">Importeret fra Edge</translation>
 <translation id="1545177026077493356">Automatisk terminaltilstand</translation>
+<translation id="1545749641540134597">Scan QR-kode</translation>
 <translation id="1545775234664667895">Installerede temaet "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Denne udvidelse har ændret, hvilken side der vises, når du klikker på knappen Startside.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> anmoder om at installere en <ph name="EXTENSION_TYPE" />, som kan:</translation>
@@ -958,7 +958,6 @@
 <translation id="1992924914582925289">Fjern fra enhed</translation>
 <translation id="1994173015038366702">Webadresse</translation>
 <translation id="1995916364271252349">Styrer, hvilke oplysninger websites kan anvende og vise (placering, kamera, pop op-vinduer m.m.)</translation>
-<translation id="1997437640397887843">Enhedens kamera er aktiveret. Placer QR-koden for dit eSIM foran kameraet.</translation>
 <translation id="1997616988432401742">Dine certifikater</translation>
 <translation id="1999115740519098545">Ved opstart</translation>
 <translation id="2000419248597011803">Sender visse cookies og søgninger fra adresselinjen og søgefeltet til din standardsøgemaskine</translation>
@@ -978,7 +977,6 @@
 <translation id="2019718679933488176">&amp;Åbn lyd på ny fane</translation>
 <translation id="2020183425253392403">Vis indstillinger for netværksadresser</translation>
 <translation id="2020225359413970060">Scan fil</translation>
-<translation id="2022953316617983419">QR-kode</translation>
 <translation id="2023167225947895179">Pinkoden kan være nem at gætte</translation>
 <translation id="202352106777823113">Overførslen tog for lang tid og blev stoppet af netværket.</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
@@ -1135,6 +1133,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2174948148799307353">Kontoen administreres af <ph name="PARENT_EMAIL" />. Klik på klokkeslættet på din skærm for at logge ud af den primære konto på denne enhed. Klik derefter på "Log ud" i den menu, der vises.</translation>
 <translation id="2175607476662778685">Hurtig start</translation>
 <translation id="217576141146192373">Printeren kunne ikke tilføjes. Tjek din printers konfiguration, og prøv igen.</translation>
+<translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
 <translation id="2179416702468739594">Søger efter tilgængelige profiler. Dette kan afbryde forbindelsen til dit mobilnetværk i et par minutter.</translation>
@@ -2968,6 +2967,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4136203100490971508">Nattelys slukkes automatisk ved solopgang</translation>
 <translation id="41365691917097717">Hvis du fortsætter, aktiveres ADB-fejlretning til oprettelse og test af Android-apps. Bemærk! Denne handling tillader, at Android-apps, der ikke er blevet bekræftet af Google, kan installeres. Du skal gendanne fabriksindstillingerne for at deaktivere dette.</translation>
 <translation id="4138267921960073861">Vis brugernavne og billeder på loginskærmen</translation>
+<translation id="4138598238327913711">Grammatikkontrol er i øjeblikket kun tilgængelig på engelsk</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID-enhed er tilsluttet</translation>
 <translation id="4142052906269098341">Lås din <ph name="DEVICE_TYPE" /> op med din telefon. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Gem registrerede printere på din profil, eller tilføj en ny printer. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -4353,7 +4353,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5712153969432126546">Websites kan nogle gange udgive PDF-filer som f.eks. dokumenter, kontrakter og formularer</translation>
 <translation id="5715711091495208045">Pluginmægler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standardsøgemaskiner</translation>
-<translation id="5719637365829998022">QR-koden blev scannet.</translation>
 <translation id="5719854774000914513">Websites kan anmode om tilladelse til at oprette forbindelse til HID-enheder</translation>
 <translation id="572155275267014074">Indstillinger for Android</translation>
 <translation id="5722086096420375088">Grøn og hvid</translation>
@@ -4546,7 +4545,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5942779427914696408">Enhedens synlighed</translation>
 <translation id="5943127421590245687">Bekræftelsen er gennemført. Angiv din gamle <ph name="DEVICE_TYPE" /> adgangskode for at låse op for og gendanne dine lokale data.</translation>
-<translation id="5944869793365969636">Scan QR-kode</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan være skadelig. Skal Google Beskyttet browsing scanne den?</translation>
 <translation id="5945363896952315544">Din sikkerhedsnøgle kan ikke gemme flere fingeraftryk. Hvis du vil tilføje et nyt, skal du først slette et eksisterende fingeraftryk.</translation>
 <translation id="5946591249682680882">Rapport-id <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4670,7 +4668,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6077131872140550515">Fjern fra foretrukne</translation>
 <translation id="6077189836672154517">Tips og opdateringer om <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Indtaling</translation>
-<translation id="6078045608615316905">Opret en QR-kode for dette billede</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gæst}one{# åbent gæstevindue}other{# åbne gæstevinduer}}</translation>
 <translation id="6078323886959318429">Tilføj genvej</translation>
 <translation id="6078752646384677957">Tjek din mikrofon og dine lydniveauer.</translation>
@@ -5212,14 +5209,12 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6680650203439190394">Talehastighed</translation>
 <translation id="6681668084120808868">Tag billede</translation>
 <translation id="6683087162435654533">G&amp;endan alle faner</translation>
-<translation id="6683948477137300040">Pop op-vinduet Vis enhedens EID-nummer og QR-kode</translation>
 <translation id="6684827949542560880">Downloader den nyeste opdatering</translation>
 <translation id="668599234725812620">Åbn Google Play</translation>
 <translation id="6686490380836145850">Luk fanerne til højre</translation>
 <translation id="6686665106869989887">Fanen blev flyttet til højre</translation>
 <translation id="6686817083349815241">Gem din adgangskode</translation>
 <translation id="6687079240787935001">Skjul <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Opret en QR-kode for dette billede</translation>
 <translation id="6690659332373509948">Filen kan ikke parses: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Administrer synkroniserede data i Google Kontrolpanel</translation>
 <translation id="6691541770654083180">Jorden</translation>
@@ -5423,7 +5418,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="6914783257214138813">Dine adgangskoder vil være synlige for alle, der kan se den eksporterede fil.</translation>
 <translation id="6916590542764765824">Administrer udvidelser</translation>
 <translation id="6919868320029503575">Svage adgangskoder</translation>
-<translation id="6920262510368602827">Opret en QR-kode for denne side</translation>
 <translation id="6920989436227028121">Åbn som almindelig fane</translation>
 <translation id="6921104647315081813">Ryd aktiviteter</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> kunne ikke åbnes</translation>
@@ -6149,7 +6143,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7691698019618282776">Crostini-opgradering</translation>
 <translation id="7696063401938172191">På din "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Oplysningerne er skjulte, når du deler din skærm</translation>
-<translation id="7697598343108519171">Scan QR-koden med kameraet</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUGER-håndtag</translation>
 <translation id="7701928712056789451">Disse elementer kan være skadelige</translation>
@@ -6255,7 +6248,6 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="7800518121066352902">Roter m&amp;od uret</translation>
 <translation id="780301667611848630">Nej tak</translation>
 <translation id="7804072833593604762">Fanen er lukket</translation>
-<translation id="7805759469263222011">Scan en QR-kode med kameraet på din enhed, eller angiv den aktiveringskode, du har fået af dit mobilselskab</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Søgning og Assistent</translation>
 <translation id="7807711621188256451">Tillad altid, at <ph name="HOST" /> har adgang til dit kamera</translation>
@@ -6812,7 +6804,6 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8386091599636877289">Politikken blev ikke fundet.</translation>
 <translation id="8387361103813440603">Har ikke tilladelse til at se din placering</translation>
 <translation id="8388770971141403598">Sekundære profiler understøttes ikke</translation>
-<translation id="8389416080014625855">Opret en QR-kode for denne side</translation>
 <translation id="8389492867173948260">Tillad, at denne udvidelse læser og ændrer alle dine data på websites, du besøger:</translation>
 <translation id="8390449457866780408">Serveren er utilgængelig.</translation>
 <translation id="8391218455464584335">Vinylplade</translation>
@@ -7371,7 +7362,6 @@ Tryk på en tildelt kontakt for fjerne en tildeling</translation>
 <translation id="8986494364107987395">Send automatisk brugsstatistikker og nedbrudsrapporter til Google</translation>
 <translation id="8987927404178983737">Måned</translation>
 <translation id="8988879467270412492">Vil du aktivere ChromeVox, der er den indbyggede skærmlæser til Chrome OS? Hold begge lydstyrkeknapper nede i fem sekunder for at aktivere.</translation>
-<translation id="8990209962746788689">QR-koden kan ikke oprettes</translation>
 <translation id="8991520179165052608">Websitet kan anvende din mikrofon</translation>
 <translation id="899384117894244799">Fjern begrænset bruger</translation>
 <translation id="899403249577094719">Webadresse for Netscape-certifikatbase</translation>

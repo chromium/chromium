@@ -224,7 +224,6 @@ Dodirnite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite preciz
 
 Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako želite precizirati pretraživanje, odaberite više ili manje riječi. Ako želite urediti pretraživanje, otvorite ploču, dodirnite ikonu da bi se otvorila nova kartica i unesite promjene u okvir za pretraživanje.</translation>
 <translation id="2459390580524506445">Poboljšano glasovno pretraživanje</translation>
-<translation id="246532703174860178">Podijeli</translation>
 <translation id="247737702124049222">Uključeni su opisi slika</translation>
 <translation id="2482878487686419369">Obavijesti</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -296,7 +295,6 @@ Dodirnite i držite bilo koju riječ da biste pokrenuli pretraživanje. Ako žel
 <translation id="2900528713135656174">Stvori događaj</translation>
 <translation id="2901411048554510387">Prikazuju se prijedlozi za <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Popis za odabir uređaja s kojim će se dijeliti kartica otvoren punom visinom.</translation>
-<translation id="2905036901251765993">Za dijeljenje s osobama u blizini dopustite im da skeniraju ovaj QR kod</translation>
 <translation id="2908243544703713905">Nepročitani članci su spremni</translation>
 <translation id="2909615210195135082">Googleova platforma za obavijesti</translation>
 <translation id="2912296070571964914">Upravljajte temama koje vas zanimaju</translation>
@@ -723,7 +721,6 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />poništite sinkronizac
 <translation id="572328651809341494">Nedavne kartice</translation>
 <translation id="5723735397759933332">Jednostavni način sad vam štedi više podataka optimiziranjem slika na HTTPS stranicama.</translation>
 <translation id="5726692708398506830">Povećavanje svega na stranici</translation>
-<translation id="5733983706093266635">Izrada QR koda nije uspjela. Broj znakova u URL-u veći je od <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Prešli ste na standardne kartice</translation>
 <translation id="5749068826913805084">Chrome treba pristup pohrani radi preuzimanja datoteka.</translation>
 <translation id="5749237766298580851">Isključeno <ph name="SEPARATOR" /> Ne preporučuje se</translation>
@@ -879,7 +876,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="6590680911007613645">Provjerite podudara li se zaporka koju spremate sa zaporkom za <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Klasični prikaz</translation>
 <translation id="6595046016124923392">Slike se šalju Googleu radi poboljšanja opisa za vas.</translation>
-<translation id="6597891566292541626">Postavite QR/crtični kôd u ovaj okvir.</translation>
 <translation id="6600954340915313787">Kopirano u Chrome</translation>
 <translation id="661266467055912436">Poboljšava sigurnost za vas i sve ostale na webu.</translation>
 <translation id="6618554661997243500">Za prikaz web-lokacija koje najčešće posjećujete i vijesti prilagođenih vama dodirnite gumb početnog zaslona</translation>
@@ -1089,7 +1085,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="7961015016161918242">Nikad</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup pohrani. Omogućite ga u Postavkama.</translation>
 <translation id="7963646190083259054">Dobavljač:</translation>
-<translation id="7967911570373677897">Da biste skenirali QR kôd, promijenite postavke tako da Chrome može koristiti vašu kameru</translation>
 <translation id="7968014550143838305">Dodano na popis za čitanje</translation>
 <translation id="7971136598759319605">Aktivan prije jednog dana</translation>
 <translation id="7975379999046275268">Pregled stranice <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1121,7 +1116,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Da bi se vaše oznake prikazale na svim vašim uređajima, uključite sinkronizaciju</translation>
 <translation id="8110087112193408731">Želite li da se vaša aktivnost u Chromeu prikazuje u Digitalnoj ravnoteži?</translation>
-<translation id="8115259494083109761">Da biste skenirali QR kôd, omogućite Chromeu da koristi vašu kameru</translation>
 <translation id="8127542551745560481">Uređivanje početne stranice</translation>
 <translation id="813082847718468539">Prikaz informacija o web-mjestu</translation>
 <translation id="8137558756159375272">Značajka Dodirnite za pretraživanje Google pretraživanju šalje odabranu riječ i trenutačnu stranicu kao kontekst. Možete je isključiti u <ph name="BEGIN_LINK" />Postavkama<ph name="END_LINK" />.</translation>
@@ -1138,7 +1132,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8218622182176210845">Upravljanje računom</translation>
 <translation id="8223642481677794647">Izbornik kartica feeda</translation>
 <translation id="8224471946457685718">Preuzimaj članke putem Wi-Fija</translation>
-<translation id="8233540874193135768">Da biste skenirali QR kôd, upotrijebite uređaj s kamerom.</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ova stranica upotrebljava previše memorije, pa je Chrome uklonio dio sadržaja.</translation>
 <translation id="8260126382462817229">Ponovo se pokušajte prijaviti</translation>
@@ -1255,7 +1248,6 @@ Na primjer, neke web-lokacije na taj zahtjev mogu odgovoriti tako da vam prikaž
 <translation id="8970887620466824814">Nešto nije u redu.</translation>
 <translation id="8972098258593396643">Želite li preuzeti u zadanu mapu?</translation>
 <translation id="8988028529677883095">Upotreba telefona kao sigurnosnog ključa</translation>
-<translation id="8990209962746788689">Izrada QR koda nije uspjela</translation>
 <translation id="8993760627012879038">Otvaranje nove kartice u anonimnom načinu</translation>
 <translation id="8996847606757455498">Odaberi drugog davatelja usluga</translation>
 <translation id="8998729206196772491">Prijavljujete se računom kojim upravlja <ph name="MANAGED_DOMAIN" /> i njegovom administratoru dajete kontrolu nad svojim podacima u Chromeu. Vaši će se podaci trajno povezati s tim računom. Ako se odjavite iz Chromea, vaši će se podaci izbrisati s ovog uređaja, no ostat će pohranjeni na vašem Google računu.</translation>

@@ -224,7 +224,6 @@ Dotaknite se poljubne besede, če želite iskati. Če želite izboljšati iskanj
 
 Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite izboljšati iskanje, izberite več ali manj besed. Če želite urediti iskanje, odprite podokno, dotaknite se ikone, da odprete na novem zavihku, in v iskalnem polju naredite spremembe.</translation>
 <translation id="2459390580524506445">Izboljšano glasovno iskanje</translation>
-<translation id="246532703174860178">Deljenje z drugimi</translation>
 <translation id="247737702124049222">Opisi slik so vklopljeni</translation>
 <translation id="2482878487686419369">Obvestila</translation>
 <translation id="2485422356828889247">Odmeščanje</translation>
@@ -296,7 +295,6 @@ Dotaknite se poljubne besede in jo pridržite, če želite iskati. Če želite i
 <translation id="2900528713135656174">Ustvarite dogodek</translation>
 <translation id="2901411048554510387">Prikaz predlogov za spletno mesto <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Seznam naprav, s katerimi želite deliti zavihek, odprt pri polni višini.</translation>
-<translation id="2905036901251765993">Če želite deliti z osebami v bližini, naj optično preberejo to kodo QR</translation>
 <translation id="2908243544703713905">Neprebrane novice so pripravljene.</translation>
 <translation id="2909615210195135082">Googlovo okolje za obvestila</translation>
 <translation id="2912296070571964914">Upravljanje tem, ki vas zanimajo.</translation>
@@ -724,7 +722,6 @@ V Google Računu so morda druge vrste zgodovine brskanja, kot so iskanja in deja
 <translation id="572328651809341494">Nedavni zavihki</translation>
 <translation id="5723735397759933332">Lahki način z optimiziranjem slik na straneh HTTPS zdaj poskrbi, da prihranite pri prenosu podatkov.</translation>
 <translation id="5726692708398506830">Povečanje vsebine strani</translation>
-<translation id="5733983706093266635">Kode QR ni mogoče ustvariti. URL vsebuje več kot toliko znakov: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="5748802427693696783">Preklopljeno na standardne zavihke</translation>
 <translation id="5749068826913805084">Chrome za prenos datotek potrebuje dostop do shrambe.</translation>
 <translation id="5749237766298580851">Izklopljeno <ph name="SEPARATOR" /> Ni priporočljivo</translation>
@@ -880,7 +877,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="6590680911007613645">Geslo, ki ga želite shraniti, se mora ujemati z geslom za <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Mesto za namizne račun.</translation>
 <translation id="6595046016124923392">Slike so poslane Googlu zaradi izboljšanja opisov.</translation>
-<translation id="6597891566292541626">Črtno kodo/kodo QR postavite v ta okvir.</translation>
 <translation id="6600954340915313787">Kopirano v Chrome</translation>
 <translation id="661266467055912436">Izboljšuje varnost za vas in vse druge v spletu.</translation>
 <translation id="6618554661997243500">Če si želite ogledati najbolj priljubljena spletna mesta in članke, se dotaknite gumba za domačo stran</translation>
@@ -1090,7 +1086,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7961015016161918242">Nikoli</translation>
 <translation id="7961926449547174351">Onemogočili ste dostop do shrambe. Omogočite ga v nastavitvah.</translation>
 <translation id="7963646190083259054">Ponudnik:</translation>
-<translation id="7967911570373677897">Če želite optično prebrati kodo QR, spremenite nastavitve, da bo Chrome lahko uporabljal kamero</translation>
 <translation id="7968014550143838305">Dodano na bralni seznam</translation>
 <translation id="7971136598759319605">Aktivna pred 1 dnevom</translation>
 <translation id="7975379999046275268">Predogled strani <ph name="BEGIN_NEW" />Novo<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /><ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Če želite dostopati do zaznamkov v vseh napravah, vklopite sinhronizacijo</translation>
 <translation id="8110087112193408731">Ali želite svojo dejavnost v Chromu prikazati v Digitalni dobrobiti?</translation>
-<translation id="8115259494083109761">Če želite optično prebrati kodo QR, Chromu omogočite uporabo kamere</translation>
 <translation id="8127542551745560481">Urejanje domače strani</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8137558756159375272">»Dotaknite se za iskanje« pošlje izbrano besedo in trenutno strank kot kontekst Iskanju Google. To lahko izklopite v <ph name="BEGIN_LINK" />nastavitvah<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8218622182176210845">Upravljanje računa</translation>
 <translation id="8223642481677794647">Meni kartice vira</translation>
 <translation id="8224471946457685718">Prenos člankov v omrežju Wi-Fi</translation>
-<translation id="8233540874193135768">Če želite optično prebrati kodo QR, uporabite napravo s kamero.</translation>
 <translation id="8250920743982581267">Dokumenti</translation>
 <translation id="825412236959742607">Ta stran uporablja preveč pomnilnika, zato je Chrome odstranil nekaj vsebine.</translation>
 <translation id="8260126382462817229">Poskusite se znova prijaviti.</translation>
@@ -1256,7 +1249,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8970887620466824814">Prišlo je do napake.</translation>
 <translation id="8972098258593396643">Želite prenesti v privzeto mapo?</translation>
 <translation id="8988028529677883095">Uporaba telefona kot varnostnega ključa</translation>
-<translation id="8990209962746788689">Kode QR ni mogoče ustvariti</translation>
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>
 <translation id="8996847606757455498">Izberi drugega ponudnika:</translation>
 <translation id="8998729206196772491">Prijavljate se z računom, ki ga upravlja <ph name="MANAGED_DOMAIN" />, in nadzor nad podatki v Chromu predajate skrbniku. Vaši podatki bodo trajno povezani s tem računom. Če se odjavite iz Chroma, boste izbrisali podatke iz te naprave, vendar bodo še naprej shranjeni v Google Računu.</translation>

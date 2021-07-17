@@ -16,6 +16,7 @@
 <translation id="1056775291175587022">नेटवर्क नाहीत</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">बॅटरी बदला किंवा रिचार्ज करा</translation>
+<translation id="1077253978657569125">आम्हाला यामध्ये सुधारणा करायची आहे!</translation>
 <translation id="108486256082349153">सेल्युलर: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">शुभ दुपार <ph name="GIVEN_NAME" />,</translation>
 <translation id="109942774857561566">मला कंटाळा आला आहे</translation>
@@ -1032,6 +1033,7 @@
 <translation id="9080132581049224423">होमवर जाण्यासाठी वर स्वाइप करा</translation>
 <translation id="9080206825613744995">मायक्रोफोन वापरात आहे.</translation>
 <translation id="9084606467167974638">मेनूची जागा टॉगल करा</translation>
+<translation id="9087578468327036362">या क्वेरीची तक्रार करा</translation>
 <translation id="9089416786594320554">इनपुट पद्धती</translation>
 <translation id="9091626656156419976"><ph name="DISPLAY_NAME" /> डिस्प्ले काढले</translation>
 <translation id="9098969848082897657">फोन सायलंट करा</translation>

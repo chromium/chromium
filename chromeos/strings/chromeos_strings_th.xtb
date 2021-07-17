@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
 <translation id="2161394479394250669">ยกเลิกงานพิมพ์</translation>
+<translation id="2209788852729124853">รีเซ็ตตัวนับการรับส่งข้อมูล</translation>
 <translation id="2217935453350629363">ความเร็วในปัจจุบัน</translation>
 <translation id="2224337661447660594">ไม่มีอินเทอร์เน็ต</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">แบตเตอรี่เต็ม</translation>
 <translation id="360565022852130722">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP 802.1x ที่ไม่รัดกุม</translation>
 <translation id="3689839747745352263">การทดสอบ <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{สแกนหน้าอีกครั้ง}=1{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}other{สแกนหน้า {PAGE_NUMBER} อีกครั้ง}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> รีวิว)</translation>
 <translation id="3748026146096797577">ไม่ได้เชื่อมต่อ</translation>
 <translation id="3749289110408117711">ชื่อไฟล์</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">ไดรฟ์ของฉัน</translation>
 <translation id="4429881212383817840">ตั๋ว Kerberos กำลังจะหมดอายุ</translation>
 <translation id="4431821876790500265">ดูรายงาน</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{นำหน้าออก}=1{นำหน้า {PAGE_NUMBER} ออก}other{นำหน้า {PAGE_NUMBER} ออก}}</translation>
 <translation id="445059817448385655">รหัสผ่านเดิม</translation>
 <translation id="4453205916657964690">ซับเน็ตมาสก์</translation>
 <translation id="4454245904991689773">สแกนแล้วบันทึกไว้ใน</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">ห้ามใช้</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}other{สแกนไฟล์และบันทึกไว้ใน <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> เรียบร้อยแล้ว}}</translation>
 <translation id="5931523347251946569">ไม่พบไฟล์</translation>
+<translation id="5972388717451707488">อัปเดตเครื่องมือ</translation>
 <translation id="6037291330010597344">ไม่มีเอกสารในตัวป้อนเอกสารของเครื่องสแกน ใส่เอกสารแล้วลองอีกครั้ง</translation>
 <translation id="6040143037577758943">ปิด</translation>
 <translation id="6040852767465482106">ข้อมูลประจำตัวที่ไม่ระบุตัวตน</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">โปรโตคอลรักษาความปลอดภัย WiFi ที่ไม่รู้จัก</translation>
 <translation id="65587193855025101">แผ่นกระจกสำหรับสแกน</translation>
 <translation id="6564646048574748301">ไม่สำเร็จ - เข้าถึงเครื่องพิมพ์ไม่ได้</translation>
+<translation id="6574762126505704998">เติม</translation>
 <translation id="6603230386432466813">หากพบปัญหาในการเชื่อมต่อ</translation>
 <translation id="6618744767048954150">กำลังดำเนินการ</translation>
 <translation id="6620487321149975369">งานพิมพ์จะปรากฏในประวัติการพิมพ์ เว้นแต่จะมีผู้ใช้นำออกไปด้วยตนเอง</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">เหลือ <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">ดูข้อมูลเพิ่มเติมในศูนย์ช่วยเหลือ</translation>
+<translation id="763165478673169849">เวลารีเซ็ตล่าสุด</translation>
 <translation id="7648838807254605802">เวลาในการตอบสนองของ HTTPS สูง</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
 <translation id="7690294790491645610">ยืนยันรหัสผ่านใหม่</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">การชาร์จที่เหลือ</translation>
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">ขอตัวนับการรับส่งข้อมูล</translation>
 <translation id="8206859287963243715">โทรศัพท์มือถือ</translation>
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8214184102975786227">สแกนหลายหน้าเป็น PDF ไฟล์เดียว</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">เครือข่าย WiFi มีการรักษาความปลอดภัยด้วยโปรโตคอล WEP PSK ที่ไม่รัดกุม</translation>
 <translation id="8477551185774834963">เวลาในการตอบสนอง DNS สูงกว่าเกณฑ์ที่ยอมรับได้เล็กน้อย</translation>
 <translation id="8483248364096924578">ที่อยู่ IP</translation>
+<translation id="8498220429738806196">ตัวนับการรับส่งข้อมูล</translation>
 <translation id="8503813439785031346">ชื่อผู้ใช้</translation>
 <translation id="8503836310948963452">อีกเพียงไม่กี่นาทีเท่านั้น...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ผู้ให้บริการอาจกำหนดให้ใช้ตัวเลือกนี้เพื่อให้เชื่อมต่อเครือข่ายของตนได้ โปรดติดต่อสอบถามรายละเอียดจากผู้ให้บริการ</translation>
 <translation id="8576249514688522074">ยังไม่ได้เริ่มต้น</translation>
 <translation id="8620617069779373398">สถานะการโรมมิ่ง</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">วอลเปเปอร์</translation>
 <translation id="8845001906332463065">ขอความช่วยเหลือ</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">การทดสอบสำเร็จ</translation>
 <translation id="8898840733695078011">ความแรงสัญญาณ</translation>
 <translation id="8910721771319628100">เครือข่ายเริ่มต้นสูงกว่าเกณฑ์เวลาในการตอบสนอง</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">บลูทูธ</translation>
 <translation id="9088306295921699330">การใช้งานปัจจุบัน</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">รีเฟรชตั๋วสำหรับ <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">กำลังสแกนหน้า <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ปลดล็อก</translation>

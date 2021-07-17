@@ -117,7 +117,6 @@
 <translation id="1124772482545689468">المستخدم</translation>
 <translation id="1125550662859510761">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (أصلية)</translation>
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
-<translation id="112752777279960360">‏لإعداد هاتف يعمل بنظام التشغيل Android واستخدامه كمفتاح أمان للوصول إلى جهاز الكمبيوتر هذا للمرة الأولى، افتح متصفِّح Chrome على هاتفك وانتقِل إلى "الإعدادات &gt; كلمات المرور &gt; استخدام الهاتف كمفتاح أمان". بعد ذلك، انقر على "توصيل جهاز جديد" وامسح رمز الاستجابة السريعة التالي ضوئيًا.</translation>
 <translation id="1128109161498068552">‏عدم السماح لأي موقع إلكتروني باستخدام الرسائل الحصرية في النظام للدخول إلى أجهزة MIDI</translation>
 <translation id="1128591060186966949">تعديل محرّك البحث</translation>
 <translation id="1129850422003387628">إدارة التطبيقات</translation>
@@ -505,6 +504,7 @@
 <translation id="1542514202066550870">‏تقدم علامة التبويب هذه محتوى VR إلى سماعة رأس.</translation>
 <translation id="1543284117603151572">‏تم الاستيراد من شبكة Edge</translation>
 <translation id="1545177026077493356">وضع الكشك التلقائي</translation>
+<translation id="1545749641540134597">فحص رمز الاستجابة السريعة</translation>
 <translation id="1545775234664667895">تم تثبيت المظهر "<ph name="THEME_NAME" />".</translation>
 <translation id="1546280085599573572">غيّرت هذه الإضافة الصفحة التي تظهر عند النقر على زر الصفحة الرئيسية.</translation>
 <translation id="1546452108651444655">يريد <ph name="CHILD_NAME" /> تثبيت <ph name="EXTENSION_TYPE" /> يمكنها:</translation>
@@ -946,7 +946,6 @@
 <translation id="1992924914582925289">إزالة من الجهاز</translation>
 <translation id="1994173015038366702">‏عنوان URL للموقع</translation>
 <translation id="1995916364271252349">يمكنك التحكّم بالمعلومات التي يمكن للمواقع الإلكترونية استخدامها وعرضها (مثل معلومات الموقع الجغرافي، والكاميرا، والنوافذ المنبثقة، وغيرها).</translation>
-<translation id="1997437640397887843">‏تم تشغيل كاميرا الجهاز. يُرجى وضع رمز الاستجابة السريعة لشريحة eSIM أمام الكاميرا.</translation>
 <translation id="1997616988432401742">شهاداتك</translation>
 <translation id="1999115740519098545">عند بدء التشغيل</translation>
 <translation id="2000419248597011803">يُرسِل بعض ملفات تعريف الارتباط وعمليات البحث من شريط العناوين ومربّع البحث إلى محرِّك البحث التلقائي.</translation>
@@ -966,7 +965,6 @@
 <translation id="2019718679933488176">&amp;فتح ملف الصوت في علامة تبويب جديدة</translation>
 <translation id="2020183425253392403">عرض إعدادات عنوان الشبكة</translation>
 <translation id="2020225359413970060">فحص الملف</translation>
-<translation id="2022953316617983419">رمز الاستجابة السريعة</translation>
 <translation id="2023167225947895179">قد يكون رقم التعريف الشخصي سهل التخمين</translation>
 <translation id="202352106777823113">استغرق التنزيل وقتًا طويلاً للغاية وتم إيقافه بواسطة الشبكة.</translation>
 <translation id="2025115093177348061">الواقع المعزّز</translation>
@@ -1121,6 +1119,7 @@
 <translation id="2174948148799307353">تتم إدارة الحساب من خلال <ph name="PARENT_EMAIL" />. لتسجيل الخروج من الحساب الأساسي على هذا الجهاز، يُرجى النقر على الوقت الظاهر على الشاشة. في القائمة التي تظهر، يُرجى النقر على "تسجيل الخروج".</translation>
 <translation id="2175607476662778685">شريط التشغيل السريع</translation>
 <translation id="217576141146192373">تتعذّر إضافة طابعة. يُرجى التحقق من ضبط الطابعة والمحاولة مرة أخرى.</translation>
+<translation id="2175927920773552910">رمز الاستجابة السريعة</translation>
 <translation id="2177950615300672361">علامة تبويب التصفح المتخفي: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">‏اختراق المرجع المصدق (CA)</translation>
 <translation id="2179416702468739594">جارٍ البحث عن الملفات التعريفية المتوفّرة. قد يؤدي هذا الإجراء إلى انقطاع الاتصال بشبكة الجوّال لبضع دقائق.</translation>
@@ -4325,7 +4324,6 @@
 <translation id="5712153969432126546">‏تنشر المواقع الإلكترونية أحيانًا ملفات PDF، مثل مستندات أو عقود أو نماذج.</translation>
 <translation id="5715711091495208045">وسيط المكوّن الإضافي: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">محرّكات البحث التلقائية</translation>
-<translation id="5719637365829998022">تم مسح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="5719854774000914513">‏السماح للمواقع الإلكترونية بطلب الاتصال بأجهزة HID</translation>
 <translation id="572155275267014074">‏إعدادات Android</translation>
 <translation id="5722086096420375088">أخضر وأبيض</translation>
@@ -4518,7 +4516,6 @@
 <translation id="5941711191222866238">تصغير</translation>
 <translation id="5942779427914696408">مستوى ظهور الجهاز</translation>
 <translation id="5943127421590245687">تم إثبات هويّتك. يُرجى إدخال كلمة المرور القديمة لجهاز <ph name="DEVICE_TYPE" /> لتتمكّن من فتح قفل الجهاز واستعادة البيانات المحلية.</translation>
-<translation id="5944869793365969636">مسح رمز الاستجابة السريعة</translation>
 <translation id="5945002094477276055">‏قد يكون الملف <ph name="FILE_NAME" /> خطيرًا. هل تريد إرسال الملف إلى "التصفح الآمن من Google" لفحصه؟</translation>
 <translation id="5945363896952315544">يتعذّر على مفتاح الأمان لديك تخزين أي بصمات أصابع إضافية. ولإضافة بصمة جديدة، عليك أولاً حذف إحدى بصمات الأصابع.</translation>
 <translation id="5946591249682680882">معرف التقرير: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4642,7 +4639,6 @@
 <translation id="6077131872140550515">إزالة من الشبكات المُفضلة</translation>
 <translation id="6077189836672154517">نصائح وتحديثات حول <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">تحويل الكلام إلى نص</translation>
-<translation id="6078045608615316905">إنشاء رمز استجابة سريعة لهذه الصورة</translation>
 <translation id="6078121669093215958">{0,plural, =1{نافذة ضيف}zero{# نافذة ضيف مفتوحة}two{نافذتا ضيف مفتوحتان}few{# نوافذ ضيف مفتوحة}many{# نافذة ضيف مفتوحة}other{# نافذة ضيف مفتوحة}}</translation>
 <translation id="6078323886959318429">إضافة اختصار</translation>
 <translation id="6078752646384677957">الرجاء التحقق من الميكروفون ومستويات الصوت.</translation>
@@ -5179,14 +5175,12 @@
 <translation id="6680650203439190394">تقييم</translation>
 <translation id="6681668084120808868">التقاط صورة</translation>
 <translation id="6683087162435654533">&amp;استعادة جميع علامات التبويب</translation>
-<translation id="6683948477137300040">‏عرض رقم EID للجهاز ورمز الاستجابة السريعة في نافذة منبثقة</translation>
 <translation id="6684827949542560880">جارٍ تنزيل آخر تحديث</translation>
 <translation id="668599234725812620">‏فتح Google Play</translation>
 <translation id="6686490380836145850">إغلاق علامات التبويب على اليمين</translation>
 <translation id="6686665106869989887">تم نقل علامة التبويب إلى اليمين.</translation>
 <translation id="6686817083349815241">حفظ كلمة المرور</translation>
 <translation id="6687079240787935001">إخفاء <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">إنشاء رمز استجابة سريعة لهذه الصورة</translation>
 <translation id="6690659332373509948">تعذر تحليل الملف: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">‏إدارة البيانات المتزامنة على لوحة بيانات Google</translation>
 <translation id="6691541770654083180">الأرض</translation>
@@ -5388,7 +5382,6 @@
 <translation id="6914783257214138813">ستكون كلمات مرورك مرئية لأي شخص يمكنه الاطلاع على الملف الذي تم تصديره.</translation>
 <translation id="6916590542764765824">إدارة الإضافات</translation>
 <translation id="6919868320029503575">كلمات مرور ضعيفة</translation>
-<translation id="6920262510368602827">إنشاء رمز استجابة سريعة لهذه الصفحة</translation>
 <translation id="6920989436227028121">فتح كعلامة تبويب عادية</translation>
 <translation id="6921104647315081813">محو الأنشطة</translation>
 <translation id="692114467174262153">تعذَّر فتح <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
@@ -6109,7 +6102,6 @@
 <translation id="7691698019618282776">‏ترقية نظام التشغيل Crostini</translation>
 <translation id="7696063401938172191">على '<ph name="PHONE_NAME" />':</translation>
 <translation id="7697166915480294040">يتم إخفاء محتوى الإشعارات أثناء مشاركة الشاشة.</translation>
-<translation id="7697598343108519171">استخدام الكاميرا لمسح رمز الاستجابة السريعة ضوئيًا</translation>
 <translation id="7701040980221191251">لا يوجد</translation>
 <translation id="7701869757853594372">معالجات المستخدم</translation>
 <translation id="7701928712056789451">قد تكون هذه العناصر خطيرة</translation>
@@ -6216,7 +6208,6 @@
 <translation id="7800518121066352902">تدوير ع&amp;كس اتجاه عقارب الساعة</translation>
 <translation id="780301667611848630">لا، شكرًا</translation>
 <translation id="7804072833593604762">تم إغلاق علامة التبويب.</translation>
-<translation id="7805759469263222011">يمكنك مسح رمز الاستجابة السريعة ضوئيًا باستخدام كاميرا الجهاز أو إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال</translation>
 <translation id="7805768142964895445">الحالة</translation>
 <translation id="7807067443225230855">البحث والمساعدة</translation>
 <translation id="7807711621188256451">السماح دائمًا لـ <ph name="HOST" /> بالدخول إلى الكاميرا</translation>
@@ -6771,7 +6762,6 @@
 <translation id="8386091599636877289">تعذَّر العثور على السياسة.</translation>
 <translation id="8387361103813440603">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على موقعك الجغرافي</translation>
 <translation id="8388770971141403598">لا يمكن استخدام الملفات الشخصية الثانوية.</translation>
-<translation id="8389416080014625855">إنشاء رمز استجابة سريعة لهذه الصفحة</translation>
 <translation id="8389492867173948260">السماح لهذه الإضافة بقراءة جميع بياناتك وتغييرها على المواقع الإلكترونية التي تزورها:</translation>
 <translation id="8390449457866780408">الخادم غير متاح.</translation>
 <translation id="8391218455464584335">أسطوانة موسيقية</translation>
@@ -7330,7 +7320,6 @@
 <translation id="8986494364107987395">‏إرسال إحصاءات الاستخدام وتقارير الأعطال إلى Google تلقائيًا</translation>
 <translation id="8987927404178983737">شهر</translation>
 <translation id="8988879467270412492">‏إذا كنت تريد تفعيل قارئ الشاشة ChromeVox المضمّن لـ "نظام التشغيل Chrome"٬ يُرجى الضغط مع الاستمرار على مفتاحَي مستوى الصوت لمدة 5 ثوانٍ.</translation>
-<translation id="8990209962746788689">يتعذّر إنشاء رمز الاستجابة السريعة.</translation>
 <translation id="8991520179165052608">يمكن للموقع الإلكتروني استخدام الميكروفون.</translation>
 <translation id="899384117894244799">إزالة مستخدم محظور</translation>
 <translation id="899403249577094719">‏عنوان URL الأساسي لشهادة Netscape</translation>

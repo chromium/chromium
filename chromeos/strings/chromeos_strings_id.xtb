@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
 <translation id="2161394479394250669">Batalkan tugas pencetakan</translation>
+<translation id="2209788852729124853">Reset Penghitung Traffic</translation>
 <translation id="2217935453350629363">Kecepatan saat ini</translation>
 <translation id="2224337661447660594">Tidak ada internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Baterai penuh</translation>
 <translation id="360565022852130722">Jaringan Wi-Fi diamankan dengan protokol WEP 802.1x yang lemah</translation>
 <translation id="3689839747745352263">Uji <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Pindai ulang halaman}=1{Pindai ulang halaman {PAGE_NUMBER}}other{Pindai ulang halaman {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ulasan)</translation>
 <translation id="3748026146096797577">Tidak Tersambung</translation>
 <translation id="3749289110408117711">Nama file</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Drive Saya</translation>
 <translation id="4429881212383817840">Masa berlaku tiket Kerberos segera berakhir</translation>
 <translation id="4431821876790500265">Lihat laporan</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Hapus halaman}=1{Hapus halaman {PAGE_NUMBER}}other{Hapus halaman {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Sandi lama</translation>
 <translation id="4453205916657964690">Subnet mask</translation>
 <translation id="4454245904991689773">Pindai ke</translation>
@@ -248,6 +251,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="5916084858004523819">Terlarang</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{File Anda berhasil dipindai dan disimpan ke <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">File tidak ditemukan</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Pengumpan dokumen pemindai kosong. Tambahkan dokumen, lalu coba lagi.</translation>
 <translation id="6040143037577758943">Tutup</translation>
 <translation id="6040852767465482106">Identitas Anonim</translation>
@@ -285,6 +289,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="6527081081771465939">Protokol keamanan Wi-Fi tidak dikenal</translation>
 <translation id="65587193855025101">Flatbed</translation>
 <translation id="6564646048574748301">Gagal - Printer tidak dapat dijangkau</translation>
+<translation id="6574762126505704998">Isi</translation>
 <translation id="6603230386432466813">Mengalami masalah saat menghubungkan?</translation>
 <translation id="6618744767048954150">Sedang berjalan</translation>
 <translation id="6620487321149975369">Tugas pencetakan akan muncul di histori, kecuali dihapus secara manual</translation>
@@ -333,6 +338,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> lagi</translation>
 <translation id="7620771111601174153">Pelajari lebih lanjut di Pusat Bantuan</translation>
+<translation id="763165478673169849">Waktu Reset Terakhir</translation>
 <translation id="7648838807254605802">Latensi HTTPS tinggi</translation>
 <translation id="7658239707568436148">Batal</translation>
 <translation id="7690294790491645610">Konfirmasi sandi baru</translation>
@@ -354,6 +360,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8075838845814659848">Sisa daya baterai</translation>
 <translation id="808894953321890993">Ubah sandi</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">Minta Penghitung Traffic</translation>
 <translation id="8206859287963243715">Seluler</translation>
 <translation id="8208861521865154048">Keuntungan</translation>
 <translation id="8214184102975786227">Pindai beberapa halaman ke satu PDF</translation>
@@ -375,8 +382,10 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8475690821716466388">Jaringan Wi-Fi diamankan dengan protokol WEP PSK yang lemah</translation>
 <translation id="8477551185774834963">Latensi DNS sedikit melebihi ambang batas yang diizinkan</translation>
 <translation id="8483248364096924578">Alamat IP</translation>
+<translation id="8498220429738806196">Penghitung Traffic</translation>
 <translation id="8503813439785031346">Nama Pengguna</translation>
 <translation id="8503836310948963452">Tinggal beberapa menit lagi...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Operator Anda mungkin memerlukan opsi ini untuk terhubung ke jaringan. Hubungi operator untuk mengetahui detailnya.</translation>
 <translation id="8576249514688522074">Tidak diinisialisasi</translation>
 <translation id="8620617069779373398">Status roaming</translation>
@@ -393,6 +402,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Wallpaper</translation>
 <translation id="8845001906332463065">Dapatkan bantuan</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Pengujian berhasil</translation>
 <translation id="8898840733695078011">Kekuatan sinyal</translation>
 <translation id="8910721771319628100">Jaringan default melebihi ambang batas latensi</translation>
@@ -408,6 +418,7 @@ Ketuk mikrofon untuk bertanya apa saja.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Penggunaan saat ini</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Perbarui tiket untuk <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Memindai halaman <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Buka kunci</translation>

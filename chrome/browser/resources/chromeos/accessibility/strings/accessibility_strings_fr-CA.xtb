@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Pour passer d'un menu à l'autre, appuyez sur la flèche vers la gauche ou vers la droite, puis sur Entrée pour activer l'élément en surbrillance</translation>
 <translation id="224426591676115802">Aucune voix n'est proposée pour cette langue : <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Arrêt du mode Apprentissage</translation>
+<translation id="2247870315273396641">Aperçu de la voix</translation>
 <translation id="225732394367814946">Augmenter le débit de la parole</translation>
 <translation id="2267538686624070261">Abandon de la faute d'orthographe</translation>
 <translation id="2267945578749931355">Caractère suivant</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Pour avancer, appuyez sur Entrée; pour retourner à la page précédente, appuyez sur Retour arrière.</translation>
 <translation id="2398579267367951220">Tapez pour rechercher du texte dans la page. Appuyez sur Entrée pour accéder aux résultats, ou sur les flèches vers le haut ou le bas pour passer d'un résultat à l'autre; continuez à écrire pour modifier la recherche; ou appuyez sur Échap pour annuler la recherche.</translation>
 <translation id="240709722712693803">Bleu violet</translation>
+<translation id="2410298923485357543">Utiliser la voix naturelle lorsque l'appareil est connecté à Internet</translation>
 <translation id="2416512023405990736">Une case décochée</translation>
 <translation id="2417569100218200841">Information sur le contenu</translation>
 <translation id="2417948780551741035">Notes de fin</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">Options de ChromeVox</translation>
 <translation id="3060756054951570867">Menu <ph name="TITLE" /> ouvert</translation>
 <translation id="3060880924447482063">Balayez l'écran vers la gauche ou la droite pour passer d'un élément à l'autre</translation>
+<translation id="3061302636956643119">Le texte sera envoyé à Google à des fins de traitement.</translation>
 <translation id="3070245424257836917">Faites glisser trois doigts vers le haut</translation>
 <translation id="307516670110542567">Orientation rapide</translation>
 <translation id="3078345202707391975">En-tête de niveau 2 suivant</translation>
@@ -937,6 +940,7 @@
 <translation id="7693840228159394336">Case d'option précédente</translation>
 <translation id="7701040980221191251">Aucun</translation>
 <translation id="7701196182766842984">liste remplissage automatique</translation>
+<translation id="7713139339518499741">Voix naturelle</translation>
 <translation id="7714340021005120797">Aucune zone de liste ou de texte suivante</translation>
 <translation id="772146615414628379">Félicitations! Vous avez appris les bases nécessaires pour utiliser ChromeVox. Rappelez-vous : vous pouvez ouvrir le menu de commande de ChromeVox en tout temps en appuyant sur les touches Rechercher+Point. Pour en apprendre encore plus sur ChromeVox et sur Chrome OS, consultez les articles suivants.
     Si vous avez terminé le tutoriel, servez-vous de ChromeVox pour naviguer jusqu'au bouton Fermer et cliquez dessus.</translation>
@@ -967,6 +971,7 @@
 <translation id="7939428177581522200">Caractères ajoutés à la sélection</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{arobase}one{# arobase}other{# arobases}}</translation>
 <translation id="7942349550061667556">Rouge</translation>
+<translation id="7945703887991230167">Voix préférée</translation>
 <translation id="7948364528129376623">Aucun lien consulté suivant</translation>
 <translation id="7952460583030260752">Références des commandes</translation>
 <translation id="7965147473449754028">menu fermé</translation>

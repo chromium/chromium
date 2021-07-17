@@ -224,7 +224,6 @@ Tryk på et ord for at søge. Du kan tilpasse søgningen ved at holde fingeren n
 
 Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge flere eller færre ord. Hvis du vil redigere din søgning, skal du åbne panelet, trykke på ikonet Ny fane og så foretage dine ændringer i søgefeltet.</translation>
 <translation id="2459390580524506445">Forbedret stemmesøgning</translation>
-<translation id="246532703174860178">Del</translation>
 <translation id="247737702124049222">Billedbeskrivelser er slået til</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
 <translation id="2485422356828889247">Afinstaller</translation>
@@ -296,7 +295,6 @@ Tryk og hold på et ord for at søge. Du kan tilpasse din søgning ved at vælge
 <translation id="2900528713135656174">Opret begivenhed</translation>
 <translation id="2901411048554510387">Viser forslag for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Åben liste i fuld højde over enheder, der skal deles en fane med.</translation>
-<translation id="2905036901251765993">Du kan dele med folk i nærheden ved at få dem til at scanne denne QR-kode</translation>
 <translation id="2908243544703713905">Ulæste historier er tilgængelige</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Administrer de emner, du er interesseret i</translation>
@@ -724,7 +722,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="572328651809341494">Seneste faner</translation>
 <translation id="5723735397759933332">Lite-tilstand optimerer nu billeder på HTTPS-sider for at reducere dit dataforbrug.</translation>
 <translation id="5726692708398506830">Gør alting på siden større</translation>
-<translation id="5733983706093266635">QR-koden kan ikke oprettes. Webadressen indeholder mere end <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="5748802427693696783">Skiftet til standardfaner</translation>
 <translation id="5749068826913805084">Chrome skal have lageradgang for at kunne downloade filer.</translation>
 <translation id="5749237766298580851">Fra <ph name="SEPARATOR" /> Anbefales ikke</translation>
@@ -880,7 +877,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="6590680911007613645">Sørg for, at den adgangskode, du gemmer, er den samme som din adgangskode til <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Standardwebsite</translation>
 <translation id="6595046016124923392">Billederne sendes til Google med henblik på at give dig bedre beskrivelser.</translation>
-<translation id="6597891566292541626">Placer QR-/stregkoden inden for denne ramme.</translation>
 <translation id="6600954340915313787">Kopieret til Chrome</translation>
 <translation id="661266467055912436">Forbedrer din og alles sikkerhed på nettet.</translation>
 <translation id="6618554661997243500">Tryk på knappen Hjem for at se de mest anvendte websites og anbefalede artikler</translation>
@@ -1090,7 +1086,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har deaktiveret adgangen til lagerplads. Gå til Indstillinger for at aktivere den.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
-<translation id="7967911570373677897">For at scanne en QR-kode skal du ændre dine indstillinger, så Chrome kan bruge dit kamera</translation>
 <translation id="7968014550143838305">Føjet til læseliste</translation>
 <translation id="7971136598759319605">Aktiv for 1 dag siden</translation>
 <translation id="7975379999046275268">Se forhåndsvisning af siden <ph name="BEGIN_NEW" />Ny<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Aktivér synkronisering for at få vist dine bogmærker på alle dine enheder</translation>
 <translation id="8110087112193408731">Vil du se din Chrome-aktivitet i Digital balance?</translation>
-<translation id="8115259494083109761">Hvis du vil scanne en QR-kode, skal du give Chrome lov til at bruge dit kamera</translation>
 <translation id="8127542551745560481">Rediger startside</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8137558756159375272">Funktionen "Tryk for at søge" sender det markerede ord og den aktuelle side som kontekst til Google Søgning. Du kan slå den fra under <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8218622182176210845">Administrer din konto</translation>
 <translation id="8223642481677794647">Feedkortmenu</translation>
 <translation id="8224471946457685718">Download artikler til dig via Wi-Fi</translation>
-<translation id="8233540874193135768">For at scanne en QR-kode skal du bruge en enhed med et kamera.</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="825412236959742607">Denne side anvender for meget hukommelse, så Chrome har fjernet noget indhold.</translation>
 <translation id="8260126382462817229">Prøv at logge ind igen</translation>
@@ -1256,7 +1249,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
 <translation id="8988028529677883095">Brug telefonen som en sikkerhedsnøgle</translation>
-<translation id="8990209962746788689">QR-koden kan ikke oprettes</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>
 <translation id="8996847606757455498">Vælg en anden udbyder</translation>
 <translation id="8998729206196772491">Du er ved at logge ind med en konto, der administreres af <ph name="MANAGED_DOMAIN" />, hvilket giver administratoren kontrol over dine Chrome-data. Dine data tilknyttes denne konto permanent. Hvis du logger ud af Chrome, slettes dine data fra denne enhed, men de forbliver gemt på din Google-konto.</translation>

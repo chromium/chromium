@@ -224,7 +224,6 @@
 
 아무 단어나 길게 터치하여 검색하세요. 더욱 상세히 검색하려면 단어를 더 많이 선택하거나 적게 선택합니다. 검색어를 수정하려면 패널을 열고 아이콘을 탭하여 새 탭에서 연 다음, 검색창 내용을 변경하세요.</translation>
 <translation id="2459390580524506445">향상된 음성 검색</translation>
-<translation id="246532703174860178">공유</translation>
 <translation id="247737702124049222">이미지 설명 사용 설정됨</translation>
 <translation id="2482878487686419369">알림</translation>
 <translation id="2485422356828889247">제거</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">일정 만들기</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> 추천 표시됨</translation>
 <translation id="2904414404539560095">탭을 공유할 기기 목록이 전체 높이로 열렸습니다.</translation>
-<translation id="2905036901251765993">근처에 있는 사람과 공유하려면 상대방이 QR 코드를 스캔하도록 하세요.</translation>
 <translation id="2908243544703713905">읽지 않은 스토리 있음</translation>
 <translation id="2909615210195135082">Google 알림 플랫폼</translation>
 <translation id="2912296070571964914">관심 주제 관리</translation>
@@ -722,7 +720,6 @@
 <translation id="572328651809341494">최근 탭</translation>
 <translation id="5723735397759933332">라이트 모드에서는 HTTPS 페이지의 이미지를 최적화하여 더 많은 데이터를 절약할 수 있습니다.</translation>
 <translation id="5726692708398506830">페이지의 모든 항목 확대</translation>
-<translation id="5733983706093266635">QR 코드를 만들 수 없습니다. URL이 <ph name="CHARACTER_LIMIT" />자(영문 기준)를 초과합니다.</translation>
 <translation id="5748802427693696783">일반 탭으로 전환됨</translation>
 <translation id="5749068826913805084">Chrome에서 파일을 다운로드하려면 저장소 액세스 권한이 있어야 합니다.</translation>
 <translation id="5749237766298580851">사용 안함 <ph name="SEPARATOR" /> 권장하지 않음</translation>
@@ -878,7 +875,6 @@
 <translation id="6590680911007613645">저장하려는 비밀번호가 <ph name="SITE" />의 비밀번호와 일치하는지 확인하세요.</translation>
 <translation id="6593061639179217415">데스크톱 사이트</translation>
 <translation id="6595046016124923392">설명을 개선하기 위해 이미지가 Google로 전송되었습니다.</translation>
-<translation id="6597891566292541626">프레임 안에 QR/바코드를 위치시키세요.</translation>
 <translation id="6600954340915313787">Chrome에 복사됨</translation>
 <translation id="661266467055912436">모든 웹 사용자를 위해 보안을 향상합니다.</translation>
 <translation id="6618554661997243500">맞춤 인기 사이트 및 뉴스를 보려면 홈 버튼 탭하기</translation>
@@ -1087,7 +1083,6 @@
 <translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7963646190083259054">공급업체:</translation>
-<translation id="7967911570373677897">QR 코드를 스캔하려면 Chrome에서 카메라를 사용할 수 있도록 설정을 변경하세요.</translation>
 <translation id="7968014550143838305">읽기 목록에 추가됨</translation>
 <translation id="7971136598759319605">1일 전 동기화됨</translation>
 <translation id="7975379999046275268">페이지 미리보기 표시 <ph name="BEGIN_NEW" />새로운 기능<ph name="END_NEW" /></translation>
@@ -1119,7 +1114,6 @@
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">어느 기기에서나 내 북마크를 사용하려면 동기화를 사용 설정하세요.</translation>
 <translation id="8110087112193408731">디지털 웰빙에서 Chrome 활동을 표시할까요?</translation>
-<translation id="8115259494083109761">QR 코드를 스캔하려면 Chrome에서 카메라를 사용할 수 있도록 허용하세요.</translation>
 <translation id="8127542551745560481">홈페이지 수정</translation>
 <translation id="813082847718468539">사이트 정보 보기</translation>
 <translation id="8137558756159375272">터치하여 검색에서 선택한 단어와 현재 페이지를 Google 검색에 컨텍스트로 발송하세요. <ph name="BEGIN_LINK" />설정<ph name="END_LINK" />에서 이 기능을 사용 중지할 수 있습니다.</translation>
@@ -1136,7 +1130,6 @@
 <translation id="8218622182176210845">계정 관리</translation>
 <translation id="8223642481677794647">피드 카드 메뉴</translation>
 <translation id="8224471946457685718">Wi-Fi로 추천 기사 다운로드</translation>
-<translation id="8233540874193135768">QR 코드를 스캔하려면 카메라가 있는 기기를 사용하세요.</translation>
 <translation id="8250920743982581267">문서</translation>
 <translation id="825412236959742607">페이지에서 너무 많은 메모리를 사용하므로 Chrome에서 일부 콘텐츠를 삭제했습니다.</translation>
 <translation id="8260126382462817229">다시 로그인해 주세요.</translation>
@@ -1252,7 +1245,6 @@
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
 <translation id="8988028529677883095">휴대전화를 보안 키로 사용</translation>
-<translation id="8990209962746788689">QR 코드를 만들 수 없음</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>
 <translation id="8996847606757455498">다른 제공업체 선택</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" />에서 관리하는 계정으로 로그인합니다. 계정 관리자가 내 Chrome 데이터를 관리하게 되며 데이터는 이 계정에 영구적으로 연결됩니다. Chrome에서 로그아웃하면 데이터가 이 기기에서 삭제되지만 Google 계정에는 그대로 유지됩니다.</translation>

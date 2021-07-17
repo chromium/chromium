@@ -196,6 +196,7 @@
 <translation id="2932085390869194046">パスワードを自動生成...</translation>
 <translation id="2952581218264071393">1. Chrome の設定を開く</translation>
 <translation id="2958718410589002129">パスワード</translation>
+<translation id="2961210776189273067">敬称</translation>
 <translation id="2964349545761222050">サードパーティの Cookie をブロックする</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
 <translation id="2975121486251958312">シークレット モードのみ使用できます</translation>
@@ -721,6 +722,7 @@
 <translation id="8073872304774253879">検索とブラウジングを改善する</translation>
 <translation id="8076014560081431679">保存済みのサイト設定は削除されず、普段の閲覧行動を反映した設定などが残る場合があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">この設定は管理されています。詳細を確認するにはダブルタップします</translation>
+<translation id="8080028325999236607">すべてのタブを閉じる</translation>
 <translation id="8105368624971345109">オフにする</translation>
 <translation id="8114753159095730575">ファイルのダウンロードが利用可能です。画面の下の方にオプションがあります。</translation>
 <translation id="8131740175452115882">確認</translation>

@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">待機中</translation>
 <translation id="2161394479394250669">印刷ジョブをキャンセル</translation>
+<translation id="2209788852729124853">トラフィック カウンタをリセット</translation>
 <translation id="2217935453350629363">現在の速度</translation>
 <translation id="2224337661447660594">インターネットに接続されていません</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">バッテリー残量: フル</translation>
 <translation id="360565022852130722">安全性の低いプロトコル WEP 802.1x が Wi-Fi で使用されています</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> テスト</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{ページを再スキャン}=1{{PAGE_NUMBER} ページを再スキャン}other{{PAGE_NUMBER} ページを再スキャン}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★（<ph name="AGGREGATED_COUNT" /> 件のレビュー）</translation>
 <translation id="3748026146096797577">接続されていません</translation>
 <translation id="3749289110408117711">ファイル名</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">マイドライブ</translation>
 <translation id="4429881212383817840">Kerberos チケットはまもなく有効期限が切れます</translation>
 <translation id="4431821876790500265">レポートを表示</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{ページを削除}=1{{PAGE_NUMBER} ページを削除}other{{PAGE_NUMBER} ページを削除}}</translation>
 <translation id="445059817448385655">古いパスワード</translation>
 <translation id="4453205916657964690">サブネット マスク</translation>
 <translation id="4454245904991689773">スキャンの保存先</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}other{ファイルは正常にスキャンされ、<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> に保存されました。}}</translation>
 <translation id="5931523347251946569">ファイルが見つかりません</translation>
+<translation id="5972388717451707488">エンジンを更新</translation>
 <translation id="6037291330010597344">スキャナの給紙トレイが空です。用紙を追加してから、もう一度お試しください。</translation>
 <translation id="6040143037577758943">閉じる</translation>
 <translation id="6040852767465482106">匿名 ID</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">Wi-Fi のセキュリティ プロトコルが不明です</translation>
 <translation id="65587193855025101">フラットベッド</translation>
 <translation id="6564646048574748301">失敗 - プリンタにアクセスできません</translation>
+<translation id="6574762126505704998">全画面</translation>
 <translation id="6603230386432466813">接続できない場合</translation>
 <translation id="6618744767048954150">実行中</translation>
 <translation id="6620487321149975369">印刷ジョブは、手動で削除するまで履歴に表示されます</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">あと <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">詳しくはヘルプセンターをご覧ください</translation>
+<translation id="763165478673169849">前回のリセット時間</translation>
 <translation id="7648838807254605802">HTTPS レイテンシが高くなっています</translation>
 <translation id="7658239707568436148">キャンセル</translation>
 <translation id="7690294790491645610">新しいパスワードの確認入力</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">バッテリー残量</translation>
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> ℃</translation>
+<translation id="8132480444149501833">トラフィック カウンタをリクエスト</translation>
 <translation id="8206859287963243715">携帯電話</translation>
 <translation id="8208861521865154048">特典</translation>
 <translation id="8214184102975786227">複数のページをスキャンして 1 つの PDF にまとめる</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">Wi-Fi ネットワークで安全性の低いプロトコル WEP PSK が使用されています</translation>
 <translation id="8477551185774834963">DNS の応答時間が許容値を少し超えています</translation>
 <translation id="8483248364096924578">IP アドレス</translation>
+<translation id="8498220429738806196">トラフィック カウンタ</translation>
 <translation id="8503813439785031346">ユーザー名</translation>
 <translation id="8503836310948963452">もう少しです…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ご利用の携帯通信会社でのネットワーク接続にこのオプションが必要な場合があります。詳しくは携帯通信会社にお問い合わせください。</translation>
 <translation id="8576249514688522074">初期化が未完了</translation>
 <translation id="8620617069779373398">ローミング状態</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">壁紙</translation>
 <translation id="8845001906332463065">ヘルプ</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">テストが成功しました</translation>
 <translation id="8898840733695078011">電波強度</translation>
 <translation id="8910721771319628100">デフォルトのネットワークの応答時間がしきい値を超えています</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">現在の使用状況</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> のチケットを更新してください</translation>
 <translation id="9106415115617144481"><ph name="PAGE_NUMBER" /> ページ目をスキャンしています</translation>
 <translation id="9111102763498581341">ロック解除</translation>

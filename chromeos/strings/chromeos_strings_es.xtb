@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar trabajo de impresión</translation>
+<translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2217935453350629363">Velocidad actual</translation>
 <translation id="2224337661447660594">Sin conexión a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Batería al máximo</translation>
 <translation id="360565022852130722">La red Wi-Fi está protegida con un protocolo poco seguro WEP 802.1x</translation>
 <translation id="3689839747745352263">Prueba <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Volver a escanear la página}=1{Volver a escanear la página {PAGE_NUMBER}}other{Volver a escanear la página {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> reseñas)</translation>
 <translation id="3748026146096797577">No conectado</translation>
 <translation id="3749289110408117711">Nombre del archivo</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Mi unidad</translation>
 <translation id="4429881212383817840">El ticket de Kerberos caducará pronto</translation>
 <translation id="4431821876790500265">Ver informe</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Quitar página}=1{Quitar página {PAGE_NUMBER}}other{Quitar página {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Contraseña antigua</translation>
 <translation id="4453205916657964690">Máscara de subred</translation>
 <translation id="4454245904991689773">Guardar en</translation>
@@ -247,6 +250,7 @@
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Tu archivo se ha escaneado correctamente y se ha guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Tus archivos se han escaneado correctamente y se han guardado en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Archivo no encontrado</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">El alimentador de documentos del escáner está vacío. Añade documentos y vuelve a intentarlo.</translation>
 <translation id="6040143037577758943">Cerrar</translation>
 <translation id="6040852767465482106">Identidad anónima</translation>
@@ -284,6 +288,7 @@
 <translation id="6527081081771465939">Protocolo de seguridad Wi-Fi desconocido</translation>
 <translation id="65587193855025101">Escáner de superficie plana</translation>
 <translation id="6564646048574748301">No se ha podido imprimir - Impresora inaccesible</translation>
+<translation id="6574762126505704998">Rellenar</translation>
 <translation id="6603230386432466813">¿No puedes conectarte?</translation>
 <translation id="6618744767048954150">En curso</translation>
 <translation id="6620487321149975369">Los trabajos de impresión aparecerán en el historial a menos que se quiten de forma manual</translation>
@@ -332,6 +337,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Tiempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Más información en el Centro de Ayuda</translation>
+<translation id="763165478673169849">Hora a la que se restableció por última vez</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirma la nueva contraseña</translation>
@@ -353,6 +359,7 @@
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8206859287963243715">Móvil</translation>
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8214184102975786227">Escanear varias páginas en un PDF</translation>
@@ -374,8 +381,10 @@
 <translation id="8475690821716466388">La red Wi-Fi está protegida con un protocolo poco seguro WEP PSK</translation>
 <translation id="8477551185774834963">La latencia DNS supera ligeramente el umbral permitido</translation>
 <translation id="8483248364096924578">Dirección IP</translation>
+<translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nombre de usuario</translation>
 <translation id="8503836310948963452">Solo unos minutos más...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Es posible que tu operador requiera esta opción para conectarte a su red. Ponte en contacto con tu operador para obtener más información al respecto.</translation>
 <translation id="8576249514688522074">No inicializado</translation>
 <translation id="8620617069779373398">Estado de roaming</translation>
@@ -392,6 +401,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8845001906332463065">Obtener ayuda</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Prueba completada correctamente</translation>
 <translation id="8898840733695078011">Intensidad de la señal</translation>
 <translation id="8910721771319628100">La red predeterminada supera el umbral de latencia</translation>
@@ -407,6 +417,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Uso actual</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza el ticket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando página <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

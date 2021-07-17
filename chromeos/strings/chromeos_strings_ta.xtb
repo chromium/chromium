@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">வரிசையிலுள்ளது</translation>
 <translation id="2161394479394250669">அச்சுப் பணியை ரத்துசெய்</translation>
+<translation id="2209788852729124853">டிராஃபிக் கவுண்ட்டர்களை மீட்டமை</translation>
 <translation id="2217935453350629363">தற்போதைய வேகம்</translation>
 <translation id="2224337661447660594">இணைய இணைப்பு இல்லை</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">பேட்டரி நிரம்பியது</translation>
 <translation id="360565022852130722">WEP 802.1x என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> சோதனை</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{பக்கத்தை மீண்டும் ஸ்கேன் செய்}=1{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்}other{{PAGE_NUMBER}வது பக்கத்தை மீண்டும் ஸ்கேன் செய்}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> மதிப்புரைகள்)</translation>
 <translation id="3748026146096797577">இணைக்கப்படவில்லை</translation>
 <translation id="3749289110408117711">கோப்பு பெயர்</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">எனது இயக்ககம்</translation>
 <translation id="4429881212383817840">Kerberos டிக்கெட் விரைவில் காலாவதியாகும்</translation>
 <translation id="4431821876790500265">அறிக்கையைக் காட்டு</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{பக்கத்தை அகற்று}=1{{PAGE_NUMBER}வது பக்கத்தை அகற்று}other{{PAGE_NUMBER}வது பக்கத்தை அகற்று}}</translation>
 <translation id="445059817448385655">தற்போதைய கடவுச்சொல்</translation>
 <translation id="4453205916657964690">சப்நெட் மாஸ்க்</translation>
 <translation id="4454245904991689773">இதில் சேமி</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">தடைசெய்யப்பட்டது</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{உங்கள் கோப்பு ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டது.}other{உங்கள் கோப்புகள் ஸ்கேன் செய்யப்பட்டு <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> கோப்புறையில் சேமிக்கப்பட்டன.}}</translation>
 <translation id="5931523347251946569">கோப்பு இல்லை</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">ஸ்கேனரின் டாக்குமெண்ட் ஃபீடர் காலியாக உள்ளது. ஆவணங்களைச் சேர்த்துவிட்டு மீண்டும் முயலவும்.</translation>
 <translation id="6040143037577758943">மூடு</translation>
 <translation id="6040852767465482106">அநாமதேய அடையாளம்</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">அறியப்படாத வைஃபை பாதுகாப்பு நெறிமுறை</translation>
 <translation id="65587193855025101">ஃபிளாட்பெட்</translation>
 <translation id="6564646048574748301">பிரிண்டரை அணுக முடியாததால் அச்சிட முடியவில்லை</translation>
+<translation id="6574762126505704998">முழுத் திரை</translation>
 <translation id="6603230386432466813">இணைப்பதில் சிக்கலா?</translation>
 <translation id="6618744767048954150">சோதனை செய்கிறது</translation>
 <translation id="6620487321149975369">பிரிண்ட்டிங் பணிகளை நீங்களாகவே அகற்றும் வரை அவை வரலாற்றில் காட்டப்படும்</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> மீதமுள்ளது</translation>
 <translation id="7620771111601174153">உதவி மையத்தில் மேலும் அறிக</translation>
+<translation id="763165478673169849">கடைசியாக மீட்டமைத்த நேரம்</translation>
 <translation id="7648838807254605802">HTTPS கோரிக்கைகள் அதிக நேரம் எடுக்கின்றன</translation>
 <translation id="7658239707568436148">ரத்து செய்</translation>
 <translation id="7690294790491645610">புதிய கடவுச்சொல்லை உறுதிப்படுத்துக</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">மீதமுள்ள சார்ஜ்</translation>
 <translation id="808894953321890993">கடவுச்சொல்லை மாற்று</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">டிராஃபிக் கவுண்ட்டர்களைக் கோரு</translation>
 <translation id="8206859287963243715">செல்லுலர்</translation>
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8214184102975786227">பல பக்கங்களை ஒரே PDF ஃபைலாக ஸ்கேன் செய்</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">WEP PSK என்னும் வலுவற்ற நெறிமுறை மூலம் வைஃபை நெட்வொர்க் பாதுகாக்கப்படுகிறது</translation>
 <translation id="8477551185774834963">DNSஸில் ஏற்படும் தாமதம் அனுமதிக்கப்படும் வரம்பைவிடச் சற்றே அதிகமாக உள்ளது</translation>
 <translation id="8483248364096924578">IP முகவரி</translation>
+<translation id="8498220429738806196">டிராஃபிக் கவுண்ட்டர்கள்</translation>
 <translation id="8503813439785031346">பயனர்பெயர்</translation>
 <translation id="8503836310948963452">இன்னும் சில நிமிடங்கள் காத்திருக்கவும்...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">சேவை வழங்கும் நிறுவனத்தின் நெட்வொர்க்குடன் இணைக்க இந்த விருப்பத்தை இயக்க வேண்டியிருக்கலாம். விவரங்களுக்கு சேவை வழங்கும் நிறுவனத்தைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="8576249514688522074">ஆரம்பிக்கப்படவில்லை</translation>
 <translation id="8620617069779373398">ரோமிங் நிலை</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">வைஃபை</translation>
 <translation id="8818152010000655963">வால்பேப்பர்</translation>
 <translation id="8845001906332463065">உதவி பெறுக</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">சோதனை நிறைவடைந்தது</translation>
 <translation id="8898840733695078011">சிக்னலின் வலிமை</translation>
 <translation id="8910721771319628100">இயல்புநிலை நெட்வொர்க்கில் ஏற்படும் தாமதம் வரம்பை மீறி உள்ளது</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">புளூடூத்</translation>
 <translation id="9088306295921699330">தற்போதைய உபயோகம்</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> வலைதளத்திற்கான டிக்கெட்டை ரெஃப்ரெஷ் செய்யவும்</translation>
 <translation id="9106415115617144481">ஸ்கேன் செய்யப்படும் பக்கம்: <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">அன்லாக் செய்</translation>

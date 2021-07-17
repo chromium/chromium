@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2161394479394250669">Cancelar traballo de impresión</translation>
+<translation id="2209788852729124853">Restablecer contadores de tráfico</translation>
 <translation id="2217935453350629363">Velocidade actual</translation>
 <translation id="2224337661447660594">Non hai conexión a Internet</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Batería completa</translation>
 <translation id="360565022852130722">A rede wifi está protexida co protocolo WEP 802.1x, que non é moi seguro</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> (proba)</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Volver escanear a páxina}=1{Volver escanear a páxina {PAGE_NUMBER}}other{Volver escanear a páxina {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> recensións)</translation>
 <translation id="3748026146096797577">Non conectado</translation>
 <translation id="3749289110408117711">Nome de ficheiro</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">A miña unidade</translation>
 <translation id="4429881212383817840">O tícket de Kerberos caduca pronto</translation>
 <translation id="4431821876790500265">Ver informe</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Quitar páxina}=1{Quitar páxina {PAGE_NUMBER}}other{Quitar páxina {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Contrasinal antigo</translation>
 <translation id="4453205916657964690">Máscara de subrede</translation>
 <translation id="4454245904991689773">Gardar en</translation>
@@ -248,6 +251,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="5916084858004523819">Prohibida</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{O teu ficheiro escaneouse e gardouse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Os teus ficheiros escaneáronse e gardáronse correctamente en <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Non se encontrou o ficheiro</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">O alimentador de documentos do escáner está baleiro. Engade algún documento e téntao de novo.</translation>
 <translation id="6040143037577758943">Pechar</translation>
 <translation id="6040852767465482106">Identidade anónima</translation>
@@ -285,6 +289,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="6527081081771465939">Descoñécese o protocolo de seguranza da wifi</translation>
 <translation id="65587193855025101">Superficie plana</translation>
 <translation id="6564646048574748301">Produciuse un erro: non se puido acceder á impresora</translation>
+<translation id="6574762126505704998">Completar</translation>
 <translation id="6603230386432466813">Tes problemas de conexión?</translation>
 <translation id="6618744767048954150">En execución</translation>
 <translation id="6620487321149975369">Os traballos de impresión aparecerán no historial a menos que os quites de xeito manual</translation>
@@ -333,6 +338,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Tempo restante: <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Máis información no Centro de axuda</translation>
+<translation id="763165478673169849">Última hora de restablecemento</translation>
 <translation id="7648838807254605802">Latencia de HTTPS alta</translation>
 <translation id="7658239707568436148">Cancelar</translation>
 <translation id="7690294790491645610">Confirmar contrasinal novo</translation>
@@ -354,6 +360,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8075838845814659848">Carga restante</translation>
 <translation id="808894953321890993">Cambiar contrasinal</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Solicitar contadores de tráfico</translation>
 <translation id="8206859287963243715">Móbil</translation>
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8214184102975786227">Escanear varias páxinas nun mesmo PDF</translation>
@@ -375,8 +382,10 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8475690821716466388">A rede wifi está protexida co protocolo WEP PSK, que non é moi seguro</translation>
 <translation id="8477551185774834963">A latencia do DNS supera lixeiramente o límite permitido</translation>
 <translation id="8483248364096924578">Enderezo IP</translation>
+<translation id="8498220429738806196">Contadores de tráfico</translation>
 <translation id="8503813439785031346">Nome de usuario</translation>
 <translation id="8503836310948963452">Só faltan uns minutos…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">É posible que sexa obrigatorio activar esta opción para conectarte á rede do teu operador. Para obter máis detalles, ponte en contacto con el.</translation>
 <translation id="8576249514688522074">Non iniciada</translation>
 <translation id="8620617069779373398">Estado de itinerancia</translation>
@@ -393,6 +402,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="8814190375133053267">Wifi</translation>
 <translation id="8818152010000655963">Fondo de pantalla</translation>
 <translation id="8845001906332463065">Obter axuda</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">Superouse a proba</translation>
 <translation id="8898840733695078011">Intensidade do sinal</translation>
 <translation id="8910721771319628100">A rede predeterminada supera o límite de latencia</translation>
@@ -408,6 +418,7 @@ Proba a tocar o micrófono para preguntarme algo.</translation>
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">En uso</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Actualiza o tícket de <ph name="PRINCIPAL_NAME" /></translation>
 <translation id="9106415115617144481">Escaneando páxina <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Desbloquear</translation>

@@ -224,7 +224,6 @@ Puudutage otsimiseks mis tahes sõna. Otsingu täpsustamiseks puudutage pikalt, 
 
 Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige rohkem või vähem sõnu. Otsingu muutmiseks avage paneel, puudutage uuel vahelehel avamiseks ikooni ja tehke otsingukastis muudatused.</translation>
 <translation id="2459390580524506445">Täiustatud häälotsing</translation>
-<translation id="246532703174860178">Jaga</translation>
 <translation id="247737702124049222">Pildikirjeldused on sisse lülitatud</translation>
 <translation id="2482878487686419369">Märguanded</translation>
 <translation id="2485422356828889247">Desinstalli</translation>
@@ -296,7 +295,6 @@ Puudutage pikalt mis tahes sõna, et seda otsida. Otsingu täpsustamiseks valige
 <translation id="2900528713135656174">Looge sündmus</translation>
 <translation id="2901411048554510387">Kuvatakse veebisaidi <ph name="WEBSITE_TITLE" /> soovitusi</translation>
 <translation id="2904414404539560095">Vahelehe jagamise seadmete loend (täiskõrgusel avatud).</translation>
-<translation id="2905036901251765993">Lähedaste inimestega jagamiseks paluge neil skaneerida see QR-kood</translation>
 <translation id="2908243544703713905">Lugemata lood on valmis</translation>
 <translation id="2909615210195135082">Google'i märguannete platvorm</translation>
 <translation id="2912296070571964914">Hallake teemasid, mis teile huvi pakuvad</translation>
@@ -724,7 +722,6 @@ Seade muutmiseks <ph name="BEGIN_LINK" />lähtestage sünkroonimine<ph name="END
 <translation id="572328651809341494">Hiljutised vahelehed</translation>
 <translation id="5723735397759933332">Lihtsustatud režiim säästab nüüd rohkem andmemahtu, optimeerides HTTPS-lehtedel kujutisi.</translation>
 <translation id="5726692708398506830">Lehel kuvatud sisu suurendamine</translation>
-<translation id="5733983706093266635">QR-koodi ei saa luua. URL on pikem kui <ph name="CHARACTER_LIMIT" /> tähemärki.</translation>
 <translation id="5748802427693696783">Tavapärased vahelehed on aktiveeritud</translation>
 <translation id="5749068826913805084">Chrome vajab failide allalaadimiseks juurdepääsu salvestusruumile.</translation>
 <translation id="5749237766298580851">Väljas <ph name="SEPARATOR" /> Ei soovitata</translation>
@@ -880,7 +877,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="6590680911007613645">Veenduge, et salvestatav parool ühtiks teie teenuses <ph name="SITE" /> kasutatava parooliga</translation>
 <translation id="6593061639179217415">Arvutisait</translation>
 <translation id="6595046016124923392">Pildid saadetakse kirjelduste täiendamiseks Google'ile.</translation>
-<translation id="6597891566292541626">Paigutage QR-/ribakood sellesse kaadrisse.</translation>
 <translation id="6600954340915313787">Chrome'i kopeeritud</translation>
 <translation id="661266467055912436">Täiendab turvalisust teie ja kõigi teiste veebikasutajate jaoks.</translation>
 <translation id="6618554661997243500">Sageli külastatud saitide ja populaarsete lugude vaatamiseks puudutage avakuva nuppu</translation>
@@ -1090,7 +1086,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7961926449547174351">Olete keelanud juurdepääsu salvestusruumile. Selle lubamiseks avage menüü Seaded.</translation>
 <translation id="7963646190083259054">Teenusepakkuja:</translation>
-<translation id="7967911570373677897">QR-koodi skannimiseks muutke seadeid, et Chrome saaks teie kaamerat kasutada</translation>
 <translation id="7968014550143838305">Lisati lugemisloendisse</translation>
 <translation id="7971136598759319605">Aktiivne 1 päev tagasi</translation>
 <translation id="7975379999046275268">Lehe eelvaade <ph name="BEGIN_NEW" />Uus<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Järjehoidjate kõigisse oma seadmetesse hankimiseks lülitage sünkroonimine sisse</translation>
 <translation id="8110087112193408731">Kas kuvada teie Chrome'i tegevused teenuses Digitaalne heaolu?</translation>
-<translation id="8115259494083109761">QR-koodi skannimiseks lubage Chrome'il oma kaamerat kasutada</translation>
 <translation id="8127542551745560481">Avalehe muutmine</translation>
 <translation id="813082847718468539">Kuvab saidi teabe</translation>
 <translation id="8137558756159375272">Puudutamine otsimiseks saadab valitud sõna ja praeguse lehe kontekstina Google'i otsingusse. Saate selle välja lülitada jaotises <ph name="BEGIN_LINK" />Seaded<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8218622182176210845">Konto haldamine</translation>
 <translation id="8223642481677794647">Voo kaardimenüü</translation>
 <translation id="8224471946457685718">Teile soovitatud artiklite allalaadimine WiFi-ühendusega</translation>
-<translation id="8233540874193135768">QR-koodi skannimiseks kasutage kaameraga seadet.</translation>
 <translation id="8250920743982581267">Dokumendid</translation>
 <translation id="825412236959742607">Chrome eemaldas osa sisust, kuna leht kasutab liiga palju mälu.</translation>
 <translation id="8260126382462817229">Proovige uuesti sisse logida</translation>
@@ -1256,7 +1249,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="8972098258593396643">Kas soovite alla laadida vaikekausta?</translation>
 <translation id="8988028529677883095">Kasutage oma telefoni turvavõtmena</translation>
-<translation id="8990209962746788689">QR-koodi ei saa luua</translation>
 <translation id="8993760627012879038">Uue vahelehe avamine inkognito režiimis</translation>
 <translation id="8996847606757455498">Valige teine teenusepakkuja</translation>
 <translation id="8998729206196772491">Logite sisse kontoga, mida haldab <ph name="MANAGED_DOMAIN" />, ja annate selle administraatorile üle Chrome'i andmete juhtimise. Teie andmed seotakse jäädavalt selle kontoga. Chrome'ist väljalogimisel kustutatakse teie andmed sellest seadmest, kuid need jäävad alles teie Google'i kontole.</translation>

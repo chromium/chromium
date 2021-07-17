@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">ተጠቃሚ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ይመስላል (ቤተኛ)</translation>
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
-<translation id="112752777279960360">Android ስልክን እንደ የደህንነት ቁልፍ ለመጠቀም ከዚህ ኮምፒውተር ጋር ለመጀመሪያ ጊዜ ለማቀናበር፣ በስልክዎ ላይ Chrome ን ይክፈቱ እና ወደ «ቅንብሮች&gt; የይለፍ ቃላት &gt; ስልክን እንደ የደህንነት ቁልፍ ይጠቀሙ» ይሂዱ። ከዚያ «አዲስ መሣሪያ ያገናኙ» ላይ መታ ያድርጉ እና ይህንን የ QR ኮድ ይቃኙ።</translation>
 <translation id="1128109161498068552">ማናቸውንም ጣቢያዎች ለሚመለከተው ስርዓት የተወሰኑ መልዕክቶችን MIDI መሳሪያዎችን ለመድረስ እንዲጠቀሙ አይፍቀዱ።</translation>
 <translation id="1128591060186966949">የፍለጋ ፕሮግራምን ያርትዑ</translation>
 <translation id="1129850422003387628">መተግበሪያዎችን አቀናብር</translation>
@@ -504,6 +503,7 @@
 <translation id="1542514202066550870">ይህ ትር የVR ይዘትን ወደ የጆሮ ማዳመጫ በማቅረብ ላይ ነው።</translation>
 <translation id="1543284117603151572">ከEdge ላይ የመጣ</translation>
 <translation id="1545177026077493356">ራስ-ሰር የኪዮስክ ሁነታ</translation>
+<translation id="1545749641540134597">የኪውአር ኮድ ይቃኙ</translation>
 <translation id="1545775234664667895">የተጫነ ገጽታ '<ph name="THEME_NAME" />'</translation>
 <translation id="1546280085599573572">ይህ ቅጥያ የመነሻ አዝራሩን ጠቅ ሲያደርጉ የሚታየውን ገጽ ቀይሮታል።</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> የሚከተሉትን ማድረግ የሚችል <ph name="EXTENSION_TYPE" /> መጫን ይፈልጋል፦</translation>
@@ -953,7 +953,6 @@
 <translation id="1992924914582925289">ከመሣሪያ አስወግድ</translation>
 <translation id="1994173015038366702">የጣቢያ ዩአርኤል</translation>
 <translation id="1995916364271252349">ጣቢያዎች ምን መረጃ (አካባቢ፣ ካሜራ፣ ብቅ-ባዮች እና ተጨማሪ) መጠቀምና ማሳየት እንደሚችሉ ይቆጣጠራል</translation>
-<translation id="1997437640397887843">የመሣሪያ ካሜራ በርቷል። እባክዎ የኢሲም QR ኮድዎን ከካሜራው ፊት ለፊት ያኑሩ።</translation>
 <translation id="1997616988432401742">የእርስዎ እውቅና ማረጋገጫዎች</translation>
 <translation id="1999115740519098545">በሚነሳበት ጊዜ</translation>
 <translation id="2000419248597011803">ፍለጋዎችን ከአድራሻ አሞሌው እና ከፍለጋ ሳጥኑ እና አንዳንድ ኩኪዎችን ወደ ነባሪው የፍለጋ ፕሮግራምዎ ይልካል</translation>
@@ -973,7 +972,6 @@
 <translation id="2019718679933488176">&amp;ተሰሚ/ኦዲዮ በአዲስ ትር ክፈት</translation>
 <translation id="2020183425253392403">የአውታረ መረብ አድራሻ ቅንብሮችን አሳይ</translation>
 <translation id="2020225359413970060">ፋይል ቃኝ</translation>
-<translation id="2022953316617983419">QR ኮድ</translation>
 <translation id="2023167225947895179">ፒን ለመገመት ምናልባት ቀላል ሊሆን ይችላል</translation>
 <translation id="202352106777823113">ማውረዱ በጣም ብዙ ጊዜ እየፈጀ ነበር እና በአውታረ መረቡ እንዲቆም ተደርጓል።</translation>
 <translation id="2025115093177348061">የላቀ እውነታ</translation>
@@ -1130,6 +1128,7 @@
 <translation id="2174948148799307353">መለያው በ<ph name="PARENT_EMAIL" /> ነው የሚቀናበረው በዚህ መሣሪያ ላይ ከዋናው መለያ ዘግተው ለመውጣት በማያ ገጽዎ ላይ ጊዜውን ጠቅ ያድርጉ። በሚመጣው ምናሌ ላይ «ዘግተህ ውጣ»ን ጠቅ ያድርጉ።</translation>
 <translation id="2175607476662778685">የፈጣን አጀማመር አሞሌ</translation>
 <translation id="217576141146192373">አታሚን ማከል አልተቻለም። የእርስዎን አታሚ ውቅረት እባክዎ ይፈትሹ እና እንደገና ይሞክሩ።</translation>
+<translation id="2175927920773552910">የQR ኮድ</translation>
 <translation id="2177950615300672361">ማንነት የማያሳውቅ ትር፦ <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2179416702468739594">የሚገኙ መገለጫዎችን በመፈለግ ላይ። ይህ የተንቀሳቃሽ ስልክ አውታረ መረብዎ ለጥቂት ደቂቃዎች እንዲቋረጥ ሊያደርግ ይችላል።</translation>
@@ -2959,6 +2958,7 @@
 <translation id="4136203100490971508">ፀሐይ ስትወጣ የማታ ብርሃን በራስ-ሰር ይጠፋል</translation>
 <translation id="41365691917097717">መቀጠል የAndroid መተግበሪያዎችን ለመፍጠር እና ለመሞከር የADB ስሕተት ማረሚያን ያነቃዋል። ይህ እርምጃ በGoogle ያልተረጋገጡ የAndroid መተግበሪያዎች መጫንን እንደሚፈቅድ፣ እና ለማሰናከል ወደ የፋብሪካ ዳግም ማስጀመር እንደሚያስፈልግ ልብ ይበሉ።</translation>
 <translation id="4138267921960073861">በመግቢያ ገጹ ላይ የተጠቃሚ ስሞች እና ፎቶዎችን አሳይ</translation>
+<translation id="4138598238327913711">የሰዋሰው ፍተሻ በአሁኑ ጊዜ ያለው ለእንግሊዝኛ ብቻ ነው</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID መሣሪያ ተገናኝቷል</translation>
 <translation id="4142052906269098341">የእርስዎን <ph name="DEVICE_TYPE" /> በስልክዎ መክፈት አለብዎት። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">ተፈልገው የተገኙ አታሚዎችን ወደ የእርስዎ መገለጫ ያስቀምጡ ወይም አዲስ አታሚ ያክሉ። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
@@ -4343,7 +4343,6 @@
 <translation id="5712153969432126546">ጣቢያዎች አንዳንድ ጊዜ እንደ ሰነዶች፣ ውሎች እና ቅጾች ያሉ በPDF ያትማሉ</translation>
 <translation id="5715711091495208045">የተሰኪ አስማሚ፦ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ነባሪ የፍለጋ ፕሮግራሞች</translation>
-<translation id="5719637365829998022">የQR ኮድ ተቃኝቷል።</translation>
 <translation id="5719854774000914513">ጣቢያዎች ከHID መሳሪያዎች ጋር ለመገናኘት መጠየቅ ይችላሉ</translation>
 <translation id="572155275267014074">የAndroid ቅንብሮች</translation>
 <translation id="5722086096420375088">አረንጓዴ እና ነጭ</translation>
@@ -4536,7 +4535,6 @@
 <translation id="5941711191222866238">አሳንስ</translation>
 <translation id="5942779427914696408">የመሣሪያ ታይነት</translation>
 <translation id="5943127421590245687">የእርስዎ ማረጋገጫ ስኬታማ ነበር። የአከባቢዎን ውሂብ ለመክፈት እና ወደነበረበት ለመመለስ እባክዎ የድሮው የ<ph name="DEVICE_TYPE" /> ይለፍ ቃልዎን ያስገቡ።</translation>
-<translation id="5944869793365969636">የQR ኮድ ይቃኙ</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> አደገኛ ሊሆን ይችላል። ለመቃኘት ወደ የGoogle ጥንቃቄ አሰሳ ይላክ?</translation>
 <translation id="5945363896952315544">የእርስዎ የደህንነት ቁልፍ ተጨማሪ የጣት አሻራዎችን ማከማቸት አይችልም። አዲስ ለማከል መጀመሪያ አንድ ነባር የጣት አሻራን ይሰርዙ።</translation>
 <translation id="5946591249682680882">የሪፖርት መታወቂያ <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4660,7 +4658,6 @@
 <translation id="6077131872140550515">ከሚመረጡ አስወግድ</translation>
 <translation id="6077189836672154517">በ<ph name="DEVICE_TYPE" /> ላይ ጠቅሚ ምክሮች እና ዝማኔዎች</translation>
 <translation id="6077476112742402730">ለመተየብ ይናገሩ</translation>
-<translation id="6078045608615316905">ለዚህ ምስል የQR ኮድ ይፍጠሩ</translation>
 <translation id="6078121669093215958">{0,plural, =1{እንግዳ}one{# የእንግዳ መስኮቶችን ይክፈቱ}other{# የእንግዳ መስኮቶችን ይክፈቱ}}</translation>
 <translation id="6078323886959318429">አቋራጭ አክል</translation>
 <translation id="6078752646384677957">እባክዎ የእርስዎን ማይክሮፎን እና የኦዲዮ ደረጃዎች ይፈትሹ።</translation>
@@ -5202,14 +5199,12 @@
 <translation id="6680650203439190394">ደረጃ ይስጡ</translation>
 <translation id="6681668084120808868">ፎቶ አንሳ</translation>
 <translation id="6683087162435654533">ሁሉንም ትሮች ወደነበሩበት ይ&amp;መልሱ</translation>
-<translation id="6683948477137300040">የመሣሪያ EID እና QR ኮድ ብቅ-ባይን አሳይ</translation>
 <translation id="6684827949542560880">የቅርብ ጊዜውን ዝማኔ በማውረድ ላይ</translation>
 <translation id="668599234725812620">Google Playን ይክፈቱ</translation>
 <translation id="6686490380836145850">በቀኝ በኩል ያሉ ትሮችን ዝጋ</translation>
 <translation id="6686665106869989887">ትር ወደ ቀኝ ተወስዷል</translation>
 <translation id="6686817083349815241">የይለፍ ቃልዎን ያስቀምጡ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ደብቅ</translation>
-<translation id="6688285987813868112">ለዚህ ምስል የQR ኮድ ይፍጠሩ</translation>
 <translation id="6690659332373509948">ይህን ፋይል መተንተን አልተቻለም፦ <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">በGoogle ዳሽቦርድ ላይ የሰመረ ውሂብን ያቀናብሩ</translation>
 <translation id="6691541770654083180">ምድር</translation>
@@ -5413,7 +5408,6 @@
 <translation id="6914783257214138813">የእርስዎ የይለፍ ቃላት ወደ ውጭ የተላከውን ፋይልን መመልከት ለሚችል ማንኛውም ሰው የሚታዩ ይሆናሉ።</translation>
 <translation id="6916590542764765824">ቅጥያዎችን አስተዳድር</translation>
 <translation id="6919868320029503575">ደካማ የይለፍ ቃላት</translation>
-<translation id="6920262510368602827">ለዚህ ገጽ የQR ኮድ ይፍጠሩ</translation>
 <translation id="6920989436227028121">እንደ መደበኛ ትር ክፈት</translation>
 <translation id="6921104647315081813">እንቅስቃሴዎችን አጽዳ</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ሊከፈት አልቻለም</translation>
@@ -6139,7 +6133,6 @@
 <translation id="7691698019618282776">Crostiniን ማላቅ</translation>
 <translation id="7696063401938172191">በእርስዎ «<ph name="PHONE_NAME" />» ላይ፦</translation>
 <translation id="7697166915480294040">የእርስዎን ማያ ገጽ በሚያጋሩበት ጊዜ ዝርዝሮች ይደበቃሉ</translation>
-<translation id="7697598343108519171">የQR ኮድ ለመቃኘት ካሜራ ይጠቀሙ</translation>
 <translation id="7701040980221191251">ምንም</translation>
 <translation id="7701869757853594372">USER መያዣዎች</translation>
 <translation id="7701928712056789451">እነዚህ ንጥሎች አደገኛ ሊሆኑ ይችላሉ</translation>
@@ -6246,7 +6239,6 @@
 <translation id="7800518121066352902">በሰዓት መዞሪያ አቅጣጫ &amp;ተቃራኒ አሽከርክር</translation>
 <translation id="780301667611848630">አይ፣ አመሰግናለሁ</translation>
 <translation id="7804072833593604762">ትር ተዘግቷል</translation>
-<translation id="7805759469263222011">የመሳሪያዎን ካሜራ በመጠቀም የQR ኮድ ይቃኙ ወይም በአገልግሎት አቅራቢዎ የቀረበውን የማግበሪያ ኮድ ያስገቡ</translation>
 <translation id="7805768142964895445">ሁኔታ</translation>
 <translation id="7807067443225230855">ፍለጋ እና ረዳት</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ሁልጊዜ የእርስዎ ካሜራ መዳረሻ ይፈቀድለት</translation>
@@ -6808,7 +6800,6 @@ nil</translation>
 <translation id="8386091599636877289">መመሪያ አልተገኘም።</translation>
 <translation id="8387361103813440603">አካባቢዎን ለማየት አልተፈቀደም</translation>
 <translation id="8388770971141403598">የሁለተኛ ደረጃ መገለጫዎች አይደገፉም</translation>
-<translation id="8389416080014625855">ለዚህ ገጽ የQR ኮድ ይፍጠሩ</translation>
 <translation id="8389492867173948260">ይህ ቅጥያ በሚጎበኟቸው ድር ጣቢያዎች ላይ ያለው ሁሉም ውሂብዎን እንዲያነብብ እና እንዲቀይር ይፍቀዱ፦</translation>
 <translation id="8390449457866780408">አገልጋይ አይገኝም።</translation>
 <translation id="8391218455464584335">ቪኒል</translation>
@@ -7366,7 +7357,6 @@ nil</translation>
 <translation id="8986494364107987395">የአጠቃቀም ስታስቲክስ እና የብልሽት ሪፖርቶች በራስ ሰር ወደ Google ይላኩ።</translation>
 <translation id="8987927404178983737">ወር</translation>
 <translation id="8988879467270412492">የChrome OS አብሮገነብየማያ ገጽ አንባቢ የሆነውን ChromeVox ማግበር ይፈልጋሉ? የሚፈልጉ ከሆነ ሁለቱንም የድምጽ መጠን ቁልፎች ለአምስት ሰከንዶች ተጭነው ይያዙ።</translation>
-<translation id="8990209962746788689">የQR ኮድ መፍጠር አልተቻለም</translation>
 <translation id="8991520179165052608">ጣቢያ የእርስዎን ማይክሮፎን መጠቀም ይችላል</translation>
 <translation id="899384117894244799">የተገደበ ተጠቃሚን አስወግድ</translation>
 <translation id="899403249577094719">የNetscape ሰርቲፊኬት መሰረት</translation>

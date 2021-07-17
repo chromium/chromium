@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1125550662859510761">Изгледа како <ph name="WIDTH" /> x <ph name="HEIGHT" /> (матична)</translation>
 <translation id="1126809382673880764">Не ве заштитува од опасни веб-сајтови, преземања и екстензии. Сѐ уште ќе имате заштита со „Безбедно прелистување“, каде што е достапно, во другите услуги на Google, како Gmail и „Пребарување“.</translation>
-<translation id="112752777279960360">Ако првпат го поставувате телефонот со Android да се користи како безбедносен клуч со овој компјутер, отворете го Chrome на телефонот и одете во „Поставки &gt; Лозинки &gt; Користи го телефонот како безбедносен клуч“. Потоа допрете „Поврзи го новиот уред“ и скенирајте го QR-кодов.</translation>
 <translation id="1128109161498068552">Не дозволувај локациите да користат системски ексклузивни пораки за да пристапат на MIDI-уреди</translation>
 <translation id="1128591060186966949">Уредете го пребарувачот</translation>
 <translation id="1129850422003387628">Управување со апликациите</translation>
@@ -507,6 +506,7 @@
 <translation id="1542514202066550870">Картичкава прикажува VR-содржини преку слушалки.</translation>
 <translation id="1543284117603151572">Увезенo од Edge</translation>
 <translation id="1545177026077493356">Автоматски режим Киоск</translation>
+<translation id="1545749641540134597">Скенирајте QR код</translation>
 <translation id="1545775234664667895">Инсталирана тема „<ph name="THEME_NAME" />“</translation>
 <translation id="1546280085599573572">Екстензијата ја смени страницата што се прикажува кога ќе кликнете на копчето Почетна страница.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> сака да инсталира <ph name="EXTENSION_TYPE" /> што може:</translation>
@@ -958,7 +958,6 @@
 <translation id="1992924914582925289">Отстрани од уредот</translation>
 <translation id="1994173015038366702">URL на локацијата</translation>
 <translation id="1995916364271252349">Контролира кои информации може да ги користат и прикажуваат сајтовите (локација, камера, скокачки програми и друго)</translation>
-<translation id="1997437640397887843">Камерата на уредот се вклучи. Наместете го QR-кодот од вашата eSIM-картичка пред камерата.</translation>
 <translation id="1997616988432401742">Ваши сертификати</translation>
 <translation id="1999115740519098545">На стартување</translation>
 <translation id="2000419248597011803">Испраќа колачиња и пребарувања од лентата за адреси и полето за пребарување во вашиот стандарден пребарувач</translation>
@@ -978,7 +977,6 @@
 <translation id="2019718679933488176">&amp;Отвори аудио во нова картичка</translation>
 <translation id="2020183425253392403">Прикажи ги поставките за адресата на мрежата</translation>
 <translation id="2020225359413970060">Скенирај ја датотеката</translation>
-<translation id="2022953316617983419">QR-код</translation>
 <translation id="2023167225947895179">PIN-кодот може да биде лесен за погодување</translation>
 <translation id="202352106777823113">Преземањето траеше предолго, па мрежата го запре.</translation>
 <translation id="2025115093177348061">Проширена реалност</translation>
@@ -1135,6 +1133,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> управува со сметката. За да се одјавите од примарната сметка на уредов, кликнете го времето на екранот. Во менито што ќе се појави, кликнете „Одјави се“.</translation>
 <translation id="2175607476662778685">Лента за брзо активирање</translation>
 <translation id="217576141146192373">Не може да се додаде печатач. Проверете ја конфигурацијата на печатачот и обидете се повторно.</translation>
+<translation id="2175927920773552910">QR-код</translation>
 <translation id="2177950615300672361">Инкогнито картичка: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">ЦА е изложен на ризик</translation>
 <translation id="2179416702468739594">Се бараат достапни профили. Ова може да предизвика неколкуминутен прекин на врската на вашата мобилна мрежа.</translation>
@@ -4353,7 +4352,6 @@
 <translation id="5712153969432126546">Сајтовите понекогаш објавуваат документи, договори и формулари во PDF-формат</translation>
 <translation id="5715711091495208045">Посредник со приклучоци: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Стандардни пребарувачи</translation>
-<translation id="5719637365829998022">QR-кодот е скениран.</translation>
 <translation id="5719854774000914513">Сајтовите може да прашуваат за да се поврзат со HID-уреди</translation>
 <translation id="572155275267014074">Поставки за Android</translation>
 <translation id="5722086096420375088">Зелена и бела</translation>
@@ -4546,7 +4544,6 @@
 <translation id="5941711191222866238">Минимизирај</translation>
 <translation id="5942779427914696408">Видливост на уредот</translation>
 <translation id="5943127421590245687">Вашата потврда беше успешна. За да ги отклучите и вратите локалните податоци, внесете ја старата лозинка за <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Скенирајте QR-код</translation>
 <translation id="5945002094477276055">Датотеката <ph name="FILE_NAME" /> можеби е опасна. Да се испрати во „Безбедно прелистување со Google“ за скенирање?</translation>
 <translation id="5945363896952315544">Безбедносниот клуч не може да складира повеќе отпечатоци. За да додадете нов, прво избришете постоен отпечаток.</translation>
 <translation id="5946591249682680882">Пријави ИД <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4670,7 +4667,6 @@
 <translation id="6077131872140550515">Отстрани од претпочитани</translation>
 <translation id="6077189836672154517">Совети и новости за <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Зборувајте за пишување</translation>
-<translation id="6078045608615316905">Создајте QR-код за сликава</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гостин}one{# отворен гостински прозорец}other{# отворени гостински прозорци}}</translation>
 <translation id="6078323886959318429">Додајте кратенка</translation>
 <translation id="6078752646384677957">Проверете ги нивоата на микрофонот и аудиото.</translation>
@@ -5212,14 +5208,12 @@
 <translation id="6680650203439190394">Брзина</translation>
 <translation id="6681668084120808868">Фотографирај</translation>
 <translation id="6683087162435654533">&amp;Врати ги сите картички</translation>
-<translation id="6683948477137300040">Прикажи го скокачкиот прозорец со EID-број и QR-код</translation>
 <translation id="6684827949542560880">Се презема најновото ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
 <translation id="6686490380836145850">Затвори картички на десно</translation>
 <translation id="6686665106869989887">Картичката е преместена надесно</translation>
 <translation id="6686817083349815241">Зачувајте ја лозинката</translation>
 <translation id="6687079240787935001">Сокриј <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Создајте QR-код за сликава</translation>
 <translation id="6690659332373509948">Не може да анализира датотека: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Управувајте со синхронизираните податоци во „Контролна табла на Google“</translation>
 <translation id="6691541770654083180">Земја</translation>
@@ -5423,7 +5417,6 @@
 <translation id="6914783257214138813">Вашите лозинки ќе бидат видливи за секој што може да ја види извезената датотека.</translation>
 <translation id="6916590542764765824">Управувај со наставки</translation>
 <translation id="6919868320029503575">Слаби лозинки</translation>
-<translation id="6920262510368602827">Создајте QR-код за страницава</translation>
 <translation id="6920989436227028121">Отвори како обична картичка</translation>
 <translation id="6921104647315081813">Избриши ги активностите</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> не може да се отвори</translation>
@@ -6149,7 +6142,6 @@
 <translation id="7691698019618282776">Надградба за Crostini</translation>
 <translation id="7696063401938172191">На вашиот <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Деталите се сокриени додека го споделувате екранот</translation>
-<translation id="7697598343108519171">Користете ја камерата за да го скенирате QR-кодот</translation>
 <translation id="7701040980221191251">Нема</translation>
 <translation id="7701869757853594372">Рачки на КОРИСНИК</translation>
 <translation id="7701928712056789451">Ставкиве може да се опасни</translation>
@@ -6256,7 +6248,6 @@
 <translation id="7800518121066352902">Ротирај на&amp;лево</translation>
 <translation id="780301667611848630">Не, фала</translation>
 <translation id="7804072833593604762">Картичката е затворена</translation>
-<translation id="7805759469263222011">Скенирајте го QR-кодот со камерата на уредот или внесете код за активација од операторот</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">„Пребарување“ и „Помошник“</translation>
 <translation id="7807711621188256451">Секогаш дозволувај <ph name="HOST" /> да пристапи до камерата</translation>
@@ -6815,7 +6806,6 @@
 <translation id="8386091599636877289">Правилото не е пронајдено.</translation>
 <translation id="8387361103813440603">Не им е дозволено да ја гледаат локацијата</translation>
 <translation id="8388770971141403598">Секундарните профили не се поддржани</translation>
-<translation id="8389416080014625855">Создајте QR-код за страницава</translation>
 <translation id="8389492867173948260">Дозволете екстензијава да ги чита и менува сите ваши податоци на веб-сајтовите што ги посетувате:</translation>
 <translation id="8390449457866780408">Серверот не е достапен.</translation>
 <translation id="8391218455464584335">Грамофонска плоча</translation>
@@ -7373,7 +7363,6 @@
 <translation id="8986494364107987395">Автоматски испрати статистика за користење и извештаи за падови до Google</translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8988879467270412492">Дали сакате да го активирате ChromeVox, вградениот читач на екранот за Chrome OS? Ако сакате, притиснете ги и задржете ги двете копчиња за јачина на звук пет секунди.</translation>
-<translation id="8990209962746788689">Не може да се создаде QR-код</translation>
 <translation id="8991520179165052608">Сајтот може да го користи микрофонот</translation>
 <translation id="899384117894244799">Отстрани ограничен корисник</translation>
 <translation id="899403249577094719">Основен URL за сертификат на Netscape</translation>

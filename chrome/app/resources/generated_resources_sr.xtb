@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Корисник</translation>
 <translation id="1125550662859510761">Изгледа да је у питању <ph name="WIDTH" />×<ph name="HEIGHT" /> (основно)</translation>
 <translation id="1126809382673880764">Не штити вас од опасних веб-сајтова, преузимања и додатака. У другим Google услугама, као што су Gmail и Претрага, и даље ћете имати заштиту помоћу Безбедног прегледања када је доступна.</translation>
-<translation id="112752777279960360">Да бисте подесили коришћење Android телефона као безбедносног кључа на овом рачунару по први пут, отворите Chrome на телефону и идите у „Подешавања &gt; Лозинке &gt; Користи телефон као безбедносни кључ“. Затим додирните „Повежите нов уређај“ и скенирајте овај QR кôд.</translation>
 <translation id="1128109161498068552">Не дозволи ниједном сајту да користи ексклузивне поруке система да би приступао MIDI уређајима</translation>
 <translation id="1128591060186966949">Измена претраживача</translation>
 <translation id="1129850422003387628">Управљајте апликацијама</translation>
@@ -502,6 +501,7 @@
 <translation id="1542514202066550870">ВР садржај ове картице приказује се преко хедсета.</translation>
 <translation id="1543284117603151572">Увезени из Edge-а</translation>
 <translation id="1545177026077493356">Аутоматски режим киоска</translation>
+<translation id="1545749641540134597">Скенирајте QR кôд</translation>
 <translation id="1545775234664667895">Инсталирана је тема „<ph name="THEME_NAME" />“</translation>
 <translation id="1546280085599573572">Овај додатак је променио страницу која се приказује када кликнете на дугме Почетак.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> жели да инсталира <ph name="EXTENSION_TYPE" /> који може:</translation>
@@ -944,7 +944,6 @@
 <translation id="1992924914582925289">Уклони са уређаја</translation>
 <translation id="1994173015038366702">URL сајта</translation>
 <translation id="1995916364271252349">Контролише које информације сајтови могу да користе и приказују (локација, камера, искачући прозори и друго)</translation>
-<translation id="1997437640397887843">Камера уређаја је укључена. Поставите eSIM QR кôд испред камере.</translation>
 <translation id="1997616988432401742">Ваши сертификати</translation>
 <translation id="1999115740519098545">При покретању</translation>
 <translation id="2000419248597011803">Подразумеваном претраживачу шаље неке колачиће и претраге из траке за адресу и оквира за претрагу</translation>
@@ -964,7 +963,6 @@
 <translation id="2019718679933488176">&amp;Отвори аудио снимак на новој картици</translation>
 <translation id="2020183425253392403">Прикажи подешавања мрежне адресе</translation>
 <translation id="2020225359413970060">Скенирај датотеку</translation>
-<translation id="2022953316617983419">QR кôд</translation>
 <translation id="2023167225947895179">Овај PIN може лако да се погоди</translation>
 <translation id="202352106777823113">Преузимање је трајало предуго па га је мрежа зауставила.</translation>
 <translation id="2025115093177348061">Проширена реалност</translation>
@@ -1121,6 +1119,7 @@
 <translation id="2174948148799307353">Налогом управља <ph name="PARENT_EMAIL" />. Да бисте се одјавили са примарног налога на овом уређају, кликните на време на екрану. У менију који се појављује кликните на Одјави ме.</translation>
 <translation id="2175607476662778685">Трака „Брзо покретање“</translation>
 <translation id="217576141146192373">Додавање штампача није успело. Проверите конфигурацију штампача и пробајте поново.</translation>
+<translation id="2175927920773552910">QR кôд</translation>
 <translation id="2177950615300672361">Картица Без архивирања: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA је компромитован</translation>
 <translation id="2179416702468739594">Траже се доступни профили. Због тога ће се можда прекинути веза са мобилном мрежом на неколико минута.</translation>
@@ -2951,6 +2950,7 @@
 <translation id="4136203100490971508">Ноћно светло се аутоматски искључује када сунце изађе</translation>
 <translation id="41365691917097717">Ако наставите, омогућићете ADB отклањање грешака за прављење и тестирање Android апликација. Имајте у виду да ова радња омогућава инсталирање Android апликација које Google није верификовао и захтева ресетовање на фабричка подешавања да би се онемогућила.</translation>
 <translation id="4138267921960073861">Приказуј корисничка имена и слике на екрану за пријављивање</translation>
+<translation id="4138598238327913711">Провера граматике је тренутно доступна само за енглески</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID уређај је повезан</translation>
 <translation id="4142052906269098341">Откључајте <ph name="DEVICE_TYPE" /> помоћу телефона. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Сачувајте откривене штампаче на профилу или додајте нов штампач. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
@@ -4336,7 +4336,6 @@
 <translation id="5712153969432126546">Сајтови понекад објављују PDF-ове, попут докумената, уговора и образаца</translation>
 <translation id="5715711091495208045">Посредник додатне компоненте: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Подразумевани претраживачи</translation>
-<translation id="5719637365829998022">QR кôд је скениран.</translation>
 <translation id="5719854774000914513">Сајтови могу да траже да се повезују са HID уређајима</translation>
 <translation id="572155275267014074">Android подешавања</translation>
 <translation id="5722086096420375088">Зелена и бела</translation>
@@ -4529,7 +4528,6 @@
 <translation id="5941711191222866238">Умањи</translation>
 <translation id="5942779427914696408">Видљивост уређаја</translation>
 <translation id="5943127421590245687">Верификација је успела. Да бисте откључали и вратили локалне податке, унесите стару лозинку за <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Скенирајте QR кôд</translation>
 <translation id="5945002094477276055">Фајл <ph name="FILE_NAME" /> је можда опасан. Желите да га пошаљете Google безбедном прегледању на скенирање?</translation>
 <translation id="5945363896952315544">Безбедносни кључ не може више да чува отиске прстију. Да бисте додали нови отисак прста, прво избришите неки постојећи отисак прста.</translation>
 <translation id="5946591249682680882">ИД извештаја <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4653,7 +4651,6 @@
 <translation id="6077131872140550515">Уклони из жељених мрежа</translation>
 <translation id="6077189836672154517">Савети и ажурирања на <ph name="DEVICE_TYPE" />-у</translation>
 <translation id="6077476112742402730">Унос говором</translation>
-<translation id="6078045608615316905">Направи QR кôд за ову слику</translation>
 <translation id="6078121669093215958">{0,plural, =1{Гост}one{# отворен прозор у режиму госта}few{# отворена прозора у режиму госта}other{# отворених прозора у режиму госта}}</translation>
 <translation id="6078323886959318429">Додај пречицу</translation>
 <translation id="6078752646384677957">Проверите нивое микрофона и звука.</translation>
@@ -5195,14 +5192,12 @@
 <translation id="6680650203439190394">Оцените</translation>
 <translation id="6681668084120808868">Снимите фотографију</translation>
 <translation id="6683087162435654533">Врати све картице</translation>
-<translation id="6683948477137300040">Прикажите искачући прозор са EID бројем и QR кодом уређаја</translation>
 <translation id="6684827949542560880">Преузима се најновије ажурирање</translation>
 <translation id="668599234725812620">Отвори Google Play</translation>
 <translation id="6686490380836145850">Затвори картице са десне стране</translation>
 <translation id="6686665106869989887">Картица је премештена надесно</translation>
 <translation id="6686817083349815241">Сачувајте лозинку</translation>
 <translation id="6687079240787935001">Сакриј <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Направи QR кôд за ову слику</translation>
 <translation id="6690659332373509948">Није могуће рашчланити датотеку: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Управљајте синхронизованим подацима на Google контролној табли</translation>
 <translation id="6691541770654083180">Земља</translation>
@@ -5406,7 +5401,6 @@
 <translation id="6914783257214138813">Лозинке ће бити видљиве свима који могу да виде извезену датотеку.</translation>
 <translation id="6916590542764765824">Управљајте додацима</translation>
 <translation id="6919868320029503575">Слабе лозинке</translation>
-<translation id="6920262510368602827">Направи QR кôд за ову страницу</translation>
 <translation id="6920989436227028121">Отвори као уобичајену картицу</translation>
 <translation id="6921104647315081813">Обришите активности</translation>
 <translation id="692114467174262153">Отварање прегледача <ph name="ALTERNATIVE_BROWSER_NAME" /> није успело</translation>
@@ -6132,7 +6126,6 @@
 <translation id="7691698019618282776">Надоградња Crostini-ја</translation>
 <translation id="7696063401938172191">На телефону „<ph name="PHONE_NAME" />“:</translation>
 <translation id="7697166915480294040">Детаљи су сакривени док делите екран</translation>
-<translation id="7697598343108519171">Скенирајте QR кôд помоћу камере</translation>
 <translation id="7701040980221191251">Ништа</translation>
 <translation id="7701869757853594372">КОРИСНИЧКИ надимци</translation>
 <translation id="7701928712056789451">Ове ставке су можда опасне</translation>
@@ -6239,7 +6232,6 @@
 <translation id="7800518121066352902">Окрећи у с&amp;меру супротном од кретања казаљке на сату</translation>
 <translation id="780301667611848630">Не, хвала</translation>
 <translation id="7804072833593604762">Картица је затворена</translation>
-<translation id="7805759469263222011">Скенирајте QR кôд помоћу камере уређаја или унесите активациони кôд који сте добили од мобилног оператера</translation>
 <translation id="7805768142964895445">Статус</translation>
 <translation id="7807067443225230855">Претрага и Помоћник</translation>
 <translation id="7807711621188256451">Увек дозволи да <ph name="HOST" /> приступа камери</translation>
@@ -6795,7 +6787,6 @@
 <translation id="8386091599636877289">Смернице нису пронађене.</translation>
 <translation id="8387361103813440603">Није им дозвољено да виде вашу локацију</translation>
 <translation id="8388770971141403598">Секундарни профили нису подржани</translation>
-<translation id="8389416080014625855">Направи QR кôд за ову страницу</translation>
 <translation id="8389492867173948260">Дозволите да овај додатак чита и мења све податке на веб-сајтовима које посећујете:</translation>
 <translation id="8390449457866780408">Сервер је недоступан.</translation>
 <translation id="8391218455464584335">Грамофонска плоча</translation>
@@ -7354,7 +7345,6 @@
 <translation id="8986494364107987395">Аутоматски шаљи Google-у статистичке податке о коришћењу и извештаје о отказивању</translation>
 <translation id="8987927404178983737">Месец</translation>
 <translation id="8988879467270412492">Желите ли да активирате ChromeVox, уграђени читач екрана за Chrome ОС? Ако је тако, притисните и задржите оба тастера за јачину звука пет секунди.</translation>
-<translation id="8990209962746788689">Прављење QR кода није успело</translation>
 <translation id="8991520179165052608">Сајт може да користи микрофон</translation>
 <translation id="899384117894244799">Уклоните корисника са ограниченим приступом</translation>
 <translation id="899403249577094719">Основна URL адреса за Netscape сертификат</translation>

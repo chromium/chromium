@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">已排入序列</translation>
 <translation id="2161394479394250669">取消列印工作</translation>
+<translation id="2209788852729124853">重設流量計數器</translation>
 <translation id="2217935453350629363">目前速度</translation>
 <translation id="2224337661447660594">沒有互聯網</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">電池已滿</translation>
 <translation id="360565022852130722">已使用防護力較弱的通訊協定 WEP 802.1x 保護 Wi-Fi 網絡</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />測試</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{重新掃瞄頁面}=1{重新掃瞄 {PAGE_NUMBER} 個頁面}other{重新掃瞄 {PAGE_NUMBER} 個頁面}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> 個評論)</translation>
 <translation id="3748026146096797577">尚未連線</translation>
 <translation id="3749289110408117711">檔案名稱</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">我的雲端硬碟</translation>
 <translation id="4429881212383817840">Kerberos 票證即將到期</translation>
 <translation id="4431821876790500265">查看報告</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{移除頁面}=1{移除 {PAGE_NUMBER} 個頁面}other{移除 {PAGE_NUMBER} 個頁面}}</translation>
 <translation id="445059817448385655">舊密碼</translation>
 <translation id="4453205916657964690">子網絡遮罩</translation>
 <translation id="4454245904991689773">掃瞄儲存位置</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">禁止</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}other{您的檔案已成功掃瞄，並儲存至「<ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />」資料夾。}}</translation>
 <translation id="5931523347251946569">找不到檔案</translation>
+<translation id="5972388717451707488">更新引擎</translation>
 <translation id="6037291330010597344">掃瞄器的文件送紙器是空的。請放入文件，然後再試一次。</translation>
 <translation id="6040143037577758943">關閉</translation>
 <translation id="6040852767465482106">匿名身分</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">未知的 Wi-Fi 安全通訊協定</translation>
 <translation id="65587193855025101">平台式</translation>
 <translation id="6564646048574748301">失敗 - 無法連接打印機</translation>
+<translation id="6574762126505704998">填滿</translation>
 <translation id="6603230386432466813">連線時遇到問題嗎？</translation>
 <translation id="6618744767048954150">正在執行</translation>
 <translation id="6620487321149975369">除非您手動移除列印工作，否則列印工作會顯示在記錄中</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">剩餘 <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">前往說明中心瞭解詳情</translation>
+<translation id="763165478673169849">上次重設時間</translation>
 <translation id="7648838807254605802">HTTPS 延遲時間長</translation>
 <translation id="7658239707568436148">取消</translation>
 <translation id="7690294790491645610">確認新密碼</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">剩餘電量</translation>
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />°C</translation>
+<translation id="8132480444149501833">要求流量計數器</translation>
 <translation id="8206859287963243715">蜂窩</translation>
 <translation id="8208861521865154048">獎賞</translation>
 <translation id="8214184102975786227">掃瞄多個頁面，並儲存為單一 PDF 檔案</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">已使用防護力較弱的通訊協定 WEP PSK 保護 Wi-Fi 網絡</translation>
 <translation id="8477551185774834963">DNS 延遲時間稍微超過允許的門檻</translation>
 <translation id="8483248364096924578">IP 位址</translation>
+<translation id="8498220429738806196">流量計數器</translation>
 <translation id="8503813439785031346">用戶名稱</translation>
 <translation id="8503836310948963452">只需多幾分鐘…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">流動網絡供應商可能會要求您必須選擇此選項，才能連接他們的網絡。詳情請聯絡流動網絡供應商。</translation>
 <translation id="8576249514688522074">未初始化</translation>
 <translation id="8620617069779373398">漫遊狀態</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">桌布</translation>
 <translation id="8845001906332463065">取得說明</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">已通過測試</translation>
 <translation id="8898840733695078011">訊號強度</translation>
 <translation id="8910721771319628100">預設網絡超過延遲門檻</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">藍牙</translation>
 <translation id="9088306295921699330">目前使用量</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">更新 <ph name="PRINCIPAL_NAME" /> 的票證</translation>
 <translation id="9106415115617144481">正在掃瞄第 <ph name="PAGE_NUMBER" /> 頁</translation>
 <translation id="9111102763498581341">解鎖</translation>

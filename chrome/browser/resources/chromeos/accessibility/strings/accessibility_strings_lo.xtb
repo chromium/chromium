@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">ກົດລູກສອນຊ້າຍ ຫຼື ຂວາເພື່ອນຳທາງ; ກົດ enter ເພື່ອເປີດໃຊ້</translation>
 <translation id="224426591676115802">ບໍ່ມີສຽງສຳລັບພາສານີ້: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">ກຳລັງຢຸດໂໝດການຮຽນຮູ້</translation>
+<translation id="2247870315273396641">ຕົວຢ່າງສຽງ</translation>
 <translation id="225732394367814946">ເພີ່ມອັດ​ຕາ​​ຄໍາເວົ້າ</translation>
 <translation id="2267538686624070261">ກຳລັງອອກຈາກຄຳທີ່ສະກົດຜິດ</translation>
 <translation id="2267945578749931355">ຕົວອັກສອນຕໍ່ໄປ</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">ເພື່ອສືບຕໍ່, ກົດ enter; ເພື່ອກັບຄືນ, ກົດ backspace.</translation>
 <translation id="2398579267367951220">ພິມເພື່ອຊອກຫາໜ້າ. ກົດ Enter ເພື່ອຂ້າມໄປຫາຜົນການຊອກຫາ, ກົດລູກສອນຂຶ້ນ ຫຼື ລົງເພື່ອເລື່ອນເບິ່ງຜົນຊອກຫາ, ສືບຕໍ່ພິມເພື່ອປ່ຽນການຊອກຫາຂອງທ່ານ ຫຼື Escape ເພື່ອຍົກເລີກ.</translation>
 <translation id="240709722712693803">ສີຟ້າບລູໄວໂອເລັດ</translation>
+<translation id="2410298923485357543">ໃຊ້ສຽງທຳມະຊາດເມື່ອອຸປະກອນອອນລາຍຢູ່</translation>
 <translation id="2416512023405990736">ກ່ອງທີ່ບໍ່ໄດ້ໝາຍເອົາ</translation>
 <translation id="2417569100218200841">ຂໍ້​ມູນ​ເນື້ອ​ໃນ</translation>
 <translation id="2417948780551741035">ບັນທຶກທ້າຍເລື່ອງ</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ຕົວ​ເລືອກ ChromeVox</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> ເມ​ນູເປີດ​ແລ້ວ</translation>
 <translation id="3060880924447482063">ປັດໄປຊ້າຍ ຫຼື ຂວາເພື່ອຍ້າຍເທື່ອລະລາຍການ</translation>
+<translation id="3061302636956643119">ຂໍ້ຄວາມຈະຖືກສົ່ງໄປຫາ Google ສຳລັບການປະມວນຜົນ.</translation>
 <translation id="3070245424257836917">ປັດສາມນິ້ວມືຂຶ້ນເທິງ</translation>
 <translation id="307516670110542567">ການແນະນຳເບື້ອງຕົ້ນແບບດ່ວນ</translation>
 <translation id="3078345202707391975">ຫົວຂໍ້ລະ​ດັບ​ 2 ຕໍ່ໄປ</translation>
@@ -936,6 +939,7 @@
 <translation id="7693840228159394336">ປຸ່ມ​ວິ​ທະ​ຍຸ​ຜ່ານ​ມາ​</translation>
 <translation id="7701040980221191251">ບໍ່​ມີ​</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">ສຽງທຳມະຊາດ</translation>
 <translation id="7714340021005120797">ບໍ່ມີກ່ອງຄອມໂບຖັດໄປ</translation>
 <translation id="772146615414628379">ຂໍສະແດງຄວາມຍິນດີ! ທ່ານໄດ້ຮຽນຮູ້ສິ່ງສຳຄັນໃນການນຳໃຊ້ ChromeVox ສຳເລັດແລ້ວ. ຈື່ວ່າທ່ານສາມາດເປີດເມນູຄຳສັ່ງຂອງ ChromeVox ໄດ້ທຸກເວລາໂດຍການກົດປຸ່ມຊອກຫາ+ໝາຍຈໍ້າ. ເພື່ອຮຽນຮູ້ເພີ່ມເຕີມອີກກ່ຽວກັບ ChromeVox ແລະ Chrome OS, ກະລຸນາເຂົ້າເບິ່ງບົດຄວາມຕໍ່ໄປນີ້.
     ຖ້າທ່ານຮຽນການສອນການນຳໃຊ້ສຳເລັດແລ້ວ, ກະລຸນາໃຊ້ ChromeVox ເພື່ອນຳທາງໄປຫາປຸ່ມປິດ ແລ້ວຄລິກມັນ.</translation>
@@ -966,6 +970,7 @@
 <translation id="7939428177581522200">ເພີ່ມ​ໃສ່ການ​ເລືອກແລ້ວ</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{ ຢູ່ທີ່}other{ # ຢູ່​ທີ່ເຄື່ອງໝາຍ}}</translation>
 <translation id="7942349550061667556">ສີ​ແດງ</translation>
+<translation id="7945703887991230167">ສຽງທີ່ຕ້ອງການ</translation>
 <translation id="7948364528129376623">ບໍ່ມີລິ້ງທີ່ເຂົ້າເບິ່ງແລ້ວຖັດໄປ</translation>
 <translation id="7952460583030260752">ການອ້າງອີງຄຳສັ່ງ</translation>
 <translation id="7965147473449754028">ປິດ​ເມ​ນູ​ແລ້ວ</translation>

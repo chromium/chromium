@@ -224,7 +224,6 @@ Toque em qualquer palavra para pesquisar. Para refinar a pesquisa, toque na tela
 
 Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar a pesquisa, selecione mais ou menos palavras. Para editar a pesquisa, abra o painel, toque no ícone que abre uma nova guia e faça mudanças na caixa de pesquisa.</translation>
 <translation id="2459390580524506445">Pesquisa por voz aprimorada</translation>
-<translation id="246532703174860178">Compartilhar</translation>
 <translation id="247737702124049222">As descrições de imagens estão ativadas</translation>
 <translation id="2482878487686419369">Notificações</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -296,7 +295,6 @@ Toque em qualquer palavra e a mantenha pressionada para pesquisar. Para refinar 
 <translation id="2900528713135656174">Criar evento</translation>
 <translation id="2901411048554510387">Exibindo sugestões para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lista de dispositivos com os quais é possível compartilhar uma guia aberta no tamanho máximo.</translation>
-<translation id="2905036901251765993">Para compartilhar com pessoas próximas, permita que elas leiam esse código QR</translation>
 <translation id="2908243544703713905">Stories ainda não lidos estão disponíveis</translation>
 <translation id="2909615210195135082">Plataforma de notificações do Google</translation>
 <translation id="2912296070571964914">Gerencie os temas relevantes para você</translation>
@@ -723,7 +721,6 @@ Para alterar essa configuração, <ph name="BEGIN_LINK" />redefina a sincroniza�
 <translation id="572328651809341494">Guias recentes</translation>
 <translation id="5723735397759933332">Agora, o Modo Lite economiza mais dados para você com a otimização de imagens em páginas HTTPS.</translation>
 <translation id="5726692708398506830">Aumentar tudo na página</translation>
-<translation id="5733983706093266635">Não é possível criar o código QR. O URL tem mais de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Alternada para guias padrão</translation>
 <translation id="5749068826913805084">O Chrome precisa de acesso para fazer o download e armazenar arquivos.</translation>
 <translation id="5749237766298580851">Desativado <ph name="SEPARATOR" /> Não recomendado</translation>
@@ -879,7 +876,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6590680911007613645">A senha que você está salvando precisa ser igual à usada em <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Para computador</translation>
 <translation id="6595046016124923392">As imagens são enviadas para o Google e, assim, podemos melhorar as descrições para você.</translation>
-<translation id="6597891566292541626">Posicione o código de barras/QR neste quadro.</translation>
 <translation id="6600954340915313787">Copiado no Chrome</translation>
 <translation id="661266467055912436">Melhora a segurança para você e para todos na Web.</translation>
 <translation id="6618554661997243500">Para ver os principais sites e matérias para você, toque no botão "Início"</translation>
@@ -1088,7 +1084,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Você desativou o acesso ao armazenamento. Acesse as Configurações para reativá-lo.</translation>
 <translation id="7963646190083259054">Fornecedor:</translation>
-<translation id="7967911570373677897">Para ler um código QR, mude as configurações e permita que o Chrome use a câmera</translation>
 <translation id="7968014550143838305">Adicionado à lista de leitura</translation>
 <translation id="7971136598759319605">Ativado há um dia</translation>
 <translation id="7975379999046275268">Visualizar página <ph name="BEGIN_NEW" />Novidade<ph name="END_NEW" /></translation>
@@ -1120,7 +1115,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Para ter seus favoritos em todos os seus dispositivos, ative a sincronização</translation>
 <translation id="8110087112193408731">Mostrar sua atividade do Chrome no Bem-estar digital?</translation>
-<translation id="8115259494083109761">Para ler um código QR, permita que o Chrome use sua câmera</translation>
 <translation id="8127542551745560481">Editar página inicial</translation>
 <translation id="813082847718468539">Visualizar informações do site</translation>
 <translation id="8137558756159375272">A "Pesquisa por toque" envia a palavra selecionada e a página atual como contexto para a Pesquisa Google. Desative esse recurso em <ph name="BEGIN_LINK" />Configurações<ph name="END_LINK" />.</translation>
@@ -1137,7 +1131,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8218622182176210845">Gerenciar sua conta</translation>
 <translation id="8223642481677794647">Menu do card do feed</translation>
 <translation id="8224471946457685718">Fazer o download de "Artigos para você" quando houver conexão Wi-Fi</translation>
-<translation id="8233540874193135768">Para ler o código QR, use um dispositivo com câmera.</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Como esta página usa muita memória, o Chrome removeu parte do conteúdo.</translation>
 <translation id="8260126382462817229">Tente fazer login novamente</translation>
@@ -1253,7 +1246,6 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="8970887620466824814">Algo deu errado.</translation>
 <translation id="8972098258593396643">Fazer o download para a pasta padrão?</translation>
 <translation id="8988028529677883095">Usar o smartphone como chave de segurança</translation>
-<translation id="8990209962746788689">Não é possível criar o código QR</translation>
 <translation id="8993760627012879038">Abrir uma nova guia no modo de navegação anônima</translation>
 <translation id="8996847606757455498">Escolha outro provedor</translation>
 <translation id="8998729206196772491">Você está fazendo login com uma conta gerenciada por <ph name="MANAGED_DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chrome, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chrome, seus dados serão excluídos desse dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>

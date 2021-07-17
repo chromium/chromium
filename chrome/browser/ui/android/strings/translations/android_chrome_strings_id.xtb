@@ -224,7 +224,6 @@ Ketuk kata apa pun untuk menelusuri. Untuk menyaring penelusuran, sentuh lama un
 
 Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih lebih banyak atau lebih sedikit kata. Untuk mengedit penelusuran, buka panel, ketuk ikon untuk membuka di tab baru, lalu lakukan perubahan di kotak penelusuran.</translation>
 <translation id="2459390580524506445">Penelusuran suara yang disempurnakan</translation>
-<translation id="246532703174860178">Bagikan</translation>
 <translation id="247737702124049222">Deskripsi gambar aktif</translation>
 <translation id="2482878487686419369">Notifikasi</translation>
 <translation id="2485422356828889247">Uninstal</translation>
@@ -296,7 +295,6 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2900528713135656174">Buat acara</translation>
 <translation id="2901411048554510387">Menampilkan saran untuk <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Daftar perangkat yang dapat digunakan untuk berbagi tab terbuka dalam layar penuh.</translation>
-<translation id="2905036901251765993">Untuk berbagi dengan orang-orang di sekitar, izinkan mereka memindai kode QR ini</translation>
 <translation id="2908243544703713905">Tersedia artikel yang belum dibaca</translation>
 <translation id="2909615210195135082">Platform Notifikasi Google</translation>
 <translation id="2912296070571964914">Kelola topik yang menarik bagi Anda</translation>
@@ -306,6 +304,7 @@ Sentuh lama kata apa pun untuk menelusurinya. Untuk menyaring penelusuran, pilih
 <translation id="2942036813789421260">Tab pratinjau ditutup</translation>
 <translation id="2956410042958133412">Akun ini dikelola oleh <ph name="PARENT_NAME_1" /> dan <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> halaman belum dibaca}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> halaman belum dibaca}}</translation>
+<translation id="2961210776189273067">Gelar</translation>
 <translation id="2979025552038692506">Tab Samaran yang Dipilih</translation>
 <translation id="2979448359891869301">Tidak dapat memperpanjang screenshot. Coba lagi saat proses yang berjalan di ponsel tidak terlalu banyak.</translation>
 <translation id="2979639724566107830">Buka di jendela baru</translation>
@@ -617,6 +616,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="497421865427891073">Maju</translation>
 <translation id="4988210275050210843">Mendownload file (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Halaman</translation>
+<translation id="5001388021414335527">Ikuti situs ini di sini</translation>
 <translation id="5004416275253351869">Kontrol aktivitas Google</translation>
 <translation id="5005498671520578047">Salin sandi</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> ingin terhubung</translation>
@@ -722,7 +722,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />reset sinkronisasi<ph name="
 <translation id="572328651809341494">Tab terbaru</translation>
 <translation id="5723735397759933332">Mode Ringan kini menghemat data Anda lebih banyak dengan mengoptimalkan gambar di halaman HTTPS.</translation>
 <translation id="5726692708398506830">Memperbesar semua yang ada di halaman</translation>
-<translation id="5733983706093266635">Tidak dapat membuat kode QR. URL berisi lebih dari <ph name="CHARACTER_LIMIT" /> karakter.</translation>
 <translation id="5748802427693696783">Beralih ke tab standar</translation>
 <translation id="5749068826913805084">Chrome memerlukan akses penyimpanan untuk mendownload file.</translation>
 <translation id="5749237766298580851">Nonaktif <ph name="SEPARATOR" /> Tidak direkomendasikan</translation>
@@ -878,7 +877,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="6590680911007613645">Pastikan sandi yang Anda simpan cocok dengan sandi untuk <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Situs desktop</translation>
 <translation id="6595046016124923392">Gambar dikirim ke Google guna menyempurnakan deskripsi untuk Anda.</translation>
-<translation id="6597891566292541626">Letakkan kode batang/QR dalam bingkai ini.</translation>
 <translation id="6600954340915313787">Disalin ke Chrome</translation>
 <translation id="661266467055912436">Meningkatkan keamanan untuk Anda dan semua orang di web.</translation>
 <translation id="6618554661997243500">Untuk melihat situs dan artikel teratas untuk Anda, ketuk tombol Beranda</translation>
@@ -987,6 +985,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Bagikan 1 item yang dipilih}other{Bagikan # item yang dipilih}}</translation>
 <translation id="7359002509206457351">Akses metode pembayaran</translation>
 <translation id="7375125077091615385">Jenis:</translation>
+<translation id="7386842512861524348">Koneksi situs aman kecuali jika Chrome menyatakan sebaliknya.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Pengalaman Penggunaan Pertama Chrome</translation>
@@ -1087,7 +1086,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7961926449547174351">Anda telah menonaktifkan Akses penyimpanan, buka Setelan untuk mengaktifkannya.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
-<translation id="7967911570373677897">Untuk memindai kode QR, ubah setelan agar Chrome dapat menggunakan kamera Anda</translation>
 <translation id="7968014550143838305">Ditambahkan ke daftar bacaan</translation>
 <translation id="7971136598759319605">Aktif 1 hari yang lalu</translation>
 <translation id="7975379999046275268">Pratinjau halaman <ph name="BEGIN_NEW" />Baru<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Untuk dapat mengakses bookmark Anda di semua perangkat, aktifkan sinkronisasi</translation>
 <translation id="8110087112193408731">Tampilkan aktivitas Chrome Anda di Kesehatan Digital?</translation>
-<translation id="8115259494083109761">Untuk memindai kode QR, izinkan Chrome menggunakan kamera Anda</translation>
 <translation id="8127542551745560481">Edit halaman beranda</translation>
 <translation id="813082847718468539">Lihat informasi situs</translation>
 <translation id="8137558756159375272">Sentuh untuk Menelusuri mengirimkan kata yang dipilih dan halaman yang dibuka sebagai konteks ke Google Penelusuran. Anda dapat menonaktifkannya di <ph name="BEGIN_LINK" />Setelan<ph name="END_LINK" />.</translation>
@@ -1136,7 +1133,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8218622182176210845">Kelola akun Anda</translation>
 <translation id="8223642481677794647">Menu kartu feed</translation>
 <translation id="8224471946457685718">Download artikel untuk Anda pada jaringan Wi-Fi</translation>
-<translation id="8233540874193135768">Untuk memindai kode QR, gunakan perangkat yang memiliki kamera.</translation>
 <translation id="8250920743982581267">Dokumen</translation>
 <translation id="825412236959742607">Halaman ini menggunakan terlalu banyak memori, sehingga Chrome menghapus sebagian konten.</translation>
 <translation id="8260126382462817229">Coba masuk lagi</translation>
@@ -1147,6 +1143,7 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8284326494547611709">Teks</translation>
 <translation id="829672787777123339">Menghubungkan ke perangkat …</translation>
 <translation id="8310344678080805313">Tab standar</translation>
+<translation id="831192587911042850">Menambahkan situs saat ini ke daftar situs yang Anda ikuti.</translation>
 <translation id="8327155640814342956">Untuk mendapatkan pengalaman penjelajahan terbaik, buka untuk mengupdate Chrome</translation>
 <translation id="834313815369870491">Jangan pernah terjemahkan situs</translation>
 <translation id="8349013245300336738">Urutkan menurut jumlah kuota yang digunakan</translation>
@@ -1252,7 +1249,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8972098258593396643">Download ke folder default?</translation>
 <translation id="8988028529677883095">Gunakan ponsel sebagai kunci keamanan</translation>
-<translation id="8990209962746788689">Tidak dapat membuat kode QR</translation>
 <translation id="8993760627012879038">Membuka tab baru dalam mode Samaran</translation>
 <translation id="8996847606757455498">Pilih penyedia lain</translation>
 <translation id="8998729206196772491">Anda akan login dengan akun yang dikelola oleh <ph name="MANAGED_DOMAIN" /> dan memberikan kontrol data Chrome kepada administratornya. Data akan terikat dengan akun ini secara permanen. Bila Anda logout dari Chrome, data akan dihapus dari perangkat ini, tetapi data tetap tersimpan di Akun Google.</translation>

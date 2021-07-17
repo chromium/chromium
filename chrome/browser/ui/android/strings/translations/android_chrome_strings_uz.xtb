@@ -224,7 +224,6 @@ Qidiruvni boshlash uchun istalgan soʻz ustiga bosing. Soʻrovni aniqlashtirish 
 
 Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish uchun kerakli soʻz yoki birikmani belgilang. Soʻrovni tahrirlash uchun panelni yuqoriga tortib oching, yangi varaq ochish uchun yoyish belgisini, keyin qidiruv oynasini bosing.</translation>
 <translation id="2459390580524506445">Kengaytirilgan ovozli qidiruv</translation>
-<translation id="246532703174860178">Ulashish</translation>
 <translation id="247737702124049222">Rasmlar tavsifi yoniq</translation>
 <translation id="2482878487686419369">Bildirishnomalar</translation>
 <translation id="2485422356828889247">O‘chirib tashlash</translation>
@@ -296,7 +295,6 @@ Qidiruvni boshlash uchun istalgan soʻzni bosib turing. Qidruvni aniqlashtirish 
 <translation id="2900528713135656174">Tadbir yaratish</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> uchun tavsiyalar koʻrsatilmoqda</translation>
 <translation id="2904414404539560095">Butun hajmda ochilgan varaq uzatiladigan qurilmalar roʻyxati.</translation>
-<translation id="2905036901251765993">Yaqin-atrofdagilarga ulashish uchun ular shu QR kodni skanerlashi kerak.</translation>
 <translation id="2908243544703713905">Ochilmagan hikoyalar tayyor</translation>
 <translation id="2909615210195135082">Google bildirishnomalar platformasi</translation>
 <translation id="2912296070571964914">Qiziqarli mavzularni boshqarish</translation>
@@ -724,7 +722,6 @@ Bu sozlamani almashtirish uchun <ph name="BEGIN_LINK" />sinxronizatsiyani tiklan
 <translation id="572328651809341494">Oxirgi varaqlar</translation>
 <translation id="5723735397759933332">Lite rejimi HTTPS sahifalardagi rasmlarni arxivlash hisobiga endi koʻproq trafikni tejaydi</translation>
 <translation id="5726692708398506830">Sahifadagi hamma narsani kattalashtirish</translation>
-<translation id="5733983706093266635">QR kod yaratilmadi. URL manzilda <ph name="CHARACTER_LIMIT" /> tadan ortiq belgi kiritildi.</translation>
 <translation id="5748802427693696783">Standart rejimdagi varaqlarga o‘tildi</translation>
 <translation id="5749068826913805084">Yuklab olish uchun Chrome brauzerida omborga saqlash ruxsati bo‘lishi zarur.</translation>
 <translation id="5749237766298580851">Faolsizlantirilgan <ph name="SEPARATOR" /> Tavsiya etilmaydi</translation>
@@ -880,7 +877,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="6590680911007613645">Saqlayotgan parolingiz <ph name="SITE" /> uchun mos kelishini tekshiring</translation>
 <translation id="6593061639179217415">Desktop versiya</translation>
 <translation id="6595046016124923392">Tavsiflarini yaxshilash uchun rasmlar Googlega yuborildi.</translation>
-<translation id="6597891566292541626">Bu kadrga QR yoki shtrix kodni joylang.</translation>
 <translation id="6600954340915313787">Chrome’ga nusxalandi</translation>
 <translation id="661266467055912436">Siz va yaqinlaringizni internetdan yaxshiroq himoyalaydi.</translation>
 <translation id="6618554661997243500">Eng sara saytlar va maqolalarni koʻrish uchun bosh sahifa tugmasini bosing</translation>
@@ -1090,7 +1086,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="7961015016161918242">Hech qachon</translation>
 <translation id="7961926449547174351">Xotiraga kirishga ruxsat berilmagan. Ruxsat berish uchun sozlamalarga kiring.</translation>
 <translation id="7963646190083259054">Ta’minotchi:</translation>
-<translation id="7967911570373677897">Chrome QR kodni skanerlashi uchun sozlamalar orqali kamerani yoqing.</translation>
 <translation id="7968014550143838305">Saqlab olindi</translation>
 <translation id="7971136598759319605">1 kun oldin onlayn edi</translation>
 <translation id="7975379999046275268">Sahifaga razm solish <ph name="BEGIN_NEW" />Yangi<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Boshqa qurilmalardagi xatcho‘plaringizni ko‘rish uchun sinxronizatsiyani yoqing</translation>
 <translation id="8110087112193408731">Raqamli muvozanat xizmatida Chrome amallari chiqsinmi?</translation>
-<translation id="8115259494083109761">Chrome QR-kodni skanerlashi uchun kameradan foydalanishga ruxsat bering</translation>
 <translation id="8127542551745560481">Bosh sahifani oʻzgartirish</translation>
 <translation id="813082847718468539">Sayt haqidagi ma’lumotlar</translation>
 <translation id="8137558756159375272">"Tegib qidirish" funksiyasi tanlangan so‘zni va kontekst sifatida joriy sahifani Google Qidiruv xizmatiga yuboradi. Uni <ph name="BEGIN_LINK" />Sozlamalarda<ph name="END_LINK" /> o‘chirib qo‘yish mumkin.</translation>
@@ -1139,7 +1133,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8218622182176210845">Hisobingizni boshqaring</translation>
 <translation id="8223642481677794647">Quyi bildirgi menyu</translation>
 <translation id="8224471946457685718">Siz uchun maqolalar Wi-Fi orqali yuklab olinsin</translation>
-<translation id="8233540874193135768">QR kod yoki bank kartasini skanerlash uchun kamerali qurilmadan foydalaning.</translation>
 <translation id="8250920743982581267">Hujjatlar</translation>
 <translation id="825412236959742607">Bu sahifa juda ko‘p xotira ishlatishi sababli Chrome bu kontentni olib tashladi.</translation>
 <translation id="8260126382462817229">Qaytadan kirib ko‘ring</translation>
@@ -1256,7 +1249,6 @@ Masalan, qaysi sahifalarga kirganligingizdan qat’i nazar, ba’zi saytlarda re
 <translation id="8970887620466824814">Xatolik yuz berdi.</translation>
 <translation id="8972098258593396643">Yuklanma standart jildga saqlansinmi?</translation>
 <translation id="8988028529677883095">Telefonni elektron kalit sifatida ishlatish</translation>
-<translation id="8990209962746788689">QR-kod yaratilmadi</translation>
 <translation id="8993760627012879038">Yangi varaqni inkognito rejimida ochish</translation>
 <translation id="8996847606757455498">Boshqa provayderni tanlang</translation>
 <translation id="8998729206196772491"><ph name="MANAGED_DOMAIN" /> domenida boshqariladigan hisobga kirish bilan siz administratorga Chrome ma’lumotlaringizni boshqarishiga rozilik bildirasiz. Barcha Chrome ma’lumotlaringiz bu hisobga butunlay bog‘langan. Agar hisobdan chiqadigan bo‘lsangiz, bu qurilmadagi barcha ma’lumotlaringiz o‘chib ketadi, lekin Google hisobingizda saqlanib qoladi.</translation>

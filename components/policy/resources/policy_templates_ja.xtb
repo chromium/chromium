@@ -73,6 +73,9 @@
       このポリシーを false に設定するか未設定のままにした場合、この情報は報告されません。
       このポリシーを true に設定した場合、デバイスのバックライトに関する情報が報告されます。</translation>
 <translation id="1076751984131277498">取り外し可能な USB デバイスの許可リスト</translation>
+<translation id="1079425471279127373">このポリシーでは、自動インストールされたウェブ アプリケーションの一部のオリジンに Device Attributes API を使用したデバイス属性（シリアル番号、ホスト名など）の取得を許可するかどうかを設定します。
+
+      Device Attributes API はウェブの API のリストです。詳しくは、https://wicg.github.io/WebApiDevice/device_attributes をご覧ください。これらの API は、<ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> に沿って自動インストールされたウェブ アプリケーションと一致するオリジンまたはキオスク セッションで設定されたオリジンに対してのみ使用できます。</translation>
 <translation id="1079801999187584280">デベロッパー ツールの使用を禁止する</translation>
 <translation id="1082802595100075771">匿名の Google サービスを使用して、ラベル付けがない画像の説明を自動的に取得するかどうかをユーザーが選択できる</translation>
 <translation id="1087437665304381368">このポリシーでは、<ph name="PRODUCT_OS_NAME" /> のデベロッパー モードのみを管理します。Android 開発者向けオプションへのアクセスを禁止するには、<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> ポリシーを設定する必要があります。</translation>
@@ -847,6 +850,7 @@
 <translation id="2090939118981888335">このポリシーを有効に設定した場合、データ圧縮プロキシが許可されます。このポリシーを無効に設定した場合、プロキシは許可されません。
 
       このポリシーを設定した場合、ユーザーはこの設定を変更できません。未設定の場合、ユーザーはこの機能の使用を選択できます。</translation>
+<translation id="2093552723795057221">音声の状態を報告しない</translation>
 <translation id="209586405398070749">Stable チャンネル</translation>
 <translation id="2098658257603918882">使用状況とクラッシュ関連データのレポートを有効にする</translation>
 <translation id="2104418465060359056">拡張機能とプラグインの情報についてレポートを作成する</translation>
@@ -890,6 +894,9 @@
 <translation id="2151831603578119302">ユーザー補助機能のショートカットを有効にする</translation>
 <translation id="2156132677421487971"><ph name="PRODUCT_NAME" /> のポリシーを設定します。この機能により、ユーザーはタブ、サイト、またはデスクトップのコンテンツをブラウザからリモートのディスプレイや音声システムに送信できます。</translation>
 <translation id="2156755242840687300">有効な外部プリント サーバー</translation>
+<translation id="2157842368188031417">このポリシーは、管理対象ゲスト セッションにのみ適用されます。Imprivata の共有ワークステーション モードでセッション中のユーザー切り替えを可能にするには、このポリシーを有効にする必要があります。
+      このポリシーを True に設定した場合、ユーザーの機密情報を保持し、Imprivata の共有ワークステーション モードでのセッション中のユーザー切り替えで使用される削除メカニズムによって処理されない機能に関する特定のポリシーが強制的にオーバーライドされます。
+      このポリシーを False に設定するか未設定のままにした場合、ポリシーのオーバーライドは行われません。</translation>
 <translation id="2160336427036785721">メモリを節約するため、タブの破棄（タブで使用されているメモリが解放され、次回表示したときに再読み込みする必要があります）を開始するまでに 1 つの <ph name="PRODUCT_NAME" /> インスタンスで使用できるメモリの量を設定します。
 
       このポリシーを設定した場合、ブラウザのメモリ使用量が制限を超えると、メモリを節約するためタブの破棄が開始されます。ただし、ブラウザが常にこの制限を超えずに動作する保証はありません。1,024 より小さい値は 1,024 に切り上げられます。
@@ -1864,6 +1871,7 @@
       このポリシーを無効にするか、未設定のままにすると、これらの TLS/DTLS バージョンは無効になります。
 
       このポリシーは一時的なものであり、<ph name="PRODUCT_NAME" /> の将来のバージョンで削除される予定です。</translation>
+<translation id="3359186795130278362">制限付き管理対象ゲスト セッションを有効にする</translation>
 <translation id="3360093276083825336">このポリシーはサポートが終了しており、<ph name="PRODUCT_OS_NAME" /> バージョン 85 で削除されます。代わりに <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> を使用してください。
 
           バッテリーでの使用中、ユーザー入力が行われなくなってから警告ダイアログを表示するまでの時間を指定します。
@@ -3082,11 +3090,13 @@
 
       注: このリストには、<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> ポリシーからも要素が追加される可能性があります。</translation>
 <translation id="5067143124345820993">ログイン ユーザーのホワイト リスト</translation>
+<translation id="5071303485174858500">制限付き管理対象ゲスト セッションを無効にする</translation>
 <translation id="5073609397321802133">このポリシーを false に設定した場合、ユーザーは新しいタブページの背景をカスタイマイズできなくなります。既存のカスタムの背景は削除され、後からこのポリシーを true に設定しても元に戻すことはできません。
 
       このポリシーを true に設定するか、未設定のままにした場合、ユーザーは新しいタブページの背景をカスタイマイズできます。</translation>
 <translation id="5075190314377370852">このポリシーを True に設定した場合、ローカルにインストールされた CA 証明書によって正常に確認されたサーバー証明書に対し、<ph name="PRODUCT_NAME" /> は常に失効確認を行います。<ph name="PRODUCT_NAME" /> が失効のステータス情報を取得できない場合、<ph name="PRODUCT_NAME" /> ではその証明書は失効したものとして扱われます（強制エラー）。このポリシーを False に設定するか未設定のままにした場合、<ph name="PRODUCT_NAME" /> は既存のオンライン失効確認設定を使用します。</translation>
 <translation id="5078623750797048009">PDF の注釈を有効にする</translation>
+<translation id="5081204761483900654">制限付き管理対象ゲスト セッション</translation>
 <translation id="5082572440690475059">File System API 経由での読み取りアクセスを許可するサイトを指定する</translation>
 <translation id="5085647276663819155">印刷プレビューを無効にする</translation>
 <translation id="5090791951240382356">ソースの異なる辞書ポリシーの統合を許可する</translation>
@@ -3717,6 +3727,7 @@
           この設定を無効にするか、未設定にする場合、デフォルトの TalkGadget ドメイン名（「chromoting-host.talkgadget.google.com」）がすべてのホストで使用されます。
 
           リモート アクセス クライアントが、このポリシーの設定によって影響を受けることはありません。TalkGadget へのアクセスには常に「chromoting-client.talkgadget.google.com」を使用します。</translation>
+<translation id="5888645257599699215">デバイスの音声の状態を報告する</translation>
 <translation id="5890063326284543943">シリアル API の使用を管理する</translation>
 <translation id="5897913798715600338">急速充電でバッテリーを充電する。</translation>
 <translation id="5898486742390981550">複数のユーザーがログインしている場合は、メインユーザーのみが Android アプリを使用できます。</translation>
@@ -4317,8 +4328,10 @@
       このポリシーを無効に設定した場合、ブラウザの試験運用版機能のアイコンはツールバーから削除されます。
 
       ブラウザの各種機能のオンとオフを切り替えるための chrome://flags やその他の方法は、このポリシーが有効か無効にかかわらず、引き続き想定どおりに動作します。</translation>
+<translation id="6794083666143216172">オリジンにデバイス属性の取得を許可する</translation>
 <translation id="6795485990775913659">PIN なしの印刷のみを許可します</translation>
 <translation id="6800181452282128474">Quirks サーバーにクエリを送信しない</translation>
+<translation id="68031099365512050">音声の状態を報告する</translation>
 <translation id="6810445994095397827">これらのサイトの JavaScript をブロックする</translation>
 <translation id="6813263547126514821">電源とシャットダウン</translation>
 <translation id="681446116407619279">サポートされる認証スキーム</translation>
@@ -4470,6 +4483,9 @@
 
       現在サポートされている言語は、af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi です。</translation>
 <translation id="6926703471186170050">長辺とじの両面印刷を有効にする</translation>
+<translation id="6928305045865155732">このポリシーを有効に設定するか未設定のままにした場合、登録済みのデバイスはデバイスの音量を報告します。
+
+      このポリシーを無効に設定した場合、登録済みのデバイスは音声の状態の記録も報告も行いません。</translation>
 <translation id="6931242315485576290">Google とのデータの同期を無効にする</translation>
 <translation id="6943577887654905793">Mac/Linux 設定名:</translation>
 <translation id="6946652757373377924">
@@ -5784,6 +5800,19 @@
       このポリシーを設定した場合、ユーザーはこの機能を変更できません。このポリシーを未設定のままにした場合、ユーザーは設定を変更できます。</translation>
 <translation id="8715885991031124968">異なる生成元のサブフレームからトリガーされた JavaScript ダイアログを許可します</translation>
 <translation id="8720547069538712402">ユーザーにスペルチェックの有効と無効の切り替えを許可する</translation>
+<translation id="8726080977639508431">このポリシーでは、<ph name="PRODUCT_NAME" /> の「従来のブラウザのサポート」機能でサイトリストまたはグレーリストのポリシーをどのように扱うかを管理します。次のポリシーに影響します: <ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      [Default]（0）に設定するか未設定のままにした場合、URL は緩やかな基準で照合されます。「/」を含まないルールは、URL のホスト名の任意の場所に含まれる部分文字列が照合されます。URL のパス コンポーネントの照合では、大文字と小文字が区別されます。
+
+      [IESiteListMode]（1）に設定した場合、URL は厳格な基準で照合されます。「/」を含まないルールは、ホスト名の末尾のみが照合されます。また、ドメイン名の区切りとしてのみ使用する必要があります。URL のパス コンポーネントの照合では、大文字と小文字は区別されません。この設定では、<ph name="MS_IE_PRODUCT_NAME" /> および <ph name="MS_EDGE_PRODUCT_NAME" /> との互換性がより高くなります。
+
+      たとえば「example.com」と「acme.com/abc」というルールの場合:
+
+      解析モードに関係なく、「http://example.com/」、「http://subdomain.example.com/」、「http://acme.com/abc」に一致します。
+
+      「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」は [Default] モードの場合のみ一致します。
+
+      「http://acme.com/ABC」は [IESiteListMode] モードの場合のみ一致します。</translation>
 <translation id="8736538322216687231">YouTube で一定レベル以上の制限付きモードを強制する</translation>
 <translation id="8745669971728319820">このポリシーでは、拡張機能とプラグインの情報について、レポートを作成するかどうかを管理します。
 

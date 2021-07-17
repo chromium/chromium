@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Käyttäjä</translation>
 <translation id="1125550662859510761">Näyttää olevan <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natiivi)</translation>
 <translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
-<translation id="112752777279960360">Jos haluat tehdä Android-puhelimesta tämän tietokoneen suojausavaimen, sinun pitää ensin avata puhelimellasi Chrome ja valita Asetukset &gt; Salasanat &gt; Käytä puhelinta suojausavaimena. Valitse sitten "Yhdistä uusi laite" ja skannaa tämä QR-koodi.</translation>
 <translation id="1128109161498068552">Älä anna sivustojen käyttää MIDI-laitteita järjestelmän omien viestien avulla</translation>
 <translation id="1128591060186966949">Muokkaa hakukonetta</translation>
 <translation id="1129850422003387628">Sovellusvalinnat</translation>
@@ -506,6 +505,7 @@
 <translation id="1542514202066550870">Tällä välilehdellä esitetään VR-sisältöä headsetiin.</translation>
 <translation id="1543284117603151572">Edgestä tuodut</translation>
 <translation id="1545177026077493356">Automaattinen kioskitila</translation>
+<translation id="1545749641540134597">Skannaa QR-koodi</translation>
 <translation id="1545775234664667895">Asennettin teema <ph name="THEME_NAME" /></translation>
 <translation id="1546280085599573572">Tämä laajennus on vaihtanut Etusivu-painikkeella avattavan sivun.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> haluaa asentaa kohteen (<ph name="EXTENSION_TYPE" />), joka voi:</translation>
@@ -956,7 +956,6 @@
 <translation id="1992924914582925289">Poista laitteelta</translation>
 <translation id="1994173015038366702">Sivuston URL-osoite</translation>
 <translation id="1995916364271252349">Koskee tietoja, joita sivustot voivat käyttää ja näyttää (sijainti, kamera, ponnahdusikkunat ja muut)</translation>
-<translation id="1997437640397887843">Laitteen kamera on mennyt päälle. Aseta eSIMin QR-koodi kameran eteen.</translation>
 <translation id="1997616988432401742">Omat varmenteet</translation>
 <translation id="1999115740519098545">Käynnistyksessä</translation>
 <translation id="2000419248597011803">Lähettää joitakin osoitekentän ja hakukentän kautta tehtyjä hakuja sekä joitakin evästeitä oletushakukoneellesi</translation>
@@ -976,7 +975,6 @@
 <translation id="2019718679933488176">Avaa äänitied&amp;osto uudessa välilehdessä</translation>
 <translation id="2020183425253392403">Näytä verkko-osoitteen asetukset</translation>
 <translation id="2020225359413970060">Tarkista tiedosto</translation>
-<translation id="2022953316617983419">QR-koodi</translation>
 <translation id="2023167225947895179">PIN-koodi voi olla helppo arvata.</translation>
 <translation id="202352106777823113">Lataus kesti liian kauan, joten verkko pysäytti sen.</translation>
 <translation id="2025115093177348061">Lisätty todellisuus</translation>
@@ -1133,6 +1131,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> hallinnoi tiliä. Jos haluat kirjautua ulos laitteen ensisijaiselta tililtä, klikkaa aikaa näytöllä. Valitse avautuvasta valikosta Kirjaudu ulos.</translation>
 <translation id="2175607476662778685">Pikakäynnistysvalikko</translation>
 <translation id="217576141146192373">Tulostimen lisääminen ei onnistu. Tarkista tulostimen määritykset ja yritä uudelleen.</translation>
+<translation id="2175927920773552910">QR-koodi</translation>
 <translation id="2177950615300672361">Incognito-välilehti: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Myöntäjäkompromissi</translation>
 <translation id="2179416702468739594">Etsitään käytettävissä olevia profiileja. Tämä voi katkaista mobiiliverkkoyhteyden muutamaksi minuutiksi.</translation>
@@ -4348,7 +4347,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5712153969432126546">Sivustot julkaisevat joskus PDF-tiedostoja, kuten asiakirjoja, sopimuksia ja lomakkeita</translation>
 <translation id="5715711091495208045">Laajennuksen välittäjä: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Oletushakukoneet</translation>
-<translation id="5719637365829998022">QR-koodi on skannattu.</translation>
 <translation id="5719854774000914513">Sivustot saavat pyytää lupaa yhdistää HID-laitteisiin</translation>
 <translation id="572155275267014074">Android-asetukset</translation>
 <translation id="5722086096420375088">Vihreä ja valkoinen</translation>
@@ -4541,7 +4539,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5942779427914696408">Laitteen näkyvyys</translation>
 <translation id="5943127421590245687">Vahvistus onnistui. Jos haluat avata paikallisen datasi lukituksen ja palauttaa sen, anna vanhan laitteen (<ph name="DEVICE_TYPE" />) salasana.</translation>
-<translation id="5944869793365969636">Skannaa QR-koodi</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> voi olla vaarallinen. Lähetetäänkö se Googlen selaussuojan tarkistettavaksi?</translation>
 <translation id="5945363896952315544">Suojausavaimeesi ei voi tallentaa enempää sormenjälkiä. Poista aiemmin lisätty sormenjälki, jotta voit lisätä uuden.</translation>
 <translation id="5946591249682680882">Raporttitunnus: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4665,7 +4662,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6077131872140550515">Poista ensisijaisista</translation>
 <translation id="6077189836672154517">Vinkkejä ja päivityksiä: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Sanelu</translation>
-<translation id="6078045608615316905">Luo QR-koodi tälle kuvalle</translation>
 <translation id="6078121669093215958">{0,plural, =1{Vieras}other{# avointa vierasikkunaa}}</translation>
 <translation id="6078323886959318429">Lisää pikakuvake</translation>
 <translation id="6078752646384677957">Tarkista mikrofonin ja äänenvoimakkuuden tasot.</translation>
@@ -5207,14 +5203,12 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6680650203439190394">Nopeus</translation>
 <translation id="6681668084120808868">Ota kuva</translation>
 <translation id="6683087162435654533">Palauta kaikki välilehdet</translation>
-<translation id="6683948477137300040">Näytä ponnahdusikkuna, jossa on laitteen EID ja QR-koodi</translation>
 <translation id="6684827949542560880">Ladataan uusinta päivitystä</translation>
 <translation id="668599234725812620">Avaa Google Play</translation>
 <translation id="6686490380836145850">Sulje välilehdet oikealle</translation>
 <translation id="6686665106869989887">Välilehti siirretty oikealle</translation>
 <translation id="6686817083349815241">Tallenna salasanasi</translation>
 <translation id="6687079240787935001">Piilota <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Luo QR-koodi tälle kuvalle</translation>
 <translation id="6690659332373509948">Tiedoston jäsennys epäonnistui: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Synkronoidun datan valinnat Google Hallintapaneelissa</translation>
 <translation id="6691541770654083180">Maapallo</translation>
@@ -5418,7 +5412,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6914783257214138813">Salasanasi näkyvät kaikille, jotka näkevät viedyn tiedoston.</translation>
 <translation id="6916590542764765824">Hallinnoi laajennuksia</translation>
 <translation id="6919868320029503575">Heikot salasanat</translation>
-<translation id="6920262510368602827">Luo QR-koodi tälle sivulle</translation>
 <translation id="6920989436227028121">Avaa tavallisella välilehdellä</translation>
 <translation id="6921104647315081813">Tyhjennä toiminta</translation>
 <translation id="692114467174262153">Selaimen <ph name="ALTERNATIVE_BROWSER_NAME" /> avaaminen epäonnistui</translation>
@@ -6144,7 +6137,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7691698019618282776">Crostini-päivitys</translation>
 <translation id="7696063401938172191"><ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Tiedot on piilotettu näytön jakamisen ajaksi</translation>
-<translation id="7697598343108519171">Skannaa QR-koodi kameralla</translation>
 <translation id="7701040980221191251">Ei mitään</translation>
 <translation id="7701869757853594372">KÄYTTÄJÄ-tunnukset</translation>
 <translation id="7701928712056789451">Nämä kohteet voivat olla vaarallisia</translation>
@@ -6250,7 +6242,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7800518121066352902">Käännä &amp;vastapäivään</translation>
 <translation id="780301667611848630">Ei kiitos</translation>
 <translation id="7804072833593604762">Välilehti suljettu</translation>
-<translation id="7805759469263222011">Skannaa QR-koodi laitteen kameralla tai lisää operaattorisi antama aktivointikoodi.</translation>
 <translation id="7805768142964895445">Tila</translation>
 <translation id="7807067443225230855">Haku ja Assistant</translation>
 <translation id="7807711621188256451">Anna aina sivuston <ph name="HOST" /> käyttää kameraasi</translation>
@@ -6807,7 +6798,6 @@ Paina määritettyä kytkintä poistaaksesi määrityksen</translation>
 <translation id="8386091599636877289">Käytäntöä ei löydy.</translation>
 <translation id="8387361103813440603">Sijainnin tarkastelu kielletty</translation>
 <translation id="8388770971141403598">Toissijaisia profiileja ei tueta</translation>
-<translation id="8389416080014625855">Luo QR-koodi tälle sivulle</translation>
 <translation id="8389492867173948260">Salli tämän laajennuksen lukea ja muuttaa kaikkea dataasi avatuilla verkkosivustoilla:</translation>
 <translation id="8390449457866780408">Palvelin ei ole käytettävissä.</translation>
 <translation id="8391218455464584335">Vinyyli</translation>
@@ -7364,7 +7354,6 @@ Paina määritettyä kytkintä poistaaksesi määrityksen</translation>
 <translation id="8986494364107987395">Lähetä Googlelle käyttötilastoja ja virheraportteja automaattisesti</translation>
 <translation id="8987927404178983737">Kuukausi</translation>
 <translation id="8988879467270412492">Haluatko aktivoida ChromeVoxin, Chrome-käyttöjärjestelmän sisäänrakennetun näytönlukijan? Jos haluat, paina molempia äänenvoimakkuuspainikkeita viiden sekunnin ajan.</translation>
-<translation id="8990209962746788689">QR-koodin luominen ei onnistu</translation>
 <translation id="8991520179165052608">Sivusto voi käyttää mikrofoniasi</translation>
 <translation id="899384117894244799">Poista rajoitettu käyttäjä</translation>
 <translation id="899403249577094719">Netscape-varmenteen URL-osoite</translation>

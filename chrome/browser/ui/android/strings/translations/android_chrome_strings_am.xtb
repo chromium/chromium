@@ -224,7 +224,6 @@
 
 ለመፈለግ ማናቸውንም ቃል ይንኩ እና ይያዙ። የእርስዎን ፍለጋ ለማጥራት፣ ተጨማሪ ወይም ያነሱ ቃላትን ይምረጡ። የእርስዎን ፍለጋ ለማርትዕ ፓነሉን ይክፈቱ፣ በአዲስ ትር ለመክፈት አዶውን መታ ያድርጉ፣ እና በፍለጋ ሳጥኑ ውስጥ የእርስዎን ለውጦች ያከናውኑ።</translation>
 <translation id="2459390580524506445">የተሻሻለ የድምጽ ፍለጋ</translation>
-<translation id="246532703174860178">አጋራ</translation>
 <translation id="247737702124049222">የምስል መግለጫዎች በርተዋል</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
 <translation id="2485422356828889247">አራግፍ</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">ክስተት ፍጠር</translation>
 <translation id="2901411048554510387">ለ<ph name="WEBSITE_TITLE" /> የአስተያየት ጥቆማዎችን በማሳየት ላይ</translation>
 <translation id="2904414404539560095">በሙሉ ቁመቱ ላይ የተከፈተ ትር የሚጋሩ የመሣሪያዎች ዝርዝር።</translation>
-<translation id="2905036901251765993">በአቅራቢያ ካሉ ሰዎች ጋር ለማጋራት፣ ይህን QR ኮድ እንዲቃኙ ይፍቀዱላቸው</translation>
 <translation id="2908243544703713905">ያልተነበቡ ታሪኮች ተዘጋጅተዋል</translation>
 <translation id="2909615210195135082">የGoogle ማሳወቂያዎች መሣሪያ ስርዓት</translation>
 <translation id="2912296070571964914">የሚፈልጓቸውን ርዕሶች ያቀናብሩ</translation>
@@ -724,7 +722,6 @@
 <translation id="572328651809341494">የቅርብ ጊዜ ትሮች</translation>
 <translation id="5723735397759933332">ቀላል ሁነታ አሁን በኤችቲቲፒኤስ ገጾች ላይ ምስሎችን በማላቅ ተጨማሪ ውሂብ ያስቀምጠዎታል።</translation>
 <translation id="5726692708398506830">በገጹ ላይ ያለውን ሁሉንም ነገር ይበልጥ አተልቅ</translation>
-<translation id="5733983706093266635">የQR ኮድ መፍጠር አልተቻለም። ዩአርኤል ከ<ph name="CHARACTER_LIMIT" /> ቁምፊዎች ይበልጣል።</translation>
 <translation id="5748802427693696783">ወደ መደበኛ ትሮች ቀይር</translation>
 <translation id="5749068826913805084">Chrome ፋይሎችን ለማውረድ የማከማቻ መዳረሻ ያስፈልገዋል።</translation>
 <translation id="5749237766298580851">አጥፋ <ph name="SEPARATOR" /> አይመከርም</translation>
@@ -880,7 +877,6 @@
 <translation id="6590680911007613645">እያስቀመጡት ያለው የይለፍ ቃል ከ<ph name="SITE" /> ይለፍ ቃል ጋር የሚዛመድ መሆኑን ያረጋግጡ</translation>
 <translation id="6593061639179217415">የዴስክቶፕ ጣቢያ</translation>
 <translation id="6595046016124923392">ለእርስዎ መግለጫዎችን ለማሻሻል ምስሎች ወደ Google ይላካሉ።</translation>
-<translation id="6597891566292541626">በዚህ ክፈፍ ውስጥ የኪውአር/አሞሌ ኮድ አቀማመጥ ያስተካክሉ።</translation>
 <translation id="6600954340915313787">ወደ Chrome ተቀድቷል</translation>
 <translation id="661266467055912436">ለእርስዎ እና ለማናቸውም በድር ላይ ያለ ሁሉም ሰው ደህንነትን ያሻሽላል።</translation>
 <translation id="6618554661997243500">ለእርስዎ የሚሆኑ ከፍተኛዎቹን ጣቢያዎች እና ዘገባዎች ለማየት የመነሻ አዝራሩን መታ ያድርጉ</translation>
@@ -1090,7 +1086,6 @@
 <translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7961926449547174351">የማከማቻ መዳረሻን አሰናክለዋል፣ እሱን ለማንቃት እባክዎ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7963646190083259054">አቅራቢ፦</translation>
-<translation id="7967911570373677897">የQR ኮድ ለመቃኘት Chrome የእርስዎን ካሜራ መጠቀም እንዲችል የእርስዎን ቅንብሮች ይለውጡ</translation>
 <translation id="7968014550143838305">ወደ የንባብ ዝርዝር ታክሏል</translation>
 <translation id="7971136598759319605">1 ቀን በፊት ንቁ ነበር</translation>
 <translation id="7975379999046275268">ገጽ <ph name="BEGIN_NEW" />አዲስ<ph name="END_NEW" /> ቅድሚያ ይመልከቱ</translation>
@@ -1122,7 +1117,6 @@
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">የእርስዎን ዕልባቶች በሁሉም መሣሪያዎችዎ ላይ ስምረትን ማብራት ለማግኘት</translation>
 <translation id="8110087112193408731">በዲጂታል ብቁ መሆን ውስጥ የChrome እንቅስቃሴዎ ይታይ?</translation>
-<translation id="8115259494083109761">አንድ QR ኮድ ለመቃኘት Chrome ካሜራዎን ይጠቀም።</translation>
 <translation id="8127542551745560481">መነሻ ገጽን ያርትዑ</translation>
 <translation id="813082847718468539">የጣቢያ መረጃን ይመልከቱ</translation>
 <translation id="8137558756159375272">ፍለጋ ላይ መንካት የተመረጠ ቃልን እና አሁን ያለውን ገጽ ወደ Google ፍለጋ ይልካል። በ<ph name="BEGIN_LINK" />ቅንብሮች<ph name="END_LINK" /> ውስጥ ሊያጠፉት ይችላሉ።</translation>
@@ -1139,7 +1133,6 @@
 <translation id="8218622182176210845">መለያዎን ያቀናብሩ</translation>
 <translation id="8223642481677794647">የምግብ ካርድ ምናሌ</translation>
 <translation id="8224471946457685718">በWi-Fi ላይ ለእርስዎ ጽሑፎችን ያውርዱ</translation>
-<translation id="8233540874193135768">የQR ኮድ ለመቃኘት ካሜራ ያለው መሣሪያ ይጠቀሙ።</translation>
 <translation id="8250920743982581267">ሰነዶች</translation>
 <translation id="825412236959742607">ይህ ገጽ በጣም ብዙ ማህደረ ትውስታን ይጠቀማል፣ ስለዚህ Chrome አንዳንድ ይዘትን አስወግዷል።</translation>
 <translation id="8260126382462817229">እንደገና ለመግባት ይሞክሩ</translation>
@@ -1256,7 +1249,6 @@
 <translation id="8970887620466824814">የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="8972098258593396643">ወደ ነባሪው አቃፊ ይውረድ?</translation>
 <translation id="8988028529677883095">እንደ ደህንነት ቁልፍ ስልክን ይጠቀሙ</translation>
-<translation id="8990209962746788689">የQR ኮድ መፍጠር አልተቻለም</translation>
 <translation id="8993760627012879038">አዲስ ትር በማንነት የማያሳውቅ ሁነታ ውስጥ ክፈት</translation>
 <translation id="8996847606757455498">ሌላ አቅራቢ ይምረጡ</translation>
 <translation id="8998729206196772491">በ<ph name="MANAGED_DOMAIN" /> ወደሚተዳደር መለያ እየገቡና ሙሉውን የChrome ውሂብዎ ቁጥጥር ለአስተዳዳሪው እየሰጡ ነው። የእርስዎ ውሂብ እስከመጨረሻው ከዚህ መለያ ጋር ይተሳሰራል። ከChrome ዘግቶ መውጣት ውሂብዎን ከዚህ መሣሪያ ይሰርዘዋል፣ ነገር ግን በእርስዎ የGoogle መለያ ላይ እንደተከማቸ ይቆያል።</translation>

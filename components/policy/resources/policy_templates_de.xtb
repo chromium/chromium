@@ -77,6 +77,9 @@
       Wenn sie auf "false" gesetzt oder nicht konfiguriert ist, werden keine Informationen ausgegeben.
       Ist sie auf "true" gesetzt, werden Informationen zur Hintergrundbeleuchtung des Geräts ausgegeben.</translation>
 <translation id="1076751984131277498">Zulassungsliste von trennbaren USB-Geräten</translation>
+<translation id="1079425471279127373">Mit dieser Richtlinie können Sie festlegen, ob einige Ursprünge von Webanwendungen mit erzwungener Installation über die Device Attributes Web API Geräteattribute wie Seriennummer oder Hostname abrufen können.
+
+      Device Attributes API ist eine Liste mit Web APIs. Weitere Informationen finden Sie unter: https://wicg.github.io/WebApiDevice/device_attributes. Sie sind nur für Ursprünge verfügbar, die zu Webanwendungen mit erzwungener Installation über <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> gehören, oder für die in der Kiosk-Session konfigurierten.</translation>
 <translation id="1079801999187584280">Nutzung der Entwicklertools nicht zulassen</translation>
 <translation id="1082802595100075771">Zulassen, dass Nutzer einen anonymen Google-Dienst verwenden, um automatische Beschreibungen für unbeschriftete Bilder zu erhalten</translation>
 <translation id="1087437665304381368">Mit dieser Richtlinie wird nur der <ph name="PRODUCT_OS_NAME" />-Entwicklermodus gesteuert. Wenn Sie den Zugriff auf Android-Entwickleroptionen verhindern möchten, müssen Sie die Richtlinie "<ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />" konfigurieren.</translation>
@@ -850,6 +853,7 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2090939118981888335">Wenn diese Richtlinie aktiviert ist, wird der Proxy zur Datenkomprimierung zugelassen. Ist die Richtlinie deaktiviert, kann der Proxy nicht verwendet werden.
 
       Wenn Sie diese Richtlinie konfigurieren, kann sie von Nutzern nicht geändert werden. Wenn sie nicht konfiguriert ist, können Nutzer entscheiden, ob die Funktion genutzt werden soll.</translation>
+<translation id="2093552723795057221">Audiostatus nicht melden</translation>
 <translation id="209586405398070749">Stabiler Kanal</translation>
 <translation id="2098658257603918882">Berichte mit Nutzungs- und Absturzdaten erstellen</translation>
 <translation id="2104418465060359056">Daten von Erweiterungen und Plug-ins erfassen</translation>
@@ -893,6 +897,9 @@ Das Feld „<ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" />“ wurde zuguns
 <translation id="2151831603578119302">Tastenkombinationen für Bedienungshilfen aktivieren</translation>
 <translation id="2156132677421487971">Konfigurieren von Richtlinien für <ph name="PRODUCT_NAME" />, ein Tool, mit dem Nutzer Inhalte von Tabs, Websites oder dem Desktop von einem Browser auf andere Bildschirme und Soundsysteme übertragen können.</translation>
 <translation id="2156755242840687300">Externe Druckserver aktiviert</translation>
+<translation id="2157842368188031417">Die Richtlinie wird nur auf verwaltete Gastsitzungen angewendet. Für den Modus für gemeinsam genutzte Arbeitsstationen von Imprivata muss sie aktiviert werden, um Benutzerwechsel bei laufender Sitzung zu ermöglichen.
+      Ist die Richtlinie auf „True“ gesetzt, wird die Überschreibung bestimmter Richtlinien für Funktionen erzwungen, die sensible Benutzerdaten beibehalten und nicht durch den Bereinigungsmechanismus abgedeckt sind, der im Modus für gemeinsam genutzte Arbeitsstationen von Imprivata den Benutzerwechsel bei laufender Sitzung ermöglicht.
+      Wenn die Richtlinie auf „False“ gesetzt oder nicht konfiguriert ist, werden keine Richtlinien überschrieben.</translation>
 <translation id="2160336427036785721">Diese Richtlinie legt fest, wie viel Arbeitsspeicher eine einzelne Instanz von <ph name="PRODUCT_NAME" /> verbrauchen darf, bevor Tabs verworfen werden, um Arbeitsspeicher zu leeren. Der vom jeweiligen Tab verbrauchte Arbeitsspeicher wird freigegeben und der Tab muss neu geladen werden, wenn er wieder aufgerufen wird.
 
       Wenn diese Richtlinie konfiguriert wird, verwirft der Browser Tabs, um Arbeitsspeicher zu leeren, sobald das Limit überschritten wird. Es gibt jedoch keine Garantie dafür, dass der Browser immer unterhalb des Limits bleibt. Jeder Wert unter 1024 wird auf 1024 aufgerundet.
@@ -1908,6 +1915,7 @@ Unter <ph name="MS_WIN_NAME" /> ist diese Funktion nur in Instanzen verfügbar, 
 
       Diese Richtlinie ist vorübergehend und wird in einer zukünftigen Version
       von <ph name="PRODUCT_NAME" /> entfernt.</translation>
+<translation id="3359186795130278362">Eingeschränkte verwaltete Gastsitzung aktivieren.</translation>
 <translation id="3360093276083825336">Diese Richtlinie ist veraltet und wird in Version 85 von <ph name="PRODUCT_OS_NAME" /> entfernt. Bitte verwenden Sie stattdessen die Richtlinie "<ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />".
 
           Hiermit wird angegeben, nach welchem Zeitraum ohne Nutzereingabe im Akkubetrieb eine Warnung angezeigt wird.
@@ -3146,6 +3154,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Hinweis: Dieser Liste können auch über die Richtlinie "<ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />" Elemente hinzugefügt werden.</translation>
 <translation id="5067143124345820993">Zulassungsliste für Nutzer bei der Anmeldung</translation>
+<translation id="5071303485174858500">Eingeschränkte verwaltete Gastsitzung deaktivieren.</translation>
 <translation id="5073609397321802133">Wenn diese Richtlinie auf "false" gesetzt ist, können Nutzer auf der "Neuer Tab"-Seite den Hintergrund nicht anpassen. Falls bereits ein benutzerdefinierter Hintergrund vorhanden ist, wird er dauerhaft entfernt, auch wenn die Richtlinie später auf "true" gesetzt wird.
 
       Wenn die Richtlinie auf "true" gesetzt oder nicht konfiguriert ist, können Nutzer den Hintergrund auf der "Neuer Tab"-Seite anpassen.</translation>
@@ -3153,6 +3162,7 @@ Wenn diese Richtlinie konfiguriert ist, erlaubt <ph name="PRODUCT_OS_NAME" /> es
 
       Wenn diese Richtlinie nicht konfiguriert oder auf "False" gesetzt ist, verwendet <ph name="PRODUCT_NAME" /> die vorhandenen Online-Einstellungen zur Widerrufsprüfung.</translation>
 <translation id="5078623750797048009">PDF-Anmerkungen aktivieren</translation>
+<translation id="5081204761483900654">Eingeschränkte verwaltete Gastsitzungen</translation>
 <translation id="5082572440690475059">Lesezugriff über die File System API auf diesen Websites erlauben</translation>
 <translation id="5085647276663819155">Druckvorschau deaktivieren</translation>
 <translation id="5090791951240382356">Zusammenführen von Wörterbuchrichtlinien aus unterschiedlichen Quellen erlauben</translation>
@@ -3803,6 +3813,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
           Ist die Einstellung deaktiviert oder nicht festgelegt, wird der Standard-Domainname für das TalkGadget ("chromoting-host.talkgadget.google.com") für alle Hosts verwendet.
 
           Clients für den Remotezugriff sind von dieser Richtlinieneinstellung nicht betroffen. Diese verwenden immer "chromoting-client.talkgadget.google.com" für den Zugriff auf das TalkGadget.</translation>
+<translation id="5888645257599699215">Audiostatus des Geräts melden</translation>
 <translation id="5890063326284543943">Verwendung der Serial API steuern</translation>
 <translation id="5897913798715600338">Lädt den Akku mit Schnellladetechnologie auf.</translation>
 <translation id="5898486742390981550">Wenn mehrere Nutzer angemeldet sind, kann nur der Hauptnutzer Android-Apps verwenden.</translation>
@@ -4447,8 +4458,10 @@ Durch Festlegen dieser Richtlinie bestimmen Sie, ob sich ein Nutzer in <ph name=
 Wird die Richtlinie deaktiviert, wird das Symbol für den Zugriff auf experimentelle Browserfunktionen von der Symbolleiste entfernt.
 
       „chrome://flags“ und alle weiteren Möglichkeiten zum Aktivieren oder Deaktivieren von Browserfunktionen funktionieren weiter wie gewohnt, unabhängig davon, ob diese Richtlinie aktiviert oder deaktiviert ist.</translation>
+<translation id="6794083666143216172">Ursprüngen erlauben, Geräteattribute anzufragen</translation>
 <translation id="6795485990775913659">Drucken nur ohne PIN zulassen</translation>
 <translation id="6800181452282128474">Keine Anfragen an Quirks Server stellen</translation>
+<translation id="68031099365512050">Audiostatus melden</translation>
 <translation id="6810445994095397827">JavaScript auf diesen Websites blockieren</translation>
 <translation id="6813263547126514821">Energiesparmodus und Herunterfahren</translation>
 <translation id="681446116407619279">Unterstützte Authentifizierungsschemas</translation>
@@ -4608,6 +4621,9 @@ Wenn die Richtlinie nicht festgelegt ist, werden keine Einschränkungen angewend
 
       Aktuell werden die folgenden Sprachen unterstützt: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Duplexdruck (lange Kante) aktivieren</translation>
+<translation id="6928305045865155732">Wenn die Richtlinie aktiviert wird oder nicht konfiguriert ist, melden angemeldete Geräte die Lautstärke des Geräts.
+
+      Ist die Richtlinie deaktiviert, zeichnen angemeldete Geräte den Audiostatus nicht auf und melden diesen nicht.</translation>
 <translation id="6931242315485576290">Synchronisierung der Daten mit Google deaktivieren</translation>
 <translation id="6943577887654905793">Bevorzugter Mac-/Linux-Name:</translation>
 <translation id="6946652757373377924">
@@ -5945,6 +5961,19 @@ Ist die Richtlinie auf "false" gesetzt oder nicht konfiguriert, kann der Nutzer 
       Nach dem Konfigurieren der Richtlinie kann diese Funktion von den Nutzern nicht mehr geändert werden. Ist sie dagegen nicht konfiguriert, kann der Nutzer die Einstellung ändern.</translation>
 <translation id="8715885991031124968">JavaScript-Dialogfelder zulassen, die von einem anderen Quell-Subframe ausgelöst wurden</translation>
 <translation id="8720547069538712402">Zulassen, dass Nutzer die Rechtschreibprüfung aktivieren oder deaktivieren</translation>
+<translation id="8726080977639508431">Diese Richtlinie legt fest, wie <ph name="PRODUCT_NAME" /> Richtlinien zu Websitelisten/Greylists für die Funktion zur Unterstützung älterer Browser interpretiert. Die folgenden Richtlinien sind betroffen: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> und <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Wenn die Richtlinie auf „Default“ (0) gesetzt oder nicht konfiguriert ist, ist der URL-Abgleich weniger streng. Bei Regeln, die „/“ nicht enthalten, wird nach einem Teilstring im Hostnamen der URL gesucht. Bei der Zuordnung der Pfadkomponente einer URL wird die Groß- und Kleinschreibung beachtet.
+
+      Wenn die Richtlinie auf „IESiteListMode“ (1) gesetzt ist, ist der URL-Abgleich strenger. Bei Regeln, die „/“ nicht enthalten, wird nur der letzte Abschnitt des Hostnamens berücksichtigt. Sie müssen außerdem innerhalb des Bereichs für Domainnamen liegen. Bei der Zuordnung der Pfadkomponente einer URL wird die Groß- und Kleinschreibung nicht beachtet. Dies bietet eine bessere Kompatibilität mit <ph name="MS_IE_PRODUCT_NAME" /> und <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Beispielsweise mit den Regeln „beispiel.de“ und „acme.de/abc“:
+
+„http://beispiel.de“; „http://subdomain.beispiel.de“ und „http://acme.de/abc“ stimmen unabhängig von Parsingmodus überein.
+
+      „http://keinbeispiel.de/“, „http://beispiel.de.ungültig.com/“ und „http://beispiel.deabc/“ stimmen nur im Modus „Default“ überein.
+
+      „http://acme.de/ABC“ stimmt nur in „IESiteListMode“ überein.</translation>
 <translation id="8736538322216687231">Minimalen eingeschränkten Modus auf YouTube erzwingen</translation>
 <translation id="8745669971728319820">Mit dieser Richtlinie wird festgelegt, ob Daten zu Erweiterungen und Plug-ins gesendet werden.
 

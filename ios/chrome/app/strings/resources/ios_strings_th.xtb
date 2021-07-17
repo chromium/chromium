@@ -196,6 +196,7 @@
 <translation id="2932085390869194046">แนะนำรหัสผ่าน...</translation>
 <translation id="2952581218264071393">1. เปิดการตั้งค่า Chrome</translation>
 <translation id="2958718410589002129">รหัสผ่าน</translation>
+<translation id="2961210776189273067">คำนำหน้าชื่อ</translation>
 <translation id="2964349545761222050">บล็อกคุกกี้ของบุคคลที่สาม</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="2975121486251958312">ใช้ได้เฉพาะโหมดไม่ระบุตัวตน</translation>
@@ -721,6 +722,7 @@
 <translation id="8073872304774253879">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8076014560081431679">การตั้งค่าเว็บไซต์ที่บันทึกไว้จะไม่ถูกลบและอาจส่งผลกับลักษณะการท่องเว็บของคุณ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
+<translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="8105368624971345109">ปิด</translation>
 <translation id="8114753159095730575">การดาวน์โหลดไฟล์พร้อมใช้งาน มีตัวเลือกอยู่ทางด้านล่างของหน้าจอ</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>

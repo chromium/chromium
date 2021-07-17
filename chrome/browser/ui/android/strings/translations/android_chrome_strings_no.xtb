@@ -224,7 +224,6 @@ Trykk på et ord for å søke. For å finstemme søket, trykk og hold inne for �
 
 Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere eller færre ord. For å redigere søket, åpne panelet, trykk på ikonet for å åpne i en ny fane, og gjør endringer i søkefeltet.</translation>
 <translation id="2459390580524506445">Forbedret talesøk</translation>
-<translation id="246532703174860178">Del</translation>
 <translation id="247737702124049222">Bildebeskrivelser er på</translation>
 <translation id="2482878487686419369">Varsler</translation>
 <translation id="2485422356828889247">Avinstaller</translation>
@@ -296,7 +295,6 @@ Trykk og hold inne på et ord for å søke. For å finstemme søket, merk flere 
 <translation id="2900528713135656174">Opprett hendelse</translation>
 <translation id="2901411048554510387">Viser forslag for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Listen over enheter du kan dele faner med, er åpnet i full høyde.</translation>
-<translation id="2905036901251765993">For å dele med personer i nærheten, la dem skanne denne QR-koden</translation>
 <translation id="2908243544703713905">Uleste historier er klare</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Administrer emnene du er interessert i</translation>
@@ -722,7 +720,6 @@ For å endre denne innstillingen, <ph name="BEGIN_LINK" />tilbakestill synkronis
 <translation id="572328651809341494">Nylige faner</translation>
 <translation id="5723735397759933332">Forenklet modus sparer nå mer data ved å optimalisere bilder på HTTPS-sider.</translation>
 <translation id="5726692708398506830">Gjør alt på siden større</translation>
-<translation id="5733983706093266635">Kan ikke lage QR-koden. Nettadressen er lengre enn <ph name="CHARACTER_LIMIT" /> tegn.</translation>
 <translation id="5748802427693696783">Byttet til standardfaner</translation>
 <translation id="5749068826913805084">Chrome må ha lagringstilgang for å laste ned filer.</translation>
 <translation id="5749237766298580851">Av <ph name="SEPARATOR" /> Anbefales ikke</translation>
@@ -878,7 +875,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="6590680911007613645">Sørg for at passordet du lagrer, samsvarer med passordet ditt for <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Side for datamaskiner</translation>
 <translation id="6595046016124923392">Bildene blir sendt til Google for å gjøre beskrivelsene bedre.</translation>
-<translation id="6597891566292541626">Plassér QR-/strekkoden i denne rammen.</translation>
 <translation id="6600954340915313787">Kopiert til Chrome</translation>
 <translation id="661266467055912436">Øker sikkerheten for deg og alle andre på nettet.</translation>
 <translation id="6618554661997243500">For å se anbefalte nettsteder og nyhetssaker for deg, trykk på knappen Gå til startsiden</translation>
@@ -1087,7 +1083,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7961015016161918242">Aldri</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
-<translation id="7967911570373677897">For å skanne QR-koder, endre innstillingene slik at Chrome kan bruke kameraet</translation>
 <translation id="7968014550143838305">Lagt til på leselisten</translation>
 <translation id="7971136598759319605">Aktiv for én dag siden</translation>
 <translation id="7975379999046275268">Forhåndsvis siden <ph name="BEGIN_NEW" />Nyhet<ph name="END_NEW" /></translation>
@@ -1119,7 +1114,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">For å få bokmerkene dine på alle enhetene dine, slå på synkronisering</translation>
 <translation id="8110087112193408731">Vil du vise Chrome-aktiviteten din i Digital balanse?</translation>
-<translation id="8115259494083109761">For å skanne QR-koder, la Chrome bruke kameraet</translation>
 <translation id="8127542551745560481">Endre startsiden</translation>
 <translation id="813082847718468539">Vis nettstedsinformasjon</translation>
 <translation id="8137558756159375272">Trykk for å søke sender det valgte ordet og den aktive siden som kontekst til Google Søk. Du kan slå av dette i <ph name="BEGIN_LINK" />Innstillinger<ph name="END_LINK" />.</translation>
@@ -1136,7 +1130,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8218622182176210845">Administrer kontoen din</translation>
 <translation id="8223642481677794647">Feedkortmeny</translation>
 <translation id="8224471946457685718">Last ned artikler for deg via Wi-Fi</translation>
-<translation id="8233540874193135768">For å skanne QR-koder, bruk en enhet med kamera.</translation>
 <translation id="8250920743982581267">Dokumenter</translation>
 <translation id="825412236959742607">Denne siden bruker for mye minne, så Chrome har fjernet noe av innholdet.</translation>
 <translation id="8260126382462817229">Prøv å logge på igjen</translation>
@@ -1252,7 +1245,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
 <translation id="8988028529677883095">Bruk telefonen som sikkerhetsnøkkel</translation>
-<translation id="8990209962746788689">Kan ikke opprette QR-kode</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>
 <translation id="8996847606757455498">Velg en annen leverandør</translation>
 <translation id="8998729206196772491">Du logger på med en konto som administreres av <ph name="MANAGED_DOMAIN" />, og du gir administratoren for dette domenet kontroll over Chrome-dataene dine. Dataene dine blir permanent knyttet til denne kontoen. Når du logger av Chrome, slettes dataene dine fra denne enheten, men de fortsetter å være lagret i Google-kontoen din.</translation>

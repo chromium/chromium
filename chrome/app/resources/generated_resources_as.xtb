@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">ব্যৱহাৰকাৰী</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" />ৰ দৰে লাগিছে (পূৰ্বনিৰ্ধাৰিত)</translation>
 <translation id="1126809382673880764">আপোনাক বিপজ্জনক ৱেবছাইট, ডাউনল’ড অথবা এক্সটেনশ্বনসমূহৰ পৰা সুৰক্ষা প্ৰদান নকৰে। Gmail আৰু Searchৰ দৰে অন্য Google সেৱাসমূহ, য’ত সুৰক্ষিত ব্ৰাউজিঙৰ সুবিধাটো উপলব্ধ, সেইবিলাকত আপুনি তথাপি এই সুবিধাটো পাব।</translation>
-<translation id="112752777279960360">প্ৰথমবাৰৰ বাবে এই কম্পিউটাৰটোৰ সৈতে এটা সুৰক্ষা চাবি হিচাপে ব্যৱহাৰ কৰিবলৈ এটা Android ফ’ন ছেট আপ কৰিবলৈ, আপোনাৰ ফ’নত Chrome খোলক আৰু "ছেটিংসমূহ &gt; পাছৱৰ্ডসমূহ &gt;সুৰক্ষা চাবি হিচাপে ফ’ন ব্যৱহাৰ কৰক"লৈ যাওক। তাৰ পাছত "নতুন ডিভাইচ সংযোগ কৰক"ত টিপক আৰু এই কিউআৰ ক’ডটো স্কেন কৰক।</translation>
 <translation id="1128109161498068552">যিকোনো ছাইটক MIDI ডিভাইচসমূহ এক্সেছ কৰিবলৈ ছিষ্টেমৰ অনন্য বাৰ্তা ব্যৱহাৰ কৰিবলৈ অনুমতি নিদিব</translation>
 <translation id="1128591060186966949">সন্ধান ইঞ্জিন সম্পাদনা কৰক</translation>
 <translation id="1129850422003387628">এপ্‌সমূহ পৰিচালনা কৰক</translation>
@@ -502,6 +501,7 @@
 <translation id="1542514202066550870">এই টেবটোৱে কোনো হেডছেটত VR সমল উপস্থাপন কৰি আছে।</translation>
 <translation id="1543284117603151572">Edgeৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="1545177026077493356">স্বয়ংক্ৰিয় কিঅ’স্ক ম’ড</translation>
+<translation id="1545749641540134597">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="1545775234664667895">ইনষ্টল কৰা থীম "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">আপুনি গৃহপৃষ্ঠা বুটামত ক্লিক কৰিলে কি পৃষ্ঠা দেখুওৱা হ’ব সেইয়া এই এক্সটেনশ্বনটোৱে সলনি কৰিছে।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />এ এটা <ph name="EXTENSION_TYPE" /> ইনষ্টল কৰিব বিচাৰে, যিটোৱে এয়া কৰিব পাৰে:</translation>
@@ -951,7 +951,6 @@
 <translation id="1992924914582925289">ডিভাইচটোৰ পৰা আঁতৰাওক</translation>
 <translation id="1994173015038366702">ছাইট URL</translation>
 <translation id="1995916364271252349">ছাইটসমূহে কি তথ্য ব্যৱহাৰ কৰিব আৰু দেখুৱাব পাৰে সেয়া নিয়ন্ত্ৰণ কৰে (অৱস্থান, কেমেৰা, পপ-আপ আৰু বহুতো)</translation>
-<translation id="1997437640397887843">ডিভাইচৰ কেমেৰাটো অন কৰা হ'ল। অনুগ্ৰহ কৰি আপোনাৰ ই-ছিমৰ কিউআৰ ক'ডটো কেমেৰাটোৰ সন্মুখত ৰাখক।</translation>
 <translation id="1997616988432401742">আপোনাৰ প্ৰমাণপত্ৰ</translation>
 <translation id="1999115740519098545">আৰম্ভণি</translation>
 <translation id="2000419248597011803">আপোনাৰ ডিফ’ল্ট সন্ধান ইঞ্জিনলৈ ঠিকনা বাৰ আৰু সন্ধান বাকছৰ পৰা কিছুমান কুকি আৰু সন্ধান পঠিয়ায়</translation>
@@ -971,7 +970,6 @@
 <translation id="2019718679933488176">অডিঅ’ নতুন টেবত খোলক</translation>
 <translation id="2020183425253392403">নেটৱর্ক ঠিকনাৰ ছেটিংসমূহ দেখুৱাওক</translation>
 <translation id="2020225359413970060">ফাইল স্কেন কৰক</translation>
-<translation id="2022953316617983419">কিউআৰ ক’ড</translation>
 <translation id="2023167225947895179">পিনটো অনুমান কৰাত সহজ হ'ব পাৰে</translation>
 <translation id="202352106777823113">ডাউনল’ডৰ বাবে অতি বেছি সময় লাগিছে আৰু নেটৱর্ক সম্পর্কীয় সমস্যাৰ বাবে ই বাধাপ্ৰাপ্ত হৈছে।</translation>
 <translation id="2025115093177348061">পৰিৱৰ্ধিত বাস্তৱিকতা</translation>
@@ -1126,6 +1124,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" />এ একাউণ্ট পৰিচালনা কৰে। এই ডিভাইচটোৰ প্ৰাথমিক একাউণ্টটোৰ পৰা ছাইন আউট কৰিবলৈ আপোনাৰ স্ক্রীনত থকা সময়ত ক্লিক কৰক। তাত ওলোৱা মেনুখনৰ "ছাইন আউট কৰক"ত ক্লিক কৰক।</translation>
 <translation id="2175607476662778685">দ্ৰুত লঞ্চ বাৰ</translation>
 <translation id="217576141146192373">প্ৰিণ্টাৰটো যোগ কৰিব পৰা নগ’ল। অনুগ্ৰহ কৰি আপোনাৰ প্ৰিণ্টাৰটোৰ কনফিগাৰেশ্বন পৰীক্ষা কৰি পুনৰ চেষ্টা কৰক।</translation>
+<translation id="2175927920773552910">কিউআৰ ক’ড</translation>
 <translation id="2177950615300672361">ইনক'গনিট' টেব: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA কম্প্ৰমাইজ</translation>
 <translation id="2179416702468739594">উপলব্ধ প্ৰ’ফাইল বিচাৰি থকা হৈছে। এইটোৱে কেইমিনিটমানৰ বাবে আপোনাৰ ম’বাইলৰ নেটৱৰ্কৰ সংযোগ বিচ্ছিন্ন কৰিব পাৰে।</translation>
@@ -4329,7 +4328,6 @@
 <translation id="5712153969432126546">ছাইটে কেতিয়াবা কেতিয়াবা নথি, সম্পৰ্ক আৰু ফৰ্মৰ দৰে PDF প্ৰকাশ কৰে</translation>
 <translation id="5715711091495208045">প্লাগ ইন ব্ৰ’কাৰ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">সন্ধানৰ ডিফ'ল্ট ইঞ্জিন</translation>
-<translation id="5719637365829998022">কিউআৰ ক’ডটো স্কেন কৰা হৈছে।</translation>
 <translation id="5719854774000914513">ছাইটে HID ডিভাইচৰ সৈতে সংযোগ কৰিবলৈ বিচাৰিব পাৰে</translation>
 <translation id="572155275267014074">Android ছেটিংসমূহ</translation>
 <translation id="5722086096420375088">সেউজীয়া আৰু বগা</translation>
@@ -4521,7 +4519,6 @@
 <translation id="5941711191222866238">সৰু কৰক</translation>
 <translation id="5942779427914696408">ডিভাইচৰ দৃশ্যমানতা</translation>
 <translation id="5943127421590245687">আপোনাৰ সত্যাপনৰ প্ৰক্ৰিয়াটো সফল হৈছে। আপোনাৰ স্থানীয় ডেটা আনলক আৰু পুনঃস্থাপন কৰিবলৈ, আপোনাৰ <ph name="DEVICE_TYPE" />ৰ পুৰণি পাছৱৰ্ডটো দিয়ক।</translation>
-<translation id="5944869793365969636">কিউআৰ ক’ড স্কেন কৰক</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> বিপজ্জনক হ’ব পাৰে। স্কেন কৰিবৰ বাবে Googleৰ সুৰক্ষিত ব্ৰাউজিঙলৈ পঠিয়াবনে?</translation>
 <translation id="5945363896952315544">আপোনাৰ সুৰক্ষা সম্পৰ্কীয় চাবিটোৱে আৰু ফিংগাৰপ্ৰিণ্ট ষ্ট'ৰ কৰিব নোৱাৰে। নতুন এটা যোগ দিবলৈ, প্ৰথমে পূর্বে থকা ফিংগাৰপ্ৰিণ্ট এটা মচক।</translation>
 <translation id="5946591249682680882">ৰিপ’ৰ্টৰ আইডি <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4645,7 +4642,6 @@
 <translation id="6077131872140550515">অগ্ৰাধিকাৰপ্ৰাপ্ত নেটৱৰ্কৰ পৰা আঁতৰাওক</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" />ৰ সম্পৰ্কে পৰামৰ্শ আৰু আপডে'ট</translation>
 <translation id="6077476112742402730">টাইপ কৰিবলৈ কথা কওক</translation>
-<translation id="6078045608615316905">এই প্ৰতিচ্ছবিখনৰ বাবে QR ক’ড সৃষ্টি কৰক</translation>
 <translation id="6078121669093215958">{0,plural, =1{অতিথি}one{# খন খোল খাই থকা অতিথিৰ ৱিণ্ড’}other{# খন খোল খাই থকা অতিথিৰ ৱিণ্ড’}}</translation>
 <translation id="6078323886959318429">শ্বর্টকাট যোগ কৰক</translation>
 <translation id="6078752646384677957">অনুগ্ৰহ কৰি আপোনাৰ মাইক্ৰ’ফ’ন আৰু অডিঅ’ৰ স্তৰ পৰীক্ষা কৰক।</translation>
@@ -5180,14 +5176,12 @@
 <translation id="6680650203439190394">হাৰ</translation>
 <translation id="6681668084120808868">ফট’ তোলক</translation>
 <translation id="6683087162435654533">আটাইবোৰ টেব পুনঃস্থাপন কৰক</translation>
-<translation id="6683948477137300040">ডিভাইচৰ ইআইডি আৰু কিউআৰ ক’ড পপআপ দেখুৱাওক</translation>
 <translation id="6684827949542560880">শেহতীয়া আপডে'টটো ডাউনল’ড কৰি থকা হৈছে</translation>
 <translation id="668599234725812620">Google Play খোলক</translation>
 <translation id="6686490380836145850">টেবটো সোঁফাললৈ বন্ধ কৰক</translation>
 <translation id="6686665106869989887">টেবটো সোঁফালে নিয়া হ'ল</translation>
 <translation id="6686817083349815241">আপোনাৰ পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> লুকুৱাওক</translation>
-<translation id="6688285987813868112">এই প্ৰতিচ্ছবিখনৰ বাবে QR ক’ড সৃষ্টি কৰক</translation>
 <translation id="6690659332373509948">ফাইল পার্ছ কৰিব পৰা নগ’ল: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google Dashboardত ছিংক কৰা ডেটা পৰিচালনা কৰক</translation>
 <translation id="6691541770654083180">পৃথিৱী</translation>
@@ -5388,7 +5382,6 @@
 <translation id="6914783257214138813">ৰপ্তানি কৰা ফাইল দেখা পোৱা যিকোনো লোকে আপোনাৰ পাছৱৰ্ড দেখা পাব।</translation>
 <translation id="6916590542764765824">এক্সটেনশ্বন পৰিচালনা কৰক</translation>
 <translation id="6919868320029503575">দুৰ্বল পাছৱৰ্ড</translation>
-<translation id="6920262510368602827">এই পৃষ্ঠাখনৰ বাবে QR ক’ড সৃষ্টি কৰক</translation>
 <translation id="6920989436227028121">নিয়মীয়া টেব হিচাপে খোলক</translation>
 <translation id="6921104647315081813">কার্যকলাপ মচক</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> খুলিব পৰা নগ’ল</translation>
@@ -6106,7 +6099,6 @@
 <translation id="7691698019618282776">Crostiniৰ আপগ্ৰে’ড</translation>
 <translation id="7696063401938172191">আপোনাৰ '<ph name="PHONE_NAME" />'ত:</translation>
 <translation id="7697166915480294040">আপুনি নিজৰ স্ক্ৰীনখন শ্বেয়াৰ কৰিলে সবিশেষ লুকুওৱা হয়</translation>
-<translation id="7697598343108519171">কিউআৰ ক’ড স্কেন কৰিবলৈ কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7701869757853594372">ব্যৱহাৰকাৰীৰ হেণ্ডেল</translation>
 <translation id="7701928712056789451">এই বস্তুবোৰ বিপজ্জনক হ’ব পাৰে</translation>
@@ -6213,7 +6205,6 @@
 <translation id="7800518121066352902">ঘড়ীৰ কাঁটাৰ বি&amp;পৰীত দিশত ঘূৰাওক</translation>
 <translation id="780301667611848630">নালাগে, ধন্যবাদ</translation>
 <translation id="7804072833593604762">টেবটো বন্ধ কৰা হ'ল</translation>
-<translation id="7805759469263222011">আপোনাৰ ডিভাইচৰ কেমেৰা ব্যৱহাৰ কৰি এটা কিউআৰ ক’ড স্কেন কৰক অথবা আপোনাৰ বাহকে প্ৰদান কৰা সক্ৰিয়কৰণৰ ক’ডটো দিয়ক।</translation>
 <translation id="7805768142964895445">স্থিতি</translation>
 <translation id="7807067443225230855">Search আৰু Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" />ক সদায় আপোনাৰ কেমেৰালৈ এক্সেছ দিয়ক</translation>
@@ -6766,7 +6757,6 @@
 <translation id="8386091599636877289">নীতিটো বিচাৰি পোৱা নগ’ল।</translation>
 <translation id="8387361103813440603">আপোনাৰ অৱস্থান চোৱাৰ অনুমতি নাই</translation>
 <translation id="8388770971141403598">গৌণ প্ৰ’ফাইল সমৰ্থিত নহয়</translation>
-<translation id="8389416080014625855">এই পৃষ্ঠাখনৰ বাবে QR ক’ড সৃষ্টি কৰক</translation>
 <translation id="8389492867173948260">এই এক্সটেনশ্বনটোক আপুনি খোলা প্রতিটো ৱেবছাইটৰ সকলো ডেটা পঢ়িবলৈ আৰু সালসলনি কৰিবলৈ দিয়ক:</translation>
 <translation id="8390449457866780408">ছার্ভাৰ নাই।</translation>
 <translation id="8391218455464584335">ভিনায়ল</translation>
@@ -7321,7 +7311,6 @@
 <translation id="8986494364107987395">স্বয়ংক্ৰিয়ভাৱে Googleলৈ ব্যৱহাৰৰ পৰিসংখ্যা আৰু ক্ৰেশ্ব ৰিপ’ৰ্ট পঠিয়াওক</translation>
 <translation id="8987927404178983737">মাহ</translation>
 <translation id="8988879467270412492">আপুনি Chrome OSৰ বাবে বিল্ট-ইন স্ক্ৰীন ৰীডাৰ, ChromeVox সক্ৰিয় কৰিবলৈ বিচাৰেনে? যদি বিচাৰে, দুয়োটা ভলিউম কী পাঁচ ছেকেণ্ডৰ বাবে হেঁচি ধৰি ৰাখক।</translation>
-<translation id="8990209962746788689">কিউআৰ ক’ড সৃষ্টি কৰিব নোৱাৰি</translation>
 <translation id="8991520179165052608">ছাইটে আপোনাৰ ডিভাইচৰ মাইক্ৰ’ফ’ন ব্যৱহাৰ কৰিব পাৰে</translation>
 <translation id="899384117894244799">প্ৰতিবন্ধিত ব্যৱহাৰকাৰীক আঁতৰাওক</translation>
 <translation id="899403249577094719">Netscape প্ৰমাণপত্ৰ ভিত্তিক URL</translation>

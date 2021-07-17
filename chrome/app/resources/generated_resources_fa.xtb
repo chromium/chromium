@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">کاربر</translation>
 <translation id="1125550662859510761">‏‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎ به‌نظر می‌رسد (داخلی)</translation>
 <translation id="1126809382673880764">‏دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک از شما محافظت نمی‌کند. درصورت موجود بودن، همچنان ویژگی حفاظتی «مرور ایمن» را در سرویس‌های دیگر Google مثل Gmail و «جستجو» دریافت می‌کنید.</translation>
-<translation id="112752777279960360">‏برای راه‌اندازی اولیه تلفن Android جهت استفاده به‌عنوان کلید امنیتی این رایانه، Chrome را در تلفن باز کنید و به «تنظیمات &gt; گذرواژه‌ها &gt; استفاده از تلفن به‌عنوان کلید امنیتی» بروید. سپس روی «اتصال دستگاه جدید» ضربه بزنید و رمزینه پاسخ‌سریع را اسکن کنید.</translation>
 <translation id="1128109161498068552">‏به هیچ سایتی اجازه داده نشود برای دسترسی به دستگاه‌های MIDI از پیام‌های انحصاری سیستم استفاده کند</translation>
 <translation id="1128591060186966949">ویرایش موتور جستجو</translation>
 <translation id="1129850422003387628">مدیریت برنامه‌ها</translation>
@@ -504,6 +503,7 @@
 <translation id="1542514202066550870">‏این برگه محتوای VR را به هدست ارائه می‌دهد.</translation>
 <translation id="1543284117603151572">‏وارد شده از Edge</translation>
 <translation id="1545177026077493356">حالت کیوسک خودکار</translation>
+<translation id="1545749641540134597">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="1545775234664667895">طرح زمینه نصب شده "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">این افزونه، صفحه‌ای را با کلیک روی دکمه صفحه اصلی نمایش داده می‌شود، تغییر داده است.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> می‌خواهد یک <ph name="EXTENSION_TYPE" /> نصب کند که می‌تواند:</translation>
@@ -954,7 +954,6 @@
 <translation id="1992924914582925289">حذف از دستگاه</translation>
 <translation id="1994173015038366702">نشانی وب سایت</translation>
 <translation id="1995916364271252349">کنترل می‌کند سایت‌ها می‌توانند از چه اطلاعاتی استفاده کنند و چه اطلاعاتی را نشان دهند (مکان، دوربین، بالاپرها، و موارد دیگر)</translation>
-<translation id="1997437640397887843">دوربین دستگاه روشن شده است. لطفاً رمزینه پاسخ‌سریع سیم‌کارت داخلی را مقابل دوربین قرار دهید.</translation>
 <translation id="1997616988432401742">گواهی‌نامه‌های شما</translation>
 <translation id="1999115740519098545">هنگام شروع به کار</translation>
 <translation id="2000419248597011803">برخی کوکی‌ها و جستجوها را از نوار نشانی و جعبه جستجو به موتور جستجوی پیش‌فرض ارسال می‌کند</translation>
@@ -974,7 +973,6 @@
 <translation id="2019718679933488176">&amp;باز کردن فایل صوتی در برگهٔ جدید</translation>
 <translation id="2020183425253392403">نمایش تنظیمات نشانی شبکه</translation>
 <translation id="2020225359413970060">اسکن فایل</translation>
-<translation id="2022953316617983419">رمزینه پاسخ‌سریع</translation>
 <translation id="2023167225947895179">حدس زدن این پین آسان است</translation>
 <translation id="202352106777823113">بارگیری خیلی طول کشید و توسط شبکه متوقف شد.</translation>
 <translation id="2025115093177348061">واقعیت افزوده</translation>
@@ -1131,6 +1129,7 @@
 <translation id="2174948148799307353">حساب را <ph name="PARENT_EMAIL" /> مدیریت می‌کند. برای خروج از حساب اصلی در این دستگاه، روی زمان صفحه‌نمایش کلیک کنید. در منویی که نمایش داده می‌شود، روی «خروج از سیستم» کلیک کنید.</translation>
 <translation id="2175607476662778685">نوار راه‌اندازی سریع</translation>
 <translation id="217576141146192373">چاپگر اضافه نشد. لطفاً پیکربندی چاپگرتان را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="2175927920773552910">رمزینه پاسخ‌سریع</translation>
 <translation id="2177950615300672361">برگه ناشناس: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">‏بی اعتبارشدن CA</translation>
 <translation id="2179416702468739594">درحال جستجوی نمایه‌های دردسترس. ممکن است درحین جستجو، اتصال شبکه تلفن همراه برای چند دقیقه قطع شود.</translation>
@@ -4349,7 +4348,6 @@
 <translation id="5712153969432126546">‏سایت‌ها گاهی‌اوقات فایل‌های PDF (ازجمله سند، قرارداد، و فرم) منتشر می‌کنند</translation>
 <translation id="5715711091495208045">واسطه افزایه:‌ <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">موتورهای جستجوی پیش‌فرض</translation>
-<translation id="5719637365829998022">رمزینه پاسخ‌سریع اسکن شده است.</translation>
 <translation id="5719854774000914513">‏سایت‌ها می‌توانند برای اتصال به دستگاه‌های HID درخواست دهند</translation>
 <translation id="572155275267014074">‏تنظیمات Android</translation>
 <translation id="5722086096420375088">سبز و سفید</translation>
@@ -4542,7 +4540,6 @@
 <translation id="5941711191222866238">کوچک کردن</translation>
 <translation id="5942779427914696408">نمایان بودن دستگاه</translation>
 <translation id="5943127421590245687">درستی‌سنجی باموفقیت انجام شد. برای باز کردن قفل و بازیابی داده‌های محلی‌تان، لطفاً گذرواژه <ph name="DEVICE_TYPE" /> قدیمی‌تان را وارد کنید.</translation>
-<translation id="5944869793365969636">اسکن رمزینه پاسخ‌سریع</translation>
 <translation id="5945002094477276055">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به «مرور ایمن Google» ارسال شود؟</translation>
 <translation id="5945363896952315544">کلید امنیتی شما نمی‌تواند اثر انگشت دیگری ذخیره کند. برای افزودن مورد جدید، ابتدا یکی از اثر انگشت‌های موجود را حذف کنید.</translation>
 <translation id="5946591249682680882">شناسه گزارش <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4666,7 +4663,6 @@
 <translation id="6077131872140550515">برداشتن از شبکه‌های برگزیده</translation>
 <translation id="6077189836672154517">نکته‌ها و به‌روزرسانی‌ها درباره <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">گفتار به نوشتار</translation>
-<translation id="6078045608615316905">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
 <translation id="6078121669093215958">{0,plural, =1{مهمان}one{# پنجره مهمان باز}other{# پنجره مهمان باز}}</translation>
 <translation id="6078323886959318429">افزودن میان‌بر</translation>
 <translation id="6078752646384677957">لطفاً میکروفون و میزان صدا را بررسی کنید.</translation>
@@ -5208,14 +5204,12 @@
 <translation id="6680650203439190394">رده‌بندی</translation>
 <translation id="6681668084120808868">عکسبرداری</translation>
 <translation id="6683087162435654533">بازیابی همه برگه‌ها</translation>
-<translation id="6683948477137300040">‏نمایش بالاپر با رمزینه پاسخ‌سریع و EID دستگاه</translation>
 <translation id="6684827949542560880">درحال بارگیری آخرین به‌روزرسانی</translation>
 <translation id="668599234725812620">‏باز کردن Google Play</translation>
 <translation id="6686490380836145850">بستن برگه‌ها به چپ</translation>
 <translation id="6686665106869989887">برگه به راست منتقل شد</translation>
 <translation id="6686817083349815241">ذخیره گذرواژه‌تان</translation>
 <translation id="6687079240787935001">پنهان کردن <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">ایجاد رمزینه پاسخ‌سریع برای این تصویر</translation>
 <translation id="6690659332373509948">این فایل تجزیه نمی‌شود: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">‏مدیریت داده‌های همگام‌سازی‌شده در داشبورد Google</translation>
 <translation id="6691541770654083180">Earth</translation>
@@ -5419,7 +5413,6 @@
 <translation id="6914783257214138813">گذرواژه‌های شما برای همه افرادی که می‌توانند فایل صادرشده را ببینید، نمایان خواهند بود.</translation>
 <translation id="6916590542764765824">مدیریت افزونه‌ها</translation>
 <translation id="6919868320029503575">گذرواژه‌های ضعیف</translation>
-<translation id="6920262510368602827">ایجاد رمزینه پاسخ‌سریع برای این صفحه</translation>
 <translation id="6920989436227028121">باز کردن به‌عنوان برگه عادی</translation>
 <translation id="6921104647315081813">پاک کردن فعالیت‌ها</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> باز نشد</translation>
@@ -6145,7 +6138,6 @@
 <translation id="7691698019618282776">‏ارتقا دادن Crostini</translation>
 <translation id="7696063401938172191">در «<ph name="PHONE_NAME" />»:</translation>
 <translation id="7697166915480294040">درحین هم‌رسانی صفحه‌نمایش، جزئیات پنهان می‌شود</translation>
-<translation id="7697598343108519171">برای اسکن رمزینه پاسخ‌سریع از دوربین استفاده کنید</translation>
 <translation id="7701040980221191251">هیچ‌کدام</translation>
 <translation id="7701869757853594372">مدیریت کاربر</translation>
 <translation id="7701928712056789451">این موارد ممکن است خطرناک باشند</translation>
@@ -6251,7 +6243,6 @@
 <translation id="7800518121066352902">چرخاندن خلاف جهت ع&amp;قربه‌های ساعت</translation>
 <translation id="780301667611848630">نه متشکرم</translation>
 <translation id="7804072833593604762">برگه بسته شد</translation>
-<translation id="7805759469263222011">رمزینه پاسخ‌سریع را بااستفاده از دوربین دستگاه اسکن کنید یا کد فعال‌سازی ارائه‌شده توسط شرکت مخابراتی‌تان را وارد کنید</translation>
 <translation id="7805768142964895445">وضعیت</translation>
 <translation id="7807067443225230855">جستجو و دستیار</translation>
 <translation id="7807711621188256451">دسترسی <ph name="HOST" /> به دوربین شما همیشه مجاز باشد</translation>
@@ -6809,7 +6800,6 @@
 <translation id="8386091599636877289">خط‌مشی یافت نشد.</translation>
 <translation id="8387361103813440603">اجازه ندارد مکانتان را ببیند</translation>
 <translation id="8388770971141403598">نمایه‌های ثانویه پشتیبانی نمی‌شود</translation>
-<translation id="8389416080014625855">ایجاد رمزینه پاسخ‌سریع برای این صفحه</translation>
 <translation id="8389492867173948260">به این افزونه اجازه دهید همه داده‌هایتان را در وب‌سایت‌هایی که بازدید می‌کنید بخواند و تغییر دهد:</translation>
 <translation id="8390449457866780408">سرور در دسترس نیست.</translation>
 <translation id="8391218455464584335">صفحه گرامافون</translation>
@@ -7367,7 +7357,6 @@
 <translation id="8986494364107987395">‏ارسال خودکار آمار کاربرد و گزارش‌های خرابی به Google</translation>
 <translation id="8987927404178983737">ماه</translation>
 <translation id="8988879467270412492">‏مایلید ChromeVox (صفحه خوان داخلی Chrome OS) را فعال کنید؟ اگر مایلید، هر دو کلید میزان صدا را فشار دهید و پنج ثانیه نگه دارید.</translation>
-<translation id="8990209962746788689">رمزینه پاسخ‌سریع ایجاد نمی‌شود</translation>
 <translation id="8991520179165052608">سایت می‌تواند از میکروفن شما استفاده کند</translation>
 <translation id="899384117894244799">برداشتن کاربر محدودشده</translation>
 <translation id="899403249577094719">‏نشانی وب گواهی Netscape</translation>

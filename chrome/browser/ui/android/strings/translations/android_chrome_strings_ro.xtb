@@ -224,7 +224,6 @@ Atinge orice cuvânt pentru a-l căuta. Ca să rafinezi căutarea, atinge lung p
 
 Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectează mai multe sau mai puține cuvinte. Pentru a edita căutarea, deschide panoul, atinge pictograma ca să deschizi într-o filă nouă și fă modificările în caseta de căutare.</translation>
 <translation id="2459390580524506445">Căutare vocală îmbunătățită</translation>
-<translation id="246532703174860178">Trimite</translation>
 <translation id="247737702124049222">Descrierile imaginilor sunt activate</translation>
 <translation id="2482878487686419369">Notificări</translation>
 <translation id="2485422356828889247">Dezinstalează</translation>
@@ -296,7 +295,6 @@ Atinge lung orice cuvânt pentru a-l căuta. Pentru a rafina căutarea, selectea
 <translation id="2900528713135656174">Creează un eveniment</translation>
 <translation id="2901411048554510387">Se afișează sugestii pentru <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lista de dispozitive pe care să trimiți o filă este deschisă la înălțimea completă.</translation>
-<translation id="2905036901251765993">Ca să le permiți accesul persoanelor din apropiere, solicită-le să scaneze acest cod QR</translation>
 <translation id="2908243544703713905">Sunt disponibile articole necitite</translation>
 <translation id="2909615210195135082">Platforma de notificări Google</translation>
 <translation id="2912296070571964914">Gestionează subiectele care te interesează</translation>
@@ -724,7 +722,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />resetează sincroniza
 <translation id="572328651809341494">File recente</translation>
 <translation id="5723735397759933332">Modul Lite economisește acum mai multe date optimizând imaginile din paginile HTTPS.</translation>
 <translation id="5726692708398506830">Mărește întregul conținut al paginii</translation>
-<translation id="5733983706093266635">Nu s-a putut crea codul QR. Adresa URL are peste <ph name="CHARACTER_LIMIT" /> caractere.</translation>
 <translation id="5748802427693696783">Ai comutat la filele standard</translation>
 <translation id="5749068826913805084">Pentru a descărca fișiere, Chrome necesită acces la stocare.</translation>
 <translation id="5749237766298580851">Dezactivată <ph name="SEPARATOR" /> Nu este recomandată</translation>
@@ -880,7 +877,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="6590680911007613645">Asigură-te că parola pe care o salvezi este aceeași cu parola pentru <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Versiune site desktop</translation>
 <translation id="6595046016124923392">Imaginile sunt trimise la Google pentru îmbunătățirea descrierilor.</translation>
-<translation id="6597891566292541626">Poziționează codul QR/de bare în acest cadru.</translation>
 <translation id="6600954340915313787">Copiat în Chrome</translation>
 <translation id="661266467055912436">Îmbunătățește securitatea pe web pentru tine și toți ceilalți.</translation>
 <translation id="6618554661997243500">Pentru a vedea principalele site-uri și subiecte pentru tine, atinge butonul ecran de pornire</translation>
@@ -1090,7 +1086,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="7961015016161918242">Niciodată</translation>
 <translation id="7961926449547174351">Ai dezactivat accesul la stocare. Accesează Setările pentru a-l activa.</translation>
 <translation id="7963646190083259054">Producător:</translation>
-<translation id="7967911570373677897">Pentru a scana un cod QR, modifică setările astfel încât Chrome să poată folosi camera</translation>
 <translation id="7968014550143838305">S-a adăugat în lista de lectură</translation>
 <translation id="7971136598759319605">Activ acum o zi</translation>
 <translation id="7975379999046275268">Previzualizează pagina <ph name="BEGIN_NEW" />Nou<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pentru a accesa marcajele pe toate dispozitivele, activează sincronizarea</translation>
 <translation id="8110087112193408731">Afișezi activitatea din Chrome în Bunăstare digitală?</translation>
-<translation id="8115259494083109761">Pentru a scana un cod QR, permite ca Chrome să utilizeze camera</translation>
 <translation id="8127542551745560481">Editează pagina de pornire</translation>
 <translation id="813082847718468539">Afișează informațiile privind site-ul</translation>
 <translation id="8137558756159375272">Funcția Atinge pentru a căuta trimite cuvântul selectat și pagina actuală drept context către Căutare Google. Poți dezactiva această funcție din <ph name="BEGIN_LINK" />Setări<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8218622182176210845">Gestionează contul</translation>
 <translation id="8223642481677794647">Meniul cardului din feed</translation>
 <translation id="8224471946457685718">Descarcă articole pentru tine pe Wi-Fi</translation>
-<translation id="8233540874193135768">Pentru a scana un cod QR, folosește un dispozitiv cu cameră.</translation>
 <translation id="8250920743982581267">Documente</translation>
 <translation id="825412236959742607">Această pagină folosește prea multă memorie, prin urmare Chrome a eliminat o parte din conținut.</translation>
 <translation id="8260126382462817229">Încearcă să te conectezi din nou</translation>
@@ -1256,7 +1249,6 @@ De exemplu, unele site-uri pot răspunde la această solicitare afișând anunț
 <translation id="8970887620466824814">A apărut o eroare.</translation>
 <translation id="8972098258593396643">Descarci în dosarul prestabilit?</translation>
 <translation id="8988028529677883095">Folosește telefonul ca pe o cheie de securitate</translation>
-<translation id="8990209962746788689">Nu s-a putut crea codul QR</translation>
 <translation id="8993760627012879038">Deschide o filă nouă în modul incognito</translation>
 <translation id="8996847606757455498">Alege alt furnizor</translation>
 <translation id="8998729206196772491">Te conectezi cu un cont gestionat de <ph name="MANAGED_DOMAIN" /> și acorzi administratorului acestuia controlul asupra datelor Chrome. Datele vor fi asociate definitiv acestui cont. Dacă te deconectezi de la Chrome, datele se vor șterge de pe acest dispozitiv, dar vor rămâne stocate în Contul Google.</translation>

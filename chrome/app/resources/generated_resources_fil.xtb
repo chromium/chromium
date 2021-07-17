@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">User</translation>
 <translation id="1125550662859510761">Mukhang <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Native)</translation>
 <translation id="1126809382673880764">Hindi ka pinoprotektahan laban sa mga mapanganib na website, download, at extension. Magkakaroon ka pa rin ng proteksyon ng Ligtas na Pag-browse, kung available, sa iba pang serbisyo ng Google, tulad ng Gmail at Search.</translation>
-<translation id="112752777279960360">Para mag-set up ng Android phone na gagamitin bilang security key sa computer na ito sa unang pagkakataon, buksan ang Chrome sa iyong telepono at pumunta sa "Mga Setting &gt; Mga Password &gt; Gamitin ang telepono bilang security key." Pagkatapos ay i-tap ang "Magkonekta ng bagong device" at i-scan ang QR code na ito.</translation>
 <translation id="1128109161498068552">Huwag payagan ang anumang mga site na gamitin ang mga eksklusibong mensahe ng system upang i-access ang mga MIDI device</translation>
 <translation id="1128591060186966949">I-edit ang search engine</translation>
 <translation id="1129850422003387628">Pamahalaan ang mga app</translation>
@@ -507,6 +506,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1542514202066550870">Nagpapakita ang tab na ito ng VR content sa isang headset.</translation>
 <translation id="1543284117603151572">Na-import Mula Sa Edge</translation>
 <translation id="1545177026077493356">Awtomatikong Kiosk Mode</translation>
+<translation id="1545749641540134597">I-scan ang QR Code</translation>
 <translation id="1545775234664667895">Naka-install na temang "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Binago ng extension na ito ang ipinapakitang page kapag na-click mo ang button ng Home.</translation>
 <translation id="1546452108651444655">Gustong mag-install ni <ph name="CHILD_NAME" /> ng <ph name="EXTENSION_TYPE" /> na magagawang:</translation>
@@ -958,7 +958,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1992924914582925289">Alisin sa device</translation>
 <translation id="1994173015038366702">URL ng site</translation>
 <translation id="1995916364271252349">Kinokontrol ang impormasyong puwedeng gamitin at ipakita ng mga site (lokasyon, camera, mga pop-up, at higit pa)</translation>
-<translation id="1997437640397887843">Naka-on na ang camera ng device. Pakitapat ang QR code ng iyong eSIM sa harap ng camera.</translation>
 <translation id="1997616988432401742">Iyong mga certificate</translation>
 <translation id="1999115740519098545">Sa startup</translation>
 <translation id="2000419248597011803">Nagpapadala ng ilang cookies at paghahanap mula sa address bar at box para sa paghahanap sa iyong default na search engine</translation>
@@ -978,7 +977,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="2019718679933488176">&amp;Buksan ang Audio sa Bagong Tab</translation>
 <translation id="2020183425253392403">Ipakita ang mga setting ng address ng network</translation>
 <translation id="2020225359413970060">I-scan ang file</translation>
-<translation id="2022953316617983419">QR code</translation>
 <translation id="2023167225947895179">Maaaring mahulaan agad ang PIN na ito</translation>
 <translation id="202352106777823113">Masyadong matagal ang pag-download at pinahinto ito ng network.</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
@@ -1135,6 +1133,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2174948148799307353">Pinapamahalaan ni <ph name="PARENT_EMAIL" /> ang account. Para mag-sign out sa pangunahing account sa device na ito, i-click ang oras sa iyong screen. Sa lalabas na menu, i-click ang "Mag-sign out."</translation>
 <translation id="2175607476662778685">Quick launch bar</translation>
 <translation id="217576141146192373">Hindi naidagdag ang printer. Pakitingnan ang configuration ng iyong printer at subukan ulit.</translation>
+<translation id="2175927920773552910">QR Code</translation>
 <translation id="2177950615300672361">Tab na Incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA Compromise</translation>
 <translation id="2179416702468739594">Naghahanap ng mga available na profile. Posibleng magdiskonekta ang iyong mobile network nang ilang minuto dahil dito.</translation>
@@ -4353,7 +4352,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5712153969432126546">Paminsan-minsan, nagpa-publish ang mga site ng mga PDF, tulad ng mga dokumento, kontrata, at form</translation>
 <translation id="5715711091495208045">Broker ng plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Mga default na search engine</translation>
-<translation id="5719637365829998022">Na-scan na ang QR code.</translation>
 <translation id="5719854774000914513">Puwedeng hilingin ng mga site na kumonekta sa mga HID device</translation>
 <translation id="572155275267014074">Mga setting ng Android</translation>
 <translation id="5722086096420375088">Berde at puti</translation>
@@ -4546,7 +4544,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5941711191222866238">I-minimize</translation>
 <translation id="5942779427914696408">Visibility ng device</translation>
 <translation id="5943127421590245687">Matagumpay ang iyong pag-verify. Para i-unlock at i-restore ang iyong lokal na data, pakilagay ang lumang password mo sa <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">I-scan ang QR code</translation>
 <translation id="5945002094477276055">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Ligtas na Pag-browse sa Google para ma-scan?</translation>
 <translation id="5945363896952315544">Hindi na puwedeng mag-store ng anupamang fingerprint ang iyong security key. Para makapagdagdag ng bago, mag-delete muna ng kasalukuyang fingerprint.</translation>
 <translation id="5946591249682680882">Report ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4670,7 +4667,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6077131872140550515">Alisin mula sa mga gustong network</translation>
 <translation id="6077189836672154517">Mga tip at update sa <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Magsalita para mag-type</translation>
-<translation id="6078045608615316905">Gumawa ng QR code para sa Larawang ito</translation>
 <translation id="6078121669093215958">{0,plural, =1{Bisita}one{# ang nakabukas na window ng bisita}other{# ang nakabukas na window ng bisita}}</translation>
 <translation id="6078323886959318429">Magdagdag ng shortcut</translation>
 <translation id="6078752646384677957">Pakisuri ang mga antas ng iyong mikropono at audio.</translation>
@@ -5212,14 +5208,12 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6680650203439190394">I-rate</translation>
 <translation id="6681668084120808868">Kumuha ng larawan</translation>
 <translation id="6683087162435654533">I-restore ang Lahat ng Tab</translation>
-<translation id="6683948477137300040">Ipakita ang popup ng device EID at QR code</translation>
 <translation id="6684827949542560880">Dina-download ang pinakabagong update</translation>
 <translation id="668599234725812620">Buksan ang Google Play</translation>
 <translation id="6686490380836145850">Isara ang mga tab sa kanan</translation>
 <translation id="6686665106869989887">Inilipat sa kanan ang tab</translation>
 <translation id="6686817083349815241">I-save ang iyong password</translation>
 <translation id="6687079240787935001">Itago ang <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Gumawa ng QR code para sa larawang ito</translation>
 <translation id="6690659332373509948">Hindi magawang i-parse ang file: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Pamahalaan ang naka-sync na data sa Google Dashboard</translation>
 <translation id="6691541770654083180">Mundo</translation>
@@ -5423,7 +5417,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6914783257214138813">Makikita ng sinumang makakatingin sa na-export na file ang iyong mga password.</translation>
 <translation id="6916590542764765824">Pamahalaan ang Mga Extension</translation>
 <translation id="6919868320029503575">Mahihinang password</translation>
-<translation id="6920262510368602827">Gumawa ng QR code para sa page na ito</translation>
 <translation id="6920989436227028121">Buksan bilang regular na tab</translation>
 <translation id="6921104647315081813">I-clear ang mga aktibidad</translation>
 <translation id="692114467174262153">Hindi mabuksan ang <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6149,7 +6142,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7691698019618282776">Pag-upgrade ng Crostini</translation>
 <translation id="7696063401938172191">Sa iyong '<ph name="PHONE_NAME" />':</translation>
 <translation id="7697166915480294040">Nakatago ang mga detalye habang ibinabahagi mo ang iyong screen</translation>
-<translation id="7697598343108519171">Gamitin ang camera para i-scan ang QR code</translation>
 <translation id="7701040980221191251">Wala</translation>
 <translation id="7701869757853594372">Mga USER Handle</translation>
 <translation id="7701928712056789451">Posibleng mapanganib ang mga item na ito</translation>
@@ -6256,7 +6248,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="7800518121066352902">I-rotate P&amp;akaliwa</translation>
 <translation id="780301667611848630">Hindi salamat</translation>
 <translation id="7804072833593604762">Isinara ang Tab</translation>
-<translation id="7805759469263222011">Mag-scan ng QR code gamit ang camera ng iyong device o ilagay ang code sa pag-activate na ibinigay ng carrier mo</translation>
 <translation id="7805768142964895445">Katayuan</translation>
 <translation id="7807067443225230855">Paghahanap at Assistant</translation>
 <translation id="7807711621188256451">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong camera</translation>
@@ -6813,7 +6804,6 @@ Pumindot ng nakatalagang switch para mag-alis ng pagtatalaga</translation>
 <translation id="8386091599636877289">Hindi nakita ang patakaran.</translation>
 <translation id="8387361103813440603">Hindi pinapayagang makita ang iyong lokasyon</translation>
 <translation id="8388770971141403598">Hindi sinusuportahan ang mga pangalawang profile</translation>
-<translation id="8389416080014625855">Gumawa ng QR code para sa Page na ito</translation>
 <translation id="8389492867173948260">Pahintulutan ang extension na ito na i-read at baguhin ang lahat ng iyong data sa mga website na binibisita mo:</translation>
 <translation id="8390449457866780408">Hindi available ang server.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
@@ -7373,7 +7363,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="8986494364107987395">Awtomatikong ipadala ang mga istatistika ng paggamit at mga ulat ng pag-crash sa Google</translation>
 <translation id="8987927404178983737">Buwan</translation>
 <translation id="8988879467270412492">Gusto mo bang i-activate ang ChromeVox, ang built-in na screen reader para sa Chrome OS? Kung oo, pindutin nang matagal ang parehong volume key sa loob ng limang segundo.</translation>
-<translation id="8990209962746788689">Hindi magawa ang QR code</translation>
 <translation id="8991520179165052608">Maaaring gamitin ng site ang iyong mikropono</translation>
 <translation id="899384117894244799">Alisin ang pinaghihigpitang user</translation>
 <translation id="899403249577094719">URL ng Netscape Certificate Base</translation>

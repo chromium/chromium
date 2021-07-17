@@ -224,7 +224,6 @@ Tocca una parola per eseguire una ricerca. Per perfezionare la ricerca, tocca e 
 
 Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la ricerca, seleziona più o meno parole. Per modificare la ricerca, apri il riquadro, tocca l'icona per aprire una nuova scheda e apporta le modifiche desiderate nella casella di ricerca.</translation>
 <translation id="2459390580524506445">Ricerca vocale migliorata</translation>
-<translation id="246532703174860178">Condividi</translation>
 <translation id="247737702124049222">Le descrizioni delle immagini sono attive</translation>
 <translation id="2482878487686419369">Notifiche</translation>
 <translation id="2485422356828889247">Disinstalla</translation>
@@ -296,7 +295,6 @@ Tocca e tieni premuta una parola per eseguire una ricerca. Per perfezionare la r
 <translation id="2900528713135656174">Crea evento</translation>
 <translation id="2901411048554510387">Visualizzazione dei suggerimenti per <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Elenco di dispositivi con cui condividere una scheda aperto a schermo intero.</translation>
-<translation id="2905036901251765993">Per condividere i contenuti con le persone qui vicino, fa' scansionare loro questo codice QR</translation>
 <translation id="2908243544703713905">Contenuti da leggere pronti</translation>
 <translation id="2909615210195135082">Piattaforma per le notifiche Google</translation>
 <translation id="2912296070571964914">Gestisci gli argomenti che ti interessano</translation>
@@ -724,7 +722,6 @@ Per cambiare questa impostazione, <ph name="BEGIN_LINK" />reimposta la sincroniz
 <translation id="572328651809341494">Schede recenti</translation>
 <translation id="5723735397759933332">La modalità Lite ora ti permette di ridurre il consumo di dati ottimizzando le immagini sulle pagine HTTPS.</translation>
 <translation id="5726692708398506830">Ingrandisci i contenuti della pagina</translation>
-<translation id="5733983706093266635">Impossibile creare il codice QR. L'URL contiene più di <ph name="CHARACTER_LIMIT" /> caratteri.</translation>
 <translation id="5748802427693696783">Schede standard attivate</translation>
 <translation id="5749068826913805084">Chrome deve avere accesso allo spazio di archiviazione per poter scaricare file.</translation>
 <translation id="5749237766298580851">Disattivata <ph name="SEPARATOR" /> Sconsigliata</translation>
@@ -880,7 +877,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="6590680911007613645">Assicurati che la password che stai salvando corrisponda a quella di <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Sito desktop</translation>
 <translation id="6595046016124923392">Le immagini vengono inviate a Google per migliorare le descrizioni.</translation>
-<translation id="6597891566292541626">Posiziona il codice a barre/QR all'interno di quest'area.</translation>
 <translation id="6600954340915313787">Copiata in Chrome</translation>
 <translation id="661266467055912436">Migliora il livello di sicurezza per te e per chiunque sul Web.</translation>
 <translation id="6618554661997243500">Per vedere notizie e siti principali personalizzati, tocca il pulsante Home</translation>
@@ -1090,7 +1086,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
 <translation id="7963646190083259054">Fornitore:</translation>
-<translation id="7967911570373677897">Per scansionare un codice QR, modifica le impostazioni affinché Chrome possa usare la fotocamera</translation>
 <translation id="7968014550143838305">Aggiunto all'elenco di lettura</translation>
 <translation id="7971136598759319605">Attivo 1 giorno fa</translation>
 <translation id="7975379999046275268">Anteprima pagina <ph name="BEGIN_NEW" />Novità<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Attiva la sincronizzazione per trovare i tuoi preferiti su tutti i dispositivi</translation>
 <translation id="8110087112193408731">Vuoi mostrare la tua attività di Chrome in Benessere digitale?</translation>
-<translation id="8115259494083109761">Per scansionare i codici QR, consenti a Chrome di usare la tua fotocamera</translation>
 <translation id="8127542551745560481">Modifica home page</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8137558756159375272">La funzione Tocca per cercare invia la parola selezionata e la pagina corrente come contesto alla Ricerca Google. Puoi disattivare la funzione nelle <ph name="BEGIN_LINK" />Impostazioni<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8218622182176210845">Gestisci il tuo account</translation>
 <translation id="8223642481677794647">Menu scheda feed</translation>
 <translation id="8224471946457685718">Scarica articoli per te tramite Wi-Fi</translation>
-<translation id="8233540874193135768">Per scansionare un codice QR, usa un dispositivo dotato di fotocamera.</translation>
 <translation id="8250920743982581267">Documenti</translation>
 <translation id="825412236959742607">Questa pagina utilizza troppa memoria, pertanto Chrome ha rimosso alcuni contenuti.</translation>
 <translation id="8260126382462817229">Prova ad accedere nuovamente</translation>
@@ -1256,7 +1249,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>
 <translation id="8988028529677883095">Utilizza il telefono come token di sicurezza</translation>
-<translation id="8990209962746788689">Impossibile creare codice QR</translation>
 <translation id="8993760627012879038">Apri nuova scheda in mod. di navigaz. in incognito</translation>
 <translation id="8996847606757455498">Scegli un altro fornitore</translation>
 <translation id="8998729206196772491">Stai per eseguire l'accesso con un account gestito da <ph name="MANAGED_DOMAIN" /> e consentire al relativo amministratore di avere il controllo dei tuoi dati di Chrome. I tuoi dati verranno associati definitivamente a questo account. Se esci da Chrome, i dati verranno eliminati da questo dispositivo, ma rimarranno memorizzati nel tuo Account Google.</translation>

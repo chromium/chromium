@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">Bruker</translation>
 <translation id="1125550662859510761">Ser ut som <ph name="WIDTH" /> x <ph name="HEIGHT" /> (innebygd)</translation>
 <translation id="1126809382673880764">Beskytter deg ikke mot farlige nettsteder, nedlastinger eller utvidelser. Du får fremdeles beskyttelse fra Safe Browsing der dette er tilgjengelig, på andre Google-tjenester, som Gmail og Søk.</translation>
-<translation id="112752777279960360">For å konfigurere en Android-telefon som en sikkerhetsnøkkel for denne datamaskinen for første gang, åpne Chrome på telefonen og gå til «Innstillinger &gt; Passord &gt; Bruk telefonen som sikkerhetsnøkkel». Trykk deretter på «Koble til en ny enhet», og skann denne QR-koden.</translation>
 <translation id="1128109161498068552">Ikke tillat at nettsteder bruker systemeksklusive meldinger for å få tilgang til MIDI-enheter</translation>
 <translation id="1128591060186966949">Endre i søkemotoren</translation>
 <translation id="1129850422003387628">Administrer apper</translation>
@@ -500,6 +499,7 @@
 <translation id="1542514202066550870">Denne fanen sender VR-innhold til VR-briller.</translation>
 <translation id="1543284117603151572">Importert fra Edge</translation>
 <translation id="1545177026077493356">Automatisk kioskmodus</translation>
+<translation id="1545749641540134597">Skann en QR-kode</translation>
 <translation id="1545775234664667895">Temaet <ph name="THEME_NAME" /> er installert</translation>
 <translation id="1546280085599573572">Denne utvidelsen har endret hvilken side som vises når du klikker på Startside-knappen.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vil installere en <ph name="EXTENSION_TYPE" /> som kan:</translation>
@@ -944,7 +944,6 @@
 <translation id="1992924914582925289">Fjern fra enheten</translation>
 <translation id="1994173015038366702">Nettadressen til nettstedet</translation>
 <translation id="1995916364271252349">Styrer hvilken informasjon nettsteder kan bruke og vise (posisjon, kamera, forgrunnsvinduer med mer)</translation>
-<translation id="1997437640397887843">Enhetskameraet er slått på. Plassér e-SIM-QR-koden foran kameraet.</translation>
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2000419248597011803">Sender noen informasjonskapsler og søk fra adressefeltet og søkefeltet samt noen informasjonskapsler til standardsøkemotoren din</translation>
@@ -964,7 +963,6 @@
 <translation id="2019718679933488176">&amp;Åpne lyd i ny fane</translation>
 <translation id="2020183425253392403">Vis innstillingene for nettverksadresse</translation>
 <translation id="2020225359413970060">Gjennomsøk fil</translation>
-<translation id="2022953316617983419">QR-kode</translation>
 <translation id="2023167225947895179">Det kan være lett å gjette seg til PIN-koden</translation>
 <translation id="202352106777823113">Nedlastingen tok for lang tid og ble stoppet av nettverket.</translation>
 <translation id="2025115093177348061">Utvidet virkelighet</translation>
@@ -1118,6 +1116,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2174948148799307353">Kontoen administreres av <ph name="PARENT_EMAIL" />. For å logge av primærkontoen på denne enheten, klikk på klokkeslettet på skjermen. I menyen som åpnes, klikker du på «Logg av».</translation>
 <translation id="2175607476662778685">Hurtigstartlinje</translation>
 <translation id="217576141146192373">Kunne ikke legge til skriveren. Kontrollér skriverkonfigurasjonen, og prøv på nytt.</translation>
+<translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Sertifiseringsinstans-kompromiss</translation>
 <translation id="2179416702468739594">Ser etter tilgjengelige profiler. Dette kan føre til at mobilnettverket ditt kobles fra i noen minutter.</translation>
@@ -4309,7 +4308,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5712153969432126546">Nettsteder publiserer av og til PDF-filer, for eksempel dokumenter, kontrakter og skjemaer</translation>
 <translation id="5715711091495208045">Programtilleggsmegler: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standard søkemotorer</translation>
-<translation id="5719637365829998022">QR-koden er skannet.</translation>
 <translation id="5719854774000914513">Nettsteder kan be om å få koble til HID-enheter</translation>
 <translation id="572155275267014074">Android-innstillinger</translation>
 <translation id="5722086096420375088">Grønn og hvit</translation>
@@ -4501,7 +4499,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="5941711191222866238">Minimer</translation>
 <translation id="5942779427914696408">Enhetens synlighet</translation>
 <translation id="5943127421590245687">Verifiseringen var vellykket. For å låse opp og gjenopprette lokale data må du oppgi det gamle <ph name="DEVICE_TYPE" />-passordet ditt.</translation>
-<translation id="5944869793365969636">Skann QR-koden</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan være farlig. Vil du sende filen til Google Safe Browsing for skanning?</translation>
 <translation id="5945363896952315544">Sikkerhetsnøkkelen din kan ikke lagre flere fingeravtrykk. For å legge til et nytt må du først slette et eksisterende fingeravtrykk.</translation>
 <translation id="5946591249682680882">Rapport-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4625,7 +4622,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6077131872140550515">Fjern som foretrukket nettverk</translation>
 <translation id="6077189836672154517">Tips og oppdateringer for <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Snakk for å skrive</translation>
-<translation id="6078045608615316905">Opprett en QR-kode for dette bildet</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gjest}other{# åpne gjestevinduer}}</translation>
 <translation id="6078323886959318429">Legg til snarvei</translation>
 <translation id="6078752646384677957">Sjekk mikrofonen din og lydnivåer.</translation>
@@ -5158,14 +5154,12 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6680650203439190394">Hastighet</translation>
 <translation id="6681668084120808868">Ta et bilde</translation>
 <translation id="6683087162435654533">Gjenopprett alle faner</translation>
-<translation id="6683948477137300040">Vis forgrunnsvindu med enhetens EID-nummer og QR-kode</translation>
 <translation id="6684827949542560880">Laster ned den nyeste oppdateringen</translation>
 <translation id="668599234725812620">Åpne Google Play</translation>
 <translation id="6686490380836145850">Lukk fanene til høyre</translation>
 <translation id="6686665106869989887">Fanen er flyttet til høyre</translation>
 <translation id="6686817083349815241">Lagre passordet ditt</translation>
 <translation id="6687079240787935001">Skjul <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Opprett en QR-kode for dette bildet</translation>
 <translation id="6690659332373509948">Kan ikke parse filen: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Administrer synkroniserte data i Google Oversikt</translation>
 <translation id="6691541770654083180">Jorden</translation>
@@ -5366,7 +5360,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="6914783257214138813">Passordene dine blir synlige for alle som kan se den eksporterte filen.</translation>
 <translation id="6916590542764765824">Administrer utvidelser</translation>
 <translation id="6919868320029503575">Svake passord</translation>
-<translation id="6920262510368602827">Opprett en QR-kode for denne siden</translation>
 <translation id="6920989436227028121">Åpne som vanlig fane</translation>
 <translation id="6921104647315081813">Tøm aktivitetsloggen</translation>
 <translation id="692114467174262153">Kunne ikke åpne <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6083,7 +6076,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7691698019618282776">Crostini-oppgradering</translation>
 <translation id="7696063401938172191">På «<ph name="PHONE_NAME" />»:</translation>
 <translation id="7697166915480294040">Detaljene skjules mens du deler skjermen</translation>
-<translation id="7697598343108519171">Bruk kameraet for å skanne QR-koden</translation>
 <translation id="7701040980221191251">Ingen</translation>
 <translation id="7701869757853594372">BRUKEREN håndterer</translation>
 <translation id="7701928712056789451">Disse elementene kan være farlige</translation>
@@ -6189,7 +6181,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7800518121066352902">Rotér m&amp;ot klokken</translation>
 <translation id="780301667611848630">Nei takk</translation>
 <translation id="7804072833593604762">Fanen er lukket</translation>
-<translation id="7805759469263222011">Skann en QR-kode med enhetskameraet, eller skriv inn aktiveringskoden du har fått av operatøren din</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Søk og Assistent</translation>
 <translation id="7807711621188256451">Tillat alltid at <ph name="HOST" /> bruker kameraet ditt</translation>
@@ -6739,7 +6730,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8386091599636877289">Fant ikke regelen.</translation>
 <translation id="8387361103813440603">Nettsteder som ikke har lov til å se posisjonen din</translation>
 <translation id="8388770971141403598">Sekundærprofiler støttes ikke</translation>
-<translation id="8389416080014625855">Opprett en QR-kode for denne siden</translation>
 <translation id="8389492867173948260">La denne utvidelsen lese og endre alle dataene dine på nettsteder du besøker:</translation>
 <translation id="8390449457866780408">Tjeneren er ikke tilgjengelig.</translation>
 <translation id="8391218455464584335">Vinylplate</translation>
@@ -7291,7 +7281,6 @@ Trykk på en tilordnet bryter for å fjerne tilordningen</translation>
 <translation id="8986494364107987395">Send bruksstatistikk og programstopprapporter automatisk til Google</translation>
 <translation id="8987927404178983737">Måned</translation>
 <translation id="8988879467270412492">Vil du slå på ChromeVox, den innebygde skjermleseren for Chrome OS? Hvis ja, trykk og hold begge volumtastene i fem sekunder.</translation>
-<translation id="8990209962746788689">Kan ikke opprette QR-kode</translation>
 <translation id="8991520179165052608">Nettstedet kan bruke mikrofonen din</translation>
 <translation id="899384117894244799">Fjern begrenset bruker</translation>
 <translation id="899403249577094719">Primære nettadresse for Netscape-sertifikat</translation>

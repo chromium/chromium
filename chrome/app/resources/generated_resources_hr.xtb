@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Korisnik</translation>
 <translation id="1125550662859510761">Izgleda kao <ph name="WIDTH" /> x <ph name="HEIGHT" /> (izvorno)</translation>
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
-<translation id="112752777279960360">Da biste postavili Android telefon tako da se koristi kao sigurnosni ključ s ovim računalom prvi put, otvorite Chrome na telefonu, a zatim otvorite "Postavke &gt; Zaporka &gt; Upotreba telefona kao sigurnosnog ključa". Zatim dodirnite "Povezivanje novog uređaja" i skenirajte ovaj QR kôd.</translation>
 <translation id="1128109161498068552">Ne dozvoli nijednoj web-lokaciji upotrebu posebnih sistemskih poruka za pristup MIDI uređajima</translation>
 <translation id="1128591060186966949">Uređivanje tražilice</translation>
 <translation id="1129850422003387628">Upravljanje aplikacijama</translation>
@@ -504,6 +503,7 @@
 <translation id="1542514202066550870">VR sadržaj ove kartice prikazuje se putem maske.</translation>
 <translation id="1543284117603151572">Uvezeno iz Edgea</translation>
 <translation id="1545177026077493356">Automatski način kioska</translation>
+<translation id="1545749641540134597">Skeniranje QR koda</translation>
 <translation id="1545775234664667895">Instalirana tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Ovo proširenje promijenilo je stranicu koja se prikazuje kada se klikne gumb Početna.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> želi instalirati proširenje <ph name="EXTENSION_TYPE" /> koje može:</translation>
@@ -946,7 +946,6 @@
 <translation id="1992924914582925289">Ukloni s uređaja</translation>
 <translation id="1994173015038366702">URL web-lokacije</translation>
 <translation id="1995916364271252349">Upravlja izborom podataka koje web-lokacije mogu upotrebljavati i prikazivati (lokacija, fotoaparat, skočni prozori i još mnogo toga)</translation>
-<translation id="1997437640397887843">Uključio se fotoaparat uređaja. Postavite QR kôd eSIM-a ispred fotoaparata.</translation>
 <translation id="1997616988432401742">Vaši certifikati</translation>
 <translation id="1999115740519098545">Prilikom pokretanja</translation>
 <translation id="2000419248597011803">Zadanoj tražilici šalje neke kolačiće i pretraživanja iz adresne trake i okvira za pretraživanje</translation>
@@ -966,7 +965,6 @@
 <translation id="2019718679933488176">&amp;Otvori zvučni zapis na novoj kartici</translation>
 <translation id="2020183425253392403">Prikaži postavke mrežne adrese</translation>
 <translation id="2020225359413970060">Skeniraj datoteku</translation>
-<translation id="2022953316617983419">QR kôd</translation>
 <translation id="2023167225947895179">PIN se može lako pogoditi</translation>
 <translation id="202352106777823113">Preuzimanje je trajalo predugo pa ga je mreža zaustavila.</translation>
 <translation id="2025115093177348061">Proširena stvarnost</translation>
@@ -1123,6 +1121,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2174948148799307353">Računom upravlja <ph name="PARENT_EMAIL" />. Da biste se odjavili s primarnog računa na ovom uređaju, kliknite vrijeme na zaslonu. Na izborniku koji će se prikazati kliknite "Odjava".</translation>
 <translation id="2175607476662778685">Traka za brzo pokretanje</translation>
 <translation id="217576141146192373">Nije moguće dodati pisač. Provjerite konfiguraciju pisača i pokušajte ponovno.</translation>
+<translation id="2175927920773552910">QR kôd</translation>
 <translation id="2177950615300672361">Anonimna kartica: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA kompromis</translation>
 <translation id="2179416702468739594">Tražimo dostupne profile. Zbog toga biste mogli izgubiti vezu s mobilnom mrežom na nekoliko minuta.</translation>
@@ -2954,6 +2953,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4136203100490971508">Noćno svjetlo automatski će se isključiti nakon izlaska sunca</translation>
 <translation id="41365691917097717">Nastavak će omogućiti ADB otklanjanje pogrešaka za izradu i testiranje Android aplikacija. Napominjemo da se time omogućuje instaliranje Android aplikacija koje Google nije potvrdio i da je za onemogućivanje potrebno vraćanje na tvorničke postavke.</translation>
 <translation id="4138267921960073861">Prikaži korisnička imena i fotografije na zaslonu za prijavu</translation>
+<translation id="4138598238327913711">Provjera gramatike trenutačno je dostupna samo za engleski</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID uređaj povezan</translation>
 <translation id="4142052906269098341">Otključajte <ph name="DEVICE_TYPE" /> telefonom. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Spremite otkrivene pisače na svoj profil ili dodajte novi pisač. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
@@ -4338,7 +4338,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5712153969432126546">Web-lokacije ponekad objavljuju PDF-ove, primjerice dokumente, ugovore i obrasce</translation>
 <translation id="5715711091495208045">Broker dodatka: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Zadane tražilice</translation>
-<translation id="5719637365829998022">QR kôd je skeniran.</translation>
 <translation id="5719854774000914513">Web-lokacije mogu tražiti dopuštenje za povezivanje s HID uređajima</translation>
 <translation id="572155275267014074">Postavke Androida</translation>
 <translation id="5722086096420375088">Zelena i bijela</translation>
@@ -4531,7 +4530,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5942779427914696408">Vidljivost uređaja</translation>
 <translation id="5943127421590245687">Potvrda je uspjela. Da biste otključali i vratili lokalne podatke, unesite staru zaporku za uređaj <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Skeniranje QR koda</translation>
 <translation id="5945002094477276055">Datoteka <ph name="FILE_NAME" /> možda je opasna. Želite li je poslati Google sigurnom pregledavanju na pregled?</translation>
 <translation id="5945363896952315544">Vaš sigurnosni ključ ne može pohraniti više nijedan digitalni otisak. Da biste dodali novi digitalni otisak, trebate izbrisati jedan od postojećih.</translation>
 <translation id="5946591249682680882">ID izvješća <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4655,7 +4653,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6077131872140550515">Ukloni iz preferiranih</translation>
 <translation id="6077189836672154517">Savjeti i novosti za <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Glasovno unošenje teksta</translation>
-<translation id="6078045608615316905">Izradite QR kôd za ovu sliku</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gost}one{# otvoreni prozor u načinu rada za goste}few{# otvorena prozora u načinu rada za goste}other{# otvorenih prozora u načinu rada za goste}}</translation>
 <translation id="6078323886959318429">Dodaj prečac</translation>
 <translation id="6078752646384677957">Provjerite mikrofon i glasnoću zvuka.</translation>
@@ -5197,14 +5194,12 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6680650203439190394">Brzina</translation>
 <translation id="6681668084120808868">Snimite fotografiju</translation>
 <translation id="6683087162435654533">V&amp;raćanje svih kartica</translation>
-<translation id="6683948477137300040">Skočni prozor za prikazivanje EID-a ili QR koda</translation>
 <translation id="6684827949542560880">Preuzimanje najnovijeg ažuriranja</translation>
 <translation id="668599234725812620">Otvori Google Play</translation>
 <translation id="6686490380836145850">Zatvori kartice s desne strane</translation>
 <translation id="6686665106869989887">Kartica je premještena udesno</translation>
 <translation id="6686817083349815241">Spremite zaporku</translation>
 <translation id="6687079240787935001">Sakrij <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Izradite QR kôd za ovu sliku</translation>
 <translation id="6690659332373509948">Nije moguće raščlaniti datoteku: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Upravljanje sinkroniziranim podacima na Google nadzornoj ploči</translation>
 <translation id="6691541770654083180">Zemlja</translation>
@@ -5408,7 +5403,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="6914783257214138813">Vaše zaporke bit će vidljive svima koji vide izvezenu datoteku.</translation>
 <translation id="6916590542764765824">Upravljanje proširenjima</translation>
 <translation id="6919868320029503575">Slabe zaporke</translation>
-<translation id="6920262510368602827">Izradite QR kôd za ovu stranicu</translation>
 <translation id="6920989436227028121">Otvori kao uobičajenu karticu</translation>
 <translation id="6921104647315081813">Izbriši aktivnosti</translation>
 <translation id="692114467174262153">Otvaranje preglednika <ph name="ALTERNATIVE_BROWSER_NAME" /> nije uspjelo</translation>
@@ -6134,7 +6128,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7691698019618282776">Nadogradnja Crostinija</translation>
 <translation id="7696063401938172191">Na telefonu <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Pojedinosti su skrivene dok dijelite zaslon</translation>
-<translation id="7697598343108519171">Fotoaparatom skenirajte QR kôd</translation>
 <translation id="7701040980221191251">Nema ih</translation>
 <translation id="7701869757853594372">Rukuje KORISNIK</translation>
 <translation id="7701928712056789451">Ove su stavke možda opasne</translation>
@@ -6241,7 +6234,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="7800518121066352902">Zakreni u smjeru suprotnom od &amp;kretanja kazaljke na satu</translation>
 <translation id="780301667611848630">Ne, hvala</translation>
 <translation id="7804072833593604762">Kartica je zatvorena</translation>
-<translation id="7805759469263222011">Skenirajte QR kôd pomoću fotoaparata uređaja ili unesite aktivacijski kôd koji ste dobili od mobilnog operatera</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Pretraživanje i Asistent</translation>
 <translation id="7807711621188256451">Uvijek dopusti hostu <ph name="HOST" /> pristup kameri</translation>
@@ -6797,7 +6789,6 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu</translation>
 <translation id="8386091599636877289">Pravilo nije pronađeno.</translation>
 <translation id="8387361103813440603">Nije dopušten pregled vaše lokacije</translation>
 <translation id="8388770971141403598">Sekundarni profili nisu podržani</translation>
-<translation id="8389416080014625855">Izradite QR kôd za ovu stranicu</translation>
 <translation id="8389492867173948260">Dopustite ovom proširenju da čita i mijenja sve vaše podatke na web-lokacijama koje posjećujete:</translation>
 <translation id="8390449457866780408">Poslužitelj nije dostupan.</translation>
 <translation id="8391218455464584335">Vinil</translation>
@@ -7356,7 +7347,6 @@ Pritisnite dodijeljeni prekidač da biste uklonili dodjelu</translation>
 <translation id="8986494364107987395">Automatski šalji Googleu statistiku o upotrebi i izvješća o padu programa</translation>
 <translation id="8987927404178983737">Mjesec</translation>
 <translation id="8988879467270412492">Želite li aktivirati ChromeVox, ugrađeni čitač zaslona za OS Chrome? Ako želite, pritisnite i zadržite obje tipke za glasnoću pet sekundi.</translation>
-<translation id="8990209962746788689">Izrada QR koda nije uspjela</translation>
 <translation id="8991520179165052608">Web-lokacija može upotrebljavati vaš mikrofon</translation>
 <translation id="899384117894244799">Uklanjanje ograničenog korisnika</translation>
 <translation id="899403249577094719">Osnovni URL Netscape certifikata</translation>

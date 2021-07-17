@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">Druk op de pijl-links of -rechts om te navigeren en op Enter om te activeren</translation>
 <translation id="224426591676115802">Geen stem beschikbaar voor de taal: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Leermodus stoppen</translation>
+<translation id="2247870315273396641">Voorbeeld van stem</translation>
 <translation id="225732394367814946">Spreeksnelheid verhogen</translation>
 <translation id="2267538686624070261">Spelfout sluiten</translation>
 <translation id="2267945578749931355">Volgend teken</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">Druk op Enter om door te gaan. Druk op Backspace om terug te gaan.</translation>
 <translation id="2398579267367951220">Typ om op de pagina te zoeken. Druk op Enter om naar het zoekresultaat te gaan of op de pijlen-omlaag om door resultaten te browsen, blijf typen om je zoekopdracht te wijzigen of druk op Escape om te annuleren.</translation>
 <translation id="240709722712693803">Violetblauw</translation>
+<translation id="2410298923485357543">Natuurlijke stem gebruiken als het apparaat online is</translation>
 <translation id="2416512023405990736">Een niet-aangevinkt selectievakje</translation>
 <translation id="2417569100218200841">Informatie over content</translation>
 <translation id="2417948780551741035">Eindnoten</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVox-opties</translation>
 <translation id="3060756054951570867">menu <ph name="TITLE" /> geopend</translation>
 <translation id="3060880924447482063">Swipe naar links of rechts om per item te navigeren</translation>
+<translation id="3061302636956643119">Tekst wordt voor verwerking naar Google gestuurd.</translation>
 <translation id="3070245424257836917">Swipe met drie vingers omhoog</translation>
 <translation id="307516670110542567">Snelle oriëntatie</translation>
 <translation id="3078345202707391975">Volgende kop voor niveau 2</translation>
@@ -936,6 +939,7 @@
 <translation id="7693840228159394336">Vorig keuzerondje</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Natuurlijke stem</translation>
 <translation id="7714340021005120797">Geen volgende keuzelijst met invoervak</translation>
 <translation id="772146615414628379">Je hebt de basisprincipes voor het gebruik van ChromeVox geleerd. Je kunt het ChromeVox-opdrachtmenu op elk gewenst moment openen door op Zoeken + punt te drukken. Ga naar de volgende artikelen voor nog meer informatie over ChromeVox en Chrome OS.
     Als je klaar bent met de tutorial, gebruik je ChromeVox om naar de knop Sluiten te navigeren en klik je erop.</translation>
@@ -966,6 +970,7 @@
 <translation id="7939428177581522200">toegevoegd aan selectie</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{apenstaartje}other{# apenstaartjes}}</translation>
 <translation id="7942349550061667556">Rood</translation>
+<translation id="7945703887991230167">Voorkeurstem</translation>
 <translation id="7948364528129376623">Geen volgende bezochte link</translation>
 <translation id="7952460583030260752">Opdrachtreferenties</translation>
 <translation id="7965147473449754028">menu gesloten</translation>

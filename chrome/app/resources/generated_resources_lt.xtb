@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Naudotojas</translation>
 <translation id="1125550662859510761">Atrodo kaip <ph name="WIDTH" /> × <ph name="HEIGHT" /> (savasis)</translation>
 <translation id="1126809382673880764">Neapsaugo jūsų nuo pavojingų svetainių, atsisiuntimų ir plėtinių. Kai yra galimybė, vis tiek gausite saugaus naršymo pranešimus kitose „Google“ paslaugose, pvz., „Gmail“ ir paieškoje.</translation>
-<translation id="112752777279960360">Norėdami pirmą kartą nustatyti „Android“ telefoną, kad jis būtų naudojamas kaip saugos raktas su šiuo kompiuteriu, atidarykite „Chrome“ telefone ir eikite į skiltį „Nustatymai“ &gt; „Slaptažodžiai“ &gt; „Naudoti telefoną kaip saugos raktą“. Tada palieskite „Prijungti naują įrenginį“ ir nuskaitykite šį QR kodą.</translation>
 <translation id="1128109161498068552">Neleisti jokioms svetainėms naudoti sistemos išskirtinių pranešimų MIDI įrenginiams pasiekti</translation>
 <translation id="1128591060186966949">Paieškos variklio redagavimas</translation>
 <translation id="1129850422003387628">Valdyti programas</translation>
@@ -509,6 +508,7 @@
 <translation id="1542514202066550870">Šis skirtukas perduoda VR turinį į ausines.</translation>
 <translation id="1543284117603151572">Importuota iš „Edge“</translation>
 <translation id="1545177026077493356">Automatinis viešojo terminalo režimas</translation>
+<translation id="1545749641540134597">Nuskaitykite QR kodą</translation>
 <translation id="1545775234664667895">Įdiegta „<ph name="THEME_NAME" />“ tema</translation>
 <translation id="1546280085599573572">Šis plėtinys pakeitė puslapį, kuris rodomas spustelėjus pagrindinio puslapio mygtuką.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> nori įdiegti <ph name="EXTENSION_TYPE" />, kuris gali atlikti nurodytus veiksmus.</translation>
@@ -960,7 +960,6 @@
 <translation id="1992924914582925289">Pašalinti iš įrenginio</translation>
 <translation id="1994173015038366702">Svetainės URL</translation>
 <translation id="1995916364271252349">Valdoma, kokią informaciją galima naudoti ir rodyti svetainėse (vietovė, fotoaparatas, iššokantieji langai ir kt.)</translation>
-<translation id="1997437640397887843">Įrenginio fotoaparatas įjungtas. Padėkite „eSIM“ kortelės QR kodą prieš fotoaparatą.</translation>
 <translation id="1997616988432401742">Jūsų sertifikatai</translation>
 <translation id="1999115740519098545">Paleidžiant</translation>
 <translation id="2000419248597011803">Numatytajam paieškos varikliui siunčiami kai kurie slapukai ir į adreso juostą bei paieškos laukelį įvestos paieškos</translation>
@@ -980,7 +979,6 @@
 <translation id="2019718679933488176">&amp;Atidaryti garso įrašą naujame skirtuke</translation>
 <translation id="2020183425253392403">Rodyti tinklo adreso nustatymus</translation>
 <translation id="2020225359413970060">Nuskaityti failą</translation>
-<translation id="2022953316617983419">QR kodas</translation>
 <translation id="2023167225947895179">PIN kodas gali būti lengvai atspėjamas</translation>
 <translation id="202352106777823113">Atsisiuntimas truko per ilgai ir buvo sustabdytas tinklo.</translation>
 <translation id="2025115093177348061">Išplėstoji realybė</translation>
@@ -1137,6 +1135,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2174948148799307353">Paskyrą tvarko: <ph name="PARENT_EMAIL" />. Jei norite šiame įrenginyje atsijungti nuo pagrindinės paskyros, palieskite ekrane rodomą laiką. Pateiktame meniu spustelėkite „Atsijungti“.</translation>
 <translation id="2175607476662778685">Sparčiosios paleisties juosta</translation>
 <translation id="217576141146192373">Nepavyko pridėti spausdintuvo. Patikrinkite spausdintuvo konfigūraciją ir bandykite dar kartą.</translation>
+<translation id="2175927920773552910">QR kodas</translation>
 <translation id="2177950615300672361">Inkognito skirtukas: „<ph name="TAB_NAME" />“</translation>
 <translation id="2178614541317717477">CA pažeidimo galimybė</translation>
 <translation id="2179416702468739594">Ieškoma pasiekiamų profilių. Dėl to mobiliojo ryšio tinklas gali būti atjungtas kelias minutes.</translation>
@@ -4356,7 +4355,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5712153969432126546">Svetainėse kartais skelbiami PDF failai, pvz., dokumentai, sutartys ir formos</translation>
 <translation id="5715711091495208045">Papildinių tarpininkas: „<ph name="PLUGIN_NAME" />“</translation>
 <translation id="5719603411793408026">Numatytieji paieškos varikliai</translation>
-<translation id="5719637365829998022">QR kodas nuskaitytas.</translation>
 <translation id="5719854774000914513">Svetainėse gali būti prašoma prisijungti prie HID įrenginių</translation>
 <translation id="572155275267014074">„Android“ nustatymai</translation>
 <translation id="5722086096420375088">Žalia ir balta</translation>
@@ -4549,7 +4547,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="5941711191222866238">Sumažinti</translation>
 <translation id="5942779427914696408">Įrenginio matomumas</translation>
 <translation id="5943127421590245687">Patvirtinta sėkmingai. Kad galėtumėte atrakinti ir atkurti vietinius duomenis, įveskite seną „<ph name="DEVICE_TYPE" />“ slaptažodį.</translation>
-<translation id="5944869793365969636">QR kodo nuskaitymas</translation>
 <translation id="5945002094477276055">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas. Siųsti „Google“ saugaus naršymo funkcijai, kad nuskaitytų?</translation>
 <translation id="5945363896952315544">Naudojant jūsų saugos raktą nebegalima išsaugoti daugiau kontrolinių kodų. Norėdami pridėti naują, pirmiausia ištrinkite kurį nors esamą kontrolinį kodą.</translation>
 <translation id="5946591249682680882">Ataskaitos ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4673,7 +4670,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6077131872140550515">Pašalinti iš pageidaujamų</translation>
 <translation id="6077189836672154517">„<ph name="DEVICE_TYPE" />“ patarimai ir naujiniai</translation>
 <translation id="6077476112742402730">Sakomo teksto įvedimas</translation>
-<translation id="6078045608615316905">Sukurti šio vaizdo QR kodą</translation>
 <translation id="6078121669093215958">{0,plural, =1{Svečias}one{# atidarytas svečio langas}few{# atidaryti svečio langai}many{# atidaryto svečio lango}other{# atidarytų svečio langų}}</translation>
 <translation id="6078323886959318429">Pridėti spartųjį klavišą</translation>
 <translation id="6078752646384677957">Patikrinkite mikrofono ir garso lygius.</translation>
@@ -5215,14 +5211,12 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6680650203439190394">Sparta</translation>
 <translation id="6681668084120808868">Fotografuoti</translation>
 <translation id="6683087162435654533">V&amp;isų skirtukų atkūrimas</translation>
-<translation id="6683948477137300040">Rodyti įrenginio EID ir QR kodo iššokantįjį langą</translation>
 <translation id="6684827949542560880">Atsisiunčiamas naujausias naujinys</translation>
 <translation id="668599234725812620">Atidaryti „Google Play“</translation>
 <translation id="6686490380836145850">Uždaryti dešinėje esančius skirtukus</translation>
 <translation id="6686665106869989887">Skirtukas perkeltas dešinėn</translation>
 <translation id="6686817083349815241">Išsaugokite slaptažodį</translation>
 <translation id="6687079240787935001">Slėpti: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Sukurti šio vaizdo QR kodą</translation>
 <translation id="6690659332373509948">Nepavyksta išanalizuoti failo: „<ph name="FILE_NAME" />“</translation>
 <translation id="6691331417640343772">Sinchronizuotų duomenų tvarkymas „Google“ informacijos suvestinėje</translation>
 <translation id="6691541770654083180">Žemė</translation>
@@ -5426,7 +5420,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="6914783257214138813">Jūsų slaptažodžiai bus matomi visiems, kurie gali peržiūrėti eksportuotą failą.</translation>
 <translation id="6916590542764765824">Plėtinių tvarkymas</translation>
 <translation id="6919868320029503575">Nesudėtingi slaptažodžiai</translation>
-<translation id="6920262510368602827">Sukurti šio puslapio QR kodą</translation>
 <translation id="6920989436227028121">Atidaryti kaip įprastą skirtuką</translation>
 <translation id="6921104647315081813">Išvalyti veiklą</translation>
 <translation id="692114467174262153">Nepavyko atidaryti „<ph name="ALTERNATIVE_BROWSER_NAME" />“</translation>
@@ -6152,7 +6145,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7691698019618282776">„Crostini“ naujovinimas</translation>
 <translation id="7696063401938172191">Jūsų telefone „<ph name="PHONE_NAME" />“:</translation>
 <translation id="7697166915480294040">Išsami informacija slepiama, kol bendrinate ekraną</translation>
-<translation id="7697598343108519171">QR kodą nuskaityti naudojant fotoaparatą</translation>
 <translation id="7701040980221191251">Nėra</translation>
 <translation id="7701869757853594372">NAUDOTOJO tvarkomi elementai</translation>
 <translation id="7701928712056789451">Šie elementai gali būti pavojingi</translation>
@@ -6259,7 +6251,6 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="7800518121066352902">Sukti prieš l&amp;aikrodžio rodyklę</translation>
 <translation id="780301667611848630">Ačiū, ne</translation>
 <translation id="7804072833593604762">Skirtukas uždarytas</translation>
-<translation id="7805759469263222011">Nuskaitykite QR kodą naudodami įrenginio fotoaparatą arba įveskite operatoriaus pateiktą aktyvinimo kodą</translation>
 <translation id="7805768142964895445">Būsena</translation>
 <translation id="7807067443225230855">Paieška ir Padėjėjas</translation>
 <translation id="7807711621188256451">Visada leisti <ph name="HOST" /> pasiekti fotoaparatą</translation>
@@ -6816,7 +6807,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="8386091599636877289">Politika nerasta.</translation>
 <translation id="8387361103813440603">Neleidžiama peržiūrėti vietovės</translation>
 <translation id="8388770971141403598">Antriniai profiliai nepalaikomi</translation>
-<translation id="8389416080014625855">Sukurti šio puslapio QR kodą</translation>
 <translation id="8389492867173948260">Leisti šiam plėtiniui skaityti ir keisti visus lankomų svetainių duomenis:</translation>
 <translation id="8390449457866780408">Serveris nepasiekiamas.</translation>
 <translation id="8391218455464584335">Plokštelė</translation>
@@ -7376,7 +7366,6 @@ Paspauskite priskirtą jungiklį, kad pašalintumėte priskyrimą</translation>
 <translation id="8986494364107987395">Automatiškai siųsti naudojimo statistiką ir strigčių ataskaitas „Google“</translation>
 <translation id="8987927404178983737">Mėnuo</translation>
 <translation id="8988879467270412492">Ar norite suaktyvinti „ChromeVox“ – integruotą „Chrome“ OS ekrano skaitytuvą? Jei norite, paspauskite ir penkias sekundes palaikykite abu garsumo klavišus.</translation>
-<translation id="8990209962746788689">Nepavyko sukurti QR kodo</translation>
 <translation id="8991520179165052608">Svetainė gali naudoti jūsų mikrofoną</translation>
 <translation id="899384117894244799">Riboto naudotojo profilio pašalinimas</translation>
 <translation id="899403249577094719">„Netscape“ sertifikatų bazės URL</translation>

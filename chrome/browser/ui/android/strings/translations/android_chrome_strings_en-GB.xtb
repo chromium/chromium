@@ -224,7 +224,6 @@ Tap any word to search. To refine your search, touch and hold to select more or 
 
 Touch and hold any word to search. To refine your search, select more or fewer words. To edit your search, open the panel, tap the icon to open in a new tab, and make your changes in the search box.</translation>
 <translation id="2459390580524506445">Enhanced voice search</translation>
-<translation id="246532703174860178">Share</translation>
 <translation id="247737702124049222">Image descriptions are on</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -296,7 +295,6 @@ Touch and hold any word to search. To refine your search, select more or fewer w
 <translation id="2900528713135656174">Create event</translation>
 <translation id="2901411048554510387">Showing suggestions for <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">List of devices to share a tab with, opened at full height.</translation>
-<translation id="2905036901251765993">To share with people nearby, let them scan this QR code</translation>
 <translation id="2908243544703713905">Unread stories ready</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Manage the topics that you're interested in</translation>
@@ -724,7 +722,6 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="572328651809341494">Recent tabs</translation>
 <translation id="5723735397759933332">Lite mode now saves you more data by optimising images on HTTPS pages.</translation>
 <translation id="5726692708398506830">Make everything on the page bigger</translation>
-<translation id="5733983706093266635">Can't create QR code. URL is more than <ph name="CHARACTER_LIMIT" /> characters.</translation>
 <translation id="5748802427693696783">Switched to standard tabs</translation>
 <translation id="5749068826913805084">Chrome needs storage access to download files.</translation>
 <translation id="5749237766298580851">Off <ph name="SEPARATOR" /> Not recommended</translation>
@@ -880,7 +877,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="6590680911007613645">Make sure that the password you are saving matches your password for <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="6595046016124923392">Images are sent to Google to improve descriptions for you.</translation>
-<translation id="6597891566292541626">Position QR/barcode in this frame.</translation>
 <translation id="6600954340915313787">Copied to Chrome</translation>
 <translation id="661266467055912436">Improves security for you and everyone on the web.</translation>
 <translation id="6618554661997243500">To see top sites and stories for you, tap the Home button</translation>
@@ -1090,7 +1086,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7961015016161918242">Never</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
-<translation id="7967911570373677897">To scan a QR code, change your settings so that Chrome can use your camera</translation>
 <translation id="7968014550143838305">Added to reading list</translation>
 <translation id="7971136598759319605">Active 1 day ago</translation>
 <translation id="7975379999046275268">Preview page <ph name="BEGIN_NEW" />New<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">To get your bookmarks on all your devices, turn on sync</translation>
 <translation id="8110087112193408731">Show your Chrome activity in Digital Wellbeing?</translation>
-<translation id="8115259494083109761">To scan a QR code, let Chrome use your camera</translation>
 <translation id="8127542551745560481">Edit homepage</translation>
 <translation id="813082847718468539">View site information</translation>
 <translation id="8137558756159375272">Touch to Search sends the selected word and the current page as context to Google Search. You can turn it off in <ph name="BEGIN_LINK" />Settings<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8218622182176210845">Manage your account</translation>
 <translation id="8223642481677794647">Feed card menu</translation>
 <translation id="8224471946457685718">Download articles for you on Wi-Fi</translation>
-<translation id="8233540874193135768">To scan a QR code, use a device with a camera.</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">This page uses too much memory, so Chrome removed some content.</translation>
 <translation id="8260126382462817229">Try signing in again</translation>
@@ -1256,7 +1249,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
 <translation id="8988028529677883095">Use phone as a security key</translation>
-<translation id="8990209962746788689">Can't create QR code</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>
 <translation id="8996847606757455498">Choose another provider</translation>
 <translation id="8998729206196772491">You are signing in with an account managed by <ph name="MANAGED_DOMAIN" /> and giving its administrator control over your Chrome data. Your data will become permanently tied to this account. Signing out of Chrome will delete your data from this device, but it will remain stored in your Google Account.</translation>

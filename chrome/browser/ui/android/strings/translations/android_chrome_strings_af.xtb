@@ -224,7 +224,6 @@ Tik op enige woord om te soek. Raak en hou om meer of minder woorde te kies as j
 
 Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog wil verfyn. Maak die paneel oop, tik op die ikoon om dit in 'n nuwe oortjie oop te maak en bring jou veranderinge in die soekkassie aan as jy jou soektog wil wysig.</translation>
 <translation id="2459390580524506445">Verbeterde stemsoektog</translation>
-<translation id="246532703174860178">Deel</translation>
 <translation id="247737702124049222">Prentbeskrywings is aan</translation>
 <translation id="2482878487686419369">Kennisgewings</translation>
 <translation id="2485422356828889247">Deïnstalleer</translation>
@@ -296,7 +295,6 @@ Raak en hou enige woord om te soek. Kies meer of minder woorde as jy jou soektog
 <translation id="2900528713135656174">Skep geleentheid</translation>
 <translation id="2901411048554510387">Wys tans voorstelle vir <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Lys toestelle om 'n oortjie mee te deel, is teen volle hoogte oopgemaak.</translation>
-<translation id="2905036901251765993">Om met mense naby te deel, moet hulle hierdie QR-kode skandeer</translation>
 <translation id="2908243544703713905">Ongelese stories is gereed</translation>
 <translation id="2909615210195135082">Google-kennisgewingsplatform</translation>
 <translation id="2912296070571964914">Bestuur die onderwerpe waarin jy belangstel</translation>
@@ -724,7 +722,6 @@ Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en
 <translation id="572328651809341494">Onlangse oortjies</translation>
 <translation id="5723735397759933332">Ligte modus bespaar jou nou meer data deur prente op HTTPS-bladsye te optimeer.</translation>
 <translation id="5726692708398506830">Maak alles op die bladsy groter</translation>
-<translation id="5733983706093266635">Kan nie QR-kode skep nie. URL is meer as <ph name="CHARACTER_LIMIT" /> karakters.</translation>
 <translation id="5748802427693696783">Het na standaardoortjies oorgeskakel</translation>
 <translation id="5749068826913805084">Chrome het bergingtoegang nodig om lêers af te laai.</translation>
 <translation id="5749237766298580851">Af <ph name="SEPARATOR" /> Nie aanbeveel nie</translation>
@@ -880,7 +877,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="6590680911007613645">Maak seker dat die wagwoord wat jy stoor, ooreenstem met jou wagwoord vir <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Werkskermwerf</translation>
 <translation id="6595046016124923392">Prente word na Google toe gestuur om beskrywings vir jou beter te maak.</translation>
-<translation id="6597891566292541626">Plaas QR- of strepieskode in hierdie raam.</translation>
 <translation id="6600954340915313787">Na Chrome gekopieer</translation>
 <translation id="661266467055912436">Verbeter sekuriteit vir jou en almal op die web.</translation>
 <translation id="6618554661997243500">Tik op die Tuisknoppie om topwerwe en -berigte te sien</translation>
@@ -1090,7 +1086,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7961015016161918242">Nooit</translation>
 <translation id="7961926449547174351">Jy het bergingtoegang gedeaktiveer. Gaan na Instellings om dit te aktiveer.</translation>
 <translation id="7963646190083259054">Verskaffer:</translation>
-<translation id="7967911570373677897">Verander jou instellings sodat Chrome jou kamera kan gebruik as jy 'n QR-kode wil skandeer</translation>
 <translation id="7968014550143838305">By leeslys gevoeg</translation>
 <translation id="7971136598759319605">1 dag gelede aktief</translation>
 <translation id="7975379999046275268">Voorbeskou bladsy <ph name="BEGIN_NEW" />Nuwe<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Skakel sinkronisering aan om jou boekmerke op al jou toestelle te kry</translation>
 <translation id="8110087112193408731">Wys jou Chrome-aktiwiteit in Digitale Welstand?</translation>
-<translation id="8115259494083109761">Laat Chrome jou kamera gebruik om 'n QR-kode te skandeer</translation>
 <translation id="8127542551745560481">Wysig tuisblad</translation>
 <translation id="813082847718468539">Bekyk werfinligting</translation>
 <translation id="8137558756159375272">Raak om te soek stuur die geselekteerde woord en die huidige bladsy as konteks na Google Search. Jy kan dit in <ph name="BEGIN_LINK" />Instellings<ph name="END_LINK" /> afskakel.</translation>
@@ -1139,7 +1133,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8218622182176210845">Bestuur jou rekening</translation>
 <translation id="8223642481677794647">Stroomkaartkieslys</translation>
 <translation id="8224471946457685718">Laai vir jou artikels op Wi-Fi af</translation>
-<translation id="8233540874193135768">Gebruik 'n toestel met 'n kamera as jy 'n QR-kode wil skandeer.</translation>
 <translation id="8250920743982581267">Dokumente</translation>
 <translation id="825412236959742607">Hierdie bladsy gebruik te veel berging en daarom het Chrome van die inhoud verwyder.</translation>
 <translation id="8260126382462817229">Probeer weer om aan te meld</translation>
@@ -1256,7 +1249,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8970887620466824814">Iets is fout.</translation>
 <translation id="8972098258593396643">Laai af na verstekvouer?</translation>
 <translation id="8988028529677883095">Gebruik foon as 'n sekuriteitsleutel</translation>
-<translation id="8990209962746788689">Kan nie QR-kode skep nie</translation>
 <translation id="8993760627012879038">Maak 'n nuwe oortjie in incognitomodus oop</translation>
 <translation id="8996847606757455498">Kies 'n ander verskaffer</translation>
 <translation id="8998729206196772491">Jy meld tans aan met 'n rekening wat deur <ph name="MANAGED_DOMAIN" /> bestuur word en gee sy administrateur beheer oor jou Chrome-data. Jou data sal permanent met hierdie rekening verbind word. As jy by Chrome afmeld, sal jou data van hierdie toestel af uitgevee word, maar dit sal steeds in jou Google-rekening geberg word.</translation>

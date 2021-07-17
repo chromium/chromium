@@ -77,6 +77,9 @@
       Als het beleid is ingesteld op False of niet is ingesteld, worden de gegevens niet gerapporteerd.
       Als het beleid is ingesteld op True, wordt informatie over de schermverlichting van het apparaat gerapporteerd.</translation>
 <translation id="1076751984131277498">Toelatingslijst met USB-apparaten die mogen worden ontkoppeld</translation>
+<translation id="1079425471279127373">Het beleid zo instellen dat sommige herkomsten van afgedwongen geïnstalleerde web-apps apparaatkenmerken (zoals serienummer, hostnaam) kunnen ophalen met behulp van de Device Attributes API.
+
+      De Device Attributes API is een lijst met web-API's, (zie https://wicg.github.io/WebApiDevice/device_attributes). Deze zijn alleen beschikbaar voor herkomsten die overeenkomen met afgedwongen geïnstalleerde web-apps via <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of met de web-app die is ingesteld in de Kiosk-sessie.</translation>
 <translation id="1079801999187584280">Het gebruik van de hulpprogramma's voor ontwikkelaars niet toestaan</translation>
 <translation id="1082802595100075771">Gebruikers laten kiezen of ze een anonieme Google-service willen gebruiken voor automatische beschrijvingen van niet-gelabelde afbeeldingen</translation>
 <translation id="1087437665304381368">Met dit beleid wordt alleen de ontwikkelaarsmodus van <ph name="PRODUCT_OS_NAME" /> bepaald. Als je de toegang tot de ontwikkelaarsopties van Android wilt blokkeren, moet je het beleid <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> instellen.</translation>
@@ -858,6 +861,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="2090939118981888335">Als je dit beleid toepast, wordt de proxy voor gegevenscompressie toegestaan. Als je het beleid niet toepast, wordt de proxy niet toegestaan.
 
       Als je het beleid instelt, kunnen gebruikers het niet aanpassen. Als je het beleid niet instelt, kunnen gebruikers ervoor kiezen de functie te gebruiken.</translation>
+<translation id="2093552723795057221">Audiostatus niet rapporteren</translation>
 <translation id="209586405398070749">Stabiel kanaal</translation>
 <translation id="2098658257603918882">Rapportage van gebruiks- en crashgegevens aanzetten</translation>
 <translation id="2104418465060359056">Gegevens over extensies en plug-ins rapporteren</translation>
@@ -901,6 +905,9 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
 <translation id="2151831603578119302">Snelkoppelingen voor toegankelijkheidsfuncties aanzetten</translation>
 <translation id="2156132677421487971">Stel beleid voor <ph name="PRODUCT_NAME" /> in, een functie waarmee gebruikers de content van tabbladen, sites of hun bureaublad vanuit de browser naar externe schermen en geluidssystemen kunnen sturen.</translation>
 <translation id="2156755242840687300">Aangezette externe afdrukservers</translation>
+<translation id="2157842368188031417">Het beleid is alleen van toepassing op beheerde gastsessies. Het moet worden aangezet voor de gedeelde werkstationmodus van Imprivata om tijdens een sessie tussen gebruikers te kunnen wisselen.
+      Als je het beleid instelt op True, worden bepaalde beleidsregels afgedwongen overschreven voor functies die gevoelige gebruikersgegevens bewaren en die niet worden verwerkt door het opschoonmechanisme dat wordt gebruikt om in de gedeelde werkstationmodus van Imprivata tijdens een sessie tussen gebruikers te wisselen.
+      Als je het beleid instelt op False of niet instelt, wordt er geen beleid overschreven.</translation>
 <translation id="2160336427036785721">Hiermee configureer je de hoeveelheid geheugen die één instantie van <ph name="PRODUCT_NAME" /> kan gebruiken voordat tabbladen worden verwijderd om geheugen te besparen (dit houdt in dat het geheugen dat voor het tabblad wordt gebruikt, wordt vrijgemaakt en dat het tabblad opnieuw moet worden geladen als de gebruiker naar dit tabblad schakelt).
 
       Als het beleid is ingesteld, worden tabbladen in de browser verwijderd om geheugen te besparen als de limiet wordt bereikt. Er is geen garantie dat de browser altijd onder de limiet wordt uitgevoerd. Elke waarde lager dan 1024 wordt afgerond naar 1024.
@@ -1899,6 +1906,7 @@ en 3 optionele leden:
       Als dit beleid niet is toegepast of niet is ingesteld, worden deze TLS/DTLS-versies uitgezet.
 
       Dit beleid is tijdelijk en wordt verwijderd in een toekomstige versie van <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3359186795130278362">Beperkte beheerde gastsessie aanzetten.</translation>
 <translation id="3360093276083825336">Dit beleid is beëindigd en wordt verwijderd in <ph name="PRODUCT_OS_NAME" />-versie 85. Gebruik in plaats daarvan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Specificeert de tijdsduur zonder gebruikersinvoer waarna een waarschuwingsdialoogvenster wordt getoond als er op de batterij wordt gewerkt.
@@ -3135,6 +3143,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Opmerking: Elementen kunnen ook aan deze lijst worden toegevoegd via het beleid <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Aanmelden bij witte lijst van gebruikers</translation>
+<translation id="5071303485174858500">Beperkte beheerde gastsessie uitzetten.</translation>
 <translation id="5073609397321802133">Als het beleid is ingesteld op 'False', kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' niet aanpassen. Eventuele bestaande aangepaste achtergronden worden definitief verwijderd, zelfs als het beleid later weer wordt ingesteld op 'True'.
 
       Als het beleid wordt ingesteld op 'True' of niet wordt ingesteld, kunnen gebruikers de achtergrond van de pagina 'Nieuw tabblad' aanpassen.</translation>
@@ -3142,6 +3151,7 @@ Geldige waarden voor het veld <ph name="MINUTE_FIELD_NAME" /> in <ph name="CHARG
 
       Als je het beleid instelt op 'False' of niet instelt, gebruikt <ph name="PRODUCT_NAME" /> de bestaande instellingen voor online intrekkingscontrole.</translation>
 <translation id="5078623750797048009">Pdf-annotaties aanzetten</translation>
+<translation id="5081204761483900654">Beperkte beheerde gastsessies</translation>
 <translation id="5082572440690475059">Alleen leestoegang via de File System API toestaan op deze sites</translation>
 <translation id="5085647276663819155">Afdrukvoorbeeld uitzetten</translation>
 <translation id="5090791951240382356">Toestaan dat woordenboekbeleid van verschillende bronnen wordt samengevoegd</translation>
@@ -3792,6 +3802,7 @@ Gebruikers kunnen deze instelling niet wijzigen.</translation>
           Als deze instelling uitstaat of niet is ingesteld, wordt de standaarddomeinnaam voor het TalkGadget ('chromoting-host.talkgadget.google.com') gebruikt voor alle hosts.
 
           Deze beleidsinstelling is niet van toepassing op clients voor externe toegang. Deze clients gebruiken altijd 'chromoting-client.talkgadget.google.com' om toegang tot het TalkGadget te krijgen.</translation>
+<translation id="5888645257599699215">Audiostatus van apparaat rapporteren</translation>
 <translation id="5890063326284543943">Gebruik van de Serial API beheren</translation>
 <translation id="5897913798715600338">Batterij snel opladen.</translation>
 <translation id="5898486742390981550">Wanneer meerdere gebruikers zijn ingelogd, kunnen Android-apps alleen worden gebruikt door de primaire gebruiker.</translation>
@@ -4415,8 +4426,10 @@ Als je ervoor kiest het volgende te gebruiken:
 Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncties verwijderd van de werkbalk.
 
       chrome://flags en andere manieren om browserfuncties aan- en uit te zetten werken nog steeds hetzelfde, ongeacht of je het beleid wel of niet hebt toegepast.</translation>
+<translation id="6794083666143216172">Toestaan dat de herkomst query's voor apparaatkenmerken kan uitvoeren</translation>
 <translation id="6795485990775913659">Alleen afdrukken toestaan zonder pincode</translation>
 <translation id="6800181452282128474">Geen query's sturen naar Quirks Servers</translation>
+<translation id="68031099365512050">Audiostatus rapporteren</translation>
 <translation id="6810445994095397827">JavaScript blokkeren op deze sites</translation>
 <translation id="6813263547126514821">Energiebeheer en uitzetten</translation>
 <translation id="681446116407619279">Ondersteunde authenticatieschema's</translation>
@@ -4575,6 +4588,9 @@ Als het beleid niet is ingesteld, worden er geen beperkingen toegepast.</transla
 
       De volgende talen worden momenteel ondersteund: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Dubbelzijdig afdrukken over lange zijde aanzetten</translation>
+<translation id="6928305045865155732">Als je het beleid aanzet of niet instelt, rapporteren ingeschreven apparaten het audiovolume van het apparaat.
+
+      Als je het beleid uitzet, betekent dit dat ingeschreven apparaten geen audiostatus opnemen of rapporteren.</translation>
 <translation id="6931242315485576290">Synchronisatie van gegevens met Google uitzetten</translation>
 <translation id="6943577887654905793">Voorkeursnaam voor Mac/Linux:</translation>
 <translation id="6946652757373377924">Dit beleid is verwijderd in M77.
@@ -5919,6 +5935,19 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
       Als je het beleid instelt, kunnen gebruikers deze functie niet wijzigen. Als je het niet instelt, kunnen ze de instelling wel wijzigen.</translation>
 <translation id="8715885991031124968">JavaScript-dialoogvensters toestaan als deze worden geactiveerd vanaf een subframe met een andere oorsprong.</translation>
 <translation id="8720547069538712402">Toestaan dat gebruikers de spellingcontrole aan- of uitzetten</translation>
+<translation id="8726080977639508431">Met dit beleid bepaal je hoe <ph name="PRODUCT_NAME" /> beleid voor sitelijsten/grijze lijsten interpreteert voor de ondersteuningsfunctie voor oudere browsers. Het is alleen van invloed op het volgende beleid: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> en <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Als je dit op Default (0) zet of niet instelt, wordt de URL-overeenkomst minder strikt toegepast. Regels die geen '/' bevatten, zoeken naar een subtekenreeks in de URL-hostnaam. De overeenkomst van de padcomponent van een URL is hoofdlettergevoelig.
+
+      Als dit op IESiteListMode (1) is gezet, wordt de URL-overeenkomst strikter toegepast. Regels die geen '/' bevatten komen alleen overeen aan het einde van de hostnaam. Deze moeten zich ook bij de domeinnaamgrens bevinden. De overeenkomst van de padcomponent van een URL is niet hoofdlettergevoelig. Dit werkt beter met <ph name="MS_IE_PRODUCT_NAME" /> en <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Een voorbeeld met de regels 'example.com' en 'acme.com/abc':
+
+'http://example.com/', 'http://subdomain.example.com/' en 'http://acme.com/abc' komen overeen, ongeacht de parseermodus.
+
+      'http://notexample.com/', 'http://example.com.invalid.com/' en 'http://example.comabc/' komen alleen overeen in de modus Default.
+
+      'http://acme.com/ABC' komt alleen overeen in IESiteListMode.</translation>
 <translation id="8736538322216687231">Minimale 'Beperkte modus' op YouTube afdwingen</translation>
 <translation id="8745669971728319820">Met dit beleid wordt bepaald of informatie over extensies en plug-ins moet worden gerapporteerd.
 

@@ -117,7 +117,6 @@
 <translation id="1124772482545689468">用户</translation>
 <translation id="1125550662859510761">有效分辨率：<ph name="WIDTH" /> x <ph name="HEIGHT" />（原生）</translation>
 <translation id="1126809382673880764">不会保护您免受危险网站、下载内容和扩展程序的侵害。在 Gmail 和 Google 搜索等其他 Google 服务中，若安全浏览保护可用，您仍将获得该保护。</translation>
-<translation id="112752777279960360">如果这是您首次将 Android 手机设为与此计算机搭配使用的安全密钥，请在手机上打开 Chrome，然后依次转到“设置”&gt;“密码”&gt;“使用手机作为安全密钥”。然后，点按“连接新设备”并扫描此二维码。</translation>
 <translation id="1128109161498068552">禁止任何网站使用系统专有消息访问 MIDI 设备</translation>
 <translation id="1128591060186966949">修改搜索引擎</translation>
 <translation id="1129850422003387628">管理应用</translation>
@@ -498,6 +497,7 @@
 <translation id="1542514202066550870">此标签页正在向头戴设备显示 VR 内容。</translation>
 <translation id="1543284117603151572">从 Edge 导入的书签</translation>
 <translation id="1545177026077493356">自动自助服务终端模式</translation>
+<translation id="1545749641540134597">扫描二维码</translation>
 <translation id="1545775234664667895">已安装主题背景“<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">此扩展程序更改了您点击“主页”按钮后系统显示的页面。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />想安装一款能够执行以下操作的<ph name="EXTENSION_TYPE" />：</translation>
@@ -939,7 +939,6 @@
 <translation id="1992924914582925289">从设备中移除</translation>
 <translation id="1994173015038366702">网站网址</translation>
 <translation id="1995916364271252349">控制网站可以使用和显示什么信息（如位置信息、摄像头、弹出式窗口及其他）</translation>
-<translation id="1997437640397887843">设备的摄像头已开启。请将摄像头对准 eSIM 卡二维码。</translation>
 <translation id="1997616988432401742">您的证书</translation>
 <translation id="1999115740519098545">启动时</translation>
 <translation id="2000419248597011803">将一些 Cookie 以及地址栏和搜索框中的搜索字词发送给您的默认搜索引擎</translation>
@@ -959,7 +958,6 @@
 <translation id="2019718679933488176">在新标签页中打开音频(&amp;O)</translation>
 <translation id="2020183425253392403">显示网络地址设置</translation>
 <translation id="2020225359413970060">扫描文件</translation>
-<translation id="2022953316617983419">二维码</translation>
 <translation id="2023167225947895179">该 PIN 码可能很容易被猜到</translation>
 <translation id="202352106777823113">下载时间过长，网络已停止下载。</translation>
 <translation id="2025115093177348061">增强现实</translation>
@@ -1114,6 +1112,7 @@
 <translation id="2174948148799307353">该帐号由 <ph name="PARENT_EMAIL" /> 管理。如需在此设备上退出主帐号，请点击屏幕上的时间。在随即显示的菜单中，点击“退出”。</translation>
 <translation id="2175607476662778685">快速启动栏</translation>
 <translation id="217576141146192373">无法添加打印机。请检查您打印机的配置，然后重试。</translation>
+<translation id="2175927920773552910">二维码</translation>
 <translation id="2177950615300672361">无痕模式标签页：<ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA 泄漏</translation>
 <translation id="2179416702468739594">正在查找可用的配置文件。这可能会导致您的移动网络连接断开几分钟。</translation>
@@ -2936,6 +2935,7 @@
 <translation id="4136203100490971508">护眼模式将于日出时自动关闭</translation>
 <translation id="41365691917097717">继续操作会启用 ADB 调试，以创建和测试 Android 应用。请注意，此操作会允许安装未经 Google 验证的 Android 应用，而且一旦安装就无法停用，除非将设备恢复到出厂设置。</translation>
 <translation id="4138267921960073861">在登录屏幕上显示用户名和照片</translation>
+<translation id="4138598238327913711">语法检查目前仅支持英语</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID 设备已连接</translation>
 <translation id="4142052906269098341">使用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">您既可将检测到的打印机保存至您的个人资料名下，也可添加新的打印机。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -4317,7 +4317,6 @@
 <translation id="5712153969432126546">网站有时会发布 PDF 文件，例如文档、合同和表单</translation>
 <translation id="5715711091495208045">插件代理程序：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">默认搜索引擎</translation>
-<translation id="5719637365829998022">二维码已扫描完毕。</translation>
 <translation id="5719854774000914513">网站可以请求连接到 HID 设备</translation>
 <translation id="572155275267014074">Android 设置</translation>
 <translation id="5722086096420375088">绿色和白色</translation>
@@ -4510,7 +4509,6 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5942779427914696408">设备公开范围</translation>
 <translation id="5943127421590245687">验证成功。若要解锁并恢复您的本地数据，请输入您的旧 <ph name="DEVICE_TYPE" />的密码。</translation>
-<translation id="5944869793365969636">扫描二维码</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危险内容。发送给 Google 安全浏览服务进行扫描？</translation>
 <translation id="5945363896952315544">您的安全密钥存储的指纹的数量已达到上限。若要添加一个新指纹，请先删除一个现有指纹。</translation>
 <translation id="5946591249682680882">报告ID：<ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4634,7 +4632,6 @@
 <translation id="6077131872140550515">从首选网络列表中移除</translation>
 <translation id="6077189836672154517">与 <ph name="DEVICE_TYPE" /> 相关的提示和最新资讯</translation>
 <translation id="6077476112742402730">说话即可输入</translation>
-<translation id="6078045608615316905">为此图片创建二维码</translation>
 <translation id="6078121669093215958">{0,plural, =1{访客}other{# 个已打开的访客窗口}}</translation>
 <translation id="6078323886959318429">添加快捷方式</translation>
 <translation id="6078752646384677957">请检查您的麦克风和音量。</translation>
@@ -5171,14 +5168,12 @@
 <translation id="6680650203439190394">语速</translation>
 <translation id="6681668084120808868">拍照</translation>
 <translation id="6683087162435654533">恢复所有标签页(&amp;E)</translation>
-<translation id="6683948477137300040">显示包含设备 EID 和二维码的弹出式窗口</translation>
 <translation id="6684827949542560880">正在下载最新更新</translation>
 <translation id="668599234725812620">打开 Google Play</translation>
 <translation id="6686490380836145850">关闭右侧标签页</translation>
 <translation id="6686665106869989887">此标签页已移至右侧</translation>
 <translation id="6686817083349815241">保存您的密码</translation>
 <translation id="6687079240787935001">隐藏<ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">为此图片创建二维码</translation>
 <translation id="6690659332373509948">无法解析文件：<ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">通过 Google 信息中心管理已同步的数据</translation>
 <translation id="6691541770654083180">地球</translation>
@@ -5380,7 +5375,6 @@
 <translation id="6914783257214138813">所有能查看此导出文件的人员都能看到您的密码。</translation>
 <translation id="6916590542764765824">管理扩展程序</translation>
 <translation id="6919868320029503575">安全系数低的密码</translation>
-<translation id="6920262510368602827">为此页面创建二维码</translation>
 <translation id="6920989436227028121">在常规标签页中打开</translation>
 <translation id="6921104647315081813">清除活动</translation>
 <translation id="692114467174262153">无法打开<ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6101,7 +6095,6 @@
 <translation id="7691698019618282776">Crostini 升级</translation>
 <translation id="7696063401938172191">在您的“<ph name="PHONE_NAME" />”上：</translation>
 <translation id="7697166915480294040">当您共享屏幕时，系统会隐藏详细信息</translation>
-<translation id="7697598343108519171">使用摄像头扫描二维码</translation>
 <translation id="7701040980221191251">无</translation>
 <translation id="7701869757853594372">用户句柄</translation>
 <translation id="7701928712056789451">这些内容可能含有危险因素</translation>
@@ -6208,7 +6201,6 @@
 <translation id="7800518121066352902">逆时针旋转(&amp;O)</translation>
 <translation id="780301667611848630">不用了，谢谢</translation>
 <translation id="7804072833593604762">已关闭标签页</translation>
-<translation id="7805759469263222011">使用您设备的摄像头扫描二维码，或者输入您的运营商提供的激活码</translation>
 <translation id="7805768142964895445">状态</translation>
 <translation id="7807067443225230855">Google 搜索和 Google 助理</translation>
 <translation id="7807711621188256451">始终允许 <ph name="HOST" /> 使用您的摄像头</translation>
@@ -6762,7 +6754,6 @@
 <translation id="8386091599636877289">找不到此政策。</translation>
 <translation id="8387361103813440603">不允许查看您的位置信息</translation>
 <translation id="8388770971141403598">次级个人资料不受支持</translation>
-<translation id="8389416080014625855">为此页面创建二维码</translation>
 <translation id="8389492867173948260">允许此扩展程序读取和更改您在所访问的网站上留存的所有数据：</translation>
 <translation id="8390449457866780408">服务器无法使用。</translation>
 <translation id="8391218455464584335">黑胶唱片</translation>
@@ -7317,7 +7308,6 @@
 <translation id="8986494364107987395">将使用情况统计信息和崩溃报告自动发送给 Google</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988879467270412492">您是想启用 ChromeVox（Chrome 操作系统的内置屏幕阅读器）吗？如果是，请同时按住两个音量键 5 秒钟。</translation>
-<translation id="8990209962746788689">无法创建二维码</translation>
 <translation id="8991520179165052608">该网站可能会使用您的麦克风</translation>
 <translation id="899384117894244799">移除受限用户</translation>
 <translation id="899403249577094719">Netscape 证书基本网址</translation>

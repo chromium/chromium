@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Foydalanuvchi</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> kabi (asli)</translation>
 <translation id="1126809382673880764">Zararli sayt, yuklanma va kengaytmalardan himoya qila olmaydi. Gmail va Qidiruv kabi Google xizmatlarida Saytlarni xavfsiz kezish himoyasi ostida boʻlasiz.</translation>
-<translation id="112752777279960360">Bu kompyuterda Android telefonini birinchi marta elektron kalit sifatida ishlatishni sozlash uchun telefonda Chromeni oching va “Sozlamalar &gt; Parollar &gt; Telefonni elektron kalit sifatida ishlatish” sahifasini oching. Keyin “Yangi qurilmani ulash” ustiga bosib, mana bu QR kodni skanerlang.</translation>
 <translation id="1128109161498068552">Hech qanday saytga MIDI qurilmalarga kirish uchun tizim xabarlaridan foydalanishiga ruxsat berilmasin</translation>
 <translation id="1128591060186966949">Qidiruv tizimini o‘zgartirish</translation>
 <translation id="1129850422003387628">Ilovalarni boshqarish</translation>
@@ -501,6 +500,7 @@
 <translation id="1542514202066550870">Bu varaq garnituraga VR kontent namoyish qilmoqda.</translation>
 <translation id="1543284117603151572">EDGE brauzeridan import qilinganlar</translation>
 <translation id="1545177026077493356">Kiosk rejimining avtomatik yoqilishi</translation>
+<translation id="1545749641540134597">QR kodni skanerlash</translation>
 <translation id="1545775234664667895">“<ph name="THEME_NAME" />” mavzusi o‘rnatildi</translation>
 <translation id="1546280085599573572">Bu kengaytma “Boshi” tugmasi bosilganda ochiladigan sahifani o‘zgartirdi.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> kengaytmasini oʻrnatmoqchi, bunga kerakli ruxsatlar:</translation>
@@ -944,7 +944,6 @@
 <translation id="1992924914582925289">Qurilmadan olib tashlash</translation>
 <translation id="1994173015038366702">Sayt URL manzili</translation>
 <translation id="1995916364271252349">Saytlar qaysi axborotlarni (joylashuv, kamera, qalqib chiquvchi va boshqalar) ishlatishi va chiqarishini boshqarish</translation>
-<translation id="1997437640397887843">Qurilma kamerasi yoqildi. Kameraga eSIM QR kodini qarating.</translation>
 <translation id="1997616988432401742">Sertifikatlaringiz</translation>
 <translation id="1999115740519098545">Boshlanishda</translation>
 <translation id="2000419248597011803">Manzillar qatori va qidiruv oynasida kiritilgan so‘rovlar va ba’zi cookie ma’lumotlarni standart qidiruv tizimiga yuboradi</translation>
@@ -964,7 +963,6 @@
 <translation id="2019718679933488176">Audio yozuvni yangi varaqda ochish</translation>
 <translation id="2020183425253392403">Tarmoq manzili sozlamalari ko‘rsatilsin</translation>
 <translation id="2020225359413970060">Faylni skanerlash</translation>
-<translation id="2022953316617983419">QR kod</translation>
 <translation id="2023167225947895179">PIN kodni osongina topish mumkin</translation>
 <translation id="202352106777823113">Yuklab olish to‘xtatildi, chunki tarmoqdan kutish vaqti cho‘zilib ketdi.</translation>
 <translation id="2025115093177348061">Boyitilgan reallik</translation>
@@ -1121,6 +1119,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2174948148799307353">Hisobni <ph name="PARENT_EMAIL" /> boshqaradi Bu qurilmadagi asosiy hisobdan chiqish uchun ekrandagi vaqt ustiga bosing. Chiqadigan menyuda “Chiqish” ustiga bosing.</translation>
 <translation id="2175607476662778685">Tezkor ishga tushirish paneli</translation>
 <translation id="217576141146192373">Printer kiritilmadi. Printer sozlamalarini tekshiring va qayta urining.</translation>
+<translation id="2175927920773552910">QR kod</translation>
 <translation id="2177950615300672361">Inkognito tab: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Sertifikat markazi (CA) oshkor bo‘lishi</translation>
 <translation id="2179416702468739594">Mavjud profillar qidirilmoqda. Bunda mobil internetingiz vaqtincha uzilib qolishi mumkin.</translation>
@@ -2954,6 +2953,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4136203100490971508">Tungi rejim quyosh chiqishi bilan avtomatik faolsizlantiriladi</translation>
 <translation id="41365691917097717">Davom etsangiz, Android ilovalarni yaratish va sinash uchun ADB tuzatish vositasi yoqiladi. Eslatma: bunda Google tomonidan tekshirilmagan Android ilovalar ham oʻrnatilishi mumkin va zavod sozlamalariga tiklash yoqilmasligi kerak.</translation>
 <translation id="4138267921960073861">Kirish ekranida foydalanuvchilar nomlari va rasmlarini ko‘rsatish</translation>
+<translation id="4138598238327913711">Grammatika tekshiruvi hozircha faqat ingliz tilida ishlaydi</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – HID qurilmasi ulandi</translation>
 <translation id="4142052906269098341"><ph name="DEVICE_TYPE" /> qulfini telefoningiz bilan oching <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Topilgan printerlarni profilga saqlash yoki yangi printer kiritish. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -4339,7 +4339,6 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5712153969432126546">Baʼzan saytlar hujjatlar, shartnomalar va shakllarni PDF formatda chop etadi.</translation>
 <translation id="5715711091495208045">Vositachi: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standart qidiruv tizimlari</translation>
-<translation id="5719637365829998022">QR kod skanerlandi.</translation>
 <translation id="5719854774000914513">Saytlar HID qurilmalarga ulanishga ruxsat soʻray oladi</translation>
 <translation id="572155275267014074">Android sozlamalari</translation>
 <translation id="5722086096420375088">Yashil va oq</translation>
@@ -4532,7 +4531,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="5941711191222866238">Yig‘ish</translation>
 <translation id="5942779427914696408">Qurilmaning ochiqligi</translation>
 <translation id="5943127421590245687">Hisobingiz tasdiqlandi. Qulfdan chiqarish va maʼlumotlarni tiklash uchun <ph name="DEVICE_TYPE" /> qurilmasining eski parolini kiriting.</translation>
-<translation id="5944869793365969636">QR kodni skanerlash</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshiruv uchun Google saytlar xavfsizligi tizimiga yuborilsinmi?</translation>
 <translation id="5945363896952315544">Elektron kalitga boshqa barmoq izlari saqlanmaydi. Yangisini kiritish uchun mavjud barmoq izini oʻchiring.</translation>
 <translation id="5946591249682680882">Hisobot identifikatori: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4656,7 +4654,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6077131872140550515">Afzal tarmoqlardan olib tashlash</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> maslahat va yangiliklari</translation>
 <translation id="6077476112742402730">Ovoz bilan matn kiritish</translation>
-<translation id="6078045608615316905">Bu rasm uchun QR kod yaratish</translation>
 <translation id="6078121669093215958">{0,plural, =1{Mehmon}other{# ta mehmon oynasi ochiq}}</translation>
 <translation id="6078323886959318429">Yorliq bilan nomlash</translation>
 <translation id="6078752646384677957">Mikrofon va ovoz balandligi darajasi tekshiring.</translation>
@@ -5199,14 +5196,12 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6680650203439190394">Nutq tezligi</translation>
 <translation id="6681668084120808868">Suratga olish</translation>
 <translation id="6683087162435654533">Barcha varaqlarni tiklash</translation>
-<translation id="6683948477137300040">Qurilma EID raqami va QR kod oynasini ochish</translation>
 <translation id="6684827949542560880">Eng oxirgi yangilanish yuklab olinmoqda</translation>
 <translation id="668599234725812620">Play Marketni ochish</translation>
 <translation id="6686490380836145850">O‘ng tomondagi ichki oynalarni yopish</translation>
 <translation id="6686665106869989887">Varaq oʻngga olindi</translation>
 <translation id="6686817083349815241">Parolni saqlash</translation>
 <translation id="6687079240787935001">Berkitish: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Bu rasm uchun QR kod yaratish</translation>
 <translation id="6690659332373509948">Faylni tahlil qilib bo‘lmadi bo‘lmadi: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google shaxsiy kabinetidagi sinxronlangan ma’lumotlarni boshqarish</translation>
 <translation id="6691541770654083180">Yer</translation>
@@ -5410,7 +5405,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="6914783257214138813">Siz eksport qilgan faylni ko‘radigan har qanday kishi parollaringizni ham ko‘ra oladi.</translation>
 <translation id="6916590542764765824">Kengaytmalarni boshqarish</translation>
 <translation id="6919868320029503575">Kuchsiz parollar</translation>
-<translation id="6920262510368602827">Bu sahifa uchun QR kod yaratish</translation>
 <translation id="6920989436227028121">Muntazam ichki oyna sifatida ochish</translation>
 <translation id="6921104647315081813">Faollikni tozalash</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ochilmadi</translation>
@@ -6136,7 +6130,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7691698019618282776">Crostini tizimini yangilash</translation>
 <translation id="7696063401938172191"><ph name="PHONE_NAME" /> telefoningizda:</translation>
 <translation id="7697166915480294040">Ekran namoyishida tafsilotlar berkitiladi</translation>
-<translation id="7697598343108519171">QR kodni kamera yordamida skanerlang</translation>
 <translation id="7701040980221191251">Hech qanday</translation>
 <translation id="7701869757853594372">USER deskriptorlari</translation>
 <translation id="7701928712056789451">Bu elementlar xavfli boʻlish mumkin</translation>
@@ -6242,7 +6235,6 @@ maqsadlarida foydalanishi mumkin. Bu ruxsatni myaccount.google.com/activitycontr
 <translation id="7800518121066352902">Soat miliga teskari yo‘nalishda burish</translation>
 <translation id="780301667611848630">Kerak emas</translation>
 <translation id="7804072833593604762">Varaq yopildi</translation>
-<translation id="7805759469263222011">Qurilma kamerasi orqali QR kodni skanerlang yoki aloqa operatori taqdim qilgan aktivatsiya kodini kiriting</translation>
 <translation id="7805768142964895445">Holat</translation>
 <translation id="7807067443225230855">Qidiruv va assistent</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> saytiga kameradan foydalanishga doim ruxsat berish</translation>
@@ -6798,7 +6790,6 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8386091599636877289">Bu parametr topilmadi.</translation>
 <translation id="8387361103813440603">Joylashuvingizni koʻrish taqiqlangan</translation>
 <translation id="8388770971141403598">Qoʻshimcha profillar ishlamaydi</translation>
-<translation id="8389416080014625855">Bu sahifa uchun QR kod yaratish</translation>
 <translation id="8389492867173948260">Kengaytmaga tashrif buyurgan saytlaringizdagi ma’lumotlarni ko‘rish va o‘zgartirishga ruxsat bering:</translation>
 <translation id="8390449457866780408">Server ish faoliyatida emas.</translation>
 <translation id="8391218455464584335">Vinil</translation>
@@ -7355,7 +7346,6 @@ Tayinlovni bekor qilish uchun yangi belgilangan tugmani bosing</translation>
 <translation id="8986494364107987395">Foydalanish statistikasi va ishdan chiqishlar hisobotini avtomatik ravishda Google‘ga jo‘natish</translation>
 <translation id="8987927404178983737">Oy</translation>
 <translation id="8988879467270412492">Chrome OS tizimidagi ichki oʻrnatilgan ekrandan oʻqish vositasi – ChromeVox faollashtirilsinmi? Uni yoqish uchun ikkala tovush tugmasini birga besh soniya bosib turing</translation>
-<translation id="8990209962746788689">QR-kod yaratilmadi</translation>
 <translation id="8991520179165052608">Sayt mikrofondan foydalanishi mumkin</translation>
 <translation id="899384117894244799">Cheklangan foydalanuvchini olib tashlash</translation>
 <translation id="899403249577094719">Netscape sertifikatlar omborining URL manzili</translation>

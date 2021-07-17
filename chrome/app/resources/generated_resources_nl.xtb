@@ -72,6 +72,7 @@
 <translation id="107278043869924952">Pincode gebruiken naast wachtwoord</translation>
 <translation id="1076176485976385390">Navigeren op pagina's met een tekstcursor</translation>
 <translation id="1076698951459398590">Thema aanzetten</translation>
+<translation id="1076766328672150609">Je kind kan een pincode gebruiken om het apparaat te ontgrendelen.</translation>
 <translation id="1076818208934827215">Microsoft Internet Explorer</translation>
 <translation id="1076882167394279216">Kan het woordenboek voor de spellingcontrole van <ph name="LANGUAGE" /> niet downloaden. Probeer het opnieuw.</translation>
 <translation id="1079766198702302550">Cameratoegang altijd blokkeren</translation>
@@ -117,7 +118,6 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
 <translation id="1126809382673880764">Beschermt je niet tegen gevaarlijke websites, downloads en extensies. Je wordt voor andere services, zoals Gmail en Zoeken, nog steeds beschermd door Safe Browsing als dat beschikbaar is.</translation>
-<translation id="112752777279960360">Als je een Android-telefoon voor het eerst wilt instellen als beveiligingssleutel voor deze computer, open je Chrome op je telefoon en ga je naar 'Instellingen' &gt; 'Wachtwoorden' &gt; 'Telefoon gebruiken als beveiligingssleutel'. Tik vervolgens op 'Nieuw apparaat verbinden' en scan deze QR-code.</translation>
 <translation id="1128109161498068552">Sites niet toestaan berichten exclusief voor het systeem te gebruiken om toegang te krijgen tot MIDI-apparaten</translation>
 <translation id="1128591060186966949">Zoekmachine bewerken</translation>
 <translation id="1129850422003387628">Apps beheren</translation>
@@ -257,6 +257,7 @@
 <translation id="1275718070701477396">Geselecteerd</translation>
 <translation id="1276994519141842946">Kan <ph name="APP_NAME" /> niet verwijderen</translation>
 <translation id="1277020343994096713">Maak een nieuwe pincode die anders is dan je huidige pincode</translation>
+<translation id="1278859221870828664">Google Play-apps en -services beoordelen</translation>
 <translation id="127946606521051357">Apparaat dichtbij is aan het delen</translation>
 <translation id="1280965841156951489">Bestanden bewerken</translation>
 <translation id="1285320974508926690">Deze site nooit vertalen</translation>
@@ -501,6 +502,7 @@
 <translation id="1542514202066550870">Op dit tabblad wordt VR-content voor een headset getoond.</translation>
 <translation id="1543284117603151572">Geïmporteerd uit Edge</translation>
 <translation id="1545177026077493356">Automatische kioskmodus</translation>
+<translation id="1545749641540134597">QR-code scannen</translation>
 <translation id="1545775234664667895">Geïnstalleerd thema: '<ph name="THEME_NAME" />'</translation>
 <translation id="1546280085599573572">Deze extensie heeft gewijzigd welke pagina je ziet als je op de Homepage-knop klikt.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wil een <ph name="EXTENSION_TYPE" /> installeren die het volgende kan:</translation>
@@ -800,6 +802,7 @@
 <translation id="1834503245783133039">Download niet geslaagd: <ph name="FILE_NAME" /></translation>
 <translation id="1835261175655098052">Linux upgraden</translation>
 <translation id="1838374766361614909">Zoekopdracht wissen</translation>
+<translation id="1839540115464516994">Tonen in <ph name="LOCATION" /></translation>
 <translation id="1841545962859478868">De apparaatbeheerder kan het volgende controleren:</translation>
 <translation id="1841616161104323629">Ontbrekende apparaatrecord.</translation>
 <translation id="1841705068325380214"><ph name="EXTENSION_NAME" /> staat uit</translation>
@@ -942,7 +945,6 @@
 <translation id="1992924914582925289">Van apparaat verwijderen</translation>
 <translation id="1994173015038366702">Site-URL</translation>
 <translation id="1995916364271252349">Beheert welke informatie sites mogen gebruiken en tonen (locatie, camera, pop-ups en meer)</translation>
-<translation id="1997437640397887843">Apparaatcamera is ingeschakeld. Houd de QR-code van je e-simkaart voor de camera.</translation>
 <translation id="1997616988432401742">Je certificaten</translation>
 <translation id="1999115740519098545">Bij opstarten</translation>
 <translation id="2000419248597011803">Hiermee worden bepaalde cookies en de zoekopdrachten in de adresbalk en in het zoekvak verzonden naar je standaard zoekmachine</translation>
@@ -962,7 +964,6 @@
 <translation id="2019718679933488176">Audio &amp;openen op nieuw tabblad</translation>
 <translation id="2020183425253392403">Netwerkadresinstellingen tonen</translation>
 <translation id="2020225359413970060">Bestand scannen</translation>
-<translation id="2022953316617983419">QR-code</translation>
 <translation id="2023167225947895179">De pincode is mogelijk makkelijk te raden</translation>
 <translation id="202352106777823113">Het downloaden duurde te lang en is door het netwerk gestopt.</translation>
 <translation id="2025115093177348061">Augmented reality</translation>
@@ -1095,6 +1096,8 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2154710561487035718">URL kopiëren</translation>
 <translation id="2155772377859296191">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /></translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
+<translation id="2156557113115192526">Niet opnieuw vragen als je deze bestandsindeling in deze app opent:
+<ph name="FILE_FORMAT" /></translation>
 <translation id="2156877321344104010">Veiligheidscheck opnieuw uitvoeren</translation>
 <translation id="2157474325782140681">Gebruik voor aanvullende functies een Dell-dockingstation dat is bedoeld voor gebruik met deze Chromebook.</translation>
 <translation id="215753907730220065">Volledig scherm sluiten</translation>
@@ -1117,6 +1120,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2174948148799307353">Account wordt beheerd door <ph name="PARENT_EMAIL" />. Als je wilt uitloggen van het primaire account op dit apparaat, klik je op de tijd op het scherm. Klik op Uitloggen in het menu dat wordt weergegeven.</translation>
 <translation id="2175607476662778685">Balk Snelstarten</translation>
 <translation id="217576141146192373">Kan printer niet toevoegen. Controleer de configuratie van je printer en probeer het opnieuw.</translation>
+<translation id="2175927920773552910">QR-code</translation>
 <translation id="2177950615300672361">Incognitotabblad: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Inbreuk op CA</translation>
 <translation id="2179416702468739594">Zoeken naar beschikbare profielen. Hierdoor kan de verbinding met je mobiele netwerk enkele minuten worden verbroken.</translation>
@@ -1269,6 +1273,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2336381494582898602">Powerwash</translation>
 <translation id="2337236196941929873">Hiermee worden de pagina's die je volgens Chrome misschien wilt bezoeken, vooraf geladen. Chrome kan hiervoor gebruikmaken van cookies, als je cookies toestaat, en de pagina's versleutelen en versturen via Google, zodat je identiteit verborgen blijft voor sites.</translation>
 <translation id="2340239562261172947"><ph name="FILE_NAME" /> kan niet beveiligd worden gedownload</translation>
+<translation id="2342180549977909852">Je kind kan een nummer (pincode) in plaats van een wachtwoord gebruiken om dit apparaat te ontgrendelen. Als je later een pincode wilt instellen, ga je naar Instellingen.</translation>
 <translation id="2342740338116612727">Bookmarks toegevoegd</translation>
 <translation id="2343747224442182863">Focus op dit tabblad plaatsen</translation>
 <translation id="2345723121311404059">1 pagina naar <ph name="PRINTER_NAME" /></translation>
@@ -1728,6 +1733,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2828375943530438449">Terug vanaf de inlogpagina</translation>
 <translation id="2828650939514476812">Verbinding maken met een wifi-netwerk</translation>
 <translation id="2831430281393059038">Apparaat wordt ondersteund</translation>
+<translation id="2832124733806557606">Je kind kan een pincode gebruiken om in te loggen op het apparaat of om het te ontgrendelen.</translation>
 <translation id="2835547721736623118">Spraakherkenningsservice</translation>
 <translation id="2836269494620652131">Crash</translation>
 <translation id="2836635946302913370">Je beheerder heeft ingesteld dat je niet kunt inloggen met deze gebruikersnaam.</translation>
@@ -1743,6 +1749,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2849035674501872372">Omhoog kijken</translation>
 <translation id="284970761985428403"><ph name="ASCII_NAME" /> (<ph name="UNICODE_NAME" />)</translation>
 <translation id="284975061945174219">Opschonen is mislukt</translation>
+<translation id="2849767214114481738">Je pincode is toegevoegd</translation>
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="2850541429955027218">Thema toevoegen</translation>
 <translation id="2851634818064021665">Je hebt rechten nodig om deze site te bezoeken</translation>
@@ -1851,6 +1858,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2960208947600937804">Er is een fout opgetreden bij het configureren van Linux. Neem contact op met je beheerder.</translation>
 <translation id="296026337010986570">Klaar. Schadelijke software is verwijderd. Als je de extensies weer wilt aanzetten, ga je naar &lt;a href="chrome://extensions"&gt;Extensies&lt;/a&gt;.</translation>
 <translation id="2961090598421146107"><ph name="CERTIFICATE_NAME" /> (door extensie geleverd)</translation>
+<translation id="2961210776189273067">Titel</translation>
 <translation id="2961695502793809356">Klik om verder te gaan en houd ingedrukt om de geschiedenis te zien</translation>
 <translation id="2962131322798295505">Achtergrondkiezer</translation>
 <translation id="2963151496262057773">De volgende plug-in reageert niet meer: <ph name="PLUGIN_NAME" />Wil je deze beëindigen?</translation>
@@ -2206,6 +2214,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="338323348408199233">Verkeer zonder VPN blokkeren</translation>
 <translation id="3385092118218578224"><ph name="DISPLAY_ZOOM" />%</translation>
 <translation id="338583716107319301">Separator</translation>
+<translation id="3387023983419383865">,</translation>
 <translation id="3387614642886316601">Verbeterde spellingcontrole gebruiken</translation>
 <translation id="3387829698079331264">Mogen niet weten wanneer je je apparaat actief gebruikt</translation>
 <translation id="3388094447051599208">Uitvoervak is bijna vol</translation>
@@ -2559,6 +2568,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="3747077776423672805">Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer. Tik op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.</translation>
 <translation id="3747220812138541072">Inline schrijfsuggesties laten zien terwijl je typt</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
+<translation id="3752253558646317685">Laat je kind de vinger steeds optillen om de vingerafdruk te bewaren</translation>
 <translation id="3752582316358263300">OK...</translation>
 <translation id="3753033997400164841">Eén keer opslaan, Overal gebruiken</translation>
 <translation id="3755411799582650620">Je <ph name="PHONE_NAME" /> kan deze <ph name="DEVICE_TYPE" /> nu ook ontgrendelen.</translation>
@@ -3021,6 +3031,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="425573743389990240">Batterij-ontlading in Watt (een negatieve waarde betekent dat de batterij wordt opgeladen)</translation>
 <translation id="4256316378292851214">&amp;Video opslaan als...</translation>
 <translation id="4258348331913189841">Bestandssystemen</translation>
+<translation id="4258786365875464621"><ph name="APP_ORIGIN" /> wil deze bestanden openen:</translation>
 <translation id="4259388776256904261">Dit kan even duren</translation>
 <translation id="4260182282978351200"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar 'Geavanceerde beveiliging' van Google sturen zodat het kan worden gescand? Druk op Shift+F6 om naar het gedeelte met de downloadbalk te gaan.</translation>
 <translation id="4263223596040212967">Controleer je toetsenbordindeling en probeer het opnieuw.</translation>
@@ -3051,6 +3062,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4287502603002637393">{MUTED_NOTIFICATIONS_COUNT,plural, =1{Weergeven}other{Alles tonen}}</translation>
 <translation id="4289372044984810120">Je kunt hier je accounts beheren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="4289540628985791613">Overzicht</translation>
+<translation id="4289732974614035569">Een pincode kiezen</translation>
 <translation id="4290791284969893584">Nadat je een pagina hebt gesloten, kan het zijn dat gestarte taken niet worden afgerond</translation>
 <translation id="4295072614469448764">De app is beschikbaar in je terminal. Mogelijk staat er ook een icoon van de app in de Launcher.</translation>
 <translation id="4295839147292213505">Je kunt sms'en vanaf je computer, de internetverbinding delen, reageren op gespreksmeldingen en je <ph name="DEVICE_TYPE" /> ontgrendelen met je telefoon.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
@@ -3646,6 +3658,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="4943368462779413526">Amerikaanse voetbal</translation>
 <translation id="4943691134276646401">'<ph name="CHROME_EXTENSION_NAME" />' wil verbinden met een seriële poort</translation>
 <translation id="4944310289250773232">Deze verificatieservice wordt gehost door <ph name="SAML_DOMAIN" /></translation>
+<translation id="4945439665401275950">Laat je kind de aan/uit-knop aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{een bestand}other{# bestanden}}</translation>
 <translation id="495170559598752135">Acties</translation>
 <translation id="4953808748584563296">Standaard oranje avatar</translation>
@@ -4319,7 +4332,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5712153969432126546">Sites publiceren soms pdf's, zoals documenten, contracten en formulieren</translation>
 <translation id="5715711091495208045">Plug-inbroker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Standaardzoekmachines</translation>
-<translation id="5719637365829998022">De QR-code is gescand</translation>
 <translation id="5719854774000914513">Sites kunnen vragen of ze verbinding mogen maken met HID-apparaten</translation>
 <translation id="572155275267014074">Android-instellingen</translation>
 <translation id="5722086096420375088">Groen/wit</translation>
@@ -4512,7 +4524,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="5941711191222866238">Minimaliseren</translation>
 <translation id="5942779427914696408">Zichtbaarheid van apparaat</translation>
 <translation id="5943127421590245687">De verificatie is afgerond. Geef het oude wachtwoord van je <ph name="DEVICE_TYPE" /> op om te ontgrendelen en je lokale gegevens te herstellen.</translation>
-<translation id="5944869793365969636">QR-code scannen</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> is misschien gevaarlijk. Wil je het bestand naar Google Safe Browsing sturen om het te laten scannen?</translation>
 <translation id="5945363896952315544">Je beveiligingssleutel kan geen nieuwe vingerafdrukken meer opslaan. Als je een nieuwe wilt toevoegen, moet je eerst een bestaande vingerafdruk verwijderen.</translation>
 <translation id="5946591249682680882">Rapport-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4636,7 +4647,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6077131872140550515">Verwijderen uit voorkeursnetwerken</translation>
 <translation id="6077189836672154517">Tips en updates voor <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Spreken om te typen</translation>
-<translation id="6078045608615316905">QR-code maken voor deze afbeelding</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gast}other{# geopende gastvensters}}</translation>
 <translation id="6078323886959318429">Snelle link toevoegen</translation>
 <translation id="6078752646384677957">Controleer je microfoon en audioniveaus</translation>
@@ -4768,6 +4778,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6232017090690406397">Batterij</translation>
 <translation id="6232116551750539448">Verbinding met <ph name="NAME" /> is verbroken</translation>
 <translation id="6233154960150021497">Standaard spraak in plaats van toetsenbord gebruiken</translation>
+<translation id="6233455992368963267">Spraak in het <ph name="LANGUAGE" /> wordt voor verwerking naar Google gestuurd.</translation>
 <translation id="6234108445915742946">De Servicevoorwaarden van Chrome veranderen op 31 maart</translation>
 <translation id="6234474535228214774">Installatie in behandeling</translation>
 <translation id="6237474966939441970">App voor notities met stylus</translation>
@@ -4861,7 +4872,9 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6318125393809743217">Een bestand policies.json opnemen bij beleidsconfiguraties.</translation>
 <translation id="6318407754858604988">Download gestart</translation>
 <translation id="6318944945640833942">Kan geen printer detecteren. Voer het printeradres opnieuw in.</translation>
+<translation id="6319081871916332821"><ph name="LANGUAGE" /> wordt lokaal verwerkt en werkt offline.</translation>
 <translation id="6321407676395378991">Screensaver altijd aanzetten</translation>
+<translation id="6322370287306604163">Sneller ontgrendelen met je vingerafdruk</translation>
 <translation id="6322653941595359182">Sms'jes verzenden en ontvangen op je Chromebook</translation>
 <translation id="6324916366299863871">Snelkoppeling bewerken</translation>
 <translation id="6325191661371220117">Automatisch starten uitzetten</translation>
@@ -5014,6 +5027,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6497789971060331894">Omgekeerd scrollen muis</translation>
 <translation id="6498249116389603658">&amp;Al je talen</translation>
 <translation id="6499143127267478107">Host omzetten in proxyscript...</translation>
+<translation id="6501086852992132091"><ph name="APP_ORIGIN" /> wil dit bestand openen:</translation>
 <translation id="650266656685499220">Ga naar Google Foto's om albums te maken</translation>
 <translation id="6503077044568424649">Meest bezocht</translation>
 <translation id="650457560773015827">Linkerknop</translation>
@@ -5032,6 +5046,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6519437681804756269">[<ph name="TIMESTAMP" />]
         <ph name="FILE_INFO" />
         <ph name="EVENT_NAME" /></translation>
+<translation id="6519689855001245063">Geschiktheid controleren</translation>
 <translation id="6520876759015997832">Zoekresultaat <ph name="LIST_POSITION" /> van <ph name="LIST_SIZE" />: <ph name="SEARCH_RESULT_TEXT" />. Druk op Enter om naar de sectie te navigeren.</translation>
 <translation id="6521214596282732365">Sites gebruiken je lettertypen meestal om te zorgen dat je hoogwaardige content kunt maken met online ontwerp- en grafische tools</translation>
 <translation id="652492607360843641">Je hebt verbinding met een <ph name="NETWORK_TYPE" /> netwerk.</translation>
@@ -5173,14 +5188,12 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6680650203439190394">Snelheid</translation>
 <translation id="6681668084120808868">Foto nemen</translation>
 <translation id="6683087162435654533">Alle tabbladen her&amp;stellen</translation>
-<translation id="6683948477137300040">Pop-up met apparaat-EID en QR-code tonen</translation>
 <translation id="6684827949542560880">De nieuwste update downloaden</translation>
 <translation id="668599234725812620">Google Play openen</translation>
 <translation id="6686490380836145850">Tabbladen aan de rechterkant sluiten</translation>
 <translation id="6686665106869989887">Tabblad naar rechts verplaatst</translation>
 <translation id="6686817083349815241">Je wachtwoord opslaan</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> verbergen</translation>
-<translation id="6688285987813868112">QR-code maken voor deze afbeelding</translation>
 <translation id="6690659332373509948">Fout bij het parseren van dit bestand: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Gesynchroniseerde gegevens beheren in Google Dashboard</translation>
 <translation id="6691541770654083180">Aarde</translation>
@@ -5257,6 +5270,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6785518634832172390">Pincode mag maximaal 12 cijfers bevatten</translation>
 <translation id="6786747875388722282">Extensies</translation>
 <translation id="6787097042755590313">Ander tabblad</translation>
+<translation id="6787631759192429908">Bestanden openen?</translation>
 <translation id="6787839852456839824">Sneltoetsen</translation>
 <translation id="6788210894632713004">Uitgepakte extensie</translation>
 <translation id="6789592661892473991">Horizontaal splitsen</translation>
@@ -5325,6 +5339,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6846178040388691741">'<ph name="EXTENSION_NAME" />' wil <ph name="FILE_NAME" /> afdrukken met <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Maak ruimte vrij om door te gaan</translation>
 <translation id="6848388270925200958">Je hebt momenteel enkele passen die alleen op dit apparaat kunnen worden gebruikt</translation>
+<translation id="6848716236260083778">Laat je kind de vingerafdruksensor aanraken om een vingerafdruk in te stellen. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op de <ph name="DEVICE_TYPE" /> staan.</translation>
 <translation id="6850286078059909152">Tekstkleur</translation>
 <translation id="6851181413209322061">Stuur gebruiks- en diagnostische gegevens. Dit apparaat stuurt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens worden niet gebruikt om je kind te identificeren en kunnen helpen om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze instelling wordt afgedwongen door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet voor je kind, kunnen deze gegevens worden opgeslagen in het Google-account van je kind.</translation>
 <translation id="6851497530878285708">App staat aan</translation>
@@ -5382,7 +5397,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="6914783257214138813">Je wachtwoorden zijn zichtbaar voor iedereen die het geëxporteerde bestand kan bekijken.</translation>
 <translation id="6916590542764765824">Extensies beheren</translation>
 <translation id="6919868320029503575">Zwakke wachtwoorden</translation>
-<translation id="6920262510368602827">QR-code maken voor deze pagina</translation>
 <translation id="6920989436227028121">Openen als normaal tabblad</translation>
 <translation id="6921104647315081813">Activiteiten wissen</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> kan niet worden geopend</translation>
@@ -5672,6 +5686,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7243632151880336635">Wissen en uitloggen</translation>
 <translation id="7243784282103630670">Er is een fout opgetreden bij het upgraden van Linux. We herstellen de container via je back-up.</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (beste)</translation>
+<translation id="7246079707145287765">Tabblad <ph name="TAB_ORIGIN" /> bekijken</translation>
 <translation id="7246230585855757313">Plaats de beveiligingssleutel opnieuw en probeer het opnieuw.</translation>
 <translation id="7249777306773517303">Dit apparaat wordt beheerd door <ph name="DOMAIN" /> en vereist dat je elke keer opnieuw inlogt.</translation>
 <translation id="7250616558727237648">Het apparaat waarmee je deelt, reageert niet. Probeer het opnieuw.</translation>
@@ -5718,6 +5733,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7297726121602187087">Donkergroen</translation>
 <translation id="7298195798382681320">Aanbevolen</translation>
 <translation id="7299337219131431707">Gebruiken als gast toestaan</translation>
+<translation id="7301470816294041580">Je kunt bijvoorbeeld vragen 'Hey Google, welk nummer is dit?' of 'Hey Google, wat staat er op mijn scherm?'</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{Deze app kan ervoor zorgen dat Chrome niet goed functioneert.}other{Deze apps kunnen ervoor zorgen dat Chrome niet goed functioneert.}}</translation>
 <translation id="7303281435234579599">Er is een probleem opgetreden bij het instellen van de demomodus.</translation>
 <translation id="7303900363563182677">Deze site kan geen tekst en afbeeldingen bekijken die naar het klembord zijn gekopieerd</translation>
@@ -5822,6 +5838,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="740810853557944681">Een afdrukserver toevoegen</translation>
 <translation id="7409549334477097887">Extra groot</translation>
 <translation id="7409735910987429903">Sites sturen mogelijk pop-ups om advertenties te tonen of gebruiken omleidingen die je naar websites leiden die je mogelijk niet wilt bezoeken</translation>
+<translation id="7409854300652085600">Bookmarks geïmporteerd.</translation>
 <translation id="7410344089573941623">Vragen of <ph name="HOST" /> toegang wil tot je camera en microfoon</translation>
 <translation id="741204030948306876">Ja, aanzetten</translation>
 <translation id="7412226954991670867">GPU-geheugen</translation>
@@ -5957,6 +5974,8 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7552846755917812628">Probeer de volgende tips:</translation>
 <translation id="7553012839257224005">De Linux-container wordt gecontroleerd</translation>
 <translation id="7553242001898162573">Geef je wachtwoord op</translation>
+<translation id="7553347517399115470">Niet opnieuw vragen als je deze bestandsindelingen in deze app opent:
+<ph name="FILE_FORMATS" /></translation>
 <translation id="755472745191515939">Je beheerder staat deze taal niet toe</translation>
 <translation id="7554791636758816595">Nieuw tabblad</translation>
 <translation id="7556033326131260574">Smart Lock kan je account niet verifiëren. Typ je wachtwoord om in te loggen.</translation>
@@ -6103,7 +6122,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7691698019618282776">Crostini upgraden</translation>
 <translation id="7696063401938172191">Op je '<ph name="PHONE_NAME" />':</translation>
 <translation id="7697166915480294040">Details zijn verborgen terwijl je je scherm deelt</translation>
-<translation id="7697598343108519171">Camera gebruiken om QR-code te scannen</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701869757853594372">USER-handles</translation>
 <translation id="7701928712056789451">Deze items kunnen gevaarlijk zijn</translation>
@@ -6209,7 +6227,6 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="7800518121066352902">Links&amp;om draaien</translation>
 <translation id="780301667611848630">Nee, bedankt</translation>
 <translation id="7804072833593604762">Tabblad gesloten</translation>
-<translation id="7805759469263222011">Scan een QR-code met je apparaatcamera of voer de activeringscode in die je van je provider hebt gekregen</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Google Zoeken en Google Assistent</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> altijd toegang tot je camera geven</translation>
@@ -6571,6 +6588,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8162307956032783161">Schakelaar toewijzen: Volgende</translation>
 <translation id="8162984717805647492">{NUM_TABS,plural, =1{Tabblad verplaatsen naar nieuw venster}other{Tabbladen verplaatsen naar nieuw venster}}</translation>
 <translation id="8165997195302308593">Poortdoorschakeling voor Crostini</translation>
+<translation id="8166081708154635403">Bestand openen?</translation>
 <translation id="816704878106051517">{COUNT,plural, =1{een telefoonnummer}other{# telefoonnummers}}</translation>
 <translation id="8168435359814927499">Content</translation>
 <translation id="8169165065843881617">{NUM_TABS,plural, =1{Tabblad toevoegen aan leeslijst}other{Tabbladen toevoegen aan leeslijst}}</translation>
@@ -6740,6 +6758,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="835238322900896202">Er is een fout opgetreden tijdens de verwijdering. Verwijder het programma via de Terminal.</translation>
 <translation id="8352772353338965963">Een account toevoegen aan Toegang tot meerdere accounts. Alle ingelogde accounts zijn toegankelijk zonder wachtwoord, dus deze functie moet alleen worden gebruikt voor vertrouwde accounts.</translation>
 <translation id="8353683614194668312">De app/extensie kan het volgende doen:</translation>
+<translation id="8354034204605718473">De pincode van je kind is toegevoegd</translation>
 <translation id="8356197132883132838"><ph name="TITLE" /> - <ph name="COUNT" /></translation>
 <translation id="8357388086258943206">Fout bij installeren van Linux</translation>
 <translation id="8358685469073206162">Pagina's herstellen?</translation>
@@ -6763,7 +6782,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8386091599636877289">Beleid niet gevonden.</translation>
 <translation id="8387361103813440603">Geen toestemming om je locatie te bekijken</translation>
 <translation id="8388770971141403598">Secundaire profielen worden niet ondersteund</translation>
-<translation id="8389416080014625855">QR-code maken voor deze pagina</translation>
 <translation id="8389492867173948260">Hiermee kan deze extensie al je gegevens lezen en wijzigen op de websites die je bezoekt:</translation>
 <translation id="8390449457866780408">Server niet beschikbaar.</translation>
 <translation id="8391218455464584335">Lp</translation>
@@ -6974,6 +6992,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8645920082661222035">Voorspelt en waarschuwt je over gevaarlijke gebeurtenissen voordat deze plaatsvinden</translation>
 <translation id="8646209145740351125">Synchronisatie uitzetten</translation>
 <translation id="864637694230589560">Sites sturen meestal meldingen om je op de hoogte te houden van actueel nieuws of nieuwe chatberichten</translation>
+<translation id="8647385344110255847">Als je toestemming geeft, kan je kind Google Play gebruiken om apps te installeren</translation>
 <translation id="8647834505253004544">Geen geldig webadres</translation>
 <translation id="8648252583955599667"><ph name="GET_HELP_LINK" /> of <ph name="RE_SCAN_LINK" /></translation>
 <translation id="8648408795949963811">Kleurtemperatuur Nachtverlichting</translation>
@@ -7118,6 +7137,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8783834180813871000">Typ de bluetooth-koppelingscode en druk op Return of Enter.</translation>
 <translation id="8784626084144195648">Gemiddelde van gegroepeerde gegevens</translation>
 <translation id="8785622406424941542">Stylus</translation>
+<translation id="8786824282808281903">Als je kind dit icoon ziet, kan er een vingerafdruk worden gebruikt voor identificatie of om aankopen goed te keuren.</translation>
 <translation id="8787575090331305835">{NUM_TABS,plural, =1{Naamloze groep - 1 tabblad}other{Naamloze groep - # tabbladen}}</translation>
 <translation id="8791534160414513928">Een verzoek voor niet bijhouden met je browseverkeer verzenden</translation>
 <translation id="8792626944327216835">microfoon</translation>
@@ -7319,7 +7339,6 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="8986494364107987395">Automatisch gebruiksstatistieken en crashrapporten naar Google verzenden</translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8988879467270412492">Wil je ChromeVox activeren, de ingebouwde schermlezer voor Chrome OS? Houd dan beide volumeknoppen 5 seconden ingedrukt.</translation>
-<translation id="8990209962746788689">Kan geen QR-code maken</translation>
 <translation id="8991520179165052608">Site kan je microfoon gebruiken</translation>
 <translation id="899384117894244799">Gebruiker met beperkte rechten verwijderen</translation>
 <translation id="899403249577094719">Basis-URL voor Netscape-certificaat</translation>
@@ -7364,6 +7383,7 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 <translation id="9031811691986152304">het opnieuw te proberen</translation>
 <translation id="9033765790910064284">Toch doorgaan</translation>
 <translation id="9033857511263905942">&amp;Plakken</translation>
+<translation id="903480517321259405">Typ de pincode nog een keer</translation>
 <translation id="9037640663275993951">Apparaat is niet toegestaan</translation>
 <translation id="9037818663270399707">Je verbinding is niet privé voor alle netwerkverkeer</translation>
 <translation id="9037965129289936994">Origineel tonen</translation>
@@ -7391,6 +7411,10 @@ Druk op een toegewezen schakelaar om de toewijzing te verwijderen</translation>
 Je kunt meerdere schakelaars aan deze actie toewijzen</translation>
 <translation id="9064275926664971810">Automatisch invullen aanzetten om formulieren met één klik in te vullen</translation>
 <translation id="9065203028668620118">Bewerken</translation>
+<translation id="9066394310994446814">Je krijgt dit item te zien op basis van je eerdere activiteit bij het gebruik van Google-services. Je kunt je gegevens bekijken of verwijderen en je instellingen wijzigen op <ph name="BEGIN_LINK1" />myactivity.google.com<ph name="END_LINK1" />.
+<ph name="BREAK" />
+<ph name="BREAK" />
+Op <ph name="BEGIN_LINK2" />policies.google.com<ph name="END_LINK2" /> vind je meer informatie over de gegevens die Google verzamelt en waarom.</translation>
 <translation id="9066782832737749352">Tekst-naar-spraak</translation>
 <translation id="9068878141610261315">Niet-ondersteund bestandstype</translation>
 <translation id="9070342919388027491">Tabblad naar links verplaatst</translation>
@@ -7499,10 +7523,11 @@ Je kunt meerdere schakelaars aan deze actie toewijzen</translation>
 <translation id="917510707618656279">Vragen als een site toegang wil krijgen tot bluetooth-apparaten</translation>
 <translation id="9176476835295860688">Stuur gebruiks- en diagnostische gegevens. Dit apparaat verzendt momenteel automatisch diagnostische, apparaat- en app-gebruiksgegevens naar Google. Deze gegevens kunnen worden gebruikt om de systeem- en app-stabiliteit te verbeteren en andere optimalisaties mogelijk te maken. Daarnaast zijn bepaalde verzamelde gegevens nuttig voor Google-apps en -partners, zoals Android-ontwikkelaars. Deze <ph name="BEGIN_LINK1" />instelling<ph name="END_LINK1" /> wordt verplicht door de eigenaar. Als je de instelling voor aanvullende Web- en app-activiteit hebt aangezet, kunnen deze gegevens worden opgeslagen in je Google-account. <ph name="BEGIN_LINK2" />Meer informatie<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" />: Bluetooth-apparaat verbonden</translation>
+<translation id="9176817945195089764"><ph name="DOMAIN" /> is geen geldige organisatie. Neem contact op met je beheerder. Als je een beheerder bent, kun je je organisatie instellen door naar g.co/ChromeEnterpriseAccount te gaan.</translation>
 <translation id="9179524979050048593">Gebruikersnaam voor inlogscherm</translation>
 <translation id="9180281769944411366">Dit proces kan enkele minuten duren. De Linux-container wordt gestart.</translation>
 <translation id="9180380851667544951">Site kan je scherm delen</translation>
-<translation id="9182556968660520230">Niet toestaan dat sites beveiligde content afspelen</translation>
+<translation id="9182556968660520230">Niet toestaan dat sites beschermde content afspelen</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9185567408827209876">Kandidaten in Hangul-modus tonen</translation>
 <translation id="9186963452600581158">Inloggen met het Google-account van een kind</translation>

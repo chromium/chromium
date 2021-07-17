@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Felhasználó</translation>
 <translation id="1125550662859510761">Megjelenés: <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natív)</translation>
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
-<translation id="112752777279960360">Ha első alkalommal szeretne androidos telefont beállítani biztonsági kulcsként való használatra ezen a számítógépen, nyissa meg a Chrome-ot telefonján, majd lépjen a „Beállítások &gt; Jelszavak &gt; Telefon használata biztonsági kulcsként” menüpontra. Ezután koppintson az „Új eszköz csatlakoztatása” lehetőségre, és olvassa be ezt a QR-kódot.</translation>
 <translation id="1128109161498068552">Ne engedélyezze a webhelyeknek, hogy exkluzív rendszerüzenetekkel elérhessék a MIDI-eszközöket</translation>
 <translation id="1128591060186966949">Keresőmotor beállítása</translation>
 <translation id="1129850422003387628">Alkalmazáskezelés</translation>
@@ -506,6 +505,7 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1542514202066550870">Ez a lap VR-tartalmat jelenít meg egy headseten.</translation>
 <translation id="1543284117603151572">Az Edge böngészőből importálva</translation>
 <translation id="1545177026077493356">Automatikus kioszk mód</translation>
+<translation id="1545749641540134597">QR-kód beolvasása</translation>
 <translation id="1545775234664667895">Telepített téma: "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Ez a bővítmény azt módosította, hogy melyik oldal jelenjen meg a Kezdőlap gombra való kattintás esetén.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> olyan <ph name="EXTENSION_TYPE" /> szeretne telepíteni, amely képes a következőkre:</translation>
@@ -956,7 +956,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="1992924914582925289">Eltávolítás az eszközről</translation>
 <translation id="1994173015038366702">Webhely URL-je</translation>
 <translation id="1995916364271252349">Azt szabályozza, hogy a webhelyek milyen információkat használhatnak és jeleníthetnek meg (hely, kamera, előugró ablakok stb.).</translation>
-<translation id="1997437640397887843">Eszköz kamerája bekapcsolt. Helyezze az eSIM QR-kódját a kamera elé.</translation>
 <translation id="1997616988432401742">Az Ön tanúsítványai</translation>
 <translation id="1999115740519098545">Induláskor</translation>
 <translation id="2000419248597011803">Bizonyos cookie-kat és kereséseket küld a címsávból és a keresőmezőből az alapértelmezett keresőmotornak</translation>
@@ -976,7 +975,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="2019718679933488176">&amp;Hang megnyitása új lapon</translation>
 <translation id="2020183425253392403">A hálózati cím beállításainak megjelenítése</translation>
 <translation id="2020225359413970060">Fájl vizsgálata</translation>
-<translation id="2022953316617983419">QR-kód</translation>
 <translation id="2023167225947895179">A PIN-kód könnyen kitalálható</translation>
 <translation id="202352106777823113">A letöltés túl sokáig tartott, ezért a hálózat leállította.</translation>
 <translation id="2025115093177348061">Kiterjesztett valóság</translation>
@@ -1133,6 +1131,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2174948148799307353">A fiókot a(z) <ph name="PARENT_EMAIL" /> kezeli. Ha szeretne kijelentkezni eszközén az elsődleges fiókból, kattintson a képernyőn az órára. A megjelenő menüben kattintson a „Kijelentkezés” lehetőségre.</translation>
 <translation id="2175607476662778685">Gyorsindító sáv</translation>
 <translation id="217576141146192373">Nem sikerült hozzáadni a nyomtatót. Ellenőrizze a nyomtató beállításait, majd próbálja újra.</translation>
+<translation id="2175927920773552910">QR-kód</translation>
 <translation id="2177950615300672361">Inkognitó lap: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">A tanúsítványkibocsátó veszélyeztetve</translation>
 <translation id="2179416702468739594">Rendelkezésre álló profilok keresése. Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
@@ -4351,7 +4350,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5712153969432126546">A webhelyek néha közzétesznek PDF formátumú tartalmakat (pl. dokumentumokat, szerződéseket vagy űrlapokat)</translation>
 <translation id="5715711091495208045">Beépülő modul közvetítője: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Alapértelmezett keresőmotorok</translation>
-<translation id="5719637365829998022">QR-kód beolvasása sikeres.</translation>
 <translation id="5719854774000914513">A webhelyek engedélyt kérhetnek a HID-eszközökhöz való csatlakozásra</translation>
 <translation id="572155275267014074">Android-beállítások</translation>
 <translation id="5722086096420375088">Zöld-fehér</translation>
@@ -4544,7 +4542,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5941711191222866238">Kis méret</translation>
 <translation id="5942779427914696408">Az eszköz láthatósága</translation>
 <translation id="5943127421590245687">Sikeres igazolás. Helyi adatainak feloldásához és helyreállításához adja meg régi <ph name="DEVICE_TYPE" />-jelszavát.</translation>
-<translation id="5944869793365969636">QR-kód beolvasása</translation>
 <translation id="5945002094477276055">A(z) <ph name="FILE_NAME" /> veszélyes lehet. Elküldi a Google Biztonságos Böngészésnek ellenőrzésre?</translation>
 <translation id="5945363896952315544">Biztonsági hardverkulcsa nem képes több ujjlenyomat tárolására. Újabb ujjlenyomat felvételéhez törölje valamelyik meglévőt.</translation>
 <translation id="5946591249682680882">Jelentésazonosító: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4668,7 +4665,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="6077131872140550515">Eltávolítás az előnyben részesített hálózatokból</translation>
 <translation id="6077189836672154517">Tippek és frissítések <ph name="DEVICE_TYPE" /> eszközökre</translation>
 <translation id="6077476112742402730">Beszéddel írás</translation>
-<translation id="6078045608615316905">QR-kód létrehozása ehhez a Képhez</translation>
 <translation id="6078121669093215958">{0,plural, =1{Vendég}other{# megnyitott vendég ablak}}</translation>
 <translation id="6078323886959318429">Parancsikon hozzáadása</translation>
 <translation id="6078752646384677957">Ellenőrizze a mikrofont és a hangerőt.</translation>
@@ -5210,14 +5206,12 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6680650203439190394">Értékelés</translation>
 <translation id="6681668084120808868">Fényképkészítés</translation>
 <translation id="6683087162435654533">Az össz&amp;es lap helyreállítása</translation>
-<translation id="6683948477137300040">Az eszköz EID-számához és QR-kódjához tartozó előugró ablak megjelenítése</translation>
 <translation id="6684827949542560880">A legutóbbi frissítés letöltése…</translation>
 <translation id="668599234725812620">A Google Play megnyitása</translation>
 <translation id="6686490380836145850">Jobbra lévő lapok bezárása</translation>
 <translation id="6686665106869989887">Lap jobbra helyezve</translation>
 <translation id="6686817083349815241">Jelszó mentése</translation>
 <translation id="6687079240787935001">A következők elrejtése: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">QR-kód létrehozása ehhez a képhez</translation>
 <translation id="6690659332373509948">Nem sikerült a fájl szintaktikai elemzése: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Szinkronizált adatok kezelése a Google Irányítópulton</translation>
 <translation id="6691541770654083180">Föld</translation>
@@ -5421,7 +5415,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="6914783257214138813">Jelszavai mindenki számára láthatók lesznek, aki hozzáfér az exportált fájlhoz.</translation>
 <translation id="6916590542764765824">Bővítmények kezelése</translation>
 <translation id="6919868320029503575">Gyenge jelszavak</translation>
-<translation id="6920262510368602827">QR-kód létrehozása ehhez az oldalhoz</translation>
 <translation id="6920989436227028121">Megnyitás normál lapként</translation>
 <translation id="6921104647315081813">Tevékenységek törlése</translation>
 <translation id="692114467174262153">A(z) <ph name="ALTERNATIVE_BROWSER_NAME" /> megnyitása nem sikerült</translation>
@@ -6147,7 +6140,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7691698019618282776">A Crostini frissítése</translation>
 <translation id="7696063401938172191">„<ph name="PHONE_NAME" />” telefonján:</translation>
 <translation id="7697166915480294040">A részleteket elrejtjük a képernyőmegosztás során</translation>
-<translation id="7697598343108519171">Kamera használata a QR-kód beolvasásához</translation>
 <translation id="7701040980221191251">Nincs</translation>
 <translation id="7701869757853594372">FELHASZNÁLÓI azonosítók</translation>
 <translation id="7701928712056789451">Ezek az elemek veszélyesek lehetnek</translation>
@@ -6254,7 +6246,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="7800518121066352902">Forgatás &amp;balra</translation>
 <translation id="780301667611848630">Köszönöm, nem</translation>
 <translation id="7804072833593604762">Lap bezárva</translation>
-<translation id="7805759469263222011">Olvassa be a QR-kódot az eszköz kamerájával, vagy adja meg a szolgáltató által adott aktiválási kódot</translation>
 <translation id="7805768142964895445">Állapot</translation>
 <translation id="7807067443225230855">Keresés és a Segéd</translation>
 <translation id="7807711621188256451">A(z) <ph name="HOST" /> mindig hozzáférhet az Ön kamerájához</translation>
@@ -6810,7 +6801,6 @@ Nyomja meg valamelyik hozzárendelt kapcsolót a hozzárendelés megszüntetés�
 <translation id="8386091599636877289">Az irányelv nem található.</translation>
 <translation id="8387361103813440603">Nem láthatják az Ön tartózkodási helyét</translation>
 <translation id="8388770971141403598">A másodlagos profilok nem támogatottak</translation>
-<translation id="8389416080014625855">QR-kód létrehozása ehhez az Oldalhoz</translation>
 <translation id="8389492867173948260">Engedélyezi az alkalmazás számára az Ön által felkeresett webhelyeken lévő valamennyi adatának olvasását és módosítását:</translation>
 <translation id="8390449457866780408">A szerver nem érhető el.</translation>
 <translation id="8391218455464584335">Bakelitlemez</translation>
@@ -7367,7 +7357,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="8986494364107987395">Használati statisztikák és hibajelentések automatikus küldése a Google-nak</translation>
 <translation id="8987927404178983737">hónap</translation>
 <translation id="8988879467270412492">Szeretné aktiválni a ChromeVoxot, a Chrome OS beépített képernyőolvasóját? Ha igen, öt másodpercig tartsa lenyomva mindkét hangerőgombot.</translation>
-<translation id="8990209962746788689">Nem lehet létrehozni QR-kódot</translation>
 <translation id="8991520179165052608">A webhely használhatja a mikrofonját</translation>
 <translation id="899384117894244799">Korlátozott felhasználó eltávolítása</translation>
 <translation id="899403249577094719">Netscape tanúsítvány - alap URL</translation>

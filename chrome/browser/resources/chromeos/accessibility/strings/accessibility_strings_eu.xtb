@@ -182,6 +182,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2243633977138166243">Nabigatzeko, sakatu ezkerrera edo eskuinera egiteko gezi-tekla; aktibatzeko, sakatu "Sartu" tekla</translation>
 <translation id="224426591676115802">Ez dago ahotsik hizkuntza honetarako: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">Ikasteko modua gelditzen</translation>
+<translation id="2247870315273396641">Ahotsaren aurrebista</translation>
 <translation id="225732394367814946">Handitu hizketaren abiadura</translation>
 <translation id="2267538686624070261">Ortografia-akatsetik irten zara</translation>
 <translation id="2267945578749931355">Hurrengo karakterea</translation>
@@ -198,6 +199,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="2390264819538553347">Aurrera egiteko, sakatu Sartu; atzera egiteko, berriz, sakatu zuriune-barra.</translation>
 <translation id="2398579267367951220">Idatzi orrian bilatu nahi duzuna. Sakatu Sartu tekla emaitza saltatzeko, Gora edo Behera geziak emaitzak arakatzeko, jarraitu idazten bilaketa aldatzeko edo sakatu Ihes tekla uzteko.</translation>
 <translation id="240709722712693803">Bioleta urdinxka</translation>
+<translation id="2410298923485357543">Erabili ahots naturala gailua sarera konektatuta dagoenean</translation>
 <translation id="2416512023405990736">Markatu gabeko koadro bat</translation>
 <translation id="2417569100218200841">Edukiaren informazioa</translation>
 <translation id="2417948780551741035">Amaierako oharrak</translation>
@@ -299,6 +301,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="3046838483509668188">ChromeVox aukerak</translation>
 <translation id="3060756054951570867"><ph name="TITLE" /> menua ireki da</translation>
 <translation id="3060880924447482063">Pasatu hatza ezkerrera edo eskuinera elementu batetik bestera joateko</translation>
+<translation id="3061302636956643119">Testua Google-ra bidaliko da prozesatzeko.</translation>
 <translation id="3070245424257836917">Pasatu hiru hatz gorantz</translation>
 <translation id="307516670110542567">Orientazio bizkorra</translation>
 <translation id="3078345202707391975">2. mailako hurrengo goiburua</translation>
@@ -936,6 +939,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7693840228159394336">Aurreko aukera-botoia</translation>
 <translation id="7701040980221191251">Bat ere ez</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">Ahots naturala</translation>
 <translation id="7714340021005120797">Ez dago beste koadro konbinaturik honen ondoren</translation>
 <translation id="772146615414628379">Zorionak! Lortu dituzu ChromeVox erabiltzeko oinarrizko ezagutzak. Gogoratu: ChromeVox-eko agindu-menua irekitzeko, sakatu bilaketa-tekla eta puntuaren tekla. ChromeVox eta Chrome OS-i buruzko informazio gehiago lortzeko, irakurri artikulu hauek.
     Tutoriala amaitu baduzu, erabili ChromeVox Itxi botoira joan, eta hura sakatzeko.</translation>
@@ -966,6 +970,7 @@ Chrome arakatzaileko menua irekitzeko, sakatu Alt tekla eta F.</translation>
 <translation id="7939428177581522200">hautapenean gehitu da</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{a bildua}other{# a bildu}}</translation>
 <translation id="7942349550061667556">Gorria</translation>
+<translation id="7945703887991230167">Ahots hobetsia</translation>
 <translation id="7948364528129376623">Ez dago bisitatutako beste estekarik honen ondoren</translation>
 <translation id="7952460583030260752">Aginduen erreferentziak</translation>
 <translation id="7965147473449754028">itxi da menua</translation>

@@ -224,7 +224,6 @@ Hae napauttamalla sanaa. Jos haluat tarkentaa hakuasi, valitse enemmän tai väh
 
 Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse enemmän tai vähemmän sanoja. Jos haluat muokata hakua, avaa paneeli, avaa uusi välilehti koskettamalla kuvaketta ja tee muutokset hakukentässä.</translation>
 <translation id="2459390580524506445">Parannettu puhehaku</translation>
-<translation id="246532703174860178">Jaa</translation>
 <translation id="247737702124049222">Kuvaselitykset ovat päällä</translation>
 <translation id="2482878487686419369">Ilmoitukset</translation>
 <translation id="2485422356828889247">Poista</translation>
@@ -296,7 +295,6 @@ Hae sanaa koskettamalla sitä pitkään. Jos haluat tarkentaa hakuasi, valitse e
 <translation id="2900528713135656174">Luo tapahtuma</translation>
 <translation id="2901411048554510387">Näytetään ehdotuksia: <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Välilehden jakamisen laiteluettelo avataan koko näytön korkeudella.</translation>
-<translation id="2905036901251765993">Jaa lähellä oleville ihmisille antamalla tämä QR-koodi skannattavaksi</translation>
 <translation id="2908243544703713905">Lukemattomia juttuja valmiina</translation>
 <translation id="2909615210195135082">Googlen ilmoitusalusta</translation>
 <translation id="2912296070571964914">Valitse sinua kiinnostavia aiheita</translation>
@@ -724,7 +722,6 @@ Jos haluat muokata asetusta, <ph name="BEGIN_LINK" />nollaa synkronointi<ph name
 <translation id="572328651809341494">Hiljattain suljetut välilehdet</translation>
 <translation id="5723735397759933332">Yksinkertaistettu tila vähentää datankäyttöä optimoimalla kuvat HTTPS-sivuilla.</translation>
 <translation id="5726692708398506830">Suurenna sivun kaikki sisältö</translation>
-<translation id="5733983706093266635">QR-koodin luominen ei onnistu. URL-osoitteessa on yli <ph name="CHARACTER_LIMIT" /> merkkiä.</translation>
 <translation id="5748802427693696783">Vaihdettiin näkyviin tavalliset välilehdet.</translation>
 <translation id="5749068826913805084">Chrome tarvitsee tallennustilan käyttöoikeuden tiedostojen lataamiseen.</translation>
 <translation id="5749237766298580851">Pois päältä <ph name="SEPARATOR" /> Ei suositeltu</translation>
@@ -880,7 +877,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="6590680911007613645">Varmista, että tallennettava salasana vastaa palvelun (<ph name="SITE" />) salasanaa</translation>
 <translation id="6593061639179217415">Tietokonesivusto</translation>
 <translation id="6595046016124923392">Kuvat lähetetään Googlelle, jotta näkemiäsi kuvauksia voidaan parantaa.</translation>
-<translation id="6597891566292541626">Aseta QR- tai viivakoodi kehykseen.</translation>
 <translation id="6600954340915313787">Kopioitiin Chromeen.</translation>
 <translation id="661266467055912436">Parantaa sinun ja kaikkien verkon käyttäjien suojausta</translation>
 <translation id="6618554661997243500">Katso suositut sivustosi ja sinulle valitut jutut napauttamalla Etusivu-painiketta</translation>
@@ -1090,7 +1086,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7961926449547174351">Olet estänyt pääsyn tallennustilaan. Salli se asetuksista.</translation>
 <translation id="7963646190083259054">Toimittaja:</translation>
-<translation id="7967911570373677897">Jos haluat lukea QR-koodin, muuta asetuksia niin, että Chrome voi käyttää kameraa</translation>
 <translation id="7968014550143838305">Lisätty lukulistalle</translation>
 <translation id="7971136598759319605">Aktiivinen 1 päivä sitten</translation>
 <translation id="7975379999046275268">Esikatsele sivu <ph name="BEGIN_NEW" />Uusi<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Ota synkronointi käyttöön, niin voit käyttää kirjanmerkkejä kaikilla laitteillasi</translation>
 <translation id="8110087112193408731">Näytetäänkö Chrome-toimintasi Digitaalisessa hyvinvoinnissa?</translation>
-<translation id="8115259494083109761">Jos haluat lukea QR-koodin, anna Chromen käyttää kameraa.</translation>
 <translation id="8127542551745560481">Muokkaa etusivua</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8137558756159375272">Koskettamalla hakeminen lähettää valitun sanan ja nykyisen sivun Google-haulle haun kontekstina. Voit poistaa ominaisuuden käytöstä <ph name="BEGIN_LINK" />asetuksissa<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8218622182176210845">Ylläpidä tiliäsi</translation>
 <translation id="8223642481677794647">Fiidikottien valikko</translation>
 <translation id="8224471946457685718">Lataa sinulle valittuja artikkeleita Wi-Fin kautta</translation>
-<translation id="8233540874193135768">Jos haluat lukea QR-koodin, käytä laitetta, jossa on kamera.</translation>
 <translation id="8250920743982581267">Dokumentit</translation>
 <translation id="825412236959742607">Tämä sivu käyttää liikaa muistia, joten Chrome poisti osan sisällöstä.</translation>
 <translation id="8260126382462817229">Yritä kirjautua uudelleen sisään.</translation>
@@ -1256,7 +1249,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8972098258593396643">Ladataanko tiedosto oletuskansioon?</translation>
 <translation id="8988028529677883095">Käytä puhelinta suojausavaimena</translation>
-<translation id="8990209962746788689">QR-koodin luominen ei onnistu</translation>
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>
 <translation id="8996847606757455498">Valitse toinen palvelu</translation>
 <translation id="8998729206196772491">Olet kirjautumassa sisään verkkotunnuksen <ph name="MANAGED_DOMAIN" /> hallinnoimalla tilillä ja antamassa sen järjestelmänvalvojalle oikeuden hallita Chrome-tietojasi. Tietosi liitetään pysyvästi tähän tiliin. Chromesta uloskirjautuminen poistaa tietosi tältä laitteelta, mutta ne säilyvät Google-tililläsi.</translation>

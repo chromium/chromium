@@ -224,7 +224,6 @@ Touchez un mot pour lancer une recherche. Pour affiner votre recherche, maintene
 
 Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour affiner votre recherche, sélectionnez plus ou moins de mots. Pour modifier votre recherche, ouvrez le panneau, touchez l'icône pour ouvrir la recherche dans un nouvel onglet, puis effectuez les modifications souhaitées dans le champ de recherche.</translation>
 <translation id="2459390580524506445">Recherche vocale améliorée</translation>
-<translation id="246532703174860178">Partager</translation>
 <translation id="247737702124049222">Les descriptions d'images sont activées</translation>
 <translation id="2482878487686419369">Notifications</translation>
 <translation id="2485422356828889247">Désinstaller</translation>
@@ -296,7 +295,6 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2900528713135656174">Créer un événement</translation>
 <translation id="2901411048554510387">Affichage des suggestions pour <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La liste d'appareils avec lesquels partager un onglet est ouverte à la hauteur maximale.</translation>
-<translation id="2905036901251765993">Pour partager avec des personnes à proximité, faites-leur numériser ce code QR</translation>
 <translation id="2908243544703713905">Articles non lus prêts</translation>
 <translation id="2909615210195135082">Plateforme des notifications Google</translation>
 <translation id="2912296070571964914">Gérez les sujets qui vous intéressent</translation>
@@ -306,6 +304,7 @@ Maintenez le doigt sur un mot pour effectuer une recherche sur celui-ci. Pour af
 <translation id="2942036813789421260">L'onglet d'aperçu est fermé</translation>
 <translation id="2956410042958133412">Ce compte est géré par <ph name="PARENT_NAME_1" /> et <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> page non lue}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> page non lue}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> pages non lues}}</translation>
+<translation id="2961210776189273067">Titre</translation>
 <translation id="2979025552038692506">Onglet de navigation privée sélectionné</translation>
 <translation id="2979448359891869301">Impossible d'étendre la capture d'écran. Essayez de nouveau lorsque votre téléphone n'est pas occupé.</translation>
 <translation id="2979639724566107830">Ouvrir dans une nouvelle fenêtre</translation>
@@ -617,6 +616,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="497421865427891073">Avancer</translation>
 <translation id="4988210275050210843">Téléchargement du fichier (<ph name="MEGABYTES" />) en cours…</translation>
 <translation id="4988526792673242964">Pages</translation>
+<translation id="5001388021414335527">Suivez ce site ici</translation>
 <translation id="5004416275253351869">Commandes d'activité Google</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> veut se connecter</translation>
@@ -722,7 +722,6 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="572328651809341494">Onglets récents</translation>
 <translation id="5723735397759933332">Le mode simplifié vous permet d'économiser davantage de données en optimisant les images sur les pages HTTPS.</translation>
 <translation id="5726692708398506830">Agrandir la taille de tout le contenu de la page</translation>
-<translation id="5733983706093266635">Impossible de créer un code QR. L'URL contient plus de <ph name="CHARACTER_LIMIT" /> caractères.</translation>
 <translation id="5748802427693696783">Passage aux onglets standards</translation>
 <translation id="5749068826913805084">Chrome a besoin d'accéder au stockage pour télécharger des fichiers.</translation>
 <translation id="5749237766298580851">Désactivée <ph name="SEPARATOR" /> Option non recommandée</translation>
@@ -878,7 +877,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="6590680911007613645">Assurez-vous que le mot de passe que vous enregistrez correspond à celui pour <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Version ordinateur</translation>
 <translation id="6595046016124923392">Les images sont envoyées à Google afin d'améliorer les descriptions pour vous.</translation>
-<translation id="6597891566292541626">Placez le code QR ou le code à barres dans ce cadre.</translation>
 <translation id="6600954340915313787">Copiée dans Chrome</translation>
 <translation id="661266467055912436">Il renforce votre sécurité et celle de tous les utilisateurs sur le Web.</translation>
 <translation id="6618554661997243500">Pour consulter les sites les plus fréquentés et des articles sélectionnés pour vous, touchez le bouton Accueil</translation>
@@ -987,6 +985,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Partager 1 élément sélectionné}one{Partager # élément sélectionné}other{Partager # éléments sélectionnés}}</translation>
 <translation id="7359002509206457351">Accéder aux modes de paiement</translation>
 <translation id="7375125077091615385">Type :</translation>
+<translation id="7386842512861524348">La connexion du site est sécuritaire, à moins que Chrome vous indique le contraire.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Expérience de première utilisation de Chrome</translation>
@@ -1087,7 +1086,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7961015016161918242">Jamais</translation>
 <translation id="7961926449547174351">Vous avez désactivé l'accès à l'espace de stockage. Veuillez accéder au menu Paramètres pour l'activer.</translation>
 <translation id="7963646190083259054">Fournisseur :</translation>
-<translation id="7967911570373677897">Pour numériser un code QR, modifiez vos paramètres pour que Chrome puisse utiliser votre appareil photo</translation>
 <translation id="7968014550143838305">Ajouté à la liste de lecture</translation>
 <translation id="7971136598759319605">Actif il y a 1 jour</translation>
 <translation id="7975379999046275268">Prévisualiser la page <ph name="BEGIN_NEW" />Nouveau<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Pour synchroniser vos favoris sur tous vos appareils, activez la synchronisation</translation>
 <translation id="8110087112193408731">Afficher votre activité Chrome dans Bien-être numérique?</translation>
-<translation id="8115259494083109761">Pour numériser un code QR, autorisez Chrome à utiliser votre appareil photo</translation>
 <translation id="8127542551745560481">Modifier la page d'accueil</translation>
 <translation id="813082847718468539">Afficher l'information sur le site</translation>
 <translation id="8137558756159375272">La fonction Appuyer pour rechercher envoie des données de contexte (les mots sélectionnés et la page actuelle) à la recherche Google. Vous pouvez la désactiver dans les <ph name="BEGIN_LINK" />paramètres<ph name="END_LINK" />.</translation>
@@ -1136,7 +1133,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8218622182176210845">Gérer votre compte</translation>
 <translation id="8223642481677794647">Menu de la carte du flux</translation>
 <translation id="8224471946457685718">Télécharger des articles pour vous par connexion Wi-Fi</translation>
-<translation id="8233540874193135768">Pour numériser un code QR, utilisez un appareil doté d'un appareil photo.</translation>
 <translation id="8250920743982581267">Documents</translation>
 <translation id="825412236959742607">Cette page utilise trop de mémoire, Chrome a donc supprimé certains contenus.</translation>
 <translation id="8260126382462817229">Essayez de vous reconnecter</translation>
@@ -1147,6 +1143,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8284326494547611709">Sous-titres</translation>
 <translation id="829672787777123339">Connexion à votre appareil en cours…</translation>
 <translation id="8310344678080805313">Onglets standard</translation>
+<translation id="831192587911042850">Ajoute le site Web actuel à la liste des sites Web que vous suivez.</translation>
 <translation id="8327155640814342956">Pour profiter d'une expérience de navigation optimale, ouvrez Chrome afin de le mettre à jour</translation>
 <translation id="834313815369870491">Ne jamais traduire les sites suivants</translation>
 <translation id="8349013245300336738">Trier par quantité de données utilisées</translation>
@@ -1252,7 +1249,6 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="8970887620466824814">Une erreur s'est produite.</translation>
 <translation id="8972098258593396643">Télécharger vers le dossier par défaut?</translation>
 <translation id="8988028529677883095">Utiliser le téléphone comme clé de sécurité</translation>
-<translation id="8990209962746788689">Impossible de créer un code QR</translation>
 <translation id="8993760627012879038">Ouvrir un nouvel onglet en mode de nav. privée</translation>
 <translation id="8996847606757455498">Choisir un autre fournisseur</translation>
 <translation id="8998729206196772491">Vous vous connectez avec un compte géré par <ph name="MANAGED_DOMAIN" />, et son administrateur pourra contrôler vos données Google Chrome. Celles-ci seront définitivement liées à votre compte. En vous déconnectant de Chrome, vous supprimerez vos données sur cet appareil, mais celles-ci resteront stockées dans votre compte Google.</translation>

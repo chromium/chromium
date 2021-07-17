@@ -196,6 +196,7 @@ Les sites ne peuvent pas utiliser de témoins pour voir votre activité de navig
 <translation id="2932085390869194046">Suggérer un mot de passe…</translation>
 <translation id="2952581218264071393">1. Ouvrez les paramètres de Chrome</translation>
 <translation id="2958718410589002129">Mots de passe</translation>
+<translation id="2961210776189273067">Titre</translation>
 <translation id="2964349545761222050">Bloquer les témoins tiers</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
 <translation id="2975121486251958312">Seul le mode de navigation privée est proposé</translation>
@@ -721,6 +722,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8073872304774253879">Améliorer les recherches et de la navigation</translation>
 <translation id="8076014560081431679">Les paramètres de site sauvegardés ne seront pas supprimés et peuvent donner des indications sur vos habitudes de navigation. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Ce paramètre est géré; touchez deux fois pour en savoir plus</translation>
+<translation id="8080028325999236607">Ferm ts onglets</translation>
 <translation id="8105368624971345109">Désactiver</translation>
 <translation id="8114753159095730575">Le téléchargement du fichier est disponible. Options présentées vers le bas de l’écran.</translation>
 <translation id="8131740175452115882">Confirmer</translation>

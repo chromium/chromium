@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" /> %</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
 <translation id="2161394479394250669">Отменить задание печати</translation>
+<translation id="2209788852729124853">Сбросить счетчики трафика</translation>
 <translation id="2217935453350629363">Текущая частота</translation>
 <translation id="2224337661447660594">Нет подключения к Интернету</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">Аккумулятор заряжен</translation>
 <translation id="360565022852130722">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP 802.1x.</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" />: тестирование</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{Повторно сканировать страницу}=1{Повторно сканировать страницу {PAGE_NUMBER}}one{Повторно сканировать страницу {PAGE_NUMBER}}few{Повторно сканировать страницу {PAGE_NUMBER}}many{Повторно сканировать страницу {PAGE_NUMBER}}other{Повторно сканировать страницу {PAGE_NUMBER}}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (отзывов: <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">Нет соединения</translation>
 <translation id="3749289110408117711">Название файла</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">Мой диск</translation>
 <translation id="4429881212383817840">Срок действия билета Kerberos истекает</translation>
 <translation id="4431821876790500265">Посмотреть отчет</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{Удалить страницу}=1{Удалить страницу {PAGE_NUMBER}}one{Удалить страницу {PAGE_NUMBER}}few{Удалить страницу {PAGE_NUMBER}}many{Удалить страницу {PAGE_NUMBER}}other{Удалить страницу {PAGE_NUMBER}}}</translation>
 <translation id="445059817448385655">Старый пароль</translation>
 <translation id="4453205916657964690">Маска подсети</translation>
 <translation id="4454245904991689773">Место сохранения</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">Запрещено</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{Файл отсканирован и сохранен в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}one{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}few{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}many{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}other{Файлы отсканированы и сохранены в папке <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" />.}}</translation>
 <translation id="5931523347251946569">Файл не найден.</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">Автоподатчик документов пуст. Положите документы и повторите попытку.</translation>
 <translation id="6040143037577758943">Закрыть</translation>
 <translation id="6040852767465482106">Анонимная идентификация</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">Неизвестный протокол обеспечения безопасности сети Wi-Fi.</translation>
 <translation id="65587193855025101">Планшетный</translation>
 <translation id="6564646048574748301">Сбой: принтер недоступен</translation>
+<translation id="6574762126505704998">Заполнить</translation>
 <translation id="6603230386432466813">Не удается подключиться?</translation>
 <translation id="6618744767048954150">Выполняется</translation>
 <translation id="6620487321149975369">Задания печати показываются в истории до тех пор, пока вы их не удалите</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">Ещё <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">Узнать больше в Справочном центре</translation>
+<translation id="763165478673169849">Время последнего сброса</translation>
 <translation id="7648838807254605802">большое время ожидания HTTPS</translation>
 <translation id="7658239707568436148">Отмена</translation>
 <translation id="7690294790491645610">Введите новый пароль ещё раз</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">Уровень заряда</translation>
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" /> °C</translation>
+<translation id="8132480444149501833">Запросить счетчики трафика</translation>
 <translation id="8206859287963243715">Сотовый</translation>
 <translation id="8208861521865154048">Преимущества</translation>
 <translation id="8214184102975786227">Сканировать несколько страниц в один PDF-файл</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">Безопасность сети Wi-Fi обеспечивается недостаточно надежным протоколом WEP PSK</translation>
 <translation id="8477551185774834963">Задержка на сервере доменных имен незначительно превышает допустимое значение.</translation>
 <translation id="8483248364096924578">IP-адрес</translation>
+<translation id="8498220429738806196">Счетчики трафика</translation>
 <translation id="8503813439785031346">Имя пользователя</translation>
 <translation id="8503836310948963452">Осталось несколько минут…</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">Возможно, вам потребуется установить этот параметр, чтобы подключиться к сети. За подробными сведениями обращайтесь к своему оператору связи.</translation>
 <translation id="8576249514688522074">Без инициализации</translation>
 <translation id="8620617069779373398">Статус роуминга</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">Wi-Fi</translation>
 <translation id="8818152010000655963">Обои</translation>
 <translation id="8845001906332463065">Справка</translation>
+<translation id="8868741746785112895">Глобальный уникальный идентификатор</translation>
 <translation id="8881098542468797602">Проверка пройдена</translation>
 <translation id="8898840733695078011">Уровень сигнала</translation>
 <translation id="8910721771319628100">В сети, используемой по умолчанию, превышено пороговое значение задержки.</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">Используется</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">Обновите билет для аккаунта <ph name="PRINCIPAL_NAME" />.</translation>
 <translation id="9106415115617144481">Сканирование страницы <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">Разблокировать</translation>

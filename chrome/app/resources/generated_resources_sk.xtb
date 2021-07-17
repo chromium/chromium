@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Používateľ</translation>
 <translation id="1125550662859510761">Vyzerá ako <ph name="WIDTH" /> x <ph name="HEIGHT" /> (natívne)</translation>
 <translation id="1126809382673880764">Nechráni vás pred nebezpečnými webmi, stiahnutými súbormi ani rozšíreniami. Ochrana Bezpečného prehliadania vám bude poskytovaná v náležitých prípadoch v ďalších službách Googlu, ako sú napríklad Gmail alebo Vyhľadávanie.</translation>
-<translation id="112752777279960360">Ak chcete prvýkrát nastaviť, aby sa nejaký telefón Android používal s týmto počítačom ako bezpečnostný kľúč, otvorte Chrome v danom telefóne a prejdite do sekcie Nastavenia &gt; Heslá &gt; Používať telefón ako bezpečnostný kľúč. Potom klepnite na Pripojiť nové zariadenie a naskenujte tento QR kód.</translation>
 <translation id="1128109161498068552">Žadnym stránkam nepovoliť používanie exkluzívnych správ na prístup k zariadeniam MIDI</translation>
 <translation id="1128591060186966949">Úprava vyhľadávača</translation>
 <translation id="1129850422003387628">Spravovať aplikácie</translation>
@@ -505,6 +504,7 @@
 <translation id="1542514202066550870">Táto karta prezentuje obsah VR do náhlavnej súpravy.</translation>
 <translation id="1543284117603151572">Importované z prehliadača Edge</translation>
 <translation id="1545177026077493356">Automatický režim verejného terminálu</translation>
+<translation id="1545749641540134597">Naskenovať kód QR</translation>
 <translation id="1545775234664667895">Nainštalovaný motív „<ph name="THEME_NAME" />“</translation>
 <translation id="1546280085599573572">Toto rozšírenie zmenilo stránku, ktorá sa zobrazí po kliknutí na tlačidlo Domovská stránka.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> chce nainštalovať <ph name="EXTENSION_TYPE" />, ktoré dokáže:</translation>
@@ -947,7 +947,6 @@
 <translation id="1992924914582925289">Odstrániť zo zariadenia</translation>
 <translation id="1994173015038366702">Webová adresa</translation>
 <translation id="1995916364271252349">Ovláda, ktoré informácie môžu weby používať a zobrazovať (polohu, fotoaparát, vyskakovacie okná a ďalšie)</translation>
-<translation id="1997437640397887843">Fotoaparát zariadenia je zapnutý. Umiestnite QR kód eSIM karty pred objektív fotoaparátu.</translation>
 <translation id="1997616988432401742">Vaše certifikáty</translation>
 <translation id="1999115740519098545">Pri spustení</translation>
 <translation id="2000419248597011803">Odošle niektoré súbory cookie a vyhľadávania z panela s adresou a vyhľadávacieho poľa do vášho predvoleného vyhľadávača</translation>
@@ -967,7 +966,6 @@
 <translation id="2019718679933488176">&amp;Otvoriť zvuk na novej karte</translation>
 <translation id="2020183425253392403">Zobraziť nastavenia sieťovej adresy</translation>
 <translation id="2020225359413970060">Skontrolovať súbor</translation>
-<translation id="2022953316617983419">QR kód</translation>
 <translation id="2023167225947895179">PIN sa dá ľahko uhádnuť</translation>
 <translation id="202352106777823113">Sťahovanie trvalo príliš dlho a bolo zastavené sieťou.</translation>
 <translation id="2025115093177348061">Rozšírená realita</translation>
@@ -1124,6 +1122,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2174948148799307353">Účet spravuje <ph name="PARENT_EMAIL" />. Ak sa chcete odhlásiť z primárneho účtu v tomto zariadení, kliknite na čas na obrazovke. V zobrazenej ponuke kliknite na Odhlásiť sa.</translation>
 <translation id="2175607476662778685">Panel Rýchle spustenie</translation>
 <translation id="217576141146192373">Tlačiareň sa nepodarilo pridať. Skontrolujte jej konfiguráciu a skúste to znova.</translation>
+<translation id="2175927920773552910">QR kód</translation>
 <translation id="2177950615300672361">Karta inkognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Ohrozenie zabezpečenia CA</translation>
 <translation id="2179416702468739594">Hľadajú sa dostupné profily. Mobilná sieť sa môže na niekoľko minúť odpojiť.</translation>
@@ -4338,7 +4337,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5712153969432126546">Weby niekedy zverejňujú súbory PDF, napríklad dokumenty, zmluvy a formuláre</translation>
 <translation id="5715711091495208045">Doplnok Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Predvolené vyhľadávače</translation>
-<translation id="5719637365829998022">QR kód bol naskenovaný</translation>
 <translation id="5719854774000914513">Weby môžu žiadať o pripojenie k zariadeniam HID</translation>
 <translation id="572155275267014074">Nastavenia Androidu</translation>
 <translation id="5722086096420375088">Zelená a biela</translation>
@@ -4531,7 +4529,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5941711191222866238">Minimalizovať</translation>
 <translation id="5942779427914696408">Viditeľnosť zariadenia</translation>
 <translation id="5943127421590245687">Overenie bolo úspešné. Ak chcete zariadenie odomknúť a obnoviť svoje miestne údaje, zadajte staré heslo pre zariadenie <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Skenovanie QR kódu</translation>
 <translation id="5945002094477276055">Súbor <ph name="FILE_NAME" /> môže byť nebezpečný. Chcete ho odoslať do Bezpečného prehliadania Google na kontrolu?</translation>
 <translation id="5945363896952315544">V bezpečnostnom kľúči už nemôžete uložiť žiadne ďalšie odtlačky prstov. Ak chcete pridať nový, najprv odstráňte niektorý z existujúcich.</translation>
 <translation id="5946591249682680882">ID prehľadu <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4655,7 +4652,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6077131872140550515">Odstrániť z preferovaných</translation>
 <translation id="6077189836672154517">Tipy a aktuálne informácie týkajúce sa zariadenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Diktovať</translation>
-<translation id="6078045608615316905">Vytvoriť QR kód pre tento obrázok</translation>
 <translation id="6078121669093215958">{0,plural, =1{Hosť}few{# otvorené okná režimu pre hostí}many{# open guest windows}other{# otvorených okien režimu pre hostí}}</translation>
 <translation id="6078323886959318429">Pridať odkaz</translation>
 <translation id="6078752646384677957">Skontrolujte mikrofón a úrovne zvuku.</translation>
@@ -5197,14 +5193,12 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6680650203439190394">Ohodnotiť</translation>
 <translation id="6681668084120808868">Zaznamenať fotografiu</translation>
 <translation id="6683087162435654533">O&amp;bnoviť všetky karty</translation>
-<translation id="6683948477137300040">Zobraziť vyskakovacie okno s číslom EID zariadenia a QR kódom</translation>
 <translation id="6684827949542560880">Sťahuje sa najnovšia aktualizácia</translation>
 <translation id="668599234725812620">Otvoriť Google Play</translation>
 <translation id="6686490380836145850">Zavrieť karty vpravo</translation>
 <translation id="6686665106869989887">Karta bola presunutá doprava</translation>
 <translation id="6686817083349815241">Uloženie hesla</translation>
 <translation id="6687079240787935001">Skryť <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Vytvoriť QR kód pre tento obrázok</translation>
 <translation id="6690659332373509948">Nepodarilo sa analyzovať súbor: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Spravovať synchronizované dáta v službe Google Dashboard</translation>
 <translation id="6691541770654083180">Zem</translation>
@@ -5408,7 +5402,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="6914783257214138813">Vaše heslá uvidí každý, kto si môže zobraziť exportovaný súbor.</translation>
 <translation id="6916590542764765824">Spravovať rozšírenia</translation>
 <translation id="6919868320029503575">Slabé heslá</translation>
-<translation id="6920262510368602827">Vytvoriť QR kód pre túto stránku</translation>
 <translation id="6920989436227028121">Otvoriť ako bežnú kartu</translation>
 <translation id="6921104647315081813">Vymazať aktivity</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> sa nepodarilo otvoriť</translation>
@@ -6134,7 +6127,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7691698019618282776">Inovácia systému Crostini</translation>
 <translation id="7696063401938172191">V telefóne <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Podrobnosti sú počas zdieľania obrazovky skryté</translation>
-<translation id="7697598343108519171">Naskenovať QR kód fotoaparátom</translation>
 <translation id="7701040980221191251">Žiadne</translation>
 <translation id="7701869757853594372">POUŽÍVATEĽ – popisovače</translation>
 <translation id="7701928712056789451">Tieto položky môžu byť nebezpečné</translation>
@@ -6241,7 +6233,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="7800518121066352902">Otočiť &amp;proti smeru hodinových ručičiek</translation>
 <translation id="780301667611848630">Nie, ďakujem</translation>
 <translation id="7804072833593604762">Karta je zatvorená</translation>
-<translation id="7805759469263222011">Naskenujte QR kód fotoaparátom zariadenia alebo zadajte aktivačný kód, ktorý vám poskytol operátor</translation>
 <translation id="7805768142964895445">Stav</translation>
 <translation id="7807067443225230855">Vyhľadávanie a Asistent</translation>
 <translation id="7807711621188256451">Vždy povoliť stránkam <ph name="HOST" /> prístup ku kamere</translation>
@@ -6797,7 +6788,6 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8386091599636877289">Pravidlo sa nenašlo.</translation>
 <translation id="8387361103813440603">Nemôže zobrazovať vašu polohu</translation>
 <translation id="8388770971141403598">Sekundárne profily nie sú podporované</translation>
-<translation id="8389416080014625855">Vytvoriť QR kód pre túto stránku</translation>
 <translation id="8389492867173948260">Umožniť tomuto rozšíreniu čítať a meniť všetky dáta na navštevovaných weboch:</translation>
 <translation id="8390449457866780408">Server je nedostupný.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
@@ -7356,7 +7346,6 @@ Ak chcete pridelenie odstrániť, stlačte pridelený prepínač</translation>
 <translation id="8986494364107987395">Automaticky odosielať Googlu štatistiky používania a správy o zlyhaní</translation>
 <translation id="8987927404178983737">Mesiac</translation>
 <translation id="8988879467270412492">Chcete aktivovať vstavanú čítačku obrazovky ChromeVox pre systém Chrome OS? Ak áno, pridržte päť sekúnd obe tlačidlá hlasitosti.</translation>
-<translation id="8990209962746788689">Nie je možné vytvoriť QR kód</translation>
 <translation id="8991520179165052608">Web môže používať váš mikrofón</translation>
 <translation id="899384117894244799">Odobrať obmedzeného používateľa</translation>
 <translation id="899403249577094719">Netscape – základná webová adresa certifikátu</translation>

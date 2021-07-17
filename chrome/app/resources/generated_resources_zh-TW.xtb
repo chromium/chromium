@@ -117,7 +117,6 @@
 <translation id="1124772482545689468">使用者</translation>
 <translation id="1125550662859510761">螢幕解析度：<ph name="WIDTH" /> x <ph name="HEIGHT" /> (原生)</translation>
 <translation id="1126809382673880764">無法封鎖不安全的網站、下載內容和擴充功能。在 Gmail 和 Google 搜尋等其他 Google 服務中，安全瀏覽功能的防護機制仍然會發揮作用 (在適用情況下)。</translation>
-<translation id="112752777279960360">第一次設定 Android 手機做為這台電腦的安全金鑰時，請在手機上開啟 Chrome，並依序前往 [設定] &gt; [密碼] &gt; [使用手機做為安全金鑰]。然後，請輕觸 [與新裝置連線] 並掃描這個 QR 圖碼。</translation>
 <translation id="1128109161498068552">禁止任何網站使用系統專用訊息存取 MIDI 裝置</translation>
 <translation id="1128591060186966949">編輯搜尋引擎</translation>
 <translation id="1129850422003387628">管理應用程式</translation>
@@ -501,6 +500,7 @@
 <translation id="1542514202066550870">這個分頁正在對頭戴式裝置展示 VR 內容。</translation>
 <translation id="1543284117603151572">從 Edge 匯入的書籤</translation>
 <translation id="1545177026077493356">自動 Kiosk 模式</translation>
+<translation id="1545749641540134597">掃描 QR 圖碼</translation>
 <translation id="1545775234664667895">已安裝「<ph name="THEME_NAME" />」主題</translation>
 <translation id="1546280085599573572">這個擴充功能已變更您點選 [首頁] 按鈕時所顯示的網頁。</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> 要求安裝具有下列功能的<ph name="EXTENSION_TYPE" />：</translation>
@@ -941,7 +941,6 @@
 <translation id="1992924914582925289">從裝置中移除</translation>
 <translation id="1994173015038366702">網站網址</translation>
 <translation id="1995916364271252349">控管網站可以使用和顯示的資訊 (位置資訊、攝影機和彈出式視窗等等)</translation>
-<translation id="1997437640397887843">已開啟裝置相機。請將相機鏡頭對準 eSIM 卡的 QR 圖碼。</translation>
 <translation id="1997616988432401742">您的憑證</translation>
 <translation id="1999115740519098545">起始畫面</translation>
 <translation id="2000419248597011803">將網址列和搜尋框中的部分 Cookie 和搜尋字詞傳送給你的預設搜尋引擎</translation>
@@ -961,7 +960,6 @@
 <translation id="2019718679933488176">在新分頁中開啟音效(&amp;O)</translation>
 <translation id="2020183425253392403">顯示網路位址設定</translation>
 <translation id="2020225359413970060">掃描檔案</translation>
-<translation id="2022953316617983419">QR 圖碼</translation>
 <translation id="2023167225947895179">你所輸入的 PIN 碼可能很容易被別人猜到</translation>
 <translation id="202352106777823113">下載時間過長，網路已中止下載。</translation>
 <translation id="2025115093177348061">擴增實境</translation>
@@ -1116,6 +1114,7 @@
 <translation id="2174948148799307353">這個帳戶是由 <ph name="PARENT_EMAIL" /> 管理。如要登出這部裝置上的主要帳戶，請按一下畫面上的時間，然後在隨即顯示的選單中按一下 [登出]。</translation>
 <translation id="2175607476662778685">快速啟動列</translation>
 <translation id="217576141146192373">無法新增印表機。請檢查你的印表機設定，然後再試一次。</translation>
+<translation id="2175927920773552910">QR 圖碼</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2179416702468739594">正在尋找可用的設定檔。這可能會導致你的行動網路中斷幾分鐘。</translation>
@@ -4320,7 +4319,6 @@
 <translation id="5712153969432126546">網站有時會發布文件、合約和表單等 PDF 檔案</translation>
 <translation id="5715711091495208045">外掛程式代理元件：<ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">預設搜尋引擎</translation>
-<translation id="5719637365829998022">已掃描 QR 圖碼。</translation>
 <translation id="5719854774000914513">網站可以要求連線至 HID 裝置</translation>
 <translation id="572155275267014074">Android 設定</translation>
 <translation id="5722086096420375088">綠色與白色</translation>
@@ -4513,7 +4511,6 @@
 <translation id="5941711191222866238">最小化</translation>
 <translation id="5942779427914696408">裝置分享設定</translation>
 <translation id="5943127421590245687">你已完成驗證程序。如要解鎖及還原本機資料，請輸入舊的 <ph name="DEVICE_TYPE" /> 密碼。</translation>
-<translation id="5944869793365969636">掃描 QR 圖碼</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 可能含有危險內容，要送交 Google 安全瀏覽服務進行掃描嗎？</translation>
 <translation id="5945363896952315544">你的安全金鑰無法再儲存其他指紋。如要新增指紋，請先刪除現有的指紋。</translation>
 <translation id="5946591249682680882">報表 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4637,7 +4634,6 @@
 <translation id="6077131872140550515">從慣用網路移除</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> 的使用提示和最新快訊</translation>
 <translation id="6077476112742402730">說話即可輸入</translation>
-<translation id="6078045608615316905">為這張圖片建立 QR 圖碼</translation>
 <translation id="6078121669093215958">{0,plural, =1{訪客}other{# 個開啟的訪客視窗}}</translation>
 <translation id="6078323886959318429">新增捷徑</translation>
 <translation id="6078752646384677957">請檢查麥克風和音量。</translation>
@@ -5174,14 +5170,12 @@
 <translation id="6680650203439190394">語速</translation>
 <translation id="6681668084120808868">拍照</translation>
 <translation id="6683087162435654533">還原所有分頁</translation>
-<translation id="6683948477137300040">顯示裝置 EID 和 QR 圖碼彈出式視窗</translation>
 <translation id="6684827949542560880">正在下載最新的更新</translation>
 <translation id="668599234725812620">開啟 Google Play</translation>
 <translation id="6686490380836145850">關閉右邊的分頁</translation>
 <translation id="6686665106869989887">分頁已移動到右側</translation>
 <translation id="6686817083349815241">儲存你的密碼</translation>
 <translation id="6687079240787935001">隱藏「<ph name="MODULE_TITLE" />」</translation>
-<translation id="6688285987813868112">為這張圖片建立 QR 圖碼</translation>
 <translation id="6690659332373509948">無法剖析檔案：<ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">管理 Google 資訊主頁中已同步處理的資料</translation>
 <translation id="6691541770654083180">地球</translation>
@@ -5383,7 +5377,6 @@
 <translation id="6914783257214138813">凡是可查看匯出的檔案的使用者都能看到你的密碼。</translation>
 <translation id="6916590542764765824">管理擴充功能</translation>
 <translation id="6919868320029503575">低強度密碼</translation>
-<translation id="6920262510368602827">為這個頁面建立 QR 圖碼</translation>
 <translation id="6920989436227028121">在一般分頁中開啟</translation>
 <translation id="6921104647315081813">清除活動</translation>
 <translation id="692114467174262153">無法開啟 <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6104,7 +6097,6 @@
 <translation id="7691698019618282776">Crostini 升級</translation>
 <translation id="7696063401938172191">在你的「<ph name="PHONE_NAME" />」上：</translation>
 <translation id="7697166915480294040">分享螢幕畫面時會隱藏詳細資料</translation>
-<translation id="7697598343108519171">使用相機掃描 QR 圖碼</translation>
 <translation id="7701040980221191251">無</translation>
 <translation id="7701869757853594372">USER 控制代碼</translation>
 <translation id="7701928712056789451">這些項目可能有安全疑慮</translation>
@@ -6211,7 +6203,6 @@
 <translation id="7800518121066352902">逆時針旋轉(&amp;O)</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
 <translation id="7804072833593604762">已關閉分頁</translation>
-<translation id="7805759469263222011">請使用裝置相機掃描 QR 圖碼，或是輸入電信業者提供的啟用代碼</translation>
 <translation id="7805768142964895445">狀態</translation>
 <translation id="7807067443225230855">搜尋與 Google 助理</translation>
 <translation id="7807711621188256451">一律允許 <ph name="HOST" /> 存取你的攝影機</translation>
@@ -6766,7 +6757,6 @@
 <translation id="8386091599636877289">找不到政策。</translation>
 <translation id="8387361103813440603">不得查看你的位置資訊</translation>
 <translation id="8388770971141403598">不支援次要設定檔</translation>
-<translation id="8389416080014625855">為這個頁面建立 QR 圖碼</translation>
 <translation id="8389492867173948260">允許這個擴充功能讀取及變更你在造訪過的網站留下的所有資料：</translation>
 <translation id="8390449457866780408">無法與伺服器連線。</translation>
 <translation id="8391218455464584335">黑膠</translation>
@@ -7321,7 +7311,6 @@
 <translation id="8986494364107987395">自動傳送使用統計資料及當機報告給 Google</translation>
 <translation id="8987927404178983737">月</translation>
 <translation id="8988879467270412492">是否要啟動 Chrome 作業系統內建的螢幕閱讀器 ChromeVox？如要啟動，請同時按住音量調高和調低鍵五秒。</translation>
-<translation id="8990209962746788689">無法建立 QR 圖碼</translation>
 <translation id="8991520179165052608">網站可以使用你的麥克風</translation>
 <translation id="899384117894244799">移除受限制的使用者</translation>
 <translation id="899403249577094719">Netscape 憑證基底網址</translation>

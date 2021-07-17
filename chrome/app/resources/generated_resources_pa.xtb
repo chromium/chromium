@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">ਵਰਤੋਂਕਾਰ</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> ਵਰਗਾ ਲੱਗਦਾ ਹੈ (ਮੂਲ)</translation>
 <translation id="1126809382673880764">ਤੁਹਾਨੂੰ ਖਤਰਨਾਕ ਵੈੱਬਸਾਈਟਾਂ, ਡਾਊਨਲੋਡਾਂ ਅਤੇ ਐਕਸਟੈਂਸ਼ਨਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਨਹੀਂ ਰੱਖਿਆ ਜਾਂਦਾ। ਹੋਰ Google ਸੇਵਾਵਾਂ ਜਿਵੇਂ ਕਿ Gmail ਅਤੇ Search ਵਿੱਚ ਜਿੱਥੇ ਵੀ ਉਪਲਬਧ ਹੋਵੇ ਤੁਹਾਨੂੰ ਫਿਰ ਵੀ ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਸੁਰੱਖਿਆ ਪ੍ਰਾਪਤ ਹੋਵੇਗੀ।</translation>
-<translation id="112752777279960360">ਇਸ ਕੰਪਿਊਟਰ 'ਤੇ ਪਹਿਲੀ ਵਾਰ Android ਫ਼ੋਨ ਨੂੰ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤੇ ਜਾਣ ਦਾ ਸੈੱਟਅੱਪ ਕਰਨ ਲਈ, ਆਪਣੇ ਫ਼ੋਨ 'ਤੇ Chrome ਖੋਲ੍ਹੋ, ਅਤੇ "ਸੈਟਿੰਗਾਂ &gt; ਪਾਸਵਰਡ &gt; ਫ਼ੋਨ ਨੂੰ ਇੱਕ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਵਜੋਂ ਵਰਤੋ" 'ਤੇ ਜਾਓ। ਫਿਰ "ਨਵਾਂ ਡੀਵਾਈਸ ਕਨੈਕਟ ਕਰੋ" 'ਤੇ ਟੈਪ ਕਰੋ ਅਤੇ ਇਸ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ।</translation>
 <translation id="1128109161498068552">ਕਿਸੇ ਵੀ ਸਾਈਟ ਨੂੰ MIDI ਡਿਵਾਈਸਾਂ ਤੇ ਪਹੁੰਚਣ ਲਈ ਸਿਸਟਮ ਐਕਸਕਲੂਸਿਵ ਸੁਨੇਹੇ ਵਰਤਣ ਦੀ ਆਗਿਆ ਨਾ ਦਿਓ</translation>
 <translation id="1128591060186966949">ਖੋਜ ਇੰਜਣ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="1129850422003387628">ਐਪਾਂ ਪ੍ਰਬੰਧਿਤ ਕਰੋ</translation>
@@ -505,6 +504,7 @@
 <translation id="1542514202066550870">ਇਹ ਟੈਬ ਇੱਕ ਹੈੱਡਸੈੱਟ ਵਿੱਚ VR ਸਮੱਗਰੀ ਨੂੰ ਪੇਸ਼ ਕਰ ਰਹੀ ਹੈ।</translation>
 <translation id="1543284117603151572">Edge ਤੋਂ ਆਯਾਤ ਕੀਤਾ</translation>
 <translation id="1545177026077493356">ਆਟੋਮੈਟਿਕ Kiosk ਮੋਡ</translation>
+<translation id="1545749641540134597">QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="1545775234664667895">ਥੀਮ "<ph name="THEME_NAME" />" ਸਥਾਪਤ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="1546280085599573572">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੇ ਇਹ ਬਦਲ ਦਿੱਤਾ ਹੈ ਕਿ ਜਦੋਂ ਤੁਸੀਂ ਹੋਮ ਬਟਨ 'ਤੇ ਕਲਿੱਕ ਕਰਦੇ ਹੋ ਤਾਂ ਕਿਹੜਾ ਪੰਨਾ ਦਿਖਾਇਆ ਜਾਵੇ।</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> ਦੀ ਇੱਛਾ ਇੱਕ <ph name="EXTENSION_TYPE" /> ਸਥਾਪਤ ਕਰਨ ਦੀ ਹੈ ਜੋ ਇਹ ਕਰ ਸਕਦੀ ਹੈ:</translation>
@@ -954,7 +954,6 @@
 <translation id="1992924914582925289">ਡੀਵਾਈਸ ਤੋਂ ਹਟਾਓ</translation>
 <translation id="1994173015038366702">ਸਾਈਟ URL</translation>
 <translation id="1995916364271252349">ਸਾਈਟਾਂ ਵੱਲੋਂ ਵਰਤੀ ਅਤੇ ਦਿਖਾਈ ਜਾ ਸਕਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਕੰਟਰੋਲ ਕਰੋ (ਟਿਕਾਣਾ, ਕੈਮਰਾ, ਪੌਪ-ਅੱਪ ਅਤੇ ਹੋਰ)</translation>
-<translation id="1997437640397887843">ਡੀਵਾਈਸ ਕੈਮਰਾ ਚਾਲੂ ਹੋ ਗਿਆ ਹੈ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਈ-ਸਿਮ QR ਕੋਡ ਕੈਮਰੇ ਦੇ ਸਾਹਮਣੇ ਰੱਖੋ।</translation>
 <translation id="1997616988432401742">ਤੁਹਾਡੇ ਸਰਟੀਫਿਕੇਟ</translation>
 <translation id="1999115740519098545">ਸਟਾਰਟਅਪ ਤੇ</translation>
 <translation id="2000419248597011803">ਪਤਾ ਬਾਰ ਅਤੇ ਖੋਜ ਬਾਕਸ ਤੋਂ ਕੁਝ ਕੁਕੀਜ਼ ਅਤੇ ਖੋਜਾਂ ਤੁਹਾਡੇ ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ ਨੂੰ ਭੇਜਦੀ ਹੈ</translation>
@@ -974,7 +973,6 @@
 <translation id="2019718679933488176">&amp;ਨਵੀਂ ਟੈਬ ਵਿੱਚ ਆਡੀਓ ਖੋਲ੍ਹੋ</translation>
 <translation id="2020183425253392403">ਨੈੱਟਵਰਕ ਪਤਾ ਸੈਟਿੰਗਾਂ ਦਿਖਾਓ</translation>
 <translation id="2020225359413970060">ਫ਼ਾਈਲ ਸਕੈਨ ਕਰੋ</translation>
-<translation id="2022953316617983419">QR ਕੋਡ</translation>
 <translation id="2023167225947895179">ਸ਼ਾਇਦ PIN ਦਾ ਆਸਾਨੀ ਨਾਲ ਪਤਾ ਲਗਾਇਆ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="202352106777823113">ਡਾਊਨਲੋਡ ਵਿੱਚ ਬਹੁਤ ਜ਼ਿਆਦਾ ਸਮਾਂ ਲੱਗ ਰਿਹਾ ਸੀ ਅਤੇ ਇਹ ਨੈੱਟਵਰਕ ਵੱਲੋਂ ਰੋਕ ਦਿੱਤੀ ਗਈ ਸੀ।</translation>
 <translation id="2025115093177348061">ਆਗਮੈਂਟਿਡ ਰਿਐਲਿਟੀ</translation>
@@ -1129,6 +1127,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> ਵੱਲੋਂ ਖਾਤੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕੀਤਾ ਜਾਂਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਪ੍ਰਾਇਮਰੀ ਖਾਤੇ ਤੋਂ ਸਾਈਨ-ਆਊਟ ਹੋਣ ਲਈ, ਆਪਣੀ ਸਕ੍ਰੀਨ 'ਤੇ ਸਮੇਂ 'ਤੇ ਕਲਿੱਕ ਕਰੋ। ਦਿਸਣ ਵਾਲੇ ਮੀਨੂ ਵਿੱਚ, "ਸਾਈਨ-ਆਊਟ ਕਰੋ" 'ਤੇ ਕਲਿੱਕ ਕਰੋ।</translation>
 <translation id="2175607476662778685">ਤਤਕਾਲ ਲਾਂਚ ਬਾਰ</translation>
 <translation id="217576141146192373">ਪ੍ਰਿੰਟਰ ਨੂੰ ਜੋੜਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਪ੍ਰਿੰਟਰ ਦੇ ਸੰਰੂਪਣ ਦੀ ਜਾਂਚ ਕਰਕੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
+<translation id="2175927920773552910">QR ਕੋਡ</translation>
 <translation id="2177950615300672361">ਇਨਕੋਗਨਿਟੋ ਟੈਬ: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA ਸਮਝੌਤਾ</translation>
 <translation id="2179416702468739594">ਉਪਲਬਧ ਪ੍ਰੋਫਾਈਲਾਂ ਨੂੰ ਲੱਭਿਆ ਜਾ ਰਿਹਾ ਹੈ। ਇਸ ਨਾਲ ਤੁਹਾਡਾ ਮੋਬਾਈਲ ਨੈੱਟਵਰਕ ਕੁਝ ਮਿੰਟਾਂ ਲਈ ਡਿਸਕਨੈਕਟ ਹੋ ਸਕਦਾ ਹੈ।</translation>
@@ -4337,7 +4336,6 @@
 <translation id="5712153969432126546">ਸਾਈਟਾਂ ਕਈ ਵਾਰ ਦਸਤਾਵੇਜ਼, ਇਕਰਾਰਨਾਮਿਆਂ ਅਤੇ ਫ਼ਾਰਮਾਂ ਵਰਗੇ PDF ਪ੍ਰਕਾਸ਼ਿਤ ਕਰਦੀਆਂ ਹਨ</translation>
 <translation id="5715711091495208045">ਪਲੱਗਇਨ ਬ੍ਰੋਕਰ: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ਪੂਰਵ-ਨਿਰਧਾਰਤ ਖੋਜ ਇੰਜਣ</translation>
-<translation id="5719637365829998022">QR ਕੋਡ ਸਕੈਨ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="5719854774000914513">ਸਾਈਟਾਂ HID ਡੀਵਾਈਸਾਂ ਨਾਲ ਕਨੈਕਟ ਕਰਨ ਲਈ ਪੁੱਛ ਸਕਦੀਆਂ ਹਨ</translation>
 <translation id="572155275267014074">Android ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5722086096420375088">ਹਰਾ ਅਤੇ ਸਫ਼ੈਦ</translation>
@@ -4530,7 +4528,6 @@
 <translation id="5941711191222866238">ਨਿਊਨਤਮ</translation>
 <translation id="5942779427914696408">ਡੀਵਾਈਸ ਦੀ ਦਿਖਣਯੋਗਤਾ</translation>
 <translation id="5943127421590245687">ਤੁਹਾਡਾ ਪੁਸ਼ਟੀਕਰਨ ਸਫਲ ਰਿਹਾ। ਆਪਣੇ ਸਥਾਨਕ ਡਾਟੇ ਨੂੰ ਅਣਲਾਕ ਅਤੇ ਮੁੜ-ਬਹਾਲ ਕਰਨ ਲਈ, ਕਿਰਪਾ ਕਰਕੇ ਆਪਣਾ ਪੁਰਾਣਾ <ph name="DEVICE_TYPE" /> ਪਾਸਵਰਡ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="5944869793365969636">QR ਕੋਡ ਸਕੈਨ ਕਰੋ</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> ਖਤਰਨਾਕ ਹੋ ਸਕਦੀ ਹੈ। ਕੀ ਸਕੈਨ ਕਰਨ ਲਈ Google ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਨੂੰ ਭੇਜਣਾ ਹੈ?</translation>
 <translation id="5945363896952315544">ਤੁਹਾਡੀ ਸੁਰੱਖਿਆ ਕੁੰਜੀ ਕੋਈ ਹੋਰ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸਟੋਰ ਨਹੀਂ ਕਰ ਸਕਦੀ। ਨਵਾਂ ਫਿੰਗਰਪ੍ਰਿੰਟ ਸ਼ਾਮਲ ਕਰਨ ਲਈ, ਪਹਿਲਾਂ ਕੋਈ ਮੌਜੂਦਾ ਫਿੰਗਰਪ੍ਰਿੰਟ ਮਿਟਾਓ।</translation>
 <translation id="5946591249682680882">ਰਿਪੋਰਟ ਆਈ.ਡੀ. <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4654,7 +4651,6 @@
 <translation id="6077131872140550515">ਤਰਜੀਹੀ ਨੈੱਟਵਰਕਾਂ ਤੋਂ ਹਟਾਓ</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> ਬਾਰੇ ਨੁਕਤੇ ਅਤੇ ਨਵੀਆਂ ਜਾਣਕਾਰੀਆਂ</translation>
 <translation id="6077476112742402730">ਬੋਲ-ਕੇ-ਟਾਈਪ ਕਰਨਾ</translation>
-<translation id="6078045608615316905">ਇਸ ਚਿੱਤਰ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6078121669093215958">{0,plural, =1{ਮਹਿਮਾਨ}one{# ਖੁੱਲ੍ਹੀ ਮਹਿਮਾਨ ਵਿੰਡੋ}other{# ਖੁੱਲ੍ਹੀਆਂ ਮਹਿਮਾਨ ਵਿੰਡੋਆਂ}}</translation>
 <translation id="6078323886959318429">ਸ਼ਾਰਟਕੱਟ ਸ਼ਾਮਲ ਕਰੋ</translation>
 <translation id="6078752646384677957">ਕਿਰਪਾ ਕਰਕੇ ਆਪਣੇ ਮਾਇਕ੍ਰੋਫ਼ੋਨ ਅਤੇ ਆਡੀਓ ਪੱਧਰਾਂ ਦੀ ਜਾਂਚ ਕਰੋ।</translation>
@@ -5191,14 +5187,12 @@
 <translation id="6680650203439190394">ਦਰ</translation>
 <translation id="6681668084120808868">ਫ਼ੋਟੋ ਲਓ</translation>
 <translation id="6683087162435654533">ਸਾਰੀਆਂ ਟੈਬਾਂ ਨੂੰ ਮੁੜ-ਬਹਾਲ ਕਰੋ</translation>
-<translation id="6683948477137300040">ਡੀਵਾਈਸ EID ਅਤੇ QR ਕੋਡ ਪੌਪਅੱਪ ਦਿਖਾਓ</translation>
 <translation id="6684827949542560880">ਨਵੀਨਤਮ ਅੱਪਡੇਟ ਡਾਊਨਲੋਡ ਕੀਤਾ ਜਾ ਰਿਹਾ ਹੈ</translation>
 <translation id="668599234725812620">Google Play ਖੋਲ੍ਹੋ</translation>
 <translation id="6686490380836145850">ਟੈਬਸ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਬੰਦ ਕਰੋ</translation>
 <translation id="6686665106869989887">ਟੈਬ ਨੂੰ ਸੱਜੇ ਪਾਸੇ ਲਿਜਾਇਆ ਗਿਆ</translation>
 <translation id="6686817083349815241">ਆਪਣਾ ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> ਲੁਕਾਓ</translation>
-<translation id="6688285987813868112">ਇਸ ਚਿੱਤਰ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6690659332373509948">ਫਾਈਲ ਪਾਰਸ ਕਰਨ ਵਿੱਚ ਅਸਮਰੱਥ: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google ਡੈਸ਼ਬੋਰਡ 'ਤੇ ਸਮਕਾਲੀਕਿਰਤ ਕੀਤੇ ਡਾਟੇ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6691541770654083180">ਧਰਤੀ</translation>
@@ -5400,7 +5394,6 @@
 <translation id="6914783257214138813">ਤੁਹਾਡੇ ਪਾਸਵਰਡ ਕਿਸੇ ਵੀ ਵਿਅਕਤੀ ਨੂੰ ਦਿਖਾਈ ਦੇਣਗੇ ਜੋ ਨਿਰਯਾਤ ਕੀਤੀ ਗਈ ਫ਼ਾਈਲ ਦੇਖ ਸਕਦਾ ਹੈ।</translation>
 <translation id="6916590542764765824">ਐਕਸਟੈਂਸ਼ਨ ਵਿਵਸਥਿਤ ਕਰੋ</translation>
 <translation id="6919868320029503575">ਕਮਜ਼ੋਰ ਪਾਸਵਰਡ</translation>
-<translation id="6920262510368602827">ਇਸ ਪੰਨੇ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="6920989436227028121">ਨਿਯਮਿਤ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="6921104647315081813">ਸਰਗਰਮੀਆਂ ਕਲੀਅਰ ਕਰੋ</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ਖੋਲ੍ਹਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ</translation>
@@ -6121,7 +6114,6 @@
 <translation id="7691698019618282776">Crostini ਅੱਪਗ੍ਰੇਡ</translation>
 <translation id="7696063401938172191">ਆਪਣੇ '<ph name="PHONE_NAME" />' 'ਤੇ:</translation>
 <translation id="7697166915480294040">ਤੁਹਾਡੇ ਵੱਲੋਂ ਆਪਣੀ ਸਕ੍ਰੀਨ ਸਾਂਝੀ ਕਰਨ 'ਤੇ ਵੇਰਵੇ ਲੁਕਾਏ ਜਾਂਦੇ ਹਨ</translation>
-<translation id="7697598343108519171">QR ਕੋਡ ਸਕੈਨ ਕਰਨ ਲਈ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="7701040980221191251">ਕੋਈ ਨਹੀਂ</translation>
 <translation id="7701869757853594372">ਵਰਤੋਂਕਾਰ ਹੈਂਡਲ</translation>
 <translation id="7701928712056789451">ਇਹ ਆਈਟਮਾਂ ਖਤਰਨਾਕ ਹੋ ਸਕਦੀਆਂ ਹਨ</translation>
@@ -6227,7 +6219,6 @@
 <translation id="7800518121066352902">ਕਾ&amp;ਉਂਟਰਕਲੌਕਵਾਈਜ ਰੋਟੇਟ ਕਰੋ</translation>
 <translation id="780301667611848630">ਨਹੀਂ ਧੰਨਵਾਦ</translation>
 <translation id="7804072833593604762">ਟੈਬ ਬੰਦ ਹੋਈ</translation>
-<translation id="7805759469263222011">ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਕੈਮਰੇ ਦੀ ਵਰਤੋਂ ਕਰਕੇ QR ਕੋਡ ਨੂੰ ਸਕੈਨ ਕਰੋ ਜਾਂ ਤੁਹਾਡੇ ਕੈਰੀਅਰ ਵੱਲੋਂ ਮੁਹੱਈਆ ਕਰਵਾਇਆ ਗਿਆ 'ਕਿਰਿਆਸ਼ੀਲ ਕਰਨ ਲਈ ਕੋਡ' ਦਾਖਲ ਕਰੋ</translation>
 <translation id="7805768142964895445">ਸਥਿਤੀ</translation>
 <translation id="7807067443225230855">Search ਅਤੇ Assistant</translation>
 <translation id="7807711621188256451">ਹਮੇਸ਼ਾਂ <ph name="HOST" /> ਨੂੰ ਆਪਣੇ ਕੈਮਰੇ ਤੇ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
@@ -6781,7 +6772,6 @@
 <translation id="8386091599636877289">ਨੀਤੀ ਨਹੀਂ ਮਿਲੀ।</translation>
 <translation id="8387361103813440603">ਤੁਹਾਡੇ ਟਿਕਾਣੇ ਨੂੰ ਦੇਖਣ ਦੀ ਇਜਾਜ਼ਤ ਨਹੀਂ ਹੈ</translation>
 <translation id="8388770971141403598">ਸੈਕੰਡਰੀ ਪ੍ਰੋਫਾਈਲਾਂ ਸਮਰਥਿਤ ਨਹੀਂ ਹਨ</translation>
-<translation id="8389416080014625855">ਇਸ ਪੰਨੇ ਲਈ QR ਕੋਡ ਬਣਾਓ</translation>
 <translation id="8389492867173948260">ਇਸ ਐਕਸਟੈਂਸ਼ਨ ਨੂੰ ਤੁਹਾਡੇ ਵੱਲੋਂ ਦੇਖੀਆਂ ਜਾਣ ਵਾਲੀਆਂ ਵੈੱਬਸਾਈਟਾਂ 'ਤੇ ਤੁਹਾਡੇ ਸਾਰੇ ਡਾਟੇ ਨੂੰ ਪੜ੍ਹਨ ਅਤੇ ਬਦਲਣ ਦਿਓ:</translation>
 <translation id="8390449457866780408">ਸਰਵਰ ਅਣਉਪਲਬਧ।</translation>
 <translation id="8391218455464584335">ਤਵਾ ਰਿਕਾਰਡ</translation>
@@ -7337,7 +7327,6 @@
 <translation id="8986494364107987395">ਵਰਤੋਂ ਅੰਕੜੇ ਅਤੇ ਕਰੈਸ਼ ਰਿਪੋਰਟਾਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ Google ਨੂੰ ਭੇਜੋ</translation>
 <translation id="8987927404178983737">ਮਹੀਨਾ</translation>
 <translation id="8988879467270412492">ਕੀ ਤੁਸੀਂ Chrome OS ਦੇ ਬਿਲਟ-ਇਨ ਸਕ੍ਰੀਨ ਰੀਡਰ ChromeVox ਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ? ਜੇ ਹਾਂ, ਤਾਂ ਪੰਜ ਸਕਿੰਟਾਂ ਲਈ ਦੋਵੇਂ ਅਵਾਜ਼ੀ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖੋ।</translation>
-<translation id="8990209962746788689">QR ਕੋਡ ਬਣਾਇਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="8991520179165052608">ਸਾਈਟ ਤੁਹਾਡੇ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਦੀ ਵਰਤੋਂ ਕਰ ਸਕਦੀ ਹੈ</translation>
 <translation id="899384117894244799">ਪ੍ਰਤਿਬੰਧਿਤ ਵਰਤੋਂਕਾਰ ਨੂੰ ਹਟਾਓ</translation>
 <translation id="899403249577094719">Netscape ਪ੍ਰਮਾਣ-ਪੱਤਰ ਬੇਸ URL</translation>

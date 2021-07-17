@@ -224,7 +224,6 @@ Nhấn vào từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung 
 
 Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội dung tìm kiếm, hãy chọn nhiều hoặc ít từ hơn. Để chỉnh sửa nội dung tìm kiếm, hãy mở bảng điều khiển, nhấn vào biểu tượng của ứng dụng bất kỳ bạn muốn mở trong một thẻ mới rồi thay đổi nội dung trong hộp tìm kiếm.</translation>
 <translation id="2459390580524506445">Tìm kiếm nâng cao bằng giọng nói</translation>
-<translation id="246532703174860178">Chia sẻ</translation>
 <translation id="247737702124049222">Tính năng mô tả hình ảnh đang bật</translation>
 <translation id="2482878487686419369">Thông báo</translation>
 <translation id="2485422356828889247">Gỡ cài đặt</translation>
@@ -296,7 +295,6 @@ Chạm và giữ từ bất kỳ để tìm kiếm. Để điều chỉnh nội 
 <translation id="2900528713135656174">Tạo sự kiện</translation>
 <translation id="2901411048554510387">Hiển thị nội dung đề xuất cho <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Danh sách các thiết bị mà bạn có thể chia sẻ một thẻ đã mở trên toàn màn hình.</translation>
-<translation id="2905036901251765993">Để chia sẻ với những người ở gần, hãy cho phép họ quét mã QR này</translation>
 <translation id="2908243544703713905">Có tin bài chưa đọc</translation>
 <translation id="2909615210195135082">Nền tảng thông báo của Google</translation>
 <translation id="2912296070571964914">Quản lý các chủ đề mà bạn quan tâm</translation>
@@ -722,7 +720,6 @@ Tài khoản Google của bạn có thể có các dạng lịch sử duyệt we
 <translation id="572328651809341494">Các thẻ gần đây</translation>
 <translation id="5723735397759933332">Giờ đây, chế độ thu gọn giúp bạn tiết kiệm được nhiều dữ liệu hơn bằng cách tối ưu hóa hình ảnh trên các trang HTTPS.</translation>
 <translation id="5726692708398506830">Phóng to mọi nội dung trên trang</translation>
-<translation id="5733983706093266635">Không thể tạo mã QR. URL dài hơn <ph name="CHARACTER_LIMIT" /> ký tự.</translation>
 <translation id="5748802427693696783">Đã chuyển sang thẻ chuẩn</translation>
 <translation id="5749068826913805084">Chrome cần quyền truy cập vào bộ nhớ để tải tệp xuống.</translation>
 <translation id="5749237766298580851">Tắt <ph name="SEPARATOR" /> Không khuyến nghị</translation>
@@ -878,7 +875,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="6590680911007613645">Đảm bảo mật khẩu bạn đang lưu khớp với mật khẩu dùng cho <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Trang web cho máy tính</translation>
 <translation id="6595046016124923392">Các hình ảnh được gửi đến Google để cải thiện nội dung mô tả cho bạn.</translation>
-<translation id="6597891566292541626">Điều chỉnh sao cho mã vạch/mã QR nằm trong khung này.</translation>
 <translation id="6600954340915313787">Đã sao chép vào Chrome</translation>
 <translation id="661266467055912436">Tăng độ bảo mật cho bạn và mọi người trên web.</translation>
 <translation id="6618554661997243500">Để xem các trang web hàng đầu và tin nổi bật dành cho bạn, hãy nhấn vào nút Trang chủ</translation>
@@ -1087,7 +1083,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7961015016161918242">Không bao giờ</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
 <translation id="7963646190083259054">Nhà cung cấp:</translation>
-<translation id="7967911570373677897">Để quét mã QR, hãy thay đổi các tùy chọn cài đặt để Chrome có thể sử dụng máy ảnh của bạn</translation>
 <translation id="7968014550143838305">Đã thêm vào danh sách đọc</translation>
 <translation id="7971136598759319605">Hoạt động 1 ngày trước</translation>
 <translation id="7975379999046275268">Xem trước trang <ph name="BEGIN_NEW" />Mới<ph name="END_NEW" /></translation>
@@ -1119,7 +1114,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Để sử dụng dấu trang trên tất cả các thiết bị, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="8110087112193408731">Bạn có muốn hiển thị hoạt động của mình trên Chrome trong Digital Wellbeing không?</translation>
-<translation id="8115259494083109761">Để quét mã QR, hãy cho phép Chrome dùng máy ảnh của bạn</translation>
 <translation id="8127542551745560481">Chỉnh sửa trang chủ</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8137558756159375272">Chạm để tìm kiếm sẽ gửi từ đã chọn và trang hiện tại làm ngữ cảnh cho Google Tìm kiếm. Bạn có thể tắt tính năng này trong <ph name="BEGIN_LINK" />Cài đặt<ph name="END_LINK" />.</translation>
@@ -1136,7 +1130,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8218622182176210845">Quản lý tài khoản của bạn</translation>
 <translation id="8223642481677794647">Trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="8224471946457685718">Tải tin bài cho bạn xuống qua Wi-Fi</translation>
-<translation id="8233540874193135768">Để quét mã QR, hãy dùng một thiết bị có máy ảnh.</translation>
 <translation id="8250920743982581267">Tài liệu</translation>
 <translation id="825412236959742607">Trang này sử dụng quá nhiều bộ nhớ, nên Chrome đã xóa bớt nội dung.</translation>
 <translation id="8260126382462817229">Thử đăng nhập lại</translation>
@@ -1252,7 +1245,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
 <translation id="8988028529677883095">Dùng điện thoại làm khóa bảo mật</translation>
-<translation id="8990209962746788689">Không thể tạo mã QR</translation>
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>
 <translation id="8996847606757455498">Chọn nhà cung cấp khác</translation>
 <translation id="8998729206196772491">Bạn đang đăng nhập bằng tài khoản do <ph name="MANAGED_DOMAIN" /> quản lý và cấp cho quản trị viên quyền kiểm soát dữ liệu Chrome của bạn. Dữ liệu của bạn sẽ được liên kết vĩnh viễn với tài khoản này. Việc đăng xuất khỏi Chrome sẽ xóa dữ liệu của bạn khỏi thiết bị này nhưng dữ liệu sẽ vẫn được lưu trữ trong Tài khoản Google.</translation>

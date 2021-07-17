@@ -16,6 +16,7 @@
 <translation id="1056775291175587022">ไม่พบเครือข่าย</translation>
 <translation id="1059194134494239015"><ph name="DISPLAY_NAME" />: <ph name="RESOLUTION" /></translation>
 <translation id="1073899992769346247">โปรดเปลี่ยนหรือชาร์จแบตเตอรี่</translation>
+<translation id="1077253978657569125">เราต้องการปรับปรุงสิ่งนี้</translation>
 <translation id="108486256082349153">โทรศัพท์มือถือ: <ph name="ADDRESS" /></translation>
 <translation id="1087110696012418426">สวัสดียามบ่าย <ph name="GIVEN_NAME" /></translation>
 <translation id="109942774857561566">ฉันเบื่อจัง</translation>
@@ -418,7 +419,7 @@
 <translation id="4269883910223712419">ผู้ดูแลระบบของอุปกรณ์เครื่องนี้ทำสิ่งต่อไปนี้ได้</translation>
 <translation id="4274537685965975248">มีการเปลี่ยนแปลงแป้นพิมพ์ลัด Ctrl + Alt + ลูกศรลง หากต้องการใช้แป้น End ให้กดแป้น <ph name="LAUNCHER_KEY_NAME" /> + ลูกศรขวา</translation>
 <translation id="4279490309300973883">กำลังแสดงผล</translation>
-<translation id="4285498937028063278">เลิกตรึง</translation>
+<translation id="4285498937028063278">เลิกปักหมุด</translation>
 <translation id="429402653707266969">สลับตำแหน่งของแถบเครื่องมือ</translation>
 <translation id="4294319844246081198">สวัสดียามเช้า <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">ล้างการแจ้งเตือนทั้งหมด <ph name="COUNT" /> รายการ</translation>
@@ -1032,6 +1033,7 @@
 <translation id="9080132581049224423">เลื่อนขึ้นเพื่อไปที่หน้าแรก</translation>
 <translation id="9080206825613744995">ใช้ไมโครโฟนอยู่</translation>
 <translation id="9084606467167974638">เปลี่ยนตำแหน่งเมนู</translation>
+<translation id="9087578468327036362">โปรดรายงานการค้นหานี้</translation>
 <translation id="9089416786594320554">วิธีป้อนข้อมูล</translation>
 <translation id="9091626656156419976">นำจอแสดงผล <ph name="DISPLAY_NAME" /> ออกแล้ว</translation>
 <translation id="9098969848082897657">ปิดเสียงโทรศัพท์</translation>

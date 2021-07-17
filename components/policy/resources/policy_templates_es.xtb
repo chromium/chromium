@@ -77,6 +77,9 @@
       Si se asigna el valor "false" a esta política o no se establece, no se enviará ninguna información.
       Si se le asigna el valor "true", se enviará la información sobre la retroiluminación del dispositivo.</translation>
 <translation id="1076751984131277498">Lista de dispositivos USB desvinculables permitidos</translation>
+<translation id="1079425471279127373">Si se establece la política, se permitirá que algunos orígenes de aplicaciones web de instalación forzada obtengan atributos de dispositivo (por ejemplo, el número de serie o el nombre de host) usando la API Device Attributes.
+
+      La API Device Attributes es una lista de APIs web. Consulta https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles en el caso de los orígenes que se correspondan con aplicaciones web de instalación forzada mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o la política que esté configurada en la sesión de kiosco.</translation>
 <translation id="1079801999187584280">No permitir el uso de herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permitir a los usuarios elegir usar un servicio de Google anónimo para proporcionar descripciones automáticas para las imágenes no etiquetadas</translation>
 <translation id="1087437665304381368">Esta política permite controlar únicamente el modo desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las opciones para desarrolladores de Android, debes asignar un valor a la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -872,6 +875,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
 
       Si se asigna un valor a esta política, los usuarios no podrán cambiarlo. Si no se le asigna ninguno, los usuarios podrán elegir si quieren usar esta función.</translation>
+<translation id="2093552723795057221">No informar sobre el estado del audio</translation>
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y de datos sobre fallos</translation>
 <translation id="2104418465060359056">Recoger información sobre extensiones y complementos</translation>
@@ -915,6 +919,9 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 <translation id="2151831603578119302">Habilitar las combinaciones de teclas para las funciones de accesibilidad</translation>
 <translation id="2156132677421487971">Configura las políticas de <ph name="PRODUCT_NAME" />, una función que permite que los usuarios envíen contenido de las pestañas, los sitios web o el escritorio desde el navegador a pantallas y sistemas de sonido remotos.</translation>
 <translation id="2156755242840687300">Servidores de impresión externos habilitados</translation>
+<translation id="2157842368188031417">La política solo se aplica a las sesiones de invitado administradas. Tiene que estar habilitada para que el modo de estación de trabajo compartida de Imprivata permita cambios de usuario durante la sesión.
+      Si se le asigna el valor True a la política, se forzará la anulación de determinadas políticas de funciones, que conservan datos de usuario sensibles y no se gestionan mediante el mecanismo de limpieza usado en el caso de los cambios de usuario durante la sesión (en el modo de estación de trabajo compartida de Imprivata).
+      Si se le asigna el valor False a la política o no se define, no se anulará ninguna política.</translation>
 <translation id="2160336427036785721">Configura la cantidad de memoria que una única instancia de <ph name="PRODUCT_NAME" /> puede usar antes de que se empiecen a descartar pestañas (es decir, se liberará la memoria que usa una pestaña y esta se tendrá que volver a cargar cuando se vuelva a acceder a ella) para ahorrar memoria.
 
       Si se define esta política, el navegador empezará a descartar pestañas para ahorrar memoria cuando se supere el límite de memoria. Sin embargo, no se garantiza que el navegador se ejecute siempre por debajo de ese límite. Cualquier valor que sea inferior a 1024 se establecerá como 1024.
@@ -933,7 +940,7 @@ Si esta política se establece en True, <ph name="PRODUCT_OS_NAME" /> intentará
 
       Los sitios web maliciosos pueden detectar fácilmente si se ha definido esta política y para qué puertos, y usar esta información para dirigir ataques.
 
-      Cada puerto de esta lista tiene una etiqueta que indica la fecha hasta la que puede desbloquearse. Después esa fecha, el puerto quedará restringido independientemente de cómo se defina este ajuste.
+      Cada puerto de esta lista tiene una etiqueta que indica la fecha hasta la que puede desbloquearse. Después de esa fecha, el puerto quedará restringido independientemente de cómo se defina este ajuste.
 
       Si el valor se deja vacío o sin definir, se bloquearán todos los puertos restringidos. Si hay tanto valores válidos como no válidos, se aplicarán los válidos.
 
@@ -1935,6 +1942,7 @@ Si no se le asigna ningún valor, la pantalla de privacidad se inhabilitará ini
 
       Esta política es temporal y se eliminará en futuras versiones
       de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3359186795130278362">Habilitar sesión de invitado administrada y restringida.</translation>
 <translation id="3360093276083825336">Ten en cuenta que esta política está obsoleta y se eliminará de la versión 85 de <ph name="PRODUCT_OS_NAME" />. Utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" /> en su lugar.
 
           Permite especificar el tiempo que debe transcurrir sin que el usuario realice ninguna acción antes de mostrar un cuadro de diálogo de advertencia (con batería).
@@ -3181,6 +3189,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Nota: También se pueden añadir elementos a la lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Lista de admisión de usuarios con permiso para iniciar sesión</translation>
+<translation id="5071303485174858500">Inhabilitar sesión de invitado administrada y restringida.</translation>
 <translation id="5073609397321802133">Si se asigna el valor "false" a esta política, la página Nueva pestaña no permitirá a los usuarios personalizar la imagen de fondo. Aunque se cambie el valor a "true" posteriormente, las imágenes de fondo personalizadas se eliminarán de forma permanente.
 
       Si se asigna el valor "true" a esta política o no se le asigna ningún valor, los usuarios podrán personalizar la imagen de fondo en la página Nueva pestaña.</translation>
@@ -3188,6 +3197,7 @@ Si se define esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que l
 
       Si se le asigna el valor "Falso" o no se le asigna ninguno, <ph name="PRODUCT_NAME" /> usará la configuración que se esté aplicando en ese momento para comprobar la revocación online.</translation>
 <translation id="5078623750797048009">Habilitar anotaciones en PDF</translation>
+<translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
 <translation id="5082572440690475059">Permitir el acceso de lectura a través de la API File System en estos sitios web</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5090791951240382356">Permite combinar políticas de diccionario de fuentes distintas</translation>
@@ -3849,6 +3859,7 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
           Si se inhabilita o no se configura esta opción, se utilizará el nombre de dominio predeterminado de TalkGadget (chromoting-host.talkgadget.google.com) para todos los hosts.
 
           La configuración de esta política no afecta a los clientes de acceso remoto, ya que siempre utilizan "chromoting-client.talkgadget.google.com" para acceder a TalkGadget.</translation>
+<translation id="5888645257599699215">Informar sobre el estado del audio del dispositivo</translation>
 <translation id="5890063326284543943">Controlar el uso de la API Serial</translation>
 <translation id="5897913798715600338">Carga la batería usando la tecnología de carga rápida.</translation>
 <translation id="5898486742390981550">Si varios usuarios han iniciado sesión, solo podrá utilizar las aplicaciones para Android el usuario principal.</translation>
@@ -4492,8 +4503,10 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se inhabilita, se elimina el icono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otro medio de activar o desactivar las funciones del navegador se seguirán comportando como se espera independientemente de si esta política está habilitada o inhabilitada.</translation>
+<translation id="6794083666143216172">Permitir que los orígenes consulten los atributos del dispositivo</translation>
 <translation id="6795485990775913659">Permitir imprimir solo sin PIN</translation>
 <translation id="6800181452282128474">No realizar consultas a Quirks Servers</translation>
+<translation id="68031099365512050">Informar sobre el estado del audio</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>
 <translation id="681446116407619279">Esquemas de autenticación admitidos</translation>
@@ -4652,6 +4665,9 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
 
       Estos son los idiomas que se admiten actualmente: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk y vi.</translation>
 <translation id="6926703471186170050">Habilitar impresión de borde largo por las dos caras</translation>
+<translation id="6928305045865155732">Si se habilita la política o no se define, los dispositivos registrados informarán del volumen de audio del dispositivo.
+
+      Si se asigna el valor Disabled a la política, los dispositivos inscritos no registrarán ni informarán del estado del audio.</translation>
 <translation id="6931242315485576290">Inhabilitar sincronización de datos con Google</translation>
 <translation id="6943577887654905793">Nombre de preferencia en Mac/Linux:</translation>
 <translation id="6946652757373377924">
@@ -6004,6 +6020,19 @@ Te recomendamos que utilices GPO para configurar la política en Windows, aunque
       Si se configura la política, los usuarios no podrán cambiar esta función. Si no se le asigna ningún valor, podrán cambiar esta opción.</translation>
 <translation id="8715885991031124968">Permitir los cuadros de diálogo de JavaScript que se activen desde un submarco de origen diferente</translation>
 <translation id="8720547069538712402">Permitir que los usuarios habiliten o inhabiliten el corrector ortográfico</translation>
+<translation id="8726080977639508431">Esta política controla cómo interpreta <ph name="PRODUCT_NAME" /> las políticas de listas de sitios y las políticas de listas de sospechosos en el caso de la función de compatibilidad con navegadores antiguos. Afecta a las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si se le asigna el valor Default (0) o no se establece, la coincidencia de URLs será menos estricta. Las reglas que no contengan "/" buscarán una cadena secundaria en cualquier lugar del nombre de host de la URL. Al buscar coincidencias con el componente de ruta de una URL, se distingue entre mayúsculas y minúsculas.
+
+      Si se le asigna el valor IESiteListMode (1), la coincidencia de URLs será más estricta. Las reglas que no contengan "/" buscarán coincidencias únicamente al final del nombre de host. Además, deben estar al lado del nombre del dominio. Al buscar coincidencias con el componente de ruta de una URL, se distingue entre mayúsculas y minúsculas. Esta opción es más compatible con <ph name="MS_IE_PRODUCT_NAME" /> y <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Por ejemplo, con las reglas "example.com" y "acme.com/abc":
+
+      "http://example.com/", "http://subdomain.example.com/" y "http://acme.com/abc" serían coincidencias independientemente del modo de análisis.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" y "http://example.comabc/" solo serían coincidencias si se usa el modo Default.
+
+      "http://acme.com/ABC" solo sería coincidencia en IESiteListMode.</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido en YouTube como mínimo</translation>
 <translation id="8745669971728319820">Esta política determina si se recoge información sobre extensiones y complementos.
 

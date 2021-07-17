@@ -224,7 +224,6 @@
 
 تلاش کرنے کے لیے کسی بھی نفظ کو ٹچ کریں اور دبائے رکھیں۔ اپنی تلاش کو بہتر بنانے کے لیے، مزید یا بعض الفاظ کو منتخب کریں۔ اپنی تلاش میں ترمیم کرنے کے لیے، پینل کھولیں، ایک نیا ٹیب کھولنے کے لیے آئیکن پر تھپتھپائیں اور تلاش کے خانے میں اپنی تبدیلیاں کریں۔</translation>
 <translation id="2459390580524506445">صوتی تلاش کو بہتر بنایا گیا</translation>
-<translation id="246532703174860178">اشتراک کریں</translation>
 <translation id="247737702124049222">تصویر کی تفصیلات آن ہیں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
 <translation id="2485422356828889247">ان انسٹال کریں</translation>
@@ -296,7 +295,6 @@
 <translation id="2900528713135656174">ایونٹ تخلیق کریں</translation>
 <translation id="2901411048554510387"><ph name="WEBSITE_TITLE" /> کیلئے تجاویز دکھائی جا رہی ہیں</translation>
 <translation id="2904414404539560095">ان آلات کی فہرست جن کے ساتھ ٹیب کا اشتراک کرنا ہے مکمل اونچائی پر کھلی ہوئی ہے۔</translation>
-<translation id="2905036901251765993">‏قریبی لوگوں سے اشتراک کرنے کے لیے، انہیں یہ QR کوڈ اسکین کرنے دیں</translation>
 <translation id="2908243544703713905">بغیر پڑھی ہوئی کہانیاں تیار ہیں</translation>
 <translation id="2909615210195135082">‏Google اطلاعات پلیٹ فارم</translation>
 <translation id="2912296070571964914">ان موضوعات کا نظم کریں جن میں آپ کو دلچسپی ہے</translation>
@@ -306,6 +304,7 @@
 <translation id="2942036813789421260">پیش منظر ٹیب بند ہے</translation>
 <translation id="2956410042958133412">یہ اکاؤنٹ <ph name="PARENT_NAME_1" /> اور <ph name="PARENT_NAME_2" /> کے زیر انتظام ہے۔</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> نہ پڑھا ہوا صفحہ}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> نہ پڑھے ہوئے صفحات}}</translation>
+<translation id="2961210776189273067">عنوان</translation>
 <translation id="2979025552038692506">منتخب پوشیدگی ٹیب</translation>
 <translation id="2979448359891869301">اسکرین شاٹ کو بڑھایا نہیں جا سکتا۔ آپ کے فون کے مصروف نہ ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="2979639724566107830">نئی ونڈو میں کھولیں</translation>
@@ -617,6 +616,7 @@
 <translation id="497421865427891073">آگے جائیں</translation>
 <translation id="4988210275050210843">فائل (<ph name="MEGABYTES" />) ڈاؤن لوڈ ہو رہی ہے۔</translation>
 <translation id="4988526792673242964">صفحات</translation>
+<translation id="5001388021414335527">یہاں اس سائٹ کی پیروی کریں</translation>
 <translation id="5004416275253351869">‏Google سرگرمی کنٹرولز</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> منسلک ہونا چاہتی ہے</translation>
@@ -722,7 +722,6 @@
 <translation id="572328651809341494">حالیہ ٹیبز</translation>
 <translation id="5723735397759933332">‏لائٹ وضع اب HTTPS صفحات پر تصاویر کو بہتر بنا کر آپ کیلئے مزید ڈیٹا کی بچت کرتی ہے۔</translation>
 <translation id="5726692708398506830">صفحہ پر موجود ہر چیز کو اور بڑا کریں</translation>
-<translation id="5733983706093266635">‏QR کوڈ تخلیق نہیں کیا جا سکا۔ URL <ph name="CHARACTER_LIMIT" /> حروف سے زیادہ ہے۔</translation>
 <translation id="5748802427693696783">معیاری ٹیبز میں سوئچ کر دیا گیا</translation>
 <translation id="5749068826913805084">‏Chrome کو فائلیں ڈاؤن لوڈ کرنے کیلئے اسٹوریج تک رسائی درکار ہے۔</translation>
 <translation id="5749237766298580851">آف <ph name="SEPARATOR" /> تجاویز کردہ نہیں ہے</translation>
@@ -878,7 +877,6 @@
 <translation id="6590680911007613645">اس بات کو یقینی بنائیں کہ آپ جو پاس ورڈ محفوظ کر رہے ہیں وہ آپ کے <ph name="SITE" /> کے پاس ورڈ سے مماثل ہے</translation>
 <translation id="6593061639179217415">ڈیسک ٹاپ سائٹ</translation>
 <translation id="6595046016124923392">‏آپ کے لئے تفصیلات میں بہتری لانے کیلئے Google کو تصاویر بھیجی جاتی ہیں۔</translation>
-<translation id="6597891566292541626">‏QR/بار کوڈ کو اس فریم میں رکھیں۔</translation>
 <translation id="6600954340915313787">‏Chrome پر کاپی کر دیا گیا</translation>
 <translation id="661266467055912436">آپ کے لیے اور ویب پر ہر کسی کے لیے سیکیورٹی کو بہتر بناتا ہے۔</translation>
 <translation id="6618554661997243500">اپنے لئے سر فہرست سائٹس اور کہانیاں دیکھنے کے لئے، ہوم بٹن پر تھپتھپائیں</translation>
@@ -987,6 +985,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{1 منتخب کردہ آئٹم کا اشتراک کریں}other{# منتخب کردہ آئٹمز کا اشتراک کریں}}</translation>
 <translation id="7359002509206457351">ادائیگی کے طریقوں تک رسائی حاصل کریں</translation>
 <translation id="7375125077091615385">قسم:</translation>
+<translation id="7386842512861524348">‏جب تک کہ Chrome آپ کو بصورت دیگر کچھ نہیں بتاتا ہے تب تک سائٹ کا کنکشن محفوظ رہتا ہے۔</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />۔</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">‏Chrome کے پہلی بار چلانے کا تجربہ</translation>
@@ -1087,7 +1086,6 @@
 <translation id="7961015016161918242">کبھی نہیں</translation>
 <translation id="7961926449547174351">آپ نے اسٹوریج تک رسائی کو غیر فعال کر دیا ہے، براہ کرم اسے فعال کرنے کے لیے ترتیبات پر جائیں۔</translation>
 <translation id="7963646190083259054">وینڈر:</translation>
-<translation id="7967911570373677897">‏QR کوڈ اسکین کرنے کے لیے، اپنی ترتیبات تبدیل کریں تاکہ Chrome آپ کا کیمرا استعمال کر سکے</translation>
 <translation id="7968014550143838305">پڑھنے کی فہرست میں شامل کیا گیا</translation>
 <translation id="7971136598759319605">1 دن پہلے فعال تھا</translation>
 <translation id="7975379999046275268">صفحے کا پیش منظر دیکھیں <ph name="BEGIN_NEW" />نیا<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">اپنے سبھی آلات پر اپنے بُک مارکس حاصل کرنے کیلئے، سِنک کو آن کریں</translation>
 <translation id="8110087112193408731">‏ڈیجیٹل فلاح و بہبود میں آپ کی Chrome سرگرمی دکھائیں؟</translation>
-<translation id="8115259494083109761">‏QR کوڈ اسکین کرنے کے لیے Chrome کو اپنا کیمرا استعمال کرنے دیں</translation>
 <translation id="8127542551745560481">ہوم صفحہ میں ترمیم کریں</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
 <translation id="8137558756159375272">‏تلاش کریں کو ٹچ کرنا منتخب کردہ لفظ اور سیاق و سباق کے بطور حالیہ صفحہ Google تلاش کو بھیج دیتا ہے۔ آپ اسے <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں آف کر سکتے ہیں۔</translation>
@@ -1136,7 +1133,6 @@
 <translation id="8218622182176210845">اپنے اکاؤنٹ کا نظم کریں</translation>
 <translation id="8223642481677794647">فیڈ کارڈ مینو</translation>
 <translation id="8224471946457685718">‏Wi-Fi پر اپنے لئے مضامین ڈاؤن لوڈ کریں</translation>
-<translation id="8233540874193135768">‏QR کوڈ اسکین کرنے کے لیے، کیمرا والا آلہ استعمال کریں۔</translation>
 <translation id="8250920743982581267">دستاویزات</translation>
 <translation id="825412236959742607">‏یہ صفحہ بہت زیادہ میموری استعمال کرتا ہے، لہذا Chrome نے بعض مواد حذف کر دیا۔</translation>
 <translation id="8260126382462817229">دوبارہ سائن ان کرنے کی کوشش کریں</translation>
@@ -1147,6 +1143,7 @@
 <translation id="8284326494547611709">کیپشنز</translation>
 <translation id="829672787777123339">آپ کے آلے سے منسلک ہو رہا ہے…</translation>
 <translation id="8310344678080805313">معیاری ٹیبز</translation>
+<translation id="831192587911042850">موجودہ ویب سائٹ کو ان ویب سائٹس کی فہرست میں شامل کرتا ہے جن کی آپ پیروی کر رہے ہیں۔</translation>
 <translation id="8327155640814342956">‏براؤزنگ کے بہترین تجربے کے لیے، Chrome کو اپ ڈیٹ کریں</translation>
 <translation id="834313815369870491">سائٹس کا کبھی بھی ترجمہ نہ کریں</translation>
 <translation id="8349013245300336738">استعمال کردہ ڈیٹا کی مقدار کے لحاظ سے ترتیب دیں</translation>
@@ -1252,7 +1249,6 @@
 <translation id="8970887620466824814">کچھ غلط ہو گیا۔</translation>
 <translation id="8972098258593396643">ڈیفالٹ فولڈر میں ڈاؤن لوڈ کریں؟</translation>
 <translation id="8988028529677883095">فون کو سیکورٹی کلید کے طور پر استعمال کریں</translation>
-<translation id="8990209962746788689">‏QR کوڈ تخلیق نہیں کیا جاسکا</translation>
 <translation id="8993760627012879038">پوشیدگی وضع میں ایک نیا ٹیب کھولیں</translation>
 <translation id="8996847606757455498">کسی دوسرے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="8998729206196772491">‏آپ <ph name="MANAGED_DOMAIN" /> کے زیر انتظام اکاؤنٹ کے ساتھ سائن ان کر رہے ہیں اور اس کے منتظم کو اپنے Chrome ڈیٹا پر کنٹرول دے رہے ہیں۔ آپ کا ڈیٹا اس اکاؤنٹ سے مستقل طور پر مربوط ہو جائے گا۔ Chrome سے سائن آؤٹ کرنے سے آپ کا ڈیٹا اس آلہ سے حذف ہو جائے گا، لیکن یہ آپ کے Google اکاؤنٹ میں اسٹور رہے گا۔</translation>

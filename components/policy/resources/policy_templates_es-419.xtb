@@ -77,6 +77,9 @@
       Si se establece la política como falsa o no se establece, no se enviará la información.
       Si se establece como verdadera, se enviará información sobre la luz de fondo del dispositivo.</translation>
 <translation id="1076751984131277498">Lista de dispositivos USB que se pueden desconectar permitidos</translation>
+<translation id="1079425471279127373">Si estableces la política, se permitirá que algunos orígenes de las aplicaciones web instaladas de manera automática obtengan atributos de dispositivos (p. ej., número de serie o nombre de host) a través de la API de Device Attributes.
+
+      La API de Device Attributes es una lista de API web, la cual puedes consultar en el siguiente sitio: https://wicg.github.io/WebApiDevice/device_attributes. Solo están disponibles para los orígenes que corresponden a las aplicaciones web que se instalaron de forma automática mediante <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o para la que se configure en la sesión de kiosco.</translation>
 <translation id="1079801999187584280">No permitir el uso de las Herramientas para desarrolladores</translation>
 <translation id="1082802595100075771">Permite que los usuarios usen un servicio anónimo de Google para obtener descripciones automáticas de las imágenes sin etiquetar</translation>
 <translation id="1087437665304381368">Esta política controla solo el modo de desarrollador de <ph name="PRODUCT_OS_NAME" />. Si quieres impedir el acceso a las Opciones para desarrolladores de Android, deberás configurar la política <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -867,6 +870,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2090939118981888335">Si habilitas la política, se activará el proxy de compresión de datos. Si la inhabilitas, se desactivará el proxy.
 
       Si estableces la política, los usuarios no podrán cambiarla. Si no la estableces, los usuarios podrán usar la función.</translation>
+<translation id="2093552723795057221">No informar el estado del audio</translation>
 <translation id="209586405398070749">Canal estable</translation>
 <translation id="2098658257603918882">Habilitar informes de uso y datos relacionados con bloqueos</translation>
 <translation id="2104418465060359056">Enviar información de extensiones y complementos</translation>
@@ -910,6 +914,9 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
 <translation id="2151831603578119302">Habilita las combinaciones de teclas para las funciones de accesibilidad</translation>
 <translation id="2156132677421487971">Configura las políticas para <ph name="PRODUCT_NAME" />, una función que permite que los usuarios envíen el contenido de las pestañas, los sitios o el escritorio del navegador a pantallas y sistemas de sonido remotos.</translation>
 <translation id="2156755242840687300">Habilita los servidores de impresión externos</translation>
+<translation id="2157842368188031417">La política solo se aplica a sesiones de invitado administradas. Debe habilitarse para que se pueda cambiar de usuario durante la sesión en el modo de estación de trabajo compartida de Imprivata.
+      Si estableces la política como verdadera, se anularán de manera automática algunas políticas de funciones, las cuales conservan datos sensibles del usuario y no están controladas por el mecanismo de limpieza utilizado para cambiar de usuario durante la sesión con el modo de estación de trabajo compartida de Imprivata.
+      Si estableces la política como falsa o no la estableces, no se anulará ninguna política.</translation>
 <translation id="2160336427036785721">Configura la cantidad de memoria que puede usar una única instancia de <ph name="PRODUCT_NAME" /> antes de que se empiecen a descartar las pestañas (es decir que se liberará la memoria que utiliza la pestaña, la cual se deberá volver a cargar cuando se seleccione), a fin de ahorrar memoria.
 
       Si estableces la política, el navegador comenzará a descartar pestañas para ahorrar memoria cuando se supere el límite. Sin embargo, no hay garantía de que el navegador se ejecute siempre por debajo del límite. Se redondeará a 1024 cualquier valor por debajo de 1024.
@@ -1925,6 +1932,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 
       Esta política es temporal y se eliminará en una versión futura
       de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3359186795130278362">Habilitar la sesión de invitado administrada y restringida</translation>
 <translation id="3360093276083825336">Ten en cuenta que esta política es obsoleta y se quitará en la versión 85 de <ph name="PRODUCT_OS_NAME" />. En su lugar, utiliza <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Especifica el período sin intervención del usuario que debe transcurrir para que se muestre un cuadro de diálogo de advertencia cuando el dispositivo esté funcionando con batería.
@@ -3167,6 +3175,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Nota: También se pueden agregar elementos a esta lista a través de la política <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Lista de usuarios con permiso para iniciar sesión</translation>
+<translation id="5071303485174858500">Inhabilitar la sesión de invitado administrada y restringida</translation>
 <translation id="5073609397321802133">Si se establece la política como falsa, los usuarios no podrán personalizar el fondo en la página Nueva pestaña. En caso de que haya un fondo personalizado, este se quitará de forma permanente, incluso si más tarde se establece la política como verdadera.
 
       Si se establece la política como verdadera o no se establece, los usuarios podrán personalizar el fondo en la página Nueva pestaña.</translation>
@@ -3174,6 +3183,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
 
       Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME" /> utilizará la configuración para comprobar la actual revocación en línea.</translation>
 <translation id="5078623750797048009">Habilitar las anotaciones en archivos PDF</translation>
+<translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
 <translation id="5082572440690475059">Permite el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
@@ -3832,6 +3842,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
           Si esta configuración está inhabilitada o no está establecida, el nombre de dominio de TalkGadget predeterminado ("chromoting-host.talkgadget.google.com") se utilizará para todos los hosts.
 
           La configuración de esta política no afecta a los clientes de acceso remoto. Ellos siempre utilizarán "chromoting-client.talkgadget.google.com" para acceder a TalkGadget.</translation>
+<translation id="5888645257599699215">Informar el estado del audio del dispositivo</translation>
 <translation id="5890063326284543943">Controla el uso de la API de Serial</translation>
 <translation id="5897913798715600338">Usar la tecnología de carga rápida para la batería</translation>
 <translation id="5898486742390981550">Cuando varios usuarios accedieron a sus cuentas, solo el usuario principal puede usar las apps de Android.</translation>
@@ -4476,8 +4487,10 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Si la inhabilitas, se quitará el ícono de funciones experimentales de la barra de herramientas.
 
       chrome://flags y cualquier otra forma de activar y desactivar las funciones del navegador seguirán comportándose según lo esperado independientemente de si esta política está habilitada o inhabilitada.</translation>
+<translation id="6794083666143216172">Permitir que los orígenes busquen atributos de dispositivos</translation>
 <translation id="6795485990775913659">Permitir la impresión solo sin PIN</translation>
 <translation id="6800181452282128474">No enviar consultas a Quirks Servers</translation>
+<translation id="68031099365512050">Informar el estado del audio</translation>
 <translation id="6810445994095397827">Bloquear JavaScript en estos sitios</translation>
 <translation id="6813263547126514821">Encendido y apagado</translation>
 <translation id="681446116407619279">Esquemas de autenticación compatibles</translation>
@@ -4636,6 +4649,9 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       Actualmente, los idiomas compatibles son los siguientes: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Habilitar la impresión doble con bordes largos</translation>
+<translation id="6928305045865155732">Si habilitas la política o no la estableces, los dispositivos inscritos informarán el volumen del audio del dispositivo.
+
+      Si la inhabilitas, los dispositivos inscritos no grabarán el audio ni informarán su estado.</translation>
 <translation id="6931242315485576290">Inhabilitar la sincronización de datos con Google</translation>
 <translation id="6943577887654905793">Nombre de preferencia de Mac/Linux:</translation>
 <translation id="6946652757373377924">En la versión M77, se quitó esta política.
@@ -5995,6 +6011,19 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
       Si estableces la política, los usuarios no podrán cambiar esta función. Si no la estableces, los usuarios podrán cambiar la configuración.</translation>
 <translation id="8715885991031124968">Permite los diálogos de JavaScript que se envían desde un submarco de otro origen</translation>
 <translation id="8720547069538712402">Permitir que el usuario habilite o inhabilite el corrector ortográfico</translation>
+<translation id="8726080977639508431">Esta política controla la manera en la que <ph name="PRODUCT_NAME" /> interpreta las políticas de listas de sitios o listas grises para la función Compatibilidad con navegadores heredados. Afecta las siguientes políticas: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> y <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si estableces la política como "Default" (0) o no la estableces, las coincidencias de URL serán menos estrictas. Las reglas que no incluyan "/" buscarán un substring en el nombre de host de la URL. Para que se establezca una coincidencia, hay que tener en cuenta que el componente de la ruta de acceso de una URL no distingue mayúsculas de minúsculas.
+
+      Si estableces la política como "IESiteListMode" (1), las coincidencias de URL serán más estrictas. Las reglas que no incluyan "/" solo buscarán coincidencias al final del nombre de host. Las reglas deben estar en el límite de un nombre de dominio. Para que se establezca una coincidencia, hay que tener en cuenta que el componente de la ruta de acceso de una URL no distingue mayúsculas de minúsculas. Es más compatible con <ph name="MS_IE_PRODUCT_NAME" /> y <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Por ejemplo, con las reglas "example.com" y "acme.com/abc":
+
+      "http://example.com/", "http://subdomain.example.com/" y "http://acme.com/abc" coinciden, independientemente del modo de análisis.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" y "http://example.comabc/" solo coinciden en el modo "Default".
+
+      "http://acme.com/ABC" solo coincide en el modo "IESiteListMode".</translation>
 <translation id="8736538322216687231">Aplicar el modo restringido mínimo en YouTube</translation>
 <translation id="8745669971728319820">Esta política controla el envío de los datos sobre las extensiones y los complementos.
 

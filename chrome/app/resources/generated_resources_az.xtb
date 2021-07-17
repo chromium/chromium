@@ -116,7 +116,6 @@
 <translation id="1124772482545689468">İstifadəçi</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (Lokal)</translation>
 <translation id="1126809382673880764">Sizi təhlükəli veb sayt, endirmə və artırmalardan qorumur. Hələ də Gmail və Axtarış kimi digər Google xidmətlərində mümkün olduğu qədər Təhlükəsiz Baxış qoruması əldə edəcəksiniz.</translation>
-<translation id="112752777279960360">Bu kompüterlə ilk dəfə təhlükəsizlik açarı kimi istifadə ediləcək Android telefonu ayarlamaq üçün telefonda Chrome'u açın və "Ayarlar &gt; Parollar &gt; Telefonu təhlükəsizlik açarı kimi istifadə edin" bölməsinə keçin. Sonra "Yeni cihazı qoşun" seçiminə toxunun və bu QR kodu skanlayın.</translation>
 <translation id="1128109161498068552">MIDI cihazlarına giriş üçün saytlara icraedici mesajlar istifadə etməsinə icazə verməyin</translation>
 <translation id="1128591060186966949">Axtarış mühərrikinə düzəliş edin</translation>
 <translation id="1129850422003387628">Tətbiqləri idarə edin</translation>
@@ -501,6 +500,7 @@
 <translation id="1542514202066550870">Bu tabel qulaqlıq üçün VR kontenti göstərir.</translation>
 <translation id="1543284117603151572">Edge'dən import edildi</translation>
 <translation id="1545177026077493356">Avtomatik Kiosk rejimi</translation>
+<translation id="1545749641540134597">QR Kodunu skan edin</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" quraşdırıldı</translation>
 <translation id="1546280085599573572">Bu artırma əsas səhifə düyməsinə kliklədiyiniz zaman hansı səhifənin göstərildiyini dəyişdi</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> aşağıdakı imkanlara malik <ph name="EXTENSION_TYPE" /> quraşdırmaq istəyir:</translation>
@@ -941,7 +941,6 @@
 <translation id="1992924914582925289">Cihazdan silin</translation>
 <translation id="1994173015038366702">Sayt URL-i</translation>
 <translation id="1995916364271252349">Saytların istifadə edə və göstərə biləcəyi məlumatlara (məkan, kamera, xəbərdarlıq pəncərələri və s.) nəzarət edir</translation>
-<translation id="1997437640397887843">Cihaz kamerası aktiv edilib. eSIM QR kodunuzu kameranın qarşısına tutun.</translation>
 <translation id="1997616988432401742">Sertifikatlarınız</translation>
 <translation id="1999115740519098545">Başlanğıcda</translation>
 <translation id="2000419248597011803">Ünvan paneli və axtarış qutusundakı bəzi kuki və axtarışları defolt axtarış mühərrikinizə göndərin</translation>
@@ -961,7 +960,6 @@
 <translation id="2019718679933488176">Audionu yeni paneldə açın</translation>
 <translation id="2020183425253392403">Şəbəkə ünvan ayarlarını göstərin</translation>
 <translation id="2020225359413970060">Faylı skanlayın</translation>
-<translation id="2022953316617983419">QR kodu</translation>
 <translation id="2023167225947895179">PIN tapmaq üçün asan ola bilər</translation>
 <translation id="202352106777823113">Endirmə çox vaxt çəkdi və şəbəkə tərəfindən dayandırıldı.</translation>
 <translation id="2025115093177348061">Artırılmış reallıq</translation>
@@ -1118,6 +1116,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2174948148799307353">Bu hesab <ph name="PARENT_EMAIL" /> tərəfindən idarə edilir. Bu cihazda əsas hesabdan çıxmaq üçün ekranınızdakı vaxta klikləyin. Görünən menyuda "Çıxış edin" seçiminə klikləyin.</translation>
 <translation id="2175607476662778685">Sürətli başlatma paneli</translation>
 <translation id="217576141146192373">Printer əlavə etmək olmur. Printerin konfiqurasiyasını yoxlayın və yenidən cəhd edin.</translation>
+<translation id="2175927920773552910">QR Kod</translation>
 <translation id="2177950615300672361">İnkoqnito rejimi paneli: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Sertifikat Doğrulaması Kompromisi</translation>
 <translation id="2179416702468739594">Əlçatan profillər axtarılır. Bu, mobil şəbəkənizin bir neçə dəqiqəlik kəsilməsinə səbəb ola bilər.</translation>
@@ -4332,7 +4331,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5712153969432126546">Saytlar bəzən sənədlər, müqavilələr və formalar kimi PDF-lər yayımlayır</translation>
 <translation id="5715711091495208045">Plaqin Broker: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Defolt axtarış sistemləri</translation>
-<translation id="5719637365829998022">QR kod skanlanıb.</translation>
 <translation id="5719854774000914513">Saytlar HID cihazlarına qoşulmaq üçün icazə istəyə bilər</translation>
 <translation id="572155275267014074">Android ayarları</translation>
 <translation id="5722086096420375088">Yaşıl və ağ</translation>
@@ -4523,7 +4521,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5941711191222866238">Minimallaşdırın</translation>
 <translation id="5942779427914696408">Cihazın görünmə dərəcəsi</translation>
 <translation id="5943127421590245687">Doğrulama uğurlu oldu. Lokal datanızı kiliddən çıxarmaq və bərpa etmək üçün köhnə <ph name="DEVICE_TYPE" /> parolunuzu daxil edin.</translation>
-<translation id="5944869793365969636">QR kodunu skan edin</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> təhlükəli ola bilər. Skanlamaq üçün Google Güvənli Axtarışa göndərilsin?</translation>
 <translation id="5945363896952315544">Təhlükəsizlik açarınız artıq barmaq izlərini saxlaya bilmir. Yenisini əlavə etmək üçün əvvəlcə mövcud bir barmaq izini silin.</translation>
 <translation id="5946591249682680882">Raport ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4647,7 +4644,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6077131872140550515">Tərcihlərdən silin</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> cihazında məsləhət və yeniləmələr</translation>
 <translation id="6077476112742402730">Diktə edin</translation>
-<translation id="6078045608615316905">Bu Şəkil üçün QR kodu yaradın</translation>
 <translation id="6078121669093215958">{0,plural, =1{Qonaq}other{# açıq qonaq pəncərəsi}}</translation>
 <translation id="6078323886959318429">Qısayol əlavə edin</translation>
 <translation id="6078752646384677957">Mikrofon və audio səviyyələrini yoxlayın.</translation>
@@ -5189,14 +5185,12 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6680650203439190394">Qiymət</translation>
 <translation id="6681668084120808868">Fotoşəkil çəkin</translation>
 <translation id="6683087162435654533">B&amp;ütün Tabları Bərpa Edin</translation>
-<translation id="6683948477137300040">Cihaz EID və QR kodu popap pəncərəsini göstərin</translation>
 <translation id="6684827949542560880">Ən son güncəlləmə endirilir</translation>
 <translation id="668599234725812620">Google Play'i açın</translation>
 <translation id="6686490380836145850">Sağ panelləri bağlayın</translation>
 <translation id="6686665106869989887">Tab sağa köçürüldü</translation>
 <translation id="6686817083349815241">Parolunuzu yadda saxlayın</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> modulunu gizlədin</translation>
-<translation id="6688285987813868112">Bu şəkil üçün QR kodu yaradın</translation>
 <translation id="6690659332373509948">Faylı təhlil etmək alınmır: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google İdarə panelində sinxronizasiya olunmuş datanı idarə edin</translation>
 <translation id="6691541770654083180">Yer</translation>
@@ -5400,7 +5394,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="6914783257214138813">Eksport edilmiş faylı görən hər kəs parollarınızı görəcək.</translation>
 <translation id="6916590542764765824">İstisnaları idarə edin</translation>
 <translation id="6919868320029503575">Zəif parollar</translation>
-<translation id="6920262510368602827">Bu səhifə üçün QR kodu yaradın</translation>
 <translation id="6920989436227028121">Adi panel kimi açın</translation>
 <translation id="6921104647315081813">Fəaliyyətləri silin</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> açılmadı</translation>
@@ -6126,7 +6119,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7691698019618282776">Crostini'nin güncəllənməsi</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" telefonunuzda:</translation>
 <translation id="7697166915480294040">Ekranınızı paylaşdığınız zaman detallar gizlədilir</translation>
-<translation id="7697598343108519171">QR kodu skanlamaq üçün kameranı istifadə edin</translation>
 <translation id="7701040980221191251">Heç bir</translation>
 <translation id="7701869757853594372">USER tutacaqları</translation>
 <translation id="7701928712056789451">Bu elementlər təhlükəli ola bilər</translation>
@@ -6233,7 +6225,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="7800518121066352902">Saat əqrəbi istiqamətinin əksinə fırladın</translation>
 <translation id="780301667611848630">Yox, çox sağ olun</translation>
 <translation id="7804072833593604762">Tab bağlanıb</translation>
-<translation id="7805759469263222011">Cihazın kamerasını istifadə edərək QR kodunu skanlayın və ya operatorunuz tərəfindən verilən aktivasiya kodunu daxil edin</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Axtarış və Assistent</translation>
 <translation id="7807711621188256451">Kameranıza daxil olmaq üçün həmişə <ph name="HOST" /> hostuna icazə verin</translation>
@@ -6788,7 +6779,6 @@ Təyinatı silmək üçün təyin edilmiş keçiriciyə basın</translation>
 <translation id="8386091599636877289">Qayda tapılmadı.</translation>
 <translation id="8387361103813440603">Məkanınıza baxmaq icazəsi verilməyib</translation>
 <translation id="8388770971141403598">İkinci dərəcəli profillər dəstəklənmir</translation>
-<translation id="8389416080014625855">Bu Səhifə üçün QR kodu yaradın</translation>
 <translation id="8389492867173948260">Daxil olduğunuz veb saytlarda bütün datanızı oxuyub dəyişiklik etmək üçün bu artırmaya icazə verin:</translation>
 <translation id="8390449457866780408">Server əlçatmazdır.</translation>
 <translation id="8391218455464584335">Vinil</translation>
@@ -7343,7 +7333,6 @@ Təyinatı silmək üçün təyin edilmiş keçiriciyə basın</translation>
 <translation id="8986494364107987395">Google'a istifadəçi statistikalarını və qəza raportlarını avtomatik göndərin</translation>
 <translation id="8987927404178983737">Ay</translation>
 <translation id="8988879467270412492">Chrome OS üçün daxili ekran oxuyucusu olan ChromeVox'u aktiv etmək istəyirsiniz? Belədirsə, hər iki səs düyməsinə beş saniyə basıb saxlayın.</translation>
-<translation id="8990209962746788689">QR kod yaratmaq olmur</translation>
 <translation id="8991520179165052608">Sayt mikrofonu paylaşa bilər</translation>
 <translation id="899384117894244799">Məhdudlaşdırılmış istifadəçini silin</translation>
 <translation id="899403249577094719">Netscape Sertifikat Base URL</translation>

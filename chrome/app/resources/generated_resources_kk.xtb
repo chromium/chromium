@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Пайдаланушы</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> (жергілікті) болып көрінеді</translation>
 <translation id="1126809382673880764">Қауіпті веб-сайттардан, жүктеп алынған файлдардан және кеңейтімдерден қорғамайды. Gmail және Search сияқты басқа Google қызметтерінде "Қауіпсіз шолу" функциясы қорғайтын болады.</translation>
-<translation id="112752777279960360">Осы компьютермен алғаш рет қолданылған Android телефонын қауіпсіздік кілті ретінде орнату үшін телефоныңыздан Chrome браузерін ашыңыз да, "Параметрлер &gt; Құпия сөздер &gt; Телефонды қауіпсіздік кілті ретінде пайдалану" тармағына өтіңіз. Содан кейін "Жаңа құрылғы қосу" функциясын түртіп, осы QR кодын сканерлеңіз.</translation>
 <translation id="1128109161498068552">Кез келген сайттардың MIDI құрылғыларына қатынасу үшін жүйенің эксклюзивті хабарларын пайдалануына рұқсат етпеу</translation>
 <translation id="1128591060186966949">Іздеу жүйесін өзгерту</translation>
 <translation id="1129850422003387628">Қолданбаларды басқару</translation>
@@ -500,6 +499,7 @@
 <translation id="1542514202066550870">Бұл қойынды гарнитураға VR мазмұнын көрсетіп жатыр.</translation>
 <translation id="1543284117603151572">Microsoft Edge арқылы импортталған</translation>
 <translation id="1545177026077493356">Автоматты киоск режимі</translation>
+<translation id="1545749641540134597">QR кодын сканерлеу</translation>
 <translation id="1545775234664667895">"<ph name="THEME_NAME" />" тақырыбы орнатылды</translation>
 <translation id="1546280085599573572">Бұл кеңейтім Басты түймесін басқан кезде көрсетілетін бетті өзгертті.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> келесілерді істей алатын <ph name="EXTENSION_TYPE" /> кеңейтімін орнатқысы келеді:</translation>
@@ -942,7 +942,6 @@
 <translation id="1992924914582925289">Құрылғыдан жою</translation>
 <translation id="1994173015038366702">URL сайты</translation>
 <translation id="1995916364271252349">Сайттар қандай ақпаратты (геодерек, камера, қалқымалы терезелер, т.б.) пайдалана және көрсете алатынын басқарады.</translation>
-<translation id="1997437640397887843">Құрылғы камерасы қосылды. Камераңызды eSIM профилінің QR кодына дәлдеңіз.</translation>
 <translation id="1997616988432401742">Сертификаттарыңыз</translation>
 <translation id="1999115740519098545">Іске қосу кезінде</translation>
 <translation id="2000419248597011803">Мекенжай жолағына және іздеу өрісіне енгізілген сұрауларды, сонымен қатар кейбір cookie файлдарын әдепкі іздеу жүйесіне жібереді</translation>
@@ -962,7 +961,6 @@
 <translation id="2019718679933488176">&amp;Аудионы жаңа қойындыда ашу</translation>
 <translation id="2020183425253392403">Желі мекенжайы параметрлерін көрсету</translation>
 <translation id="2020225359413970060">Файлды сканерлеу</translation>
-<translation id="2022953316617983419">QR коды</translation>
 <translation id="2023167225947895179">PIN коды табуға оңай болуы мүмкін</translation>
 <translation id="202352106777823113">Жүктеу тым ұзаққа созылғандықтан, желі оны тоқтатты.</translation>
 <translation id="2025115093177348061">Толықтырылған шындық</translation>
@@ -1119,6 +1117,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> басқаратын есептік жазба. Құрылғыдағы негізгі есептік жазбадан шығу үшін экрандағы уақытты басыңыз. Мәзірден "Шығу" опциясын таңдаңыз.</translation>
 <translation id="2175607476662778685">Жылдам іске қосу жолағы</translation>
 <translation id="217576141146192373">Принтер енгізілмеді. Принтердің конфигурациясын тексеріп, қайталап көріңіз.</translation>
+<translation id="2175927920773552910">QR коды</translation>
 <translation id="2177950615300672361">Инкогнито қойындысы: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA келісімі</translation>
 <translation id="2179416702468739594">Қолжетімді профильдер ізделуде. Осыған байланысты мобильдік желі бірнеше минут өшуі мүмкін.</translation>
@@ -3224,7 +3223,7 @@
 <translation id="4479639480957787382">Ethernet</translation>
 <translation id="4479877282574735775">Виртуалдық құрылғы конфигурацияланып жатыр. Бұл бірнеше минут алуы мүмкін.</translation>
 <translation id="4480590691557335796">Chrome браузері компьютердегі зиянды бағдарламалық құралды тауып, оны өшіре алады.</translation>
-<translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> құрылғыңыз күтпеген жерден өшіріліп қосылды</translation>
+<translation id="4481448477173043917"><ph name="DEVICE_TYPE" /> құрылғыңыз күтпеген жерден өшіп қосылды</translation>
 <translation id="4481467543947557978">service worker</translation>
 <translation id="4481530544597605423">Жұпталмаған құрылғылар</translation>
 <translation id="4481906837550700306">Реттеу нұсқаулығын қайта іске қоссаңыз, тағайындалған ауыстырғыштар өшіріледі. Жалғастырғыңыз келе ме?</translation>
@@ -4332,7 +4331,6 @@
 <translation id="5712153969432126546">Сайттар кейде PDF-терді (мысалы, құжаттар, келісімшарттар және үлгілер) жариялайды.</translation>
 <translation id="5715711091495208045">Плагин делдалы: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Әдепкі іздеу жүйелері</translation>
-<translation id="5719637365829998022">QR коды сканерленді.</translation>
 <translation id="5719854774000914513">Сайттар HID құрылғыларына қосылуға рұқсат сұрайды</translation>
 <translation id="572155275267014074">Android параметрлері</translation>
 <translation id="5722086096420375088">Жасыл және ақ</translation>
@@ -4525,7 +4523,6 @@
 <translation id="5941711191222866238">Жию</translation>
 <translation id="5942779427914696408">Құрылғының көрінуі</translation>
 <translation id="5943127421590245687">Растау сәтті аяқталды. Жергілікті деректердің құлпын ашып, қалпына келтіру үшін <ph name="DEVICE_TYPE" /> құрылғысының ескі құпия сөзін енгізіңіз.</translation>
-<translation id="5944869793365969636">QR кодын сканерлеу</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> қауіпті болуы мүмкін. Сканерлеу үшін Google Safe Browsing-ге жіберу керек пе?</translation>
 <translation id="5945363896952315544">Қауіпсіздік кілтіңіз бұдан көп саусақ ізін сақтай алмайды. Жаңасын қосу үшін бұрыннан бар саусақ ізін жойыңыз.</translation>
 <translation id="5946591249682680882">Есеп идентификаторы <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4649,7 +4646,6 @@
 <translation id="6077131872140550515">Таңдаулы желілерден өшіру</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> құрылғысына қатысты кеңестер мен жаңартулар</translation>
 <translation id="6077476112742402730">Дауыспен енгізу</translation>
-<translation id="6078045608615316905">Осы суретке QR код жасау</translation>
 <translation id="6078121669093215958">{0,plural, =1{Қонақ}other{# қонақ терезесі ашық}}</translation>
 <translation id="6078323886959318429">Таңбашаны енгізу</translation>
 <translation id="6078752646384677957">Микрофон мен аудиомазмұн деңгейлерін тексеріңіз.</translation>
@@ -5191,14 +5187,12 @@
 <translation id="6680650203439190394">Жылдамдық</translation>
 <translation id="6681668084120808868">Фотосуретке түсіру</translation>
 <translation id="6683087162435654533">Барлық қойындыны қалпына келтіру</translation>
-<translation id="6683948477137300040">Құрылғының EID нөмірін және QR кодын көрсету</translation>
 <translation id="6684827949542560880">Соңғы жаңартылған нұсқа жүктеліп жатыр</translation>
 <translation id="668599234725812620">Google Play дүкенін ашу</translation>
 <translation id="6686490380836145850">Қойындыларды оң жаққа жабу</translation>
 <translation id="6686665106869989887">Қойынды оң жаққа жылжытылды.</translation>
 <translation id="6686817083349815241">Құпия сөзді сақтау</translation>
 <translation id="6687079240787935001">"<ph name="MODULE_TITLE" />" жасыру</translation>
-<translation id="6688285987813868112">Осы суретке QR код жасау</translation>
 <translation id="6690659332373509948">Файлды талдау мүмкін емес: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google бақылау тақтасындағы синхрондалған деректерді басқару</translation>
 <translation id="6691541770654083180">Жер</translation>
@@ -5402,7 +5396,6 @@
 <translation id="6914783257214138813">Құпия сөз экспортталған құпия сөздер файлын көре алатын кез келген адамға қолжетімді болады.</translation>
 <translation id="6916590542764765824">Кеңейтімдерді басқару</translation>
 <translation id="6919868320029503575">Оңай құпия сөздер</translation>
-<translation id="6920262510368602827">Осы бетке QR код жасау</translation>
 <translation id="6920989436227028121">Қалыпты қойынды ретінде ашу</translation>
 <translation id="6921104647315081813">Әрекеттерді тазалау</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ашылмады.</translation>
@@ -6128,7 +6121,6 @@
 <translation id="7691698019618282776">Crostini жүйесін жаңарту</translation>
 <translation id="7696063401938172191">"<ph name="PHONE_NAME" />" телефонында:</translation>
 <translation id="7697166915480294040">Экраныңызды бөлісіп жатқанда, мәліметтер жасырын тұрады.</translation>
-<translation id="7697598343108519171">QR кодын сканерлеу үшін камераны пайдалану</translation>
 <translation id="7701040980221191251">Жоқ</translation>
 <translation id="7701869757853594372">USER өңдегіштері</translation>
 <translation id="7701928712056789451">Бұл элементтер қауіпті болуы мүмкін</translation>
@@ -6235,7 +6227,6 @@
 <translation id="7800518121066352902">С&amp;ағат тіліне қарсы айналдыру</translation>
 <translation id="780301667611848630">Жоқ, рақмет</translation>
 <translation id="7804072833593604762">Қойынды жабық</translation>
-<translation id="7805759469263222011">Құрылғының камерасымен QR кодын сканерлеңіз немесе оператор берген белсендіру кодын енгізіңіз.</translation>
 <translation id="7805768142964895445">Күйі</translation>
 <translation id="7807067443225230855">Іздеу және Assistant</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> үшін камераға кіру рұқсатын әрдайым беру</translation>
@@ -6790,7 +6781,6 @@
 <translation id="8386091599636877289">Саясат табылмады.</translation>
 <translation id="8387361103813440603">Геодеректеріңізді көруге рұқсаты жоқтар</translation>
 <translation id="8388770971141403598">Қосалқы профильдерге қолдау көрсетілмейді.</translation>
-<translation id="8389416080014625855">Осы бетке QR код жасау</translation>
 <translation id="8389492867173948260">Бұл кеңейтімге сіз кіретін веб-сайттардағы барлық деректерді оқуға және өзгертуге рұқсат беру:</translation>
 <translation id="8390449457866780408">Сервер қолжетімсіз.</translation>
 <translation id="8391218455464584335">Винил пластинка</translation>
@@ -7347,7 +7337,6 @@
 <translation id="8986494364107987395">Қолданыс статистикасы мен жаңылыс туралы есептерді Google компаниясына автоматты түрде жіберу</translation>
 <translation id="8987927404178983737">Ай</translation>
 <translation id="8988879467270412492">Chrome OS-ке арналған ендірілген ChromeVox экранды оқу құралын іске қосқыңыз келе ме? Іске қосқыңыз келсе, екі дыбыс деңгейі пернесін бес секунд басып тұрыңыз.</translation>
-<translation id="8990209962746788689">QR кодын жасау мүмкін емес</translation>
 <translation id="8991520179165052608">Сайт микрофонды пайдалана алады</translation>
 <translation id="899384117894244799">Шектелген пайдаланушыны өшіру</translation>
 <translation id="899403249577094719">Netscape сертификатының негізгі URL мекенжайы</translation>
@@ -7493,7 +7482,7 @@
 <translation id="9137248913990643158">Қолданбаны пайдаланбас бұрын Chrome жүйесін іске қосып, оған кіріңіз.</translation>
 <translation id="9137916601698928395">Сілтемені <ph name="USER" /> ретінде ашу</translation>
 <translation id="9138978632494473300">Келесі орындарға таңбашалар қосу:</translation>
-<translation id="9139258866388561662">Жүктеп алуды аяқтау үшін <ph name="WEB_DRIVE" /> сайтына кіріңіз</translation>
+<translation id="9139258866388561662">Жүктеп алуды аяқтау үшін <ph name="WEB_DRIVE" /> есептік жазбасына кіріңіз</translation>
 <translation id="9139988741193276691">Linux конфигурациялануда</translation>
 <translation id="9140067245205650184">Қолдау көрсетілмеген элемент жалаушасы қолданылуда: <ph name="BAD_FLAG" />. Тұрақтылық пен қауіпсіздікке зиян келеді.</translation>
 <translation id="9143298529634201539">Ұсынысты өшіру керек пе?</translation>

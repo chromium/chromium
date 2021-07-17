@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">กดลูกศรซ้ายหรือขวาเพื่อไปยังส่วนต่างๆ แล้วกด Enter เพื่อเปิดใช้งาน</translation>
 <translation id="224426591676115802">ไม่มีเสียงสำหรับภาษา<ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">กำลังหยุดโหมดการเรียนรู้</translation>
+<translation id="2247870315273396641">ฟังตัวอย่างเสียง</translation>
 <translation id="225732394367814946">เพิ่มอัตราการพูด</translation>
 <translation id="2267538686624070261">กำลังออกจากคำที่สะกดผิด</translation>
 <translation id="2267945578749931355">อักขระถัดไป</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">กด Enter เพื่อดำเนินการต่อ หรือกด Backspace เพื่อกลับ</translation>
 <translation id="2398579267367951220">พิมพ์เพื่อค้นหาในหน้า กด Enter เพื่อข้ามไปยังผลลัพธ์ กดลูกศรขึ้นหรือลงเพื่อเรียกดูผลลัพธ์ พิมพ์ต่อเพื่อเปลี่ยนคำค้นหา หรือกด Escape เพื่อยกเลิก</translation>
 <translation id="240709722712693803">สีม่วงอมน้ำเงิน</translation>
+<translation id="2410298923485357543">ใช้เสียงที่เป็นธรรมชาติเมื่ออุปกรณ์ออนไลน์</translation>
 <translation id="2416512023405990736">ช่องทำเครื่องหมายที่ไม่ได้ทำเครื่องหมาย</translation>
 <translation id="2417569100218200841">ข้อมูลเนื้อหา</translation>
 <translation id="2417948780551741035">อ้างอิงท้ายเรื่อง</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ตัวเลือก ChromeVox</translation>
 <translation id="3060756054951570867">เปิดเมนู <ph name="TITLE" /> แล้ว</translation>
 <translation id="3060880924447482063">เลื่อนไปทางซ้ายหรือขวาเพื่อย้ายทีละรายการ</translation>
+<translation id="3061302636956643119">ระบบจะส่งข้อความไปยัง Google เพื่อประมวลผล</translation>
 <translation id="3070245424257836917">เลื่อน 3 นิ้วขึ้น</translation>
 <translation id="307516670110542567">การแนะนำเบื้องต้นแบบด่วน</translation>
 <translation id="3078345202707391975">ส่วนหัวระดับถัดไป  2</translation>
@@ -936,6 +939,7 @@
 <translation id="7693840228159394336">ปุ่มตัวเลือกก่อนหน้า</translation>
 <translation id="7701040980221191251">ไม่มี</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">เสียงตามธรรมชาติ</translation>
 <translation id="7714340021005120797">ไม่มีช่องตัวเลือกรวมถัดไป</translation>
 <translation id="772146615414628379">ยินดีด้วย! คุณได้เรียนรู้ข้อมูลสำคัญเกี่ยวกับการใช้งาน ChromeVox เรียบร้อยแล้ว โปรดทราบว่าคุณเปิดเมนูคำสั่ง ChromeVox ได้ทุกเมื่อด้วยการกดแป้นค้นหา + เครื่องหมายจุด ดูข้อมูลเพิ่มเติมเกี่ยวกับ ChromeVox และ Chrome OS ได้ที่บทความต่อไปนี้
     หากศึกษาบทแนะนำเรียบร้อยแล้ว ให้ใช้ ChromeVox เพื่อนำทางไปยังปุ่ม "ปิด" แล้วคลิกปุ่มดังกล่าว</translation>
@@ -966,6 +970,7 @@
 <translation id="7939428177581522200">เพิ่มไปยังรายการที่เลือกแล้ว</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{เครื่องหมาย at}other{# เครื่องหมาย at}}</translation>
 <translation id="7942349550061667556">สีแดง</translation>
+<translation id="7945703887991230167">เสียงที่ต้องการ</translation>
 <translation id="7948364528129376623">ไม่มีลิงก์ที่เคยเข้าชมถัดไป</translation>
 <translation id="7952460583030260752">ข้อมูลอ้างอิงเกี่ยวกับคำสั่ง</translation>
 <translation id="7965147473449754028">ปิดเมนูแล้ว</translation>

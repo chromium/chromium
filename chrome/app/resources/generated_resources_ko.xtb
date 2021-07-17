@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">사용자</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" />x<ph name="HEIGHT" />(기본)처럼 보입니다.</translation>
 <translation id="1126809382673880764">위험한 웹사이트, 다운로드 항목, 확장 프로그램으로부터 사용자를 보호하지 않습니다. Gmail, Google 검색과 같은 다른 Google 서비스에서는 가능한 경우 세이프 브라우징 보호가 계속 제공됩니다.</translation>
-<translation id="112752777279960360">이 컴퓨터에서 Android 휴대전화를 보안 키로 사용하도록 처음 설정하려면 휴대전화에서 Chrome을 열고 '설정' &gt; '비밀번호' &gt; '휴대전화를 보안 키로 사용'으로 이동하세요. 그런 다음 '새 기기 연결'을 탭하고 이 QR 코드를 스캔하세요.</translation>
 <translation id="1128109161498068552">사이트에서 시스템 전용 메시지를 사용하여 MIDI 기기에 액세스하도록 허용하지 않음</translation>
 <translation id="1128591060186966949">검색엔진 수정</translation>
 <translation id="1129850422003387628">앱 관리</translation>
@@ -504,6 +503,7 @@
 <translation id="1542514202066550870">이 탭에서 헤드셋에 VR 콘텐츠를 전송하는 중입니다.</translation>
 <translation id="1543284117603151572">Edge에서 가져옴</translation>
 <translation id="1545177026077493356">자동 키오스크 모드</translation>
+<translation id="1545749641540134597">QR 코드 스캔</translation>
 <translation id="1545775234664667895">테마('<ph name="THEME_NAME" />')를 설치했습니다.</translation>
 <translation id="1546280085599573572">홈 버튼을 클릭하면 표시되는 페이지가 이 확장 프로그램으로 인해 변경되었습니다.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" />님이 다음 작업을 실행할 수 있는 <ph name="EXTENSION_TYPE" />을(를) 설치하려고 합니다.</translation>
@@ -954,7 +954,6 @@
 <translation id="1992924914582925289">기기에서 삭제</translation>
 <translation id="1994173015038366702">사이트 URL</translation>
 <translation id="1995916364271252349">사이트에서 사용하고 표시할 수 있는 정보(위치, 카메라, 팝업 등)를 제어합니다.</translation>
-<translation id="1997437640397887843">기기 카메라가 켜졌습니다. 카메라 앞에 eSIM QR 코드를 두세요.</translation>
 <translation id="1997616988432401742">내 인증서</translation>
 <translation id="1999115740519098545">시작 그룹</translation>
 <translation id="2000419248597011803">검색주소창 및 검색창의 검색어 및 일부 쿠키를 기본 검색엔진에 전송</translation>
@@ -974,7 +973,6 @@
 <translation id="2019718679933488176">새 탭에서 오디오 열기(&amp;O)</translation>
 <translation id="2020183425253392403">네트워크 주소 설정 표시</translation>
 <translation id="2020225359413970060">파일 스캔</translation>
-<translation id="2022953316617983419">QR 코드</translation>
 <translation id="2023167225947895179">추측하기 쉬운 PIN입니다.</translation>
 <translation id="202352106777823113">다운로드가 너무 오래 걸려 네트워크에서 중단했습니다.</translation>
 <translation id="2025115093177348061">증강 현실</translation>
@@ -1129,6 +1127,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" />님이 관리하는 계정입니다. 기기의 기본 계정에서 로그아웃하려면 화면에 표시된 시간을 클릭하세요. 이때 표시되는 메뉴에서 '로그아웃'을 클릭합니다.</translation>
 <translation id="2175607476662778685">빠른 실행 표시줄</translation>
 <translation id="217576141146192373">프린터를 추가할 수 없습니다. 프린터 설정을 확인하고 다시 시도해 보세요.</translation>
+<translation id="2175927920773552910">QR 코드</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2179416702468739594">사용 가능한 프로필을 찾는 중입니다. 이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
@@ -4335,7 +4334,6 @@
 <translation id="5712153969432126546">사이트에서 때때로 문서, 계약서, 양식과 같은 PDF를 게시할 수 있습니다.</translation>
 <translation id="5715711091495208045">플러그인 중개인: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">기본 검색엔진</translation>
-<translation id="5719637365829998022">QR 코드가 스캔되었습니다.</translation>
 <translation id="5719854774000914513">사이트에서 HID 기기에 연결하도록 요청할 수 있음</translation>
 <translation id="572155275267014074">Android 설정</translation>
 <translation id="5722086096420375088">초록색 및 흰색</translation>
@@ -4528,7 +4526,6 @@
 <translation id="5941711191222866238">최소화</translation>
 <translation id="5942779427914696408">내 기기 공개 범위</translation>
 <translation id="5943127421590245687">인증이 완료되었습니다. 로컬 데이터를 잠금 해제하고 복원하려면 이전 <ph name="DEVICE_TYPE" /> 비밀번호를 입력하세요</translation>
-<translation id="5944869793365969636">QR 코드 스캔</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> 파일은 위험할 수 있습니다. 검사를 위해 Google 세이프 브라우징으로 전송하시겠습니까?</translation>
 <translation id="5945363896952315544">보안 키에 지문을 추가로 저장할 수 없습니다. 새 지문을 추가하려면 먼저 기존 지문을 삭제하세요.</translation>
 <translation id="5946591249682680882">보고서 ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4652,7 +4649,6 @@
 <translation id="6077131872140550515">기본 네트워크에서 삭제</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> 도움말 및 업데이트</translation>
 <translation id="6077476112742402730">음성으로 입력하기</translation>
-<translation id="6078045608615316905">이 이미지의 QR 코드 생성</translation>
 <translation id="6078121669093215958">{0,plural, =1{게스트}other{게스트 창 #개 열림}}</translation>
 <translation id="6078323886959318429">바로가기 추가</translation>
 <translation id="6078752646384677957">마이크 및 오디오 음량을 확인하세요.</translation>
@@ -5189,14 +5185,12 @@
 <translation id="6680650203439190394">속도</translation>
 <translation id="6681668084120808868">사진 찍기</translation>
 <translation id="6683087162435654533">모든 탭 복원(&amp;E)</translation>
-<translation id="6683948477137300040">기기 EID 및 QR 코드 팝업 표시</translation>
 <translation id="6684827949542560880">최신 업데이트 다운로드 중</translation>
 <translation id="668599234725812620">Google Play 열기</translation>
 <translation id="6686490380836145850">우측 탭 닫기</translation>
 <translation id="6686665106869989887">오른쪽으로 탭을 이동함</translation>
 <translation id="6686817083349815241">비밀번호 저장</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> 숨기기</translation>
-<translation id="6688285987813868112">이 이미지의 QR 코드 생성</translation>
 <translation id="6690659332373509948">파일을 파싱할 수 없음: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google 대시보드에서 동기화된 데이터 관리</translation>
 <translation id="6691541770654083180">지구</translation>
@@ -5398,7 +5392,6 @@
 <translation id="6914783257214138813">내보낸 파일을 볼 수 있는 모든 사용자에게 비밀번호가 표시됩니다.</translation>
 <translation id="6916590542764765824">확장 프로그램 관리</translation>
 <translation id="6919868320029503575">취약한 비밀번호</translation>
-<translation id="6920262510368602827">이 페이지의 QR 코드 생성</translation>
 <translation id="6920989436227028121">일반 탭으로 열기</translation>
 <translation id="6921104647315081813">활동 삭제</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" />을(를) 열 수 없음</translation>
@@ -6119,7 +6112,6 @@
 <translation id="7691698019618282776">Crostini 업그레이드</translation>
 <translation id="7696063401938172191">'<ph name="PHONE_NAME" />'에서 다음과 같이 설정하세요.</translation>
 <translation id="7697166915480294040">화면을 공유하는 동안에는 세부정보가 표시되지 않습니다.</translation>
-<translation id="7697598343108519171">카메라를 사용하여 QR 코드 스캔</translation>
 <translation id="7701040980221191251">없음</translation>
 <translation id="7701869757853594372">사용자 처리</translation>
 <translation id="7701928712056789451">위험할 수 있는 항목</translation>
@@ -6226,7 +6218,6 @@
 <translation id="7800518121066352902">반시계 방향으로 회전(&amp;O)</translation>
 <translation id="780301667611848630">취소</translation>
 <translation id="7804072833593604762">탭 닫음</translation>
-<translation id="7805759469263222011">기기 카메라로 QR 코드를 스캔하거나 이동통신사에서 제공한 활성화 코드를 입력하세요.</translation>
 <translation id="7805768142964895445">상태</translation>
 <translation id="7807067443225230855">검색 및 어시스턴트</translation>
 <translation id="7807711621188256451"><ph name="HOST" />에서 카메라에 액세스하도록 항상 허용</translation>
@@ -6781,7 +6772,6 @@
 <translation id="8386091599636877289">정책을 찾을 수 없습니다.</translation>
 <translation id="8387361103813440603">사용자 위치 확인이 허용되지 않음</translation>
 <translation id="8388770971141403598">보조 프로필은 지원되지 않습니다.</translation>
-<translation id="8389416080014625855">이 페이지의 QR 코드 생성</translation>
 <translation id="8389492867173948260">이 확장 프로그램이 내가 방문하는 다음 웹사이트의 모든 데이터를 읽고 변경하도록 허용합니다.</translation>
 <translation id="8390449457866780408">서버를 사용할 수 없습니다.</translation>
 <translation id="8391218455464584335">레코드판</translation>
@@ -7336,7 +7326,6 @@
 <translation id="8986494364107987395">사용 통계 및 비정상 종료 보고서를 Google에 자동으로 전송합니다.</translation>
 <translation id="8987927404178983737">월</translation>
 <translation id="8988879467270412492">Chrome OS에 기본 제공되는 스크린 리더인 ChromeVox를 활성화하시겠습니까? 활성화하려면 볼륨 키 2개를 5초 동안 길게 누르세요.</translation>
-<translation id="8990209962746788689">QR 코드를 만들 수 없음</translation>
 <translation id="8991520179165052608">사이트에서 마이크를 사용할 수 있습니다.</translation>
 <translation id="899384117894244799">제한된 사용자 삭제</translation>
 <translation id="899403249577094719">Netscape Certificate Base URL</translation>

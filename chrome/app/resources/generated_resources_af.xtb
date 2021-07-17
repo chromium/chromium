@@ -120,7 +120,6 @@
 <translation id="1124772482545689468">Gebruiker</translation>
 <translation id="1125550662859510761">Lyk soos <ph name="WIDTH" /> x <ph name="HEIGHT" /> (oorspronlik)</translation>
 <translation id="1126809382673880764">Beskerm jou nie teen gevaarlike webwerwe, aflaaie en uitbreidings nie. Jy sal steeds Veiligblaai-beskerming kry, indien beskikbaar, in ander Google-dienste, soos Gmail en Search.</translation>
-<translation id="112752777279960360">Om 'n Android-foon vir die eerste keer op te stel om as 'n sekuriteitsleutel saam met hierdie rekenaar gebruik te word, moet jy Chrome op jou foon oopmaak en gaan na "Instellings &gt; Wagwoorde &gt; Gebruik foon as 'n sekuriteitsleutel". Tik dan op "Koppel nuwe toestel" en skandeer hierdie QR-kode.</translation>
 <translation id="1128109161498068552">Moenie enige werwe toelaat om boodskappe wat eksklusief tot die stelsel is, te gebruik om by MIDI-toestelle in te gaan nie.</translation>
 <translation id="1128591060186966949">Wysig soekenjin</translation>
 <translation id="1129850422003387628">Bestuur programme</translation>
@@ -506,6 +505,7 @@
 <translation id="1542514202066550870">Hierdie oortjie bied VR-inhoud vir 'n kopstuk aan.</translation>
 <translation id="1543284117603151572">Van Edge af ingevoer</translation>
 <translation id="1545177026077493356">Outomatiese kioskmodus</translation>
+<translation id="1545749641540134597">Skandeer QR-kode</translation>
 <translation id="1545775234664667895">Tema "<ph name="THEME_NAME" />" is geïnstalleer</translation>
 <translation id="1546280085599573572">Hierdie uitbreiding het verander watter bladsy gewys word wanneer jy die Tuis-knoppie klik.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> wil 'n <ph name="EXTENSION_TYPE" /> installeer wat kan:</translation>
@@ -957,7 +957,6 @@
 <translation id="1992924914582925289">Verwyder van toestel</translation>
 <translation id="1994173015038366702">Werf-URL</translation>
 <translation id="1995916364271252349">Beheer watter inligting werwe kan gebruik en wys (ligging, kamera, opspringers en meer)</translation>
-<translation id="1997437640397887843">Toestelkamera het aangeskakel. Plaas jou e-SIM se QR-kode voor die kamera.</translation>
 <translation id="1997616988432401742">Jou sertifikate</translation>
 <translation id="1999115740519098545">Met afskop</translation>
 <translation id="2000419248597011803">Stuur 'n paar webkoekies en soektogte vanaf die adresbalk en soekkassie na jou versteksoekenjin toe</translation>
@@ -977,7 +976,6 @@
 <translation id="2019718679933488176">Maak oudio in nuwe oortjie oop</translation>
 <translation id="2020183425253392403">Wys netwerkadresinstellings</translation>
 <translation id="2020225359413970060">Skandeer lêer</translation>
-<translation id="2022953316617983419">QR-kode</translation>
 <translation id="2023167225947895179">PIN kan dalk maklik geraai word</translation>
 <translation id="202352106777823113">Die aflaai het te lank gevat en is deur die netwerk gestop.</translation>
 <translation id="2025115093177348061">Aangevulde realiteit</translation>
@@ -1134,6 +1132,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2174948148799307353">Rekening word bestuur deur <ph name="PARENT_EMAIL" />. Klik die tyd op jou skerm om uit die primêre rekening op hierdie toestel af te meld. Klik "Meld af" op die kieslys wat verskyn.</translation>
 <translation id="2175607476662778685">Kitslanseerbalk</translation>
 <translation id="217576141146192373">Kan nie drukker byvoeg nie. Gaan asseblief jou drukker se opstelling na en probeer weer.</translation>
+<translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177950615300672361">Incognito-oortjie: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA-kompromie</translation>
 <translation id="2179416702468739594">Soek tans beskikbare profiele. Dit kan veroorsaak dat jou selnetwerk vir 'n paar minute ontkoppel.</translation>
@@ -4354,7 +4353,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5712153969432126546">Werwe publiseer soms PDF's, soos dokumente, kontrakte en vorms</translation>
 <translation id="5715711091495208045">Inpropagent: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Versteksoekenjins</translation>
-<translation id="5719637365829998022">QR-kode is geskandeer.</translation>
 <translation id="5719854774000914513">Werwe kan vra om aan HID-toestelle te koppel</translation>
 <translation id="572155275267014074">Android-instellings</translation>
 <translation id="5722086096420375088">Groen en wit</translation>
@@ -4547,7 +4545,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5941711191222866238">Maak kleiner</translation>
 <translation id="5942779427914696408">Toestelsigbaarheid</translation>
 <translation id="5943127421590245687">Jou verifikasie was suksesvol. Voer asseblief jou ou <ph name="DEVICE_TYPE" />-wagwoord in om jou plaaslike data te ontsluit en terug te laai.</translation>
-<translation id="5944869793365969636">Skandeer QR-kode</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> kan gevaarlik wees. Stuur na Google Veiligblaai om geskandeer te word?</translation>
 <translation id="5945363896952315544">Jou sekuriteitsleutel kan nie meer vingerafdrukke berg nie. Om 'n nuwe een by te voeg, moet jy eers 'n bestaande vingerafdruk uitvee.</translation>
 <translation id="5946591249682680882">Verslag-ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4671,7 +4668,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6077131872140550515">Verwyder uit voorkeure</translation>
 <translation id="6077189836672154517">Wenke en kennisgewings oor <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Praat om te tik</translation>
-<translation id="6078045608615316905">Skep QR-kode vir hierdie prent</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gas}other{# oop gasvensters}}</translation>
 <translation id="6078323886959318429">Voeg kortpad by</translation>
 <translation id="6078752646384677957">Gaan jou mikrofoon en oudiovlakke na.</translation>
@@ -5213,14 +5209,12 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6680650203439190394">Gradeer</translation>
 <translation id="6681668084120808868">Neem foto</translation>
 <translation id="6683087162435654533">Stel alle oortjies terug</translation>
-<translation id="6683948477137300040">Wys toestel-EID en QR-kodeopspringer</translation>
 <translation id="6684827949542560880">Laai tans die jongste opdatering af</translation>
 <translation id="668599234725812620">Maak Google Play oop</translation>
 <translation id="6686490380836145850">Maak oortjies aan die regterkant toe</translation>
 <translation id="6686665106869989887">Oortjie is na regs geskuif</translation>
 <translation id="6686817083349815241">Stoor jou wagwoord</translation>
 <translation id="6687079240787935001">Versteek <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Skep QR-kode vir hierdie prent</translation>
 <translation id="6690659332373509948">Kan nie lêer ontleed nie: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Bestuur gesinkroniseerde data in Google Dashboard</translation>
 <translation id="6691541770654083180">Aarde</translation>
@@ -5424,7 +5418,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6914783257214138813">Jou wagwoorde sal sigbaar wees aan enigiemand wat die uitgevoerde lêer kan sien.</translation>
 <translation id="6916590542764765824">Bestuur uitbreidings</translation>
 <translation id="6919868320029503575">Swak wagwoorde</translation>
-<translation id="6920262510368602827">Skep QR-kode vir hierdie bladsy</translation>
 <translation id="6920989436227028121">Maak as gewone oortjie oop</translation>
 <translation id="6921104647315081813">Vee aktiwiteite uit</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> kon nie oopgemaak word nie</translation>
@@ -6150,7 +6143,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7691698019618282776">Crostini-opgradering</translation>
 <translation id="7696063401938172191">Op jou "<ph name="PHONE_NAME" />":</translation>
 <translation id="7697166915480294040">Besonderhede word versteek terwyl jy jou skerm deel</translation>
-<translation id="7697598343108519171">Gebruik kamera om QR-kode te skandeer</translation>
 <translation id="7701040980221191251">Geen</translation>
 <translation id="7701869757853594372">GEBRUIKER-handvatsel</translation>
 <translation id="7701928712056789451">Hierdie items kan gevaarlik wees</translation>
@@ -6257,7 +6249,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="7800518121066352902">Draai antikloksgewys</translation>
 <translation id="780301667611848630">Nee, dankie</translation>
 <translation id="7804072833593604762">Oortjie is toegemaak</translation>
-<translation id="7805759469263222011">Skandeer 'n QR-kode met jou toestelkamera of voer die aktiveringkode in wat jou diensverskaffer verskaf het</translation>
 <translation id="7805768142964895445">Status</translation>
 <translation id="7807067443225230855">Soek en assistent</translation>
 <translation id="7807711621188256451">Laat <ph name="HOST" /> altyd toe om by jou kamera in te gaan</translation>
@@ -6813,7 +6804,6 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8386091599636877289">Kon nie beleid kry nie.</translation>
 <translation id="8387361103813440603">Mag nie jou ligging sien nie</translation>
 <translation id="8388770971141403598">Sekondêre profiele word nie gesteun nie</translation>
-<translation id="8389416080014625855">Skep QR-kode vir hierdie bladsy</translation>
 <translation id="8389492867173948260">Laat hierdie uitbreiding toe om al jou data op webwerwe wat jy besoek te lees en te verander:</translation>
 <translation id="8390449457866780408">Bediener is nie beskikbaar nie.</translation>
 <translation id="8391218455464584335">Viniel</translation>
@@ -7370,7 +7360,6 @@ Druk 'n toegewese skakelaar om toewysing te verwyder</translation>
 <translation id="8986494364107987395">Stuur gebruikstatistiek en omvalverslae outomaties na Google</translation>
 <translation id="8987927404178983737">Maand</translation>
 <translation id="8988879467270412492">Wil jy ChromeVox, Chrome-bedryfstelsel se ingeboude skermleser, aktiveer? Indien wel, druk en hou albei volumesleutels vyf sekondes lank.</translation>
-<translation id="8990209962746788689">Kan nie QR-kode skep nie</translation>
 <translation id="8991520179165052608">Werf kan jou mikrofoon gebruik</translation>
 <translation id="899384117894244799">Verwyder gebruiker met beperkte gebruik</translation>
 <translation id="899403249577094719">Netscape-sertifikaatbasis se URL</translation>

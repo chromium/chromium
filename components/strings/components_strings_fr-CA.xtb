@@ -116,7 +116,7 @@
 <translation id="1348198688976932919">Le site que vous allez ouvrir contient des applications dangereuses</translation>
 <translation id="1348779747280417563">Confirmer le nom</translation>
 <translation id="1357195169723583938">Qui a utilisé cet appareil récemment, et quand</translation>
-<translation id="1358187717814494928">Créer une feuille</translation>
+<translation id="1358187717814494928">Créer une feuille de calcul</translation>
 <translation id="1360955481084547712">Ouvrez une nouvelle fenêtre en mode de navigation privée pour naviguer de manière privée</translation>
 <translation id="1363819917331173092">Ne pas proposer de traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
 <translation id="1364822246244961190">Cette politique est bloquée, sa valeur sera ignorée.</translation>
@@ -385,7 +385,7 @@
 <translation id="2298855485018661510">Bouton Gérer les témoins, appuyez sur Entrée pour gérer vos préférences relatives aux témoins dans les paramètres de Chrome</translation>
 <translation id="2300306941146563769">Non téléversé</translation>
 <translation id="2310021320168182093">Enveloppe Chou2</translation>
-<translation id="2314184656092908234">Bouton fermer les fenêtres de navigation privée, appuyez sur Entrée pour fermer toutes les fenêtres de navigation privée pour le profil de navigation privée actuel</translation>
+<translation id="2314184656092908234">Bouton Fermer les fenêtres de navigation privée, appuyez sur Entrée pour fermer toutes les fenêtres du profil actuel de navigation privée</translation>
 <translation id="2316887270356262533">Libère moins de 1 Mo d'espace. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
 <translation id="2317259163369394535"><ph name="DOMAIN" /> requiert un nom d'utilisateur et un mot de passe.</translation>
 <translation id="2328651992442742497">Autorisée (par défaut)</translation>
@@ -418,7 +418,7 @@
 <translation id="2413528052993050574">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />. Il se peut que son certificat de sécurité ait été révoqué. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="2414886740292270097">Foncé</translation>
 <translation id="2417466718237453711">Fermer toutes les fenêtres de navigation privée du profil de navigation privée actuel</translation>
-<translation id="2430968933669123598">Gérez le compte Google, appuyez sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
+<translation id="2430968933669123598">Gérer le compte Google, appuyez sur Entrée pour gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="2438874542388153331">Quadruple perforation à droite</translation>
 <translation id="245044156129055925">Vous venez d'entrer votre mot de passe sur un site trompeur. Chromium vous recommande de modifier votre mot de passe maintenant.</translation>
 <translation id="2463739503403862330">Remplir</translation>
@@ -770,7 +770,7 @@
 <translation id="3715597595485130451">Connexion au réseau Wi-Fi</translation>
 <translation id="3717027428350673159"><ph name="BEGIN_LINK" />De vérifier la configuration du mandataire, du pare-feu et du DNS<ph name="END_LINK" /></translation>
 <translation id="372429172604983730">Voici des applications qui peuvent provoquer cette erreur : un logiciel antivirus, un logiciel de pare-feu, ou un logiciel de filtrage Web ou de mandataire.</translation>
-<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une présentation Google dans Slides</translation>
+<translation id="3727101516080730231"><ph name="CREATE_GOOGLE_SLIDE_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour rapidement créer une présentation Google dans Présentations</translation>
 <translation id="373042150751172459">Enveloppe B4</translation>
 <translation id="3736520371357197498">Si vous comprenez les risques pour votre sécurité, vous pouvez <ph name="BEGIN_LINK" />visiter ce site dangereux<ph name="END_LINK" /> avant que les programmes dangereux aient été supprimés.</translation>
 <translation id="3738166223076830879">Votre navigateur est géré par votre administrateur.</translation>
@@ -1247,7 +1247,7 @@
 <translation id="5363309033720083897">Port série autorisé par votre administrateur</translation>
 <translation id="5371425731340848620">Mettre à jour la carte</translation>
 <translation id="5377026284221673050">« Votre horloge est en retard », « Votre horloge est en avance » ou « &lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt; »</translation>
-<translation id="5379027395132364855">Bouton Créer une présentation, appuyez sur Entrée pour rapidement créer une présentation Google dans Slides</translation>
+<translation id="5379027395132364855">Bouton Créer une présentation, appuyez sur Entrée pour rapidement créer une présentation Google dans Présentations</translation>
 <translation id="5386426401304769735">La chaîne de certificat pour ce site contient un certificat qui a été signé avec SHA-1.</translation>
 <translation id="538659543871111977">A4 à onglet</translation>
 <translation id="5396631636586785122">Agrafage par le bord droit</translation>
@@ -1405,7 +1405,7 @@
 <translation id="598637245381783098">Impossible d'ouvrir l'application de paiement</translation>
 <translation id="5989320800837274978">Aucun serveur mandataire fixe ni URL de script .pac indiqué.</translation>
 <translation id="5992691462791905444">Technique de pli en Z</translation>
-<translation id="5995727681868049093">Gérez vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
+<translation id="5995727681868049093">Gérer vos renseignements, la confidentialité et la sécurité de votre compte Google</translation>
 <translation id="6000758707621254961"><ph name="RESULT_COUNT" /> résultats trouvés pour « <ph name="SEARCH_TEXT" /> »</translation>
 <translation id="6006484371116297560">Classique</translation>
 <translation id="6008122969617370890">Ordre N sur 1</translation>
@@ -1653,7 +1653,7 @@
 <translation id="6965978654500191972">Appareil</translation>
 <translation id="696703987787944103">Perceptuel</translation>
 <translation id="6970216967273061347">District</translation>
-<translation id="6971439137020188025">Créer rapidement une présentation Google dans Slides</translation>
+<translation id="6971439137020188025">Créer rapidement une présentation Google dans Présentations</translation>
 <translation id="6972629891077993081">Appareils HID</translation>
 <translation id="6973656660372572881">Des serveurs mandataires fixes et une URL de script .pac sont spécifiés.</translation>
 <translation id="6973932557599545801">Désolée, je ne suis plus en mesure de vous aider, veuillez continuer par vous-même.</translation>
@@ -1914,7 +1914,7 @@ Détails supplémentaires :
 <translation id="7855695075675558090"><ph name="TOTAL_LABEL" /> <ph name="CURRENCY_CODE" /> <ph name="FORMATTED_TOTAL_AMOUNT" /></translation>
 <translation id="7862185352068345852">Quitter le site?</translation>
 <translation id="7865448901209910068">Meilleure vitesse</translation>
-<translation id="7871445724586827387">Modifiez le mot de passe de votre compte Google</translation>
+<translation id="7871445724586827387">Modifier le mot de passe de votre compte Google</translation>
 <translation id="7874263914261512992">Vous venez d'entrer votre mot de passe sur un site trompeur. Chrome vous recommande de vérifier vos mots de passe enregistrés pour <ph name="WEBSITE_1" />, pour <ph name="WEBSITE_2" /> et pour tout autre site sur lequel vous utilisez ce mot de passe maintenant.</translation>
 <translation id="7878562273885520351">Votre mot de passe a peut-être été compromis</translation>
 <translation id="7880146494886811634">Enregistrer l'adresse</translation>
@@ -2095,7 +2095,7 @@ Détails supplémentaires :
 <translation id="8503559462189395349">Mots de passe Chrome</translation>
 <translation id="8503813439785031346">Nom d'utilisateur</translation>
 <translation id="8507227106804027148">Ligne de commande</translation>
-<translation id="8507258803558481268"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour fermer toutes les fenêtres de navigation privée pour le profil de navigation privée actuel</translation>
+<translation id="8507258803558481268"><ph name="CLOSE_INCOGNITO_WINDOWS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur Tabulation, puis sur Entrée pour fermer toutes les fenêtres du profil actuel de navigation privée</translation>
 <translation id="8508648098325802031">Icône de recherche</translation>
 <translation id="8511402995811232419">Gérer les témoins</translation>
 <translation id="8522552481199248698">Chrome peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>

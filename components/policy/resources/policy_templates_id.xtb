@@ -77,6 +77,9 @@
       Jika kebijakan ditetapkan ke false, atau tidak ditetapkan, informasi tidak akan dilaporkan.
       Jika ditetapkan ke true, informasi lampu latar perangkat akan dilaporkan.</translation>
 <translation id="1076751984131277498">Daftar perangkat USB dapat dilepas yang diizinkan</translation>
+<translation id="1079425471279127373">Jika kebijakan disetel, beberapa asal dari aplikasi web yang diinstal otomatis akan diizinkan mendapatkan atribut perangkat (misalnya, nomor seri, nama host) dengan menggunakan Device Attributes API.
+
+      Device Attributes API adalah daftar API web, harap lihat https://wicg.github.io/WebApiDevice/device_attributes. API ini hanya tersedia untuk asal yang sesuai dengan aplikasi web yang diinstal otomatis melalui <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> atau aplikasi web yang dikonfigurasi dalam sesi Kios.</translation>
 <translation id="1079801999187584280">Larang penggunaan Developer Tools</translation>
 <translation id="1082802595100075771">Izinkan pengguna memilih menggunakan layanan Google anonim untuk memberikan deskripsi otomatis untuk gambar tanpa label</translation>
 <translation id="1087437665304381368">Kebijakan ini hanya mengontrol mode developer<ph name="PRODUCT_OS_NAME" />. Jika ingin mencegah akses ke Opsi Developer Android, Anda perlu menetapkan kebijakan <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -872,6 +875,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2090939118981888335">Jika kebijakan disetel ke Aktif, proxy kompresi data akan diizinkan. Jika kebijakan disetel ke Nonaktif, proxy tidak akan diizinkan.
 
       Jika kebijakan disetel, pengguna tidak dapat mengubahnya. Jika tidak disetel, pengguna dapat memilih menggunakan fitur tersebut.</translation>
+<translation id="2093552723795057221">Jangan laporkan status audio</translation>
 <translation id="209586405398070749">Saluran stabil</translation>
 <translation id="2098658257603918882">Aktifkan laporan data penggunaan dan yang terkait error</translation>
 <translation id="2104418465060359056">Melaporkan informasi Ekstensi dan Plugin</translation>
@@ -915,6 +919,9 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="2151831603578119302">Mengaktifkan pintasan fitur aksesibilitas</translation>
 <translation id="2156132677421487971">Mengonfigurasi kebijakan untuk <ph name="PRODUCT_NAME" />, fitur yang memungkinkan pengguna mengirim konten tab, situs, atau desktop dari browser ke sistem suara dan layar jarak jauh.</translation>
 <translation id="2156755242840687300">Server cetak eksternal diaktifkan</translation>
+<translation id="2157842368188031417">Kebijakan ini hanya berlaku untuk sesi tamu terkelola. Kebijakan ini harus diaktifkan untuk mode workstation bersama Imprivata guna memungkinkan pengalihan pengguna dalam sesi.
+      Menyetel kebijakan ke Benar (True) akan memaksa penggantian kebijakan tertentu untuk fitur, yang mempertahankan data pengguna sensitif dan tidak ditangani oleh mekanisme pembersihan yang digunakan untuk pengalihan pengguna dalam sesi dengan mode workstation bersama Imprivata.
+      Jika kebijakan disetel ke Salah (False) atau tidak disetel, tidak ada kebijakan yang akan diganti.</translation>
 <translation id="2160336427036785721">Mengonfigurasi jumlah memori yang dapat digunakan oleh satu instance <ph name="PRODUCT_NAME" /> sebelum tab mulai dihapus (artinya, memori yang digunakan oleh tab akan dibebaskan dan tab harus dimuat ulang saat dialihkan) untuk menghemat memori.
 
       Jika kebijakan ini ditetapkan, browser akan mulai menghapus tab untuk menghemat memori setelah melampaui batas. Namun, tidak ada jaminan bahwa browser selalu berjalan di bawah batas. Setiap nilai yang kurang dari 1024 akan dibulatkan ke 1024.
@@ -1935,6 +1942,7 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 
       Kebijakan ini bersifat sementara dan akan dihapus dalam versi
       <ph name="PRODUCT_NAME" /> yang akan datang.</translation>
+<translation id="3359186795130278362">Aktifkan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="3360093276083825336">Perhatikan bahwa kebijakan ini sudah tidak digunakan lagi dan akan dihapus di <ph name="PRODUCT_OS_NAME" /> versi 85. Sebagai gantinya, gunakan <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.
 
           Menentukan durasi waktu tanpa masukan pengguna setelah dialog peringatan ditampilkan saat menggunakan daya baterai.
@@ -3180,6 +3188,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Catatan: Elemen juga dapat ditambahkan ke daftar ini melalui kebijakan <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" />.</translation>
 <translation id="5067143124345820993">Daftar putih pengguna masuk</translation>
+<translation id="5071303485174858500">Nonaktifkan sesi tamu terkelola yang dibatasi.</translation>
 <translation id="5073609397321802133">Jika kebijakan ditetapkan ke false, halaman Tab Baru tidak akan mengizinkan pengguna menyesuaikan latar belakang. Latar belakang kustom yang ada akan dihapus secara permanen meskipun nanti kebijakan ditetapkan ke true.
 
       Jika kebijakan ditetapkan ke true atau tidak ditetapkan, pengguna dapat menyesuaikan latar belakang di halaman Tab Baru.</translation>
@@ -3187,6 +3196,7 @@ Jika kebijakan ini dinonaktifkan atau tidak disetel, situs tidak akan dapat mena
 
       Jika kebijakan ditetapkan ke Salah (False) atau tidak ditetapkan, <ph name="PRODUCT_NAME" /> akan menggunakan setelan pemeriksaan pencabutan online yang ada.</translation>
 <translation id="5078623750797048009">Mengaktifkan Anotasi PDF</translation>
+<translation id="5081204761483900654">Sesi tamu terkelola yang dibatasi</translation>
 <translation id="5082572440690475059">Izinkan akses baca melalui File System API di situs ini</translation>
 <translation id="5085647276663819155">Nonaktifkan Pratinjau Cetak</translation>
 <translation id="5090791951240382356">Mengizinkan penggabungan kebijakan kamus dari sumber berbeda</translation>
@@ -3849,6 +3859,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
           Jika setelan ini dinonaktifkan atau tidak disetel, maka nama domain TalkGadget default ('chromoting-host.talkgadget.google.com') akan digunakan untuk semua hosting.
 
           Klien akses jarak jauh tidak dipengaruhi oleh setelan kebijakan ini. Klien akses jarak jauh akan selalu menggunakan 'chromoting-client.talkgadget.google.com' untuk mengakses TalkGadget.</translation>
+<translation id="5888645257599699215">Melaporkan status audio perangkat</translation>
 <translation id="5890063326284543943">Mengontrol penggunaan Serial API</translation>
 <translation id="5897913798715600338">Mengisi daya baterai menggunakan teknologi pengisian daya cepat.</translation>
 <translation id="5898486742390981550">Ketika beberapa pengguna masuk, hanya pengguna utama yang dapat menggunakan aplikasi Android.</translation>
@@ -4493,8 +4504,10 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif, ikon fitur eksperimental browser akan dihapus dari toolbar.
 
       chrome://flags dan cara lain untuk menonaktifkan dan mengaktifkan fitur browser akan tetap berperilaku sebagaimana mestinya terlepas dari apakah kebijakan ini disetel ke Aktif atau Nonaktif.</translation>
+<translation id="6794083666143216172">Mengizinkan asal mengkueri atribut perangkat</translation>
 <translation id="6795485990775913659">Hanya izinkan pencetakan tanpa PIN</translation>
 <translation id="6800181452282128474">Jangan kueri Server Quirks</translation>
+<translation id="68031099365512050">Laporkan status audio</translation>
 <translation id="6810445994095397827">Cekal JavaScript di situs ini</translation>
 <translation id="6813263547126514821">Daya dan penonaktifan</translation>
 <translation id="681446116407619279">Skema autentikasi yang didukung</translation>
@@ -4653,6 +4666,9 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Bahasa yang didukung saat ini adalah: af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk, vi.</translation>
 <translation id="6926703471186170050">Aktifkan pencetakan dupleks tepi panjang</translation>
+<translation id="6928305045865155732">Jika kebijakan disetel ke Aktif atau tidak disetel, perangkat terdaftar akan melaporkan volume audio perangkat.
+
+      Jika kebijakan disetel ke Nonaktif, perangkat terdaftar tidak akan merekam atau melaporkan status audio.</translation>
 <translation id="6931242315485576290">Nonaktifkan sinkronisasi data dengan Google</translation>
 <translation id="6943577887654905793">Nama preferensi Mac/Linux:</translation>
 <translation id="6946652757373377924">
@@ -5992,6 +6008,19 @@ Kebijakan akan dihapus pada M75.</translation>
       Jika Anda menyetel kebijakan, pengguna tidak dapat mengubah fungsi ini. Jika Anda tidak menyetelnya, pengguna akan diizinkan mengubah setelan.</translation>
 <translation id="8715885991031124968">Izinkan dialog JavaScript yang dipicu dari subframe asal yang berbeda.</translation>
 <translation id="8720547069538712402">Izinkan pengguna mengaktifkan atau menonaktifkan periksa ejaan</translation>
+<translation id="8726080977639508431">Kebijakan ini mengontrol cara <ph name="PRODUCT_NAME" /> menafsirkan kebijakan sitelist/greylist untuk fitur Dukungan Browser Lama. Kebijakan ini akan memengaruhi kebijakan berikut: <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" />, dan <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Jika disetel ke 'Default' (0) atau tidak disetel, pencocokan URL kurang ketat. Aturan yang tidak berisi "/" akan mencari substring di mana pun di nama host URL. Pencocokan komponen jalur URL peka huruf besar/kecil.
+
+      Jika disetel ke 'IESiteListMode' (1), pencocokan URL akan lebih ketat. Aturan yang tidak berisi "/" hanya akan dicocokkan pada akhir nama host. Aturan juga harus berada di batas nama domain. Pencocokan komponen jalur URL tidak peka huruf besar/kecil. Aturan ini lebih kompatibel dengan <ph name="MS_IE_PRODUCT_NAME" /> dan <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Misalnya, dengan aturan "example.com" dan "acme.com/abc":
+
+      "http://example.com/", "http://subdomain.example.com/", dan "http://acme.com/abc" cocok, apa pun mode penguraiannya.
+
+      "http://notexample.com/", "http://example.com.invalid.com/", "http://example.comabc/" hanya cocok dalam mode 'Default'.
+
+      "http://acme.com/ABC" hanya cocok dalam mode 'IESiteListMode'.</translation>
 <translation id="8736538322216687231">Memaksa Mode Terbatas YouTube minimum</translation>
 <translation id="8745669971728319820">Kebijakan ini mengontrol apakah informasi ekstensi dan plugin akan dilaporkan atau tidak.
 

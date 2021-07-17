@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2161394479394250669">प्रिंट करना रद्द करें</translation>
+<translation id="2209788852729124853">ट्रैफ़िक काउंटर रीसेट करें</translation>
 <translation id="2217935453350629363">मौजूदा स्पीड</translation>
 <translation id="2224337661447660594">इंटरनेट कनेक्शन नहीं है</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">बैटरी पूरी हो गई</translation>
 <translation id="360565022852130722">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP 802.1x से सुरक्षित है</translation>
 <translation id="3689839747745352263"><ph name="TEST_NAME" /> टेस्ट</translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{पेज दोबारा स्कैन करें}=1{{PAGE_NUMBER} पेज दोबारा स्कैन करें}one{{PAGE_NUMBER} पेज दोबारा स्कैन करें}other{{PAGE_NUMBER} पेज दोबारा स्कैन करें}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> समीक्षाएं)</translation>
 <translation id="3748026146096797577">कनेक्ट नहीं है</translation>
 <translation id="3749289110408117711">फ़ाइल नाम</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">मेरी डिस्क</translation>
 <translation id="4429881212383817840">Kerberos टिकट की समयसीमा जल्द ही खत्म होने वाली है</translation>
 <translation id="4431821876790500265">रिपोर्ट देखें</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{पेज हटाएं}=1{{PAGE_NUMBER} पेज हटाएं}one{{PAGE_NUMBER} पेज हटाएं}other{{PAGE_NUMBER} पेज हटाएं}}</translation>
 <translation id="445059817448385655">पुराना पासवर्ड</translation>
 <translation id="4453205916657964690">सबनेट मास्क</translation>
 <translation id="4454245904991689773">स्कैन की हुई फ़ाइल यहां सेव करें</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">निषिद्ध</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}one{आपकी फ़ाइल स्कैन कर दी गई है. साथ ही, उसे <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}other{आपकी फ़ाइलें स्कैन कर दी गई हैं. साथ ही, उन्हें <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> में सेव कर दिया गया है.}}</translation>
 <translation id="5931523347251946569">फ़ाइल नहीं मिली</translation>
+<translation id="5972388717451707488">Update Engine</translation>
 <translation id="6037291330010597344">स्कैनर का डॉक्यूमेंट फ़ीडर खाली है. डॉक्यूमेंट जोड़ें और फिर से कोशिश करें.</translation>
 <translation id="6040143037577758943">बंद करें</translation>
 <translation id="6040852767465482106">अनाम पहचान</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">इस वाई-फ़ाई सुरक्षा प्रोटोकॉल की जानकारी नहीं है</translation>
 <translation id="65587193855025101">फ़्लैटबेड</translation>
 <translation id="6564646048574748301">प्रिंट नहीं हो पाया - प्रिंटर से कनेक्ट नहीं हो पा रहा है</translation>
+<translation id="6574762126505704998">भरें</translation>
 <translation id="6603230386432466813">क्या आपको ईथरनेट कनेक्शन से जुड़ने में समस्या हो रही है?</translation>
 <translation id="6618744767048954150">जांच चल रही है</translation>
 <translation id="6620487321149975369">प्रिंट की गई फ़ाइलें तब तक इतिहास में दिखेंगी, जब तक इन्हें मैन्युअल तरीके से हटा नहीं दिया जाता</translation>
@@ -333,6 +338,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331"><ph name="TIME_VALUE" /> बाकी हैं</translation>
 <translation id="7620771111601174153">इसके बारे में ज़्यादा जानने के लिए सहायता केंद्र पर जाएं</translation>
+<translation id="763165478673169849">आखिर में रीसेट किया गया समय</translation>
 <translation id="7648838807254605802">एचटीटीपीएस अनुरोधों में इंतज़ार का समय ज़्यादा है</translation>
 <translation id="7658239707568436148">अभी नहीं</translation>
 <translation id="7690294790491645610">नए पासवर्ड की पुष्टि करें</translation>
@@ -354,6 +360,7 @@
 <translation id="8075838845814659848">इतने प्रतिशत चार्ज होना बाकी है</translation>
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">ट्रैफ़िक काउंटर का अनुरोध करें</translation>
 <translation id="8206859287963243715">सेलुलर</translation>
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8214184102975786227">सारे पेज स्कैन करके एक PDF बना लें</translation>
@@ -375,8 +382,10 @@
 <translation id="8475690821716466388">यह वाई-फ़ाई नेटवर्क एक कमज़ोर प्रोटोकॉल WEP PSK से सुरक्षित है</translation>
 <translation id="8477551185774834963">डीएनएस, इंतज़ार की समयसीमा से थोड़ा ऊपर है</translation>
 <translation id="8483248364096924578">आईपी पता</translation>
+<translation id="8498220429738806196">ट्रैफ़िक काउंटर</translation>
 <translation id="8503813439785031346">उपयोगकर्ता नाम</translation>
 <translation id="8503836310948963452">बस कुछ मिनट और...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">मोबाइल और इंटरनेट सेवा देने वाली आपकी कंपनी को, अपने नेटवर्क से कनेक्ट करने लिए इस विकल्प की ज़रूरत पड़ सकती है. ज़्यादा जानकारी के लिए, उस कंपनी से संपर्क करें जो आपको मोबाइल और इंटरनेट सेवा देती है.</translation>
 <translation id="8576249514688522074">शुरू नहीं किया गया</translation>
 <translation id="8620617069779373398">रोमिंग की स्‍थिति</translation>
@@ -393,6 +402,7 @@
 <translation id="8814190375133053267">वाई-फ़ाई </translation>
 <translation id="8818152010000655963">वॉलपेपर</translation>
 <translation id="8845001906332463065">सहायता पाएं</translation>
+<translation id="8868741746785112895">GUID (ग्लोबली यूनिक आइडेंटिफ़ायर)</translation>
 <translation id="8881098542468797602">टेस्ट सफल रहा</translation>
 <translation id="8898840733695078011">सिग्‍नल शक्ति</translation>
 <translation id="8910721771319628100">डिफ़ॉल्ट नेटवर्क, इंतज़ार की समयसीमा से ऊपर है</translation>
@@ -408,6 +418,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">ब्लूटूथ</translation>
 <translation id="9088306295921699330">मौजूदा इस्तेमाल</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980"><ph name="PRINCIPAL_NAME" /> के लिए टिकट रीफ़्रेश करें</translation>
 <translation id="9106415115617144481">पेज <ph name="PAGE_NUMBER" /> को स्कैन किया जा रहा है</translation>
 <translation id="9111102763498581341">अनलॉक करें</translation>

@@ -60,6 +60,7 @@
 <translation id="2141644705054017895"><ph name="PERCENTAGE_VALUE" />%</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
 <translation id="2161394479394250669">ຍົກເລີກວຽກພິມ</translation>
+<translation id="2209788852729124853">ຣີເຊັດຕົວນັບທຣາບຟິກ</translation>
 <translation id="2217935453350629363">ຄວາມໄວປັດຈຸບັນ</translation>
 <translation id="2224337661447660594">ບໍ່ມີອິນເຕີເນັດ</translation>
 <translation id="2230051135190148440">CHAP</translation>
@@ -120,6 +121,7 @@
 <translation id="3595596368722241419">ແບັດເຕີຣີເຕັມ</translation>
 <translation id="360565022852130722">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP 802.1x ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="3689839747745352263">ການທົດສອບ <ph name="TEST_NAME" /></translation>
+<translation id="373232531963562220">{PAGE_NUMBER,plural, =0{ສະແກນໜ້າຄືນໃໝ່}=1{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່}other{ສະແກນ {PAGE_NUMBER} ໜ້າຄືນໃໝ່}}</translation>
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (<ph name="AGGREGATED_COUNT" /> ຄຳຕິຊົມ)</translation>
 <translation id="3748026146096797577">ບໍ່​ໄດ້​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="3749289110408117711">ຊື່​ໄຟລ​໌</translation>
@@ -151,6 +153,7 @@
 <translation id="4425149324548788773">My Drive</translation>
 <translation id="4429881212383817840">ປີ້ Kerberos ຈະໝົດອາຍຸໃນໄວໆນີ້</translation>
 <translation id="4431821876790500265">ເບິ່ງລາຍງານ</translation>
+<translation id="4439309966561990606">{PAGE_NUMBER,plural, =0{ລຶບໜ້າອອກ}=1{ລຶບໜ້າ {PAGE_NUMBER} ອອກ}other{ລຶບໜ້າ {PAGE_NUMBER} ອອກ}}</translation>
 <translation id="445059817448385655">ລະຫັດຜ່ານເກົ່າ</translation>
 <translation id="4453205916657964690">Subnet Mask</translation>
 <translation id="4454245904991689773">ສະແກນເພື່ອ</translation>
@@ -248,6 +251,7 @@
 <translation id="5916084858004523819">ຫ້າມໃຊ້</translation>
 <translation id="5921506667911082617">{COUNT,plural, =1{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}other{ສະແກນ ແລະ ບັນທຶກໄຟລ໌ຂອງທ່ານໄວ້ໃນ <ph name="LINK_BEGIN" /><ph name="FOLDER_NAME" /><ph name="LINK_END" /> ແລ້ວ.}}</translation>
 <translation id="5931523347251946569">ບໍ່ພົບໄຟລ໌</translation>
+<translation id="5972388717451707488">ອັບເດດລະບົບ</translation>
 <translation id="6037291330010597344">ຕົວປ້ອນເອກະສານຂອງເຄື່ອງສະແກນຫວ່າງເປົ່າ. ກະລຸນາເພີ່ມເອກະສານໃສ່ແລ້ວລອງໃໝ່.</translation>
 <translation id="6040143037577758943">ປິດ</translation>
 <translation id="6040852767465482106">ຕົວຕົນທີ່ບໍ່ເປີດເຜີຍຊື່</translation>
@@ -285,6 +289,7 @@
 <translation id="6527081081771465939">ໂປຣໂຕຄໍຮັກສາຄວາມປອດໄພ WiFi ທີ່ບໍ່ຮູ້ຈັກ</translation>
 <translation id="65587193855025101">ແບບແທ່ນນອນ</translation>
 <translation id="6564646048574748301">ບໍ່ສຳເລັດ, ບໍ່ສາມາດຕິດຕໍ່ເຄື່ອງພິມໄດ້</translation>
+<translation id="6574762126505704998">ຕື່ມສີ</translation>
 <translation id="6603230386432466813">ກຳລັງມີບັນຫາໃນການເຊື່ອມຕໍ່ບໍ?</translation>
 <translation id="6618744767048954150">ກຳລັງເປີດ</translation>
 <translation id="6620487321149975369">ວຽກພິມຈະປາກົດໃນປະຫວັດ ເວັ້ນເສຍແຕ່ຜູ້ໃຊ້ຈະລຶບພວກມັນອອກດ້ວຍຕົນເອງ</translation>
@@ -334,6 +339,7 @@
 <translation id="7569444139234840525"><ph name="QUERY_TEXT" /> · /<ph name="PHONETICS" />/</translation>
 <translation id="7595982850646262331">ຍັງເຫຼືອ <ph name="TIME_VALUE" /></translation>
 <translation id="7620771111601174153">ສຶກສາເພີ່ມເຕີມໃນສູນຊ່ວຍເຫຼືອ</translation>
+<translation id="763165478673169849">ເວລາຣີເຊັດຫຼ້າສຸດ</translation>
 <translation id="7648838807254605802">ເວລາແຝງ HTTPS ສູງ</translation>
 <translation id="7658239707568436148">ຍົກ​ເລີກ​</translation>
 <translation id="7690294790491645610">ຢືນຢັນລະຫັດຜ່ານໃໝ່</translation>
@@ -355,6 +361,7 @@
 <translation id="8075838845814659848">ການສາກທີ່ເຫຼືອ</translation>
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8129620843620772246"><ph name="TEMPERATURE_C" />° C</translation>
+<translation id="8132480444149501833">ຮ້ອງຂໍຕົວນັບທຣາບຟິກ</translation>
 <translation id="8206859287963243715">ເຊວລູລາ</translation>
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8214184102975786227">ສະແກນຫຼາຍໜ້າເປັນໄຟລ໌ PDF ດຽວ</translation>
@@ -376,8 +383,10 @@
 <translation id="8475690821716466388">ເຄືອຂ່າຍ WiFi ມີການຮັກສາຄວາມປອດໄພດ້ວຍໂປຣໂຕຄໍ WEP PSK ທີ່ບໍ່ຮັດກຸມ</translation>
 <translation id="8477551185774834963">ເວລາໃນການຕອບສະໜອງ DNS ສູງກວ່າເກນທີ່ຍອມຮັບໄດ້ເລັກນ້ອຍ</translation>
 <translation id="8483248364096924578">ທີ່ຢູ່ IP</translation>
+<translation id="8498220429738806196">ຕົວນັບທຣາບຟິກ</translation>
 <translation id="8503813439785031346">ຊື່​ຜູ້​ໃຊ້</translation>
 <translation id="8503836310948963452">ອີກສອງສາມນາທີ...</translation>
+<translation id="8528615187455571738">Crosvm</translation>
 <translation id="8575298406870537639">ຜູ້ໃຫ້ບໍລິການຂອງທ່ານອາດຕ້ອງໃຊ້ຕົວເລືອກນີ້ເພື່ອເຊື່ອມຕໍ່ຫາເຄືອຂ່າຍຂອງເຂົາເຈົ້າ. ກະລຸນາຕິດຕໍ່ຫາຜູ້ໃຫ້ບໍລິການຂອງທ່ານສຳລັບລາຍລະອຽດ.</translation>
 <translation id="8576249514688522074">ບໍ່ໄດ້ລິເລີ່ມ</translation>
 <translation id="8620617069779373398">ສະຖານະການໂຣມມິງ</translation>
@@ -394,6 +403,7 @@
 <translation id="8814190375133053267">Wi​-Fi</translation>
 <translation id="8818152010000655963">ພາບພື້ນຫຼັງ</translation>
 <translation id="8845001906332463065">ຂໍການຊ່ວຍເຫຼືອ</translation>
+<translation id="8868741746785112895">GUID</translation>
 <translation id="8881098542468797602">ສຳເລັດການທົດສອບແລ້ວ</translation>
 <translation id="8898840733695078011">ຄວາມແຮງສັນຍານ</translation>
 <translation id="8910721771319628100">ເຄືອຂ່າຍເລີ່ມຕົ້ນສູງກວ່າເກນເວລາໃນການຕອບສະໜອງ</translation>
@@ -409,6 +419,7 @@
 <translation id="9073281213608662541">PAP</translation>
 <translation id="9074739597929991885">Bluetooth</translation>
 <translation id="9088306295921699330">ການນຳໃຊ້ໃນປັດຈຸບັນ</translation>
+<translation id="9095775724867566971">Pluginvm</translation>
 <translation id="910415269708673980">ໂຫຼດຂໍ້ມູນປີ້ສຳລັບ <ph name="PRINCIPAL_NAME" /> ໃໝ່</translation>
 <translation id="9106415115617144481">ກຳລັງສະແກນໜ້າ <ph name="PAGE_NUMBER" /></translation>
 <translation id="9111102763498581341">ປົດລັອກ</translation>

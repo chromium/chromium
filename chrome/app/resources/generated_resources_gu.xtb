@@ -117,7 +117,6 @@
 <translation id="1124772482545689468">વપરાશકર્તા</translation>
 <translation id="1125550662859510761"><ph name="WIDTH" /> x <ph name="HEIGHT" /> જેવું લાગે છે (મૂળ)</translation>
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેંશન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
-<translation id="112752777279960360">પહેલી વાર આ કમ્પ્યુટર માટે સિક્યુરિટી કી તરીકે કોઈ Android ફોનના ઉપયોગને સેટઅપ કરવા માટે, તમારા ફોન પર Chrome ખોલો અને "સેટિંગ &gt; પાસવર્ડ &gt; ફોનનો સિક્યુરિટી કી તરીકે ઉપયોગ કરો" પર જાઓ. પછી "નવા ડિવાઇસને કનેક્ટ કરો" પર ટૅપ કરો અને આ QR કોડને સ્કૅન કરો.</translation>
 <translation id="1128109161498068552">MIDI ઉપકરણોને ઍક્સેસ કરવા માટે સિસ્ટમના એકમાત્ર સંદેશાઓનો ઉપયોગ કરવાની કોઇપણ સાઇટ્સને  મંજૂરી આપશો નહીં</translation>
 <translation id="1128591060186966949">શોધ એંજિનમાં ફેરફાર કરો</translation>
 <translation id="1129850422003387628">ઍપ મેનેજ કરો</translation>
@@ -499,6 +498,7 @@
 <translation id="1542514202066550870">આ ટૅબ હૅડસેટ પર VR કન્ટેન્ટ પ્રસ્તુત કરી રહ્યું છે.</translation>
 <translation id="1543284117603151572">Edge માંથી આયાત કરેલ</translation>
 <translation id="1545177026077493356">સ્વચલિત કિઓસ્ક મોડ</translation>
+<translation id="1545749641540134597">QR કોડ સ્કેન કરો</translation>
 <translation id="1545775234664667895">ઇન્સ્ટોલ કરેલી થીમ "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">જ્યારે તમે હોમ બટન ક્લિક કરો છો ત્યારે જે પૃષ્ઠ દર્શાવવામાં આવે છે તે આ એક્સટેન્શને બદલ્યું છે.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> <ph name="EXTENSION_TYPE" /> ઇન્સ્ટૉલ કરવા માગે છે, જે આ કરી શકે:</translation>
@@ -938,7 +938,6 @@
 <translation id="1992924914582925289">ડિવાઇસમાંથી કાઢી નાખો</translation>
 <translation id="1994173015038366702">સાઈટ URL</translation>
 <translation id="1995916364271252349">સાઇટ કઈ માહિતીનો ઉપયોગ કરી શકે અને કઈ માહિતી બતાવી શકે તે નિયંત્રિત કરો (સ્થાન, કૅમેરા, પૉપ-અપ અને અન્ય ઘણું)</translation>
-<translation id="1997437640397887843">ડિવાઇસનો કૅમેરા ચાલુ કરવામાં આવ્યો છે. કૃપા કરીને તમારો ઇ-સિમ QR કોડ કૅમેરાની સામે રાખો.</translation>
 <translation id="1997616988432401742">તમારા પ્રમાણપત્રો</translation>
 <translation id="1999115740519098545">સ્ટાર્ટઅપ પર</translation>
 <translation id="2000419248597011803">ઍડ્રેસ બાર અને શોધ બૉક્સમાંથી કેટલીક કુકી અને શોધને તમારા ડિફૉલ્ટ શોધ એંજિન પર મોકલે છે</translation>
@@ -958,7 +957,6 @@
 <translation id="2019718679933488176">નવા ટૅબમાં ઑડિયો &amp;ખોલો</translation>
 <translation id="2020183425253392403">નેટવર્ક સરનામાની સેટિંગ્સ બતાવો</translation>
 <translation id="2020225359413970060">ફાઇલને સ્કૅન કરો</translation>
-<translation id="2022953316617983419">QR કોડ</translation>
 <translation id="2023167225947895179">PIN અનુમાન કરવામાં સરળ હોઈ શકે છે</translation>
 <translation id="202352106777823113">ડાઉનલોડ ઘણો સમય લઈ રહ્યું હતું અને નેટવર્ક દ્વારા રોકવામાં આવ્યું હતું.</translation>
 <translation id="2025115093177348061">ઑગ્મેન્ટેડ રિયાલિટી</translation>
@@ -1113,6 +1111,7 @@
 <translation id="2174948148799307353"><ph name="PARENT_EMAIL" /> દ્વારા મેનેજ કરાતું એકાઉન્ટ. આ ડિવાઇસ પર પ્રાથમિક એકાઉન્ટમાંથી સાઇન આઉટ થવા માટે, તમારી સ્ક્રીન પર આપેલા સમય પર ક્લિક કરો. દેખાઈ રહેલા મેનૂમાં "સાઇન આઉટ કરો" પર ક્લિક કરો.</translation>
 <translation id="2175607476662778685">ઝડપી લૉંચ બાર</translation>
 <translation id="217576141146192373">પ્રિન્ટર ઉમેરી શકાયું નથી. કૃપા કરીને તમારા પ્રિન્ટરની ગોઠવણી ચેક કરો અને ફરી પ્રયાસ કરો.</translation>
+<translation id="2175927920773552910">QR કોડ</translation>
 <translation id="2177950615300672361">છુપો ટેબ: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">CA સમાધાન</translation>
 <translation id="2179416702468739594">ઉપલબ્ધ પ્રોફાઇલ શોધી રહ્યાં છીએ. આને કારણે કદાચ થોડીવાર માટે તમારું મોબાઇલ નેટવર્ક ડિસ્કનેક્ટ થઈ શકે છે.</translation>
@@ -4321,7 +4320,6 @@
 <translation id="5712153969432126546">સાઇટ અમુક વખતે PDFs પ્રકાશિત કરે છે, જેમ કે દસ્તાવેજો, કરારો અને ફોર્મ</translation>
 <translation id="5715711091495208045">પ્લગિન બ્રોકર: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">ડિફૉલ્ટ શોધ એંજિન્સ</translation>
-<translation id="5719637365829998022">QR કોડ સ્કૅન કરવામાં આવ્યો છે.</translation>
 <translation id="5719854774000914513">સાઇટ HID ડિવાઇસ સાથે કનેક્ટ કરવાનું પૂછી શકે છે</translation>
 <translation id="572155275267014074">Android સેટિંગ્સ</translation>
 <translation id="5722086096420375088">લીલો અને સફેદ</translation>
@@ -4515,7 +4513,6 @@ USB ડિવાઇસ</translation>
 <translation id="5941711191222866238">નાનું કરો</translation>
 <translation id="5942779427914696408">ડિવાઇસની દૃશ્યતા</translation>
 <translation id="5943127421590245687">તમારી ચકાસણી સફળ રહી. તમારા સ્થાનિક ડેટાને અનલૉક કરવા અને તેને રિસ્ટોર કરવા માટે, કૃપા કરીને તમારો જૂનો <ph name="DEVICE_TYPE" /> પાસવર્ડ દાખલ કરો.</translation>
-<translation id="5944869793365969636">QR કોડ સ્કૅન કરો</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Google Safe Browsingને મોકલીએ?</translation>
 <translation id="5945363896952315544">તમારી સિક્યુરિટી કીમાં હવેથી વધુ કોઈ ફિંગરપ્રિન્ટ સ્ટોર કરી શકાતી નથી. નવી ફિંગરપ્રિન્ટ ઉમેરવા માટે, પહેલાં હાલની ફિંગરપ્રિન્ટ ડિલીટ કરો.</translation>
 <translation id="5946591249682680882">રીપોર્ટ ID <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4639,7 +4636,6 @@ USB ડિવાઇસ</translation>
 <translation id="6077131872140550515">પસંદગીમાંથી દૂર કરો</translation>
 <translation id="6077189836672154517"><ph name="DEVICE_TYPE" /> વિશે ટિપ અને અપડેટ</translation>
 <translation id="6077476112742402730">લખવા માટે બોલો</translation>
-<translation id="6078045608615316905">આ છબી માટે QR કોડ બનાવો</translation>
 <translation id="6078121669093215958">{0,plural, =1{અતિથિ}one{# અતિથિ વિંડો ખુલ્લી છે}other{# અતિથિ વિંડો ખુલ્લી છે}}</translation>
 <translation id="6078323886959318429">શોર્ટકટ ઉમેરો</translation>
 <translation id="6078752646384677957">કૃપા કરીને તમારા માઇક્રોફોન અને ઑડિઓના સ્તરોને તપાસો.</translation>
@@ -5176,14 +5172,12 @@ USB ડિવાઇસ</translation>
 <translation id="6680650203439190394">રેટ કરો</translation>
 <translation id="6681668084120808868">ફોટો લો</translation>
 <translation id="6683087162435654533">બધા ટૅબ રિસ્ટોર કરો</translation>
-<translation id="6683948477137300040">ડિવાઇસનો EID અને QR કોડ પૉપઅપ બતાવો</translation>
 <translation id="6684827949542560880">નવીનતમ અપડેટ ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="668599234725812620">Google Play ખોલો</translation>
 <translation id="6686490380836145850">જમણી બાજુનાં ટૅબ્સ બંધ કરો</translation>
 <translation id="6686665106869989887">ટૅબને જમણે ખસેડી</translation>
 <translation id="6686817083349815241">તમારો પાસવર્ડ સાચવો</translation>
 <translation id="6687079240787935001"><ph name="MODULE_TITLE" /> છુપાવો</translation>
-<translation id="6688285987813868112">આ છબી માટે QR કોડ બનાવો</translation>
 <translation id="6690659332373509948">ફાઇલ વિશ્લેષિત કરવામાં અસમર્થ: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Google ડૅશબોર્ડ પર સિંક કરેલ ડેટા મેનેજ કરો</translation>
 <translation id="6691541770654083180">પૃથ્વી</translation>
@@ -5385,7 +5379,6 @@ USB ડિવાઇસ</translation>
 <translation id="6914783257214138813">જે કોઈપણ તમારી નિકાસ કરેલ પાસવર્ડની ફાઇલને જોઈ શકશે, તેમને તમારા પાસવર્ડ પણ દૃશ્યક્ષમ થશે.</translation>
 <translation id="6916590542764765824">એક્સ્ટેન્શન મેનેજ કરો</translation>
 <translation id="6919868320029503575">નબળા પાસવર્ડ</translation>
-<translation id="6920262510368602827">આ પેજ માટે QR કોડ બનાવો</translation>
 <translation id="6920989436227028121">નિયમિત ટૅબ તરીકે ખોલો</translation>
 <translation id="6921104647315081813">પ્રવૃત્તિઓ સાફ કરો</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> ખોલી શકાયું નથી</translation>
@@ -6106,7 +6099,6 @@ USB ડિવાઇસ</translation>
 <translation id="7691698019618282776">Crostini અપગ્રેડ કરો</translation>
 <translation id="7696063401938172191">તમારા '<ph name="PHONE_NAME" />' પર:</translation>
 <translation id="7697166915480294040">જ્યારે તમે તમારી સ્ક્રીન શેર કરો, ત્યારે વિગતો છુપાવવામાં આવે છે</translation>
-<translation id="7697598343108519171">QR કોડ સ્કૅન કરવા માટે કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="7701040980221191251">કોઈ નથી</translation>
 <translation id="7701869757853594372">વપરાશકર્તા હેન્ડલ્સ</translation>
 <translation id="7701928712056789451">આ આઇટમ જોખમકારક હોઈ શકે છે</translation>
@@ -6212,7 +6204,6 @@ USB ડિવાઇસ</translation>
 <translation id="7800518121066352902">ઘ&amp;ડિયાળની વિપરિત દિશામાં ફેરવો</translation>
 <translation id="780301667611848630">નહીં, આભાર</translation>
 <translation id="7804072833593604762">ટૅબ બંધ કરી છે</translation>
-<translation id="7805759469263222011">તમારા ડિવાઇસના કૅમેરાનો ઉપયોગ કરીને QR કોડ સ્કૅન કરો અથવા તમારા મોબાઇલ ઑપરેટર દ્વારા પ્રદાન કરેલો સક્રિયકરણનો કોડ દાખલ કરો</translation>
 <translation id="7805768142964895445">સ્થિતિ</translation>
 <translation id="7807067443225230855">શોધ અને સહાયક</translation>
 <translation id="7807711621188256451"><ph name="HOST" /> ને હંમેશા તમારા કૅમેરાને ઍક્સેસ કરવાની મંજૂરી આપો</translation>
@@ -6762,7 +6753,6 @@ USB ડિવાઇસ</translation>
 <translation id="8386091599636877289">પૉલિસી મળી નથી.</translation>
 <translation id="8387361103813440603">તમારું સ્થાન જોવાની મંજૂરી નથી</translation>
 <translation id="8388770971141403598">ગૌણ પ્રોફાઇલને સપોર્ટ આપવામાં આવતો નથી</translation>
-<translation id="8389416080014625855">આ પેજ માટે QR કોડ બનાવો</translation>
 <translation id="8389492867173948260">આ એક્સટેંશનને તમે મુલાકાત લો તે વેબસાઇટ પરનો તમારો બધો ડેટા વાંચવાની અને બદલવાની મંજૂરી આપો:</translation>
 <translation id="8390449457866780408">સર્વર અનુપલબ્ધ.</translation>
 <translation id="8391218455464584335">વિનાઇલ</translation>
@@ -7318,7 +7308,6 @@ USB ડિવાઇસ</translation>
 <translation id="8986494364107987395">ઉપયોગિતા આંકડાઓ અને ક્રૅશ રિપોર્ટ Googleને ઑટોમૅટિક રીતે મોકલો</translation>
 <translation id="8987927404178983737">મહિનો</translation>
 <translation id="8988879467270412492">શું તમે Chrome OSમાં બિલ્ટ-ઇન સ્ક્રીન રીડર, ChromeVox સક્રિય કરવા માગો છો? જો હા હોય, તો પાંચ સેકન્ડ માટે બન્ને વૉલ્યૂમ કી દબાવી રાખો.</translation>
-<translation id="8990209962746788689">QR કોડ બનાવી શકતા નથી</translation>
 <translation id="8991520179165052608">સાઇટ તમારા માઇક્રોફોનનો ઉપયોગ કરી શકે છે</translation>
 <translation id="899384117894244799">પ્રતિબંધિત વપરાશકર્તાને કાઢી નાખો</translation>
 <translation id="899403249577094719">નેટસ્કેપ પ્રમાણપત્ર બેઝ URL</translation>

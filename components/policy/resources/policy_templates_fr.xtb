@@ -77,6 +77,9 @@
       Si la règle est définie sur "False" ou n'est pas définie, ces informations ne sont pas transmises.
       Si elle est définie sur "True", les informations concernant le rétroéclairage de l'appareil sont transmises.</translation>
 <translation id="1076751984131277498">Liste d'autorisation des appareils USB amovibles</translation>
+<translation id="1079425471279127373">Si cette règle est configurée, certaines origines d'applis Web installées d'office sont autorisées à obtenir les attributs des appareils (ex. : numéro de série, nom d'hôte) à l'aide de l'API Device Attributes.
+
+      Cette API est une liste d'API Web (voir https://wicg.github.io/WebApiDevice/device_attributes). Elles ne sont disponibles que pour les origines qui correspondent aux applis web installées d'office via la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou celle configurée dans la session Kiosque.</translation>
 <translation id="1079801999187584280">Interdire l'utilisation des outils pour les développeurs</translation>
 <translation id="1082802595100075771">Laisser les utilisateurs choisir s'ils veulent employer un service Google anonyme pour qu'une description soit ajoutée automatiquement aux images sans libellé</translation>
 <translation id="1087437665304381368">Cette règle permet de ne contrôler que le mode développeur <ph name="PRODUCT_OS_NAME" />. Si vous voulez bloquer l'accès aux options pour les développeurs Android, vous devez définir la règle <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" />.</translation>
@@ -874,6 +877,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
 
       Si vous configurez cette règle, les utilisateurs ne peuvent pas la modifier. Si vous ne la configurez pas, les utilisateurs peuvent choisir d'utiliser ou non la fonctionnalité.</translation>
+<translation id="2093552723795057221">Ne pas signaler l'état audio</translation>
 <translation id="209586405398070749">Version stable</translation>
 <translation id="2098658257603918882">Autoriser l'envoi de statistiques d'utilisation et de rapports d'erreur</translation>
 <translation id="2104418465060359056">Enregistrer les informations des extensions et des plug-ins</translation>
@@ -917,6 +921,9 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
 <translation id="2151831603578119302">Activer les raccourcis des fonctionnalités d'accessibilité</translation>
 <translation id="2156132677421487971">Configurer les règles pour <ph name="PRODUCT_NAME" />, une fonctionnalité permettant aux utilisateurs de caster le contenu des onglets, des sites ou de leur bureau depuis leur navigateur sur des écrans ou systèmes audio distants.</translation>
 <translation id="2156755242840687300">Serveurs d'impression externes activés</translation>
+<translation id="2157842368188031417">Cette règle ne concerne que les sessions Invité gérées. Elle doit être activée pour que le mode station de travail partagée d'Imprivata autorise les changements d'utilisateurs en cours de session.
+      Si cette règle est définie sur "True", certaines règles sont ignorées d'office pour des fonctionnalités, qui conservent les données utilisateur sensibles et qui ne sont pas gérées par le mécanisme de nettoyage utilisé pour les changements d'utilisateurs en cours de session avec le mode station de travail partagée d'Imprivata.
+      Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, aucune règle n'est ignorée.</translation>
 <translation id="2160336427036785721">Permet de configurer la quantité de mémoire qu'une instance de <ph name="PRODUCT_NAME" /> peut utiliser avant que des onglets ne commencent à être ignorés (c'est-à-dire que la mémoire utilisée par l'onglet sera libérée, et l'onglet devra être actualisé lorsque l'utilisateur le sélectionnera) afin d'économiser de la mémoire.
 
       Si cette règle est configurée, le navigateur commence à ignorer des onglets pour économiser de la mémoire lorsque la limite est dépassée. Il n'est cependant pas garanti que le navigateur fonctionne toujours en deçà de cette limite. Toute valeur inférieure à 1024 est arrondie à ce nombre.
@@ -1912,6 +1919,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 
       Cette règle est temporaire et sera supprimée dans une future version
      de <ph name="PRODUCT_NAME" />.</translation>
+<translation id="3359186795130278362">Activer la session Invité gérée restreinte.</translation>
 <translation id="3360093276083825336">Cette règle étant obsolète, elle sera supprimée dans la version 85 de <ph name="PRODUCT_OS_NAME" />. (Veuillez utiliser la règle <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />.)
 
           Délai d'inactivité de l'utilisateur au terme duquel un message d'avertissement s'affiche (en cas d'utilisation de la batterie).
@@ -3152,6 +3160,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Remarque : Vous pouvez également utiliser la règle <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> pour ajouter des éléments à cette liste.</translation>
 <translation id="5067143124345820993">Liste des utilisateurs autorisés à se connecter</translation>
+<translation id="5071303485174858500">Désactiver la session Invité gérée restreinte.</translation>
 <translation id="5073609397321802133">Si cette règle est définie sur "False", les utilisateurs ne peuvent pas personnaliser l'arrière-plan sur la page "Nouvel onglet". Tout arrière-plan personnalisé actuel sera définitivement supprimé, même si la règle est définie sur "True" par la suite.
 
       Si celle-ci est définie sur "True" ou si elle n'est pas configurée, les utilisateurs peuvent personnaliser l'arrière-plan sur la page "Nouvel onglet".</translation>
@@ -3159,6 +3168,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise les paramètres actuels de vérification en ligne de la révocation.</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
+<translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
 <translation id="5082572440690475059">Autoriser l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
@@ -3821,6 +3831,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
           En cas de désactivation ou de non-configuration de ce paramètre, le nom de domaine TalkGadget par défaut ("chromoting-host.talkgadget.google.com") est utilisé pour tous les hôtes.
 
           Les clients d'accès à distance ne sont pas concernés par la configuration de cette règle. Ils utilisent toujours "chromoting-client.talkgadget.google.com" pour accéder à TalkGadget.</translation>
+<translation id="5888645257599699215">Signaler l'état audio des appareils</translation>
 <translation id="5890063326284543943">Contrôler l'utilisation de l'API Serial</translation>
 <translation id="5897913798715600338">Recharge de la batterie à l'aide d'une technologie de recharge rapide.</translation>
 <translation id="5898486742390981550">Lorsque plusieurs personnes sont connectées, l'utilisateur principal est le seul à pouvoir se servir des applications Android.</translation>
@@ -4462,8 +4473,10 @@ Si vous sélectionnez les options suivantes :
       Si cette règle est désactivée, l'icône des fonctionnalités expérimentales du navigateur ne s'affiche pas dans la barre d'outils.
 
       L'activation ou la désactivation de cette règle ne change rien au fonctionnement de la page chrome://flags ni à celui de tout autre moyen d'activer ou désactiver des fonctionnalités du navigateur.</translation>
+<translation id="6794083666143216172">Autoriser les origines à interroger les attributs des appareils</translation>
 <translation id="6795485990775913659">Autoriser l'impression sans code uniquement</translation>
 <translation id="6800181452282128474">Ne pas envoyer de requêtes aux serveurs Quirks</translation>
+<translation id="68031099365512050">Signaler l'état audio</translation>
 <translation id="6810445994095397827">Bloquer JavaScript sur ces sites</translation>
 <translation id="6813263547126514821">Démarrage et arrêt</translation>
 <translation id="681446116407619279">Modèles d'authentification compatibles</translation>
@@ -4622,6 +4635,9 @@ Si vous sélectionnez les options suivantes :
 
       Actuellement, les langues compatibles sont les suivantes : af, bg, ca, cs, da, de, el, en-AU, en-CA, en-GB, en-US, es, es-419, es-AR, es-ES, es-MX, es-US, et, fa, fo, fr, he, hi, hr, hu, id, it, ko, lt, lv, nb, nl, pl, pt-BR, pt-PT, ro, ru, sh, sk, sl, sq, sr, sv, ta, tg, tr, uk et vi.</translation>
 <translation id="6926703471186170050">Activer l'impression recto verso bord long</translation>
+<translation id="6928305045865155732">Si cette règle est activée ou qu'elle n'est pas configurée, les appareils enregistrés signalent leur volume audio.
+
+      Si cette règle est désactivée, les appareils enregistrés n'enregistrent ni ne signalent l'état audio.</translation>
 <translation id="6931242315485576290">Désactiver la synchronisation des données avec Google</translation>
 <translation id="6943577887654905793">Nom de préférence Mac/Linux :</translation>
 <translation id="6946652757373377924">
@@ -5971,6 +5987,19 @@ Il est conseillé de configurer les règles sur Windows via GPO, même si la ges
       Si cette règle est configurée, les utilisateurs ne peuvent pas modifier la fonctionnalité. Si elle n'est pas configurée, les utilisateurs peuvent modifier le paramètre.</translation>
 <translation id="8715885991031124968">Autoriser les boîtes de dialogue JavaScript déclenchées depuis un sous-frame d'une origine différente.</translation>
 <translation id="8720547069538712402">Autoriser l'utilisateur à activer ou désactiver le correcteur orthographique</translation>
+<translation id="8726080977639508431">Cette règle contrôle la façon dont <ph name="PRODUCT_NAME" /> interprète les règles des listes grises/de sites pour la fonctionnalité Legacy Browser Support. Cela concerne ces règles : <ph name="URL_LIST_POLICY_NAME" />, <ph name="URL_GREYLIST_POLICY_NAME" />, <ph name="USE_IE_SITELIST_POLICY_NAME" />, <ph name="EXTERNAL_SITELIST_POLICY_NAME" /> et <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />.
+
+      Si cette règle est définie sur "Par défaut" (0) ou qu'elle n'est pas configurée, la mise en correspondance d'URL est moins stricte. Les instructions qui n'incluent pas "/" recherchent une sous-chaîne dans le nom d'hôte de l'URL. La mise en correspondance du composant de chemin d'une URL est sensible à la casse.
+
+      Si cette règle est définie sur "IESiteListMode" (1), la mise en correspondance d'URL est plus stricte. Les instructions qui n'incluent pas "/" n'établissent une correspondance qu'à la fin du nom d'hôte. Elles doivent aussi être associées à la limite d'un nom de domaine. La mise en correspondance du composant de chemin d'une URL n'est pas sensible à la casse. La compatibilité est meilleure avec <ph name="MS_IE_PRODUCT_NAME" /> et <ph name="MS_EDGE_PRODUCT_NAME" />.
+
+      Par exemple, avec les instructions "example.com" et "acme.com/abc" :
+
+      "http://example.com/", "http://subdomain.example.com/" et "http://acme.com/abc" correspondent quel que soit le mode d'analyse.
+
+      "http://notexample.com/", "http://example.com.invalid.com/" et "http://example.comabc/" correspondent uniquement en mode "Par défaut".
+
+      "http://acme.com/ABC" ne correspond qu'en "IESiteListMode".</translation>
 <translation id="8736538322216687231">Appliquer un mode restreint minimal sur YouTube</translation>
 <translation id="8745669971728319820">Cette règle détermine si les informations sur les extensions et les plug-ins doivent être enregistrées.
 

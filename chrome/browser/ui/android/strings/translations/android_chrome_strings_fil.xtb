@@ -224,7 +224,6 @@ Mag-tap ng anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pind
 
 Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong paghahanap, pumili ng mas marami o mas kaunting salita. Para i-edit ang iyong paghahanap, buksan ang panel, i-tap ang icon para buksan sa bagong tab, at gawin ang iyong mga pagbabago sa box para sa paghahanap.</translation>
 <translation id="2459390580524506445">Pinahusay na paghahanap gamit ang boses</translation>
-<translation id="246532703174860178">Ibahagi</translation>
 <translation id="247737702124049222">Naka-on ang mga paglalarawan ng larawan</translation>
 <translation id="2482878487686419369">Mga Abiso</translation>
 <translation id="2485422356828889247">I-uninstall</translation>
@@ -296,7 +295,6 @@ Pindutin nang matagal ang anumang salita para maghanap. Para pinuhin ang iyong p
 <translation id="2900528713135656174">Gumawa ng event</translation>
 <translation id="2901411048554510387">Ipinapakita ang mga suhestyon para sa <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">Nakabukas ang listahan ng mga device kung saan magbabahagi ng tab nang buo ang taas.</translation>
-<translation id="2905036901251765993">Para magbahagi sa mga taong nasa malapit, ipa-scan sa kanila ang QR code na ito</translation>
 <translation id="2908243544703713905">Handa na ang mga hindi pa nababasang kuwento</translation>
 <translation id="2909615210195135082">Google Notifications Platform</translation>
 <translation id="2912296070571964914">Pamahalaan ang mga paksa kung saan ka interesado</translation>
@@ -724,7 +722,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-reset ang pag-sync<ph
 <translation id="572328651809341494">Mga kamakailang tab</translation>
 <translation id="5723735397759933332">Makakatipid ka na ngayon ng higit pang data sa Lite mode sa pamamagitan ng pag-optimize ng mga larawan sa mga HTTPS page.</translation>
 <translation id="5726692708398506830">Palakihin ang lahat ng nasa page</translation>
-<translation id="5733983706093266635">Hindi makagawa ng QR code. Mahigit sa <ph name="CHARACTER_LIMIT" /> (na) character ang URL.</translation>
 <translation id="5748802427693696783">Lumipat sa mga karaniwang tab</translation>
 <translation id="5749068826913805084">Kailangan ng Chrome ng access sa storage para mag-download ng mga file.</translation>
 <translation id="5749237766298580851">Naka-off <ph name="SEPARATOR" /> Hindi inirerekomenda</translation>
@@ -880,7 +877,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="6590680911007613645">Tiyaking tumutugma ang password na sine-save mo sa iyong password para sa <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Desktop site</translation>
 <translation id="6595046016124923392">Ipinapadala sa Google ang mga larawan para mapahusay ang mga paglalarawan para sa iyo.</translation>
-<translation id="6597891566292541626">Iposisyon ang QR/barcode sa frame na ito.</translation>
 <translation id="6600954340915313787">Kinopya sa Chrome</translation>
 <translation id="661266467055912436">Pinapahusay ang seguridad para sa iyo at sa lahat ng tao sa web.</translation>
 <translation id="6618554661997243500">Para makita ang mga nangungunang site at kuwento para sa iyo, i-tap ang button ng Home</translation>
@@ -1090,7 +1086,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
-<translation id="7967911570373677897">Para mag-scan ng QR code, baguhin ang iyong mga setting para magamit ng Chrome ang camera mo</translation>
 <translation id="7968014550143838305">Idinagdag sa list ng babasahin</translation>
 <translation id="7971136598759319605">Aktibo 1 araw ang nakalipas</translation>
 <translation id="7975379999046275268">I-preview ang page na <ph name="BEGIN_NEW" />Bago<ph name="END_NEW" /></translation>
@@ -1122,7 +1117,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Para makuha ang iyong mga bookmark sa lahat ng device mo, i-on ang pag-sync</translation>
 <translation id="8110087112193408731">Ipakita sa Digital Wellness ang aktibidad mo sa Chrome?</translation>
-<translation id="8115259494083109761">Para mag-scan ng QR code, hayaang gamitin ng Chrome ang iyong camera</translation>
 <translation id="8127542551745560481">I-edit ang homepage</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8137558756159375272">Ipinadadala ng Pindutin upang Hanapin ang piniling salita at ang kasalukuyang page bilang konteksto sa Paghahanap sa Google. Maaari mo itong i-off sa <ph name="BEGIN_LINK" />Mga Setting<ph name="END_LINK" />.</translation>
@@ -1139,7 +1133,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8218622182176210845">Pamahalaan ang iyong account</translation>
 <translation id="8223642481677794647">Menu ng feed card</translation>
 <translation id="8224471946457685718">Mag-download ng mga artikulo para sa iyo sa Wi-Fi</translation>
-<translation id="8233540874193135768">Para mag-scan ng QR code, gumamit ng device na may camera.</translation>
 <translation id="8250920743982581267">Mga Dokumento</translation>
 <translation id="825412236959742607">Masyadong malaki ang ginagamit na memory ng page na ito kaya inalis ng Chrome ang ilang content.</translation>
 <translation id="8260126382462817229">Subukang mag-sign in muli</translation>
@@ -1256,7 +1249,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8972098258593396643">I-download sa default na folder?</translation>
 <translation id="8988028529677883095">Gamitin ang telepono bilang security key</translation>
-<translation id="8990209962746788689">Hindi magawa ang QR code</translation>
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>
 <translation id="8996847606757455498">Pumili ng ibang provider</translation>
 <translation id="8998729206196772491">Nagsa-sign in ka gamit ang isang account na pinamamahalaan ng <ph name="MANAGED_DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chrome. Permanenteng mauugnay ang iyong data sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chrome, ngunit mananatili itong naka-store sa iyong Google Account.</translation>

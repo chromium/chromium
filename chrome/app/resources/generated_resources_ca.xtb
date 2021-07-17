@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Usuari</translation>
 <translation id="1125550662859510761">Resolució: <ph name="WIDTH" /> x <ph name="HEIGHT" /> (nativa)</translation>
 <translation id="1126809382673880764">No et protegeix contra baixades, extensions ni llocs web perillosos. Continuaràs obtenint protecció mitjançant Navegació segura, sempre que estigui disponible, en altres serveis de Google, com ara Gmail i la Cerca.</translation>
-<translation id="112752777279960360">Per configurar per primera vegada un telèfon Android perquè funcioni com a clau de seguretat amb aquest ordinador, obre Chrome al telèfon i ves a Configuració &gt; Contrasenyes &gt; Fes servir el telèfon com a clau de seguretat. A continuació, toca Connecta un dispositiu nou i escaneja aquest codi QR.</translation>
 <translation id="1128109161498068552">No permetis que cap lloc utilitzi els missatges exclusius del sistema per accedir als dispositius MIDI</translation>
 <translation id="1128591060186966949">Edita el motor de cerca</translation>
 <translation id="1129850422003387628">Gestiona aplicacions</translation>
@@ -503,6 +502,7 @@
 <translation id="1542514202066550870">Aquesta pestanya està mostrant contingut de realitat virtual en un visor.</translation>
 <translation id="1543284117603151572">Importades d'Edge</translation>
 <translation id="1545177026077493356">Mode quiosc automàtic</translation>
+<translation id="1545749641540134597">Escaneja el codi QR</translation>
 <translation id="1545775234664667895">S'ha instal·lat el tema "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Aquesta extensió ha canviat la pàgina que es mostra quan feu clic al botó Pàgina d'inici.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> vol instal·lar una extensió de tipus <ph name="EXTENSION_TYPE" /> que pot:</translation>
@@ -945,7 +945,6 @@
 <translation id="1992924914582925289">Suprimeix del dispositiu</translation>
 <translation id="1994173015038366702">URL del lloc web</translation>
 <translation id="1995916364271252349">Controlen la informació que els llocs web poden fer servir i mostrar (ubicació, càmera, finestres emergents i més)</translation>
-<translation id="1997437640397887843">La càmera del dispositiu s'ha activat. Posa el codi QR de l'eSIM davant de la càmera.</translation>
 <translation id="1997616988432401742">Els meus certificats</translation>
 <translation id="1999115740519098545">A l'inici</translation>
 <translation id="2000419248597011803">Envia al motor de cerca predeterminat algunes galetes i cerques de la barra d'adreces i del quadre de cerca</translation>
@@ -965,7 +964,6 @@
 <translation id="2019718679933488176">&amp;Obre l'àudio en una pestanya nova</translation>
 <translation id="2020183425253392403">Mostra la configuració de l'adreça de xarxa</translation>
 <translation id="2020225359413970060">Analitza el fitxer</translation>
-<translation id="2022953316617983419">Codi QR</translation>
 <translation id="2023167225947895179">El PIN sembla fàcil d'endevinar</translation>
 <translation id="202352106777823113">La baixada trigava massa i la xarxa l'ha aturat.</translation>
 <translation id="2025115093177348061">Realitat augmentada</translation>
@@ -1121,6 +1119,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2174948148799307353">Aquest compte el gestiona <ph name="PARENT_EMAIL" />. Per tancar la sessió del compte principal en aquest dispositiu, fes clic a l'hora de la pantalla. Al menú que es mostra, fes clic a Tanca la sessió.</translation>
 <translation id="2175607476662778685">Barra d'inici ràpid</translation>
 <translation id="217576141146192373">No es pot afegir la impressora. Comprova'n la configuració i torna-ho a provar.</translation>
+<translation id="2175927920773552910">Codi QR</translation>
 <translation id="2177950615300672361">Pestanya d'incògnit: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Compromís de CA</translation>
 <translation id="2179416702468739594">S'estan cercant perfils disponibles. Això pot fer que la xarxa mòbil es desconnecti durant uns minuts.</translation>
@@ -4336,7 +4335,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5712153969432126546">A vegades, els llocs web publiquen fitxers PDF, com ara documents, contractes i formularis</translation>
 <translation id="5715711091495208045">Agent de connectors: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Motors de cerca predeterminats</translation>
-<translation id="5719637365829998022">S'ha escanejat el codi QR.</translation>
 <translation id="5719854774000914513">Els llocs web poden demanar permís per connectar-se a dispositius HID</translation>
 <translation id="572155275267014074">Configuració d'Android</translation>
 <translation id="5722086096420375088">Verd i blanc</translation>
@@ -4529,7 +4527,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5941711191222866238">Minimitza</translation>
 <translation id="5942779427914696408">Visibilitat del dispositiu</translation>
 <translation id="5943127421590245687">La verificació s'ha dut a terme correctament. Per desbloquejar i restaurar les dades locals, introdueix la contrasenya antiga del dispositiu <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Escaneja un codi QR</translation>
 <translation id="5945002094477276055">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a Navegació segura de Google perquè s'escanegi?</translation>
 <translation id="5945363896952315544">La teva clau de seguretat no pot emmagatzemar més empremtes digitals. Per afegir-ne una de nova, primer n'has de suprimir una.</translation>
 <translation id="5946591249682680882">Identificador de l'informe: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4653,7 +4650,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6077131872140550515">Suprimeix de les preferides</translation>
 <translation id="6077189836672154517">Consells i novetats sobre el dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Parla per escriure</translation>
-<translation id="6078045608615316905">Crea un codi QR d'aquesta imatge</translation>
 <translation id="6078121669093215958">{0,plural, =1{Convidat}other{# finestres de convidat obertes}}</translation>
 <translation id="6078323886959318429">Afegeix una drecera</translation>
 <translation id="6078752646384677957">Comprova els nivells del micròfon i de l'àudio.</translation>
@@ -5195,14 +5191,12 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6680650203439190394">Velocitat</translation>
 <translation id="6681668084120808868">Fes una foto</translation>
 <translation id="6683087162435654533">R&amp;estaura totes les pestanyes</translation>
-<translation id="6683948477137300040">Mostra la finestra emergent amb el codi QR i amb l'EID del dispositiu</translation>
 <translation id="6684827949542560880">S'està baixant l'actualització més recent</translation>
 <translation id="668599234725812620">Obre Google Play</translation>
 <translation id="6686490380836145850">Tanca les pestanyes de la dreta</translation>
 <translation id="6686665106869989887">La pestanya s'ha mogut cap a la dreta</translation>
 <translation id="6686817083349815241">Desa la contrasenya</translation>
 <translation id="6687079240787935001">Amaga <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Crea un codi QR d'aquesta imatge</translation>
 <translation id="6690659332373509948">No es pot analitzar el fitxer: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Gestiona les dades sincronitzades des del Tauler de control de Google</translation>
 <translation id="6691541770654083180">La Terra</translation>
@@ -5406,7 +5400,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6914783257214138813">Tothom que pugui veure el fitxer exportat podrà veure també les teves contrasenyes.</translation>
 <translation id="6916590542764765824">Gestiona les extensions</translation>
 <translation id="6919868320029503575">Contrasenyes poc segures</translation>
-<translation id="6920262510368602827">Crea un codi QR d'aquesta pàgina</translation>
 <translation id="6920989436227028121">Obre-ho com a pestanya normal</translation>
 <translation id="6921104647315081813">Esborra les activitats</translation>
 <translation id="692114467174262153"><ph name="ALTERNATIVE_BROWSER_NAME" /> no s'ha pogut obrir</translation>
@@ -6132,7 +6125,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7691698019618282776">Actualització de Crostini</translation>
 <translation id="7696063401938172191">A <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Els detalls estan amagats mentre comparteixes la pantalla</translation>
-<translation id="7697598343108519171">Utilitza la càmera per escanejar el codi QR</translation>
 <translation id="7701040980221191251">Cap</translation>
 <translation id="7701869757853594372">Controls d'USUARI</translation>
 <translation id="7701928712056789451">Aquests elements poden ser perillosos</translation>
@@ -6239,7 +6231,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7800518121066352902">Gira en el sentit con&amp;trari a les agulles del rellotge</translation>
 <translation id="780301667611848630">No, gràcies</translation>
 <translation id="7804072833593604762">Pestanya tancada</translation>
-<translation id="7805759469263222011">Escaneja el codi QR amb la càmera del dispositiu o introdueix el codi d'activació que t'ha proporcionat l'operador</translation>
 <translation id="7805768142964895445">Estat</translation>
 <translation id="7807067443225230855">Cerca i Assistent</translation>
 <translation id="7807711621188256451">Permet sempre que <ph name="HOST" /> accedeixi a la càmera</translation>
@@ -6797,7 +6788,6 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8386091599636877289">No s'ha trobat la política.</translation>
 <translation id="8387361103813440603">Sense permís per veure la teva ubicació</translation>
 <translation id="8388770971141403598">Els perfils secundaris no s'admeten</translation>
-<translation id="8389416080014625855">Crea un codi QR d'aquesta pàgina</translation>
 <translation id="8389492867173948260">Permet que aquesta extensió llegeixi i modifiqui totes les dades dels llocs web que visitis.</translation>
 <translation id="8390449457866780408">El servidor no està disponible.</translation>
 <translation id="8391218455464584335">Vinil</translation>
@@ -7354,7 +7344,6 @@ Prem un interruptor assignat per suprimir l'assignació</translation>
 <translation id="8986494364107987395">Envia automàticament estadístiques d'ús i informes d'error a Google</translation>
 <translation id="8987927404178983737">Mes</translation>
 <translation id="8988879467270412492">Vols activar ChromeVox, el lector de pantalla integrat per a Chrome OS? Si és així, mantén premudes les dues tecles de volum durant cinc segons.</translation>
-<translation id="8990209962746788689">No es pot crear el codi QR</translation>
 <translation id="8991520179165052608">El lloc web pot utilitzar el micròfon</translation>
 <translation id="899384117894244799">Suprimeix un usuari restringit</translation>
 <translation id="899403249577094719">URL base de certificat de Netscape</translation>

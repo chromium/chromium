@@ -196,6 +196,7 @@
 <translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2952581218264071393">1. Откройте настройки Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
+<translation id="2961210776189273067">Обращение</translation>
 <translation id="2964349545761222050">Блокировать сторонние файлы cookie</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
 <translation id="2975121486251958312">Доступен только режим инкогнито</translation>
@@ -721,6 +722,7 @@
 <translation id="8073872304774253879">Улучшить функции поиска и просмотра страниц</translation>
 <translation id="8076014560081431679">Настройки сайтов не изменятся, поэтому данные о вашей работе в Интернете сохранятся. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8079602123447022758">Эту настройку может изменить администратор. Нажмите дважды, чтобы узнать больше.</translation>
+<translation id="8080028325999236607">Закрыть все вкладки</translation>
 <translation id="8105368624971345109">Отключить</translation>
 <translation id="8114753159095730575">Файл доступен для скачивания. Параметры указаны в нижней части экрана.</translation>
 <translation id="8131740175452115882">Подтвердить</translation>

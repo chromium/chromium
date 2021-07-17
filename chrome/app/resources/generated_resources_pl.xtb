@@ -118,7 +118,6 @@
 <translation id="1124772482545689468">Użytkownik</translation>
 <translation id="1125550662859510761">Wygląda na <ph name="WIDTH" /> × <ph name="HEIGHT" /> (natywna)</translation>
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
-<translation id="112752777279960360">Aby po raz pierwszy użyć na tym komputerze telefonu z Androidem jako klucza bezpieczeństwa, na telefonie otwórz Chrome i wybierz „Ustawienia &gt; Hasła &gt; Używaj telefonu jako klucza bezpieczeństwa”. Potem kliknij „Połącz z nowym urządzeniem” i zeskanuj ten kod QR.</translation>
 <translation id="1128109161498068552">Nie zezwalaj żadnym witrynom na używanie wiadomości zarezerwowanych dla systemu w celu uzyskania dostępu do urządzeń MIDI</translation>
 <translation id="1128591060186966949">Edytuj wyszukiwarkę</translation>
 <translation id="1129850422003387628">Zarządzaj aplikacjami</translation>
@@ -505,6 +504,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1542514202066550870">Ta karta prezentuje treści VR na goglach.</translation>
 <translation id="1543284117603151572">Zaimportowane z Edge</translation>
 <translation id="1545177026077493356">Automatyczny tryb kiosku</translation>
+<translation id="1545749641540134597">Zeskanuj kod QR</translation>
 <translation id="1545775234664667895">Zainstalowano motyw „<ph name="THEME_NAME" />”</translation>
 <translation id="1546280085599573572">To rozszerzenie ustawiło inną stronę wyświetlaną po kliknięciu przycisku strony głównej.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> chce zainstalować <ph name="EXTENSION_TYPE" /> z następującymi uprawnieniami:</translation>
@@ -943,7 +943,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="1992924914582925289">Usuń z urządzenia</translation>
 <translation id="1994173015038366702">URL strony</translation>
 <translation id="1995916364271252349">Tu możesz określić, jakie informacje mogą wykorzystywać i wyświetlać strony (lokalizacja, kamera, wyskakujące okienka i inne)</translation>
-<translation id="1997437640397887843">Aparat urządzenia został włączony. Umieść kod QR eSIM przed obiektywem aparatu.</translation>
 <translation id="1997616988432401742">Twoje certyfikaty</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="2000419248597011803">Niektóre pliki cookie oraz zapytania wpisane na pasku adresu i w polu wyszukiwania zostaną wysłane do domyślnej wyszukiwarki</translation>
@@ -963,7 +962,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="2019718679933488176">&amp;Otwórz dźwięk w nowej karcie</translation>
 <translation id="2020183425253392403">Pokaż ustawienia adresu sieciowego</translation>
 <translation id="2020225359413970060">Skanuj plik</translation>
-<translation id="2022953316617983419">Kod QR</translation>
 <translation id="2023167225947895179">Ten kod PIN może być łatwy do odgadnięcia</translation>
 <translation id="202352106777823113">Pobieranie trwało zbyt długo i zostało przerwane przez sieć.</translation>
 <translation id="2025115093177348061">Rzeczywistość rozszerzona</translation>
@@ -1120,6 +1118,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2174948148799307353">Kontem zarządza <ph name="PARENT_EMAIL" />. Aby wylogować się z podstawowego konta na tym urządzeniu, kliknij godzinę na ekranie. W wyświetlonym menu kliknij „Wyloguj”.</translation>
 <translation id="2175607476662778685">Pasek szybkiego uruchamiania</translation>
 <translation id="217576141146192373">Nie można dodać drukarki. Sprawdź jej konfigurację i spróbuj ponownie.</translation>
+<translation id="2175927920773552910">Kod QR</translation>
 <translation id="2177950615300672361">Karta incognito: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Naruszenie bezpieczeństwa urzędu certyfikacji</translation>
 <translation id="2179416702468739594">Szukam dostępnych profili. Może to spowodować utratę połączenia z siecią komórkową na kilka minut.</translation>
@@ -2949,6 +2948,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="4136203100490971508">Podświetlenie nocne wyłączy się automatycznie o wschodzie słońca</translation>
 <translation id="41365691917097717">Jeśli będziesz kontynuować, włączone zostanie debugowanie ADB do tworzenia i testowania aplikacji na Androida. Pamiętaj, że to działanie wiąże się z zezwoleniem na instalowanie aplikacji na Androida, które nie zostały zweryfikowane przez Google, a do wyłączenia tej funkcji konieczne jest przywrócenie ustawień fabrycznych.</translation>
 <translation id="4138267921960073861">Pokaż nazwy użytkowników i zdjęcia na stronie logowania</translation>
+<translation id="4138598238327913711">Sprawdzanie gramatyki jest obecnie dostępne tylko w języku angielskim</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> – połączono z urządzeniem HID</translation>
 <translation id="4142052906269098341">Odblokowuj urządzenie <ph name="DEVICE_TYPE" /> telefonem. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">Zapisz wykryte drukarki w swoim profilu lub dodaj nową drukarkę. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
@@ -4333,7 +4333,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5712153969432126546">Czasami witryny publikują pliki PDF takie jak dokumenty, umowy i formularze</translation>
 <translation id="5715711091495208045">Broker wtyczek: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Domyślne wyszukiwarki</translation>
-<translation id="5719637365829998022">Zeskanowano kod QR.</translation>
 <translation id="5719854774000914513">Witryny mogą prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="572155275267014074">Ustawienia Androida</translation>
 <translation id="5722086096420375088">Zielono-biały</translation>
@@ -4526,7 +4525,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="5941711191222866238">Minimalizuj</translation>
 <translation id="5942779427914696408">Widoczność urządzenia</translation>
 <translation id="5943127421590245687">Weryfikacja została ukończona. Aby odblokować i przywrócić dane lokalne, podaj swoje stare hasło do urządzenia <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Zeskanuj kod QR</translation>
 <translation id="5945002094477276055">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Bezpieczne przeglądanie Google?</translation>
 <translation id="5945363896952315544">Na Twoim kluczu bezpieczeństwa nie można zapisać więcej odcisków palców. Aby dodać nowy odcisk, najpierw usuń 1 z już istniejących.</translation>
 <translation id="5946591249682680882">Identyfikator raportu: <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4650,7 +4648,6 @@ Jeśli Twoje dziecko nie używa w szkole Chromebooka lub jeśli wolisz zarządz
 <translation id="6077131872140550515">Usuń z preferowanych</translation>
 <translation id="6077189836672154517">Wskazówki i wiadomości na temat: <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Mów, by pisać</translation>
-<translation id="6078045608615316905">Utwórz kod QR powiązany z tym obrazem</translation>
 <translation id="6078121669093215958">{0,plural, =1{Gość}few{# okna w trybie gościa}many{# okien w trybie gościa}other{# okna w trybie gościa}}</translation>
 <translation id="6078323886959318429">Dodaj skrót</translation>
 <translation id="6078752646384677957">Sprawdź mikrofon i poziom dźwięku.</translation>
@@ -5192,14 +5189,12 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6680650203439190394">Szybkość</translation>
 <translation id="6681668084120808868">Zrób zdjęcie</translation>
 <translation id="6683087162435654533">&amp;Przywróć wszystkie karty</translation>
-<translation id="6683948477137300040">Pokaż wyskakujące okienko z numerem EID urządzenia i kodem QR</translation>
 <translation id="6684827949542560880">Pobieram najnowszą aktualizację</translation>
 <translation id="668599234725812620">Otwórz Google Play</translation>
 <translation id="6686490380836145850">Zamknij karty po prawej</translation>
 <translation id="6686665106869989887">Karta została przesunięta w prawo</translation>
 <translation id="6686817083349815241">Zapisz hasło</translation>
 <translation id="6687079240787935001">Ukryj: <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Utwórz kod QR powiązany z tym obrazem</translation>
 <translation id="6690659332373509948">Nie można przeanalizować pliku: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Zarządzaj synchronizowanymi danymi w Panelu Google</translation>
 <translation id="6691541770654083180">Ziemia</translation>
@@ -5403,7 +5398,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6914783257214138813">Twoje hasła będą widoczne dla każdego, kto może zobaczyć wyeksportowany plik.</translation>
 <translation id="6916590542764765824">Zarządzaj rozszerzeniami</translation>
 <translation id="6919868320029503575">Słabe hasła</translation>
-<translation id="6920262510368602827">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="6920989436227028121">Otwórz jako zwykłą kartę</translation>
 <translation id="6921104647315081813">Wyczyść aktypurplewności</translation>
 <translation id="692114467174262153">Nie udało się otworzyć przeglądarki <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6129,7 +6123,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7691698019618282776">Uaktualnienie Crostini</translation>
 <translation id="7696063401938172191">Na telefonie <ph name="PHONE_NAME" />:</translation>
 <translation id="7697166915480294040">Gdy udostępniasz ekran, szczegóły są ukryte</translation>
-<translation id="7697598343108519171">Użyj aparatu, by zeskanować kod QR</translation>
 <translation id="7701040980221191251">Brak</translation>
 <translation id="7701869757853594372">Uchwyty USER</translation>
 <translation id="7701928712056789451">Te elementy mogą być niebezpieczne</translation>
@@ -6236,7 +6229,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="7800518121066352902">&amp;Obróć w lewo</translation>
 <translation id="780301667611848630">Nie, dziękuję</translation>
 <translation id="7804072833593604762">Karta została zamknięta</translation>
-<translation id="7805759469263222011">Zeskanuj aparatem urządzenia kod QR lub wpisz kod aktywacyjny otrzymany od operatora</translation>
 <translation id="7805768142964895445">Stan</translation>
 <translation id="7807067443225230855">Wyszukiwanie i Asystent</translation>
 <translation id="7807711621188256451">Zawsze zezwalaj witrynie <ph name="HOST" /> na dostęp do kamery</translation>
@@ -6793,7 +6785,6 @@ Naciśnij przypisany przełącznik, aby usunąć przypisanie</translation>
 <translation id="8386091599636877289">Nie znaleziono zasady.</translation>
 <translation id="8387361103813440603">Nie zezwolono na sprawdzanie lokalizacji</translation>
 <translation id="8388770971141403598">Profile dodatkowe nie są obsługiwane</translation>
-<translation id="8389416080014625855">Utwórz kod QR powiązany z tą stroną</translation>
 <translation id="8389492867173948260">Zezwól temu rozszerzeniu na odczytywanie i zmienianie wszystkich Twoich danych w witrynach, które otwierasz:</translation>
 <translation id="8390449457866780408">Serwer jest niedostępny.</translation>
 <translation id="8391218455464584335">Płyta winylowa</translation>
@@ -7352,7 +7343,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="8986494364107987395">Automatycznie przesyłaj do Google statystyki użytkowania i raporty o awariach</translation>
 <translation id="8987927404178983737">Miesiąc</translation>
 <translation id="8988879467270412492">Czy chcesz włączyć ChromeVoksa – wbudowany czytnik ekranu w systemie Chrome OS? Jeśli tak, naciśnij i przytrzymaj przez 5 sekund oba przyciski głośności.</translation>
-<translation id="8990209962746788689">Nie udało się utworzyć kodu QR</translation>
 <translation id="8991520179165052608">Strona może używać mikrofonu</translation>
 <translation id="899384117894244799">Usuwanie użytkownika z ograniczonym dostępem</translation>
 <translation id="899403249577094719">Podstawowy adres URL certyfikatu firmy Netscape</translation>

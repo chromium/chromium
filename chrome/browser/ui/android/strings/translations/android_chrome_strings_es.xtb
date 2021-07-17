@@ -224,7 +224,6 @@ Toca cualquier palabra para buscarla. Para acotar la búsqueda, mantén pulsado 
 
 Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selecciona más o menos palabras. Para modificar la búsqueda, abre el panel, toca el icono para abrirla en una pestaña nueva y haz los cambios que desees en el cuadro de búsqueda.</translation>
 <translation id="2459390580524506445">Búsqueda por voz mejorada</translation>
-<translation id="246532703174860178">Compartir</translation>
 <translation id="247737702124049222">Las descripciones de imágenes están activadas</translation>
 <translation id="2482878487686419369">Notificaciones</translation>
 <translation id="2485422356828889247">Desinstalar</translation>
@@ -296,7 +295,6 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2900528713135656174">Crear evento</translation>
 <translation id="2901411048554510387">Mostrando sugerencias para <ph name="WEBSITE_TITLE" /></translation>
 <translation id="2904414404539560095">La lista de dispositivos con los que puedes compartir una pestaña está abierta y ocupa toda la pantalla.</translation>
-<translation id="2905036901251765993">Para compartir con personas que estén cerca de ti, pídeles que escaneen este código QR</translation>
 <translation id="2908243544703713905">Historias no leídas listas</translation>
 <translation id="2909615210195135082">Plataforma de notificaciones de Google</translation>
 <translation id="2912296070571964914">Gestiona los temas que te interesan</translation>
@@ -306,6 +304,7 @@ Mantén pulsada cualquier palabra para buscarla. Para acotar la búsqueda, selec
 <translation id="2942036813789421260">La pestaña de vista previa está cerrada</translation>
 <translation id="2956410042958133412">Esta cuenta está administrada por <ph name="PARENT_NAME_1" /> y <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> página no leída}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> páginas no leídas}}</translation>
+<translation id="2961210776189273067">Título</translation>
 <translation id="2979025552038692506">Pestaña de incógnito seleccionada</translation>
 <translation id="2979448359891869301">No se puede ampliar la captura de pantalla. Vuelve a intentarlo cuando tu teléfono no esté realizando otras tareas.</translation>
 <translation id="2979639724566107830">Abrir en una ventana nueva</translation>
@@ -583,7 +582,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="4807098396393229769">Titular de la tarjeta</translation>
 <translation id="4818017973810341238">No se han podido verificar Digital Asset Links en <ph name="VIOLATED_URL" /></translation>
 <translation id="4831037795716408498">Descargar contenido</translation>
-<translation id="4834007576107377210">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda (si tu buscador lo permite)</translation>
+<translation id="4834007576107377210">Consulta las instrucciones de tu buscador para eliminar tu historial de búsqueda si hace falta</translation>
 <translation id="4835385943915508971">Chrome no tiene acceso al recurso solicitado.</translation>
 <translation id="4837753911714442426">Abre las opciones para imprimir la página</translation>
 <translation id="4842092870884894799">Mostrando la ventana emergente de generación de contraseña</translation>
@@ -617,6 +616,7 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="497421865427891073">Avanzar</translation>
 <translation id="4988210275050210843">Descargando archivo (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">Páginas</translation>
+<translation id="5001388021414335527">Seguir a este sitio aquí</translation>
 <translation id="5004416275253351869">Controles de actividad de Google</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> quiere conectarse</translation>
@@ -722,7 +722,6 @@ Para cambiar esta opción, <ph name="BEGIN_LINK" />restablece la sincronización
 <translation id="572328651809341494">Pestañas recientes</translation>
 <translation id="5723735397759933332">Ahora, el modo básico gasta menos datos gracias a la optimización de las imágenes de páginas HTTPS.</translation>
 <translation id="5726692708398506830">Amplía todo el contenido de la página</translation>
-<translation id="5733983706093266635">No se puede crear el código QR. La URL contiene más de <ph name="CHARACTER_LIMIT" /> caracteres.</translation>
 <translation id="5748802427693696783">Se ha cambiado a las pestañas estándares</translation>
 <translation id="5749068826913805084">Chrome necesita acceso de almacenamiento para descargar archivos.</translation>
 <translation id="5749237766298580851">Desactivada <ph name="SEPARATOR" /> No recomendado</translation>
@@ -878,7 +877,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="6590680911007613645">La contraseña que guardes debe coincidir con tu contraseña de <ph name="SITE" /></translation>
 <translation id="6593061639179217415">Vista ordenador</translation>
 <translation id="6595046016124923392">Las imágenes se envían a Google para mejorar las descripciones que recibes.</translation>
-<translation id="6597891566292541626">Coloca el código QR o el código de barras dentro del marco.</translation>
 <translation id="6600954340915313787">Copiada a Chrome</translation>
 <translation id="661266467055912436">Mejora tu seguridad y la de todo el mundo en la Web.</translation>
 <translation id="6618554661997243500">Para ver tus sitios favoritos e historias, toca el botón de inicio</translation>
@@ -987,6 +985,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{Compartir 1 elemento seleccionado}other{Compartir # elementos seleccionados}}</translation>
 <translation id="7359002509206457351">Acceder a métodos de pago</translation>
 <translation id="7375125077091615385">Tipo:</translation>
+<translation id="7386842512861524348">La conexión del sitio es segura, a menos que Chrome te indique lo contrario.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Primera experiencia de ejecución de Chrome</translation>
@@ -1087,7 +1086,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Has inhabilitado el acceso al almacenamiento; ve a Ajustes para habilitarlo.</translation>
 <translation id="7963646190083259054">Proveedor:</translation>
-<translation id="7967911570373677897">Para escanear un código QR, cambia los ajustes para que Chrome pueda usar tu cámara</translation>
 <translation id="7968014550143838305">Añadido a la lista de lectura</translation>
 <translation id="7971136598759319605">Activo hace 1 día</translation>
 <translation id="7975379999046275268">Revisar página <ph name="BEGIN_NEW" />Nuevo<ph name="END_NEW" /></translation>
@@ -1119,7 +1117,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8105893657415066307"><ph name="DESCRIPTION" /> <ph name="SEPARATOR" /> <ph name="FILE_SIZE" /></translation>
 <translation id="8109613176066109935">Activa la sincronización para ver tus marcadores en todos tus dispositivos</translation>
 <translation id="8110087112193408731">¿Mostrar tu actividad de Chrome en Bienestar digital?</translation>
-<translation id="8115259494083109761">Para escanear un código QR, permite que Chrome use la cámara</translation>
 <translation id="8127542551745560481">Editar página principal</translation>
 <translation id="813082847718468539">Ver información del sitio</translation>
 <translation id="8137558756159375272">La función Tocar para buscar envía la palabra seleccionada y la página actual como contexto a la Búsqueda de Google. Puedes desactivarla en la <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" />.</translation>
@@ -1136,7 +1133,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8218622182176210845">Gestionar tu cuenta</translation>
 <translation id="8223642481677794647">Menú de la tarjeta del feed</translation>
 <translation id="8224471946457685718">Descargar artículos recomendados para ti con Wi‑Fi</translation>
-<translation id="8233540874193135768">Para escanear un código QR, usa un dispositivo con cámara.</translation>
 <translation id="8250920743982581267">Documentos</translation>
 <translation id="825412236959742607">Esta página utiliza demasiada memoria, por lo que Chrome ha eliminado parte del contenido.</translation>
 <translation id="8260126382462817229">Prueba a iniciar sesión de nuevo</translation>
@@ -1147,6 +1143,7 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8284326494547611709">Subtítulos</translation>
 <translation id="829672787777123339">Conectando con tu dispositivo…</translation>
 <translation id="8310344678080805313">Pestañas estándar</translation>
+<translation id="831192587911042850">Añade el sitio web actual a la lista de sitios que sigues.</translation>
 <translation id="8327155640814342956">Para disfrutar de la mejor experiencia de navegación posible, abre Chrome para actualizarlo.</translation>
 <translation id="834313815369870491">No traducir sitios nunca</translation>
 <translation id="8349013245300336738">Ordenar por cantidad de datos usados</translation>
@@ -1252,7 +1249,6 @@ Por ejemplo, algunos sitios web pueden responder a la solicitud mostrándote anu
 <translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8972098258593396643">¿Quieres descargarlo en la carpeta predeterminada?</translation>
 <translation id="8988028529677883095">Usar teléfono como llave de seguridad</translation>
-<translation id="8990209962746788689">No se puede crear el código QR</translation>
 <translation id="8993760627012879038">Abre una nueva pestaña en modo de incógnito</translation>
 <translation id="8996847606757455498">Elegir otro proveedor</translation>
 <translation id="8998729206196772491">Estás iniciando sesión con una cuenta gestionada por <ph name="MANAGED_DOMAIN" />, lo que significa que vas a proporcionar a su administrador el control sobre tus datos de Chrome. Los datos se vincularán de forma permanente a esta cuenta. Si cierras sesión en Chrome, se eliminarán los datos de este dispositivo, pero permanecerán almacenados en tu cuenta de Google.</translation>

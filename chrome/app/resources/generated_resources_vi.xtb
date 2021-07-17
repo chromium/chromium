@@ -119,7 +119,6 @@
 <translation id="1124772482545689468">Người dùng</translation>
 <translation id="1125550662859510761">Có vẻ như là <ph name="WIDTH" /> x <ph name="HEIGHT" /> (Gốc)</translation>
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
-<translation id="112752777279960360">Để thiết lập điện thoại Android làm khóa bảo mật cho chiếc máy tính này lần đầu, hãy mở Chrome trên điện thoại rồi chuyển đến phần "Cài đặt &gt; Mật khẩu &gt; Dùng điện thoại làm khóa bảo mật". Sau đó, nhấn vào "Kết nối thiết bị mới" rồi quét mã QR này.</translation>
 <translation id="1128109161498068552">Không cho phép bất cứ trang web nào sử dụng thông báo dành riêng cho hệ thống để truy cập thiết bị MIDI</translation>
 <translation id="1128591060186966949">Chỉnh sửa công cụ tìm kiếm</translation>
 <translation id="1129850422003387628">Quản lý ứng dụng</translation>
@@ -504,6 +503,7 @@
 <translation id="1542514202066550870">Thẻ này đang trình bày nội dung thực tế ảo đến một kính thực tế ảo.</translation>
 <translation id="1543284117603151572">Đã nhập từ Edge</translation>
 <translation id="1545177026077493356">Chế độ kiosk tự động</translation>
+<translation id="1545749641540134597">Quét mã QR</translation>
 <translation id="1545775234664667895">Đã cài đặt chủ đề "<ph name="THEME_NAME" />"</translation>
 <translation id="1546280085599573572">Tiện ích này đã thay đổi trang nào sẽ hiển thị khi bạn nhấp vào nút Trang chủ.</translation>
 <translation id="1546452108651444655"><ph name="CHILD_NAME" /> muốn cài đặt một <ph name="EXTENSION_TYPE" /> có thể:</translation>
@@ -954,7 +954,6 @@
 <translation id="1992924914582925289">Xóa khỏi thiết bị</translation>
 <translation id="1994173015038366702">URL trang web</translation>
 <translation id="1995916364271252349">Kiểm soát thông tin mà các trang web có thể dùng và hiển thị (vị trí, máy ảnh, cửa sổ bật lên và thông tin khác)</translation>
-<translation id="1997437640397887843">Máy ảnh của thiết bị đã bật. Vui lòng đặt mã QR của eSIM trước máy ảnh.</translation>
 <translation id="1997616988432401742">Chứng chỉ của bạn</translation>
 <translation id="1999115740519098545">Khi khởi động</translation>
 <translation id="2000419248597011803">Gửi một số cookie và nội dung tìm kiếm từ thanh địa chỉ cũng như hộp tìm kiếm tới công cụ tìm kiếm mặc định</translation>
@@ -974,7 +973,6 @@
 <translation id="2019718679933488176">&amp;Mở Âm thanh trong Thẻ Mới</translation>
 <translation id="2020183425253392403">Hiển thị cài đặt địa chỉ mạng</translation>
 <translation id="2020225359413970060">Quét tệp</translation>
-<translation id="2022953316617983419">Mã QR</translation>
 <translation id="2023167225947895179">Mã PIN có thể dễ đoán</translation>
 <translation id="202352106777823113">Quá trình tải xuống mất quá nhiều thời gian và đã bị ngừng bởi mạng.</translation>
 <translation id="2025115093177348061">Thực tế tăng cường</translation>
@@ -1129,6 +1127,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2174948148799307353">Tài khoản do <ph name="PARENT_EMAIL" /> quản lý. Để đăng xuất khỏi tài khoản chính trên thiết bị này, hãy nhấp vào khu vực giờ trên màn hình. Trong trình đơn hiện ra, hãy nhấp vào "Đăng xuất".</translation>
 <translation id="2175607476662778685">Thanh khởi động nhanh</translation>
 <translation id="217576141146192373">Không thể thêm máy in. Vui lòng kiểm tra cấu hình của máy in rồi thử lại.</translation>
+<translation id="2175927920773552910">Mã QR</translation>
 <translation id="2177950615300672361">Thẻ ẩn danh: <ph name="TAB_NAME" /></translation>
 <translation id="2178614541317717477">Lộ CA</translation>
 <translation id="2179416702468739594">Đang tìm hồ sơ có sẵn. Thao tác này có thể khiến mạng di động của bạn bị ngắt kết nối trong vài phút.</translation>
@@ -4338,7 +4337,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5712153969432126546">Đôi khi, trang web sẽ xuất bản các tệp PDF, như tài liệu, hợp đồng và biểu mẫu</translation>
 <translation id="5715711091495208045">Trình môi giới plugin: <ph name="PLUGIN_NAME" /></translation>
 <translation id="5719603411793408026">Công cụ tìm kiếm mặc định</translation>
-<translation id="5719637365829998022">Đã quét xong mã QR.</translation>
 <translation id="5719854774000914513">Trang web có thể yêu cầu kết nối với thiết bị HID</translation>
 <translation id="572155275267014074">Cài đặt Android</translation>
 <translation id="5722086096420375088">Xanh lục và trắng</translation>
@@ -4531,7 +4529,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="5941711191222866238">Thu nhỏ</translation>
 <translation id="5942779427914696408">Phạm vi hiển thị của thiết bị</translation>
 <translation id="5943127421590245687">Đã xác minh thành công. Để mở khóa và khôi phục dữ liệu trên thiết bị, vui lòng nhập mật khẩu cũ của <ph name="DEVICE_TYPE" />.</translation>
-<translation id="5944869793365969636">Quét mã QR</translation>
 <translation id="5945002094477276055"><ph name="FILE_NAME" /> có thể nguy hiểm. Gửi đến tính năng Duyệt web An toàn của Google để quét?</translation>
 <translation id="5945363896952315544">Khóa bảo mật của bạn không thể lưu trữ thêm vân tay. Để thêm một vân tay mới, trước tiên, hãy xóa một vân tay hiện có.</translation>
 <translation id="5946591249682680882">ID báo cáo <ph name="WEBRTC_LOG_REPORT_ID" /></translation>
@@ -4655,7 +4652,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6077131872140550515">Xóa khỏi ưa thích</translation>
 <translation id="6077189836672154517">Mẹo và thông tin cập nhật về <ph name="DEVICE_TYPE" /></translation>
 <translation id="6077476112742402730">Nói để nhập</translation>
-<translation id="6078045608615316905">Tạo mã QR cho hình ảnh này</translation>
 <translation id="6078121669093215958">{0,plural, =1{Khách}other{# cửa sổ khách đang mở}}</translation>
 <translation id="6078323886959318429">Thêm lối tắt</translation>
 <translation id="6078752646384677957">Vui lòng kiểm tra micrô và mức âm thanh của bạn.</translation>
@@ -5192,14 +5188,12 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6680650203439190394">Tốc độ</translation>
 <translation id="6681668084120808868">Chụp ảnh</translation>
 <translation id="6683087162435654533">K&amp;hôi phục tất cả các thẻ</translation>
-<translation id="6683948477137300040">Hiện cửa sổ bật lên hiển thị mã QR và số EID của thiết bị</translation>
 <translation id="6684827949542560880">Đang tải bản cập nhật mới nhất xuống</translation>
 <translation id="668599234725812620">Mở Google Play</translation>
 <translation id="6686490380836145850">Đóng thẻ phía bên phải</translation>
 <translation id="6686665106869989887">Đã di chuyển thẻ sang phải</translation>
 <translation id="6686817083349815241">Lưu mật khẩu của bạn</translation>
 <translation id="6687079240787935001">Ẩn <ph name="MODULE_TITLE" /></translation>
-<translation id="6688285987813868112">Tạo mã QR cho hình ảnh này</translation>
 <translation id="6690659332373509948">Không thể phân tích cú pháp tệp: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Quản lý dữ liệu đã đồng bộ hóa trên Trang tổng quan của Google</translation>
 <translation id="6691541770654083180">Trái đất</translation>
@@ -5401,7 +5395,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="6914783257214138813">Bất cứ ai có thể xem tệp đã xuất đều có thể biết mật khẩu của bạn.</translation>
 <translation id="6916590542764765824">Quản lý các tiện ích</translation>
 <translation id="6919868320029503575">Mật khẩu yếu</translation>
-<translation id="6920262510368602827">Tạo mã QR cho trang này</translation>
 <translation id="6920989436227028121">Mở dưới dạng thẻ thông thường</translation>
 <translation id="6921104647315081813">Xóa hoạt động</translation>
 <translation id="692114467174262153">Không mở được <ph name="ALTERNATIVE_BROWSER_NAME" /></translation>
@@ -6122,7 +6115,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7691698019618282776">Nâng cấp Crostini</translation>
 <translation id="7696063401938172191">Trên '<ph name="PHONE_NAME" />' của bạn:</translation>
 <translation id="7697166915480294040">Thông tin chi tiết bị ẩn trong khi bạn chia sẻ màn hình</translation>
-<translation id="7697598343108519171">Dùng máy ảnh để quét mã QR</translation>
 <translation id="7701040980221191251">Không có</translation>
 <translation id="7701869757853594372">Xử lý NGƯỜI DÙNG</translation>
 <translation id="7701928712056789451">Các mục này có thể nguy hiểm</translation>
@@ -6229,7 +6221,6 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="7800518121066352902">Xoay &amp;ngược chiều kim đồng hồ</translation>
 <translation id="780301667611848630">Không, cảm ơn</translation>
 <translation id="7804072833593604762">Đã đóng thẻ</translation>
-<translation id="7805759469263222011">Quét mã QR bằng máy ảnh của thiết bị hoặc nhập mã kích hoạt mà nhà mạng cung cấp</translation>
 <translation id="7805768142964895445">Trạng thái</translation>
 <translation id="7807067443225230855">Tìm kiếm và trợ lý</translation>
 <translation id="7807711621188256451">Luôn cho phép <ph name="HOST" /> truy cập máy ảnh của bạn</translation>
@@ -6784,7 +6775,6 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8386091599636877289">Không tìm thấy chính sách.</translation>
 <translation id="8387361103813440603">Không được phép xem vị trí của bạn</translation>
 <translation id="8388770971141403598">Hồ sơ phụ không được hỗ trợ</translation>
-<translation id="8389416080014625855">Tạo mã QR cho trang này</translation>
 <translation id="8389492867173948260">Cho phép tiện ích này đọc và thay đổi tất cả dữ liệu trên các trang web bạn truy cập:</translation>
 <translation id="8390449457866780408">Máy chủ không khả dụng.</translation>
 <translation id="8391218455464584335">Vinyl</translation>
@@ -7339,7 +7329,6 @@ Nhấn một công tắc đã gán để xóa</translation>
 <translation id="8986494364107987395">Tự động gửi số liệu thống kê về việc sử dụng và báo cáo sự cố cho Google</translation>
 <translation id="8987927404178983737">Tháng</translation>
 <translation id="8988879467270412492">Bạn có muốn kích hoạt ChromeVox (trình đọc màn hình tích hợp cho Chrome OS) không? Nếu có, hãy nhấn và giữ cả hai phím âm lượng trong 5 giây.</translation>
-<translation id="8990209962746788689">Không thể tạo mã QR</translation>
 <translation id="8991520179165052608">Trang web có thể sử dụng micrô của bạn</translation>
 <translation id="899384117894244799">Xóa người dùng bị hạn chế</translation>
 <translation id="899403249577094719">URL Cơ sở Chứng chỉ Netscape</translation>
