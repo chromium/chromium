@@ -93,7 +93,7 @@ bool IsIChromeAccessibleEnabled() {
 }
 
 const base::Feature kSelectiveUIAEnablement{"SelectiveUIAEnablement",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Returns true if accessibility will be selectively enabled depending on the
 // UIA APIs that are called, allowing non-screenreader usage to enable less of
