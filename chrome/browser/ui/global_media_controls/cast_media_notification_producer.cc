@@ -17,7 +17,7 @@ namespace {
 
 bool ShouldHideNotification(const media_router::MediaRoute& route) {
   // TODO(crbug.com/1195382): Display multizone group route.
-  if (!route.for_display()) {
+  if (!route.for_display() || route.is_connecting()) {
     return true;
   }
 

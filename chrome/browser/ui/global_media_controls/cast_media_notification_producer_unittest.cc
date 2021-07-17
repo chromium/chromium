@@ -191,8 +191,12 @@ TEST_F(CastMediaNotificationProducerCastStartStopTest,
   MediaRoute mirroring_route =
       CreateRoute("route-2", "urn:x-org.chromium.media:source:tab:*");
   MediaRoute multizone_member_route = CreateRoute("route-3", "cast:705D30C6");
+  MediaRoute connecting_route = CreateRoute("route-4");
+  connecting_route.set_is_connecting(true);
 
   notification_producer_->OnRoutesUpdated(
-      {non_display_route, mirroring_route, multizone_member_route}, {});
+      {non_display_route, mirroring_route, multizone_member_route,
+       connecting_route},
+      {});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
