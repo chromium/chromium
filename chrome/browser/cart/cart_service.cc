@@ -15,6 +15,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/browser_resources.h"
@@ -825,7 +826,8 @@ void CartService::StartGettingDiscount() {
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
       std::make_unique<CartDiscountFetcherFactory>(),
-      std::make_unique<CartLoaderAndUpdaterFactory>(profile_));
+      std::make_unique<CartLoaderAndUpdaterFactory>(profile_),
+      IdentityManagerFactory::GetForProfile(profile_));
 
   fetch_discount_worker_->Start(
       base::TimeDelta::FromMilliseconds(kDelayStartMs));

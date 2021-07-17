@@ -48,22 +48,26 @@ class CartDiscountFetcher {
   virtual void Fetch(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       CartDiscountFetcherCallback callback,
-      std::vector<CartDB::KeyAndValue> proto_pairs);
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      bool is_oauth_fetch,
+      const std::string access_token);
 
  private:
   friend class CartDiscountFetcherTest;
-  // TODO(meiliang): Add param a list of carts to fetch.
-  static void fetchForDiscounts(
+  static void FetchForDiscounts(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       CartDiscountFetcherCallback callback,
-      std::vector<CartDB::KeyAndValue> proto_pairs);
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      bool is_oauth_fetch,
+      const std::string access_token);
   static void OnDiscountsAvailable(
       std::unique_ptr<EndpointFetcher> endpoint_fetcher,
       CartDiscountFetcherCallback callback,
       std::unique_ptr<EndpointResponse> responses);
   static std::unique_ptr<EndpointFetcher> CreateEndpointFetcher(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-      std::vector<CartDB::KeyAndValue> proto_pairs);
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      bool is_oauth_fetch);
   static std::string generatePostData(
       std::vector<CartDB::KeyAndValue> proto_pairs,
       base::Time current_timestamp);

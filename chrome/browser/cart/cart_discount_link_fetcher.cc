@@ -76,7 +76,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountLinkFetcher::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       GURL(kFetchDiscountLinkEndpoint), kPostMethod, kContentType, kTimeoutMs,
       post_data, traffic_annotation,
-      network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
+      network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+      false);
 }
 
 std::string CartDiscountLinkFetcher::GeneratePostData(

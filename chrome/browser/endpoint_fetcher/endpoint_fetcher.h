@@ -91,8 +91,7 @@ class EndpointFetcher {
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       signin::IdentityManager* const identity_manager);
 
-  // This Constructor can be used in a background thread AND Chrome API Key is
-  // used for authentication.
+  // This Constructor can be used in a background thread.
   EndpointFetcher(
       const GURL& url,
       const std::string& http_method,
@@ -100,7 +99,8 @@ class EndpointFetcher {
       int64_t timeout_ms,
       const std::string& post_data,
       const net::NetworkTrafficAnnotationTag& annotation_tag,
-      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory);
+      const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+      const bool is_oauth_fetch);
 
   EndpointFetcher(const EndpointFetcher& endpoint_fetcher) = delete;
 

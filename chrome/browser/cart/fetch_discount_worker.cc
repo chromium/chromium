@@ -9,8 +9,10 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/access_token_info.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -20,6 +22,10 @@ constexpr base::FeatureParam<base::TimeDelta> kDelayFetchParam(
     &ntp_features::kNtpChromeCartModule,
     "delay-fetch-discount",
     base::TimeDelta::FromHours(6));
+
+const char kOauthName[] = "rbd";
+const char kOauthScopes[] = "https://www.googleapis.com/auth/chromememex";
+const char kEmptyToken[] = "";
 }  // namespace
 
 CartLoader::CartLoader(Profile* profile)
@@ -63,11 +69,13 @@ FetchDiscountWorker::FetchDiscountWorker(
         browserProcessURLLoaderFactory,
     std::unique_ptr<CartDiscountFetcherFactory> fetcher_factory,
     std::unique_ptr<CartLoaderAndUpdaterFactory>
-        cart_loader_and_updater_factory)
+        cart_loader_and_updater_factory,
+    signin::IdentityManager* const identity_manager)
     : browserProcessURLLoaderFactory_(browserProcessURLLoaderFactory),
       fetcher_factory_(std::move(fetcher_factory)),
       cart_loader_and_updater_factory_(
-          std::move(cart_loader_and_updater_factory)) {
+          std::move(cart_loader_and_updater_factory)),
+      identity_manager_(identity_manager) {
   backend_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
       {base::TaskPriority::BEST_EFFORT});
 }
@@ -87,14 +95,56 @@ void FetchDiscountWorker::Start(base::TimeDelta delay) {
 void FetchDiscountWorker::PrepareToFetch() {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
-  // Load all active carts.
-  auto cart_loaded_callback = base::BindOnce(&FetchDiscountWorker::ReadyToFetch,
-                                             weak_ptr_factory_.GetWeakPtr());
+  if (identity_manager_ &&
+      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    FetchOauthToken();
+  } else {
+    LoadAllActiveCarts(/*is_oauth_fetch*/ false, kEmptyToken);
+  }
+}
+
+void FetchDiscountWorker::FetchOauthToken() {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK(!access_token_fetcher_);
+
+  signin::AccessTokenFetcher::TokenCallback token_callback = base::BindOnce(
+      &FetchDiscountWorker::OnAuthTokenFetched, weak_ptr_factory_.GetWeakPtr());
+  access_token_fetcher_ =
+      std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
+          kOauthName, identity_manager_, signin::ScopeSet{kOauthScopes},
+          std::move(token_callback),
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+}
+
+void FetchDiscountWorker::OnAuthTokenFetched(
+    GoogleServiceAuthError error,
+    signin::AccessTokenInfo access_token_info) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  access_token_fetcher_.reset();
+
+  if (error.state() != GoogleServiceAuthError::NONE) {
+    VLOG(3) << "There was an authentication error: " << error.state();
+    return;
+  }
+
+  LoadAllActiveCarts(/*is_oauth_fetch*/ true, access_token_info.token);
+}
+
+void FetchDiscountWorker::LoadAllActiveCarts(
+    const bool is_oauth_fetch,
+    const std::string access_token_str) {
+  DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+
+  auto cart_loaded_callback = base::BindOnce(
+      &FetchDiscountWorker::ReadyToFetch, weak_ptr_factory_.GetWeakPtr(),
+      is_oauth_fetch, std::move(access_token_str));
   auto loader = cart_loader_and_updater_factory_->createCartLoader();
   loader->LoadAllCarts(std::move(cart_loaded_callback));
 }
 
 void FetchDiscountWorker::ReadyToFetch(
+    const bool is_oauth_fetch,
+    const std::string access_token_str,
     bool success,
     std::vector<CartDB::KeyAndValue> proto_pairs) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
@@ -109,20 +159,24 @@ void FetchDiscountWorker::ReadyToFetch(
       FROM_HERE,
       base::BindOnce(&FetchInBackground, std::move(pending_factory),
                      std::move(fetcher), std::move(done_fetching_callback),
-                     std::move(proto_pairs)));
+                     std::move(proto_pairs), is_oauth_fetch,
+                     std::move(access_token_str)));
 }
 
 void FetchDiscountWorker::FetchInBackground(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     std::unique_ptr<CartDiscountFetcher> fetcher,
     AfterFetchingCallback after_fetching_callback,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
+    std::vector<CartDB::KeyAndValue> proto_pairs,
+    const bool is_oauth_fetch,
+    const std::string access_token_str) {
   DCHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
 
   auto done_fetching_callback = base::BindOnce(
       &DoneFetchingInBackground, std::move(after_fetching_callback));
   fetcher->Fetch(std::move(pending_factory), std::move(done_fetching_callback),
-                 std::move(proto_pairs));
+                 std::move(proto_pairs), is_oauth_fetch,
+                 std::move(access_token_str));
 }
 
 // TODO(meiliang): Follow up to use BindPostTask.

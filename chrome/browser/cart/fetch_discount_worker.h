@@ -10,11 +10,16 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/cart/cart_discount_fetcher.h"
 #include "chrome/browser/cart/cart_service.h"
+#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 
 namespace network {
 class SharedURLLoaderFactory;
 class PendingSharedURLLoaderFactory;
 }  // namespace network
+
+namespace signin {
+class IdentityManager;
+}  // namespace signin
 
 class CartLoader {
  public:
@@ -73,7 +78,8 @@ class FetchDiscountWorker {
       scoped_refptr<network::SharedURLLoaderFactory>
           browserProcessURLLoaderFactory,
       std::unique_ptr<CartDiscountFetcherFactory> fetcher_factory,
-      std::unique_ptr<CartLoaderAndUpdaterFactory> cartLoaderAndUpdaterFactory);
+      std::unique_ptr<CartLoaderAndUpdaterFactory> cartLoaderAndUpdaterFactory,
+      signin::IdentityManager* const identity_manager);
   ~FetchDiscountWorker();
   // Starts the worker to work.
   void Start(base::TimeDelta delay);
@@ -92,14 +98,33 @@ class FetchDiscountWorker {
   // This is used to create CartLoader to load all active carts, and
   // CartDiscountUpdater to update the given cart discount.
   std::unique_ptr<CartLoaderAndUpdaterFactory> cart_loader_and_updater_factory_;
+  // This is used to identify whether user is a sync user.
+  signin::IdentityManager* const identity_manager_;
+  // This is used to fetch the oauth token.
+  std::unique_ptr<const signin::PrimaryAccountAccessTokenFetcher>
+      access_token_fetcher_;
 
   // This is run in the UI thread, it creates a `CartLoader` and loads all
   // active carts.
   void PrepareToFetch();
 
+  // This is run if user is a sync user.
+  void FetchOauthToken();
+
+  // This is run after oauth token is fetched.
+  void OnAuthTokenFetched(GoogleServiceAuthError error,
+                          signin::AccessTokenInfo access_token_info);
+
+  // Load all the active carts.
+  void LoadAllActiveCarts(const bool is_oauth_fetch,
+                          const std::string access_token_str);
+
   // This is run in the UI thread, it posts the discount fetching work,
   // FetchInBackground(), to another thread as a background task.
-  void ReadyToFetch(bool success, std::vector<CartDB::KeyAndValue> proto_pairs);
+  void ReadyToFetch(const bool is_oauth_fetch,
+                    const std::string access_token_str,
+                    bool success,
+                    std::vector<CartDB::KeyAndValue> proto_pairs);
 
   // TODO(crbug.com/1207197): Change these two static method to anonymous
   // namespace in the cc file. This is run in a background thread, it fetches
@@ -108,7 +133,9 @@ class FetchDiscountWorker {
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       std::unique_ptr<CartDiscountFetcher> fetcher,
       AfterFetchingCallback after_fetching_callback,
-      std::vector<CartDB::KeyAndValue> proto_pairs);
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      const bool is_oauth_fetch,
+      const std::string access_token_str);
 
   // This is run in a background thread, it posts AfterDiscountFetched() back to
   // UI thread to process the fetched result.

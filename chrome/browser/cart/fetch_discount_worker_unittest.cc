@@ -9,6 +9,7 @@
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search/ntp_features.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -73,6 +74,7 @@ const std::vector<cart_db::DiscountInfoProto> kMockMerchantADiscounts = {
                                      kMockMerchantARuleId,
                                      kMockMerchantARawMerchantOfferId,
                                      kMockMerchantAPercentOff)};
+const char kEmail[] = "mock_email@gmail.com";
 }  // namespace
 
 class FakeCartDiscountFetcher : public CartDiscountFetcher {
@@ -80,14 +82,20 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
   void Fetch(
       std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
       CartDiscountFetcherCallback callback,
-      std::vector<CartDB::KeyAndValue> proto_pairs) override {
+      std::vector<CartDB::KeyAndValue> proto_pairs,
+      const bool is_oauth_fetch,
+      const std::string access_token_str) override {
     FakeCartDiscountFetcher::fetcher_fetch_count_++;
-    std::move(callback).Run(fake_result_, is_tester_);
+    // Only oauth fetch has a chance to be a tester.
+    bool is_tester = is_tester_ && is_oauth_fetch;
+    std::move(callback).Run(fake_result_, is_tester);
   }
 
   void SetFakeFetcherResult(CartDiscountFetcher::CartDiscountMap fake_result) {
     fake_result_ = std::move(fake_result);
   }
+
+  void SetExpectedTester(bool is_tester) { is_tester_ = is_tester; }
 
   static int GetFetchCount() { return fetcher_fetch_count_; }
 
@@ -96,7 +104,7 @@ class FakeCartDiscountFetcher : public CartDiscountFetcher {
  private:
   CartDiscountFetcher::CartDiscountMap fake_result_;
   static int fetcher_fetch_count_;
-  bool is_tester_;
+  bool is_tester_{false};
 };
 
 int FakeCartDiscountFetcher::fetcher_fetch_count_ = 0;
@@ -108,21 +116,27 @@ class MockCartDiscountFetcher : public CartDiscountFetcher {
       Fetch,
       (std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
        CartDiscountFetcherCallback callback,
-       std::vector<CartDB::KeyAndValue> proto_pairs),
+       std::vector<CartDB::KeyAndValue> proto_pairs,
+       const bool is_oauth_fetch,
+       const std::string access_token_str),
       (override));
 
-  void DelegateToFake(CartDiscountMap fake_result) {
+  void DelegateToFake(CartDiscountMap fake_result, bool is_tester) {
     fake_cart_discount_fetcher_.SetFakeFetcherResult(std::move(fake_result));
+    fake_cart_discount_fetcher_.SetExpectedTester(is_tester);
 
     EXPECT_CALL(*this, Fetch)
         .WillRepeatedly(
             [this](std::unique_ptr<network::PendingSharedURLLoaderFactory>
                        pending_factory,
                    CartDiscountFetcherCallback callback,
-                   std::vector<CartDB::KeyAndValue> proto_pairs) {
+                   std::vector<CartDB::KeyAndValue> proto_pairs,
+                   const bool is_oauth_fetch,
+                   const std::string access_token_str) {
               return fake_cart_discount_fetcher_.Fetch(
                   std::move(pending_factory), std::move(callback),
-                  std::move(proto_pairs));
+                  std::move(proto_pairs), is_oauth_fetch,
+                  std::move(access_token_str));
             });
   }
 
@@ -134,7 +148,7 @@ class FakeCartDiscountFetcherFactory : public CartDiscountFetcherFactory {
  public:
   std::unique_ptr<CartDiscountFetcher> createFetcher() override {
     auto fetcher = std::make_unique<MockCartDiscountFetcher>();
-    fetcher->DelegateToFake(fetcher_fake_result_);
+    fetcher->DelegateToFake(fetcher_fake_result_, is_tester_);
     return std::move(fetcher);
   }
 
@@ -143,8 +157,11 @@ class FakeCartDiscountFetcherFactory : public CartDiscountFetcherFactory {
     fetcher_fake_result_ = std::move(fetcher_fake_result);
   }
 
+  void SetExpectedTester(bool is_tester) { is_tester_ = is_tester; }
+
  private:
   CartDiscountFetcher::CartDiscountMap fetcher_fake_result_;
+  bool is_tester_{false};
 };
 
 class FakeCartLoader : public CartLoader {
@@ -166,15 +183,17 @@ class FakeCartLoader : public CartLoader {
 class FakeCartDiscountUpdater : public CartDiscountUpdater {
  public:
   explicit FakeCartDiscountUpdater(Profile* profile)
-      : CartDiscountUpdater(profile) {}
+      : CartDiscountUpdater(profile), expected_tester_(false) {}
 
   void SetExpectedData(
       cart_db::ChromeCartContentProto fake_updater_expected_data,
       bool has_discounts,
-      std::string& expected_highest_discount_string) {
+      std::string& expected_highest_discount_string,
+      bool is_tester) {
     expected_update_data_ = fake_updater_expected_data;
     has_discounts_ = has_discounts;
     expected_highest_discount_string_ = expected_highest_discount_string;
+    expected_tester_ = is_tester;
   }
 
   void update(const std::string& cart_url,
@@ -201,18 +220,23 @@ class FakeCartDiscountUpdater : public CartDiscountUpdater {
     } else {
       EXPECT_TRUE(discount_text.empty());
     }
+
+    EXPECT_EQ(is_tester, expected_tester_);
   }
 
  private:
   cart_db::ChromeCartContentProto expected_update_data_;
   bool has_discounts_;
   std::string expected_highest_discount_string_;
+  bool expected_tester_;
 };
 
 class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
  public:
   explicit FakeCartLoaderAndUpdaterFactory(Profile* profile)
-      : CartLoaderAndUpdaterFactory(profile), profile_(profile) {}
+      : CartLoaderAndUpdaterFactory(profile),
+        profile_(profile),
+        expected_tester_(false) {}
 
   std::unique_ptr<CartLoader> createCartLoader() override {
     auto fake_loader = std::make_unique<FakeCartLoader>(profile_);
@@ -221,9 +245,9 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
   }
   std::unique_ptr<CartDiscountUpdater> createCartDiscountUpdater() override {
     auto fake_updater = std::make_unique<FakeCartDiscountUpdater>(profile_);
-    fake_updater->SetExpectedData(fake_updater_expected_data_,
-                                  fake_updater_has_discounts_,
-                                  fake_updater_highest_discount_string_);
+    fake_updater->SetExpectedData(
+        fake_updater_expected_data_, fake_updater_has_discounts_,
+        fake_updater_highest_discount_string_, expected_tester_);
     return fake_updater;
   }
 
@@ -241,12 +265,15 @@ class FakeCartLoaderAndUpdaterFactory : public CartLoaderAndUpdaterFactory {
         std::string(fake_updater_highest_discount_string);
   }
 
+  void SetExpectedTester(bool is_tester) { expected_tester_ = is_tester; }
+
  private:
   Profile* profile_;
   std::vector<CartDB::KeyAndValue> fake_loader_data_;
   cart_db::ChromeCartContentProto fake_updater_expected_data_;
   bool fake_updater_has_discounts_;
   std::string fake_updater_highest_discount_string_;
+  bool expected_tester_;
 };
 
 class FetchDiscountWorkerTest : public testing::Test {
@@ -268,14 +295,19 @@ class FetchDiscountWorkerTest : public testing::Test {
         std::make_unique<FakeCartLoaderAndUpdaterFactory>(&profile_);
   }
 
-  void TearDown() override { FakeCartDiscountFetcher::ClearFetchCount(); }
+  void TearDown() override {
+    FakeCartDiscountFetcher::ClearFetchCount();
+    is_signin_and_sync_ = false;
+  }
 
   // This method transfers mock_fetcher_ ownership. Set all expectations for
   // mock_fetcher_ before calling this method.
   void CreateCartDiscountFetcherFactory(
-      CartDiscountFetcher::CartDiscountMap fetcher_fake_result) {
+      CartDiscountFetcher::CartDiscountMap fetcher_fake_result,
+      bool is_tester) {
     auto factory = std::make_unique<FakeCartDiscountFetcherFactory>();
     factory->SetFetcherFakeResult(std::move(fetcher_fake_result));
+    factory->SetExpectedTester(is_tester);
     fake_cart_discount_fetcher_factory_ = std::move(factory);
   }
 
@@ -287,7 +319,15 @@ class FetchDiscountWorkerTest : public testing::Test {
     fetch_discount_worker_ = std::make_unique<FetchDiscountWorker>(
         std::move(test_shared_url_loader_factory_),
         std::move(fake_cart_discount_fetcher_factory_),
-        std::move(fake_cart_loader_and_updater_factory_));
+        std::move(fake_cart_loader_and_updater_factory_),
+        is_signin_and_sync_ ? identity_test_env_.identity_manager() : nullptr);
+  }
+
+  void SignInAndSync() {
+    identity_test_env_.MakePrimaryAccountAvailable(kEmail,
+                                                   signin::ConsentLevel::kSync);
+    identity_test_env_.SetAutomaticIssueOfAccessTokens(true);
+    is_signin_and_sync_ = true;
   }
 
   void CreateFakeFetchedResult() {}
@@ -298,6 +338,7 @@ class FetchDiscountWorkerTest : public testing::Test {
   base::test::ScopedFeatureList features_;
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  signin::IdentityTestEnvironment identity_test_env_;
 
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -312,12 +353,13 @@ class FetchDiscountWorkerTest : public testing::Test {
       fake_cart_loader_and_updater_factory_;
 
   TestingProfile profile_;
+  bool is_signin_and_sync_ = false;
 };
 
 
 TEST_F(FetchDiscountWorkerTest, TestStart_EndToEnd) {
   CartDiscountFetcher::CartDiscountMap fake_result;
-  CreateCartDiscountFetcherFactory(std::move(fake_result));
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
   CreateWorker();
 
   fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
@@ -330,7 +372,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithDiscount) {
       kMockMerchantACartUrl,
       MerchantIdAndDiscounts(kMockMerchantAId, kMockMerchantADiscounts,
                              kMockMerchantAHighestPercentOff));
-  CreateCartDiscountFetcherFactory(std::move(fake_result));
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
 
   CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
       std::make_pair(kMockMerchantA, kMockMerchantACartContentProto);
@@ -355,7 +397,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedWithDiscount) {
 TEST_F(FetchDiscountWorkerTest, TestStart_DiscountUpdatedClearDiscount) {
   // No discount available.
   CartDiscountFetcher::CartDiscountMap fake_result;
-  CreateCartDiscountFetcherFactory(std::move(fake_result));
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
 
   // Loader fake data contatins discount.
   cart_db::ChromeCartContentProto cart_content_proto = BuildCartContentProto(
@@ -387,7 +429,7 @@ TEST_F(FetchDiscountWorkerTest, TestStart_FetcherRefetched) {
       kMockMerchantACartUrl,
       MerchantIdAndDiscounts(kMockMerchantAId, kMockMerchantADiscounts,
                              kMockMerchantAHighestPercentOff));
-  CreateCartDiscountFetcherFactory(std::move(fake_result));
+  CreateCartDiscountFetcherFactory(std::move(fake_result), false);
 
   CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
       std::make_pair(kMockMerchantA, kMockMerchantACartContentProto);
@@ -412,4 +454,35 @@ TEST_F(FetchDiscountWorkerTest, TestStart_FetcherRefetched) {
   task_environment_.FastForwardBy(base::TimeDelta::FromHours(7));
   task_environment_.RunUntilIdle();
   EXPECT_EQ(2, FakeCartDiscountFetcher::GetFetchCount());
+}
+
+TEST_F(FetchDiscountWorkerTest, TestTesterFetch) {
+  SignInAndSync();
+  bool expected_a_tester = true;
+  CartDiscountFetcher::CartDiscountMap fake_result;
+  fake_result.emplace(
+      kMockMerchantACartUrl,
+      MerchantIdAndDiscounts(kMockMerchantAId, kMockMerchantADiscounts,
+                             kMockMerchantAHighestPercentOff));
+  CreateCartDiscountFetcherFactory(std::move(fake_result), expected_a_tester);
+
+  CartDB::KeyAndValue mockMerchantACartContentKeyAndProto =
+      std::make_pair(kMockMerchantA, kMockMerchantACartContentProto);
+  std::vector<CartDB::KeyAndValue> loader_fake_data(
+      1, mockMerchantACartContentKeyAndProto);
+  fake_cart_loader_and_updater_factory_->setCartLoaderFakeData(
+      loader_fake_data);
+
+  cart_db::ChromeCartContentProto cart_content_proto = BuildCartContentProto(
+      kMockMerchantA, kMockMerchantACartUrl, kMockMerchantATimestamp);
+  cart_db::ChromeCartContentProto updater_expected_data = AddDiscountToProto(
+      cart_content_proto, kMockMerchantAId, kMockMerchantADiscounts[0]);
+  fake_cart_loader_and_updater_factory_->setCartDiscountUpdaterExpectedData(
+      updater_expected_data, true, kMockMerchantAHighestPercentOff);
+  fake_cart_loader_and_updater_factory_->SetExpectedTester(expected_a_tester);
+
+  CreateWorker();
+
+  fetch_discount_worker_->Start(base::TimeDelta::FromMilliseconds(0));
+  task_environment_.RunUntilIdle();
 }

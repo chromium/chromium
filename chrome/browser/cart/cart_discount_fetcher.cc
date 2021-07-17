@@ -239,29 +239,35 @@ CartDiscountFetcher::~CartDiscountFetcher() = default;
 void CartDiscountFetcher::Fetch(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     CartDiscountFetcherCallback callback,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
-  CartDiscountFetcher::fetchForDiscounts(
-      std::move(pending_factory), std::move(callback), std::move(proto_pairs));
+    std::vector<CartDB::KeyAndValue> proto_pairs,
+    bool is_oauth_fetch,
+    const std::string access_token) {
+  CartDiscountFetcher::FetchForDiscounts(
+      std::move(pending_factory), std::move(callback), std::move(proto_pairs),
+      is_oauth_fetch, std::move(access_token));
 }
 
-void CartDiscountFetcher::fetchForDiscounts(
+void CartDiscountFetcher::FetchForDiscounts(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
     CartDiscountFetcherCallback callback,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
-  auto fetcher =
-      CreateEndpointFetcher(std::move(pending_factory), std::move(proto_pairs));
+    std::vector<CartDB::KeyAndValue> proto_pairs,
+    bool is_oauth_fetch,
+    const std::string access_token) {
+  auto fetcher = CreateEndpointFetcher(std::move(pending_factory),
+                                       std::move(proto_pairs), is_oauth_fetch);
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->PerformRequest(
       base::BindOnce(&CartDiscountFetcher::OnDiscountsAvailable,
                      std::move(fetcher), std::move(callback)),
-      nullptr);
+      access_token.c_str());
   CartDiscountMetricCollector::RecordFetchingForDiscounts();
 }
 
 std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
     std::unique_ptr<network::PendingSharedURLLoaderFactory> pending_factory,
-    std::vector<CartDB::KeyAndValue> proto_pairs) {
+    std::vector<CartDB::KeyAndValue> proto_pairs,
+    bool is_oauth_fetch) {
   net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation("chrome_cart_discounts_lookup", R"(
         semantics {
@@ -294,7 +300,8 @@ std::unique_ptr<EndpointFetcher> CartDiscountFetcher::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       GURL(kFetchDiscountsEndpoint), kPostMethod, kContentType, kTimeoutMs,
       generatePostData(proto_pairs, base::Time::Now()), traffic_annotation,
-      network::SharedURLLoaderFactory::Create(std::move(pending_factory)));
+      network::SharedURLLoaderFactory::Create(std::move(pending_factory)),
+      is_oauth_fetch);
 }
 
 std::string CartDiscountFetcher::generatePostData(

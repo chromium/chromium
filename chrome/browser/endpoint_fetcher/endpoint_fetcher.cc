@@ -131,8 +131,9 @@ EndpointFetcher::EndpointFetcher(
     int64_t timeout_ms,
     const std::string& post_data,
     const net::NetworkTrafficAnnotationTag& annotation_tag,
-    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory)
-    : auth_type_(CHROME_API_KEY),
+    const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
+    const bool is_oauth_fetch)
+    : auth_type_(is_oauth_fetch ? OAUTH : CHROME_API_KEY),
       url_(url),
       http_method_(http_method),
       content_type_(content_type),
