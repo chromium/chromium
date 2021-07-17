@@ -90,11 +90,16 @@ class WebFeedFollowIntroView {
         // Make the request to show the IPH.
         helper.requestShowIPH(
                 new IPHCommandBuilder(mMenuButtonAnchorView.getContext().getResources(),
-                        FeatureConstants.FEED_HEADER_MENU_FEATURE, iphStringResource,
+                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE, iphStringResource,
                         iphAccessibilityStringResource)
                         .setAnchorView(mMenuButtonAnchorView)
                         .setDismissOnTouch(false)
                         .setAutoDismissTimeout(mShowTimeoutMillis)
+                        .setOnShowCallback(() -> { turnOnHighlightForFollowMenuItem(); })
+                        .setOnDismissCallback(() -> {
+                            mHandler.postDelayed(this::turnOffHighlightForFollowMenuItem,
+                                    ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
+                        })
                         .build());
     }
 
