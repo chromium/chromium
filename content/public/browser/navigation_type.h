@@ -15,18 +15,35 @@ enum NavigationType {
 
   // A new entry was navigated to in the main frame. This covers all cases where
   // the main frame navigated and a new navigation entry was created. This means
-  // cases like navigations to a hash on the same document are NEW_ENTRY.
-  // (Navigation entries created by subframe navigations are NEW_SUBFRAME.)
+  // cases like navigations to a hash on the same document or history.pushState
+  // are NEW_ENTRY, except when it results in replacement (see comment for
+  // NAVIGATION_TYPE_EXISTING_ENTRY below).
+  // This type of navigation will create a new NavigationEntry, without sharing
+  // any (frame-specific) session history entries with other NavigationEntries.
+  // Navigation entries created by subframe navigations are NEW_SUBFRAME.
   NAVIGATION_TYPE_NEW_ENTRY,
 
-  // Navigating to an existing navigation entry. This is the case for session
-  // history navigations, reloads, history.replaceState(), and all kinds of same
-  // document replacement. It also includes reloads as a result of the user
-  // requesting a navigation to the same URL (e.g., pressing Enter in the URL
-  // bar).
+  // Navigating to an existing navigation entry. This is the case for:
+  // - Session history navigations
+  // - Reloads, including reloads as a result of the user requesting a
+  //   navigation to the same URL (e.g., pressing Enter in the URL bar)
+  // - Same-document navigations that result in the current entry's replacement,
+  //   as a result of history.replaceState(), location.replace(), and all
+  //   same-document navigations on a document with a trivial session history
+  //   entry requirement (e.g. prerender). Note that for normal non-replacement
+  //   cases, same-document navigations on the main frame will be
+  //   classified as NAVIGATION_TYPE_NEW_ENTRY.
+  //   TODO(https://crbug.com/1226489): Classify same-document replacements (or
+  //   at least location.replace()) as NAVIGATION_TYPE_NEW_ENTRY, like
+  //   cross-document replacements and normal same-document navigations.
   //
-  // This type of navigation will modify most/all of the contents of the
-  // existing entry.
+  // This type of navigation will reuse the existing NavigationEntry but modify
+  // most/all of the contents of the existing NavigationEntry. This means the
+  // session history entry for the frame, which might be shared with othe
+  // NavigationEntries, will be reused in the updated NavigationEntry.
+  // TODO(https://crbug.com/1226489): Do not reuse the session history entry
+  // for the frame (and maybe the NavigationEntry itself) for same-document
+  // location.replace().
   NAVIGATION_TYPE_EXISTING_ENTRY,
 
   // A new subframe was manually navigated by the user. We will create a new

@@ -1867,8 +1867,10 @@ void NavigationControllerImpl::RendererDidNavigateToExistingEntry(
     }
   } else {
     // This is renderer-initiated. The only kinds of renderer-initated
-    // navigations that are EXISTING_ENTRY are reloads and history.replaceState,
-    // which land us at the last committed entry.
+    // navigations that are EXISTING_ENTRY are same-document navigations that
+    // result in replacement (e.g. history.replaceState(), location.replace(),
+    // forced replacements for trivial session history contexts). For these
+    // cases, we reuse the last committed entry.
     entry = GetLastCommittedEntry();
 
     // TODO(crbug.com/751023): Set page transition type to PAGE_TRANSITION_LINK
