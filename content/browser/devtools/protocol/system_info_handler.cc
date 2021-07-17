@@ -48,13 +48,14 @@ std::unique_ptr<SystemInfo::Size> GfxSizeToSystemInfoSize(
       .Build();
 }
 // Give the GPU process a few seconds to provide GPU info.
-// Linux and Mac Debug builds need more time -- see Issue 796437, 1046598, and
-// 1153667.
+// Linux and ChromeOS Debug builds need more time -- see Issue 796437,
+// 1046598, and 1153667.
 // Windows builds need more time -- see Issue 873112 and 1004472.
+// Mac builds need more time - see Issue angleproject:6182.
 // ASAN builds need more time -- see Issue 1167875.
-#if ((defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC)) && \
-     !defined(NDEBUG)) ||                                              \
-    defined(OS_WIN) || defined(ADDRESS_SANITIZER) || defined(USE_OZONE)
+#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(NDEBUG)) || \
+    defined(OS_WIN) || defined(OS_MAC) || defined(ADDRESS_SANITIZER) ||  \
+    defined(USE_OZONE)
 const int kGPUInfoWatchdogTimeoutMs = 30000;
 #else
 // Increased from 5000 to 10000 -- see Issue 1220072.
