@@ -106,12 +106,13 @@ void ImportDataHandler::StartImport(
 
 void ImportDataHandler::HandleImportData(const base::ListValue* args) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 2u);
 
-  int browser_index;
-  CHECK(args->GetInteger(0, &browser_index));
+  int browser_index = list[0].GetInt();
 
-  const base::DictionaryValue* types = nullptr;
-  CHECK(args->GetDictionary(1, &types));
+  const base::Value& types = list[1];
+  CHECK(types.is_dict());
 
   if (!importer_list_loaded_ || browser_index < 0 ||
       browser_index >= static_cast<int>(importer_list_->count())) {
@@ -120,15 +121,15 @@ void ImportDataHandler::HandleImportData(const base::ListValue* args) {
   }
 
   uint16_t selected_items = importer::NONE;
-  if (*types->FindBoolKey(prefs::kImportDialogAutofillFormData))
+  if (*types.FindBoolKey(prefs::kImportDialogAutofillFormData))
     selected_items |= importer::AUTOFILL_FORM_DATA;
-  if (*types->FindBoolKey(prefs::kImportDialogBookmarks))
+  if (*types.FindBoolKey(prefs::kImportDialogBookmarks))
     selected_items |= importer::FAVORITES;
-  if (*types->FindBoolKey(prefs::kImportDialogHistory))
+  if (*types.FindBoolKey(prefs::kImportDialogHistory))
     selected_items |= importer::HISTORY;
-  if (*types->FindBoolKey(prefs::kImportDialogSavedPasswords))
+  if (*types.FindBoolKey(prefs::kImportDialogSavedPasswords))
     selected_items |= importer::PASSWORDS;
-  if (*types->FindBoolKey(prefs::kImportDialogSearchEngine))
+  if (*types.FindBoolKey(prefs::kImportDialogSearchEngine))
     selected_items |= importer::SEARCH_ENGINES;
 
   const importer::SourceProfile& source_profile =

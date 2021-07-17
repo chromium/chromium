@@ -466,17 +466,13 @@ void CrostiniHandler::HandleAddCrostiniPortForward(
 
 void CrostiniHandler::HandleRemoveCrostiniPortForward(
     const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetSize());
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  std::string vm_name;
-  CHECK(args->GetString(1, &vm_name));
-  std::string container_name;
-  CHECK(args->GetString(2, &container_name));
-  int port_number;
-  CHECK(args->GetInteger(3, &port_number));
-  int protocol_type;
-  CHECK(args->GetInteger(4, &protocol_type));
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -508,18 +504,14 @@ void CrostiniHandler::HandleRemoveAllCrostiniPortForwards(
 
 void CrostiniHandler::HandleActivateCrostiniPortForward(
     const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
 
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  std::string vm_name;
-  CHECK(args->GetString(1, &vm_name));
-  std::string container_name;
-  CHECK(args->GetString(2, &container_name));
-  int port_number;
-  CHECK(args->GetInteger(3, &port_number));
-  int protocol_type;
-  CHECK(args->GetInteger(4, &protocol_type));
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);
@@ -536,18 +528,14 @@ void CrostiniHandler::HandleActivateCrostiniPortForward(
 
 void CrostiniHandler::HandleDeactivateCrostiniPortForward(
     const base::ListValue* args) {
-  CHECK_EQ(5U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
 
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
-  std::string vm_name;
-  CHECK(args->GetString(1, &vm_name));
-  std::string container_name;
-  CHECK(args->GetString(2, &container_name));
-  int port_number;
-  CHECK(args->GetInteger(3, &port_number));
-  int protocol_type;
-  CHECK(args->GetInteger(4, &protocol_type));
+  std::string callback_id = list[0].GetString();
+  std::string vm_name = list[1].GetString();
+  std::string container_name = list[2].GetString();
+  int port_number = list[3].GetInt();
+  int protocol_type = list[4].GetInt();
 
   if (!crostini::CrostiniFeatures::Get()->IsPortForwardingAllowed(profile_)) {
     OnPortForwardComplete(callback_id, false);

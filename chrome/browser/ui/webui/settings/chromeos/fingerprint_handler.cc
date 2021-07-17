@@ -259,11 +259,10 @@ void FingerprintHandler::OnCancelCurrentEnrollSession(bool success) {
 }
 
 void FingerprintHandler::HandleGetEnrollmentLabel(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  std::string callback_id;
-  int index;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetInteger(1, &index));
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
+  std::string callback_id = list[0].GetString();
+  int index = list[1].GetInt();
   DCHECK_LT(index, static_cast<int>(fingerprints_labels_.size()));
 
   AllowJavascript();
@@ -279,11 +278,10 @@ void FingerprintHandler::OnRequestRecordLabel(const std::string& callback_id,
 }
 
 void FingerprintHandler::HandleRemoveEnrollment(const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  std::string callback_id;
-  int index;
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetInteger(1, &index));
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
+  std::string callback_id = list[0].GetString();
+  int index = list[1].GetInt();
   DCHECK_LT(index, static_cast<int>(fingerprints_paths_.size()));
 
   AllowJavascript();
@@ -302,14 +300,12 @@ void FingerprintHandler::OnRemoveRecord(const std::string& callback_id,
 
 void FingerprintHandler::HandleChangeEnrollmentLabel(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
-  std::string callback_id;
-  int index;
-  std::string new_label;
+  const auto& list = args->GetList();
+  CHECK_EQ(3U, list.size());
 
-  CHECK(args->GetString(0, &callback_id));
-  CHECK(args->GetInteger(1, &index));
-  CHECK(args->GetString(2, &new_label));
+  std::string callback_id = list[0].GetString();
+  int index = list[1].GetInt();
+  std::string new_label = list[2].GetString();
 
   AllowJavascript();
   fp_service_->SetRecordLabel(

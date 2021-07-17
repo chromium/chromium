@@ -27,19 +27,19 @@ bool IsUpdateOverCellularAllowed(bool interactive) {
   if (!settings)
     return default_update_over_cellular_allowed;
 
-  const base::Value* raw_types_value =
+  const base::Value* types_value =
       settings->GetPref(chromeos::kAllowedConnectionTypesForUpdate);
-  if (!raw_types_value)
+  if (!types_value)
     return default_update_over_cellular_allowed;
-  const base::ListValue* types_value;
-  CHECK(raw_types_value->GetAsList(&types_value));
-  for (size_t i = 0; i < types_value->GetSize(); ++i) {
-    int connection_type;
-    if (!types_value->GetInteger(i, &connection_type)) {
+  CHECK(types_value->is_list());
+  const auto& list = types_value->GetList();
+  for (size_t i = 0; i < list.size(); ++i) {
+    if (!list[i].is_int()) {
       LOG(WARNING) << "Can't parse connection type #" << i;
       continue;
     }
-    if (connection_type == 4)
+
+    if (list[i].GetInt() == 4)
       return true;
   }
   // Device policy does not allow updates over cellular, as cellular is not

@@ -554,11 +554,11 @@ std::string PrintPreviewHandler::GetCallbackId(int request_id) {
 void PrintPreviewHandler::HandleGetPrinters(const base::ListValue* args) {
   // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
   LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetPrinters()";
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 2u);
+  std::string callback_id = list[0].GetString();
   CHECK(!callback_id.empty());
-  int type;
-  CHECK(args->GetInteger(1, &type));
+  int type = list[1].GetInt();
   mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
 
   // Immediately resolve the callback without fetching printers if the printer
@@ -587,16 +587,25 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
     const base::ListValue* args) {
   // TODO(crbug.com/1195284): Remove log once bug is confirmed fix.
   LOG(ERROR) << "Initiated PrintPreviewHandler::HandleGetPrinterCapabilities()";
-  std::string callback_id;
-  std::string printer_name;
-  int type;
-  if (!args->GetString(0, &callback_id) || !args->GetString(1, &printer_name) ||
-      !args->GetInteger(2, &type) || callback_id.empty() ||
-      printer_name.empty()) {
+  const auto& list = args->GetList();
+  // Validate that we have a valid callback_id
+  if (list.size() < 1 || !list[0].is_string() || list[0].GetString().empty()) {
+    RejectJavascriptCallback(base::Value(""), base::Value());
+    return;
+  }
+  // If we got here, we know that we have at least one string element.
+  std::string callback_id = list[0].GetString();
+  if (list.size() < 3) {
     RejectJavascriptCallback(base::Value(callback_id), base::Value());
     return;
   }
-  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(type);
+  const std::string* printer_name = list[1].GetIfString();
+  absl::optional<int> type = list[2].GetIfInt();
+  if (!printer_name || printer_name->empty() || !type.has_value()) {
+    RejectJavascriptCallback(base::Value(callback_id), base::Value());
+    return;
+  }
+  mojom::PrinterType printer_type = static_cast<mojom::PrinterType>(*type);
 
   // Reject the callback if the printer type is on the deny list.
   if (base::Contains(printer_type_deny_list_, printer_type)) {
@@ -611,7 +620,7 @@ void PrintPreviewHandler::HandleGetPrinterCapabilities(
   }
 
   handler->StartGetCapability(
-      printer_name,
+      *printer_name,
       base::BindOnce(&PrintPreviewHandler::SendPrinterCapabilities,
                      weak_factory_.GetWeakPtr(), callback_id));
 }

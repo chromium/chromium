@@ -117,24 +117,24 @@ void NtpBackgroundHandler::HandleGetBackgrounds(const base::ListValue* args) {
 }
 
 void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  int backgroundIndex;
-  args->GetInteger(0, &backgroundIndex);
+  const auto& list = args->GetList();
+  CHECK_EQ(1U, list.size());
+  int background_index = list[0].GetInt();
 
   std::array<GURL, kNtpBackgroundsCount> NtpBackgrounds = GetNtpBackgrounds();
   InstantService* instant_service =
       InstantServiceFactory::GetForProfile(Profile::FromWebUI(web_ui()));
 
-  switch (backgroundIndex) {
+  switch (background_index) {
     case static_cast<int>(NtpBackgrounds::kArt):
       instant_service->SetCustomBackgroundInfo(
-          NtpBackgrounds[backgroundIndex], "Universe Cosmic Vacum",
+          NtpBackgrounds[background_index], "Universe Cosmic Vacum",
           "Philipp Rietz — Walli",
           GURL("https://walli.shanga.co/image/view/?id=370"), "");
       break;
     case static_cast<int>(NtpBackgrounds::kCityscape):
       instant_service->SetCustomBackgroundInfo(
-          NtpBackgrounds[backgroundIndex],
+          NtpBackgrounds[background_index],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
                                     u"Ev Tchebotarev"),
           "",
@@ -144,20 +144,20 @@ void NtpBackgroundHandler::HandleSetBackground(const base::ListValue* args) {
       break;
     case static_cast<int>(NtpBackgrounds::kEarth):
       instant_service->SetCustomBackgroundInfo(
-          NtpBackgrounds[backgroundIndex],
+          NtpBackgrounds[background_index],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
                                     u"NASA Image Library"),
           "", GURL("https://www.google.com/sky/"), "");
       break;
     case static_cast<int>(NtpBackgrounds::kGeometricShapes):
       instant_service->SetCustomBackgroundInfo(
-          NtpBackgrounds[backgroundIndex], "Tessellation 15",
+          NtpBackgrounds[background_index], "Tessellation 15",
           "Justin Prno — Walli",
           GURL("https://walli.shanga.co/image/view/?id=1375"), "");
       break;
     case static_cast<int>(NtpBackgrounds::kLandscape):
       instant_service->SetCustomBackgroundInfo(
-          NtpBackgrounds[backgroundIndex],
+          NtpBackgrounds[background_index],
           l10n_util::GetStringFUTF8(IDS_WELCOME_NTP_BACKGROUND_PHOTO_BY_LABEL,
                                     u"Giulio Rosso Chioso"),
           "",

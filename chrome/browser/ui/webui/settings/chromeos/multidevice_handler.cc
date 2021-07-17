@@ -271,25 +271,20 @@ void MultideviceHandler::HandleGetPageContent(const base::ListValue* args) {
 
 void MultideviceHandler::HandleSetFeatureEnabledState(
     const base::ListValue* args) {
-  std::string callback_id;
-  bool result = args->GetString(0, &callback_id);
-  DCHECK(result);
+  const auto& list = args->GetList();
+  DCHECK_GE(list.size(), 3u);
+  std::string callback_id = list[0].GetString();
 
-  int feature_as_int;
-  result = args->GetInteger(1, &feature_as_int);
-  DCHECK(result);
+  int feature_as_int = list[1].GetInt();
 
   auto feature = static_cast<multidevice_setup::mojom::Feature>(feature_as_int);
   DCHECK(multidevice_setup::mojom::IsKnownEnumValue(feature));
 
-  bool enabled;
-  result = args->GetBoolean(2, &enabled);
-  DCHECK(result);
+  bool enabled = list[2].GetBool();
 
   absl::optional<std::string> auth_token;
-  std::string possible_token_value;
-  if (args->GetString(3, &possible_token_value))
-    auth_token = possible_token_value;
+  if (list.size() >= 4 && list[3].is_string())
+    auth_token = list[3].GetString();
 
   multidevice_setup_client_->SetFeatureEnabledState(
       feature, enabled, auth_token,

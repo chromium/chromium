@@ -165,12 +165,11 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
     const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
-  std::string webui_callback_id;
-  int period_selected;
-  CHECK(args->GetString(0, &webui_callback_id));
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
+  std::string webui_callback_id = list[0].GetString();
+  int period_selected = list[1].GetInt();
 
-  CHECK(args->GetInteger(1, &period_selected));
   browsing_data::TimePeriod time_period =
       static_cast<browsing_data::TimePeriod>(period_selected);
 

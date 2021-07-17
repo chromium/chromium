@@ -287,13 +287,12 @@ void ChromeCleanupHandler::HandleGetItemsToRemovePluralString(
 
 void ChromeCleanupHandler::GetPluralString(int id,
                                            const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetSize());
+  const auto& list = args->GetList();
+  CHECK_EQ(2U, list.size());
 
-  std::string callback_id;
-  CHECK(args->GetString(0, &callback_id));
+  std::string callback_id = list[0].GetString();
 
-  int num_items = 0;
-  args->GetInteger(1, &num_items);
+  int num_items = list[1].GetIfInt().value_or(0);
 
   const std::u16string plural_string =
       num_items > 0 ? l10n_util::GetPluralStringFUTF16(id, num_items)

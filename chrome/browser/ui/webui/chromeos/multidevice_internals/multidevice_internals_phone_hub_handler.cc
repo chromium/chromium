@@ -275,8 +275,9 @@ void MultidevicePhoneHubHandler::HandleEnableDnd(const base::ListValue* args) {
 
 void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
     const base::ListValue* args) {
-  int status_as_int = 0;
-  CHECK(args->GetInteger(0, &status_as_int));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int status_as_int = list[0].GetInt();
 
   auto status =
       static_cast<phonehub::FindMyDeviceController::Status>(status_as_int);
@@ -287,8 +288,9 @@ void MultidevicePhoneHubHandler::HandleSetFindMyDeviceStatus(
 
 void MultidevicePhoneHubHandler::HandleSetTetherStatus(
     const base::ListValue* args) {
-  int status_as_int = 0;
-  CHECK(args->GetInteger(0, &status_as_int));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int status_as_int = list[0].GetInt();
 
   auto status = static_cast<phonehub::TetherController::Status>(status_as_int);
   PA_LOG(VERBOSE) << "Setting tether status to " << status;
@@ -333,8 +335,9 @@ void MultidevicePhoneHubHandler::HandleEnableFakePhoneHubManager(
 
 void MultidevicePhoneHubHandler::HandleSetFeatureStatus(
     const base::ListValue* args) {
-  int feature_as_int = 0;
-  CHECK(args->GetInteger(0, &feature_as_int));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int feature_as_int = list[0].GetInt();
 
   auto feature = static_cast<phonehub::FeatureStatus>(feature_as_int);
   PA_LOG(VERBOSE) << "Setting feature status to " << feature;
@@ -522,8 +525,9 @@ void MultidevicePhoneHubHandler::HandleSetNotification(
 
 void MultidevicePhoneHubHandler::HandleRemoveNotification(
     const base::ListValue* args) {
-  int notification_id = 0;
-  CHECK(args->GetInteger(0, &notification_id));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int notification_id = list[0].GetInt();
   fake_phone_hub_manager_->fake_notification_manager()->RemoveNotification(
       notification_id);
   PA_LOG(VERBOSE) << "Removed notification with id " << notification_id;

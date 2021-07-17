@@ -348,8 +348,9 @@ void DeviceEmulatorMessageHandler::HandleSetHasMouse(
 
 void DeviceEmulatorMessageHandler::UpdateBatteryPercent(
     const base::ListValue* args) {
-  int new_percent;
-  if (args->GetInteger(0, &new_percent)) {
+  const auto& list = args->GetList();
+  if (list.size() >= 1 && list[0].is_int()) {
+    int new_percent = list[0].GetInt();
     power_manager::PowerSupplyProperties props =
         *fake_power_manager_client_->GetLastStatus();
     props.set_battery_percent(new_percent);
@@ -359,8 +360,9 @@ void DeviceEmulatorMessageHandler::UpdateBatteryPercent(
 
 void DeviceEmulatorMessageHandler::UpdateBatteryState(
     const base::ListValue* args) {
-  int battery_state;
-  if (args->GetInteger(0, &battery_state)) {
+  const auto& list = args->GetList();
+  if (list.size() >= 1 && list[0].is_int()) {
+    int battery_state = list[0].GetInt();
     power_manager::PowerSupplyProperties props =
         *fake_power_manager_client_->GetLastStatus();
     props.set_battery_state(
@@ -372,8 +374,9 @@ void DeviceEmulatorMessageHandler::UpdateBatteryState(
 
 void DeviceEmulatorMessageHandler::UpdateTimeToEmpty(
     const base::ListValue* args) {
-  int new_time;
-  if (args->GetInteger(0, &new_time)) {
+  const auto& list = args->GetList();
+  if (list.size() >= 1 && list[0].is_int()) {
+    int new_time = list[0].GetInt();
     power_manager::PowerSupplyProperties props =
         *fake_power_manager_client_->GetLastStatus();
     props.set_battery_time_to_empty_sec(new_time);
@@ -383,8 +386,9 @@ void DeviceEmulatorMessageHandler::UpdateTimeToEmpty(
 
 void DeviceEmulatorMessageHandler::UpdateTimeToFull(
     const base::ListValue* args) {
-  int new_time;
-  if (args->GetInteger(0, &new_time)) {
+  const auto& list = args->GetList();
+  if (list.size() >= 1 && list[0].is_int()) {
+    int new_time = list[0].GetInt();
     power_manager::PowerSupplyProperties props =
         *fake_power_manager_client_->GetLastStatus();
     props.set_battery_time_to_full_sec(new_time);

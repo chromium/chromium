@@ -143,31 +143,34 @@ void SyncFileSystemInternalsHandler::HandleGetNotificationSource(
 
 void SyncFileSystemInternalsHandler::HandleGetLog(const base::ListValue* args) {
   AllowJavascript();
+  const auto& args_list = args->GetList();
+  DCHECK_GE(args_list.size(), 1u);
+  const base::Value& callback_id = args_list[0];
   const std::vector<EventLogger::Event> log =
       sync_file_system::util::GetLogHistory();
 
-  int last_log_id_sent;
-  if (!args->GetInteger(1, &last_log_id_sent))
-    last_log_id_sent = -1;
+  int last_log_id_sent = -1;
+  if (args_list.size() >= 2 && args_list[1].is_int())
+    last_log_id_sent = args_list[1].GetInt();
 
   // Collate events which haven't been sent to WebUI yet.
-  base::ListValue list;
+  base::Value list(base::Value::Type::LIST);
   for (auto log_entry = log.begin(); log_entry != log.end(); ++log_entry) {
     if (log_entry->id <= last_log_id_sent)
       continue;
 
-    std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-    dict->SetInteger("id", log_entry->id);
-    dict->SetString("time",
-        google_apis::util::FormatTimeAsStringLocaltime(log_entry->when));
-    dict->SetString("logEvent", log_entry->what);
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetIntKey("id", log_entry->id);
+    dict.SetStringKey("time", google_apis::util::FormatTimeAsStringLocaltime(
+                                  log_entry->when));
+    dict.SetStringKey("logEvent", log_entry->what);
     list.Append(std::move(dict));
     last_log_id_sent = log_entry->id;
   }
   if (list.GetList().empty())
     return;
 
-  ResolveJavascriptCallback(args->GetList()[0] /* callback_id */, list);
+  ResolveJavascriptCallback(callback_id, list);
 }
 
 void SyncFileSystemInternalsHandler::HandleClearLogs(

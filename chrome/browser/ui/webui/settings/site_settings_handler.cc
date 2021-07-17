@@ -1599,9 +1599,9 @@ void SiteSettingsHandler::HandleClearEtldPlus1DataAndCookies(
 }
 
 void SiteSettingsHandler::HandleRecordAction(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  int action;
-  CHECK(args->GetInteger(0, &action));
+  const auto& list = args->GetList();
+  CHECK_EQ(1U, list.size());
+  int action = list[0].GetInt();
   DCHECK_LE(action, static_cast<int>(AllSitesAction2::kMaxValue));
   DCHECK_GE(action, static_cast<int>(AllSitesAction2::kLoadPage));
 

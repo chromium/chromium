@@ -231,10 +231,10 @@ void PowerHandler::HandleRequestPowerManagementSettings(
 void PowerHandler::HandleSetIdleBehavior(const base::ListValue* args) {
   AllowJavascript();
 
-  int value = 0;
-  bool when_on_ac = true;
-  CHECK(args->GetInteger(0, &value));
-  CHECK(args->GetBoolean(1, &when_on_ac));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 2u);
+  int value = list[0].GetInt();
+  bool when_on_ac = list[1].GetBool();
 
   const char* idle_pref = when_on_ac ? ash::prefs::kPowerAcIdleAction
                                      : ash::prefs::kPowerBatteryIdleAction;
@@ -281,8 +281,9 @@ void PowerHandler::HandleSetIdleBehavior(const base::ListValue* args) {
 void PowerHandler::HandleSetLidClosedBehavior(const base::ListValue* args) {
   AllowJavascript();
 
-  int value = 0;
-  CHECK(args->GetInteger(0, &value));
+  const auto& list = args->GetList();
+  CHECK_GE(list.size(), 1u);
+  int value = list[0].GetInt();
   switch (static_cast<PowerPolicyController::Action>(value)) {
     case PowerPolicyController::ACTION_SUSPEND:
       prefs_->ClearPref(ash::prefs::kPowerLidClosedAction);

@@ -41,19 +41,16 @@ void PluralStringHandler::AddLocalizedString(const std::string& name, int id) {
 
 void PluralStringHandler::HandleGetPluralString(const base::ListValue* args) {
   AllowJavascript();
-  CHECK_EQ(3U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const auto& list = args->GetList();
+  CHECK_EQ(3U, list.size());
 
-  std::string message_name;
-  CHECK(args->GetString(1, &message_name));
-
-  int count;
-  CHECK(args->GetInteger(2, &count));
+  const base::Value& callback_id = list[0];
+  std::string message_name = list[1].GetString();
+  int count = list[2].GetInt();
 
   auto string = GetPluralizedStringForMessageName(message_name, count);
 
-  ResolveJavascriptCallback(*callback_id, base::Value(string));
+  ResolveJavascriptCallback(callback_id, base::Value(string));
 }
 
 void PluralStringHandler::HandleGetPluralStringTupleWithComma(
@@ -69,28 +66,21 @@ void PluralStringHandler::HandleGetPluralStringTupleWithPeriods(
 void PluralStringHandler::GetPluralStringTuple(const base::ListValue* args,
                                                int string_tuple_id) {
   AllowJavascript();
-  CHECK_EQ(5U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  const auto& list = args->GetList();
+  CHECK_EQ(5U, list.size());
 
-  std::string message_name1;
-  CHECK(args->GetString(1, &message_name1));
-
-  int count1;
-  CHECK(args->GetInteger(2, &count1));
-
-  std::string message_name2;
-  CHECK(args->GetString(3, &message_name2));
-
-  int count2;
-  CHECK(args->GetInteger(4, &count2));
+  const base::Value& callback_id = list[0];
+  std::string message_name1 = list[1].GetString();
+  int count1 = list[2].GetInt();
+  std::string message_name2 = list[3].GetString();
+  int count2 = list[4].GetInt();
 
   auto string1 = GetPluralizedStringForMessageName(message_name1, count1);
   auto string2 = GetPluralizedStringForMessageName(message_name2, count2);
 
   ResolveJavascriptCallback(
-      *callback_id, base::Value(l10n_util::GetStringFUTF8(string_tuple_id,
-                                                          string1, string2)));
+      callback_id, base::Value(l10n_util::GetStringFUTF8(string_tuple_id,
+                                                         string1, string2)));
 }
 
 std::u16string PluralStringHandler::GetPluralizedStringForMessageName(
