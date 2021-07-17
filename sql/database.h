@@ -444,9 +444,9 @@ class COMPONENT_EXPORT(SQL) Database {
   // Returns true if the given structure exists.  Instead of test-then-create,
   // callers should almost always prefer the "IF NOT EXISTS" version of the
   // CREATE statement.
-  bool DoesIndexExist(base::StringPiece index_name) const;
-  bool DoesTableExist(base::StringPiece table_name) const;
-  bool DoesViewExist(base::StringPiece table_name) const;
+  bool DoesIndexExist(base::StringPiece index_name);
+  bool DoesTableExist(base::StringPiece table_name);
+  bool DoesViewExist(base::StringPiece table_name);
 
   // Returns true if a column with the given name exists in the given table.
   //
@@ -455,7 +455,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // This should only be used by migration code for legacy features that do not
   // use MetaTable, and need an alternative way of figuring out the database's
   // current version.
-  bool DoesColumnExist(const char* table_name, const char* column_name) const;
+  bool DoesColumnExist(const char* table_name, const char* column_name);
 
   // Returns sqlite's internal ID for the last inserted row. Valid only
   // immediately after an insert.
@@ -491,7 +491,7 @@ class COMPONENT_EXPORT(SQL) Database {
   // Return a reproducible representation of the schema equivalent to
   // running the following statement at a sqlite3 command-line:
   //   SELECT type, name, tbl_name, sql FROM sqlite_master ORDER BY 1, 2, 3, 4;
-  std::string GetSchema() const;
+  std::string GetSchema();
 
   // Returns |true| if there is an error expecter (see SetErrorExpecter), and
   // that expecter returns |true| when passed |error|.  Clients which provide an
@@ -577,8 +577,7 @@ class COMPONENT_EXPORT(SQL) Database {
   }
 
   // Internal helper for Does*Exist() functions.
-  bool DoesSchemaItemExist(base::StringPiece name,
-                           base::StringPiece type) const;
+  bool DoesSchemaItemExist(base::StringPiece name, base::StringPiece type);
 
   // Accessors for global error-expecter, for injecting behavior during tests.
   // See test/scoped_error_expecter.h.
@@ -605,8 +604,8 @@ class COMPONENT_EXPORT(SQL) Database {
 
     // |database| is the sql::Database instance associated with
     // the statement, and is used for tracking outstanding statements
-    // and for error handling.  Set to nullptr for invalid or untracked
-    // refs.  |stmt| is the actual statement, and should only be null
+    // and for error handling.  Set to nullptr for invalid refs.
+    // |stmt| is the actual statement, and should only be null
     // to create an invalid ref.  |was_valid| indicates whether the
     // statement should be considered valid for diagnostic purposes.
     // |was_valid| can be true for a null |stmt| if the Database has
@@ -625,10 +624,6 @@ class COMPONENT_EXPORT(SQL) Database {
     bool was_valid() const { return was_valid_; }
 
     // If we've not been linked to a database, this will be null.
-    //
-    // TODO(shess): database_ can be nullptr in case of
-    // GetUntrackedStatement(), which prevents Statement::OnError() from
-    // forwarding errors.
     Database* database() const { return database_; }
 
     // Returns the sqlite statement if any. If the statement is not active,
@@ -686,19 +681,8 @@ class COMPONENT_EXPORT(SQL) Database {
   bool ExecuteWithTimeout(const char* sql,
                           base::TimeDelta ms_timeout) WARN_UNUSED_RESULT;
 
-  // Implementation helper for GetUniqueStatement() and GetUntrackedStatement().
-  // |tracking_db| is the db the resulting ref should register with for
-  // outstanding statement tracking, which should be |this| to track or null to
-  // not track.
-  scoped_refptr<StatementRef> GetStatementImpl(sql::Database* tracking_db,
-                                               const char* sql) const;
-
-  // Helper for implementing const member functions.  Like GetUniqueStatement(),
-  // except the StatementRef is not entered into |open_statements_|, so an
-  // outstanding StatementRef from this function can block closing the database.
-  // The StatementRef will not call OnSqliteError(), because that can call
-  // |error_callback_| which can close the database.
-  scoped_refptr<StatementRef> GetUntrackedStatement(const char* sql) const;
+  // Implementation helper for GetUniqueStatement() and GetCachedStatement().
+  scoped_refptr<StatementRef> GetStatementImpl(const char* sql);
 
   bool IntegrityCheckHelper(const char* pragma_sql,
                             std::vector<std::string>* messages)

@@ -355,9 +355,7 @@ TEST_P(SQLDatabaseTest, ScopedErrorExpecter) {
   }
 }
 
-// Test that clients of GetUntrackedStatement() can test corruption-handling
-// with ScopedErrorExpecter.
-TEST_P(SQLDatabaseTest, ScopedIgnoreUntracked) {
+TEST_P(SQLDatabaseTest, SchemaIntrospectionUsesErrorExpecter) {
   const char* kCreateSql = "CREATE TABLE foo (id INTEGER UNIQUE)";
   ASSERT_TRUE(db_->Execute(kCreateSql));
   ASSERT_FALSE(db_->DoesTableExist("bar"));
