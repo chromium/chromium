@@ -22,8 +22,7 @@ import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-s
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
-import {URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides the root custom element for the Clusters
@@ -163,8 +162,8 @@ class HistoryClustersAppElement extends PolymerElement {
     this.onBrowserIdle_().then(() => {
       this.queryClusters_({
         query: this.query_.trim(),
-        maxTime: undefined,
         maxCount: this.result_.clusters.length,
+        endTime: undefined,
       });
     });
   }
@@ -213,11 +212,11 @@ class HistoryClustersAppElement extends PolymerElement {
   private onScrolledToBottom_() {
     this.$.scrollThreshold.clearTriggers();
 
-    if (this.result_ && this.result_.continuationMaxTime) {
+    if (this.result_ && this.result_.continuationEndTime) {
       this.queryClusters_({
         query: this.result_.query,
-        maxTime: this.result_.continuationMaxTime,
         maxCount: RESULTS_PER_PAGE,
+        endTime: this.result_.continuationEndTime,
       });
     }
   }
@@ -252,7 +251,7 @@ class HistoryClustersAppElement extends PolymerElement {
       // Do not replace the existing result. `result` contains a partial set of
       // Clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
-      this.result_.continuationMaxTime = result.continuationMaxTime;
+      this.result_.continuationEndTime = result.continuationEndTime;
     } else {
       this.result_ = result;
     }
@@ -269,8 +268,8 @@ class HistoryClustersAppElement extends PolymerElement {
       // Request up to `RESULTS_PER_PAGE` of the freshest Clusters until now.
       this.queryClusters_({
         query: this.query_.trim(),
-        maxTime: undefined,
         maxCount: RESULTS_PER_PAGE,
+        endTime: undefined,
       });
       // Scroll to the top when the results change due to query change.
       this.$.container.scrollTop = 0;
@@ -285,11 +284,11 @@ class HistoryClustersAppElement extends PolymerElement {
   }
 
   private queryClusters_(queryParams: QueryParams) {
-    // Invalidate the existing `continuationMaxTime`, if any, in order to
+    // Invalidate the existing `continuationEndTime`, if any, in order to
     // prevent sending additional requests while a request is in-flight. A new
-    // `continuationMaxTime` will be supplied with the new set of results.
+    // `continuationEndTime` will be supplied with the new set of results.
     if (this.result_) {
-      this.result_.continuationMaxTime = undefined;
+      this.result_.continuationEndTime = undefined;
     }
     this.pageHandler_.queryClusters(queryParams);
   }

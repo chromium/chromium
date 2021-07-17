@@ -33,7 +33,6 @@ static_library("core") {
   deps = [
     ":clustering_backend",
     ":history_clusters_buildflags",
-    ":mojo_bindings",
     "//base",
     "//components/history/core/browser",
     "//components/history_clusters/core/proto",
@@ -58,15 +57,6 @@ source_set("clustering_backend") {
   ]
 }
 
-mojom("mojo_bindings") {
-  sources = [ "history_clusters.mojom" ]
-  webui_module_path = "/components/history_clusters/core"
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//url/mojom:url_mojom_gurl",
-  ]
-}
-
 source_set("unit_tests") {
   testonly = true
   sources = [
@@ -80,7 +70,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/history/core/browser",
     "//components/history/core/test",
-    "//components/history_clusters/core:mojo_bindings",
     "//components/history_clusters/core/proto",
     "//services/network:test_support",
     "//testing/gtest",

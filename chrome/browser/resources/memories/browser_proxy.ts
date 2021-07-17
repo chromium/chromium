@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PageCallbackRouter, PageHandler, PageHandlerRemote} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
+import {PageCallbackRouter, PageHandler, PageHandlerRemote} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo

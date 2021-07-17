@@ -10,8 +10,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxy} from './browser_proxy.js';
-import {PageCallbackRouter} from './chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js';
-import {Cluster, URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
+import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a Cluster.

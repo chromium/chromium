@@ -11,7 +11,6 @@
 #include "chrome/browser/history_clusters/history_clusters_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "components/history_clusters/core/history_clusters.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
@@ -113,7 +112,7 @@ void HistoryClustersHandler::SetPage(
 void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
   const std::string& query = query_params->query;
   const size_t max_count = query_params->max_count;
-  base::Time end_time = query_params->max_time.value_or(base::Time());
+  base::Time end_time = query_params->end_time.value_or(base::Time());
   auto result_callback =
       base::BindOnce(&HistoryClustersHandler::OnClustersQueryResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(query_params));
@@ -123,8 +122,8 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
     query_task_tracker_.TryCancelAll();
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-    // TODO(crbug.com/1220765): Supply `continuation_max_time` in
-    //  `result_callback` once the service supports paging.
+    // TODO(crbug.com/1220765): Supply `continuation_end_time` in
+    // `result_callback` once the service supports paging.
     history_clusters_service->QueryClusters(
         query, end_time, max_count,
         base::BindOnce(&ClustersToMojom)
@@ -186,13 +185,13 @@ void HistoryClustersHandler::OnMemoriesDebugMessage(
 
 void HistoryClustersHandler::OnClustersQueryResult(
     mojom::QueryParamsPtr original_query_params,
-    const absl::optional<base::Time>& continuation_max_time,
+    const absl::optional<base::Time>& continuation_end_time,
     std::vector<mojom::ClusterPtr> cluster_mojoms) {
   auto result_mojom = mojom::QueryResult::New();
   result_mojom->query = original_query_params->query;
-  // Continuation queries have a value for `max_time`. Mark the result as such.
-  result_mojom->is_continuation = original_query_params->max_time.has_value();
-  result_mojom->continuation_max_time = continuation_max_time;
+  // Continuation queries have a value for `end_time`. Mark the result as such.
+  result_mojom->is_continuation = original_query_params->end_time.has_value();
+  result_mojom->continuation_end_time = continuation_end_time;
   result_mojom->clusters = std::move(cluster_mojoms);
   page_->OnClustersQueryResult(std::move(result_mojom));
 }
@@ -205,14 +204,14 @@ void HistoryClustersHandler::OnVisitsRemoved(
 #if !defined(CHROME_BRANDED)
 void HistoryClustersHandler::QueryHistoryService(
     const std::string& query,
-    base::Time max_time,
+    base::Time end_time,
     size_t max_count,
     std::vector<mojom::ClusterPtr> cluster_mojoms,
     QueryResultsCallback callback) {
   if (max_count > 0 && cluster_mojoms.size() == max_count) {
     // Enough clusters have been created. Run the callback with those Clusters
     // along with the continuation max time threshold.
-    std::move(callback).Run(max_time, std::move(cluster_mojoms));
+    std::move(callback).Run(end_time, std::move(cluster_mojoms));
     return;
   }
 
@@ -221,21 +220,21 @@ void HistoryClustersHandler::QueryHistoryService(
                                            ServiceAccessType::EXPLICIT_ACCESS);
   history::QueryOptions query_options;
   query_options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
-  query_options.end_time = max_time;
+  query_options.end_time = end_time;
   // Make sure to look back far enough to find some visits.
   query_options.begin_time =
       query_options.end_time.LocalMidnight() - base::TimeDelta::FromDays(90);
   history_service->QueryHistory(
       base::UTF8ToUTF16(query), query_options,
       base::BindOnce(&HistoryClustersHandler::OnHistoryQueryResults,
-                     weak_ptr_factory_.GetWeakPtr(), query, max_time, max_count,
+                     weak_ptr_factory_.GetWeakPtr(), query, end_time, max_count,
                      std::move(cluster_mojoms), std::move(callback)),
       &query_task_tracker_);
 }
 
 void HistoryClustersHandler::OnHistoryQueryResults(
     const std::string& query,
-    base::Time max_time,
+    base::Time end_time,
     size_t max_count,
     std::vector<mojom::ClusterPtr> cluster_mojoms,
     QueryResultsCallback callback,
@@ -243,7 +242,7 @@ void HistoryClustersHandler::OnHistoryQueryResults(
   if (results.empty()) {
     // No more results to create Clusters from. Run the callback with the
     // Clusters created so far.
-    std::move(callback).Run(max_time, std::move(cluster_mojoms));
+    std::move(callback).Run(end_time, std::move(cluster_mojoms));
     return;
   }
 
@@ -400,10 +399,10 @@ void HistoryClustersHandler::OnHistoryQueryResults(
 
   // Continue to extract Clusters from 11:59:59pm of the day before the
   // Cluster's `last_visit_time`.
-  max_time = cluster_mojom->last_visit_time.LocalMidnight() -
+  end_time = cluster_mojom->last_visit_time.LocalMidnight() -
              base::TimeDelta::FromSeconds(1);
   cluster_mojoms.push_back(std::move(cluster_mojom));
-  QueryHistoryService(query, max_time, max_count, std::move(cluster_mojoms),
+  QueryHistoryService(query, end_time, max_count, std::move(cluster_mojoms),
                       std::move(callback));
 }
 #endif

@@ -18,9 +18,8 @@ ts_library("build_ts") {
   in_files = [
     "app.ts",
     "browser_proxy.ts",
-    "chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js",
     "cluster.ts",
-    "components/history_clusters/core/history_clusters.mojom-webui.js",
+    "history_clusters.mojom-webui.js",
     "history_clusters.ts",
     "page_favicon.ts",
     "router.ts",
@@ -30,40 +29,22 @@ ts_library("build_ts") {
     "top_visit.ts",
     "visit_row.ts",
   ]
-  path_mappings = [
-    "/chrome/browser/ui/webui/history_clusters/*|" +
-        rebase_path(
-            "$preprocess_folder/chrome/browser/ui/webui/history_clusters/*",
-            target_gen_dir),
-    "/components/history_clusters/core/*|" +
-        rebase_path("$preprocess_folder/components/history_clusters/core/*",
-                    target_gen_dir),
-  ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
     "//ui/webui/resources/mojo:library",
   ]
   extra_deps = [
-    ":copy_history_clusters_api_mojom",
-    ":copy_history_clusters_definitions_mojom",
+    ":copy_history_clusters_mojom",
     ":preprocess",
     ":preprocess_generated",
   ]
 }
 
-copy("copy_history_clusters_api_mojom") {
+copy("copy_history_clusters_mojom") {
   sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/history_clusters/history_clusters.mojom-webui.js" ]
-  outputs = [ "$preprocess_folder/chrome/browser/ui/webui/history_clusters/{{source_file_part}}" ]
+  outputs = [ "$preprocess_folder/{{source_file_part}}" ]
   deps = [ "//chrome/browser/ui/webui/history_clusters:mojo_bindings_webui_js" ]
-}
-
-copy("copy_history_clusters_definitions_mojom") {
-  sources = [ "$root_gen_dir/mojom-webui/components/history_clusters/core/history_clusters.mojom-webui.js" ]
-  outputs = [
-    "$preprocess_folder/components/history_clusters/core/{{source_file_part}}",
-  ]
-  deps = [ "//components/history_clusters/core:mojo_bindings_webui_js" ]
 }
 
 html_to_js("web_components_local") {

@@ -11,7 +11,7 @@ import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {URLVisit} from './components/history_clusters/core/history_clusters.mojom-webui.js';
+import {URLVisit} from './history_clusters.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a top visit

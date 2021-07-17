@@ -13,7 +13,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/webui/history_clusters/history_clusters.mojom.h"
 #include "components/history/core/browser/history_types.h"
-#include "components/history_clusters/core/history_clusters.mojom-forward.h"
 #include "components/history_clusters/core/history_clusters_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -57,13 +56,13 @@ class HistoryClustersHandler : public mojom::PageHandler,
   void OnMemoriesDebugMessage(const std::string& message) override;
 
  private:
-  // Called with the original `query_params`, `continuation_max_time` which is
+  // Called with the original `query_params`, `continuation_end_time` which is
   // created in anticipation of the next query, and `cluster_mojoms` when the
   // results of querying the HistoryClustersService are available. Subsequently
   // creates a QueryResult instance using the parameters and sends it to the JS.
   void OnClustersQueryResult(
       mojom::QueryParamsPtr original_query_params,
-      const absl::optional<base::Time>& continuation_max_time,
+      const absl::optional<base::Time>& continuation_end_time,
       std::vector<mojom::ClusterPtr> cluster_mojoms);
   // Called with the set of removed visits. Subsequently, `visits` is sent to
   // the JS to update the UI.
@@ -74,12 +73,12 @@ class HistoryClustersHandler : public mojom::PageHandler,
       base::OnceCallback<void(const absl::optional<base::Time>&,
                               std::vector<mojom::ClusterPtr>)>;
   void QueryHistoryService(const std::string& query,
-                           base::Time max_time,
+                           base::Time end_time,
                            size_t max_count,
                            std::vector<mojom::ClusterPtr> cluster_mojoms,
                            QueryResultsCallback callback);
   void OnHistoryQueryResults(const std::string& query,
-                             base::Time max_time,
+                             base::Time end_time,
                              size_t max_count,
                              std::vector<mojom::ClusterPtr> cluster_mojoms,
                              QueryResultsCallback callback,
