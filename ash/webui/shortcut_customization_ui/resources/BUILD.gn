@@ -12,6 +12,7 @@ preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
 
 polymer_element_files = [
+  "accelerator_edit_dialog.js",
   "accelerator_row.js",
   "accelerator_view.js",
   "accessibility_shortcuts_page.js",
@@ -77,6 +78,7 @@ js_library("chromeos_shortcuts_page") {
 
 js_library("android_shortcuts_page") {
   deps = [
+    ":accelerator_edit_dialog",
     ":shortcut_input",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
@@ -100,6 +102,15 @@ js_library("accelerator_row") {
   deps = [
     ":accelerator_view",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("accelerator_edit_dialog") {
+  deps = [
+    ":accelerator_view",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
   ]
 }
 

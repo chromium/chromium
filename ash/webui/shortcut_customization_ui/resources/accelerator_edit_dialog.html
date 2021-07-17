@@ -1,0 +1,26 @@
+<style include="cr-shared-style">
+  #acceleratorViewList {
+    display: grid;
+    row-gap: 5px;
+  }
+</style>
+
+<cr-dialog id="editDialog">
+  <div id="dialogTitle" slot="title">
+    [[description]]
+  </div>
+  <div slot="body">
+    <div id="acceleratorViewList">
+      <template is="dom-repeat" items=[[accelerators]]>
+        <accelerator-view class="acceleratorItem" accelerator=[[item]]>
+        </accelerator-view>
+      </template>
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="doneButton" on-click="onDoneButtonClicked">
+      <!-- TODO(jimmyxgong): Localize this string -->
+      Done
+    </cr-button>
+  </div>
+</cr-dialog>

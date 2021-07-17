@@ -44,6 +44,7 @@ const debug_suites_list = [
   'ShortcutCustomizationApp',
   'AcceleratorViewTest',
   'AcceleratorRowTest',
+  'AcceleratorEditDialogTest',
 ];
 
 TEST_F('ShortcutCustomizationAppBrowserTest', 'All', function() {
