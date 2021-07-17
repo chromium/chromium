@@ -5,7 +5,7 @@
 #include "chrome/browser/account_manager_facade_factory.h"
 
 #include "base/no_destructor.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,7 +15,7 @@ namespace {
 mojo::Remote<crosapi::mojom::AccountManager> GetAccountManagerRemote() {
   mojo::Remote<crosapi::mojom::AccountManager> remote;
 
-  auto* lacros_chrome_service_impl = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_chrome_service_impl = chromeos::LacrosService::Get();
   DCHECK(lacros_chrome_service_impl);
   if (!lacros_chrome_service_impl->IsAccountManagerAvailable()) {
     LOG(WARNING) << "Connected to an older version of ash. Account "
@@ -36,7 +36,7 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
   // Multi-Login is disabled with Lacros. Always return the same instance.
   static base::NoDestructor<account_manager::AccountManagerFacadeImpl> facade(
       GetAccountManagerRemote(),
-      chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
+      chromeos::LacrosService::Get()->GetInterfaceVersion(
           crosapi::mojom::AccountManager::Uuid_));
   return facade.get();
 }

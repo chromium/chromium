@@ -137,7 +137,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
@@ -303,9 +303,9 @@ void TestingProfile::Init() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  // `LacrosChromeServiceImpl` has to be initialized before
+  // `LacrosService` has to be initialized before
   // `EnsureBrowserContextKeyedServiceFactoriesBuilt` call.
-  if (!chromeos::LacrosChromeServiceImpl::Get()) {
+  if (!chromeos::LacrosService::Get()) {
     lacros_service_test_helper_ =
         std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
   }

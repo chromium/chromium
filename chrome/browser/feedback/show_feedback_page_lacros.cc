@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/crosapi/mojom/feedback.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 
 namespace chrome {
 namespace internal {

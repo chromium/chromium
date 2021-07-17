@@ -9,7 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/lacros/cert_db_initializer.h"
 #include "chromeos/crosapi/mojom/cert_database.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "mojo/public/cpp/bindings/remote.h"

@@ -21,7 +21,7 @@ namespace extensions {
 DisplayInfoProviderLacros::DisplayInfoProviderLacros() {
   // Relies on the fact that the instance is a singleton managed by
   // DisplayInfoProvider::Get(), and assumes that instantiation takes place
-  // after LacrosChromeServiceImpl has been initialized.
+  // after LacrosService has been initialized.
   auto* lacros_service = chromeos::LacrosService::Get();
   DCHECK(lacros_service);
   if (lacros_service->IsAvailable<crosapi::mojom::SystemDisplay>() &&

@@ -54,7 +54,7 @@ void BrowserWithTestWindowTest::SetUp() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (!chromeos::LacrosChromeServiceImpl::Get()) {
+  if (!chromeos::LacrosService::Get()) {
     lacros_service_test_helper_ =
         std::make_unique<chromeos::ScopedLacrosServiceTestHelper>();
   }

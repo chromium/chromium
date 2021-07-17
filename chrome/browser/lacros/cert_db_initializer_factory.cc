@@ -7,7 +7,7 @@
 #include "chrome/browser/lacros/cert_db_initializer_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
 class CertDbInitializer;
@@ -41,8 +41,8 @@ KeyedService* CertDbInitializerFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = Profile::FromBrowserContext(context);
 
-  if (!chromeos::LacrosChromeServiceImpl::Get() ||
-      !chromeos::LacrosChromeServiceImpl::Get()
+  if (!chromeos::LacrosService::Get() ||
+      !chromeos::LacrosService::Get()
            ->IsAvailable<crosapi::mojom::CertDatabase>()) {
     return nullptr;
   }

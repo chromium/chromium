@@ -79,7 +79,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace {
@@ -158,7 +158,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // TODO(https://crbug.com/1194983): Figure out how split sync settings will
     // work here. For now, we will mimic Ash's behaviour of having sync turned
     // on by default.
-    if (chromeos::LacrosChromeServiceImpl::Get()
+    if (chromeos::LacrosService::Get()
             ->init_params()
             ->use_new_account_manager &&
         profile->IsMainProfile()) {

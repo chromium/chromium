@@ -74,7 +74,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace signin {
@@ -314,7 +314,7 @@ void ProcessMirrorHeader(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   DCHECK(init_params->use_new_account_manager);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

@@ -71,7 +71,7 @@
 #include "base/callback_helpers.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "printing/print_settings.h"
 #include "printing/printing_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -777,8 +777,7 @@ void PrintViewManagerBase::OnNotifyPrintJobEvent(
     }
     case JobEventDetails::DOC_DONE: {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-      chromeos::LacrosChromeServiceImpl* service =
-          chromeos::LacrosChromeServiceImpl::Get();
+      chromeos::LacrosService* service = chromeos::LacrosService::Get();
       if (!service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
         LOG(ERROR) << "Could not report print job queued";
       } else {

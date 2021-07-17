@@ -39,7 +39,7 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace {
@@ -202,7 +202,7 @@ void OneGoogleBarLoaderImpl::AuthenticatedURLLoader::SetRequestHeaders(
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (!init_params->use_new_account_manager)
     return;
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

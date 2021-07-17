@@ -46,7 +46,7 @@
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 namespace profiles {
@@ -279,10 +279,9 @@ bool IsPublicSession() {
     return chromeos::LoginState::Get()->IsPublicSessionUser();
   }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  DCHECK(chromeos::LacrosChromeServiceImpl::Get());
-  return chromeos::LacrosChromeServiceImpl::Get()
-             ->init_params()
-             ->session_type == crosapi::mojom::SessionType::kPublicSession;
+  DCHECK(chromeos::LacrosService::Get());
+  return chromeos::LacrosService::Get()->init_params()->session_type ==
+         crosapi::mojom::SessionType::kPublicSession;
 #endif
   return false;
 }

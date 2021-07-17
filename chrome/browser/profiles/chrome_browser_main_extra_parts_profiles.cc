@@ -201,7 +201,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/cert_db_initializer_factory.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if defined(OS_MAC)
@@ -446,7 +446,7 @@ void ChromeBrowserMainExtraPartsProfiles::
     site_engagement::SiteEngagementServiceFactory::GetInstance();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (!init_params->use_new_account_manager)
     SigninManagerFactory::GetInstance();
 #elif BUILDFLAG(ENABLE_DICE_SUPPORT)

@@ -5,7 +5,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/networking_attributes.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 
 using NetworkingAttributesLacrosBrowserTest = InProcessBrowserTest;
@@ -14,7 +14,7 @@ IN_PROC_BROWSER_TEST_F(NetworkingAttributesLacrosBrowserTest,
                        GetNetworkDetails) {
   crosapi::mojom::GetNetworkDetailsResultPtr result;
   crosapi::mojom::NetworkingAttributesAsyncWaiter async_waiter(
-      chromeos::LacrosChromeServiceImpl::Get()
+      chromeos::LacrosService::Get()
           ->GetRemote<crosapi::mojom::NetworkingAttributes>()
           .get());
   async_waiter.GetNetworkDetails(&result);

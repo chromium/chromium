@@ -6,7 +6,7 @@
 
 #include "base/check.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_service.h"
 
@@ -18,7 +18,7 @@ MetricsReportingObserver::MetricsReportingObserver(PrefService* local_state)
 MetricsReportingObserver::~MetricsReportingObserver() = default;
 
 void MetricsReportingObserver::Init() {
-  auto* lacros_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_service = chromeos::LacrosService::Get();
   if (!lacros_service->IsMetricsReportingAvailable()) {
     LOG(WARNING) << "MetricsReporting API not available";
     return;

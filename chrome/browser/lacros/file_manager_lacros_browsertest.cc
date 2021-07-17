@@ -6,7 +6,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom-test-utils.h"
 #include "chromeos/crosapi/mojom/file_manager.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

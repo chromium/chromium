@@ -58,7 +58,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -297,7 +297,7 @@ ChromeSigninClient::GetInitialPrimaryAccount() {
   }
 
   const crosapi::mojom::AccountPtr& device_account =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params()->device_account;
+      chromeos::LacrosService::Get()->init_params()->device_account;
   if (!device_account)
     return absl::nullopt;
 

@@ -94,7 +94,7 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/account_id/account_id.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
@@ -1058,7 +1058,7 @@ IN_PROC_BROWSER_TEST_F(ProfileBrowserTest,
     crosapi::mojom::BrowserInitParamsPtr init_params =
         crosapi::mojom::BrowserInitParams::New();
     init_params->session_type = crosapi::mojom::SessionType::kPublicSession;
-    chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
     EXPECT_TRUE(profile->IsMainProfile());
@@ -1090,7 +1090,7 @@ IN_PROC_BROWSER_TEST_F(
     init_params->session_type = crosapi::mojom::SessionType::kRegularSession;
     init_params->device_mode =
         crosapi::mojom::DeviceMode::kEnterpriseActiveDirectory;
-    chromeos::LacrosChromeServiceImpl::Get()->SetInitParamsForTests(
+    chromeos::LacrosService::Get()->SetInitParamsForTests(
         std::move(init_params));
 
     EXPECT_TRUE(profile->IsMainProfile());

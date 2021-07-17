@@ -182,8 +182,8 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/common/chrome_paths_lacros.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"  // nogncheck
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
 #include "chromeos/lacros/lacros_dbus_helper.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -544,13 +544,12 @@ void ChromeMainDelegate::PostEarlyInitialization(bool is_running_tests) {
   // Initialize D-Bus for Lacros.
   chromeos::LacrosInitializeDBus();
 
-  // LacrosChromeServiceImpl instance needs the sequence of the main thread,
+  // LacrosService instance needs the sequence of the main thread,
   // and needs to be created earlier than incoming Mojo invitation handling.
   // This also needs ThreadPool sequences to post some tasks internally.
   // However, the tasks can be suspended until actual start of the ThreadPool
   // sequences later.
-  lacros_chrome_service_ =
-      std::make_unique<chromeos::LacrosChromeServiceImpl>();
+  lacros_chrome_service_ = std::make_unique<chromeos::LacrosService>();
   {
     const crosapi::mojom::BrowserInitParams* init_params =
         lacros_chrome_service_->init_params();

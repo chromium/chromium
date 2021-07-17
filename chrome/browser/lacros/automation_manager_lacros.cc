@@ -5,14 +5,13 @@
 #include "chrome/browser/lacros/automation_manager_lacros.h"
 
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api.h"
 #include "ui/accessibility/ax_tree_id.h"
 
 AutomationManagerLacros::AutomationManagerLacros() {
-  chromeos::LacrosChromeServiceImpl* impl =
-      chromeos::LacrosChromeServiceImpl::Get();
+  chromeos::LacrosService* impl = chromeos::LacrosService::Get();
   if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
 
@@ -24,8 +23,7 @@ AutomationManagerLacros::AutomationManagerLacros() {
 }
 
 AutomationManagerLacros::~AutomationManagerLacros() {
-  chromeos::LacrosChromeServiceImpl* impl =
-      chromeos::LacrosChromeServiceImpl::Get();
+  chromeos::LacrosService* impl = chromeos::LacrosService::Get();
   if (!impl->IsAvailable<crosapi::mojom::AutomationFactory>())
     return;
 
@@ -44,9 +42,8 @@ void AutomationManagerLacros::DispatchAccessibilityEvents(
   // TODO: we probably don't want to check every time but only once and cache
   // the value(s). Also, we need to check all accessibility enums, structs
   // reachable from AXTreeUpdate and AXEvent.
-  int remote_version =
-      chromeos::LacrosChromeServiceImpl::Get()->GetInterfaceVersion(
-          crosapi::mojom::Automation::Uuid_);
+  int remote_version = chromeos::LacrosService::Get()->GetInterfaceVersion(
+      crosapi::mojom::Automation::Uuid_);
   if (remote_version < 0 ||
       crosapi::mojom::Automation::kDispatchAccessibilityEventsMinVersion >
           static_cast<uint32_t>(remote_version)) {

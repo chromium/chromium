@@ -90,7 +90,7 @@
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager_util.h"
 #include "chromeos/crosapi/mojom/drive_integration_service.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 using content::RenderFrameHost;
@@ -365,8 +365,7 @@ PrintPreviewHandler::PrintPreviewHandler() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   local_printer_ = std::make_unique<crosapi::LocalPrinterAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl* service =
-      chromeos::LacrosChromeServiceImpl::Get();
+  chromeos::LacrosService* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<crosapi::mojom::LocalPrinter>()) {
     local_printer_ = service->GetRemote<crosapi::mojom::LocalPrinter>().get();
     local_printer_version_ =

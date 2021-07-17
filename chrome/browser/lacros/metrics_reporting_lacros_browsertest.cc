@@ -5,7 +5,7 @@
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "content/public/test/browser_test.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -37,7 +37,7 @@ class TestObserver : public mojom::MetricsReportingObserver {
 using MetricsReportingLacrosBrowserTest = InProcessBrowserTest;
 
 IN_PROC_BROWSER_TEST_F(MetricsReportingLacrosBrowserTest, Basics) {
-  auto* lacros_service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* lacros_service = chromeos::LacrosService::Get();
   ASSERT_TRUE(lacros_service);
 
   // We don't assert the initial metrics state because it might vary depending

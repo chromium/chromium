@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "chrome/browser/browser_process.h"
 #include "chromeos/crosapi/mojom/download_controller.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "components/download/public/common/download_item.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/download_item_utils.h"

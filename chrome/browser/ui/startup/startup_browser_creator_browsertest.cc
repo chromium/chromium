@@ -154,7 +154,7 @@ using testing::Return;
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_APP_SESSION_SERVICE) && !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -2561,7 +2561,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   const crosapi::mojom::BrowserInitParams* init_params =
-      chromeos::LacrosChromeServiceImpl::Get()->init_params();
+      chromeos::LacrosService::Get()->init_params();
   if (init_params->use_new_account_manager) {
     // Welcome page should not be shown for the first/main profile on Lacros.
     // (about:blank or new tab page will be shown instead)

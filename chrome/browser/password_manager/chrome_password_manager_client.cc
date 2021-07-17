@@ -154,7 +154,7 @@
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/cpp/scoped_allow_sync_call.h"
 #include "chromeos/crosapi/mojom/clipboard.mojom.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #endif
 
 #if defined(OS_ANDROID)
@@ -1310,7 +1310,7 @@ void ChromePasswordManagerClient::OnPaste() {
   // clipboard text.
   // TODO(https://crbug.com/913422): This logic can be removed once all
   // clipboard APIs are async.
-  auto* service = chromeos::LacrosChromeServiceImpl::Get();
+  auto* service = chromeos::LacrosService::Get();
   if (service->IsAvailable<crosapi::mojom::Clipboard>()) {
     used_crosapi_workaround = true;
     std::string text_utf8;

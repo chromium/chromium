@@ -569,7 +569,7 @@
 #include "chrome/browser/chrome_browser_main_parts_lacros.h"
 #include "chrome/browser/lacros/chrome_browser_main_extra_parts_lacros.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views_lacros.h"
-#include "chromeos/lacros/lacros_chrome_service_impl.h"
+#include "chromeos/lacros/lacros_service.h"
 #include "ui/base/ui_base_switches.h"
 #endif
 
@@ -5774,7 +5774,7 @@ bool ChromeContentBrowserClient::IsOriginTrialRequiredForAppCache(
 void ChromeContentBrowserClient::BindBrowserControlInterface(
     mojo::ScopedMessagePipeHandle pipe) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  chromeos::LacrosChromeServiceImpl::Get()->BindReceiver(
+  chromeos::LacrosService::Get()->BindReceiver(
       chrome::GetVersionString(chrome::WithExtendedStable(true)));
 #endif
 }
