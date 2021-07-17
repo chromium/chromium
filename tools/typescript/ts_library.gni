@@ -36,10 +36,6 @@ template("ts_library") {
       composite = invoker.composite
     }
 
-    if (composite) {
-      outputs += [ "$target_gen_dir/tsconfig.tsbuildinfo" ]
-    }
-
     if (defined(in_files)) {
       outputs += [ "$target_gen_dir/tsconfig.manifest" ]
       foreach(_source, in_files) {
