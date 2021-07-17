@@ -6,8 +6,10 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/phonehub/notification_opt_in_view.h"
+#include "ash/system/phonehub/phone_hub_recent_apps_view.h"
 #include "ash/system/phonehub/phone_hub_view_ids.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/phonehub/quick_actions_view.h"
@@ -51,6 +53,11 @@ PhoneConnectedView::PhoneConnectedView(
   if (phone_model) {
     setup_layered_view(AddChildView(std::make_unique<TaskContinuationView>(
         phone_model, phone_hub_manager->GetUserActionRecorder())));
+  }
+
+  if (features::IsEcheSWAEnabled() && features::IsPhoneHubRecentAppsEnabled()) {
+    setup_layered_view(
+        AddChildView(std::make_unique<PhoneHubRecentAppsView>()));
   }
 }
 
