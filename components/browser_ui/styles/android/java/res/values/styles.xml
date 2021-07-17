@@ -188,15 +188,12 @@
         <item name="android:background">@color/default_bg_color</item>
     </style>
 
-    <style name="Base.ColorOverlay" parent="">
-        <!-- Attributes that point to the same color/attr in dark and light modes. -->
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
-
-
-        <!-- Adaptive attributes -->
+    <!-- Indirection to allow downstream to add attributes. -->
+    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
+    <!-- TODO(https://crbug.com/1216642): Inconsistent naming style. Remove
+         after downstream stops using. -->
+    <style name="Base.ColorOverlay" parent="ColorOverlay.BrowserUi"/>
+    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
         <item name="android:colorBackground">@color/baseline_neutral_0</item>
         <item name="colorError">@color/baseline_error_600</item>
         <item name="colorOnBackground">@color/baseline_neutral_900</item>
@@ -220,6 +217,12 @@
         <!-- Semantic names -->
         <item name="divider_line_bg_color">?attr/colorSurfaceVariant</item>
     </style>
+    <style name="ColorOverlay.BrowserUi.DayNight" parent="ColorOverlay.Ui">
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
+        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
+        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
+    </style>
 
     <!-- It's logically backward, but this is applied to SettingsActivity when
          THEME_REFACTOR_ANDROID is disabled. -->
@@ -231,6 +234,4 @@
     <style name="ThemeRefactorOverlay.Enabled.SettingsPromo" parent="">
         <item name="elevationOverlayEnabled">true</item>
     </style>
-    <!-- Indirection to allow downstream to add attributes. -->
-    <style name="ColorOverlay" parent="Base.ColorOverlay"/>
 </resources>

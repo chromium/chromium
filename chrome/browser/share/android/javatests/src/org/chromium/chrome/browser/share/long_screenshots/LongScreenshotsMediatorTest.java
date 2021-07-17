@@ -40,7 +40,8 @@ public class LongScreenshotsMediatorTest {
 
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Mock
     private View mView;

@@ -13,6 +13,7 @@ import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 public class DummyUiChromeActivityTestCase extends DummyUiActivityTestCase {
     /** Default constructor. */
     public DummyUiChromeActivityTestCase() {
-        super(new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay));
+        super(new ThemedDummyUiActivityTestRule<>(
+                DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid));
     }
 }

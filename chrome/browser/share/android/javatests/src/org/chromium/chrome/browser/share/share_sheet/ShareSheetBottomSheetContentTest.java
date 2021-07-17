@@ -49,7 +49,8 @@ public final class ShareSheetBottomSheetContentTest {
 
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     private static final Bitmap.Config sConfig = Bitmap.Config.ALPHA_8;
     private static final Uri sImageUri = Uri.parse("content://testImage.png");

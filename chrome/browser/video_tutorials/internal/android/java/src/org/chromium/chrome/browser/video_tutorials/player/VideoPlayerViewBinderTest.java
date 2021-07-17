@@ -46,7 +46,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class VideoPlayerViewBinderTest {
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     private Activity mActivity;
     private VideoPlayerView mVideoPlayerView;

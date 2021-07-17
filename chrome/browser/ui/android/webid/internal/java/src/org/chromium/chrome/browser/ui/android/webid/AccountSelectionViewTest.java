@@ -75,7 +75,8 @@ public class AccountSelectionViewTest {
     private View mContentView;
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Before
     public void setUp() throws Exception {

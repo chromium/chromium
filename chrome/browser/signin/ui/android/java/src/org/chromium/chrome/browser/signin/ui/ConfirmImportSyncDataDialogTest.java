@@ -95,7 +95,8 @@ public class ConfirmImportSyncDataDialogTest {
 
     @ClassRule
     public static final ThemedDummyUiActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Mock
     private ConfirmImportSyncDataDialogCoordinator.Listener mListenerMock;

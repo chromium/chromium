@@ -69,7 +69,8 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Rule
     public ThemedDummyUiActivityTestRule<DummyUiActivity> mActivityTestRule =
-            new ThemedDummyUiActivityTestRule<>(DummyUiActivity.class, R.style.ColorOverlay);
+            new ThemedDummyUiActivityTestRule<>(
+                    DummyUiActivity.class, R.style.ColorOverlay_ChromiumAndroid);
 
     @Rule
     public TestRule mFeatureProcessor = new Features.JUnitProcessor();

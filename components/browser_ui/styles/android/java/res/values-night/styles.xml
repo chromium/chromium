@@ -4,13 +4,7 @@
      found in the LICENSE file. -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <style name="Base.ColorOverlay" parent="">
-        <!-- Attributes that point to the same color/attr in dark and light modes. -->
-        <item name="colorOnPrimaryContainer">@color/baseline_primary_900</item>
-        <item name="colorPrimaryContainer">@color/baseline_primary_100</item>
-        <item name="android:textColorPrimary">?attr/colorOnBackground</item>
-        <item name="android:textColorSecondary">?attr/colorOnSurfaceVariant</item>
-
+    <style name="ColorOverlay.BrowserUi" parent="ColorOverlay.BrowserUi.DayNight">
         <!-- Adaptive attributes -->
         <item name="android:colorBackground">@color/baseline_neutral_900</item>
         <item name="colorError">@color/baseline_error_200</item>
