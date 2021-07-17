@@ -488,13 +488,21 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
                                            IDS_PAGE_INFO_LEGACY_TLS_DETAILS,
                                            SecurityDescriptionType::CONNECTION);
         default:
-          return CreateSecurityDescription(
+
+          auto description = CreateSecurityDescription(
               SecuritySummaryColor::GREEN, IDS_PAGE_INFO_SECURE_SUMMARY,
               base::FeatureList::IsEnabled(
                   omnibox::kUpdatedConnectionSecurityIndicators)
                   ? IDS_PAGE_INFO_SECURE_DETAILS_V2
                   : IDS_PAGE_INFO_SECURE_DETAILS,
               SecurityDescriptionType::CONNECTION);
+          if (identity_info.identity_status ==
+              PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT) {
+            description->details = l10n_util::GetStringFUTF16(
+                IDS_PAGE_INFO_ADMIN_PROVIDED_CERT_DETAILS,
+                base::UTF8ToUTF16(identity_info.site_identity));
+          }
+          return description;
       }
     case PageInfo::SITE_IDENTITY_STATUS_DEPRECATED_SIGNATURE_ALGORITHM:
     case PageInfo::SITE_IDENTITY_STATUS_UNKNOWN:

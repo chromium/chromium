@@ -87,6 +87,9 @@
   <message name="IDS_PAGE_INFO_SECURE_DETAILS_V2" desc="A short paragraph explaining a secure site to the user.">
     The site's connection is secure unless Chrome tells you otherwise.
   </message>
+  <message name="IDS_PAGE_INFO_ADMIN_PROVIDED_CERT_DETAILS" desc="A short paragraph explaining a site using an administrator-provided certificate to the user.">
+    You have accessed content using an administrator-provided certificate. Data you provide to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> can be intercepted by your administrator.
+  </message>
   <message name="IDS_PAGE_INFO_MIXED_CONTENT_DETAILS" desc="A short paragraph explaining a partially insecure site to the user.">
     Attackers might be able to see the images you’re looking at on this site and trick you by modifying them.
   </message>
@@ -151,13 +154,6 @@
   <if expr="not use_titlecase">
     <message name="IDS_PAGE_INFO_CHECK_PASSWORDS_BUTTON" desc="The string used in the page info check passwords button.">
       Check passwords
-    </message>
-  </if>
-
-  <if expr="chromeos">
-    <!-- Administrator-provided certificate notifications -->
-    <message name="IDS_CERT_POLICY_PROVIDED_CERT_MESSAGE" desc="Text that is displayed in the Page Info popup when using an administrator-provided certificate">
-      You have accessed content using an administrator-provided certificate. Data you provide to <ph name="DOMAIN">$1<ex>www.google.com</ex></ph> can be intercepted by your administrator.
     </message>
   </if>
 
