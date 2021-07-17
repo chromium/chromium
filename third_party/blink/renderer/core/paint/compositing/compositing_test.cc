@@ -2393,6 +2393,42 @@ TEST_P(CompositingSimTest, SolidColorLayersWithSnapping) {
   EXPECT_TRUE(snap_up->GetRecordingSourceForTesting()->is_solid_color());
 }
 
+TEST_P(CompositingSimTest, SolidColorLayerWithSubpixelTransform) {
+  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return;
+
+  InitializeWithHTML(R"HTML(
+      <!DOCTYPE html>
+      <style>
+        #forceCompositing {
+          position: absolute;
+          width: 100px;
+          height: 100px;
+          will-change: transform;
+        }
+        #target {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 60.9px;
+          height: 60.1px;
+          transform: translate(0.4px, 0.6px);
+          background: blue;
+        }
+      </style>
+      <div id="forceCompositing"></div>
+      <div id="target"></div>
+  )HTML");
+
+  Compositor().BeginFrame();
+
+  auto* target =
+      static_cast<const cc::PictureLayer*>(CcLayerByDOMElementId("target"));
+  EXPECT_TRUE(target->GetRecordingSourceForTesting()->is_solid_color());
+  EXPECT_NEAR(0.4, target->offset_to_transform_parent().x(), 0.001);
+  EXPECT_NEAR(0.6, target->offset_to_transform_parent().y(), 0.001);
+}
+
 // While not required for correctness, it is important for performance (e.g.,
 // the MotionMark Focus benchmark) that we do not decomposite effect nodes (see:
 // |PaintArtifactCompositor::DecompositeEffect|) when the author has specified

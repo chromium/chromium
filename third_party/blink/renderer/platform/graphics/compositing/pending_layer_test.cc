@@ -92,20 +92,21 @@ TEST(PendingLayerTest, Merge) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
 
-  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.BoundsForTesting());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0));
-  EXPECT_EQ(pending_layer.Bounds(), pending_layer.RectKnownToBeOpaque());
+  EXPECT_EQ(pending_layer.BoundsForTesting(),
+            pending_layer.RectKnownToBeOpaque());
 
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
 
   // Bounds not equal to one PaintChunk.
-  EXPECT_EQ(FloatRect(0, 0, 40, 60), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 40, 60), pending_layer.BoundsForTesting());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1));
   EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.RectKnownToBeOpaque());
 
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 2)));
 
-  EXPECT_EQ(FloatRect(-5, -25, 45, 85), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(-5, -25, 45, 85), pending_layer.BoundsForTesting());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1, 2));
   EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.RectKnownToBeOpaque());
 }
@@ -119,7 +120,7 @@ TEST(PendingLayerTest, MergeWithGuestTransform) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 70, 85), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 70, 85), pending_layer.BoundsForTesting());
   EXPECT_EQ(PropertyTreeState::Root(), pending_layer.GetPropertyTreeState());
 }
 
@@ -132,7 +133,7 @@ TEST(PendingLayerTest, MergeWithHomeTransform) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 50, 65), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 50, 65), pending_layer.BoundsForTesting());
   EXPECT_EQ(PropertyTreeState::Root(), pending_layer.GetPropertyTreeState());
 }
 
@@ -146,7 +147,7 @@ TEST(PendingLayerTest, MergeWithBothTransforms) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(-20, -25, 70, 90), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(-20, -25, 70, 90), pending_layer.BoundsForTesting());
   EXPECT_EQ(PropertyTreeState::Root(), pending_layer.GetPropertyTreeState());
 }
 
@@ -162,7 +163,7 @@ TEST(PendingLayerTest, MergeSparseTinyLayers) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 23, 24), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 23, 24), pending_layer.BoundsForTesting());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0, 1));
 }
 
@@ -178,7 +179,7 @@ TEST(PendingLayerTest, DontMergeSparse) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_FALSE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.BoundsForTesting());
   EXPECT_EQ(chunks.begin()->properties, pending_layer.GetPropertyTreeState());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0));
 }
@@ -193,7 +194,7 @@ TEST(PendingLayerTest, PendingLayerDontMergeSparseWithTransforms) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_FALSE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.BoundsForTesting());
   EXPECT_EQ(chunks.begin()->properties, pending_layer.GetPropertyTreeState());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0));
 }
@@ -210,7 +211,7 @@ TEST(PendingLayerTest, DontMergeSparseInCompositedEffect) {
 
   PendingLayer pending_layer(chunks, chunks.begin());
   ASSERT_FALSE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
-  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.Bounds());
+  EXPECT_EQ(FloatRect(0, 0, 30, 40), pending_layer.BoundsForTesting());
   EXPECT_EQ(chunks.begin()->properties, pending_layer.GetPropertyTreeState());
   EXPECT_THAT(ChunkIndices(pending_layer), ElementsAre(0));
 }
@@ -245,12 +246,14 @@ TEST(PendingLayerTest, KnownOpaque) {
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 1)));
   // Chunk 2 doesn't cover the entire layer, so not opaque.
   EXPECT_EQ(FloatRect(0, 0, 25, 35), pending_layer.RectKnownToBeOpaque());
-  EXPECT_NE(pending_layer.Bounds(), pending_layer.RectKnownToBeOpaque());
+  EXPECT_NE(pending_layer.BoundsForTesting(),
+            pending_layer.RectKnownToBeOpaque());
 
   ASSERT_TRUE(pending_layer.Merge(PendingLayer(chunks, chunks.begin() + 2)));
   // Chunk 3 covers the entire layer, so now it's opaque.
-  EXPECT_EQ(FloatRect(0, 0, 50, 60), pending_layer.Bounds());
-  EXPECT_EQ(pending_layer.Bounds(), pending_layer.RectKnownToBeOpaque());
+  EXPECT_EQ(FloatRect(0, 0, 50, 60), pending_layer.BoundsForTesting());
+  EXPECT_EQ(pending_layer.BoundsForTesting(),
+            pending_layer.RectKnownToBeOpaque());
 }
 
 TEST(PendingLayerTest, CanNotMergeAcrossPaintArtifacts) {
@@ -292,7 +295,7 @@ TEST_P(PendingLayerTextOpaquenessTest, OpaqueTextAndOpaqueText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
 
@@ -314,7 +317,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NonOpaqueTextAndOpaqueText) {
     ASSERT_FALSE(merged);
   } else {
     ASSERT_TRUE(merged);
-    EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+    EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
     EXPECT_FALSE(layer_a.TextKnownToBeOnOpaqueBackground());
   }
 }
@@ -337,7 +340,7 @@ TEST_P(PendingLayerTextOpaquenessTest, OpaqueTextAndNonOpaqueText) {
     ASSERT_FALSE(merged);
   } else {
     ASSERT_TRUE(merged);
-    EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+    EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
     EXPECT_FALSE(layer_a.TextKnownToBeOnOpaqueBackground());
   }
 }
@@ -356,7 +359,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NonOpaqueTextAndOpaqueTextCovered) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 300, 300), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 300, 300), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(200, 200, 100, 100), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -375,7 +378,7 @@ TEST_P(PendingLayerTextOpaquenessTest, OpaqueTextAndNonOpaqueTextCovered) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -393,7 +396,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NoTextAndOpaqueText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -411,7 +414,7 @@ TEST_P(PendingLayerTextOpaquenessTest, OpaqueTextAndNoText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -427,7 +430,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NonOpaqueNoTextAndNonOpaqueText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
   EXPECT_FALSE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
 
@@ -442,7 +445,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NonOpaqueTextAndNonOpaqueNoText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 400, 400), layer_a.BoundsForTesting());
   EXPECT_FALSE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
 
@@ -458,7 +461,7 @@ TEST_P(PendingLayerTextOpaquenessTest, OpaqueNoTextAndNonOpaqueText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -475,7 +478,7 @@ TEST_P(PendingLayerTextOpaquenessTest, NonOpaqueTextAndOpaqueNoText) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(100, 100, 250, 250), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }
@@ -498,7 +501,7 @@ TEST_P(PendingLayerTextOpaquenessTest, UnitedClippedToOpaque) {
   PendingLayer layer_a(chunks, chunks.begin());
   PendingLayer layer_b(chunks, chunks.begin() + 1);
   ASSERT_TRUE(layer_a.Merge(layer_b, PrefersLCDText()));
-  EXPECT_EQ(FloatRect(175, 175, 100, 100), layer_a.Bounds());
+  EXPECT_EQ(FloatRect(175, 175, 100, 100), layer_a.BoundsForTesting());
   EXPECT_EQ(FloatRect(100, 100, 210, 210), layer_a.RectKnownToBeOpaque());
   EXPECT_TRUE(layer_a.TextKnownToBeOnOpaqueBackground());
 }

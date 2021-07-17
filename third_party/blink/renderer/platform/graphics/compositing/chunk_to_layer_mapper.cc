@@ -11,12 +11,11 @@
 namespace blink {
 
 ChunkToLayerMapper::ChunkToLayerMapper(const PropertyTreeState& layer_state,
-                                       const gfx::Vector2dF& layer_offset)
+                                       const FloatPoint& layer_offset)
     : layer_state_(layer_state),
       layer_offset_(layer_offset),
       chunk_state_(layer_state_),
-      translation_2d_or_matrix_(
-          FloatSize(-layer_offset.x(), -layer_offset.y())) {}
+      translation_2d_or_matrix_(ToFloatSize(-layer_offset)) {}
 
 void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   raster_effect_outset_ = chunk.raster_effect_outset;
@@ -28,8 +27,8 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
 
   if (new_chunk_state == layer_state_) {
     has_filter_that_moves_pixels_ = false;
-    translation_2d_or_matrix_ = GeometryMapper::Translation2DOrMatrix(
-        FloatSize(-layer_offset_.x(), -layer_offset_.y()));
+    translation_2d_or_matrix_ =
+        GeometryMapper::Translation2DOrMatrix(ToFloatSize(-layer_offset_));
     clip_rect_ = FloatClipRect();
     chunk_state_ = new_chunk_state;
     return;
@@ -38,8 +37,8 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
   if (&new_chunk_state.Transform() != &chunk_state_.Transform()) {
     translation_2d_or_matrix_ = GeometryMapper::SourceToDestinationProjection(
         new_chunk_state.Transform(), layer_state_.Transform());
-    translation_2d_or_matrix_.PostTranslate(-layer_offset_.x(),
-                                            -layer_offset_.y());
+    translation_2d_or_matrix_.PostTranslate(-layer_offset_.X(),
+                                            -layer_offset_.Y());
   }
 
   bool new_has_filter_that_moves_pixels = has_filter_that_moves_pixels_;
@@ -62,7 +61,7 @@ void ChunkToLayerMapper::SwitchToChunk(const PaintChunk& chunk) {
     clip_rect_ =
         GeometryMapper::LocalToAncestorClipRect(new_chunk_state, layer_state_);
     if (!clip_rect_.IsInfinite())
-      clip_rect_.MoveBy(FloatPoint(-layer_offset_.x(), -layer_offset_.y()));
+      clip_rect_.MoveBy(-layer_offset_);
   }
 
   chunk_state_ = new_chunk_state;
@@ -108,7 +107,7 @@ IntRect ChunkToLayerMapper::MapUsingGeometryMapper(const IntRect& rect) const {
   if (visual_rect.Rect().IsEmpty())
     return IntRect();
 
-  visual_rect.Rect().Move(-layer_offset_.x(), -layer_offset_.y());
+  visual_rect.Rect().MoveBy(-layer_offset_);
   InflateForRasterEffectOutset(visual_rect.Rect());
   return EnclosingIntRect(visual_rect.Rect());
 }

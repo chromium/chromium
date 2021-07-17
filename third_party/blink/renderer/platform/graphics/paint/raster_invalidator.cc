@@ -175,7 +175,7 @@ void RasterInvalidator::GenerateRasterInvalidations(
     const PaintChunkSubset& new_chunks,
     const PropertyTreeState& layer_state,
     Vector<PaintChunkInfo>& new_chunks_info) {
-  ChunkToLayerMapper mapper(layer_state, layer_bounds_.OffsetFromOrigin());
+  ChunkToLayerMapper mapper(layer_state, layer_offset_);
   Vector<bool> old_chunks_matched;
   old_chunks_matched.resize(old_paint_chunks_info_.size());
   wtf_size_t old_index = 0;
@@ -312,13 +312,15 @@ RasterInvalidationTracking& RasterInvalidator::EnsureTracking() {
 void RasterInvalidator::Generate(
     RasterInvalidationFunction raster_invalidation_function,
     const PaintChunkSubset& new_chunks,
-    const gfx::Rect& layer_bounds,
+    const FloatPoint& layer_offset,
+    const IntSize& layer_bounds,
     const PropertyTreeState& layer_state,
     const DisplayItemClient* layer_client) {
   if (RasterInvalidationTracking::ShouldAlwaysTrack())
     EnsureTracking();
 
   bool layer_bounds_was_empty = layer_bounds_.IsEmpty();
+  layer_offset_ = layer_offset;
   layer_bounds_ = layer_bounds;
 
   Vector<PaintChunkInfo> new_chunks_info;
@@ -327,7 +329,7 @@ void RasterInvalidator::Generate(
   if (layer_bounds_was_empty || layer_bounds_.IsEmpty()) {
     // Fast path if either the old bounds or the new bounds is empty. We still
     // need to update new_chunks_info for the next cycle.
-    ChunkToLayerMapper mapper(layer_state, layer_bounds.OffsetFromOrigin());
+    ChunkToLayerMapper mapper(layer_state, layer_offset);
     for (auto it = new_chunks.begin(); it != new_chunks.end(); ++it) {
       if (ShouldSkipForRasterInvalidation(it))
         continue;
@@ -337,8 +339,7 @@ void RasterInvalidator::Generate(
 
     if (!layer_bounds.IsEmpty() && !new_chunks.IsEmpty()) {
       AddRasterInvalidation(
-          raster_invalidation_function,
-          IntRect(IntPoint(), IntSize(layer_bounds.size())),
+          raster_invalidation_function, IntRect(IntPoint(), layer_bounds),
           layer_client ? *layer_client : new_chunks.begin()->id.client,
           PaintInvalidationReason::kFullLayer, kClientIsNew);
     }
@@ -367,7 +368,8 @@ size_t RasterInvalidator::ApproximateUnsharedMemoryUsage() const {
 void RasterInvalidator::ClearOldStates() {
   old_paint_artifact_ = nullptr;
   old_paint_chunks_info_.clear();
-  layer_bounds_ = gfx::Rect();
+  layer_offset_ = FloatPoint();
+  layer_bounds_ = IntSize();
 }
 
 }  // namespace blink

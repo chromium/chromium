@@ -251,4 +251,42 @@ IntRect DrawingDisplayItem::TightenVisualRect(
   return item_rect;
 }
 
+bool DrawingDisplayItem::IsSolidColor() const {
+  if (!record_)
+    return false;
+
+  // TODO(pdr): We could use SolidColorAnalyzer::DetermineIfSolidColor instead
+  // of special-casing just single-op drawrect solid colors.
+  if (record_->size() != 1)
+    return false;
+
+  const auto* op = record_->GetFirstOp();
+  if (!op->IsPaintOpWithFlags())
+    return false;
+
+  const auto& flags = static_cast<const cc::PaintOpWithFlags*>(op)->flags;
+  // The following can cause the painted output to be outside the paint op rect.
+  if (flags.getStyle() != cc::PaintFlags::kFill_Style || flags.getLooper() ||
+      flags.getMaskFilter() || flags.getImageFilter() || flags.getShader()) {
+    return false;
+  }
+
+  FloatRect solid_color_rect;
+  switch (op->GetType()) {
+    case cc::PaintOpType::DrawRect:
+      solid_color_rect =
+          FloatRect(static_cast<const cc::DrawRectOp*>(op)->rect);
+      break;
+    case cc::PaintOpType::DrawIRect:
+      solid_color_rect =
+          FloatRect(IntRect(static_cast<const cc::DrawIRectOp*>(op)->rect));
+      break;
+    default:
+      return false;
+  }
+
+  // The solid color must fully cover the visual rect.
+  return solid_color_rect.Contains(VisualRect());
+}
+
 }  // namespace blink

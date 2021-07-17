@@ -289,9 +289,10 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   std::unique_ptr<ContentLayerClientImpl> content_layer_client =
       ClientForPaintChunk(pending_layer.FirstPaintChunk());
 
-  IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.Bounds());
+  FloatPoint layer_offset = pending_layer.LayerOffset();
+  IntSize layer_bounds = pending_layer.LayerBounds();
   auto cc_layer = content_layer_client->UpdateCcPictureLayer(
-      pending_layer.Chunks(), cc_combined_bounds,
+      pending_layer.Chunks(), layer_offset, layer_bounds,
       pending_layer.GetPropertyTreeState());
 
   new_content_layer_clients.push_back(std::move(content_layer_client));
@@ -300,7 +301,7 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   // here to avoid changing foreign layers. This includes things set by
   // GraphicsLayer on the ContentsLayer() or by video clients etc.
   bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
-      FloatRect(cc_combined_bounds));
+      FloatRect(layer_offset, FloatSize(layer_bounds)));
   cc_layer->SetContentsOpaque(contents_opaque);
   if (!contents_opaque) {
     cc_layer->SetContentsOpaqueForText(
@@ -953,10 +954,9 @@ void PaintArtifactCompositor::UpdateRepaintedContentLayerClient(
     content_layer_client.GetRasterInvalidator().SetOldPaintArtifact(
         &pending_layer.Chunks().GetPaintArtifact());
   } else {
-    IntRect cc_combined_bounds = EnclosingIntRect(pending_layer.Bounds());
     content_layer_client.UpdateCcPictureLayer(
-        pending_layer.Chunks(), cc_combined_bounds,
-        pending_layer.GetPropertyTreeState());
+        pending_layer.Chunks(), pending_layer.LayerOffset(),
+        pending_layer.LayerBounds(), pending_layer.GetPropertyTreeState());
   }
 }
 

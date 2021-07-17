@@ -43,7 +43,12 @@ class PLATFORM_EXPORT PendingLayer {
   PendingLayer(const PaintChunkSubset&, const PaintChunkIterator&);
   explicit PendingLayer(const PreCompositedLayerInfo&);
 
-  const FloatRect& Bounds() const { return bounds_; }
+  // Returns the offset/bounds for the final cc::Layer, rounded if needed.
+  FloatPoint LayerOffset() const;
+  IntSize LayerBounds() const;
+
+  const FloatRect& BoundsForTesting() const { return bounds_; }
+
   const FloatRect& RectKnownToBeOpaque() const {
     return rect_known_to_be_opaque_;
   }
@@ -126,6 +131,9 @@ class PLATFORM_EXPORT PendingLayer {
                      const PropertyTreeState& guest_state,
                      bool prefers_lcd_text,
                      bool dry_run);
+
+  // True if this contains only a single solid color DrawingDisplayItem.
+  bool IsSolidColor() const;
 
   // The rects are in the space of property_tree_state.
   FloatRect bounds_;

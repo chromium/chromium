@@ -6,6 +6,7 @@
 
 #include "base/callback_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller_test.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
@@ -26,9 +27,9 @@ class DisplayItemRasterInvalidatorTest : public PaintControllerTestBase,
     invalidator_.Generate(
         base::DoNothing(),
         PaintChunkSubset(GetPaintController().GetPaintArtifactShared()),
-        // The layer rect is big enough not to clip display item raster
+        // The layer bounds are big enough not to clip display item raster
         // invalidation rects in the tests.
-        IntRect(0, 0, 20000, 20000), PropertyTreeState::Root());
+        FloatPoint(), IntSize(20000, 20000), PropertyTreeState::Root());
     GetPaintController().FinishCycle();
     for (auto& chunk : GetPaintController().PaintChunks())
       chunk.properties.ClearChangedTo(PropertyTreeState::Root());

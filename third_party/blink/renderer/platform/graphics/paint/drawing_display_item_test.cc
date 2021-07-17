@@ -123,5 +123,40 @@ TEST_F(DrawingDisplayItemTest, EqualsForUnderInvalidation) {
   EXPECT_TRUE(empty_item.EqualsForUnderInvalidation(empty_item));
 }
 
+TEST_F(DrawingDisplayItemTest, SolidColorRect) {
+  FloatRect record_bounds(5, 6, 10, 10);
+  DrawingDisplayItem item(client_, DisplayItem::Type::kDocumentBackground,
+                          EnclosingIntRect(record_bounds),
+                          CreateRectRecord(record_bounds));
+  EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
+  EXPECT_TRUE(item.IsSolidColor());
+}
+
+TEST_F(DrawingDisplayItemTest, NonSolidColorSnappedRect) {
+  FloatRect record_bounds(5.1, 6.9, 10, 10);
+  DrawingDisplayItem item(client_, DisplayItem::Type::kDocumentBackground,
+                          EnclosingIntRect(record_bounds),
+                          CreateRectRecord(record_bounds));
+  EXPECT_EQ(IntRect(5, 6, 11, 11), item.VisualRect());
+  // Not solid color if the drawing does not fully cover the visual rect.
+  EXPECT_FALSE(item.IsSolidColor());
+}
+
+TEST_F(DrawingDisplayItemTest, NonSolidColorOval) {
+  FloatRect record_bounds(5, 6, 10, 10);
+
+  PaintRecorder recorder;
+  cc::PaintCanvas* canvas =
+      recorder.beginRecording(record_bounds.Width(), record_bounds.Height());
+  canvas->drawOval(record_bounds, PaintFlags());
+
+  DrawingDisplayItem item(client_, DisplayItem::Type::kDocumentBackground,
+                          EnclosingIntRect(record_bounds),
+                          recorder.finishRecordingAsPicture());
+  EXPECT_EQ(IntRect(5, 6, 10, 10), item.VisualRect());
+  // Not solid color if the drawing does not fully cover the visual rect.
+  EXPECT_FALSE(item.IsSolidColor());
+}
+
 }  // namespace
 }  // namespace blink

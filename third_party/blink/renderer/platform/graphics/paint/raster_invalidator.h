@@ -41,7 +41,8 @@ class PLATFORM_EXPORT RasterInvalidator {
   // paint artifact.
   void Generate(RasterInvalidationFunction,
                 const PaintChunkSubset&,
-                const gfx::Rect& layer_bounds,
+                const FloatPoint& layer_offset,
+                const IntSize& layer_bounds,
                 const PropertyTreeState& layer_state,
                 const DisplayItemClient* layer_client = nullptr);
 
@@ -52,7 +53,7 @@ class PLATFORM_EXPORT RasterInvalidator {
   // PaintArtifactCompositor and pass it in Generate().
   void SetOldPaintArtifact(scoped_refptr<const PaintArtifact>);
 
-  const gfx::Rect& LayerBounds() const { return layer_bounds_; }
+  const IntSize& LayerBounds() const { return layer_bounds_; }
 
   size_t ApproximateUnsharedMemoryUsage() const;
 
@@ -138,10 +139,11 @@ class PLATFORM_EXPORT RasterInvalidator {
   template <typename Rect>
   Rect ClipByLayerBounds(const Rect& r) const {
     return Intersection(
-        r, Rect(0, 0, layer_bounds_.width(), layer_bounds_.height()));
+        r, Rect(0, 0, layer_bounds_.Width(), layer_bounds_.Height()));
   }
 
-  gfx::Rect layer_bounds_;
+  FloatPoint layer_offset_;
+  IntSize layer_bounds_;
   Vector<PaintChunkInfo> old_paint_chunks_info_;
   scoped_refptr<const PaintArtifact> old_paint_artifact_;
 

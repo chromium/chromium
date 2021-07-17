@@ -48,6 +48,8 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
 
   SkColor BackgroundColor(float& area) const;
 
+  bool IsSolidColor() const;
+
  private:
   friend class DisplayItem;
   bool EqualsForUnderInvalidationImpl(const DrawingDisplayItem&) const;

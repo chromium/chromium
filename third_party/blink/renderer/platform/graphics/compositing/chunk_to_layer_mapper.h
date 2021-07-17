@@ -23,7 +23,7 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
 
  public:
   ChunkToLayerMapper(const PropertyTreeState& layer_state,
-                     const gfx::Vector2dF& layer_offset);
+                     const FloatPoint& layer_offset);
 
   // This class can map from multiple chunks. Before mapping from a chunk, this
   // method must be called to prepare for the chunk.
@@ -47,7 +47,7 @@ class PLATFORM_EXPORT ChunkToLayerMapper {
   void InflateForRasterEffectOutset(FloatRect&) const;
 
   const PropertyTreeState layer_state_;
-  const gfx::Vector2dF layer_offset_;
+  const FloatPoint layer_offset_;
 
   // The following fields are chunk-specific which are updated in
   // SwitchToChunk().

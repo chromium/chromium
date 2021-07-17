@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
 namespace blink {
@@ -95,6 +96,24 @@ PendingLayer::PendingLayer(const PreCompositedLayerInfo& pre_composited_layer)
       compositing_type_(kPreCompositedLayer) {
   DCHECK(graphics_layer_);
   DCHECK(!graphics_layer_->ShouldCreateLayersAfterPaint());
+}
+
+FloatPoint PendingLayer::LayerOffset() const {
+  // The solid color layer optimization is important for performance. Snapping
+  // the location could make the solid color drawings not cover the entire
+  // cc::Layer which would make the layer non-solid-color.
+  if (IsSolidColor())
+    return bounds_.Location();
+  // Otherwise return integral offset to reduce chance of additional blurriness.
+  return FloatPoint(FlooredIntPoint(bounds_.Location()));
+}
+
+IntSize PendingLayer::LayerBounds() const {
+  // Because solid color layers do not adjust their location (see:
+  // |PendingLayer::LayerOffset()|), we only expand their size here.
+  if (IsSolidColor())
+    return ExpandedIntSize(bounds_.Size());
+  return EnclosingIntRect(bounds_).Size();
 }
 
 FloatRect PendingLayer::MapRectKnownToBeOpaque(
@@ -193,11 +212,11 @@ bool PendingLayer::MergeInternal(const PendingLayer& guest,
   if (!merged_state)
     return false;
 
-  FloatClipRect new_home_bounds(Bounds());
+  FloatClipRect new_home_bounds(bounds_);
   GeometryMapper::LocalToAncestorVisualRect(GetPropertyTreeState(),
                                             *merged_state, new_home_bounds);
   ClipToVisibilityLimit(*merged_state, new_home_bounds.Rect());
-  FloatClipRect new_guest_bounds(guest.Bounds());
+  FloatClipRect new_guest_bounds(guest.bounds_);
   GeometryMapper::LocalToAncestorVisualRect(guest_state, *merged_state,
                                             new_guest_bounds);
   ClipToVisibilityLimit(*merged_state, new_guest_bounds.Rect());
@@ -388,12 +407,21 @@ void PendingLayer::DecompositeTransforms(Vector<PendingLayer>& pending_layers) {
       transform = &transform->Parent()->Unalias();
     }
     pending_layer.property_tree_state_.SetTransform(*transform);
-    // Move bounds into the new transform space.
     pending_layer.bounds_.MoveBy(
         pending_layer.OffsetOfDecompositedTransforms());
     pending_layer.rect_known_to_be_opaque_.MoveBy(
         pending_layer.OffsetOfDecompositedTransforms());
   }
+}
+
+bool PendingLayer::IsSolidColor() const {
+  if (Chunks().size() != 1)
+    return false;
+  const auto& items = chunks_.begin().DisplayItems();
+  if (items.size() != 1)
+    return false;
+  auto* drawing = DynamicTo<DrawingDisplayItem>(*items.begin());
+  return drawing && drawing->IsSolidColor();
 }
 
 }  // namespace blink
