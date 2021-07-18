@@ -60,7 +60,7 @@ bool WorkQueue::BlockedByFence() const {
 bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
   if (tasks_.empty() || BlockedByFence()) {
     recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #1 %lu",
-                         recordreplay::PointerId((void*)this));
+                         recordreplay::PointerId(this));
     return false;
   }
   // Quick sanity check.
@@ -69,7 +69,7 @@ bool WorkQueue::GetFrontTaskEnqueueOrder(EnqueueOrder* enqueue_order) const {
       << name_;
   *enqueue_order = tasks_.front().enqueue_order();
   recordreplay::Assert("WorkQueue::GetFrontTaskEnqueueOrder #2 %lu %lu",
-                       recordreplay::PointerId((void*)this), (size_t)*enqueue_order);
+                       recordreplay::PointerId(this), (size_t)*enqueue_order);
   return true;
 }
 

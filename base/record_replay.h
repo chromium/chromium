@@ -56,9 +56,9 @@ struct AutoDisallowEvents {
 
 bool HasDivergedFromRecording();
 
-void RegisterPointer(void* ptr);
-void UnregisterPointer(void* ptr);
-int PointerId(void* ptr);
+void RegisterPointer(const void* ptr);
+void UnregisterPointer(const void* ptr);
+int PointerId(const void* ptr);
 void* IdPointer(int id);
 
 // stl comparator that uses pointer IDs to compare elements when recording/replaying,
@@ -67,8 +67,8 @@ struct CompareByPointerId {
   template <typename T>
   bool operator()(const T* a, const T* b) const {
     if (recordreplay::IsRecordingOrReplaying()) {
-      int ida = recordreplay::PointerId((void*)a);
-      int idb = recordreplay::PointerId((void*)b);
+      int ida = recordreplay::PointerId(a);
+      int idb = recordreplay::PointerId(b);
       CHECK(ida && idb);
       return ida < idb;
     }

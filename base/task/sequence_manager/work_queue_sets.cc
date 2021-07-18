@@ -262,7 +262,7 @@ void WorkQueueSets::CollectSkippedOverLowerPriorityTasks(
     const internal::WorkQueue* selected_work_queue,
     std::vector<const Task*>* result) const {
   recordreplay::Assert("WorkQueueSets::CollectSkippedOverLowerPriorityTasks %lu",
-                       recordreplay::PointerId((void*)selected_work_queue));
+                       recordreplay::PointerId(selected_work_queue));
   EnqueueOrder selected_enqueue_order;
   CHECK(selected_work_queue->GetFrontTaskEnqueueOrder(&selected_enqueue_order));
   for (size_t priority = selected_work_queue->work_queue_set_index() + 1;

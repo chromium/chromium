@@ -313,7 +313,7 @@ void PictureLayerTiling::RemoveTilesInRegion(const Region& layer_invalidation,
 
 Tile::CreateInfo PictureLayerTiling::CreateInfoForTile(int i, int j) const {
   recordreplay::Assert("PictureLayerTiling::CreateInfoForTile Start %d",
-                       recordreplay::PointerId((void*)this));
+                       recordreplay::PointerId(this));
   gfx::Rect tile_rect = tiling_data_.TileBoundsWithBorder(i, j);
   recordreplay::Assert("PictureLayerTiling::CreateInfoForTile %d %d %d %d %d %d",
                        i, j, tile_rect.x(), tile_rect.y(), tile_rect.width(), tile_rect.height());

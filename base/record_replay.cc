@@ -33,9 +33,9 @@ extern "C" void V8RecordReplayNewCheckpoint();
 extern "C" void V8RecordReplayBeginPassThroughEvents();
 extern "C" void V8RecordReplayEndPassThroughEvents();
 extern "C" bool V8RecordReplayHasDivergedFromRecording();
-extern "C" void V8RecordReplayRegisterPointer(void* ptr);
-extern "C" void V8RecordReplayUnregisterPointer(void* ptr);
-extern "C" int V8RecordReplayPointerId(void* ptr);
+extern "C" void V8RecordReplayRegisterPointer(const void* ptr);
+extern "C" void V8RecordReplayUnregisterPointer(const void* ptr);
+extern "C" int V8RecordReplayPointerId(const void* ptr);
 extern "C" void* V8RecordReplayIdPointer(int id);
 
 bool IsRecordingOrReplaying() {
@@ -117,15 +117,15 @@ bool HasDivergedFromRecording() {
   return OP2(V8RecordReplayHasDivergedFromRecording(), false);
 }
 
-void RegisterPointer(void* ptr) {
+void RegisterPointer(const void* ptr) {
   OP(V8RecordReplayRegisterPointer(ptr));
 }
 
-void UnregisterPointer(void* ptr) {
+void UnregisterPointer(const void* ptr) {
   OP(V8RecordReplayUnregisterPointer(ptr));
 }
 
-int PointerId(void* ptr) {
+int PointerId(const void* ptr) {
   return OP2(V8RecordReplayPointerId(ptr), 0);
 }
 

@@ -1676,7 +1676,7 @@ bool XMLHttpRequest::ResponseIsHTML() const {
 
 int XMLHttpRequest::status() const {
   recordreplay::Assert("XMLHttpRequest::status %lu %d %d",
-                       recordreplay::PointerId((void*)this), (int)state_, error_);
+                       recordreplay::PointerId(this), (int)state_, error_);
 
   if (state_ == kUnsent || state_ == kOpened || error_)
     return 0;

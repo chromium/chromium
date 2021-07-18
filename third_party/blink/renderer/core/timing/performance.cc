@@ -944,7 +944,7 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
   recordreplay::Assert("Performance::NotifyObserversOfEntry Start %lu",
-                       recordreplay::PointerId((void*)this));
+                       recordreplay::PointerId(this));
   DCHECK(entry.EntryTypeEnum() != PerformanceEntry::kEvent ||
          RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
