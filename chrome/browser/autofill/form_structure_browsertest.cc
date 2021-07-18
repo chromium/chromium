@@ -177,7 +177,9 @@ FormStructureBrowserTest::FormStructureBrowserTest()
     : DataDrivenTest(GetTestDataDir()) {
   feature_list_.InitWithFeatures(
       // Enabled
-      {// TODO(crbug.com/1098943): Remove once experiment is over.
+      {// TODO(crbug.com/1187842): Remove once experiment is over.
+       features::kAutofillAcrossIframes,
+       // TODO(crbug.com/1098943): Remove once experiment is over.
        features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
        features::kAutofillEnableSupportForMoreStructureInAddresses,
