@@ -220,6 +220,7 @@
 <translation id="1232569758102978740">Untitled</translation>
 <translation id="1233497634904001272">Touch your security key again to complete the request.</translation>
 <translation id="1233721473400465416">Locale</translation>
+<translation id="1234736487471201993">Create QR code for this image</translation>
 <translation id="1234808891666923653">Service Workers</translation>
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="123578888592755962">Disk full</translation>
@@ -262,6 +263,7 @@
 <translation id="1278859221870828664">Review Google Play apps and services</translation>
 <translation id="127946606521051357">Device nearby is sharing</translation>
 <translation id="1280965841156951489">Edit files</translation>
+<translation id="1282465000333679776">Share system audio</translation>
 <translation id="1285320974508926690">Never translate this site</translation>
 <translation id="1285484354230578868">Store data in your Google Drive account</translation>
 <translation id="1285625592773741684">Current data usage setting is mobile data</translation>
@@ -627,6 +629,7 @@
 <translation id="1660763353352708040">Power adaptor issue</translation>
 <translation id="1661156625580498328">Enforce AES encryption (recommended).</translation>
 <translation id="16620462294541761">Sorry, your password could not be verified. Please try again.</translation>
+<translation id="1662777896967868795">On – will turn off automatically at sunrise</translation>
 <translation id="166278006618318542">Subject Public Key Algorithm</translation>
 <translation id="1666232093776384142">Disable data access protection for peripherals</translation>
 <translation id="1668435968811469751">Enrol manually</translation>
@@ -754,6 +757,7 @@
 <translation id="1781398670452016618"><ph name="DOMAIN" /> requires you to connect to Wi-Fi now and download an update.</translation>
 <translation id="1781502536226964113">Open the New Tab page</translation>
 <translation id="1781771911845953849">Accounts and sync</translation>
+<translation id="1781979858217752599">Share window audio</translation>
 <translation id="1782101999402987960">Updates are blocked by your administrator</translation>
 <translation id="1782196717298160133">Finding your phone</translation>
 <translation id="1784707308176068866">Run in the background when requested by a cooperating native application</translation>
@@ -1143,6 +1147,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2187895286714876935">Server Certificate Import Error</translation>
 <translation id="2187906491731510095">Extensions updated</translation>
 <translation id="2188881192257509750">Open <ph name="APPLICATION" /></translation>
+<translation id="2189787291884708275">Share tab audio</translation>
 <translation id="2190069059097339078">Wi-Fi Credentials Getter</translation>
 <translation id="219008588003277019">Native Client module: <ph name="NEXE_NAME" /></translation>
 <translation id="2190355936436201913">(empty)</translation>
@@ -1605,6 +1610,9 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2691385045260836588">Model</translation>
 <translation id="2691440343905273290">Change input settings</translation>
 <translation id="2693176596243495071">Oops!  An unknown error occurred. Please try again later or contact your administrator if the issue persists.</translation>
+<translation id="2693640212062142966">Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE" /> and tell you apart from others. To save battery, 'Hey Google' is only on when your device is connected to a power source. To make changes, go to Settings.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Remember:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="2699911226086014512">PIN operation failed with code <ph name="RETRIES" />.</translation>
 <translation id="2701330563083355633">Shared from <ph name="DEVICE_NAME" /></translation>
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
@@ -2114,6 +2122,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3246107497225150582">{0,plural, =1{Update device within a day}other{Update device within # days}}</translation>
 <translation id="324849028894344899"><ph name="WINDOW_TITLE" /> – Network error</translation>
 <translation id="3248902735035392926">Safety matters. Take a moment and <ph name="BEGIN_LINK" />check your extensions now<ph name="END_LINK" /></translation>
+<translation id="3251714896659475029">Let <ph name="SUPERVISED_USER_NAME" /> access Google Assistant with 'Hey Google'</translation>
 <translation id="3251759466064201842">&lt;Not part of certificate&gt;</translation>
 <translation id="325238099842880997">Set digital ground rules to help children play, explore and do schoolwork at home</translation>
 <translation id="3253448572569133955">Unknown account</translation>
@@ -2531,6 +2540,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3694027410380121301">Select previous tab</translation>
 <translation id="369489984217678710">Passwords and other sign-in data</translation>
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Security checks are complete. Your data will be uploaded.}=1{Security checks are complete. Your file will be uploaded.}other{Security checks are complete. Your files will be uploaded.}}</translation>
+<translation id="3696576298374669274">Show service logs</translation>
 <translation id="3699624789011381381">Email address</translation>
 <translation id="3699920817649120894">Turn off sync and personalisation?</translation>
 <translation id="3700888195348409686">Presenting (<ph name="PAGE_ORIGIN" />)</translation>
@@ -2590,6 +2600,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3755411799582650620">Your <ph name="PHONE_NAME" /> can now unlock this <ph name="DEVICE_TYPE" /> too.</translation>
 <translation id="375636864092143889">Site is using your microphone</translation>
 <translation id="3756578970075173856">Set PIN</translation>
+<translation id="3756795331760037744">Allow Google Assistant to use info on <ph name="SUPERVISED_USER_NAME" />’s screen to help</translation>
 <translation id="3757733214359997190">No sites found</translation>
 <translation id="375841316537350618">Downloading proxy script...</translation>
 <translation id="3758842566811519622">Cookies set</translation>
@@ -2981,6 +2992,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4154664944169082762">Fingerprints</translation>
 <translation id="4157869833395312646">Microsoft Server Gated Cryptography</translation>
 <translation id="4158364720893025815">Pass</translation>
+<translation id="4159163871835771155">To get tailored responses when <ph name="SUPERVISED_USER_NAME" /> asks questions, let Assistant use info on <ph name="SUPERVISED_USER_NAME" />’s screen. This may include info about songs or videos that are playing.</translation>
 <translation id="4159681666905192102">This is an account for kids managed by <ph name="CUSTODIAN_EMAIL" /> and <ph name="SECOND_CUSTODIAN_EMAIL" />.</translation>
 <translation id="4163560723127662357">Unknown keyboard</translation>
 <translation id="4167686856635546851">Sites usually use Javascript to display interactive features, like video games or web forms</translation>
@@ -3466,6 +3478,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4699172675775169585">Cached images and files</translation>
 <translation id="4699357559218762027">(auto-launched)</translation>
 <translation id="4701025263201366865">Parent sign-in</translation>
+<translation id="4707582759326616943">Drag to search images with Google Lens</translation>
 <translation id="4708794300267213770">Show lock screen when waking from sleep</translation>
 <translation id="4708849949179781599">Quit <ph name="PRODUCT_NAME" /></translation>
 <translation id="4711638718396952945">Restore settings</translation>
@@ -3492,6 +3505,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4742970037960872810">Remove highlight</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Find out how to update applications<ph name="END_LINK" /></translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Unmute site}other{Unmute sites}}</translation>
+<translation id="474609389162964566">Access your Assistant with 'Hey Google'</translation>
 <translation id="4746351372139058112">Messages</translation>
 <translation id="4748783296226936791">Sites usually connect to HID devices for features that use uncommon keyboards, game controllers and other devices</translation>
 <translation id="4750394297954878236">Suggestions</translation>
@@ -3552,6 +3566,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4824958205181053313">Cancel sync?</translation>
 <translation id="4827675678516992122">Couldn't connect</translation>
 <translation id="4827784381479890589">Enhanced spell check in Chrome browser (text is sent to Google for spelling suggestions)</translation>
+<translation id="4827904420700932487">Create QR code for this Image</translation>
 <translation id="482952334869563894">USB devices from vendor <ph name="VENDOR_ID" /></translation>
 <translation id="4829768588131278040">Set up PIN</translation>
 <translation id="4830121310592638841">Ask when a site wants to open and place windows on your screens</translation>
@@ -3589,6 +3604,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4864369630010738180">Signing in...</translation>
 <translation id="4864805589453749318">Select the parent who is granting permission to add a school account.</translation>
 <translation id="486635084936119914">Open certain file types automatically after downloading</translation>
+<translation id="4868281708609571334">Teach Google Assistant to recognise <ph name="SUPERVISED_USER_NAME" />’s voice</translation>
 <translation id="48704129375571883">Add additional features</translation>
 <translation id="4870758487381879312">Enter admin-provided password to get configuration info</translation>
 <translation id="4870903493621965035">No paired devices</translation>
@@ -3741,6 +3757,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5029568752722684782">Clear copy</translation>
 <translation id="5029873138381728058">Failed to check VMs</translation>
 <translation id="503155457707535043">Apps downloading</translation>
+<translation id="5032430150487044192">Can't create QR code</translation>
 <translation id="5033137252639132982">Not allowed to use motion sensors</translation>
 <translation id="5033266061063942743">Geometric shapes</translation>
 <translation id="5036662165765606524">Do not allow any site to download multiple files automatically</translation>
@@ -3898,6 +3915,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="520621735928254154">Certificate import error</translation>
 <translation id="5206787458656075734">{COUNT,plural, =1{Successfully changed the compromised password. You have # more compromised password. Chrome recommends checking this password now.}other{Successfully changed the compromised password. You have # more compromised passwords. Chrome recommends checking these passwords now.}}</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
+<translation id="5208548918290612795">Storing <ph name="WEB_DRIVE" /> authentication token</translation>
 <translation id="520902706163766447">Enable a pop-up bubble in Top Chrome UI to search over currently open tabs.</translation>
 <translation id="5209320130288484488">No devices found</translation>
 <translation id="5210365745912300556">Close tab</translation>
@@ -4160,6 +4178,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5499313591153584299">This file may be harmful for your computer.</translation>
 <translation id="5499453227627332024">An upgrade is available for your Linux container. You can also upgrade later from the Settings app.</translation>
 <translation id="549957179819296104">New icon</translation>
+<translation id="5500168250243071806"><ph name="BEGIN_LINK_SEARCH" />Search history<ph name="END_LINK_SEARCH" /> and <ph name="BEGIN_LINK_GOOGLE" />other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
 <translation id="5500709606820808700">Safety check ran today</translation>
 <translation id="5501322521654567960">Left-aligned side panel</translation>
 <translation id="5501809658163361512">{COUNT,plural, =1{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}other{Failed to receive <ph name="ATTACHMENTS" /> from <ph name="DEVICE_NAME" />}}</translation>
@@ -4246,6 +4265,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5585912436068747822">Formatting failed</translation>
 <translation id="5588033542900357244">(<ph name="RATING_COUNT" />)</translation>
 <translation id="558918721941304263">Loading apps...</translation>
+<translation id="5590265327628802792">It looks like <ph name="SUPERVISED_USER_NAME" /> has already set up Google Assistant on another device. <ph name="SUPERVISED_USER_NAME" /> can get even more out of Assistant by turning on 'Screen context'.</translation>
 <translation id="5592595402373377407">Not enough data available yet.</translation>
 <translation id="5595485650161345191">Edit address</translation>
 <translation id="5596627076506792578">More options</translation>
@@ -4326,6 +4346,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5684661240348539843">Asset Identifier</translation>
 <translation id="5687326903064479980">Time Zone</translation>
 <translation id="5689516760719285838">Location</translation>
+<translation id="5689531695336322499">It looks like <ph name="SUPERVISED_USER_NAME" /> already set up Voice Match with Assistant on another device. These previous recordings were used to make a voice model on this device.</translation>
 <translation id="56907980372820799">Link data</translation>
 <translation id="5691581861107245578">Get emoji suggestions based on what you're typing</translation>
 <translation id="5691772641933328258">Fingerprint not recognised</translation>
@@ -4348,6 +4369,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5707185214361380026">Failed to load extension from:</translation>
 <translation id="5708171344853220004">Microsoft Principal Name</translation>
 <translation id="5709557627224531708">Set Chrome as your default browser</translation>
+<translation id="5711010025974903573">Service logs</translation>
 <translation id="5711983031544731014">Unable to unlock. Enter your password.</translation>
 <translation id="5712153969432126546">Sites sometimes publish PDFs, like documents, contracts and forms</translation>
 <translation id="5715711091495208045">Plug-in Broker: <ph name="PLUGIN_NAME" /></translation>
@@ -4767,6 +4789,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6195693561221576702">This device cannot be set up in offline demo mode.</translation>
 <translation id="6196640612572343990">Block third-party cookies</translation>
 <translation id="6196854373336333322">The extension "<ph name="EXTENSION_NAME" />" has taken control of your proxy settings, which means it can change, break or eavesdrop on anything you do online. If you aren't sure why this change happened, you probably don't want it.</translation>
+<translation id="6197128521826316819">Create QR code for this page</translation>
 <translation id="6198102561359457428">Sign out then sign in again...</translation>
 <translation id="6198252989419008588">Change PIN</translation>
 <translation id="6200047250927636406">Discard file</translation>
@@ -4801,6 +4824,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6233455992368963267"><ph name="LANGUAGE" /> speech is sent to Google for processing.</translation>
 <translation id="6234108445915742946">Chrome's Terms of Service are changing on 31 March</translation>
 <translation id="6234474535228214774">Install pending</translation>
+<translation id="6235208551686043831">Device camera has turned on. Please place your eSIM QR code in front of the camera.</translation>
 <translation id="6237474966939441970">Stylus note-taking app</translation>
 <translation id="6237816943013845465">Allows you to adjust your screen resolution</translation>
 <translation id="6238624845858322552">Connect to Bluetooth device</translation>
@@ -4868,6 +4892,9 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6294759976468837022">Auto-scan speed</translation>
 <translation id="6295158916970320988">All sites</translation>
 <translation id="6295855836753816081">Saving...</translation>
+<translation id="6298800237463568825">Voice Match helps your Google Assistant identify your voice on your <ph name="DEVICE_TYPE" /> and tell you apart from others.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Remember:<ph name="END_BOLD" /> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant settings.</translation>
 <translation id="6298962879096096191">Use Google Play to install Android apps</translation>
 <translation id="6300177430812514606">Not allowed to finish sending or receiving data</translation>
 <translation id="630065524203833229">E&amp;xit</translation>
@@ -5081,6 +5108,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6532663472409656417">Enterprise enrolled</translation>
 <translation id="6535331821390304775">Always allow <ph name="ORIGIN" /> to open links of this type in the associated app</translation>
 <translation id="653659894138286600">Scan documents and images</translation>
+<translation id="6537016096312202316">Drag over images to search with Google Lens</translation>
 <translation id="6537613839935722475">The name can use letters, numbers and hyphens (-)</translation>
 <translation id="6537880577641744343">Commander</translation>
 <translation id="6538098297809675636">Error detecting code</translation>
@@ -5214,6 +5242,9 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6686665106869989887">Tab moved right</translation>
 <translation id="6686817083349815241">Save your password</translation>
 <translation id="6687079240787935001">Hide <ph name="MODULE_TITLE" /></translation>
+<translation id="6689714331348768690">Ask <ph name="SUPERVISED_USER_NAME" /> to come to the computer. Your child will be reading a few phrases on this screen to create their voice model.
+    <ph name="BR" />
+    If <ph name="SUPERVISED_USER_NAME" /> needs help with reading, have your child repeat after you. Whisper away from the mic so that the Assistant learns your child’s voice instead of yours.</translation>
 <translation id="6690659332373509948">Unable to parse file: <ph name="FILE_NAME" /></translation>
 <translation id="6691331417640343772">Manage synced data on Google Dashboard</translation>
 <translation id="6691541770654083180">Earth</translation>
@@ -5262,6 +5293,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="6745592621698551453">Update now</translation>
 <translation id="6746124502594467657">Move down</translation>
 <translation id="674632704103926902">Enable tap dragging</translation>
+<translation id="6748054820659621153">Search your screen with Google Lens</translation>
 <translation id="6748465660675848252">You may proceed, but only your synced data and settings will be restored. All local data will be lost.</translation>
 <translation id="6749006854028927059">Sites can't use your cookies to see your browsing activity across different sites, for example, to personalise ads. Features on some sites may break.</translation>
 <translation id="6750757184909117990">Disable mobile</translation>
@@ -5626,6 +5658,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7136639886842764730"><ph name="DOMAIN" /> requires you to update your <ph name="DEVICE_TYPE" /> immediately.</translation>
 <translation id="7136694880210472378">Make default</translation>
 <translation id="7136993520339022828">There's an error. Please try again by choosing other images.</translation>
+<translation id="7138515695467025690">Off – will turn on automatically at sunset</translation>
 <translation id="7138678301420049075">Other</translation>
 <translation id="7139627972753429585"><ph name="APP_NAME" /> is using your microphone</translation>
 <translation id="7141105143012495934">Sign-in failed because your account details could not be retrieved. Please contact your administrator or try again.</translation>
@@ -5676,6 +5709,13 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="720715819012336933">{NUM_PAGES,plural, =1{Exit page}other{Exit pages}}</translation>
 <translation id="7207457272187520234">Send usage and diagnostic data. This device is currently automatically sending diagnostic, device and app usage data to Google. This will help system and app stability and other improvements. Some aggregate data will also help Google apps and partners, such as Android developers. This setting is enforced by the owner. If your additional Web &amp; App Activity setting is turned on, this data may be saved to your Google Account.</translation>
 <translation id="7207631048330366454">Search apps</translation>
+<translation id="7210488993538120146">Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME" />’s voice on your <ph name="DEVICE_TYPE" /> and tell it apart from others.
+    <ph name="BR" />
+    The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to identify their voice better.
+    <ph name="BR" />
+    If you decide later that Voice Match isn’t right for your child, simply remove it in their Assistant settings. To view or delete the audio clips your child records during Voice Match setup, go to g.co/assistant/match from your child’s account.
+    <ph name="BR" />
+    <ph name="BEGIN_BOLD" />Note:<ph name="END_BOLD" /> A similar voice or recording might be able to access <ph name="SUPERVISED_USER_NAME" />’s personal results. To save battery, 'Hey Google' is only on when this device is connected to a power source.</translation>
 <translation id="7210499381659830293">Extension printers</translation>
 <translation id="7211783048245131419">No switch has been assigned yet</translation>
 <translation id="7212097698621322584">Enter your current PIN to change it. If you don’t know your PIN, you’ll need to reset the security key, then create a new PIN.</translation>
@@ -5923,6 +5963,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7475671414023905704">Netscape Lost Password URL</translation>
 <translation id="7476454130948140105">Battery too low for update (<ph name="BATTERY_PERCENT" />%)</translation>
 <translation id="7476989672001283112">Automatically blocked <ph name="PERMISSION" /> and <ph name="COUNT" /> more</translation>
+<translation id="7477748600276493962">Create QR code for this page</translation>
 <translation id="7477793887173910789">Control your music, videos and more</translation>
 <translation id="7478485216301680444">Kiosk application could not be installed.</translation>
 <translation id="7478623944308207463">Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google Account. For browser sync options, go to <ph name="LINK_BEGIN" />Chrome settings<ph name="LINK_END" />.</translation>
@@ -6098,6 +6139,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7652954539215530680">Create a PIN</translation>
 <translation id="7654941827281939388">This account is already being used on this computer.</translation>
 <translation id="7655411746932645568">Sites can ask to connect to serial ports</translation>
+<translation id="7657218410916651670"><ph name="BEGIN_LINK_GOOGLE" />Other forms of activity<ph name="END_LINK_GOOGLE" /> may be saved in your Google Account when you're signed in. You can delete them at any time.</translation>
 <translation id="7658239707568436148">Cancel</translation>
 <translation id="7659154729610375585">Exit Incognito mode anyway?</translation>
 <translation id="7659297516559011665">Passwords on this device only</translation>
@@ -6180,6 +6222,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7734486794139738745">I only use one switch</translation>
 <translation id="7734541938181328224">Review icon updates</translation>
 <translation id="7737115349420013392">Pairing with "<ph name="DEVICE_NAME" />" ...</translation>
+<translation id="7737846262459425222">You can change this at any time in Settings &gt; Google Assistant &gt; Screen context.</translation>
 <translation id="7737948071472253612">Not allowed to use your camera</translation>
 <translation id="7740996059027112821">Standard</translation>
 <translation id="7741307896921365578">Enables a browser-level side panel for a useful and persistent way to access your reading list and bookmarks.</translation>
@@ -6241,6 +6284,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7792388396321542707">Stop sharing</translation>
 <translation id="779308894558717334">Light green</translation>
 <translation id="7793098747275782155">Dark blue</translation>
+<translation id="7797246427375693110">On – will turn off automatically at <ph name="TIME" /></translation>
 <translation id="7797571222998226653">Off</translation>
 <translation id="7798844538707273832">Automatically blocked <ph name="PERMISSION" /></translation>
 <translation id="7799299114731150374">Wallpaper set successfully</translation>
@@ -6393,6 +6437,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7942349550061667556">Red</translation>
 <translation id="7943368935008348579">Download PDFs</translation>
 <translation id="7943837619101191061">Add Location...</translation>
+<translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7945031593909029181">"<ph name="CHROME_EXTENSION_NAME" />" wants to connect</translation>
 <translation id="7946586320617670168">Origin must be secure</translation>
 <translation id="794676567536738329">Confirm Permission</translation>
@@ -6433,12 +6478,14 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="7980084013673500153">Asset ID: <ph name="ASSET_ID" /></translation>
 <translation id="7981313251711023384">Preload pages for faster browsing and searching</translation>
 <translation id="798145602633458219">Append the suggestion <ph name="SUGGESTION_NAME" /> to search box</translation>
+<translation id="7981662863948574132">Show device EID and QR code pop-up</translation>
 <translation id="7982083145464587921">Please restart your device to fix this error.</translation>
 <translation id="7982789257301363584">Network</translation>
 <translation id="7984068253310542383">Mirror <ph name="DISPLAY_NAME" /></translation>
 <translation id="7986295104073916105">Read and change saved password settings</translation>
 <translation id="7987814697832569482">Always connect through this VPN</translation>
 <translation id="7988355189918024273">Enable accessibility features</translation>
+<translation id="7990394755527173834">To set up an Android phone to be used as a security key with this computer for the first time, open Chrome on your phone and go to Settings &gt; Passwords &gt; Use phone as a security key. Then tap 'Connect new device' and scan this QR code.</translation>
 <translation id="7991296728590311172">Switch Access settings</translation>
 <translation id="7997826902155442747">Process Priority</translation>
 <translation id="7999229196265990314">Created the following files:
@@ -6798,6 +6845,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8376137163494131156">Tell us what's happening with Google Cast.</translation>
 <translation id="8376384591331888629">Including third-party cookies on this site</translation>
 <translation id="8378714024927312812">Managed by your organisation</translation>
+<translation id="8379156816349755485">Upon signing in, a unique authentication token will be stored and used for all future eligible downloads.</translation>
 <translation id="8379878387931047019">This device doesn't support the type of security key requested by this website</translation>
 <translation id="8379991678458444070">Get back here fast by bookmarking this tab</translation>
 <translation id="8382913212082956454">Copy &amp;email address</translation>
@@ -6969,6 +7017,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8597845839771543242">Property format:</translation>
 <translation id="8599681327221583254">One or more policies are not configured correctly. Please contact your administrator</translation>
 <translation id="8601206103050338563">TLS WWW Client Authentication</translation>
+<translation id="8601611099293226919">Search your screen with Google Lens</translation>
 <translation id="8602851771975208551">Another program on your computer added an app that may change the way Chrome works.</translation>
 <translation id="8605428685123651449">SQLite memory</translation>
 <translation id="8608618451198398104">Add a Kerberos ticket</translation>
@@ -7074,6 +7123,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8705331520020532516">Serial Number</translation>
 <translation id="8705580154597116082">Wi-Fi available via phone</translation>
 <translation id="8705629851992224300">Your security key couldn't be read</translation>
+<translation id="8706111173576263877">QR code has been scanned.</translation>
 <translation id="8708000541097332489">Clear on exit</translation>
 <translation id="870805141700401153">Microsoft Individual Code Signing</translation>
 <translation id="8708671767545720562">&amp;More Information</translation>
@@ -7098,6 +7148,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8725178340343806893">Favourites/bookmarks</translation>
 <translation id="8726206820263995930">Error when fetching policy settings from the server: <ph name="CLIENT_ERROR" />.</translation>
 <translation id="8727154974495727220">When your <ph name="DEVICE_TYPE" /> is set up, press the Assistant button or say "Ok Google" to get help at any time. Go to Assistant settings to make changes.</translation>
+<translation id="8729133765463465108">Use camera to scan QR code</translation>
 <translation id="8730621377337864115">Done</translation>
 <translation id="8731629443331803108"><ph name="SITE_NAME" /> wants to: <ph name="PERMISSION" /></translation>
 <translation id="8731787661154643562">Port number</translation>
@@ -7287,6 +7338,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8907787635362884532">Publisher: <ph name="APP_ORIGIN" /></translation>
 <translation id="8907906903932240086">Chrome can check your computer for harmful software</translation>
 <translation id="8909298138148012791"><ph name="APP_NAME" /> has been uninstalled</translation>
+<translation id="8909782404367982052">Drag to search images with Google Lens</translation>
 <translation id="8909833622202089127">Site is tracking your location</translation>
 <translation id="8910222113987937043">Changes to your bookmarks, history, passwords and other settings will no longer be synced to your Google Account. However, your existing data will remain stored in your Google Account and can be managed on <ph name="BEGIN_LINK" />Google Dashboard<ph name="END_LINK" />.</translation>
 <translation id="8912362522468806198">Google Account</translation>
@@ -7333,6 +7385,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="8962083179518285172">Hide Details</translation>
 <translation id="8962918469425892674">This site is using motion or light sensors.</translation>
 <translation id="8965037249707889821">Enter old password</translation>
+<translation id="89667524227025535">Scan a QR code using your device camera or enter the activation code provided by your operator</translation>
 <translation id="8966809848145604011">Other profiles</translation>
 <translation id="8966870118594285808">Reopen a tab if you accidentally closed it</translation>
 <translation id="8967427617812342790">Add to reading list</translation>
@@ -7425,6 +7478,7 @@ Press an assigned switch to remove assignment</translation>
 <translation id="9055636786322918818">Enforce RC4 encryption. Using this option increases your risk, as the RC4 ciphers are insecure.</translation>
 <translation id="9056810968620647706">No matches were found.</translation>
 <translation id="9057354806206861646">Update schedule</translation>
+<translation id="9057599413476594385">Drag over images to search with Google Lens</translation>
 <translation id="9062468308252555888">14x</translation>
 <translation id="9063208415146866933">Error from line <ph name="ERROR_LINE_START" /> to <ph name="ERROR_LINE_END" /></translation>
 <translation id="9063800855227801443">Can't capture confidential content</translation>
@@ -7592,6 +7646,7 @@ You can assign multiple switches to this action</translation>
 <translation id="936646668635477464">Camera and microphone</translation>
 <translation id="936801553271523408">System diagnostic data</translation>
 <translation id="93766956588638423">Repair extension</translation>
+<translation id="938568644810664664">Try 'Hey Google, what song is this?' or 'Hey Google, what's on my screen?'</translation>
 <translation id="939252827960237676">Failed to save screenshot</translation>
 <translation id="939598580284253335">Enter passphrase</translation>
 <translation id="939736085109172342">New folder</translation>
@@ -7634,6 +7689,7 @@ You can assign multiple switches to this action</translation>
 <translation id="98515147261107953">Landscape</translation>
 <translation id="987068745968718743">Parallels desktop: <ph name="PLUGIN_VM_NAME" /></translation>
 <translation id="987264212798334818">General</translation>
+<translation id="987363316774788151">Off – will turn on automatically at <ph name="TIME" /></translation>
 <translation id="987897973846887088">No images available</translation>
 <translation id="988320949174893488">Occasional stutter</translation>
 <translation id="988978206646512040">Empty passphrase is not allowed</translation>

@@ -257,7 +257,7 @@
 <translation id="1275718070701477396">Përzgjedhur</translation>
 <translation id="1276994519141842946"><ph name="APP_NAME" /> nuk mund të çinstalohej</translation>
 <translation id="1277020343994096713">Krijo një kod të ri PIN që është i ndryshëm nga kodi yt aktual PIN</translation>
-<translation id="1278859221870828664">Shqyrto aplikacionet dhe shërbmet e Google Play</translation>
+<translation id="1278859221870828664">Shqyrto aplikacionet dhe shërbimet e Google Play</translation>
 <translation id="127946606521051357">Pajisja në afërsi po ndan</translation>
 <translation id="1280965841156951489">Modifiko skedarët</translation>
 <translation id="1285320974508926690">Asnjëherë mos e përkthe këtë sajt</translation>
@@ -1731,7 +1731,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="2828375943530438449">Kthehu nga identifikimi</translation>
 <translation id="2828650939514476812">Lidhu me rrjetin Wi-Fi</translation>
 <translation id="2831430281393059038">Pajisja mbështetet</translation>
-<translation id="2832124733806557606">Fëmija yt mund të përdorë një PIN për t'u identifikuar ose shkyçur pajisjen.</translation>
+<translation id="2832124733806557606">Fëmija yt mund të përdorë një PIN për t'u identifikuar ose për të shkyçur pajisjen.</translation>
 <translation id="2835547721736623118">Shërbimi i njohjes së ligjërimit</translation>
 <translation id="2836269494620652131">Ndërprerje aksidentale</translation>
 <translation id="2836635946302913370">Identifikimi me këtë emër përdoruesi është çaktivizuar nga administratori yt.</translation>
@@ -3658,7 +3658,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="4943368462779413526">Futboll</translation>
 <translation id="4943691134276646401">"<ph name="CHROME_EXTENSION_NAME" />" dëshiron të lidhet me një portë serie</translation>
 <translation id="4944310289250773232">Ky shërbim vërtetimi strehohet nga <ph name="SAML_DOMAIN" /></translation>
-<translation id="4945439665401275950">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë butonin e energjisë. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="4945439665401275950">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë butonin e energjisë. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga ky <ph name="DEVICE_TYPE" />.</translation>
 <translation id="495164417696120157">{COUNT,plural, =1{një skedar}other{# skedarë}}</translation>
 <translation id="495170559598752135">Veprimet</translation>
 <translation id="4953808748584563296">Avatari i parazgjedhur portokalli</translation>
@@ -5339,7 +5339,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="6846178040388691741">"<ph name="EXTENSION_NAME" />" dëshiron të printojë <ph name="FILE_NAME" /> me <ph name="PRINTER_NAME" />.</translation>
 <translation id="6847125920277401289">Liro hapësirë për të vazhduar</translation>
 <translation id="6848388270925200958">Në këtë moment, ke disa karta që mund të përdoren vetëm në këtë pajisje</translation>
-<translation id="6848716236260083778">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga kjo <ph name="DEVICE_TYPE" />.</translation>
+<translation id="6848716236260083778">Për të konfiguruar gjurmë gishti, vëre fëmijën tënd të prekë sensorin e gjurmës së gishtit. Të dhënat e gjurmës së gishtit të fëmijës tënd ruhen në mënyrë të sigurt dhe nuk largohen kurrë nga ky <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6850286078059909152">Ngjyra e tekstit</translation>
 <translation id="6851181413209322061">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto nuk do të përdoren për të identifikuar fëmijën tënd dhe do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky cilësim zbatohet nga zotëruesi. Nëse "Aktiviteti shtesë i uebit dhe i aplikacioneve" është i aktivizuar për fëmijën tënd, këto të dhëna mund të ruhen në "Llogarinë e Google" të fëmijës.</translation>
 <translation id="6851497530878285708">Aplikacioni u aktivizua</translation>
@@ -7521,7 +7521,7 @@ Mund të caktosh disa çelësa te ky veprim</translation>
 <translation id="917510707618656279">Pyet kur një sajt dëshiron të ketë qasje te pajisjet Bluetooth</translation>
 <translation id="9176476835295860688">Dërgo të dhënat e përdorimit dhe të diagnostikimit. Aktualisht kjo pajisje po dërgon automatikisht te Google të dhënat e diagnostikimit dhe të përdorimit të pajisjes dhe të aplikacioneve. Këto do të ndihmojnë për qëndrueshmërinë e sistemit dhe të aplikacioneve dhe për përmirësime të tjera. Disa të dhëna të përmbledhura do të ndihmojnë po ashtu aplikacionet dhe partnerët e Google, si p.sh. zhvilluesit e Android. Ky <ph name="BEGIN_LINK1" />cilësim<ph name="END_LINK1" /> zbatohet nga zotëruesi. Nëse cilësimi i "Aktivitetit shtesë të uebit dhe të aplikacioneve" është i aktivizuar, këto të dhëna mund të ruhen në "Llogarinë tënde të Google". <ph name="BEGIN_LINK2" />Mëso më shumë<ph name="END_LINK2" /></translation>
 <translation id="9176611096776448349"><ph name="WINDOW_TITLE" /> - u lidh një pajisje Bluetooth</translation>
-<translation id="9176817945195089764"><ph name="DOMAIN" /> nuk është organizatë e vlefshme. Kontakto me administatorin tënd. Nëse je administator, mund ta konfigurosh organizatën tënde duke vizituar: g.co/ChromeEnterpriseAccount</translation>
+<translation id="9176817945195089764"><ph name="DOMAIN" /> nuk është organizatë e vlefshme. Kontakto me administatorin tënd. Nëse je administrator, mund ta konfigurosh organizatën tënde duke vizituar: g.co/ChromeEnterpriseAccount</translation>
 <translation id="9179524979050048593">Emri i përdoruesit të ekranit të identifikimit</translation>
 <translation id="9180281769944411366">Procesi mund të zgjasë disa minuta. Po hapet kontejneri i Linux.</translation>
 <translation id="9180380851667544951">Sajti mund të ndajë ekranin tënd</translation>

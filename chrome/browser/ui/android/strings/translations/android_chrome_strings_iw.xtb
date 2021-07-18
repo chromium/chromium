@@ -304,6 +304,7 @@
 <translation id="2942036813789421260">כרטיסיית התצוגה המקדימה סגורה</translation>
 <translation id="2956410042958133412">החשבון הזה מנוהל על ידי <ph name="PARENT_NAME_1" /> ו-<ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{דף אחד (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) שלא נקרא}two{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> דפים שלא נקראו}}</translation>
+<translation id="2961210776189273067">תואר</translation>
 <translation id="2979025552038692506">כרטיסיית המצב האנונימי שנבחרה</translation>
 <translation id="2979448359891869301">לא ניתן להרחיב את צילום המסך. יש לנסות שוב כשיהיה יותר מקום בזיכרון הטלפון.</translation>
 <translation id="2979639724566107830">פתיחה בחלון חדש</translation>
@@ -615,6 +616,7 @@
 <translation id="497421865427891073">ניווט קדימה</translation>
 <translation id="4988210275050210843">מתבצעת הורדה של קובץ (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">דפים</translation>
+<translation id="5001388021414335527">כאן ניתן לעקוב אחר האתר הזה</translation>
 <translation id="5004416275253351869">‏בקרת הפעילות בחשבון Google</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5011311129201317034"><ph name="SITE" /> מבקש להתחבר אל</translation>
@@ -983,6 +985,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{שיתוף פריט אחד שנבחר}two{שיתוף # פריטים שנבחרו}many{שיתוף # פריטים שנבחרו}other{שיתוף # פריטים שנבחרו}}</translation>
 <translation id="7359002509206457351">גישה לאמצעי תשלום</translation>
 <translation id="7375125077091615385">סוג:</translation>
+<translation id="7386842512861524348">‏חיבור האתר מאובטח אלא אם תתקבל הודעה שונה מ-Chrome</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />.</translation>
 <translation id="7400418766976504921">כתובת אתר</translation>
 <translation id="7403691278183511381">‏חוויית ההפעלה הראשונה של Chrome</translation>
@@ -1140,6 +1143,7 @@
 <translation id="8284326494547611709">כתוביות</translation>
 <translation id="829672787777123339">מתבצע חיבור למכשיר…</translation>
 <translation id="8310344678080805313">כרטיסיות רגילות</translation>
+<translation id="831192587911042850">הוספת אתר האינטרנט שפתוח כרגע לרשימת אתרי האינטרנט שבמעקב.</translation>
 <translation id="8327155640814342956">‏כדי ליהנות מחוויית הגלישה הטובה ביותר, יש לפתוח את Chrome כדי לעדכן אותו</translation>
 <translation id="834313815369870491">אין לתרגם את האתרים אף פעם</translation>
 <translation id="8349013245300336738">מיון לפי כמות הנתונים שבהם נעשה שימוש</translation>
