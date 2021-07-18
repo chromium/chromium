@@ -773,7 +773,7 @@
 <translation id="1794051631868188691">Nunca mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794791083288629568">Envie um feedback para nos ajudar a corrigir esse problema.</translation>
 <translation id="1795214765651529549">Usar "Clássico"</translation>
-<translation id="1796588414813960292">Os recursos que precisam reproduzir sons não funcionarão</translation>
+<translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1799071797295057738">A extensão "<ph name="EXTENSION_NAME" />" foi desativada automaticamente.</translation>
 <translation id="1802624026913571222">Suspender quando a capa for fechada</translation>
 <translation id="1802687198411089702">A página não está respondendo. Você pode esperar até que ele volte a responder ou sair.</translation>
@@ -1139,7 +1139,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2178614541317717477">Compromisso da autoridade de certificação</translation>
 <translation id="2179416702468739594">Procurando perfis disponíveis. Isso pode desconectar a rede móvel por alguns minutos.</translation>
 <translation id="2182058453334755893">Copiado para a área de transferência</translation>
-<translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem reproduzir sons (recomendado)</translation>
+<translation id="2184515124301515068">Permitir que Chrome defina quando os sites podem tocar áudio (recomendado)</translation>
 <translation id="2187675480456493911">Sincronizada com outros dispositivos na sua conta. As configurações modificadas por outros usuários não serão sincronizadas. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2187895286714876935">Erro de importação do certificado de servidor</translation>
 <translation id="2187906491731510095">Extensões atualizadas</translation>
@@ -1962,7 +1962,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3060379269883947824">Ativar Selecionar para ouvir</translation>
 <translation id="3060952009917586498">Mudar o idioma do dispositivo. O idioma atual é <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Não foi possível estabelecer uma conexão com o smartphone. Verifique se o smartphone está por perto, desbloqueado e com o Wi-Fi e o Bluetooth ativados.</translation>
-<translation id="3064871050034234884">Os sites podem reproduzir sons</translation>
+<translation id="3064871050034234884">Os sites podem ter áudio</translation>
 <translation id="3065041951436100775">Feedback para guia desativada.</translation>
 <translation id="3065522099314259755">Latência de repetição do teclado</translation>
 <translation id="3067198179881736288">Instalar app?</translation>
