@@ -273,7 +273,8 @@ class PrintJobReportingServiceTest : public ::testing::Test {
     user_manager->AddKioskAppUser(account_id);
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         std::move(user_manager));
-    print_job_reporting_service_ = PrintJobReportingService::Create();
+    print_job_reporting_service_ =
+        PrintJobReportingService::Create(/* dm_token_value= */ "");
   }
 
   void ChangeReportingSetting(bool should_report) {
@@ -357,7 +358,8 @@ TEST_F(PrintJobReportingServiceTest, PendingPrintJobsEnqueue) {
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
   ChangeReportingSetting(true);
   // Create the reporting service after setting the policy to true.
-  print_job_reporting_service_ = PrintJobReportingService::Create();
+  print_job_reporting_service_ =
+      PrintJobReportingService::Create(/* dm_token_value= */ "");
   SetReportQueue();
 
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());
@@ -370,7 +372,8 @@ TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyEnabled) {
 TEST_F(PrintJobReportingServiceTest, ShouldReportPolicyInitiallyDisabled) {
   ChangeReportingSetting(false);
   // Create the reporting service after setting the policy to false.
-  print_job_reporting_service_ = PrintJobReportingService::Create();
+  print_job_reporting_service_ =
+      PrintJobReportingService::Create(/* dm_token_value= */ "");
   SetReportQueue();
 
   print_job_reporting_service_->OnPrintJobFinished(JobInfo1());

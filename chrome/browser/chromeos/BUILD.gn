@@ -356,6 +356,7 @@ source_set("chromeos") {
     "//components/renderer_context_menu",
     "//components/reporting/client:report_queue",
     "//components/reporting/client:report_queue_configuration",
+    "//components/reporting/client:report_queue_factory",
     "//components/reporting/client:report_queue_provider",
     "//components/reporting/proto:interface_proto",
     "//components/reporting/storage:storage_module",

@@ -12,6 +12,7 @@
 #include "chrome/browser/chromeos/printing/history/print_job_database_impl.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service_impl.h"
+#include "chrome/browser/chromeos/printing/history/print_job_reporting_service.h"
 #include "chrome/browser/chromeos/printing/history/print_job_reporting_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

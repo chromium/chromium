@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/strings/string_piece_forward.h"
 #include "chrome/browser/chromeos/printing/history/print_job_history_service.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/reporting/client/report_queue.h"
 
@@ -19,7 +19,8 @@ namespace chromeos {
 class PrintJobReportingService : public KeyedService,
                                  public PrintJobHistoryService::Observer {
  public:
-  static std::unique_ptr<PrintJobReportingService> Create();
+  static std::unique_ptr<PrintJobReportingService> Create(
+      base::StringPiece dm_token_value);
 
   ~PrintJobReportingService() override = default;
 

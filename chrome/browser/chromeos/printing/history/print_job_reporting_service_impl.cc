@@ -11,11 +11,14 @@
 #include "base/callback_list.h"
 #include "base/containers/queue.h"
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chromeos/settings/cros_settings_names.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/proto/record_constants.pb.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/status.pb.h"
@@ -30,13 +33,18 @@ namespace chromeos {
 
 class PrintJobReportingServiceImpl : public PrintJobReportingService {
  public:
-  PrintJobReportingServiceImpl() : cros_settings_(CrosSettings::Get()) {
+  explicit PrintJobReportingServiceImpl(base::StringPiece dm_token_value)
+      : cros_settings_(CrosSettings::Get()) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     UpdateShouldReport();
     should_report_subscription_ = cros_settings_->AddSettingsObserver(
         kReportDevicePrintJobs,
         base::BindRepeating(&PrintJobReportingServiceImpl::UpdateShouldReport,
                             weak_factory_.GetWeakPtr()));
+
+    reporting::ReportQueueFactory::Create(dm_token_value,
+                                          reporting::Destination::PRINT_JOBS,
+                                          GetReportQueueSetter());
   }
 
   ~PrintJobReportingServiceImpl() override = default;
@@ -196,8 +204,9 @@ class PrintJobReportingServiceImpl : public PrintJobReportingService {
   base::WeakPtrFactory<PrintJobReportingServiceImpl> weak_factory_{this};
 };
 
-std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create() {
-  return std::make_unique<PrintJobReportingServiceImpl>();
+std::unique_ptr<PrintJobReportingService> PrintJobReportingService::Create(
+    base::StringPiece dm_token_value) {
+  return std::make_unique<PrintJobReportingServiceImpl>(dm_token_value);
 }
 
 }  // namespace chromeos

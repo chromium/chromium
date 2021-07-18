@@ -19,6 +19,24 @@ static_library("report_queue_configuration") {
   ]
 }
 
+static_library("report_queue_factory") {
+  sources = [
+    "report_queue_factory.cc",
+    "report_queue_factory.h",
+  ]
+
+  deps = [
+    ":report_queue",
+    ":report_queue_configuration",
+    ":report_queue_provider",
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/util:backoff_settings",
+    "//components/reporting/util:status",
+    "//net:net",
+  ]
+}
+
 static_library("report_queue") {
   sources = [
     "report_queue.cc",

@@ -1,4 +1,6 @@
 include_rules = [
   "+base",
+  "+content/public/browser",
+  "+net/base/backoff_entry.h",
   "+third_party/protobuf",
 ]
