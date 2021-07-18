@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
-// Next MinVersion: 20
+// Next MinVersion: 21
 
 module arc.mojom;
 
@@ -11,7 +11,10 @@ import "components/arc/mojom/bitmap.mojom";
 import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/intent_common.mojom";
 import "components/arc/mojom/video_common.mojom";
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
+
+// TODO(b/193097194): Use structured types (e.g., url.mojom.Url for URLs).
 
 // Represents a document in Android DocumentsProvider.
 // See Android docs of DocumentsContract.Document for details.
@@ -266,7 +269,7 @@ struct RootSize {
   int64 capacity_bytes;
 };
 
-// Next method ID: 11
+// Next method ID: 12
 interface FileSystemHost {
   // Returns the name of the file specified by the URL.
   // When an error occurs, returns null value.
@@ -276,6 +279,10 @@ interface FileSystemHost {
   // If the file does not exist or the size is unknown (e.g. directories and
   // streams), -1 is returned.
   [MinVersion=6] GetFileSize@2(string url) => (int64 size);
+
+  // Returns the last modified timestamp of the file specified by the URL.
+  [MinVersion=20] GetLastModified@11(url.mojom.Url url)
+      => (mojo_base.mojom.Time? last_modified);
 
   // Returns the MIME type of the file specified by the URL.
   // When an error occurs, returns null value.
