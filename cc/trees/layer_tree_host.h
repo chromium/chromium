@@ -546,7 +546,8 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   void ClearLayersThatShouldPushProperties();
   // The current set of all Layers attached to the LayerTreeHost's tree that
   // have been marked as needing PushPropertiesTo in the next commit.
-  const base::flat_set<Layer*>& LayersThatShouldPushProperties() {
+  typedef base::flat_set<Layer*, CompareLayersById> LayerSet;
+  const LayerSet& LayersThatShouldPushProperties() {
     return layers_that_should_push_properties_;
   }
 
@@ -926,7 +927,7 @@ class CC_EXPORT LayerTreeHost : public MutatorHostClient {
   base::flat_map<viz::SurfaceRange, int> surface_ranges_;
 
   // Set of layers that need to push properties.
-  base::flat_set<Layer*> layers_that_should_push_properties_;
+  LayerSet layers_that_should_push_properties_;
 
   // Layer id to Layer map.
   std::unordered_map<int, Layer*> layer_id_map_;
