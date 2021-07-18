@@ -6,6 +6,7 @@
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/win/windows_version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -200,6 +201,13 @@ IN_PROC_BROWSER_TEST_F(MenuControllerUITest, TestMouseOverShownMenu) {
 // currently.
 #ifdef OS_WIN
 IN_PROC_BROWSER_TEST_F(MenuControllerUITest, FocusOnOrphanMenu) {
+  // This test is extremely flaky on WIN10_20H2, so disable.
+  // TODO(crbug.com/1225346) Investigate why it's so flaky on that version of
+  // Windows.
+  if (base::win::OSInfo::GetInstance()->version() >=
+      base::win::Version::WIN10_20H2) {
+    GTEST_SKIP() << "Skipping test for WIN10_20H2 and greater";
+  }
   // Going into full screen mode prevents pre-test focus and mouse position
   // state from affecting test, and helps ui_controls function correctly.
   chrome::ToggleFullscreenMode(browser());
