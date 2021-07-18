@@ -46,6 +46,7 @@ struct PriorityCompare {
 }  // namespace
 
 SMILAnimationSandwich::SMILAnimationSandwich() {
+  // Pointer registration is needed for sorting in ElementSMILAnimations::Apply.
   recordreplay::RegisterPointer(this);
 }
 
