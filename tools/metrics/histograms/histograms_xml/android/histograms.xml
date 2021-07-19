@@ -3218,6 +3218,26 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Android.WebView.ForceDarkBehavior"
+    enum="WebViewForceDarkBehavior" expires_after="2021-12-03">
+  <owner>peter@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records strategy to be used by force dark in WebView when
+    setForceDarkBehavior API is called by the embedding application.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.ForceDarkMode" enum="WebViewForceDarkMode"
+    expires_after="2021-12-03">
+  <owner>peter@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records WebView's force dark setting and the UI's night mode when
+    setForceDark API is called by the embedding application.
+  </summary>
+</histogram>
+
 <histogram name="Android.WebView.Gfx.HardwareDrawType"
     enum="WebViewDrawAndSubmissionType" expires_after="2022-01-15">
   <owner>vasilyt@chromium.org</owner>

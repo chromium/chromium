@@ -6,7 +6,10 @@ package org.chromium.support_lib_glue;
 
 import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
 
+import android.content.res.Configuration;
+
 import org.chromium.android_webview.AwSettings;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.support_lib_boundary.WebSettingsBoundaryInterface;
 import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
@@ -15,6 +18,13 @@ import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
  */
 class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     private final AwSettings mAwSettings;
+
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    private static final int OS_NIGHT_MODE_UNDEFINED = 0 * AwSettings.FORCE_DARK_MODES_COUNT;
+    private static final int OS_NIGHT_MODE_NO = 1 * AwSettings.FORCE_DARK_MODES_COUNT;
+    private static final int OS_NIGHT_MODE_YES = 2 * AwSettings.FORCE_DARK_MODES_COUNT;
+    private static final int UMA_FORCE_DARK_MODE_MAX_VALUE = 3 * AwSettings.FORCE_DARK_MODES_COUNT;
 
     public SupportLibWebSettingsAdapter(AwSettings awSettings) {
         mAwSettings = awSettings;
@@ -71,6 +81,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     @Override
     public void setForceDark(int forceDarkMode) {
         recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK);
+        recordForceDarkMode(forceDarkMode);
         mAwSettings.setForceDarkMode(forceDarkMode);
     }
 
@@ -83,6 +94,7 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
     @Override
     public void setForceDarkBehavior(int forceDarkBehavior) {
         recordApiCall(ApiCall.WEB_SETTINGS_SET_FORCE_DARK_BEHAVIOR);
+        recordForceDarkBehavior(forceDarkBehavior);
         switch (forceDarkBehavior) {
             case ForceDarkBehavior.FORCE_DARK_ONLY:
                 mAwSettings.setForceDarkBehavior(AwSettings.FORCE_DARK_ONLY);
@@ -108,5 +120,29 @@ class SupportLibWebSettingsAdapter implements WebSettingsBoundaryInterface {
                 return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
         }
         return ForceDarkBehavior.PREFER_MEDIA_QUERY_OVER_FORCE_DARK;
+    }
+
+    private void recordForceDarkMode(int forceDarkMode) {
+        int value = getOsNightMode() + forceDarkMode;
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.ForceDarkMode", value, UMA_FORCE_DARK_MODE_MAX_VALUE);
+    }
+
+    private void recordForceDarkBehavior(int forceDarkBehavior) {
+        RecordHistogram.recordEnumeratedHistogram("Android.WebView.ForceDarkBehavior",
+                forceDarkBehavior, AwSettings.FORCE_DARK_STRATEGY_COUNT);
+    }
+
+    private int getOsNightMode() {
+        int osNightMode = mAwSettings.getUiModeNight();
+        switch (osNightMode) {
+            case Configuration.UI_MODE_NIGHT_NO:
+                return OS_NIGHT_MODE_NO;
+            case Configuration.UI_MODE_NIGHT_YES:
+                return OS_NIGHT_MODE_YES;
+            case Configuration.UI_MODE_NIGHT_UNDEFINED:
+            default:
+                return OS_NIGHT_MODE_UNDEFINED;
+        }
     }
 }
