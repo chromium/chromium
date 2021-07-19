@@ -434,7 +434,11 @@
 }
 
 - (void)focusFakebox {
-  [self.contentSuggestionsCoordinator.headerController focusFakebox];
+  if (self.discoverFeedViewController) {
+    [self.ntpViewController focusFakebox];
+  } else {
+    [self.contentSuggestionsCoordinator.headerController focusFakebox];
+  }
 }
 
 - (void)reload {

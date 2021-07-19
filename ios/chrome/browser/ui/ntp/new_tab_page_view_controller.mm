@@ -8,6 +8,7 @@
 
 #import "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_synchronizing.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_header_view_controller.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 #import "ios/chrome/browser/ui/content_suggestions/discover_feed_metrics_recorder.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -71,6 +72,9 @@ const CGFloat kOffsetToPinOmnibox = 100;
 
 // The scroll position when a scrolling event starts.
 @property(nonatomic, assign) int scrollStartPosition;
+
+// Whether the omnibox should be focused once the collection view appears.
+@property(nonatomic, assign) BOOL shouldFocusFakebox;
 
 @end
 
@@ -200,6 +204,12 @@ const CGFloat kOffsetToPinOmnibox = 100;
   // Updates omnibox to ensure that the dimensions are correct when navigating
   // back to the NTP.
   [self.headerSynchronizer updateFakeOmniboxForScrollPosition];
+
+  if (self.shouldFocusFakebox && [self collectionViewHasLoaded]) {
+    [self.headerController focusFakebox];
+    self.shouldFocusFakebox = NO;
+  }
+
   self.viewDidAppear = YES;
 }
 
@@ -329,6 +339,17 @@ const CGFloat kOffsetToPinOmnibox = 100;
 - (CGFloat)contentSuggestionsContentHeight {
   return self.contentSuggestionsViewController.collectionView.contentSize
       .height;
+}
+
+- (void)focusFakebox {
+  // The fakebox should only be focused once the collection view has reached its
+  // minimum height. If this is not the case yet, we wait until viewDidAppear
+  // before focusing the fakebox.
+  if ([self collectionViewHasLoaded]) {
+    [self.headerController focusFakebox];
+  } else {
+    self.shouldFocusFakebox = YES;
+  }
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -621,6 +642,15 @@ const CGFloat kOffsetToPinOmnibox = 100;
   return self.contentSuggestionsViewController.collectionView.contentSize
              .height +
          self.view.safeAreaInsets.top;
+}
+
+// Whether the collection view has attained its minimum height.
+// The fake omnibox never actually disappears; the NTP just scrolls enough so
+// that it's hidden behind the real one when it's focused. When the NTP hasn't
+// fully loaded yet, there isn't enough height to scroll it behind the real
+// omnibox, so they would both show.
+- (BOOL)collectionViewHasLoaded {
+  return self.collectionView.contentSize.height > 0;
 }
 
 #pragma mark - Setters
