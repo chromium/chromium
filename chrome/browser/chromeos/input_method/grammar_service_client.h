@@ -58,19 +58,24 @@ class GrammarServiceClient {
   // and calls a provided callback method.
   virtual bool RequestTextCheck(Profile* profile,
                                 const std::u16string& text,
-                                TextCheckCompleteCallback callback) const;
+                                TextCheckCompleteCallback callback);
 
  private:
   void OnLoadGrammarCheckerDone(
+      machine_learning::mojom::GrammarCheckerQueryPtr query,
+      const std::string& query_text,
+      TextCheckCompleteCallback callback,
       machine_learning::mojom::LoadModelResult result);
 
   void OnLoadTextClassifierDone(
+      const std::string& query_text,
+      TextCheckCompleteCallback callback,
       machine_learning::mojom::LoadModelResult result);
 
   void OnLanguageDetectionDone(
       const std::string& query_text,
       TextCheckCompleteCallback callback,
-      std::vector<machine_learning::mojom::TextLanguagePtr> languages) const;
+      std::vector<machine_learning::mojom::TextLanguagePtr> languages);
 
   // Parse the result returned from grammar check service.
   void ParseGrammarCheckerResult(
