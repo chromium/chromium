@@ -612,11 +612,9 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
             embedder_support::prefs::kOriginTrialDisabledFeatures);
     if (override_disabled_feature_list) {
       std::vector<base::StringPiece> disabled_features;
-      base::StringPiece disabled_feature;
       for (const auto& item : override_disabled_feature_list->GetList()) {
-        if (item.GetAsString(&disabled_feature)) {
-          disabled_features.push_back(disabled_feature);
-        }
+        if (item.is_string())
+          disabled_features.push_back(item.GetString());
       }
       if (!disabled_features.empty()) {
         const std::string override_disabled_features =
@@ -633,11 +631,9 @@ void ChromeBrowserMainParts::SetupOriginTrialsCommandLine(
         embedder_support::prefs::kOriginTrialDisabledTokens);
     if (disabled_token_list) {
       std::vector<base::StringPiece> disabled_tokens;
-      base::StringPiece disabled_token;
       for (const auto& item : disabled_token_list->GetList()) {
-        if (item.GetAsString(&disabled_token)) {
-          disabled_tokens.push_back(disabled_token);
-        }
+        if (item.is_string())
+          disabled_tokens.push_back(item.GetString());
       }
       if (!disabled_tokens.empty()) {
         const std::string disabled_token_switch =
