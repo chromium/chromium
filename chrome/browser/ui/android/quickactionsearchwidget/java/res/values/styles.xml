@@ -4,13 +4,27 @@
      found in the LICENSE file. -->
 
 <resources>
-    <style name="QuickActionSearchWidgetButton">
-        <item name="android:layout_width">@dimen/quick_action_search_widget_button_width</item>
-        <item name="android:layout_height">@dimen/quick_action_search_widget_button_height</item>
+    <style name="QuickActionSearchWidgetSmallButton">
+        <item name="android:layout_width">@dimen/quick_action_search_widget_small_button_width</item>
+        <item name="android:layout_height">@dimen/quick_action_search_widget_small_button_height</item>
         <item name="android:layout_margin">@dimen/quick_action_search_widget_button_margin</item>
-        <item name="android:background">@drawable/quick_action_search_widget_button_background</item>
-        <item name="android:padding">@dimen/quick_action_search_widget_button_icon_padding</item>
+        <item name="android:background">@drawable/quick_action_search_widget_small_button_background</item>
+        <item name="android:padding">@dimen/quick_action_search_widget_small_button_icon_padding</item>
         <item name="android:tint">@color/default_icon_color</item>
         <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="QuickActionSearchWidgetMediumButton">
+        <item name="android:layout_width">@dimen/quick_action_search_widget_medium_button_width</item>
+        <item name="android:layout_height">@dimen/quick_action_search_widget_medium_button_height</item>
+        <item name="android:layout_margin">@dimen/quick_action_search_widget_button_margin</item>
+        <item name="android:background">@drawable/quick_action_search_widget_medium_button_background</item>
+        <item name="android:padding">@dimen/quick_action_search_widget_medium_button_icon_padding</item>
+        <item name="android:tint">@color/default_icon_color</item>
+        <item name="android:scaleType">fitCenter</item>
+    </style>
+
+    <style name="TextAppearance.QuickActionSearchWidgetSmallSearchBoxText" parent="TextAppearance.NewTabPageSearchBoxText">
+        <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
 </resources>

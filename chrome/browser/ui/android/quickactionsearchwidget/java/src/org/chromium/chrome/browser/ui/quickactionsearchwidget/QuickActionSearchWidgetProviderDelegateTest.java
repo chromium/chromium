@@ -47,8 +47,9 @@ public class QuickActionSearchWidgetProviderDelegateTest {
     }
 
     private static final class TestDelegate extends QuickActionSearchWidgetProviderDelegate {
-        public TestDelegate(ComponentName widgetReceiverComponent) {
-            super(widgetReceiverComponent);
+        public TestDelegate(@QuickActionSearchWidgetType int widgetType,
+                ComponentName widgetReceiverComponent) {
+            super(widgetType, widgetReceiverComponent);
         }
 
         public final List<RemoteViews> mRemoteViews = new ArrayList<>();
@@ -78,7 +79,7 @@ public class QuickActionSearchWidgetProviderDelegateTest {
 
         ComponentName widgetReceiverComponent =
                 new ComponentName(mContext, QuickActionSearchWidgetReceiver.class);
-        mDelegate = new TestDelegate(widgetReceiverComponent);
+        mDelegate = new TestDelegate(QuickActionSearchWidgetType.SMALL, widgetReceiverComponent);
 
         setUpViews();
     }

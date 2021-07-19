@@ -19,17 +19,21 @@ import org.chromium.base.IntentUtils;
  * contains as much of the widget logic for the Quick Action Search Widget as possible.
  */
 public class QuickActionSearchWidgetProviderDelegate {
+    private final @QuickActionSearchWidgetType int mWidgetType;
     private final ComponentName mWidgetReceiverComponent;
 
     /**
      * Constructor for the {@link QuickActionSearchWidgetProviderDelegate}
      *
+     * @param widgetType
      * @param widgetReceiverComponent The {@link ComponentName} for the {@link
      *         android.content.BroadcastReceiver} that will receive the intents that are broadcast
      *         when the user interacts with the widget. Generally this component is {@link
      *         QuickActionSearchWidgetReceiver}.
      */
-    public QuickActionSearchWidgetProviderDelegate(ComponentName widgetReceiverComponent) {
+    public QuickActionSearchWidgetProviderDelegate(
+            @QuickActionSearchWidgetType int widgetType, ComponentName widgetReceiverComponent) {
+        mWidgetType = widgetType;
         mWidgetReceiverComponent = widgetReceiverComponent;
     }
 
@@ -86,8 +90,8 @@ public class QuickActionSearchWidgetProviderDelegate {
      * @param context the {@link Context} from which the widget is being updated.
      */
     private RemoteViews createWidgetRemoteViews(final Context context) {
-        RemoteViews remoteViews = new RemoteViews(
-                context.getPackageName(), R.layout.quick_action_search_widget_layout);
+        int layoutId = getLayoutIdForWidgetType(mWidgetType);
+        RemoteViews remoteViews = new RemoteViews(context.getPackageName(), layoutId);
 
         // Search Bar Intent
         PendingIntent textSearchPendingIntent = createPendingIntentForAction(
@@ -136,5 +140,29 @@ public class QuickActionSearchWidgetProviderDelegate {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtils.addTrustedIntentExtras(intent);
         return intent;
+    }
+
+    /**
+     * Returns the layout resource id for a given {@link QuickActionSearchWidgetType}.
+     *
+     * @param widgetType A {@link QuickActionSearchWidgetType} that will correspond to a specific
+     *         layout.
+     * @return An int that is the resource id of the layout corresponding to the given widgetType.
+     */
+    private int getLayoutIdForWidgetType(@QuickActionSearchWidgetType int widgetType) {
+        switch (widgetType) {
+            case QuickActionSearchWidgetType.SMALL:
+                return R.layout.quick_action_search_widget_small_layout;
+            case QuickActionSearchWidgetType.MEDIUM:
+                return R.layout.quick_action_search_widget_medium_layout;
+            case QuickActionSearchWidgetType.INVALID:
+            default:
+                assert false : "Unknown QuickActionSearchWidgetType";
+
+                // If the case where we do not know which widget type to show,
+                // we default to the small widget layout since it will fit in
+                // whatever homescreen space is allocated to the widget.
+                return R.layout.quick_action_search_widget_small_layout;
+        }
     }
 }

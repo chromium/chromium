@@ -27,6 +27,7 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
+import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
 
 /**
  * Tests for the (@link QuickActionSearchWidgetProvider}.
@@ -36,6 +37,17 @@ public class QuickActionSearchWidgetProviderTest {
     // These are random unique identifiers, the value of these numbers have no special meaning.
     // The number of identifiers has no particular meaning either.
     private static final int[] WIDGET_IDS = {1, 2};
+
+    /**
+     * A sub class of {@link QuickActionSearchWidgetProvider} for testing, since
+     * QuickActionSearchWidgetProvider is abstract.
+     */
+    private static class TestProvider extends QuickActionSearchWidgetProvider {
+        @Override
+        protected int getWidgetType() {
+            return QuickActionSearchWidgetType.MEDIUM;
+        }
+    }
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -53,7 +65,7 @@ public class QuickActionSearchWidgetProviderTest {
     public void setUp() {
         FirstRunStatus.setFirstRunFlowComplete(true);
 
-        mWidgetProvider = Mockito.spy(new QuickActionSearchWidgetProvider());
+        mWidgetProvider = Mockito.spy(new TestProvider());
         mWidgetProvider.setDelegateForTesting(mDelegateMock);
 
         when(mContextMock.getSystemService(Context.APPWIDGET_SERVICE))

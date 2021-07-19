@@ -4,8 +4,8 @@
      found in the LICENSE file. -->
 
 <appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
-    android:initialLayout="@layout/quick_action_search_widget_layout"
+    android:initialLayout="@layout/quick_action_search_widget_small_layout"
     android:minWidth="@dimen/quick_action_search_widget_width"
-    android:minHeight="@dimen/quick_action_search_widget_default_height"
+    android:minHeight="@dimen/quick_action_search_widget_small_height"
     android:resizeMode="horizontal|vertical"
     android:widgetCategory="home_screen|searchbox" />

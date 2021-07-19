@@ -15,13 +15,38 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetProviderDelegate;
+import org.chromium.chrome.browser.ui.quickactionsearchwidget.QuickActionSearchWidgetType;
 
 /**
  * {@link AppWidgetProvider} for a widget that provides an entry point for users to quickly perform
  * actions in Chrome.
  */
-public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
+public abstract class QuickActionSearchWidgetProvider extends AppWidgetProvider {
     private QuickActionSearchWidgetProviderDelegate mDelegate;
+
+    /**
+     * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
+     * initially has the small layout.
+     */
+    public static class QuickActionSearchWidgetProviderSmall
+            extends QuickActionSearchWidgetProvider {
+        @Override
+        protected int getWidgetType() {
+            return QuickActionSearchWidgetType.SMALL;
+        }
+    }
+
+    /**
+     * A sub class of {@link QuickActionSearchWidgetProvider} that provides the widget that
+     * initially has the medium layout.
+     */
+    public static class QuickActionSearchWidgetProviderMedium
+            extends QuickActionSearchWidgetProvider {
+        @Override
+        protected int getWidgetType() {
+            return QuickActionSearchWidgetType.MEDIUM;
+        }
+    }
 
     @Override
     public void onUpdate(
@@ -39,13 +64,19 @@ public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
      */
     private QuickActionSearchWidgetProviderDelegate getDelegate(final Context context) {
         if (mDelegate == null) {
+            int widgetType = getWidgetType();
+
             ComponentName widgetReceiverComponent =
                     new ComponentName(context, QuickActionSearchWidgetReceiver.class);
 
-            mDelegate = new QuickActionSearchWidgetProviderDelegate(widgetReceiverComponent);
+            mDelegate = new QuickActionSearchWidgetProviderDelegate(
+                    widgetType, widgetReceiverComponent);
         }
         return mDelegate;
     }
+
+    /** @return The {@link QuickActionSearchWidgetType} for this widget */
+    protected abstract @QuickActionSearchWidgetType int getWidgetType();
 
     /**
      * This function initializes the QuickActionSearchWidgetProvider component. Namely, this
@@ -75,11 +106,15 @@ public class QuickActionSearchWidgetProvider extends AppWidgetProvider {
                 : PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
 
         Context context = ContextUtils.getApplicationContext();
-        ComponentName componentName =
-                new ComponentName(context, QuickActionSearchWidgetProvider.class);
+        ComponentName smallWidgetComponentName =
+                new ComponentName(context, QuickActionSearchWidgetProviderSmall.class);
+        ComponentName mediumWidgetComponentName =
+                new ComponentName(context, QuickActionSearchWidgetProviderMedium.class);
 
         context.getPackageManager().setComponentEnabledSetting(
-                componentName, componentEnabledState, PackageManager.DONT_KILL_APP);
+                smallWidgetComponentName, componentEnabledState, PackageManager.DONT_KILL_APP);
+        context.getPackageManager().setComponentEnabledSetting(
+                mediumWidgetComponentName, componentEnabledState, PackageManager.DONT_KILL_APP);
     }
 
     /** Sets a QuickActionSearchWidgetProviderDelegate to facilitate tests. */
