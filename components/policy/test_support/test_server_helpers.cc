@@ -37,7 +37,7 @@ bool GetTokenFromAuthorization(const HttpRequest& request,
   auto authorization = request.headers.find(dm_protocol::kAuthHeader);
   return authorization != request.headers.end() &&
          re2::RE2::FullMatch(authorization->second,
-                             token_header_prefix + "(\\w+)", out);
+                             token_header_prefix + "(.+)", out);
 }
 
 bool GetEnrollmentTokenFromRequest(const HttpRequest& request,
@@ -49,6 +49,13 @@ bool GetEnrollmentTokenFromRequest(const HttpRequest& request,
 bool GetDeviceTokenFromRequest(const HttpRequest& request, std::string* out) {
   return GetTokenFromAuthorization(request,
                                    dm_protocol::kDMTokenAuthHeaderPrefix, out);
+}
+
+bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
+                               std::string* out) {
+  return net::GetValueForKeyInQuery(request.GetURL(), "oauth_token", out) ||
+         GetTokenFromAuthorization(
+             request, dm_protocol::kServiceTokenAuthHeaderPrefix, out);
 }
 
 std::unique_ptr<HttpResponse> CreateHttpResponse(net::HttpStatusCode code,

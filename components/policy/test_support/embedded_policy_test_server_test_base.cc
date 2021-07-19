@@ -88,6 +88,17 @@ void EmbeddedPolicyTestServerTestBase::SetDeviceTokenHeader(
       std::string(dm_protocol::kDMTokenAuthHeaderPrefix).append(device_token));
 }
 
+void EmbeddedPolicyTestServerTestBase::SetGoogleLoginTokenHeader(
+    const std::string& user_email) {
+  CHECK(resource_request_);
+  CHECK(!user_email.empty());
+
+  resource_request_->headers.SetHeader(
+      dm_protocol::kAuthHeader,
+      std::string(dm_protocol::kServiceTokenAuthHeaderPrefix)
+          .append(user_email));
+}
+
 void EmbeddedPolicyTestServerTestBase::SetPayload(
     const enterprise_management::DeviceManagementRequest&
         device_management_request) {

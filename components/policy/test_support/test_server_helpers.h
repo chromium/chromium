@@ -20,8 +20,8 @@ struct HttpRequest;
 
 namespace policy {
 
-// Returns the value associated with |key| in |url|'s query or empty string if
-// |key| is not present.
+// Returns the value associated with `key` in `url`'s query or empty string if
+// `key` is not present.
 std::string KeyValueFromUrl(GURL url, const std::string& key);
 
 // Check server-side requirements, as defined in
@@ -29,23 +29,29 @@ std::string KeyValueFromUrl(GURL url, const std::string& key);
 bool MeetsServerSideRequirements(GURL url);
 
 // Returns true if a token is specified in the request URL with prefix
-// |token_header_prefix|, in which case the token is copied to |out|.
+// `token_header_prefix`, in which case the token is copied to `out`.
 
 bool GetTokenFromAuthorization(const net::test_server::HttpRequest& request,
                                const std::string& token_header_prefix,
                                std::string* out);
 
 // Returns true if an enrollment token is specified in the request URL, in which
-// case the enrollment token is copied to |out|.
+// case the enrollment token is copied to `out`.
 bool GetEnrollmentTokenFromRequest(const net::test_server::HttpRequest& request,
                                    std::string* out);
 
 // Returns true if a device token is specified in the request URL, in which case
-// the device token is copied to |out|.
+// the device token is copied to `out`.
 bool GetDeviceTokenFromRequest(const net::test_server::HttpRequest& request,
                                std::string* out);
 
-// Returns a text/plain HttpResponse with a given |code| and |content|.
+// Returns true if an auth toke is specified in the request URL with the
+// oauth_token parameter or if it is set as GoogleLogin token from the
+// Authorization header. The token is copied to `out` if available.
+bool GetGoogleLoginFromRequest(const net::test_server::HttpRequest& request,
+                               std::string* out);
+
+// Returns a text/plain HttpResponse with a given `code` and `content`.
 std::unique_ptr<net::test_server::HttpResponse> CreateHttpResponse(
     net::HttpStatusCode code,
     const std::string& content);

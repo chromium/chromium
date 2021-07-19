@@ -26,6 +26,7 @@ class ClientStorage {
     std::string device_id;
     std::string device_token;
     std::string machine_name;
+    std::string username;
     std::vector<std::string> state_keys;
     std::set<std::string> allowed_policy_types;
   };

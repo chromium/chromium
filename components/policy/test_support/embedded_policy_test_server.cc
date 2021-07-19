@@ -15,16 +15,39 @@
 #include "components/policy/test_support/request_handler_for_chrome_desktop_report.h"
 #include "components/policy/test_support/request_handler_for_policy.h"
 #include "components/policy/test_support/request_handler_for_register_browser.h"
+#include "components/policy/test_support/request_handler_for_register_device_and_user.h"
 #include "components/policy/test_support/test_server_helpers.h"
 #include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 
+using ::net::test_server::BasicHttpResponse;
 using ::net::test_server::EmbeddedTestServer;
 using ::net::test_server::HttpRequest;
 using ::net::test_server::HttpResponse;
 
 namespace policy {
+
+namespace {
+
+std::unique_ptr<HttpResponse> LogStatusAndReturn(
+    GURL url,
+    std::unique_ptr<HttpResponse> response) {
+  if (!response)
+    return nullptr;
+
+  BasicHttpResponse* basic_response =
+      static_cast<BasicHttpResponse*>(response.get());
+  if (basic_response->code() == net::HTTP_OK) {
+    DLOG(INFO) << "Request succeeded: " << url;
+  } else {
+    DLOG(INFO) << "Request failed with error code " << basic_response->code()
+               << " (" << basic_response->content() << "): " << url;
+  }
+  return response;
+}
+
+}  // namespace
 
 const char kFakeDeviceToken[] = "fake_device_management_token";
 const char kInvalidEnrollmentToken[] = "invalid_enrollment_token";
@@ -37,22 +60,18 @@ EmbeddedPolicyTestServer::RequestHandler::RequestHandler(
 EmbeddedPolicyTestServer::RequestHandler::~RequestHandler() = default;
 
 EmbeddedPolicyTestServer::EmbeddedPolicyTestServer()
-    : EmbeddedPolicyTestServer(std::make_unique<ClientStorage>(),
-                               std::make_unique<PolicyStorage>()) {}
-
-EmbeddedPolicyTestServer::EmbeddedPolicyTestServer(
-    std::unique_ptr<ClientStorage> client_storage,
-    std::unique_ptr<PolicyStorage> policy_storage)
     : http_server_(EmbeddedTestServer::TYPE_HTTP),
-      client_storage_(std::move(client_storage)),
-      policy_storage_(std::move(policy_storage)) {
-  RegisterHandler(std::make_unique<RequestHandlerForRegisterBrowser>(
+      client_storage_(std::make_unique<ClientStorage>()),
+      policy_storage_(std::make_unique<PolicyStorage>()) {
+  RegisterHandler(std::make_unique<RequestHandlerForApiAuthorization>(
       client_storage_.get(), policy_storage_.get()));
   RegisterHandler(std::make_unique<RequestHandlerForChromeDesktopReport>(
       client_storage_.get(), policy_storage_.get()));
   RegisterHandler(std::make_unique<RequestHandlerForPolicy>(
       client_storage_.get(), policy_storage_.get()));
-  RegisterHandler(std::make_unique<RequestHandlerForApiAuthorization>(
+  RegisterHandler(std::make_unique<RequestHandlerForRegisterBrowser>(
+      client_storage_.get(), policy_storage_.get()));
+  RegisterHandler(std::make_unique<RequestHandlerForRegisterDeviceAndUser>(
       client_storage_.get(), policy_storage_.get()));
 
   http_server_.RegisterDefaultHandler(base::BindRepeating(
@@ -78,21 +97,23 @@ void EmbeddedPolicyTestServer::RegisterHandler(
 std::unique_ptr<HttpResponse> EmbeddedPolicyTestServer::HandleRequest(
     const HttpRequest& request) {
   GURL url = request.GetURL();
+  DLOG(INFO) << "Request URL: " << url;
 
   std::string request_type = KeyValueFromUrl(url, dm_protocol::kParamRequest);
   auto it = request_handlers_.find(request_type);
   if (it == request_handlers_.end()) {
-    DVLOG(1) << "No request handler for: " << url;
+    LOG(ERROR) << "No request handler for: " << url;
     return nullptr;
   }
 
   if (!MeetsServerSideRequirements(url)) {
-    return CreateHttpResponse(
-        net::HTTP_BAD_REQUEST,
-        "URL must define device type, app type, and device id.");
+    return LogStatusAndReturn(
+        url, CreateHttpResponse(
+                 net::HTTP_BAD_REQUEST,
+                 "URL must define device type, app type, and device id."));
   }
 
-  return it->second->HandleRequest(request);
+  return LogStatusAndReturn(url, it->second->HandleRequest(request));
 }
 
 }  // namespace policy

@@ -90,7 +90,7 @@ constexpr char kEnrollmentResultMetrics[] =
 const char kUnenrollmentSuccessMetrics[] =
     "Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess";
 
-std::unique_ptr<PolicyStorage> CreatePolicyStorage() {
+void UpdatePolicyStorage(PolicyStorage* policy_storage) {
   em::CloudPolicySettings settings;
   em::BooleanPolicyProto* saving_browser_history_disabled =
       settings.mutable_savingbrowserhistorydisabled();
@@ -98,7 +98,6 @@ std::unique_ptr<PolicyStorage> CreatePolicyStorage() {
       em::PolicyOptions::MANDATORY);
   saving_browser_history_disabled->set_value(true);
 
-  auto policy_storage = std::make_unique<PolicyStorage>();
   policy_storage->SetPolicyPayload(
       dm_protocol::kChromeMachineLevelUserCloudPolicyType,
       settings.SerializeAsString());
@@ -107,7 +106,6 @@ std::unique_ptr<PolicyStorage> CreatePolicyStorage() {
       settings.SerializeAsString());
   policy_storage->set_robot_api_auth_code("fake_auth_code");
   policy_storage->set_service_account_identity("foo@bar.com");
-  return policy_storage;
 }
 
 ClientStorage::ClientInfo CreateTestClientInfo() {
@@ -672,8 +670,8 @@ class MachineLevelUserCloudPolicyPolicyFetchTest
 #endif
 
   void SetUpTestServer() {
-    test_server_ = std::make_unique<EmbeddedPolicyTestServer>(
-        std::make_unique<ClientStorage>(), CreatePolicyStorage());
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
+    UpdatePolicyStorage(test_server_->policy_storage());
     test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 
@@ -833,8 +831,8 @@ class MachineLevelUserCloudPolicyRobotAuthTest : public PlatformBrowserTest {
 #endif
 
   void SetUpTestServer() {
-    test_server_ = std::make_unique<EmbeddedPolicyTestServer>(
-        std::make_unique<ClientStorage>(), CreatePolicyStorage());
+    test_server_ = std::make_unique<EmbeddedPolicyTestServer>();
+    UpdatePolicyStorage(test_server_->policy_storage());
     test_server_->client_storage()->RegisterClient(CreateTestClientInfo());
   }
 

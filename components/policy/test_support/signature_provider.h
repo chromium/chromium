@@ -83,7 +83,7 @@ class SignatureProvider {
   std::vector<SigningKey> signing_keys_;
 
   // The key version to be used if no key version is defined by the client.
-  int current_key_version_ = 0;
+  int current_key_version_ = 1;
 };
 
 }  // namespace policy

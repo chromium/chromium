@@ -6,6 +6,7 @@
 #define COMPONENTS_POLICY_TEST_SUPPORT_POLICY_STORAGE_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 namespace policy {
@@ -39,6 +40,16 @@ class PolicyStorage {
     service_account_identity_ = service_account_identity;
   }
 
+  const std::set<std::string>& managed_users() const { return managed_users_; }
+  void add_managed_user(const std::string& managed_user) {
+    managed_users_.insert(managed_user);
+  }
+
+  const std::string& policy_user() const { return policy_user_; }
+  void set_policy_user(const std::string& policy_user) {
+    policy_user_ = policy_user;
+  }
+
  private:
   // Maps policy types to a serialized proto representing the policies to be
   // applied for the type (e.g. CloudPolicySettings,
@@ -48,6 +59,10 @@ class PolicyStorage {
   std::string robot_api_auth_code_;
 
   std::string service_account_identity_;
+
+  std::set<std::string> managed_users_;
+
+  std::string policy_user_;
 };
 
 }  // namespace policy

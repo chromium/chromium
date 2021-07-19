@@ -60,8 +60,6 @@ class EmbeddedPolicyTestServer {
   };
 
   EmbeddedPolicyTestServer();
-  EmbeddedPolicyTestServer(std::unique_ptr<ClientStorage> client_storage,
-                           std::unique_ptr<PolicyStorage> policy_storage);
   EmbeddedPolicyTestServer(const EmbeddedPolicyTestServer&) = delete;
   EmbeddedPolicyTestServer& operator=(const EmbeddedPolicyTestServer&) = delete;
   virtual ~EmbeddedPolicyTestServer();

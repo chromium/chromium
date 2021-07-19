@@ -44,6 +44,7 @@ class EmbeddedPolicyTestServerTestBase : public testing::Test {
   void SetRequestTypeParam(const std::string& request_type);
   void SetEnrollmentTokenHeader(const std::string& enrollment_token);
   void SetDeviceTokenHeader(const std::string& device_token);
+  void SetGoogleLoginTokenHeader(const std::string& user_email);
   void SetPayload(const enterprise_management::DeviceManagementRequest&
                       device_management_request);
 

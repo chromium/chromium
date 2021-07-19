@@ -25,6 +25,8 @@ static_library("test_support") {
     "request_handler_for_policy.h",
     "request_handler_for_register_browser.cc",
     "request_handler_for_register_browser.h",
+    "request_handler_for_register_device_and_user.cc",
+    "request_handler_for_register_device_and_user.h",
     "signature_provider.cc",
     "signature_provider.h",
     "test_server_helpers.cc",
@@ -61,6 +63,7 @@ source_set("unittests") {
     "request_handler_for_chrome_desktop_report_unittest.cc",
     "request_handler_for_policy_unittest.cc",
     "request_handler_for_register_browser_unittest.cc",
+    "request_handler_for_register_device_and_user_unittest.cc",
     "signature_provider_unittest.cc",
   ]
 
