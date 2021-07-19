@@ -53,7 +53,7 @@ bool NavigationRateLimiter::CanProceed() {
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
           "Throttling navigation to prevent the browser from hanging. See "
-          "https://crbug.com/882238. Command line switch "
+          "https://crbug.com/1038223. Command line switch "
           "--disable-ipc-flooding-protection can be used to bypass the "
           "protection"));
     }
