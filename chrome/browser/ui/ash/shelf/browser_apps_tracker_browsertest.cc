@@ -1,0 +1,576 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/shell.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/shelf/browser_app_status_observer.h"
+#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_navigator.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/web_applications/components/web_app_id.h"
+#include "chrome/browser/web_applications/components/web_application_info.h"
+#include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/browser/page_navigator.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "extensions/common/constants.h"
+#include "ui/wm/public/activation_client.h"
+
+// default implementation of RunTestOnMainThread() and TestBody()
+#include "content/public/test/browser_test.h"
+
+namespace {
+
+using extension_misc::kChromeAppId;
+
+// Generated from start URL "https://a.example.org/".
+// See |web_app::GenerateAppId|.
+constexpr char kAppAId[] = "dhehpanpcmiafdmbldplnfenbijejdfe";
+
+// Generated from start URL "https://b.example.org/".
+constexpr char kAppBId[] = "abhkhfladdfdlfmhaokoglcllbamaili";
+
+struct Event {
+  static Event Create(const std::string name,
+                      const BrowserAppInstance& instance) {
+    return {
+        name,
+        instance.app_id,
+        instance.browser,
+        instance.contents,
+        instance.visible,
+        instance.active,
+    };
+  }
+  std::string name;
+  std::string app_id;
+  Browser* browser;
+  content::WebContents* contents;
+  bool visible;
+  bool active;
+};
+
+// Make test sequence easier to scan
+constexpr bool kVisible = true;
+constexpr bool kHidden = false;
+constexpr bool kActive = true;
+constexpr bool kInactive = false;
+
+bool operator==(const Event& e1, const Event& e2) {
+  return e1.name == e2.name && e1.app_id == e2.app_id &&
+         e1.browser == e2.browser && e1.contents == e2.contents &&
+         e1.visible == e2.visible && e1.active == e2.active;
+}
+
+bool operator!=(const Event& e1, const Event& e2) {
+  return !(e1 == e2);
+}
+
+std::ostream& operator<<(std::ostream& os, const Event& e) {
+  if (e.name == "") {
+    return os << "none";
+  }
+  os << e.name << "(app_id=" << e.app_id << ", browser=" << e.browser;
+  if (e.contents) {
+    os << ", tab=" << e.contents;
+  }
+  os << ", " << (e.visible ? "visible" : "hidden");
+  os << ", " << (e.active ? "active" : "inactive");
+  return os << ")";
+}
+
+class Recorder : public BrowserAppStatusObserver {
+ public:
+  explicit Recorder(BrowserAppsTracker* tracker) : tracker_(tracker) {
+    DCHECK(tracker);
+    tracker_->AddObserver(this);
+  }
+
+  ~Recorder() override { tracker_->RemoveObserver(this); }
+
+  void OnBrowserAppAdded(const BrowserAppInstance& instance) override {
+    calls_.push_back(Event::Create("added", instance));
+  }
+
+  void OnBrowserAppUpdated(const BrowserAppInstance& instance) override {
+    calls_.push_back(Event::Create("updated", instance));
+  }
+
+  void OnBrowserAppRemoved(const BrowserAppInstance& instance) override {
+    calls_.push_back(Event::Create("removed", instance));
+  }
+
+  void Verify(const std::vector<Event>& expected_calls) {
+    EXPECT_EQ(calls_.size(), expected_calls.size());
+    for (int i = 0; i < std::max(calls_.size(), expected_calls.size()); ++i) {
+      EXPECT_EQ(Get(calls_, i), Get(expected_calls, i)) << "call #" << i;
+    }
+  }
+
+ private:
+  static const Event Get(const std::vector<Event>& calls, int i) {
+    if (i < calls.size()) {
+      return calls[i];
+    }
+    return {};
+  }
+
+  BrowserAppsTracker* tracker_;
+  std::vector<Event> calls_;
+};
+
+}  // namespace
+
+class BrowserAppsTrackerTest : public InProcessBrowserTest {
+ protected:
+  Browser* CreateBrowser() {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    Browser::CreateParams params(profile, true /* user_gesture */);
+    Browser* browser = Browser::Create(params);
+    browser->window()->Show();
+    return browser;
+  }
+
+  Browser* CreateAppBrowser(const std::string& app_id) {
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    auto params = Browser::CreateParams::CreateForApp(
+        "_crx_" + app_id, true /* trusted_source */,
+        gfx::Rect(), /* window_bounts */
+        profile, true /* user_gesture */);
+    Browser* browser = Browser::Create(params);
+    browser->window()->Show();
+    return browser;
+  }
+
+  content::WebContents* NavigateAndWait(Browser* browser,
+                                        const std::string& url,
+                                        WindowOpenDisposition disposition) {
+    NavigateParams params(browser, GURL(url),
+                          ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
+    params.disposition = disposition;
+    Navigate(&params);
+    auto* contents = params.navigated_or_inserted_contents;
+    content::TestNavigationObserver observer(contents);
+    observer.Wait();
+    return contents;
+  }
+
+  void NavigateActiveTab(Browser* browser, const std::string& url) {
+    NavigateAndWait(browser, url, WindowOpenDisposition::CURRENT_TAB);
+  }
+
+  content::WebContents* InsertBackgroundTab(Browser* browser,
+                                            const std::string& url) {
+    return NavigateAndWait(browser, url,
+                           WindowOpenDisposition::NEW_BACKGROUND_TAB);
+  }
+
+  content::WebContents* InsertForegroundTab(Browser* browser,
+                                            const std::string& url) {
+    return NavigateAndWait(browser, url,
+                           WindowOpenDisposition::NEW_FOREGROUND_TAB);
+  }
+
+  web_app::AppId InstallWebApp(const std::string& start_url) {
+    auto info = std::make_unique<WebApplicationInfo>();
+    info->start_url = GURL(start_url);
+    Profile* profile = ProfileManager::GetPrimaryUserProfile();
+    return web_app::test::InstallWebApp(profile, std::move(info));
+  }
+
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    tracker_ = std::make_unique<BrowserAppsTracker>(
+        ash::Shell::Get()->activation_client());
+    tracker_->Initialize();
+
+    ASSERT_EQ(kAppAId, InstallWebApp("https://a.example.org"));
+    ASSERT_EQ(kAppBId, InstallWebApp("https://b.example.org"));
+  }
+
+  void TearDownOnMainThread() override {
+    tracker_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    InProcessBrowserTest ::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kNoStartupWindow);
+  }
+
+ protected:
+  std::unique_ptr<BrowserAppsTracker> tracker_;
+};
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, InsertAndCloseTabs) {
+  Browser* browser = nullptr;
+  content::WebContents* tab_app1 = nullptr;
+  content::WebContents* tab_app2 = nullptr;
+
+  // Open a foreground tab with a website.
+  {
+    SCOPED_TRACE("insert an initial foreground tab");
+    Recorder recorder(tracker_.get());
+
+    browser = CreateBrowser();
+    tab_app1 = InsertForegroundTab(browser, "https://a.example.org");
+    recorder.Verify({
+        {"added", kChromeAppId, browser, nullptr, kVisible, kActive},
+        {"added", kAppAId, browser, tab_app1, kVisible, kActive},
+    });
+  }
+
+  // Open a second tab in foreground.
+  {
+    SCOPED_TRACE("insert a second foreground tab");
+    Recorder recorder(tracker_.get());
+
+    tab_app2 = InsertForegroundTab(browser, "https://b.example.org");
+    recorder.Verify({
+        {"updated", kAppAId, browser, tab_app1, kVisible, kInactive},
+        {"added", kAppBId, browser, tab_app2, kVisible, kActive},
+    });
+  }
+
+  // Open a third tab in foreground with no app.
+  {
+    SCOPED_TRACE("insert a third foreground tab without app");
+    Recorder recorder(tracker_.get());
+
+    InsertForegroundTab(browser, "https://c.example.org");
+    recorder.Verify({
+        {"updated", kAppBId, browser, tab_app2, kVisible, kInactive},
+    });
+  }
+
+  // Open two more tabs in foreground and close them.
+  {
+    SCOPED_TRACE("insert and close two more tabs");
+    Recorder recorder(tracker_.get());
+
+    auto* tab_app4 = InsertForegroundTab(browser, "https://a.example.org");
+    auto* tab_app5 = InsertForegroundTab(browser, "https://b.example.org");
+    // Close in reverse order.
+    int i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app5);
+    browser->tab_strip_model()->CloseWebContentsAt(
+        i, TabStripModel::CLOSE_USER_GESTURE);
+    i = browser->tab_strip_model()->GetIndexOfWebContents(tab_app4);
+    browser->tab_strip_model()->CloseWebContentsAt(
+        i, TabStripModel::CLOSE_USER_GESTURE);
+
+    recorder.Verify({
+        // tab 4 opened: no events for tab 3 as it has no app
+        {"added", kAppAId, browser, tab_app4, kVisible, kActive},
+        // tab 5 opened: tab 4 deactivates
+        {"updated", kAppAId, browser, tab_app4, kVisible, kInactive},
+        {"added", kAppBId, browser, tab_app5, kVisible, kActive},
+        // tab 5 closed: tab 4 reactivates
+        {"removed", kAppBId, browser, tab_app5, kVisible, kActive},
+        {"updated", kAppAId, browser, tab_app4, kVisible, kActive},
+        // tab closed: no events for tab 3 as it has no app
+        {"removed", kAppAId, browser, tab_app4, kVisible, kActive},
+    });
+  }
+
+  // Close the browser.
+  {
+    SCOPED_TRACE("close browser");
+    Recorder recorder(tracker_.get());
+
+    browser->tab_strip_model()->CloseAllTabs();
+    recorder.Verify({
+        {"removed", kAppBId, browser, tab_app2, kVisible, kInactive},
+        {"removed", kAppAId, browser, tab_app1, kVisible, kInactive},
+        {"removed", kChromeAppId, browser, nullptr, kVisible, kActive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, ForegroundTabNavigate) {
+  // Setup: one foreground tab with no app.
+  auto* browser = CreateBrowser();
+  auto* tab = InsertForegroundTab(browser, "https://c.example.org");
+
+  // Navigate the foreground tab to app A.
+  {
+    SCOPED_TRACE("navigate tab to app A");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://a.example.org");
+    recorder.Verify({
+        {"added", kAppAId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Navigate the foreground tab to app B.
+  {
+    SCOPED_TRACE("navigate tab to app B");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://b.example.org");
+    recorder.Verify({
+        {"removed", kAppAId, browser, tab, kVisible, kActive},
+        {"added", kAppBId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Navigate the foreground tab to a different subdomain with no app.
+  {
+    SCOPED_TRACE("navigate tab from app B to a non-app subdomain");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://c.example.org");
+    recorder.Verify({
+        {"removed", kAppBId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Navigate the foreground tab from a non-app subdomain to app B.
+  {
+    SCOPED_TRACE("navigate tab from a non-app subdomain to app B");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://b.example.org");
+    recorder.Verify({
+        {"added", kAppBId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Navigate the foreground tab to a different domain with no app.
+  {
+    SCOPED_TRACE("navigate tab from app B to a non-app domain");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://example.com");
+    recorder.Verify({
+        {"removed", kAppBId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Navigate the foreground tab from a non-app domain to app B.
+  {
+    SCOPED_TRACE("navigate tab from a non-app domain to app B");
+    Recorder recorder(tracker_.get());
+
+    NavigateActiveTab(browser, "https://b.example.org");
+    recorder.Verify({
+        {"added", kAppBId, browser, tab, kVisible, kActive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowedWebApp) {
+  Browser* browser = nullptr;
+  content::WebContents* tab = nullptr;
+
+  // Open app A in a window.
+  {
+    SCOPED_TRACE("create a windowed app");
+    Recorder recorder(tracker_.get());
+
+    browser = CreateAppBrowser(kAppAId);
+    tab = InsertForegroundTab(browser, "https://a.example.org");
+    recorder.Verify({
+        {"added", kAppAId, browser, tab, kVisible, kActive},
+    });
+  }
+
+  // Close the browser.
+  {
+    SCOPED_TRACE("close browser");
+    Recorder recorder(tracker_.get());
+
+    browser->tab_strip_model()->CloseAllTabs();
+    recorder.Verify({
+        {"removed", kAppAId, browser, tab, kVisible, kActive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, SwitchTabs) {
+  // Setup: one foreground tab and one background tab.
+  auto* browser = CreateBrowser();
+  auto* tab0 = InsertForegroundTab(browser, "https://a.example.org");
+  auto* tab1 = InsertForegroundTab(browser, "https://b.example.org");
+  InsertForegroundTab(browser, "https://c.example.org");
+
+  // Switch tabs: no app -> app A
+  {
+    SCOPED_TRACE("switch tabs to app A");
+    Recorder recorder(tracker_.get());
+
+    browser->tab_strip_model()->ActivateTabAt(0);
+    recorder.Verify({
+        {"updated", kAppAId, browser, tab0, kVisible, kActive},
+    });
+  }
+
+  // Switch tabs: app A -> app B
+  {
+    SCOPED_TRACE("switch tabs to app B");
+    Recorder recorder(tracker_.get());
+
+    browser->tab_strip_model()->ActivateTabAt(1);
+    recorder.Verify({
+        {"updated", kAppBId, browser, tab1, kVisible, kActive},
+        {"updated", kAppAId, browser, tab0, kVisible, kInactive},
+    });
+  }
+
+  // Switch tabs: app B -> no app
+  {
+    SCOPED_TRACE("switch tabs to no app");
+    Recorder recorder(tracker_.get());
+
+    browser->tab_strip_model()->ActivateTabAt(2);
+    recorder.Verify({
+        {"updated", kAppBId, browser, tab1, kVisible, kInactive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowVisibility) {
+  // Setup: one foreground tab and one background tab.
+  auto* browser = CreateBrowser();
+  auto* bg_tab = InsertForegroundTab(browser, "https://a.example.org");
+  auto* fg_tab = InsertForegroundTab(browser, "https://b.example.org");
+  InsertForegroundTab(browser, "https://c.example.org");
+  auto* window = browser->window()->GetNativeWindow();
+  auto* activation_client = ash::Shell::Get()->activation_client();
+  // Prevent spurious deactivation events.
+  activation_client->DeactivateWindow(window);
+  ASSERT_EQ(activation_client->GetActiveWindow(), nullptr);
+
+  // Hide the window.
+  {
+    SCOPED_TRACE("hide window");
+    Recorder recorder(tracker_.get());
+
+    window->Hide();
+    recorder.Verify({
+        {"updated", kChromeAppId, browser, nullptr, kHidden, kInactive},
+        {"updated", kAppAId, browser, bg_tab, kHidden, kInactive},
+        {"updated", kAppBId, browser, fg_tab, kHidden, kInactive},
+    });
+  }
+
+  // Show the window.
+  {
+    SCOPED_TRACE("show window");
+    Recorder recorder(tracker_.get());
+
+    window->Show();
+    recorder.Verify({
+        {"updated", kChromeAppId, browser, nullptr, kVisible, kInactive},
+        {"updated", kAppAId, browser, bg_tab, kVisible, kInactive},
+        {"updated", kAppBId, browser, fg_tab, kVisible, kInactive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, WindowActivation) {
+  // Setup: two browsers with two tabs each.
+  auto* browser1 = CreateBrowser();
+  InsertForegroundTab(browser1, "https://a.example.org");
+  InsertForegroundTab(browser1, "https://c.example.org");
+  auto* fg_tab1 = InsertForegroundTab(browser1, "https://b.example.org");
+  auto* window1 = browser1->window()->GetNativeWindow();
+
+  auto* browser2 = CreateBrowser();
+  InsertForegroundTab(browser2, "https://a.example.org");
+  InsertForegroundTab(browser2, "https://c.example.org");
+  auto* fg_tab2 = InsertForegroundTab(browser2, "https://b.example.org");
+  auto* window2 = browser2->window()->GetNativeWindow();
+
+  auto* activation_client = ash::Shell::Get()->activation_client();
+  ASSERT_EQ(activation_client->GetActiveWindow(), window2);
+
+  // Activate window 1.
+  {
+    SCOPED_TRACE("activate window 1");
+    Recorder recorder(tracker_.get());
+
+    activation_client->ActivateWindow(window1);
+    recorder.Verify({
+        // activated first
+        {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
+        {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
+        // then deactivated
+        {"updated", kChromeAppId, browser2, nullptr, kVisible, kInactive},
+        {"updated", kAppBId, browser2, fg_tab2, kVisible, kInactive},
+    });
+  }
+
+  // Activate window 2.
+  {
+    SCOPED_TRACE("activate window 2");
+    Recorder recorder(tracker_.get());
+
+    activation_client->ActivateWindow(window2);
+    recorder.Verify({
+        // activated first
+        {"updated", kChromeAppId, browser2, nullptr, kVisible, kActive},
+        {"updated", kAppBId, browser2, fg_tab2, kVisible, kActive},
+        // then deactivated
+        {"updated", kChromeAppId, browser1, nullptr, kVisible, kInactive},
+        {"updated", kAppBId, browser1, fg_tab1, kVisible, kInactive},
+    });
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(BrowserAppsTrackerTest, TabDrag) {
+  // Setup: two browsers: one with two, another with three tabs.
+  auto* browser1 = CreateBrowser();
+  InsertForegroundTab(browser1, "https://a.example.org");
+  auto* fg_tab1 = InsertForegroundTab(browser1, "https://b.example.org");
+  auto* window1 = browser1->window()->GetNativeWindow();
+
+  auto* browser2 = CreateBrowser();
+  InsertForegroundTab(browser2, "https://a.example.org");
+  auto* bg_tab2 = InsertForegroundTab(browser2, "https://a.example.org");
+  auto* fg_tab2 = InsertForegroundTab(browser2, "https://b.example.org");
+  auto* window2 = browser2->window()->GetNativeWindow();
+
+  auto* activation_client = ash::Shell::Get()->activation_client();
+  ASSERT_EQ(activation_client->GetActiveWindow(), window2);
+
+  // Drag the active tab of browser 2 and rop it into the last position in
+  // browser 1.
+  SCOPED_TRACE("tab drag and drop");
+  Recorder recorder(tracker_.get());
+
+  // We skip a step where a detached tab gets inserted into a temporary browser
+  // but the sequence there is identical.
+
+  // Detach.
+  int src_index = browser2->tab_strip_model()->GetIndexOfWebContents(fg_tab2);
+  auto detached =
+      browser2->tab_strip_model()->DetachWebContentsAtForInsertion(src_index);
+
+  // Target browser window goes into foreground right before drop.
+  activation_client->ActivateWindow(window1);
+
+  // Attach.
+  int dst_index = browser1->tab_strip_model()->count();
+  browser1->tab_strip_model()->InsertWebContentsAt(
+      dst_index, std::move(detached), TabStripModel::ADD_ACTIVE);
+  recorder.Verify({
+      // background tab in the dragged-from browser gets activated when the
+      // active tab is detached
+      {"updated", kAppAId, browser2, bg_tab2, kVisible, kActive},
+      // dragged-into browser window goes into foreground
+      {"updated", kChromeAppId, browser1, nullptr, kVisible, kActive},
+      {"updated", kAppBId, browser1, fg_tab1, kVisible, kActive},
+      // dragged-from browser goes into background
+      {"updated", kChromeAppId, browser2, nullptr, kVisible, kInactive},
+      {"updated", kAppAId, browser2, bg_tab2, kVisible, kInactive},
+      // previously foreground tab in the dragged-into browser goes into
+      // background when the dragged tab is attached to the new browser
+      {"updated", kAppBId, browser1, fg_tab1, kVisible, kInactive},
+      // dragged tab gets reparented and becomes active in the new browser
+      {"updated", kAppBId, browser1, fg_tab2, kVisible, kActive},
+  });
+}

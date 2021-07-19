@@ -19,6 +19,7 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/window_animation_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
@@ -61,6 +62,7 @@
 #include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_controller.h"
 #include "chrome/browser/ui/ash/shelf/app_window_shelf_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/browser_apps_tracker.h"
 #include "chrome/browser/ui/ash/shelf/browser_shortcut_shelf_item_controller.h"
 #include "chrome/browser/ui/ash/shelf/browser_status_monitor.h"
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
@@ -253,6 +255,10 @@ ChromeShelfController::ChromeShelfController(Profile* profile,
   app_window_controllers_.emplace_back(std::move(app_service_controller));
   // Create the browser monitor which will inform the shelf of status changes.
   browser_status_monitor_ = std::make_unique<BrowserStatusMonitor>(this);
+  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
+    browser_apps_tracker_ = std::make_unique<BrowserAppsTracker>(
+        ash::Shell::Get()->activation_client());
+  }
 }
 
 ChromeShelfController::~ChromeShelfController() {
@@ -299,6 +305,9 @@ void ChromeShelfController::Init() {
 
   UpdatePinnedAppsFromSync();
   browser_status_monitor_->Initialize();
+  if (base::FeatureList::IsEnabled(BrowserAppsTracker::kEnabled)) {
+    browser_apps_tracker_->Initialize();
+  }
 }
 
 ash::ShelfID ChromeShelfController::CreateAppItem(

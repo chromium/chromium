@@ -28,6 +28,7 @@
 class AppIconLoader;
 class AppServiceAppWindowShelfController;
 class AppWindowShelfController;
+class BrowserAppsTracker;
 class BrowserShortcutShelfItemController;
 class BrowserStatusMonitor;
 class ChromeShelfControllerUserSwitchObserver;
@@ -441,6 +442,9 @@ class ChromeShelfController
 
   // The owned browser status monitor.
   std::unique_ptr<BrowserStatusMonitor> browser_status_monitor_;
+
+  // The owned browser apps tracker.
+  std::unique_ptr<BrowserAppsTracker> browser_apps_tracker_;
 
   // A special observer class to detect user switches.
   std::unique_ptr<ChromeShelfControllerUserSwitchObserver>
