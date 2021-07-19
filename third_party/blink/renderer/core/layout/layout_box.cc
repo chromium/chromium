@@ -4189,8 +4189,7 @@ bool LayoutBox::ShouldComputeLogicalWidthFromAspectRatio(
   if (StyleRef().AspectRatio().IsAuto())
     return false;
 
-  if (IsGridItem() &&
-      StyleRef().JustifySelf().GetPosition() == ItemPosition::kStretch)
+  if (IsGridItem() && HasStretchedLogicalWidth(StretchingMode::Explicit))
     return false;
 
   if (!HasOverrideLogicalHeight() &&
@@ -4510,7 +4509,7 @@ bool LayoutBox::IsStretchingColumnFlexItem() const {
 
 // TODO (lajava) Can/Should we move this inside specific layout classes (flex.
 // grid)? Can we refactor columnFlexItemHasStretchAlignment logic?
-bool LayoutBox::HasStretchedLogicalWidth() const {
+bool LayoutBox::HasStretchedLogicalWidth(StretchingMode stretchingMode) const {
   NOT_DESTROYED();
   const ComputedStyle& style = StyleRef();
   if (!style.LogicalWidth().IsAuto() || style.MarginStart().IsAuto() ||
@@ -4523,15 +4522,14 @@ bool LayoutBox::HasStretchedLogicalWidth() const {
     // Flexbox Items, which obviously should have a container.
     return false;
   }
+  auto defaultItemPosition = stretchingMode == StretchingMode::Any
+                                 ? cb->SelfAlignmentNormalBehavior(this)
+                                 : ItemPosition::kNormal;
   if (cb->IsHorizontalWritingMode() != IsHorizontalWritingMode()) {
-    return style
-               .ResolvedAlignSelf(cb->SelfAlignmentNormalBehavior(this),
-                                  cb->Style())
+    return style.ResolvedAlignSelf(defaultItemPosition, cb->Style())
                .GetPosition() == ItemPosition::kStretch;
   }
-  return style
-             .ResolvedJustifySelf(cb->SelfAlignmentNormalBehavior(this),
-                                  cb->Style())
+  return style.ResolvedJustifySelf(defaultItemPosition, cb->Style())
              .GetPosition() == ItemPosition::kStretch;
 }
 
