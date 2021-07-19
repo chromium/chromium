@@ -197,7 +197,7 @@ void WebAppInstallFinalizer::FinalizeInstall(
 
   web_app->SetAdditionalSearchTerms(web_app_info.additional_search_terms);
   web_app->AddSource(source);
-  web_app->SetIsInSyncInstall(false);
+  web_app->SetIsFromSyncAndPendingInstallation(false);
   web_app->SetStorageIsolated(web_app_info.is_storage_isolated);
 
   UpdateIntWebAppPref(profile_->GetPrefs(), app_id, kLatestWebAppInstallSource,
@@ -325,7 +325,8 @@ void WebAppInstallFinalizer::FinalizeUpdate(
       GenerateAppId(web_app_info.manifest_id, web_app_info.start_url);
   const WebApp* existing_web_app = GetWebAppRegistrar().GetAppById(app_id);
 
-  if (!existing_web_app || existing_web_app->is_in_sync_install() ||
+  if (!existing_web_app ||
+      existing_web_app->is_from_sync_and_pending_installation() ||
       app_id != existing_web_app->app_id()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), AppId(),

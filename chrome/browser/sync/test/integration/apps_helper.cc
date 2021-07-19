@@ -214,7 +214,7 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
     ASSERT_TRUE(web_app::WebAppProvider::Get(profile)
                     ->registrar()
                     .AsWebAppRegistrar()
-                    ->GetAppsInSyncInstall()
+                    ->GetAppsFromSyncAndPendingInstallation()
                     .empty());
 
     std::set<web_app::AppId> apps_in_sync_uninstall =

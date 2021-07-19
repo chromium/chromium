@@ -459,7 +459,7 @@ void WebAppSyncBridge::OnDatabaseOpened(
   registrar_->InitRegistry(std::move(registry));
   std::move(callback).Run();
 
-  MaybeInstallAppsInSyncInstall();
+  MaybeInstallAppsFromSyncAndPendingInstallation();
 }
 
 void WebAppSyncBridge::OnDataWritten(CommitCallback callback, bool success) {
@@ -551,7 +551,7 @@ void WebAppSyncBridge::ApplySyncDataChange(
 
     // Request a followup sync-initiated install for this stub app to fetch
     // full local data and all the icons.
-    web_app->SetIsInSyncInstall(true);
+    web_app->SetIsFromSyncAndPendingInstallation(true);
 
     // The sync system requires non-empty name, populate temp name from
     // the fallback sync data name:
@@ -719,11 +719,11 @@ const std::set<AppId>& WebAppSyncBridge::GetAppsInSyncUninstallForTest() {
   return apps_in_sync_uninstall_;
 }
 
-void WebAppSyncBridge::MaybeInstallAppsInSyncInstall() {
+void WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation() {
   std::vector<WebApp*> apps_in_sync_install;
 
   for (WebApp& app : registrar_->GetAppsIncludingStubsMutable()) {
-    if (app.is_in_sync_install())
+    if (app.is_from_sync_and_pending_installation())
       apps_in_sync_install.push_back(&app);
   }
 

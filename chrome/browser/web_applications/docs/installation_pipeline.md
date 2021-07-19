@@ -102,9 +102,9 @@ Sync installs have a few extra complications:
 * They need to be immediately saved to the database & be installed eventually.
 * Many are often queued up during a new profile sign-in, and it's not uncommon for the user to quit before the installation queue finishes.
 
-Due to this, unlike other installs, a special [`WebApp::is_in_sync_install`](https://source.chromium.org/search?q=WebApp::is_in_sync_install) ([protobuf](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/proto/web_app.proto;l=110;bpv=1;bpt=1?q=web_app.proto%20is_in_sync_install&ss=chromium)) variable is saved in the database. WebApps with this set to true are treated as not fully installed, and are often left out of app listings. This variable is reset back to `false` when the app is finished installing.
+Due to this, unlike other installs, a special [`WebApp::is_from_sync_and_pending_installation`](https://source.chromium.org/search?q=WebApp::is_from_sync_and_pending_installation) ([protobuf](https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/web_applications/proto/web_app.proto;l=110;bpv=1;bpt=1?q=web_app.proto%20is_from_sync_and_pending_installation&ss=chromium)) variable is saved in the database. WebApps with this set to true are treated as not fully installed, and are often left out of app listings. This variable is reset back to `false` when the app is finished installing.
 
-To handle the cases above, on startup when the database is loaded, any WebApp with `is_in_sync_install` of `true` will be re-installed inside of [`WebAppSyncBridge::MaybeInstallAppsInSyncInstall`](https://source.chromium.org/search?q=WebAppSyncBridge::MaybeInstallAppsInSyncInstall)
+To handle the cases above, on startup when the database is loaded, any WebApp with `is_from_sync_and_pending_installation` of `true` will be re-installed inside of [`WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation`](https://source.chromium.org/search?q=WebAppSyncBridge::MaybeInstallAppsFromSyncAndPendingInstallation)
 
 ## Installation State Modifications
 

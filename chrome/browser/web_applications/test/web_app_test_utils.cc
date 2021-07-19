@@ -267,7 +267,7 @@ std::unique_ptr<WebApp> CreateRandomWebApp(const GURL& base_url,
   app->SetThemeColor(theme_color);
   app->SetBackgroundColor(background_color);
   app->SetIsLocallyInstalled(random.next_bool());
-  app->SetIsInSyncInstall(random.next_bool());
+  app->SetIsFromSyncAndPendingInstallation(random.next_bool());
   app->SetUserDisplayMode(random.next_bool() ? DisplayMode::kBrowser
                                              : DisplayMode::kStandalone);
 

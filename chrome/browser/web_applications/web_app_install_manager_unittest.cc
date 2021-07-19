@@ -246,7 +246,7 @@ class WebAppInstallManagerTest
     return web_app;
   }
 
-  std::unique_ptr<WebApp> CreateWebAppInSyncInstall(
+  std::unique_ptr<WebApp> CreateWebAppFromSyncAndPendingInstallation(
       const GURL& start_url,
       const std::string& app_name,
       DisplayMode user_display_mode,
@@ -255,7 +255,7 @@ class WebAppInstallManagerTest
       const GURL& scope,
       const std::vector<WebApplicationIconInfo>& icon_infos) {
     auto web_app = CreateWebApp(start_url, Source::kSync, user_display_mode);
-    web_app->SetIsInSyncInstall(true);
+    web_app->SetIsFromSyncAndPendingInstallation(true);
     web_app->SetIsLocallyInstalled(locally_installed);
 
     WebApp::SyncFallbackData sync_fallback_data;
@@ -476,11 +476,11 @@ TEST_P(WebAppInstallManagerTest,
   const GURL url2{"https://example.org/path"};
   const AppId app2_id = GenerateAppId(/*manifest_id=*/absl::nullopt, url2);
   {
-    std::unique_ptr<WebApp> app1 = CreateWebAppInSyncInstall(
+    std::unique_ptr<WebApp> app1 = CreateWebAppFromSyncAndPendingInstallation(
         url1, "Name1 from sync", DisplayMode::kStandalone, SK_ColorRED,
         /*is_locally_installed=*/false, /*scope=*/GURL(), /*icon_infos=*/{});
 
-    std::unique_ptr<WebApp> app2 = CreateWebAppInSyncInstall(
+    std::unique_ptr<WebApp> app2 = CreateWebAppFromSyncAndPendingInstallation(
         url2, "Name2 from sync", DisplayMode::kBrowser, SK_ColorGREEN,
         /*is_locally_installed=*/true, /*scope=*/GURL(), /*icon_infos=*/{});
 
@@ -624,9 +624,10 @@ TEST_P(WebAppInstallManagerTest,
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   {
-    std::unique_ptr<WebApp> app_in_sync_install = CreateWebAppInSyncInstall(
-        start_url, "Name from sync", DisplayMode::kStandalone, SK_ColorRED,
-        /*is_locally_installed=*/true, /*scope=*/GURL(), /*icon_infos=*/{});
+    std::unique_ptr<WebApp> app_in_sync_install =
+        CreateWebAppFromSyncAndPendingInstallation(
+            start_url, "Name from sync", DisplayMode::kStandalone, SK_ColorRED,
+            /*is_locally_installed=*/true, /*scope=*/GURL(), /*icon_infos=*/{});
 
     InitRegistrarWithApp(std::move(app_in_sync_install));
   }
@@ -690,7 +691,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
   const std::unique_ptr<WebApp> expected_app =
       CreateWebApp(url, Source::kSync,
                    /*user_display_mode=*/DisplayMode::kStandalone);
-  expected_app->SetIsInSyncInstall(false);
+  expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetScope(url);
   expected_app->SetName("Name");
   expected_app->SetIsLocallyInstalled(expect_locally_installed);
@@ -720,11 +721,12 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Success) {
     expected_app->SetSyncFallbackData(std::move(sync_fallback_data));
   }
 
-  std::unique_ptr<const WebApp> app_in_sync_install = CreateWebAppInSyncInstall(
-      expected_app->start_url(), "Name from sync",
-      expected_app->user_display_mode(), SK_ColorRED,
-      expected_app->is_locally_installed(), expected_app->scope(),
-      expected_app->icon_infos());
+  std::unique_ptr<const WebApp> app_in_sync_install =
+      CreateWebAppFromSyncAndPendingInstallation(
+          expected_app->start_url(), "Name from sync",
+          expected_app->user_display_mode(), SK_ColorRED,
+          expected_app->is_locally_installed(), expected_app->scope(),
+          expected_app->icon_infos());
 
   // Init using a copy.
   InitRegistrarWithApp(std::make_unique<WebApp>(*app_in_sync_install));
@@ -766,7 +768,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
   const std::unique_ptr<WebApp> expected_app =
       CreateWebApp(url, Source::kSync,
                    /*user_display_mode=*/DisplayMode::kBrowser);
-  expected_app->SetIsInSyncInstall(false);
+  expected_app->SetIsFromSyncAndPendingInstallation(false);
   expected_app->SetName("Name from sync");
   expected_app->SetScope(url);
   expected_app->SetDisplayMode(DisplayMode::kBrowser);
@@ -797,11 +799,13 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppsAfterSync_Fallback) {
     expected_app->SetSyncFallbackData(std::move(sync_fallback_data));
   }
 
-  std::unique_ptr<const WebApp> app_in_sync_install = CreateWebAppInSyncInstall(
-      expected_app->start_url(), expected_app->name(),
-      expected_app->user_display_mode(), expected_app->theme_color().value(),
-      expected_app->is_locally_installed(), expected_app->scope(),
-      expected_app->icon_infos());
+  std::unique_ptr<const WebApp> app_in_sync_install =
+      CreateWebAppFromSyncAndPendingInstallation(
+          expected_app->start_url(), expected_app->name(),
+          expected_app->user_display_mode(),
+          expected_app->theme_color().value(),
+          expected_app->is_locally_installed(), expected_app->scope(),
+          expected_app->icon_infos());
 
   // Init using a copy.
   InitRegistrarWithApp(std::make_unique<WebApp>(*app_in_sync_install));
@@ -1037,10 +1041,12 @@ TEST_P(WebAppInstallManagerTest,
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   {
-    std::unique_ptr<WebApp> app_in_sync_install = CreateWebAppInSyncInstall(
-        start_url, "Name from sync",
-        /*user_display_mode=*/DisplayMode::kStandalone, SK_ColorRED,
-        /*is_locally_installed=*/false, /*scope=*/GURL(), /*icon_infos=*/{});
+    std::unique_ptr<WebApp> app_in_sync_install =
+        CreateWebAppFromSyncAndPendingInstallation(
+            start_url, "Name from sync",
+            /*user_display_mode=*/DisplayMode::kStandalone, SK_ColorRED,
+            /*is_locally_installed=*/false, /*scope=*/GURL(),
+            /*icon_infos=*/{});
 
     InitRegistrarWithApp(std::move(app_in_sync_install));
   }

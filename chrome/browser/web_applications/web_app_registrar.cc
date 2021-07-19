@@ -385,9 +385,10 @@ const WebApp* WebAppRegistrar::GetAppByStartUrl(const GURL& start_url) const {
   return nullptr;
 }
 
-std::vector<AppId> WebAppRegistrar::GetAppsInSyncInstall() {
-  AppSet apps_in_sync_install = AppSet(
-      this, [](const WebApp& web_app) { return web_app.is_in_sync_install(); });
+std::vector<AppId> WebAppRegistrar::GetAppsFromSyncAndPendingInstallation() {
+  AppSet apps_in_sync_install = AppSet(this, [](const WebApp& web_app) {
+    return web_app.is_from_sync_and_pending_installation();
+  });
 
   std::vector<AppId> app_ids;
   for (const WebApp& app : apps_in_sync_install)
@@ -414,7 +415,7 @@ void WebAppRegistrar::Shutdown() {
 
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
-  return web_app && !web_app->is_in_sync_install();
+  return web_app && !web_app->is_from_sync_and_pending_installation();
 }
 
 bool WebAppRegistrar::IsUninstalling(const AppId& app_id) const {
@@ -702,7 +703,7 @@ const WebAppRegistrar::AppSet WebAppRegistrar::GetAppsIncludingStubs() const {
 
 const WebAppRegistrar::AppSet WebAppRegistrar::GetApps() const {
   return AppSet(this, [](const WebApp& web_app) {
-    return !web_app.is_in_sync_install();
+    return !web_app.is_from_sync_and_pending_installation();
   });
 }
 
@@ -745,7 +746,7 @@ WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsIncludingStubsMutable() {
 
 WebAppRegistrar::AppSet WebAppRegistrarMutable::GetAppsMutable() {
   return AppSet(this, [](const WebApp& web_app) {
-    return !web_app.is_in_sync_install();
+    return !web_app.is_from_sync_and_pending_installation();
   });
 }
 

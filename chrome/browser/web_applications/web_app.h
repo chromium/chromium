@@ -95,12 +95,14 @@ class WebApp {
   // a part of user's app library.
   bool is_locally_installed() const { return is_locally_installed_; }
   // Sync-initiated installation produces a stub app awaiting for full
-  // installation process. The |is_in_sync_install| app has only app_id,
-  // launch_url and sync_fallback_data fields defined, no icons. If online
-  // install succeeds, icons get downloaded and all the fields get their values.
-  // If online install fails, we do the fallback installation to generate icons
-  // using |sync_fallback_data| fields.
-  bool is_in_sync_install() const { return is_in_sync_install_; }
+  // installation process. The |is_from_sync_and_pending_installation| app has
+  // only app_id, launch_url and sync_fallback_data fields defined, no icons. If
+  // online install succeeds, icons get downloaded and all the fields get their
+  // values. If online install fails, we do the fallback installation to
+  // generate icons using |sync_fallback_data| fields.
+  bool is_from_sync_and_pending_installation() const {
+    return is_from_sync_and_pending_installation_;
+  }
 
   // Represents whether the web app is being uninstalled.
   bool is_uninstalling() const { return is_uninstalling_; }
@@ -240,7 +242,8 @@ class WebApp {
   void SetUserLaunchOrdinal(syncer::StringOrdinal launch_ordinal);
   void SetWebAppChromeOsData(absl::optional<WebAppChromeOsData> chromeos_data);
   void SetIsLocallyInstalled(bool is_locally_installed);
-  void SetIsInSyncInstall(bool is_in_sync_install);
+  void SetIsFromSyncAndPendingInstallation(
+      bool is_from_sync_and_pending_installation);
   void SetIsUninstalling(bool is_uninstalling);
   void SetIconInfos(std::vector<WebApplicationIconInfo> icon_infos);
   // Performs sorting and uniquifying of |sizes| if passed as vector.
@@ -303,7 +306,7 @@ class WebApp {
   syncer::StringOrdinal user_launch_ordinal_;
   absl::optional<WebAppChromeOsData> chromeos_data_;
   bool is_locally_installed_ = true;
-  bool is_in_sync_install_ = false;
+  bool is_from_sync_and_pending_installation_ = false;
   // Note: This field is not persisted in the database.
   // TODO(crbug.com/1162477): Add this field to the protocol buffer file and
   // other places to save it to the database, and then make sure to continue

@@ -438,7 +438,7 @@ TEST_F(WebAppSyncBridgeTest, MergeSyncData_LocalSetLessThanServerSet) {
        expected_apps_to_install) {
     expected_app_to_install->SetIsLocallyInstalled(
         AreAppsLocallyInstalledBySync());
-    expected_app_to_install->SetIsInSyncInstall(true);
+    expected_app_to_install->SetIsFromSyncAndPendingInstallation(true);
   }
 
   Registry registry;
@@ -530,7 +530,7 @@ TEST_F(WebAppSyncBridgeTest, ApplySyncChanges_AddUpdateDelete) {
   for (std::unique_ptr<WebApp>& app_to_add :
        CreateAppsList("https://example.org/", 10)) {
     app_to_add->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
-    app_to_add->SetIsInSyncInstall(true);
+    app_to_add->SetIsFromSyncAndPendingInstallation(true);
 
     ConvertAppToEntityChange(*app_to_add, syncer::EntityChange::ACTION_ADD,
                              &entity_changes);
@@ -1050,13 +1050,13 @@ TEST_F(WebAppSyncBridgeTest,
 }
 
 // Test that any apps that are still pending install from sync (or,
-// |is_in_sync_install|) are continued to be installed when the bridge
-// initializes.
-TEST_F(WebAppSyncBridgeTest, InstallAppsInSyncInstall) {
+// |is_from_sync_and_pending_installation|) are continued to be installed when
+// the bridge initializes.
+TEST_F(WebAppSyncBridgeTest, InstallAppsFromSyncAndPendingInstallation) {
   AppsList apps_in_sync_install = CreateAppsList("https://example.com/", 10);
   for (std::unique_ptr<WebApp>& app : apps_in_sync_install) {
     app->SetIsLocallyInstalled(AreAppsLocallyInstalledBySync());
-    app->SetIsInSyncInstall(true);
+    app->SetIsFromSyncAndPendingInstallation(true);
   }
 
   Registry registry;

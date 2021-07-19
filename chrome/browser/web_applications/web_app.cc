@@ -194,8 +194,10 @@ void WebApp::SetIsLocallyInstalled(bool is_locally_installed) {
   is_locally_installed_ = is_locally_installed;
 }
 
-void WebApp::SetIsInSyncInstall(bool is_in_sync_install) {
-  is_in_sync_install_ = is_in_sync_install;
+void WebApp::SetIsFromSyncAndPendingInstallation(
+    bool is_from_sync_and_pending_installation) {
+  is_from_sync_and_pending_installation_ =
+      is_from_sync_and_pending_installation;
 }
 
 void WebApp::SetIsUninstalling(bool is_uninstalling) {
@@ -375,7 +377,7 @@ bool WebApp::operator==(const WebApp& other) const {
         app.user_launch_ordinal_,
         app.chromeos_data_,
         app.is_locally_installed_,
-        app.is_in_sync_install_,
+        app.is_from_sync_and_pending_installation_,
         app.is_uninstalling_,
         app.icon_infos_,
         app.downloaded_icon_sizes_any_,
@@ -503,7 +505,8 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetBoolKey("is_generated_icon", is_generated_icon_);
 
-  root.SetBoolKey("is_in_sync_install", is_in_sync_install_);
+  root.SetBoolKey("is_from_sync_and_pending_installation",
+                  is_from_sync_and_pending_installation_);
 
   root.SetBoolKey("is_locally_installed", is_locally_installed_);
 

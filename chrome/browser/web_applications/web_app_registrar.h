@@ -44,7 +44,7 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // TODO(https://crbug.com/1182363): should be removed when id is introduced to
   // manifest.
   const WebApp* GetAppByStartUrl(const GURL& start_url) const;
-  std::vector<AppId> GetAppsInSyncInstall();
+  std::vector<AppId> GetAppsFromSyncAndPendingInstallation();
 
   // Returns true if the app was preinstalled and NOT installed via any other
   // mechanism.

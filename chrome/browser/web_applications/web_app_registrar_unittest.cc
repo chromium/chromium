@@ -326,12 +326,12 @@ TEST_F(WebAppRegistrarTest, GetApps) {
   EXPECT_EQ(10, not_in_sync_install_count);
 
   auto web_app_in_sync1 = CreateWebApp("https://example.org/sync1");
-  web_app_in_sync1->SetIsInSyncInstall(true);
+  web_app_in_sync1->SetIsFromSyncAndPendingInstallation(true);
   const AppId web_app_id_in_sync1 = web_app_in_sync1->app_id();
   RegisterApp(std::move(web_app_in_sync1));
 
   auto web_app_in_sync2 = CreateWebApp("https://example.org/sync2");
-  web_app_in_sync2->SetIsInSyncInstall(true);
+  web_app_in_sync2->SetIsFromSyncAndPendingInstallation(true);
   const AppId web_app_id_in_sync2 = web_app_in_sync2->app_id();
   RegisterApp(std::move(web_app_in_sync2));
 
@@ -812,14 +812,15 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
   EXPECT_EQ(2, registrar().CountUserInstalledApps());
 }
 
-TEST_F(WebAppRegistrarTest, AppsInSyncInstallExcludedFromGetAppIds) {
+TEST_F(WebAppRegistrarTest,
+       AppsFromSyncAndPendingInstallationExcludedFromGetAppIds) {
   InitRegistrarWithApps("https://example.com/path/", 100);
 
   EXPECT_EQ(100u, registrar().GetAppIds().size());
 
   std::unique_ptr<WebApp> web_app_in_sync_install =
       CreateWebApp("https://example.org/");
-  web_app_in_sync_install->SetIsInSyncInstall(true);
+  web_app_in_sync_install->SetIsFromSyncAndPendingInstallation(true);
 
   const AppId web_app_in_sync_install_id = web_app_in_sync_install->app_id();
   RegisterApp(std::move(web_app_in_sync_install));

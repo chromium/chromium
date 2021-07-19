@@ -304,7 +304,7 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
     return;
 
   for (WebApp* web_app : web_apps) {
-    DCHECK(web_app->is_in_sync_install());
+    DCHECK(web_app->is_from_sync_and_pending_installation());
 
     auto web_application_info = std::make_unique<WebApplicationInfo>();
     web_application_info->manifest_id = web_app->manifest_id();

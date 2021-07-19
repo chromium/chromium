@@ -306,7 +306,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
   EXPECT_TRUE(app->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
   EXPECT_FALSE(app->is_generated_icon());
-  EXPECT_FALSE(app->is_in_sync_install());
+  EXPECT_FALSE(app->is_from_sync_and_pending_installation());
   EXPECT_TRUE(app->sync_fallback_data().name.empty());
   EXPECT_FALSE(app->sync_fallback_data().theme_color.has_value());
   EXPECT_FALSE(app->sync_fallback_data().scope.is_valid());
@@ -372,7 +372,7 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MASKABLE).empty());
   EXPECT_TRUE(app_copy->downloaded_icon_sizes(IconPurpose::MONOCHROME).empty());
   EXPECT_FALSE(app_copy->is_generated_icon());
-  EXPECT_FALSE(app_copy->is_in_sync_install());
+  EXPECT_FALSE(app_copy->is_from_sync_and_pending_installation());
   EXPECT_TRUE(app_copy->sync_fallback_data().name.empty());
   EXPECT_FALSE(app_copy->sync_fallback_data().theme_color.has_value());
   EXPECT_FALSE(app_copy->sync_fallback_data().scope.is_valid());

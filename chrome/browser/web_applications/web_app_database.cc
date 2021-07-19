@@ -244,7 +244,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
 
   local_data->set_user_run_on_os_login_mode(
       ToWebAppProtoRunOnOsLoginMode(web_app.run_on_os_login_mode()));
-  local_data->set_is_in_sync_install(web_app.is_in_sync_install());
+  local_data->set_is_from_sync_and_pending_installation(
+      web_app.is_from_sync_and_pending_installation());
 
   for (const WebApplicationIconInfo& icon_info : web_app.icon_infos())
     *(local_data->add_icon_infos()) = WebAppIconInfoToSyncProto(icon_info);
@@ -548,8 +549,9 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (local_data.has_background_color())
     web_app->SetBackgroundColor(local_data.background_color());
 
-  if (local_data.has_is_in_sync_install())
-    web_app->SetIsInSyncInstall(local_data.is_in_sync_install());
+  if (local_data.has_is_from_sync_and_pending_installation())
+    web_app->SetIsFromSyncAndPendingInstallation(
+        local_data.is_from_sync_and_pending_installation());
 
   if (local_data.has_last_badging_time()) {
     web_app->SetLastBadgingTime(
