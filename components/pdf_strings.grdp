@@ -97,6 +97,9 @@
     <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE" desc="Label for a landscape page orientation.">
       landscape
     </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_SQUARE" desc="Label for a square page that has neither portrait nor landscape orientation.">
+      square
+    </message>
     <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE" desc="Value for the page size of a PDF that lacks a uniform page size.">
       Varies
     </message>

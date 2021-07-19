@@ -59,7 +59,7 @@ const tests = [
      ['pdf-producer', 'fixup_pdf_template.py'],
      ['pdf-version', '1.7'],
      ['page-count', '1'],
-     ['page-size', '2.78 × 2.78 in (portrait)'],
+     ['page-size', '2.78 × 2.78 in (square)'],
      ['fast-web-view', 'No'],
     ].forEach(([field, expectedValue]) => assertField(field, expectedValue));
 

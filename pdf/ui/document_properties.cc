@@ -53,11 +53,15 @@ std::u16string FormatLengthInMillimeters(int length_points) {
 
 // Returns the localized string for the orientation.
 std::u16string GetOrientation(const gfx::Size& size) {
-  // TODO(crbug.com/1184345): Add a string for square sizes such that they are
-  // not displayed as "portrait".
-  return l10n_util::GetStringUTF16(
-      size.height() >= size.width() ? IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT
-                                    : IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE);
+  int message_id;
+  if (size.height() > size.width())
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT;
+  else if (size.height() < size.width())
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE;
+  else
+    message_id = IDS_PDF_PROPERTIES_PAGE_SIZE_SQUARE;
+
+  return l10n_util::GetStringUTF16(message_id);
 }
 
 bool ShowInches() {

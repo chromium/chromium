@@ -53,7 +53,7 @@ class FormatPageSizeMillimetersTest : public FormatPageSizeTest {
 };
 
 TEST_F(FormatPageSizeMillimetersTest, EmptySize) {
-  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0 × 0 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0 × 0 mm (square)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Portrait) {
@@ -65,12 +65,12 @@ TEST_F(FormatPageSizeMillimetersTest, Landscape) {
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Square) {
-  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"35 × 35 mm (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"35 × 35 mm (square)");
 }
 
 TEST_F(FormatPageSizeMillimetersTest, Large) {
   EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
-            u"25,400 × 25,400 mm (portrait)");
+            u"25,400 × 25,400 mm (square)");
 }
 
 class FormatPageSizeMillimetersPeriodSeparatorTest : public FormatPageSizeTest {
@@ -80,7 +80,7 @@ class FormatPageSizeMillimetersPeriodSeparatorTest : public FormatPageSizeTest {
 
 TEST_F(FormatPageSizeMillimetersPeriodSeparatorTest, Large) {
   EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
-            u"25.400 × 25.400 mm (portrait)");
+            u"25.400 × 25.400 mm (square)");
 }
 
 class FormatPageSizeInchesTest : public FormatPageSizeTest {
@@ -89,7 +89,7 @@ class FormatPageSizeInchesTest : public FormatPageSizeTest {
 };
 
 TEST_F(FormatPageSizeInchesTest, EmptySize) {
-  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0.00 × 0.00 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size()), u"0.00 × 0.00 in (square)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Portrait) {
@@ -101,12 +101,12 @@ TEST_F(FormatPageSizeInchesTest, Landscape) {
 }
 
 TEST_F(FormatPageSizeInchesTest, Square) {
-  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"1.39 × 1.39 in (portrait)");
+  EXPECT_EQ(FormatPageSize(gfx::Size(100, 100)), u"1.39 × 1.39 in (square)");
 }
 
 TEST_F(FormatPageSizeInchesTest, Large) {
   EXPECT_EQ(FormatPageSize(gfx::Size(72000, 72000)),
-            u"1,000.00 × 1,000.00 in (portrait)");
+            u"1,000.00 × 1,000.00 in (square)");
 }
 
 TEST(FormatPdfVersion, Valid) {
