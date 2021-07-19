@@ -565,6 +565,8 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   void DestroyContents() {
+    is_destroying_ = true;
+
     window_view_map_.clear();
     no_previews_set_.clear();
     target_window_ = nullptr;
@@ -613,6 +615,9 @@ class WindowCycleView : public views::WidgetDelegateView,
   }
 
   void Layout() override {
+    if (is_destroying_)
+      return;
+
     const bool is_interactive_alt_tab_mode_allowed =
         Shell::Get()
             ->window_cycle_controller()
@@ -678,8 +683,10 @@ class WindowCycleView : public views::WidgetDelegateView,
 
     // Layout a tab slider if Bento is enabled.
     if (is_interactive_alt_tab_mode_allowed) {
-      DCHECK(tab_slider_container_);
-      DCHECK(no_recent_items_label_);
+      // TODO(crbug.com/1216238): Change these back to DCHECKs once the bug is
+      // resolved.
+      CHECK(tab_slider_container_);
+      CHECK(no_recent_items_label_);
       // Layout the tab slider.
       const gfx::Size tab_slider_size =
           tab_slider_container_->GetPreferredSize();
@@ -871,6 +878,11 @@ class WindowCycleView : public views::WidgetDelegateView,
 
   // Velocity of the fling that will gradually decrease during a fling.
   gfx::Vector2dF fling_velocity_;
+
+  // True once `DestroyContents` is called. Used to prevent `Layout` from being
+  // called once all the child views have been removed. See
+  // https://crbug.com/1223302 for more details.
+  bool is_destroying_ = false;
 
   // Gesture curve of the current active fling. nullptr while a fling is not
   // active.
