@@ -88,6 +88,9 @@ class DesksClient {
   // Attempts to create `app_launch_handler_` if it doesn't already exist.
   void MaybeCreateAppLaunchHandler();
 
+  void RecordWindowAndTabCount(ash::DeskTemplate* desk_template);
+  void RecordLaunchFromTemplate();
+
   // Convenience pointer to the desks helper which is `ash::DesksController`.
   // Guaranteed to be not null for the duration of `this`.
   ash::DesksHelper* const desks_helper_;

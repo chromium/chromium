@@ -10,14 +10,23 @@
 #include "ash/public/cpp/desks_helper.h"
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/desk_template_app_launch_handler.h"
+#include "extensions/common/constants.h"
 
 namespace {
 
 DesksClient* g_desks_client_instance = nullptr;
+
+constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
+constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
+constexpr char kWindowAndTabCountHistogramName[] =
+    "Ash.DeskTemplate.WindowAndTabCount";
+constexpr char kLaunchFromTemplateHistogramName[] =
+    "Ash.DeskTemplate.LaunchFromTemplate";
 
 }  // namespace
 
@@ -41,6 +50,7 @@ void DesksClient::CaptureActiveDeskAndSaveTemplate(
   std::unique_ptr<ash::DeskTemplate> desk_template =
       desks_helper_->CaptureActiveDeskAsTemplate();
   // TODO: Save it to storage.
+  RecordWindowAndTabCount(desk_template.get());
   std::move(callback).Run(/*success=*/true, std::move(desk_template));
 }
 
@@ -96,6 +106,8 @@ void DesksClient::OnCreateAndActivateNewDesk(
   DCHECK(app_launch_handler_);
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
   std::move(callback).Run(/*success=*/true);
+
+  RecordLaunchFromTemplate();
 }
 
 void DesksClient::MaybeCreateAppLaunchHandler() {
@@ -109,4 +121,42 @@ void DesksClient::MaybeCreateAppLaunchHandler() {
     app_launch_handler_ =
         std::make_unique<DeskTemplateAppLaunchHandler>(profile);
   }
+}
+
+void DesksClient::RecordWindowAndTabCount(ash::DeskTemplate* desk_template) {
+  full_restore::RestoreData* restore_data = desk_template->desk_restore_data();
+  DCHECK(restore_data);
+
+  int window_count = 0;
+  int tab_count = 0;
+  int total_count = 0;
+
+  const auto& launch_list = restore_data->app_id_to_launch_list();
+  for (const auto& iter : launch_list) {
+    // Since apps aren't guaranteed to have the url field set up correctly, this
+    // is necessary to ensure things are not double-counted.
+    if (iter.first != extension_misc::kChromeAppId) {
+      ++window_count;
+      ++total_count;
+      continue;
+    }
+
+    for (const auto& window_iter : iter.second) {
+      absl::optional<std::vector<GURL>> urls = window_iter.second->urls;
+      if (!urls || urls->empty())
+        continue;
+
+      ++window_count;
+      tab_count += urls->size();
+      total_count += urls->size();
+    }
+  }
+
+  base::UmaHistogramCounts100(kWindowCountHistogramName, window_count);
+  base::UmaHistogramCounts100(kTabCountHistogramName, tab_count);
+  base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
+}
+
+void DesksClient::RecordLaunchFromTemplate() {
+  base::UmaHistogramBoolean(kLaunchFromTemplateHistogramName, true);
 }

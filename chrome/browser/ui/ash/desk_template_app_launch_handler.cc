@@ -145,10 +145,10 @@ void DeskTemplateAppLaunchHandler::LaunchBrowsers() {
             browser, urls->at(i), /*index=*/-1,
             /*foreground=*/(active_tab_index && i == *active_tab_index));
       }
-
       browser->window()->ShowInactive();
     }
   }
+  restore_data_->RemoveApp(extension_misc::kChromeAppId);
 }
 
 void DeskTemplateAppLaunchHandler::RecordRestoredAppLaunch(
