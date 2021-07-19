@@ -945,9 +945,9 @@ TEST_F(NGInlineNodeTest, CollectInlinesShouldNotClearFirstInlineFragment) {
   GetDocument().UpdateStyleAndLayoutTree();
   EXPECT_TRUE(block_flow->NeedsCollectInlines());
 
-  // |IsEmptyInline| should run |CollectInlines|.
+  // |IsBlockLevel| should run |CollectInlines|.
   NGInlineNode node(block_flow);
-  node.IsEmptyInline();
+  node.IsBlockLevel();
   EXPECT_FALSE(block_flow->NeedsCollectInlines());
 
   // Running |CollectInlines| should not clear |FirstInlineFragment|.
