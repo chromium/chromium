@@ -60,6 +60,7 @@ void DeleteAllReportsInDirectory(base::FilePath directory) {
 // begin uploading when possible.
 void ProcessIntermediateDumps() {
   crash_reporter::ProcessIntermediateDumps();
+  [[MainThreadFreezeDetector sharedInstance] processIntermediateDumps];
   crash_reporter::StartProcessingPendingReports();
 }
 
@@ -216,6 +217,8 @@ void SetUploadingEnabled(bool enabled) {
 
   if (crash_reporter::IsCrashpadRunning()) {
     crash_reporter::SetUploadConsent(enabled);
+    [[MainThreadFreezeDetector sharedInstance] prepareCrashReportsForUpload:^(){
+    }];
     return;
   }
 

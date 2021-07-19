@@ -43164,6 +43164,9 @@ Called by update_gpu_driver_bug_workaround_entries.py.-->
     Freeze detection stopped after moving the hang report out of the Breakpad
     directory and into the |UTE| directory.
   </int>
+  <int value="2" label="After Crashpad DumpWithoutCrash">
+    Freeze detection stopped after calling DumpWithCrash from Crashpad.
+  </int>
 </enum>
 
 <enum name="IOSMenuAction">

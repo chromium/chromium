@@ -99,6 +99,7 @@ source_set("unit_tests") {
     "crash_reporter_breadcrumb_observer_unittest.mm",
     "crash_reporter_url_observer_unittest.mm",
     "crash_restore_helper_unittest.mm",
+    "main_thread_freeze_detector_unittest.mm",
     "synthetic_crash_report_util_unittest.mm",
   ]
   deps = [
