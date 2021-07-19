@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <cstdint>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
@@ -503,6 +504,69 @@ TEST_P(SQLDatabaseTest, GetCachedStatement_CompilationError) {
 
   EXPECT_TRUE(error_callback_called)
       << "SQL compilation errors should call the error callback";
+}
+
+TEST_P(SQLDatabaseTest, GetUniqueStatement_ExtraContents) {
+  sql::Statement minimal(db_->GetUniqueStatement("SELECT 1"));
+  sql::Statement extra_semicolon(db_->GetUniqueStatement("SELECT 1;"));
+
+  // It would be nice to flag trailing comments too, as they cost binary size.
+  // However, there's no easy way of doing that.
+  sql::Statement trailing_comment(
+      db_->GetUniqueStatement("SELECT 1 -- Comment"));
+
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("SELECT 1;SELECT 2"))
+      << "Extra statement without whitespace";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("SELECT 1; SELECT 2"))
+      << "Extra statement separated by whitespace";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("SELECT 1;-- Comment"))
+      << "Comment without whitespace";
+  EXPECT_DCHECK_DEATH(db_->GetUniqueStatement("SELECT 1; -- Comment"))
+      << "Comment separated by whitespace";
+}
+
+TEST_P(SQLDatabaseTest, GetCachedStatement_ExtraContents) {
+  sql::Statement minimal(db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1"));
+  sql::Statement extra_semicolon(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1;"));
+
+  // It would be nice to flag trailing comments too, as they cost binary size.
+  // However, there's no easy way of doing that.
+  sql::Statement trailing_comment(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1 -- Comment"));
+
+  EXPECT_DCHECK_DEATH(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1;SELECT 2"))
+      << "Extra statement without whitespace";
+  EXPECT_DCHECK_DEATH(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1; SELECT 2"))
+      << "Extra statement separated by whitespace";
+  EXPECT_DCHECK_DEATH(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1;-- Comment"))
+      << "Comment without whitespace";
+  EXPECT_DCHECK_DEATH(
+      db_->GetCachedStatement(SQL_FROM_HERE, "SELECT 1; -- Comment"))
+      << "Comment separated by whitespace";
+}
+
+TEST_P(SQLDatabaseTest, IsSQLValid_ExtraContents) {
+  EXPECT_TRUE(db_->IsSQLValid("SELECT 1"));
+  EXPECT_TRUE(db_->IsSQLValid("SELECT 1;"))
+      << "Trailing semicolons are currently tolerated";
+
+  // It would be nice to flag trailing comments too, as they cost binary size.
+  // However, there's no easy way of doing that.
+  EXPECT_TRUE(db_->IsSQLValid("SELECT 1 -- Comment"))
+      << "Trailing comments are currently tolerated";
+
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("SELECT 1;SELECT 2"))
+      << "Extra statement without whitespace";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("SELECT 1; SELECT 2"))
+      << "Extra statement separated by whitespace";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("SELECT 1;-- Comment"))
+      << "Comment without whitespace";
+  EXPECT_DCHECK_DEATH(db_->IsSQLValid("SELECT 1; -- Comment"))
+      << "Comment separated by whitespace";
 }
 
 // Test that Database::Raze() results in a database without the
