@@ -68,6 +68,8 @@ blink_modules_sources("webcodecs") {
     "video_frame_attachment.h",
     "video_frame_handle.cc",
     "video_frame_handle.h",
+    "video_frame_monitor.cc",
+    "video_frame_monitor.h",
     "video_frame_transfer_list.cc",
     "video_frame_transfer_list.h",
     "webcodecs_logger.cc",
@@ -105,6 +107,7 @@ source_set("unit_tests") {
     "image_decoder_external_test.cc",
     "video_decoder_broker_test.cc",
     "video_encoder_test.cc",
+    "video_frame_monitor_test.cc",
     "video_frame_test.cc",
   ]
 

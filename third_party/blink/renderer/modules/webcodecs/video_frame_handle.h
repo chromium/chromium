@@ -36,14 +36,23 @@ class ExecutionContext;
 class MODULES_EXPORT VideoFrameHandle
     : public WTF::ThreadSafeRefCounted<VideoFrameHandle> {
  public:
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>, ExecutionContext*);
+  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   ExecutionContext*,
+                   std::string monitoring_source_id = std::string());
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
-                   ExecutionContext*);
+                   ExecutionContext*,
+                   std::string monitoring_source_id = std::string());
   VideoFrameHandle(scoped_refptr<media::VideoFrame>,
                    sk_sp<SkImage> sk_image,
-                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>);
-  VideoFrameHandle(scoped_refptr<media::VideoFrame>, sk_sp<SkImage> sk_image);
+                   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor>,
+                   std::string monitoring_source_id = std::string());
+  VideoFrameHandle(scoped_refptr<media::VideoFrame>,
+                   sk_sp<SkImage> sk_image,
+                   std::string monitoring_source_id = std::string());
+
+  VideoFrameHandle(const VideoFrameHandle&) = delete;
+  VideoFrameHandle& operator=(const VideoFrameHandle&) = delete;
 
   // Returns a copy of |frame_|, which should be re-used throughout the scope
   // of a function call, instead of calling frame() multiple times. Otherwise
@@ -78,6 +87,9 @@ class MODULES_EXPORT VideoFrameHandle
   // |mutex_| must be held before calling into this.
   void InvalidateLocked();
 
+  void MaybeMonitorOpenFrame();
+  void MaybeMonitorCloseFrame();
+
   // Flag that prevents the creation of a new handle during the next Clone()
   // call. Used as a temporary workaround for crbug.com/1182497.
   bool close_on_clone_ = false;
@@ -86,6 +98,7 @@ class MODULES_EXPORT VideoFrameHandle
   sk_sp<SkImage> sk_image_;
   scoped_refptr<media::VideoFrame> frame_;
   scoped_refptr<WebCodecsLogger::VideoFrameCloseAuditor> close_auditor_;
+  std::string monitoring_source_id_;
 };
 
 }  // namespace blink
