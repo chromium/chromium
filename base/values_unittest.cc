@@ -1391,27 +1391,24 @@ TEST(ValuesTest, List) {
 
   Value* value = nullptr;
   bool bool_value = false;
-  int int_value = 0;
   double double_value = 0.0;
   std::string string_value;
 
   ASSERT_FALSE(mixed_list->Get(4, &value));
 
-  ASSERT_FALSE(mixed_list->GetInteger(0, &int_value));
-  ASSERT_EQ(0, int_value);
+  ASSERT_FALSE(mixed_list->GetList()[0].is_int());
   ASSERT_FALSE(mixed_list->GetBoolean(1, &bool_value));
   ASSERT_FALSE(bool_value);
   ASSERT_FALSE(mixed_list->GetString(2, &string_value));
   ASSERT_EQ("", string_value);
-  ASSERT_FALSE(mixed_list->GetInteger(2, &int_value));
-  ASSERT_EQ(0, int_value);
+  ASSERT_FALSE(mixed_list->GetList()[2].is_int());
   ASSERT_FALSE(mixed_list->GetBoolean(3, &bool_value));
   ASSERT_FALSE(bool_value);
 
   ASSERT_TRUE(mixed_list->GetBoolean(0, &bool_value));
   ASSERT_TRUE(bool_value);
-  ASSERT_TRUE(mixed_list->GetInteger(1, &int_value));
-  ASSERT_EQ(42, int_value);
+  ASSERT_TRUE(mixed_list->GetList()[1].is_int());
+  ASSERT_EQ(42, mixed_list->GetList()[1].GetInt());
   // implicit conversion from Integer to Double should be possible.
   ASSERT_TRUE(mixed_list->GetDouble(1, &double_value));
   ASSERT_EQ(42, double_value);
@@ -1425,7 +1422,6 @@ TEST(ValuesTest, List) {
   base::Value not_found_value(false);
 
   ASSERT_TRUE(Contains(mixed_list->GetList(), sought_value));
-  ASSERT_EQ(42, int_value);
   ASSERT_FALSE(Contains(mixed_list->GetList(), not_found_value));
 }
 
@@ -2403,15 +2399,6 @@ TEST(ValuesTest, GetWithNullOutValue) {
   EXPECT_FALSE(main_list.GetBoolean(5, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(6, nullptr));
   EXPECT_FALSE(main_list.GetBoolean(7, nullptr));
-
-  EXPECT_FALSE(main_list.GetInteger(0, nullptr));
-  EXPECT_TRUE(main_list.GetInteger(1, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(2, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(3, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(4, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(5, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(6, nullptr));
-  EXPECT_FALSE(main_list.GetInteger(7, nullptr));
 
   EXPECT_FALSE(main_list.GetDouble(0, nullptr));
   EXPECT_TRUE(main_list.GetDouble(1, nullptr));

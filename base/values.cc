@@ -1497,17 +1497,6 @@ bool ListValue::GetBoolean(size_t index, bool* bool_value) const {
   return value->GetAsBoolean(bool_value);
 }
 
-bool ListValue::GetInteger(size_t index, int* out_value) const {
-  const Value* value;
-  if (!Get(index, &value))
-    return false;
-
-  bool is_int = value->is_int();
-  if (is_int && out_value)
-    *out_value = value->GetInt();
-  return is_int;
-}
-
 bool ListValue::GetDouble(size_t index, double* out_value) const {
   const Value* value;
   if (!Get(index, &value))
