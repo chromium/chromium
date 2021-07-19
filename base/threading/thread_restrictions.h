@@ -246,6 +246,7 @@ class LocalPrinterHandlerDefault;
 #if defined(OS_MAC)
 class PrintBackendServiceImpl;
 #endif
+class PrintBackendServiceManager;
 class PrintJobWorker;
 class PrinterQuery;
 }
@@ -428,6 +429,7 @@ class BASE_EXPORT ScopedAllowBlocking {
 #if defined(OS_MAC)
   friend class printing::PrintBackendServiceImpl;
 #endif
+  friend class printing::PrintBackendServiceManager;
   friend class printing::PrintJobWorker;
   friend class remote_cocoa::
       DroppedScreenShotCopierMac;  // https://crbug.com/1148078

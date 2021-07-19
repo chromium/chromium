@@ -13,7 +13,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/threading/scoped_blocking_call.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -259,8 +259,7 @@ void PrintBackendServiceManager::FetchCapabilities(
     // TODO(1227561)  Remove local call for driver info, don't want any
     // residual accesses left into the printer drivers from the browser
     // process.
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
+    base::ScopedAllowBlocking allow_blocking;
     scoped_refptr<PrintBackend> print_backend =
         PrintBackend::CreateInstance(g_browser_process->GetApplicationLocale());
     crash_keys_ = std::make_unique<crash_keys::ScopedPrinterInfo>(
