@@ -14,8 +14,10 @@ import {DisplayableImage} from './personalization_reducers.js';
 export const ActionName = {
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS: 'begin_load_images_for_collections',
   BEGIN_LOAD_LOCAL_IMAGE_DATA: 'begin_load_local_image_data',
+  BEGIN_LOAD_SELECTED_IMAGE: 'begin_load_selected_image',
   BEGIN_SELECT_IMAGE: 'begin_select_image',
   BEGIN_UPDATE_DAILY_REFRESH_IMAGE: 'begin_update_daily_refresh_image',
+  END_SELECT_IMAGE: 'end_select_image',
   SET_COLLECTIONS: 'set_collections',
   SET_DAILY_REFRESH_COLLECTION_ID: 'set_daily_refresh_collection_id',
   SET_IMAGES_FOR_COLLECTION: 'set_images_for_collection',
@@ -62,12 +64,30 @@ export function beginUpdateDailyRefreshImageAction() {
 }
 
 /**
+ * Notify that app is loading currently selected image information.
+ * @return {!Action}
+ */
+export function beginLoadSelectedImageAction() {
+  return {name: ActionName.BEGIN_LOAD_SELECTED_IMAGE};
+}
+
+/**
  * Notify that a user has clicked on an image to set as wallpaper.
  * @param {!DisplayableImage} image
  * @return {!Action}
  */
 export function beginSelectImageAction(image) {
   return {name: ActionName.BEGIN_SELECT_IMAGE, image};
+}
+
+/**
+ * Notify that the user-initiated action to set image has finished.
+ * @param {!DisplayableImage} image
+ * @param {boolean} success
+ * @return {!Action}
+ */
+export function endSelectImageAction(image, success) {
+  return {name: ActionName.END_SELECT_IMAGE, image, success};
 }
 
 /**

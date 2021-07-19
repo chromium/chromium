@@ -115,7 +115,6 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   void OnGetOnlineImageAttribution(const ash::WallpaperInfo& info,
                                    const GURL& wallpaper_data_url,
-                                   GetCurrentWallpaperCallback callback,
                                    bool success,
                                    const std::string& collection_id,
                                    const std::vector<backdrop::Image>& images);
@@ -128,6 +127,8 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   std::unique_ptr<backdrop_wallpaper_handlers::ImageInfoFetcher>
       wallpaper_attribution_info_fetcher_;
+
+  GetCurrentWallpaperCallback pending_get_current_wallpaper_callback_;
 
   std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 

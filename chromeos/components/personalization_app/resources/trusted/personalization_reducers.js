@@ -45,8 +45,16 @@ export let BackdropState;
  * |local| stores data just for local images on disk.
  * |local.data| stores a mapping of stringified UnguessableToken to loading
  * state.
- * |setWallpaper| is true after a user clicks on a wallpaper until the
- * operation completes.
+ *
+ * |selected| is a number representing the number of concurrent requests to load
+ * current wallpaper information. This can be more than 1 in case a user rapidly
+ * selects multiple wallpaper options, or picks a new daily refresh wallpaper.
+ * This is also called at the beginning of page load, so has subtly different
+ * behavior than the |setImage| counter below.
+ *
+ * |setImage| is a number representing the number of concurrent requests to set
+ * current wallpaper information. This can be more than 1 in case a user rapidly
+ * selects multiple wallpaper options.
  * @typedef {{
  *   collections: boolean,
  *   images: !Object<string, boolean>,
@@ -54,9 +62,9 @@ export let BackdropState;
  *     images: boolean,
  *     data: !Object<string, boolean>
  *   },
- *   selected: boolean,
- *   setWallpaper: boolean,
  *   refreshWallpaper: boolean,
+ *   selected: number,
+ *   setImage: number,
  * }}
  */
 export let LoadingState;
@@ -103,9 +111,9 @@ export function emptyState() {
       collections: true,
       images: {},
       local: {images: true, data: {}},
-      selected: true,
-      setWallpaper: false,
       refreshWallpaper: false,
+      selected: 0,
+      setImage: 0,
     },
     local: {images: null, data: {}},
     selected: null,
@@ -184,8 +192,20 @@ function loadingReducer(state, action) {
         ...state,
         local: {...state.local, data: {...state.local.data, [action.id]: true}}
       });
+    case ActionName.BEGIN_LOAD_SELECTED_IMAGE:
+      return /** @type {!LoadingState} */ (
+          {...state, selected: state.selected + 1});
     case ActionName.BEGIN_SELECT_IMAGE:
-      return /** @type {!LoadingState} */ ({...state, selected: true});
+      return /** @type {!LoadingState} */ (
+          {...state, setImage: state.setImage + 1});
+    case ActionName.END_SELECT_IMAGE:
+      if (state.setImage <= 0) {
+        console.error('Impossible state for loading.setImage');
+        // Reset to 0.
+        return /** @type {!LoadingState} */ ({...state, setImage: 0});
+      }
+      return /** @type {!LoadingState} */ (
+          {...state, setImage: state.setImage - 1});
     case ActionName.SET_COLLECTIONS:
       return /** @type {!LoadingState} */ ({...state, collections: false});
     case ActionName.SET_IMAGES_FOR_COLLECTION:
@@ -213,7 +233,13 @@ function loadingReducer(state, action) {
         },
       });
     case ActionName.SET_SELECTED_IMAGE:
-      return /** @type {!LoadingState} */ ({...state, selected: false});
+      if (state.selected <= 0) {
+        console.error('Impossible state for loading.selected');
+        // Reset to 0.
+        return /** @type {!LoadingState} */ ({...state, selected: 0});
+      }
+      return /** @type {!LoadingState} */ (
+          {...state, selected: state.selected - 1});
     case ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
       return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
     case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:

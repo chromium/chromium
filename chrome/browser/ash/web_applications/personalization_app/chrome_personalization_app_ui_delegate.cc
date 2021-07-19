@@ -203,6 +203,11 @@ void ChromePersonalizationAppUiDelegate::GetLocalImageThumbnail(
 
 void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
     GetCurrentWallpaperCallback callback) {
+  if (pending_get_current_wallpaper_callback_) {
+    std::move(pending_get_current_wallpaper_callback_).Run(nullptr);
+  }
+  wallpaper_attribution_info_fetcher_.reset();
+
   auto* controller = ash::WallpaperController::Get();
   auto* client = WallpaperControllerClientImpl::Get();
 
@@ -229,16 +234,16 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
                 /*key=*/base::UnguessableToken::Create().ToString()));
         return;
       }
-      if (!wallpaper_attribution_info_fetcher_) {
-        wallpaper_attribution_info_fetcher_ =
-            std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
-                info.collection_id);
-      }
+      wallpaper_attribution_info_fetcher_ =
+          std::make_unique<backdrop_wallpaper_handlers::ImageInfoFetcher>(
+              info.collection_id);
+
+      pending_get_current_wallpaper_callback_ = std::move(callback);
 
       wallpaper_attribution_info_fetcher_->Start(base::BindOnce(
           &ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution,
-          backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url,
-          std::move(callback)));
+          backend_weak_ptr_factory_.GetWeakPtr(), info, wallpaper_data_url));
+
       return;
     }
     case ash::WallpaperType::CUSTOMIZED: {
@@ -440,11 +445,11 @@ void ChromePersonalizationAppUiDelegate::OnGetLocalImageThumbnail(
 void ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution(
     const ash::WallpaperInfo& info,
     const GURL& wallpaper_data_url,
-    GetCurrentWallpaperCallback callback,
     bool success,
     const std::string& collection_id,
     const std::vector<backdrop::Image>& images) {
   DCHECK(wallpaper_attribution_info_fetcher_);
+  DCHECK(pending_get_current_wallpaper_callback_);
   DCHECK(info.asset_id.has_value());
 
   const uint64_t& asset_id = info.asset_id.value();
@@ -461,9 +466,10 @@ void ChromePersonalizationAppUiDelegate::OnGetOnlineImageAttribution(
       }
     }
   }
-  std::move(callback).Run(
-      chromeos::personalization_app::mojom::CurrentWallpaper::New(
+  std::move(pending_get_current_wallpaper_callback_)
+      .Run(chromeos::personalization_app::mojom::CurrentWallpaper::New(
           wallpaper_data_url, attribution, info.layout, info.type,
           /*key=*/base::NumberToString(asset_id)));
+
   wallpaper_attribution_info_fetcher_.reset();
 }

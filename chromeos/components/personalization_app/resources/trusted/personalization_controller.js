@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isNonEmptyArray} from '../common/utils.js';
-import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginSelectImageAction, beginUpdateDailyRefreshImageAction, setCollectionsAction, setDailyRefreshCollectionIdAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './personalization_actions.js';
+import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginLoadSelectedImageAction, beginSelectImageAction, beginUpdateDailyRefreshImageAction, endSelectImageAction, setCollectionsAction, setDailyRefreshCollectionIdAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './personalization_actions.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**
@@ -97,6 +97,7 @@ async function getAllLocalImageThumbnails(provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function getCurrentWallpaper(provider, store) {
+  store.dispatch(beginLoadSelectedImageAction());
   const {image} = await provider.getCurrentWallpaper();
   store.dispatch(setSelectedImageAction(image));
 }
@@ -109,7 +110,6 @@ export async function getCurrentWallpaper(provider, store) {
  * @param {!PersonalizationStore} store
  */
 export async function selectWallpaper(image, provider, store) {
-  const oldImage = store.data.selected;
   store.dispatch(beginSelectImageAction(image));
   const {success} = await (() => {
     if (image.assetId) {
@@ -124,6 +124,8 @@ export async function selectWallpaper(image, provider, store) {
   if (!success) {
     console.warn('Error setting wallpaper');
   }
+  store.dispatch(endSelectImageAction(image, success));
+
   // Explicitly disable daily refresh if wallpaper is manually selected.
   setDailyRefreshCollectionId('', provider, store);
   // Retrieve the current wallpaper from client to get the correct attribution.

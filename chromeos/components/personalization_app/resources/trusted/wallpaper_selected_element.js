@@ -165,7 +165,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
     this.watch('image_', state => state.selected);
     this.watch(
         'isLoading_',
-        state => state.loading.selected || state.loading.refreshWallpaper);
+        state => Math.max(state.loading.selected, state.loading.setImage) > 0 ||
+            state.loading.refreshWallpaper);
     this.watch(
         'dailyRefreshCollectionId_', state => state.dailyRefresh.collectionId);
     this.updateFromStore();

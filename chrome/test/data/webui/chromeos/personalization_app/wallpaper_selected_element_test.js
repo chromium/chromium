@@ -38,7 +38,12 @@ export function WallpaperSelectedTest() {
     await flushTasks();
   });
 
-  test('shows loading spinner at startup', async () => {
+  test('shows loading spinner when there are in-flight requests', async () => {
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      selected: 1,
+      setImage: 0,
+    };
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
     assertEquals(
@@ -52,6 +57,29 @@ export function WallpaperSelectedTest() {
         wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
 
     assertTrue(spinner.active);
+
+    // Loading spinner should be hidden.
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      selected: 0,
+      setImage: 0,
+    };
+    personalizationStore.notifyObservers();
+    waitAfterNextRender(wallpaperSelectedElement);
+
+    assertFalse(spinner.active);
+
+    // Sent a request to update user wallpaper. Loading spinner should come
+    // back.
+    personalizationStore.data.loading = {
+      ...personalizationStore.data.loading,
+      selected: 0,
+      setImage: 1,
+    };
+    personalizationStore.notifyObservers();
+    waitAfterNextRender(wallpaperSelectedElement);
+
+    assertTrue(spinner.active);
   });
 
   test('sets wallpaper image in store on first load', async () => {
@@ -63,18 +91,10 @@ export function WallpaperSelectedTest() {
   });
 
   test('shows wallpaper image and attribution when loaded', async () => {
-    wallpaperSelectedElement = initElement(WallpaperSelected.is);
-
-    const spinner =
-        wallpaperSelectedElement.shadowRoot.querySelector('paper-spinner-lite');
-    assertTrue(spinner.active);
-
-    personalizationStore.data.loading.selected = false;
     personalizationStore.data.selected = wallpaperProvider.currentWallpaper;
-    personalizationStore.notifyObservers();
-    await waitAfterNextRender(wallpaperSelectedElement);
 
-    assertFalse(spinner.active);
+    wallpaperSelectedElement = initElement(WallpaperSelected.is);
+    await waitAfterNextRender(wallpaperSelectedElement);
 
     const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
     assertEquals(
@@ -172,17 +192,19 @@ export function WallpaperSelectedTest() {
   test('sets selected wallpaper data in store', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);
-    assertTrue(personalizationStore.data.loading.selected);
     // Run the actual reducers.
     personalizationStore.setReducersEnabled(true);
 
     wallpaperSelectedElement = initElement(WallpaperSelected.is);
 
+    // In-flight request to get current wallpaper.
+    assertEquals(1, personalizationStore.data.loading.selected);
+
     // Wait for api call to complete.
     await wallpaperProvider.whenCalled('getCurrentWallpaper');
 
     // Should be done loading now.
-    assertFalse(personalizationStore.data.loading.selected);
+    assertEquals(0, personalizationStore.data.loading.selected);
     // Shallow equals - they should be the same object.
     assertEquals(
         wallpaperProvider.currentWallpaper, personalizationStore.data.selected);
