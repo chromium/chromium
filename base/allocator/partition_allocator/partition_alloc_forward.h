@@ -19,13 +19,11 @@ struct SlotSpanMetadata;
 constexpr bool ThreadSafe = true;
 constexpr bool NotThreadSafe = false;
 
-#if BUILDFLAG(USE_BACKUP_REF_PTR)
-#if DCHECK_IS_ON()
-BASE_EXPORT void DCheckGetSlotOffsetIsZero(void*);
-#else
-ALWAYS_INLINE void DCheckGetSlotOffsetIsZero(void*) {}
+#if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
+    BUILDFLAG(USE_BACKUP_REF_PTR)
+BASE_EXPORT void CheckThatSlotOffsetIsZero(void*);
 #endif
-#endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
+
 }  // namespace internal
 
 template <bool thread_safe>

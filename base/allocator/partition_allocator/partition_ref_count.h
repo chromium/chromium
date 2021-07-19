@@ -179,12 +179,16 @@ static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
               "<= SystemPageSize().");
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
-  DCheckGetSlotOffsetIsZero(slot_start);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+  CheckThatSlotOffsetIsZero(slot_start);
+#endif
   uintptr_t slot_start_as_uintptr = reinterpret_cast<uintptr_t>(slot_start);
   if (LIKELY(slot_start_as_uintptr & SystemPageOffsetMask())) {
     uintptr_t refcount_ptr_as_uintptr =
         slot_start_as_uintptr - sizeof(PartitionRefCount);
-    PA_DCHECK(refcount_ptr_as_uintptr % alignof(PartitionRefCount) == 0);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    PA_CHECK(refcount_ptr_as_uintptr % alignof(PartitionRefCount) == 0);
+#endif
     return reinterpret_cast<PartitionRefCount*>(refcount_ptr_as_uintptr);
   } else {
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
@@ -197,7 +201,9 @@ ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
 #endif
                         ) *
                    kPartitionRefCountIndexMultiplier;
-    PA_DCHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
+#endif
     return bitmap_base + index;
   }
 }
@@ -215,7 +221,9 @@ constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
 constexpr size_t kPartitionPastAllocationAdjustment = 1;
 
 ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
-  DCheckGetSlotOffsetIsZero(slot_start);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+  CheckThatSlotOffsetIsZero(slot_start);
+#endif
   return reinterpret_cast<PartitionRefCount*>(slot_start);
 }
 

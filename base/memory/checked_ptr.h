@@ -118,7 +118,9 @@ struct BackupRefPtrImpl {
     // https://bugs.llvm.org/show_bug.cgi?id=49403
     // https://reviews.llvm.org/D97848
     // https://chromium-review.googlesource.com/c/chromium/src/+/2727400/2/base/memory/checked_ptr.h#120
-    DCHECK(ptr != nullptr || !ret);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    CHECK(ptr != nullptr || !ret);
+#endif
 #if HAS_BUILTIN(__builtin_assume)
     __builtin_assume(ptr != nullptr || !ret);
 #endif
@@ -152,7 +154,9 @@ struct BackupRefPtrImpl {
   // Wraps a pointer.
   static ALWAYS_INLINE void* WrapRawPtr(void* ptr) {
     if (IsSupportedAndNotNull(ptr)) {
-      DCHECK(ptr != nullptr);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+      CHECK(ptr != nullptr);
+#endif
       AcquireInternal(ptr);
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
@@ -166,7 +170,9 @@ struct BackupRefPtrImpl {
   // Notifies the allocator when a wrapped pointer is being removed or replaced.
   static ALWAYS_INLINE void ReleaseWrappedPtr(void* wrapped_ptr) {
     if (IsSupportedAndNotNull(wrapped_ptr)) {
-      DCHECK(wrapped_ptr != nullptr);
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+      CHECK(wrapped_ptr != nullptr);
+#endif
       ReleaseInternal(wrapped_ptr);
     }
 #if !defined(PA_HAS_64_BITS_POINTERS)
@@ -181,8 +187,8 @@ struct BackupRefPtrImpl {
   static ALWAYS_INLINE void* SafelyUnwrapPtrForDereference(void* wrapped_ptr) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (IsSupportedAndNotNull(wrapped_ptr)) {
-      DCHECK(wrapped_ptr != nullptr);
-      DCHECK(IsPointeeAlive(wrapped_ptr));
+      CHECK(wrapped_ptr != nullptr);
+      CHECK(IsPointeeAlive(wrapped_ptr));
     }
 #endif
     return wrapped_ptr;
@@ -383,8 +389,10 @@ class CheckedPtr {
   ALWAYS_INLINE CheckedPtr& operator=(const CheckedPtr<U, Impl>& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
-    DCHECK(reinterpret_cast<uintptr_t>(this) !=
-           reinterpret_cast<uintptr_t>(&ptr));
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    CHECK(reinterpret_cast<uintptr_t>(this) !=
+          reinterpret_cast<uintptr_t>(&ptr));
+#endif
     Impl::ReleaseWrappedPtr(AsVoidPtr());
     SetFromVoidPtr(
         Impl::Duplicate(Impl::template Upcast<T, U>(ptr.AsVoidPtr())));
@@ -397,8 +405,10 @@ class CheckedPtr {
   ALWAYS_INLINE CheckedPtr& operator=(CheckedPtr<U, Impl>&& ptr) noexcept {
     // Make sure that pointer isn't assigned to itself (look at pointer address,
     // not its value).
-    DCHECK(reinterpret_cast<uintptr_t>(this) !=
-           reinterpret_cast<uintptr_t>(&ptr));
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+    CHECK(reinterpret_cast<uintptr_t>(this) !=
+          reinterpret_cast<uintptr_t>(&ptr));
+#endif
     Impl::ReleaseWrappedPtr(AsVoidPtr());
     SetFromVoidPtr(Impl::template Upcast<T, U>(ptr.AsVoidPtr()));
 #if BUILDFLAG(USE_BACKUP_REF_PTR)

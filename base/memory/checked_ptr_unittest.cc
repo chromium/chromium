@@ -746,10 +746,10 @@ TEST(BackupRefPtrImpl, Basic) {
   EXPECT_EQ(*raw_ptr1, *checked_ptr1);
 
   allocator.root()->Free(raw_ptr1);
-#if DCHECK_IS_ON()
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // In debug builds, the use-after-free should be caught immediately.
   EXPECT_DEATH_IF_SUPPORTED(if (*checked_ptr1 == 42) return, "");
-#else   // DCHECK_IS_ON()
+#else   // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   // The allocation should be poisoned since there's a CheckedPtr alive.
   EXPECT_NE(*checked_ptr1, 42ul);
 
@@ -763,7 +763,7 @@ TEST(BackupRefPtrImpl, Basic) {
   void* raw_ptr3 = allocator.root()->Alloc(sizeof(uint64_t), "");
   EXPECT_EQ(raw_ptr1, raw_ptr3);
   allocator.root()->Free(raw_ptr3);
-#endif  // DCHECK_IS_ON()
+#endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 }
 
 TEST(BackupRefPtrImpl, ZeroSized) {
