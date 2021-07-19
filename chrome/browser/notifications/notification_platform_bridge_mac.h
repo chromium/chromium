@@ -17,7 +17,6 @@
 @class NotificationCenterDelegate;
 @class NSDictionary;
 @class NSUserNotificationCenter;
-@class NSXPCConnection;
 
 namespace message_center {
 class Notification;

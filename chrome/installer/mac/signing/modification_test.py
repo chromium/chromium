@@ -19,10 +19,6 @@ def plist_read(*args):
             'KSProductID': 'test.ksproduct',
             'KSChannelID-full': '-full',
         },
-        '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist':
-            {
-                'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
-            },
         '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/Helpers/Product Helper (Alerts).app/Contents/Info.plist':
             {
                 'CFBundleIdentifier': bundle_id + '.AlertNotificationService'
@@ -414,15 +410,8 @@ class TestModification(unittest.TestCase):
         kwargs['write_file'].assert_called_once_with(
             '/$W/App Product Canary.app/Contents/PkgInfo', 'APPLMooo')
 
-        self.assertEqual(9, kwargs['write_plist'].call_count)
+        self.assertEqual(8, kwargs['write_plist'].call_count)
         kwargs['write_plist'].assert_has_calls([
-            mock.call(
-                {
-                    'CFBundleIdentifier':
-                        'test.signing.bundle_id.canary.AlertNotificationService'
-                },
-                '/$W/App Product Canary.app/Contents/Frameworks/Product Framework.framework/XPCServices/AlertNotificationService.xpc/Contents/Info.plist',
-                'xml1'),
             mock.call(
                 {
                     'CFBundleIdentifier':

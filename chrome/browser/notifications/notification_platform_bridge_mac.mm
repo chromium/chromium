@@ -21,7 +21,6 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #import "chrome/browser/notifications/alert_dispatcher_mojo.h"
-#import "chrome/browser/notifications/alert_dispatcher_xpc.h"
 #include "chrome/browser/notifications/mac_notification_provider_factory.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
@@ -51,22 +50,6 @@
 }
 @end
 
-namespace {
-
-base::scoped_nsobject<NSObject<AlertDispatcher>> CreateAlertDispatcher() {
-  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher;
-  if (base::FeatureList::IsEnabled(features::kNotificationsViaHelperApp)) {
-    auto provider_factory = std::make_unique<MacNotificationProviderFactory>();
-    alert_dispatcher.reset([[AlertDispatcherMojo alloc]
-        initWithProviderFactory:std::move(provider_factory)]);
-  } else {
-    alert_dispatcher.reset([[AlertDispatcherXPC alloc] init]);
-  }
-  return alert_dispatcher;
-}
-
-}  // namespace
-
 // /////////////////////////////////////////////////////////////////////////////
 NotificationPlatformBridgeMac::NotificationPlatformBridgeMac(
     NSUserNotificationCenter* notification_center,
@@ -88,8 +71,10 @@ NotificationPlatformBridgeMac::~NotificationPlatformBridgeMac() {
 // static
 std::unique_ptr<NotificationPlatformBridge>
 NotificationPlatformBridge::Create() {
-  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher =
-      CreateAlertDispatcher();
+  auto provider_factory = std::make_unique<MacNotificationProviderFactory>();
+  base::scoped_nsobject<NSObject<AlertDispatcher>> alert_dispatcher(
+      [[AlertDispatcherMojo alloc]
+          initWithProviderFactory:std::move(provider_factory)]);
 
   if (@available(macOS 10.14, *)) {
     if (base::FeatureList::IsEnabled(features::kNewMacNotificationAPI)) {

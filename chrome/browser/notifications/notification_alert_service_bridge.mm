@@ -121,11 +121,6 @@ void DispatchGetAllNotificationsReply(
   return self;
 }
 
-- (void)setUseUNNotification:(BOOL)useUNNotification
-           machExceptionPort:(CrXPCMachPort*)port {
-  NOTREACHED();
-}
-
 - (void)deliverNotification:(NSDictionary*)notificationData {
   NSString* notificationId =
       notificationData[notification_constants::kNotificationId];

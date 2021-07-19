@@ -37,17 +37,6 @@ def _modify_plists(paths, dist, config):
                                   'Info.plist')
     with commands.PlistContext(app_plist_path, rewrite=True) as app_plist:
         if dist.channel_customize:
-            notification_xpc_plist_path = os.path.join(
-                paths.work, config.framework_dir, 'XPCServices',
-                'AlertNotificationService.xpc', 'Contents', 'Info.plist')
-            with commands.PlistContext(
-                    notification_xpc_plist_path,
-                    rewrite=True) as notification_xpc_plist:
-                notification_xpc_plist[_CF_BUNDLE_ID] = \
-                        notification_xpc_plist[_CF_BUNDLE_ID].replace(
-                                config.base_config.base_bundle_id,
-                                config.base_bundle_id)
-
             alert_helper_app_path = os.path.join(
                 paths.work, config.framework_dir, 'Helpers',
                 '{} Helper (Alerts).app'.format(config.product))

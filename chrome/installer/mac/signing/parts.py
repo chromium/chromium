@@ -51,14 +51,6 @@ def get_parts(config):
                 config.framework_dir,
                 '{}.framework'.format(uncustomized_bundle_id),
                 verify_options=verify_options),
-        'notification-xpc':
-            CodeSignedProduct(
-                '{.framework_dir}/XPCServices/AlertNotificationService.xpc'
-                .format(config),
-                '{}.framework.AlertNotificationService'.format(
-                    config.base_bundle_id),
-                options=CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS,
-                verify_options=verify_options),
         'crashpad':
             CodeSignedProduct(
                 '{.framework_dir}/Helpers/chrome_crashpad_handler'.format(

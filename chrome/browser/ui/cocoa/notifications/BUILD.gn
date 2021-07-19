@@ -2,55 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/mac/rules.gni")
-import("//build/util/branding.gni")
-
-mac_app_bundle("alert_notification_xpc_service") {
-  output_name = "AlertNotificationService"
-  package_type = "xpc"
-
-  info_plist = "xpc-Info.plist"
-  extra_substitutions = [ "CHROME_BUNDLE_ID=$chrome_mac_bundle_id" ]
-
-  sources = [
-    "alert_notification_service.h",
-    "alert_notification_service.mm",
-    "alert_nsnotification_service.h",
-    "alert_nsnotification_service.mm",
-    "service_delegate.h",
-    "service_delegate.mm",
-    "xpc_service_main.mm",
-    "xpc_transaction_handler.h",
-    "xpc_transaction_handler.mm",
-  ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//chrome/services/mac_notifications/public/cpp:constants",
-    "//third_party/crashpad/crashpad/client",
-  ]
-
-  frameworks = [
-    "AppKit.framework",
-    "Foundation.framework",
-  ]
-  weak_frameworks = [
-    "UserNotifications.framework",  # macOS 10.14
-  ]
-
-  ldflags = []
-  if (is_component_build) {
-    ldflags += [
-      # The XPC service is in Chromium.app/Contents/Frameworks/Chromium \
-      # Framework.framework/Versions/A/XPCServices/ \
-      # AlertNotificationService.xpc/Contents/MacOS/
-      # so set rpath up to the base.
-      "-Wl,-rpath,@loader_path/../../../../../../../../../../",
-    ]
-  }
-}
-
 static_library("common") {
   sources = [
     "notification_builder_base.h",
@@ -64,8 +15,6 @@ static_library("common") {
     "unnotification_builder_mac.mm",
     "unnotification_response_builder_mac.h",
     "unnotification_response_builder_mac.mm",
-    "xpc_mach_port.h",
-    "xpc_mach_port.mm",
   ]
 
   deps = [

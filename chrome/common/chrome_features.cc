@@ -664,12 +664,6 @@ const base::Feature kNotificationDurationLongForRequireInteraction{
     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // OS_WIN
 
-#if defined(OS_MAC)
-// Shows alert notifications via a helper app in a utility process.
-const base::Feature kNotificationsViaHelperApp{
-    "NotificationsViaHelperApp", base::FEATURE_ENABLED_BY_DEFAULT};
-#endif  // OS_MAC
-
 #if defined(OS_POSIX)
 // Enables NTLMv2, which implicitly disables NTLMv1.
 const base::Feature kNtlmV2Enabled{"NtlmV2Enabled",

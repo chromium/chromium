@@ -5196,8 +5196,6 @@ static_library("browser") {
       "notifications/alert_dispatcher_mac.h",
       "notifications/alert_dispatcher_mojo.h",
       "notifications/alert_dispatcher_mojo.mm",
-      "notifications/alert_dispatcher_xpc.h",
-      "notifications/alert_dispatcher_xpc.mm",
       "notifications/mac_notification_provider_factory.h",
       "notifications/mac_notification_provider_factory.mm",
       "notifications/notification_alert_service_bridge.h",

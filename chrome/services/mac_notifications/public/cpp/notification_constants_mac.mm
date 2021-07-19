@@ -36,7 +36,4 @@ NSString* const kNotificationIsAlert = @"notificationIsAlert";
 NSString* const kNotificationOperation = @"notificationOperation";
 NSString* const kNotificationButtonIndex = @"notificationButtonIndex";
 
-// Name of the XPC service
-NSString* const kAlertXPCServiceName = @"%@.framework.AlertNotificationService";
-
 }  // notification_constants
