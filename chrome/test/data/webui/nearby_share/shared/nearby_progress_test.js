@@ -28,20 +28,45 @@ suite('ProgressTest', function() {
     progressElement.remove();
   });
 
+  /** @return {!nearbyShare.mojom.ShareTarget} */
+  function getDefaultShareTarget() {
+    return /** @type {!nearbyShare.mojom.ShareTarget} */ ({
+      id: {high: 0, low: 0},
+      name: 'Default Device Name',
+      type: nearbyShare.mojom.ShareTargetType.kPhone,
+      imageUrl: {
+        url: 'http://google.com/image',
+      },
+    });
+  }
+
   test('renders component', function() {
     assertEquals('NEARBY-PROGRESS', progressElement.tagName);
   });
 
   test('renders device name', function() {
     const name = 'Device Name';
-    const shareTarget = /** @type {!nearbyShare.mojom.ShareTarget} */ ({
-      id: {high: 0, low: 0},
-      name,
-      type: nearbyShare.mojom.ShareTargetType.kPhone,
-    });
+    const shareTarget = getDefaultShareTarget();
+    shareTarget.name = name;
     progressElement.shareTarget = shareTarget;
 
     const renderedName = progressElement.$$('#device-name').innerText;
     assertEquals(name, renderedName);
+  });
+
+  test('renders target image', function() {
+    progressElement.shareTarget = getDefaultShareTarget();
+
+    const renderedSource = progressElement.$$('#share-target-image').src;
+    assertEquals('chrome://image/?http://google.com/image=s68', renderedSource);
+  });
+
+  test('renders blank target image', function() {
+    const shareTarget = getDefaultShareTarget();
+    shareTarget.imageUrl.url = '';
+    progressElement.shareTarget = shareTarget;
+
+    const renderedSource = progressElement.$$('#share-target-image').src;
+    assertEquals('', renderedSource);
   });
 });

@@ -9,6 +9,8 @@
  * an animation if the percentage is indeterminate.
  */
 
+import {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
+
 Polymer({
   is: 'nearby-progress',
 
@@ -56,6 +58,19 @@ Polymer({
       type: Boolean,
       value: false,
     },
+
+    /** @const {number} Size of the target image/icon in pixels. */
+    targetImageSize: {
+      type: Number,
+      readOnly: true,
+      value: 68,
+    },
+  },
+
+  ready: function() {
+    this.updateStyles(
+        {'--target-image-size': this.properties.targetImageSize.value + 'px'});
+    this.listenToTargetImageLoad_();
   },
 
   /**
@@ -92,4 +107,38 @@ Polymer({
     }
     return -1;
   },
+
+  /**
+   * @return {!string} The URL of the target image.
+   * @private
+   */
+  getTargetImageUrl_() {
+    if (!(this.shareTarget && this.shareTarget.imageUrl &&
+          this.shareTarget.imageUrl.url &&
+          this.shareTarget.imageUrl.url.length)) {
+      return '';
+    }
+
+    // Adds the parameter to resize to the desired size.
+    return this.shareTarget.imageUrl.url + '=s' +
+        this.properties.targetImageSize.value;
+  },
+
+  /** @private */
+  listenToTargetImageLoad_() {
+    const autoImg = this.$$('#share-target-image');
+    if (autoImg.complete && autoImg.naturalHeight !== 0) {
+      this.onTargetImageLoad_();
+    } else {
+      autoImg.onload = () => {
+        this.onTargetImageLoad_();
+      };
+    }
+  },
+
+  /** @private */
+  onTargetImageLoad_() {
+    this.$$('#share-target-image').style.display = 'inline';
+    this.$$('#icon').style.display = 'none';
+  }
 });

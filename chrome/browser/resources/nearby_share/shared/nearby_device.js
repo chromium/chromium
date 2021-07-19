@@ -67,9 +67,8 @@ Polymer({
     if (autoImg.complete && autoImg.naturalHeight !== 0) {
       this.onTargetImageLoad_();
     } else {
-      const nearbyDevice = this;
-      autoImg.onload = function() {
-        nearbyDevice.onTargetImageLoad_();
+      autoImg.onload = () => {
+        this.onTargetImageLoad_();
       };
     }
   },

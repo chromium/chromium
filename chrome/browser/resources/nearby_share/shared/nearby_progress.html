@@ -21,9 +21,9 @@
       }
 
       #icon {
-        height: 68px;
+        height: var(--target-image-size);
         margin: auto;
-        width: 68px;
+        width: var(--target-image-size);
       }
 
       .has-error #icon {
@@ -37,6 +37,16 @@
         margin: 8px auto 20px auto;
         position: relative;
         width: 76px;
+      }
+
+      #share-target-image {
+        border-radius: 50%;
+        /* Hide the image until it's downloaded. */
+        display: none;
+        flex-shrink: 0;
+        height: var(--target-image-size);
+        margin: 4px;
+        width: var(--target-image-size);
       }
 
       #wheel {
@@ -115,6 +125,9 @@
             cx="40" cy="40" r="39" pathLength="100">
         </circle>
       </svg>
+      <img is="cr-auto-img" id="share-target-image"
+          auto-src="[[getTargetImageUrl_(shareTarget)]]">
+      </img>
       <nearby-device-icon id="icon" share-target="[[shareTarget]]">
       </nearby-device-icon>
     </div>

@@ -127,6 +127,7 @@ js_library("nearby_progress") {
   deps = [
     ":nearby_device_icon",
     "//third_party/polymer/v1_0/components-chromium/iron-icon:iron-icon-extracted",
+    "//ui/webui/resources/cr_elements/cr_auto_img",
   ]
 }
 
