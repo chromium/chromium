@@ -201,61 +201,6 @@ namespace {
 // TODO(xiaochengh): Reorganize these legacy implementations. Get rid of the
 // EListStyleType enum, and merge them into their callers if possible.
 
-static void ToHebrewUnder1000(int number, Vector<UChar>& letters) {
-  // FIXME: CSS3 mentions various refinements not implemented here.
-  // FIXME: Should take a look at Mozilla's HebrewToText function (in
-  // nsBulletFrame).
-  DCHECK_GE(number, 0);
-  DCHECK_LT(number, 1000);
-  int four_hundreds = number / 400;
-  for (int i = 0; i < four_hundreds; i++)
-    letters.push_front(1511 + 3);
-  number %= 400;
-  if (number / 100)
-    letters.push_front(1511 + (number / 100) - 1);
-  number %= 100;
-  if (number == 15 || number == 16) {
-    letters.push_front(1487 + 9);
-    letters.push_front(1487 + number - 9);
-  } else {
-    if (int tens = number / 10) {
-      static const UChar kHebrewTens[9] = {1497, 1499, 1500, 1502, 1504,
-                                           1505, 1506, 1508, 1510};
-      letters.push_front(kHebrewTens[tens - 1]);
-    }
-    if (int ones = number % 10)
-      letters.push_front(1487 + ones);
-  }
-}
-
-static String ToHebrew(int number) {
-  // FIXME: CSS3 mentions ways to make this work for much larger numbers.
-  DCHECK_GE(number, 0);
-  DCHECK_LE(number, 999999);
-
-  Vector<UChar> letters;
-
-  if (number == 0) {
-    static const UChar kHebrewZero[3] = {0x05E1, 0x05E4, 0x05D0};
-    letters.Append(kHebrewZero, 3);
-  } else {
-    if (number > 999) {
-      ToHebrewUnder1000(number / 1000, letters);
-      letters.push_front(kHebrewPunctuationGereshCharacter);
-      number = number % 1000;
-    }
-    ToHebrewUnder1000(number, letters);
-  }
-
-  // Since Hebrew is RTL, legacy implementation generates letters in the
-  // reversed ordering, which is actually wrong because characters in a String
-  // should always be in the logical ordering. We re-reverse it so that the
-  // output ordering is correct.
-  std::reverse(letters.begin(), letters.end());
-
-  return String(letters);
-}
-
 static int ToArmenianUnder10000(int number,
                                 bool upper,
                                 bool add_circumflex,
@@ -474,10 +419,51 @@ static String ToCJKIdeographic(int number,
 
 }  // namespace
 
-String HebrewAlgorithm(unsigned value) {
-  if (value > 999999)
+String HebrewAlgorithmUnder1000(unsigned number) {
+  // FIXME: CSS3 mentions various refinements not implemented here.
+  // FIXME: Should take a look at Mozilla's HebrewToText function (in
+  // nsBulletFrame).
+  DCHECK_LT(number, 1000u);
+  StringBuilder letters;
+  unsigned four_hundreds = number / 400;
+  for (unsigned i = 0; i < four_hundreds; i++) {
+    letters.Append(static_cast<UChar>(1511 + 3));
+  }
+  number %= 400;
+  if (number / 100)
+    letters.Append(static_cast<UChar>(1511 + (number / 100) - 1));
+  number %= 100;
+  if (number == 15 || number == 16) {
+    letters.Append(static_cast<UChar>(1487 + 9));
+    letters.Append(static_cast<UChar>(1487 + number - 9));
+  } else {
+    if (unsigned tens = number / 10) {
+      static const UChar kHebrewTens[9] = {1497, 1499, 1500, 1502, 1504,
+                                           1505, 1506, 1508, 1510};
+      letters.Append(kHebrewTens[tens - 1]);
+    }
+    if (unsigned ones = number % 10)
+      letters.Append(static_cast<UChar>(1487 + ones));
+  }
+  return letters.ToString();
+}
+
+String HebrewAlgorithm(unsigned number) {
+  // FIXME: CSS3 mentions ways to make this work for much larger numbers.
+  if (number > 999999)
     return String();
-  return ToHebrew(value);
+
+  if (number == 0) {
+    static const UChar kHebrewZero[3] = {0x05D0, 0x05E4, 0x05E1};
+    return String(kHebrewZero, 3);
+  }
+
+  if (number <= 999)
+    return HebrewAlgorithmUnder1000(number);
+
+  return HebrewAlgorithmUnder1000(number / 1000) +
+         kHebrewPunctuationGereshCharacter +
+         HebrewAlgorithmUnder1000(number % 1000);
 }
 
 int AbsoluteValueForLegacyCJKAlgorithms(int value) {
