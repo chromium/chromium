@@ -14,6 +14,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
+struct SystemMemoryInfoKB;
 class TimeDelta;
 }
 
@@ -27,6 +28,17 @@ enum class ArcBinaryTranslationType {
   NONE,
   HOUDINI,
   NDK_TRANSLATION,
+};
+
+// For better unit-testing.
+class ArcVmClientAdapterDelegate {
+ public:
+  ArcVmClientAdapterDelegate() = default;
+  ArcVmClientAdapterDelegate(const ArcVmClientAdapterDelegate&) = delete;
+  ArcVmClientAdapterDelegate& operator=(const ArcVmClientAdapterDelegate&) =
+      delete;
+  virtual ~ArcVmClientAdapterDelegate() = default;
+  virtual bool GetSystemMemoryInfo(base::SystemMemoryInfoKB* info);
 };
 
 // Returns an adapter for arcvm.
@@ -52,6 +64,10 @@ std::vector<std::string> GenerateUpgradePropsForTesting(
     const UpgradeParams& upgrade_params,
     const std::string& serial_number,
     const std::string& prefix);
+
+void SetArcVmClientAdapterDelegateForTesting(
+    ArcClientAdapter* adapter,
+    std::unique_ptr<ArcVmClientAdapterDelegate> delegate);
 
 }  // namespace arc
 

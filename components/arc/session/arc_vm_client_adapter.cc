@@ -323,7 +323,9 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
     uint32_t cpus,
     const base::FilePath& demo_session_apps_path,
     const FileSystemStatus& file_system_status,
-    std::vector<std::string> kernel_cmdline) {
+    std::vector<std::string> kernel_cmdline,
+    base::OnceCallback<bool(base::SystemMemoryInfoKB*)>
+        get_system_memory_info_cb) {
   vm_tools::concierge::StartArcVmRequest request;
 
   request.set_name(kArcVmName);
@@ -384,7 +386,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
   // Specify VM Memory.
   if (base::FeatureList::IsEnabled(kVmMemorySize)) {
     base::SystemMemoryInfoKB info;
-    if (base::GetSystemMemoryInfo(&info)) {
+    if (std::move(get_system_memory_info_cb).Run(&info)) {
       const int ram_mib = info.total / 1024;
       const int shift_mib = kVmMemorySizeShiftMiB.Get();
       const int max_mib = kVmMemorySizeMaxMiB.Get();
@@ -492,6 +494,12 @@ bool SendUpgradePropsToArcVmBootNotificationServer(
 
 }  // namespace
 
+bool ArcVmClientAdapterDelegate::GetSystemMemoryInfo(
+    base::SystemMemoryInfoKB* info) {
+  // Call the base function by default.
+  return base::GetSystemMemoryInfo(info);
+}
+
 class ArcVmClientAdapter : public ArcClientAdapter,
                            public chromeos::ConciergeClient::VmObserver,
                            public chromeos::ConciergeClient::Observer {
@@ -503,7 +511,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   // For testing purposes and the internal use (by the other ctor) only.
   explicit ArcVmClientAdapter(const FileSystemStatusRewriter& rewriter)
-      : is_host_on_vm_(chromeos::system::StatisticsProvider::GetInstance()
+      : delegate_(std::make_unique<ArcVmClientAdapterDelegate>()),
+        is_host_on_vm_(chromeos::system::StatisticsProvider::GetInstance()
                            ->IsRunningOnVm()),
         file_system_status_rewriter_for_testing_(rewriter) {
     auto* client = GetConciergeClient();
@@ -651,6 +660,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void ConciergeServiceStarted() override {}
+
+  void set_delegate_for_testing(  // IN-TEST
+      std::unique_ptr<ArcVmClientAdapterDelegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
 
  private:
   void OnArcBugReportBackedUp(base::TimeTicks arc_bug_report_backup_time,
@@ -818,9 +832,13 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     std::vector<std::string> kernel_cmdline = GenerateKernelCmdline(
         start_params_, file_system_status, *is_dev_mode_, is_host_on_vm_,
         GetChromeOsChannelFromLsbRelease());
-    auto start_request =
-        CreateStartArcVmRequest(cpus, demo_session_apps_path,
-                                file_system_status, std::move(kernel_cmdline));
+    auto start_request = CreateStartArcVmRequest(
+        cpus, demo_session_apps_path, file_system_status,
+        std::move(kernel_cmdline),
+        base::BindOnce(&ArcVmClientAdapterDelegate::GetSystemMemoryInfo,
+                       // Unretained is safe because CreateStartArcVmRequest is
+                       // a synchronous function.
+                       base::Unretained(delegate_.get())));
 
     GetConciergeClient()->StartArcVm(
         start_request,
@@ -1047,6 +1065,8 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     std::move(callback).Run(success, failure_reason);
   }
 
+  std::unique_ptr<ArcVmClientAdapterDelegate> delegate_;
+
   absl::optional<bool> is_dev_mode_;
   // True when the *host* is running on a VM.
   const bool is_host_on_vm_;
@@ -1108,6 +1128,14 @@ std::vector<std::string> GenerateUpgradePropsForTesting(
     const std::string& serial_number,
     const std::string& prefix) {
   return GenerateUpgradeProps(upgrade_params, serial_number, prefix);
+}
+
+void SetArcVmClientAdapterDelegateForTesting(  // IN-TEST
+    ArcClientAdapter* adapter,
+    std::unique_ptr<ArcVmClientAdapterDelegate> delegate) {
+  static_cast<ArcVmClientAdapter*>(adapter)
+      ->set_delegate_for_testing(  // IN-TEST
+          std::move(delegate));
 }
 
 }  // namespace arc
