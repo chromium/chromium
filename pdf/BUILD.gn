@@ -245,6 +245,7 @@ if (enable_pdf) {
       ":*",
       "//components:components_browsertests",
       "//components/pdf/renderer",
+      "//components/pdf/renderer:unit_tests",
     ]
 
     sources = [

@@ -6,14 +6,20 @@
 
 #include <utility>
 
+#include "pdf/accessibility_structs.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace pdf {
 
-const PP_PrivateAccessibilityTextRunInfo kFirstTextRun = {
-    15, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
-const PP_PrivateAccessibilityTextRunInfo kSecondTextRun = {
-    15, PP_MakeFloatRectFromXYWH(28.0f, 117.0f, 152.0f, 19.0f)};
+const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
+    15, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
+const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
+    15, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
 const PP_PrivateAccessibilityCharInfo kDummyCharsData[] = {
     {'H', 12}, {'e', 6},  {'l', 5},  {'l', 4},  {'o', 8},  {',', 4},
     {' ', 4},  {'w', 12}, {'o', 6},  {'r', 6},  {'l', 4},  {'d', 9},
@@ -26,7 +32,7 @@ TEST(PdfAccessibilityTreeUnitTest, TextRunsAndCharsMismatch) {
   // |chars| and |text_runs| span over the same page text. They should denote
   // the same page text size, but |text_runs_| is incorrect and only denotes 1
   // of 2 text runs.
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
 
   std::vector<PP_PrivateAccessibilityCharInfo> chars(
@@ -41,7 +47,7 @@ TEST(PdfAccessibilityTreeUnitTest, TextRunsAndCharsMismatch) {
 TEST(PdfAccessibilityTreeUnitTest, TextRunsAndCharsMatch) {
   // |chars| and |text_runs| span over the same page text. They should denote
   // the same page text size.
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -55,7 +61,7 @@ TEST(PdfAccessibilityTreeUnitTest, TextRunsAndCharsMatch) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedLinkVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -87,7 +93,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedLinkVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundLink) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -109,7 +115,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundLink) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedImageVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -137,7 +143,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedImageVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundImage) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -157,7 +163,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundImage) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedHighlightVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -189,7 +195,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedHighlightVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundHighlight) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -211,7 +217,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundHighlight) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedTextFieldVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -241,7 +247,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedTextFieldVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundTextField) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -262,7 +268,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundTextField) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedChoiceFieldVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -292,7 +298,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedChoiceFieldVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundChoiceField) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -313,7 +319,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundChoiceField) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, UnsortedButtonVector) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -343,7 +349,7 @@ TEST(PdfAccessibilityTreeUnitTest, UnsortedButtonVector) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundButton) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -364,7 +370,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundButton) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundRadioButton) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -401,7 +407,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundRadioButton) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundCheckBox) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -438,7 +444,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundCheckBox) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageLink) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -461,7 +467,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageLink) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageHighlight) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -483,7 +489,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageHighlight) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageTextFeild) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 
@@ -504,7 +510,7 @@ TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInPageTextFeild) {
 }
 
 TEST(PdfAccessibilityTreeUnitTest, OutOfBoundIndexInChoiceFeild) {
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs;
   text_runs.emplace_back(kFirstTextRun);
   text_runs.emplace_back(kSecondTextRun);
 

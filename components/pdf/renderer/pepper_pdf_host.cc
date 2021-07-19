@@ -284,10 +284,29 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityDocInfo(
   return PP_OK;
 }
 
+namespace {
+
+chrome_pdf::AccessibilityTextStyleInfo ToAccessibilityTextStyleInfo(
+    const ppapi::PdfAccessibilityTextStyleInfo& pp_style) {
+  chrome_pdf::AccessibilityTextStyleInfo style;
+  style.font_name = pp_style.font_name;
+  style.font_weight = pp_style.font_weight;
+  style.render_mode = static_cast<chrome_pdf::AccessibilityTextRenderMode>(
+      pp_style.render_mode);
+  style.font_size = pp_style.font_size;
+  style.fill_color = pp_style.fill_color;
+  style.stroke_color = pp_style.stroke_color;
+  style.is_italic = pp_style.is_italic;
+  style.is_bold = pp_style.is_bold;
+  return style;
+}
+
+}  // namespace
+
 int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
     ppapi::host::HostMessageContext* context,
     const PP_PrivateAccessibilityPageInfo& pp_page_info,
-    const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_run_info,
+    const std::vector<ppapi::PdfAccessibilityTextRunInfo>& pp_text_run_infos,
     const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
   if (!host_->GetPluginInstance(pp_instance()))
@@ -296,7 +315,16 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
   chrome_pdf::AccessibilityPageInfo page_info = {
       pp_page_info.page_index, content::PP_ToGfxRect(pp_page_info.bounds),
       pp_page_info.text_run_count, pp_page_info.char_count};
-  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_info,
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_run_infos;
+  text_run_infos.reserve(pp_text_run_infos.size());
+  for (const auto& pp_text_run_info : pp_text_run_infos) {
+    text_run_infos.emplace_back(
+        pp_text_run_info.len, content::PP_ToGfxRectF(pp_text_run_info.bounds),
+        static_cast<chrome_pdf::AccessibilityTextDirection>(
+            pp_text_run_info.direction),
+        ToAccessibilityTextStyleInfo(pp_text_run_info.style));
+  }
+  pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_infos,
                                                     chars, page_objects);
   return PP_OK;
 }

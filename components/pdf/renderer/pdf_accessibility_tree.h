@@ -24,6 +24,7 @@
 namespace chrome_pdf {
 struct AccessibilityDocInfo;
 struct AccessibilityPageInfo;
+struct AccessibilityTextRunInfo;
 struct AccessibilityViewportInfo;
 }  // namespace chrome_pdf
 
@@ -45,7 +46,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
   ~PdfAccessibilityTree() override;
 
   static bool IsDataFromPluginValid(
-      const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
+      const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects);
 
@@ -65,7 +66,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       const chrome_pdf::AccessibilityDocInfo& doc_info);
   void SetAccessibilityPageInfo(
       const chrome_pdf::AccessibilityPageInfo& page_info,
-      const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
+      const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects);
   void HandleAction(const PP_PdfAccessibilityActionData& action_data);
@@ -121,7 +122,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       ui::AXNodeData* page_node,
       const gfx::RectF& page_bounds,
       uint32_t page_index,
-      const std::vector<ppapi::PdfAccessibilityTextRunInfo>& text_runs,
+      const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects,
       content::RenderAccessibility* render_accessibility);

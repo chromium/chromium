@@ -26,15 +26,20 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_conversions.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace pdf {
 
 namespace {
 
-const PP_PrivateAccessibilityTextRunInfo kFirstTextRun = {
-    15, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
-const PP_PrivateAccessibilityTextRunInfo kSecondTextRun = {
-    15, PP_MakeFloatRectFromXYWH(28.0f, 117.0f, 152.0f, 19.0f)};
+const chrome_pdf::AccessibilityTextRunInfo kFirstTextRun = {
+    15, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
+const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
+    15, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
 const PP_PrivateAccessibilityCharInfo kDummyCharsData[] = {
     {'H', 12}, {'e', 6},  {'l', 5},  {'l', 4},  {'o', 8},  {',', 4},
     {' ', 4},  {'w', 12}, {'o', 6},  {'r', 6},  {'l', 4},  {'d', 9},
@@ -42,14 +47,22 @@ const PP_PrivateAccessibilityCharInfo kDummyCharsData[] = {
     {'d', 12}, {'b', 10}, {'y', 12}, {'e', 12}, {',', 4},  {' ', 6},
     {'w', 16}, {'o', 12}, {'r', 8},  {'l', 4},  {'d', 12}, {'!', 2},
 };
-const PP_PrivateAccessibilityTextRunInfo kFirstRunMultiLine = {
-    7, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
-const PP_PrivateAccessibilityTextRunInfo kSecondRunMultiLine = {
-    8, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
-const PP_PrivateAccessibilityTextRunInfo kThirdRunMultiLine = {
-    9, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
-const PP_PrivateAccessibilityTextRunInfo kFourthRunMultiLine = {
-    6, PP_MakeFloatRectFromXYWH(26.0f, 189.0f, 84.0f, 13.0f)};
+const chrome_pdf::AccessibilityTextRunInfo kFirstRunMultiLine = {
+    7, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
+const chrome_pdf::AccessibilityTextRunInfo kSecondRunMultiLine = {
+    8, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
+const chrome_pdf::AccessibilityTextRunInfo kThirdRunMultiLine = {
+    9, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
+const chrome_pdf::AccessibilityTextRunInfo kFourthRunMultiLine = {
+    6, gfx::RectF(26.0f, 189.0f, 84.0f, 13.0f),
+    chrome_pdf::AccessibilityTextDirection::kNone,
+    chrome_pdf::AccessibilityTextStyleInfo()};
 
 const char kChromiumTestUrl[] = "www.cs.chromium.org";
 
@@ -194,7 +207,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   chrome_pdf::AccessibilityViewportInfo viewport_info_;
   chrome_pdf::AccessibilityDocInfo doc_info_;
   chrome_pdf::AccessibilityPageInfo page_info_;
-  std::vector<ppapi::PdfAccessibilityTextRunInfo> text_runs_;
+  std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs_;
   std::vector<PP_PrivateAccessibilityCharInfo> chars_;
   ppapi::PdfAccessibilityPageObjects page_objects_;
 };

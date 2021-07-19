@@ -62,7 +62,9 @@ source_set("unit_tests") {
 
   deps = [
     ":renderer",
+    "//pdf:accessibility_structs",
     "//pdf/mojom",
     "//testing/gtest",
+    "//ui/gfx/geometry",
   ]
 }
