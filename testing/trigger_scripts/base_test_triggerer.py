@@ -149,6 +149,7 @@ class BaseTestTriggerer(object):
 
     def list_bots(self,
                   dimensions,
+                  verbose,
                   server='chromium-swarm.appspot.com'):
         """List bots having specified bot dimensions.
 
@@ -161,7 +162,8 @@ class BaseTestTriggerer(object):
         for key in sorted(dimensions):
             args.extend(['-dimension', '%s=%s' % (key, dimensions[key])])
 
-        logging.info('Running Go `swarming` with args: %s', args)
+        if verbose:
+            logging.info('Running Go `swarming` with args: %s', args)
 
         with tempfile.NamedTemporaryFile(delete=False) as result_json:
             result_json.close()
@@ -175,6 +177,7 @@ class BaseTestTriggerer(object):
     def query_swarming(self,
                        api,
                        query_args,
+                       verbose,
                        limit='0',
                        server='chromium-swarm.appspot.com'):
         try:
@@ -186,7 +189,7 @@ class BaseTestTriggerer(object):
             ]
             # Append the query at the end
             args.append(('%s?%s' % (api, encoded_args)))
-            ret = self.run_swarming(args)
+            ret = self.run_swarming(args, verbose)
             if ret:
                 raise Exception('Error running swarming.py')
             return self.read_encoded_json_from_temp_file(temp_file)
@@ -220,18 +223,20 @@ class BaseTestTriggerer(object):
         with open(output_file, 'w') as f:
             json.dump(merged_json, f)
 
-    def run_swarming(self, args):
-        logging.info('Running Swarming with args: %s', args)
+    def run_swarming(self, args, verbose):
+        if verbose:
+            logging.info('Running Swarming with args: %s', args)
         return subprocess.call([sys.executable, SWARMING_PY] + args)
 
     def run_swarming_go(self,
                         args,
+                        verbose,
                         json_path,
                         shard_index,
                         shards,
                         merged_json=None):
-
-        logging.info('Running Go `swarming` with args: %s', args)
+        if verbose:
+            logging.info('Running Go `swarming` with args: %s', args)
 
         if merged_json is None:
             merged_json = {}
@@ -258,12 +263,12 @@ class BaseTestTriggerer(object):
         self.write_json_to_file(merged_json, json_path)
         return ret
 
-    def prune_test_specific_configs(self, args):
+    def prune_test_specific_configs(self, args, verbose):
         # Ability for base class to further prune configs to
         # run tests on.
         pass
 
-    def select_config_indices(self, args):
+    def select_config_indices(self, args, verbose):
         # Main implementation for base class to determine which bot config to
         # trigger for each shard.
         #
@@ -279,7 +284,7 @@ class BaseTestTriggerer(object):
         else:
             return [args.shard_index]
 
-    def generate_shard_map(self, args, buildername, selected_config):
+    def generate_shard_map(self, args, buildername, selected_config, verbose):
         """Returns shard map generated on runtime if needed."""
         pass
 
@@ -294,17 +299,14 @@ class BaseTestTriggerer(object):
         Returns:
             Exit code for the script.
         """
-        if args.multiple_dimension_script_verbose:
-            logging.basicConfig(level=logging.DEBUG)
-
         # crbug/1140389: debug print outs
         logging.info('DEBUG: init: %s', remaining)
-
+        verbose = args.multiple_dimension_script_verbose
         self.parse_bot_configs(args)
         # Prunes config list to the exact set of configurations to trigger jobs
         # on. This logic is specific to the base class if they want to prune
         # list further.
-        self.prune_test_specific_configs(args)
+        self.prune_test_specific_configs(args, verbose)
 
         # In the remaining arguments, find the Swarming dimensions that are
         # specified by the bot configs and remove them, because for each shard,
@@ -319,10 +321,10 @@ class BaseTestTriggerer(object):
         logging.info('DEBUG: After filtered: %s', filtered_remaining_args)
 
         merged_json = {}
-        selected_config = self.select_config_indices(args)
+        selected_config = self.select_config_indices(args, verbose)
         shard_map = self.generate_shard_map(
             args, self._findBuilderName(filtered_remaining_args),
-            selected_config)
+            selected_config, verbose)
         # Choose selected configs for this run of the test suite.
         for shard_index, bot_index in selected_config:
             # For each shard that we're going to distribute, do the following:
@@ -343,7 +345,7 @@ class BaseTestTriggerer(object):
                 # crbug/1140389: debug print outs
                 logging.info('DEBUG: Before calling swarming: %s',
                              args_to_pass)
-                ret = self.run_swarming_go(args_to_pass, json_temp,
+                ret = self.run_swarming_go(args_to_pass, verbose, json_temp,
                                            shard_index, args.shards,
                                            merged_json)
                 if ret:
