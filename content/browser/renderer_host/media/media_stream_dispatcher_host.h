@@ -24,7 +24,7 @@ class MediaStreamManager;
 
 // MediaStreamDispatcherHost is a delegate for Media Stream API messages used by
 // MediaStreamImpl.  There is one MediaStreamDispatcherHost per
-// RenderProcessHost, the former owned by the latter.
+// RenderFrameHost, the former owned by the latter.
 class CONTENT_EXPORT MediaStreamDispatcherHost
     : public blink::mojom::MediaStreamDispatcherHost {
  public:
