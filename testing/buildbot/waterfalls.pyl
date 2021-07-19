@@ -795,16 +795,6 @@
           'isolated_scripts': 'cronet_dbg_isolated_scripts',
         },
       },
-      'android-cronet-x86-dbg-10-tests': {
-        'mixins': [
-          'enable_resultdb',
-          '10-x86-emulator',
-        ],
-        'test_suites': {
-          'gtest_tests': 'cronet_gtests',
-        },
-        'os_type': 'android',
-      },
       'android-cronet-x86-rel': {
         'additional_compile_targets': [
           'cronet_package',
@@ -1074,6 +1064,16 @@
         'test_suites': {
           'gtest_tests': 'android_12_emulator_gtests',
         }
+      },
+      'android-cronet-x86-dbg-10-tests': {
+        'mixins': [
+          'enable_resultdb',
+          '10-x86-emulator',
+        ],
+        'test_suites': {
+          'gtest_tests': 'cronet_gtests',
+        },
+        'os_type': 'android',
       },
       'android-pie-arm64-wpt-rel-non-cq': {
         'mixins': [
