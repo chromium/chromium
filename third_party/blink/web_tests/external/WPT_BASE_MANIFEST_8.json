@@ -149160,6 +149160,32 @@
       ]
      },
      "text-indent": {
+      "anonymous-flex-item-001.html": [
+       "0b305fc307be36e5a5d61c4ae686c40b76b8f359",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/anonymous-flex-grid-item-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "anonymous-grid-item-001.html": [
+       "268365807200a5d7533bdf4b9d0157c4ac793c60",
+       [
+        null,
+        [
+         [
+          "/css/css-text/text-indent/reference/anonymous-flex-grid-item-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "text-indent-percentage-001.xht": [
        "6da26308b266e6d1574d78238f9d12cf5a404b25",
        [
@@ -168008,7 +168034,7 @@
       ]
      ],
      "accent-color-visited.tentative.html": [
-      "5aee0f125f7a1a6fffacda9790d7b72b02ab71ac",
+      "8a2b8f39061b3a63334c73f119a24d62671acc0b",
       [
        null,
        [
@@ -246208,6 +246234,10 @@
      },
      "text-indent": {
       "reference": {
+       "anonymous-flex-grid-item-001-ref.html": [
+        "517f9e65fde0f2951fb8175b77a13eaf3514a62d",
+        []
+       ],
        "text-indent-percentage-001-ref.xht": [
         "5b065d1db7ac1e399668e8588727be09922bf62b",
         []
@@ -249901,7 +249931,7 @@
       []
      ],
      "accent-color-visited-ref.html": [
-      "3954a3193ea3644eb666c37af619de303a5a4d27",
+      "e9c3cfad7c0f12181f73d52ad6b56ea7da9d9b9d",
       []
      ],
      "appearance-auto-input-non-widget-001-ref.html": [
@@ -284139,7 +284169,7 @@
     ],
     "pointerlock": {
      "pointerevent_pointerlock_supercedes_capture.html.ini": [
-      "51217132075a40ddc4b91f83e1a4bedf7cf3b866",
+      "01dc3b936568f0de205de2cd8b1f43819ad7ff61",
       []
      ],
      "resources": {
@@ -465873,7 +465903,7 @@
       ]
      ],
      "declarative-shadow-dom-basic.tentative.html": [
-      "0b993766c35683f58cc1892b88a09ae3cc659e67",
+      "d0ed328eeb75c6f8b6177650595c919a64e8dd4d",
       [
        null,
        {}
