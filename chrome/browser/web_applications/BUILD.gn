@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/buildflags.gni")
 
 group("web_app_group") {
   public_configs = [ "//build/config/compiler:wexit_time_destructors" ]
@@ -46,6 +47,10 @@ source_set("web_applications") {
     "preinstalled_web_app_manager.h",
     "preinstalled_web_app_utils.cc",
     "preinstalled_web_app_utils.h",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils.cc",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
+    "preinstalled_web_apps/preinstalled_web_apps.cc",
+    "preinstalled_web_apps/preinstalled_web_apps.h",
     "protocol_handler_manager.cc",
     "system_web_apps/system_web_app_background_task.cc",
     "system_web_apps/system_web_app_background_task.h",
@@ -109,12 +114,14 @@ source_set("web_applications") {
   # web_applications must not depend on //chrome/browser/extensions and //extensions
   deps = [
     ":web_app_group",
+    "//base",
+    "//build:branding_buildflags",
     "//build:chromeos_buildflags",
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications/components",
-    "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/common",
+    "//chrome/common:non_code_constants",
     "//components/content_settings/core/browser",
 
     # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
@@ -134,9 +141,40 @@ source_set("web_applications") {
     "//services/metrics/public/cpp:ukm_builders",
     "//services/preferences/public/cpp",
     "//skia",
+    "//ui/base",
     "//ui/base/idle",
     "//ui/events/devices:devices",
   ]
+
+  if (is_chrome_branded) {
+    sources += [
+      "preinstalled_web_apps/gmail.cc",
+      "preinstalled_web_apps/gmail.h",
+      "preinstalled_web_apps/google_docs.cc",
+      "preinstalled_web_apps/google_docs.h",
+      "preinstalled_web_apps/google_drive.cc",
+      "preinstalled_web_apps/google_drive.h",
+      "preinstalled_web_apps/google_sheets.cc",
+      "preinstalled_web_apps/google_sheets.h",
+      "preinstalled_web_apps/google_slides.cc",
+      "preinstalled_web_apps/google_slides.h",
+      "preinstalled_web_apps/youtube.cc",
+      "preinstalled_web_apps/youtube.h",
+    ]
+
+    if (is_chromeos_ash) {
+      sources += [
+        "preinstalled_web_apps/google_calendar.cc",
+        "preinstalled_web_apps/google_calendar.h",
+        "preinstalled_web_apps/google_chat.cc",
+        "preinstalled_web_apps/google_chat.h",
+        "preinstalled_web_apps/google_meet.cc",
+        "preinstalled_web_apps/google_meet.h",
+      ]
+    }
+
+    deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
+  }
 
   if (is_chromeos_ash) {
     deps += [
@@ -297,6 +335,7 @@ source_set("web_applications_unit_tests") {
     "manifest_update_task_unittest.cc",
     "preinstalled_web_app_manager_unittest.cc",
     "preinstalled_web_app_utils_unittest.cc",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
     "system_web_apps/test/system_web_app_manager_unittest.cc",
     "web_app_database_unittest.cc",
     "web_app_icon_manager_unittest.cc",
@@ -317,8 +356,8 @@ source_set("web_applications_unit_tests") {
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/web_applications/components",
-    "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/services/app_service/public/cpp:app_url_handling",
@@ -377,7 +416,6 @@ source_set("web_applications_browser_tests") {
     "//chrome/browser/extensions:test_support",
     "//chrome/browser/web_applications/components",
     "//chrome/browser/web_applications/extensions",
-    "//chrome/browser/web_applications/preinstalled_web_apps",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//components/permissions:permissions",
@@ -407,7 +445,6 @@ group("unit_tests") {
     ":web_applications_unit_tests",
     "//chrome/browser/web_applications/components:unit_tests",
     "//chrome/browser/web_applications/extensions:unit_tests",
-    "//chrome/browser/web_applications/preinstalled_web_apps:unit_tests",
   ]
 }
 

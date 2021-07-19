@@ -2764,7 +2764,7 @@ static_library("ui") {
       "//chrome/browser/ui/webui/settings/chromeos/constants:mojom",
       "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom",
       "//chrome/browser/ui/webui/settings/chromeos/search:mojo_bindings",
-      "//chrome/browser/web_applications/preinstalled_web_apps",
+      "//chrome/browser/web_applications",
       "//chrome/services/file_util/public/cpp",
       "//chromeos",
       "//chromeos/assistant:buildflags",
