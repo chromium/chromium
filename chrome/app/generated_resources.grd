@@ -6050,12 +6050,22 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Read Later context menu -->
-      <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_UNREAD" desc="Label for context menu item to a read later entry as unread.">
-        Mark as unread
-      </message>
-      <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_READ" desc="Label for context menu item to a read later entry as read.">
-        Mark as read
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_UNREAD" desc="Label for context menu item to a read later entry as unread. (In title case.)">
+          Mark as Unread
+        </message>
+        <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_READ" desc="Label for context menu item to a read later entry as read. (In title case.)">
+          Mark as Read
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_UNREAD" desc="Label for context menu item to a read later entry as unread.">
+          Mark as unread
+        </message>
+        <message name="IDS_READ_LATER_CONTEXT_MENU_MARK_AS_READ" desc="Label for context menu item to a read later entry as read.">
+          Mark as read
+        </message>
+      </if>
       <message name="IDS_READ_LATER_CONTEXT_MENU_DELETE" desc="Label for context menu item to a delete a read later entry.">
         Delete
       </message>
