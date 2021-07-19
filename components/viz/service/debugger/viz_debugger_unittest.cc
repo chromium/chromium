@@ -411,4 +411,24 @@ TEST_F(VisualDebuggerTest, TestDebugFlagAnnoAndFunction) {
 
 }  // namespace
 }  // namespace viz
-#endif  // VIZ_DEBUGGER_IS_ON()
+#else  // VIZ_DEBUGGER_IS_ON()
+
+class VisualDebuggerTest : public testing::Test {};
+
+DBG_FLAG_FBOOL("unit.test.fake.anno", flag_default_value_check)
+
+TEST_F(VisualDebuggerTest, TestDebugFlagAnnoAndFunction) {
+  // Visual debugger is disabled at build level this check should always return
+  // false.
+  EXPECT_FALSE(viz::VizDebugger::GetInstance()->IsEnabled());
+  // The default value for a bool flag when the visual debugger is disabled is
+  // false.
+  EXPECT_FALSE(flag_default_value_check());
+}
+
+// For optimization purposes the flag fbool values return false as a constexpr.
+// This allows the compiler to constant propagate and remove unused codepaths.
+static_assert(flag_default_value_check() == false,
+              "Default value when debugger is disabled is false.");
+
+#endif

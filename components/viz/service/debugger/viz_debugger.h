@@ -343,9 +343,9 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 
-#define DBG_FLAG_FBOOL(anno, fun_name)       \
-  namespace {                                \
-  constexp bool fun_name() { return false; } \
+#define DBG_FLAG_FBOOL(anno, fun_name)        \
+  namespace {                                 \
+  constexpr bool fun_name() { return false; } \
   }
 
 #endif  // BUILDFLAG(USE_VIZ_DEBUGGER)
