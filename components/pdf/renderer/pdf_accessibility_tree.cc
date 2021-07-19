@@ -18,7 +18,6 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
-#include "content/public/renderer/renderer_ppapi_host.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
@@ -1125,9 +1124,10 @@ class PdfAccessibilityTreeBuilder {
 
 }  // namespace
 
-PdfAccessibilityTree::PdfAccessibilityTree(content::RendererPpapiHost* host,
-                                           PP_Instance instance)
-    : host_(host), instance_(instance) {}
+PdfAccessibilityTree::PdfAccessibilityTree(
+    content::RenderFrame* render_frame,
+    content::PepperPluginInstance* plugin_instance)
+    : render_frame_(render_frame), plugin_instance_(plugin_instance) {}
 
 PdfAccessibilityTree::~PdfAccessibilityTree() {
   // Even if `render_accessibility` is disabled, still let it know `this` is
@@ -1474,9 +1474,7 @@ void PdfAccessibilityTree::ClearAccessibilityNodes() {
 }
 
 content::RenderAccessibility* PdfAccessibilityTree::GetRenderAccessibility() {
-  content::RenderFrame* render_frame =
-      host_->GetRenderFrameForInstance(instance_);
-  return render_frame ? render_frame->GetRenderAccessibility() : nullptr;
+  return render_frame_ ? render_frame_->GetRenderAccessibility() : nullptr;
 }
 
 content::RenderAccessibility*
@@ -1593,11 +1591,9 @@ bool PdfAccessibilityTree::ShowContextMenu() {
 
 void PdfAccessibilityTree::HandleAction(
     const PP_PdfAccessibilityActionData& action_data) {
-  content::PepperPluginInstance* plugin_instance =
-      host_->GetPluginInstance(instance_);
-  if (plugin_instance) {
-    plugin_instance->HandleAccessibilityAction(action_data);
-  }
+  // TODO(ankk): Ensure `plugin_instance_` can never be nullptr.
+  if (plugin_instance_)
+    plugin_instance_->HandleAccessibilityAction(action_data);
 }
 
 absl::optional<PdfAccessibilityTree::AnnotationInfo>

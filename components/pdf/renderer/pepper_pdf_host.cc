@@ -361,8 +361,8 @@ int32_t PepperPDFHost::OnHostMsgSetPluginCanSave(
 
 void PepperPDFHost::CreatePdfAccessibilityTreeIfNeeded() {
   if (!pdf_accessibility_tree_) {
-    pdf_accessibility_tree_ =
-        std::make_unique<PdfAccessibilityTree>(host_, pp_instance());
+    pdf_accessibility_tree_ = std::make_unique<PdfAccessibilityTree>(
+        GetRenderFrame(), host_->GetPluginInstance(pp_instance()));
   }
 }
 

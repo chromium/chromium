@@ -11,7 +11,6 @@
 #include "content/public/renderer/render_accessibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_view.h"
-#include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/public/test/fake_pepper_plugin_instance.h"
 #include "content/public/test/render_view_test.h"
 #include "pdf/accessibility_structs.h"
@@ -110,67 +109,6 @@ class ActionHandlingFakePepperPluginInstance
   PP_PdfAccessibilityActionData received_action_data_;
 };
 
-class FakeRendererPpapiHost : public content::RendererPpapiHost {
- public:
-  explicit FakeRendererPpapiHost(content::RenderFrame* render_frame)
-      : FakeRendererPpapiHost(render_frame, nullptr) {}
-  FakeRendererPpapiHost(
-      content::RenderFrame* render_frame,
-      ActionHandlingFakePepperPluginInstance* fake_pepper_plugin_instance)
-      : render_frame_(render_frame),
-        fake_pepper_plugin_instance_(fake_pepper_plugin_instance) {}
-  ~FakeRendererPpapiHost() override = default;
-
-  ppapi::host::PpapiHost* GetPpapiHost() override { return nullptr; }
-  bool IsValidInstance(PP_Instance instance) override { return true; }
-  content::PepperPluginInstance* GetPluginInstance(
-      PP_Instance instance) override {
-    return fake_pepper_plugin_instance_;
-  }
-  content::RenderFrame* GetRenderFrameForInstance(
-      PP_Instance instance) override {
-    return render_frame_;
-  }
-  content::RenderView* GetRenderViewForInstance(PP_Instance instance) override {
-    return nullptr;
-  }
-  blink::WebPluginContainer* GetContainerForInstance(
-      PP_Instance instance) override {
-    return nullptr;
-  }
-  bool HasUserGesture(PP_Instance instance) override { return false; }
-  int GetRoutingIDForWidget(PP_Instance instance) override { return 0; }
-  gfx::Point PluginPointToRenderFrame(PP_Instance instance,
-                                      const gfx::Point& pt) override {
-    return gfx::Point();
-  }
-  IPC::PlatformFileForTransit ShareHandleWithRemote(
-      base::PlatformFile handle,
-      bool should_close_source) override {
-    return IPC::PlatformFileForTransit();
-  }
-  base::UnsafeSharedMemoryRegion ShareUnsafeSharedMemoryRegionWithRemote(
-      const base::UnsafeSharedMemoryRegion& region) override {
-    return base::UnsafeSharedMemoryRegion();
-  }
-  base::ReadOnlySharedMemoryRegion ShareReadOnlySharedMemoryRegionWithRemote(
-      const base::ReadOnlySharedMemoryRegion& region) override {
-    return base::ReadOnlySharedMemoryRegion();
-  }
-  bool IsRunningInProcess() override { return false; }
-  std::string GetPluginName() override { return std::string(); }
-  void SetToExternalPluginHost() override {}
-  void CreateBrowserResourceHosts(
-      PP_Instance instance,
-      const std::vector<IPC::Message>& nested_msgs,
-      base::OnceCallback<void(const std::vector<int>&)> callback) override {}
-  GURL GetDocumentURL(PP_Instance instance) override { return GURL(); }
-
- private:
-  content::RenderFrame* render_frame_;
-  ActionHandlingFakePepperPluginInstance* fake_pepper_plugin_instance_;
-};
-
 }  // namespace
 
 class PdfAccessibilityTreeTest : public content::RenderViewTest {
@@ -217,9 +155,8 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPDFPage) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -235,9 +172,8 @@ TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -256,9 +192,8 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   // Make the accessibility tree with a portrait page and then remake with a
   // landscape page.
@@ -327,9 +262,8 @@ TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -439,9 +373,8 @@ TEST_F(PdfAccessibilityTreeTest, TestOverlappingAnnots) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -525,9 +458,8 @@ TEST_F(PdfAccessibilityTreeTest, TestHighlightCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -647,9 +579,8 @@ TEST_F(PdfAccessibilityTreeTest, TestTextFieldNodeCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -804,9 +735,8 @@ TEST_F(PdfAccessibilityTreeTest, TestButtonNodeCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -993,9 +923,8 @@ TEST_F(PdfAccessibilityTreeTest, TestListboxNodeCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1186,9 +1115,8 @@ TEST_F(PdfAccessibilityTreeTest, TestComboboxNodeCreation) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1397,9 +1325,8 @@ TEST_F(PdfAccessibilityTreeTest, TestPreviousNextOnLine) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  pdf::PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1524,9 +1451,8 @@ TEST_F(PdfAccessibilityTreeTest, TextRunsAndCharsMismatch) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1569,9 +1495,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedLinkVector) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1605,9 +1530,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundLink) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1648,9 +1572,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedImageVector) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1682,9 +1605,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundImage) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1730,9 +1652,8 @@ TEST_F(PdfAccessibilityTreeTest, UnsortedHighlightVector) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1767,9 +1688,8 @@ TEST_F(PdfAccessibilityTreeTest, OutOfBoundHighlight) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
-  FakeRendererPpapiHost host(GetMainRenderFrame());
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              /*plugin_instance=*/nullptr);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1789,9 +1709,8 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1854,9 +1773,8 @@ TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1918,9 +1836,8 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -1965,9 +1882,8 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
 
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
@@ -2010,9 +1926,8 @@ TEST_F(PdfAccessibilityTreeTest, TestZoomAndScaleChanges) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
   pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
                                                   chars_, page_objects_);
@@ -2072,9 +1987,8 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   render_frame->SetAccessibilityModeForTest(ui::AXMode::kWebContents);
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
   pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
@@ -2168,9 +2082,8 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   ASSERT_TRUE(render_frame->GetRenderAccessibility());
 
   ActionHandlingFakePepperPluginInstance fake_pepper_instance;
-  FakeRendererPpapiHost host(GetMainRenderFrame(), &fake_pepper_instance);
-  PP_Instance instance = 0;
-  PdfAccessibilityTree pdf_accessibility_tree(&host, instance);
+  PdfAccessibilityTree pdf_accessibility_tree(render_frame,
+                                              &fake_pepper_instance);
   pdf_accessibility_tree.SetAccessibilityViewportInfo(viewport_info_);
   pdf_accessibility_tree.SetAccessibilityDocInfo(doc_info_);
   pdf_accessibility_tree.SetAccessibilityPageInfo(page_info_, text_runs_,
