@@ -73,6 +73,7 @@
 /dawn
 /depot_tools
 /devtools-frontend/src
+/devtools-frontend-internal
 /directxsdk
 /distributed_point_functions/src
 /dom_distiller_js/dist
