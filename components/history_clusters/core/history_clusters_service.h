@@ -34,6 +34,17 @@ class HistoryClustersService : public KeyedService {
     virtual void OnMemoriesDebugMessage(const std::string& message) = 0;
   };
 
+  // The result data returned by `QueryClusters()`.
+  struct QueryClustersResult {
+    QueryClustersResult();
+    ~QueryClustersResult();
+    QueryClustersResult(const QueryClustersResult&);
+
+    std::vector<history::Cluster> clusters;
+    base::Time continuation_end_time;
+  };
+  using QueryClustersCallback = base::OnceCallback<void(QueryClustersResult)>;
+
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   // In that case, HistoryClustersService will never instantiate a clustering
   // backend that requires it, such as the RemoteClusteringBackend.
@@ -79,13 +90,12 @@ class HistoryClustersService : public KeyedService {
   // The returned clusters are sorted in reverse-chronological order based on
   // their highest scoring visit. The visits within each cluster are sorted by
   // score, from highest to lowest.
-  using QueryClustersCallback =
-      base::OnceCallback<void(std::vector<history::Cluster>)>;
   void QueryClusters(const std::string& query,
                      base::Time end_time,
                      size_t max_count,
                      QueryClustersCallback callback,
                      base::CancelableTaskTracker* task_tracker);
+
   // Removes all visits to the specified URLs in the specified time ranges in
   // `expire_list`. Calls `closure` when done.
   void RemoveVisits(const std::vector<history::ExpireHistoryArgs>& expire_list,
@@ -107,7 +117,7 @@ class HistoryClustersService : public KeyedService {
   // This is a callback used for the `QueryClusters()` call from
   // `DoesQueryMatchAnyCluster()`. Populates the cluster keyword cache from the
   // keywords in `clusters`.
-  void PopulateClusterKeywordCache(std::vector<history::Cluster> clusters);
+  void PopulateClusterKeywordCache(QueryClustersResult result);
 
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history

@@ -66,17 +66,22 @@ mojom::URLVisitPtr VisitToMojom(
   return visit_mojom;
 }
 
-std::vector<mojom::ClusterPtr> ClustersToMojom(
-    const std::vector<history::Cluster> clusters) {
-  std::vector<mojom::ClusterPtr> clusters_mojom;
-  for (const auto& cluster : clusters) {
+void ServiceResultToMojom(
+    base::OnceCallback<
+        void(const absl::optional<base::Time>& continuation_max_time,
+             std::vector<mojom::ClusterPtr> cluster_mojoms)> callback,
+    HistoryClustersService::QueryClustersResult result) {
+  std::vector<mojom::ClusterPtr> clusters_mojoms;
+  for (const auto& cluster : result.clusters) {
     auto cluster_mojom = mojom::Cluster::New();
     cluster_mojom->id = cluster.cluster_id;
     for (const auto& visit : cluster.scored_annotated_visits)
       cluster_mojom->visits.push_back(VisitToMojom(visit));
-    clusters_mojom.emplace_back(std::move(cluster_mojom));
+    clusters_mojoms.emplace_back(std::move(cluster_mojom));
   }
-  return clusters_mojom;
+
+  std::move(callback).Run(result.continuation_end_time,
+                          std::move(clusters_mojoms));
 }
 
 // Exists temporarily only for developer usage. Never enabled via variations.
@@ -122,12 +127,9 @@ void HistoryClustersHandler::QueryClusters(mojom::QueryParamsPtr query_params) {
     query_task_tracker_.TryCancelAll();
     auto* history_clusters_service =
         HistoryClustersServiceFactory::GetForBrowserContext(profile_);
-    // TODO(crbug.com/1220765): Supply `continuation_end_time` in
-    // `result_callback` once the service supports paging.
     history_clusters_service->QueryClusters(
         query, end_time, max_count,
-        base::BindOnce(&ClustersToMojom)
-            .Then(base::BindOnce(std::move(result_callback), absl::nullopt)),
+        base::BindOnce(&ServiceResultToMojom, std::move(result_callback)),
         &query_task_tracker_);
   } else {
 #if defined(CHROME_BRANDED)

@@ -104,7 +104,22 @@ std::vector<history::Cluster> SortClusters(
   return clusters;
 }
 
+HistoryClustersService::QueryClustersResult MakeQueryClustersResult(
+    std::vector<history::Cluster> clusters) {
+  HistoryClustersService::QueryClustersResult result;
+  result.clusters = std::move(clusters);
+  // TODO(tommycli): Fill `continuation_end_time` once pagination done.
+  return result;
+}
+
 }  // namespace
+
+HistoryClustersService::QueryClustersResult::QueryClustersResult() = default;
+
+HistoryClustersService::QueryClustersResult::~QueryClustersResult() = default;
+
+HistoryClustersService::QueryClustersResult::QueryClustersResult(
+    const QueryClustersResult&) = default;
 
 HistoryClustersService::HistoryClustersService(
     history::HistoryService* history_service,
@@ -217,6 +232,7 @@ void HistoryClustersService::QueryClusters(
       &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
       base::BindOnce(&FilterClustersMatchingQuery, query)
           .Then(base::BindOnce(&SortClusters))
+          .Then(base::BindOnce(&MakeQueryClustersResult))
           .Then(std::move(callback)));
 
   // TODO(tommycli): Support pagination by setting `begin_time` on `options`.
@@ -308,9 +324,9 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
 }
 
 void HistoryClustersService::PopulateClusterKeywordCache(
-    std::vector<history::Cluster> clusters) {
+    QueryClustersResult result) {
   all_keywords_cache_.clear();
-  for (auto& cluster : clusters) {
+  for (auto& cluster : result.clusters) {
     for (auto& keyword : cluster.keywords) {
       // Each `keyword` may itself have multiple terms that we need to extract.
       query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),

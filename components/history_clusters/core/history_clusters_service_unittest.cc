@@ -187,26 +187,28 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
       /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
-      base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
-        ASSERT_EQ(clusters.size(), 2u);
+      base::BindLambdaForTesting(
+          [&](HistoryClustersService::QueryClustersResult result) {
+            auto& clusters = result.clusters;
+            ASSERT_EQ(clusters.size(), 2u);
 
-        auto& visits = clusters[0].scored_annotated_visits;
-        ASSERT_EQ(visits.size(), 1u);
-        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
-                  "https://github.com/");
-        EXPECT_FLOAT_EQ(visits[0].score, 0.1);
+            auto& visits = clusters[0].scored_annotated_visits;
+            ASSERT_EQ(visits.size(), 1u);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                      "https://github.com/");
+            EXPECT_FLOAT_EQ(visits[0].score, 0.1);
 
-        visits = clusters[1].scored_annotated_visits;
-        ASSERT_EQ(visits.size(), 2u);
-        EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
-                  "https://google.com/");
-        EXPECT_FLOAT_EQ(visits[0].score, 0.9);
-        EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
-                  "https://github.com/");
-        EXPECT_FLOAT_EQ(visits[1].score, 0.5);
+            visits = clusters[1].scored_annotated_visits;
+            ASSERT_EQ(visits.size(), 2u);
+            EXPECT_EQ(visits[0].annotated_visit.url_row.url(),
+                      "https://google.com/");
+            EXPECT_FLOAT_EQ(visits[0].score, 0.9);
+            EXPECT_EQ(visits[1].annotated_visit.url_row.url(),
+                      "https://github.com/");
+            EXPECT_FLOAT_EQ(visits[1].score, 0.5);
 
-        run_loop_quit_.Run();
-      }),
+            run_loop_quit_.Run();
+          }),
       &task_tracker_);
 
   history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
@@ -271,7 +273,9 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
         /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
-        base::BindLambdaForTesting([&](std::vector<history::Cluster> clusters) {
+        base::BindLambdaForTesting([&](HistoryClustersService::
+                                           QueryClustersResult result) {
+          auto& clusters = result.clusters;
           size_t expected_size = int(test_data[i].expect_first_cluster) +
                                  int(test_data[i].expect_second_cluster);
           ASSERT_EQ(clusters.size(), expected_size);
