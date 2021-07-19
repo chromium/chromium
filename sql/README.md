@@ -430,6 +430,10 @@ Views are syntactic sugar, and do not open up any new SQL capabilities. SQL
 statements on views are more difficult to understand and maintain, because of
 the extra layer of indirection.
 
+Access to views is disabled by default for SQLite databases opened with Chrome's
+`sql::Database` infrastructure. This is intended to steer feature developers
+away from the discouraged feature.
+
 After
 [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
 to disable SQLite's VIEW support using

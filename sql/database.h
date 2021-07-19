@@ -142,10 +142,19 @@ struct COMPONENT_EXPORT(SQL) DatabaseOptions {
   // pre-compiled SQL statements.
   bool mmap_alt_status_discouraged = false;
 
-  // If true, enables virtual tables (a discouraged feature) for this database.
+  // If true, enables SQL views (a discouraged feature) for this database.
   //
   // The use of views is discouraged for Chrome code. See README.md for details
   // and recommended replacements.
+  //
+  // If this option is false, CREATE VIEW and DROP VIEW succeed, but SELECT
+  // statements targeting views fail.
+  bool enable_views_discouraged = false;
+
+  // If true, enables virtual tables (a discouraged feature) for this database.
+  //
+  // The use of virtual tables is discouraged for Chrome code. See README.md for
+  // details and recommended replacements.
   //
   // If this option is false, CREATE VIRTUAL TABLE and DROP VIRTUAL TABLE
   // succeed, but statements targeting virtual tables fail.

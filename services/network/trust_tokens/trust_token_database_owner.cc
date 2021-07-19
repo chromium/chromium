@@ -91,6 +91,7 @@ NOINLINE TrustTokenDatabaseOwner::TrustTokenDatabaseOwner(
           .cache_size = 500,
           // TODO(pwnall): Add a meta table and remove this option.
           .mmap_alt_status_discouraged = true,
+          .enable_views_discouraged = true,  // Required by mmap_alt_status.
       })),
       issuer_table_(
           std::make_unique<sqlite_proto::KeyValueTable<TrustTokenIssuerConfig>>(

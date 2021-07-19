@@ -249,6 +249,9 @@ Database::Database(DatabaseOptions options)
   DCHECK_LE(options.page_size, 65536);
   DCHECK(!(options.page_size & (options.page_size - 1)))
       << "page_size must be a power of two";
+  DCHECK(!options_.mmap_alt_status_discouraged ||
+         options_.enable_views_discouraged)
+      << "mmap_alt_status requires views";
 }
 
 Database::~Database() {
@@ -787,6 +790,7 @@ bool Database::Raze() {
       .exclusive_locking = true,
       .page_size = options_.page_size,
       .cache_size = 0,
+      .enable_views_discouraged = options_.enable_views_discouraged,
       .enable_virtual_tables_discouraged =
           options_.enable_virtual_tables_discouraged,
   });
@@ -1523,6 +1527,10 @@ bool Database::OpenInternal(const std::string& file_name,
   // configuration change, triggers are not executed. CREATE TRIGGER and DROP
   // TRIGGER still succeed.
   err = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_TRIGGER, 0, nullptr);
+  DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
+
+  err = sqlite3_db_config(db_, SQLITE_DBCONFIG_ENABLE_VIEW,
+                          options_.enable_views_discouraged ? 1 : 0, nullptr);
   DCHECK_EQ(err, SQLITE_OK) << "sqlite3_db_config() should not fail";
 
   // Enable extended result codes to provide more color on I/O errors.

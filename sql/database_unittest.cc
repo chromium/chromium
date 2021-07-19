@@ -1322,6 +1322,7 @@ TEST_P(SQLDatabaseTest, MmapInitiallyEnabledAltStatus) {
 
   DatabaseOptions options = GetDBOptions();
   options.mmap_alt_status_discouraged = true;
+  options.enable_views_discouraged = true;
   db_ = std::make_unique<Database>(options);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -1406,6 +1407,7 @@ TEST_P(SQLDatabaseTest, GetAppropriateMmapSizeAltStatus) {
   // Using alt status, everything should be mapped, with state in the view.
   DatabaseOptions options = GetDBOptions();
   options.mmap_alt_status_discouraged = true;
+  options.enable_views_discouraged = true;
   db_ = std::make_unique<Database>(options);
   ASSERT_TRUE(db_->Open(db_path_));
 
@@ -1475,6 +1477,42 @@ TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
   // sqlite3_db_config() currently only disables running triggers. Schema
   // operations on triggers are still allowed.
   EXPECT_TRUE(db_->Execute("DROP TRIGGER IF EXISTS trigger"));
+}
+
+TEST_P(SQLDatabaseTest, ViewsDisabledByDefault) {
+  EXPECT_FALSE(GetDBOptions().enable_views_discouraged);
+
+  // sqlite3_db_config() currently only disables querying views. Schema
+  // operations on views are still allowed.
+  ASSERT_TRUE(db_->Execute("CREATE VIEW view(id) AS SELECT 1"));
+
+  {
+    sql::test::ScopedErrorExpecter expecter;
+    expecter.ExpectError(SQLITE_ERROR);
+    Statement select_from_view(db_->GetUniqueStatement("SELECT id FROM view"));
+    EXPECT_FALSE(select_from_view.is_valid());
+    EXPECT_TRUE(expecter.SawExpectedErrors());
+  }
+
+  // sqlite3_db_config() currently only disables querying views. Schema
+  // operations on views are still allowed.
+  EXPECT_TRUE(db_->Execute("DROP VIEW IF EXISTS view"));
+}
+
+TEST_P(SQLDatabaseTest, ViewsEnabled) {
+  DatabaseOptions options = GetDBOptions();
+  options.enable_views_discouraged = true;
+  db_ = std::make_unique<Database>(options);
+  ASSERT_TRUE(db_->Open(db_path_));
+
+  ASSERT_TRUE(db_->Execute("CREATE VIEW view(id) AS SELECT 1"));
+
+  Statement select_from_view(db_->GetUniqueStatement("SELECT id FROM view"));
+  ASSERT_TRUE(select_from_view.is_valid());
+  EXPECT_TRUE(select_from_view.Step());
+  EXPECT_EQ(1, select_from_view.ColumnInt64(0));
+
+  EXPECT_TRUE(db_->Execute("DROP VIEW IF EXISTS view"));
 }
 
 TEST_P(SQLDatabaseTest, VirtualTablesDisabledByDefault) {
