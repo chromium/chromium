@@ -3506,6 +3506,10 @@ void BrowserView::UpdateAcceleratorMetrics(const ui::Accelerator& accelerator,
       base::RecordAction(base::UserMetricsAction("Accel_NewTabInGroup"));
   }
 
+  if (command_id == IDC_NEW_INCOGNITO_WINDOW) {
+    base::RecordAction(base::UserMetricsAction("Accel_NewIncognitoWindow"));
+  }
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Collect information about the relative popularity of various accelerators
   // on Chrome OS.
