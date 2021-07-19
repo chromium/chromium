@@ -26,7 +26,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
       {{"app_icon_192.png", 192,
         IDR_CHROMEOS_PERSONALIZATION_APP_ICON_192_PNG}},
       *info);
-  info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
+  info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->open_as_window = true;
 
   return info;
