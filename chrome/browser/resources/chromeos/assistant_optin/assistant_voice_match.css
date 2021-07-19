@@ -25,22 +25,3 @@
   height: 100px;
   width: 100px;
 }
-
-:host-context([orientation=horizontal]) #voice-match-animation {
-  padding-top: 16px;
-}
-
-#message-vertical-mode {
-  padding-top: 40px;
-}
-
-:host-context(html:not([new-layout])) #message-vertical-mode,
-:host-context([orientation=vertical]) #message-horizontal-mode,
-:host-context([orientation=horizontal]) #message-vertical-mode {
-  display: none;
-}
-
-:host-context([orientation=vertical])
-    #voiceMatchIntroDialog div[slot='content'] {
-  justify-content: flex-start;
-}
