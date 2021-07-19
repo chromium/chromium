@@ -197,6 +197,15 @@ class SwapChainPresenter : public base::PowerStateObserver {
   // whichever is currently used.
   Microsoft::WRL::ComPtr<IDXGISwapChainMedia> GetSwapChainMedia() const;
 
+  // Present the Direct Compositon surface from MediaFoundationRenderer.
+  bool PresentDCOMPSurface(const ui::DCRendererLayerParams& overlay);
+
+  // Release resources related to `PresentDCOMPSurface()`.
+  void ReleaseDCOMPSurfaceResourcesIfNeeded();
+
+  // The Direct Composition surface handle from MediaFoundationRenderer.
+  HANDLE dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
+
   // Layer tree instance that owns this swap chain presenter.
   DCLayerTree* layer_tree_ = nullptr;
 

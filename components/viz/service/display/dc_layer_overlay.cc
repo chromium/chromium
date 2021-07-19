@@ -16,6 +16,7 @@
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
+#include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
@@ -164,6 +165,41 @@ void FromYUVQuad(const YUVVideoDrawQuad* quad,
   dc_layer->hdr_metadata = quad->hdr_metadata;
 }
 
+void FromStreamVideoQuad(const StreamVideoDrawQuad* quad,
+                         const gfx::Transform& transform_to_root_target,
+                         DCLayerOverlay* dc_layer) {
+  dc_layer->resources[kYPlaneResourceIndex] = quad->resource_id();
+  // UV resource ID needs to be populated for checks in GLRenderer, even though
+  // it is not used with Media Foundation DirectComposition images.
+  dc_layer->resources[kUVPlaneResourceIndex] = quad->resource_id();
+  dc_layer->quad_rect = quad->rect;
+  // Quad rect is in quad content space so both quad to target, and target to
+  // root transforms must be applied to it.
+  gfx::Transform quad_to_root_transform(
+      quad->shared_quad_state->quad_to_target_transform);
+  quad_to_root_transform.ConcatTransform(transform_to_root_target);
+  // Flatten transform to 2D since DirectComposition doesn't support 3D
+  // transforms.
+  quad_to_root_transform.FlattenTo2d();
+  dc_layer->transform = quad_to_root_transform;
+
+  dc_layer->clip_rect = quad->shared_quad_state->clip_rect;
+  if (dc_layer->clip_rect) {
+    // Clip rect is in quad target space, and must be transformed to root target
+    // space.
+    gfx::RectF clip_rect =
+        gfx::RectF(dc_layer->clip_rect.value_or(gfx::Rect()));
+    transform_to_root_target.TransformRect(&clip_rect);
+    dc_layer->clip_rect = gfx::ToEnclosingRect(clip_rect);
+  }
+
+  dc_layer->color_space = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                          gfx::ColorSpace::TransferID::BT709);
+  // Set the protected_video_type to kHardwareProtected to signal that a DC
+  // layer is required for this quad
+  dc_layer->protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
+}
+
 DCLayerResult ValidateTextureQuad(
     const TextureDrawQuad* quad,
     const std::vector<gfx::Rect>& backdrop_filter_rects,
@@ -235,8 +271,11 @@ bool IsProtectedVideo(const QuadList::Iterator& it) {
                gfx::ProtectedVideoType::kHardwareProtected ||
            yuv_quad->protected_video_type ==
                gfx::ProtectedVideoType::kSoftwareProtected;
+  } else if (it->material == DrawQuad::Material::kStreamVideoContent) {
+    return true;
+  } else {
+    return false;
   }
-  return false;
 }
 
 DCLayerResult IsUnderlayAllowed(const QuadList::Iterator& it) {
@@ -640,6 +679,11 @@ void DCLayerOverlayProcessor::Process(
         if (result == DC_LAYER_SUCCESS)
           processed_yuv_overlay_count_++;
         break;
+      case DrawQuad::Material::kStreamVideoContent:
+        // Stream video quads contain Media Foundation dcomp surface which is
+        // always presented as overlay.
+        result = DC_LAYER_SUCCESS;
+        break;
       case DrawQuad::Material::kTextureContent:
         result = ValidateTextureQuad(TextureDrawQuad::MaterialCast(*it),
                                      backdrop_filter_rects, resource_provider);
@@ -786,6 +830,10 @@ void DCLayerOverlayProcessor::UpdateDCLayerOverlays(
       FromYUVQuad(YUVVideoDrawQuad::MaterialCast(*it),
                   render_pass->transform_to_root_target, &dc_layer);
       processed_yuv_overlay_count_++;
+      break;
+    case DrawQuad::Material::kStreamVideoContent:
+      FromStreamVideoQuad(StreamVideoDrawQuad::MaterialCast(*it),
+                          render_pass->transform_to_root_target, &dc_layer);
       break;
     case DrawQuad::Material::kTextureContent:
       FromTextureQuad(TextureDrawQuad::MaterialCast(*it),

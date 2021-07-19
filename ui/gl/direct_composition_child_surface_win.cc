@@ -370,7 +370,10 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
 
   DXGI_FORMAT dxgi_format = gfx::ColorSpaceWin::GetDXGIFormat(color_space_);
 
-  if (!dcomp_surface_ && enable_dc_layers_) {
+  // IDCompositionDevice2::CreateSurface does not support rgb10. In cases where
+  // dc overlays are to be used for rgb10, use swap chains instead.
+  if (!dcomp_surface_ && enable_dc_layers_ &&
+      dxgi_format != DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM) {
     TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::CreateSurface",
                  "width", size_.width(), "height", size_.height());
     swap_chain_.Reset();
@@ -388,7 +391,11 @@ bool DirectCompositionChildSurfaceWin::SetDrawRectangle(
       g_direct_composition_swap_chain_failed = true;
       return false;
     }
-  } else if (!swap_chain_ && !enable_dc_layers_) {
+
+    // Use swap chains for rgb10 because dcomp surfaces cannot be created.
+  } else if (!swap_chain_ &&
+             (!enable_dc_layers_ ||
+              dxgi_format == DXGI_FORMAT::DXGI_FORMAT_R10G10B10A2_UNORM)) {
     TRACE_EVENT2("gpu", "DirectCompositionChildSurfaceWin::CreateSwapChain",
                  "width", size_.width(), "height", size_.height());
     dcomp_surface_.Reset();

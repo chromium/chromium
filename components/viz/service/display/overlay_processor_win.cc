@@ -21,6 +21,21 @@ namespace {
 // switch away after a large number of frames not needing DC layers have
 // been produced.
 constexpr int kNumberOfFramesBeforeDisablingDCLayers = 60;
+
+bool ContainsMediaFoundationVideoContent(
+    const AggregatedRenderPassList& render_passes) {
+  for (size_t i = 0; i < render_passes.size(); ++i) {
+    const QuadList& quad_list = render_passes[i]->quad_list;
+    for (size_t j = 0; j < quad_list.size(); ++j) {
+      if (quad_list.ElementAt(j)->material ==
+          DrawQuad::Material::kStreamVideoContent)
+        return true;
+    }
+  }
+
+  return false;
+}
+
 }  // anonymous namespace
 
 OverlayProcessorWin::OverlayProcessorWin(
@@ -85,7 +100,9 @@ void OverlayProcessorWin::ProcessForOverlays(
       gl::GetOverlaySupportFlags(DXGI_FORMAT_R10G10B10A2_UNORM) != 0;
   if (root_render_pass->content_color_usage == gfx::ContentColorUsage::kHDR &&
       !supports_rgb10a2_overlay) {
-    return;
+    // Media Foundation always uses overlays to render video, so do not skip.
+    if (!ContainsMediaFoundationVideoContent(*render_passes))
+      return;
   }
 
   dc_layer_overlay_processor_->Process(

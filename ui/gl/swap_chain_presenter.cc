@@ -21,6 +21,7 @@
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_image_d3d.h"
+#include "ui/gl/gl_image_dcomp_surface.h"
 #include "ui/gl/gl_image_dxgi.h"
 #include "ui/gl/gl_image_memory.h"
 #include "ui/gl/gl_switches.h"
@@ -858,6 +859,18 @@ bool SwapChainPresenter::PresentToDecodeSwapChain(
 }
 
 bool SwapChainPresenter::PresentToSwapChain(ui::DCRendererLayerParams& params) {
+  if (GLImageDCOMPSurface::FromGLImage(
+          params.images[kYPlaneImageIndex].get()) != nullptr) {
+    return PresentDCOMPSurface(params);
+  }
+
+  // SwapChainPresenter can be reused when switching between MediaFoundation
+  // (MF) video content and non-MF content; in such cases, the DirectComposition
+  // (DCOMP) surface handle associated with the MF content needs to be cleared.
+  // Doing so allows a DCOMP surface to be reset on the visual when MF
+  // content is shown again.
+  ReleaseDCOMPSurfaceResourcesIfNeeded();
+
   GLImageDXGI* image_dxgi =
       GLImageDXGI::FromGLImage(params.images[kNV12ImageIndex].get());
   GLImageD3D* image_d3d =
@@ -1157,6 +1170,113 @@ void SwapChainPresenter::RecordPresentationStatistics() {
     TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("gpu.service"),
                          "GetFrameStatisticsMedia", TRACE_EVENT_SCOPE_THREAD,
                          "CompositionMode", mode);
+  }
+}
+
+bool SwapChainPresenter::PresentDCOMPSurface(
+    const ui::DCRendererLayerParams& params) {
+  // TODO(crbug.com/999747): Include an early out path in case the same dcomp
+  // surface is being presented.
+
+  ReleaseSwapChainResources();
+
+  GLImageDCOMPSurface* image_dcomp_surface =
+      GLImageDCOMPSurface::FromGLImage(params.images[kYPlaneImageIndex].get());
+
+  if (layer_tree_->window() != image_dcomp_surface->GetParentWindow())
+    image_dcomp_surface->SetParentWindow(layer_tree_->window());
+
+  // Apply transform to video and notify DCOMPTexture.
+  gfx::Transform transform = params.transform;
+  gfx::RectF on_screen_bounds(params.quad_rect);
+  transform.TransformRect(&on_screen_bounds);
+  image_dcomp_surface->SetRect(gfx::ToEnclosingRect(on_screen_bounds));
+
+  // If |image_dcomp_surface| size is {1, 1}, the texture was initialized
+  // without knowledge of output size; do not add to |clip_visual_|.
+  if (image_dcomp_surface->GetSize().width() == 1 &&
+      image_dcomp_surface->GetSize().height() == 1) {
+    // If |content_visual_| is not updated, empty the visual and clear the DComp
+    // surface to prevent stale content from being displayed.
+    ReleaseDCOMPSurfaceResourcesIfNeeded();
+    DVLOG(2) << __func__ << " this=" << this
+             << " image_dcomp_surface size (1x1) path.";
+    return true;
+  }
+
+  // TODO(crbug.com/999747): Call UpdateVisuals() here.
+
+  if (!content_visual_) {
+    DCHECK(!clip_visual_);
+    dcomp_device_->CreateVisual(&clip_visual_);
+    DCHECK(clip_visual_);
+    dcomp_device_->CreateVisual(&content_visual_);
+    DCHECK(content_visual_);
+    clip_visual_->AddVisual(content_visual_.Get(), FALSE, nullptr);
+  }
+
+  // Set the transform to identity on the visual in case it has retained other
+  // transforms; this can be the case when switching to MediaFoundation (MF)
+  // content from non-MF content. The transform is identity because scaling is
+  // done independently by the MF video renderer.
+  content_visual_->SetTransform(nullptr);
+
+  // This visual's content was a different DC surface.
+  if (dcomp_surface_handle_ != image_dcomp_surface->GetSurfaceHandle()) {
+    DVLOG(2) << "Update visual's content. " << __func__ << "(" << this << ")";
+
+    Microsoft::WRL::ComPtr<IDCompositionSurface> texture_dc_surface =
+        image_dcomp_surface->CreateSurfaceForDevice(dcomp_device_.Get());
+    content_visual_->SetContent(texture_dc_surface.Get());
+    // Don't take ownership of handle as the GLImageDCOMPSurface instance
+    // manages it
+    dcomp_surface_handle_ = image_dcomp_surface->GetSurfaceHandle();
+  }
+
+  // Check for transform / offset changes
+  gfx::Point offset(params.quad_rect.x(), params.quad_rect.y());
+  if (visual_info_.transform != transform || visual_info_.offset != offset) {
+    visual_info_.transform = transform;
+    visual_info_.offset = offset;
+
+    // Make sure the same transform is applied to the offset as that of video.
+    // Otherwise, video content will be off-centered.
+    transform.TransformPoint(&offset);
+    content_visual_->SetOffsetX(offset.x());
+    content_visual_->SetOffsetY(offset.y());
+  }
+
+  if (visual_info_.clip_rect.value_or(gfx::Rect()) !=
+      params.clip_rect.value_or(gfx::Rect())) {
+    visual_info_.clip_rect = params.clip_rect;
+    // DirectComposition clips happen in the pre-transform visual space, while
+    // cc/ clips happen post-transform. So the clip needs to go on a separate
+    // parent visual that's untransformed.
+    if (params.clip_rect) {
+      Microsoft::WRL::ComPtr<IDCompositionRectangleClip> clip;
+      dcomp_device_->CreateRectangleClip(&clip);
+      DCHECK(clip);
+      clip->SetLeft(params.clip_rect->x());
+      clip->SetRight(params.clip_rect->right());
+      clip->SetBottom(params.clip_rect->bottom());
+      clip->SetTop(params.clip_rect->y());
+      clip_visual_->SetClip(clip.Get());
+    } else {
+      clip_visual_->SetClip(nullptr);
+    }
+  }
+
+  // Ensures DCOMP video layer to be visible.
+  layer_tree_->SetNeedsRebuildVisualTree();
+  return true;
+}
+
+void SwapChainPresenter::ReleaseDCOMPSurfaceResourcesIfNeeded() {
+  if (dcomp_surface_handle_ != INVALID_HANDLE_VALUE) {
+    dcomp_surface_handle_ = INVALID_HANDLE_VALUE;
+    if (content_visual_)
+      content_visual_->SetContent(nullptr);
+    layer_tree_->SetNeedsRebuildVisualTree();
   }
 }
 
