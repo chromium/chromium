@@ -436,7 +436,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   crash_keys::SetConnectedScenesCount([self connectedScenes].count);
 }
 
-- (void)willResignActiveTabModel {
+- (void)willResignActive {
   if (self.initStage < InitStageBrowserObjectsForUI) {
     // If the application did not pass the foreground initialization stage,
     // there is no active tab model to resign.

@@ -684,7 +684,7 @@ TEST_F(AppStateNoFixtureTest, willResignActive) {
   ASSERT_TRUE([startupInformation isColdStart]);
 
   // Action.
-  [appState willResignActiveTabModel];
+  [appState willResignActive];
 
   // Test.
   EXPECT_FALSE([startupInformation isColdStart]);

@@ -102,6 +102,13 @@ const int kMainIntentCheckDelay = 1;
          selector:@selector(sceneWillConnect:)
              name:UISceneWillConnectNotification
            object:nil];
+  // UIApplicationWillResignActiveNotification is delivered before the last
+  // scene has entered the background.
+  [[NSNotificationCenter defaultCenter]
+      addObserver:self
+         selector:@selector(lastSceneWillEnterBackground:)
+             name:UIApplicationWillResignActiveNotification
+           object:nil];
   // UIApplicationDidEnterBackgroundNotification is delivered after the last
   // scene has entered the background.
   [[NSNotificationCenter defaultCenter]
@@ -118,27 +125,6 @@ const int kMainIntentCheckDelay = 1;
            object:nil];
 
   return requiresHandling;
-}
-
-- (void)applicationWillResignActive:(UIApplication*)application {
-  if (_appState.initStage <= InitStageSafeMode)
-    return;
-
-  [_appState willResignActiveTabModel];
-}
-
-// Called when going into the background. iOS already broadcasts, so
-// stakeholders can register for it directly.
-- (void)applicationDidEnterBackground:(UIApplication*)application {
-  [_appState applicationDidEnterBackground:application
-                              memoryHelper:_memoryHelper];
-}
-
-// Called when returning to the foreground.
-- (void)applicationWillEnterForeground:(UIApplication*)application {
-  [_appState applicationWillEnterForeground:application
-                            metricsMediator:_metricsMediator
-                               memoryHelper:_memoryHelper];
 }
 
 - (void)applicationWillTerminate:(UIApplication*)application {
@@ -216,6 +202,13 @@ const int kMainIntentCheckDelay = 1;
                               metricsMediator:_metricsMediator
                                  memoryHelper:_memoryHelper];
   }
+}
+
+- (void)lastSceneWillEnterBackground:(NSNotification*)notification {
+  if (_appState.initStage <= InitStageSafeMode)
+    return;
+
+  [_appState willResignActive];
 }
 
 - (void)lastSceneDidEnterBackground:(NSNotification*)notification {
