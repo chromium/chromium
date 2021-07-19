@@ -1377,7 +1377,7 @@ TEST_P(
 }
 
 TEST_P(ContentSubresourceFilterThrottleManagerTest,
-       ReadyToCommitNavigationThenRenderFrameDeletes_MetricsNotRecoded) {
+       ReadyToCommitNavigationThenRenderFrameDeletes_MetricsNotRecorded) {
   NavigateAndCommitMainFrame(GURL(kTestURLWithDryRun));
   ExpectActivationSignalForFrame(main_rfh(), true /* expect_activation */);
 
