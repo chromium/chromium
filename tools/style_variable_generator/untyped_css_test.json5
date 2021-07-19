@@ -5,10 +5,6 @@
     },
   },
   untyped_css: {
-    typography: {
-      text_font_primary: '500 13px/20px Roboto',
-      text_font_secondary: 'normal 10px/10px Roboto',
-    },
     /* box-shadow: values*/
     shadows: {
       elevation_1_shadow: '0px 1px 2px rgba(0, 0, 0, 0.3), 0px 1px 3px rgba(0, 0, 0, 0.15)',

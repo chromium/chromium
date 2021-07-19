@@ -37,7 +37,8 @@ class CSSStyleGenerator(BaseGenerator):
         return {
             'opacities': opacities,
             'colors': colors,
-            'untyped_css': self.model[VariableType.UNTYPED_CSS]
+            'typography': self.model[VariableType.TYPOGRAPHY],
+            'untyped_css': self.model[VariableType.UNTYPED_CSS],
         }
 
     def GetFilters(self):
@@ -46,6 +47,7 @@ class CSSStyleGenerator(BaseGenerator):
             'css_color': self._CSSColor,
             'css_opacity': self._CSSOpacity,
             'css_color_rgb': self.CSSColorRGB,
+            'process_simple_ref': self.ProcessSimpleRef,
         }
 
     def GetGlobals(self):
@@ -67,6 +69,15 @@ class CSSStyleGenerator(BaseGenerator):
         return set(map(lambda n: self.ToCSSVarName(n),
                        self.context_map.keys()))
 
+    def ProcessSimpleRef(self, value):
+        '''If |value| is a simple '$other_variable' reference, returns a
+           CSS variable that points to '$other_variable'.'''
+        if value.startswith('$'):
+            ref_name = value[1:]
+            assert self.context_map[ref_name]
+            value = 'var({0})'.format(self.ToCSSVarName(ref_name))
+
+        return value
 
     def _GetCSSVarPrefix(self, model_name):
         prefix = self.context_map[model_name].get(CSSStyleGenerator.GetName(),

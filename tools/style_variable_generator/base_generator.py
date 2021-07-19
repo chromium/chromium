@@ -38,6 +38,7 @@ class Modes:
 class VariableType:
     COLOR = 'color'
     OPACITY = 'opacity'
+    TYPOGRAPHY = 'typography'
     UNTYPED_CSS = 'untyped_css'
 
 
@@ -139,6 +140,24 @@ class ColorModel(ModeKeyedModel):
     def _CreateValue(self, value):
         return Color(value)
 
+
+class TypographyModel(object):
+    def __init__(self):
+        self.font_families = collections.OrderedDict()
+        self.typefaces = collections.OrderedDict()
+
+    def AddFontFamily(self, name, value):
+        assert name.startswith('font_family_')
+        self.font_families[name] = value
+
+    def AddTypeface(self, name, value_obj):
+        assert value_obj['font_family']
+        assert value_obj['font_size']
+        assert value_obj['font_weight']
+        assert value_obj['line_height']
+        self.typefaces[name] = value_obj
+
+
 class BaseGenerator:
     '''A generic style variable generator.
 
@@ -164,14 +183,19 @@ class BaseGenerator:
         # A dictionary of |VariableType| to models containing mappings of
         # variable names to values.
         self.model = {
-            VariableType.COLOR: color_model,
-            VariableType.OPACITY: opacity_model,
+            VariableType.COLOR:
+            color_model,
+            VariableType.OPACITY:
+            opacity_model,
+            VariableType.TYPOGRAPHY:
+            TypographyModel(),
             # A dict of client-defined groups to corresponding dicts of variable
             # names to values. This is used to store CSS that doesn't have a
             # dedicated model type. This is used for more freeform variables, or
             # for variable types that haven't been implemented yet.
             # See https://crbug.com/1018654.
-            VariableType.UNTYPED_CSS: dict(),
+            VariableType.UNTYPED_CSS:
+            dict(),
         }
 
         # A dictionary of variable names to objects containing information about
@@ -209,7 +233,7 @@ class BaseGenerator:
 
     def AddUntypedCSSGroup(self, group_name, value_obj, context=None):
         for var_name in value_obj.keys():
-          self._SetVariableContext(var_name, context)
+            self._SetVariableContext(var_name, context)
         self.model[VariableType.UNTYPED_CSS][group_name] = value_obj
 
     def AddJSONFileToModel(self, path):
@@ -251,6 +275,17 @@ class BaseGenerator:
 
             self.AddOpacity(name, value, generator_context)
 
+        typography = data.get('typography')
+        if typography:
+            typography_model = self.model[VariableType.TYPOGRAPHY]
+            for name, value in typography['font_families'].items():
+                self._SetVariableContext(name, generator_context)
+                typography_model.AddFontFamily(name, value)
+
+            for name, value_obj in typography['typefaces'].items():
+                self._SetVariableContext(name, generator_context)
+                typography_model.AddTypeface(name, value_obj)
+
         for name, value in data.get('untyped_css', {}).items():
             self.AddUntypedCSSGroup(name, value, generator_context)
 
@@ -275,14 +310,14 @@ class BaseGenerator:
 
         def CheckColorReference(name, referrer):
             if name == referrer:
-                raise ValueError(f"{name} refers to itself")
+                raise ValueError("{0} refers to itself".format(name))
             if name not in color_names:
                 raise ValueError("Cannot find color %s referenced by %s" %
                                  (name, referrer))
 
         def CheckOpacityReference(name, referrer):
             if name == referrer:
-                raise ValueError(f"{name} refers to itself")
+                raise ValueError("{0} refers to itself".format(name))
             if name not in opacity_names:
                 raise ValueError("Cannot find opacity %s referenced by %s" %
                                  (name, referrer))

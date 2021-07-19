@@ -29,6 +29,25 @@ html:not(body) {
 
 }
 
+{%- if typography.font_families or typography.typefaces %}
+
+html {
+  /* font families */
+{%-   for name, value in typography.font_families.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+
+  /* typefaces */
+{%-   for name, typeface in typography.typefaces.items() %}
+  {{name | to_css_var_name}}-font-family: {{typeface.font_family | process_simple_ref}};
+  {{name | to_css_var_name}}-font-size: {{typeface.font_size}}px;
+  {{name | to_css_var_name}}-font-weight: {{typeface.font_weight}};
+  {{name | to_css_var_name}}-line-height: {{typeface.line_height}}px;
+
+{%   endfor -%}
+}
+{%- endif %}
+
 {%- if untyped_css %}
 
 html {

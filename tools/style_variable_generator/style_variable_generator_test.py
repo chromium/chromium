@@ -67,6 +67,13 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         expected_file_name = 'untyped_css_test_expected.css'
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
+    def testTypography(self):
+        self.generator = CSSStyleGenerator()
+        self.generator.AddJSONFileToModel('typography_test.json5')
+        expected_file_name = 'typography_test_expected.css'
+        self.assertEqualToFile(self.generator.Render(), expected_file_name)
+
+
 class ProtoStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
     def setUp(self):
         self.generator = ProtoStyleGenerator()
