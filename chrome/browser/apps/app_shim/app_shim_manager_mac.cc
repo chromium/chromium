@@ -1000,6 +1000,25 @@ void AppShimManager::OnBrowserSetLastActive(Browser* browser) {
   UpdateAllProfileMenus();
 }
 
+void AppShimManager::OnAppLaunchCancelled(content::BrowserContext* context,
+                                          const std::string& app_id) {
+  auto found_app = apps_.find(app_id);
+  if (found_app == apps_.end())
+    return;
+
+  Profile* profile = static_cast<Profile*>(context);
+  AppState* app_state = found_app->second.get();
+  auto found_profile = app_state->profiles.find(profile);
+  if (found_profile == app_state->profiles.end())
+    return;
+
+  // If there are no browser windows open, then close the ProfileState
+  // (and potentially the shim as well).
+  ProfileState* profile_state = found_profile->second.get();
+  if (profile_state->browsers.empty())
+    OnAppDeactivated(context, app_id);
+}
+
 void AppShimManager::UpdateAllProfileMenus() {
   RebuildProfileMenuItemsFromAvatarMenu();
   for (auto& iter_app : apps_) {

@@ -136,6 +136,11 @@ class AppShimManager : public AppShimHostBootstrap::Client,
   // Return true if any non-bookmark app windows open.
   bool HasNonBookmarkAppWindowsOpen();
 
+  // Called when the launch of the app was cancelled by the user. For example,
+  // if the user clicks cancel during a protocol launch.
+  void OnAppLaunchCancelled(content::BrowserContext* context,
+                            const std::string& app_id);
+
   // AppShimHostBootstrap::Client:
   void OnShimProcessConnected(
       std::unique_ptr<AppShimHostBootstrap> bootstrap) override;

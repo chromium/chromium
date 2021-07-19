@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/web_applications/components/app_registry_controller.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -205,6 +206,9 @@ void WebAppShimManagerDelegate::LaunchApp(
               apps::AppServiceProxyFactory::GetForProfile(profile)
                   ->BrowserAppLauncher()
                   ->LaunchAppWithParams(std::move(params));
+            } else {
+              apps::AppShimManager::Get()->OnAppLaunchCancelled(profile,
+                                                                params.app_id);
             }
           },
           std::move(params), profile);

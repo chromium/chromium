@@ -20,8 +20,10 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/web_applications/components/app_shim_registry_mac.h"
+#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/mac/app_shim.mojom.h"
+#include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/browser/notification_service.h"
@@ -676,6 +678,42 @@ TEST_F(AppShimManagerTest, RunOnOsLoginLaunchAndCloseShim) {
   manager_->OnShimProcessDisconnected(host_aa_.get());
   EXPECT_FALSE(manager_->FindHost(&profile_a_, kTestAppIdA));
   EXPECT_EQ(host_aa_.get(), nullptr);
+}
+
+TEST_F(AppShimManagerTest, AppLaunchCancelled) {
+  // Validate that if no browser is registered during a launch that
+  // OnAppLaunchCancelled removes the host and closes the app.
+  NormalLaunch(bootstrap_bb_, std::move(host_bb_unique_));
+  EXPECT_EQ(host_bb_.get(), manager_->FindHost(&profile_b_, kTestAppIdB));
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
+  manager_->OnAppLaunchCancelled(&profile_b_, kTestAppIdB);
+  EXPECT_FALSE(manager_->FindHost(&profile_b_, kTestAppIdB));
+  EXPECT_EQ(host_bb_.get(), nullptr);
+
+  // Validate that if a browser is registered during a launch
+  // that OnAppLaunchCancelled is an no-op
+  NormalLaunch(bootstrap_aa_, std::move(host_aa_unique_));
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Notify manager that a new browser has been associated with the app.
+  auto browser_window = std::make_unique<TestBrowserWindow>();
+  std::string app_name = web_app::GenerateApplicationNameFromAppId(kTestAppIdA);
+  Browser::CreateParams params = Browser::CreateParams::CreateForApp(
+      app_name, true, browser_window->GetBounds(), &profile_a_, true);
+  params.window = browser_window.get();
+  auto browser = std::unique_ptr<Browser>(Browser::Create(params));
+  manager_->OnBrowserAdded(browser.get());
+
+  // Validate that OnAppLaunchCancelled does not close the app,
+  // and that the state is still valid.
+  EXPECT_CALL(*manager_, MaybeTerminate()).Times(0);
+  manager_->OnAppLaunchCancelled(&profile_a_, kTestAppIdA);
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
+
+  // Removing the browser should close the app.
+  EXPECT_CALL(*manager_, MaybeTerminate()).WillOnce(Return());
+  manager_->OnBrowserRemoved(browser.get());
+  EXPECT_EQ(host_aa_.get(), manager_->FindHost(&profile_a_, kTestAppIdA));
 }
 
 TEST_F(AppShimManagerTest, AppLifetime) {
