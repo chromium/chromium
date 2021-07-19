@@ -513,11 +513,19 @@ public class PictureInPictureController {
 
         @Override
         public void onContentChanged(Tab tab) {
-            if (tab == mTab) return;
+            if (tab != mTab) return;
             // While webContentsWillSwap() probably did this, doesn't hurt to do it again.
             cleanupWebContentsObserver();
             // Now that we have a new WebContents, start listening.
             registerWebContentsObserver();
+        }
+
+        @Override
+        public void onDestroyed(Tab tab) {
+            if (tab != mTab) return;
+            cleanupWebContentsObserver();
+            // Don't bother to clean up here -- it clears the observers anyway,
+            // and TabChangeObserver will do it anyway.
         }
     }
 
