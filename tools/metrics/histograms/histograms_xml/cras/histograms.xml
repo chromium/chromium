@@ -920,6 +920,61 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelAverageRms"
+    units="dBFS (negated)" expires_after="2021-12-31">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal in the output of WebRTC's
+    Audio Processing Module run in CRAS, after all WebRTC audio processing. A
+    new value is reported every 10 seconds, and the peak is the RMS of the
+    strongest 10 ms block over the latest interval. The metric is negated dBFS,
+    meaning that 0 is a full-scale signal, while 127 corresponds to -127 dBFS
+    (very faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureInputLevelPeakRms"
+    units="dBFS (negated)" expires_after="2021-12-31">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal coming in to WebRTC's
+    Audio Processing Module run in CRAS, prior to any WebRTC processing. A new
+    value is reported every 10 seconds, and the peak is the RMS of the strongest
+    10 ms block over the latest interval. The metric is negated dBFS, meaning
+    that 0 is a full-scale signal, while 127 corresponds to -127 dBFS (very
+    faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureOutputLevelAverageRms"
+    units="dBFS (negated)" expires_after="2021-12-31">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the average RMS of the signal in the output of
+    WebRTC's Audio Processing Module run in CRAS, after all audio WebRTC
+    processing. A new value is reported every 10 seconds, and the average is
+    over the latest interval. The metric is negated dBFS, meaning that 0 is a
+    full-scale signal, while 127 corresponds to -127 dBFS (very faint).
+  </summary>
+</histogram>
+
+<histogram name="Cras.WebRTC.Audio.ApmCaptureOutputLevelPeakRms"
+    units="dBFS (negated)" expires_after="2021-12-31">
+  <owner>hychao@chromium.org</owner>
+  <owner>chromeos-audio@google.com</owner>
+  <summary>
+    This histogram reports the peak RMS of the signal in the output of WebRTC's
+    Audio Processing Module run in CRAS, after all WebRTC audio processing. A
+    new value is reported every 10 seconds, and the peak is the RMS of the
+    strongest 10 ms block over the latest interval. The metric is negated dBFS,
+    meaning that 0 is a full-scale signal, while 127 corresponds to -127 dBFS
+    (very faint).
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
