@@ -32,14 +32,6 @@ class SyncChangeProcessor {
   virtual absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) = 0;
-
-  // Fills a list of SyncData. This should create an up to date representation
-  // of all the data known to the ChangeProcessor for |datatype|, and
-  // should match/be a subset of the server's view of that datatype.
-  //
-  // WARNING: This can be a potentially slow & memory intensive operation and
-  // should only be used when absolutely necessary / sparingly.
-  virtual SyncDataList GetAllSyncData(ModelType type) const = 0;
 };
 
 }  // namespace syncer

@@ -104,10 +104,6 @@ class TestSyncProcessorStub : public syncer::SyncChangeProcessor {
 
   void FailNextProcessSyncChanges() { fail_next_ = true; }
 
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override {
-    return syncer::SyncDataList();
-  }
-
  private:
   syncer::SyncChangeList* output_;
   bool fail_next_;

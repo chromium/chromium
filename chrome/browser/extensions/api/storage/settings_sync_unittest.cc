@@ -117,10 +117,6 @@ class MockSyncChangeProcessor : public syncer::SyncChangeProcessor {
     return absl::nullopt;
   }
 
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override {
-    return syncer::SyncDataList();
-  }
-
   // Mock methods.
 
   const SettingSyncDataList& changes() { return changes_; }

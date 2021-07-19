@@ -30,7 +30,6 @@ class SyncChangeProcessorWrapperForTest : public SyncChangeProcessor {
   absl::optional<ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const SyncChangeList& change_list) override;
-  SyncDataList GetAllSyncData(ModelType type) const override;
 
  private:
   const base::RepeatingCallback<absl::optional<ModelError>(

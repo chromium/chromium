@@ -23,20 +23,11 @@ class FakeSyncChangeProcessor : public SyncChangeProcessor {
       const base::Location& from_here,
       const SyncChangeList& change_list) override;
 
-  // SyncChangeProcessor implementation.
-  //
-  // Returns data().
-  SyncDataList GetAllSyncData(ModelType type) const override;
-
-  virtual const SyncChangeList& changes() const;
-  virtual SyncChangeList& changes();
-
-  virtual const SyncDataList& data() const;
-  virtual SyncDataList& data();
+  const SyncChangeList& changes() const;
+  SyncChangeList& changes();
 
  private:
   SyncChangeList changes_;
-  SyncDataList data_;
 
   DISALLOW_COPY_AND_ASSIGN(FakeSyncChangeProcessor);
 };

@@ -34,10 +34,4 @@ SyncChangeProcessorWrapperForTest::ProcessSyncChanges(
   return process_sync_changes_.Run(from_here, change_list);
 }
 
-SyncDataList SyncChangeProcessorWrapperForTest::GetAllSyncData(
-    ModelType type) const {
-  NOTREACHED();
-  return SyncDataList();
-}
-
 }  // namespace syncer

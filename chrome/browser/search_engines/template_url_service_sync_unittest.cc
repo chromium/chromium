@@ -104,10 +104,6 @@ class TestChangeProcessor : public syncer::SyncChangeProcessor {
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override {
-    return syncer::SyncDataList();
-  }
-
   bool contains_guid(const std::string& guid) const {
     return change_map_.count(guid) != 0;
   }

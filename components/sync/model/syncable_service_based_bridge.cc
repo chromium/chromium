@@ -193,13 +193,6 @@ class LocalChangeProcessor : public SyncChangeProcessor {
     return absl::nullopt;
   }
 
-  SyncDataList GetAllSyncData(ModelType type) const override {
-    // This function is not supported and not exercised by the relevant
-    // datatypes (that are integrated with this bridge).
-    NOTREACHED();
-    return SyncDataList();
-  }
-
  private:
   const ModelType type_;
   const base::RepeatingCallback<void(const absl::optional<ModelError>&)>
