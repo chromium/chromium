@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_HUD_DISPLAY_CPU_STATUS_H_
-#define ASH_HUD_DISPLAY_CPU_STATUS_H_
+#ifndef ASH_HUD_DISPLAY_CPU_STATS_H_
+#define ASH_HUD_DISPLAY_CPU_STATS_H_
 
 #include <cstdint>
 
@@ -41,4 +41,4 @@ CpuStats GetProcStatCPU();
 }  // namespace hud_display
 }  // namespace ash
 
-#endif  // ASH_HUD_DISPLAY_CPU_STATUS_H_
+#endif  // ASH_HUD_DISPLAY_CPU_STATS_H_

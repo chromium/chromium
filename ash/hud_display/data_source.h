@@ -7,7 +7,7 @@
 
 #include <cstdint>
 #include <limits>
-#include "ash/hud_display/cpu_status.h"
+#include "ash/hud_display/cpu_stats.h"
 
 namespace ash {
 namespace hud_display {

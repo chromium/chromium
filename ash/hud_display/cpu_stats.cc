@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/hud_display/cpu_status.h"
+#include "ash/hud_display/cpu_stats.h"
 
 #include <cinttypes>
 #include <cstdio>
