@@ -266961,7 +266961,7 @@
      },
      "offscreen": {
       "META.yml": [
-       "d3e4c387e8b5b9d27ea3dea6febdc1d9a662e4f0",
+       "d0524194c9186da948d150da7b36f0f1144a61f9",
        []
       ],
       "manual": {
@@ -267099,6 +267099,16 @@
         "31bf7882298ab07a8c62aa47d0f90533c6dc8a75",
         []
        ]
+      },
+      "the-offscreen-canvas": {
+       "2d-getcontext-options.any-expected.txt": [
+        "5451d9c75a2a03f6ab2ed11abc88d60a6fe14d2e",
+        []
+       ],
+       "2d-getcontext-options.any.worker-expected.txt": [
+        "5451d9c75a2a03f6ab2ed11abc88d60a6fe14d2e",
+        []
+       ]
       }
      },
      "resources": {
@@ -267169,7 +267179,7 @@
        []
       ],
       "spec.yaml": [
-       "9ccadf7b9293253f56a79f02149d2fe360a59677",
+       "d8397ee94b1f169f502404c223139fee86cf4721",
        []
       ],
       "templates-offscreen.yaml": [
@@ -267247,7 +267257,7 @@
          []
         ],
         "the-canvas-element.yaml": [
-         "ec4c4e6d07bf605dea1820d3ebdce98aa8605676",
+         "5abee0300771f18fa648f5413bad6f2e7e8618d5",
          []
         ],
         "the-canvas-state.yaml": [
@@ -267321,7 +267331,7 @@
          []
         ],
         "the-offscreen-canvas.yaml": [
-         "2ca8f9a9587ea0a4d35c6db122f0d2aad94ed986",
+         "2bffbf2a9726d509c298cc52cd75bdee525f39b9",
          []
         ],
         "transformations.yaml": [
@@ -273927,6 +273937,10 @@
        ]
       },
       "the-canvas-element": {
+       "2d-getcontext-options-expected.txt": [
+        "b08b3ed5a64478c70273e79716716169f45fe633",
+        []
+       ],
        "2d.scaled.png": [
         "875407769ff19385c8be8b1dfd4eafc8a2e285be",
         []
@@ -410423,6 +410437,17 @@
        ]
       },
       "the-offscreen-canvas": {
+       "2d-getcontext-options.any.js": [
+        "c530ed4bc01a4f6cd01a36f3f3fae14186a662ff",
+        [
+         "html/canvas/offscreen/the-offscreen-canvas/2d-getcontext-options.any.html",
+         {}
+        ],
+        [
+         "html/canvas/offscreen/the-offscreen-canvas/2d-getcontext-options.any.worker.html",
+         {}
+        ]
+       ],
        "2d.canvas.readonly.html": [
         "b1760e62c6f83aad782961750a241a71c44b7f15",
         [
@@ -410465,17 +410490,31 @@
          {}
         ]
        ],
-       "2d.getcontext.extraargs.html": [
-        "0cc3052ea3caa6c7777cbb5558a4cd3feb0cddee",
+       "2d.getcontext.extraargs.cache.html": [
+        "e288ed408cc32dda1d93b47aa8a72e1997ca8373",
         [
          null,
          {}
         ]
        ],
-       "2d.getcontext.extraargs.worker.js": [
-        "9f9eeb06327710af87d510a1d58b6ab9d38b8c9b",
+       "2d.getcontext.extraargs.cache.worker.js": [
+        "3b22e2f8f4c73ab828bd5d11a30b65aea83e3c58",
         [
-         "html/canvas/offscreen/the-offscreen-canvas/2d.getcontext.extraargs.worker.html",
+         "html/canvas/offscreen/the-offscreen-canvas/2d.getcontext.extraargs.cache.worker.html",
+         {}
+        ]
+       ],
+       "2d.getcontext.extraargs.create.html": [
+        "c71c239579e9ea3cd1aa1a5c3b5a5901f5e86965",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.getcontext.extraargs.create.worker.js": [
+        "1504256fd0221b02d2ed107dc3c8d59cc7d46275",
+        [
+         "html/canvas/offscreen/the-offscreen-canvas/2d.getcontext.extraargs.create.worker.html",
          {}
         ]
        ],
@@ -418643,6 +418682,13 @@
        ]
       },
       "the-canvas-element": {
+       "2d-getcontext-options.html": [
+        "748513ab584823ee5ced22f4929bb53fc77ac35a",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.canvas.context.html": [
         "b9d26011e283e7cf07470e51d6f0857a32e7af65",
         [
@@ -418671,8 +418717,15 @@
          {}
         ]
        ],
-       "2d.getcontext.extraargs.html": [
-        "38867fbeb5e262755786c52690f1e975e238ae08",
+       "2d.getcontext.extraargs.cache.html": [
+        "18d700645166611b0891d53301bef31c62c14ad1",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.getcontext.extraargs.create.html": [
+        "980d1036953d2187fb4622772b96bd88f573c044",
         [
          null,
          {}

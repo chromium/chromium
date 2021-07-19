@@ -38,7 +38,7 @@ assertions:
   - id: context.2d
     text: "When the getContext() method of a canvas element is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object."
   - id: context.2d.extraargs
-    text: "When the getContext() method of a canvas element is to return a new object for the contextId 2d, the user agent *must* return a new CanvasRenderingContext2D object. Any additional arguments are ignored."
+    text: "If options is not an object, then set options to null."
 
   - id: toDataURL.noarguments
     text: "When a user agent is to create a serialization of the image as a file, <...> if there are no arguments, in the PNG format."

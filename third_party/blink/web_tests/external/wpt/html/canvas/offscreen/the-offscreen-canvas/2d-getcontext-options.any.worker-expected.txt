@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL 2d-getcontext-options assert_array_equals: order of operations (caching) lengths differ, expected array ["alpha", "colorSpace", "colorSpace toString", "desynchronized", "willReadFrequently"] length 5, got ["alpha", "colorSpace", "colorSpace toString", "desynchronized", "willReadFrequently", "alpha", "colorSpace", "colorSpace toString", "desynchronized", "willReadFrequently"] length 10
+Harness: the test ran to completion.
+
