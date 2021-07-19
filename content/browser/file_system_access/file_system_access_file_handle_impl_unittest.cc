@@ -266,12 +266,16 @@ TEST_F(FileSystemAccessAccessHandleTest, OpenAccessHandle) {
   handle_->OpenAccessHandle(
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
-              blink::mojom::FileSystemAccessAccessHandleFilePtr file) {
+              blink::mojom::FileSystemAccessAccessHandleFilePtr file,
+              mojo::PendingRemote<
+                  blink::mojom::FileSystemAccessAccessHandleHost>
+                  access_handle_remote) {
             EXPECT_EQ(result->status,
                       blink::mojom::FileSystemAccessStatus::kOk);
             // File should be valid and no incognito remote is needed.
             EXPECT_TRUE(file->is_regular_file());
             EXPECT_TRUE(file->get_regular_file().IsValid());
+            EXPECT_TRUE(access_handle_remote.is_valid());
           })
           .Then(loop.QuitClosure()));
   loop.Run();
@@ -282,12 +286,16 @@ TEST_F(FileSystemAccessAccessHandleIncognitoTest, OpenAccessHandle) {
   handle_->OpenAccessHandle(
       base::BindLambdaForTesting(
           [&](blink::mojom::FileSystemAccessErrorPtr result,
-              blink::mojom::FileSystemAccessAccessHandleFilePtr file) {
+              blink::mojom::FileSystemAccessAccessHandleFilePtr file,
+              mojo::PendingRemote<
+                  blink::mojom::FileSystemAccessAccessHandleHost>
+                  access_handle_remote) {
             EXPECT_EQ(result->status,
                       blink::mojom::FileSystemAccessStatus::kOk);
             // Incognito remote should be valid and no file is needed.
             EXPECT_TRUE(file->is_incognito_file_delegate());
             EXPECT_TRUE(file->get_incognito_file_delegate().is_valid());
+            EXPECT_TRUE(access_handle_remote.is_valid());
           })
           .Then(loop.QuitClosure()));
   loop.Run();

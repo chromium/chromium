@@ -9,6 +9,7 @@
 #include "base/guid.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
 #include "content/browser/file_system_access/file_system_access_handle_base.h"
 #include "content/browser/file_system_access/file_system_access_transfer_token_impl.h"
@@ -154,11 +155,11 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
 
   if (!IsAccessHandleEnabled()) {
     mojo::ReportBadMessage("File System Access Access Handle not enabled");
-    std::move(callback).Run(
-        file_system_access_error::FromStatus(
-            FileSystemAccessStatus::kInvalidState,
-            "File System Access Access Handle not enabled"),
-        blink::mojom::FileSystemAccessAccessHandleFilePtr());
+    std::move(callback).Run(file_system_access_error::FromStatus(
+                                FileSystemAccessStatus::kInvalidState,
+                                "File System Access Access Handle not enabled"),
+                            blink::mojom::FileSystemAccessAccessHandleFilePtr(),
+                            mojo::NullRemote());
     return;
   }
 
@@ -167,7 +168,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
         file_system_access_error::FromStatus(
             FileSystemAccessStatus::kInvalidState,
             "Access handles may only be created on temporary file systems"),
-        blink::mojom::FileSystemAccessAccessHandleFilePtr());
+        blink::mojom::FileSystemAccessAccessHandleFilePtr(),
+        mojo::NullRemote());
     return;
   }
 
@@ -183,7 +185,8 @@ void FileSystemAccessFileHandleImpl::OpenAccessHandle(
                         OpenAccessHandleCallback callback) {
         std::move(callback).Run(
             std::move(result),
-            blink::mojom::FileSystemAccessAccessHandleFilePtr());
+            blink::mojom::FileSystemAccessAccessHandleFilePtr(),
+            mojo::NullRemote());
       }),
       std::move(callback));
 }
@@ -200,10 +203,14 @@ void FileSystemAccessFileHandleImpl::DoOpenIncognitoFile(
       file_delegate_host_receiver =
           file_delegate_host_remote.InitWithNewPipeAndPassReceiver();
 
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
+
   std::move(callback).Run(
       file_system_access_error::Ok(),
       blink::mojom::FileSystemAccessAccessHandleFile::NewIncognitoFileDelegate(
-          std::move(file_delegate_host_remote)));
+          std::move(file_delegate_host_remote)),
+      std::move(access_handle_host_remote));
 }
 
 void FileSystemAccessFileHandleImpl::DoOpenFile(
@@ -226,12 +233,16 @@ void FileSystemAccessFileHandleImpl::DidOpenFile(
     base::OnceClosure /*on_close_callback*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+      access_handle_host_remote = manager()->CreateAccessHandleHost(url());
+
   blink::mojom::FileSystemAccessErrorPtr result =
       file_system_access_error::FromFileError(file.error_details());
   std::move(callback).Run(
       std::move(result),
       blink::mojom::FileSystemAccessAccessHandleFile::NewRegularFile(
-          std::move(file)));
+          std::move(file)),
+      std::move(access_handle_host_remote));
 }
 
 void FileSystemAccessFileHandleImpl::IsSameEntry(

@@ -22,6 +22,7 @@
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/browser/file_system_access/file_system_access.pb.h"
+#include "content/browser/file_system_access/file_system_access_access_handle_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_data_transfer_token_impl.h"
 #include "content/browser/file_system_access/file_system_access_directory_handle_impl.h"
 #include "content/browser/file_system_access/file_system_access_error.h"
@@ -927,6 +928,23 @@ FileSystemAccessManagerImpl::CreateFileWriter(
   return writer_weak;
 }
 
+mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+FileSystemAccessManagerImpl::CreateAccessHandleHost(
+    const storage::FileSystemURL& /*url*/) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost> result;
+  auto receiver = result.InitWithNewPipeAndPassReceiver();
+
+  auto handle = std::make_unique<FileSystemAccessAccessHandleHostImpl>(
+      this, PassKey(), std::move(receiver));
+  access_handle_host_receivers_.insert(std::move(handle));
+
+  // TODO(fivedots): Register an access handle (exclusive) lock on the provided
+  // URL.
+  return result;
+}
+
 void FileSystemAccessManagerImpl::CreateTransferToken(
     const FileSystemAccessFileHandleImpl& file,
     mojo::PendingReceiver<blink::mojom::FileSystemAccessTransferToken>
@@ -1261,6 +1279,14 @@ void FileSystemAccessManagerImpl::RemoveFileWriter(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   size_t count_removed = writer_receivers_.erase(writer);
+  DCHECK_EQ(1u, count_removed);
+}
+
+void FileSystemAccessManagerImpl::RemoveAccessHandleHost(
+    FileSystemAccessAccessHandleHostImpl* access_handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  size_t count_removed = access_handle_host_receivers_.erase(access_handle);
   DCHECK_EQ(1u, count_removed);
 }
 

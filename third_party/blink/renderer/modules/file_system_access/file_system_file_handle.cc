@@ -111,21 +111,25 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
 
   mojo_ptr_->OpenAccessHandle(WTF::Bind(
       [](ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result,
-         mojom::blink::FileSystemAccessAccessHandleFilePtr file) {
+         mojom::blink::FileSystemAccessAccessHandleFilePtr file,
+         mojo::PendingRemote<mojom::blink::FileSystemAccessAccessHandleHost>
+             access_handle_remote) {
         if (result->status != mojom::blink::FileSystemAccessStatus::kOk) {
           file_system_access_error::Reject(resolver, *result);
           return;
         }
         DCHECK(!file.is_null());
+        DCHECK(access_handle_remote.is_valid());
+
+        ExecutionContext* context = resolver->GetExecutionContext();
+        if (!context)
+          return;
 
         FileSystemAccessFileDelegate* file_delegate = nullptr;
         if (file->is_regular_file()) {
           file_delegate = FileSystemAccessFileDelegate::Create(
               std::move(file->get_regular_file()));
         } else if (file->is_incognito_file_delegate()) {
-          ExecutionContext* context = resolver->GetExecutionContext();
-          if (!context)
-            return;
           file_delegate = FileSystemAccessFileDelegate::CreateForIncognito(
               context, std::move(file->get_incognito_file_delegate()));
         }
@@ -139,7 +143,8 @@ ScriptPromise FileSystemFileHandle::createSyncAccessHandle(
           return;
         }
         resolver->Resolve(MakeGarbageCollected<FileSystemSyncAccessHandle>(
-            std::move(file_delegate)));
+            context, std::move(file_delegate),
+            std::move(access_handle_remote)));
       },
       WrapPersistent(resolver)));
 

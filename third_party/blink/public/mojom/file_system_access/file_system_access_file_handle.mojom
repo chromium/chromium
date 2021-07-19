@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/file_info.mojom";
 import "mojo/public/mojom/base/file.mojom";
 import "third_party/blink/public/mojom/blob/blob.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_error.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom";
 import "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom";
@@ -46,10 +47,10 @@ interface FileSystemAccessFileHandle {
   // Returns an error if the file does not exist.
   Remove() => (FileSystemAccessError result);
 
-  // TODO(fivedots): Change the return type to a host object once the access
-  // handle locking implementation is clearer.
-  // Returns a file object which can be used initiate file operations from the renderer.
-  OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file);
+  // Returns a file object and an access handle host. The file can be used to
+  // initiate file operations from the renderer. The access handle host acts as
+  // an exclusive write lock while the mojo pipe remains open.
+  OpenAccessHandle() =>  (FileSystemAccessError result, FileSystemAccessAccessHandleFile? file, pending_remote<FileSystemAccessAccessHandleHost>? access_handle_host);
 
   // Returns true if |other| represents the same file on disk as this handle.
   IsSameEntry(pending_remote<FileSystemAccessTransferToken> other) =>

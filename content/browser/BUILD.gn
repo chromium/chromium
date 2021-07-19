@@ -882,6 +882,8 @@ source_set("browser") {
     "file_system/file_system_manager_impl.h",
     "file_system/file_system_url_loader_factory.cc",
     "file_system/file_system_url_loader_factory.h",
+    "file_system_access/file_system_access_access_handle_host_impl.cc",
+    "file_system_access/file_system_access_access_handle_host_impl.h",
     "file_system_access/file_system_access_data_transfer_token_impl.cc",
     "file_system_access/file_system_access_data_transfer_token_impl.h",
     "file_system_access/file_system_access_directory_handle_impl.cc",

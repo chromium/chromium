@@ -9,4 +9,6 @@
   Exposed=DedicatedWorker,
   RuntimeEnabled=FileSystemAccessAccessHandle,
   SecureContext
-] interface FileSystemSyncAccessHandle {};
+] interface FileSystemSyncAccessHandle {
+  [CallWith=ScriptState] Promise<void> close();
+};

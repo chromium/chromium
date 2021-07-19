@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Exclusive lock for an AccessHandle created by the renderer.
+//
+// The interface is consumed by Blink in the renderer process. The interface is
+// currently implemented in the browser process, and will eventually move to the
+// Storage Service.
+//
+// This interface currently serves as a lock. The renderer gets exclusive access
+// to the associated file while it keeps this interface's mojo pipe open.
+interface FileSystemAccessAccessHandleHost {
+  // Promises to the browser that the file and AccessHandle were closed. This
+  // allows the browser to release the exclusive write lock held on the owning
+  // FileSystemFileHandle.
+  //
+  // Well-behaved renderers will call this method after closing the associated
+  // file descriptor received by the
+  // FileSystemAccessFileHandle.OpenAccessHandle().
+  //
+  // A compromised renderer may lie and call this method without closing its
+  // corresponding file descriptor. This may allow it to observe writes from
+  // other renderers to the same (origin-scoped) file, so no cross-origin data
+  // would be leaked.
+  Close() => ();
+};

@@ -26,6 +26,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_data_transfer_token.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_manager.mojom.h"
@@ -42,6 +43,7 @@ class FileSystemAccessDirectoryHandleImpl;
 class FileSystemAccessTransferTokenImpl;
 class FileSystemAccessDataTransferTokenImpl;
 class FileSystemAccessFileWriterImpl;
+class FileSystemAccessAccessHandleHostImpl;
 class StoragePartitionImpl;
 
 // This is the browser side implementation of the
@@ -84,7 +86,7 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
     const storage::IsolatedContext::ScopedFSHandle file_system;
   };
 
-  // The caller is responsible for ensuring that |permission_context| outlives
+  // The caller is responsible for ensuring that `permission_context` outlives
   // this instance.
   FileSystemAccessManagerImpl(
       scoped_refptr<storage::FileSystemContext> context,
@@ -176,6 +178,10 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
       bool auto_close,
       download::QuarantineConnectionCallback quarantine_connection_callback);
 
+  // Creates a new FileSystemAccessHandleHost for a given URL.
+  mojo::PendingRemote<blink::mojom::FileSystemAccessAccessHandleHost>
+  CreateAccessHandleHost(const storage::FileSystemURL& url);
+
   // Create a transfer token for a specific file or directory.
   void CreateTransferToken(
       const FileSystemAccessFileHandleImpl& file,
@@ -230,11 +236,16 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
     auto_file_picker_result_for_test_ = result_entry;
   }
 
-  // Remove |writer| from |writer_receivers|. It is an error to try to remove
+  // Remove `writer` from `writer_receivers_`. It is an error to try to remove
   // a writer that doesn't exist.
   void RemoveFileWriter(FileSystemAccessFileWriterImpl* writer);
 
-  // Remove |token| from |transfer_tokens_|. It is an error to try to remove
+  // Remove `access_handle` from `access_handle_host_receivers_`. It is an error
+  // to try to remove an access handle that doesn't exist.
+  void RemoveAccessHandleHost(
+      FileSystemAccessAccessHandleHostImpl* access_handle);
+
+  // Remove `token` from `transfer_tokens_`. It is an error to try to remove
   // a token that doesn't exist.
   void RemoveToken(const base::UnguessableToken& token);
 
@@ -384,6 +395,9 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
   base::flat_set<std::unique_ptr<FileSystemAccessFileWriterImpl>,
                  base::UniquePtrComparator>
       writer_receivers_;
+  base::flat_set<std::unique_ptr<FileSystemAccessAccessHandleHostImpl>,
+                 base::UniquePtrComparator>
+      access_handle_host_receivers_;
 
   bool off_the_record_;
 
