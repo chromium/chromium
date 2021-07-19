@@ -3231,7 +3231,8 @@ void NavigationRequest::OnRequestFailed(
       status.should_collapse_initiator /* collapse_frame */);
 }
 
-url::Origin NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
+absl::optional<url::Origin>
+NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
     mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
     const network::mojom::EarlyHints& early_hints) {
   // Early Hints preloads should happen only before the final response is
@@ -3246,6 +3247,10 @@ url::Origin NavigationRequest::CreateURLLoaderFactoryForEarlyHintsPreload(
   RenderProcessHost* process = frame_tree_node_->render_manager()
                                    ->GetSiteInstanceForNavigationRequest(this)
                                    ->GetProcess();
+
+  // The process is shutting down.
+  if (!process->GetBrowserContext())
+    return absl::nullopt;
 
   // Compute sandbox flags. Currently just inherit from the frame.
   // TODO(crbug.com/1225556): Think about the right way the specification should

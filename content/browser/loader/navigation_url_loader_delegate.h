@@ -102,9 +102,10 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   virtual void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) = 0;
 
-  // Creates a URLLoaderFactory for Early Hints preloads. Also calculates and
-  // returns the origin to be used for network::ResourceRequest.
-  virtual url::Origin CreateURLLoaderFactoryForEarlyHintsPreload(
+  // Creates a URLLoaderFactory for Early Hints preloads. On success returns the
+  // calculated origin to be used for network::ResourceRequest.
+  virtual absl::optional<url::Origin>
+  CreateURLLoaderFactoryForEarlyHintsPreload(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
       const network::mojom::EarlyHints& early_hints) = 0;
 

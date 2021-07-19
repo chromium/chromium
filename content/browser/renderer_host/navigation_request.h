@@ -1009,7 +1009,7 @@ class CONTENT_EXPORT NavigationRequest
       EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  url::Origin CreateURLLoaderFactoryForEarlyHintsPreload(
+  absl::optional<url::Origin> CreateURLLoaderFactoryForEarlyHintsPreload(
       mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver,
       const network::mojom::EarlyHints& early_hints) override;
 

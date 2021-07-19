@@ -765,10 +765,15 @@ void NavigationURLLoaderImpl::OnReceiveEarlyHints(
 
   if (!early_hints_manager_) {
     mojo::Remote<network::mojom::URLLoaderFactory> loader_factory;
-    url::Origin origin = delegate_->CreateURLLoaderFactoryForEarlyHintsPreload(
-        loader_factory.BindNewPipeAndPassReceiver(), *early_hints);
+    absl::optional<url::Origin> origin =
+        delegate_->CreateURLLoaderFactoryForEarlyHintsPreload(
+            loader_factory.BindNewPipeAndPassReceiver(), *early_hints);
+
+    if (!origin.has_value())
+      return;
+
     early_hints_manager_ = std::make_unique<NavigationEarlyHintsManager>(
-        *browser_context_, std::move(loader_factory), origin,
+        *browser_context_, std::move(loader_factory), *origin,
         frame_tree_node_id_);
   }
 
