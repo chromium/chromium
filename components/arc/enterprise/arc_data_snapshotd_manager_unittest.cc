@@ -1114,6 +1114,7 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, EscapeBasic) {
 
     // Send a cancellation signal.
     client()->signal_callback().Run();
+    RunUntilIdle();
     EXPECT_TRUE(is_attempt_user_exit_called);
   } else {
     EXPECT_TRUE(is_attempt_user_exit_called);
