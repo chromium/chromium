@@ -54,7 +54,6 @@ crbug.com/1224802 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,c
 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:web_platform,copyToTexture,canvas:copy_contents_from_gl_context_canvas:* [ Timeout Crash ]
 
 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createTexture:sampleCount,various_sampleCount_with_all_formats:* [ Failure Crash ]
-crbug.com/dawn/759 [ Linux ] wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Failure ]
 crbug.com/1203413 [ Mac ] wpt_internal/webgpu/cts.html?worker=1&q=webgpu:api,validation,buffer,mapping:* [ Crash ]
 
 # Test completes and passes, but then somehow times out consistently.
@@ -168,6 +167,8 @@ wpt_internal/webgpu/cts.html?q=webgpu:idl,constants,flags:* [ Failure ]
 crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,createBindGroupLayout:max_resources_per_stage,in_pipeline_layout:* [ Failure ]
 # maxColorAttachments 4 -> 8
 crbug.com/dawn/796 wpt_internal/webgpu/cts.html?q=webgpu:api,validation,render_pass_descriptor:OOB_color_attachment_indices_are_handled:* [ Failure ]
+# maxInterStageShaderComponents 64 -> 60 (crbug.com/dawn/759 [ Linux ][ Failure ] on NVIDIA will be recovered after the tests are fixed)
+crbug.com/dawn/802 wpt_internal/webgpu/cts.html?q=webgpu:api,operation,rendering,draw:vertex_attributes,basic:* [ Skip ]
 
 ###
 ### Test bugs (fixed upstream)
