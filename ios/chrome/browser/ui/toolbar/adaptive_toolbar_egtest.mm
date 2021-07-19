@@ -17,6 +17,7 @@
 #include "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -508,7 +509,9 @@ UIViewController* TopPresentedViewController() {
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
       performAction:grey_tap()];
 
   // Check the buttons status.
