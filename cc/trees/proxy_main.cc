@@ -317,7 +317,8 @@ void ProxyMain::BeginMainFrame(
 
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
-      layer_tree_host_->GetId());
+      layer_tree_host_->GetId(),
+      begin_main_frame_state->begin_frame_args.frame_id.sequence_number);
 
   current_pipeline_stage_ = COMMIT_PIPELINE_STAGE;
   if (final_pipeline_stage_ < COMMIT_PIPELINE_STAGE) {

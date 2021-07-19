@@ -194,7 +194,7 @@ void SingleThreadProxy::DoCommit(const viz::BeginFrameArgs& commit_args) {
 
   layer_tree_host_->WillCommit();
   devtools_instrumentation::ScopedCommitTrace commit_task(
-      layer_tree_host_->GetId());
+      layer_tree_host_->GetId(), commit_args.frame_id.sequence_number);
 
   // Commit immediately.
   {

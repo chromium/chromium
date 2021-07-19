@@ -38,6 +38,7 @@ const char kFrameId[] = "frameId";
 const char kLayerId[] = "layerId";
 const char kLayerTreeId[] = "layerTreeId";
 const char kPixelRefId[] = "pixelRefId";
+const char kFrameSequenceNumber[] = "frameSeqId";
 
 const char kImageUploadTask[] = "ImageUploadTask";
 const char kImageDecodeTask[] = "ImageDecodeTask";
