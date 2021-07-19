@@ -4295,7 +4295,6 @@ crbug.com/789139 http/tests/devtools/sources/debugger/live-edit-no-reveal.js [ C
 
 # ====== Begin of display: contents tests ======
 
-crbug.com/795217 external/wpt/css/css-display/display-contents-details.html [ Failure ]
 crbug.com/181374 external/wpt/css/css-display/display-contents-dynamic-table-001-inline.html [ Failure ]
 
 # ====== End of display: contents tests ======
