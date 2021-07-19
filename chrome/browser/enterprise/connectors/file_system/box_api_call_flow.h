@@ -133,6 +133,30 @@ class BoxCreateUpstreamFolderApiCallFlow : public BoxApiCallFlow {
 };
 
 // Helper for performing preflight checks before uploading a file.
+class BoxGetCurrentUserApiCallFlow : public BoxApiCallFlow {
+ public:
+  explicit BoxGetCurrentUserApiCallFlow(
+      base::OnceCallback<void(Response, base::Value)> callback);
+  ~BoxGetCurrentUserApiCallFlow() override;
+
+  // BoxApiCallFlow interface.
+  GURL CreateApiCallUrl() override;
+  bool IsExpectedSuccessCode(int code) const override;
+  void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,
+                             std::unique_ptr<std::string> body) override;
+  void ProcessFailure(Response response) override;
+
+ private:
+  // Callback for JsonParser that extracts enterprise_id in
+  // ProcessApiCallSuccess().
+  void OnJsonParsed(ParseResult result);
+
+  // Callback from the controller to report success, http_code, folder_id.
+  base::OnceCallback<void(Response, base::Value)> callback_;
+  base::WeakPtrFactory<BoxGetCurrentUserApiCallFlow> weak_factory_{this};
+};
+
+// Helper for performing preflight checks before uploading a file.
 class BoxPreflightCheckApiCallFlow : public BoxApiCallFlow {
  public:
   BoxPreflightCheckApiCallFlow(TaskCallback callback,

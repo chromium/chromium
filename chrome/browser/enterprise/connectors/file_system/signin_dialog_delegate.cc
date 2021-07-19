@@ -16,10 +16,13 @@
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/browser/storage_partition_config.h"
+#include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "net/base/escape.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -144,6 +147,15 @@ void FileSystemSigninDialogDelegate::OnCancellation() {
   ReturnCancellation(std::move(callback_));
 }
 
+scoped_refptr<network::SharedURLLoaderFactory>
+FileSystemSigninDialogDelegate::GetURLLoaderFactory() {
+  content::StoragePartition* partition =
+      web_view_->GetBrowserContext()->GetStoragePartition(
+          content::StoragePartitionConfig::CreateDefault(
+              web_view_->GetBrowserContext()));
+  return partition->GetURLLoaderFactoryForBrowserProcess();
+}
+
 void FileSystemSigninDialogDelegate::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   const GURL& url = navigation_handle->GetURL();
@@ -159,17 +171,14 @@ void FileSystemSigninDialogDelegate::DidFinishNavigation(
     return;
   }
 
-  content::StoragePartition* partition =
-      web_view_->GetBrowserContext()->GetStoragePartitionForUrl(
-          GURL(kFileSystemBoxEndpointApi));
-  auto url_loader = partition->GetURLLoaderFactoryForBrowserProcess();
   auto callback =
       base::BindOnce(&FileSystemSigninDialogDelegate::OnGotOAuthTokens,
                      weak_factory_.GetWeakPtr());
 
   // No refresh_token, so need to get both tokens with authorization code.
   token_fetcher_ = std::make_unique<AccessTokenFetcher>(
-      url_loader, settings_.service_provider, settings_.token_endpoint,
+      GetURLLoaderFactory(), settings_.service_provider,
+      settings_.token_endpoint,
       /*refresh_token=*/std::string(), auth_code, kOAuthConsumerName,
       std::move(callback));
   token_fetcher_->Start(settings_.client_id, settings_.client_secret,
@@ -180,8 +189,59 @@ void FileSystemSigninDialogDelegate::OnGotOAuthTokens(
     const GoogleServiceAuthError& status,
     const std::string& access_token,
     const std::string& refresh_token) {
-  token_fetcher_ = nullptr;
-  std::move(callback_).Run(status, access_token, refresh_token);
+  token_fetcher_.reset();
+
+  // If we failed to auth then just notify upstream right here.
+  if (status.state() != GoogleServiceAuthError::NONE) {
+    DLOG(ERROR) << "Failed authentication: " << status.state();
+    OnAuthFlowDone(status);
+    return;
+  }
+
+  access_token_ = access_token;
+  refresh_token_ = refresh_token;
+
+  // Otherwise check enterprise ID.
+  current_api_call_ = std::make_unique<BoxGetCurrentUserApiCallFlow>(
+      base::BindOnce(&FileSystemSigninDialogDelegate::OnGetCurrentUserResponse,
+                     weak_factory_.GetWeakPtr()));
+  current_api_call_->Start(GetURLLoaderFactory(), access_token);
+}
+
+void FileSystemSigninDialogDelegate::OnGetCurrentUserResponse(
+    BoxApiCallResponse response,
+    base::Value user_info) {
+  current_api_call_.reset();
+  auto state = GoogleServiceAuthError::NONE;  // Assume success.
+  if (response.success) {
+    DCHECK_EQ(response.net_or_http_code, net::HTTP_OK);
+    const std::string* enterprise_id =
+        user_info.FindStringPath("enterprise.id");
+    DCHECK(enterprise_id);
+    if (settings_.enterprise_id.compare(*enterprise_id) != 0) {
+      // User is logged in to wrong account which doesn't match enterprise_id.
+      // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+      // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+      state = GoogleServiceAuthError::USER_NOT_SIGNED_UP;
+    }
+  } else {
+    // Request for Box user's enterprise_id failed.
+    // TODO(https://crbug.com/1186488): Surface this error via UI to the user.
+    // This is handled as case 1c (other errors) by FileSystemRenameHandler.
+    state = GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE;
+  }
+
+  OnAuthFlowDone(GoogleServiceAuthError(state));
+}
+
+void FileSystemSigninDialogDelegate::OnAuthFlowDone(
+    const GoogleServiceAuthError& status) {
+  // The tokens must be empty iff it's status is in an error state
+  DCHECK(access_token_.empty() ==
+         (status.state() != GoogleServiceAuthError::NONE));
+  DCHECK(refresh_token_.empty() ==
+         (status.state() != GoogleServiceAuthError::NONE));
+  std::move(callback_).Run(status, access_token_, refresh_token_);
   GetWidget()->Close();
 }
 

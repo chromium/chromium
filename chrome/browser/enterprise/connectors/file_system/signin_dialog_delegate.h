@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_FILE_SYSTEM_SIGNIN_DIALOG_DELEGATE_H_
 
 #include <vector>
-
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/file_system/access_token_fetcher.h"
+#include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_web_modal_dialog_manager_delegate.h"
 #include "components/download/public/common/download_item_impl.h"
@@ -68,6 +68,12 @@ class FileSystemSigninDialogDelegate
   void OnGotOAuthTokens(const GoogleServiceAuthError& status,
                         const std::string& access_token,
                         const std::string& refresh_token);
+  void OnGetCurrentUserResponse(BoxApiCallResponse response,
+                                base::Value user_info);
+
+  // Invoke the callback with the status of the auth flow and tokens if
+  // obtained.
+  void OnAuthFlowDone(const GoogleServiceAuthError& status);
 
   // Return extra URL parameters that are specific to a given service provider.
   // May return the empty string if there are none.
@@ -76,10 +82,16 @@ class FileSystemSigninDialogDelegate
   // Return display name for the service provider.
   std::u16string GetProviderName() const;
 
+  // Get a URLLoaderFactory for OAuth2Flows.
+  scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory();
+
   const FileSystemSettings settings_;
+  std::string access_token_;
+  std::string refresh_token_;
   std::unique_ptr<views::WebView> web_view_;
   std::unique_ptr<OAuth2AccessTokenFetcherImpl> token_fetcher_;
   AuthorizationCompletedCallback callback_;
+  std::unique_ptr<OAuth2ApiCallFlow> current_api_call_;
   base::WeakPtrFactory<FileSystemSigninDialogDelegate> weak_factory_{this};
 };
 

@@ -16,6 +16,8 @@ const char kFileSystemBoxPreflightCheckUrl[] =
     "https://api.box.com/2.0/files/content";
 const char kFileSystemBoxDirectUploadUrl[] =
     "https://upload.box.com/api/2.0/files/content";
+const char kFileSystemBoxGetUserUrl[] =
+    "https://api.box.com/2.0/users/me?fields=enterprise";
 
 const char kEmptyResponseBody[] = R"({})";
 

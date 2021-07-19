@@ -445,6 +445,61 @@ void BoxCreateUpstreamFolderApiCallFlow::OnSuccessJsonParsed(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// GetCurrentUser
+////////////////////////////////////////////////////////////////////////////////
+// BoxApiCallFlow interface.
+// API reference:
+// https://developer.box.com/reference/get-users-me/
+BoxGetCurrentUserApiCallFlow::BoxGetCurrentUserApiCallFlow(
+    base::OnceCallback<void(Response, base::Value)> callback)
+    : callback_(std::move(callback)) {}
+BoxGetCurrentUserApiCallFlow::~BoxGetCurrentUserApiCallFlow() = default;
+
+GURL BoxGetCurrentUserApiCallFlow::CreateApiCallUrl() {
+  return BoxApiCallFlow::CreateApiCallUrl().Resolve(
+      "2.0/users/me?fields=enterprise");
+}
+
+bool BoxGetCurrentUserApiCallFlow::IsExpectedSuccessCode(int code) const {
+  return code == net::HTTP_OK;
+}
+
+void BoxGetCurrentUserApiCallFlow::ProcessApiCallSuccess(
+    const network::mojom::URLResponseHead* head,
+    std::unique_ptr<std::string> body) {
+  auto response_code = head->headers->response_code();
+  DCHECK_EQ(response_code, net::HTTP_OK);
+  data_decoder::DataDecoder::ParseJsonIsolated(
+      *body, base::BindOnce(&BoxGetCurrentUserApiCallFlow::OnJsonParsed,
+                            weak_factory_.GetWeakPtr()));
+}
+
+void BoxGetCurrentUserApiCallFlow::OnJsonParsed(ParseResult result) {
+  if (!result.value.has_value()) {
+    LOG_PARSE_FAIL(ERROR, "GetCurrentUser", result);
+    std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
+    return;
+  }
+
+  // TODO(https://crbug.com/1230049): Extract into a struct instead of returning
+  //  a json blob to the callback.
+  if (!result.value->FindStringPath("enterprise.id")) {
+    LOG(ERROR) << "[BoxApiCallFlow] GetCurrentUser succeeded but "
+                  "response does not include enterprise_id: "
+               << *result.value;
+    std::move(callback_).Run(Response{false, net::HTTP_OK}, CreateEmptyDict());
+    return;
+  }
+  std::move(callback_).Run(Response{true, net::HTTP_OK},
+                           std::move(result.value.value()));
+}
+
+void BoxGetCurrentUserApiCallFlow::ProcessFailure(Response response) {
+  DCHECK(!response.success);
+  std::move(callback_).Run(response, CreateEmptyDict());
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // PreflightCheck
 ////////////////////////////////////////////////////////////////////////////////
 // BoxApiCallFlow interface.
