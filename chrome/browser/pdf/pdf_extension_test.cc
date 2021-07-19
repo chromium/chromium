@@ -3459,7 +3459,8 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionAccessibilityNavigationTest,
   EXPECT_EQ("https://bing.com/", expected_url.spec());
 }
 
-class PDFExtensionPrerenderTest : public PDFExtensionTest {
+class PDFExtensionPrerenderTest
+    : public PDFExtensionTestWithUnseasonedOverride {
  public:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     PDFExtensionTest::SetUpCommandLine(command_line);
@@ -3488,7 +3489,7 @@ class PDFExtensionPrerenderTest : public PDFExtensionTest {
 // TODO(1206312, 1205920): As of writing this test, we can attempt to prerender
 // the PDF viewer without crashing, however the viewer itself fails to load a
 // PDF. This test should be extended once that works.
-IN_PROC_BROWSER_TEST_F(PDFExtensionPrerenderTest,
+IN_PROC_BROWSER_TEST_P(PDFExtensionPrerenderTest,
                        LoadPdfWhilePrerenderedDoesNotCrash) {
   const GURL initial_url =
       embedded_test_server()->GetURL("a.test", "/empty.html");
@@ -3519,3 +3520,4 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionContentSettingJSTestWithUnseasonedOverride);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionLinkClickTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionInternalLinkClickTest);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionPrerenderTest);
