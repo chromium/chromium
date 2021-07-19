@@ -102,7 +102,7 @@
     "properties": {
       "WINDOW_ID_NONE": {
         "value": -1,
-        "description": "The windowId value that represents the absence of a chrome browser window."
+        "description": "The windowId value that represents the absence of a Chrome browser window."
       },
       "WINDOW_ID_CURRENT": {
         "value": -2,

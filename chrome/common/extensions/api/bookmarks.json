@@ -405,7 +405,7 @@
       {
         "name": "import",
         "type": "function",
-        "description": "Imports bookmarks from a chrome html bookmark file",
+        "description": "Imports bookmarks from a Chrome html bookmark file",
         "nodoc": "true",
         "parameters": [],
         "returns_async": {
@@ -417,7 +417,7 @@
       {
         "name": "export",
         "type": "function",
-        "description": "Exports bookmarks to a chrome html bookmark file",
+        "description": "Exports bookmarks to a Chrome html bookmark file",
         "nodoc": "true",
         "parameters": [],
         "returns_async": {

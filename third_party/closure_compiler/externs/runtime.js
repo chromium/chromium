@@ -1,4 +1,4 @@
-// Copyright 2020 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,10 +7,9 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.runtime.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 // IMPORTANT NOTE: Work-around for crbug.com/543822
-// s/chrome.runtime.events.Event/chrome.events.Event/
 // s/chrome.runtime.tabs.Tab/chrome.tabs.Tab/
 
 /** @fileoverview Externs generated from namespace: runtime */
@@ -40,20 +39,6 @@ chrome.runtime.Port.prototype.name;
  * @see https://developer.chrome.com/extensions/runtime#method-disconnect
  */
 chrome.runtime.Port.prototype.disconnect = function() {};
-
-/**
- * Fired when the port is disconnected from the other end(s). $(ref:runtime.lastError) may be set if the port was disconnected by an error. If the port is closed via $(ref:Port.disconnect disconnect), then this event is <em>only</em> fired on the other end. This event is fired at most once (see also <a href="messaging#port-lifetime">Port lifetime</a>). The first and only parameter to the event handler is this disconnected port.
- * @type {!chrome.events.Event}
- * @see https://developer.chrome.com/extensions/runtime#type-onDisconnect
- */
-chrome.runtime.Port.prototype.onDisconnect;
-
-/**
- * This event is fired when $(ref:Port.postMessage postMessage) is called by the other end of the port. The first parameter is the message, the second parameter is the port that received the message.
- * @type {!chrome.events.Event}
- * @see https://developer.chrome.com/extensions/runtime#type-onMessage
- */
-chrome.runtime.Port.prototype.onMessage;
 
 /**
  * Send a message to the other end of the port. If the port is disconnected, an
@@ -189,7 +174,7 @@ chrome.runtime.id;
  * inside the current extension/app. If the background page is an event page,
  * the system will ensure it is loaded before calling the callback. If there is
  * no background page, an error is set.
- * @param {function((Object|undefined)):void} callback
+ * @param {function((Window|undefined)): void} callback
  * @see https://developer.chrome.com/extensions/runtime#method-getBackgroundPage
  */
 chrome.runtime.getBackgroundPage = function(callback) {};
@@ -204,7 +189,7 @@ chrome.runtime.getBackgroundPage = function(callback) {};
  * page. It will never cause the caller page to reload.</p><p>If your Extension
  * does not declare an options page, or Chrome failed to create one for some
  * other reason, the callback will set $(ref:lastError).</p>
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/runtime#method-openOptionsPage
  */
 chrome.runtime.openOptionsPage = function(callback) {};
@@ -235,7 +220,7 @@ chrome.runtime.getURL = function(path) {};
  * @param {string} url URL to be opened after the extension is uninstalled. This
  *     URL must have an http: or https: scheme. Set an empty string to not open
  *     a new tab upon uninstallation.
- * @param {function():void=} callback Called when the uninstall URL is set. If
+ * @param {function(): void=} callback Called when the uninstall URL is set. If
  *     the given URL is invalid, $(ref:runtime.lastError) will be set.
  * @see https://developer.chrome.com/extensions/runtime#method-setUninstallURL
  */
@@ -251,7 +236,7 @@ chrome.runtime.reload = function() {};
 /**
  * <p>Requests an immediate update check be done for this app/extension.</p>
  * <p><b>Important</b>: Most extensions/apps should <b>not</b> use this method,
- * since chrome already does automatic checks every few hours, and you can
+ * since Chrome already does automatic checks every few hours, and you can
  * listen for the $(ref:runtime.onUpdateAvailable) event without needing to call
  * requestUpdateCheck.</p><p>This method is only appropriate to call in very
  * limited circumstances, such as if your extension/app talks to a backend
@@ -262,7 +247,7 @@ chrome.runtime.reload = function() {};
  * server resources.</p>
  * @param {function(!chrome.runtime.RequestUpdateCheckStatus, ({
  *   version: string
- * }|undefined)):void} callback
+ * }|undefined)): void} callback
  * @see https://developer.chrome.com/extensions/runtime#method-requestUpdateCheck
  */
 chrome.runtime.requestUpdateCheck = function(callback) {};
@@ -282,7 +267,7 @@ chrome.runtime.restart = function() {};
  * extension to invoke this API.
  * @param {number} seconds Time to wait in seconds before rebooting the device,
  *     or -1 to cancel a scheduled reboot.
- * @param {function():void=} callback A callback to be invoked when a restart
+ * @param {function(): void=} callback A callback to be invoked when a restart
  *     request was successfully rescheduled.
  * @see https://developer.chrome.com/extensions/runtime#method-restartAfterDelay
  */
@@ -340,7 +325,7 @@ chrome.runtime.connectNative = function(application) {};
  * @param {{
  *   includeTlsChannelId: (boolean|undefined)
  * }=} options
- * @param {function(*):void=} responseCallback
+ * @param {function(*): void=} responseCallback
  * @see https://developer.chrome.com/extensions/runtime#method-sendMessage
  */
 chrome.runtime.sendMessage = function(extensionId, message, options, responseCallback) {};
@@ -350,14 +335,14 @@ chrome.runtime.sendMessage = function(extensionId, message, options, responseCal
  * @param {string} application The name of the native messaging host.
  * @param {Object} message The message that will be passed to the native
  *     messaging host.
- * @param {function(*):void=} responseCallback
+ * @param {function(*): void=} responseCallback
  * @see https://developer.chrome.com/extensions/runtime#method-sendNativeMessage
  */
 chrome.runtime.sendNativeMessage = function(application, message, responseCallback) {};
 
 /**
  * Returns information about the current platform.
- * @param {function(!chrome.runtime.PlatformInfo):void} callback Called with
+ * @param {function(!chrome.runtime.PlatformInfo): void} callback Called with
  *     results
  * @see https://developer.chrome.com/extensions/runtime#method-getPlatformInfo
  */
@@ -365,7 +350,7 @@ chrome.runtime.getPlatformInfo = function(callback) {};
 
 /**
  * Returns a DirectoryEntry for the package directory.
- * @param {function(Object):void} callback
+ * @param {function(DirectoryEntry): void} callback
  * @see https://developer.chrome.com/extensions/runtime#method-getPackageDirectoryEntry
  */
 chrome.runtime.getPackageDirectoryEntry = function(callback) {};
@@ -414,7 +399,7 @@ chrome.runtime.onSuspendCanceled;
  * extension is using a persistent background page, the background page of
  * course never gets unloaded, so unless you call chrome.runtime.reload()
  * manually in response to this event the update will not get installed until
- * the next time chrome itself restarts. If no handlers are listening for this
+ * the next time Chrome itself restarts. If no handlers are listening for this
  * event, and your extension has a persistent background page, it behaves as if
  * chrome.runtime.reload() is called in response to this event.
  * @type {!ChromeEvent}

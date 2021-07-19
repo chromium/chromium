@@ -15,7 +15,7 @@ namespace resourcesPrivate {
     // chrome/browser/extensions/api/resources_private/resources_private_api.cc
     // for instructions on adding a new component to this API.
     //
-    // |component| : Internal chrome component to get strings for.
+    // |component| : Internal Chrome component to get strings for.
     // |callback| : Called with a dictionary mapping names to strings.
     static void getStrings(Component component,
                            GetStringsCallback callback);

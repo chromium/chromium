@@ -15,7 +15,7 @@ namespace printingMetrics {
     // The job was created from an Android App.
     ANDROID_APP,
 
-    // The job was created by extension via chrome API.
+    // The job was created by extension via Chrome API.
     EXTENSION
   };
 
