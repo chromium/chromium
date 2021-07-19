@@ -3757,7 +3757,7 @@
     <ph name="BEGIN_BOLD">&lt;b&gt;</ph>Keep in mind:<ph name="END_BOLD">&lt;/b&gt;</ph> A similar voice or recording might be able to access your personal results, too. You can remove Voice Match permission later by turning it off in Assistant Settings.
   </message>
   <message name="IDS_ASSISTANT_VOICE_MATCH_MESSAGE_CHILD" desc="Message for Assistant voice match screen, when a child account is in use.">
-    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell it apart from others.
+    Voice Match helps Google Assistant identify <ph name="SUPERVISED_USER_NAME">$2<ex>Child 1</ex></ph>’s voice on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> and tell them apart from others.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
     The Assistant takes clips of your child’s voice to form a unique voice model, which is only stored on their device(s). Your child’s voice model may be sent temporarily to Google to better identify their voice.
     <ph name="BR">&lt;br&gt;&lt;br&gt;</ph>
