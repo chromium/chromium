@@ -23,6 +23,15 @@ namespace internal {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
+namespace {
+
+[[noreturn]] NOINLINE NOT_TAIL_CALLED void DoubleFreeOrCorruptionDetected() {
+  NO_CODE_FOLDING();
+  IMMEDIATE_CRASH();
+}
+
+}  // namespace
+
 // Special-purpose atomic reference count class used by BackupRefPtrImpl.
 // The least significant bit of the count is reserved for tracking the liveness
 // state of an allocation: it's set when the allocation is created and cleared
@@ -84,7 +93,8 @@ class BASE_EXPORT PartitionRefCount {
 #endif
 
     int32_t old_count = count_.fetch_sub(1, std::memory_order_release);
-    PA_CHECK(old_count & 1);  // double-free detection
+    if (UNLIKELY(!(old_count & 1)))
+      DoubleFreeOrCorruptionDetected();
     if (old_count == 1) {
       std::atomic_thread_fence(std::memory_order_acquire);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
