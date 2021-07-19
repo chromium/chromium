@@ -1112,7 +1112,12 @@ class PDFExtensionContentSettingJSTest : public PDFExtensionJSTestBase {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, Beep) {
+class PDFExtensionContentSettingJSTestWithUnseasonedOverride
+    : public WithUnseasonedOverride,
+      public PDFExtensionContentSettingJSTest {};
+
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
+                       Beep) {
   RunTestsInJsModule("beep_test.js", "test-beep.pdf");
 }
 
@@ -1144,13 +1149,15 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, NoBeepThenBeep) {
   EXPECT_EQ(1, CountPDFProcesses());
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, BeepCsp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
+                       BeepCsp) {
   // The script-source * directive in the mock headers file should
   // allow the JavaScript to execute the beep().
   RunTestsInJsModule("beep_test.js", "test-beep-csp.pdf");
 }
 
-IN_PROC_BROWSER_TEST_F(PDFExtensionContentSettingJSTest, DISABLED_NoBeepCsp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionContentSettingJSTestWithUnseasonedOverride,
+                       DISABLED_NoBeepCsp) {
   // The script-source none directive in the mock headers file should
   // prevent the JavaScript from executing the beep().
   // TODO(https://crbug.com/1032511) functionality not implemented.
@@ -3506,3 +3513,5 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFPluginDisabledTest);
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
     PDFExtensionJSTestWithUnseasonedOverride);
+INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
+    PDFExtensionContentSettingJSTestWithUnseasonedOverride);
