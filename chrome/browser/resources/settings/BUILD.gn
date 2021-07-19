@@ -41,7 +41,7 @@ if (optimize_webui) {
       "//ui/webui/resources:preprocess",
     ]
 
-    if (!is_chromeos) {
+    if (!is_chromeos_ash) {
       deps += [ "//ui/webui/resources/cr_components/customize_themes:build_ts" ]
     }
 
