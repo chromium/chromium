@@ -48,11 +48,10 @@ const char kDeviceKindAudioOutput[] = "audiooutput";
 // It needs to be a browser test (and not content browser test) to be able to
 // test that labels are cleared or not depending on if access to devices has
 // been granted.
-class WebRtcGetMediaDevicesBrowserTest
-    : public WebRtcTestBase,
-      public testing::WithParamInterface<bool> {
+class WebRtcMediaDevicesBrowserTest : public WebRtcTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
-  WebRtcGetMediaDevicesBrowserTest()
+  WebRtcMediaDevicesBrowserTest()
       : has_audio_output_devices_initialized_(false),
         has_audio_output_devices_(false) {}
 
@@ -158,7 +157,7 @@ class WebRtcGetMediaDevicesBrowserTest
   base::test::ScopedFeatureList audio_service_features_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        EnumerateDevicesWithoutAccess) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -175,7 +174,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        EnumerateDevicesWithAccess) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -194,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        DeviceIdSameGroupIdDiffersAfterReload) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -224,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        DeviceIdSameGroupIdDiffersAcrossTabs) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -258,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        DeviceIdDiffersAfterClearingCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -287,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   CheckEnumerationsAreDifferent(devices, devices2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        DeviceIdDiffersAcrossTabsWithCookiesDisabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -314,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   CheckEnumerationsAreDifferent(devices, devices2);
 }
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesBrowserTest,
                        DeviceIdDiffersSameTabAfterReloadWithCookiesDisabled) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
@@ -338,14 +337,14 @@ IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesBrowserTest,
   CheckEnumerationsAreDifferent(devices, devices2);
 }
 
-class WebRtcGetMediaDevicesPrerenderingBrowserTest
-    : public WebRtcGetMediaDevicesBrowserTest {
+class WebRtcMediaDevicesPrerenderingBrowserTest
+    : public WebRtcMediaDevicesBrowserTest {
  public:
-  WebRtcGetMediaDevicesPrerenderingBrowserTest()
+  WebRtcMediaDevicesPrerenderingBrowserTest()
       : prerender_helper_(base::BindRepeating(
-            &WebRtcGetMediaDevicesPrerenderingBrowserTest::web_contents,
+            &WebRtcMediaDevicesPrerenderingBrowserTest::web_contents,
             base::Unretained(this))) {}
-  ~WebRtcGetMediaDevicesPrerenderingBrowserTest() override = default;
+  ~WebRtcMediaDevicesPrerenderingBrowserTest() override = default;
 
   content::test::PrerenderTestHelper* prerender_helper() {
     return &prerender_helper_;
@@ -359,7 +358,7 @@ class WebRtcGetMediaDevicesPrerenderingBrowserTest
   content::test::PrerenderTestHelper prerender_helper_;
 };
 
-IN_PROC_BROWSER_TEST_F(WebRtcGetMediaDevicesPrerenderingBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesPrerenderingBrowserTest,
                        EnumerateDevicesInPrerendering) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
