@@ -507,7 +507,7 @@ void AutofillMetricsTest::SetFidoEligibility(bool is_verifiable) {
       autofill_client_.GetPaymentsClient())
       ->AllowFidoRegistration(true);
   access_manager->is_authentication_in_progress_ = false;
-  access_manager->can_fetch_unmask_details_.Signal();
+  access_manager->can_fetch_unmask_details_ = true;
   access_manager->is_user_verifiable_ = absl::nullopt;
 }
 

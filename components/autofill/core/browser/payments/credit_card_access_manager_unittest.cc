@@ -217,7 +217,7 @@ class CreditCardAccessManagerTest : public testing::Test {
   void ResetFetchCreditCard() {
     // Resets all variables related to credit card fetching.
     credit_card_access_manager_->is_authentication_in_progress_ = false;
-    credit_card_access_manager_->can_fetch_unmask_details_.Signal();
+    credit_card_access_manager_->can_fetch_unmask_details_ = true;
     credit_card_access_manager_->is_user_verifiable_ = absl::nullopt;
   }
 
@@ -398,7 +398,7 @@ class CreditCardAccessManagerTest : public testing::Test {
 
   void InvokeUnmaskDetailsTimeout() {
     credit_card_access_manager_->ready_to_start_authentication_.Signal();
-    credit_card_access_manager_->can_fetch_unmask_details_.Signal();
+    credit_card_access_manager_->can_fetch_unmask_details_ = true;
   }
 
   void WaitForCallbacks() { task_environment_.RunUntilIdle(); }
@@ -1938,9 +1938,9 @@ TEST_F(CreditCardAccessManagerTest, PreflightCallRateLimited) {
   credit_card_access_manager_->PrepareToFetchCreditCard();
   histogram_tester.ExpectTotalCount(preflight_call_metric, 1);
 
-  // The above call should automatically reset the flag.
-  EXPECT_FALSE(
-      credit_card_access_manager_->can_fetch_unmask_details_.IsSignaled());
+  // Calling PrepareToFetchCreditCard() without a prior preflight call should
+  // have set |can_fetch_unmask_details_| to false to prevent further ones.
+  EXPECT_FALSE(credit_card_access_manager_->can_fetch_unmask_details_);
 
   // Any subsequent calls should not make a RPC.
   credit_card_access_manager_->PrepareToFetchCreditCard();

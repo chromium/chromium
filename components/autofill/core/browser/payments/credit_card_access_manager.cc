@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -57,10 +56,7 @@ CreditCardAccessManager::CreditCardAccessManager(
       client_(client),
       payments_client_(client_->GetPaymentsClient()),
       personal_data_manager_(personal_data_manager),
-      form_event_logger_(form_event_logger),
-      can_fetch_unmask_details_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
-                                base::WaitableEvent::InitialState::SIGNALED) {
-}
+      form_event_logger_(form_event_logger) {}
 
 CreditCardAccessManager::~CreditCardAccessManager() {}
 
@@ -171,9 +167,13 @@ void CreditCardAccessManager::PrepareToFetchCreditCard() {
   if (!ServerCardsAvailable())
     return;
 
-  // Do not make an unnecessary preflight call unless signaled.
-  if (!can_fetch_unmask_details_.IsSignaled())
+  // Do not make a preflight call if unnecessary, such as if one is already in
+  // progress or a recently-returned call should be currently used.
+  if (!can_fetch_unmask_details_)
     return;
+  // As we may now be making a GetUnmaskDetails call, disallow further calls
+  // until the current preflight call has been used or has timed out.
+  can_fetch_unmask_details_ = false;
 
   // Reset in case a late response was ignored.
   ready_to_start_authentication_.Reset();
@@ -374,7 +374,7 @@ void CreditCardAccessManager::OnSettingsPageFIDOAuthToggled(bool opt_in) {
 }
 
 void CreditCardAccessManager::SignalCanFetchUnmaskDetails() {
-  can_fetch_unmask_details_.Signal();
+  can_fetch_unmask_details_ = true;
 }
 
 void CreditCardAccessManager::CacheUnmaskedCardInfo(const CreditCard& card,
@@ -497,7 +497,7 @@ CreditCardAccessManager::GetOrCreateFIDOAuthenticator() {
 void CreditCardAccessManager::OnCVCAuthenticationComplete(
     const CreditCardCVCAuthenticator::CVCAuthenticationResponse& response) {
   is_authentication_in_progress_ = false;
-  can_fetch_unmask_details_.Signal();
+  can_fetch_unmask_details_ = true;
 
   // Log completed CVC authentication if auth was successful. Do not log for
   // kCvcThenFido flow since that is yet to be completed.
@@ -635,7 +635,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
                                        ? CreditCardFetchResult::kSuccess
                                        : CreditCardFetchResult::kTransientError,
                                    response.card, response.cvc);
-    can_fetch_unmask_details_.Signal();
+    can_fetch_unmask_details_ = true;
 
     form_event_logger_->LogCardUnmaskAuthenticationPromptCompleted(
         unmask_auth_flow_type_);
@@ -655,7 +655,7 @@ void CreditCardAccessManager::OnFIDOAuthenticationComplete(
     // invoke the error dialog.
     is_authentication_in_progress_ = false;
     unmask_auth_flow_type_ = UnmaskAuthFlowType::kNone;
-    can_fetch_unmask_details_.Signal();
+    can_fetch_unmask_details_ = true;
     client_->ShowVirtualCardErrorDialog(
         response.failure_type ==
         payments::FullCardRequest::VIRTUAL_CARD_RETRIEVAL_PERMANENT_FAILURE);

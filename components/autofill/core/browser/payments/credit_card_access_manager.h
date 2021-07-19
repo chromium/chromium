@@ -12,7 +12,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/synchronization/waitable_event.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -331,11 +330,12 @@ class CreditCardAccessManager : public CreditCardCVCAuthenticator::Requester,
   // Authenticate() is called when signaled.
   WaitForSignalOrTimeout ready_to_start_authentication_;
 
-  // Required to avoid any unnecessary preflight calls to Payments servers.
-  // Initial state is signaled. Resets when PrepareToFetchCreditCard() is
-  // called. Signaled after an authentication is complete or after a timeout.
-  // GetUnmaskDetailsIfUserIsVerifiable() is not called unless this is signaled.
-  base::WaitableEvent can_fetch_unmask_details_;
+  // Required to avoid any unnecessary calls to Payments servers by signifying
+  // when preflight unmask details calls should be made. Initial state is true,
+  // and is set to false when PrepareToFetchCreditCard() is called. Reset to
+  // true after an authentication is complete or after a timeout.
+  // GetUnmaskDetailsIfUserIsVerifiable() is not called unless this is true.
+  bool can_fetch_unmask_details_ = true;
 
   // The credit card being accessed.
   std::unique_ptr<CreditCard> card_;
