@@ -113,7 +113,7 @@ class URLSchemesRegistry final {
   friend URLSchemesRegistry& GetMutableURLSchemesRegistryForTest();
 
   static URLSchemesRegistry& GetInstance() {
-    DEFINE_STATIC_LOCAL(URLSchemesRegistry, schemes, ());
+    DEFINE_THREAD_SAFE_STATIC_LOCAL(URLSchemesRegistry, schemes, ());
     return schemes;
   }
 };
