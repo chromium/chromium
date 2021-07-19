@@ -8,10 +8,12 @@
 #include "build/build_config.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/media/fullscreen_video_element.mojom-blink.h"
+#include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 
 namespace blink {
 
@@ -42,6 +44,8 @@ class LocalFrameMojoHandler
   mojom::blink::LocalFrameHost& LocalFrameHostRemote() const {
     return *local_frame_host_remote_.get();
   }
+
+  mojom::blink::ReportingServiceProxy* ReportingService();
 
  private:
   Page* GetPage() const;
@@ -206,6 +210,9 @@ class LocalFrameMojoHandler
   void RequestFullscreenVideoElement() final;
 
   Member<blink::LocalFrame> frame_;
+
+  HeapMojoRemote<mojom::blink::ReportingServiceProxy> reporting_service_{
+      nullptr};
 
   HeapMojoAssociatedRemote<mojom::blink::LocalFrameHost>
       local_frame_host_remote_{nullptr};

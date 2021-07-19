@@ -6,6 +6,7 @@
 
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/data_decoder/public/mojom/resource_snapshot_for_web_bundle.mojom-blink.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-blink.h"
@@ -335,6 +336,7 @@ LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
 
 void LocalFrameMojoHandler::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
+  visitor->Trace(reporting_service_);
   visitor->Trace(local_frame_host_remote_);
   visitor->Trace(local_frame_receiver_);
   visitor->Trace(main_frame_receiver_);
@@ -359,6 +361,15 @@ void LocalFrameMojoHandler::DidDetachFrame() {
 
 void LocalFrameMojoHandler::ClosePageForTesting() {
   ClosePage(base::DoNothing());
+}
+
+mojom::blink::ReportingServiceProxy* LocalFrameMojoHandler::ReportingService() {
+  if (!reporting_service_.is_bound()) {
+    frame_->GetBrowserInterfaceBroker().GetInterface(
+        reporting_service_.BindNewPipeAndPassReceiver(
+            frame_->GetTaskRunner(TaskType::kInternalDefault)));
+  }
+  return reporting_service_.get();
 }
 
 Page* LocalFrameMojoHandler::GetPage() const {

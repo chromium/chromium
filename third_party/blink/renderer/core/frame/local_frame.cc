@@ -423,7 +423,6 @@ void LocalFrame::Trace(Visitor* visitor) const {
   visitor->Trace(raw_system_clipboard_);
   visitor->Trace(virtual_keyboard_overlay_changed_observers_);
   visitor->Trace(pause_handle_receivers_);
-  visitor->Trace(reporting_service_);
 #if defined(OS_MAC)
   visitor->Trace(text_input_host_);
 #endif
@@ -2311,12 +2310,7 @@ const base::UnguessableToken& LocalFrame::GetAgentClusterId() const {
 }
 
 mojom::blink::ReportingServiceProxy* LocalFrame::GetReportingService() {
-  if (!reporting_service_.is_bound()) {
-    GetBrowserInterfaceBroker().GetInterface(
-        reporting_service_.BindNewPipeAndPassReceiver(
-            GetTaskRunner(blink::TaskType::kInternalDefault)));
-  }
-  return reporting_service_.get();
+  return mojo_handler_->ReportingService();
 }
 
 // static

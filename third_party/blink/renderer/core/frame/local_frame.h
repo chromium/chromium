@@ -55,7 +55,7 @@
 #include "third_party/blink/public/mojom/link_to_text/link_to_text.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/loader/pause_subresource_loading_handle.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/optimization_guide/optimization_guide.mojom-blink.h"
-#include "third_party/blink/public/mojom/reporting/reporting.mojom-blink.h"
+#include "third_party/blink/public/mojom/reporting/reporting.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
@@ -871,12 +871,6 @@ class CORE_EXPORT LocalFrame final : public Frame,
   Member<ContentCaptureManager> content_capture_manager_;
 
   InterfaceRegistry* const interface_registry_;
-  // This is declared mutable so that the service endpoint can be cached by
-  // const methods.
-  //
-  // LocalFrame can be reused by multiple ExecutionContext.
-  mutable HeapMojoRemote<mojom::blink::ReportingServiceProxy>
-      reporting_service_{nullptr};
 
 #if defined(OS_MAC)
   // LocalFrame can be reused by multiple ExecutionContext.
