@@ -397,10 +397,6 @@ Widget* BubbleDialogDelegate::CreateBubble(
   bubble_delegate->SizeToContents();
   bubble_delegate->bubble_widget_observer_ =
       std::make_unique<BubbleWidgetObserver>(bubble_delegate, bubble_widget);
-  bubble_delegate->paint_as_active_subscription_ =
-      bubble_widget->RegisterPaintAsActiveChangedCallback(base::BindRepeating(
-          &BubbleDialogDelegate::OnBubbleWidgetPaintAsActiveChanged,
-          base::Unretained(bubble_delegate)));
   return bubble_widget;
 }
 
@@ -527,27 +523,6 @@ void BubbleDialogDelegate::OnAnchorWidgetBoundsChanged() {
     SizeToContents();
 }
 
-void BubbleDialogDelegate::OnBubbleWidgetPaintAsActiveChanged() {
-  // It's possible for GetWidget() to return null here when the Widget's
-  // ownership model is WIDGET_OWNS_NATIVE_WIDGET.  In that case, the View
-  // hierarchy is torn down, which detaches rather than destroys |this| due to
-  // set_owned_by_client().  Then the native widget is destroyed, which calls
-  // back here.  Since GetWidget() is implemented in terms of View::GetWidget(),
-  // which no longer has a RootView, it returns null.  While there are other
-  // ways to address this, they all seem more fragile than null-checking.
-  if (!GetWidget() || !GetWidget()->ShouldPaintAsActive()) {
-    paint_as_active_lock_.reset();
-    return;
-  }
-
-  if (!anchor_widget() || !anchor_widget()->GetTopLevelWidget())
-    return;
-
-  // When this bubble renders as active, its anchor widget should also render as
-  // active.
-  paint_as_active_lock_ =
-      anchor_widget()->GetTopLevelWidget()->LockPaintAsActive();
-}
 
 BubbleBorder::Shadow BubbleDialogDelegate::GetShadow() const {
   if (CustomShadowsSupported() || shadow_ == BubbleBorder::NO_SHADOW)
@@ -765,7 +740,6 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
     if (anchor_widget()) {
       if (GetWidget() && GetWidget()->IsVisible())
         UpdateHighlightedButton(false);
-      paint_as_active_lock_.reset();
       anchor_widget_ = nullptr;
     }
     if (anchor_view) {
@@ -773,13 +747,6 @@ void BubbleDialogDelegate::SetAnchorView(View* anchor_view) {
       if (anchor_widget_) {
         const bool visible = GetWidget() && GetWidget()->IsVisible();
         UpdateHighlightedButton(visible);
-        // Have the anchor widget's paint-as-active state track this view's
-        // widget - lock is only required if the bubble widget is active.
-        if (anchor_widget_->GetTopLevelWidget() && GetWidget() &&
-            GetWidget()->ShouldPaintAsActive()) {
-          paint_as_active_lock_ =
-              anchor_widget_->GetTopLevelWidget()->LockPaintAsActive();
-        }
       }
     }
   }
