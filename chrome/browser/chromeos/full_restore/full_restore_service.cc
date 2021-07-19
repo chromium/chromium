@@ -9,6 +9,7 @@
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_data_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_prefs.h"
@@ -25,6 +26,9 @@
 #include "components/full_restore/full_restore_info.h"
 #include "components/full_restore/full_restore_save_handler.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/notification_details.h"
+#include "content/public/browser/notification_service.h"
+#include "content/public/browser/notification_source.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -61,7 +65,10 @@ FullRestoreService::FullRestoreService(Profile* profile)
           profile_,
           /*should_init_service=*/true)),
       restore_data_handler_(
-          std::make_unique<FullRestoreDataHandler>(profile_)) {}
+          std::make_unique<FullRestoreDataHandler>(profile_)) {
+  notification_registrar_.Add(this, chrome::NOTIFICATION_APP_TERMINATING,
+                              content::NotificationService::AllSources());
+}
 
 FullRestoreService::~FullRestoreService() = default;
 
@@ -171,6 +178,13 @@ void FullRestoreService::Click(const absl::optional<int>& button_index,
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
   }
+}
+
+void FullRestoreService::Observe(int type,
+                                 const content::NotificationSource& source,
+                                 const content::NotificationDetails& details) {
+  DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
 }
 
 void FullRestoreService::Shutdown() {

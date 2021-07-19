@@ -75,5 +75,10 @@ void FullRestoreArcTaskHandler::OnShelfReady() {
     arc_app_launch_handler_->OnShelfReady();
 }
 
+void FullRestoreArcTaskHandler::Shutdown() {
+  arc_app_launch_handler_.reset();
+  window_handler_.reset();
+}
+
 }  // namespace full_restore
 }  // namespace chromeos

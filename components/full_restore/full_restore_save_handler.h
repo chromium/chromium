@@ -65,6 +65,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   void SetAppRegistryCache(const base::FilePath& profile_path,
                            apps::AppRegistryCache* app_registry_cache);
 
+  void SetShutDown();
+
   // aura::EnvObserver:
   void OnWindowInitialized(aura::Window* window) override;
 
@@ -232,6 +234,8 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreSaveHandler
   std::set<base::FilePath> save_running_;
 
   std::unique_ptr<ArcSaveHandler> arc_save_handler_;
+
+  bool is_shut_down_ = false;
 
   // The number of window created. This is used for metrics only.
   int window_count_ = 0;
