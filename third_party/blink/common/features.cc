@@ -186,10 +186,15 @@ const base::FeatureParam<FencedFramesImplementationType>
 // because kSetOnlyIfOverridden is used for setting WebRuntimeFeatures'
 // Prerender2. To enable this feature, we need to force-enable this feature
 // using chrome://flags/#enable-prerender2 or --enable-features=Prerender2
-// command line or a valid Origin Trial token in the page after default-enabling
-// this feature.
-const base::Feature kPrerender2{"Prerender2",
-                                base::FEATURE_DISABLED_BY_DEFAULT};
+// command line or a valid Origin Trial token in the page.
+const base::Feature kPrerender2 {
+  "Prerender2",
+#if defined(OS_ANDROID)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 bool IsPrerender2Enabled() {
   return base::FeatureList::IsEnabled(blink::features::kPrerender2);
