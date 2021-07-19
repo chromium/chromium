@@ -964,7 +964,7 @@ _CONFIG = [
         'allowed': [
             'base::MRUCache',
             'gl::GpuPreference',
-            'gpu::SHARED_IMAGE_USAGE_WEBGPU',
+            'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::gles2::GLES2Interface',
             'gpu::raster::RasterInterface',
             'gpu::Mailbox',

@@ -509,6 +509,10 @@ class PixelTestPages(object):
             base_name + '_CanvasDisplaySRGBUnaccelerated2DGPUCompositing',
             test_rect=[0, 0, 140, 140],
             browser_args=browser_args + [cba.DISABLE_ACCELERATED_2D_CANVAS]),
+        PixelTestPage('pixel_webgl_webcodecs_breakoutbox_displays_frame.html',
+                      base_name + '_WebGLWebCodecsBreakoutBoxDisplaysFrame',
+                      test_rect=[0, 0, 300, 300],
+                      browser_args=browser_args)
     ]
 
   @staticmethod
