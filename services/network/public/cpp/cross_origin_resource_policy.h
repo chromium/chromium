@@ -6,11 +6,9 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_RESOURCE_POLICY_H_
 
 #include "base/component_export.h"
-#include "base/gtest_prod_util.h"
-#include "services/network/public/mojom/blocked_by_response_reason.mojom.h"
+#include "services/network/public/mojom/blocked_by_response_reason.mojom-forward.h"
 #include "services/network/public/mojom/cross_origin_embedder_policy.mojom-forward.h"
-#include "services/network/public/mojom/fetch_api.mojom-shared.h"
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom-forward.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
