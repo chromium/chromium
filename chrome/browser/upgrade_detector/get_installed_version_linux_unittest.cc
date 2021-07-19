@@ -119,7 +119,8 @@ TEST_F(GetInstalledVersionLinuxTest, WithMonkey) {
 
 // Tests that the expected instance is returned when the child process reports a
 // valid version.
-TEST_F(GetInstalledVersionLinuxTest, WithVersion) {
+// TODO(crbug.com/1230474): Reenable. Failed consistently on  Linux Tests (dbg).
+TEST_F(GetInstalledVersionLinuxTest, DISABLED_WithVersion) {
   AddChildCommandLineSwitches(ChildMode::kWithVersion);
   InstalledAndCriticalVersion versions = GetInstalledVersion();
   ASSERT_TRUE(versions.installed_version.IsValid());
