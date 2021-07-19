@@ -30,6 +30,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/trace_log.h"
 #include "base/tracing/trace_time.h"
+#include "build/build_config.h"
 #include "components/tracing/common/tracing_switches.h"
 #include "services/tracing/perfetto/test_utils.h"
 #include "services/tracing/public/cpp/perfetto/macros.h"
@@ -49,6 +50,10 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/process_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pb.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 using TrackEvent = perfetto::protos::TrackEvent;
 
@@ -78,6 +83,8 @@ class TraceEventDataSourceTest : public TracingUnitTest {
     old_process_name_ =
         base::trace_event::TraceLog::GetInstance()->process_name();
     base::trace_event::TraceLog::GetInstance()->set_process_name(kTestProcess);
+    base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(
+        false);
 
     PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner();
     auto perfetto_wrapper = std::make_unique<base::tracing::PerfettoTaskRunner>(
@@ -720,6 +727,57 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   EXPECT_EQ(1, metadata1.size());
   MetadataHasNamedValue(metadata1, "before_int", 42);
 }
+
+#if defined(OS_ANDROID)
+TEST_F(TraceEventDataSourceTest,
+       PackageNameNotRecordedPrivacyFilteringDisabledTraceLogNotSet) {
+  StartTraceEventDataSource(/* privacy_filtering_enabled = false */);
+
+  auto* e_packet = producer_client()->GetFinalizedPacket(0);
+  ExpectProcessTrack(e_packet /* privacy_filtering_enabled = false */);
+  ASSERT_FALSE(e_packet->track_descriptor()
+                   .chrome_process()
+                   .has_host_app_package_name());
+}
+
+TEST_F(TraceEventDataSourceTest,
+       PackageNameNotRecordedPrivacyFilteringEnabledTraceLogNotSet) {
+  StartTraceEventDataSource(true /* privacy_filtering_enabled */);
+
+  auto* e_packet = producer_client()->GetFinalizedPacket(0);
+  ExpectProcessTrack(e_packet, true /* privacy_filtering_enabled */);
+  ASSERT_FALSE(e_packet->track_descriptor()
+                   .chrome_process()
+                   .has_host_app_package_name());
+}
+
+TEST_F(TraceEventDataSourceTest,
+       PackageNameNotRecordedPrivacyFilteringEnabledTraceLogSet) {
+  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(true);
+  StartTraceEventDataSource(true /* privacy_filtering_enabled */);
+
+  auto* e_packet = producer_client()->GetFinalizedPacket(0);
+  ExpectProcessTrack(e_packet, true /* privacy_filtering_enabled */);
+  ASSERT_FALSE(e_packet->track_descriptor()
+                   .chrome_process()
+                   .has_host_app_package_name());
+}
+
+TEST_F(TraceEventDataSourceTest,
+       PackageNameRecordedPrivacyFilteringDisabledTraceLogSet) {
+  base::trace_event::TraceLog::GetInstance()->SetRecordHostAppPackageName(true);
+  StartTraceEventDataSource(/* privacy_filtering_enabled = false */);
+
+  auto* e_packet = producer_client()->GetFinalizedPacket(0);
+  ExpectProcessTrack(e_packet /* privacy_filtering_enabled = false */);
+  ASSERT_TRUE(e_packet->track_descriptor()
+                  .chrome_process()
+                  .has_host_app_package_name());
+  EXPECT_EQ(
+      base::android::BuildInfo::GetInstance()->host_package_name(),
+      e_packet->track_descriptor().chrome_process().host_app_package_name());
+}
+#endif
 
 TEST_F(TraceEventDataSourceTest, BasicTraceEvent) {
   StartTraceEventDataSource();

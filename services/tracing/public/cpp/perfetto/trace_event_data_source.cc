@@ -1342,13 +1342,13 @@ void TraceEventDataSource::EmitTrackDescriptor() {
   }
 
 #if defined(OS_ANDROID)
-  // Host app package name is only recorded if privacy filtering is disabled or
-  // this is a system trace.
-  if (!privacy_filtering_enabled || is_system_producer) {
+  // Host app package name is only recorded if the corresponding TraceLog
+  // setting is set to true and privacy filtering is disabled or this is a
+  // system trace.
+  if (TraceLog::GetInstance()->ShouldRecordHostAppPackageName() &&
+      (!privacy_filtering_enabled || is_system_producer)) {
     // Host app package name is used to group information from different
     // processes that "belong" to the same WebView app.
-    // TODO(b/161983088): only write this for WebView since this information is
-    // not useful in other cases.
     if (process_type == ChromeProcessDescriptor::PROCESS_RENDERER ||
         process_type == ChromeProcessDescriptor::PROCESS_BROWSER) {
       chrome_process->set_host_app_package_name(
