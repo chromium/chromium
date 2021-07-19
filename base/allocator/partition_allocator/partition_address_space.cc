@@ -80,7 +80,6 @@ void PartitionAddressSpace::Init() {
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated in the beginning of "
          "the BRPPool";
-  SetSystemPagesAccess(actual_address, kSuperPageSize, PageInaccessible);
 #endif  // defined(PA_ALLOW_PCSCAN)
 
   PA_DCHECK(reserved_base_address_ + properties.size == current);
