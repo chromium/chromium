@@ -62,7 +62,6 @@ source_set("app_sources") {
     ":version_header",
     "//base",
     "//chrome/updater:base",
-    "//chrome/updater:updater_version_cc",
     "//chrome/updater:version_header",
     "//components/update_client:update_client",
   ]

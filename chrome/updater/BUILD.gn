@@ -302,22 +302,10 @@ if (is_win || is_mac) {
     }
   }
 
-  source_set("version_header") {
-    sources = [ "updater_version.h" ]
-  }
-
-  process_version("updater_version_cc") {
+  process_version("version_header") {
     sources = [ "//chrome/VERSION" ]
-    deps = [ ":version_header" ]
-    template_file = "updater_version.cc.in"
-    output = "$target_gen_dir/updater_version.cc"
-  }
-
-  process_version("updater_version_cc_offset") {
-    sources = [ "//chrome/VERSION" ]
-    deps = [ ":version_header" ]
-    template_file = "updater_version_offset.cc.in"
-    output = "$target_gen_dir/updater_version_offset.cc"
+    template_file = "updater_version.h.in"
+    output = "$target_gen_dir/updater_version.h"
   }
 
   process_version("branding_header") {
@@ -391,10 +379,7 @@ if (is_win || is_mac) {
         "//chrome/updater/mac/xpc_service_names.mm",
       ]
 
-      deps += [
-        ":updater_version_cc",
-        ":version_header",
-      ]
+      deps += [ ":version_header" ]
     }
 
     visibility = [
@@ -442,7 +427,6 @@ if (is_win || is_mac) {
       ":branding_header",
       ":updater",
       ":updater_tests_support",
-      ":updater_version_cc",
       ":version_header",
       "//base",
       "//base/test:test_support",
