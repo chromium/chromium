@@ -145,6 +145,7 @@ class HTMLDocumentParserState
         end_if_delayed_forbidden_(0),
         should_complete_(0),
         should_attempt_to_end_on_eof_(0),
+        times_yielded_(0),
         needs_link_header_dispatch_(true),
         have_seen_first_byte_(false) {}
 
@@ -198,6 +199,9 @@ class HTMLDocumentParserState
   }
   ParserSynchronizationPolicy GetMode() const { return mode_; }
 
+  void MarkYield() { times_yielded_++; }
+  int TimesYielded() const { return times_yielded_; }
+
   void SetSeenCSPMetaTag(const bool seen) {
     if (meta_csp_state_ == MetaCSPTokenState::kUnenforceable)
       return;
@@ -240,6 +244,7 @@ class HTMLDocumentParserState
   // Set to non-zero if Document::Finish has been called and we're operating
   // asynchronously.
   int should_attempt_to_end_on_eof_;
+  int times_yielded_;
   bool needs_link_header_dispatch_;
   bool have_seen_first_byte_;
 };
@@ -385,15 +390,6 @@ HTMLDocumentParser::HTMLDocumentParser(
       context_element, report_errors, options_));
 }
 
-namespace {
-int GetMaxTokenizationBudget() {
-  static int max = base::GetFieldTrialParamByFeatureAsInt(
-      features::kForceSynchronousHTMLParsing, "MaxTokenizationBudget",
-      kDefaultMaxTokenizationBudget);
-  return max;
-}
-}  // namespace
-
 HTMLDocumentParser::HTMLDocumentParser(Document& document,
                                        ParserContentPolicy content_policy,
                                        ParserSynchronizationPolicy sync_policy,
@@ -450,8 +446,6 @@ HTMLDocumentParser::HTMLDocumentParser(Document& document,
     metrics_reporter_ = std::make_unique<HTMLParserMetrics>(
         document.UkmSourceID(), document.UkmRecorder());
   }
-
-  max_tokenization_budget_ = GetMaxTokenizationBudget();
 
   // Don't create preloader for parsing clipboard content.
   if (content_policy == kDisallowScriptingAndPluginContent)
@@ -1044,7 +1038,13 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
   bool should_yield = false;
   bool should_pause_async_script_execution = false;
-  int budget = max_tokenization_budget_;
+  // If we've yielded more than 2 times, then set the budget to a very large
+  // number, to attempt to consume all available tokens in one go. This
+  // heuristic is intended to allow a quick first contentful paint, followed by
+  // a larger rendering lifecycle that processes the remainder of the page.
+  int budget = (task_runner_state_->TimesYielded() <= 2)
+                   ? kDefaultMaxTokenizationBudget
+                   : 1e7;
 
   base::ElapsedTimer chunk_parsing_timer_;
   unsigned tokens_parsed = 0;
@@ -1138,6 +1138,8 @@ bool HTMLDocumentParser::PumpTokenizer() {
 
   // should_run_until_completion implies that we should not yield
   CHECK(!should_run_until_completion || !should_yield);
+  if (should_yield)
+    task_runner_state_->MarkYield();
   return should_yield;
 }
 
