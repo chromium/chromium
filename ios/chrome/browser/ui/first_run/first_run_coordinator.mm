@@ -36,6 +36,8 @@
 @property(nonatomic, readonly, weak) id<SyncPresenter> presenter;
 // The main browser that can be used for authentication.
 @property(nonatomic, readonly) Browser* mainBrowser;
+// YES if First Run was completed.
+@property(nonatomic, assign) BOOL completed;
 
 @end
 
@@ -73,14 +75,22 @@
 
 - (void)stop {
   void (^completion)(void) = ^{
-    base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
-    WriteFirstRunSentinel();
-
-    // If the remaining screens have been skipped, additional actions will be
-    // executed.
-    [self.delegate didFinishPresentingScreensWithSubsequentActionsTriggered:
-                       self.screensSkipped];
   };
+  if (self.completed) {
+    completion = ^{
+      base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
+      WriteFirstRunSentinel();
+
+      // If the remaining screens have been skipped, additional actions will be
+      // executed.
+      [self.delegate didFinishPresentingScreensWithSubsequentActionsTriggered:
+                         self.screensSkipped];
+    };
+  }
+
+  [self.childCoordinator stop];
+  self.childCoordinator = nil;
+
   [self.baseViewController dismissViewControllerAnimated:YES
                                               completion:completion];
 }
@@ -97,7 +107,7 @@
   [self.childCoordinator stop];
   self.childCoordinator = nil;
   self.screensSkipped = YES;
-  [self.delegate willFinishPresentingScreens];
+  [self willFinishPresentingScreens];
 }
 
 - (void)skipAllAndShowSyncSettings {
@@ -121,7 +131,7 @@
   // If no more screen need to be present, call delegate to stop presenting
   // screens.
   if (type == kFirstRunCompleted) {
-    [self.delegate willFinishPresentingScreens];
+    [self willFinishPresentingScreens];
     return;
   }
   self.childCoordinator = [self createChildCoordinatorWithScreenType:type];
@@ -155,6 +165,11 @@
       break;
   }
   return nil;
+}
+
+- (void)willFinishPresentingScreens {
+  self.completed = YES;
+  [self.delegate willFinishPresentingScreens];
 }
 
 @end

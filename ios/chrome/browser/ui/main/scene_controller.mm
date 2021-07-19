@@ -691,8 +691,8 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
     return;
   }
 
-  BOOL initializingUIInColdStart = level > SceneActivationLevelBackground &&
-                                   !self.sceneState.hasInitializedUI;
+  BOOL initializingUIInColdStart =
+      level > SceneActivationLevelBackground && !self.sceneState.UIEnabled;
   if (initializingUIInColdStart) {
     [self initializeUI];
     // Add the scene to the list of connected scene, to restore in case of
@@ -735,8 +735,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 
   [self recordWindowCreationForSceneState:self.sceneState];
 
-  if (self.sceneState.hasInitializedUI &&
-      level == SceneActivationLevelUnattached) {
+  if (self.sceneState.UIEnabled && level == SceneActivationLevelUnattached) {
     if (base::ios::IsMultipleScenesSupported()) {
       // If Multiple scenes are not supported, the session shouldn't be
       // removed as it can be used for normal restoration.
@@ -797,12 +796,12 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)initializeUI {
-  if (self.sceneState.hasInitializedUI) {
+  if (self.sceneState.UIEnabled) {
     return;
   }
 
   [self startUpChromeUI];
-  self.sceneState.hasInitializedUI = YES;
+  self.sceneState.UIEnabled = YES;
 }
 
 // Returns YES if restore prompt can be shown.
@@ -1105,7 +1104,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 // This method completely destroys all of the UI. It should be called when the
 // scene is disconnected.
 - (void)teardownUI {
-  if (!self.sceneState.hasInitializedUI) {
+  if (!self.sceneState.UIEnabled) {
     return;  // Nothing to do.
   }
 
@@ -1137,10 +1136,14 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
   PolicyWatcherBrowserAgent::FromBrowser(self.mainInterface.browser)
       ->RemoveObserver(_policyWatcherObserverBridge.get());
 
+  // TODO(crbug.com/1229306): Consider moving this at the beginning of
+  // teardownUI to indicate that the UI is about to be torn down and that the
+  // dependencies depending on the browser UI models has to be cleaned up
+  // agent).
+  self.sceneState.UIEnabled = NO;
+
   [self.browserViewWrangler shutdown];
   self.browserViewWrangler = nil;
-
-  self.sceneState.hasInitializedUI = NO;
 
   [self.sceneState.appState removeObserver:self];
 }
@@ -1971,7 +1974,7 @@ const char kMultiWindowOpenInNewWindowHistogram[] =
 }
 
 - (void)tabGridDismissTransitionDidEnd:(TabGridCoordinator*)tabGrid {
-  if (!self.sceneState.hasInitializedUI) {
+  if (!self.sceneState.UIEnabled) {
     return;
   }
   [self finishActivatingBrowserDismissingTabSwitcher:YES];
