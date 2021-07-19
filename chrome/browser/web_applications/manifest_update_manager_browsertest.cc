@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -341,8 +342,7 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
         time_override);
   }
 
-  ManifestUpdateResult GetResultAfterPageLoad(const GURL& url,
-                                              const AppId* app_id) {
+  ManifestUpdateResult GetResultAfterPageLoad(const GURL& url) {
     UpdateCheckResultAwaiter awaiter(browser(), url);
     ui_test_utils::NavigateToURL(browser(), url);
     return std::move(awaiter).AwaitNextResult();
@@ -367,12 +367,12 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
                        CheckOutOfScopeNavigation) {
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), nullptr),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kNoAppInScope);
 
   AppId app_id = InstallWebApp();
 
-  EXPECT_EQ(GetResultAfterPageLoad(GURL("http://example.org"), nullptr),
+  EXPECT_EQ(GetResultAfterPageLoad(GURL("http://example.org")),
             ManifestUpdateResult::kNoAppInScope);
 
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
@@ -384,27 +384,27 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckIsThrottled) {
   SetTimeOverride(time_override);
 
   AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
 
   time_override += kDelayBetweenChecks / 2;
   SetTimeOverride(time_override);
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kThrottled);
 
   time_override += kDelayBetweenChecks;
   SetTimeOverride(time_override);
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
 
   time_override += kDelayBetweenChecks / 2;
   SetTimeOverride(time_override);
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kThrottled);
 
   time_override += kDelayBetweenChecks * 2;
   SetTimeOverride(time_override);
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
 
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "\n\n\n\n"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -491,7 +491,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate,
                    {"Different app name", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -515,7 +515,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate,
                    {"Different short test app name", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -537,7 +537,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate,
                    {"Different app name", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -569,7 +569,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerAppIdentityBrowserTest,
 
   OverrideManifest(kManifestTemplate,
                    {"Different app name", kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {"b.html", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppIdMismatch);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppIdMismatch, 1);
@@ -612,7 +612,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   )";
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   AppId app_id = InstallWebApp();
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -634,7 +634,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
   OverrideManifest(kManifestTemplate, {kInstallableIconList,
                                        "invalid manifest syntax !@#$%^*&()"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppNotEligible);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppNotEligible, 1);
@@ -659,7 +659,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   EXPECT_FALSE(GetProvider().registrar().IsLocallyInstalled(app_id));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kNoAppInScope);
   histogram_tester_.ExpectTotalCount(kUpdateHistogramName, 0);
 }
@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
     }
   )";
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(app_url, &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(app_url),
             ManifestUpdateResult::kAppIsPlaceholder);
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kAppIsPlaceholder, 1);
@@ -731,7 +731,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // CSS #RRGGBBAA syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "#00FF00F0"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -761,7 +761,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // CSS #RRGGBBAA syntax.
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "red"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -799,7 +799,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   std::string query = "manifest=/banners/manifest_one_icon.json";
   replacements.SetQuery(query.c_str(), url::Component(0, query.length()));
   GURL app_url_with_new_manifest = GetAppURL().ReplaceComponents(replacements);
-  EXPECT_EQ(GetResultAfterPageLoad(app_url_with_new_manifest, &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(app_url_with_new_manifest),
             ManifestUpdateResult::kAppUpdated);
 
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
@@ -827,7 +827,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest, CheckKeepsSameName) {
 
   OverrideManifest(kManifestTemplate,
                    {"App name 2", kInstallableIconList, "red"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -852,7 +852,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 0);
@@ -874,7 +874,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallDefaultApp();
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -899,7 +899,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       GetProvider().install_finalizer().CanUserUninstallWebApp(app_id));
 
   OverrideManifest(kManifestTemplate, {"red", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -926,7 +926,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {"/", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -952,7 +952,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {"/", kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -979,7 +979,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallDefaultApp();
 
   OverrideManifest(kManifestTemplate, {"/", kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1023,14 +1023,14 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
 
   if (ExpectUpdateAllowed()) {
     // The icon should have updated (because the flag is enabled).
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
               ManifestUpdateResult::kAppUpdated);
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 1);
     CheckShortcutInfoUpdated(app_id, kAnotherInstallableIconTopLeftColor);
   } else {
     // The icon should not have updated.
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
               ManifestUpdateResult::kAppUpToDate);
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 0);
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
 
   if (ExpectUpdateAllowed()) {
     // Name should have updated (because the flag is enabled).
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
               ManifestUpdateResult::kAppUpdated);
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 1);
@@ -1067,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(ManifestUpdateManagerBrowserTest_PolicyAppsCanUpdate,
               "Different app name");
   } else {
     // Name should not have updated (because the flag is missing).
-    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+    EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
               ManifestUpdateResult::kAppUpToDate);
     histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                         ManifestUpdateResult::kAppUpdated, 0);
@@ -1095,7 +1095,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {"standalone", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1121,7 +1121,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
       app_id, DisplayMode::kStandalone, /*is_user_action=*/false);
 
   OverrideManifest(kManifestTemplate, {"browser", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1155,7 +1155,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   OverrideManifest(kManifestTemplate,
                    {R"([ "fullscreen", "minimal-ui" ])", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1190,7 +1190,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(kManifestTemplate,
                    {R"("display_override": [ "minimal-ui", "standalone" ],)",
                     kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1225,7 +1225,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
 
   // Remove display_override from manifest
   OverrideManifest(kManifestTemplate, {"", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1260,7 +1260,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   // display_override contains only invalid values
   OverrideManifest(kManifestTemplate,
                    {R"( [ "invalid", 7 ])", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1293,7 +1293,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(
       kManifestTemplate,
       {R"("display_override": [ "invalid", 7 ],)", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -1320,7 +1320,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   OverrideManifest(
       kManifestTemplate,
       {R"([ "invalid", "standard", "fullscreen" ])", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -1360,7 +1360,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
         return false;
       }));
 
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 0);
@@ -1386,7 +1386,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 0);
@@ -1416,7 +1416,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerCaptureLinksBrowserTest,
             blink::mojom::CaptureLinks::kNone);
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, "new-client"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1441,7 +1441,7 @@ class ManifestUpdateManagerSystemAppBrowserTest
 IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerSystemAppBrowserTest,
                        CheckUpdateSkipped) {
   AppId app_id = system_app_->GetAppId();
-  EXPECT_EQ(GetResultAfterPageLoad(system_app_->GetAppUrl(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(system_app_->GetAppUrl()),
             ManifestUpdateResult::kAppIsSystemWebApp);
 
   histogram_tester_.ExpectBucketCount(
@@ -1485,7 +1485,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kShareTargetManifestTemplate, {kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1519,7 +1519,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
 
   OverrideManifest(kShareTargetManifestTemplate,
                    {"POST", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1563,7 +1563,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerWebAppsBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -1617,7 +1617,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -1656,7 +1656,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   OverrideManifest(kFileHandlerManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 
@@ -1699,7 +1699,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -1765,8 +1765,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   base::Time time_override = base::Time::Now();
   SetTimeOverride(time_override);
   OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "red"});
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   auto new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
@@ -1784,8 +1783,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   time_override += base::TimeDelta::FromDays(10);
   SetTimeOverride(time_override);
   OverrideManifest(kFileHandlerManifestTemplate, {".md\", \".txt", "blue"});
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_TRUE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
@@ -1798,8 +1796,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   time_override += base::TimeDelta::FromDays(10);
   SetTimeOverride(time_override);
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "blue"});
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   new_extensions = web_app->file_handlers()[0].accept[0].file_extensions;
   EXPECT_FALSE(base::Contains(new_extensions, ".md"));
   EXPECT_TRUE(base::Contains(new_extensions, ".txt"));
@@ -1814,8 +1811,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   OverrideManifest(kFileHandlerManifestTemplate, {".txt", "red"});
   time_override += base::TimeDelta::FromDays(10);
   SetTimeOverride(time_override);
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             map->GetContentSetting(origin, origin,
                                    ContentSettingsType::FILE_HANDLING));
@@ -1875,8 +1871,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
   EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
   // Update manifest.
   OverrideManifest(kFileHandlerManifestTemplate, {".md", kInstallableIconList});
-  EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(url, &app_id));
+  EXPECT_EQ(ManifestUpdateResult::kAppUpdated, GetResultAfterPageLoad(url));
   // Manifest update task should preserve the permission blocked state.
   EXPECT_TRUE(registrar->GetAppById(app_id)->file_handler_permission_blocked());
 }
@@ -1917,7 +1912,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithFileHandling,
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -2057,7 +2052,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, kShortcutsItems});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2097,7 +2092,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
 
   OverrideManifest(kManifestTemplate,
                    {kInstallableIconList, kAnotherShortcutsItemName});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2138,7 +2133,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   OverrideManifest(kManifestTemplate,
                    {kInstallableIconList, kAnotherShortcutsItemShortName,
                     kAnotherShortcutsItemDescription});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
@@ -2175,7 +2170,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
 
   OverrideManifest(kManifestTemplate,
                    {kInstallableIconList, kAnotherShortcutsItemUrl});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2227,7 +2222,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
         return false;
       }));
 
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2289,7 +2284,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
       }));
 
   OverrideManifest(kManifest, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   // The icon should not be updated.
   CheckShortcutInfoUpdated(app_id, kInstallableIconTopLeftColor);
@@ -2328,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, kAnotherIconSrc});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2372,7 +2367,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithShortcutsMenu,
   OverrideManifest(kManifestTemplate,
                    {kInstallableIconList,
                     gfx::Size(kAnotherIconSize, kAnotherIconSize).ToString()});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2424,7 +2419,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
         return false;
       }));
 
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2452,7 +2447,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {kAnotherInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
@@ -2506,7 +2501,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
         return false;
       }));
 
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kIconDownloadFailed);
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kIconDownloadFailed, 1);
@@ -2581,7 +2576,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
       kManifestTemplate,
       {kInstallableIconList,
        R"({"origin": "https://foo.com"}, {"origin": "https://bar.com"})"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
 
   apps::UrlHandlers url_handlers =
@@ -2618,7 +2613,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
   OverrideManifest(kManifestTemplate,
                    {kInstallableIconList,
                     R"(,"url_handlers": [{"origin": "https://foo.com"}])"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
 
   apps::UrlHandlers url_handlers =
@@ -2656,7 +2651,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
       apps::UrlHandlerInfo(url::Origin::Create(GURL("https://foo.com")))));
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList, R"()"});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
 
   url_handlers = GetProvider().registrar().GetAppUrlHandlers(app_id);
@@ -2700,7 +2695,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_UrlHandlers,
   // Prepare for association fetching at manifest update.
   SetUpUrlHandlerManager();
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppAssociationsUpdated);
 
   // Verify url handlers are saved to prefs.
@@ -2766,7 +2761,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
 
   OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -2802,7 +2797,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
 
   OverrideManifest(kProtocolHandlerManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
 
@@ -2843,7 +2838,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
   OverrideManifest(kProtocolHandlerManifestTemplate,
                    {"web+mailto", "web+mailto", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -2887,7 +2882,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithProtocolHandling,
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
 
@@ -2935,7 +2930,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kNewNoteUrlManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_EQ(http_server_.GetURL("/new"),
@@ -2966,7 +2961,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kNewNoteUrlManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpToDate,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
   EXPECT_EQ(http_server_.GetURL("/new"),
@@ -3000,7 +2995,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
   OverrideManifest(kNewNoteUrlManifestTemplate,
                    {"/newer", kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_EQ(http_server_.GetURL("/newer"),
@@ -3040,7 +3035,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTestWithWebAppNoteTaking,
 
   OverrideManifest(kManifestTemplate, {kInstallableIconList});
   EXPECT_EQ(ManifestUpdateResult::kAppUpdated,
-            GetResultAfterPageLoad(GetAppURL(), &app_id));
+            GetResultAfterPageLoad(GetAppURL()));
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
   EXPECT_TRUE(web_app->note_taking_new_note_url().is_empty());
@@ -3075,7 +3070,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   EXPECT_EQ(GetProvider().registrar().GetAppStartUrl(app_id).path(), "/startA");
 
   OverrideManifest(kManifestTemplate, {"/startB", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpdated);
   EXPECT_EQ(GetProvider().registrar().GetAppStartUrl(app_id).path(), "/startB");
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
@@ -3098,7 +3093,7 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   AppId app_id = InstallWebApp();
 
   OverrideManifest(kManifestTemplate, {"testb", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppIdMismatch);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppIdMismatch, 1);
@@ -3141,10 +3136,51 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
   // Setting manifest id to match default value won't trigger update as the
   // parsed manifest is the same.
   OverrideManifest(kManifestTemplate2, {"start", kInstallableIconList});
-  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL(), &app_id),
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
             ManifestUpdateResult::kAppUpToDate);
 
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpToDate, 1);
+}
+
+IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerBrowserTest_ManifestId,
+                       AllowManifestIdUpdateWhenAppIdIsNotChanged) {
+  constexpr char kManifestTemplate[] = R"(
+    {
+      "name": "Test app name",
+      "id": "$1",
+      "start_url": "/start",
+      "scope": "/",
+      "display": "standalone",
+      "icons": $2
+    }
+  )";
+  OverrideManifest(kManifestTemplate, {"start", kInstallableIconList});
+  AppId app_id = InstallWebApp();
+  // Manually set manifest_id to null. manifest_id can be null when the
+  // kWebAppEnableManifestId is turnned off or when the app is sync installed
+  // from older versions of Chromium.
+  {
+    ScopedRegistryUpdate update(
+        GetProvider().registry_controller().AsWebAppSyncBridge());
+    WebApp* app = update->UpdateApp(app_id);
+    app->SetManifestId(absl::nullopt);
+  }
+  EXPECT_FALSE(GetProvider()
+                   .registrar()
+                   .AsWebAppRegistrar()
+                   ->GetAppById(app_id)
+                   ->manifest_id()
+                   .has_value());
+  // Reload page to trigger an manifest update that re-fetches the manifest with
+  // id specified to be same as the default start_url.
+  EXPECT_EQ(GetResultAfterPageLoad(GetAppURL()),
+            ManifestUpdateResult::kAppUpdated);
+  EXPECT_TRUE(GetProvider()
+                  .registrar()
+                  .AsWebAppRegistrar()
+                  ->GetAppById(app_id)
+                  ->manifest_id()
+                  .has_value());
 }
 }  // namespace web_app

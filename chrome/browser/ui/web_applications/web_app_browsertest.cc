@@ -1363,6 +1363,16 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WebAppInternalsPage) {
   NavigateToURLAndWait(browser(), GURL("chrome://web-app-internals"));
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, NullManifestId) {
+  NavigateToURLAndWait(browser(), GetInstallableAppURL());
+
+  const AppId app_id = InstallPwaForCurrentUrl();
+  auto* provider = WebAppProvider::Get(profile());
+  auto* app = provider->registrar().AsWebAppRegistrar()->GetAppById(app_id);
+
+  EXPECT_EQ(absl::nullopt, app->manifest_id());
+}
+
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_WindowControlsOverlay,
                        WindowControlsOverlay) {
   GURL test_url = https_server()->GetURL(
