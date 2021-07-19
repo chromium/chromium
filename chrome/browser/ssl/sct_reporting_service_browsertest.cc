@@ -6,6 +6,7 @@
 #include "base/callback.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -338,8 +339,15 @@ IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
 }
 
 // Tests that disabling Extended Reporting causes the cache to be cleared.
+// TODO(crbug.com/1179504): Reenable. Flakes heavily on Linux, Win, and CrOS.
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#define MAYBE_OptingOutClearsSCTAuditingCache \
+  DISABLED_OptingOutClearsSCTAuditingCache
+#else
+#define MAYBE_OptingOutClearsSCTAuditingCache OptingOutClearsSCTAuditingCache
+#endif
 IN_PROC_BROWSER_TEST_F(SCTReportingServiceBrowserTest,
-                       OptingOutClearsSCTAuditingCache) {
+                       MAYBE_OptingOutClearsSCTAuditingCache) {
   // Enable SCT auditing and enqueue a report.
   SetExtendedReportingEnabled(true);
 
