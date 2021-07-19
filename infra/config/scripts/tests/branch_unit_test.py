@@ -108,27 +108,6 @@ class BranchUnitTest(unittest.TestCase):
             }
             """))
 
-  def test_set_type_mapped(self):
-    input = textwrap.dedent("""\
-        {
-            "project": "chromium-mMM",
-            "project_title": "Chromium MMM",
-            "ref": "refs/branch-heads/AAAA"
-        }""")
-    output = branch.set_type(input, ['lts'])
-    self.assertEqual(
-        output,
-        textwrap.dedent("""\
-            {
-                "project": "chromium-mMM",
-                "project_title": "Chromium MMM",
-                "ref": "refs/branch-heads/AAAA",
-                "branch_types": [
-                    "cros-lts"
-                ]
-            }
-            """))
-
 
 if __name__ == '__main__':
   unittest.main()

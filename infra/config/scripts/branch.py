@@ -80,13 +80,7 @@ def initialize_cmd(args):
     f.write(settings)
 
 
-BRANCH_TYPES = ('standard', 'desktop-extended-stable', 'cros-lts', 'lts')
-
-# TODO(gbeaty) Remove this once buildbucket picks up property change for
-# branch-config-verifier
-BRANCH_TYPE_MAPPING = {
-    'lts': 'cros-lts',
-}
+BRANCH_TYPES = ('standard', 'desktop-extended-stable', 'cros-lts')
 
 
 def set_type(settings_json, branch_types):
@@ -94,7 +88,6 @@ def set_type(settings_json, branch_types):
     assert t in BRANCH_TYPES, 'Unknown branch_type {!r}'.format(t)
 
   settings = json.loads(settings_json)
-  branch_types = [BRANCH_TYPE_MAPPING.get(t, t) for t in branch_types]
   settings.update(branch_types=branch_types)
   return json.dumps(settings, indent=4) + '\n'
 
