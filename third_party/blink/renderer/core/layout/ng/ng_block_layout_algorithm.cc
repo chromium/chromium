@@ -2575,11 +2575,8 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     const absl::optional<LayoutUnit> child_bfc_block_offset,
     bool has_clearance_past_adjoining_floats,
     LayoutUnit block_start_annotation_space) {
-  const ComputedStyle& style = Style();
   const ComputedStyle& child_style = child.Style();
-  const auto child_writing_direction = child.IsInline()
-                                           ? style.GetWritingDirection()
-                                           : child_style.GetWritingDirection();
+  const auto child_writing_direction = child_style.GetWritingDirection();
 
   NGConstraintSpaceBuilder builder(ConstraintSpace(), child_writing_direction,
                                    is_new_fc);
@@ -2624,16 +2621,16 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
   if (child_bfc_block_offset && !is_new_fc)
     builder.SetForcedBfcBlockOffset(*child_bfc_block_offset);
 
-  if (has_bfc_block_offset && child.IsBlock()) {
+  if (has_bfc_block_offset) {
     // Typically we aren't allowed to look at the previous layout result within
     // a layout algorithm. However this is fine (honest), as it is just a hint
     // to the child algorithm for where floats should be placed. If it doesn't
     // have this flag, or gets this estimate wrong, it'll relayout with the
     // appropriate "forced" BFC block-offset.
-    if (const NGLayoutResult* previous_result =
-            child.GetLayoutBox()->GetCachedLayoutResult()) {
-      const NGConstraintSpace& prev_space =
-          previous_result->GetConstraintSpaceForCaching();
+    if (child.IsBlock() && child.GetLayoutBox()->GetCachedLayoutResult()) {
+      const auto& prev_space = child.GetLayoutBox()
+                                   ->GetCachedLayoutResult()
+                                   ->GetConstraintSpaceForCaching();
 
       // To increase the hit-rate we adjust the previous "optimistic"/"forced"
       // BFC block-offset by how much the child has shifted from the previous
