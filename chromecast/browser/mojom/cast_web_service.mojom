@@ -136,6 +136,9 @@ struct CastWebViewParams {
   // Turns on the device screen when the window is made visible.
   bool turn_on_screen = true;
 
+  // Keeps the screen on and suppresses the screensaver while the app is visible.
+  bool keep_screen_on = true;
+
   // Window's gesture priority for when it is visible.
   GesturePriority gesture_priority = GesturePriority.NONE;
 };

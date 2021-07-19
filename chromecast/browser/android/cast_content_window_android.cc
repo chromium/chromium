@@ -25,11 +25,12 @@ base::android::ScopedJavaLocalRef<jobject> CreateJavaWindow(
     bool enable_touch_input,
     bool is_remote_control_mode,
     bool turn_on_screen,
+    bool keep_screen_on,
     const std::string& session_id) {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_CastContentWindowAndroid_create(
       env, native_window, enable_touch_input, is_remote_control_mode,
-      turn_on_screen, ConvertUTF8ToJavaString(env, session_id));
+      turn_on_screen, keep_screen_on, ConvertUTF8ToJavaString(env, session_id));
 }
 
 constexpr char kContextInteractionId[] = "interactionId";
@@ -82,6 +83,7 @@ CastContentWindowAndroid::CastContentWindowAndroid(
                                     params_->enable_touch_input,
                                     params_->is_remote_control_mode,
                                     params_->turn_on_screen,
+                                    params_->keep_screen_on,
                                     params_->session_id)) {}
 
 CastContentWindowAndroid::~CastContentWindowAndroid() {
