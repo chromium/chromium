@@ -370,9 +370,10 @@ TEST_F(FullRestoreReadAndSaveTest, MultipleFilePaths) {
   AddAppLaunchInfo(tmp_dir2.GetPath(), kId2);
   EXPECT_TRUE(timer->IsRunning());
 
+  CreateWindowInfo(kId2, kActivationIndex2);
+
   // Simulate timeout, and verify the timer stops.
   timer->FireNow();
-  CreateWindowInfo(kId2, kActivationIndex2);
   task_environment().RunUntilIdle();
   EXPECT_FALSE(timer->IsRunning());
 
