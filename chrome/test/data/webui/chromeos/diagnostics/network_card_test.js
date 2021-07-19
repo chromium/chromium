@@ -8,7 +8,7 @@ import {fakeCellularNetwork, fakeEthernetNetwork, fakeNetworkGuidInfoList, fakeW
 import {FakeNetworkHealthProvider} from 'chrome://diagnostics/fake_network_health_provider.js';
 import {setNetworkHealthProviderForTesting} from 'chrome://diagnostics/mojo_interface_provider.js';
 
-import {assertFalse, assertTrue} from '../../chai_assert.js';
+import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
 import * as dx_utils from './diagnostics_test_utils.js';
@@ -84,5 +84,13 @@ export function networkCardTestSuite() {
             () => assertFalse(isVisible(
                 /** @type {!HTMLElement} */ (
                     networkCardElement.$$('#troubleConnectingContainer')))));
+  });
+
+  test('IpConfigInfoDrawerAdded', () => {
+    // Ensure ip-config-info-drawer in UI and displays in correct slot.
+    return initializeNetworkCard('wifiGuid').then(() => {
+      assertTrue(
+          !!(networkCardElement.$$('#ipConfigInfoDrawer[slot=routines]')));
+    });
   });
 }
