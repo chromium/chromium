@@ -9240,9 +9240,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
         <message name="IDS_NEW_INCOGNITO_WINDOW_MAC" desc="The Mac menu item for opening a new Incognito window in the file menu.">
           New Incognito Window
         </message>
-        <message name="IDS_BACKGROUND_APPS_MAC" desc="The Mac submenu for opening Background Apps.">
-          Background Apps
-        </message>
         <message name="IDS_REOPEN_CLOSED_TABS_MAC" desc="The Mac menu item reopen recently closed tabs in the file menu.">
           Reopen Closed Tab
         </message>

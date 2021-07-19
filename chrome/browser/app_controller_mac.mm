@@ -35,8 +35,6 @@
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/app_shim/app_shim_termination_manager.h"
 #include "chrome/browser/apps/platform_apps/app_window_registry_util.h"
-#include "chrome/browser/background/background_application_list_model.h"
-#include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
@@ -365,7 +363,6 @@ Profile* GetLastProfileMac() {
 - (void)checkForAnyKeyWindows;
 - (BOOL)userWillWaitForInProgressDownloads:(int)downloadCount;
 - (BOOL)shouldQuitWithInProgressDownloads;
-- (void)executeApplication:(id)sender;
 - (void)profileWasRemoved:(const base::FilePath&)profilePath
              forIncognito:(bool)isIncognito;
 - (void)setLastProfile:(Profile*)profile;
@@ -1201,8 +1198,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
   } else if (action == @selector(toggleConfirmToQuit:)) {
     [self updateConfirmToQuitPrefMenuItem:static_cast<NSMenuItem*>(item)];
     enable = YES;
-  } else if (action == @selector(executeApplication:)) {
-    enable = YES;
   }
   return enable;
 }
@@ -1335,18 +1330,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
       [self showPreferences:sender];
       break;
   }
-}
-
-// Run a (background) application in a new tab.
-- (void)executeApplication:(id)sender {
-  NSInteger tag = [sender tag];
-  Profile* profile = [self lastProfile];
-  DCHECK(profile);
-  BackgroundApplicationListModel applications(profile);
-  DCHECK(tag >= 0 &&
-         tag < static_cast<int>(applications.size()));
-  const extensions::Extension* extension = applications.GetExtension(tag);
-  BackgroundModeManager::LaunchBackgroundApplication(profile, extension);
 }
 
 // Same as |-commandDispatch:|, but executes commands using a disposition
@@ -1700,31 +1683,6 @@ static base::mac::ScopedObjCClassSwizzler* g_swizzle_imk_input_session;
     [item setTag:IDC_NEW_INCOGNITO_WINDOW];
     [item setEnabled:[self validateUserInterfaceItem:item]];
     [dockMenu addItem:item];
-  }
-
-  // TODO(rickcam): Mock out BackgroundApplicationListModel, then add unit tests
-  // which use the mock in place of the profile-initialized model.
-  BackgroundApplicationListModel applications(profile);
-  if (applications.size()) {
-    int position = 0;
-    NSString* menuStr =
-        l10n_util::GetNSStringWithFixup(IDS_BACKGROUND_APPS_MAC);
-    base::scoped_nsobject<NSMenu> appMenu(
-        [[NSMenu alloc] initWithTitle:menuStr]);
-    for (extensions::ExtensionList::const_iterator cursor =
-             applications.begin();
-         cursor != applications.end(); ++cursor, ++position) {
-      DCHECK_EQ(applications.GetPosition(cursor->get()), position);
-      NSString* itemStr =
-          base::SysUTF16ToNSString(base::UTF8ToUTF16((*cursor)->name()));
-      base::scoped_nsobject<NSMenuItem> appItem([[NSMenuItem alloc]
-          initWithTitle:itemStr
-                 action:@selector(executeApplication:)
-          keyEquivalent:@""]);
-      [appItem setTarget:self];
-      [appItem setTag:position];
-      [appMenu addItem:appItem];
-    }
   }
 
   return dockMenu;
