@@ -246,8 +246,9 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
   AutotestPrivateWithPolicyApiTest() {}
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(_))
-        .WillRepeatedly(Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     AutotestPrivateApiTest::SetUpInProcessBrowserTestFixture();
   }
@@ -264,7 +265,7 @@ class AutotestPrivateWithPolicyApiTest : public AutotestPrivateApiTest {
   }
 
  protected:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 
  private:
   DISALLOW_COPY_AND_ASSIGN(AutotestPrivateWithPolicyApiTest);

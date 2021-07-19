@@ -58,10 +58,9 @@ class ArcKeyPermissionsManagerDelegateTest : public testing::Test {
   void SetUp() override {
     policy_provider_ = std::make_unique<
         testing::NiceMock<policy::MockConfigurationPolicyProvider>>();
-    ON_CALL(*policy_provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(*policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    policy_provider_->SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     std::vector<policy::ConfigurationPolicyProvider*> providers = {
         policy_provider_.get()};
     auto policy_service_ =
