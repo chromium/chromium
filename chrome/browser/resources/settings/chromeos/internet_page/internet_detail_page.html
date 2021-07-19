@@ -354,7 +354,9 @@
           </div>
           <template is="dom-if" if="[[showScanningSpinner_(
               managedProperties_, deviceState_)]]">
-            <paper-spinner-lite active></paper-spinner-lite>
+            <paper-spinner-lite active 
+                title="$i18n{mobileNetworkScanningLabel}">
+            </paper-spinner-lite>
           </template>
         </div>
       </cr-expand-button>

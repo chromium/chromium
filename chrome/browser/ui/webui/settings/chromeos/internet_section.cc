@@ -642,6 +642,7 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_REMOVE_PREFERRED},
       {"knownNetworksMenuForget",
        IDS_SETTINGS_INTERNET_KNOWN_NETWORKS_MENU_FORGET},
+      {"mobileNetworkScanningLabel", IDS_MOBILE_NETWORK_SCANNING_MESSAGE},
       {"networkAllowDataRoaming",
        IDS_SETTINGS_SETTINGS_NETWORK_ALLOW_DATA_ROAMING},
       {"networkAllowDataRoamingEnabledHome",
