@@ -129,15 +129,36 @@ TEST_F(SubresourceFilterIndexedRulesetTest, SimpleBlocklist) {
             GetLoadPolicy("http://example.org?param=image1"));
 }
 
+TEST_F(SubresourceFilterIndexedRulesetTest, SimpleBlocklistSubdocument) {
+  ASSERT_TRUE(AddSimpleRule("?param="));
+  Finish();
+
+  EXPECT_EQ(LoadPolicy::ALLOW, GetLoadPolicy("https://example.com"));
+  EXPECT_EQ(LoadPolicy::DISALLOW,
+            GetLoadPolicy("http://example.org?param=image1",
+                          /*document_origin=*/"", testing::kSubdocument));
+}
+
 TEST_F(SubresourceFilterIndexedRulesetTest, SimpleAllowlist) {
   ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
   Finish();
 
   // This should not return EXPLICITLY_ALLOW because there is no corresponding
   // blocklist rule for the allowlist rule. To optimize speed, allowlist rules
-  // are only checked if a rule was matched with a blocklist rule.
+  // are only checked if a rule was matched with a blocklist rule unless it
+  // is a subdocument resource.
   EXPECT_EQ(LoadPolicy::ALLOW,
             GetLoadPolicy("https://example.com?filter_out=true"));
+}
+
+TEST_F(SubresourceFilterIndexedRulesetTest, SimpleAllowlistSubdocument) {
+  ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
+  Finish();
+
+  // Verify allowlist rules are always checked for subdocument element types.
+  EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
+            GetLoadPolicy("https://example.com?filter_out=true",
+                          /*document_origin=*/"", testing::kSubdocument));
 }
 
 TEST_F(SubresourceFilterIndexedRulesetTest,
@@ -148,6 +169,17 @@ TEST_F(SubresourceFilterIndexedRulesetTest,
 
   EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
             GetLoadPolicy("https://example.com?filter_out=true"));
+}
+
+TEST_F(SubresourceFilterIndexedRulesetTest,
+       SimpleAllowlistWithMatchingBlocklistSubdocument) {
+  ASSERT_TRUE(AddSimpleRule("example.com/?filter_out="));
+  ASSERT_TRUE(AddSimpleAllowlistRule("example.com/?filter_out="));
+  Finish();
+
+  EXPECT_EQ(LoadPolicy::EXPLICITLY_ALLOW,
+            GetLoadPolicy("https://example.com?filter_out=true",
+                          /*document_origin=*/"", testing::kSubdocument));
 }
 
 // Ensure patterns containing non-ascii characters are disallowed.

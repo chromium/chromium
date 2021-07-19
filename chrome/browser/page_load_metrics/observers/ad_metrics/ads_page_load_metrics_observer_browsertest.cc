@@ -1267,10 +1267,10 @@ IN_PROC_BROWSER_TEST_F(AdsPageLoadMetricsObserverBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     AdsPageLoadMetricsObserverBrowserTest,
     FrameCreatedByAdScriptNavigatedToAllowListRule_NotRecorddedAsAd) {
-  // Allowlist rules are only checked if there is a matching blocklist rule.
+  // Subdocument resources should always check allowlist rules, even if
+  // there is not matching blocklist rule.
   SetRulesetWithRules(
       {subresource_filter::testing::CreateSuffixRule("ad_iframe_writer.js"),
-       subresource_filter::testing::CreateSuffixRule("ixel.png"),
        subresource_filter::testing::CreateAllowlistSuffixRule("xel.png")});
   base::HistogramTester histogram_tester;
   content::WebContents* web_contents =

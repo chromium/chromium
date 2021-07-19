@@ -165,20 +165,37 @@ const url_pattern_index::flat::UrlRule* IndexedRulesetMatcher::MatchedUrlRule(
   const bool is_third_party = first_party.IsThirdParty(url);
   const EmbedderConditionsMatcher embedder_conditions_matcher;
 
-  const url_pattern_index::flat::UrlRule* blocklist_rule = blocklist_.FindMatch(
-      url, first_party.origin(), element_type,
-      proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party, disable_generic_rules,
-      embedder_conditions_matcher, FindRuleStrategy::kAny);
-  const url_pattern_index::flat::UrlRule* allowlist_rule = nullptr;
-  if (blocklist_rule) {
-    allowlist_rule =
-        allowlist_.FindMatch(url, first_party.origin(), element_type,
-                             proto::ACTIVATION_TYPE_UNSPECIFIED, is_third_party,
-                             disable_generic_rules, embedder_conditions_matcher,
-                             FindRuleStrategy::kAny);
-    return allowlist_rule ? allowlist_rule : blocklist_rule;
+  auto find_match =
+      [&](const url_pattern_index::UrlPatternIndexMatcher& matcher) {
+        return matcher.FindMatch(url, first_party.origin(), element_type,
+                                 proto::ACTIVATION_TYPE_UNSPECIFIED,
+                                 is_third_party, disable_generic_rules,
+                                 embedder_conditions_matcher,
+                                 FindRuleStrategy::kAny);
+      };
+
+  // Always check the allowlist for subdocuments. For other forms of resources,
+  // it is not necessary to differentiate between the resource not matching a
+  // blocklist rule and matching an allowlist rule. For subdocuments, matching
+  // an allowlist rule can still override ad tagging decisions even if the
+  // subdocument url did not match a blocklist rule.
+  //
+  // To optimize the subdocument case, we only check the blocklist if an
+  // allowlist rule was not matched.
+  if (element_type == proto::ELEMENT_TYPE_SUBDOCUMENT) {
+    auto* allowlist_rule = find_match(allowlist_);
+    if (allowlist_rule)
+      return allowlist_rule;
+    return find_match(blocklist_);
   }
-  return nullptr;
+
+  // For non-subdocument elements, only check the allowlist if there is a
+  // matched blocklist rule to prevent unnecessary lookups.
+  auto* blocklist_rule = find_match(blocklist_);
+  if (!blocklist_rule)
+    return nullptr;
+  auto* allowlist_rule = find_match(allowlist_);
+  return allowlist_rule ? allowlist_rule : blocklist_rule;
 }
 
 }  // namespace subresource_filter
