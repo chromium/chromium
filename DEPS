@@ -92,12 +92,6 @@ vars = {
   # restricted to Googlers only.
   'checkout_chromium_password_manager_test_dependencies': False,
 
-  # By default, do not check out Chromium Enterprise File System Connector
-  # captured sites test ependencies. These dependencies include a large number
-  # of large web capture files. Captured sites test dependencies are also
-  # restricted to Googlers only.
-  'checkout_chromium_fsc_test_dependencies': False,
-
   # By default, do not check out Google Benchmark. The library is only used by a
   # few specialized benchmarks that most developers do not interact with. Will
   # be overridden by gclient variables.
@@ -545,29 +539,6 @@ deps = {
     'condition': 'checkout_chromium_password_manager_test_dependencies',
     'dep_type': 'cipd',
   },
-
-  'src/chrome/test/data/enterprise/connectors/file_system/captured_sites': {
-    'packages': [
-      {
-        'package': 'chromium/chrome/test/data/enterprise/connectors/file_system/captured_sites',
-        'version': 'VQWPovF2DbgjrWMu_FXXced70SojMAV5I4T--yHEHsAC',
-      }
-    ],
-    'condition': 'checkout_chromium_fsc_test_dependencies',
-    'dep_type': 'cipd',
-  },
-
-  'src/chrome/test/data/enterprise/connectors/file_system/downloads/cipd': {
-    'packages': [
-      {
-        'package': 'chromium/chrome/test/data/enterprise/connectors/file_system/downloads',
-        'version': 'OqoTmkXSZL8TiU2yFt3j6fKGoLwXYCWJXcFXg4L2b_wC',
-      }
-    ],
-    'condition': 'checkout_chromium_fsc_test_dependencies',
-    'dep_type': 'cipd',
-  },
-
 
   'src/chrome/test/data/perf/canvas_bench':
     Var('chromium_git') + '/chromium/canvas_bench.git' + '@' + 'a7b40ea5ae0239517d78845a5fc9b12976bfc732',

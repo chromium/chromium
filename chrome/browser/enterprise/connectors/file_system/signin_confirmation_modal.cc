@@ -4,7 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/file_system/signin_confirmation_modal.h"
 
-#include "chrome/browser/enterprise/connectors/file_system/signin_experience.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/models/image_model.h"
@@ -27,29 +26,25 @@ namespace enterprise_connectors {
 
 // static
 void FileSystemConfirmationModal::Show(gfx::NativeWindow context,
-                                       const std::u16string& title,
-                                       const std::u16string& message,
-                                       const std::u16string& cancel_button,
-                                       const std::u16string& accept_button,
-                                       Callback callback,
-                                       SigninExperienceTestObserver* observer) {
-  auto* confirmation_modal = new FileSystemConfirmationModal(
-      title, message, cancel_button, accept_button, std::move(callback));
+                                       std::u16string title,
+                                       std::u16string message,
+                                       std::u16string cancel_button,
+                                       std::u16string accept_button,
+                                       Callback callback) {
   auto* modal_view = constrained_window::CreateBrowserModalDialogViews(
-      confirmation_modal, context);
-
-  if (observer)
-    observer->OnConfirmationDialogCreated(confirmation_modal);
+      new FileSystemConfirmationModal(title, message, cancel_button,
+                                      accept_button, std::move(callback)),
+      context);
   // The naked new is OK here because CreateBrowserModalDialogViews() takes
   // ownership.
   modal_view->Show();
 }
 
 FileSystemConfirmationModal::FileSystemConfirmationModal(
-    const std::u16string& title,
-    const std::u16string& message,
-    const std::u16string& cancel_button,
-    const std::u16string& accept_button,
+    std::u16string title,
+    std::u16string message,
+    std::u16string cancel_button,
+    std::u16string accept_button,
     Callback callback)
     : title_(title), message_(message), callback_(std::move(callback)) {
   SetShowIcon(true);
