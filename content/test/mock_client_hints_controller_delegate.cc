@@ -4,8 +4,6 @@
 
 #include "content/test/mock_client_hints_controller_delegate.h"
 
-#include "base/feature_list.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "url/gurl.h"
@@ -26,10 +24,6 @@ MockClientHintsControllerDelegate::GetNetworkQualityTracker() {
 
 bool MockClientHintsControllerDelegate::IsJavaScriptAllowed(const GURL& url) {
   return true;
-}
-
-bool MockClientHintsControllerDelegate::UserAgentClientHintEnabled() {
-  return base::FeatureList::IsEnabled(features::kUserAgentClientHint);
 }
 
 blink::UserAgentMetadata

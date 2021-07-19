@@ -47,7 +47,6 @@ BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];
 
-BLINK_COMMON_EXPORT extern const char kUserAgentClientHintDisable[];
 }  // namespace switches
 }  // namespace blink
 

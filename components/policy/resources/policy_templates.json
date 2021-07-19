@@ -24643,7 +24643,7 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'owners': ['file://components/client_hints/OWNERS', 'yoavweiss@google.com', 'aarontag@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
-      'supported_on': ['chrome_os:84-', 'chrome.*:84-', 'android:84-'],
+      'supported_on': ['chrome_os:84-93', 'chrome.*:84-93', 'android:84-93'],
       'features': {
         'per_profile': False,
         'dynamic_refresh': True,
@@ -24654,13 +24654,11 @@ If you disable this policy, web page scrolling to specific text fragments via UR
       'id': 725,
       'caption': '''Control the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature.''',
       'tags': [],
-      'desc': '''When enabled the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature sends granular request headers providing information about the user browser and environment.
+      'desc': '''Note that this policy was removed in M94.  This policy was intended for short-term adaptation purposes only.
 
+      When enabled the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature sends granular request headers providing information about the user browser and environment.
       This is an additive feature, but the new headers may break some websites that restrict the characters that requests may contain.
-
-      If this policy is enabled or not set the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature is enabled. If the policy is disabled the feature is unavailable.
-
-      This enterprise policy is for short-term adaptation purposes and will be removed in Chrome 94.''',
+      If this policy is enabled or not set the <ph name="PRODUCT_NAME">User-Agent Client Hints</ph> feature is enabled. If the policy is disabled the feature is unavailable.''',
     },
     {
       'name': 'SuggestedContentEnabled',

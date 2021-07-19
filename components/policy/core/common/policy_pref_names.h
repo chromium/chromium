@@ -25,7 +25,6 @@ POLICY_EXPORT extern const char kUrlBlocklist[];
 POLICY_EXPORT extern const char kUrlAllowlist[];
 POLICY_EXPORT extern const char kUserPolicyRefreshRate[];
 POLICY_EXPORT extern const char kIntensiveWakeUpThrottlingEnabled[];
-POLICY_EXPORT extern const char kUserAgentClientHintsEnabled[];
 POLICY_EXPORT extern const char kTargetBlankImpliesNoOpener[];
 #if defined(OS_ANDROID)
 POLICY_EXPORT extern const char kBackForwardCacheEnabled[];

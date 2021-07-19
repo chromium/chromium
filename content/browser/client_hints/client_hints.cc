@@ -386,6 +386,10 @@ bool PrefersColorSchemeClientHintEnabled() {
       features::kPrefersColorSchemeClientHintHeader);
 }
 
+bool UserAgentClientHintEnabled() {
+  return base::FeatureList::IsEnabled(features::kUserAgentClientHint);
+}
+
 void AddUAHeader(net::HttpRequestHeaders* headers,
                  network::mojom::WebClientHintsType type,
                  const std::string& value) {
@@ -611,7 +615,7 @@ void UpdateNavigationRequestClientUaHeaders(
     FrameTreeNode* frame_tree_node,
     net::HttpRequestHeaders* headers) {
   DCHECK(frame_tree_node);
-  if (!delegate->UserAgentClientHintEnabled() ||
+  if (!UserAgentClientHintEnabled() ||
       !ShouldAddClientHints(url, frame_tree_node, delegate)) {
     return;
   }
@@ -669,7 +673,7 @@ void AddRequestClientHintsHeaders(
     AddLangHeader(headers, context);
   }
 
-  if (delegate->UserAgentClientHintEnabled()) {
+  if (UserAgentClientHintEnabled()) {
     UpdateNavigationRequestClientUaHeadersImpl(
         url, delegate, is_ua_override_on, frame_tree_node,
         ClientUaHeaderCallType::kDuringCreation, headers);
@@ -780,7 +784,7 @@ ParseAndPersistAcceptCHForNavigation(
 
   absl::optional<std::vector<network::mojom::WebClientHintsType>> parsed =
       blink::FilterAcceptCH(headers->accept_ch.value(), LangClientHintEnabled(),
-                            delegate->UserAgentClientHintEnabled(),
+                            UserAgentClientHintEnabled(),
                             PrefersColorSchemeClientHintEnabled());
   if (!parsed.has_value())
     return absl::nullopt;

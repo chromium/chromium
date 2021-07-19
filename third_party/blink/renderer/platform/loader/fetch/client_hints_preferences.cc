@@ -46,12 +46,6 @@ void ClientHintsPreferences::CombineWith(
   }
 }
 
-bool ClientHintsPreferences::UserAgentClientHintEnabled() {
-  return RuntimeEnabledFeatures::UserAgentClientHintEnabled() &&
-         !base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kUserAgentClientHintDisable);
-}
-
 void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
     const String& header_value,
     const KURL& url,
@@ -72,7 +66,7 @@ void ClientHintsPreferences::UpdateFromHttpEquivAcceptCH(
       FilterAcceptCH(
           network::ParseClientHintsHeader(header_value.Latin1()),
           RuntimeEnabledFeatures::LangClientHintHeaderEnabled(),
-          UserAgentClientHintEnabled(),
+          RuntimeEnabledFeatures::UserAgentClientHintEnabled(),
           RuntimeEnabledFeatures::PrefersColorSchemeClientHintHeaderEnabled());
   if (!parsed_ch.has_value())
     return;

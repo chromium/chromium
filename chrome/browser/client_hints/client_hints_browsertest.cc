@@ -18,7 +18,6 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -32,9 +31,6 @@
 #include "components/embedder_support/user_agent_utils.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
-#include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
@@ -151,7 +147,7 @@ bool IsSimilarToIntABNF(const std::string& header_value) {
 
 }  // namespace
 
-class ClientHintsBrowserTest : public policy::PolicyTest,
+class ClientHintsBrowserTest : public InProcessBrowserTest,
                                public testing::WithParamInterface<bool> {
  public:
   ClientHintsBrowserTest()
@@ -2080,29 +2076,6 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
   // No additional hints are sent.
   EXPECT_EQ(expected_client_hints_number * 2,
             count_client_hints_headers_seen());
-}
-
-class ClientHintsEnterprisePolicyTest : public ClientHintsBrowserTest {
-  void SetUpInProcessBrowserTestFixture() override {
-    policy::PolicyTest::SetUpInProcessBrowserTestFixture();
-    policy::PolicyMap policies;
-    SetPolicy(&policies, policy::key::kUserAgentClientHintsEnabled,
-              base::Value(false));
-    provider_.UpdateChromePolicy(policies);
-  }
-};
-
-// Makes sure that no client hints are sent by default when the
-// "UserAgentClientHintsEnabled" enterprise polickly is set to
-// false
-IN_PROC_BROWSER_TEST_F(ClientHintsEnterprisePolicyTest,
-                       ClientHintsEnterprisePolicy) {
-  const GURL gurl = accept_ch_without_lifetime_url();
-  ui_test_utils::NavigateToURL(browser(), gurl);
-  // These would normally be one each
-  EXPECT_EQ(0u, count_user_agent_hint_headers_seen());
-  EXPECT_EQ(0u, count_ua_mobile_client_hints_headers_seen());
-  EXPECT_EQ(0u, count_ua_platform_client_hints_headers_seen());
 }
 
 class ClientHintsWebHoldbackBrowserTest : public ClientHintsBrowserTest {

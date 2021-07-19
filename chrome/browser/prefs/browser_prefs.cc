@@ -636,6 +636,8 @@ constexpr char kProfileSwitchInterceptionDeclinedPref[] =
 
 const char kSuggestionsBlocklist[] = "suggestions.blacklist";
 const char kSuggestionsData[] = "suggestions.data";
+const char kUserAgentClientHintsEnabled[] =
+    "policy.user_agent_client_hints_enabled";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 // Deprecated 07/2021.
@@ -673,6 +675,8 @@ void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kStabilityBreakpadRegistrationSuccess, 0);
   registry->RegisterIntegerPref(kStabilityDebuggerPresent, 0);
   registry->RegisterIntegerPref(kStabilityDebuggerNotPresent, 0);
+
+  registry->RegisterBooleanPref(kUserAgentClientHintsEnabled, true);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   registry->RegisterBooleanPref(kPinnedExtensionsMigrationComplete, false);
@@ -881,8 +885,6 @@ void RegisterLocalState(PrefRegistrySimple* registry) {
   // function called above. Please keep this list alphabetized.
   registry->RegisterBooleanPref(
       policy::policy_prefs::kIntensiveWakeUpThrottlingEnabled, false);
-  registry->RegisterBooleanPref(
-      policy::policy_prefs::kUserAgentClientHintsEnabled, true);
   registry->RegisterBooleanPref(
       policy::policy_prefs::kTargetBlankImpliesNoOpener, true);
 #if defined(OS_ANDROID)
@@ -1416,6 +1418,9 @@ void MigrateObsoleteLocalStatePrefs(PrefService* local_state) {
   // Added 03/2021
   local_state->ClearPref(kPinnedExtensionsMigrationComplete);
 #endif
+
+  // Added 07/2021
+  local_state->ClearPref(kUserAgentClientHintsEnabled);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_LOCAL_STATE_PREFS

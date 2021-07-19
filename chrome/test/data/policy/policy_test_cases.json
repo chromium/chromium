@@ -11221,26 +11221,7 @@
     ]
   },
   "UserAgentClientHintsEnabled": {
-    "os": [
-      "win",
-      "linux",
-      "mac",
-      "chromeos",
-      "android"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "UserAgentClientHintsEnabled": true
-        },
-        "prefs": {
-          "policy.user_agent_client_hints_enabled": {
-            "location": "local_state",
-            "value": true
-          }
-        }
-      }
-    ]
+    "reason_for_missing_test": "Policy was removed"
   },
   "ShowFullUrlsInAddressBar": {
     "os": [

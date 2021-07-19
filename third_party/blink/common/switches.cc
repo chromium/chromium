@@ -126,13 +126,5 @@ const char kShowPaintRects[] = "show-paint-rects";
 // the platform default is used.
 const char kTouchTextSelectionStrategy[] = "touch-selection-strategy";
 
-// Used to communicate managed policy for the UserAgentClientHint feature.
-// This feature is typically controlled by base::Feature (see
-// renderer/platform/scheduler/common/features.*) but requires an enterprise
-// policy override.
-
-extern const char kUserAgentClientHintDisable[] =
-    "user-agent-client-hint-disable";
-
 }  // namespace switches
 }  // namespace blink

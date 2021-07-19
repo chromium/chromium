@@ -2218,13 +2218,6 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
                       kIntensiveWakeUpThrottlingPolicy_ForceDisable);
       }
 
-      // Same as above, but for the blink side of UserAgentClientHints
-      if (!local_state->GetBoolean(
-              policy::policy_prefs::kUserAgentClientHintsEnabled)) {
-        command_line->AppendSwitch(
-            blink::switches::kUserAgentClientHintDisable);
-      }
-
       if (!local_state->GetBoolean(
               policy::policy_prefs::kTargetBlankImpliesNoOpener)) {
         command_line->AppendSwitch(
