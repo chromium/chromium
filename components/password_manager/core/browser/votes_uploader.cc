@@ -15,6 +15,7 @@
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_download_manager.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -177,8 +178,11 @@ size_t GetLowEntropyHashValue(const std::u16string& value) {
 
 SingleUsernameVoteData::SingleUsernameVoteData(
     autofill::FieldRendererId renderer_id,
+    const std::u16string& username_candidate_value,
     const FormPredictions& form_predictions)
-    : renderer_id(renderer_id), form_predictions(form_predictions) {}
+    : renderer_id(renderer_id),
+      username_candidate_value(username_candidate_value),
+      form_predictions(form_predictions) {}
 
 SingleUsernameVoteData::SingleUsernameVoteData(
     const SingleUsernameVoteData& other) = default;
@@ -487,26 +491,24 @@ void VotesUploader::MaybeSendSingleUsernameVote() {
   for (size_t i = 0; i < form_to_upload->field_count(); ++i) {
     AutofillField* field = form_to_upload->field(i);
 
-    ServerFieldType type = autofill::UNKNOWN_TYPE;
     autofill::FieldRendererId field_renderer_id =
         predictions.fields[i].renderer_id;
-    if (field_renderer_id == single_username_vote_data_->renderer_id) {
-      if (field_info_manager->GetFieldType(predictions.form_signature,
-                                           predictions.fields[i].signature) !=
-          autofill::UNKNOWN_TYPE) {
-        // The vote for this field has been already sent. Don't send again.
-        return;
-      }
-      type = username_change_state_ == UsernameChangeState::kUnchanged
-                 ? autofill::SINGLE_USERNAME
-                 : autofill::NOT_USERNAME;
-      if (username_change_state_ == UsernameChangeState::kChangedToKnownValue)
-        field->set_vote_type(AutofillUploadContents::Field::USERNAME_EDITED);
-      available_field_types.insert(type);
-      SaveFieldVote(form_to_upload->form_signature(),
-                    field->GetFieldSignature(), type);
+
+    if (field_renderer_id != single_username_vote_data_->renderer_id) {
+      field->set_possible_types({autofill::UNKNOWN_TYPE});
+      continue;
     }
-    field->set_possible_types({type});
+    if (field_info_manager->GetFieldType(predictions.form_signature,
+                                         predictions.fields[i].signature) !=
+        autofill::UNKNOWN_TYPE) {
+      // The vote for this field has been already sent. Don't send again.
+      return;
+    }
+    if (!SetSingleUsernameVote(field, &available_field_types,
+                               form_to_upload->form_signature())) {
+      // The single username field has no field type. Don't send vote.
+      return;
+    }
   }
 
   if (password_manager_util::IsLoggingActive(client_)) {
@@ -711,6 +713,56 @@ void VotesUploader::SaveFieldVote(autofill::FormSignature form_signature,
   if (!field_info_manager)
     return;
   field_info_manager->AddFieldType(form_signature, field_signature, field_type);
+}
+
+bool VotesUploader::SetSingleUsernameVote(
+    AutofillField* field,
+    ServerFieldTypeSet* available_field_types,
+    autofill::FormSignature form_signature) {
+  ServerFieldType type = autofill::UNKNOWN_TYPE;
+  autofill::AutofillUploadContents_Field_SingleUsernameVoteType vote_type =
+      AutofillUploadContents::Field::DEFAULT;
+
+  // Send a negative vote if the possible username value contains whitespaces.
+  const std::u16string single_username_value =
+      single_username_vote_data_->username_candidate_value;
+  if (single_username_value.find(' ') != std::u16string::npos) {
+    type = autofill::NOT_USERNAME;
+    vote_type = AutofillUploadContents::Field::HAD_WHITESPACES;
+  } else {
+// It's not possible to edit username in the save prompt on Android, thus it's
+// not possible to rely on this heuristic.
+#if !defined(OS_ANDROID)
+    if (saved_username_ != suggested_username_) {
+      // The user edited the username in a prompt before accepting it.
+      // The user removed some suggested username and that username wasn't the
+      // possible single username (|single_username_value|) => this is neither
+      // negative or positive vote. If the user removes |single_username_value|,
+      // then it is a negative signal and will be reported below.
+      if (saved_username_.empty() &&
+          suggested_username_ != single_username_value) {
+        return false;
+      }
+      type = saved_username_ == single_username_value
+                 ? autofill::SINGLE_USERNAME
+                 : autofill::NOT_USERNAME;
+      vote_type = AutofillUploadContents::Field::EDITED_IN_PROMPT;
+    } else {  // saved_username_ == suggested_username
+      // The user did NOT edit the username in prompt and accepted it as it is.
+      type = saved_username_ == single_username_value
+                 ? autofill::SINGLE_USERNAME
+                 : autofill::NOT_USERNAME;
+      vote_type = AutofillUploadContents::Field::NOT_EDITED_IN_PROMPT;
+    }
+#else
+    return false;
+#endif  // !defined(OS_ANDROID)
+  }
+  available_field_types->insert(type);
+  SaveFieldVote(form_signature, field->GetFieldSignature(), type);
+  field->set_possible_types({type});
+  field->set_single_username_vote_type(vote_type);
+  return true;
 }
 
 }  // namespace password_manager

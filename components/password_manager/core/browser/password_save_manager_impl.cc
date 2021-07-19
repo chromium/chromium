@@ -497,6 +497,9 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
       parsed_submitted_form.submission_event);
   metrics_recorder_->SetSubmissionIndicatorEvent(
       parsed_submitted_form.submission_event);
+  // Remember the final username value which the user accepted the prompt
+  // with in order to produce votes based on username edits.
+  votes_uploader_->set_saved_username(pending_credentials_.username_value);
 
   if (IsNewLogin()) {
     metrics_util::LogNewlySavedPasswordIsGenerated(

@@ -45,11 +45,15 @@ struct PossibleUsernameData {
 
   // Predictions for the form which contains a field with |renderer_id|.
   absl::optional<FormPredictions> form_predictions;
-};
 
-// Returns whether |possible_username| was last edited too far in the past and
-// should not be considered as a possible single username.
-bool IsPossibleUsernameStale(const PossibleUsernameData& possible_username);
+  // Returns whether |possible_username| was last edited too far in the past and
+  // should not be considered as a possible single username.
+  bool IsStale() const;
+
+  // Returns whether the field identified by |renderer_id| has a
+  // SINGLE_USERNAME prediction stored in |form_predictions|.
+  bool HasSingleUsernameServerPrediction() const;
+};
 
 }  // namespace password_manager
 

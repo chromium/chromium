@@ -1011,6 +1011,7 @@ void PasswordManager::OnLoginSuccessful() {
   if (ShouldPromptUserToSavePassword(*submitted_manager)) {
     if (logger)
       logger->LogMessage(Logger::STRING_DECISION_ASK);
+    submitted_manager->SaveSuggestedUsernameValueToVotesUploader();
     bool update_password = submitted_manager->IsPasswordUpdate();
     if (client_->PromptUserToSaveOrUpdatePassword(MoveOwnedSubmittedManager(),
                                                   update_password)) {

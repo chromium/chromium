@@ -34,17 +34,17 @@ class IsPossibleUsernameValidTest : public testing::Test {
 // Check that if more than |kPossibleUsernameExpirationTimeout| time has
 // passed since the last change of |possible_username_data_|, then it is stale.
 TEST_F(IsPossibleUsernameValidTest, IsPossibleUsernameStale) {
-  EXPECT_FALSE(IsPossibleUsernameStale(possible_username_data_));
+  EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward for a little less than expiration time, but not
   // exactly to not flake the test.
   task_environment_.FastForwardBy(kPossibleUsernameExpirationTimeout -
                                   TimeDelta::FromSeconds(3));
-  EXPECT_FALSE(IsPossibleUsernameStale(possible_username_data_));
+  EXPECT_FALSE(possible_username_data_.IsStale());
 
   // Fast forward more until the data becomes stale.
   task_environment_.FastForwardBy(TimeDelta::FromSeconds(5));
-  EXPECT_TRUE(IsPossibleUsernameStale(possible_username_data_));
+  EXPECT_TRUE(possible_username_data_.IsStale());
 }
 
 }  // namespace

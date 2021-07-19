@@ -170,6 +170,23 @@ MATCHER_P2(UploadedGenerationTypesAre,
   return true;
 }
 
+MATCHER_P(UploadedSingleUsernameVoteTypeIs, expected_type, "") {
+  for (const auto& field : arg) {
+    autofill::ServerFieldType vote = field->possible_types().empty()
+                                         ? autofill::UNKNOWN_TYPE
+                                         : *field->possible_types().begin();
+    if ((vote == autofill::SINGLE_USERNAME || vote == autofill::NOT_USERNAME) &&
+        expected_type != field->single_username_vote_type()) {
+      // Wrong vote type.
+      *result_listener << "Expected vote type for the field " << field->name
+                       << " is " << expected_type << ", but found "
+                       << field->single_username_vote_type().value();
+      return false;
+    }
+  }
+  return true;
+}
+
 MATCHER_P(PasswordsWereRevealed, passwords_were_revealed, "") {
   return passwords_were_revealed == arg.passwords_were_revealed();
 }

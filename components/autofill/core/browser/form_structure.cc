@@ -2140,6 +2140,11 @@ void FormStructure::EncodeFormForUpload(
           added_field->mutable_randomized_field_metadata());
     }
 
+    if (field->single_username_vote_type()) {
+      added_field->set_single_username_vote_type(
+          field->single_username_vote_type().value());
+    }
+
     if (is_raw_metadata_uploading_enabled) {
       added_field->set_type(field->form_control_type);
 

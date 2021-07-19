@@ -229,6 +229,9 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return absl::get_if<autofill::FormData>(&observed_form_or_digest_);
   }
 
+  // Saves username value from |pending_credentials_| to votes uploader.
+  void SaveSuggestedUsernameValueToVotesUploader();
+
 #if defined(UNIT_TEST)
   static void set_wait_for_server_predictions_for_filling(bool value) {
     wait_for_server_predictions_for_filling_ = value;
@@ -238,6 +241,7 @@ class PasswordFormManager : public PasswordFormManagerForUI,
     return password_save_manager_->GetFormSaver();
   }
 
+  const VotesUploader& votes_uploader() const { return votes_uploader_; }
 #endif
 
  protected:
@@ -311,12 +315,10 @@ class PasswordFormManager : public PasswordFormManagerForUI,
 
   PasswordFormDigest ConstructObservedFormDigest() const;
 
-  // Returns whether |possible_username| should be populated in a Save/Update
-  // prompt on username first flow. The decision is based on server predictions,
-  // and whether |possible_username| has a non empty value and is not expired
-  // yet.
-  bool UsePossibleUsernameToBuildCredential(
-      const PossibleUsernameData* possible_username);
+  // Returns whether |possible_username| data can be used in username first
+  // flow.
+  bool IsPossibleSingleUsernameAvailable(
+      const PossibleUsernameData* possible_username) const;
 
   // Updates the predictions stored in |parser_| with predictions relevant for
   // |observed_form_or_digest_|.

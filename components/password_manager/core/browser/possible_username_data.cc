@@ -15,6 +15,21 @@ using base::TimeDelta;
 
 namespace password_manager {
 
+namespace {
+
+// Find a field in |predictions| with given renderer id.
+const PasswordFieldPrediction* FindFieldPrediction(
+    const FormPredictions& predictions,
+    autofill::FieldRendererId field_renderer_id) {
+  for (const auto& field : predictions.fields) {
+    if (field.renderer_id == field_renderer_id)
+      return &field;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 PossibleUsernameData::PossibleUsernameData(
     std::string signon_realm,
     autofill::FieldRendererId renderer_id,
@@ -32,9 +47,18 @@ PossibleUsernameData::PossibleUsernameData(const PossibleUsernameData&) =
     default;
 PossibleUsernameData::~PossibleUsernameData() = default;
 
-bool IsPossibleUsernameStale(const PossibleUsernameData& possible_username) {
-  return base::Time::Now() - possible_username.last_change >
-         kPossibleUsernameExpirationTimeout;
+bool PossibleUsernameData::IsStale() const {
+  return base::Time::Now() - last_change > kPossibleUsernameExpirationTimeout;
+}
+
+bool PossibleUsernameData::HasSingleUsernameServerPrediction() const {
+  // Check if there is a server prediction.
+  if (!form_predictions)
+    return false;
+  const PasswordFieldPrediction* field_prediction =
+      FindFieldPrediction(*form_predictions, renderer_id);
+  return field_prediction &&
+         field_prediction->type == autofill::SINGLE_USERNAME;
 }
 
 }  // namespace password_manager

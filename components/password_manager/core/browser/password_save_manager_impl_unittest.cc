@@ -353,6 +353,8 @@ class PasswordSaveManagerImplTest : public testing::Test,
     fetcher()->NotifyFetchCompleted();
   }
 
+  VotesUploader* votes_uploader() { return &votes_uploader_; }
+
   FormData observed_form_;
   FormData submitted_form_;
   FormData observed_form_only_password_fields_;
@@ -604,6 +606,7 @@ TEST_P(PasswordSaveManagerImplTest, SaveNewCredentials) {
   EXPECT_EQ(submitted_form.url, saved_form.url);
   EXPECT_EQ(expected_signon_realm, saved_form.signon_realm);
   EXPECT_EQ(new_username, saved_form.username_value);
+  EXPECT_EQ(new_username, votes_uploader()->saved_username());
   EXPECT_EQ(new_password, saved_form.password_value);
 
   EXPECT_EQ(submitted_form.fields[kUsernameFieldIndex].name,
@@ -694,6 +697,7 @@ TEST_P(PasswordSaveManagerImplTest, OverridePassword) {
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
+  EXPECT_EQ(username, votes_uploader()->saved_username());
 }
 
 // Tests that when the user changes password on a change password form then the
@@ -734,6 +738,7 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordOnChangePasswordForm) {
 
   EXPECT_TRUE(ArePasswordFormUniqueKeysEqual(saved_match_, updated_form));
   EXPECT_EQ(new_password, updated_form.password_value);
+  EXPECT_EQ(saved_match_.username_value, votes_uploader()->saved_username());
 }
 
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {
@@ -767,6 +772,10 @@ TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {
   EXPECT_EQ(
       user_chosen_username,
       password_save_manager_impl()->GetPendingCredentials().username_value);
+
+  password_save_manager_impl()->Save(&observed_form_only_password_fields_,
+                                     parsed_submitted_form);
+  EXPECT_EQ(user_chosen_username, votes_uploader()->saved_username());
 }
 
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAlreadyExisting) {

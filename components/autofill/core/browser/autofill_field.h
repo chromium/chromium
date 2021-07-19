@@ -196,6 +196,15 @@ class AutofillField : public FormFieldData {
     return state_is_a_matching_type_;
   }
 
+  void set_single_username_vote_type(
+      AutofillUploadContents::Field::SingleUsernameVoteType vote_type) {
+    single_username_vote_type_ = vote_type;
+  }
+  absl::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
+  single_username_vote_type() const {
+    return single_username_vote_type_;
+  }
+
   // For each type in |possible_types_| that's missing from
   // |possible_types_validities_|, will add it to the
   // |possible_types_validities_| and will set its validity to UNVALIDATED. This
@@ -291,6 +300,10 @@ class AutofillField : public FormFieldData {
 
   // Denotes if |ADDRESS_HOME_STATE| should be added to |possible_types_|.
   bool state_is_a_matching_type_ = false;
+
+  // Strength of the single username vote signal, if applicable.
+  absl::optional<AutofillUploadContents::Field::SingleUsernameVoteType>
+      single_username_vote_type_;
 
   DISALLOW_COPY_AND_ASSIGN(AutofillField);
 };

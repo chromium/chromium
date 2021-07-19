@@ -381,6 +381,10 @@ std::ostream& operator<<(std::ostream& out,
       out << "\n type: " << field.type();
     if (field.generation_type())
       out << "\n generation_type: " << field.generation_type();
+    if (field.single_username_vote_type()) {
+      out << "\n single_username_vote_type: "
+          << field.single_username_vote_type();
+    }
   }
   return out;
 }

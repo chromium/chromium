@@ -18,6 +18,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
+class AutofillField;
 struct FormData;
 class FormStructure;
 }  // namespace autofill
@@ -35,6 +36,7 @@ using VoteTypeMap =
 // Contains information for sending a SINGLE_USERNAME vote.
 struct SingleUsernameVoteData {
   SingleUsernameVoteData(autofill::FieldRendererId renderer_id,
+                         const std::u16string& username_candidate_value,
                          const FormPredictions& form_predictions);
   SingleUsernameVoteData(const SingleUsernameVoteData&);
   SingleUsernameVoteData& operator=(const SingleUsernameVoteData&);
@@ -44,6 +46,9 @@ struct SingleUsernameVoteData {
   // Renderer id of an input element, for which the SINGLE_USERNAME vote will be
   // sent.
   autofill::FieldRendererId renderer_id;
+
+  // Value of the single username candidate field.
+  std::u16string username_candidate_value;
 
   // Predictions for the form which contains a field with |renderer_id|.
   FormPredictions form_predictions;
@@ -129,6 +134,8 @@ class VotesUploader {
   // SINGLE_USERNAME (if the user saved the credential with the username
   // captured from |single_username_vote_data|) or NOT_USERNAME (if the user
   // modified the username).
+  // TODO (crbug.com/959776): Have a single point in code that calls this
+  // method.
   void MaybeSendSingleUsernameVote();
 
   void set_generation_popup_was_shown(bool generation_popup_was_shown) {
@@ -173,10 +180,28 @@ class VotesUploader {
 
   void clear_single_username_vote_data() { single_username_vote_data_.reset(); }
 
-  void set_single_username_vote_data(autofill::FieldRendererId renderer_id,
-                                     const FormPredictions& form_predictions) {
-    single_username_vote_data_.emplace(renderer_id, form_predictions);
+  void set_single_username_vote_data(
+      autofill::FieldRendererId renderer_id,
+      const std::u16string& username_candidate_value,
+      const FormPredictions& form_predictions) {
+    single_username_vote_data_.emplace(renderer_id, username_candidate_value,
+                                       form_predictions);
   }
+
+  void set_suggested_username(const std::u16string& suggested_username) {
+    suggested_username_ = suggested_username;
+  }
+
+  void set_saved_username(const std::u16string& saved_username) {
+    saved_username_ = saved_username;
+  }
+
+#if defined(UNIT_TEST)
+  const std::u16string& suggested_username() const {
+    return suggested_username_;
+  }
+  const std::u16string& saved_username() const { return saved_username_; }
+#endif
 
  private:
   // The outcome of the form classifier.
@@ -210,6 +235,14 @@ class VotesUploader {
   void SaveFieldVote(autofill::FormSignature form_signature,
                      autofill::FieldSignature field_signature,
                      autofill::ServerFieldType field_type);
+
+  // Sets a server field type for the |field| and updates
+  // |available_field_types| and |field_info_manager| accordingly. Returns true
+  // iff a non-default type is assigned to the |field|.
+  bool SetSingleUsernameVote(
+      autofill::AutofillField* field,
+      autofill::ServerFieldTypeSet* available_field_types,
+      autofill::FormSignature form_signature);
 
   // The client which implements embedder-specific PasswordManager operations.
   PasswordManagerClient* client_;
@@ -256,6 +289,12 @@ class VotesUploader {
   std::map<autofill::FieldRendererId, std::u16string> initial_values_;
 
   absl::optional<SingleUsernameVoteData> single_username_vote_data_;
+
+  // The username that is suggested in a save/update prompt.
+  std::u16string suggested_username_;
+
+  // The username that was saved.
+  std::u16string saved_username_;
 };
 
 }  // namespace password_manager
