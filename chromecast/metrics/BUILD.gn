@@ -27,6 +27,37 @@ cast_source_set("metrics") {
   ]
 }
 
+cast_source_set("metrics_recorder") {
+  public = [ "metrics_recorder.h" ]
+  sources = [ "metrics_recorder.cc" ]
+
+  public_deps = [
+    ":cast_event_builder_interface",
+    "//base",
+  ]
+
+  deps = [ "//net" ]
+}
+
+cast_source_set("cast_event_builder_interface") {
+  public = [ "cast_event_builder.h" ]
+  sources = [ "cast_event_builder.cc" ]
+
+  deps = [ "//third_party/metrics_proto" ]
+}
+
+cast_source_set("cast_event_builder_simple") {
+  sources = [ "cast_event_builder_simple.cc" ]
+  public = [ "cast_event_builder_simple.h" ]
+
+  public_deps = [ ":cast_event_builder_interface" ]
+
+  deps = [
+    "//base",
+    "//third_party/metrics_proto",
+  ]
+}
+
 test("cast_metrics_unittest") {
   sources = [
     "cast_metrics_service_client_unittest.cc",
