@@ -41,8 +41,8 @@ sys.path.append(os.path.join(CHROMIUM_SRC_DIR, 'testing'))
 
 from unexpected_passes import gpu_builders
 from unexpected_passes import gpu_expectations
+from unexpected_passes import gpu_queries
 from unexpected_passes_common import builders
-from unexpected_passes_common import queries
 from unexpected_passes_common import result_output
 
 SUITE_TO_EXPECTATIONS_MAP = {
@@ -185,8 +185,9 @@ def main():
   ci_builders = builders_instance.GetCiBuilders(
       SUITE_TO_TELEMETRY_SUITE_MAP.get(args.suite, args.suite))
 
-  querier = queries.BigQueryQuerier(args.suite, args.project, args.num_samples,
-                                    args.large_query_mode)
+  querier = gpu_queries.GpuBigQueryQuerier(args.suite, args.project,
+                                           args.num_samples,
+                                           args.large_query_mode)
   # Unmatched results are mainly useful for script maintainers, as they don't
   # provide any additional information for the purposes of finding unexpectedly
   # passing tests or unused expectations.

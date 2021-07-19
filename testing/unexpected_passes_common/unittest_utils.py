@@ -8,7 +8,7 @@ from __future__ import print_function
 from unexpected_passes_common import builders
 from unexpected_passes_common import expectations
 from unexpected_passes_common import data_types
-from unexpected_passes_common import queries
+from unexpected_passes_common import queries as queries_module
 
 
 def CreateStatsWithPassFails(passes, fails):
@@ -20,15 +20,48 @@ def CreateStatsWithPassFails(passes, fails):
   return stats
 
 
+def _CreateSimpleQueries(clauses):
+  queries = []
+  # Not actually a valid query since we don't specify the table, but it works.
+  for c in clauses:
+    queries.append("""\
+SELECT *
+WHERE %s
+""" % c)
+  return queries
+
+
+class SimpleFixedQueryGenerator(queries_module.FixedQueryGenerator):
+  def GetQueries(self):
+    return _CreateSimpleQueries(self.GetClauses())
+
+
+class SimpleSplitQueryGenerator(queries_module.SplitQueryGenerator):
+  def GetQueries(self):
+    return _CreateSimpleQueries(self.GetClauses())
+
+
+class SimpleBigQueryQuerier(queries_module.BigQueryQuerier):
+  def _GetQueryGeneratorForBuilder(self, _, builder_type):
+    if not self._large_query_mode:
+      return SimpleFixedQueryGenerator(builder_type, 'AND True')
+    return SimpleSplitQueryGenerator(builder_type, ['test_id'], 200)
+
+  def _StripPrefixFromTestId(self, test_id):
+    return test_id.split('.')[-1]
+
+
 def CreateGenericQuerier(suite=None,
                          project=None,
                          num_samples=None,
-                         large_query_mode=None):
+                         large_query_mode=None,
+                         cls=None):
   suite = suite or 'pixel'
   project = project or 'project'
   num_samples = num_samples or 5
   large_query_mode = large_query_mode or False
-  return queries.BigQueryQuerier(suite, project, num_samples, large_query_mode)
+  cls = cls or SimpleBigQueryQuerier
+  return cls(suite, project, num_samples, large_query_mode)
 
 
 def GetArgsForMockCall(call_args_list, call_number):

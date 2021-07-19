@@ -34,45 +34,29 @@ class HelperMethodUnittest(unittest.TestCase):
     with self.assertRaises(AssertionError):
       queries._StripPrefixFromBuildId('build-1-2')
 
-  def testStripPrefixFromTestIdValidId(self):
-    test_name = 'conformance/programs/program-handling.html'
-    prefix = ('ninja://chrome/test:telemetry_gpu_integration_test/'
-              'gpu_tests.webgl_conformance_integration_test.'
-              'WebGLConformanceIntegrationTest.')
-    test_id = prefix + test_name
-    self.assertEqual(queries._StripPrefixFromTestId(test_id), test_name)
 
-  def testStripPrefixFromTestIdInvalidId(self):
-    test_name = 'conformance/programs/program-handling_html'
-    prefix = ('ninja://chrome/test:telemetry_gpu_integration_test/'
-              'gpu_testse.webgl_conformance_integration_test.')
-    test_id = prefix + test_name
-    with self.assertRaises(AssertionError):
-      queries._StripPrefixFromTestId(test_id)
-
-
-class QueryTestFilterUnittest(unittest.TestCase):
-  def testSplitQueryTestFilterInitialSplit(self):
+class QueryGeneratorUnittest(unittest.TestCase):
+  def testSplitQueryGeneratorInitialSplit(self):
     """Tests that initial query splitting works as expected."""
-    test_filter = queries._SplitQueryTestFilter(['1', '2', '3'], 2)
+    test_filter = queries.SplitQueryGenerator('ci', ['1', '2', '3'], 2)
     self.assertEqual(test_filter._test_id_lists, [['1', '2'], ['3']])
     self.assertEqual(len(test_filter.GetClauses()), 2)
-    test_filter = queries._SplitQueryTestFilter(['1', '2', '3'], 3)
+    test_filter = queries.SplitQueryGenerator('ci', ['1', '2', '3'], 3)
     self.assertEqual(test_filter._test_id_lists, [['1', '2', '3']])
     self.assertEqual(len(test_filter.GetClauses()), 1)
 
-  def testSplitQueryTestFilterSplitQuery(self):
-    """Tests that SplitQueryTestFilter's query splitting works."""
-    test_filter = queries._SplitQueryTestFilter(['1', '2'], 10)
+  def testSplitQueryGeneratorSplitQuery(self):
+    """Tests that SplitQueryGenerator's query splitting works."""
+    test_filter = queries.SplitQueryGenerator('ci', ['1', '2'], 10)
     self.assertEqual(len(test_filter.GetClauses()), 1)
-    test_filter.SplitFilter()
+    test_filter.SplitQuery()
     self.assertEqual(len(test_filter.GetClauses()), 2)
 
-  def testSplitQueryTestFilterSplitQueryCannotSplitFurther(self):
-    """Tests that SplitQueryTestFilter's failure mode."""
-    test_filter = queries._SplitQueryTestFilter(['1'], 1)
+  def testSplitQueryGeneratorSplitQueryCannotSplitFurther(self):
+    """Tests that SplitQueryGenerator's failure mode."""
+    test_filter = queries.SplitQueryGenerator('ci', ['1'], 1)
     with self.assertRaises(queries.QuerySplitError):
-      test_filter.SplitFilter()
+      test_filter.SplitQuery()
 
 
 class QueryBuilderUnittest(unittest.TestCase):
@@ -133,119 +117,24 @@ class QueryBuilderUnittest(unittest.TestCase):
         data_types.Result('test_name', ['win', 'intel'], 'Failure', 'step_name',
                           '1234'))
 
-  def testWebGlVersion(self):
-    """Tests that only results for the correct WebGL version are returned."""
-    query_results = [
-        {
-            'id':
-            'build-1234',
-            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
-                        'gpu_tests.webgl_conformance_integration_test.'
-                        'WebGLConformanceIntegrationTest.test_name'),
-            'status':
-            'FAIL',
-            'typ_expectations': [
-                'RetryOnFailure',
-            ],
-            'typ_tags': [
-                'webgl-version-1',
-            ],
-            'step_name':
-            'step_name',
-        },
-        {
-            'id':
-            'build-2345',
-            'test_id': ('ninja://chrome/test:telemetry_gpu_integration_test/'
-                        'gpu_tests.webgl_conformance_integration_test.'
-                        'WebGLConformanceIntegrationTest.test_name'),
-            'status':
-            'FAIL',
-            'typ_expectations': [
-                'RetryOnFailure',
-            ],
-            'typ_tags': [
-                'webgl-version-2',
-            ],
-            'step_name':
-            'step_name',
-        },
-    ]
-    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance1')
-    self._popen_mock.return_value = unittest_utils.FakeProcess(
-        stdout=json.dumps(query_results))
-    results = querier.QueryBuilder('builder', 'ci')
-    self.assertEqual(len(results), 1)
-    self.assertEqual(
-        results[0],
-        data_types.Result('test_name', ['webgl-version-1'], 'Failure',
-                          'step_name', '1234'))
-
-    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance2')
-    results = querier.QueryBuilder('builder', 'ci')
-    self.assertEqual(len(results), 1)
-    self.assertEqual(
-        results[0],
-        data_types.Result('test_name', ['webgl-version-2'], 'Failure',
-                          'step_name', '2345'))
-
-  def testSuiteExceptionMap(self):
-    """Tests that the suite passed to the query changes for some suites."""
-
-    def assertSuiteInQuery(suite, call_args):
-      query = call_args[0][0][0]
-      s = 'r"gpu_tests\\.%s\\."' % suite
-      self.assertIn(s, query)
-
-    # Non-special cased suite.
-    querier = unittest_utils.CreateGenericQuerier()
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
-      assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
-
-    # Special-cased suites.
-    querier = unittest_utils.CreateGenericQuerier(suite='info_collection')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
-      assertSuiteInQuery('info_collection_test', query_mock.call_args)
-
-    querier = unittest_utils.CreateGenericQuerier(suite='power')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
-      assertSuiteInQuery('power_measurement_integration_test',
-                         query_mock.call_args)
-
-    querier = unittest_utils.CreateGenericQuerier(suite='trace_test')
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', 'ci')
-      assertSuiteInQuery('trace_integration_test', query_mock.call_args)
-
   def testFilterInsertion(self):
     """Tests that test filters are properly inserted into the query."""
     with mock.patch.object(
         self._querier,
-        '_GetTestFilterForBuilder',
-        return_value=queries._FixedQueryTestFilter(
-            'a real filter')), mock.patch.object(
+        '_GetQueryGeneratorForBuilder',
+        return_value=unittest_utils.SimpleFixedQueryGenerator(
+            'ci', 'a real filter')), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
       self._querier.QueryBuilder('builder', 'ci')
       query_mock.assert_called_once()
       query = query_mock.call_args[0][0][0]
-      self.assertIn(
-          """\
-        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        a real filter
-      GROUP BY exported.id""", query)
+      self.assertIn('a real filter', query)
 
   def testEarlyReturnOnNoFilter(self):
     """Tests that the absence of a test filter results in an early return."""
     with mock.patch.object(
-        self._querier, '_GetTestFilterForBuilder',
+        self._querier, '_GetQueryGeneratorForBuilder',
         return_value=None), mock.patch.object(
             self._querier, '_RunBigQueryCommandsForJsonOutput') as query_mock:
       results = self._querier.QueryBuilder('builder', 'ci')
@@ -265,9 +154,9 @@ class QueryBuilderUnittest(unittest.TestCase):
 
     with mock.patch.object(
         self._querier,
-        '_GetTestFilterForBuilder',
-        return_value=queries._SplitQueryTestFilter(
-            ['filter_a', 'filter_b'], 10)), mock.patch.object(
+        '_GetQueryGeneratorForBuilder',
+        return_value=unittest_utils.SimpleSplitQueryGenerator(
+            'ci', ['filter_a', 'filter_b'], 10)), mock.patch.object(
                 self._querier,
                 '_RunBigQueryCommandsForJsonOutput') as query_mock:
       query_mock.side_effect = SideEffect
@@ -351,81 +240,6 @@ class FillExpectationMapForBuildersUnittest(unittest.TestCase):
     with self.assertRaises(IndexError):
       self._querier._FillExpectationMapForBuilders(
           data_types.TestExpectationMap(), ['matched_builder'], 'ci')
-
-
-class GetTestFilterClausesForBuilderUnittest(unittest.TestCase):
-  def setUp(self):
-    self._querier = unittest_utils.CreateGenericQuerier()
-    self._query_patcher = mock.patch.object(
-        self._querier, '_RunBigQueryCommandsForJsonOutput')
-    self._query_mock = self._query_patcher.start()
-    self.addCleanup(self._query_patcher.stop)
-
-  def testNoLargeQueryMode(self):
-    """Tests that the expected clause is returned in normal mode."""
-    test_filter = self._querier._GetTestFilterForBuilder('', '')
-    self.assertEqual(len(test_filter.GetClauses()), 1)
-    self.assertEqual(
-        test_filter.GetClauses()[0], """\
-        AND REGEXP_CONTAINS(
-          test_id,
-          r"gpu_tests\.pixel_integration_test\.")""")
-    self.assertIsInstance(test_filter, queries._FixedQueryTestFilter)
-    self._query_mock.assert_not_called()
-
-  def testLargeQueryModeNoTests(self):
-    """Tests that a special value is returned if no tests are found."""
-    querier = unittest_utils.CreateGenericQuerier(large_query_mode=True)
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput',
-                           return_value=[]) as query_mock:
-      test_filter = querier._GetTestFilterForBuilder('', '')
-      self.assertIsNone(test_filter)
-      query_mock.assert_called_once()
-
-  def testLargeQueryModeFoundTests(self):
-    """Tests that a clause containing found tests is returned."""
-    querier = unittest_utils.CreateGenericQuerier(large_query_mode=True)
-    with mock.patch.object(querier,
-                           '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      query_mock.return_value = [{
-          'test_id': 'foo_test'
-      }, {
-          'test_id': 'bar_test'
-      }]
-      test_filter = querier._GetTestFilterForBuilder('', '')
-      self.assertEqual(test_filter.GetClauses(),
-                       ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
-      self.assertIsInstance(test_filter, queries._SplitQueryTestFilter)
-
-
-class GetSuiteFilterClauseUnittest(unittest.TestCase):
-  def testNonWebGl(self):
-    """Tests that no filter is returned for non-WebGL suites."""
-    for suite in [
-        'context_lost',
-        'depth_capture',
-        'hardware_accelerated_feature',
-        'gpu_process',
-        'info_collection',
-        'maps',
-        'pixel',
-        'power',
-        'screenshot_sync',
-        'trace_test',
-    ]:
-      querier = unittest_utils.CreateGenericQuerier(suite=suite)
-      self.assertEqual(querier._GetSuiteFilterClause(), '')
-
-  def testWebGl(self):
-    """Tests that filters are returned for WebGL suites."""
-    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance1')
-    expected_filter = 'AND "webgl-version-1" IN UNNEST(typ_tags)'
-    self.assertEqual(querier._GetSuiteFilterClause(), expected_filter)
-
-    querier = unittest_utils.CreateGenericQuerier(suite='webgl_conformance2')
-    expected_filter = 'AND "webgl-version-2" IN UNNEST(typ_tags)'
-    self.assertEqual(querier._GetSuiteFilterClause(), expected_filter)
 
 
 class RunBigQueryCommandsForJsonOutputUnittest(unittest.TestCase):

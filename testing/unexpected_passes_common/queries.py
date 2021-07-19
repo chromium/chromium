@@ -19,127 +19,15 @@ import six
 from typ import expectations_parser
 from unexpected_passes_common import builders as builders_module
 from unexpected_passes_common import data_types
-from unexpected_passes_common import expectations
 from unexpected_passes_common import multiprocessing_utils
 
 DEFAULT_NUM_SAMPLES = 100
 MAX_ROWS = (2**31) - 1
 MAX_QUERY_TRIES = 3
-# The target number of results/rows per query. Higher values = longer individual
-# query times and higher chances to run out of memory in BigQuery. Lower
-# values = more parallelization overhead and more issues with rate limit errors.
-TARGET_RESULTS_PER_QUERY = 20000
 # Used to prevent us from triggering too many queries simultaneously and causing
 # a bunch of rate limit errors. Anything below 1.5 seemed to result in enough
 # rate limit errors to cause problems. Raising above that for safety.
 QUERY_DELAY = 2
-
-# Largely written by nodir@ and modified by bsheedy@
-# This query gets us all results for tests that have had results with a
-# RetryOnFailure or Failure expectation in the past |@num_samples| builds on
-# |@builder_name| for the test |suite| type we're looking at. Whether these are
-# CI or try results depends on whether |builder_type| is "ci" or "try".
-GPU_BQ_QUERY_TEMPLATE = """\
-WITH
-  builds AS (
-    SELECT
-      exported.id,
-      ARRAY_AGG(STRUCT(
-          exported.id,
-          test_id,
-          status,
-          (
-            SELECT value
-            FROM tr.tags
-            WHERE key = "step_name") as step_name,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "typ_tag") as typ_tags,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "raw_typ_expectation") as typ_expectations
-      )) as test_results,
-      FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
-      WHERE
-        status != "SKIP"
-        AND exported.realm = "chromium:{builder_type}"
-        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        {test_filter_clause}
-      GROUP BY exported.id
-      ORDER BY ANY_VALUE(partition_time) DESC
-      LIMIT @num_builds
-    ),
-    tests AS (
-      SELECT ARRAY_AGG(tr) test_results
-      FROM builds b, b.test_results tr
-      WHERE
-        "RetryOnFailure" IN UNNEST(typ_expectations)
-        OR "Failure" IN UNNEST(typ_expectations)
-      GROUP BY test_id, step_name
-    )
-SELECT tr.*
-FROM tests t, t.test_results tr
-"""
-
-# Very similar to above, but used for getting the names of tests that are of
-# interest for use as a filter.
-TEST_FILTER_QUERY_TEMPLATE = """\
-WITH
-  builds AS (
-    SELECT
-      exported.id,
-      ARRAY_AGG(STRUCT(
-          exported.id,
-          test_id,
-          status,
-          (
-            SELECT value
-            FROM tr.tags
-            WHERE key = "step_name") as step_name,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "typ_tag") as typ_tags,
-          ARRAY(
-            SELECT value
-            FROM tr.tags
-            WHERE key = "raw_typ_expectation") as typ_expectations
-      )) as test_results,
-      FROM `luci-resultdb.chromium.gpu_{builder_type}_test_results` tr
-      WHERE
-        status != "SKIP"
-        AND exported.realm = "chromium:{builder_type}"
-        AND STRUCT("builder", @builder_name) IN UNNEST(variant)
-        AND REGEXP_CONTAINS(
-          test_id,
-          r"gpu_tests\.{suite}\.")
-      GROUP BY exported.id
-      ORDER BY ANY_VALUE(partition_time) DESC
-      LIMIT 50
-    ),
-    tests AS (
-      SELECT ARRAY_AGG(tr) test_results
-      FROM builds b, b.test_results tr
-      WHERE
-        "RetryOnFailure" IN UNNEST(typ_expectations)
-        OR "Failure" IN UNNEST(typ_expectations)
-        {suite_filter_clause}
-      GROUP BY test_id, step_name
-    )
-SELECT DISTINCT tr.test_id
-FROM tests t, t.test_results tr
-"""
-
-# The suite reported to Telemetry for selecting which suite to run is not
-# necessarily the same one that is reported to typ/ResultDB, so map any special
-# cases here.
-TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP = {
-    'info_collection': 'info_collection_test',
-    'power': 'power_measurement_integration_test',
-    'trace_test': 'trace_integration_test',
-}
 
 
 class BigQueryQuerier(object):
@@ -163,32 +51,8 @@ class BigQueryQuerier(object):
     self._project = project
     self._num_samples = num_samples or DEFAULT_NUM_SAMPLES
     self._large_query_mode = large_query_mode
-    self._check_webgl_version = None
-    self._webgl_version_tag = None
 
     assert self._num_samples > 0
-
-    # WebGL 1 and 2 tests are technically the same suite, but have different
-    # expectation files. This leads to us getting both WebGL 1 and 2 results
-    # when we only have expectations for one of them, which causes all the
-    # results from the other to be reported as not having a matching
-    # expectation.
-    # TODO(crbug.com/1140283): Remove this once WebGL expectations are merged
-    # and there's no need to differentiate them.
-    if 'webgl_conformance' in self._suite:
-      webgl_version = self._suite[-1]
-      self._suite = 'webgl_conformance'
-      self._webgl_version_tag = 'webgl-version-%s' % webgl_version
-      self._check_webgl_version =\
-          lambda tags: self._webgl_version_tag in tags
-    else:
-      self._check_webgl_version = lambda tags: True
-
-    # Most test names are |suite|_integration_test, but there are several that
-    # are not reported that way in typ, and by extension ResultDB, so adjust
-    # that here.
-    self._suite = TELEMETRY_SUITE_TO_RDB_SUITE_EXCEPTION_MAP.get(
-        self._suite, self._suite + '_integration_test')
 
   def FillExpectationMapForCiBuilders(self, expectation_map, builders):
     """Fills |expectation_map| for CI builders.
@@ -287,8 +151,8 @@ class BigQueryQuerier(object):
       data_types.Resultobjects.
     """
 
-    test_filter = self._GetTestFilterForBuilder(builder, builder_type)
-    if not test_filter:
+    query_generator = self._GetQueryGeneratorForBuilder(builder, builder_type)
+    if not query_generator:
       # No affected tests on this builder, so early return.
       return []
 
@@ -299,15 +163,8 @@ class BigQueryQuerier(object):
     query_results = None
     while query_results is None:
       try:
-        queries = []
-        for tfc in test_filter.GetClauses():
-          query = GPU_BQ_QUERY_TEMPLATE.format(builder_type=builder_type,
-                                               test_filter_clause=tfc,
-                                               suite=self._suite)
-          queries.append(query)
-
         query_results = self._RunBigQueryCommandsForJsonOutput(
-            queries, {
+            query_generator.GetQueries(), {
                 '': {
                     'builder_name': builder
                 },
@@ -319,7 +176,7 @@ class BigQueryQuerier(object):
         logging.warning(
             'Query to builder %s hit BigQuery hard memory limit, trying again '
             'with more query splitting.', builder)
-        test_filter.SplitFilter()
+        query_generator.SplitQuery()
 
     results = []
     if not query_results:
@@ -332,10 +189,10 @@ class BigQueryQuerier(object):
       return results
 
     for r in query_results:
-      if not self._check_webgl_version(r['typ_tags']):
+      if self._ShouldSkipOverResult(r):
         continue
       build_id = _StripPrefixFromBuildId(r['id'])
-      test_name = _StripPrefixFromTestId(r['test_id'])
+      test_name = self._StripPrefixFromTestId(r['test_id'])
       actual_result = _ConvertActualResultToExpectationFileFormat(r['status'])
       tags = r['typ_tags']
       step = r['step_name']
@@ -345,8 +202,20 @@ class BigQueryQuerier(object):
                   builder_type, builder)
     return results
 
-  def _GetTestFilterForBuilder(self, builder, builder_type):
-    """Returns a _BaseQueryTestFilter instance to only include relevant tests.
+  def _ShouldSkipOverResult(self, result):
+    """Whether |result| should be ignored and skipped over.
+
+    Args:
+      result: A dict containing a single BigQuery result row.
+
+    Returns:
+      True if the result should be skipped over/ignored, otherwise False.
+    """
+    del result
+    return False
+
+  def _GetQueryGeneratorForBuilder(self, builder, builder_type):
+    """Returns a _BaseQueryGenerator instance to only include relevant tests.
 
     Args:
       builder: A string containing the name of the builder to query.
@@ -355,48 +224,9 @@ class BigQueryQuerier(object):
 
     Returns:
       None if the query returned no results. Otherwise, some instance of a
-      _BaseQueryTestFilter.
+      _BaseQueryGenerator.
     """
-
-    if not self._large_query_mode:
-      # Look for all tests that match the given suite.
-      return _FixedQueryTestFilter("""\
-        AND REGEXP_CONTAINS(
-          test_id,
-          r"gpu_tests\.%s\.")""" % self._suite)
-
-    query = TEST_FILTER_QUERY_TEMPLATE.format(
-        builder_type=builder_type,
-        suite=self._suite,
-        suite_filter_clause=self._GetSuiteFilterClause())
-    query_results = self._RunBigQueryCommandsForJsonOutput(
-        query, {'': {
-            'builder_name': builder
-        }})
-    test_ids = ['"%s"' % r['test_id'] for r in query_results]
-
-    if not test_ids:
-      return None
-
-    # Only consider specific test cases that were found to have active
-    # expectations in the above query. Also perform any initial query splitting.
-    target_num_ids = TARGET_RESULTS_PER_QUERY / self._num_samples
-    return _SplitQueryTestFilter(test_ids, target_num_ids)
-
-  def _GetSuiteFilterClause(self):
-    """Returns a SQL clause to only include relevant suites.
-
-    Meant for cases where suites are differentiated by typ tag rather than
-    reported suite name, e.g. WebGL 1 vs. 2 conformance.
-
-    Returns:
-      A string containing a valid SQL clause. Will be an empty string if no
-      filtering is possible/necessary.
-    """
-    if not self._webgl_version_tag:
-      return ''
-
-    return 'AND "%s" IN UNNEST(typ_tags)' % self._webgl_version_tag
+    raise NotImplementedError()
 
   def _RunBigQueryCommandsForJsonOutput(self, queries, parameters):
     """Runs the given BigQuery queries and returns their outputs as JSON.
@@ -491,13 +321,28 @@ class BigQueryQuerier(object):
         combined_json.append(row)
     return combined_json
 
+  def _StripPrefixFromTestId(self, test_id):
+    """Strips the prefix from a test ID, leaving only the test case name.
 
-class _BaseQueryTestFilter(object):
-  """Abstract base class for test filters."""
+    Args:
+      test_id: A string containing a full ResultDB test ID, e.g.
+          ninja://target/directory.suite.class.test_case
 
-  def SplitFilter(self):
-    """Splits the test filter into more clauses/queries."""
-    raise NotImplementedError('SplitFilter must be overridden in a child class')
+    Returns:
+      A string containing the test cases name extracted from |test_id|.
+    """
+    raise NotImplementedError()
+
+
+class _BaseQueryGenerator(object):
+  """Abstract base class for query generators."""
+
+  def __init__(self, builder_type):
+    self._builder_type = builder_type
+
+  def SplitQuery(self):
+    """Splits the query into more clauses/queries."""
+    raise NotImplementedError('SplitQuery must be overridden in a child class')
 
   def GetClauses(self):
     """Gets string representations of the test filters.
@@ -508,18 +353,28 @@ class _BaseQueryTestFilter(object):
     """
     raise NotImplementedError('GetClauses must be overridden in a child class')
 
+  def GetQueries(self):
+    """Gets string representations of the queries to run.
 
-class _FixedQueryTestFilter(_BaseQueryTestFilter):
+    Returns:
+      A list of strings, each string being a valid SQL query that queries a
+      portion of the tests of interest.
+    """
+    raise NotImplementedError('GetQueries must be overridden in a child class')
+
+
+class FixedQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
   """Concrete test filter that cannot be split."""
 
-  def __init__(self, test_filter):
+  def __init__(self, builder_type, test_filter):
     """
     Args:
       test_filter: A string containing the test filter SQL clause to use.
     """
+    super(FixedQueryGenerator, self).__init__(builder_type)
     self._test_filter = test_filter
 
-  def SplitFilter(self):
+  def SplitQuery(self):
     raise QuerySplitError('Tried to split a query without any test IDs to use, '
                           'use --large-query-mode')
 
@@ -527,10 +382,10 @@ class _FixedQueryTestFilter(_BaseQueryTestFilter):
     return [self._test_filter]
 
 
-class _SplitQueryTestFilter(_BaseQueryTestFilter):
+class SplitQueryGenerator(_BaseQueryGenerator):  # pylint: disable=abstract-method
   """Concrete test filter that can be split to a desired size."""
 
-  def __init__(self, test_ids, target_num_samples):
+  def __init__(self, builder_type, test_ids, target_num_samples):
     """
     Args:
       test_ids: A list of strings containing the test IDs to use in the test
@@ -538,6 +393,7 @@ class _SplitQueryTestFilter(_BaseQueryTestFilter):
       target_num_samples: The target/max number of samples to get from each
           query that uses clauses from this test filter.
     """
+    super(SplitQueryGenerator, self).__init__(builder_type)
     self._test_id_lists = []
     self._target_num_samples = target_num_samples
     self._clauses = []
@@ -573,7 +429,7 @@ class _SplitQueryTestFilter(_BaseQueryTestFilter):
       test_filter_clauses.append(clause)
     self._clauses = test_filter_clauses
 
-  def SplitFilter(self):
+  def SplitQuery(self):
     def _SplitListInHalf(l):
       assert len(l) > 1
       front = l[:len(l) // 2]
@@ -630,17 +486,6 @@ def _StripPrefixFromBuildId(build_id):
   # Build IDs provided by ResultDB are prefixed with "build-"
   split_id = build_id.split('-')
   assert len(split_id) == 2
-  return split_id[-1]
-
-
-def _StripPrefixFromTestId(test_id):
-  # GPU test IDs provided by ResultDB are the test name as known by the test
-  # runner prefixed by
-  # "ninja://<target>/gpu_tests.<suite>_integration_test.<class>.", e.g.
-  #     "ninja://chrome/test:telemetry_gpu_integration_test/
-  #      gpu_tests.pixel_integration_test.PixelIntegrationTest."
-  split_id = test_id.split('.', 3)
-  assert len(split_id) == 4
   return split_id[-1]
 
 
