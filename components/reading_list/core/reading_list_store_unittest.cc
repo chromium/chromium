@@ -316,6 +316,8 @@ TEST_F(ReadingListStoreTest, CompareEntriesForSync) {
   entryB.set_status(sync_pb::ReadingListSpecifics::UNREAD);
   entryA.set_creation_time_us(10);
   entryB.set_creation_time_us(10);
+  entryA.set_estimated_read_time_seconds(420);
+  entryB.set_estimated_read_time_seconds(420);
   entryA.set_first_read_time_us(50);
   entryB.set_first_read_time_us(50);
   entryA.set_update_time_us(100);
@@ -396,6 +398,13 @@ TEST_F(ReadingListStoreTest, CompareEntriesForSync) {
   ExpectAB(entryA, entryB, true);
   ExpectAB(entryB, entryA, false);
   entryA.set_first_read_time_us(50);
+
+  entryA.set_creation_time_us(11);
+  entryA.set_estimated_read_time_seconds(400);
+  ExpectAB(entryB, entryA, true);
+  ExpectAB(entryA, entryB, false);
+  entryA.set_estimated_read_time_seconds(420);
+  entryA.set_creation_time_us(10);
 
   entryA.set_update_time_us(99);
   ExpectAB(entryA, entryB, true);

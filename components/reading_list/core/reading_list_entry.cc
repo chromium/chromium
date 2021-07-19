@@ -539,6 +539,12 @@ void ReadingListEntry::MergeWithEntry(const ReadingListEntry& other) {
   if (creation_time_us_ < other.creation_time_us_) {
     creation_time_us_ = std::move(other.creation_time_us_);
     first_read_time_us_ = std::move(other.first_read_time_us_);
+    if (estimated_read_time_ != other.estimated_read_time_ &&
+        !other.estimated_read_time_.is_zero()) {
+      // Assume that if |other| is newer that its estimated read time is the
+      // preferred one.
+      estimated_read_time_ = std::move(other.estimated_read_time_);
+    }
   } else if (creation_time_us_ == other.creation_time_us_) {
     // The first_time_read_us from |other| is used if
     // - this.first_time_read_us == 0: the entry was never read in this device.
@@ -582,6 +588,7 @@ ReadingListEntry::AsReadingListLocal(const base::Time& now) const {
   pb_entry->set_first_read_time_us(FirstReadTime());
   pb_entry->set_update_time_us(UpdateTime());
   pb_entry->set_update_title_time_us(UpdateTitleTime());
+  pb_entry->set_estimated_read_time_seconds(EstimatedReadTime().InSeconds());
 
   switch (state_) {
     case READ:
@@ -661,6 +668,7 @@ ReadingListEntry::AsReadingListSpecifics() const {
   pb_entry->set_first_read_time_us(FirstReadTime());
   pb_entry->set_update_time_us(UpdateTime());
   pb_entry->set_update_title_time_us(UpdateTitleTime());
+  pb_entry->set_estimated_read_time_seconds(EstimatedReadTime().InSeconds());
 
   switch (state_) {
     case READ:
