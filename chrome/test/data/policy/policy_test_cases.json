@@ -1927,12 +1927,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {
-          "DisableAuthNegotiateCnameLookup": true
-        },
+        "note": "Checking default value (no policies set)",
+        "policies": { },
         "prefs": {
           "auth.disable_negotiate_cname_lookup": {
-            "location": "local_state"
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "DisableAuthNegotiateCnameLookup": true },
+        "prefs": {
+          "auth.disable_negotiate_cname_lookup": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "DisableAuthNegotiateCnameLookup": false },
+        "prefs": {
+          "auth.disable_negotiate_cname_lookup": {
+            "location": "local_state",
+            "value": false
           }
         }
       }
@@ -1947,12 +1965,30 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "policies": {
-          "EnableAuthNegotiatePort": true
-        },
+        "note": "Checking default value (no policies set)",
+        "policies": { },
         "prefs": {
           "auth.enable_negotiate_port": {
-            "location": "local_state"
+            "location": "local_state",
+            "default_value": false
+          }
+        }
+      },
+      {
+        "policies": { "EnableAuthNegotiatePort": true },
+        "prefs": {
+          "auth.enable_negotiate_port": {
+            "location": "local_state",
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": { "EnableAuthNegotiatePort": false },
+        "prefs": {
+          "auth.enable_negotiate_port": {
+            "location": "local_state",
+            "value": false
           }
         }
       }
