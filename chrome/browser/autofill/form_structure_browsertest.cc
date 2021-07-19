@@ -259,8 +259,7 @@ std::unique_ptr<HttpResponse> FormStructureBrowserTest::HandleRequest(
   return std::move(response);
 }
 
-// Times out on all platforms.  http://crbug.com/1216328
-IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DISABLED_DataDrivenHeuristics) {
+IN_PROC_BROWSER_TEST_P(FormStructureBrowserTest, DataDrivenHeuristics) {
   // Prints the path of the test to be executed.
   LOG(INFO) << GetParam().MaybeAsASCII();
   bool is_expected_to_pass =
