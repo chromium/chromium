@@ -38,7 +38,12 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
       std::unique_ptr<ui::OverlayCandidatesOzone> overlay_candidates,
       std::vector<OverlayStrategy> available_strategies,
       gpu::SharedImageInterface* shared_image_interface);
+  OverlayProcessorDelegated(const OverlayProcessorDelegated&) = delete;
+  OverlayProcessorDelegated& operator=(const OverlayProcessorDelegated&) =
+      delete;
   ~OverlayProcessorDelegated() override;
+
+  bool DisableSplittingQuads() const override;
 
   void ProcessForOverlays(
       DisplayResourceProvider* resource_provider,
@@ -58,8 +63,8 @@ class VIZ_SERVICE_EXPORT OverlayProcessorDelegated
   // is also used by SurfaceControl to adjust rotation.
   // TODO(weiliangc): Internalize the |output_surface_plane| inside the overlay
   // processor.
-  void AdjustOutputSurfaceOverlay(absl::optional<OutputSurfaceOverlayPlane>*
-                                      output_surface_plane) override {}
+  void AdjustOutputSurfaceOverlay(
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
 
  private:
   gfx::RectF GetPrimaryPlaneDisplayRect(

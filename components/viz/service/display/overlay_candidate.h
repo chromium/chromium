@@ -167,6 +167,11 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
   // with |uv_rect| member in this class.
   gfx::RectF bounds_rect;
 
+  // Quad |shared_quad_state| opacity is ubiquitous for quad types
+  // AggregateRenderPassDrawQuad, TileDrawQuad, SolidColorDrawQuad. A delegate
+  // context must support non opaque opacity for these types.
+  float opacity = 1.0f;
+
  private:
   static bool FromDrawQuadResource(
       DisplayResourceProvider* resource_provider,
@@ -179,7 +184,8 @@ class VIZ_SERVICE_EXPORT OverlayCandidate {
                               SurfaceDamageRectList* surface_damage_rect_list,
                               const TextureDrawQuad* quad,
                               const gfx::RectF& primary_rect,
-                              OverlayCandidate* candidate);
+                              OverlayCandidate* candidate,
+                              bool is_delegated_context);
 
   static bool FromTileQuad(DisplayResourceProvider* resource_provider,
                            SurfaceDamageRectList* surface_damage_rect_list,

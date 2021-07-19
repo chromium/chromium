@@ -50,6 +50,13 @@ OverlayProcessorDelegated::OverlayProcessorDelegated(
 
 OverlayProcessorDelegated::~OverlayProcessorDelegated() = default;
 
+bool OverlayProcessorDelegated::DisableSplittingQuads() const {
+  // If there is quads to split these will happen delegee side.
+  return true;
+}
+
+constexpr size_t kTooManyQuads = 128;
+
 bool OverlayProcessorDelegated::AttemptWithStrategies(
     const skia::Matrix44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
@@ -61,16 +68,20 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     OverlayCandidateList* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   DCHECK(candidates->empty());
-
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
-  const bool allow_delegated_quads = true;
+  constexpr bool is_delegated_context = true;
 
-  // Wayland overlay forwarding mechanism does not support putting the same
-  // buffer on multiple surfaces. We use this |candidate_ids| for best effort
-  // service and simply skip duplicate resource id quads.
+  if (quad_list->size() >= kTooManyQuads ||
+      !render_pass_backdrop_filters.empty())
+    return false;
+
+  // Wayland overlay forwarding mechanism does not (yet) support putting the
+  // same buffer on multiple surfaces. We use this |candidate_ids| for best
+  // effort service and simply skip duplicate resource id quads.
   std::set<ResourceId> candidate_ids;
   std::vector<QuadList::Iterator> candidate_quads;
+
   for (auto it = quad_list->begin(); it != quad_list->end(); ++it) {
     OverlayCandidate candidate;
     auto& transform = it->shared_quad_state->quad_to_target_transform;
@@ -84,7 +95,7 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     if (OverlayCandidate::FromDrawQuad(
             resource_provider, surface_damage_rect_list, output_color_matrix,
             *it, GetPrimaryPlaneDisplayRect(primary_plane), &candidate,
-            allow_delegated_quads)) {
+            is_delegated_context)) {
       // Setting the |uv_rect| will eventually result in setting the
       // |crop_rect_| in wayland. If this results in an empty pixel scale the
       // wayland connection will be terminated. See: wayland_surface.cc
@@ -130,22 +141,31 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
     }
   }
 
-  if (candidates->empty())
+  if (candidates->empty() || candidates->size() != quad_list->size()) {
+    candidates->clear();
     return false;
+  }
 
   int curr_plane_order = candidates->size();
   for (auto&& each : *candidates) {
     each.plane_z_order = curr_plane_order--;
   }
+
   // Check for support.
   this->CheckOverlaySupport(primary_plane, candidates);
+
+  for (auto&& each : *candidates) {
+    if (!each.overlay_handled) {
+      candidates->clear();
+      return false;
+    }
+  }
 
   // We cannot erase the quads that were handled as overlays because raw
   // pointers of the aggregate draw quads were placed in the |rpdq| member of
   // the |OverlayCandidate|. As keeping with the pattern in
   // overlay_processor_mac we will also set the damage to empty on the
   // successful promotion of all quads.
-
   return true;
 }
 
@@ -186,12 +206,35 @@ void OverlayProcessorDelegated::ProcessForOverlays(
   }
 
   DCHECK(candidates->empty() || success);
-  // TODO(petermcneeley) : Actually modify the damage here. When all damaged
-  // quads are forwarded the damage here will be empty.
+
+  if (success) {
+    overlay_damage_rect_ = *damage_rect;
+    // Save all the damage for the case when we fail delegation.
+    previous_frame_overlay_rect_.Union(*damage_rect);
+    // All quads handled. Primary plane damage is zero.
+    *damage_rect = gfx::Rect();
+  } else {
+    overlay_damage_rect_ = previous_frame_overlay_rect_;
+    // Add in all the damage from all fully delegated frames.
+    damage_rect->Union(previous_frame_overlay_rect_);
+    previous_frame_overlay_rect_ = gfx::Rect();
+  }
+
   DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),
                  "Scheduled overlay planes", candidates->size());
+}
+
+void OverlayProcessorDelegated::AdjustOutputSurfaceOverlay(
+    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+  if (!output_surface_plane->has_value())
+    return;
+
+  // TODO(https://crbug.com/1224991) : Damage propagation will allow us to
+  // remove the primary plan entirely in the case of full delegation.
+  // In that case we will do "output_surface_plane->reset()" like the existing
+  // fullscreen overlay code.
 }
 
 }  // namespace viz
