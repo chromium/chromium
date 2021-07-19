@@ -34,6 +34,25 @@ TEST_F(FrameQueueTest, PushPopMatches) {
   }
 }
 
+TEST_F(FrameQueueTest, PushReturnsReplacedElement) {
+  const int kMaxSize = 2;
+  scoped_refptr<FrameQueue<int>> queue =
+      base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
+  absl::optional<int> replaced = queue->Push(1);
+  EXPECT_FALSE(replaced.has_value());
+
+  replaced = queue->Push(2);
+  EXPECT_FALSE(replaced.has_value());
+
+  replaced = queue->Push(3);
+  EXPECT_TRUE(replaced.has_value());
+  EXPECT_EQ(replaced.value(), 1);
+
+  replaced = queue->Push(4);
+  EXPECT_TRUE(replaced.has_value());
+  EXPECT_EQ(replaced.value(), 2);
+}
+
 TEST_F(FrameQueueTest, EmptyQueueReturnsNullopt) {
   scoped_refptr<FrameQueue<int>> queue =
       base::MakeRefCounted<FrameQueue<int>>(5);
@@ -139,6 +158,43 @@ TEST_F(FrameQueueTest, PushValuesInOrderOnSeparateThread) {
     num_read++;
   }
   EXPECT_LE(num_read, kMaxSize);
+}
+
+TEST_F(FrameQueueTest, LockedOperations) {
+  const int kMaxSize = 1;
+  scoped_refptr<FrameQueue<int>> queue =
+      base::MakeRefCounted<FrameQueue<int>>(kMaxSize);
+  MutexLocker locker(queue->GetMutex());
+  EXPECT_TRUE(queue->IsEmptyLocked());
+
+  absl::optional<int> peeked = queue->PeekLocked();
+  EXPECT_FALSE(peeked.has_value());
+
+  absl::optional<int> popped = queue->PushLocked(1);
+  EXPECT_FALSE(popped.has_value());
+  EXPECT_FALSE(queue->IsEmptyLocked());
+
+  peeked = queue->PeekLocked();
+  EXPECT_TRUE(peeked.has_value());
+  EXPECT_EQ(peeked.value(), 1);
+  EXPECT_FALSE(queue->IsEmptyLocked());
+
+  popped = queue->PushLocked(2);
+  EXPECT_TRUE(popped.has_value());
+  EXPECT_EQ(popped.value(), 1);
+
+  peeked = queue->PeekLocked();
+  EXPECT_TRUE(peeked.has_value());
+  EXPECT_EQ(peeked.value(), 2);
+  EXPECT_FALSE(queue->IsEmptyLocked());
+
+  popped = queue->PopLocked();
+  EXPECT_TRUE(popped.has_value());
+  EXPECT_EQ(popped.value(), 2);
+  EXPECT_TRUE(queue->IsEmptyLocked());
+
+  peeked = queue->PeekLocked();
+  EXPECT_FALSE(peeked.has_value());
 }
 
 }  // namespace blink
