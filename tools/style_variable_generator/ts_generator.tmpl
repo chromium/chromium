@@ -1,0 +1,94 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+{%- for path in in_files %}
+ *  {{path}}
+{%-  endfor %}
+ */
+{% macro render_variables_as_css(mode) -%}
+{%- for model_name, color in colors[mode].items() %}
+  {{model_name | to_css_var_name}}-rgb: {{color | css_color_rgb}};
+  {{model_name | to_css_var_name}}: {{css_color_var(model_name, color)}};
+{% endfor %}
+
+{%- for name, value in opacities[mode].items() %}
+  {{name | to_css_var_name}}: {{value | css_opacity}};
+{%  endfor -%}
+{%- endmacro %}
+import {css} from 'lit-element';
+{%- if include_style_sheet %}
+/* SAFETY_BOILERPLATE */
+
+export interface GetColorsCSSOptions {
+  lockTheme?: 'light'|'dark';
+}
+
+const DEFAULT_CSS = `
+{#
+The :not(body) adds extra selector specificity so that these colors 'win'
+against paper-styles/color.html.
+TODO(https://crbug.com/1062154): Remove once deprecated colors are removed from
+Chrome OS pages.
+-#}
+html:not(body) {
+{{- render_variables_as_css(Modes.DEFAULT) }}
+
+{%- if untyped_css %}
+{%- for group_name, vars in untyped_css.items() %}
+  /* {{group_name}} */
+{%-     for name, value in vars.items() %}
+  {{name | to_css_var_name}}: {{value}};
+{%-     endfor %}
+{%   endfor %}
+{%- endif -%}
+}
+`;
+
+const DARK_MODE_OVERRIDES_CSS = `
+html:not(body) {
+{{- render_variables_as_css(Modes.DARK) -}}
+}
+`;
+
+/**
+ * Returns a string containing all semantic colors exported in this file as
+ * css variables. This string an be used to construct a stylesheet which can be
+ * placed in the dom at runtime, see tools/style_variable_generator/README.md
+ * for more info. Ensure the css returned by this function is added to the dom
+ * before the rendering of the first element on the page so you are guaranteed
+ * that all TS constant references resolve correctly.
+ */
+export function getColorsCSS(options?: GetColorsCSSOptions) {
+  let cssString;
+  if (options?.lockTheme === 'light') {
+    // Tag strings which are safe with a special comment so copybara can add
+    // the right safety wrappers whem moving this code into Google3.
+    cssString = /* SAFE */ (DEFAULT_CSS);
+  } else if (options?.lockTheme === 'dark') {
+    cssString = /* SAFE */ (`
+      ${DEFAULT_CSS}
+      ${DARK_MODE_OVERRIDES_CSS}
+    `);
+  } else {
+    cssString = /* SAFE */ (`
+      ${DEFAULT_CSS}
+
+      @media (prefers-color-scheme: dark) {
+        ${DARK_MODE_OVERRIDES_CSS}
+      }
+    `);
+  }
+
+  return cssString;
+}
+{%- endif %}
+
+{% for model_name, color in colors[Modes.DEFAULT].items() -%}
+export const {{model_name | to_ts_var_name}} = css`var({{model_name | to_css_var_name}})`;
+{% endfor %}
+
+{%- for model_name, value in opacities[Modes.DEFAULT].items() -%}
+export const {{model_name | to_ts_var_name}} = css`var({{model_name | to_css_var_name}})`;
+{%  endfor -%}

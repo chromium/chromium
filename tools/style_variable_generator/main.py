@@ -10,6 +10,7 @@ import os
 sys.path += [os.path.dirname(os.path.dirname(__file__))]
 
 from style_variable_generator.css_generator import CSSStyleGenerator
+from style_variable_generator.ts_generator import TSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from style_variable_generator.views_generator import ViewsStyleGenerator
 from style_variable_generator.base_generator import Modes
@@ -32,7 +33,7 @@ def main():
 
     generators = [
         CSSStyleGenerator, ViewsStyleGenerator, ProtoStyleGenerator,
-        ProtoJSONStyleGenerator
+        ProtoJSONStyleGenerator, TSStyleGenerator
     ]
 
     parser.add_argument('--generator',

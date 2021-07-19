@@ -11,6 +11,7 @@ from style_variable_generator.base_generator import Modes
 from style_variable_generator.css_generator import CSSStyleGenerator
 from style_variable_generator.proto_generator import ProtoStyleGenerator, ProtoJSONStyleGenerator
 from style_variable_generator.views_generator import ViewsStyleGenerator
+from style_variable_generator.ts_generator import TSStyleGenerator
 import unittest
 
 
@@ -71,6 +72,18 @@ class CSSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
         self.generator = CSSStyleGenerator()
         self.generator.AddJSONFileToModel('typography_test.json5')
         expected_file_name = 'typography_test_expected.css'
+
+
+class TSStyleGeneratorTest(unittest.TestCase, BaseStyleGeneratorTest):
+    def setUp(self):
+        self.generator = TSStyleGenerator()
+        self.generator.AddJSONFileToModel('colors_test_palette.json5')
+        self.generator.AddJSONFileToModel('colors_test.json5')
+        self.expected_output_file = 'colors_test_expected.ts'
+
+    def testIncludeStyleSheet(self):
+        expected_file_name = 'colors_test_include_style_sheet_expected.ts'
+        self.generator.generator_options = {'include_style_sheet': 'true'}
         self.assertEqualToFile(self.generator.Render(), expected_file_name)
 
 
