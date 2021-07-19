@@ -49,9 +49,9 @@ int CreateFirstRunTrial(
     case version_info::Channel::CANARY:
     case version_info::Channel::DEV:
     case version_info::Channel::BETA:
-      enabled_percent = 0;
-      control_percent = 0;
-      default_percent = 100;
+      enabled_percent = 50;
+      control_percent = 50;
+      default_percent = 0;
       break;
     case version_info::Channel::STABLE:
       enabled_percent = 0;
