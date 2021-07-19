@@ -1372,7 +1372,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="TabManager.TimeSinceGroupClosedUntilRestored" units="ms"
-    expires_after="2021-07-13">
+    expires_after="2022-01-10">
   <owner>connily@chromium.org</owner>
   <owner>chrome-desktop-ui-sea@google.com</owner>
   <summary>
