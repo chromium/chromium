@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
-
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 

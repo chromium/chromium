@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 

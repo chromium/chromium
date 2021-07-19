@@ -25,7 +25,9 @@
 
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_latin1.h"
 
+#include <unicode/utf16.h>
 #include <memory>
+
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_codec_ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

@@ -198,7 +198,7 @@ class CORE_EXPORT NGConstraintSpace final {
         bitfields_.percentage_inline_storage)) {
       default:
         NOTREACHED();
-        U_FALLTHROUGH;
+        FALLTHROUGH;
       case kSameAsAvailable:
         return available_size_.inline_size;
       case kZero:
@@ -216,7 +216,7 @@ class CORE_EXPORT NGConstraintSpace final {
         static_cast<NGPercentageStorage>(bitfields_.percentage_block_storage)) {
       default:
         NOTREACHED();
-        U_FALLTHROUGH;
+        FALLTHROUGH;
       case kSameAsAvailable:
         return available_size_.block_size;
       case kZero:

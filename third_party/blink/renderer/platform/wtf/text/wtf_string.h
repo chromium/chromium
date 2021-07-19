@@ -715,7 +715,6 @@ using WTF::g_empty_string;
 using WTF::g_empty_string16_bit;
 using WTF::Equal;
 using WTF::Find;
-using WTF::IsSpaceOrNewline;
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

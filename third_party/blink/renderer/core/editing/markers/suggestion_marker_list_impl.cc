@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/editing/markers/suggestion_marker_replacement_scope.h"
 #include "third_party/blink/renderer/core/editing/markers/unsorted_document_marker_list_editor.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 

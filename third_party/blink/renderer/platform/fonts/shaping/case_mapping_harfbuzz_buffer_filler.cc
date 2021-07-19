@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/fonts/shaping/case_mapping_harfbuzz_buffer_filler.h"
 
+#include <unicode/utf16.h>
+
 #include "third_party/blink/renderer/platform/wtf/text/case_map.h"
 
 namespace blink {

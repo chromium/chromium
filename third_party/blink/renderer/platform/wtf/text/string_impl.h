@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/ascii_fast_path.h"
 #include "third_party/blink/renderer/platform/wtf/text/number_parsing_options.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
@@ -880,14 +880,6 @@ static inline int CodeUnitCompare(const StringImpl* string1,
   if (string2_is_8bit)
     return -CodeUnitCompare8To16(string2, string1);
   return CodeUnitCompare16(string1, string2);
-}
-
-static inline bool IsSpaceOrNewline(UChar c) {
-  // Use IsASCIISpace() for basic Latin-1.
-  // This will include newlines, which aren't included in Unicode DirWS.
-  return c <= 0x7F
-             ? WTF::IsASCIISpace(c)
-             : WTF::unicode::Direction(c) == WTF::unicode::kWhiteSpaceNeutral;
 }
 
 inline scoped_refptr<StringImpl> StringImpl::IsolatedCopy() const {
