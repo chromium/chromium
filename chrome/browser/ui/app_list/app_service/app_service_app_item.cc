@@ -115,6 +115,7 @@ void AppServiceAppItem::Activate(int event_flags) {
       .ForOneApp(id(), [&is_active_app](const apps::AppUpdate& update) {
         if (update.AppType() == apps::mojom::AppType::kCrostini ||
             ((update.AppType() == apps::mojom::AppType::kExtension ||
+              update.AppType() == apps::mojom::AppType::kSystemWeb ||
               update.AppType() == apps::mojom::AppType::kWeb) &&
              update.IsPlatformApp() == apps::mojom::OptionalBool::kFalse)) {
           is_active_app = true;
