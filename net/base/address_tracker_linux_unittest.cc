@@ -779,7 +779,7 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 //
 // Note: consumers generally should not need to create two tracking instances of
 // `AddressTrackerLinux` in the same process.
-TEST(AddressTrackerLinuxNetlinkTest, DISABLED_TestInitializeTwoTrackers) {
+TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
   base::test::TaskEnvironment task_env(
       base::test::TaskEnvironment::MainThreadType::IO);
   AddressTrackerLinux tracker1(base::DoNothing(), base::DoNothing(),
@@ -825,8 +825,7 @@ base::File GetSwitchValueFile(const base::CommandLine* command_line,
 //
 // This test creates multiple concurrent `AddressTrackerLinux` instances in
 // separate processes, each in their own PID namespaces.
-TEST(AddressTrackerLinuxNetlinkTest,
-     DISABLED_TestInitializeTwoTrackersInPidNamespaces) {
+TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackersInPidNamespaces) {
   // This test initializes `kNumChildren` instances of `AddressTrackerLinux` in
   // tracking mode, each in their own child process running in a PID namespace.
   // The test will fail if the implementation reuses the value of
