@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/svg/animation/element_smil_animations.h"
 
+#include "base/record_replay.h"
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_sandwich.h"
 
 namespace blink {

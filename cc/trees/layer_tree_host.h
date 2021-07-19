@@ -34,6 +34,7 @@
 #include "cc/input/input_handler.h"
 #include "cc/input/layer_selection_bound.h"
 #include "cc/input/scrollbar.h"
+#include "cc/layers/layer.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/layer_list_iterator.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
