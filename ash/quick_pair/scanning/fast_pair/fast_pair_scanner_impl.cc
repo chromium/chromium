@@ -56,6 +56,11 @@ void FastPairScannerImpl::OnGetAdapter(
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       kFilterDeviceFoundThreshold, kFilterDeviceLostThreshold,
       kFilterDeviceFoundTimeout, kFilterDeviceLostTimeout, {pattern});
+  if (!filter) {
+    QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start due to "
+                     "failure to create filter.";
+    return;
+  }
 
   background_scan_session_ = adapter_->StartLowEnergyScanSession(
       std::move(filter), weak_ptr_factory_.GetWeakPtr());

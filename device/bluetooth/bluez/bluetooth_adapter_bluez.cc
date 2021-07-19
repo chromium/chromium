@@ -1568,6 +1568,9 @@ BluetoothAdapterBlueZ::StartLowEnergyScanSession(
   if (!chromeos::features::IsBluetoothAdvertisementMonitoringEnabled()) {
     return nullptr;
   }
+
+  DCHECK(filter);
+
   dbus::ObjectPath monitor_path = dbus::ObjectPath(
       static_cast<std::string>(kAdvertisementMonitorApplicationObjectPath) +
       "/" + base::UnguessableToken::Create().ToString());

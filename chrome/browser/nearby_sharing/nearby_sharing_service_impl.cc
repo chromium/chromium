@@ -2211,6 +2211,12 @@ void NearbySharingServiceImpl::StartBackgroundScanning() {
       kBackgroundScanningDeviceLostRSSIThreshold,
       kBackgroundScanningDeviceFoundTimeout,
       kBackgroundScanningDeviceLostTimeout, {pattern});
+  if (!filter) {
+    NS_LOG(ERROR) << __func__
+                  << ": Failed to start background scanning due to failure to "
+                     "create filter.";
+    return;
+  }
 
   background_scan_session_ = bluetooth_adapter_->StartLowEnergyScanSession(
       std::move(filter), /*delegate=*/weak_ptr_factory_.GetWeakPtr());

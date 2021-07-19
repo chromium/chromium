@@ -40,6 +40,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
     Pattern(const Pattern&);
     ~Pattern();
 
+    bool IsValid() const;
+
     uint8_t start_position() const { return start_position_; }
     AdvertisementDataType data_type() const { return data_type_; }
     const std::vector<uint8_t>& value() const { return value_; }
@@ -50,6 +52,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
     std::vector<uint8_t> value_;
   };
 
+  // Returns nullptr if the provided parameters fail validation. See
+  // documentation on instance variables for details.
   static std::unique_ptr<BluetoothLowEnergyScanFilter> Create(
       int16_t device_found_rssi_threshold,
       int16_t device_lost_rssi_threshold,
@@ -79,10 +83,27 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothLowEnergyScanFilter {
                                base::TimeDelta device_lost_timeout,
                                std::vector<Pattern> patterns);
 
+  bool IsValid() const;
+
+  // Must be between -127 and 20, inclusive, and must be greater than to
+  // |device_lost_rssi_threshold_|.
   int16_t device_found_rssi_threshold_;
+
+  // Must be between -127 and 20, inclusive, and must be less than
+  // |device_found_rssi_threshold_|.
   int16_t device_lost_rssi_threshold_;
+
+  // Must be between 1 and 300 seconds, inclusive. A device must be above
+  // |device_found_rssi_threshold_| for |device_found_timeout_| seconds before
+  // it is reported as found.
   base::TimeDelta device_found_timeout_;
+
+  // Must be between 1 and 300 seconds, inclusive. A device must be below
+  // |device_lost_rssi_threshold_| for |device_lost_timeout_| seconds before it
+  // is reported as lost.
   base::TimeDelta device_lost_timeout_;
+
+  // Must not be empty. For each pattern, Pattern::IsValid() must also pass.
   std::vector<Pattern> patterns_;
 };
 

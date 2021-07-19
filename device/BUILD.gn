@@ -237,7 +237,10 @@ test("device_unittests") {
   }
 
   if (is_chromeos_ash) {
-    sources += [ "bluetooth/chromeos/bluetooth_utils_unittest.cc" ]
+    sources += [
+      "bluetooth/bluetooth_low_energy_scan_filter_unittest.cc",
+      "bluetooth/chromeos/bluetooth_utils_unittest.cc",
+    ]
     deps += [ "//ash/constants" ]
   }
 
