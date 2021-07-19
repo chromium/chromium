@@ -5045,12 +5045,16 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     AddSameConstraints(self.view, self.blockingView);
     self.blockingView.alpha = 1;
     [self.omniboxHandler cancelOmniboxEdit];
-
     // Resign the first responder. This achieves multiple goals:
     // 1. The keyboard is dismissed.
     // 2. Hardware keyboard events (such as space to scroll) will be ignored.
     UIResponder* firstResponder = GetFirstResponder();
     [firstResponder resignFirstResponder];
+    // Close presented view controllers, e.g. share sheets.
+    if (self.presentedViewController) {
+      [self dismissViewControllerAnimated:NO completion:nil];
+    }
+
   } else {
     [UIView animateWithDuration:0.2
         animations:^{
