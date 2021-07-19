@@ -291,6 +291,52 @@ TEST_F(WebGPUTest, RequestDeviceAfterContextLost) {
   EXPECT_TRUE(called);
 }
 
+TEST_F(WebGPUTest, RequestAdapterAfterServerDestroyed) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+
+  Initialize(WebGPUTest::Options());
+
+  webgpu()->DisconnectContextAndDestroyServer();
+
+  bool called = false;
+  webgpu()->RequestAdapterAsync(
+      webgpu::PowerPreference::kDefault,
+      base::BindOnce(
+          [](bool* called, int32_t adapter_id, const WGPUDeviceProperties&,
+             const char*) {
+            EXPECT_EQ(adapter_id, -1);
+            *called = true;
+          },
+          &called));
+  RunPendingTasks();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(WebGPUTest, RequestDeviceAfterServerDestroyed) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+
+  Initialize(WebGPUTest::Options());
+
+  webgpu()->DisconnectContextAndDestroyServer();
+
+  bool called = false;
+  webgpu()->RequestDeviceAsync(GetAdapterId(), GetDeviceProperties(),
+                               base::BindOnce(
+                                   [](bool* called, WGPUDevice device) {
+                                     EXPECT_EQ(device, nullptr);
+                                     *called = true;
+                                   },
+                                   &called));
+  RunPendingTasks();
+  EXPECT_TRUE(called);
+}
+
 TEST_F(WebGPUTest, RequestDeviceWitUnsupportedExtension) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";

@@ -84,6 +84,10 @@ _FUNCTION_INFO = {
         'request_device_properties_size * sizeof(char)',
     },
   },
+  'DestroyServer': {
+    'impl_func': False,
+    'internal': True,
+    },
 }
 
 def main(argv):

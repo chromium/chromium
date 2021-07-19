@@ -474,6 +474,7 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   std::unordered_map<uint32_t, WGPUBackendType> device_backend_types_;
 
   bool has_polling_work_ = false;
+  bool destroyed_ = false;
 
   scoped_refptr<gl::GLContext> gl_context_;
   scoped_refptr<gl::GLSurface> gl_surface_;
@@ -554,7 +555,11 @@ WebGPUDecoderImpl::~WebGPUDecoderImpl() {
 
 void WebGPUDecoderImpl::Destroy(bool have_context) {
   associated_shared_image_map_.clear();
+  known_devices_.clear();
+  device_backend_types_.clear();
   wire_server_ = nullptr;
+
+  destroyed_ = true;
 }
 
 ContextResult WebGPUDecoderImpl::Initialize() {
@@ -777,6 +782,12 @@ error::Error WebGPUDecoderImpl::DoCommands(unsigned int num_commands,
     const unsigned int arg_count = size - 1;
     unsigned int command_index = command - kFirstWebGPUCommand;
     if (command_index < base::size(command_info)) {
+      // Prevent all further WebGPU commands from being processed if the server
+      // is destroyed.
+      if (destroyed_) {
+        result = error::kLostContext;
+        break;
+      }
       const CommandInfo& info = command_info[command_index];
       unsigned int info_arg_count = static_cast<unsigned int>(info.arg_count);
       if ((info.arg_flags == cmd::kFixed && arg_count == info_arg_count) ||
@@ -890,6 +901,14 @@ void WebGPUDecoderImpl::SendRequestedDeviceInfo(
   client()->HandleReturnData(base::make_span(
       reinterpret_cast<const uint8_t*>(&return_request_device_info),
       sizeof(return_request_device_info)));
+}
+
+error::Error WebGPUDecoderImpl::HandleDestroyServer(
+    uint32_t immediate_data_size,
+    const volatile void* cmd_data) {
+  Destroy(false);
+
+  return error::kNoError;
 }
 
 error::Error WebGPUDecoderImpl::HandleRequestAdapter(

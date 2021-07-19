@@ -11,3 +11,4 @@ GL_APICALL void GL_APIENTRY wgAssociateMailbox (GLuint device_id, GLuint device_
 GL_APICALL void GL_APIENTRY wgDissociateMailbox (GLuint texture_id, GLuint texture_generation);
 GL_APICALL void GL_APIENTRY wgRequestAdapter (GLuint64 request_adapter_serial, EnumClassPowerPreference power_preference = PowerPreference::kDefault);
 GL_APICALL void GL_APIENTRY wgRequestDevice (GLuint64 request_device_serial, GLuint adapter_service_id, GLuint device_id, GLuint device_generation, const char* dawn_request_device_properties, size_t request_device_properties_size);
+GL_APICALL void GL_APIENTRY wgDestroyServer (void);

@@ -419,9 +419,13 @@ void WebGPUImplementation::FlushAwaitingCommands() {
 
 void WebGPUImplementation::DisconnectContextAndDestroyServer() {
   // Treat this like a context lost since the context is no longer usable.
-  // TODO(crbug.com/1160459): Also send a message to eagerly free server-side
-  // resources.
   OnGpuControlLostContextMaybeReentrant();
+
+#if BUILDFLAG(USE_DAWN)
+  // Send a message to eagerly free server-side resources.
+  helper_->DestroyServer();
+  helper_->Flush();
+#endif
 }
 
 ReservedTexture WebGPUImplementation::ReserveTexture(WGPUDevice device) {

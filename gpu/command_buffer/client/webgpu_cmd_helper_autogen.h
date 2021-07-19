@@ -67,4 +67,11 @@ void RequestDevice(uint64_t request_device_serial,
   }
 }
 
+void DestroyServer() {
+  webgpu::cmds::DestroyServer* c = GetCmdSpace<webgpu::cmds::DestroyServer>();
+  if (c) {
+    c->Init();
+  }
+}
+
 #endif  // GPU_COMMAND_BUFFER_CLIENT_WEBGPU_CMD_HELPER_AUTOGEN_H_
