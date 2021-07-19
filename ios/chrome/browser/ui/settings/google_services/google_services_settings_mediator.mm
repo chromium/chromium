@@ -269,14 +269,12 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
   }
   [model addItem:self.accountItem
       toSectionWithIdentifier:IdentitySectionIdentifier];
-  if (signin::IsSSOEditingEnabled()) {
-    TableViewImageItem* manageGoogleAccount =
-        [[TableViewImageItem alloc] initWithType:ManageGoogleAccountItemType];
-    manageGoogleAccount.title =
-        GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE);
-    [model addItem:manageGoogleAccount
-        toSectionWithIdentifier:IdentitySectionIdentifier];
-  }
+  TableViewImageItem* manageGoogleAccount =
+      [[TableViewImageItem alloc] initWithType:ManageGoogleAccountItemType];
+  manageGoogleAccount.title =
+      GetNSString(IDS_IOS_MANAGE_YOUR_GOOGLE_ACCOUNT_TITLE);
+  [model addItem:manageGoogleAccount
+      toSectionWithIdentifier:IdentitySectionIdentifier];
 }
 
 // Creates, removes or updates the identity section as needed. And notifies the

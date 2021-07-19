@@ -248,18 +248,15 @@ NSString* kGoogleServicesSyncErrorImage = @"google_services_sync_error";
       toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
   // GoogleActivityControlsItemType.
-  if (signin::IsSSOEditingEnabled()) {
-    TableViewImageItem* googleActivityControlsItem = [[TableViewImageItem alloc]
-        initWithType:GoogleActivityControlsItemType];
-    googleActivityControlsItem.title =
-        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
-    googleActivityControlsItem.detailText =
-        GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
-    googleActivityControlsItem.accessibilityTraits |=
-        UIAccessibilityTraitButton;
-    [model addItem:googleActivityControlsItem
-        toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
-  }
+  TableViewImageItem* googleActivityControlsItem =
+      [[TableViewImageItem alloc] initWithType:GoogleActivityControlsItemType];
+  googleActivityControlsItem.title =
+      GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE);
+  googleActivityControlsItem.detailText =
+      GetNSString(IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_DESCRIPTION);
+  googleActivityControlsItem.accessibilityTraits |= UIAccessibilityTraitButton;
+  [model addItem:googleActivityControlsItem
+      toSectionWithIdentifier:AdvancedSettingsSectionIdentifier];
 
   // AdvancedSettingsSectionIdentifier.
   TableViewImageItem* dataFromChromeSyncItem =

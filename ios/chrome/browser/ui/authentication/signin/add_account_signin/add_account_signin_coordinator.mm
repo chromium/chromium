@@ -128,12 +128,6 @@ using signin_metrics::PromoAction;
                                            ->GetPrefs()
                        identityManager:identityManager];
   self.manager.delegate = self;
-  __weak __typeof(self) weakSelf = self;
-  if (signin::IsSSOAccountCreationInChromeTabEnabled()) {
-    self.manager.openAccountCreationURLCallback = ^(NSURL* url) {
-      weakSelf.openAccountCreationURL = url;
-    };
-  }
   [self.manager showSigninWithIntent:self.signinIntent];
 }
 
