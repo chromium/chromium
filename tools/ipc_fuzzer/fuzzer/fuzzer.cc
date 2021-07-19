@@ -506,7 +506,8 @@ struct FuzzTraits<base::ListValue> {
         }
         case base::Value::Type::INTEGER: {
           int tmp;
-          p->GetInteger(index, &tmp);
+          if (index < p->GetList().size() && p->GetList()[index].is_int())
+            tmp = p->GetList()[index].GetInt();
           fuzzer->FuzzInt(&tmp);
           p->Set(index, std::make_unique<base::Value>(tmp));
           break;
