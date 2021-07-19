@@ -45,14 +45,15 @@ static hb_language_t ToHarfbuzLanguage(const AtomicString& locale) {
                                  locale_as_latin1.length());
 }
 
-// SkFontMgr requires script-based locale names, like "zh-Hant" and "zh-Hans",
-// instead of "zh-CN" and "zh-TW".
+// SkFontMgr uses two/three-letter language code with an optional ISO 15924
+// four-letter script code, in POSIX style (with '-' as the separator,) such as
+// "zh-Hant" and "zh-Hans". See `fonts.xml`.
 static const char* ToSkFontMgrLocale(UScriptCode script) {
   switch (script) {
     case USCRIPT_KATAKANA_OR_HIRAGANA:
-      return "ja-JP";
+      return "ja";
     case USCRIPT_HANGUL:
-      return "ko-KR";
+      return "ko";
     case USCRIPT_SIMPLIFIED_HAN:
       return "zh-Hans";
     case USCRIPT_TRADITIONAL_HAN:
@@ -63,13 +64,22 @@ static const char* ToSkFontMgrLocale(UScriptCode script) {
 }
 
 const char* LayoutLocale::LocaleForSkFontMgr() const {
-  if (string_for_sk_font_mgr_.empty()) {
-    const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_);
-    string_for_sk_font_mgr_ =
-        sk_font_mgr_locale ? sk_font_mgr_locale : std::string();
-    if (string_for_sk_font_mgr_.empty())
-      string_for_sk_font_mgr_ = string_.Ascii();
+  if (!string_for_sk_font_mgr_.empty())
+    return string_for_sk_font_mgr_.c_str();
+
+  if (const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_)) {
+    string_for_sk_font_mgr_ = sk_font_mgr_locale;
+    DCHECK(!string_for_sk_font_mgr_.empty());
+    return string_for_sk_font_mgr_.c_str();
   }
+
+  const icu::Locale locale(Ascii().c_str());
+  const char* language = locale.getLanguage();
+  string_for_sk_font_mgr_ = language && *language ? language : "und";
+  const char* script = locale.getScript();
+  if (script && *script)
+    string_for_sk_font_mgr_ = string_for_sk_font_mgr_ + "-" + script;
+  DCHECK(!string_for_sk_font_mgr_.empty());
   return string_for_sk_font_mgr_.c_str();
 }
 
