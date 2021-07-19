@@ -20,8 +20,7 @@ class TileShuffler {
   TileShuffler(const TileShuffler& other) = delete;
   TileShuffler& operator=(const TileShuffler& other) = delete;
 
-  virtual void Shuffle(std::vector<std::unique_ptr<Tile>>* tiles,
-                       int start) const;
+  virtual void Shuffle(std::vector<Tile>* tiles, int start) const;
 };
 
 // Function to sort a vector of tiles based on their score in |tile_stats|. If
@@ -42,11 +41,8 @@ class TileShuffler {
 // will result in (0.5, 0.5, 0.7, 0). And for new tiles at the front, they are
 // guaranteed a minimum score. So that if all the other tiles haven't been
 // clicked for a while, it will have a chance to be placed at the front.
-// After sorting, tiles from position |TileConfig::GetTileShufflePosition()|
-// are randomly shuffled so that low score tiles has a chance to be seen.
 void SortTilesAndClearUnusedStats(std::vector<std::unique_ptr<Tile>>* tiles,
-                                  std::map<std::string, TileStats>* tile_stats,
-                                  const TileShuffler& shuffler);
+                                  std::map<std::string, TileStats>* tile_stats);
 
 // Calculates the current tile score based on |current_time|. Tile score will
 // decay over time.
@@ -54,6 +50,10 @@ double CalculateTileScore(const TileStats& tile_stats, base::Time current_time);
 
 // Checks whether a tile ID is for trending tile.
 bool IsTrendingTile(const std::string& tile_id);
+
+// Shuffle tiles from position |TileConfig::GetTileShufflePosition()|
+// so that low score tiles has a chance to be seen.
+void ShuffleTiles(std::vector<Tile>* tiles, const TileShuffler& shuffer);
 
 }  // namespace query_tiles
 

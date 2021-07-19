@@ -136,9 +136,10 @@ class TileManagerTest : public testing::Test {
   // returned tiles.
   void GetTiles(std::vector<Tile> expected) {
     base::RunLoop loop;
-    manager()->GetTiles(base::BindOnce(
-        &TileManagerTest::OnTilesReturned, base::Unretained(this),
-        loop.QuitClosure(), std::move(expected)));
+    manager()->GetTiles(
+        true, base::BindOnce(&TileManagerTest::OnTilesReturned,
+                             base::Unretained(this), loop.QuitClosure(),
+                             std::move(expected)));
     loop.Run();
   }
 
@@ -152,8 +153,9 @@ class TileManagerTest : public testing::Test {
   void GetSingleTile(const std::string& id, absl::optional<Tile> expected) {
     base::RunLoop loop;
     manager()->GetTile(
-        id, base::BindOnce(&TileManagerTest::OnGetTile, base::Unretained(this),
-                           loop.QuitClosure(), std::move(expected)));
+        id, true,
+        base::BindOnce(&TileManagerTest::OnGetTile, base::Unretained(this),
+                       loop.QuitClosure(), std::move(expected)));
     loop.Run();
   }
 

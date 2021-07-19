@@ -59,7 +59,7 @@ class TileManagerImpl : public TileManager {
                                   std::move(group), std::move(callback)));
   }
 
-  void GetTiles(GetTilesCallback callback) override {
+  void GetTiles(bool shuffle_tiles, GetTilesCallback callback) override {
     if (!tile_group_) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE, base::BindOnce(std::move(callback), std::vector<Tile>()));
@@ -74,11 +74,16 @@ class TileManagerImpl : public TileManager {
     // are not used.
     std::vector<Tile> tiles =
         trending_tile_handler_.FilterExtraTrendingTiles(tile_group_->tiles);
+
+    if (shuffle_tiles)
+      ShuffleTiles(&tiles, TileShuffler());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(tiles)));
   }
 
-  void GetTile(const std::string& tile_id, TileCallback callback) override {
+  void GetTile(const std::string& tile_id,
+               bool shuffle_tiles,
+               TileCallback callback) override {
     // First remove the inactive trending tiles.
     RemoveIdleTrendingTiles();
     // Find the tile.
@@ -103,6 +108,8 @@ class TileManagerImpl : public TileManager {
           trending_tile_handler_.FilterExtraTrendingTiles(
               result_tile->sub_tiles);
       if (!sub_tiles.empty()) {
+        if (shuffle_tiles)
+          ShuffleTiles(&sub_tiles, TileShuffler());
         std::vector<std::unique_ptr<Tile>> sub_tile_ptrs;
         for (auto& tile : sub_tiles)
           sub_tile_ptrs.emplace_back(std::make_unique<Tile>(std::move(tile)));
@@ -191,8 +198,7 @@ class TileManagerImpl : public TileManager {
       loaded_groups.erase(kTileStatsGroup);
       if (tile_group_) {
         SortTilesAndClearUnusedStats(&tile_group_->tiles,
-                                     &tile_stats_group_->tile_stats,
-                                     TileShuffler());
+                                     &tile_stats_group_->tile_stats);
       }
     }
     trending_tile_handler_.Reset();

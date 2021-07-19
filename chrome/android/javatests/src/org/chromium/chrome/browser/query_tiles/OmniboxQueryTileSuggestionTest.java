@@ -65,9 +65,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * perform a full end-to-end test for omnibox query tiles.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Features.EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_OMNIBOX})
+@Features.EnableFeatures({ChromeFeatureList.QUERY_TILES_IN_OMNIBOX})
+// clang-format off
+@CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
+    "enable-features=" + ChromeFeatureList.QUERY_TILES + "<Study",
+    "force-fieldtrials=Study/Group"})
 public class OmniboxQueryTileSuggestionTest {
+    // clang-format on
+    private static final String BASE_PARAMS =
+            "force-fieldtrial-params=Study.Group:tile_shuffle_position/10";
     private static final String SEARCH_URL_PATTERN = "https://www.google.com/search?q=";
 
     @Rule
@@ -112,6 +118,7 @@ public class OmniboxQueryTileSuggestionTest {
     /** Tests that tiles show up as expected when omnibox is opened. */
     @Test
     @SmallTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testShowOmniboxQueryTileSuggestion() throws Exception {
         clickNTPSearchBox();
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -124,6 +131,7 @@ public class OmniboxQueryTileSuggestionTest {
     /** Tests that clicking on a tile opens up the next level tiles in omnibox. */
     @Test
     @SmallTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testClickTileOpensNextTierTiles() throws Exception {
         clickNTPSearchBox();
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -144,6 +152,7 @@ public class OmniboxQueryTileSuggestionTest {
     /** Tests that clicking on a tile hides the suggestion and shows the query on omnibox. */
     @Test
     @SmallTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     @Features.EnableFeatures(ChromeFeatureList.QUERY_TILES_ENABLE_QUERY_EDITING)
     public void testClickTileOpensQueryEditMode() throws Exception {
         clickNTPSearchBox();
@@ -171,6 +180,7 @@ public class OmniboxQueryTileSuggestionTest {
     /** Tests that clicking a last level tile loads the search result page. */
     @Test
     @SmallTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testClickLastLevelTileOpensSearchResultsPage() throws Exception {
         clickNTPSearchBox();
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -197,6 +207,7 @@ public class OmniboxQueryTileSuggestionTest {
     /** Tests that typing on omnibox will dismiss the query tiles suggestion. */
     @Test
     @SmallTest
+    @CommandLineFlags.Add({BASE_PARAMS})
     public void testTypingInOmniboxDismissesQueryTileSuggestion() throws Exception {
         clickNTPSearchBox();
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);

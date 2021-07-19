@@ -36,8 +36,8 @@ class MockTileManager : public TileManager {
  public:
   MockTileManager() = default;
   MOCK_METHOD(void, Init, (TileGroupStatusCallback));
-  MOCK_METHOD(void, GetTiles, (GetTilesCallback));
-  MOCK_METHOD(void, GetTile, (const std::string&, TileCallback));
+  MOCK_METHOD(void, GetTiles, (bool, GetTilesCallback));
+  MOCK_METHOD(void, GetTile, (const std::string&, bool, TileCallback));
   MOCK_METHOD(void,
               SaveTiles,
               (std::unique_ptr<TileGroup>, TileGroupStatusCallback));
@@ -234,8 +234,8 @@ TEST_F(TileServiceImplTest, CancelTask) {
 
 TEST_F(TileServiceImplTest, GetTiles) {
   int expected_size = 5;
-  EXPECT_CALL(*tile_manager(), GetTiles(_))
-      .WillOnce(Invoke([&](GetTilesCallback callback) {
+  EXPECT_CALL(*tile_manager(), GetTiles(true, _))
+      .WillOnce(Invoke([&](bool, GetTilesCallback callback) {
         std::vector<Tile> out = std::vector<Tile>(expected_size, Tile());
         std::move(callback).Run(std::move(out));
       }));
@@ -246,8 +246,8 @@ TEST_F(TileServiceImplTest, GetTiles) {
 
 TEST_F(TileServiceImplTest, GetTile) {
   std::string tile_id = "test-id";
-  EXPECT_CALL(*tile_manager(), GetTile(tile_id, _))
-      .WillOnce(Invoke([&](const std::string& id, TileCallback callback) {
+  EXPECT_CALL(*tile_manager(), GetTile(tile_id, true, _))
+      .WillOnce(Invoke([&](const std::string& id, bool, TileCallback callback) {
         EXPECT_EQ(id, tile_id);
         Tile out;
         out.id = tile_id;
@@ -260,7 +260,7 @@ TEST_F(TileServiceImplTest, GetTile) {
 
 TEST_F(TileServiceImplTest, PurgeDb) {
   EXPECT_CALL(*tile_manager(), PurgeDb());
-  EXPECT_CALL(*tile_manager(), GetTiles(_));
+  EXPECT_CALL(*tile_manager(), GetTiles(true, _));
   EXPECT_CALL(*scheduler(), OnDbPurged(_));
   query_tiles_service()->PurgeDb();
   query_tiles_service()->GetQueryTiles(base::BindOnce(
