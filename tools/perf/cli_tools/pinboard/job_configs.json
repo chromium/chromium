@@ -1,7 +1,7 @@
 [
   {
     "name": "Try job for v8: enable TurboProp as top-tier - Pixel 2",
-    "target": "performance_test_suite",
+    "target": "performance_test_suite_android_clank_monochrome_64_32_bundle",
     "configuration": "android-pixel2-perf",
     "benchmark": "v8.browsing_mobile",
     "story_tags": "2019",
@@ -19,7 +19,7 @@
   },
   {
     "name": "Try job for v8: enable TurboProp as mid-tier - Pixel 2",
-    "target": "performance_test_suite",
+    "target": "performance_test_suite_android_clank_monochrome_64_32_bundle",
     "configuration": "android-pixel2-perf",
     "benchmark": "v8.browsing_mobile",
     "story_tags": "2019",
@@ -37,7 +37,7 @@
   },
   {
     "name": "Try job for v8: enable TurboProp as mid-tier - Speedometer - Pixel2",
-    "target": "performance_test_suite",
+    "target": "performance_test_suite_android_clank_monochrome_64_32_bundle",
     "configuration": "android-pixel2-perf",
     "benchmark": "speedometer2",
     "story": "Speedometer2",
@@ -46,7 +46,7 @@
   },
   {
     "name": "Try job for v8: enable TurboProp as mid-tier - Jetstream2 - Pixel2",
-    "target": "performance_test_suite",
+    "target": "performance_test_suite_android_clank_monochrome_64_32_bundle",
     "configuration": "android-pixel2-perf",
     "benchmark": "jetstream2",
     "story": "JetStream2",
