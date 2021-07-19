@@ -29,9 +29,7 @@ void ShelfSpinnerItemController::ExecuteCommand(bool from_context_menu,
                                                 int64_t command_id,
                                                 int32_t event_flags,
                                                 int64_t display_id) {
-  if (from_context_menu && ExecuteContextMenuCommand(command_id, event_flags))
-    return;
-
+  DCHECK(!from_context_menu);
   NOTIMPLEMENTED();
 }
 

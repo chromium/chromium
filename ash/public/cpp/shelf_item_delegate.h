@@ -94,9 +94,6 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
   // Returns nullptr if class is not AppWindowShelfItemController.
   virtual AppWindowShelfItemController* AsAppWindowShelfItemController();
 
-  // Attempts to execute a context menu command; returns true if it was run.
-  bool ExecuteContextMenuCommand(int64_t command_id, int32_t event_flags);
-
   // Called on invocation of a shelf item's context or application menu command.
   // |from_context_menu| is true if the command came from a context menu, or
   // false if the command came from an application menu. If the |display_id| is
@@ -119,9 +116,6 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
 
   // Set to true if the launcher item image has been set by the controller.
   bool image_set_by_controller_ = false;
-
-  // The context menu model that was last shown for the associated shelf item.
-  std::unique_ptr<ui::SimpleMenuModel> context_menu_;
 
   base::WeakPtrFactory<ShelfItemDelegate> weak_ptr_factory_{this};
 
