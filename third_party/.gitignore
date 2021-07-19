@@ -7,6 +7,8 @@
 /adobe/flash/symbols
 /aemu-linux-arm64
 /aemu-linux-x64
+/aemu-mac-arm64
+/aemu-mac-x64
 /amd/
 /android_build_tools/aapt2/aapt2
 /android_build_tools/aapt2/lib64/*.so
