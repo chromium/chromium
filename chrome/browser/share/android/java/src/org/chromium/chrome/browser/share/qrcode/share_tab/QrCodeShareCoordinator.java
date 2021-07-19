@@ -52,6 +52,8 @@ public class QrCodeShareCoordinator implements QrCodeDialogTab {
 
     @Override
     public void updatePermissions(AndroidPermissionDelegate windowAndroid) {
-        mMediator.updatePermissions(windowAndroid);
+        if (mMediator != null) {
+            mMediator.updatePermissions(windowAndroid);
+        }
     }
 }

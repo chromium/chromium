@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.share.qrcode;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.View;
 
@@ -79,6 +80,16 @@ public class QrCodeDialog extends DialogFragment {
         mWindowAndroid = null;
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // There is a corner case where this function can be triggered by toggling the battery saver
+        // state, resulting in all the variables being reset. The only way out is to destroy this
+        // dialog to bring the user back to the web page.
+        if (mWindowAndroid == null || mTabLayoutPageListener == null) {
+            onDestroyView();
+        }
+    }
     /**
      * Setter for the current WindowAndroid.
      * @param windowAndroid The windowAndroid to set.
@@ -86,7 +97,7 @@ public class QrCodeDialog extends DialogFragment {
     public void setAndroidPermissionDelegate(AndroidPermissionDelegate windowAndroid) {
         mWindowAndroid = windowAndroid;
         if (mTabLayoutPageListener != null) {
-            mTabLayoutPageListener.updatePermissions(windowAndroid);
+            mTabLayoutPageListener.updatePermissions(mWindowAndroid);
         }
     }
 
