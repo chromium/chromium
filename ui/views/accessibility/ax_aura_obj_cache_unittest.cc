@@ -249,11 +249,13 @@ TEST_F(AXAuraObjCacheTest, GetFocusIsUnignoredAncestor) {
   ASSERT_EQ(ax::mojom::Role::kGroup, GetData(cache.GetFocus()).role);
   ASSERT_EQ(ax_child, cache.GetFocus());
 
+  // Ignore should cause focus to move upwards.
   child->GetViewAccessibility().OverrideIsIgnored(true);
   ASSERT_EQ(ax::mojom::Role::kTextField, GetData(cache.GetFocus()).role);
   ASSERT_EQ(ax_parent, cache.GetFocus());
 
-  parent->GetViewAccessibility().OverrideIsIgnored(true);
+  // Propagate focus to ancestor should also cause focus to move upward.
+  parent->GetViewAccessibility().set_propagate_focus_to_ancestor(true);
   ASSERT_EQ(ax::mojom::Role::kWindow, GetData(cache.GetFocus()).role);
   ASSERT_EQ(cache.GetOrCreate(widget->GetRootView()), cache.GetFocus());
 
