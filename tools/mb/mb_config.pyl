@@ -1750,17 +1750,17 @@
     ],
 
     'chromeos_amd64-generic_lacros_official': [
-      'chromeos_amd64-generic', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
     # This is the same as 'chromeos_amd64-generic_lacros_official', except for
     # the 'is_skylab' arg. Please keep them in sync.
     'chromeos_amd64-generic_lacros_official_skylab': [
-      'chromeos_amd64-generic', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_amd64-generic_lacros_rel': [
-      'chromeos_amd64-generic', 'amd64-lacros',
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'release',
     ],
 
     'chromeos_amd64-generic_lacros_rel_reclient': [
@@ -1768,7 +1768,7 @@
     ],
 
     'chromeos_amd64-generic_lacros_dbg': [
-      'chromeos_amd64-generic', 'amd64-lacros', 'debug',
+      'chromeos_amd64-generic-crostoolchain', 'amd64-lacros', 'debug',
     ],
 
     'chromeos_amd64-generic_dbg': [
@@ -1804,15 +1804,15 @@
     ],
 
     'chromeos_arm-generic_lacros_official': [
-      'chromeos_arm-generic', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
+      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto',
     ],
 
     'chromeos_arm-generic_lacros_official_skylab': [
-      'chromeos_arm-generic', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
+      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'official', 'minimal_symbols', 'cfi', 'thin_lto', 'is_skylab',
     ],
 
     'chromeos_arm-generic_lacros_rel': [
-      'chromeos_arm-generic', 'arm-lacros',
+      'chromeos_arm-generic-crostoolchain', 'arm-lacros', 'release',
     ],
 
     'chromeos_asan_lsan_fuzzer_v8_heap_release_bot': [
@@ -2860,12 +2860,16 @@
       'args_file': '//build/args/chromeos/amd64-generic.gni',
     },
 
+    'amd64-generic-crostoolchain': {
+      'args_file': '//build/args/chromeos/amd64-generic-crostoolchain.gni',
+    },
+
     'amd64-lacros': {
-      'gn_args': 'use_ozone=true ozone_platform="wayland" ozone_platform_wayland=true ozone_platform_gbm=false ozone_platform_drm=false ozone_platform_x11=false target_os="chromeos" use_evdev_gestures=false use_vaapi=false use_gtk=false use_glib=false enable_linux_installer=false rtc_use_pipewire=false use_gio=false use_v8_context_snapshot=false use_custom_libcxx=false use_pulseaudio=false use_pangocairo=false chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_amd64-sysroot" use_custom_libcxx_for_host=true'
+      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_amd64-sysroot"'
     },
 
     'arm-lacros': {
-      'gn_args': 'use_ozone=true ozone_platform="wayland" ozone_platform_wayland=true ozone_platform_gbm=false ozone_platform_drm=false ozone_platform_x11=false target_os="chromeos" use_evdev_gestures=false use_vaapi=false use_gtk=false use_glib=false enable_linux_installer=false rtc_use_pipewire=false use_gio=false use_v8_context_snapshot=false use_custom_libcxx=false use_pulseaudio=false use_pangocairo=false chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_i386-sysroot" use_custom_libcxx_for_host=true'
+      'gn_args': 'target_os="chromeos" chromeos_is_browser_only=true cros_host_sysroot="//build/linux/debian_sid_amd64-sysroot" cros_v8_snapshot_sysroot="//build/linux/debian_sid_i386-sysroot"'
     },
 
     # We build Android with codecs on most bots to ensure maximum test
@@ -2926,6 +2930,10 @@
 
     'arm-generic': {
       'args_file': '//build/args/chromeos/arm-generic.gni',
+    },
+
+    'arm-generic-crostoolchain': {
+      'args_file': '//build/args/chromeos/arm-generic-crostoolchain.gni',
     },
 
     'arm64': {
@@ -3020,8 +3028,12 @@
       'mixins': ['chromeos_device', 'amd64-generic',]
     },
 
-    'chromeos_arm-generic': {
-      'mixins': ['chromeos_device', 'arm-generic',]
+    'chromeos_amd64-generic-crostoolchain': {
+      'mixins': ['chromeos_device', 'amd64-generic-crostoolchain',]
+    },
+
+    'chromeos_arm-generic-crostoolchain': {
+      'mixins': ['chromeos_device', 'arm-generic-crostoolchain',]
     },
 
     'chromeos_kevin': {
