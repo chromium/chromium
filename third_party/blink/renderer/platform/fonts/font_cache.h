@@ -247,9 +247,13 @@ class PLATFORM_EXPORT FontCache {
   static void AcceptLanguagesChanged(const String&);
 
 #if defined(OS_ANDROID)
-  static AtomicString GetGenericFamilyNameForScript(
-      const AtomicString& family_name,
-      const FontDescription&);
+  // Locale-specific families can use different |SkTypeface| for a family name
+  // if locale is different.
+  static const char* GetLocaleSpecificFamilyName(
+      const AtomicString& family_name);
+  sk_sp<SkTypeface> CreateLocaleSpecificTypeface(
+      const FontDescription& font_description,
+      const char* locale_family_name);
 #endif  // defined(OS_ANDROID)
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
@@ -405,6 +409,7 @@ class PLATFORM_EXPORT FontCache {
 
   friend class SimpleFontData;  // For fontDataFromFontPlatformData
   friend class FontFallbackList;
+  FRIEND_TEST_ALL_PREFIXES(FontCacheAndroid, LocaleSpecificTypeface);
 };
 
 class PLATFORM_EXPORT FontCachePurgePreventer {

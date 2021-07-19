@@ -82,6 +82,50 @@ const AtomicString& FontCache::SystemFontFamily() {
 // static
 void FontCache::SetSystemFontFamily(const AtomicString&) {}
 
+// static
+const char* FontCache::GetLocaleSpecificFamilyName(
+    const AtomicString& family_name) {
+  // Only `serif` has `fallbackFor` according to the current `fonts.xml`.
+  if (family_name == font_family_names::kWebkitSerif)
+    return "serif";
+  return nullptr;
+}
+
+sk_sp<SkTypeface> FontCache::CreateLocaleSpecificTypeface(
+    const FontDescription& font_description,
+    const char* locale_family_name) {
+  const char* bcp47 = font_description.LocaleOrDefault().LocaleForSkFontMgr();
+  DCHECK(bcp47);
+  SkFontMgr* font_manager =
+      font_manager_ ? font_manager_.get() : SkFontMgr::RefDefault().get();
+  sk_sp<SkTypeface> typeface(font_manager->matchFamilyStyleCharacter(
+      locale_family_name, font_description.SkiaFontStyle(), &bcp47,
+      /* bcp47Count */ 1,
+      // |matchFamilyStyleCharacter| is the only API that accepts |bcp47|, but
+      // it also checks if a character has a glyph. To look up the first
+      // match, use the space character, because all fonts are likely to have
+      // a glyph for it.
+      kSpaceCharacter));
+  if (!typeface)
+    return nullptr;
+
+  // When the specified family of the specified language does not exist, we want
+  // to fall back to the specified family of the default language, but
+  // |matchFamilyStyleCharacter| falls back to the default family of the
+  // specified language. Get the default family of the language and compare
+  // with what we get.
+  SkString skia_family_name;
+  typeface->getFamilyName(&skia_family_name);
+  sk_sp<SkTypeface> fallback(font_manager->matchFamilyStyleCharacter(
+      nullptr, font_description.SkiaFontStyle(), &bcp47,
+      /* bcp47Count */ 1, kSpaceCharacter));
+  SkString skia_fallback_name;
+  fallback->getFamilyName(&skia_fallback_name);
+  if (typeface != fallback)
+    return typeface;
+  return nullptr;
+}
+
 scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
     const FontDescription& font_description,
     UChar32 c,
@@ -146,48 +190,6 @@ scoped_refptr<SimpleFontData> FontCache::PlatformFallbackFontForCharacter(
       GetFontPlatformData(font_description,
                           FontFaceCreationParams(family_name)),
       kDoNotRetain);
-}
-
-// static
-AtomicString FontCache::GetGenericFamilyNameForScript(
-    const AtomicString& family_name,
-    const FontDescription& font_description) {
-  // If monospace, do not apply CJK hack to find i18n fonts, because
-  // i18n fonts are likely not monospace. Monospace is mostly used
-  // for code, but when i18n characters appear in monospace, system
-  // fallback can still render the characters.
-  if (family_name == font_family_names::kWebkitMonospace)
-    return family_name;
-
-  // The CJK hack below should be removed, at latest when we have
-  // serif and sans-serif versions of CJK fonts. Until then, limit it
-  // to only when the content locale is available. crbug.com/652146
-  const LayoutLocale* content_locale = font_description.Locale();
-  if (!content_locale)
-    return family_name;
-
-  // This is a hack to use the preferred font for CJK scripts.
-  // TODO(kojii): This logic disregards either generic family name
-  // or locale. We need an API that honors both to find appropriate
-  // fonts. crbug.com/642340
-  UChar32 exampler_char;
-  switch (content_locale->GetScript()) {
-    case USCRIPT_SIMPLIFIED_HAN:
-    case USCRIPT_TRADITIONAL_HAN:
-    case USCRIPT_KATAKANA_OR_HIRAGANA:
-      exampler_char = 0x4E00;  // A common character in Japanese and Chinese.
-      break;
-    case USCRIPT_HANGUL:
-      exampler_char = 0xAC00;
-      break;
-    default:
-      // For other scripts, use the default generic family mapping logic.
-      return family_name;
-  }
-
-  sk_sp<SkFontMgr> fm(SkFontMgr::RefDefault());
-  return GetFamilyNameForCharacter(fm.get(), exampler_char, font_description,
-                                   nullptr, FontFallbackPriority::kText);
 }
 
 }  // namespace blink

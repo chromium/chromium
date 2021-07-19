@@ -18,15 +18,10 @@ AtomicString FontSelector::FamilyNameFromSettings(
     const FontDescription& font_description,
     const AtomicString& generic_family_name) {
 #if defined(OS_ANDROID)
-  if (font_description.GenericFamily() == FontDescription::kStandardFamily) {
-    return FontCache::GetGenericFamilyNameForScript(
-        font_family_names::kWebkitStandard, font_description);
-  }
-
-  if (generic_family_name.StartsWith("-webkit-")) {
-    return FontCache::GetGenericFamilyNameForScript(generic_family_name,
-                                                    font_description);
-  }
+  // Android does not have the locale-specific font-family setting. Instead, the
+  // system may use different typefaces depending on the locale. Looking up such
+  // locale-specific family name is rather expensive that we rely on |FontCache|
+  // to handle them.
 #else
   UScriptCode script = font_description.GetScript();
   if (font_description.GenericFamily() == FontDescription::kStandardFamily)
@@ -45,7 +40,7 @@ AtomicString FontSelector::FamilyNameFromSettings(
     return settings.Pictograph(script);
   if (generic_family_name == font_family_names::kWebkitStandard)
     return settings.Standard(script);
-#endif
+#endif  // !defined(OS_ANDROID)
   return g_empty_atom;
 }
 

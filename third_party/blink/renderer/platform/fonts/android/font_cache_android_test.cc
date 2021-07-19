@@ -28,31 +28,30 @@ TEST(FontCacheAndroid, FallbackFontForCharacter) {
   EXPECT_TRUE(font_data);
 }
 
-TEST(FontCacheAndroid, genericFamilyNameForScript) {
-  FontDescription english;
-  english.SetLocale(LayoutLocale::Get("en"));
-  FontDescription chinese;
-  chinese.SetLocale(LayoutLocale::Get("zh"));
+TEST(FontCacheAndroid, LocaleSpecificTypeface) {
+  FontCachePurgePreventer purge_preventer;
+  FontCache* font_cache = FontCache::GetFontCache();
 
-  font_family_names::Init();
+  FontDescription serif_ja_description;
+  serif_ja_description.SetLocale(LayoutLocale::Get("ja"));
+  serif_ja_description.SetGenericFamily(FontDescription::kSerifFamily);
+  sk_sp<SkTypeface> serif_ja_typeface =
+      font_cache->CreateLocaleSpecificTypeface(serif_ja_description, "serif");
 
-  // For non-CJK, getGenericFamilyNameForScript should return the given
-  // familyName.
-  EXPECT_EQ(font_family_names::kWebkitStandard,
-            FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, english));
-  EXPECT_EQ(font_family_names::kWebkitMonospace,
-            FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitMonospace, english));
+  // |CreateLocaleSpecificTypeface| returns `nullptr` if the system does not
+  // have a locale-specific `serif` for Japanese. In this case, we can't test
+  // further.
+  if (!serif_ja_typeface)
+    return;
 
-  // For CJK, getGenericFamilyNameForScript should return CJK fonts except
-  // monospace.
-  EXPECT_NE(font_family_names::kWebkitStandard,
-            FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitStandard, chinese));
-  EXPECT_EQ(font_family_names::kWebkitMonospace,
-            FontCache::GetGenericFamilyNameForScript(
-                font_family_names::kWebkitMonospace, chinese));
+  // If the system has one, it must be different from the default font.
+  FontDescription standard_ja_description;
+  standard_ja_description.SetLocale(LayoutLocale::Get("ja"));
+  standard_ja_description.SetGenericFamily(FontDescription::kStandardFamily);
+  std::string name;
+  sk_sp<SkTypeface> standard_ja_typeface = font_cache->CreateTypeface(
+      standard_ja_description, FontFaceCreationParams(), name);
+  EXPECT_NE(serif_ja_typeface.get(), standard_ja_typeface.get());
 }
 
 }  // namespace blink
