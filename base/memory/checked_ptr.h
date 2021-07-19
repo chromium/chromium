@@ -15,6 +15,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 
@@ -26,7 +27,6 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/base_export.h"
-#include "base/dcheck_is_on.h"
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 namespace base {
@@ -91,6 +91,10 @@ struct CheckedPtrNoOpImpl {
 
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
 
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr);
+#endif
+
 struct BackupRefPtrImpl {
   // Note that `BackupRefPtrImpl` itself is not thread-safe. If multiple threads
   // modify the same smart pointer object without synchronization, a data race
@@ -135,15 +139,10 @@ struct BackupRefPtrImpl {
     // This allows us to make a stronger assertion that if
     // IsManagedByPartitionAllocBRPPool returns true for a valid pointer,
     // it must be at least partition page away from the beginning of a super
-    // page. This, however, can't be easily checked for direct maps, where a
-    // pointer on a consecutive super page may easily land in its first
-    // partition page.
-    // TODO(bartekn): Keep the assert for non-DirectMap as well as for the
-    // first page of DirectMap allocations.
-#if 0
+    // page.
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     if (ret) {
-      DCHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
-             PartitionPageSize());
+      CheckThatAddressIsntWithinFirstPartitionPage(ptr);
     }
 #endif
 

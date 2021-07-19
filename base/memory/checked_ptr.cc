@@ -13,7 +13,9 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_ref_count.h"
 #include "base/allocator/partition_allocator/partition_root.h"
+#include "base/allocator/partition_allocator/reservation_offset_table.h"
 #include "base/check.h"
+#include "base/dcheck_is_on.h"
 
 namespace base {
 
@@ -41,6 +43,20 @@ bool BackupRefPtrImpl::IsPointeeAlive(void* ptr) {
 bool BackupRefPtrImpl::IsValidDelta(void* ptr, ptrdiff_t delta) {
   return PartitionAllocIsValidPtrDelta(ptr, delta);
 }
+
+#if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
+void CheckThatAddressIsntWithinFirstPartitionPage(void* ptr) {
+  if (IsManagedByDirectMap(ptr)) {
+    uintptr_t reservation_start = GetDirectMapReservationStart(ptr);
+    CHECK(reinterpret_cast<uintptr_t>(ptr) - reservation_start >=
+          PartitionPageSize());
+  } else {
+    CHECK(IsManagedByNormalBuckets(ptr));
+    CHECK(reinterpret_cast<uintptr_t>(ptr) % kSuperPageSize >=
+          PartitionPageSize());
+  }
+}
+#endif  // DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
 
 }  // namespace internal
 
