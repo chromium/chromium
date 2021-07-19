@@ -17,7 +17,7 @@ namespace quick_answers {
 namespace {
 
 constexpr char kUnitConversionQueryRewriteTemplate[] = "Convert:%s";
-constexpr char kDictionaryQueryRewriteTemplate[] = "Define:%s";
+constexpr char kDictionaryQueryRewriteTemplate[] = "Define %s";
 constexpr char kTranslationQueryRewriteTemplate[] = "Translate:%s";
 
 }  // namespace
