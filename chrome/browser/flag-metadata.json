@@ -4387,7 +4387,7 @@
   {
     "name": "page-info-version-2-desktop",
     "owners": [ "bsep", "olesiamarukhno" ],
-    "expiry_milestone": 93
+    "expiry_milestone": 95
   },
   {
     "name": "paint-preview-demo",
