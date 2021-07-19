@@ -131,9 +131,6 @@ void PopulateProfileMetadata(const ReportingSettings& reporting_settings,
 const base::Feature kEnterpriseConnectorsEnabled{
     "EnterpriseConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kPerProfileConnectorsEnabled{
-    "PerProfileConnectorsEnabled", base::FEATURE_ENABLED_BY_DEFAULT};
-
 const char kServiceProviderConfig[] = R"({
   "version": "1",
   "service_providers" : [
@@ -501,9 +498,6 @@ ConnectorsService::GetBrowserDmToken() const {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
-  if (!base::FeatureList::IsEnabled(kPerProfileConnectorsEnabled))
-    return absl::nullopt;
-
   if (!CanUseProfileDmToken())
     return absl::nullopt;
 

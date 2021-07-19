@@ -105,8 +105,7 @@ class ConnectorsServiceProfileBrowserTest
 
     // Set the required features for the per-profile feature to work.
     scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures(
-        {kEnterpriseConnectorsEnabled, kPerProfileConnectorsEnabled}, {});
+    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled}, {});
   }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -469,92 +468,6 @@ IN_PROC_BROWSER_TEST_P(ConnectorsServiceRealtimeURLCheckProfileBrowserTest,
       ASSERT_EQ(kDomain1, management_domain);
       break;
   }
-#endif
-}
-
-// This test validates that no settings are obtained when
-// kPerProfileConnectorsEnabled is disabled. CrOS is unaffected as it only gets
-// the browser token if it is present.
-class ConnectorsServiceNoProfileFeatureBrowserTest
-    : public ConnectorsServiceProfileBrowserTest,
-      public testing::WithParamInterface<ManagementStatus> {
- public:
-  ConnectorsServiceNoProfileFeatureBrowserTest()
-      : ConnectorsServiceProfileBrowserTest(GetParam()) {
-    scoped_feature_list_.Reset();
-    scoped_feature_list_.InitWithFeatures({kEnterpriseConnectorsEnabled},
-                                          {kPerProfileConnectorsEnabled});
-  }
-};
-
-INSTANTIATE_TEST_SUITE_P(,
-                         ConnectorsServiceNoProfileFeatureBrowserTest,
-                         testing::Values(ManagementStatus::AFFILIATED,
-                                         ManagementStatus::UNAFFILIATED,
-                                         ManagementStatus::UNMANAGED));
-
-IN_PROC_BROWSER_TEST_P(ConnectorsServiceNoProfileFeatureBrowserTest, Test) {
-  for (auto connector : {FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY}) {
-    SetPrefs(ConnectorPref(connector), ConnectorScopePref(connector),
-             kNormalAnalysisSettingsPref);
-  }
-  SetPrefs(ConnectorPref(ReportingConnector::SECURITY_EVENT),
-           ConnectorScopePref(ReportingConnector::SECURITY_EVENT),
-           kNormalReportingSettingsPref);
-  SetPrefs(prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckMode,
-           prefs::kSafeBrowsingEnterpriseRealTimeUrlCheckScope, 1);
-
-  for (auto connector : {FILE_ATTACHED, FILE_DOWNLOADED, BULK_DATA_ENTRY}) {
-    auto settings =
-        ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-            ->GetAnalysisSettings(GURL(kTestUrl), connector);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (management_status() == ManagementStatus::UNMANAGED) {
-      ASSERT_FALSE(settings.has_value());
-    } else {
-      ASSERT_TRUE(settings.has_value());
-      ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
-      ASSERT_FALSE(settings.value().per_profile);
-    }
-#else
-    EXPECT_FALSE(settings.has_value());
-#endif
-  }
-
-  auto settings =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetReportingSettings(ReportingConnector::SECURITY_EVENT);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (management_status() == ManagementStatus::UNMANAGED) {
-    ASSERT_FALSE(settings.has_value());
-  } else {
-    ASSERT_TRUE(settings.has_value());
-    ASSERT_EQ(kFakeBrowserDMToken, settings.value().dm_token);
-    ASSERT_FALSE(settings.value().per_profile);
-  }
-#else
-  EXPECT_FALSE(settings.has_value());
-#endif
-
-  auto maybe_dm_token =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetDMTokenForRealTimeUrlCheck();
-  safe_browsing::EnterpriseRealTimeUrlCheckMode url_check_pref =
-      ConnectorsServiceFactory::GetForBrowserContext(browser()->profile())
-          ->GetAppliedRealTimeUrlCheck();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  EXPECT_EQ(management_status() != ManagementStatus::UNMANAGED,
-            maybe_dm_token.has_value());
-  if (maybe_dm_token.has_value()) {
-    EXPECT_EQ(kFakeBrowserDMToken, maybe_dm_token.value());
-    ASSERT_EQ(safe_browsing::REAL_TIME_CHECK_FOR_MAINFRAME_ENABLED,
-              url_check_pref);
-  } else {
-    EXPECT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
-  }
-#else
-  EXPECT_FALSE(maybe_dm_token.has_value());
-  EXPECT_EQ(safe_browsing::REAL_TIME_CHECK_DISABLED, url_check_pref);
 #endif
 }
 

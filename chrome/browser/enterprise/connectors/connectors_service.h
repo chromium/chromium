@@ -28,9 +28,6 @@ namespace enterprise_connectors {
 // ConnectorsManager.
 extern const base::Feature kEnterpriseConnectorsEnabled;
 
-// Controls whether per-profile Enterprise Connector policies are applied.
-extern const base::Feature kPerProfileConnectorsEnabled;
-
 // For the moment, service provider configurations are static and only support
 // google endpoints.  Therefore the configuration is placed here directly.
 // Once the configuration becomes more dynamic this static string will be

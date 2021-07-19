@@ -8,7 +8,6 @@
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
@@ -114,12 +113,7 @@ class DownloadDeepScanningBrowserTestBase
   // OnFileDownloadedEnterpriseConnector and OnSecurityEventEnterpriseConnector
   // should be set at the machine or user scope.
   explicit DownloadDeepScanningBrowserTestBase(bool connectors_machine_scope)
-      : connectors_machine_scope_(connectors_machine_scope) {
-    if (!connectors_machine_scope) {
-      scoped_feature_list_.InitAndEnableFeature(
-          enterprise_connectors::kPerProfileConnectorsEnabled);
-    }
-  }
+      : connectors_machine_scope_(connectors_machine_scope) {}
 
   void OnDownloadCreated(content::DownloadManager* manager,
                          download::DownloadItem* item) override {
@@ -439,7 +433,6 @@ class DownloadDeepScanningBrowserTestBase
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
 
   bool connectors_machine_scope_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
   mojo::Remote<network::mojom::DataPipeGetter> data_pipe_getter_;
 };

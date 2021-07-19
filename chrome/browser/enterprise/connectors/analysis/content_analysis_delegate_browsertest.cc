@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
@@ -199,10 +198,6 @@ class ContentAnalysisDelegateBrowserTestBase
   explicit ContentAnalysisDelegateBrowserTestBase(bool machine_scope)
       : machine_scope_(machine_scope) {
     ContentAnalysisDialog::SetObserverForTesting(this);
-
-    if (!machine_scope) {
-      scoped_feature_list_.InitAndEnableFeature(kPerProfileConnectorsEnabled);
-    }
   }
 
   void EnableUploadsScanningAndReporting() {
@@ -285,7 +280,6 @@ class ContentAnalysisDelegateBrowserTestBase
   std::unique_ptr<signin::IdentityTestEnvironment> identity_test_environment_;
   base::ScopedTempDir temp_dir_;
   bool machine_scope_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class ContentAnalysisDelegateBrowserTest
