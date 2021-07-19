@@ -3178,6 +3178,16 @@
       },
     },
   },
+  'webgpu_blink_web_tests': {
+    'modifications': {
+      # Increase the timeout with ASAN (crbug.com/1208253)
+      'Dawn Win10 x64 ASAN Release': {
+        'args': [
+          '--time-out-ms=48000',
+        ],
+      },
+    },
+  },
   'webkit_unit_tests': {
     'remove_from': [
       # Flakily fails on Win7. https://crbug.com/943372.
