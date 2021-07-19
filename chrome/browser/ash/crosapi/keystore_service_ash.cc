@@ -466,18 +466,19 @@ void KeystoreServiceAsh::DidRemoveCertificate(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::GetPublicKey(
+void KeystoreServiceAsh::DEPRECATED_GetPublicKey(
     const std::vector<uint8_t>& certificate,
     mojom::KeystoreSigningAlgorithmName algorithm_name,
-    GetPublicKeyCallback callback) {
+    DEPRECATED_GetPublicKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   absl::optional<std::string> name =
       StringFromSigningAlgorithmName(algorithm_name);
   if (!name) {
-    std::move(callback).Run(mojom::GetPublicKeyResult::NewErrorMessage(
-        chromeos::platform_keys::StatusToString(
-            chromeos::platform_keys::Status::
-                kErrorAlgorithmNotPermittedByCertificate)));
+    std::move(callback).Run(
+        mojom::DEPRECATED_GetPublicKeyResult::NewErrorMessage(
+            chromeos::platform_keys::StatusToString(
+                chromeos::platform_keys::Status::
+                    kErrorAlgorithmNotPermittedByCertificate)));
     return;
   }
 
@@ -485,7 +486,8 @@ void KeystoreServiceAsh::GetPublicKey(
       chromeos::platform_keys::GetPublicKeyAndAlgorithm(certificate,
                                                         name.value());
 
-  mojom::GetPublicKeyResultPtr result_ptr = mojom::GetPublicKeyResult::New();
+  mojom::DEPRECATED_GetPublicKeyResultPtr result_ptr =
+      mojom::DEPRECATED_GetPublicKeyResult::New();
   if (output.status == chromeos::platform_keys::Status::kSuccess) {
     absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
         signing_algorithm =

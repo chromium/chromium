@@ -75,9 +75,10 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void RemoveCertificate(mojom::KeystoreType keystore,
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback) override;
-  void GetPublicKey(const std::vector<uint8_t>& certificate,
-                    mojom::KeystoreSigningAlgorithmName algorithm_name,
-                    GetPublicKeyCallback callback) override;
+  void DEPRECATED_GetPublicKey(
+      const std::vector<uint8_t>& certificate,
+      mojom::KeystoreSigningAlgorithmName algorithm_name,
+      DEPRECATED_GetPublicKeyCallback callback) override;
   void ExtensionGenerateKey(mojom::KeystoreType keystore,
                             mojom::KeystoreSigningAlgorithmPtr algorithm,
                             const absl::optional<std::string>& extension_id,
