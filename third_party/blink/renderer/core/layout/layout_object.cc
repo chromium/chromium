@@ -4941,19 +4941,6 @@ LayoutUnit LayoutObject::FlipForWritingModeInternal(
       ->FlipForWritingMode(position, width);
 }
 
-void LayoutObject::MarkForLayout(LayoutInvalidationReasonForTracing reason,
-                                 MarkingBehavior mark_parents,
-                                 SubtreeLayoutScope* layouter) {
-  DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.invalidationTracking"),
-      "LayoutInvalidationTracking",
-      inspector_layout_invalidation_tracking_event::Data, this, reason);
-  if (mark_parents == kMarkContainerChain &&
-      (!layouter || layouter->Root() != this)) {
-    MarkContainerChainForLayout(!layouter, layouter);
-  }
-}
-
 bool LayoutObject::SelfPaintingLayerNeedsVisualOverflowRecalc() const {
   NOT_DESTROYED();
   if (HasLayer()) {
