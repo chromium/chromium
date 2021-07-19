@@ -38,11 +38,20 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 };
 
 typedef NS_ENUM(NSInteger, ItemType) {
-  ItemTypeSaveModalFields = kItemTypeEnumZero,
-  ItemTypeAddressProfileSaveUpdateButton,
+  ItemTypeSaveAddress = kItemTypeEnumZero,
+  ItemTypeSaveEmail,
+  ItemTypeSavePhone,
   ItemTypeUpdateModalDescription,
   ItemTypeUpdateModalTitle,
-  ItemTypeUpdateModalFields
+  ItemTypeUpdateNameNew,
+  ItemTypeUpdateAddressNew,
+  ItemTypeUpdateEmailNew,
+  ItemTypeUpdatePhoneNew,
+  ItemTypeUpdateNameOld,
+  ItemTypeUpdateAddressOld,
+  ItemTypeUpdateEmailOld,
+  ItemTypeUpdatePhoneOld,
+  ItemTypeAddressProfileSaveUpdateButton,
 };
 
 @interface InfobarSaveAddressProfileTableViewController ()
@@ -183,9 +192,18 @@ typedef NS_ENUM(NSInteger, ItemType) {
   if (base::FeatureList::IsEnabled(
           autofill::features::
               kAutofillAddressProfileSavePromptAddressVerificationSupport)) {
-    if (itemType == ItemTypeSaveModalFields ||
-        itemType == ItemTypeUpdateModalFields) {
-      [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+    switch (itemType) {
+      case ItemTypeSaveAddress:
+      case ItemTypeSaveEmail:
+      case ItemTypeSavePhone:
+      case ItemTypeUpdateNameNew:
+      case ItemTypeUpdateAddressNew:
+      case ItemTypeUpdateEmailNew:
+      case ItemTypeUpdatePhoneNew:
+        [self ensureContextMenuShownForItemType:itemType atIndexPath:indexPath];
+        break;
+      default:
+        break;
     }
   }
 }
@@ -291,7 +309,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   for (NSNumber* type in self.profileDataDiff) {
     if ([self.profileDataDiff[type][0] length] > 0) {
       SettingsImageDetailTextItem* newItem =
-          [self detailItemWithType:ItemTypeUpdateModalFields
+          [self detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                             (AutofillUIType)[type intValue]
+                                                                 update:YES
+                                                                    old:NO]
                               text:self.profileDataDiff[type][0]
                      iconImageName:[self iconForAutofillInputTypeNumber:type]
               imageTintColorIsGrey:NO];
@@ -311,7 +332,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
     for (NSNumber* type in self.profileDataDiff) {
       if ([self.profileDataDiff[type][1] length] > 0) {
         SettingsImageDetailTextItem* oldItem =
-            [self detailItemWithType:ItemTypeUpdateModalFields
+            [self detailItemWithType:[self modalItemTypeForAutofillUIType:
+                                               (AutofillUIType)[type intValue]
+                                                                   update:YES
+                                                                      old:YES]
                                 text:self.profileDataDiff[type][1]
                        iconImageName:[self iconForAutofillInputTypeNumber:type]
                 imageTintColorIsGrey:YES];
@@ -426,6 +450,45 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return [self iconForAutofillUIType:(AutofillUIType)[val intValue]];
 }
 
+// Determines the itemType for the row based on |autofillUIType|, whether the
+// modal is for save/update address or belongs to the old/new section in case of
+// update modal.
+- (NSInteger)modalItemTypeForAutofillUIType:(AutofillUIType)autofillUIType
+                                     update:(BOOL)update
+                                        old:(BOOL)old {
+  switch (autofillUIType) {
+    case AutofillUITypeProfileHomeAddressStreet:
+    case AutofillUITypeAddressHomeAddress:
+      if (update) {
+        return old ? ItemTypeUpdateAddressOld : ItemTypeUpdateAddressNew;
+      } else {
+        return ItemTypeSaveAddress;
+      }
+    case AutofillUITypeProfileEmailAddress:
+      if (update) {
+        return old ? ItemTypeUpdateEmailOld : ItemTypeUpdateEmailNew;
+      } else {
+        return ItemTypeSaveEmail;
+      }
+    case AutofillUITypeProfileHomePhoneWholeNumber:
+      if (update) {
+        return old ? ItemTypeUpdatePhoneOld : ItemTypeUpdatePhoneNew;
+      } else {
+        return ItemTypeSavePhone;
+      }
+    case AutofillUITypeNameFullWithHonorificPrefix:
+      if (update) {
+        return old ? ItemTypeUpdateNameOld : ItemTypeUpdateNameNew;
+      } else {
+        NOTREACHED();
+        return 0;
+      }
+    default:
+      NOTREACHED();
+      return 0;
+  }
+}
+
 // Returns an array of UIMenuItems to display in a context menu on the site
 // cell.
 - (NSArray*)menuItems {
@@ -443,10 +506,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (SettingsImageDetailTextItem*)
     detailItemForSaveModalWithText:(NSString*)text
                     autofillUIType:(AutofillUIType)autofillUIType {
-  return [self detailItemWithType:ItemTypeSaveModalFields
-                             text:text
-                    iconImageName:[self iconForAutofillUIType:autofillUIType]
-             imageTintColorIsGrey:YES];
+  return [self
+        detailItemWithType:[self modalItemTypeForAutofillUIType:autofillUIType
+                                                         update:NO
+                                                            old:NO]
+                      text:text
+             iconImageName:[self iconForAutofillUIType:autofillUIType]
+      imageTintColorIsGrey:YES];
 }
 
 - (SettingsImageDetailTextItem*)detailItemWithType:(NSInteger)type
