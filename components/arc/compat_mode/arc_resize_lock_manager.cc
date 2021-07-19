@@ -223,15 +223,19 @@ void ArcResizeLockManager::OnWindowPropertyChanged(aura::Window* window,
   if (key != ash::kArcResizeLockTypeKey)
     return;
 
+  // We need to always trigger UpdateCompatModeButton regardless of value
+  // change because it need to be called even when the property is set to
+  // ArcResizeLockType::RESIZABLE, which is the the default value of
+  // kArcResizeLockTypeKey, and the new value is the same as |old| in that case.
+  AppIdObserver::RunOnReady(
+      window, base::BindOnce(&ArcResizeLockManager::UpdateCompatModeButton,
+                             weak_ptr_factory_.GetWeakPtr()));
+
   const auto new_value = window->GetProperty(ash::kArcResizeLockTypeKey);
   const auto old_value = static_cast<ash::ArcResizeLockType>(old);
 
   if (new_value == old_value)
     return;
-
-  AppIdObserver::RunOnReady(
-      window, base::BindOnce(&ArcResizeLockManager::UpdateCompatModeButton,
-                             weak_ptr_factory_.GetWeakPtr()));
 
   if (ShouldEnableResizeLock(new_value)) {
     // Both the resize lock value and app id are needed to enable resize lock.
@@ -399,9 +403,9 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
     case ash::ArcResizeLockType::RESIZE_LIMITED:
     case ash::ArcResizeLockType::RESIZABLE:
       compat_mode_button->SetEnabled(true);
-      frame_view->SetToggleResizeLockMenuCallback(base::BindRepeating(
-          &ArcResizeLockManager::ToggleResizeToggleMenu,
-          base::Unretained(this), frame_view->frame()));
+      frame_view->SetToggleResizeLockMenuCallback(
+          base::BindRepeating(&ArcResizeLockManager::ToggleResizeToggleMenu,
+                              base::Unretained(this), frame_view->frame()));
       break;
     case ash::ArcResizeLockType::FULLY_LOCKED:
       compat_mode_button->SetEnabled(false);
@@ -410,8 +414,7 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
   }
 }
 
-void ArcResizeLockManager::ToggleResizeToggleMenu(
-    views::Widget* widget) {
+void ArcResizeLockManager::ToggleResizeToggleMenu(views::Widget* widget) {
   aura::Window* window = widget->GetNativeWindow();
   if (!window || !ash::IsArcWindow(window))
     return;
