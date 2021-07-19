@@ -1096,6 +1096,11 @@ const base::Feature kVirtualKeyboardBorderedKey{
 const base::Feature kVirtualKeyboardMultipaste{
     "VirtualKeyboardMultipaste", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enable or disable showing multipaste suggestions in virtual keyboard on
+// Chrome OS.
+const base::Feature kVirtualKeyboardMultipasteSuggestion{
+    "VirtualKeyboardMultipasteSuggestion", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable or disable the chrome://vm page
 const base::Feature kVmStatusPage{"VmStatusPage",
                                   base::FEATURE_ENABLED_BY_DEFAULT};

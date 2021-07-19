@@ -5190,6 +5190,12 @@ const char kVirtualKeyboardMultipasteName[] = "Virtual Keyboard MultiPaste";
 const char kVirtualKeyboardMultipasteDescription[] =
     "Show virtual keyboard with multipaste UI";
 
+const char kVirtualKeyboardMultipasteSuggestionName[] =
+    "Virtual Keyboard MultiPaste Suggestion";
+const char kVirtualKeyboardMultipasteSuggestionDescription[] =
+    "Show multipaste items in virtual keyboard suggestion bar if they are "
+    "copied recently";
+
 const char kVmStatusPageName[] = "VM status page";
 const char kVmStatusPageDescription[] = "Enable VM status page";
 

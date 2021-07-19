@@ -4062,6 +4062,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVirtualKeyboardMultipasteName,
      flag_descriptions::kVirtualKeyboardMultipasteDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(chromeos::features::kVirtualKeyboardMultipaste)},
+    {"enable-cros-virtual-keyboard-multipaste-suggestion",
+     flag_descriptions::kVirtualKeyboardMultipasteSuggestionName,
+     flag_descriptions::kVirtualKeyboardMultipasteSuggestionDescription,
+     kOsCrOS,
+     FEATURE_VALUE_TYPE(
+         chromeos::features::kVirtualKeyboardMultipasteSuggestion)},
     {"enable-experimental-accessibility-dictation-extension",
      flag_descriptions::kExperimentalAccessibilityDictationExtensionName,
      flag_descriptions::kExperimentalAccessibilityDictationExtensionDescription,
