@@ -14,8 +14,8 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "services/network/public/cpp/url_loader_completion_status.h"
+#include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
@@ -151,6 +151,9 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
   // is completed. When null, the timer falls back to base::TimeTicks::Now().
   static void SetTimeoutTickClockForTest(
       const base::TickClock* timeout_tick_clock);
+
+  SimpleURLLoader(const SimpleURLLoader&) = delete;
+  SimpleURLLoader& operator=(const SimpleURLLoader&) = delete;
 
   virtual ~SimpleURLLoader();
 
@@ -381,9 +384,6 @@ class COMPONENT_EXPORT(NETWORK_CPP) SimpleURLLoader {
 
  protected:
   SimpleURLLoader();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SimpleURLLoader);
 };
 
 }  // namespace network
