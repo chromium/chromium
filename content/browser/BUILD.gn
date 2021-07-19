@@ -1972,6 +1972,8 @@ source_set("browser") {
     "web_package/web_bundle_url_loader_factory.h",
     "web_package/web_bundle_utils.cc",
     "web_package/web_bundle_utils.h",
+    "webauth/client_data_json.cc",
+    "webauth/client_data_json.h",
     "webauth/webauth_request_security_checker.cc",
     "webauth/webauth_request_security_checker.h",
     "webid/federated_auth_navigation_throttle.cc",
