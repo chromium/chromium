@@ -245,7 +245,7 @@ ui::AXNode* GetStaticTextNodeFromNode(ui::AXNode* node) {
 
 std::string GetTextRunCharsAsUTF8(
     const chrome_pdf::AccessibilityTextRunInfo& text_run,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     int char_index) {
   std::string chars_utf8;
   for (uint32_t i = 0; i < text_run.len; ++i) {
@@ -257,7 +257,7 @@ std::string GetTextRunCharsAsUTF8(
 
 std::vector<int32_t> GetTextRunCharOffsets(
     const chrome_pdf::AccessibilityTextRunInfo& text_run,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     int char_index) {
   std::vector<int32_t> char_offsets(text_run.len);
   double offset = 0.0;
@@ -354,7 +354,7 @@ class PdfAccessibilityTreeBuilder {
  public:
   explicit PdfAccessibilityTreeBuilder(
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
-      const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+      const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
       const ppapi::PdfAccessibilityPageObjects& page_objects,
       const gfx::RectF& page_bounds,
       uint32_t page_index,
@@ -1098,7 +1098,7 @@ class PdfAccessibilityTreeBuilder {
 
   std::vector<uint32_t> text_run_start_indices_;
   const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs_;
-  const std::vector<PP_PrivateAccessibilityCharInfo>& chars_;
+  const std::vector<chrome_pdf::AccessibilityCharInfo>& chars_;
   const std::vector<ppapi::PdfAccessibilityLinkInfo>& links_;
   uint32_t current_link_index_ = 0;
   const std::vector<ppapi::PdfAccessibilityImageInfo>& images_;
@@ -1140,7 +1140,7 @@ PdfAccessibilityTree::~PdfAccessibilityTree() {
 // static
 bool PdfAccessibilityTree::IsDataFromPluginValid(
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
   base::CheckedNumeric<uint32_t> char_length = 0;
   for (const chrome_pdf::AccessibilityTextRunInfo& text_run : text_runs)
@@ -1319,7 +1319,7 @@ void PdfAccessibilityTree::SetAccessibilityDocInfo(
 void PdfAccessibilityTree::SetAccessibilityPageInfo(
     const chrome_pdf::AccessibilityPageInfo& page_info,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
   // Outdated calls are ignored.
   uint32_t page_index = page_info.page_index;
@@ -1369,7 +1369,7 @@ void PdfAccessibilityTree::AddPageContent(
     const gfx::RectF& page_bounds,
     uint32_t page_index,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects,
     content::RenderAccessibility* render_accessibility) {
   DCHECK(page_node);

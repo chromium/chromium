@@ -307,7 +307,7 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
     ppapi::host::HostMessageContext* context,
     const PP_PrivateAccessibilityPageInfo& pp_page_info,
     const std::vector<ppapi::PdfAccessibilityTextRunInfo>& pp_text_run_infos,
-    const std::vector<PP_PrivateAccessibilityCharInfo>& chars,
+    const std::vector<PP_PrivateAccessibilityCharInfo>& pp_chars,
     const ppapi::PdfAccessibilityPageObjects& page_objects) {
   if (!host_->GetPluginInstance(pp_instance()))
     return PP_ERROR_FAILED;
@@ -324,6 +324,10 @@ int32_t PepperPDFHost::OnHostMsgSetAccessibilityPageInfo(
             pp_text_run_info.direction),
         ToAccessibilityTextStyleInfo(pp_text_run_info.style));
   }
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars;
+  chars.reserve(pp_chars.size());
+  for (const auto& pp_char : pp_chars)
+    chars.push_back({pp_char.unicode_character, pp_char.char_width});
   pdf_accessibility_tree_->SetAccessibilityPageInfo(page_info, text_run_infos,
                                                     chars, page_objects);
   return PP_OK;

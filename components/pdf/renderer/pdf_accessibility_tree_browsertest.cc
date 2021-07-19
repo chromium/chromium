@@ -40,7 +40,7 @@ const chrome_pdf::AccessibilityTextRunInfo kSecondTextRun = {
     15, gfx::RectF(28.0f, 117.0f, 152.0f, 19.0f),
     chrome_pdf::AccessibilityTextDirection::kNone,
     chrome_pdf::AccessibilityTextStyleInfo()};
-const PP_PrivateAccessibilityCharInfo kDummyCharsData[] = {
+const chrome_pdf::AccessibilityCharInfo kDummyCharsData[] = {
     {'H', 12}, {'e', 6},  {'l', 5},  {'l', 4},  {'o', 8},  {',', 4},
     {' ', 4},  {'w', 12}, {'o', 6},  {'r', 6},  {'l', 4},  {'d', 9},
     {'!', 4},  {' ', 0},  {' ', 0},  {'G', 16}, {'o', 12}, {'o', 12},
@@ -208,7 +208,7 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
   chrome_pdf::AccessibilityDocInfo doc_info_;
   chrome_pdf::AccessibilityPageInfo page_info_;
   std::vector<chrome_pdf::AccessibilityTextRunInfo> text_runs_;
-  std::vector<PP_PrivateAccessibilityCharInfo> chars_;
+  std::vector<chrome_pdf::AccessibilityCharInfo> chars_;
   ppapi::PdfAccessibilityPageObjects page_objects_;
 };
 
