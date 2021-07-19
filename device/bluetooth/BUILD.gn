@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//device/bluetooth/cast_bluetooth.gni")
 
 if (is_android) {
   import("//build/config/android/rules.gni")  # For generate_jni().
@@ -309,8 +310,10 @@ component("bluetooth") {
 
   if (is_chromeos || is_linux) {
     if (use_dbus) {
+      if (!force_cast_bluetooth) {
+        sources += [ "bluetooth_adapter_chromeos.cc" ]
+      }
       sources += [
-        "bluetooth_adapter_chromeos.cc",
         "bluez/bluetooth_adapter_bluez.cc",
         "bluez/bluetooth_adapter_bluez.h",
         "bluez/bluetooth_adapter_profile_bluez.cc",
@@ -483,6 +486,16 @@ component("bluetooth") {
       }
       deps += [ "//dbus" ]
     } else {  # !use_dbus
+      defines += [ "LINUX_WITHOUT_DBUS" ]
+      sources += [
+        "dbus/dbus_bluez_manager_wrapper_linux.h",
+        "dbus/dbus_bluez_manager_wrapper_stub_linux.cc",
+      ]
+    }
+
+    # force_cast_bluetooth is used to compile with both cast & BlueZ, by
+    # omitting the stubs that would otherwise be added in.
+    if (!use_dbus || force_cast_bluetooth) {
       if (is_chromecast && (is_linux || is_chromeos)) {
         sources += [
           "cast/bluetooth_adapter_cast.cc",
@@ -508,12 +521,6 @@ component("bluetooth") {
       } else {
         sources += [ "bluetooth_adapter_stub.cc" ]
       }
-
-      defines += [ "LINUX_WITHOUT_DBUS" ]
-      sources += [
-        "dbus/dbus_bluez_manager_wrapper_linux.h",
-        "dbus/dbus_bluez_manager_wrapper_stub_linux.cc",
-      ]
     }
   }
 }
