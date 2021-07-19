@@ -13,6 +13,7 @@
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 
 namespace enterprise_connectors {
+class FileSystemRenameHandler;
 
 // The UMA label used to log the number of renames to avoid a collision when
 // uploading to Box
@@ -29,6 +30,32 @@ class BoxUploader {
 
   static std::unique_ptr<BoxUploader> Create(
       download::DownloadItem* download_item);
+
+  // Test observer class that monitors BoxUploader behaviors.
+  class TestObserver : public base::CheckedObserver {
+   public:
+    explicit TestObserver(FileSystemRenameHandler* rename_handler);
+    ~TestObserver() override;
+
+    enum Status { kNotStarted, kInProgress, kSucceeded, kFailed };
+
+    void OnUploadStart();
+    void OnUploadDone(bool succeeded);
+    void OnFileDeletionStart();
+    void OnFileDeletionDone(bool succeeded);
+    void OnDestruction();
+    bool WaitForUpload();
+    bool WaitForTmpFileDeletion();
+    GURL GetFileUrl();
+
+   private:
+    base::WeakPtr<BoxUploader> uploader_;
+    GURL file_url_;
+    Status upload_status_ = Status::kNotStarted;
+    Status tmp_file_deletion_status_ = Status::kNotStarted;
+    base::RunLoop upload_run_loop_;
+    base::RunLoop delete_run_loop_;
+  };
 
   virtual ~BoxUploader();
 
@@ -175,6 +202,9 @@ class BoxUploader {
   std::string folder_id_;
   // PrefService used to store folder_id.
   PrefService* prefs_ = nullptr;  // Must be initialized to nullptr for DCHECKs.
+
+  // Test observers
+  base::ObserverList<TestObserver> observers_;
 
   base::WeakPtrFactory<BoxUploader> weak_factory_{this};
 };
