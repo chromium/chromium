@@ -33,7 +33,7 @@ declare_args() {
 
   # Enables support for background apps.
   enable_background_contents = !is_android && !is_chromecast
-  enable_background_mode = !is_android && !is_chromecast && !is_chromeos_ash
+  enable_background_mode = !is_android && !is_chromecast && !is_chromeos
 
   # Enable the printing system dialog for platforms that support printing
   # and have a system dialog.
