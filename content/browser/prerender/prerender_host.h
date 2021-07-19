@@ -119,8 +119,14 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   void RecordFinalStatus(base::PassKey<PrerenderHostRegistry>,
                          FinalStatus status);
 
-  // Waits until the page load finishes.
-  void WaitForLoadStopForTesting();
+  enum class LoadingOutcome {
+    kLoadingCompleted,
+    kPrerenderingCancelled,
+  };
+
+  // Waits until the page load finishes. Returns the loading status indicating
+  // how the operation was finished.
+  LoadingOutcome WaitForLoadStopForTesting();
 
   const GURL& GetInitialUrl() const;
 
@@ -138,6 +144,10 @@ class CONTENT_EXPORT PrerenderHost : public WebContentsObserver {
   int frame_tree_node_id() const { return frame_tree_node_id_; }
 
   bool is_ready_for_activation() const { return is_ready_for_activation_; }
+
+  const absl::optional<FinalStatus>& final_status() const {
+    return final_status_;
+  }
 
  private:
   class PageHolder;

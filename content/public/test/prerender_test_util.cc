@@ -240,7 +240,8 @@ int PrerenderTestHelper::GetHostForUrl(const GURL& gurl) {
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(int host_id) {
   auto* host = GetPrerenderHostById(GetWebContents(), host_id);
   ASSERT_NE(host, nullptr);
-  host->WaitForLoadStopForTesting();
+  auto status = host->WaitForLoadStopForTesting();
+  EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kLoadingCompleted);
 }
 
 // static
@@ -256,7 +257,8 @@ void PrerenderTestHelper::WaitForPrerenderLoadCompletion(
     host = registry.FindHostByUrlForTesting(gurl);
     ASSERT_NE(host, nullptr);
   }
-  host->WaitForLoadStopForTesting();
+  auto status = host->WaitForLoadStopForTesting();
+  EXPECT_EQ(status, PrerenderHost::LoadingOutcome::kLoadingCompleted);
 }
 
 void PrerenderTestHelper::WaitForPrerenderLoadCompletion(const GURL& gurl) {

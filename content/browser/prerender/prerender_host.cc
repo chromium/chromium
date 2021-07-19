@@ -106,6 +106,13 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   }
 
   ~PageHolder() override {
+    // If we are still waiting on test loop, we can assume the page loading step
+    // has been cancelled and the PageHolder is being discarded without
+    // completing loading the page.
+    if (on_wait_loading_finished_)
+      std::move(on_wait_loading_finished_)
+          .Run(PrerenderHost::LoadingOutcome::kPrerenderingCancelled);
+
     if (frame_tree_)
       frame_tree_->Shutdown();
   }
@@ -120,8 +127,9 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
                        bool to_different_document) override {}
 
   void DidStopLoading() override {
-    if (on_stopped_loading_for_tests_) {
-      std::move(on_stopped_loading_for_tests_).Run();
+    if (on_wait_loading_finished_) {
+      std::move(on_wait_loading_finished_)
+          .Run(PrerenderHost::LoadingOutcome::kLoadingCompleted);
     }
   }
 
@@ -218,24 +226,38 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
     return ActivateResult(FinalStatus::kActivated, std::move(page));
   }
 
-  void WaitForLoadCompletionForTesting() {
+  PrerenderHost::LoadingOutcome WaitForLoadCompletionForTesting() {
+    PrerenderHost::LoadingOutcome status =
+        PrerenderHost::LoadingOutcome::kLoadingCompleted;
     if (!frame_tree_->IsLoading())
-      return;
+      return status;
 
     base::RunLoop loop;
-    on_stopped_loading_for_tests_ = loop.QuitClosure();
+    on_wait_loading_finished_ =
+        base::BindOnce(&PrerenderHost::PageHolder::FinishWaitingForTesting,
+                       loop.QuitClosure(), &status);
     loop.Run();
+    return status;
   }
 
   FrameTree* frame_tree() { return frame_tree_.get(); }
 
  private:
+  static void FinishWaitingForTesting(base::OnceClosure on_close,  // IN-TEST
+                                      PrerenderHost::LoadingOutcome* result,
+                                      PrerenderHost::LoadingOutcome status) {
+    *result = status;
+    std::move(on_close).Run();
+  }
+
   // WebContents where this prerenderer is embedded.
   WebContentsImpl& web_contents_;
 
-  // This can be called when |frame_tree_| is destroyed so it must be
-  // destructed after |frame_tree_|.
-  base::OnceClosure on_stopped_loading_for_tests_;
+  // Used for testing, this closure is only set when waiting a page to be
+  // either loaded for pre-rendering. |frame_tree_| provides us with a trigger
+  // for when the page is loaded.
+  base::OnceCallback<void(PrerenderHost::LoadingOutcome)>
+      on_wait_loading_finished_;
 
   // Frame tree created for the prerenderer to load the page and prepare it for
   // a future activation. During activation, the prerendered page will be taken
@@ -581,8 +603,8 @@ void PrerenderHost::CreatePageHolder(WebContentsImpl& web_contents) {
       page_holder_->frame_tree()->root()->frame_tree_node_id();
 }
 
-void PrerenderHost::WaitForLoadStopForTesting() {
-  page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
+PrerenderHost::LoadingOutcome PrerenderHost::WaitForLoadStopForTesting() {
+  return page_holder_->WaitForLoadCompletionForTesting();  // IN-TEST
 }
 
 void PrerenderHost::RecordFinalStatus(FinalStatus status) {
