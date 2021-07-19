@@ -294,13 +294,11 @@ base::ListValue GetSafeBrowsingPoliciesList(PrefService* prefs) {
   preferences_list.Append(
       base::Value(prefs::kPasswordProtectionWarningTrigger));
 
-  const base::ListValue* login_urls_value =
-      prefs->GetList(prefs::kPasswordProtectionLoginURLs);
-  std::vector<std::string> login_urls_list;
-  CanonicalizeDomainList(*login_urls_value, &login_urls_list);
+  std::vector<GURL> login_urls_list;
+  GetPasswordProtectionLoginURLsPref(*prefs, &login_urls_list);
   std::string login_urls;
   for (const auto& login_url : login_urls_list) {
-    login_urls = login_urls + " " + login_url;
+    login_urls = login_urls + " " + login_url.spec();
   }
   preferences_list.Append(base::Value(login_urls));
   preferences_list.Append(base::Value(prefs::kPasswordProtectionLoginURLs));
