@@ -88,6 +88,16 @@ NGInlineBreakToken::~NGInlineBreakToken() {
   }
 }
 
+bool NGInlineBreakToken::IsAfterBlockInInline() const {
+  if (!ItemIndex())
+    return false;
+  const auto node = To<NGInlineNode>(InputNode());
+  const NGInlineItemsData& items_data = node.ItemsData(/*is_first_line*/ false);
+  const NGInlineItem& last_item = items_data.items[ItemIndex() - 1];
+  return last_item.Type() == NGInlineItem::kBlockInInline &&
+         TextOffset() == last_item.EndOffset();
+}
+
 #if DCHECK_IS_ON()
 
 String NGInlineBreakToken::ToString() const {

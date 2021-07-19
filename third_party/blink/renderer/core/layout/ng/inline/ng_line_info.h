@@ -8,6 +8,8 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_result.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 
 namespace blink {
@@ -56,6 +58,16 @@ class CORE_EXPORT NGLineInfo {
   // no margin/border/padding.
   bool IsEmptyLine() const { return is_empty_line_; }
   void SetIsEmptyLine() { is_empty_line_ = true; }
+
+  // Returns true if this line is a block-in-inline.
+  bool IsBlockInInline() const { return is_block_in_inline_; }
+  void SetIsBlockInInline() { is_block_in_inline_ = true; }
+  const NGBlockBreakToken* BlockInInlineBreakToken() const {
+    return block_in_inline_break_token_.get();
+  }
+  void SetBlockInInlineBreakToken(const NGBlockBreakToken* break_token) {
+    block_in_inline_break_token_ = break_token;
+  }
 
   // NGInlineItemResults for this line.
   NGInlineItemResults* MutableResults() { return &results_; }
@@ -131,6 +143,15 @@ class CORE_EXPORT NGLineInfo {
   // justify alignment.
   bool NeedsAccurateEndPosition() const { return needs_accurate_end_position_; }
 
+  // Line breaker may abort if block-in-inline aborts the layout.
+  const NGLayoutResult* AbortedLayoutResult() const {
+    return aborted_layout_result_.get();
+  }
+  void SetAbortedLayoutResult(
+      scoped_refptr<const NGLayoutResult> layout_result) {
+    aborted_layout_result_ = std::move(layout_result);
+  }
+
   // |MayHaveTextCombineItem()| is used for treating text-combine box as
   // ideographic character during "text-align:justify".
   bool MayHaveTextCombineItem() const { return may_have_text_combine_item_; }
@@ -150,6 +171,9 @@ class CORE_EXPORT NGLineInfo {
 
   NGBfcOffset bfc_offset_;
 
+  scoped_refptr<const NGBlockBreakToken> block_in_inline_break_token_;
+  scoped_refptr<const NGLayoutResult> aborted_layout_result_;
+
   LayoutUnit available_width_;
   LayoutUnit width_;
   LayoutUnit hang_width_;
@@ -165,6 +189,7 @@ class CORE_EXPORT NGLineInfo {
   bool use_first_line_style_ = false;
   bool is_last_line_ = false;
   bool is_empty_line_ = false;
+  bool is_block_in_inline_ = false;
   bool has_overflow_ = false;
   bool has_trailing_spaces_ = false;
   bool needs_accurate_end_position_ = false;

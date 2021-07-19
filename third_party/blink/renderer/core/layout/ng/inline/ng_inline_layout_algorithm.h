@@ -97,6 +97,10 @@ class CORE_EXPORT NGInlineLayoutAlgorithm final
                                       const NGLineInfo&,
                                       NGInlineItemResult*,
                                       NGLogicalLineItems* line_box);
+  void PlaceBlockInInline(const NGInlineItem&,
+                          const NGLineInfo&,
+                          NGInlineItemResult*,
+                          NGLogicalLineItems* line_box);
   void PlaceLayoutResult(NGInlineItemResult*,
                          NGLogicalLineItems* line_box,
                          NGInlineBoxState*,

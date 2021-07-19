@@ -30,7 +30,7 @@ void CheckNoItemsAreAssociated(const NGPhysicalBoxFragment& fragment) {
 void CheckIsLast(const NGFragmentItem& item) {
   if (const NGPhysicalBoxFragment* fragment = item.BoxFragment()) {
     if (!fragment->IsInline()) {
-      DCHECK(fragment->IsFloating());
+      DCHECK(!fragment->IsInlineBox());
       DCHECK_EQ(item.IsLastForNode(), !fragment->BreakToken());
     }
   }
@@ -117,14 +117,14 @@ void NGFragmentItems::FinalizeAfterLayout(
       DCHECK(layout_object->IsInLayoutNGInlineFormattingContext());
 
       item.SetDeltaToNextForSameLayoutObject(0);
-      if (UNLIKELY(layout_object->IsFloating())) {
+      if (UNLIKELY(layout_object->IsFloating() || !layout_object->IsInline())) {
         // Fragments that aren't really on a line, such as floats, will have
         // block break tokens if they continue in a subsequent fragmentainer, so
         // just check that. Floats in particular will continue as regular box
         // fragment children in subsequent fragmentainers, i.e. they will not be
         // fragment items (even if we're in an inline formatting context). So
         // we're not going to find the last fragment by just looking for items.
-        DCHECK(item.BoxFragment() && item.BoxFragment()->IsFloating());
+        DCHECK(item.BoxFragment() && !item.BoxFragment()->IsInlineBox());
         item.SetIsLastForNode(!item.BoxFragment()->BreakToken());
       } else {
         DCHECK(layout_object->IsInline());

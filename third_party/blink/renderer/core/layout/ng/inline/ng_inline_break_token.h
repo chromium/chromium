@@ -59,6 +59,9 @@ class CORE_EXPORT NGInlineBreakToken final : public NGBreakToken {
     return flags_ & kIsForcedBreak;
   }
 
+  // True if this is after a block-in-inline.
+  bool IsAfterBlockInInline() const;
+
   // The BreakToken when a block-in-inline is block-fragmented.
   const NGBlockBreakToken* BlockInInlineBreakToken() const;
 
