@@ -257,10 +257,11 @@ Result<bool> WriteShortcutsMenuIcons(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns true if no errors occurred.
-Result<bool> WriteDataBlocking(const std::unique_ptr<FileUtilsWrapper>& utils,
-                               const base::FilePath& web_apps_directory,
-                               const AppId& app_id,
-                               const IconBitmaps& icon_bitmaps) {
+Result<bool> WriteAppIconDataBlocking(
+    const std::unique_ptr<FileUtilsWrapper>& utils,
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    const IconBitmaps& icon_bitmaps) {
   // Create the temp directory under the web apps root.
   // This guarantees it is on the same file system as the WebApp's eventual
   // install target.
@@ -316,9 +317,6 @@ Result<bool> WriteShortcutsMenuIconsDataBlocking(
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
-  if (shortcuts_menu_icon_bitmaps.empty())
-    return {.value = false};
-
   // Create the temp directory under the web apps root.
   // This guarantees it is on the same file system as the WebApp's eventual
   // install target.
@@ -380,6 +378,25 @@ Result<bool> WriteShortcutsMenuIconsDataBlocking(
   }
 
   return {.value = true};
+}
+
+Result<bool> WriteDataBlocking(
+    const std::unique_ptr<FileUtilsWrapper>& utils,
+    const base::FilePath& web_apps_directory,
+    const AppId& app_id,
+    const IconBitmaps& icon_bitmaps,
+    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
+  auto result =
+      WriteAppIconDataBlocking(utils, web_apps_directory, app_id, icon_bitmaps);
+  if (result.HasErrors())
+    return result;
+
+  if (!shortcuts_menu_icon_bitmaps.empty()) {
+    result = WriteShortcutsMenuIconsDataBlocking(
+        utils, web_apps_directory, app_id, shortcuts_menu_icon_bitmaps);
+  }
+
+  return result;
 }
 
 // Performs blocking I/O. May be called on another thread.
@@ -658,29 +675,17 @@ WebAppIconManager::WebAppIconManager(Profile* profile,
 
 WebAppIconManager::~WebAppIconManager() = default;
 
-void WebAppIconManager::WriteData(AppId app_id,
-                                  IconBitmaps icon_bitmaps,
-                                  WriteDataCallback callback) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, kTaskTraits,
-      base::BindOnce(WriteDataBlocking, utils_->Clone(), web_apps_directory_,
-                     std::move(app_id), std::move(icon_bitmaps)),
-      base::BindOnce(&LogErrorsCallCallback<bool>,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void WebAppIconManager::WriteShortcutsMenuIconsData(
+void WebAppIconManager::WriteData(
     AppId app_id,
+    IconBitmaps icon_bitmaps,
     ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps,
     WriteDataCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
-      base::BindOnce(WriteShortcutsMenuIconsDataBlocking, utils_->Clone(),
-                     web_apps_directory_, std::move(app_id),
+      base::BindOnce(WriteDataBlocking, utils_->Clone(), web_apps_directory_,
+                     std::move(app_id), std::move(icon_bitmaps),
                      std::move(shortcuts_menu_icon_bitmaps)),
       base::BindOnce(&LogErrorsCallCallback<bool>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

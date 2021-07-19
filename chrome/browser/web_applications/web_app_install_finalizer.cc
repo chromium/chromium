@@ -442,37 +442,13 @@ void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
 
   icon_manager_->WriteData(
       std::move(app_id), web_app_info.icon_bitmaps,
+      web_app_info.shortcuts_menu_icon_bitmaps,
       base::BindOnce(&WebAppInstallFinalizer::OnIconsDataWritten,
                      weak_ptr_factory_.GetWeakPtr(), std::move(commit_callback),
-                     std::move(web_app),
-                     web_app_info.shortcuts_menu_icon_bitmaps));
+                     std::move(web_app)));
 }
 
 void WebAppInstallFinalizer::OnIconsDataWritten(
-    CommitCallback commit_callback,
-    std::unique_ptr<WebApp> web_app,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-    bool success) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  if (!success) {
-    std::move(commit_callback).Run(success);
-    return;
-  }
-
-  if (shortcuts_menu_icon_bitmaps.empty()) {
-    OnShortcutsMenuIconsDataWritten(std::move(commit_callback),
-                                    std::move(web_app), success);
-  } else {
-    AppId app_id = web_app->app_id();
-    icon_manager_->WriteShortcutsMenuIconsData(
-        app_id, shortcuts_menu_icon_bitmaps,
-        base::BindOnce(&WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(commit_callback), std::move(web_app)));
-  }
-}
-
-void WebAppInstallFinalizer::OnShortcutsMenuIconsDataWritten(
     CommitCallback commit_callback,
     std::unique_ptr<WebApp> web_app,
     bool success) {

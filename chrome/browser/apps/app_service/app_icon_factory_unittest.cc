@@ -574,7 +574,7 @@ class WebAppIconFactoryTest : public ChromeRenderViewHostTestHarness {
     }
 
     base::RunLoop run_loop;
-    icon_manager_->WriteData(app_id, std::move(icon_bitmaps),
+    icon_manager_->WriteData(app_id, std::move(icon_bitmaps), {},
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_TRUE(success);
                                run_loop.Quit();

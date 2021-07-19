@@ -94,12 +94,11 @@ class WebAppIconManagerTest : public WebAppTest {
     }
 
     base::RunLoop run_loop;
-    icon_manager_->WriteShortcutsMenuIconsData(
-        app_id, std::move(shortcuts_menu_icons),
-        base::BindLambdaForTesting([&](bool success) {
-          EXPECT_TRUE(success);
-          run_loop.Quit();
-        }));
+    icon_manager_->WriteData(app_id, {}, std::move(shortcuts_menu_icons),
+                             base::BindLambdaForTesting([&](bool success) {
+                               EXPECT_TRUE(success);
+                               run_loop.Quit();
+                             }));
     run_loop.Run();
   }
 
@@ -542,7 +541,7 @@ TEST_F(WebAppIconManagerTest, OverwriteIcons) {
     base::RunLoop run_loop;
 
     // Overwrite red icons with green and blue ones.
-    icon_manager().WriteData(app_id, std::move(icon_bitmaps),
+    icon_manager().WriteData(app_id, std::move(icon_bitmaps), {},
                              base::BindLambdaForTesting([&](bool success) {
                                EXPECT_TRUE(success);
                                run_loop.Quit();
@@ -781,12 +780,11 @@ TEST_F(WebAppIconManagerTest, WriteShortcutsMenuIconsEmptyMap) {
 
   ShortcutsMenuIconBitmaps shortcuts_menu_icons;
   base::RunLoop run_loop;
-  icon_manager().WriteShortcutsMenuIconsData(
-      app_id, std::move(shortcuts_menu_icons),
-      base::BindLambdaForTesting([&](bool success) {
-        EXPECT_FALSE(success);
-        run_loop.Quit();
-      }));
+  icon_manager().WriteData(app_id, {}, std::move(shortcuts_menu_icons),
+                           base::BindLambdaForTesting([&](bool success) {
+                             EXPECT_TRUE(success);
+                             run_loop.Quit();
+                           }));
   run_loop.Run();
 
   // Make sure that nothing was written to disk.

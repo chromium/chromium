@@ -209,7 +209,7 @@ void IconManagerWriteGeneratedIcons(
   }
 
   base::RunLoop run_loop;
-  icon_manager.WriteData(app_id, std::move(icon_bitmaps),
+  icon_manager.WriteData(app_id, std::move(icon_bitmaps), {},
                          base::BindLambdaForTesting([&](bool success) {
                            DCHECK(success);
                            run_loop.Quit();

@@ -50,11 +50,8 @@ class WebAppIconManager : public AppIconManager, public AppRegistrarObserver {
   // Writes all data (icons) for an app.
   void WriteData(AppId app_id,
                  IconBitmaps icon_bitmaps,
+                 ShortcutsMenuIconBitmaps shortcuts_menu_icons,
                  WriteDataCallback callback);
-  void WriteShortcutsMenuIconsData(
-      AppId app_id,
-      ShortcutsMenuIconBitmaps shortcuts_menu_icons,
-      WriteDataCallback callback);
   void DeleteData(AppId app_id, WriteDataCallback callback);
 
   // AppIconManager:
