@@ -392,14 +392,14 @@ gfx::Size Combobox::CalculatePreferredSize() const {
 
   // The preferred size will drive the local bounds which in turn is used to set
   // the minimum width for the dropdown list.
-  gfx::Insets insets = GetInsets();
-  const LayoutProvider* provider = LayoutProvider::Get();
-  insets += gfx::Insets(
-      provider->GetDistanceMetric(DISTANCE_CONTROL_VERTICAL_TEXT_PADDING),
-      provider->GetDistanceMetric(DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING));
-  int total_width = std::max(kMinComboboxWidth, content_size_.width()) +
-                    insets.width() + kComboboxArrowContainerWidth;
-  return gfx::Size(total_width, content_size_.height() + insets.height());
+  const int width = std::max(kMinComboboxWidth, content_size_.width()) +
+                    LayoutProvider::Get()->GetDistanceMetric(
+                        DISTANCE_TEXTFIELD_HORIZONTAL_TEXT_PADDING) *
+                        2 +
+                    kComboboxArrowContainerWidth + GetInsets().width();
+  const int height = LayoutProvider::GetControlHeightForFont(
+      text_context_, text_style_, GetFontList());
+  return gfx::Size(width, height);
 }
 
 void Combobox::OnBoundsChanged(const gfx::Rect& previous_bounds) {

@@ -167,28 +167,11 @@ void MdTextButton::UpdatePadding() {
 }
 
 gfx::Insets MdTextButton::CalculateDefaultPadding() const {
-  // Text buttons default to 28dp in height on all platforms when the base font
-  // is in use, but should grow or shrink if the font size is adjusted up or
-  // down. When the system font size has been adjusted, the base font will be
-  // larger than normal such that 28dp might not be enough, so also enforce a
-  // minimum height of twice the font size.
-  // Example 1:
-  // * Normal button on ChromeOS, 12pt Roboto. Button height of 28dp.
-  // * Button on ChromeOS that has been adjusted to 14pt Roboto. Button height
-  // of 28 + 2 * 2 = 32dp.
-  // * Linux user sets base system font size to 17dp. For a normal button, the
-  // |size_delta| will be zero, so to adjust upwards we double 17 to get 34.
-  int size_delta =
-      label()->font_list().GetFontSize() -
-      style::GetFont(style::CONTEXT_BUTTON_MD, style::STYLE_PRIMARY)
-          .GetFontSize();
-  // TODO(tapted): This should get |target_height| using LayoutProvider::
-  // GetControlHeightForFont().
-  constexpr int kBaseHeight = 32;
-  int target_height = std::max(kBaseHeight + size_delta * 2,
-                               label()->font_list().GetFontSize() * 2);
+  int target_height = LayoutProvider::GetControlHeightForFont(
+      label()->GetTextContext(), style::STYLE_PRIMARY, label()->font_list());
 
   int label_height = label()->GetPreferredSize().height();
+  DCHECK_GE(target_height, label_height);
   int top_padding = (target_height - label_height) / 2;
   int bottom_padding = (target_height - label_height + 1) / 2;
   DCHECK_EQ(target_height, label_height + top_padding + bottom_padding);

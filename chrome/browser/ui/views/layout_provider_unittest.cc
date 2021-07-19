@@ -343,7 +343,8 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
   } kExpectedIncreases[] = {{CONTEXT_HEADLINE, 4, 8},
                             {views::style::CONTEXT_DIALOG_TITLE, 1, 4},
                             {views::style::CONTEXT_DIALOG_BODY_TEXT, 2, 4},
-                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5}};
+                            {CONTEXT_DIALOG_BODY_TEXT_SMALL, 4, 5},
+                            {views::style::CONTEXT_BUTTON_MD, 0, 1}};
 
   for (size_t i = 0; i < base::size(kExpectedIncreases); ++i) {
     SCOPED_TRACE(testing::Message() << "Testing index: " << i);
@@ -353,13 +354,6 @@ TEST_F(LayoutProviderTest, TypographyLineHeight) {
     EXPECT_GE(increase.max, line_spacing - font.GetHeight());
     EXPECT_LE(increase.min, line_spacing - font.GetHeight());
   }
-
-  // Buttons should specify zero line height (i.e. use the font's height) so
-  // buttons have flexibility to configure their own spacing.
-  EXPECT_EQ(0,
-            views::style::GetLineHeight(views::style::CONTEXT_BUTTON, kStyle));
-  EXPECT_EQ(
-      0, views::style::GetLineHeight(views::style::CONTEXT_BUTTON_MD, kStyle));
 }
 
 // Ensure that line heights reported in a default bot configuration match the

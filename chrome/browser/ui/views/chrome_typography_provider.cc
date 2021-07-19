@@ -173,10 +173,7 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
   constexpr int kHeadlineHeight = 32;
   constexpr int kTitleHeight = 22;
   constexpr int kBodyHeight = 20;  // For both large and small.
-
-  // Button text should always use the minimum line height for a font to avoid
-  // unnecessarily influencing the height of a button.
-  constexpr int kButtonAbsoluteHeight = 0;
+  constexpr int kControlHeight = 16;
 
 // The platform-specific heights (i.e. gfx::Font::GetHeight()) that result when
 // asking for the target size constants in ChromeTypographyProvider::GetFont()
@@ -214,6 +211,9 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
       GetFont(views::style::CONTEXT_DIALOG_BODY_TEXT, kTemplateStyle)
           .GetHeight() -
       kBodyTextLargePlatformHeight + kBodyHeight;
+  static const int control_height =
+      GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle).GetHeight() -
+      kBodyTextSmallPlatformHeight + kControlHeight;
   static const int default_height =
       GetFont(CONTEXT_DIALOG_BODY_TEXT_SMALL, kTemplateStyle).GetHeight() -
       kBodyTextSmallPlatformHeight + kBodyHeight;
@@ -221,8 +221,9 @@ int ChromeTypographyProvider::GetLineHeight(int context, int style) const {
   switch (context) {
     case views::style::CONTEXT_BUTTON:
     case views::style::CONTEXT_BUTTON_MD:
+    case views::style::CONTEXT_TEXTFIELD:
     case CONTEXT_TOOLBAR_BUTTON:
-      return kButtonAbsoluteHeight;
+      return control_height;
     case views::style::CONTEXT_DIALOG_TITLE:
       return title_height;
     case views::style::CONTEXT_DIALOG_BODY_TEXT:

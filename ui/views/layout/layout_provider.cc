@@ -85,7 +85,7 @@ int LayoutProvider::GetDistanceMetric(int metric) const {
     case DISTANCE_CLOSE_BUTTON_MARGIN:
       return 4;
     case DISTANCE_CONTROL_VERTICAL_TEXT_PADDING:
-      return 6;
+      return 8;
     case DISTANCE_DIALOG_BUTTON_MINIMUM_WIDTH:
       // Minimum label size plus padding.
       return 32 + 2 * GetDistanceMetric(DISTANCE_BUTTON_HORIZONTAL_PADDING);
