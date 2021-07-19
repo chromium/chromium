@@ -1623,11 +1623,6 @@ config("default_warnings") {
           "-Wno-unused-but-set-variable",
         ]
 
-        cflags_c += [
-          # TODO(https://crbug.com/995993): Clean up and enable.
-          "-Wno-implicit-fallthrough",
-        ]
-
         if (enable_wmax_tokens) {
           cflags += [ "-Wmax-tokens" ]
         }

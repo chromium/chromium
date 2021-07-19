@@ -25,6 +25,8 @@ _coder_simple = _coder_bcj_arm || _coder_bcj_armthumb || _coder_bcj_ia64 ||
 _small = true
 
 config("common_config") {
+  cflags = [ "-Wno-implicit-fallthrough" ]
+
   visibility = [ ":*" ]
   defines = [ "HAVE_CONFIG_H" ]
 

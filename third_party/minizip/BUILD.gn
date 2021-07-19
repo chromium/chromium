@@ -10,6 +10,7 @@ config("minizip_compiler_flags") {
       # mz_zip.c does |UINT_MAX == UINT16_MAX && ...|.
       "-Wno-unreachable-code",
       "-Wno-unused-function",
+      "-Wno-implicit-fallthrough",
     ]
 
     if (!is_nacl && (target_cpu == "x86" || target_cpu == "x64")) {

@@ -26,8 +26,14 @@ if ((is_linux || is_chromeos) && !is_chromecast && !use_fuzzing_engine) {
     defines = [ "XML_STATIC" ]
   }
   config("expat_internal_config") {
-    # xmlparse.c has some |if (0 && ...)| statements.
-    cflags = [ "-Wno-unreachable-code" ]
+    cflags = [
+      # xmlparse.c has some |if (0 && ...)| statements.
+      "-Wno-unreachable-code",
+
+      # Various files have fallthrough annotated with comments instead of
+      # attributes, and switching to attributes is difficult.
+      "-Wno-implicit-fallthrough",
+    ]
   }
 
   static_library("expat") {
