@@ -124,7 +124,7 @@ public class ScreenshotCoordinator {
         assert mImageEditorModuleProvider != null;
         ImageEditorDialogCoordinator editor =
                 mImageEditorModuleProvider.getImageEditorDialogCoordinator();
-        editor.launchEditor(mActivity, mScreenshot, mTab, mShareUrl, mChromeOptionShareCallback);
+        editor.launchEditor(mActivity, mScreenshot, mTab, mChromeOptionShareCallback);
         mScreenshot = null;
     }
 
