@@ -18613,9 +18613,7 @@
       'tags': [],
       'desc': '''Setting the policy to Enabled or leaving it unset prevents third-party software from injecting executable code into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s processes.
 
-      Setting the policy to Disabled allows this software to inject such code into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s processes.
-
-      Regardless of the value of this policy, the browser won't block third-party software from injecting executable code into its processes on a machine that's joined to a <ph name="MS_AD_NAME">Microsoft® Active Directory®</ph> domain.''',
+      Setting the policy to Disabled allows this software to inject such code into <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph>'s processes.'''
     },
     {
       'name': 'SpellcheckEnabled',
