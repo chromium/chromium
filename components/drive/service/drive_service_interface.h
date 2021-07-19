@@ -12,8 +12,8 @@
 
 #include "base/time/time.h"
 #include "google_apis/drive/auth_service_interface.h"
-#include "google_apis/drive/base_requests.h"
 #include "google_apis/drive/drive_api_requests.h"
+#include "google_apis/drive/drive_base_requests.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 #include "google_apis/gaia/core_account_id.h"
 

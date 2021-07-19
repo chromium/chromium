@@ -35,6 +35,9 @@ class CalendarApiGetRequest : public UrlFetchRequestBase {
  protected:
   // UrlFetchRequestBase:
   GURL GetURL() const override;
+  ApiErrorCode MapReasonToError(ApiErrorCode code,
+                                const std::string& reason) override;
+  bool IsSuccessfulErrorCode(ApiErrorCode error) override;
 
   // Derived classes should override GetURLInternal instead of GetURL()
   // directly since fields are appended in the GetURL() method.

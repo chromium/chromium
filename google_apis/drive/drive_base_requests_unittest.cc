@@ -1,8 +1,8 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/drive/drive_base_requests.h"
 
 #include <stdint.h>
 
@@ -13,6 +13,8 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
+#include "google_apis/drive/drive_api_parser.h"
+#include "google_apis/drive/drive_api_requests.h"
 #include "google_apis/drive/dummy_auth_service.h"
 #include "google_apis/drive/request_sender.h"
 #include "google_apis/drive/test_util.h"
@@ -32,52 +34,56 @@ namespace google_apis {
 
 namespace {
 
-const char kValidJsonString[] = "{ \"test\": 123 }";
-const char kInvalidJsonString[] = "$$$";
-
-class FakeUrlFetchRequest : public UrlFetchRequestBase {
+class FakeMultipartUploadRequest : public MultipartUploadRequestBase {
  public:
-  FakeUrlFetchRequest(RequestSender* sender,
-                      PrepareCallback callback,
-                      const GURL& url)
-      : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-        callback_(std::move(callback)),
-        url_(url) {}
+  FakeMultipartUploadRequest(base::SequencedTaskRunner* blocking_task_runner,
+                             const std::string& metadata_json,
+                             const std::string& content_type,
+                             int64_t content_length,
+                             const base::FilePath& local_file_path,
+                             FileResourceCallback callback,
+                             google_apis::ProgressCallback progress_callback,
+                             const GURL& url,
+                             std::string* upload_content_type,
+                             std::string* upload_content_data)
+      : MultipartUploadRequestBase(blocking_task_runner,
+                                   metadata_json,
+                                   content_type,
+                                   content_length,
+                                   local_file_path,
+                                   std::move(callback),
+                                   progress_callback),
+        url_(url),
+        upload_content_type_(upload_content_type),
+        upload_content_data_(upload_content_data) {}
 
-  ~FakeUrlFetchRequest() override {}
+  ~FakeMultipartUploadRequest() override = default;
+
+  std::string GetRequestType() const override { return "POST"; }
+
+  bool GetContentData(std::string* content_type,
+                      std::string* content_data) override {
+    const bool result =
+        MultipartUploadRequestBase::GetContentData(content_type, content_data);
+    *upload_content_type_ = *content_type;
+    *upload_content_data_ = *content_data;
+    return result;
+  }
 
  protected:
   GURL GetURL() const override { return url_; }
-  void ProcessURLFetchResults(
-      const network::mojom::URLResponseHead* response_head,
-      base::FilePath response_file,
-      std::string response_body) override {
-    std::move(callback_).Run(GetErrorCode());
-  }
-  void RunCallbackOnPrematureFailure(ApiErrorCode code) override {
-    std::move(callback_).Run(code);
-  }
-  google_apis::ApiErrorCode MapReasonToError(
-      google_apis::ApiErrorCode code,
-      const std::string& reason) override {
-    if (reason == "rateLimitExceeded")
-      return google_apis::HTTP_SERVICE_UNAVAILABLE;
-    return code;
-  }
 
-  bool IsSuccessfulErrorCode(ApiErrorCode error) override {
-    return error == HTTP_SUCCESS;
-  }
-
-  PrepareCallback callback_;
-  GURL url_;
+ private:
+  const GURL url_;
+  std::string* const upload_content_type_;
+  std::string* const upload_content_data_;
 };
 
 }  // namespace
 
-class BaseRequestsTest : public testing::Test {
+class DriveBaseRequestsTest : public testing::Test {
  public:
-  BaseRequestsTest() : response_code_(net::HTTP_OK) {
+  DriveBaseRequestsTest() {
     mojo::Remote<network::mojom::NetworkService> network_service_remote;
     network_service_ = network::NetworkService::Create(
         network_service_remote.BindNewPipeAndPassReceiver());
@@ -118,7 +124,7 @@ class BaseRequestsTest : public testing::Test {
         TRAFFIC_ANNOTATION_FOR_TESTS);
 
     test_server_.RegisterRequestHandler(base::BindRepeating(
-        &BaseRequestsTest::HandleRequest, base::Unretained(this)));
+        &DriveBaseRequestsTest::HandleRequest, base::Unretained(this)));
     ASSERT_TRUE(test_server_.Start());
   }
 
@@ -149,53 +155,50 @@ class BaseRequestsTest : public testing::Test {
   std::unique_ptr<RequestSender> sender_;
   net::EmbeddedTestServer test_server_;
 
-  net::HttpStatusCode response_code_;
+  net::HttpStatusCode response_code_ = net::HTTP_OK;
   std::string response_body_;
 };
 
-TEST_F(BaseRequestsTest, ParseValidJson) {
-  std::unique_ptr<base::Value> json(ParseJson(kValidJsonString));
+typedef DriveBaseRequestsTest MultipartUploadRequestBaseTest;
 
-  base::DictionaryValue* root_dict = nullptr;
-  ASSERT_TRUE(json);
-  ASSERT_TRUE(json->GetAsDictionary(&root_dict));
-
-  int int_value = 0;
-  ASSERT_TRUE(root_dict->GetInteger("test", &int_value));
-  EXPECT_EQ(123, int_value);
-}
-
-TEST_F(BaseRequestsTest, ParseInvalidJson) {
-  EXPECT_FALSE(ParseJson(kInvalidJsonString));
-}
-
-TEST_F(BaseRequestsTest, UrlFetchRequestBaseResponseCodeOverride) {
-  response_code_ = net::HTTP_FORBIDDEN;
-  response_body_ =
-      "{\"error\": {\n"
-      "  \"errors\": [\n"
-      "   {\n"
-      "    \"domain\": \"usageLimits\",\n"
-      "    \"reason\": \"rateLimitExceeded\",\n"
-      "    \"message\": \"Rate Limit Exceeded\"\n"
-      "   }\n"
-      "  ],\n"
-      "  \"code\": 403,\n"
-      "  \"message\": \"Rate Limit Exceeded\"\n"
-      " }\n"
-      "}\n";
-
+TEST_F(MultipartUploadRequestBaseTest, Basic) {
+  response_code_ = net::HTTP_OK;
+  response_body_ = "{\"kind\": \"drive#file\", \"id\": \"file_id\"}";
+  std::unique_ptr<google_apis::FileResource> file;
   ApiErrorCode error = OTHER_ERROR;
   base::RunLoop run_loop;
-  sender_->StartRequestWithAuthRetry(std::make_unique<FakeUrlFetchRequest>(
-      sender_.get(),
-      test_util::CreateQuitCallback(
-          &run_loop, test_util::CreateCopyResultCallback(&error)),
-      test_server_.base_url()));
+  const base::FilePath source_path =
+      google_apis::test_util::GetTestFilePath("drive/text.txt");
+  std::string upload_content_type;
+  std::string upload_content_data;
+  std::unique_ptr<FakeMultipartUploadRequest> multipart_request =
+      std::make_unique<FakeMultipartUploadRequest>(
+          sender_->blocking_task_runner(), "{json:\"test\"}", "text/plain", 10,
+          source_path,
+          test_util::CreateQuitCallback(
+              &run_loop, test_util::CreateCopyResultCallback(&error, &file)),
+          ProgressCallback(), test_server_.base_url(), &upload_content_type,
+          &upload_content_data);
+  multipart_request->SetBoundaryForTesting("TESTBOUNDARY");
+  sender_->StartRequestWithAuthRetry(
+      std::make_unique<drive::SingleBatchableDelegateRequest>(
+          sender_.get(), std::move(multipart_request)));
   run_loop.Run();
-
-  // HTTP_FORBIDDEN (403) is overridden by the error reason.
-  EXPECT_EQ(HTTP_SERVICE_UNAVAILABLE, error);
+  EXPECT_EQ("multipart/related; boundary=TESTBOUNDARY", upload_content_type);
+  EXPECT_EQ(
+      "--TESTBOUNDARY\n"
+      "Content-Type: application/json\n"
+      "\n"
+      "{json:\"test\"}\n"
+      "--TESTBOUNDARY\n"
+      "Content-Type: text/plain\n"
+      "\n"
+      "This is a sample file. I like chocolate and chips.\n"
+      "\n"
+      "--TESTBOUNDARY--",
+      upload_content_data);
+  ASSERT_EQ(HTTP_SUCCESS, error);
+  EXPECT_EQ("file_id", file->file_id());
 }
 
 }  // namespace google_apis

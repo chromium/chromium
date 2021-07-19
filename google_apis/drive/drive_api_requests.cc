@@ -292,7 +292,8 @@ Property::~Property() = default;
 //============================ DriveApiPartialFieldRequest ====================
 
 DriveApiPartialFieldRequest::DriveApiPartialFieldRequest(RequestSender* sender)
-    : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()) {}
+    : DriveUrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()) {
+}
 
 DriveApiPartialFieldRequest::~DriveApiPartialFieldRequest() = default;
 
@@ -1057,7 +1058,7 @@ bool PermissionsInsertRequest::GetContentData(std::string* upload_content_type,
 SingleBatchableDelegateRequest::SingleBatchableDelegateRequest(
     RequestSender* sender,
     std::unique_ptr<BatchableDelegate> delegate)
-    : UrlFetchRequestBase(
+    : DriveUrlFetchRequestBase(
           sender,
           base::BindRepeating(
               &SingleBatchableDelegateRequest::OnUploadProgress,
@@ -1123,7 +1124,7 @@ BatchUploadChildEntry::~BatchUploadChildEntry() = default;
 BatchUploadRequest::BatchUploadRequest(
     RequestSender* sender,
     const DriveApiUrlGenerator& url_generator)
-    : UrlFetchRequestBase(
+    : DriveUrlFetchRequestBase(
           sender,
           // Safe to not retain as the SimpleURLoader is owned by our base class
           // and cannot outlive this instance.
@@ -1235,8 +1236,8 @@ void BatchUploadRequest::MayCompletePrepare() {
                           total_size / 1024);
 
   std::vector<uint64_t> part_data_offset;
-  GenerateMultipartBody(MULTIPART_MIXED, boundary_, parts, &upload_content_,
-                        &part_data_offset);
+  GenerateMultipartBody(MultipartType::kMixed, boundary_, parts,
+                        &upload_content_, &part_data_offset);
   DCHECK(part_data_offset.size() == child_requests_.size());
   for (size_t i = 0; i < child_requests_.size(); ++i) {
     child_requests_[i]->data_offset += part_data_offset[i];

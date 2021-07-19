@@ -32,6 +32,18 @@ GURL CalendarApiGetRequest::GetURL() const {
   return url;
 }
 
+ApiErrorCode CalendarApiGetRequest::MapReasonToError(
+    ApiErrorCode code,
+    const std::string& reason) {
+  // TODO (jiamingc@): parse the calendar error codes from JSON based on
+  // https://developers.google.com/calendar/api/guides/errors
+  return code;
+}
+
+bool CalendarApiGetRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
+  return IsSuccessfulCalendarApiErrorCode(error);
+}
+
 CalendarApiEventsRequest::CalendarApiEventsRequest(
     RequestSender* sender,
     const CalendarApiUrlGenerator& url_generator,

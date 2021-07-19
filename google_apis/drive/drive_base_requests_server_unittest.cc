@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "google_apis/drive/base_requests.h"
+#include "google_apis/drive/drive_base_requests.h"
 
 #include <memory>
 

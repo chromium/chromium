@@ -20,9 +20,9 @@
 #include "base/task_runner_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "google_apis/drive/base_requests.h"
 #include "google_apis/drive/drive_api_parser.h"
 #include "google_apis/drive/drive_api_url_generator.h"
+#include "google_apis/drive/drive_base_requests.h"
 #include "google_apis/drive/drive_common_callbacks.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 
@@ -112,7 +112,7 @@ bool ParseMultipartResponse(const std::string& content_type,
 // support partial request (to improve the performance). The function can be
 // shared among the Drive API requests.
 // See also https://developers.google.com/drive/performance
-class DriveApiPartialFieldRequest : public UrlFetchRequestBase {
+class DriveApiPartialFieldRequest : public DriveUrlFetchRequestBase {
  public:
   explicit DriveApiPartialFieldRequest(RequestSender* sender);
   ~DriveApiPartialFieldRequest() override;
@@ -1135,7 +1135,7 @@ class PermissionsInsertRequest : public EntryActionRequest {
 //======================= SingleBatchableDelegateRequest =======================
 
 // Request that is operated by single BatchableDelegate.
-class SingleBatchableDelegateRequest : public UrlFetchRequestBase {
+class SingleBatchableDelegateRequest : public DriveUrlFetchRequestBase {
  public:
   SingleBatchableDelegateRequest(RequestSender* sender,
                                  std::unique_ptr<BatchableDelegate> delegate);
@@ -1178,7 +1178,7 @@ class BatchUploadChildEntry {
   DISALLOW_COPY_AND_ASSIGN(BatchUploadChildEntry);
 };
 
-class BatchUploadRequest : public UrlFetchRequestBase {
+class BatchUploadRequest : public DriveUrlFetchRequestBase {
  public:
   BatchUploadRequest(RequestSender* sender,
                      const DriveApiUrlGenerator& url_generator);

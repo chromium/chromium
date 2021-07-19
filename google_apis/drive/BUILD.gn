@@ -19,6 +19,8 @@ source_set("drive") {
     "drive_api_requests.h",
     "drive_api_url_generator.cc",
     "drive_api_url_generator.h",
+    "drive_base_requests.cc",
+    "drive_base_requests.h",
     "drive_common_callbacks.h",
     "files_list_request_runner.cc",
     "files_list_request_runner.h",
@@ -68,11 +70,12 @@ source_set("drive_unittests") {
   testonly = true
 
   sources = [
-    "base_requests_server_unittest.cc",
     "base_requests_unittest.cc",
     "drive_api_parser_unittest.cc",
     "drive_api_requests_unittest.cc",
     "drive_api_url_generator_unittest.cc",
+    "drive_base_requests_server_unittest.cc",
+    "drive_base_requests_unittest.cc",
     "files_list_request_runner_unittest.cc",
     "request_sender_unittest.cc",
     "request_util_unittest.cc",
