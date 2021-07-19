@@ -78261,6 +78261,9 @@ would be helpful to identify which type is being sent.
   <int value="22" label="Manage Google account"/>
   <int value="23" label="Clear YouTube history"/>
   <int value="24" label="Change Google password"/>
+  <int value="25" label="Incognito-mode clear browsing data"/>
+  <int value="26" label="Close Incognito windows"/>
+  <int value="27" label="Play Chrome Dino game"/>
 </enum>
 
 <enum name="SuggestionsResponseState">
