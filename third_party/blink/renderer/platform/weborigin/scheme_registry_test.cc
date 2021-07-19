@@ -61,7 +61,6 @@ TEST_F(SchemeRegistryTest, BypassSecureContextCheck) {
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme2));
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme3));
 
-  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck("random-scheme");
 
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme1));
