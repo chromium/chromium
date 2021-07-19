@@ -318,25 +318,8 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const auto timestamp = base::TimeDelta::FromMicroseconds(
       (init && init->hasTimestamp()) ? init->timestamp() : 0);
 
-  // Note: The current PaintImage may be lazy generated, for simplicity, we just
-  // ask Skia to rasterize the image for us.
-  //
-  // A potential optimization could use PaintImage::DecodeYuv() to decode
-  // directly into a media::VideoFrame. This would improve VideoFrame from <img>
-  // creation, but probably such users should be using ImageDecoder directly.
-  //
-  // TODO(crbug.com/1031051): PaintImage::GetSkImage() is being deprecated as we
-  // move to OOPR canvas2D. In OOPR mode it will return null so we fall back to
-  // GetSwSkImage(). This area should be updated once VideoFrame can wrap
-  // mailboxes.
-  auto sk_image = image->PaintImageForCurrentFrame().GetSkImage();
-  if (!sk_image)
-    sk_image = image->PaintImageForCurrentFrame().GetSwSkImage();
-  if (sk_image->isLazyGenerated())
-    sk_image = sk_image->makeRasterImage();
-
-  const auto sk_image_info = sk_image->imageInfo();
-
+  const auto paint_image = image->PaintImageForCurrentFrame();
+  const auto sk_image_info = paint_image.GetSkImageInfo();
   auto sk_color_space = sk_image_info.refColorSpace();
   if (!sk_color_space)
     sk_color_space = SkColorSpace::MakeSRGB();
@@ -353,11 +336,12 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
   const gfx::Size natural_size = coded_size;
   const auto orientation = image->CurrentFrameOrientation().Orientation();
 
+  sk_sp<SkImage> sk_image;
   scoped_refptr<media::VideoFrame> frame;
   if (image->IsTextureBacked()) {
     DCHECK(image->IsStaticBitmapImage());
     auto format = media::VideoPixelFormatFromSkColorType(
-        sk_image->colorType(),
+        paint_image.GetColorType(),
         image->CurrentFrameKnownToBeOpaque() || init->alpha() == kAlphaDiscard);
 
     auto* sbi = static_cast<StaticBitmapImage*>(image.get());
@@ -381,14 +365,21 @@ VideoFrame* VideoFrame::Create(ScriptState* script_state,
     if (frame)
       frame->metadata().texture_origin_is_top_left = is_origin_top_left;
 
-    // Drop the SkImage, we don't want it in the VideoFrameHandle.
-    // (We did need it to get the color space though.)
-    //
     // Note: We could add the StaticBitmapImage to the VideoFrameHandle so we
     // can round trip through VideoFrame back to canvas w/o any copies, but
     // this doesn't seem like a common use case.
-    sk_image.reset();
   } else {
+    // Note: The current PaintImage may be lazy generated, for simplicity, we
+    // just ask Skia to rasterize the image for us.
+    //
+    // A potential optimization could use PaintImage::DecodeYuv() to decode
+    // directly into a media::VideoFrame. This would improve VideoFrame from
+    // <img> creation, but probably such users should be using ImageDecoder
+    // directly.
+    sk_image = paint_image.GetSwSkImage();
+    if (sk_image->isLazyGenerated())
+      sk_image = sk_image->makeRasterImage();
+
     const bool force_opaque =
         init && init->alpha() == kAlphaDiscard && !sk_image->isOpaque();
 
