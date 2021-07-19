@@ -79,11 +79,21 @@ class PluginObserver::PluginPlaceholderHost : public PluginInstallerObserver {
   mojo::Remote<chrome::mojom::PluginRenderer> plugin_renderer_remote_;
 };
 
+void PluginObserver::BindPluginHost(
+    mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost> receiver,
+    content::RenderFrameHost* rfh) {
+  auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
+  if (!web_contents)
+    return;
+  auto* plugin_helper = PluginObserver::FromWebContents(web_contents);
+  if (!plugin_helper)
+    return;
+  plugin_helper->plugin_host_receivers_.Bind(rfh, std::move(receiver));
+}
+
 PluginObserver::PluginObserver(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      plugin_host_receivers_(web_contents,
-                             this,
-                             content::WebContentsFrameReceiverSetPassKey()) {}
+      plugin_host_receivers_(web_contents, this) {}
 
 PluginObserver::~PluginObserver() {
 }

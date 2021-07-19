@@ -84,6 +84,10 @@
 #include "chrome/browser/badging/badge_manager.h"
 #endif
 
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "chrome/browser/plugins/plugin_observer.h"
+#endif
+
 namespace {
 
 // Helper method for ExposeInterfacesToRenderer() that checks the latest
@@ -344,6 +348,15 @@ bool ChromeContentBrowserClient::BindAssociatedReceiverFromFrame(
         render_frame_host);
     return true;
   }
+#if BUILDFLAG(ENABLE_PLUGINS)
+  if (interface_name == chrome::mojom::PluginHost::Name_) {
+    PluginObserver::BindPluginHost(
+        mojo::PendingAssociatedReceiver<chrome::mojom::PluginHost>(
+            std::move(*handle)),
+        render_frame_host);
+    return true;
+  }
+#endif
   if (interface_name == content_capture::mojom::ContentCaptureReceiver::Name_) {
     content_capture::OnscreenContentProvider::BindContentCaptureReceiver(
         mojo::PendingAssociatedReceiver<
