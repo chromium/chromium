@@ -32,8 +32,22 @@ namespace {
 // the resource will be treated as if it were safe.
 const int kCheckUrlTimeoutMs = 5000;
 
+constexpr char kMatchResultHistogramName[] =
+    "SafeBrowsing.RT.LocalMatch.Result";
+
 void RecordCheckUrlTimeout(bool timed_out) {
   UMA_HISTOGRAM_BOOLEAN("SafeBrowsing.CheckUrl.Timeout", timed_out);
+}
+
+void RecordLocalMatchResult(
+    AsyncMatch match_result,
+    network::mojom::RequestDestination request_destination) {
+  base::UmaHistogramEnumeration(kMatchResultHistogramName, match_result);
+  bool is_mainframe =
+      request_destination == network::mojom::RequestDestination::kDocument;
+  std::string suffix = is_mainframe ? ".Mainframe" : ".NonMainframe";
+  base::UmaHistogramEnumeration(kMatchResultHistogramName + suffix,
+                                match_result);
 }
 
 }  // namespace
@@ -437,7 +451,7 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
           can_check_db_
               ? database_manager_->CheckUrlForHighConfidenceAllowlist(url, this)
               : AsyncMatch::NO_MATCH;
-      UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.LocalMatch.Result", match);
+      RecordLocalMatchResult(match, request_destination_);
       switch (match) {
         case AsyncMatch::ASYNC:
           // Hash-prefix matched. A call to
