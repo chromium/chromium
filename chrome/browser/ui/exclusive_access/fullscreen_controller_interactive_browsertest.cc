@@ -294,21 +294,15 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_FALSE(IsWindowFullscreenForTabOrPending());
 }
 
-#if defined(OS_MAC)
-// http://crbug.com/100467
-IN_PROC_BROWSER_TEST_F(ExclusiveAccessTest,
-                       DISABLED_TabEntersPresentationModeFromWindowed) {
+IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest,
+                       TabEntersPresentationModeFromWindowed) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   AddTabAtIndex(0, GURL(url::kAboutBlankURL), PAGE_TRANSITION_TYPED);
 
-  WebContents* tab = browser()->tab_strip_model()->GetActiveWebContents();
-
   {
-    FullscreenNotificationObserver fullscreen_observer(browser());
     EXPECT_FALSE(browser()->window()->IsFullscreen());
-    browser()->EnterFullscreenModeForTab(tab->GetMainFrame(), {});
-    fullscreen_observer.Wait();
+    ASSERT_NO_FATAL_FAILURE(ToggleTabFullscreenNoRetries(true));
     EXPECT_TRUE(browser()->window()->IsFullscreen());
   }
 
@@ -328,7 +322,6 @@ IN_PROC_BROWSER_TEST_F(ExclusiveAccessTest,
     EXPECT_TRUE(browser()->window()->IsFullscreen());
   }
 }
-#endif
 
 // Tests mouse lock can be escaped with ESC key.
 IN_PROC_BROWSER_TEST_F(FullscreenControllerInteractiveTest, EscapingMouseLock) {
