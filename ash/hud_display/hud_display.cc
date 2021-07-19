@@ -36,11 +36,11 @@ namespace ash {
 namespace hud_display {
 namespace {
 
-constexpr size_t kHUDGraphsInset = 5;
+constexpr int kHUDGraphsInset = 5;
 
 // Default HUDDisplayView height.
-constexpr size_t kDefaultHUDGraphHeight = 300;
-constexpr size_t kDefaultHUDSettingHeight = 400;
+constexpr int kDefaultHUDGraphHeight = 300;
+constexpr int kDefaultHUDSettingHeight = 400;
 
 // Top border + Header height + margin + graph height + bottom border..
 constexpr int kHUDViewDefaultHeight =

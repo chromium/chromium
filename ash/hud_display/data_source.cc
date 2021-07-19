@@ -33,9 +33,10 @@ CpuStats Delta(const CpuStats& newer, const CpuStats& older) {
 
   // Calculates (left - right) assuming |left| and |right| are increasing
   // unsigned counters with respect to possible counter overflow.
-  auto minus = [](const size_t& left, const size_t right) {
-    return left > right ? (left - right)
-                        : (left + (std::numeric_limits<size_t>::max() - right));
+  auto minus = [](const uint64_t& left, const uint64_t right) {
+    return left > right
+               ? (left - right)
+               : (left + (std::numeric_limits<uint64_t>::max() - right));
   };
 
   CpuStats result;
@@ -54,7 +55,7 @@ CpuStats Delta(const CpuStats& newer, const CpuStats& older) {
 
 // Returns sum of all entries. This is useful for deltas to calculate
 // percentage.
-size_t Sum(const CpuStats& stats) {
+uint64_t Sum(const CpuStats& stats) {
   static_assert(sizeof(CpuStats) == sizeof(uint64_t) * 10,
                 "This method should be updated when CpuStats is changed.");
 
