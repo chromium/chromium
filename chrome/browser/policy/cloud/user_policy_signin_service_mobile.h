@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -41,6 +40,8 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  UserPolicySigninService(const UserPolicySigninService&) = delete;
+  UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
   ~UserPolicySigninService() override;
 
   // Registers a CloudPolicyClient for fetching policy for |username|.
@@ -82,8 +83,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
   PrefService* profile_prefs_;
 
   base::WeakPtrFactory<UserPolicySigninService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
 };
 
 }  // namespace policy

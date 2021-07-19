@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,6 +69,9 @@ class UserPolicySigninServiceBase : public KeyedService,
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  UserPolicySigninServiceBase(const UserPolicySigninServiceBase&) = delete;
+  UserPolicySigninServiceBase& operator=(const UserPolicySigninServiceBase&) =
+      delete;
   ~UserPolicySigninServiceBase() override;
 
   // Initiates a policy fetch as part of user signin, using a |dm_token| and
@@ -174,8 +176,6 @@ class UserPolicySigninServiceBase : public KeyedService,
 
   signin::ConsentLevel consent_level_;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninServiceBase);
 };
 
 }  // namespace policy

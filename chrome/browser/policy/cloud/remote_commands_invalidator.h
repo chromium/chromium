@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
 #define CHROME_BROWSER_POLICY_CLOUD_REMOTE_COMMANDS_INVALIDATOR_H_
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/invalidation/public/invalidation_handler.h"
 #include "components/invalidation/public/invalidation_util.h"
@@ -28,6 +27,9 @@ namespace policy {
 class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
  public:
   explicit RemoteCommandsInvalidator(std::string owner_name);
+  RemoteCommandsInvalidator(const RemoteCommandsInvalidator&) = delete;
+  RemoteCommandsInvalidator& operator=(const RemoteCommandsInvalidator&) =
+      delete;
   ~RemoteCommandsInvalidator() override;
 
   // Initialize this invalidator to pair with |invalidation_service|. Must be
@@ -122,8 +124,6 @@ class RemoteCommandsInvalidator : public invalidation::InvalidationHandler {
   // A thread checker to make sure that callbacks are invoked on the correct
   // thread.
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsInvalidator);
 };
 
 }  // namespace policy

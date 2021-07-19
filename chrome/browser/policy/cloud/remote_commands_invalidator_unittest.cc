@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/cloud/remote_commands_invalidator.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fake_invalidation_service.h"
@@ -35,6 +34,9 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
  public:
   MockRemoteCommandInvalidator()
       : RemoteCommandsInvalidator("RemoteCommands.Test") {}
+  MockRemoteCommandInvalidator(const MockRemoteCommandInvalidator&) = delete;
+  MockRemoteCommandInvalidator& operator=(const MockRemoteCommandInvalidator&) =
+      delete;
 
   MOCK_METHOD0(OnInitialize, void());
   MOCK_METHOD0(OnShutdown, void());
@@ -52,15 +54,15 @@ class MockRemoteCommandInvalidator : public RemoteCommandsInvalidator {
     const em::PolicyData policy_data;
     ReloadPolicyData(&policy_data);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRemoteCommandInvalidator);
 };
 
 class RemoteCommandsInvalidatorTest : public testing::Test {
  public:
   RemoteCommandsInvalidatorTest()
       : kTestingTopic1("abcdef"), kTestingTopic2("defabc") {}
+  RemoteCommandsInvalidatorTest(const RemoteCommandsInvalidatorTest&) = delete;
+  RemoteCommandsInvalidatorTest& operator=(
+      const RemoteCommandsInvalidatorTest&) = delete;
 
   void EnableInvalidationService() {
     invalidation_service_.SetInvalidatorState(
@@ -157,9 +159,6 @@ class RemoteCommandsInvalidatorTest : public testing::Test {
 
   invalidation::FakeInvalidationService invalidation_service_;
   StrictMock<MockRemoteCommandInvalidator> invalidator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsInvalidatorTest);
 };
 
 // Verifies that only the fired invalidations will be received.

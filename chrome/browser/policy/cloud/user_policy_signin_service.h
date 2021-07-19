@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -39,6 +38,8 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  UserPolicySigninService(const UserPolicySigninService&) = delete;
+  UserPolicySigninService& operator=(const UserPolicySigninService&) = delete;
   ~UserPolicySigninService() override;
 
   // Registers a CloudPolicyClient for fetching policy for a user. |username| is
@@ -101,8 +102,6 @@ class UserPolicySigninService : public UserPolicySigninServiceBase {
 
   std::unique_ptr<CloudPolicyClientRegistrationHelper> registration_helper_;
   PrefChangeRegistrar profile_pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninService);
 };
 
 }  // namespace policy

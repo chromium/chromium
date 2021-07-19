@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_POLICY_CLOUD_USER_POLICY_SIGNIN_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -38,6 +37,11 @@ class UserPolicySigninServiceFactory
   static void SetDeviceManagementServiceForTesting(
       DeviceManagementService* device_management_service);
 
+  UserPolicySigninServiceFactory(const UserPolicySigninServiceFactory&) =
+      delete;
+  UserPolicySigninServiceFactory& operator=(
+      const UserPolicySigninServiceFactory&) = delete;
+
  protected:
   // BrowserContextKeyedServiceFactory implementation.
   KeyedService* BuildServiceInstanceFor(
@@ -55,8 +59,6 @@ class UserPolicySigninServiceFactory
 
   UserPolicySigninServiceFactory();
   ~UserPolicySigninServiceFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninServiceFactory);
 };
 
 }  // namespace policy

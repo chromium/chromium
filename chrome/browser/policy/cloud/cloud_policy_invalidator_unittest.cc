@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
@@ -928,6 +927,12 @@ TEST_F(CloudPolicyInvalidatorOwnerNameTest,
 class CloudPolicyInvalidatorUserTypedTest
     : public CloudPolicyInvalidatorTestBase,
       public testing::WithParamInterface<PolicyInvalidationScope> {
+ public:
+  CloudPolicyInvalidatorUserTypedTest(
+      const CloudPolicyInvalidatorUserTypedTest&) = delete;
+  CloudPolicyInvalidatorUserTypedTest& operator=(
+      const CloudPolicyInvalidatorUserTypedTest&) = delete;
+
  protected:
   CloudPolicyInvalidatorUserTypedTest() = default;
 
@@ -942,8 +947,6 @@ class CloudPolicyInvalidatorUserTypedTest
   PolicyInvalidationScope GetPolicyInvalidationScope() const override;
 
   base::HistogramTester histogram_tester_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyInvalidatorUserTypedTest);
 };
 
 base::HistogramBase::Count CloudPolicyInvalidatorUserTypedTest::GetCount(
