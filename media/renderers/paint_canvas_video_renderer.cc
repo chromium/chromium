@@ -1808,7 +1808,7 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
         // TODO(nazabris): Handle scoped access correctly. This follows the
         // current pattern but is most likely bugged. Access should last for
         // the lifetime of the SkImage.
-        ScopedSharedImageAccess(ri, cache_->source_texture, mailbox);
+        ScopedSharedImageAccess access(ri, cache_->source_texture, mailbox);
         auto source_image = WrapGLTexture(
             wraps_video_frame_texture
                 ? video_frame->mailbox_holder(0).texture_target
