@@ -7378,8 +7378,8 @@ crbug.com/1161244 external/wpt/html/cross-origin-opener-policy/popup-coop-by-sw-
 crbug.com/1230534 [ Linux ] external/wpt/webrtc/simulcast/vp8.https.html [ Pass Timeout ]
 
 # Temporary: Oilpan library launch
-crbug.com/1230599 [ Linux ] fast/workers/chromium/worker-document-leak.html [ Pass Crash ]
-crbug.com/1230599 [ Linux ] fast/workers/worker-close-more.html [ Pass Crash ]
-crbug.com/1230599 [ Linux ] fast/workers/worker-lifecycle.html [ Pass Crash ]
+crbug.com/1230599 [ Linux ] fast/workers/chromium/worker-document-leak.html [ Crash Pass ]
+crbug.com/1230599 [ Linux ] fast/workers/worker-close-more.html [ Crash Pass ]
+crbug.com/1230599 [ Linux ] fast/workers/worker-lifecycle.html [ Crash Pass ]
 crbug.com/1230599 [ Linux ] virtual/plz-dedicated-worker/fast/workers/chromium/worker-document-leak.html [ Crash ]
-crbug.com/1230599 [ Linux ] virtual/shared_array_buffer_on_desktop/fast/workers/dedicated-worker-lifecycle.html [ Pass Crash ]
+crbug.com/1230599 [ Linux ] virtual/shared_array_buffer_on_desktop/fast/workers/dedicated-worker-lifecycle.html [ Crash Pass ]
