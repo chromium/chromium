@@ -671,15 +671,6 @@ class Browser : public TabStripModelObserver,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bool is_type_custom_tab() const { return type_ == TYPE_CUSTOM_TAB; }
 #endif
-  // TODO(crbug.com/990158): |deprecated_is_app()| is added for backwards
-  // compatibility for previous callers to |is_app()| which returned true when
-  // |app_name_| is non-empty.  This includes TYPE_APP, TYPE_DEVTOOLS and
-  // TYPE_APP_POPUP. Existing callers should change to use the appropriate
-  // is_type_* functions.
-  bool deprecated_is_app() const {
-    return type_ == TYPE_APP || type_ == TYPE_DEVTOOLS ||
-           type_ == TYPE_APP_POPUP;
-  }
 
   // True when the mouse cursor is locked.
   bool IsMouseLocked() const;
