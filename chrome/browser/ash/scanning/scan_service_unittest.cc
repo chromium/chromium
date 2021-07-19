@@ -267,12 +267,18 @@ class ScanServiceTest : public testing::Test {
     const AccountId account_id(AccountId::FromUserEmail(kUserEmail));
     user_manager_->AddUser(account_id);
     user_manager_->LoginUser(account_id);
-    scan_service_ = std::make_unique<ScanService>(
-        &fake_lorgnette_scanner_manager_, base::FilePath(), base::FilePath(),
-        profile_);
+    SetupScanService(scanned_files_mount_->GetRootPath(),
+                     base::FilePath("/google/drive"));
   }
 
-  void SetUp() override {
+  void SetupScanService(base::FilePath my_files_path,
+                        base::FilePath google_drive_path) {
+    scan_service_ = std::make_unique<ScanService>(
+        &fake_lorgnette_scanner_manager_, my_files_path, google_drive_path,
+        profile_);
+    if (scan_service_remote_.is_bound()) {
+      scan_service_remote_.reset();
+    }
     scan_service_->BindInterface(
         scan_service_remote_.BindNewPipeAndPassReceiver());
   }
@@ -432,9 +438,9 @@ TEST_F(ScanServiceTest, ScanWithUnsupportedFilePath) {
   ASSERT_EQ(scanners.size(), 1u);
 
   const base::FilePath my_files_path(kMyFilesPath);
-  scan_service_->SetMyFilesPathForTesting(my_files_path);
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       my_files_path.Append("../../../var/log"), mojo_ipc::FileType::kPng);
+  SetupScanService(my_files_path, base::FilePath("/google/drive"));
   EXPECT_FALSE(StartScan(scanners[0]->id, settings.Clone()));
 }
 
@@ -455,7 +461,6 @@ TEST_F(ScanServiceTest, Scan) {
   base::HistogramTester histogram_tester;
   int num_single_file_scans = 0u;
   int num_multi_file_scans = 0u;
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   for (int type_num = static_cast<int>(mojo_ipc::FileType::kMinValue);
        type_num <= static_cast<int>(mojo_ipc::FileType::kMaxValue);
        ++type_num) {
@@ -509,7 +514,6 @@ TEST_F(ScanServiceTest, RotateEpsonADF) {
   // Since we're using mock time, this is deterministic.
   base::Time::Now().LocalExplode(&scan_time);
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   mojo_ipc::ScanSettings settings =
       CreateScanSettings(scanned_files_mount_->GetRootPath(),
                          mojo_ipc::FileType::kPdf, "ADF Duplex");
@@ -534,7 +538,6 @@ TEST_F(ScanServiceTest, ScanFails) {
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPng);
 
@@ -554,7 +557,6 @@ TEST_F(ScanServiceTest, ScanAfterFailedScan) {
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPng);
 
@@ -603,7 +605,6 @@ TEST_F(ScanServiceTest, FailedScanAfterSuccessfulScan) {
   // Since we're using mock time, this is deterministic.
   base::Time::Now().LocalExplode(&scan_time);
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPng);
   const std::vector<base::FilePath> saved_scan_paths =
@@ -641,7 +642,6 @@ TEST_F(ScanServiceTest, CancelScanBeforeScanCompletes) {
   auto scanners = GetScanners();
   ASSERT_EQ(scanners.size(), 1u);
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   const mojo_ipc::ScanSettings settings = CreateScanSettings(
       scanned_files_mount_->GetRootPath(), mojo_ipc::FileType::kPng);
 
@@ -673,7 +673,6 @@ TEST_F(ScanServiceTest, HoldingSpaceScan) {
   size_t num_items_in_holding_space = 0u;
   ASSERT_EQ(num_items_in_holding_space, holding_space_model->items().size());
 
-  scan_service_->SetMyFilesPathForTesting(scanned_files_mount_->GetRootPath());
   for (int type_num = static_cast<int>(mojo_ipc::FileType::kMinValue);
        type_num <= static_cast<int>(mojo_ipc::FileType::kMaxValue);
        ++type_num) {

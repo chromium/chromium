@@ -11,6 +11,7 @@
 
 #include "ash/webui/scanning/scanning_app_delegate.h"
 #include "base/files/file_path.h"
+#include "chrome/browser/ash/scanning/scanning_file_path_helper.h"
 
 class PrefService;
 
@@ -51,11 +52,10 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
   // Register scan settings prefs.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  // Sets |google_drive_path_| for tests.
-  void SetGoogleDrivePathForTesting(const base::FilePath& google_drive_path);
-
-  // Sets |my_files_path_| for tests.
-  void SetMyFilesPathForTesting(const base::FilePath& my_files_path);
+  // Initializes ScanningFilePathHelper with |google_drive_path_| and
+  // |my_files_path_|.
+  void SetValidPaths(const base::FilePath& google_drive_path,
+                     const base::FilePath& my_files_path);
 
  private:
   // Returns the PrefService for the active Profile.
@@ -63,9 +63,8 @@ class ChromeScanningAppDelegate : public ScanningAppDelegate {
 
   content::WebUI* web_ui_;  // Owns |this|.
 
-  // The paths to the user's My files and Google Drive directories.
-  base::FilePath google_drive_path_;
-  base::FilePath my_files_path_;
+  // Helper class for for file path manipulation and verification.
+  ScanningFilePathHelper file_path_helper_;
 };
 
 }  // namespace ash
