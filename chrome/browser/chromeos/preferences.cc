@@ -1069,7 +1069,7 @@ void Preferences::OnIsSyncingChanged() {
 void Preferences::ForceNaturalScrollDefault() {
   DVLOG(1) << "ForceNaturalScrollDefault";
   // Natural scroll is a priority pref.
-  bool is_syncing = chromeos::features::IsSplitSettingsSyncEnabled()
+  bool is_syncing = chromeos::features::IsSyncSettingsCategorizationEnabled()
                         ? prefs_->AreOsPriorityPrefsSyncing()
                         : prefs_->IsPrioritySyncing();
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(

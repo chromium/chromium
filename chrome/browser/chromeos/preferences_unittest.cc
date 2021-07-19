@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/chromeos/input_method/input_method_configuration.h"
@@ -38,6 +39,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
+#include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/chromeos/extension_ime_util.h"
 #include "ui/base/ime/chromeos/mock_component_extension_ime_manager_delegate.h"
@@ -62,7 +64,7 @@ CreatePrefSyncData(const std::string& name, const base::Value& value) {
   json.Serialize(value);
   sync_pb::EntitySpecifics specifics;
   sync_pb::PreferenceSpecifics* pref =
-      features::IsSplitSettingsSyncEnabled()
+      features::IsSyncSettingsCategorizationEnabled()
           ? specifics.mutable_os_preference()->mutable_preference()
           : specifics.mutable_preference();
   pref->set_name(name);
@@ -215,10 +217,24 @@ TEST_F(PreferencesTest, TestUpdatePrefOnBrowserScreenDetails) {
   EXPECT_EQ("KeyboardB", mock_manager_->last_input_method_id_);
 }
 
-class InputMethodPreferencesTest : public PreferencesTest {
+class InputMethodPreferencesTest : public PreferencesTest,
+                                   public ::testing::WithParamInterface<bool> {
  public:
-  InputMethodPreferencesTest() {}
-  ~InputMethodPreferencesTest() override {}
+  InputMethodPreferencesTest() {
+    // TODO(crbug.com/1227693) Remove kSplitSettingsSync from the list when
+    // other parts of the code migrated.
+    if (GetParam()) {
+      feature_list_.InitWithFeatures(
+          {ash::features::kSyncSettingsCategorization,
+           ash::features::kSplitSettingsSync},
+          {});
+    } else {
+      feature_list_.InitWithFeatures(
+          {}, {ash::features::kSyncSettingsCategorization,
+               ash::features::kSplitSettingsSync});
+    }
+  }
+  ~InputMethodPreferencesTest() override = default;
 
   void SetUp() override {
     PreferencesTest::SetUp();
@@ -367,9 +383,9 @@ class InputMethodPreferencesTest : public PreferencesTest {
   syncer::SyncableService* SyncPreferences(
       const syncer::SyncDataList& sync_data_list) {
     // SplitSettingsSync moves IME prefs to be OS prefs.
-    syncer::ModelType model_type = features::IsSplitSettingsSyncEnabled()
-                                       ? syncer::OS_PREFERENCES
-                                       : syncer::PREFERENCES;
+    syncer::ModelType model_type =
+        features::IsSyncSettingsCategorizationEnabled() ? syncer::OS_PREFERENCES
+                                                        : syncer::PREFERENCES;
     syncer::SyncableService* sync =
         pref_service_->GetSyncableService(model_type);
     sync->MergeDataAndStartSyncing(model_type, sync_data_list,
@@ -388,12 +404,14 @@ class InputMethodPreferencesTest : public PreferencesTest {
   StringPrefMember enabled_imes_;
   StringPrefMember enabled_imes_syncable_;
 
+  base::test::ScopedFeatureList feature_list_;
+
  private:
   DISALLOW_COPY_AND_ASSIGN(InputMethodPreferencesTest);
 };
 
 // Tests that the server values are added to the values chosen at OOBE.
-TEST_F(InputMethodPreferencesTest, TestOobeAndSync) {
+TEST_P(InputMethodPreferencesTest, TestOobeAndSync) {
   // Choose options at OOBE.
   pref_service_->SetBoolean(
       prefs::kLanguageShouldMergeInputMethods, true);
@@ -471,7 +489,7 @@ TEST_F(InputMethodPreferencesTest, TestOobeAndSync) {
 }
 
 // Tests that logging in after sync has completed changes nothing.
-TEST_F(InputMethodPreferencesTest, TestLogIn) {
+TEST_P(InputMethodPreferencesTest, TestLogIn) {
   // Set up existing preference values.
   std::string languages("es");
   std::string preload_engines(ToInputMethodIds("xkb:es::spa"));
@@ -510,7 +528,7 @@ TEST_F(InputMethodPreferencesTest, TestLogIn) {
 
 // Tests that logging in with preferences from before a) XKB component
 // extensions and b) the IME syncing logic doesn't overwrite settings.
-TEST_F(InputMethodPreferencesTest, TestLogInLegacy) {
+TEST_P(InputMethodPreferencesTest, TestLogInLegacy) {
   // Simulate existing local preferences from M-36.
   SetLocalValues("es", "xkb:es::spa", kIdentityIMEID);
   InitPreferences();
@@ -544,7 +562,7 @@ TEST_F(InputMethodPreferencesTest, TestLogInLegacy) {
 }
 
 // Tests some edge cases: empty strings, lots of values, duplicates.
-TEST_F(InputMethodPreferencesTest, MergeStressTest) {
+TEST_P(InputMethodPreferencesTest, MergeStressTest) {
   SetLocalValues("hr,lv,lt,es-419,he,el,da,ca,es,cs,bg",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  std::string());
@@ -594,7 +612,7 @@ TEST_F(InputMethodPreferencesTest, MergeStressTest) {
 }
 
 // Tests non-existent IDs.
-TEST_F(InputMethodPreferencesTest, MergeInvalidValues) {
+TEST_P(InputMethodPreferencesTest, MergeInvalidValues) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -629,7 +647,7 @@ TEST_F(InputMethodPreferencesTest, MergeInvalidValues) {
 
 // Tests that we merge input methods even if syncing has started before
 // initialization of Preferences.
-TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
+TEST_P(InputMethodPreferencesTest, MergeAfterSyncing) {
   SetLocalValues("es",
                  ToInputMethodIds("xkb:es::spa,xkb:us::eng"),
                  kIdentityIMEID);
@@ -670,5 +688,7 @@ TEST_F(InputMethodPreferencesTest, MergeAfterSyncing) {
         std::string(kIdentityIMEID) + "," + kUnknownIMEID);
   }
 }
+
+INSTANTIATE_TEST_SUITE_P(All, InputMethodPreferencesTest, testing::Bool());
 
 }  // namespace chromeos
