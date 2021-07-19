@@ -195,8 +195,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Cryptohome.DiskCleanupProgress"
     enum="CryptohomeDiskCleanupProgress" expires_after="2021-12-26">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+  <owner>dlunev@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
     In low disk space scenarios, Cryptohome erases caches while target amount of
     free disk space is not reached. It starts from low priority categories. This
@@ -208,7 +208,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Cryptohome.DiskCleanupResult"
     enum="CryptohomeDiskCleanupResult" expires_after="2021-11-21">
   <owner>vsavu@google.com</owner>
-  <owner>weifangsun@chromium.org</owner>
+  <owner>dlunev@chromium.org</owner>
   <summary>Records the result of triggering disk cleanup.</summary>
 </histogram>
 
@@ -235,9 +235,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalFreedInMb" units="MiB"
-    expires_after="2021-08-22">
+    expires_after="2022-07-13">
   <owner>vsavu@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+  <owner>dlunev@chromium.org</owner>
   <summary>
     In low disk space scenarios, Cryptohome performs a lot of disk space
     operations to erase data. This is the amount of space that was released by
@@ -246,9 +246,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.FreeDiskSpaceTotalTime2" units="ms"
-    expires_after="2021-08-22">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+    expires_after="2022-07-13">
+  <owner>dlunev@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
     In low disk space scenarios, Cryptohome performs a lot of disk space
     operations to erase data. This is a number of milliseconds taken to perform
@@ -258,9 +258,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Cryptohome.GCache.FreedDiskSpaceInMb" units="MB"
-    expires_after="2022-01-09">
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+    expires_after="2022-07-13">
+  <owner>dlunev@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
     This is an amount of Google Drive cache (MB) which was evicted by cryptohome
     due to shortage of remaining disk space. Reported only if something was
@@ -445,8 +445,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histogram name="Cryptohome.TimeBetweenFreeDiskSpace" units="s"
     expires_after="2022-01-01">
   <owner>vsavu@google.com</owner>
-  <owner>slangley@chromium.org</owner>
-  <owner>weifangsun@chromium.org</owner>
+  <owner>dlunev@chromium.org</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
     The amount of time (s) between disk cleanup runs. If there is sufficient
     disk space, nothing is reported. The first cleanup run after boot is not
