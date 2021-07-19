@@ -6,9 +6,11 @@ package org.chromium.base.test.params;
 
 import org.junit.Test;
 import org.junit.runner.Runner;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.Suite;
 import org.junit.runners.model.FrameworkField;
+import org.junit.runners.model.Statement;
 import org.junit.runners.model.TestClass;
 
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
@@ -217,5 +219,18 @@ public final class ParameterizedRunner extends Suite {
                           Arrays.toString(testClass.getOnlyConstructor().getParameterTypes())),
                     e);
         }
+    }
+
+    /**
+     * We need to prevent the ParentRunner from running ClassRules or Before/AfterClass annotations,
+     * or they'll run a second time (re-entrantly) when the child runners that actually run the
+     * tests run.
+     *
+     * Do not call super.classBlock().
+     */
+    @Override
+    protected Statement classBlock(final RunNotifier notifier) {
+        Statement statement = childrenInvoker(notifier);
+        return statement;
     }
 }
