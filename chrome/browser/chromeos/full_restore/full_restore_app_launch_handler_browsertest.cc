@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/web_applications/system_web_app_integration_test.h"
+#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/chromeos/full_restore/arc_app_launch_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_arc_task_handler.h"
 #include "chrome/browser/chromeos/full_restore/full_restore_service.h"
@@ -59,6 +60,8 @@
 #include "components/full_restore/full_restore_utils.h"
 #include "components/full_restore/window_info.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
+#include "content/public/browser/notification_details.h"
+#include "content/public/browser/notification_source.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -794,6 +797,14 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerChromeAppBrowserTest,
 
   WaitForAppLaunchInfoSaved();
 
+  // Simulate the system shutdown process, and the window is closed.
+  FullRestoreService::GetForProfile(profile())->Observe(
+      chrome::NOTIFICATION_APP_TERMINATING,
+      content::Source<extensions::AppWindow>(app_window),
+      content::NotificationDetails());
+  CloseAppWindow(app_window);
+  WaitForAppLaunchInfoSaved();
+
   // Read from the restore data.
   auto app_launch_handler =
       std::make_unique<FullRestoreAppLaunchHandler>(profile());
@@ -1361,8 +1372,14 @@ IN_PROC_BROWSER_TEST_F(FullRestoreAppLaunchHandlerArcAppBrowserTest,
 
   WaitForAppLaunchInfoSaved();
 
-  Restore();
+  // Simulate the system shutdown process, and the window is closed.
+  FullRestoreService::GetForProfile(profile())->Observe(
+      chrome::NOTIFICATION_APP_TERMINATING,
+      content::Source<aura::Window>(window), content::NotificationDetails());
   widget->CloseNow();
+  WaitForAppLaunchInfoSaved();
+
+  Restore();
 
   app_host()->OnTaskDestroyed(kTaskId1);
 
