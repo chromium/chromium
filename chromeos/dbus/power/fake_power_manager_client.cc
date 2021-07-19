@@ -402,6 +402,17 @@ void FakePowerManagerClient::RefreshBluetoothBattery(
   }
 }
 
+void FakePowerManagerClient::SetExternalDisplayALSBrightness(bool enabled) {
+  external_display_als_brightness_enabled_ = enabled;
+}
+
+void FakePowerManagerClient::GetExternalDisplayALSBrightness(
+    DBusMethodCallback<bool> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                external_display_als_brightness_enabled_));
+}
+
 bool FakePowerManagerClient::PopVideoActivityReport() {
   CHECK(!video_activity_reports_.empty());
   bool fullscreen = video_activity_reports_.front();

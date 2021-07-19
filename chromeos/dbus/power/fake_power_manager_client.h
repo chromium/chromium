@@ -136,6 +136,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
                        VoidDBusMethodCallback callback) override;
   base::TimeDelta GetDarkSuspendDelayTimeout() override;
   void RefreshBluetoothBattery(const std::string& address) override;
+  void SetExternalDisplayALSBrightness(bool enabled) override;
+  void GetExternalDisplayALSBrightness(
+      DBusMethodCallback<bool> callback) override;
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
@@ -317,6 +320,8 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
 
   // Used in RefreshBluetoothBattery.
   base::flat_map<std::string, int> peripheral_battery_refresh_levels_;
+
+  bool external_display_als_brightness_enabled_ = false;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
