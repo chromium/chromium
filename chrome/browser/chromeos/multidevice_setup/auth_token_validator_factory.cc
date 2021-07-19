@@ -37,7 +37,7 @@ AuthTokenValidatorFactory::~AuthTokenValidatorFactory() {}
 KeyedService* AuthTokenValidatorFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   return new AuthTokenValidatorImpl(
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(
+      quick_unlock::QuickUnlockFactory::GetForProfile(
           Profile::FromBrowserContext(context)));
 }
 

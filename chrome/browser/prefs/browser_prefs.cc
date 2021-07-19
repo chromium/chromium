@@ -1267,13 +1267,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   chromeos::NetworkMetadataStore::RegisterPrefs(registry);
   ash::ReleaseNotesStorage::RegisterProfilePrefs(registry);
   chromeos::HelpAppNotificationController::RegisterProfilePrefs(registry);
-  chromeos::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
-  chromeos::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
+  ash::quick_unlock::FingerprintStorage::RegisterProfilePrefs(registry);
+  ash::quick_unlock::PinStoragePrefs::RegisterProfilePrefs(registry);
   chromeos::Preferences::RegisterProfilePrefs(registry);
   chromeos::EnterprisePrintersProvider::RegisterProfilePrefs(registry);
   ash::parent_access::ParentAccessService::RegisterProfilePrefs(registry);
   chromeos::quick_answers::prefs::RegisterProfilePrefs(registry);
-  chromeos::quick_unlock::RegisterProfilePrefs(registry);
+  ash::quick_unlock::RegisterProfilePrefs(registry);
   chromeos::RegisterSamlProfilePrefs(registry);
   ash::ScreenTimeController::RegisterProfilePrefs(registry);
   SecondaryAccountConsentLogger::RegisterPrefs(registry);

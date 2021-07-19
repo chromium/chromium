@@ -342,9 +342,9 @@ bool PasswordsPrivateDelegateImpl::OsReauthCall(
               ->GetAccountId());
   if (user_cannot_manually_enter_password)
     return true;
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
-  const chromeos::quick_unlock::AuthToken* auth_token =
+  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      ash::quick_unlock::QuickUnlockFactory::GetForProfile(profile_);
+  const ash::quick_unlock::AuthToken* auth_token =
       quick_unlock_storage->GetAuthToken();
   if (!auth_token || !auth_token->GetAge())
     return false;

@@ -5,15 +5,12 @@
 #ifndef CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 #define CHROME_BROWSER_CHROMEOS_MULTIDEVICE_SETUP_AUTH_TOKEN_VALIDATOR_IMPL_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/quick_unlock/quick_unlock_storage.h"
 #include "chromeos/services/multidevice_setup/public/cpp/auth_token_validator.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace chromeos {
-
-namespace quick_unlock {
-class QuickUnlockStorage;
-}  // namespace quick_unlock
-
 namespace multidevice_setup {
 
 // Concrete AuthTokenValidator implementation.

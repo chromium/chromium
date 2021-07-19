@@ -16,9 +16,8 @@
 #include "content/public/browser/device_service.h"
 #include "services/device/public/mojom/fingerprint.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
-
 namespace {
 
 constexpr char kFingerprintUMAFeatureName[] = "Fingerprint";
@@ -143,4 +142,4 @@ void FingerprintStorage::OnGetRecords(
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

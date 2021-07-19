@@ -19,7 +19,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 namespace {
 
@@ -176,4 +176,4 @@ TEST_F(QuickUnlockStorageUnitTest, AuthToken) {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

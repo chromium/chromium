@@ -65,8 +65,8 @@ InSessionAuthDialogClient* InSessionAuthDialogClient::Get() {
 
 bool InSessionAuthDialogClient::IsFingerprintAuthAvailable(
     const AccountId& account_id) {
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
+  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      ash::quick_unlock::QuickUnlockFactory::GetForAccountId(account_id);
   return quick_unlock_storage &&
          quick_unlock_storage->fingerprint_storage()->IsFingerprintAvailable();
 }
@@ -95,7 +95,7 @@ void InSessionAuthDialogClient::CheckPinAuthAvailability(
     const AccountId& account_id,
     base::OnceCallback<void(bool)> callback) {
   // PinBackend may be using cryptohome backend or prefs backend.
-  chromeos::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
+  ash::quick_unlock::PinBackend::GetInstance()->CanAuthenticate(
       account_id, std::move(callback));
 }
 
@@ -125,7 +125,7 @@ void InSessionAuthDialogClient::AuthenticateUserWithPasswordOrPin(
   pending_auth_state_.emplace(std::move(callback));
 
   if (authenticated_by_pin) {
-    chromeos::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
+    ash::quick_unlock::PinBackend::GetInstance()->TryAuthenticate(
         user_context.GetAccountId(), *user_context.GetKey(),
         base::BindOnce(&InSessionAuthDialogClient::OnPinAttemptDone,
                        weak_factory_.GetWeakPtr(), user_context));
@@ -142,10 +142,10 @@ void InSessionAuthDialogClient::OnPinAttemptDone(
     bool success) {
   if (success) {
     // Mark strong auth if this is cryptohome based pin.
-    if (chromeos::quick_unlock::PinBackend::GetInstance()->ShouldUseCryptohome(
+    if (ash::quick_unlock::PinBackend::GetInstance()->ShouldUseCryptohome(
             user_context.GetAccountId())) {
-      chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-          chromeos::quick_unlock::QuickUnlockFactory::GetForAccountId(
+      ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+          ash::quick_unlock::QuickUnlockFactory::GetForAccountId(
               user_context.GetAccountId());
       if (quick_unlock_storage)
         quick_unlock_storage->MarkStrongAuth();
@@ -175,8 +175,8 @@ void InSessionAuthDialogClient::AuthenticateWithPassword(
 
 void InSessionAuthDialogClient::OnPasswordAuthSuccess(
     const UserContext& user_context) {
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForAccountId(
+  ash::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      ash::quick_unlock::QuickUnlockFactory::GetForAccountId(
           user_context.GetAccountId());
   if (quick_unlock_storage)
     quick_unlock_storage->MarkStrongAuth();

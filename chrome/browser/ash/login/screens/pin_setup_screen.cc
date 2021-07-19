@@ -175,11 +175,11 @@ void PinSetupScreen::ShowImpl() {
   token_lifetime_timeout_.Start(
       FROM_HERE,
       base::TimeDelta::FromSeconds(
-          chromeos::quick_unlock::AuthToken::kTokenExpirationSeconds),
+          quick_unlock::AuthToken::kTokenExpirationSeconds),
       base::BindOnce(&PinSetupScreen::OnTokenTimedOut,
                      weak_ptr_factory_.GetWeakPtr()));
-  chromeos::quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(
+  quick_unlock::QuickUnlockStorage* quick_unlock_storage =
+      quick_unlock::QuickUnlockFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile());
   quick_unlock_storage->MarkStrongAuth();
   std::unique_ptr<UserContext> user_context =
@@ -198,9 +198,8 @@ void PinSetupScreen::ShowImpl() {
   if (view_)
     view_->Show(token, is_child_account);
 
-  chromeos::quick_unlock::PinBackend::GetInstance()->HasLoginSupport(
-      base::BindOnce(&PinSetupScreen::OnHasLoginSupport,
-                     weak_ptr_factory_.GetWeakPtr()));
+  quick_unlock::PinBackend::GetInstance()->HasLoginSupport(base::BindOnce(
+      &PinSetupScreen::OnHasLoginSupport, weak_ptr_factory_.GetWeakPtr()));
 }
 
 void PinSetupScreen::HideImpl() {

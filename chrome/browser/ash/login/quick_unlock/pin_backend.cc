@@ -26,9 +26,8 @@
 #include "components/user_manager/known_user.h"
 #include "crypto/random.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
-
 namespace {
 
 constexpr int kSaltByteSize = 16;
@@ -219,7 +218,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   // If the preference is not user controllable, the auto submit dialog
   // isn't available in Settings, so we return a failure.
   if (!PrefService(account_id)
-           ->IsUserModifiablePreference(prefs::kPinUnlockAutosubmitEnabled)) {
+           ->IsUserModifiablePreference(::prefs::kPinUnlockAutosubmitEnabled)) {
     PostResponse(std::move(did_set), false);
     return;
   }
@@ -233,7 +232,7 @@ void PinBackend::SetPinAutoSubmitEnabled(const AccountId& account_id,
   } else {
     user_manager::known_user::SetUserPinLength(account_id, 0);
     PrefService(account_id)
-        ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, false);
+        ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, false);
     PostResponse(std::move(did_set), true);
   }
 }
@@ -346,7 +345,7 @@ int PinBackend::GetExposedPinLength(const AccountId& account_id) {
   // example, via policy. Disabling auto submit through Settings clears it
   // immediately.
   if (!PrefService(account_id)
-           ->GetBoolean(prefs::kPinUnlockAutosubmitEnabled)) {
+           ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled)) {
     user_manager::known_user::SetUserPinLength(account_id, 0);
     return 0;
   }
@@ -393,14 +392,12 @@ void PinBackend::OnPinAutosubmitCheckComplete(const AccountId& account_id,
   user_manager::known_user::SetUserPinLength(account_id,
                                              success ? pin_length : 0);
   PrefService(account_id)
-      ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, success);
+      ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, success);
   PostResponse(std::move(result), success);
 }
 
 PrefService* PinBackend::PrefService(const AccountId& account_id) {
-  return chromeos::ProfileHelper::Get()
-      ->GetProfileByAccountId(account_id)
-      ->GetPrefs();
+  return ProfileHelper::Get()->GetProfileByAccountId(account_id)->GetPrefs();
 }
 
 void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
@@ -413,7 +410,8 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
   user_manager::known_user::PinAutosubmitSetBackfillNotNeeded(account_id);
 
   const bool autosubmit_enabled =
-      PrefService(account_id)->GetBoolean(prefs::kPinUnlockAutosubmitEnabled) &&
+      PrefService(account_id)
+          ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled) &&
       pin_length <= kPinAutosubmitMaxPinLength;
 
   // Explicitly set the user pref to false if the PIN is longer than 12 digits
@@ -421,7 +419,7 @@ void PinBackend::UpdatePinAutosubmitOnSet(const AccountId& account_id,
   // tries to enable the toggle with a long pin an error is shown.
   if (pin_length > kPinAutosubmitMaxPinLength) {
     PrefService(account_id)
-        ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, false);
+        ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, false);
   }
 
   // Expose the true PIN length if enabled
@@ -433,7 +431,7 @@ void PinBackend::UpdatePinAutosubmitOnRemove(const AccountId& account_id) {
   if (!features::IsPinAutosubmitFeatureEnabled())
     return;
   user_manager::known_user::SetUserPinLength(account_id, 0);
-  PrefService(account_id)->ClearPref(prefs::kPinUnlockAutosubmitEnabled);
+  PrefService(account_id)->ClearPref(::prefs::kPinUnlockAutosubmitEnabled);
 }
 
 void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
@@ -447,7 +445,8 @@ void PinBackend::UpdatePinAutosubmitOnSuccessfulTryAuth(
   PinAutosubmitBackfill(account_id, pin_length);
 
   const bool autosubmit_enabled =
-      PrefService(account_id)->GetBoolean(prefs::kPinUnlockAutosubmitEnabled) &&
+      PrefService(account_id)
+          ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled) &&
       pin_length <= kPinAutosubmitMaxPinLength;
   if (autosubmit_enabled)
     user_manager::known_user::SetUserPinLength(account_id, pin_length);
@@ -467,17 +466,17 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
 
   // Dont backfill if there is a user value set for the pref.
   if (PrefService(account_id)
-          ->GetUserPrefValue(prefs::kPinUnlockAutosubmitEnabled) != nullptr)
+          ->GetUserPrefValue(::prefs::kPinUnlockAutosubmitEnabled) != nullptr)
     return;
 
   // Disabled if not allowed by policy. Since 'kPinUnlockAutosubmitEnabled'
   // is enabled by default, it is only false when recommended/mandatory by
   // policy.
   if (!PrefService(account_id)
-           ->GetBoolean(prefs::kPinUnlockAutosubmitEnabled)) {
+           ->GetBoolean(::prefs::kPinUnlockAutosubmitEnabled)) {
     RecordUMAHistogram(BackfillEvent::kDisabledDueToPolicy);
     PrefService(account_id)
-        ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, false);
+        ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, false);
     return;
   }
 
@@ -485,13 +484,13 @@ void PinBackend::PinAutosubmitBackfill(const AccountId& account_id,
   if (pin_length != kPinAutosubmitBackfillLength) {
     RecordUMAHistogram(BackfillEvent::kDisabledDueToPinLength);
     PrefService(account_id)
-        ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, false);
+        ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, false);
   } else {
     RecordUMAHistogram(BackfillEvent::kEnabled);
     PrefService(account_id)
-        ->SetBoolean(prefs::kPinUnlockAutosubmitEnabled, true);
+        ->SetBoolean(::prefs::kPinUnlockAutosubmitEnabled, true);
   }
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

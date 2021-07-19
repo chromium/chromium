@@ -16,7 +16,7 @@
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 namespace {
 
@@ -100,4 +100,4 @@ IN_PROC_BROWSER_TEST_F(PinMigrationTest, Migrate) {
 
 }  // namespace
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

@@ -22,7 +22,7 @@ simulate fingerprint enrollment scan progress.
 
 Fingerprint unlock policy is dependent on device policy and hardware specs.
 Fingerprint can be manually enabled for testing by calling:
-chromeos::quick_unlock::EnabledForTesting(true) to force enable fingerprint features.
+ash::quick_unlock::EnabledForTesting(true) to force enable fingerprint features.
 
 Fingerprint unlock is not considered strong authentication. This means that,
 under certain policies, fingerprint cannot be the only method of authentication

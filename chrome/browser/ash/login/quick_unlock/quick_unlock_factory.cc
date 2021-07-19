@@ -11,7 +11,7 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 
 // static
@@ -59,4 +59,4 @@ KeyedService* QuickUnlockFactory::BuildServiceInstanceFor(
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

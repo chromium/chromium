@@ -127,7 +127,7 @@ void PopulateLoadTimeData(content::WebUI* web_ui,
       ash::AssistantState::Get()->settings_enabled().value_or(false));
   source->AddBoolean("playStoreEnabled",
                      arc::IsArcPlayStoreEnabledForProfile(profile));
-  source->AddBoolean("pinEnabled", chromeos::quick_unlock::IsPinEnabled());
+  source->AddBoolean("pinEnabled", ash::quick_unlock::IsPinEnabled());
 
   // Data about what type of account/login this is.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();

@@ -9,7 +9,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/login/auth/user_context.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 
 const int AuthToken::kTokenExpirationSeconds = 5 * 60;
@@ -44,4 +44,4 @@ void AuthToken::Reset() {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

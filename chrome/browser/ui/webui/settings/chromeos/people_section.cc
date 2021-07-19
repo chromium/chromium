@@ -438,13 +438,11 @@ void AddLockScreenPageStrings(content::WebUIDataSource* html_source,
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
-  html_source->AddBoolean("quickUnlockEnabled",
-                          chromeos::quick_unlock::IsPinEnabled());
+  html_source->AddBoolean("quickUnlockEnabled", quick_unlock::IsPinEnabled());
   html_source->AddBoolean("quickUnlockPinAutosubmitFeatureEnabled",
                           chromeos::features::IsPinAutosubmitFeatureEnabled());
-  html_source->AddBoolean(
-      "quickUnlockDisabledByPolicy",
-      chromeos::quick_unlock::IsPinDisabledByPolicy(pref_service));
+  html_source->AddBoolean("quickUnlockDisabledByPolicy",
+                          quick_unlock::IsPinDisabledByPolicy(pref_service));
   html_source->AddBoolean("lockScreenNotificationsEnabled",
                           ash::features::IsLockScreenNotificationsEnabled());
   html_source->AddBoolean(
@@ -486,13 +484,13 @@ void AddFingerprintResources(content::WebUIDataSource* html_source,
   html_source->AddBoolean("fingerprintUnlockEnabled",
                           are_fingerprint_settings_allowed);
   if (are_fingerprint_settings_allowed) {
-    chromeos::quick_unlock::AddFingerprintResources(html_source);
+    quick_unlock::AddFingerprintResources(html_source);
   }
 
   int instruction_id, aria_label_id;
   bool aria_label_includes_device = false;
-  using FingerprintLocation = chromeos::quick_unlock::FingerprintLocation;
-  switch (chromeos::quick_unlock::GetFingerprintLocation()) {
+  using FingerprintLocation = quick_unlock::FingerprintLocation;
+  switch (quick_unlock::GetFingerprintLocation()) {
     case FingerprintLocation::TABLET_POWER_BUTTON:
       instruction_id =
           IDS_SETTINGS_ADD_FINGERPRINT_DIALOG_INSTRUCTION_LOCATE_SCANNER_POWER_BUTTON;
@@ -1069,7 +1067,7 @@ void PeopleSection::OnStateChanged(syncer::SyncService* sync_service) {
 }
 
 bool PeopleSection::AreFingerprintSettingsAllowed() {
-  return chromeos::quick_unlock::IsFingerprintEnabled(profile());
+  return quick_unlock::IsFingerprintEnabled(profile());
 }
 
 void PeopleSection::UpdateRemoveFingerprintSearchTags() {

@@ -15,9 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
-
 namespace {
 
 base::TimeDelta GetStrongAuthTimeout(PrefService* pref_service) {
@@ -101,4 +100,4 @@ void QuickUnlockStorage::Shutdown() {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

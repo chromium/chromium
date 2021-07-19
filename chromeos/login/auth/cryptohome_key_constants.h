@@ -24,6 +24,7 @@ extern const char kCryptohomeWildcardLabel[];
 // source code migration is finished.
 namespace ash {
 using ::chromeos::kCryptohomeGaiaKeyLabel;
+using ::chromeos::kCryptohomePinLabel;
 }
 
 #endif  // CHROMEOS_LOGIN_AUTH_CRYPTOHOME_KEY_CONSTANTS_H_

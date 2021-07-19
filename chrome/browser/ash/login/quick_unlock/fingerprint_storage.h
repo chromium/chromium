@@ -13,10 +13,9 @@
 class PrefRegistrySimple;
 class Profile;
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 class FingerprintMetricsReporter;
-class QuickUnlockStorage;
 
 // The result of fingerprint auth attempt on the lock screen. These values are
 // persisted to logs. Entries should not be renumbered and numeric values
@@ -92,14 +91,14 @@ class FingerprintStorage : public feature_usage::FeatureUsageMetrics::Delegate {
 };
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
 // source migration is finished.
-namespace ash {
+namespace chromeos {
 namespace quick_unlock {
-using ::chromeos::quick_unlock::FingerprintUnlockResult;
+using ::ash::quick_unlock::FingerprintUnlockResult;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_FINGERPRINT_STORAGE_H_

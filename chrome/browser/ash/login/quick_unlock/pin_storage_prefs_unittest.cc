@@ -14,7 +14,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 namespace {
 
@@ -72,7 +72,7 @@ class PinStoragePrefsTestApi {
 TEST_F(PinStoragePrefsUnitTest, PinStorageWritesToPrefs) {
   PrefService* prefs = profile_->GetPrefs();
 
-  EXPECT_EQ("", prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
+  EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSalt));
   EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSecret));
 
   PinStoragePrefsTestApi pin_storage_test(PinStoragePrefs());
@@ -80,7 +80,7 @@ TEST_F(PinStoragePrefsUnitTest, PinStorageWritesToPrefs) {
   PinStoragePrefs()->SetPin("1111");
   EXPECT_TRUE(PinStoragePrefs()->IsPinSet());
   EXPECT_EQ(pin_storage_test.PinSalt(),
-            prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
+            prefs->GetString(prefs::kQuickUnlockPinSalt));
   EXPECT_EQ(pin_storage_test.PinSecret(),
             prefs->GetString(prefs::kQuickUnlockPinSecret));
   EXPECT_NE("", pin_storage_test.PinSalt());
@@ -88,7 +88,7 @@ TEST_F(PinStoragePrefsUnitTest, PinStorageWritesToPrefs) {
 
   PinStoragePrefs()->RemovePin();
   EXPECT_FALSE(PinStoragePrefs()->IsPinSet());
-  EXPECT_EQ("", prefs->GetString(ash::prefs::kQuickUnlockPinSalt));
+  EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSalt));
   EXPECT_EQ("", prefs->GetString(prefs::kQuickUnlockPinSecret));
 }
 
@@ -156,4 +156,4 @@ TEST_F(PinStoragePrefsUnitTest, AuthenticationWithHashedPin) {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

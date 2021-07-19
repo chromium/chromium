@@ -23,10 +23,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
-
 namespace {
+
 // Quick unlock is enabled regardless of flags.
 bool enable_for_testing_ = false;
 bool disable_pin_by_policy_for_testing_ = false;
@@ -222,4 +222,4 @@ void DisablePinByPolicyForTesting(bool disable) {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

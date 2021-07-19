@@ -535,7 +535,7 @@ void MultideviceHandler::NotifySmartLockSignInAllowedChanged() {
 bool MultideviceHandler::IsAuthTokenValid(const std::string& auth_token) {
   Profile* profile = Profile::FromWebUI(web_ui());
   quick_unlock::QuickUnlockStorage* quick_unlock_storage =
-      chromeos::quick_unlock::QuickUnlockFactory::GetForProfile(profile);
+      quick_unlock::QuickUnlockFactory::GetForProfile(profile);
   return quick_unlock_storage->GetAuthToken() &&
          auth_token == quick_unlock_storage->GetAuthToken()->Identifier();
 }

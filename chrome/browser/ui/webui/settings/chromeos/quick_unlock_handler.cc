@@ -67,9 +67,9 @@ void QuickUnlockHandler::OnPinLoginAvailable(bool is_available) {
 }
 
 void QuickUnlockHandler::UpdateQuickUnlockDisabledByPolicy() {
-  FireWebUIListener("quick-unlock-disabled-by-policy-changed",
-                    base::Value(chromeos::quick_unlock::IsPinDisabledByPolicy(
-                        pref_service_)));
+  FireWebUIListener(
+      "quick-unlock-disabled-by-policy-changed",
+      base::Value(quick_unlock::IsPinDisabledByPolicy(pref_service_)));
 }
 
 }  // namespace settings

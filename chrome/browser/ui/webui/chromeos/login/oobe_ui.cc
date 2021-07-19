@@ -392,7 +392,7 @@ content::WebUIDataSource* CreateOobeUIDataSource(
   // Configure shared resources
   AddProductLogoResources(source);
 
-  chromeos::quick_unlock::AddFingerprintResources(source);
+  quick_unlock::AddFingerprintResources(source);
   AddSyncConsentResources(source);
   AddArcScreensResources(source);
   AddAssistantScreensResources(source);

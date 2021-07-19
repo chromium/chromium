@@ -21,9 +21,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
-
 namespace {
 
 constexpr char kDummyPin[] = "123456";
@@ -35,7 +34,7 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    quick_unlock::EnabledForTesting(true);
+    EnabledForTesting(true);
     SystemSaltGetter::Initialize();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
@@ -47,8 +46,8 @@ class PinStorageCryptohomeUnitTest : public testing::Test {
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     SystemSaltGetter::Shutdown();
-    quick_unlock::EnabledForTesting(false);
-    quick_unlock::IsFingerprintEnabled(nullptr);
+    EnabledForTesting(false);
+    IsFingerprintEnabled(nullptr);
   }
 
   bool IsPinSet() const {
@@ -227,4 +226,4 @@ TEST_F(PinStorageCryptohomeUnitTest, AuthLockedTest) {
 }
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash

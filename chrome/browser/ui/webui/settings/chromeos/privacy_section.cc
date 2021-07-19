@@ -360,7 +360,7 @@ void PrivacySection::RegisterHierarchy(HierarchyGenerator* generator) const {
 }
 
 bool PrivacySection::AreFingerprintSettingsAllowed() {
-  return chromeos::quick_unlock::IsFingerprintEnabled(profile());
+  return quick_unlock::IsFingerprintEnabled(profile());
 }
 
 void PrivacySection::UpdateRemoveFingerprintSearchTags() {

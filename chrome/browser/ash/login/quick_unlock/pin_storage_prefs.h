@@ -14,7 +14,7 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace quick_unlock {
 
 class PinStoragePrefs {
@@ -62,6 +62,6 @@ class PinStoragePrefs {
 };
 
 }  // namespace quick_unlock
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_PREFS_H_
