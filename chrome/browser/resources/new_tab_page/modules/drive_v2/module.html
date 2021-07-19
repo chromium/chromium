@@ -1,6 +1,7 @@
 <style>
   :host {
     display: block;
+    font-size: 16px;
     height: 100%;
     width: 100%;
   }
@@ -8,23 +9,79 @@
   #files {
     display: flex;
     flex-direction: column;
+    margin-bottom: 12px;
+    margin-top: 15px;
+  }
+
+  .file:hover {
+    background-color: var(--google-grey-400);
+  }
+
+  .file {
+    color: inherit;
+    display: flex;
+    height: 40px;
+    padding-bottom: 8px;
+    padding-top: 8px;
+    text-decoration: none;
+  }
+
+  .file-info {
+    display: flex;
+    flex-direction: column;
+    margin-inline-start: 16px;
+    min-width: 0;
+    padding-inline-end: 8px;
+  }
+
+  .file-title,
+  .file-description {
+    line-height: 20px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .file-title {
-    size: 13px;
+    font-size: 0.8125rem;
   }
 
   .file-description {
     color: var(--cr-secondary-text-color);
-    size: 12px;
+    font-size: 0.75rem;
+  }
+
+  #iconBackground {
+    align-items: center;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 4px;
+    display: flex;
+    flex-shrink: 0;
+    height: 40px;
+    justify-content: center;
+    margin-inline-end: 16px;
+    margin-inline-start: auto;
+    width: 40px;
+  }
+
+  .file-icon {
+    height: 24px;
+    width: 24px;
   }
 </style>
 <div id="files">
   <template id="fileRepeat" is="dom-repeat" items="[[files]]">
-    <a class="file">
+    <a class="file" href="[[item.itemUrl.url]]">
       <div class="file-info">
         <div class="file-title">[[item.title]]</div>
         <div class="file-description">[[item.justificationText]]</div>
+      </div>
+      <div id="iconBackground">
+        <img is="cr-auto-img"
+            class="file-icon"
+            draggable="false"
+            auto-src="[[getImageSrc_(item)]]">
+        </img>
       </div>
     </a>
   </template>

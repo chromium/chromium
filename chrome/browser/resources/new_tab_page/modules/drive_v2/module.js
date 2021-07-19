@@ -23,6 +23,16 @@ class DriveModuleElement extends PolymerElement {
       files: Array,
     };
   }
+
+  /**
+   * @param {drive.mojom.File} file
+   * @return {string}
+   * @private
+   */
+  getImageSrc_(file) {
+    return 'https://drive-thirdparty.googleusercontent.com/32/type/' +
+        file.mimeType;
+  }
 }
 
 customElements.define(DriveModuleElement.is, DriveModuleElement);

@@ -49,8 +49,9 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     document.body.append(module);
     await testProxy.handler.whenCalled('getFiles');
     module.$.fileRepeat.render();
-
     const items = Array.from(module.shadowRoot.querySelectorAll('.file'));
+    const urls = module.shadowRoot.querySelectorAll('.file');
+
     assertTrue(isVisible(module.$.files));
     assertTrue(!!module);
     assertEquals(3, items.length);
@@ -58,6 +59,18 @@ suite('NewTabPageModulesDriveModuleTest', () => {
     assertEquals(
         'Edited yesterday',
         items[1].querySelector('.file-description').textContent);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.spreadsheet',
+        items[0].querySelector('.file-icon').autoSrc);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.document',
+        items[1].querySelector('.file-icon').autoSrc);
+    assertEquals(
+        'https://drive-thirdparty.googleusercontent.com/32/type/application/vnd.google-apps.presentation',
+        items[2].querySelector('.file-icon').autoSrc);
+    assertEquals('https://foo.com/', urls[0].href);
+    assertEquals('https://bar.com/', urls[1].href);
+    assertEquals('https://caz.com/', urls[2].href);
   });
 
   test('documents do not show without data', async () => {
