@@ -57,7 +57,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private final long mShareStartTime;
     private final long mRequestSelectorStartTime;
 
-    private String mVisibleUrl;
+    private String mShareUrl;
     private TextFragmentReceiver mProducer;
     private boolean mCancelRequest;
     private String mSelectedText;
@@ -94,7 +94,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mChromeShareExtras = chromeShareExtras;
         mShareStartTime = shareStartTime;
-        mVisibleUrl = visibleUrl;
+        mShareUrl = visibleUrl;
         mSelectedText = selectedText;
 
         mTab.addObserver(this);
@@ -176,7 +176,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     @VisibleForTesting
     void startRequestSelector() {
-        if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mVisibleUrl))) {
+        if (!LinkToTextBridge.shouldOfferLinkToText(new GURL(mShareUrl))) {
             LinkToTextBridge.logGenerateErrorBlockList();
             onSelectorReady(INVALID_SELECTOR);
             return;
@@ -184,7 +184,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
             if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
-                    && isAmpUrl(mVisibleUrl)) {
+                    && isAmpUrl(mShareUrl)) {
                 PostTask.postDelayedTask(
                         UiThreadTaskTraits.DEFAULT, () -> timeout(), AMP_TIMEOUT_MS);
                 requestSelectorForCanonicalUrl();
@@ -224,7 +224,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     @VisibleForTesting
     String getUrlToShare(String selector) {
-        String url = mVisibleUrl;
+        String url = mShareUrl;
         if (!selector.isEmpty()) {
             // Set the fragment which will also remove existing fragment, including text fragments.
             Uri uri = Uri.parse(url);
@@ -275,13 +275,13 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     }
 
     public boolean isAmpUrl(String url) {
-        if (url.substring(8, 12).equals("www.")) {
+        if (url.startsWith("www.", 8)) {
             if (url.length() - 12 < LENGTH_AMP_DOMAIN) return false;
             return AMP_VIEWER_DOMAINS.contains(url.substring(12, 12 + LENGTH_AMP_DOMAIN));
-        } else if (url.substring(8, 10).equals("m.")) {
+        } else if (url.startsWith("m.", 8)) {
             if (url.length() - 10 < LENGTH_AMP_DOMAIN) return false;
             return AMP_VIEWER_DOMAINS.contains(url.substring(10, 10 + LENGTH_AMP_DOMAIN));
-        } else if (url.substring(8, 15).equals("mobile.")) {
+        } else if (url.startsWith("mobile.", 8)) {
             if (url.length() - 15 < LENGTH_AMP_DOMAIN) return false;
             return AMP_VIEWER_DOMAINS.contains(url.substring(15, 15 + LENGTH_AMP_DOMAIN));
         }
@@ -292,7 +292,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         mTab.getWebContents().getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
             @Override
             public void onResult(GURL result) {
-                mVisibleUrl = result.getSpec();
+                if (!result.isEmpty()) {
+                    mShareUrl = result.getSpec();
+                }
                 requestSelector();
             }
         });
