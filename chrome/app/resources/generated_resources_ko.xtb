@@ -801,7 +801,7 @@
 <translation id="1826516787628120939">확인 중</translation>
 <translation id="1827738518074806965">아트 갤러리</translation>
 <translation id="1828378091493947763">이 기기에서 지원되지 않는 플러그인입니다.</translation>
-<translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(O)}}</translation>
+<translation id="1828879788654007962">{COUNT,plural, =0{모두 열기(O)}=1{북마크 열기(O)}other{{COUNT}개 모두 열기(&amp;O)}}</translation>
 <translation id="1828901632669367785">시스템 대화상자를 사용하여 인쇄...</translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="1829192082282182671">축소(&amp;O)</translation>
@@ -2953,6 +2953,7 @@
 <translation id="4136203100490971508">일출 시 야간 조명이 자동으로 꺼짐</translation>
 <translation id="41365691917097717">계속하면 Android 앱 생성과 테스트에 ADB 디버깅을 사용 설정합니다. 이렇게 하면 Google에서 확인하지 않은 Android 앱을 설치할 수 있게 되며, 사용 중지하려면 초기화가 필요합니다.</translation>
 <translation id="4138267921960073861">로그인 화면에 사용자 이름과 사진 표시</translation>
+<translation id="4138598238327913711">문법 검사 기능은 현재 영어로만 제공됩니다.</translation>
 <translation id="413915106327509564"><ph name="WINDOW_TITLE" /> - HID 기기 연결됨</translation>
 <translation id="4142052906269098341">휴대전화를 사용해 <ph name="DEVICE_TYPE" />을 잠금 해제하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4142518881503042940">감지된 프린터를 프로필에 저장하거나 새 프린터를 추가합니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>

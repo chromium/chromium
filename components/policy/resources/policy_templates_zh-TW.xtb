@@ -77,6 +77,9 @@
       如果將這項政策設為 False 或未設定，系統將不會回報這項資訊。
       如果設為 True，系統會回報裝置背光的資訊。</translation>
 <translation id="1076751984131277498">卸除式 USB 裝置許可清單</translation>
+<translation id="1079425471279127373">設定這項政策可讓強制安裝的網頁應用程式的某些來源，透過 Device Attributes API 取得各種裝置屬性，例如序號和主機名稱。
+
+      Device Attributes API 是一系列的網路 API，請參閱 https://wicg.github.io/WebApiDevice/device_attributes。這些 API 僅適用於透過 <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> 強制安裝的網頁應用程式所對應的來源，或是在資訊站工作階段中設定的來源。</translation>
 <translation id="1079801999187584280">禁止使用開發人員工具</translation>
 <translation id="1082802595100075771">讓使用者選擇使用去識別化的 Google 服務，針對無標籤圖片提供自動產生的說明</translation>
 <translation id="1087437665304381368">這項政策只能控管 <ph name="PRODUCT_OS_NAME" />開發人員模式。如要禁止他人存取 Android 開發人員選項，則必須設定 <ph name="DEVELOPER_TOOLS_DISABLED_POLICY_NAME" /> 政策。</translation>
@@ -855,6 +858,7 @@
 <translation id="2090939118981888335">如果將這項政策設為啟用，代表允許使用資料壓縮 Proxy。如果將這項政策設為停用，則代表禁止使用該 Proxy。
 
       如果設定這項政策，使用者將無法變更設定。如果不設定，使用者可選擇使用該功能。</translation>
+<translation id="2093552723795057221">不要回報音訊狀態</translation>
 <translation id="209586405398070749">穩定版</translation>
 <translation id="2098658257603918882">啟用使用量和當機相關資料的報告功能</translation>
 <translation id="2104418465060359056">回報擴充功能和外掛程式資訊</translation>
@@ -898,6 +902,9 @@
 <translation id="2151831603578119302">啟用無障礙功能快速鍵</translation>
 <translation id="2156132677421487971">設定「<ph name="PRODUCT_NAME" />」的各項政策。這項功能可讓使用者透過瀏覽器將分頁、網站或桌面內容傳送至遠端的螢幕和音響設備。</translation>
 <translation id="2156755242840687300">已啟用的外部列印伺服器</translation>
+<translation id="2157842368188031417">這項政策僅適用於受管理的訪客工作階段。你必須為 Imprivata 的共用工作站模式啟用此政策，才能讓使用者在工作階段中進行切換。
+      如果將此政策設為 True，系統會強制覆寫某些功能的政策，這些功能會保留機密的使用者資料，且不會由清理機制處理 (該機制用於 Imprivata 共用工作站模式下的工作階段中使用者切換作業)。
+      如果將這項政策設為 False 或不設定，系統便不會覆寫任何政策。</translation>
 <translation id="2160336427036785721">設定單一 <ph name="PRODUCT_NAME" /> 例項可用的記憶體大小。超過此值後，系統會開始捨棄分頁以節省記憶體。這表示系統會釋放分頁所用的記憶體，而當使用者切換至該分頁時，系統必須重新載入該分頁。
 
       設定這項政策後，如果超過記憶體使用限制，瀏覽器會開始捨棄分頁以節省記憶體。不過，我們無法保證瀏覽器運作時，記憶體使用量會一律在限制值以下。1024 以下的值會進位到 1024。
@@ -1897,6 +1904,7 @@
       如果停用或不設定這項政策，系統會停用這些傳輸層安全標準 (TLS)/DTLS 版本。
 
       這項政策僅是暫時性措施，我們會在日後的 <ph name="PRODUCT_NAME" /> 版本中予以移除。</translation>
+<translation id="3359186795130278362">啟用有限制的受管理訪客工作階段。</translation>
 <translation id="3360093276083825336">請注意，這項政策已遭淘汰，並將在 <ph name="PRODUCT_OS_NAME" />第 85 版中移除。請改用 <ph name="POWER_MANAGEMENT_IDLE_SETTINGS_POLICY_NAME" />。
 
           指定電池供電時的閒置時間長度。如果使用者在這段時間內沒有任何動作，系統就會顯示警告對話方塊。
@@ -3131,6 +3139,7 @@
 
       注意：系統也可以透過 <ph name="EXTERNAL_SITELIST_URL_POLICY_NAME" /> 政策將元素加入這份清單。</translation>
 <translation id="5067143124345820993">登入使用者許可清單</translation>
+<translation id="5071303485174858500">停用有限制的受管理訪客工作階段。</translation>
 <translation id="5073609397321802133">如果將這項政策設為 False，系統將禁止使用者自訂新分頁的背景。即使日後將這項政策設為 True，系統仍會永久移除任何現有的自訂背景。
 
       如果不設定這項政策或將其設為 True，使用者可以自訂新分頁的背景。</translation>
@@ -3138,6 +3147,7 @@
 
       如果將這項政策設為 False 或不設定，<ph name="PRODUCT_NAME" /> 會使用現有的線上撤銷檢查設定。</translation>
 <translation id="5078623750797048009">啟用 PDF 註解功能</translation>
+<translation id="5081204761483900654">有限制的受管理訪客工作階段</translation>
 <translation id="5082572440690475059">允許這些網站透過 File System API 進行讀取</translation>
 <translation id="5085647276663819155">停用列印預覽</translation>
 <translation id="5090791951240382356">允許合併不同來源的字典政策</translation>
@@ -3772,6 +3782,7 @@
           如果你停用這項設定或並未進行設置，則所有主機都會使用 TalkGadget 預設網域名稱 (「chromoting-host.talkgadget.google.com」)。
 
           遠端存取用戶端不受這項政策設定所影響，而會一律採用「chromoting-client.talkgadget.google.com」來存取 TalkGadget。</translation>
+<translation id="5888645257599699215">回報裝置音訊狀態</translation>
 <translation id="5890063326284543943">控管 Serial API 的使用</translation>
 <translation id="5897913798715600338">使用快速充電技術為電池充電。</translation>
 <translation id="5898486742390981550">如有多位使用者同時登入，只有主要使用者可以使用 Android 應用程式。</translation>
@@ -4396,8 +4407,10 @@
       如果將這項政策設為停用，則會從工具列中移除瀏覽器實驗功能圖示。
 
       無論這項政策設為啟用或停用，chrome://flags 和其他開啟/關閉瀏覽器功能的方法都能正常運作。</translation>
+<translation id="6794083666143216172">同意讓來源查詢裝置屬性</translation>
 <translation id="6795485990775913659">只在 PIN 碼停用時允許列印</translation>
 <translation id="6800181452282128474">不向 Quirks Server 發送查詢</translation>
+<translation id="68031099365512050">回報音訊狀態</translation>
 <translation id="6810445994095397827">封鎖這些網站的 JavaScript</translation>
 <translation id="6813263547126514821">電源與關機</translation>
 <translation id="681446116407619279">支援的驗證機制</translation>
@@ -4557,6 +4570,9 @@
 
       拼字檢查功能目前支援的語言如下：af、bg、ca、cs、da、de、el、en-AU、en-CA、en-GB、en-US、es、es-419、es-AR、es-ES、es-MX、es-US、et、fa、fo、fr、he、hi、hr、hu、id、it、ko、lt、lv、nb、nl、pl、pt-BR、pt-PT、ro、ru、sh、sk、sl、sq、sr、sv、ta、tg、tr、uk、vi。</translation>
 <translation id="6926703471186170050">啟用長邊雙面列印</translation>
+<translation id="6928305045865155732">如果將這項政策設為啟用或不設定，已註冊的裝置會回報裝置音量。
+
+      如果將這項政策設為停用，那麼已註冊的裝置就不會記錄或回報音訊狀態。</translation>
 <translation id="6931242315485576290">停用 Google 資料同步處理功能</translation>
 <translation id="6943577887654905793">Mac/Linux 偏好設定名稱：</translation>
 <translation id="6946652757373377924">
@@ -5890,6 +5906,17 @@
       如果設定這項政策，使用者將無法變更此功能。如果不設定，使用者將可變更這項設定。</translation>
 <translation id="8715885991031124968">允許從不同來源子頁框觸發的 JavaScript 對話方塊。</translation>
 <translation id="8720547069538712402">允許使用者啟用/停用拼字檢查功能</translation>
+<translation id="8726080977639508431">這項政策可控管 <ph name="PRODUCT_NAME" /> 如何解讀舊版瀏覽器支援功能的網站清單/可疑項目清單政策，影響範圍涵蓋以下政策：<ph name="URL_LIST_POLICY_NAME" />、<ph name="URL_GREYLIST_POLICY_NAME" />、<ph name="USE_IE_SITELIST_POLICY_NAME" />、<ph name="EXTERNAL_SITELIST_POLICY_NAME" /> 和 <ph name="EXTERNAL_GREYLIST_POLICY_NAME" />。
+
+      如果將這項政策設為「Default」(0) 或不設定，網址比對方式會較不嚴格，不含「/」的規則會尋找網址主機名稱中任意位置出現的子字串，而網址路徑元件的比對方式會區分大小寫。
+
+      如果將這項政策設為「IESiteListMode」(1)，網址比對方式會比較嚴格，不含「/」的規則只會在主機名稱的結尾進行比對，這類規則比對的內容也不得超出網域名稱的範圍，而網址路徑元件的比對方式將不會區分大小寫。這種比對方式與 <ph name="MS_IE_PRODUCT_NAME" /> 及 <ph name="MS_EDGE_PRODUCT_NAME" /> 的相容性較高。
+
+      以「example.com」和「acme.com/abc」規則為例：
+
+      無論剖析模式為何，「http://example.com/」、「http://subdomain.example.com/」和「http://acme.com/abc」都是相符的結果。
+
+      不過，「http://notexample.com/」、「http://example.com.invalid.com/」、「http://example.comabc/」只有在「Default」模式下才會是相符的結果；「http://acme.com/ABC」則只會在「IESiteListMode」模式下才會是相符的結果。</translation>
 <translation id="8736538322216687231">強制執行低度的 YouTube 嚴格篩選模式</translation>
 <translation id="8745669971728319820">這項政策可控管系統是否要回報擴充功能和外掛程式資訊。
 

@@ -304,6 +304,7 @@
 <translation id="2942036813789421260">পূৰ্বদৰ্শন টেবটো বন্ধ কৰা আছে</translation>
 <translation id="2956410042958133412"><ph name="PARENT_NAME_1" /> আৰু <ph name="PARENT_NAME_2" />এ এই একাউণ্টটো পৰিচালনা কৰে।</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" /> খন নপঢ়া পৃষ্ঠা}one{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> খন নপঢ়া পৃষ্ঠা}}</translation>
+<translation id="2961210776189273067">শিৰোনাম</translation>
 <translation id="2979025552038692506">বাছনি কৰা ইনকগনিট’ টেব</translation>
 <translation id="2979448359891869301">দীঘল স্ক্ৰীনশ্বট ল’ব নোৱাৰি। আপোনাৰ ফ’নটো ব্যস্ত নথকা সময়ত পুনৰ চেষ্টা কৰক।</translation>
 <translation id="2979639724566107830">নতুন ৱিণ্ড'ত খোলক</translation>
@@ -615,6 +616,7 @@
 <translation id="497421865427891073">আগুৱাই যাওক</translation>
 <translation id="4988210275050210843">ফাইল ডাউনল’ড কৰি থকা হৈছে (<ph name="MEGABYTES" />)।</translation>
 <translation id="4988526792673242964">পৃষ্ঠা</translation>
+<translation id="5001388021414335527">ইয়াত এই ছাইটটো ফ’ল’ কৰক</translation>
 <translation id="5004416275253351869">Googleৰ কাৰ্যকলাপৰ নিয়ন্ত্ৰণ</translation>
 <translation id="5005498671520578047">পাছৱর্ডটোৰ প্ৰতিলিপি কৰক</translation>
 <translation id="5011311129201317034"><ph name="SITE" />এ সংযোগ কৰিব বিচাৰিছে</translation>
@@ -982,6 +984,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{বাছনি কৰা ১টা বস্তু শ্বেয়াৰ কৰক}one{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}other{বাছনি কৰা #টা বস্তু শ্বেয়াৰ কৰক}}</translation>
 <translation id="7359002509206457351">পৰিশোধৰ পদ্ধতি এক্সেছ কৰক</translation>
 <translation id="7375125077091615385">ধৰণ:</translation>
+<translation id="7386842512861524348">Chromeএ আপোনাক নোকোৱা পৰ্যন্ত ছাইটৰ সংযোগটো সুৰক্ষিত।</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" />।</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7403691278183511381">Chrome প্ৰথমবাৰ চলোৱাৰ অভিজ্ঞতা</translation>
@@ -1139,6 +1142,7 @@
 <translation id="8284326494547611709">কেপশ্বন</translation>
 <translation id="829672787777123339">আপোনাৰ ডিভাইচটোৰ সৈতে সংযোগ কৰি থকা হৈছে…</translation>
 <translation id="8310344678080805313">মান্য টেব</translation>
+<translation id="831192587911042850">বৰ্তমানৰ ৱেবছাইটটোক আপুনি ফ’ল’ কৰি থকা ৱেবছাইটসমূহৰ সূচীত যোগ দিয়ে।</translation>
 <translation id="8327155640814342956">সকলোতকৈ ভালকৈ ব্ৰাউজিং কৰাৰ অভিজ্ঞতা পাবলৈ Chrome আপডে'ট কৰক</translation>
 <translation id="834313815369870491">কেতিয়াও অনুবাদ কৰিব নলগীয়া ছাইট</translation>
 <translation id="8349013245300336738">ব্যৱহাৰ কৰা ডেটাৰ পৰিমাণ অনুসৰি সজাওক</translation>

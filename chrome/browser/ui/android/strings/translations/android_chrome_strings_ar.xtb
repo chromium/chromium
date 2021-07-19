@@ -304,6 +304,7 @@
 <translation id="2942036813789421260">علامة تبويب المعاينة مغلقة</translation>
 <translation id="2956410042958133412">تتم إدارة هذا الحساب بواسطة <ph name="PARENT_NAME_1" /> و <ph name="PARENT_NAME_2" />.</translation>
 <translation id="2961208450284224863">{READING_LIST_UNREAD_PAGE_COUNT,plural, =1{صفحة واحدة (<ph name="READING_LIST_UNREAD_PAGE_COUNT_ONE" />) غير مقروءة}zero{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}two{صفحتان (<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" />) غير مقروءتَين}few{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحات غير مقروءة}many{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}other{<ph name="READING_LIST_UNREAD_PAGE_COUNT_MANY" /> صفحة غير مقروءة}}</translation>
+<translation id="2961210776189273067">العنوان</translation>
 <translation id="2979025552038692506">علامة تبويب محددة للتصفح المتخفي</translation>
 <translation id="2979448359891869301">يتعذّر توسيع نافذة لقطة الشاشة. حاوِل مرة أخرى عندما يتوفّر قدر كافٍ من الذاكرة.</translation>
 <translation id="2979639724566107830">فتح الإشارة في نافذة جديدة</translation>
@@ -615,6 +616,7 @@
 <translation id="497421865427891073">انتقال للأمام</translation>
 <translation id="4988210275050210843">جارٍ تنزيل الملف (<ph name="MEGABYTES" />).</translation>
 <translation id="4988526792673242964">الصفحات</translation>
+<translation id="5001388021414335527">متابعة هذا الموقع الإلكتروني هنا</translation>
 <translation id="5004416275253351869">‏عناصر التحكم بالنشاط على Google</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5011311129201317034">يريد <ph name="SITE" /> الاتصال</translation>
@@ -983,6 +985,7 @@
 <translation id="7353894246028566792">{NUM_SELECTED,plural, =1{مشاركة عنصر واحد محدد}zero{مشاركة # عنصر محدد}two{مشاركة عنصرين (#) محددين}few{مشاركة # عناصر محددة}many{مشاركة # عنصرًا محددًا}other{مشاركة # عنصر محدد}}</translation>
 <translation id="7359002509206457351">الوصول إلى طرق الدفع</translation>
 <translation id="7375125077091615385">النوع:</translation>
+<translation id="7386842512861524348">‏الاتصال بهذا الموقع الإلكتروني آمن، ما لم يخبرك Chrome بغير ذلك.</translation>
 <translation id="7396940094317457632"><ph name="FILE_NAME" /></translation>
 <translation id="7400418766976504921">‏عنوان URL</translation>
 <translation id="7403691278183511381">‏أول تجربة تشغيل لمتصفح Chrome</translation>
@@ -1140,6 +1143,7 @@
 <translation id="8284326494547611709">الترجمة والشرح</translation>
 <translation id="829672787777123339">جارٍ الاتصال بجهازك…</translation>
 <translation id="8310344678080805313">علامات التبويب القياسية</translation>
+<translation id="831192587911042850">تعمل هذه الميزة على إضافة الموقع الإلكتروني الحالي إلى قائمة المواقع الإلكترونية التي تتابعها.</translation>
 <translation id="8327155640814342956">‏للحصول على أفضل تجربة للتصفّح، يُرجى الفتح لتحديث Chrome.</translation>
 <translation id="834313815369870491">مواقع إلكترونية لا أريد ترجمتها مطلقًا</translation>
 <translation id="8349013245300336738">الترتيب حسب مقدار البيانات المُستخدَمة</translation>

@@ -182,6 +182,7 @@
 <translation id="2243633977138166243">নেভিগে'ট কৰিবলৈ বাওঁফালৰ অথবা সোঁফালৰ এৰ' টিপক, সক্ৰিয় কৰিবলৈ এণ্টাৰ টিপক</translation>
 <translation id="224426591676115802">এই ভাষাটোৰ বাবে কোনো কণ্ঠধ্বনি উপলব্ধ নহয়: <ph name="LANGUAGE" /></translation>
 <translation id="2247700577781885251">শিক্ষণ ম’ড বন্ধ কৰি থকা হৈছে</translation>
+<translation id="2247870315273396641">কণ্ঠধ্বনিৰ পূৰ্বদৰ্শন</translation>
 <translation id="225732394367814946">কথনৰ হাৰ বঢ়াওক</translation>
 <translation id="2267538686624070261">বানান ভুলবোৰ বাদ দি থকা হৈছে</translation>
 <translation id="2267945578749931355">পৰৱৰ্তী বৰ্ণ</translation>
@@ -198,6 +199,7 @@
 <translation id="2390264819538553347">আগবাঢ়িবলৈ এণ্টাৰ দবাওক; উভতি যাবলৈ বেকস্পেছ দবাওক।</translation>
 <translation id="2398579267367951220">পৃষ্ঠাখনত সন্ধান কৰিবলৈ টাইপ কৰক। ফলাফললৈ পোনপটীয়াকৈ যাবলৈ এণ্টাৰ টিপক, ফলাফল ব্ৰাউজ কৰিবলৈ আপ অথবা ডাউন এৰ’সমূহ টিপক, আপোনাৰ সন্ধান সলনি কৰিবলৈ টাইপ কৰি থাকক অথবা বাতিল কৰিবলৈ এস্কে’প টিপক।</translation>
 <translation id="240709722712693803">নীলা বেঙুনীয়া</translation>
+<translation id="2410298923485357543">ডিভাইচটো অনলাইন হৈ থাকিলে স্বাভাৱিক কণ্ঠধ্বনি ব্যৱহাৰ কৰক</translation>
 <translation id="2416512023405990736">টিক চিহ্ন নিদিয়া চ্চেকবক্স</translation>
 <translation id="2417569100218200841">সমলৰ তথ্য</translation>
 <translation id="2417948780551741035">এণ্ডন‘টছ</translation>
@@ -299,6 +301,7 @@
 <translation id="3046838483509668188">ChromeVoxৰ বিকল্পসমূহ</translation>
 <translation id="3060756054951570867"><ph name="TITLE" />মেনু খোলা হৈছে</translation>
 <translation id="3060880924447482063">বস্তু অনুসৰি আঁতৰাবলৈ বাওঁ বা সোঁফালে ছোৱাইপ কৰক</translation>
+<translation id="3061302636956643119">প্ৰক্ৰিয়াকৰণ কৰিবলৈ পাঠ Googleলৈ পঠিওৱা হ’ব।</translation>
 <translation id="3070245424257836917">তিনিটা আঙুলি ওপৰলৈ ছোৱাইপ কৰক</translation>
 <translation id="307516670110542567">ক্ষিপ্ৰ অ'ৰিয়েণ্টশ্বন</translation>
 <translation id="3078345202707391975">পৰৱর্তী স্তৰ ২ৰ শিৰোনাম</translation>
@@ -936,6 +939,7 @@
 <translation id="7693840228159394336">পূৰ্বৱৰ্তী ৰেডিঅ’ বুটাম</translation>
 <translation id="7701040980221191251">নাই</translation>
 <translation id="7701196182766842984">autolst</translation>
+<translation id="7713139339518499741">স্বাভাৱিক কণ্ঠধ্বনি</translation>
 <translation id="7714340021005120797">কোনো পৰৱর্তী কম্ব’ বাকচ নাই</translation>
 <translation id="772146615414628379">অভিনন্দন! আপুনি ChromeVox ব্যৱহাৰ কৰাৰ বাবে আৱশ্যকীয় কথাবোৰ জানিলে। মনত ৰাখিব যে আপুনি যিকোনো সময়তে ছাৰ্চ+পিৰিয়ড টিপি ChromeVox নিৰ্দেশনা মেনু খুলিব পাৰে। ChromeVox আৰু Chrome OSৰ বিষয়ে আৰু অধিক জানিবলৈ তলত উল্লেখ কৰা লেখাসমূহ চাওক।
     যদি আপোনাৰ প্ৰশিক্ষণ সম্পূর্ণ হৈছে তেন্তে বন্ধ কৰা বুটামটোলৈ যাবলৈ ChromeVox ব্যৱহাৰ কৰক আৰু ইয়াক ক্লিক কৰক।</translation>
@@ -966,6 +970,7 @@
 <translation id="7939428177581522200">বাছনিত যোগ কৰা হ’ল</translation>
 <translation id="794091007957014205">{COUNT,plural, =1{এট}one{#টা এট চিহ্ন}other{#টা এট চিহ্ন}}</translation>
 <translation id="7942349550061667556">ৰঙা</translation>
+<translation id="7945703887991230167">অগ্ৰাধিকাৰ দিয়া কণ্ঠধ্বনি</translation>
 <translation id="7948364528129376623">কোনো পৰৱর্তী চোৱা লিংক নাই</translation>
 <translation id="7952460583030260752">নিৰ্দেশনাৰ প্ৰসঙ্গ</translation>
 <translation id="7965147473449754028">মেনু বন্ধ কৰা হ’ল</translation>
