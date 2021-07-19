@@ -288,27 +288,21 @@ class PerfDeviceTriggerer(base_test_triggerer.BaseTestTriggerer):
     def _query_swarming_for_eligible_bot_configs(self, dimensions):
         """Query Swarming to figure out which bots are available.
 
-      Returns: a dictionary in which the keys are the bot id and
-      the values are Bot object that indicate the health status
-      of the bots.
-    """
-        values = []
-        for key, value in sorted(dimensions.iteritems()):
-            values.append(('dimensions', '%s:%s' % (key, value)))
+        Returns: a dictionary in which the keys are the bot id and
+        the values are Bot object that indicate the health status
+        of the bots.
+        """
 
-        query_result = self.query_swarming('bots/list',
-                                           values,
-                                           True,
-                                           server=self._swarming_server)
-        if 'items' not in query_result:
-            return {}
+        query_result = self.list_bots(dimensions,
+                                      True,
+                                      server=self._swarming_server)
         perf_bots = {}
-        for bot in query_result['items']:
+        for bot in query_result:
             # Device maintenance is usually quick, and we can wait for it to
             # finish. However, if the device is too hot, it can take a long time
             # for it to cool down, so check for 'Device temperature' in
             # maintenance_msg.
-            alive = (not bot['is_dead'] and not bot['quarantined']
+            alive = (not bot.get('is_dead') and not bot.get('quarantined')
                      and 'Device temperature' not in bot.get(
                          'maintenance_msg', ''))
             perf_bots[bot['bot_id']] = Bot(bot['bot_id'], alive)

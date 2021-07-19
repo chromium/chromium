@@ -20,12 +20,13 @@ class Args(object):
 
 
 class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
-    def __init__(self, args, swarming_args, files):
+    def __init__(self, args, swarming_args, files, list_bots_result):
         self._bot_statuses = []
         self._swarming_runs = []
         self._files = files
         self._temp_file_id = 0
         self._triggered_with_swarming_go = 0
+        self._list_bots_result = list_bots_result
         super(FakeTriggerer, self).__init__(args, swarming_args)
 
     def set_files(self, files):
@@ -47,6 +48,12 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
 
     def write_json_to_file(self, merged_json, output_file):
         self._files[output_file] = merged_json
+
+    def list_bots(self,
+                  dimensions,
+                  verbose,
+                  server='chromium-swarm.appspot.com'):
+        return self._list_bots_result
 
     def run_swarming(self, args, verbose):
         del verbose  #unused
@@ -91,18 +98,15 @@ class UnitTest(unittest.TestCase):
 
         triggerer = FakeTriggerer(
             args, swarming_args,
-            self.get_files(args.shards, previous_task_assignment_map,
-                           alive_bots, dead_bots))
+            self.get_files(args.shards, previous_task_assignment_map),
+            self.generate_list_of_eligible_bots_query_response(
+                alive_bots, dead_bots))
         triggerer.trigger_tasks(args, swarming_args)
         return triggerer
 
-    def get_files(self, num_shards, previous_task_assignment_map, alive_bots,
-                  dead_bots):
+    def get_files(self, num_shards, previous_task_assignment_map):
         files = {}
         file_index = 0
-        files['base_trigger_dimensions%d.json' % file_index] = (
-            self.generate_list_of_eligible_bots_query_response(
-                alive_bots, dead_bots))
         file_index = file_index + 1
         # Perf device trigger will call swarming n times:
         #   1. Once for all eligible bots
@@ -142,9 +146,9 @@ class UnitTest(unittest.TestCase):
                                                       dead_bots):
         if len(alive_bots) == 0 and len(dead_bots) == 0:
             return {}
-        items = {'items': []}
+        bots = []
         for bot_id in alive_bots:
-            items['items'].append({
+            bots.append({
                 'bot_id': ('%s' % bot_id),
                 'is_dead': False,
                 'quarantined': False
@@ -152,37 +156,19 @@ class UnitTest(unittest.TestCase):
         is_dead = True
         for bot_id in dead_bots:
             is_quarantined = (not is_dead)
-            items['items'].append({
+            bots.append({
                 'bot_id': ('%s' % bot_id),
                 'is_dead': is_dead,
                 'quarantined': is_quarantined
             })
             is_dead = (not is_dead)
-        return items
+        return bots
 
     def list_contains_sublist(self, main_list, sub_list):
         return any(sub_list == main_list[offset:offset + len(sub_list)]
                    for offset in xrange(len(main_list) - (len(sub_list) - 1)))
 
-    def assert_query_swarming_args(self, triggerer, num_shards,
-                                   use_dynamic_shards):
-        # Assert the calls to query swarming send the right args
-        # First call is to get eligible bots. With device affinity, we need one
-        # query per shard for the previous bot id; with dynamic sharding, no
-        # further qeury is needed.
-        total_queries = 1 if use_dynamic_shards else num_shards + 1
-        for i in range(total_queries):
-            self.assertTrue('query' in triggerer._swarming_runs[i])
-            self.assertTrue(
-                self.list_contains_sublist(triggerer._swarming_runs[i],
-                                           ['-S', 'foo_server']))
-
-    def get_triggered_shard_to_bot(self,
-                                   triggerer,
-                                   num_shards,
-                                   use_dynamic_shards=False):
-        self.assert_query_swarming_args(triggerer, num_shards,
-                                        use_dynamic_shards)
+    def get_triggered_shard_to_bot(self, triggerer):
         triggered_map = {}
         for run in triggerer._swarming_runs:
             if not 'trigger' in run:
@@ -204,8 +190,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=3)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEquals(len(set(expected_task_assignment.values())), 3)
 
         # All three bots were healthy so we should expect the task assignment to
@@ -233,8 +218,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=3)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEquals(len(set(expected_task_assignment.values())), 3)
 
         # The first two should be assigned to one of the unassigned healthy bots
@@ -254,8 +238,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=5)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEquals(len(set(expected_task_assignment.values())), 5)
 
         # We have 5 shards and 5 bots that ran them, but two
@@ -279,8 +262,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=5)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEquals(len(set(expected_task_assignment.values())), 5)
 
         # Not enough healthy bots so make sure shard 0 is still assigned to its
@@ -305,8 +287,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5'],
             dead_bots=['build1', 'build2'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=3)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
         self.assertEquals(len(set(expected_task_assignment.values())), 3)
         new_healthy_bots = ['build3', 'build4', 'build5']
         self.assertIn(expected_task_assignment.get(0), new_healthy_bots)
@@ -323,8 +304,7 @@ class UnitTest(unittest.TestCase):
             },
             alive_bots=['build3', 'build4', 'build5', 'build7'],
             dead_bots=['build1', 'build6'])
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=3)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
         # Test that the new assignment will add a new bot to avoid
         # assign 'build3' to both shard 0 & shard 1 as before.
@@ -343,8 +323,7 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build1', 'build2', 'build3', 'build4', 'build5'],
             dead_bots=[],
             use_dynamic_shards=True)
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=123, use_dynamic_shards=True)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
         self.assertEquals(set(expected_task_assignment.values()),
                           {'build1', 'build2', 'build3', 'build4', 'build5'})
@@ -360,8 +339,7 @@ class UnitTest(unittest.TestCase):
             alive_bots=['build2', 'build5', 'build3'],
             dead_bots=['build1', 'build4'],
             use_dynamic_shards=True)
-        expected_task_assignment = self.get_triggered_shard_to_bot(
-            triggerer, num_shards=789, use_dynamic_shards=True)
+        expected_task_assignment = self.get_triggered_shard_to_bot(triggerer)
 
         self.assertEquals(set(expected_task_assignment.values()),
                           {'build2', 'build3', 'build5'})

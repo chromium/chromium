@@ -147,6 +147,31 @@ class BaseTestTriggerer(object):
         if not all(isinstance(entry, dict) for entry in self._bot_configs):
             raise ValueError('Bot configurations must all be dictionaries')
 
+    def list_bots(self,
+                  dimensions,
+                  verbose,
+                  server='chromium-swarm.appspot.com'):
+        """List bots having specified bot dimensions.
+
+        Type of returned value is list of
+        https://source.chromium.org/search?q=%22class%20BotInfo(messages.Message)%22%20f:luci%2Fappengine%2Fswarming&ssfr=1
+        """
+
+        args = [SWARMING_GO, 'bots', '-server', server]
+
+        for key in sorted(dimensions):
+            args.extend(['-dimension', '%s=%s' % (key, dimensions[key])])
+
+        if verbose:
+            logging.info('Running Go `swarming` with args: %s', args)
+
+        with tempfile.NamedTemporaryFile(delete=False) as result_json:
+            result_json.close()
+            args.extend(['--json', result_json.name])
+            subprocess.check_call(args)
+            with open(result_json.name) as f:
+                return json.load(f)
+
     # TODO(eyaich): Move the stateless logic that is specific to querying
     # swarming to its own object to make trigger logic more clear.
     def query_swarming(self,
