@@ -15,6 +15,11 @@ import "third_party/blink/public/mojom/tokens/tokens.mojom";
 // Interface for general communication between the renderer process's
 // AgentSchedulingGroup and the browser process's AgentSchedulingGroupHost.
 // Implemented by AgentSchedulingGroupHost (in the browser process).
+//
+// This interface is associated with this AgentSchedulingGroup's channel.
+// The renderer process retrieves it via
+// AgentSchedulingGroup.BindAssociatedInterfaces(). See comments on
+// AgentSchedulingGroup for more about channels.
 interface AgentSchedulingGroupHost {
   // Acknowledge a RenderFrame was unloaded due to NavigationControl::Unload().
   // This is not simply a reply callback on NavigationControl::Unload() because
@@ -28,16 +33,32 @@ interface AgentSchedulingGroupHost {
 // Interface for general communication between the browser process's
 // AgentSchedulingGroupHost and the renderer process's AgentSchedulingGroup.
 // Implemented by content::AgentSchedulingGroup (in the renderer process).
+//
+// The interface's message pipe depends on the mode that the Multiple Blink
+// Isolate (MBI) feature is using (https://crbug.com/1051790).
+//
+// In non-kLegacy mode: there is a legacy IPC channel per AgentSchedulingGroup.
+// The channel is created along with this interface, which it is associated
+// with. Messages are *not* ordered with the per-process legacy IPC channel.
+//
+// In kLegacy mode: there is one legacy IPC channel per renderer and this
+// interface is channel-associated with it. The browser process retrieves it via
+// GetRemoteAssociatedInterface().
+//
+// See the comments for MBIMode in content/public/common/content_features.h for
+// more details.
 interface AgentSchedulingGroup {
   // Tells the renderer to bind the AgentSchedulingGroup's associated
   // interfaces. This includes the host remote (mojom::AgentSchedulingGroupHost)
   // as well as RouteProvider remote/receiver pair.
   // We have this as a method on this interface, as opposed to passing the
-  // pending interfaces over the method that creates the AgentSchedulingGroup.
-  // This is because we need these interfaces to be associated with the message
-  // pipe that the AgentSchedulingGroup is associated with, which may be
-  // different than the message pipe that we create the AgentSchedulingGroup
-  // over.
+  // pending interfaces over the method that creates the AgentSchedulingGroup:
+  // Renderer.CreateAgentSchedulingGroup() or
+  // Renderer.CreateAgentAssociatedSchedulingGroup() (depending on the mode, see
+  // the interface comments). This is because we need these interfaces to be
+  // associated with the message pipe that the AgentSchedulingGroup is
+  // associated with, which may be different than the message pipe that we
+  // create the AgentSchedulingGroup over.
   BindAssociatedInterfaces(
     pending_associated_remote<AgentSchedulingGroupHost> remote_host,
     pending_associated_remote<RouteProvider> remote_route_provider,
