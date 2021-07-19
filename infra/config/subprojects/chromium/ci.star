@@ -436,6 +436,7 @@ consoles.console_view(
     short_name = short_name,
 ) for name, category, short_name in (
     ("fuchsia-fyi-arm64-size", "fyi", "a64-size"),
+    ("fuchsia-fyi-astro", "fyi", "astro"),
     ("fuchsia-builder-perf-fyi", "fyi", "builder-perf"),
     ("fuchsia-perf-fyi", "fyi", "perf"),
     ("fuchsia-x64", "ci", "x64-chrome"),
