@@ -60,6 +60,8 @@ source_set("test_utils") {
   sources = [
     "perfetto/test_utils.cc",
     "perfetto/test_utils.h",
+    "public/cpp/perfetto/producer_test_utils.cc",
+    "public/cpp/perfetto/producer_test_utils.h",
   ]
 
   deps = [
@@ -69,6 +71,7 @@ source_set("test_utils") {
     "//testing/gtest",
     "//third_party/perfetto/protos/perfetto/common:lite",
     "//third_party/perfetto/protos/perfetto/trace:lite",
+    "//third_party/perfetto/protos/perfetto/trace/chrome:lite",
   ]
 
   if (is_posix) {
@@ -86,8 +89,6 @@ source_set("tests") {
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
-    "public/cpp/perfetto/producer_test_utils.cc",
-    "public/cpp/perfetto/producer_test_utils.h",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",

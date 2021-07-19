@@ -164,6 +164,7 @@ void ConnectionManager::ReportMetrics() {
 
 void ConnectionManager::DumpProcessesForTracing(
     bool strip_path_from_mapped_files,
+    bool write_proto,
     DumpProcessesForTracingCallback callback,
     VmRegions vm_regions) {
   base::AutoLock lock(connections_lock_);
@@ -184,6 +185,11 @@ void ConnectionManager::DumpProcessesForTracing(
   for (auto& it : connections_) {
     base::ProcessId pid = it.first;
     Connection* connection = it.second.get();
+    // TODO(ssid): Stop writing JSON to traces when proto output is enabled,
+    // https://crbug.com/1228548.
+    if (write_proto)
+      connection->client->AddHeapProfileToTrace(base::DoNothing());
+
     connection->client->RetrieveHeapProfile(base::BindOnce(
         &ConnectionManager::HeapProfileRetrieved, weak_factory_.GetWeakPtr(),
         tracking, pid, connection->process_type, strip_path_from_mapped_files,

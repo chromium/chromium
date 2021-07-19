@@ -65,7 +65,10 @@ CoordinatorImpl::CoordinatorImpl()
     : next_dump_id_(0),
       client_process_timeout_(base::TimeDelta::FromSeconds(15)),
       use_proto_writer_(!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kUseMemoryTrackingJsonWriter)) {
+          switches::kUseMemoryTrackingJsonWriter)),
+      write_proto_heap_profile_(
+          base::CommandLine::ForCurrentProcess()->HasSwitch(
+              switches::kUseHeapProfilingProtoWriter)) {
   DCHECK(!g_coordinator_impl);
   g_coordinator_impl = this;
   base::trace_event::MemoryDumpManager::GetInstance()->set_tracing_process_id(
@@ -408,7 +411,7 @@ void CoordinatorImpl::PerformNextQueuedGlobalMemoryDump() {
             ->GetCurrentTraceConfig()
             .IsArgumentFilterEnabled();
     heap_profiler_->DumpProcessesForTracing(
-        strip_path_from_mapped_files,
+        strip_path_from_mapped_files, write_proto_heap_profile_,
         base::BindOnce(&CoordinatorImpl::OnDumpProcessesForTracing,
                        weak_ptr_factory_.GetWeakPtr(), request->dump_guid));
 

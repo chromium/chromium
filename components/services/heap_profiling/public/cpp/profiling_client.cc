@@ -19,6 +19,10 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 
+#if !defined(OS_IOS)
+#include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
+#endif
+
 #if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_CFI_TABLE) && \
     defined(OFFICIAL_BUILD)
 #include "base/trace_event/cfi_backtrace_android.h"
@@ -71,6 +75,11 @@ void ProfilingClient::StartProfiling(mojom::ProfilingParamsPtr params,
                      std::move(callback)));
 #else
   StartProfilingInternal(std::move(params), std::move(callback));
+#endif
+
+#if !defined(OS_IOS)
+  // Create trace source so that it registers itself to the tracing system.
+  HeapProfilingTraceSource::GetInstance();
 #endif
 }
 
@@ -194,6 +203,24 @@ void ProfilingClient::RetrieveHeapProfile(
     profile->strings.emplace(reinterpret_cast<uintptr_t>(string), string);
 
   std::move(callback).Run(std::move(profile));
+}
+
+void ProfilingClient::AddHeapProfileToTrace(
+    AddHeapProfileToTraceCallback callback) {
+  auto* profiler = base::SamplingHeapProfiler::Get();
+  std::vector<base::SamplingHeapProfiler::Sample> samples =
+      profiler->GetSamples(/*profile_id=*/0);
+
+#if !defined(OS_IOS)
+  bool success =
+      HeapProfilingTraceSource::GetInstance()->AddToTraceIfEnabled(samples);
+#else
+  bool success = false;
+  // Tracing is not supported in iOS.
+  NOTREACHED();
+#endif
+
+  std::move(callback).Run(success);
 }
 
 }  // namespace heap_profiling

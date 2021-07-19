@@ -11,6 +11,7 @@ namespace switches {
 const char kDisableChromeTracingComputation[] =
     "disable-chrome-tracing-computation";
 const char kUseMemoryTrackingJsonWriter[] = "use-memory-tracking-json-writer";
+const char kUseHeapProfilingProtoWriter[] = "use-heap-profiling-proto-writer";
 
 }  // namespace switches
 }  // namespace memory_instrumentation
