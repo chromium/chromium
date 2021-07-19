@@ -17,6 +17,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_macros_local.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/timer/elapsed_timer.h"
@@ -40,24 +41,23 @@ namespace {
 
 void RecordSyncOpenResult(net::CacheType cache_type, OpenEntryResult result) {
   DCHECK_LT(result, OPEN_ENTRY_MAX);
-  SIMPLE_CACHE_UMA(ENUMERATION,
-                   "SyncOpenResult", cache_type, result, OPEN_ENTRY_MAX);
+  SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncOpenResult", cache_type, result,
+                     OPEN_ENTRY_MAX);
 }
 
 void RecordWriteResult(net::CacheType cache_type, SyncWriteResult result) {
-  SIMPLE_CACHE_UMA(ENUMERATION, "SyncWriteResult", cache_type, result,
-                   SYNC_WRITE_RESULT_MAX);
+  SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncWriteResult", cache_type, result,
+                     SYNC_WRITE_RESULT_MAX);
 }
 
 void RecordCheckEOFResult(net::CacheType cache_type, CheckEOFResult result) {
-  SIMPLE_CACHE_UMA(ENUMERATION,
-                   "SyncCheckEOFResult", cache_type,
-                   result, CHECK_EOF_RESULT_MAX);
+  SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncCheckEOFResult", cache_type, result,
+                     CHECK_EOF_RESULT_MAX);
 }
 
 void RecordCloseResult(net::CacheType cache_type, CloseResult result) {
-  SIMPLE_CACHE_UMA(ENUMERATION,
-                   "SyncCloseResult", cache_type, result, CLOSE_RESULT_MAX);
+  SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncCloseResult", cache_type, result,
+                     CLOSE_RESULT_MAX);
 }
 
 void RecordOpenPrefetchMode(net::CacheType cache_type, OpenPrefetchMode mode) {
@@ -66,7 +66,7 @@ void RecordOpenPrefetchMode(net::CacheType cache_type, OpenPrefetchMode mode) {
 }
 
 void RecordDiskCreateLatency(net::CacheType cache_type, base::TimeDelta delay) {
-  SIMPLE_CACHE_UMA(TIMES, "DiskCreateLatency", cache_type, delay);
+  SIMPLE_CACHE_LOCAL(TIMES, "DiskCreateLatency", cache_type, delay);
 }
 
 bool CanOmitEmptyFile(int file_index) {
@@ -1161,9 +1161,8 @@ bool SimpleSynchronousEntry::OpenFiles(SimpleEntryStat* out_entry_stat) {
 
     if (!MaybeOpenFile(i, &error)) {
       RecordSyncOpenResult(cache_type_, OPEN_ENTRY_PLATFORM_FILE_ERROR);
-      SIMPLE_CACHE_UMA(ENUMERATION,
-                       "SyncOpenPlatformFileError", cache_type_,
-                       -error, -base::File::FILE_ERROR_MAX);
+      SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncOpenPlatformFileError", cache_type_,
+                         -error, -base::File::FILE_ERROR_MAX);
       while (--i >= 0)
         CloseFile(i);
       return false;
@@ -1216,9 +1215,8 @@ bool SimpleSynchronousEntry::CreateFiles(SimpleEntryStat* out_entry_stat) {
   for (int i = 0; i < kSimpleEntryNormalFileCount; ++i) {
     base::File::Error error;
     if (!MaybeCreateFile(i, FILE_NOT_REQUIRED, &error)) {
-      SIMPLE_CACHE_UMA(ENUMERATION,
-                       "SyncCreatePlatformFileError", cache_type_,
-                       -error, -base::File::FILE_ERROR_MAX);
+      SIMPLE_CACHE_LOCAL(ENUMERATION, "SyncCreatePlatformFileError",
+                         cache_type_, -error, -base::File::FILE_ERROR_MAX);
       while (--i >= 0)
         CloseFile(i);
       return false;

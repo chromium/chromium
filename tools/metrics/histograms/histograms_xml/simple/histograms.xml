@@ -22,7 +22,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 <histograms>
 
 <histogram base="true" name="SimpleCache.CacheSizeOnInit" units="KB"
-    expires_after="M94">
+    expires_after="2022-07-01">
   <owner>jkarlin@chromium.org</owner>
   <owner>shivanisha@chromium.org</owner>
   <summary>
@@ -70,7 +70,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.CreationToIndex" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -80,7 +80,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.CreationToIndexFail" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -103,7 +103,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskCloseLatency" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -113,7 +113,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskCreateLatency" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -123,7 +123,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskDoomLatency" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -133,7 +133,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskOpenLatency" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -143,7 +143,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.DiskWriteLatency" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -153,7 +153,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.EntryCreationTime" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -196,18 +196,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.Eviction.CacheSizeOnStart2" units="KB"
     expires_after="M85">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <summary>The size of the cache at the beginning of an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.EntryCount" units="units"
-    expires_after="M85">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
+  <owner>wanderview@chromium.org</owner>
   <summary>The number of entries to be erased in an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.MaxCacheSizeOnStart2"
     units="KB" expires_after="M85">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <summary>
     The maximum allowed size of the cache at the beginning of an eviction.
@@ -216,6 +223,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.Eviction.Result" enum="BooleanSuccess"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The result of an eviction.</summary>
@@ -223,6 +233,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.Eviction.SizeOfEvicted2" units="KB"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The amount of memory freed in an eviction.</summary>
@@ -230,27 +243,30 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.Eviction.SizeWhenDone2" units="KB"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The size of the cache after running an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.TimeToDone" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent completing an eviction.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.Eviction.TimeToSelectEntries"
-    units="ms" expires_after="2021-07-01">
+    units="ms" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>Time spent selecting entries for eviction.</summary>
 </histogram>
 
 <histogram name="SimpleCache.FileDescriptorLimiterAction"
-    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2021-07-01">
+    enum="SimpleCache.FileDescriptorLimiterOp" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -261,7 +277,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.HeaderSize" units="bytes"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -271,14 +287,14 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexCreatedEntryCount" units="units"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The number of entries in a newly created index file.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexFileStateOnLoad"
-    enum="SimpleIndexState" expires_after="2021-07-01">
+    enum="SimpleIndexState" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -287,15 +303,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexInitializeMethod"
-    enum="SimpleCacheIndexInitializeMethod" expires_after="2021-07-01">
+    enum="SimpleCacheIndexInitializeMethod" expires_after="2022-07-01">
   <owner>wanderview@chromium.org</owner>
   <owner>morlovich@chromium.org</owner>
   <summary>The method used to initialize the simple cache index.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexNumEntriesOnInit" units="entries"
-    expires_after="M85">
+    expires_after="2022-07-01">
   <owner>jkarlin@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <summary>
     The number of entries in the index at the time that the index has finished
     initializing.
@@ -304,13 +321,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.IndexNumEntriesOnWrite" units="units"
     expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>The number of entries written to the index on a flush.</summary>
 </histogram>
 
 <histogram base="true" name="SimpleCache.IndexRestoreTime" units="ms"
-    expires_after="2021-07-01">
+    expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -321,6 +341,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.IndexWriteReason"
     enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -331,6 +354,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.IndexWriteReasonAtLoad"
     enum="SimpleCacheIndexWriteReason" expires_after="2021-07-01">
+  <obsolete>
+    Removed in July 2021.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -341,8 +367,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.MaxCacheSizeOnInit" units="KB"
-    expires_after="M85">
+    expires_after="2022-07-01">
   <owner>jkarlin@chromium.org</owner>
+  <owner>morlovich@chromium.org</owner>
   <summary>
     The maximum allowed size of the cache at the time that the index has
     finished initializing.
@@ -350,7 +377,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.OpenEntryIndexState"
-    enum="SimpleCacheOpenEntryIndexState" expires_after="2021-07-01">
+    enum="SimpleCacheOpenEntryIndexState" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -372,6 +399,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.PercentFullOnInit" units="%"
     expires_after="M85">
+  <obsolete>
+    Removed July 2021.
+  </obsolete>
   <owner>jkarlin@chromium.org</owner>
   <summary>
     The fullness (in percent) of the cache at the time that the index has
@@ -395,7 +425,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexExtraEntryCount"
-    units="entries" expires_after="2021-07-01">
+    units="entries" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -406,7 +436,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexMissedEntryCount"
-    units="entries" expires_after="2021-07-01">
+    units="entries" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -417,7 +447,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="SimpleCache.StaleIndexQuality"
-    enum="SimpleCacheStaleIndexQuality" expires_after="2021-07-01">
+    enum="SimpleCacheStaleIndexQuality" expires_after="2022-07-01">
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -428,6 +458,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncCheckEOFResult"
     enum="SimpleCacheSyncCheckEOFResult" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -438,6 +473,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncCloseResult"
     enum="SimpleCacheSyncCloseResult" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -447,6 +487,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncCreatePlatformFileError"
     enum="PlatformFileError" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -457,6 +502,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncOpenPlatformFileError"
     enum="PlatformFileError" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -477,6 +527,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncOpenResult"
     enum="SimpleCacheSyncOpenResult" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>
@@ -487,6 +542,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram base="true" name="SimpleCache.SyncWriteResult"
     enum="SimpleCacheSyncWriteResult" expires_after="2021-07-01">
+  <obsolete>
+    As of July 2021, no longer logged in UMA data. Kept as a local histogram
+    (data not sent to UMA) so it appears in chrome://histograms for local
+    debugging.
+  </obsolete>
   <owner>morlovich@chromium.org</owner>
   <owner>wanderview@chromium.org</owner>
   <summary>

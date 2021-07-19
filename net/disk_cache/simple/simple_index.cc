@@ -410,12 +410,6 @@ void SimpleIndex::StartEvictionIfNeeded() {
   // Take all live key hashes from the index and sort them by time.
   eviction_in_progress_ = true;
   eviction_start_time_ = base::TimeTicks::Now();
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.CacheSizeOnStart2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(cache_size_ / kBytesInKb));
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.MaxCacheSizeOnStart2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
 
   bool use_size_heuristic = (cache_type_ != net::GENERATED_BYTE_CODE_CACHE);
 
@@ -453,10 +447,6 @@ void SimpleIndex::StartEvictionIfNeeded() {
   SIMPLE_CACHE_UMA(TIMES,
                    "Eviction.TimeToSelectEntries", cache_type_,
                    base::TimeTicks::Now() - eviction_start_time_);
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.SizeOfEvicted2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(
-          evicted_so_far_size / kBytesInKb));
 
   delegate_->DoomEntries(
       &entry_hashes, base::BindOnce(&SimpleIndex::EvictionDone, AsWeakPtr()));
@@ -505,13 +495,9 @@ void SimpleIndex::EvictionDone(int result) {
 
   // Ignore the result of eviction. We did our best.
   eviction_in_progress_ = false;
-  SIMPLE_CACHE_UMA(BOOLEAN, "Eviction.Result", cache_type_, result == net::OK);
   SIMPLE_CACHE_UMA(TIMES,
                    "Eviction.TimeToDone", cache_type_,
                    base::TimeTicks::Now() - eviction_start_time_);
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.SizeWhenDone2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(cache_size_ / kBytesInKb));
 }
 
 // static
@@ -602,11 +588,6 @@ void SimpleIndex::MergeInitializingSet(
   SIMPLE_CACHE_UMA(
       MEMORY_KB, "MaxCacheSizeOnInit", cache_type_,
       static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
-  if (max_size_ > 0) {
-    SIMPLE_CACHE_UMA(PERCENTAGE, "PercentFullOnInit", cache_type_,
-                     static_cast<base::HistogramBase::Sample>(
-                         (cache_size_ * 100) / max_size_));
-  }
 
   // Run all callbacks waiting for the index to come up.
   for (auto it = to_run_when_initialized_.begin(),
@@ -640,10 +621,6 @@ void SimpleIndex::WriteToDisk(IndexWriteToDiskReason reason) {
 
   // Cancel any pending writes since we are about to write to disk now.
   write_to_disk_timer_.AbandonAndStop();
-
-  SIMPLE_CACHE_UMA(CUSTOM_COUNTS,
-                   "IndexNumEntriesOnWrite", cache_type_,
-                   entries_set_.size(), 0, 100000, 50);
 
   base::OnceClosure after_write;
   if (cleanup_tracker_) {

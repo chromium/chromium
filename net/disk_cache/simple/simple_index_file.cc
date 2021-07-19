@@ -15,6 +15,7 @@
 #include "base/pickle.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
+#include "build/build_config.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
 #include "net/disk_cache/simple/simple_histogram_macros.h"
 #include "net/disk_cache/simple/simple_index.h"
@@ -65,18 +66,6 @@ void UmaRecordIndexInitMethod(SimpleIndex::IndexInitMethod method,
                               net::CacheType cache_type) {
   SIMPLE_CACHE_UMA(ENUMERATION, "IndexInitializeMethod", cache_type, method,
                    SimpleIndex::INITIALIZE_METHOD_MAX);
-}
-
-void UmaRecordIndexWriteReason(SimpleIndex::IndexWriteToDiskReason reason,
-                               net::CacheType cache_type) {
-  SIMPLE_CACHE_UMA(ENUMERATION, "IndexWriteReason", cache_type, reason,
-                   SimpleIndex::INDEX_WRITE_REASON_MAX);
-}
-
-void UmaRecordIndexWriteReasonAtLoad(SimpleIndex::IndexWriteToDiskReason reason,
-                                     net::CacheType cache_type) {
-  SIMPLE_CACHE_UMA(ENUMERATION, "IndexWriteReasonAtLoad", cache_type, reason,
-                   SimpleIndex::INDEX_WRITE_REASON_MAX);
 }
 
 void UmaRecordStaleIndexQuality(int missed_entry_count,
@@ -372,7 +361,6 @@ void SimpleIndexFile::WriteToDisk(net::CacheType cache_type,
                                   const SimpleIndex::EntrySet& entry_set,
                                   uint64_t cache_size,
                                   base::OnceClosure callback) {
-  UmaRecordIndexWriteReason(reason, cache_type_);
   IndexMetadata index_metadata(reason, entry_set.size(), cache_size);
   std::unique_ptr<base::Pickle> pickle =
       Serialize(cache_type, index_metadata, entry_set);
@@ -405,11 +393,6 @@ void SimpleIndexFile::SyncLoadIndexEntries(
       UmaRecordIndexFileState(INDEX_STATE_CORRUPT, cache_type);
   } else {
     if (cache_last_modified <= last_cache_seen_by_index) {
-      if (out_result->index_write_reason !=
-          SimpleIndex::INDEX_WRITE_REASON_MAX) {
-        UmaRecordIndexWriteReasonAtLoad(out_result->index_write_reason,
-                                        cache_type);
-      }
       base::Time latest_dir_mtime;
       simple_util::GetMTime(cache_directory, &latest_dir_mtime);
       if (LegacyIsIndexFileStale(latest_dir_mtime, index_file_path)) {
