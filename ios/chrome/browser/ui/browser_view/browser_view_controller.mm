@@ -190,6 +190,7 @@
 #import "ios/public/provider/chrome/browser/ui/fullscreen_provider.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_controller.h"
 #include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#import "ios/web/common/crw_input_view_provider.h"
 #include "ios/web/common/features.h"
 #include "ios/web/common/url_scheme_util.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
@@ -3953,6 +3954,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                               previewProvider:nil
                                                actionProvider:actionProvider];
   completionHandler(configuration);
+}
+
+- (id<CRWResponderInputView>)webStateInputViewProvider:
+    (web::WebState*)webState {
+  return self.inputViewProvider;
 }
 
 #pragma mark - CRWWebStateDelegate helpers

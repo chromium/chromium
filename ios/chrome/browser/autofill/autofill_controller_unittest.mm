@@ -283,7 +283,6 @@ void AutofillControllerTest::SetUp() {
                                               webStateList:NULL
                                        personalDataManager:NULL
                                              passwordStore:nullptr
-                                                  appState:nil
                                       securityAlertHandler:nil
                                     reauthenticationModule:nil];
 

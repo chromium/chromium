@@ -19,9 +19,9 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_content_injector.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card+CreditCard.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_credit_card.h"
-#import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -49,19 +49,14 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
 // All available credit cards.
 @property(nonatomic, assign) std::vector<autofill::CreditCard*> cards;
 
-// The command handler used by this Mediator.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands> handler;
-
 @end
 
 @implementation ManualFillCardMediator
 
-- (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards
-                      handler:(id<BrowserCoordinatorCommands>)handler {
+- (instancetype)initWithCards:(std::vector<autofill::CreditCard*>)cards {
   self = [super init];
   if (self) {
     _cards = cards;
-    _handler = handler;
   }
   return self;
 }
@@ -141,7 +136,7 @@ NSString* const kAddCreditCardsAccessibilityIdentifier =
              action:^{
                base::RecordAction(base::UserMetricsAction(
                    "ManualFallback_CreditCard_OpenAddCreditCard"));
-               [weakSelf.handler showAddCreditCard];
+               [weakSelf.navigationDelegate openAddCreditCard];
              }];
   addCreditCardsItem.accessibilityIdentifier =
       manual_fill::kAddCreditCardsAccessibilityIdentifier;

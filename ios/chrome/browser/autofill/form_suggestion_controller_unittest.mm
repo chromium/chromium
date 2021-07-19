@@ -187,12 +187,6 @@ class FormSuggestionControllerTest : public PlatformTest {
     [[[mock_consumer stub] andDo:mockShow]
         showAccessorySuggestions:[OCMArg any]];
 
-    // Mock restore keyboard to verify cleanup.
-    void (^mockRestore)(NSInvocation*) = ^(NSInvocation* invocation) {
-      received_suggestions_ = nil;
-    };
-    [[[mock_consumer stub] andDo:mockRestore] restoreOriginalKeyboardView];
-
     id mock_window = OCMClassMock([UIWindow class]);
 
     id mock_web_state_view = OCMClassMock([UIView class]);
@@ -200,16 +194,12 @@ class FormSuggestionControllerTest : public PlatformTest {
 
     fake_web_state_.SetView(mock_web_state_view);
 
-    id mock_app_state = OCMClassMock([AppState class]);
-    OCMStub([mock_app_state lastTappedWindow]).andReturn(mock_window);
-
     accessory_mediator_ =
         [[FormInputAccessoryMediator alloc] initWithConsumer:mock_consumer
                                                      handler:nil
                                                 webStateList:NULL
                                          personalDataManager:NULL
                                                passwordStore:nullptr
-                                                    appState:mock_app_state
                                         securityAlertHandler:nil
                                       reauthenticationModule:nil];
 
@@ -258,8 +248,7 @@ TEST_F(FormSuggestionControllerTest, PageLoadShouldBeIgnoredWhenNotHtml) {
   EXPECT_FALSE(received_suggestions_.count);
 }
 
-// Tests that the suggestions are reset and JavaScript is injected when a page
-// is loaded.
+// Tests that the suggestions are reset when a page is loaded.
 TEST_F(FormSuggestionControllerTest,
        PageLoadShouldRestoreKeyboardAccessoryViewAndInjectJavaScript) {
   SetUpController(@[ [TestSuggestionProvider providerWithSuggestions] ]);

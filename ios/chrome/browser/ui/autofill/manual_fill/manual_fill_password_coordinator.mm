@@ -105,18 +105,10 @@
 #pragma mark - PasswordListNavigator
 
 - (void)openAllPasswordsList {
-  // On iPad, first dismiss the popover before the new view is presented.
-  __weak __typeof(self) weakSelf = self;
-  if ((ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) &&
-      self.passwordViewController.presentingViewController) {
-    [self.passwordViewController
-        dismissViewControllerAnimated:true
-                           completion:^{
-                             [weakSelf openAllPasswordsList];
-                           }];
-    return;
-  }
-  [self.delegate openAllPasswordsPicker];
+  __weak id<PasswordCoordinatorDelegate> delegate = self.delegate;
+  [self dismissIfNecessaryThenDoCompletion:^{
+    [delegate openAllPasswordsPicker];
+  }];
 }
 
 - (void)openPasswordSettings {
