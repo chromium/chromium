@@ -31,11 +31,24 @@ class ImageCompressionAppliedDocument
     : public content::RenderDocumentHostUserData<
           ImageCompressionAppliedDocument> {
  public:
+  enum State {
+    kDisabled,
+    kLoginRobotsRulesFetchingOnly,
+    kLoginRobotsCheckedEnabled,
+    kPublicImageHintsEnabled,
+  };
+
   ~ImageCompressionAppliedDocument() override;
   ImageCompressionAppliedDocument(const ImageCompressionAppliedDocument&) =
       delete;
   ImageCompressionAppliedDocument& operator=(
       const ImageCompressionAppliedDocument&) = delete;
+
+  State state() const { return state_; }
+  void set_state(State state) { state_ = state; }
+
+  static State GetState(content::RenderFrameHost* rfh);
+  static void SetState(content::RenderFrameHost* rfh, State state);
 
   // Gets the robots rules for |origin| from the |rules_cache| and invokes the
   // |callback|.
@@ -51,6 +64,14 @@ class ImageCompressionAppliedDocument
       ImageCompressionAppliedDocument>;
 
   content::RenderFrameHost* render_frame_host_;
+
+  // Maintains whether https image compression was attempted for the last
+  // navigation. Even though image compression was attempted, it doesn't mean at
+  // least one image will get compressed, since that depends on a public image
+  // present in this page. This is not an issue since most pages tend to have at
+  // least one public image even though they are fully private.
+  State state_ = kDisabled;
+
   RENDER_DOCUMENT_HOST_USER_DATA_KEY_DECL();
 };
 
@@ -106,17 +127,6 @@ class SubresourceRedirectObserver
   // subresource redirect will be disallowed.
   bool IsAllowedForCurrentLoginState(
       content::NavigationHandle* navigation_handle);
-
-  // Maintains whether https image compression was attempted for the last
-  // navigation. Even though image compression was attempted, it doesn't mean at
-  // least one image will get compressed, since that depends on a public image
-  // present in this page. This is not an issue since most pages tend to have at
-  // least one public image even though they are fully private.
-  bool is_mainframe_https_image_compression_applied_ = false;
-
-  // Whether login is allowed for the current navigation. Updated when the
-  // navigation is ready to be committed.
-  bool is_allowed_by_login_state_ = false;
 
   content::WebContentsFrameReceiverSet<mojom::SubresourceRedirectService>
       receivers_;
