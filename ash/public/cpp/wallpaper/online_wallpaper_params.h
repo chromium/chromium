@@ -18,9 +18,9 @@ namespace ash {
 struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // The user's account id.
   AccountId account_id;
-  // The unique identifier of the wallpaper. if present, it is logged for
-  // wallpaper metric. Empty when the image is auto refreshed.
-  // TODO(b/178216755): Make this required for auto refreshed wallpaper.
+  // The unique identifier of the wallpaper. Empty when the image is auto
+  // refreshed from old wallpaper app.
+  // TODO(b/193788853): Make this required after deprecating old wallpaper app.
   absl::optional<uint64_t> asset_id;
   // The wallpaper url.
   GURL url;
@@ -31,13 +31,17 @@ struct ASH_PUBLIC_EXPORT OnlineWallpaperParams {
   // If true, show the wallpaper immediately but doesn't change the user
   // wallpaper info until |ConfirmPreviewWallpaper| is called.
   bool preview_mode;
+  // Indicate the params is a result of a user's request. i.e clicking on an
+  // image.
+  bool from_user = false;
 
   OnlineWallpaperParams(const AccountId& account_id,
                         const absl::optional<uint64_t>& asset_id,
                         const GURL& url,
                         const std::string& collection_id,
                         WallpaperLayout layout,
-                        bool preview_mode);
+                        bool preview_mode,
+                        bool from_user);
 
   OnlineWallpaperParams(const OnlineWallpaperParams& other);
 

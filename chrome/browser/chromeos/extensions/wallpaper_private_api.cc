@@ -317,14 +317,17 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
       params = set_wallpaper_if_exists::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  // Convert asset_id from string to optional uint64_t. Empty string results in
-  // nullopt.
+  // Convert |asset_id| from string to optional uint64_t. Empty string results
+  // in nullopt. |from_user| is true when the request is from a user's
+  // action i.e. |asset_id| is not nullopt.
   absl::optional<uint64_t> asset_id;
+  bool from_user = false;
   if (!params->asset_id.empty()) {
     uint64_t value = 0;
     if (!base::StringToUint64(params->asset_id, &value))
       return RespondNow(Error("Failed to parse asset_id."));
     asset_id = value;
+    from_user = true;
   }
 
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperIfExists(
@@ -333,7 +336,7 @@ WallpaperPrivateSetWallpaperIfExistsFunction::Run() {
           asset_id, GURL(params->url), params->collection_id,
           wallpaper_api_util::GetLayoutEnum(
               wallpaper_base::ToString(params->layout)),
-          params->preview_mode),
+          params->preview_mode, from_user),
       base::BindOnce(&WallpaperPrivateSetWallpaperIfExistsFunction::
                          OnSetOnlineWallpaperIfExistsCallback,
                      this));
@@ -365,6 +368,9 @@ ExtensionFunction::ResponseAction WallpaperPrivateSetWallpaperFunction::Run() {
       params = set_wallpaper::Params::Create(*args_);
   EXTENSION_FUNCTION_VALIDATE(params);
 
+  // |from_user| is false as this method is called after
+  // |WallpaperPrivateSetWallpaperIfExistsFunction| which has already handled
+  // extra logic tied with |from_user|.
   WallpaperControllerClientImpl::Get()->SetOnlineWallpaperFromData(
       ash::OnlineWallpaperParams(
           GetUserFromBrowserContext(browser_context())->GetAccountId(),
@@ -372,7 +378,7 @@ ExtensionFunction::ResponseAction WallpaperPrivateSetWallpaperFunction::Run() {
           /*collection_id=*/std::string(),
           wallpaper_api_util::GetLayoutEnum(
               wallpaper_base::ToString(params->layout)),
-          params->preview_mode),
+          params->preview_mode, /*from_user=*/false),
       std::string(params->wallpaper.begin(), params->wallpaper.end()),
       base::BindOnce(
           &WallpaperPrivateSetWallpaperFunction::OnSetWallpaperCallback, this));

@@ -19,13 +19,15 @@ OnlineWallpaperParams::OnlineWallpaperParams(
     const GURL& in_url,
     const std::string& in_collection_id,
     WallpaperLayout in_layout,
-    bool in_preview_mode)
+    bool in_preview_mode,
+    bool in_from_user)
     : account_id(in_account_id),
       asset_id(in_asset_id),
       url(in_url),
       collection_id(in_collection_id),
       layout(in_layout),
-      preview_mode(in_preview_mode) {}
+      preview_mode(in_preview_mode),
+      from_user(in_from_user) {}
 
 OnlineWallpaperParams::OnlineWallpaperParams(
     const OnlineWallpaperParams& other) = default;

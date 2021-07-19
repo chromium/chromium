@@ -51,6 +51,7 @@
 #include "extensions/browser/value_store/value_store.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/screen.h"
 #include "url/gurl.h"
 
@@ -730,9 +731,9 @@ void WallpaperControllerClientImpl::OnDailyImageInfoFetched(
     const backdrop::Image& image,
     const std::string& next_resume_token) {
   if (success) {
-    std::move(callback).Run(image.image_url());
+    std::move(callback).Run(image.asset_id(), image.image_url());
   } else {
-    std::move(callback).Run(std::string());
+    std::move(callback).Run(absl::nullopt, std::string());
   }
   surprise_me_image_fetcher_.reset();
 }

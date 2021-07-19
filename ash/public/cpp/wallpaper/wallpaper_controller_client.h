@@ -10,6 +10,7 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -36,7 +37,8 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
   // Downloads and sets a new random wallpaper from the collection of the
   // specified collection_id.
   using DailyWallpaperUrlFetchedCallback =
-      base::OnceCallback<void(const std::string&)>;
+      base::OnceCallback<void(const absl::optional<uint64_t>& asset_id,
+                              const std::string& url)>;
   virtual void FetchDailyRefreshWallpaper(
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) = 0;

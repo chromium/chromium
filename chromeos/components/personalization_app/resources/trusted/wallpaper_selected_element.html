@@ -97,7 +97,8 @@
     </div>
     <div id="textContainer">
       <p id="currentlySet">[[i18n('currentlySet')]]</p>
-      <dom-repeat items="[[image_.attribution]]">
+      <p title="[[imageTitle_]]">[[imageTitle_]]</p>
+      <dom-repeat items="[[imageOtherAttribution_]]">
         <template>
           <p title="[[item]]">[[item]]</p>
         </template>

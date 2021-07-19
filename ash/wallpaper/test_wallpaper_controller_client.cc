@@ -4,6 +4,8 @@
 
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace ash {
 
 TestWallpaperControllerClient::TestWallpaperControllerClient() = default;
@@ -42,8 +44,11 @@ void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
     const std::string& collection_id,
     DailyWallpaperUrlFetchedCallback callback) {
   fetch_daily_refresh_wallpaper_param_ = collection_id;
-  std::move(callback).Run(fetch_daily_refresh_info_fails_ ? std::string()
-                                                          : "fun_image_url");
+  if (fetch_daily_refresh_info_fails_) {
+    std::move(callback).Run(absl::nullopt, std::string());
+  } else {
+    std::move(callback).Run(1, "fun_image_url");
+  }
 }
 
 bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(

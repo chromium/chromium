@@ -592,9 +592,11 @@ class ASH_EXPORT WallpaperControllerImpl
   // specified collection when daily refresh is enabled. If |image_url| is
   // empty, fetching the url failed, and should be tried again soon.
   void SetDailyWallpaper(const AccountId& account_id,
+                         const std::string& collection_id,
                          WallpaperLayout layout,
                          bool preview_mode,
                          RefreshWallpaperCallback callback,
+                         const absl::optional<uint64_t>& asset_id,
                          const std::string& image_url);
 
   // Called after attempting to download and set a daily refresh wallpaper.

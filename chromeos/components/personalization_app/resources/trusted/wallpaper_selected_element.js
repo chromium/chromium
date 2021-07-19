@@ -13,6 +13,7 @@ import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
 import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js'
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {isNonEmptyArray} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {getCurrentWallpaper, getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './personalization_controller.js';
 import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
@@ -72,6 +73,24 @@ export class WallpaperSelected extends WithPersonalizationStore {
        */
       image_: {
         type: Object,
+      },
+
+      /**
+       * @type {!string}
+       * @private
+       */
+      imageTitle_: {
+        type: String,
+        computed: 'computeImageTitle_(image_, dailyRefreshCollectionId_)',
+      },
+
+      /**
+       * @type {Array<!string>}
+       * @private
+       */
+      imageOtherAttribution_: {
+        type: Array,
+        computed: 'computeImageOtherAttribution_(image_)',
       },
 
       /**
@@ -171,37 +190,64 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
    * @param {boolean} loading
    * @return {boolean}
+   * @private
    */
   computeShowImage_(image, loading) {
     return !loading && !!image;
   }
 
   /**
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @param {!string} dailyRefreshCollectionId
+   * @return {string}
    * @private
+   */
+  computeImageTitle_(image, dailyRefreshCollectionId) {
+    if (!!image && isNonEmptyArray(image.attribution)) {
+      return !!dailyRefreshCollectionId ?
+          this.i18n('dailyRefresh') + ': ' + image.attribution[0] :
+          image.attribution[0];
+    }
+    return '';
+  }
+
+  /**
+   * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
+   * @return {Array<!string>}
+   * @private
+   */
+  computeImageOtherAttribution_(image) {
+    if (!!image && isNonEmptyArray(image.attribution)) {
+      return image.attribution.slice(1);
+    }
+    return [];
+  }
+
+  /**
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {boolean}
+   * @private
    */
   computeShowWallpaperOptions_(image) {
     return !!image && image.type === WallpaperType.kCustomized;
   }
 
   /**
-   * @private
    * @param {string} path
    * @return {boolean}
+   * @private
    */
   computeShowCollectionOptions_(path) {
     return path === Paths.CollectionImages;
   }
 
   /**
-   * @private
    * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
+   * @private
    */
   computeCenterOptionClass_(image) {
     if (image.layout === WallpaperLayout.kCenter)
@@ -210,9 +256,9 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {!chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {string}
+   * @private
    */
   computeFillOptionClass_(image) {
     if (image.layout === WallpaperLayout.kCenterCropped)
@@ -221,8 +267,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {!Event} event
+   * @private
    */
   onClickLayoutIcon_(event) {
     const layout = event.currentTarget.dataset.layout;
@@ -234,10 +280,10 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {!string} collectionId
    * @param {!string} dailyRefreshCollectionId
    * @return {string}
+   * @private
    */
   computeDailyRefreshIcon_(collectionId, dailyRefreshCollectionId) {
     if (this.isDailyRefreshCollectionId_(
@@ -247,10 +293,10 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {!string} collectionId
    * @param {!string} dailyRefreshCollectionId
    * @return {string}
+   * @private
    */
   computeAriaPressed_(collectionId, dailyRefreshCollectionId) {
     if (this.isDailyRefreshCollectionId_(
@@ -282,10 +328,10 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * Determine the current collection view belongs to the collection that is
    * enabled with daily refresh. If true, highlight the toggle and display the
    * refresh button
-   * @private
    * @param {!string} collectionId
    * @param {!string} dailyRefreshCollectionId
    * @return {boolean}
+   * @private
    */
   isDailyRefreshCollectionId_(collectionId, dailyRefreshCollectionId) {
     return collectionId === dailyRefreshCollectionId;
@@ -299,19 +345,19 @@ export class WallpaperSelected extends WithPersonalizationStore {
   }
 
   /**
-   * @private
    * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
    * @param {boolean} loading
    * @return {boolean}
+   * @private
    */
   computeHasError_(image, loading) {
     return !loading && !image;
   }
 
   /**
-   * @private
    * @param {?chromeos.personalizationApp.mojom.WallpaperImage} image
    * @return {string}
+   * @private
    */
   getAriaLabel_(image) {
     // TODO(b/192195088) figure out aria label when image has no attribution

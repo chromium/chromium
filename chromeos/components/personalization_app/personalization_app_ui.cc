@@ -65,7 +65,8 @@ void AddStrings(content::WebUIDataSource* source) {
       {"center", IDS_PERSONALIZATION_APP_CENTER},
       {"fill", IDS_PERSONALIZATION_APP_FILL},
       {"changeDaily", IDS_PERSONALIZATION_APP_CHANGE_DAILY},
-      {"refresh", IDS_PERSONALIZATION_APP_REFRESH}};
+      {"refresh", IDS_PERSONALIZATION_APP_REFRESH},
+      {"dailyRefresh", IDS_PERSONALIZATION_APP_DAILY_REFRESH}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }
