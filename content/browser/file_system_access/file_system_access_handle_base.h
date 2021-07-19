@@ -109,10 +109,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase : public WebContentsObserver {
   // Note that |callback| is passed to this method before other arguments, while
   // the wrapped callback will be passed as last argument to the underlying
   // FileSystemOperation |method|.
-  //
-  // TODO(mek): Once Promises are a thing, this can be done a lot cleaner, and
-  // mostly just be integrated in base::SequenceBound, eliminating the need for
-  // these helper methods.
   template <typename... MethodArgs,
             typename... ArgsMinusCallback,
             typename... CallbackArgs>
