@@ -8,6 +8,14 @@
 #include <memory>
 #include <utility>
 
+#include "build/build_config.h"
+
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+// V8 requires the embedder to establish the architecture define.
+#define V8_TARGET_ARCH_ARM 1
+#include "v8/include/v8-unwinder-state.h"
+#endif
+
 namespace {
 
 class V8Module : public base::ModuleCache::Module {
@@ -74,6 +82,52 @@ v8::MemoryRange GetEmbeddedCodeRange(v8::Isolate* isolate) {
   v8::MemoryRange range;
   isolate->GetEmbeddedCodeRange(&range.start, &range.length_in_bytes);
   return range;
+}
+
+void CopyCalleeSavedRegisterFromRegisterContext(
+    const base::RegisterContext& register_context,
+    v8::CalleeSavedRegisters* callee_saved_registers) {
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+  // ARM requires callee-saved registers to be restored:
+  // https://crbug.com/v8/10799.
+  DCHECK(callee_saved_registers);
+  callee_saved_registers->arm_r4 =
+      reinterpret_cast<void*>(register_context.arm_r4);
+  callee_saved_registers->arm_r5 =
+      reinterpret_cast<void*>(register_context.arm_r5);
+  callee_saved_registers->arm_r6 =
+      reinterpret_cast<void*>(register_context.arm_r6);
+  callee_saved_registers->arm_r7 =
+      reinterpret_cast<void*>(register_context.arm_r7);
+  callee_saved_registers->arm_r8 =
+      reinterpret_cast<void*>(register_context.arm_r8);
+  callee_saved_registers->arm_r9 =
+      reinterpret_cast<void*>(register_context.arm_r9);
+  callee_saved_registers->arm_r10 =
+      reinterpret_cast<void*>(register_context.arm_r10);
+#endif
+}
+
+void CopyCalleeSavedRegisterToRegisterContext(
+    const v8::CalleeSavedRegisters* callee_saved_registers,
+    base::RegisterContext& register_context) {
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+  DCHECK(callee_saved_registers);
+  register_context.arm_r4 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r4);
+  register_context.arm_r5 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r5);
+  register_context.arm_r6 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r6);
+  register_context.arm_r7 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r7);
+  register_context.arm_r8 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r8);
+  register_context.arm_r9 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r9);
+  register_context.arm_r10 =
+      reinterpret_cast<uintptr_t>(callee_saved_registers->arm_r10);
+#endif
 }
 
 }  // namespace
@@ -199,6 +253,13 @@ base::UnwindResult V8Unwinder::TryUnwind(
   register_state.fp = reinterpret_cast<void*>(
       base::RegisterContextFramePointer(thread_context));
 
+#if defined(ARCH_CPU_ARM_FAMILY) && defined(ARCH_CPU_32_BITS)
+  if (!register_state.callee_saved)
+    register_state.callee_saved = std::make_unique<v8::CalleeSavedRegisters>();
+#endif
+  CopyCalleeSavedRegisterFromRegisterContext(*thread_context,
+                                             register_state.callee_saved.get());
+
   if (!v8::Unwinder::TryUnwindV8Frames(
           js_entry_stubs_, code_ranges_.size(), code_ranges_.buffer(),
           &register_state, reinterpret_cast<const void*>(stack_top))) {
@@ -216,6 +277,9 @@ base::UnwindResult V8Unwinder::TryUnwind(
       reinterpret_cast<uintptr_t>(register_state.sp);
   base::RegisterContextFramePointer(thread_context) =
       reinterpret_cast<uintptr_t>(register_state.fp);
+
+  CopyCalleeSavedRegisterToRegisterContext(register_state.callee_saved.get(),
+                                           *thread_context);
 
   stack->emplace_back(
       base::RegisterContextInstructionPointer(thread_context),
