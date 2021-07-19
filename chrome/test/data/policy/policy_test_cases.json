@@ -1172,10 +1172,30 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
+          "SafeBrowsingEnabled": true
+        },
+        "prefs": {
+          "safebrowsing.enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
           "SafeBrowsingEnabled": false
         },
         "prefs": {
-          "safebrowsing.enabled": {}
+          "safebrowsing.enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "safebrowsing.enabled": {
+            "default_value": true
+          }
         }
       }
     ]
@@ -1948,7 +1968,7 @@
     "policy_pref_mapping_tests": [
       {
         "note": "Checking default value (no policies set)",
-        "policies": { },
+        "policies": {},
         "prefs": {
           "auth.disable_negotiate_cname_lookup": {
             "location": "local_state",
@@ -1957,7 +1977,9 @@
         }
       },
       {
-        "policies": { "DisableAuthNegotiateCnameLookup": true },
+        "policies": {
+          "DisableAuthNegotiateCnameLookup": true
+        },
         "prefs": {
           "auth.disable_negotiate_cname_lookup": {
             "location": "local_state",
@@ -1966,7 +1988,9 @@
         }
       },
       {
-        "policies": { "DisableAuthNegotiateCnameLookup": false },
+        "policies": {
+          "DisableAuthNegotiateCnameLookup": false
+        },
         "prefs": {
           "auth.disable_negotiate_cname_lookup": {
             "location": "local_state",
@@ -1986,7 +2010,7 @@
     "policy_pref_mapping_tests": [
       {
         "note": "Checking default value (no policies set)",
-        "policies": { },
+        "policies": {},
         "prefs": {
           "auth.enable_negotiate_port": {
             "location": "local_state",
@@ -1995,7 +2019,9 @@
         }
       },
       {
-        "policies": { "EnableAuthNegotiatePort": true },
+        "policies": {
+          "EnableAuthNegotiatePort": true
+        },
         "prefs": {
           "auth.enable_negotiate_port": {
             "location": "local_state",
@@ -2004,7 +2030,9 @@
         }
       },
       {
-        "policies": { "EnableAuthNegotiatePort": false },
+        "policies": {
+          "EnableAuthNegotiatePort": false
+        },
         "prefs": {
           "auth.enable_negotiate_port": {
             "location": "local_state",
