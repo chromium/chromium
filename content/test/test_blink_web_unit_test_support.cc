@@ -181,19 +181,19 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     case IDS_FORM_FILE_NO_FILE_LABEL:
       return WebString::FromASCII("<<NoFileChosenLabel>>");
     case IDS_FORM_OTHER_DATE_LABEL:
-      return WebString::FromASCII("<<OtherDateLabel>>");
+      return WebString::FromASCII("<<OtherDate>>");
     case IDS_FORM_OTHER_MONTH_LABEL:
-      return WebString::FromASCII("<<OtherMonthLabel>>");
+      return WebString::FromASCII("<<OtherMonth>>");
     case IDS_FORM_OTHER_WEEK_LABEL:
-      return WebString::FromASCII("<<OtherWeekLabel>>");
+      return WebString::FromASCII("<<OtherWeek>>");
     case IDS_FORM_CALENDAR_CLEAR:
-      return WebString::FromASCII("<<CalendarClear>>");
+      return WebString::FromASCII("<<Clear>>");
     case IDS_FORM_CALENDAR_TODAY:
-      return WebString::FromASCII("<<CalendarToday>>");
+      return WebString::FromASCII("<<Today>>");
     case IDS_FORM_THIS_MONTH_LABEL:
-      return WebString::FromASCII("<<ThisMonthLabel>>");
+      return WebString::FromASCII("<<ThisMonth>>");
     case IDS_FORM_THIS_WEEK_LABEL:
-      return WebString::FromASCII("<<ThisWeekLabel>>");
+      return WebString::FromASCII("<<ThisWeek>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING:
       return WebString::FromASCII("<<ValidationValueMissing>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING_SELECT:

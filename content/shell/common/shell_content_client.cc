@@ -27,19 +27,19 @@ std::u16string ShellContentClient::GetLocalizedString(int message_id) {
   if (switches::IsRunWebTestsSwitchPresent()) {
     switch (message_id) {
       case IDS_FORM_OTHER_DATE_LABEL:
-        return u"<<OtherDateLabel>>";
+        return u"<<OtherDate>>";
       case IDS_FORM_OTHER_MONTH_LABEL:
-        return u"<<OtherMonthLabel>>";
+        return u"<<OtherMonth>>";
       case IDS_FORM_OTHER_WEEK_LABEL:
-        return u"<<OtherWeekLabel>>";
+        return u"<<OtherWeek>>";
       case IDS_FORM_CALENDAR_CLEAR:
-        return u"<<CalendarClear>>";
+        return u"<<Clear>>";
       case IDS_FORM_CALENDAR_TODAY:
-        return u"<<CalendarToday>>";
+        return u"<<Today>>";
       case IDS_FORM_THIS_MONTH_LABEL:
-        return u"<<ThisMonthLabel>>";
+        return u"<<ThisMonth>>";
       case IDS_FORM_THIS_WEEK_LABEL:
-        return u"<<ThisWeekLabel>>";
+        return u"<<ThisWeek>>";
     }
   }
   return l10n_util::GetStringUTF16(message_id);
