@@ -1755,6 +1755,18 @@
     ctx.moveTo(0, 0);
     ctx.lineTo(100, 0);
     @nonfinite ctx.roundRect(<0 Infinity -Infinity NaN>, <50 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <1 Infinity -Infinity NaN>, <[0] [Infinity] [-Infinity] [NaN] [Infinity,0] [-Infinity,0] [NaN,0] [0,Infinity] [0,-Infinity] [0,NaN] [Infinity,0,0] [-Infinity,0,0] [NaN,0,0] [0,Infinity,0] [0,-Infinity,0] [0,NaN,0] [0,0,Infinity] [0,0,-Infinity] [0,0,NaN] [Infinity,0,0,0] [-Infinity,0,0,0] [NaN,0,0,0] [0,Infinity,0,0] [0,-Infinity,0,0] [0,NaN,0,0] [0,0,Infinity,0] [0,0,-Infinity,0] [0,0,NaN,0] [0,0,0,Infinity] [0,0,0,-Infinity] [0,0,0,NaN]>);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, Infinity)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, -Infinity)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(10, NaN)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(Infinity, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(-Infinity, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [new DOMPoint(NaN, 10)]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: Infinity}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: -Infinity}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: 10, y: NaN}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: Infinity, y: 10}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: -Infinity, y: 10}]);
+    ctx.roundRect(0, 0, 100, 100, [{x: NaN, y: 10}]);
     ctx.lineTo(100, 50);
     ctx.lineTo(0, 50);
     ctx.fillStyle = '#0f0';
@@ -2435,6 +2447,10 @@
   code: |
     assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [-1])});
     assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [1, -1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(-1, 1), 1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(1, -1)])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: -1, y: 1}, 1])});
+    assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: 1, y: -1}])});
     t.done();
 
 - name: 2d.path.fill.overlap

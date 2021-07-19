@@ -18,6 +18,10 @@ var ctx = offscreenCanvas.getContext('2d');
 
 assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [-1])});
 assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [1, -1])});
+assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(-1, 1), 1])});
+assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [new DOMPoint(1, -1)])});
+assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: -1, y: 1}, 1])});
+assert_throws_js(RangeError, () => { ctx.roundRect(0, 0, 0, 0, [{x: 1, y: -1}])});
 t.done();
 
 });
