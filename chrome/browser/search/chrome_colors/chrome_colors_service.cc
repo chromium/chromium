@@ -37,10 +37,6 @@ void ChromeColorsService::RecordColorOnLoadHistogram(SkColor color) {
                             kNumColorsInfo);
 }
 
-void ChromeColorsService::RecordColorAppliedHistogram(int color_id) {
-  base::UmaHistogramSparse("ChromeColors.ColorApplied", color_id);
-}
-
 void ChromeColorsService::ApplyDefaultTheme(content::WebContents* tab) {
   SaveThemeRevertState(tab);
   theme_service_->UseDefaultTheme();

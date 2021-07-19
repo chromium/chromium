@@ -37,9 +37,6 @@ class ChromeColorsService : public KeyedService {
   // predefined set, |kOtherColorId| is recorded.
   static void RecordColorOnLoadHistogram(SkColor color);
 
-  // Records |color_id| to UMA histogram whenever a new theme is applied.
-  static void RecordColorAppliedHistogram(int color_id);
-
   // Applies a theme that can be reverted by saving the previous theme state and
   // the |tab| that changes are made from.
   void ApplyDefaultTheme(content::WebContents* tab);
