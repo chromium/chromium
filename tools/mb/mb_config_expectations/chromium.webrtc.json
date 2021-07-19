@@ -13,6 +13,7 @@
   },
   "WebRTC Chromium Linux Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -22,6 +23,7 @@
   },
   "WebRTC Chromium Mac Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -32,6 +34,7 @@
   "WebRTC Chromium Win Builder": {
     "gn_args": {
       "com_init_check_hook_disabled": true,
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

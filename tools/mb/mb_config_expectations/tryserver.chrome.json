@@ -209,6 +209,7 @@
   },
   "win-celab-try-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chrome_branded": true,
       "is_component_build": false,
       "is_debug": false,

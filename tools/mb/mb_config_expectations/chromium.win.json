@@ -1,6 +1,7 @@
 {
   "Win Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -23,6 +24,7 @@
   },
   "Win x64 Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -44,6 +46,7 @@
   "Win x64 Builder Code Coverage": {
     "gn_args": {
       "coverage_instrumentation_input_file": "//.code-coverage/files_to_instrument.txt",
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -55,6 +58,7 @@
   },
   "Windows deterministic": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,

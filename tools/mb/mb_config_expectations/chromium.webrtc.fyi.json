@@ -1,6 +1,7 @@
 {
   "WebRTC Chromium FYI Android Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -36,6 +37,7 @@
   },
   "WebRTC Chromium FYI Linux Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -53,6 +55,7 @@
   },
   "WebRTC Chromium FYI Mac Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -71,6 +74,7 @@
   "WebRTC Chromium FYI Win Builder": {
     "gn_args": {
       "com_init_check_hook_disabled": true,
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

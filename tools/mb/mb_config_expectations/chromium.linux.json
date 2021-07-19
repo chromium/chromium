@@ -1,6 +1,7 @@
 {
   "Cast Audio Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_cast_audio_only": true,
       "is_chromecast": true,
       "is_component_build": false,
@@ -11,6 +12,7 @@
   },
   "Cast Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromecast": true,
       "is_component_build": false,
       "is_debug": false,
@@ -38,6 +40,7 @@
   },
   "Deterministic Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -59,6 +62,7 @@
   },
   "Fuchsia ARM64": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -68,6 +72,7 @@
   },
   "Fuchsia x64": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
@@ -76,6 +81,7 @@
   },
   "Leak Detection Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -83,6 +89,7 @@
   },
   "Linux Builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -113,6 +120,7 @@
   },
   "Network Service Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -120,6 +128,7 @@
   },
   "fuchsia-arm64-cast": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromecast": true,
       "is_component_build": false,
       "is_debug": false,
@@ -131,6 +140,7 @@
   },
   "fuchsia-x64-cast": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromecast": true,
       "is_component_build": false,
       "is_debug": false,
@@ -150,6 +160,7 @@
   },
   "linux-bfcache-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -159,6 +170,7 @@
   },
   "linux-bionic-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -168,6 +180,7 @@
   },
   "linux-extended-tracing-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "extended_tracing_enabled": true,
       "is_component_build": false,
       "is_debug": false,
@@ -176,6 +189,7 @@
   },
   "linux-gcc-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": false,
       "is_component_build": false,
       "is_debug": false,
@@ -187,6 +201,7 @@
   },
   "linux-ozone-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "headless",
@@ -197,6 +212,7 @@
   },
   "linux-trusty-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -206,6 +222,7 @@
   },
   "linux-xenial-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

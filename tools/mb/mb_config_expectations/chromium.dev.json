@@ -1,6 +1,7 @@
 {
   "android-lollipop-arm-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -14,6 +15,7 @@
   },
   "android-marshmallow-arm64-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -31,6 +33,7 @@
   },
   "linux-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -40,6 +43,7 @@
   },
   "linux-rel-swarming-staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -49,6 +53,7 @@
   },
   "linux-ssd-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -58,6 +63,7 @@
   },
   "mac-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -68,6 +74,7 @@
   },
   "win-rel-swarming": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -78,6 +85,7 @@
   },
   "win-rel-swarming-staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,

@@ -1,6 +1,7 @@
 {
   "Linux ChromiumOS Full": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -91,6 +92,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -104,6 +106,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -117,6 +120,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_i386-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -126,6 +130,7 @@
   },
   "linux-ash-chromium-generator-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -136,6 +141,7 @@
   },
   "linux-cfm-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_cfm": true,
       "is_component_build": false,
       "is_debug": false,
@@ -156,6 +162,7 @@
   },
   "linux-chromeos-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -168,6 +175,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -182,6 +190,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",

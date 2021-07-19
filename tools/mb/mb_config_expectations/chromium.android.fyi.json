@@ -15,6 +15,7 @@
   },
   "Android WebView P FYI (rel)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -42,6 +43,7 @@
   },
   "android-11-x86-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -58,6 +60,7 @@
   },
   "android-12-x64-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -74,6 +77,7 @@
   },
   "android-pie-arm64-wpt-rel-non-cq": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -88,6 +92,7 @@
   },
   "android-web-platform-pie-x86-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -104,6 +109,7 @@
   },
   "android-weblayer-pie-x86-wpt-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -120,6 +126,7 @@
   },
   "android-weblayer-pie-x86-wpt-smoketest": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -137,6 +144,7 @@
   "android-weblayer-with-aosp-webview-x86-fyi-rel": {
     "gn_args": {
       "chrome_public_manifest_package": "com.android.chrome",
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "enable_proguard_obfuscation": false,
       "enable_resource_allowlist_generation": true,
@@ -153,6 +161,7 @@
   },
   "android-webview-pie-x86-wpt-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

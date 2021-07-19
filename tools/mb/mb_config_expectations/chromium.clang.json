@@ -1,6 +1,7 @@
 {
   "CFI Linux CF": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_cfi": true,
       "is_component_build": false,
       "is_debug": false,
@@ -28,6 +29,7 @@
   },
   "CrWinAsan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_ipc_fuzzer": true,
       "is_asan": true,
       "is_clang": true,
@@ -40,6 +42,7 @@
   },
   "CrWinAsan(dll)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_asan": true,
       "is_clang": true,
       "is_component_build": true,
@@ -51,6 +54,7 @@
   },
   "ToTAndroid": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_clang": true,
       "is_component_build": false,
@@ -95,6 +99,7 @@
   },
   "ToTAndroid64": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "llvm_force_head_revision": true,
@@ -128,6 +133,7 @@
   },
   "ToTAndroidOfficial": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_clang": true,
       "is_component_build": false,
@@ -142,6 +148,7 @@
   },
   "ToTFuchsia x64": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -161,6 +168,7 @@
   },
   "ToTLinux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": true,
       "is_debug": false,
@@ -178,6 +186,7 @@
   },
   "ToTLinuxASan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_asan": true,
       "is_clang": true,
       "is_component_build": false,
@@ -188,6 +197,7 @@
   },
   "ToTLinuxASanLibfuzzer": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
       "is_asan": true,
@@ -201,6 +211,7 @@
   },
   "ToTLinuxCoverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "llvm_force_head_revision": true,
@@ -210,6 +221,7 @@
   },
   "ToTLinuxMSan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "is_msan": true,
@@ -237,6 +249,7 @@
   },
   "ToTLinuxTSan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "is_tsan": true,
@@ -245,6 +258,7 @@
   },
   "ToTLinuxUBSanVptr": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -255,6 +269,7 @@
   },
   "ToTMac": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": true,
       "is_debug": false,
@@ -272,6 +287,7 @@
   },
   "ToTMacASan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_asan": true,
       "is_clang": true,
@@ -283,6 +299,7 @@
   },
   "ToTMacCoverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "llvm_force_head_revision": true,
@@ -301,6 +318,7 @@
   },
   "ToTWin": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -331,6 +349,7 @@
   },
   "ToTWin64": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -367,6 +386,7 @@
   },
   "ToTWinASanLibfuzzer": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_asan": true,
@@ -433,6 +453,7 @@
   },
   "ToTWindowsCoverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_debug": false,
       "llvm_force_head_revision": true,
@@ -442,6 +463,7 @@
   },
   "ToTiOS": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_enable_code_signing": false,
       "ios_set_attributes_for_xcode_project_generation": false,
@@ -456,6 +478,7 @@
   },
   "ToTiOSDevice": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_code_signing_identity_description": "iPhone Developer",
       "ios_set_attributes_for_xcode_project_generation": false,

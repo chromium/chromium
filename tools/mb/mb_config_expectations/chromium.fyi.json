@@ -12,6 +12,7 @@
   "Afl Upload Linux ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
       "is_asan": true,
@@ -26,6 +27,7 @@
   },
   "Comparison Linux": {
     "goma": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -33,6 +35,7 @@
       "use_goma": true
     },
     "reclient": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -43,6 +46,7 @@
   "Libfuzzer Upload Chrome OS ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
       "is_asan": true,
@@ -58,6 +62,7 @@
   },
   "Libfuzzer Upload Linux ASan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
@@ -73,6 +78,7 @@
   },
   "Libfuzzer Upload Linux ASan (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
@@ -105,6 +111,7 @@
   "Libfuzzer Upload Linux MSan": {
     "gn_args": {
       "archive_seed_corpus": false,
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": true,
@@ -121,6 +128,7 @@
   "Libfuzzer Upload Linux UBSan": {
     "gn_args": {
       "archive_seed_corpus": false,
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
@@ -135,6 +143,7 @@
   },
   "Libfuzzer Upload Mac ASan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
       "is_asan": true,
@@ -149,6 +158,7 @@
   },
   "Libfuzzer Upload Windows ASan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_mojom_fuzzer": true,
       "enable_nacl": false,
       "ffmpeg_branding": "Chrome",
@@ -164,6 +174,7 @@
   },
   "Linux Builder (core-32) (goma)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -173,6 +184,7 @@
   },
   "Linux Builder (core-32) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -182,6 +194,7 @@
   },
   "Linux Builder (core-32) (runsc) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -191,6 +204,7 @@
   },
   "Linux Builder (deps-cache) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -200,6 +214,7 @@
   },
   "Linux Builder (j-500) (g-ip) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -209,6 +224,7 @@
   },
   "Linux Builder (j-500) (n2) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -218,6 +234,7 @@
   },
   "Linux Builder (j-500) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -227,6 +244,7 @@
   },
   "Linux TSan Builder (goma cache silo)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -236,6 +254,7 @@
   },
   "Linux TSan Builder (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -255,6 +274,7 @@
   },
   "Mac Builder Next": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -265,6 +285,7 @@
   },
   "Mac deterministic": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_stripping": true,
       "is_component_build": false,
       "is_debug": false,
@@ -282,6 +303,7 @@
   },
   "Site Isolation Android": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -305,6 +327,7 @@
   },
   "TSAN Release (core-32) (goma)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -314,6 +337,7 @@
   },
   "TSAN Release (core-32) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -323,6 +347,7 @@
   },
   "TSAN Release (deps-cache) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -332,6 +357,7 @@
   },
   "TSAN Release (g-ip) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -341,6 +367,7 @@
   },
   "TSAN Release (j-250) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -350,6 +377,7 @@
   },
   "TSAN Release (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -359,6 +387,7 @@
   },
   "TSAN Release (runsc-exp) (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,
@@ -368,6 +397,7 @@
   },
   "UBSan Release (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan": true,
@@ -376,6 +406,7 @@
   },
   "VR Linux": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_vr": true,
       "is_component_build": false,
       "is_debug": false,
@@ -385,6 +416,7 @@
   },
   "VR Linux (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_vr": true,
       "is_component_build": false,
       "is_debug": false,
@@ -404,6 +436,7 @@
   },
   "Win x64 Builder (reclient)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -414,6 +447,7 @@
   },
   "Win x64 Builder (reclient)(cross)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -463,6 +497,7 @@
   },
   "android-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -482,6 +517,7 @@
   },
   "android-code-coverage-native": {
     "gn_args": {
+      "dcheck_always_on": false,
       "disable_android_lint": true,
       "enable_resource_allowlist_generation": true,
       "ffmpeg_branding": "Chrome",
@@ -528,6 +564,7 @@
   },
   "fuchsia-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "fuchsia_code_coverage": true,
       "is_clang": true,
       "is_component_build": false,
@@ -550,6 +587,7 @@
   },
   "fuchsia-fyi-arm64-femu": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -559,6 +597,7 @@
   },
   "fuchsia-fyi-arm64-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -577,6 +616,7 @@
   },
   "fuchsia-fyi-x64-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_os": "fuchsia",
@@ -585,6 +625,7 @@
   },
   "ios-asan": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_set_attributes_for_xcode_project_generation": false,
       "is_asan": true,
@@ -717,6 +758,7 @@
   },
   "ios15-sdk-device": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_run_ios_unittests_with_xctest": true,
       "ios_enable_code_signing": false,
       "ios_set_attributes_for_xcode_project_generation": false,
@@ -747,6 +789,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -772,6 +815,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -781,6 +825,7 @@
   },
   "linux-annotator-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -788,6 +833,7 @@
   },
   "linux-ash-chromium-builder-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -858,6 +904,7 @@
   },
   "linux-chromeos-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -869,6 +916,7 @@
   },
   "linux-chromeos-js-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",
       "is_component_build": false,
       "is_debug": false,
@@ -880,6 +928,7 @@
   },
   "linux-chromium-tests-staging-builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -887,6 +936,7 @@
   },
   "linux-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -897,6 +947,7 @@
   },
   "linux-example-builder": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -904,6 +955,7 @@
   },
   "linux-exp-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -914,6 +966,7 @@
   },
   "linux-fieldtrial-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -924,6 +977,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -938,6 +992,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -952,6 +1007,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -966,6 +1022,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -983,6 +1040,7 @@
     "gn_args": {
       "also_build_ash_chrome": true,
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -996,6 +1054,7 @@
   "linux-lacros-version-skew-fyi": {
     "gn_args": {
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -1008,6 +1067,7 @@
   },
   "linux-perfetto-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true,
@@ -1016,6 +1076,7 @@
   },
   "linux-upload-perfetto": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1023,6 +1084,7 @@
   },
   "linux-wpt-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -1031,6 +1093,7 @@
   },
   "linux-wpt-identity-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -1039,6 +1102,7 @@
   },
   "linux-wpt-input-fyi-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -1047,6 +1111,7 @@
   },
   "mac-arm64-on-arm64-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "target_cpu": "arm64",
@@ -1055,6 +1120,7 @@
   },
   "mac-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -1065,6 +1131,7 @@
   },
   "mac-hermetic-upgrade-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1094,6 +1161,7 @@
   },
   "mac-upload-perfetto": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1101,6 +1169,7 @@
   },
   "win-annotator-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1140,6 +1209,7 @@
   },
   "win-celab-builder-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -1148,6 +1218,7 @@
   },
   "win-pixel-builder-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1155,6 +1226,7 @@
   },
   "win-upload-perfetto": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -1162,6 +1234,7 @@
   },
   "win10-code-coverage": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": true,
       "is_component_build": false,
       "is_debug": false,
@@ -1172,6 +1245,7 @@
   },
   "win32-archive-rel-goma-rbe-canary": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "skip_archive_compression": false,
@@ -1182,6 +1256,7 @@
   },
   "win32-archive-rel-goma-rbe-latest": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "skip_archive_compression": false,
@@ -1192,6 +1267,7 @@
   },
   "win32-arm64-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_component_build": false,
       "is_debug": false,

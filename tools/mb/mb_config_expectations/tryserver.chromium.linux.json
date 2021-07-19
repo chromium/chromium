@@ -1,6 +1,7 @@
 {
   "cast-binary-size": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromecast": true,
       "is_component_build": false,
       "is_debug": false,
@@ -455,6 +456,7 @@
   },
   "linux-bfcache-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -571,6 +573,7 @@
   },
   "linux-gcc-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_clang": false,
       "is_component_build": false,
       "is_debug": false,
@@ -614,6 +617,7 @@
   "linux-lacros-version-skew-fyi": {
     "gn_args": {
       "chromeos_is_browser_only": true,
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "ozone_platform": "wayland",
@@ -785,6 +789,7 @@
   },
   "linux-webkit-msan-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -839,6 +844,7 @@
   },
   "linux_chromium_archive_rel_ng": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -884,6 +890,7 @@
   },
   "linux_chromium_chromeos_msan_rel_ng": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -951,6 +958,7 @@
   },
   "linux_chromium_msan_rel_ng": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "is_msan": true,
@@ -984,6 +992,7 @@
   },
   "linux_chromium_ubsan_rel_ng": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "is_ubsan_no_recover": true,
@@ -1054,6 +1063,7 @@
   },
   "linux_upload_clang": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true

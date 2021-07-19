@@ -59,6 +59,7 @@
   },
   "chromecast-linux-builder-perf": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chromecast": true,
       "is_component_build": false,
       "is_debug": false,

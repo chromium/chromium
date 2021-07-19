@@ -1,6 +1,7 @@
 {
   "Mojo Android": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -37,6 +38,7 @@
   },
   "Mojo Windows": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,

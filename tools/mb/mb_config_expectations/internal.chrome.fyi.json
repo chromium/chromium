@@ -5,6 +5,7 @@
       "chromeos_is_browser_only": true,
       "cros_host_sysroot": "//build/linux/debian_sid_amd64-sysroot",
       "cros_v8_snapshot_sysroot": "//build/linux/debian_sid_amd64-sysroot",
+      "dcheck_always_on": false,
       "is_chromeos_device": true,
       "is_debug": false,
       "ozone_platform_headless": true,
@@ -14,6 +15,7 @@
   },
   "linux-autofill-captured-sites-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -21,6 +23,7 @@
   },
   "linux-password-manager-captured-sites-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -40,6 +43,7 @@
   },
   "mac-autofill-captured-sites-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -47,6 +51,7 @@
   },
   "win-autofill-captured-sites-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -54,6 +59,7 @@
   },
   "win-celab-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_chrome_branded": true,
       "is_component_build": false,
       "is_debug": false,
@@ -64,6 +70,7 @@
   },
   "win-password-manager-captured-sites-rel": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true

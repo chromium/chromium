@@ -1,6 +1,7 @@
 {
   "Chromium Android ARM 32-bit Goma RBE Staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -13,6 +14,7 @@
   },
   "Chromium Android ARM 32-bit Goma RBE ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -25,6 +27,7 @@
   },
   "Chromium Android ARM 32-bit Goma RBE ToT (ATS)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
@@ -37,6 +40,7 @@
   },
   "Chromium Linux Goma RBE Staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -44,6 +48,7 @@
   },
   "Chromium Linux Goma RBE Staging (clobber)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -67,6 +72,7 @@
   },
   "Chromium Linux Goma RBE ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -74,6 +80,7 @@
   },
   "Chromium Linux Goma RBE ToT (ATS)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -81,6 +88,7 @@
   },
   "Chromium Mac Goma RBE Staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -88,6 +96,7 @@
   },
   "Chromium Mac Goma RBE Staging (clobber)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -103,6 +112,7 @@
   },
   "Chromium Mac Goma RBE ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -110,6 +120,7 @@
   },
   "Chromium Win Goma RBE ATS Staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -119,6 +130,7 @@
   },
   "Chromium Win Goma RBE ATS Staging (clobber)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -128,6 +140,7 @@
   },
   "Chromium Win Goma RBE ATS ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -137,6 +150,7 @@
   },
   "Chromium Win Goma RBE Staging": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -146,6 +160,7 @@
   },
   "Chromium Win Goma RBE Staging (clobber)": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -155,6 +170,7 @@
   },
   "Chromium Win Goma RBE ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
@@ -164,6 +180,7 @@
   },
   "Chromium iOS Goma RBE ToT": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
       "ios_set_attributes_for_xcode_project_generation": false,

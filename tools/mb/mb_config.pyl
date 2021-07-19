@@ -3515,8 +3515,12 @@
       'gn_args': 'use_rbe=true rbe_cfg_dir="../../buildtools/reclient_cfgs/win-cross-experiments"',
     },
 
+    # Historically, a 'release' bot had DCHECKs turned off. DCHECKs are now
+    # enabled by default, but explicitly turning them off here preserves
+    # backwards compatibility. TODO: We should probably come up with better
+    # names like 'dcheck' vs. 'release' to make this clearer.
     'release': {
-      'gn_args': 'is_debug=false',
+      'gn_args': 'is_debug=false dcheck_always_on=false',
     },
 
     'release_bot': {

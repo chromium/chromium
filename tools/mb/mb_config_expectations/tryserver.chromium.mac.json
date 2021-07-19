@@ -225,6 +225,7 @@
   },
   "ios-device": {
     "gn_args": {
+      "dcheck_always_on": false,
       "ios_code_signing_identity_description": "Apple Development",
       "ios_enable_code_signing": false,
       "ios_set_attributes_for_xcode_project_generation": false,
@@ -542,6 +543,7 @@
   },
   "mac_chromium_archive_rel_ng": {
     "gn_args": {
+      "dcheck_always_on": false,
       "enable_stripping": true,
       "is_component_build": false,
       "is_debug": false,
@@ -551,7 +553,7 @@
   },
   "mac_chromium_asan_rel_ng": {
     "gn_args": {
-      "dcheck_always_on": true,
+      "dcheck_always_on": false,
       "enable_nacl": false,
       "is_asan": true,
       "is_component_build": false,
@@ -609,6 +611,7 @@
   },
   "mac_upload_clang": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
@@ -616,6 +619,7 @@
   },
   "mac_upload_clang_arm": {
     "gn_args": {
+      "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
       "use_goma": true
