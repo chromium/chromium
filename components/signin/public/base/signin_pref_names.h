@@ -24,6 +24,7 @@ extern const char kGoogleServicesLastAccountId[];
 extern const char kGoogleServicesLastUsername[];
 extern const char kGoogleServicesSigninScopedDeviceId[];
 extern const char kGoogleServicesUsernamePattern[];
+extern const char kRestrictAccountsToPatterns[];
 extern const char kReverseAutologinRejectedEmailList[];
 extern const char kSignedInWithCredentialProvider[];
 extern const char kSigninAllowed[];

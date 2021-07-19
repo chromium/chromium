@@ -177,6 +177,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kOmniboxGeolocationAuthorizationState, 0);
   registry->RegisterStringPref(kOmniboxGeolocationLastAuthorizationAlertVersion,
                                "");
+
+  registry->RegisterListPref(prefs::kRestrictAccountsToPatterns);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {

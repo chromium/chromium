@@ -96,4 +96,8 @@ const char kTokenServiceDiceCompatible[] = "token_service.dice_compatible";
 const char kGaiaCookieLastListAccountsData[] =
     "gaia_cookie.last_list_accounts_data";
 
+// List of patterns to determine the account visibility.
+const char kRestrictAccountsToPatterns[] =
+    "signin.restrict_accounts_to_patterns";
+
 }  // namespace prefs
