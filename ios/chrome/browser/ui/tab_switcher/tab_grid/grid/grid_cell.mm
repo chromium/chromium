@@ -51,6 +51,11 @@ void PositionView(UIView* view, CGPoint point) {
 // The constraints enabled under normal font size.
 @property(nonatomic, strong)
     NSArray<NSLayoutConstraint*>* nonAccessibilityConstraints;
+// The constraints enabled while showing the close icon.
+@property(nonatomic, strong) NSArray<NSLayoutConstraint*>* closeIconConstraints;
+// The constraints enabled while showing the selection icon.
+@property(nonatomic, strong)
+    NSArray<NSLayoutConstraint*>* selectIconConstraints;
 // Header height of the cell.
 @property(nonatomic, strong) NSLayoutConstraint* topBarHeightConstraint;
 // Visual components of the cell.
@@ -157,7 +162,7 @@ void PositionView(UIView* view, CGPoint point) {
       UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory);
   if (isPreviousAccessibilityCategory ^ isCurrentAccessibilityCategory) {
-    [self updateTopBar];
+    [self updateTopBarSize];
   }
 }
 
@@ -324,34 +329,38 @@ void PositionView(UIView* view, CGPoint point) {
   _topBarHeightConstraint =
       [topBar.heightAnchor constraintEqualToConstant:kGridCellHeaderHeight];
 
-  [self updateTopBar];
-
-  NSArray* constraints = @[
-    _topBarHeightConstraint,
-    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+  _closeIconConstraints = @[
     [titleLabel.trailingAnchor
         constraintEqualToAnchor:closeIconView.leadingAnchor
                        constant:-kGridCellTitleLabelContentInset],
-    [closeIconView.topAnchor
-        constraintEqualToAnchor:topBar.topAnchor
-                       constant:kGridCellCloseButtonContentInset],
+    [titleLabel.centerYAnchor
+        constraintEqualToAnchor:closeIconView.centerYAnchor],
     [closeIconView.trailingAnchor
         constraintEqualToAnchor:topBar.trailingAnchor
                        constant:-kGridCellCloseButtonContentInset],
   ];
 
   if (_selectIconView) {
-    constraints = [constraints arrayByAddingObjectsFromArray:@[
-      [closeIconView.leadingAnchor
-          constraintEqualToAnchor:_selectIconView.leadingAnchor],
-      [closeIconView.trailingAnchor
-          constraintEqualToAnchor:_selectIconView.trailingAnchor],
-      [closeIconView.topAnchor
-          constraintEqualToAnchor:_selectIconView.topAnchor],
-      [closeIconView.bottomAnchor
-          constraintEqualToAnchor:_selectIconView.bottomAnchor],
-    ]];
+    _selectIconConstraints = @[
+      [titleLabel.trailingAnchor
+          constraintEqualToAnchor:_selectIconView.leadingAnchor
+                         constant:-kGridCellTitleLabelContentInset],
+      [titleLabel.centerYAnchor
+          constraintEqualToAnchor:_selectIconView.centerYAnchor],
+      [_selectIconView.trailingAnchor
+          constraintEqualToAnchor:topBar.trailingAnchor
+                         constant:-kGridCellCloseButtonContentInset],
+
+    ];
   }
+
+  [self updateTopBarSize];
+  [self configureCloseOrSelectIconConstraints];
+
+  NSArray* constraints = @[
+    _topBarHeightConstraint,
+    [titleLabel.centerYAnchor constraintEqualToAnchor:topBar.centerYAnchor],
+  ];
 
   [NSLayoutConstraint activateConstraints:constraints];
   [titleLabel
@@ -362,6 +371,15 @@ void PositionView(UIView* view, CGPoint point) {
                                       forAxis:UILayoutConstraintAxisHorizontal];
   [closeIconView setContentHuggingPriority:UILayoutPriorityRequired
                                    forAxis:UILayoutConstraintAxisHorizontal];
+  if (_selectIconView) {
+    [_selectIconView
+        setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                        forAxis:
+                                            UILayoutConstraintAxisHorizontal];
+    [_selectIconView
+        setContentHuggingPriority:UILayoutPriorityRequired
+                          forAxis:UILayoutConstraintAxisHorizontal];
+  }
   return topBar;
 }
 
@@ -379,8 +397,9 @@ void PositionView(UIView* view, CGPoint point) {
 // Update constraints of top bar when system font size changes. If accessibility
 // font size is chosen, the favicon will be hidden, and the title text will be
 // shown in two lines.
-- (void)updateTopBar {
+- (void)updateTopBarSize {
   self.topBarHeightConstraint.constant = [self topBarHeight];
+
   if (UIContentSizeCategoryIsAccessibilityCategory(
           self.traitCollection.preferredContentSizeCategory)) {
     self.titleLabel.numberOfLines = 2;
@@ -390,6 +409,21 @@ void PositionView(UIView* view, CGPoint point) {
     self.titleLabel.numberOfLines = 1;
     [NSLayoutConstraint deactivateConstraints:_accessibilityConstraints];
     [NSLayoutConstraint activateConstraints:_nonAccessibilityConstraints];
+  }
+}
+
+- (void)configureCloseOrSelectIconConstraints {
+  BOOL showSelectionMode = self.isInSelectionMode && _selectIconView;
+
+  self.closeIconView.hidden = showSelectionMode;
+  self.selectIconView.hidden = !showSelectionMode;
+
+  if (showSelectionMode) {
+    [NSLayoutConstraint deactivateConstraints:_closeIconConstraints];
+    [NSLayoutConstraint activateConstraints:_selectIconConstraints];
+  } else {
+    [NSLayoutConstraint deactivateConstraints:_selectIconConstraints];
+    [NSLayoutConstraint activateConstraints:_closeIconConstraints];
   }
 }
 
@@ -408,31 +442,8 @@ void PositionView(UIView* view, CGPoint point) {
   self.selectIconView.image = [[self selectIconImageForCurrentState]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 
-  __weak GridCell* weakSelf = self;
-  [UIView animateWithDuration:0.02f
-      animations:^{
-        GridCell* strongSelf = weakSelf;
-        if (strongSelf) {
-          if (strongSelf.isInSelectionMode) {
-            strongSelf.border.alpha = 0.0;
-            strongSelf.closeIconView.alpha = 0.0;
-            strongSelf.selectIconView.alpha = 1.0;
-          } else {
-            strongSelf.border.alpha = 1.0;
-            strongSelf.closeIconView.alpha = 1.0;
-            strongSelf.selectIconView.alpha = 0.0;
-          }
-        }
-      }
-      completion:^(BOOL finished) {
-        GridCell* strongSelf = weakSelf;
-        if (strongSelf) {
-          BOOL isInSelectionMode = strongSelf.isInSelectionMode;
-          strongSelf.border.hidden = isInSelectionMode;
-          strongSelf.closeIconView.hidden = isInSelectionMode;
-          strongSelf.selectIconView.hidden = !isInSelectionMode;
-        }
-      }];
+  [self configureCloseOrSelectIconConstraints];
+  self.border.hidden = self.isInSelectionMode;
 }
 
 // Sets up the selection border. The tint color is set when the theme is
