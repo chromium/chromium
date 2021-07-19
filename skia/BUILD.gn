@@ -60,6 +60,7 @@ config("skia_config") {
     "SK_CODEC_DECODES_WEBP",
     "SK_ENCODE_PNG",
     "SK_ENCODE_WEBP",
+    "SK_ENABLE_SKSL",
     "SK_USER_CONFIG_HEADER=\"../../skia/config/SkUserConfig.h\"",
   ]
 
