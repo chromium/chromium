@@ -1,0 +1,14 @@
+{
+  "Type": "Cellular",
+  "Name": "Test Network",
+  "Cellular": {
+    "AllowRoaming": true,
+    "APN": {
+      "AccessPointName": "test-apn",
+      "Authentication": "chap",
+      "Username": "test-username",
+      "Password": "test-password"
+    },
+    "AutoConnect": true
+  }
+}

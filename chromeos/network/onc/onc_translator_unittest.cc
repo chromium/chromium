@@ -75,6 +75,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::make_pair("vpn_ipsec_clientcert_pkcs11.onc",
                        "shill_vpn_ipsec_clientcert_pkcs11.json"),
         std::make_pair("cellular.onc", "shill_cellular.json"),
+        std::make_pair("cellular.per_network_roaming.onc",
+                       "shill_cellular.per_network_roaming.json"),
         // WiMAX is deprecated, but we need to ensure older ONC configurations
         // are handled gracefully.
         std::make_pair("wimax.onc", "shill_wimax.json"),
@@ -155,6 +157,9 @@ INSTANTIATE_TEST_SUITE_P(
                        "translation_of_shill_wifi_proxy_pac.onc"),
         std::make_pair("shill_cellular_with_state.json",
                        "translation_of_shill_cellular_with_state.onc"),
+        std::make_pair(
+            "shill_cellular_with_state.per_network_roaming.json",
+            "translation_of_shill_cellular_with_state.per_network_roaming.onc"),
         std::make_pair("shill_output_third_party_vpn.json",
                        "translation_of_shill_output_third_party_vpn.onc"),
         std::make_pair(
