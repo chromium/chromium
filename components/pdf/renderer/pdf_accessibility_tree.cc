@@ -1358,7 +1358,7 @@ void PdfAccessibilityTree::SetAccessibilityPageInfo(
   doc_node_->child_ids.push_back(page_node->id);
 
   AddPageContent(page_node, page_bounds, page_index, text_runs, chars,
-                 page_objects, render_accessibility);
+                 page_objects);
 
   if (page_index == page_count_ - 1)
     Finish();
@@ -1370,9 +1370,11 @@ void PdfAccessibilityTree::AddPageContent(
     uint32_t page_index,
     const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
     const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
-    const ppapi::PdfAccessibilityPageObjects& page_objects,
-    content::RenderAccessibility* render_accessibility) {
+    const ppapi::PdfAccessibilityPageObjects& page_objects) {
   DCHECK(page_node);
+  content::RenderAccessibility* render_accessibility =
+      GetRenderAccessibilityIfEnabled();
+  DCHECK(render_accessibility);
   PdfAccessibilityTreeBuilder tree_builder(
       text_runs, chars, page_objects, page_bounds, page_index, page_node,
       render_accessibility, &nodes_, &node_id_to_page_char_index_,

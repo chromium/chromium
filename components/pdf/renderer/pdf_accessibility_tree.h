@@ -125,8 +125,7 @@ class PdfAccessibilityTree : public content::PluginAXTreeSource {
       uint32_t page_index,
       const std::vector<chrome_pdf::AccessibilityTextRunInfo>& text_runs,
       const std::vector<chrome_pdf::AccessibilityCharInfo>& chars,
-      const ppapi::PdfAccessibilityPageObjects& page_objects,
-      content::RenderAccessibility* render_accessibility);
+      const ppapi::PdfAccessibilityPageObjects& page_objects);
 
   // Clears the local cache of node data used to create the tree so that
   // replacement node data can be introduced.
