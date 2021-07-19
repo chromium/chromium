@@ -525,6 +525,7 @@ public class WebApkUpdateManagerUnitTest {
 
         mJniMocker.mock(WebApkUpdateManagerJni.TEST_HOOKS, new TestWebApkUpdateManagerJni());
 
+        WebappRegistry.refreshSharedPrefsForTesting();
         registerWebApk(
                 WEBAPK_PACKAGE_NAME, defaultManifestData(), REQUEST_UPDATE_FOR_SHELL_APK_VERSION);
         registerStorageForWebApkPackage(WEBAPK_PACKAGE_NAME);
