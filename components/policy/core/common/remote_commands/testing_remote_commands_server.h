@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -48,6 +47,9 @@ using ResultReportedCallback =
 class TestingRemoteCommandsServer {
  public:
   TestingRemoteCommandsServer();
+  TestingRemoteCommandsServer(const TestingRemoteCommandsServer&) = delete;
+  TestingRemoteCommandsServer& operator=(const TestingRemoteCommandsServer&) =
+      delete;
   virtual ~TestingRemoteCommandsServer();
 
   using RemoteCommandResults =
@@ -137,8 +139,6 @@ class TestingRemoteCommandsServer {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<TestingRemoteCommandsServer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestingRemoteCommandsServer);
 };
 
 }  // namespace policy

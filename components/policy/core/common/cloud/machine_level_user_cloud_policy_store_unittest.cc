@@ -7,7 +7,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -41,6 +40,10 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
     policy_.payload().mutable_searchsuggestenabled()->set_value(false);
     policy_.Build();
   }
+  MachineLevelUserCloudPolicyStoreTest(
+      const MachineLevelUserCloudPolicyStoreTest&) = delete;
+  MachineLevelUserCloudPolicyStoreTest& operator=(
+      const MachineLevelUserCloudPolicyStoreTest&) = delete;
 
   ~MachineLevelUserCloudPolicyStoreTest() override {}
 
@@ -111,8 +114,6 @@ class MachineLevelUserCloudPolicyStoreTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStoreTest);
 };
 
 TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadWithoutDMToken) {

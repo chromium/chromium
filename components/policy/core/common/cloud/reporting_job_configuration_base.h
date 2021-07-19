@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -98,6 +97,10 @@ class POLICY_EXPORT ReportingJobConfigurationBase
     static const char kChromeVersion[];
   };
 
+  ReportingJobConfigurationBase(const ReportingJobConfigurationBase&) = delete;
+  ReportingJobConfigurationBase& operator=(
+      const ReportingJobConfigurationBase&) = delete;
+
   // DeviceManagementService::JobConfiguration
   std::string GetPayload() override;
   std::string GetUmaName() override;
@@ -157,8 +160,6 @@ class POLICY_EXPORT ReportingJobConfigurationBase
   void InitializePayload(CloudPolicyClient* client, bool include_device_info);
 
   const std::string server_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingJobConfigurationBase);
 };
 
 }  // namespace policy

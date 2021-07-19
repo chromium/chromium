@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -38,6 +37,11 @@ const char* kExternalPolicyDataOverflowPayload = "External policy data+++++++";
 }  // namespace
 
 class ExternalPolicyDataFetcherTest : public testing::Test {
+ public:
+  ExternalPolicyDataFetcherTest(const ExternalPolicyDataFetcherTest&) = delete;
+  ExternalPolicyDataFetcherTest& operator=(
+      const ExternalPolicyDataFetcherTest&) = delete;
+
  protected:
   ExternalPolicyDataFetcherTest();
   ~ExternalPolicyDataFetcherTest() override;
@@ -64,9 +68,6 @@ class ExternalPolicyDataFetcherTest : public testing::Test {
   int callback_job_index_;
   ExternalPolicyDataFetcher::Result callback_result_;
   std::unique_ptr<std::string> callback_data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataFetcherTest);
 };
 
 ExternalPolicyDataFetcherTest::ExternalPolicyDataFetcherTest()

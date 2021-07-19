@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_store.h"
@@ -30,6 +29,10 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
       const base::FilePath& key_path,
       bool cloud_policy_has_priority,
       scoped_refptr<base::SequencedTaskRunner> background_task_runner);
+  MachineLevelUserCloudPolicyStore(const MachineLevelUserCloudPolicyStore&) =
+      delete;
+  MachineLevelUserCloudPolicyStore& operator=(
+      const MachineLevelUserCloudPolicyStore&) = delete;
   ~MachineLevelUserCloudPolicyStore() override;
 
   // Creates a MachineLevelUserCloudPolicyStore instance. |external_policy_path|
@@ -81,8 +84,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyStore
 
   DMToken machine_dm_token_;
   std::string machine_client_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyStore);
 };
 
 }  // namespace policy

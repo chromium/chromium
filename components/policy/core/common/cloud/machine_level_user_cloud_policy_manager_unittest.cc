@@ -7,7 +7,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/cloud/dm_token.h"
@@ -37,7 +36,11 @@ class MockMachineLevelUserCloudPolicyStore
 
 class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
  public:
-  MachineLevelUserCloudPolicyManagerTest() {}
+  MachineLevelUserCloudPolicyManagerTest() = default;
+  MachineLevelUserCloudPolicyManagerTest(
+      const MachineLevelUserCloudPolicyManagerTest&) = delete;
+  MachineLevelUserCloudPolicyManagerTest& operator=(
+      const MachineLevelUserCloudPolicyManagerTest&) = delete;
   ~MachineLevelUserCloudPolicyManagerTest() override { manager_->Shutdown(); }
 
   void SetUp() override {
@@ -52,9 +55,6 @@ class MachineLevelUserCloudPolicyManagerTest : public ::testing::Test {
   SchemaRegistry schema_registry_;
   MockMachineLevelUserCloudPolicyStore* store_ = nullptr;
   std::unique_ptr<MachineLevelUserCloudPolicyManager> manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyManagerTest);
 };
 
 TEST_F(MachineLevelUserCloudPolicyManagerTest, InitManager) {

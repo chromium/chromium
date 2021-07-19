@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/policy_export.h"
@@ -27,6 +26,9 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
     : public ConfigurationPolicyProvider {
  public:
   explicit AndroidCombinedPolicyProvider(SchemaRegistry* registry);
+  AndroidCombinedPolicyProvider(const AndroidCombinedPolicyProvider&) = delete;
+  AndroidCombinedPolicyProvider& operator=(
+      const AndroidCombinedPolicyProvider&) = delete;
 
   ~AndroidCombinedPolicyProvider() override;
 
@@ -55,8 +57,6 @@ class POLICY_EXPORT AndroidCombinedPolicyProvider
   bool initialized_;
   std::unique_ptr<policy::android::PolicyConverter> policy_converter_;
   base::android::ScopedJavaGlobalRef<jobject> java_combined_policy_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidCombinedPolicyProvider);
 };
 
 }  // namespace android

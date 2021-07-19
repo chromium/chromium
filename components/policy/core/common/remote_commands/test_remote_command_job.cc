@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
@@ -28,14 +27,14 @@ class TestRemoteCommandJob::EchoPayload
     : public RemoteCommandJob::ResultPayload {
  public:
   explicit EchoPayload(const std::string& payload) : payload_(payload) {}
+  EchoPayload(const EchoPayload&) = delete;
+  EchoPayload& operator=(const EchoPayload&) = delete;
 
   // RemoteCommandJob::ResultPayload:
   std::unique_ptr<std::string> Serialize() override;
 
  private:
   const std::string payload_;
-
-  DISALLOW_COPY_AND_ASSIGN(EchoPayload);
 };
 
 std::unique_ptr<std::string> TestRemoteCommandJob::EchoPayload::Serialize() {

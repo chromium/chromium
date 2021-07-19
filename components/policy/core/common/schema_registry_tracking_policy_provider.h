@@ -6,7 +6,6 @@
 #define COMPONENTS_POLICY_CORE_COMMON_SCHEMA_REGISTRY_TRACKING_POLICY_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_namespace.h"
 #include "components/policy/policy_export.h"
@@ -46,6 +45,10 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
   // The |delegate| must outlive this provider.
   explicit SchemaRegistryTrackingPolicyProvider(
       ConfigurationPolicyProvider* delegate);
+  SchemaRegistryTrackingPolicyProvider(
+      const SchemaRegistryTrackingPolicyProvider&) = delete;
+  SchemaRegistryTrackingPolicyProvider& operator=(
+      const SchemaRegistryTrackingPolicyProvider&) = delete;
   ~SchemaRegistryTrackingPolicyProvider() override;
 
   // ConfigurationPolicyProvider:
@@ -84,8 +87,6 @@ class POLICY_EXPORT SchemaRegistryTrackingPolicyProvider
 
   ConfigurationPolicyProvider* delegate_;
   InitializationState state_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaRegistryTrackingPolicyProvider);
 };
 
 }  // namespace policy

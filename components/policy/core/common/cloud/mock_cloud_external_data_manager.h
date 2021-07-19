@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
 #include "components/policy/core/common/external_data_fetcher.h"
@@ -22,6 +21,9 @@ class ExternalDataFetcher;
 class MockCloudExternalDataManager : public CloudExternalDataManager {
  public:
   MockCloudExternalDataManager();
+  MockCloudExternalDataManager(const MockCloudExternalDataManager&) = delete;
+  MockCloudExternalDataManager& operator=(const MockCloudExternalDataManager&) =
+      delete;
   ~MockCloudExternalDataManager() override;
 
   MOCK_METHOD0(OnPolicyStoreLoaded, void(void));
@@ -32,9 +34,6 @@ class MockCloudExternalDataManager : public CloudExternalDataManager {
 
   std::unique_ptr<ExternalDataFetcher> CreateExternalDataFetcher(
       const std::string& policy);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockCloudExternalDataManager);
 };
 
 }  // namespace policy

@@ -11,7 +11,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
@@ -41,6 +40,10 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   CloudPolicyClientRegistrationHelper(
       CloudPolicyClient* client,
       enterprise_management::DeviceRegisterRequest::Type registration_type);
+  CloudPolicyClientRegistrationHelper(
+      const CloudPolicyClientRegistrationHelper&) = delete;
+  CloudPolicyClientRegistrationHelper& operator=(
+      const CloudPolicyClientRegistrationHelper&) = delete;
   ~CloudPolicyClientRegistrationHelper() override;
 
   // Starts the client registration process. This version uses the
@@ -90,8 +93,6 @@ class POLICY_EXPORT CloudPolicyClientRegistrationHelper
   CloudPolicyClient* client_;
   enterprise_management::DeviceRegisterRequest::Type registration_type_;
   base::OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyClientRegistrationHelper);
 };
 
 }  // namespace policy

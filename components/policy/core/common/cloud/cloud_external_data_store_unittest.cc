@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/test/test_simple_task_runner.h"
 #include "components/policy/core/common/cloud/resource_cache.h"
 #include "crypto/sha2.h"
@@ -35,6 +34,9 @@ const size_t kMaxSize = 100;
 class CloudExternalDataStoreTest : public testing::Test {
  public:
   CloudExternalDataStoreTest();
+  CloudExternalDataStoreTest(const CloudExternalDataStoreTest&) = delete;
+  CloudExternalDataStoreTest& operator=(const CloudExternalDataStoreTest&) =
+      delete;
 
   void SetUp() override;
 
@@ -45,9 +47,6 @@ class CloudExternalDataStoreTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<ResourceCache> resource_cache_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CloudExternalDataStoreTest);
 };
 
 CloudExternalDataStoreTest::CloudExternalDataStoreTest()

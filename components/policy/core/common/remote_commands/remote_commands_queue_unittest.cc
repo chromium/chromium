@@ -8,7 +8,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -48,14 +47,15 @@ em::RemoteCommand GenerateCommandProto(RemoteCommandJob::UniqueIDType unique_id,
 // Mock class for RemoteCommandsQueue::Observer.
 class MockRemoteCommandsQueueObserver : public RemoteCommandsQueue::Observer {
  public:
-  MockRemoteCommandsQueueObserver() {}
+  MockRemoteCommandsQueueObserver() = default;
+  MockRemoteCommandsQueueObserver(const MockRemoteCommandsQueueObserver&) =
+      delete;
+  MockRemoteCommandsQueueObserver& operator=(
+      const MockRemoteCommandsQueueObserver&) = delete;
 
   // RemoteCommandsQueue::Observer:
   MOCK_METHOD1(OnJobStarted, void(RemoteCommandJob* command));
   MOCK_METHOD1(OnJobFinished, void(RemoteCommandJob* command));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockRemoteCommandsQueueObserver);
 };
 
 }  // namespace
@@ -68,6 +68,10 @@ using ::testing::StrEq;
 using ::testing::StrictMock;
 
 class RemoteCommandsQueueTest : public testing::Test {
+ public:
+  RemoteCommandsQueueTest(const RemoteCommandsQueueTest&) = delete;
+  RemoteCommandsQueueTest& operator=(const RemoteCommandsQueueTest&) = delete;
+
  protected:
   RemoteCommandsQueueTest();
 
@@ -99,8 +103,6 @@ class RemoteCommandsQueueTest : public testing::Test {
                                base::TimeTicks expected_issued_time);
 
   base::ThreadTaskRunnerHandle runner_handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteCommandsQueueTest);
 };
 
 RemoteCommandsQueueTest::RemoteCommandsQueueTest()

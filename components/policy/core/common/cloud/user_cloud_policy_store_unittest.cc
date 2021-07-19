@@ -8,7 +8,6 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -59,6 +58,8 @@ class UserCloudPolicyStoreTest : public testing::Test {
   UserCloudPolicyStoreTest()
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
+  UserCloudPolicyStoreTest(const UserCloudPolicyStoreTest&) = delete;
+  UserCloudPolicyStoreTest& operator=(const UserCloudPolicyStoreTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(tmp_dir_.CreateUniqueTempDir());
@@ -140,9 +141,6 @@ class UserCloudPolicyStoreTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   base::ScopedTempDir tmp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyStoreTest);
 };
 
 TEST_F(UserCloudPolicyStoreTest, LoadWithNoFile) {

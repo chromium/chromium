@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
@@ -81,6 +80,8 @@ class CloudPolicyValidatorTest : public testing::Test {
         validate_values_(false) {
     policy_.SetDefaultNewSigningKey();
   }
+  CloudPolicyValidatorTest(const CloudPolicyValidatorTest&) = delete;
+  CloudPolicyValidatorTest& operator=(const CloudPolicyValidatorTest&) = delete;
 
   void Validate(testing::Action<void(UserCloudPolicyValidator*)> check_action) {
     policy_.Build();
@@ -181,8 +182,6 @@ class CloudPolicyValidatorTest : public testing::Test {
 
  private:
   MOCK_METHOD1(ValidationCompletion, void(UserCloudPolicyValidator* validator));
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyValidatorTest);
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

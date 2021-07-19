@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "components/policy/core/common/cloud/cloud_external_data_manager.h"
@@ -31,6 +30,11 @@ namespace policy {
 namespace {
 
 class UserCloudPolicyManagerTest : public testing::Test {
+ public:
+  UserCloudPolicyManagerTest(const UserCloudPolicyManagerTest&) = delete;
+  UserCloudPolicyManagerTest& operator=(const UserCloudPolicyManagerTest&) =
+      delete;
+
  protected:
   UserCloudPolicyManagerTest() : store_(nullptr) {}
 
@@ -74,9 +78,6 @@ class UserCloudPolicyManagerTest : public testing::Test {
   MockConfigurationPolicyObserver observer_;
   MockUserCloudPolicyStore* store_;  // Not owned.
   std::unique_ptr<UserCloudPolicyManager> manager_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserCloudPolicyManagerTest);
 };
 
 TEST_F(UserCloudPolicyManagerTest, DisconnectAndRemovePolicy) {

@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 
@@ -29,6 +28,10 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  MachineLevelUserCloudPolicyManager(
+      const MachineLevelUserCloudPolicyManager&) = delete;
+  MachineLevelUserCloudPolicyManager& operator=(
+      const MachineLevelUserCloudPolicyManager&) = delete;
   ~MachineLevelUserCloudPolicyManager() override;
 
   // Initializes the cloud connection. |local_state| must stay valid until this
@@ -58,8 +61,6 @@ class POLICY_EXPORT MachineLevelUserCloudPolicyManager
   std::unique_ptr<CloudExternalDataManager> external_data_manager_;
 
   const base::FilePath policy_dir_;
-
-  DISALLOW_COPY_AND_ASSIGN(MachineLevelUserCloudPolicyManager);
 };
 
 }  // namespace policy

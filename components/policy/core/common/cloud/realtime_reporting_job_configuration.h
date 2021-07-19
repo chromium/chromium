@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
@@ -49,6 +48,10 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
                                     bool include_device_info,
                                     bool add_connector_url_params,
                                     UploadCompleteCallback callback);
+  RealtimeReportingJobConfiguration(const RealtimeReportingJobConfiguration&) =
+      delete;
+  RealtimeReportingJobConfiguration& operator=(
+      const RealtimeReportingJobConfiguration&) = delete;
 
   ~RealtimeReportingJobConfiguration() override;
 
@@ -82,8 +85,6 @@ class POLICY_EXPORT RealtimeReportingJobConfiguration
   // Gathers the ids of the uploads that failed
   std::set<std::string> GetFailedUploadIds(
       const std::string& response_body) const;
-
-  DISALLOW_COPY_AND_ASSIGN(RealtimeReportingJobConfiguration);
 };
 
 }  // namespace policy
