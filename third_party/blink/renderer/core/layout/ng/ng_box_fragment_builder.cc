@@ -407,12 +407,6 @@ scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::ToBoxFragment(
                          std::move(fragment), this));
 }
 
-scoped_refptr<const NGLayoutResult> NGBoxFragmentBuilder::Abort(
-    NGLayoutResult::EStatus status) {
-  return base::AdoptRef(new NGLayoutResult(
-      NGLayoutResult::NGBoxFragmentBuilderPassKey(), status, this));
-}
-
 LogicalOffset NGBoxFragmentBuilder::GetChildOffset(
     const LayoutObject* object) const {
   DCHECK(object);

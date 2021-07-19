@@ -18,6 +18,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_early_break.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_floats_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_fragment_builder.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_link.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_out_of_flow_positioned_node.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
@@ -272,6 +273,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   }
 
   const NGConstraintSpace* ConstraintSpace() const { return space_; }
+
+  scoped_refptr<const NGLayoutResult> Abort(NGLayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
   String ToString() const;

@@ -518,6 +518,12 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
   }
 }
 
+scoped_refptr<const NGLayoutResult> NGContainerFragmentBuilder::Abort(
+    NGLayoutResult::EStatus status) {
+  return base::AdoptRef(new NGLayoutResult(
+      NGLayoutResult::NGContainerFragmentBuilderPassKey(), status, this));
+}
+
 #if DCHECK_IS_ON()
 
 String NGContainerFragmentBuilder::ToString() const {

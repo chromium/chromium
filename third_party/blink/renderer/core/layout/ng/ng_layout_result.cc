@@ -114,14 +114,11 @@ NGLayoutResult::NGLayoutResult(
     : NGLayoutResult(std::move(physical_fragment),
                      static_cast<NGContainerFragmentBuilder*>(builder)) {}
 
-NGLayoutResult::NGLayoutResult(NGBoxFragmentBuilderPassKey key,
+NGLayoutResult::NGLayoutResult(NGContainerFragmentBuilderPassKey key,
                                EStatus status,
-                               NGBoxFragmentBuilder* builder)
-    : NGLayoutResult(/* physical_fragment */ nullptr,
-                     static_cast<NGContainerFragmentBuilder*>(builder)) {
+                               NGContainerFragmentBuilder* builder)
+    : NGLayoutResult(/* physical_fragment */ nullptr, builder) {
   bitfields_.status = status;
-  if (builder->lines_until_clamp_)
-    EnsureRareData()->lines_until_clamp = *builder->lines_until_clamp_;
   DCHECK_NE(status, kSuccess)
       << "Use the other constructor for successful layout";
 }
