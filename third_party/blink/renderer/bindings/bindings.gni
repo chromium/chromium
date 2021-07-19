@@ -130,8 +130,6 @@ blink_core_sources_bindings =
                     "core/v8/v8_code_cache.h",
                     "core/v8/v8_context_snapshot.cc",
                     "core/v8/v8_context_snapshot.h",
-                    "core/v8/v8_dom_configuration.cc",
-                    "core/v8/v8_dom_configuration.h",
                     "core/v8/v8_embedder_graph_builder.cc",
                     "core/v8/v8_embedder_graph_builder.h",
                     "core/v8/v8_event_listener_info.h",

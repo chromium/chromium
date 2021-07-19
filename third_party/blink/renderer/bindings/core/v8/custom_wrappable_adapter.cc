@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/custom_wrappable_adapter.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_configuration.h"
+#include "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
@@ -15,7 +15,7 @@ namespace {
 
 void InstallCustomWrappableTemplate(v8::Isolate* isolate,
                                     const DOMWrapperWorld& world,
-                                    v8::Local<v8::Template> v8_template);
+                                    v8::Local<v8::Template> interface_template);
 
 const WrapperTypeInfo custom_wrappable_info = {
     gin::kEmbedderBlink,
@@ -29,13 +29,21 @@ const WrapperTypeInfo custom_wrappable_info = {
     WrapperTypeInfo::kCustomWrappableKind,
 };
 
-void InstallCustomWrappableTemplate(v8::Isolate* isolate,
-                                    const DOMWrapperWorld& world,
-                                    v8::Local<v8::Template> v8_template) {
-  V8DOMConfiguration::InitializeDOMInterfaceTemplate(
-      isolate, v8_template.As<v8::FunctionTemplate>(),
-      custom_wrappable_info.interface_name, v8::Local<v8::FunctionTemplate>(),
-      kV8DefaultWrapperInternalFieldCount);
+void InstallCustomWrappableTemplate(
+    v8::Isolate* isolate,
+    const DOMWrapperWorld& world,
+    v8::Local<v8::Template> interface_template) {
+  v8::Local<v8::FunctionTemplate> interface_function_template =
+      interface_template.As<v8::FunctionTemplate>();
+  v8::Local<v8::ObjectTemplate> instance_object_template =
+      interface_function_template->InstanceTemplate();
+  v8::Local<v8::ObjectTemplate> prototype_object_template =
+      interface_function_template->PrototypeTemplate();
+  v8::Local<v8::FunctionTemplate> parent_interface_template;
+  bindings::SetupIDLInterfaceTemplate(
+      isolate, &custom_wrappable_info, instance_object_template,
+      prototype_object_template, interface_function_template,
+      parent_interface_template);
 }
 
 }  // namespace
