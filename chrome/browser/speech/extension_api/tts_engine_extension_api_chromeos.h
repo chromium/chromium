@@ -18,10 +18,6 @@ namespace content {
 class BrowserContext;
 }
 
-namespace extensions {
-class EventRouter;
-}
-
 // TtsEngineDelegate implementation used by TtsController on Chrome OS.
 class TtsExtensionEngineChromeOS
     : public TtsExtensionEngine,
@@ -67,8 +63,7 @@ class TtsExtensionEngineChromeOS
                                              Profile* profile);
 
   // Helper to start audio playback.
-  void Play(extensions::EventRouter* event_router,
-            std::unique_ptr<base::ListValue> args,
+  void Play(std::unique_ptr<base::ListValue> args,
             const std::string& engine_id,
             Profile* profile);
 
