@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -78,9 +79,9 @@
 #include "extensions/common/extension_set.h"
 #include "extensions/common/file_test_util.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/switches.h"
-#include "extensions/common/value_builder.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_switches.h"
@@ -168,6 +169,128 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
       *directory_path = test_dir_gen_root;
     }
   }
+}
+
+// Creates a copy of `source` within `temp_dir` and populates `out` with the
+// destination path. Returns true on success.
+bool CreateTempDirectoryCopy(const base::FilePath& temp_dir,
+                             const base::FilePath& source,
+                             base::FilePath* out) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  base::FilePath temp_subdir;
+  if (!base::CreateTemporaryDirInDir(temp_dir, base::FilePath::StringType(),
+                                     &temp_subdir)) {
+    ADD_FAILURE() << "Could not create temporary dir for test under "
+                  << temp_dir;
+    return false;
+  }
+
+  // Copy all files from `source` to `temp_subdir`.
+  if (!base::CopyDirectory(source, temp_subdir, true /* recursive */)) {
+    ADD_FAILURE() << source.value() << " could not be copied to "
+                  << temp_subdir.value();
+    return false;
+  }
+
+  *out = temp_subdir.Append(source.BaseName());
+  return true;
+}
+
+// Modifies `manifest_dict` changing its manifest version to 3.
+bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
+  // This should only be used for manifest v2 extension.
+  absl::optional<int> current_manifest_version =
+      manifest_dict.FindIntPath(manifest_keys::kManifestVersion);
+  if (!current_manifest_version || *current_manifest_version != 2) {
+    ADD_FAILURE() << manifest_dict << " should have a manifest version of 2.";
+    return false;
+  }
+
+  manifest_dict.SetInteger(manifest_keys::kManifestVersion, 3);
+  return true;
+}
+
+// Modifies extension at `extension_root` and its `manifest_dict` converting it
+// to a service worker based extension.
+// NOTE: The conversion works only for extensions with background.scripts and
+// background.persistent = false; persistent background pages and
+// background.page are not supported.
+bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
+                                     base::DictionaryValue& manifest_dict) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
+
+  // Retrieve the value of the "background" key and verify that it is
+  // non-persistent and specifies JS files.
+  // Persistent background pages or background pages that specify HTML files
+  // are not supported.
+  base::Value* background_dict =
+      manifest_dict.FindKeyOfType("background", base::Value::Type::DICTIONARY);
+  if (!background_dict) {
+    ADD_FAILURE() << extension_root.value()
+                  << " 'background' key not found in manifest.json";
+    return false;
+  }
+  {
+    base::Value* background_persistent = background_dict->FindKeyOfType(
+        "persistent", base::Value::Type::BOOLEAN);
+    if (!background_persistent) {
+      ADD_FAILURE() << extension_root.value()
+                    << ": The \"persistent\" key must be specified to run as a "
+                       "Service Worker-based extension.";
+      return false;
+    }
+  }
+  base::Value* background_scripts_list =
+      background_dict->FindKeyOfType("scripts", base::Value::Type::LIST);
+  if (!background_scripts_list) {
+    ADD_FAILURE() << extension_root.value()
+                  << ": Only event pages with JS script(s) can be loaded "
+                     "as SW extension.";
+    return false;
+  }
+
+  // Number of JS scripts must be >= 1.
+  base::Value::ConstListView scripts_list = background_scripts_list->GetList();
+  if (scripts_list.size() < 1) {
+    ADD_FAILURE() << extension_root.value()
+                  << ": Only event pages with JS script(s) can be loaded "
+                     " as SW extension.";
+    return false;
+  }
+
+  // Generate combined script as Service Worker script using importScripts().
+  constexpr const char kGeneratedSWFileName[] = "generated_service_worker__.js";
+
+  std::vector<std::string> script_filenames;
+  for (const base::Value& script : scripts_list)
+    script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
+
+  base::FilePath combined_script_filepath =
+      extension_root.AppendASCII(kGeneratedSWFileName);
+  // Collision with generated script filename.
+  if (base::PathExists(combined_script_filepath)) {
+    ADD_FAILURE() << combined_script_filepath.value()
+                  << " already exists, make sure " << extension_root.value()
+                  << " does not contained file named " << kGeneratedSWFileName;
+    return false;
+  }
+  std::string generated_sw_script_content = base::StringPrintf(
+      "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
+  if (!file_test_util::WriteFile(combined_script_filepath,
+                                 generated_sw_script_content)) {
+    ADD_FAILURE() << "Could not write combined Service Worker script to: "
+                  << combined_script_filepath.value();
+    return false;
+  }
+
+  // Remove the existing background specification and replace it with a service
+  // worker.
+  background_dict->RemoveKey("persistent");
+  background_dict->RemoveKey("scripts");
+  background_dict->SetStringPath("service_worker", kGeneratedSWFileName);
+
+  return true;
 }
 
 }  // namespace
@@ -304,13 +427,10 @@ const Extension* ExtensionBrowserTest::LoadExtension(
 const Extension* ExtensionBrowserTest::LoadExtension(
     const base::FilePath& path,
     const LoadOptions& options) {
-  // Attempt to convert the extension to run as a Service Worker-based
-  // extension if requested.
-  base::FilePath extension_path = path;
-  if (options.load_as_service_worker) {
-    if (!CreateServiceWorkerBasedExtension(path, &extension_path))
-      return nullptr;
-  }
+  base::FilePath extension_path;
+  if (!ModifyExtensionIfNeeded(options, path, &extension_path))
+    return nullptr;
+
   if (options.load_as_component) {
     // TODO(https://crbug.com/1171429): Decide if other load options
     // can/should be supported when load_as_component is true.
@@ -350,136 +470,6 @@ const Extension* ExtensionBrowserTest::LoadExtension(
   }
 
   return extension.get();
-}
-
-bool ExtensionBrowserTest::CreateServiceWorkerBasedExtension(
-    const base::FilePath& path,
-    base::FilePath* out_path) {
-  base::ScopedAllowBlockingForTesting allow_blocking;
-
-  // This dir will contain all files for the Service Worker based extension.
-  base::FilePath temp_extension_container;
-  base::FilePath temp_dir;
-  // Tests that have a PRE_ stage that are being converted to use
-  // a service worker-based extension need to exist in a temporary
-  // directory that persists after the test fixture is destroyed.
-  // The test bots are configured to use a unique temp directory that's
-  // cleaned up after the tests run, so this won't pollute the system
-  // tmp directory.
-  if (GetTestPreCount() == 0) {
-    temp_dir = temp_dir_.GetPath();
-  } else if (!base::GetTempDir(&temp_dir)) {
-    ADD_FAILURE() << "Could not get temporary dir for test.";
-    return false;
-  }
-  if (!base::CreateTemporaryDirInDir(temp_dir, base::FilePath::StringType(),
-                                     &temp_extension_container)) {
-    ADD_FAILURE() << "Could not create temporary dir for test under "
-                  << temp_dir;
-    return false;
-  }
-
-  // Copy all files from test dir to temp dir.
-  if (!base::CopyDirectory(path, temp_extension_container,
-                           true /* recursive */)) {
-    ADD_FAILURE() << path.value() << " could not be copied to "
-                  << temp_extension_container.value();
-    return false;
-  }
-
-  const base::FilePath extension_root =
-      temp_extension_container.Append(path.BaseName());
-
-  std::string error;
-  std::unique_ptr<base::DictionaryValue> manifest_dict =
-      file_util::LoadManifest(extension_root, &error);
-  if (!manifest_dict) {
-    ADD_FAILURE() << path.value() << " could not load manifest: " << error;
-    return false;
-  }
-
-  // Retrieve the value of the "background" key and verify that it is
-  // non-persistent and specifies JS files.
-  // Persistent background pages or background pages that specify HTML files
-  // are not supported.
-  base::Value* background_dict =
-      manifest_dict->FindKeyOfType("background", base::Value::Type::DICTIONARY);
-  if (!background_dict) {
-    ADD_FAILURE() << path.value()
-                  << " 'background' key not found in manifest.json";
-    return false;
-  }
-  {
-    base::Value* background_persistent = background_dict->FindKeyOfType(
-        "persistent", base::Value::Type::BOOLEAN);
-    if (!background_persistent) {
-      ADD_FAILURE() << path.value()
-                    << ": The \"persistent\" key must be specified to run as a "
-                       "Service Worker-based extension.";
-      return false;
-    }
-  }
-  base::Value* background_scripts_list =
-      background_dict->FindKeyOfType("scripts", base::Value::Type::LIST);
-  if (!background_scripts_list) {
-    ADD_FAILURE() << path.value()
-                  << ": Only event pages with JS script(s) can be loaded "
-                     "as SW extension.";
-    return false;
-  }
-
-  // Number of JS scripts must be >= 1.
-  base::Value::ConstListView scripts_list = background_scripts_list->GetList();
-  if (scripts_list.size() < 1) {
-    ADD_FAILURE() << path.value()
-                  << ": Only event pages with JS script(s) can be loaded "
-                     " as SW extension.";
-    return false;
-  }
-
-  // Generate combined script as Service Worker script using importScripts().
-  constexpr const char kGeneratedSWFileName[] = "generated_service_worker__.js";
-
-  std::vector<std::string> script_filenames;
-  for (const base::Value& script : scripts_list)
-    script_filenames.push_back(base::StrCat({"'", script.GetString(), "'"}));
-
-  base::FilePath combined_script_filepath =
-      extension_root.AppendASCII(kGeneratedSWFileName);
-  // Collision with generated script filename.
-  if (base::PathExists(combined_script_filepath)) {
-    ADD_FAILURE() << combined_script_filepath.value()
-                  << " already exists, make sure " << path.value()
-                  << " does not contained file named " << kGeneratedSWFileName;
-    return false;
-  }
-  std::string generated_sw_script_content = base::StringPrintf(
-      "importScripts(%s);", base::JoinString(script_filenames, ",").c_str());
-  if (!file_test_util::WriteFile(combined_script_filepath,
-                                 generated_sw_script_content)) {
-    ADD_FAILURE() << "Could not write combined Service Worker script to: "
-                  << combined_script_filepath.value();
-    return false;
-  }
-
-  // Remove the existing background specification and replace it with a service
-  // worker.
-  background_dict->RemoveKey("persistent");
-  background_dict->RemoveKey("scripts");
-  background_dict->SetStringPath("service_worker", kGeneratedSWFileName);
-
-  // Write out manifest.json.
-  DictionaryBuilder manifest_builder(*manifest_dict);
-  std::string manifest_contents = manifest_builder.ToJSON();
-  base::FilePath manifest_path = extension_root.Append(kManifestFilename);
-  if (!file_test_util::WriteFile(manifest_path, manifest_contents)) {
-    ADD_FAILURE() << "Could not write manifest file to "
-                  << manifest_path.value();
-    return false;
-  }
-
-  *out_path = extension_root;
-  return true;
 }
 
 const Extension* ExtensionBrowserTest::LoadExtensionAsComponentWithManifest(
@@ -846,6 +836,65 @@ bool ExtensionBrowserTest::ExecuteScriptInBackgroundPageNoWait(
     const std::string& script) {
   return browsertest_util::ExecuteScriptInBackgroundPageNoWait(
       profile(), extension_id, script);
+}
+
+bool ExtensionBrowserTest::ModifyExtensionIfNeeded(
+    const LoadOptions& options,
+    const base::FilePath& input_path,
+    base::FilePath* out_path) {
+  base::ScopedAllowBlockingForTesting scoped_allow_blocking;
+
+  // Early return if no modification is needed.
+  if (!options.load_as_service_worker && !options.load_as_manifest_version_3) {
+    *out_path = input_path;
+    return true;
+  }
+
+  // Tests that have a PRE_ stage need to exist in a temporary directory that
+  // persists after the test fixture is destroyed. The test bots are configured
+  // to use a unique temp directory that's cleaned up after the tests run, so
+  // this won't pollute the system tmp directory.
+  base::FilePath temp_dir;
+  if (GetTestPreCount() == 0) {
+    temp_dir = temp_dir_.GetPath();
+  } else if (!base::GetTempDir(&temp_dir)) {
+    ADD_FAILURE() << "Could not get temporary dir for test.";
+    return false;
+  }
+
+  base::FilePath extension_root;
+  if (!CreateTempDirectoryCopy(temp_dir, input_path, &extension_root))
+    return false;
+
+  std::string error;
+  std::unique_ptr<base::DictionaryValue> manifest_dict =
+      file_util::LoadManifest(extension_root, &error);
+  if (!manifest_dict) {
+    ADD_FAILURE() << extension_root.value()
+                  << " could not load manifest: " << error;
+    return false;
+  }
+
+  if (options.load_as_service_worker &&
+      !ModifyExtensionForServiceWorker(extension_root, *manifest_dict)) {
+    return false;
+  }
+
+  if (options.load_as_manifest_version_3 &&
+      !ModifyManifestForManifestVersion3(*manifest_dict)) {
+    return false;
+  }
+
+  // Write out manifest.json.
+  base::FilePath manifest_path = extension_root.Append(kManifestFilename);
+  if (!JSONFileValueSerializer(manifest_path).Serialize(*manifest_dict)) {
+    ADD_FAILURE() << "Could not write manifest file to "
+                  << manifest_path.value();
+    return false;
+  }
+
+  *out_path = extension_root;
+  return true;
 }
 
 }  // namespace extensions

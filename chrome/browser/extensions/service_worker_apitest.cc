@@ -344,6 +344,23 @@ class ServiceWorkerBasedBackgroundTestWithNotification
   DISALLOW_COPY_AND_ASSIGN(ServiceWorkerBasedBackgroundTestWithNotification);
 };
 
+enum class ManifestVersion { kTwo, kThree };
+class ServiceWorkerWithManifestVersionTest
+    : public ServiceWorkerBasedBackgroundTest,
+      public testing::WithParamInterface<ManifestVersion> {
+ public:
+  ServiceWorkerWithManifestVersionTest() = default;
+  ~ServiceWorkerWithManifestVersionTest() override = default;
+
+  const Extension* LoadExtensionInternal(const base::FilePath& path) {
+    LoadOptions options;
+    if (GetParam() == ManifestVersion::kThree)
+      options.load_as_manifest_version_3 = true;
+
+    return LoadExtension(path, options);
+  }
+};
+
 // Tests that Service Worker based background pages can be loaded and they can
 // receive extension events.
 // The extension is installed and loaded during this step and it registers
@@ -2515,19 +2532,22 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest, PermissionsAPI) {
       mojom::APIPermissionID::kStorage));
 }
 
-// Tests that a Manifest V3 extension's service worker can't be used to relax
-// the extension CSP.
-IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
-                       ExtensionCSPModification_MV3) {
+// Tests that an extension's service worker can't be used to relax the extension
+// CSP.
+IN_PROC_BROWSER_TEST_P(ServiceWorkerWithManifestVersionTest,
+                       ExtensionCSPModification) {
   ExtensionTestMessageListener worker_listener("ready", false);
-  const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
+  const Extension* extension = LoadExtensionInternal(test_data_dir_.AppendASCII(
       "service_worker/worker_based_background/extension_csp_modification"));
   ASSERT_TRUE(extension);
   const ExtensionId extension_id = extension->id();
   ASSERT_TRUE(worker_listener.WaitUntilSatisfied());
 
-  ExtensionTestMessageListener csp_modified_listener(
-      "script-src 'self'; object-src 'self';", false);
+  const char* kDefaultCSP = GetParam() == ManifestVersion::kTwo
+                                ? "script-src 'self' blob: filesystem:; "
+                                  "object-src 'self' blob: filesystem:;"
+                                : "script-src 'self'; object-src 'self';";
+  ExtensionTestMessageListener csp_modified_listener(kDefaultCSP, false);
   csp_modified_listener.set_extension_id(extension_id);
   ui_test_utils::NavigateToURL(
       browser(), extension->GetResourceURL("extension_page.html"));
@@ -2564,6 +2584,11 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerBasedBackgroundTest,
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(iframe, kScript, &result));
   EXPECT_EQ("PASS", result);
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ServiceWorkerWithManifestVersionTest,
+                         ::testing::Values(ManifestVersion::kTwo,
+                                           ManifestVersion::kThree));
 
 // Tests that console messages logged by extension service workers, both via
 // the typical console.* methods and via our custom bindings console, are

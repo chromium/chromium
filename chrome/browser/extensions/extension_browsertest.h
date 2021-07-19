@@ -84,6 +84,11 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
     // Loads the extension with location COMPONENT.
     bool load_as_component = false;
+
+    // Changes the "manifest_version" manifest key to 3. Note as of now, this
+    // doesn't make any other changes to convert the extension to MV3 other than
+    // changing the integer value in the manifest.
+    bool load_as_manifest_version_3 = false;
   };
 
   ExtensionBrowserTest();
@@ -135,16 +140,6 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
 
   const Extension* LoadExtension(const base::FilePath& path,
                                  const LoadOptions& options);
-
-  // Converts an extension from |path| to a Service Worker based extension and
-  // returns true on success.
-  // If successful, |out_path| contains path of the converted extension.
-  //
-  // NOTE: The conversion works only for extensions with background.scripts and
-  // background.persistent = false; persistent background pages and
-  // background.page are not supported.
-  bool CreateServiceWorkerBasedExtension(const base::FilePath& path,
-                                         base::FilePath* out_path);
 
   // Loads unpacked extension from |path| with manifest |manifest_relative_path|
   // and imitates that it is a component extension.
@@ -350,6 +345,12 @@ class ExtensionBrowserTest : virtual public InProcessBrowserTest {
   std::unique_ptr<ChromeExtensionTestNotificationObserver> observer_;
 
  private:
+  // Modifies extension at `input_path` as dictated by `options`. On success,
+  // returns true and populates `out_path`. On failure, false is returned.
+  bool ModifyExtensionIfNeeded(const LoadOptions& options,
+                               const base::FilePath& input_path,
+                               base::FilePath* out_path);
+
   // Temporary directory for testing.
   base::ScopedTempDir temp_dir_;
 
