@@ -65,13 +65,14 @@ class ExploreSitesBlockSiteTest : public TaskTestBase {
 
 void ExploreSitesBlockSiteTest::PopulateActivity() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert_activity(db->GetUniqueStatement(R"(
-INSERT INTO activity
-(time, category_type, url)
-VALUES
-(12345, 1, "https://www.google.com"),
-(23456, 1, "https://www.example.com/1");
-    )"));
+    static constexpr char kActivitySql[] =
+        // clang-format off
+        "INSERT INTO activity(time, category_type, url)"
+            "VALUES"
+                "(12345, 1, 'https://www.google.com'),"
+                "(23456, 1, 'https://www.example.com/1')";
+    // clang-format on
+    sql::Statement insert_activity(db->GetUniqueStatement(kActivitySql));
     return insert_activity.Run();
   }));
 }

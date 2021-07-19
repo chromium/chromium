@@ -78,24 +78,30 @@ void ExploreSitesGetImagesTaskTest::PopulateTestingCatalog() {
     ExploreSitesSchema::InitMetaTable(db, &meta_table);
     meta_table.SetValue("current_catalog", 5678);
     meta_table.DeleteKey("downloading_catalog");
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label)
-VALUES
-(3, "5678", 1, "label_1"),
-(4, "5678", 2, "label_2");)"));
-    if (!insert.Run())
+
+    static constexpr char kCategoriesSql[] =
+        // clang-format off
+        "INSERT INTO categories"
+            "(category_id, version_token, type, label)"
+            "VALUES"
+                "(3, '5678', 1, 'label_1'),"
+                "(4, '5678', 2, 'label_2')";
+    // clang-format on
+    sql::Statement insert_categories(db->GetUniqueStatement(kCategoriesSql));
+    if (!insert_categories.Run())
       return false;
 
-    sql::Statement insert_sites(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title, favicon)
-VALUES
-(1, "https://www.example.com/1", 3, "example_1", "bytes1"),
-(2, "https://www.example.com/2", 4, "example_2", "bytes2"),
-(3, "https://www.example.com/3", 3, "example_3", "bytes3"),
-(4, "https://www.example.com/4", 4, "example_4", "bytes4");
-    )"));
+    static constexpr char kSitesSql[] =
+        // clang-format off
+        "INSERT INTO sites"
+            "(site_id, url, category_id, title, favicon)"
+            "VALUES"
+                "(1, 'https://www.example.com/1', 3, 'example_1', 'bytes1'),"
+                "(2, 'https://www.example.com/2', 4, 'example_2', 'bytes2'),"
+                "(3, 'https://www.example.com/3', 3, 'example_3', 'bytes3'),"
+                "(4, 'https://www.example.com/4', 4, 'example_4', 'bytes4')";
+    // clang-format on
+    sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
     return insert_sites.Run();
   }));
 }
@@ -120,22 +126,30 @@ void ExploreSitesGetImagesTaskTest::PopulateInvalidRowsInCatalog() {
     ExploreSitesSchema::InitMetaTable(db, &meta_table);
     meta_table.SetValue(ExploreSitesSchema::kDownloadingCatalogKey, "5678");
     meta_table.DeleteKey(ExploreSitesSchema::kCurrentCatalogKey);
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label)
-VALUES
-(1, "XXXX", 1, "bad_1"),
-(2, "XXXX", 2, "bad_2");)"));
-    if (!insert.Run())
+
+    static constexpr char kCategoriesSql[] =
+        // clang-format off
+        "INSERT INTO categories"
+            "(category_id, version_token, type, label)"
+            "VALUES"
+                "(1, 'XXXX', 1, 'bad_1'),"
+                "(2, 'XXXX', 2, 'bad_2')";
+    // clang-format on
+    sql::Statement insert_categories(db->GetUniqueStatement(kCategoriesSql));
+    if (!insert_categories.Run())
       return false;
 
-    sql::Statement insert_sites(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title, favicon)
-VALUES
-(5, "https://www.bad.com/1", 1, "bad", "bad - used unknown version"),
-(6, "https://www.bad.com/2", 2, "bad", "bad - used unknown version");
-    )"));
+    static constexpr char kSitesSql[] =
+        // clang-format off
+        "INSERT INTO sites"
+            "(site_id, url, category_id, title, favicon)"
+            "VALUES"
+                "(5, 'https://www.bad.com/1', 1, 'bad',"
+                    "'bad - used unknown version'),"
+                "(6, 'https://www.bad.com/2', 2, 'bad',"
+                    "'bad - used unknown version')";
+    // clang-format on
+    sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
     return insert_sites.Run();
   }));
 }
@@ -194,12 +208,14 @@ TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndNotBlocked) {
 TEST_F(ExploreSitesGetImagesTaskTest, SitesExistAndBlocked) {
   PopulateTestingCatalog();
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO site_blocklist
-(url, date_removed)
-VALUES
-("https://www.example.com/1", 123);)"));
-    return insert.Run();
+    static constexpr char kBlocklistSql[] =
+        // clang-format off
+        "INSERT INTO site_blocklist(url, date_removed)"
+            "VALUES"
+                "('https://www.example.com/1', 123)";
+    // clang-format on
+    sql::Statement insert_blocklist(db->GetUniqueStatement(kBlocklistSql));
+    return insert_blocklist.Run();
   }));
   GetImagesTask task(store(), 3, 4, StoreResult());
   RunTask(&task);
@@ -214,14 +230,17 @@ TEST_F(ExploreSitesGetImagesTaskTest, TooManySitesToReturn) {
   PopulateTestingCatalog();
   // Add 3 more sites to the interesting category, but limit the site max to 4.
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title, favicon)
-VALUES
-(5, "https://www.example.com/5", 3, "example_5", "bytes5"),
-(6, "https://www.example.com/6", 3, "example_6", "bytes6"),
-(7, "https://www.example.com/7", 3, "example_7", "bytes7");)"));
-    return insert.Run();
+    static constexpr char kSitesSql[] =
+        // clang-format off
+        "INSERT INTO sites"
+            "(site_id, url, category_id, title, favicon)"
+            "VALUES"
+                "(5, 'https://www.example.com/5', 3, 'example_5', 'bytes5'),"
+                "(6, 'https://www.example.com/6', 3, 'example_6', 'bytes6'),"
+                "(7, 'https://www.example.com/7', 3, 'example_7', 'bytes7')";
+    // clang-format on
+    sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
+    return insert_sites.Run();
   }));
   GetImagesTask task(store(), 3, 4, StoreResult());
   RunTask(&task);
@@ -232,15 +251,17 @@ VALUES
 TEST_F(ExploreSitesGetImagesTaskTest, SkipMissingFavicons) {
   PopulateTestingCatalog();
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title, favicon)
-VALUES
-(5, "https://www.example.com/5", 3, "example_5", NULL),
-(6, "https://www.example.com/6", 3, "example_6", ""),
-(7, "https://www.example.com/7", 3, "example_7", "bytes7");
-)"));
-    return insert.Run();
+    static constexpr char kSitesSql[] =
+        // clang-format off
+        "INSERT INTO sites"
+            "(site_id, url, category_id, title, favicon)"
+            "VALUES"
+                "(5, 'https://www.example.com/5', 3, 'example_5', NULL),"
+                "(6, 'https://www.example.com/6', 3, 'example_6', ''),"
+                "(7, 'https://www.example.com/7', 3, 'example_7', 'bytes7')";
+    // clang-format on
+    sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
+    return insert_sites.Run();
   }));
   GetImagesTask task(store(), 3, 3, StoreResult());
   RunTask(&task);
