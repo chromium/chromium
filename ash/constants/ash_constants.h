@@ -27,6 +27,9 @@ constexpr SkColor kChromeOsBootColor = SkColorSetRGB(0xfe, 0xfe, 0xfe);
 // The border thickness of keyboard focus for launcher items and system tray.
 constexpr int kFocusBorderThickness = 2;
 
+// The thickness of the focus bar for launcher search.
+constexpr int kFocusBarThickness = 3;
+
 constexpr int kDefaultLargeCursorSize = 64;
 
 constexpr SkColor kDefaultCursorColor = SK_ColorBLACK;

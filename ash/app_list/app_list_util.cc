@@ -6,7 +6,13 @@
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
+#include "ash/constants/ash_constants.h"
+#include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/skia_util.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -115,6 +121,27 @@ gfx::ImageSkia CreateIconWithCircleBackground(const gfx::ImageSkia& icon,
   // color from the NativeTheme or AshColorProvider.
   return gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
       icon.width() / 2, background_color, icon);
+}
+
+void PaintFocusBar(gfx::Canvas* canvas,
+                   const gfx::Point content_origin,
+                   const int height) {
+  SkPath path;
+  gfx::Rect focus_bar_bounds(content_origin.x() - kFocusBarThickness,
+                             content_origin.y(), kFocusBarThickness * 2,
+                             height);
+  path.addRRect(SkRRect::MakeRectXY(RectToSkRect(focus_bar_bounds),
+                                    kFocusBarThickness, kFocusBarThickness));
+  canvas->ClipPath(path, true);
+
+  cc::PaintFlags flags;
+  flags.setAntiAlias(true);
+  flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
+  flags.setStrokeWidth(kFocusBarThickness);
+  gfx::Point top_point = content_origin;
+  gfx::Point bottom_point = content_origin + gfx::Vector2d(0, height);
+  canvas->DrawLine(top_point, bottom_point, flags);
 }
 
 }  // namespace ash

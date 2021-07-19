@@ -46,6 +46,7 @@ class ASH_EXPORT AppListBubbleView : public views::BubbleDialogDelegateView,
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
+  void OnPaint(gfx::Canvas* canvas) override;
 
   // SearchBoxViewDelegate:
   void QueryChanged(SearchBoxViewBase* sender) override;

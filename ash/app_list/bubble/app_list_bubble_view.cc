@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/app_list/app_list_util.h"
 #include "ash/app_list/bubble/app_list_bubble_apps_page.h"
 #include "ash/app_list/bubble/app_list_bubble_assistant_page.h"
 #include "ash/app_list/bubble/app_list_bubble_search_page.h"
@@ -14,6 +15,7 @@
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/search_box/search_box_constants.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
@@ -29,6 +31,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/scroll_view.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/layout/box_layout.h"
 
 using views::BoxLayout;
@@ -200,6 +203,20 @@ gfx::Size AppListBubbleView::CalculatePreferredSize() const {
   return gfx::Size(width, height);
 }
 
+void AppListBubbleView::OnPaint(gfx::Canvas* canvas) {
+  // Used to draw/hide the focus bar for the search box view.
+  if (search_box_view_->search_box()->HasFocus() &&
+      search_box_view_->search_box()->GetText().empty()) {
+    PaintFocusBar(
+        canvas,
+        GetContentsBounds().origin() +
+            gfx::Vector2d(0,
+                          kUnifiedTrayCornerRadius /*downshift the focus bar*/),
+        /*height=*/kSearchBoxIconSize);
+  }
+  views::View::OnPaint(canvas);
+}
+
 void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   DCHECK_EQ(sender, search_box_view_);
   // TODO(https://crbug.com/1204551): Animated transitions.
@@ -211,6 +228,7 @@ void AppListBubbleView::QueryChanged(SearchBoxViewBase* sender) {
   // Ask the controller to start the search.
   std::u16string query = view_delegate_->GetSearchModel()->search_box()->text();
   view_delegate_->StartSearch(query);
+  SchedulePaint();
 }
 
 void AppListBubbleView::AssistantButtonPressed() {

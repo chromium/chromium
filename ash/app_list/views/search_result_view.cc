@@ -52,8 +52,6 @@ constexpr int kDetailsLineHeight = 16;
 
 // URL color.
 constexpr SkColor kUrlColor = gfx::kGoogleBlue600;
-// The width of the focus bar.
-constexpr int kFocusBarWidth = 3;
 
 // Delta applied to font size of all AppListSearchResult titles.
 constexpr int kSearchResultTitleTextSizeDelta = 2;
@@ -348,23 +346,8 @@ void SearchResultView::PaintButtonContents(gfx::Canvas* canvas) {
             color_provider->GetRippleAttributesHighlightOpacity(bg_color) *
                 255));
 
-    SkPath path;
-    gfx::Rect focus_ring_bounds = content_rect;
-    focus_ring_bounds.set_x(focus_ring_bounds.x() - kFocusBarWidth);
-    focus_ring_bounds.set_width(kFocusBarWidth * 2);
-    path.addRRect(SkRRect::MakeRectXY(RectToSkRect(focus_ring_bounds),
-                                      kFocusBarWidth, kFocusBarWidth));
-    canvas->ClipPath(path, true);
-
-    cc::PaintFlags flags;
-    flags.setAntiAlias(true);
-    flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
-    flags.setStyle(cc::PaintFlags::kStroke_Style);
-    flags.setStrokeWidth(kFocusBarWidth);
-    gfx::Point top_point = content_rect.origin();
-    gfx::Point bottom_point =
-        top_point + gfx::Vector2d(0, content_rect.height());
-    canvas->DrawLine(top_point, bottom_point, flags);
+    PaintFocusBar(canvas, GetContentsBounds().origin(),
+                  /*height=*/GetContentsBounds().height());
   }
 }
 

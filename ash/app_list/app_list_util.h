@@ -11,7 +11,11 @@
 
 namespace views {
 class Textfield;
-}
+}  // namespace views
+
+namespace gfx {
+class Canvas;
+}  // namespace gfx
 
 namespace ash {
 class AppListItem;
@@ -55,6 +59,11 @@ ASH_EXPORT bool ProcessLeftRightKeyTraversalForTextfield(
 ASH_EXPORT gfx::ImageSkia CreateIconWithCircleBackground(
     const gfx::ImageSkia& icon,
     SkColor background_color);
+
+// Paints a rounded focus bar on the left edge of |canvas|.
+ASH_EXPORT void PaintFocusBar(gfx::Canvas* canvas,
+                              const gfx::Point content_origin,
+                              const int height);
 
 }  // namespace ash
 
