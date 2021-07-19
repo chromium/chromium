@@ -373,8 +373,9 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
     case RG16_EXT:
       return GL_RG16_EXT;
     case RGBX_8888:
-    case ETC1:
       return GL_RGB8_OES;
+    case ETC1:
+      return GL_ETC1_RGB8_OES;
     case P010:
     case RGBA_1010102:
     case BGRA_1010102:

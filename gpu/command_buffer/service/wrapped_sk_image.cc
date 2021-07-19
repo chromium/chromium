@@ -515,10 +515,6 @@ bool WrappedSkImageFactory::IsSupported(uint32_t usage,
                                         GrContextType gr_context_type,
                                         bool* allow_legacy_mailbox,
                                         bool is_pixel_used) {
-  // TODO(hitawala): Remove gr_context_type check for supporting GL as well.
-  if (is_pixel_used && gr_context_type == GrContextType::kGL) {
-    return false;
-  }
   if (!CanUseWrappedSkImage(usage, gr_context_type) || thread_safe) {
     return false;
   }

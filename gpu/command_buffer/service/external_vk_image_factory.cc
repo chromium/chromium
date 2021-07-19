@@ -163,9 +163,6 @@ bool ExternalVkImageFactory::IsSupported(uint32_t usage,
                                          GrContextType gr_context_type,
                                          bool* allow_legacy_mailbox,
                                          bool is_pixel_used) {
-  if (is_pixel_used) {
-    return false;
-  }
   if (gmb_type != gfx::EMPTY_BUFFER && !CanImportGpuMemoryBuffer(gmb_type)) {
     return false;
   }
