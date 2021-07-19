@@ -3,9 +3,20 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<shape xmlns:android="http://schemas.android.com/apk/res/android"
-    android:shape="rectangle">
-    <solid android:color="@color/omnibox_bg_color" />
-    <size android:height="@dimen/quick_action_search_widget_medium_search_bar_height" />
-    <corners android:radius="@dimen/quick_action_search_widget_medium_search_bar_corner_radius" />
-</shape>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?android:attr/colorControlHighlight">
+    <item android:id="@android:id/mask">
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/quick_action_search_widget_medium_search_bar_corner_radius" />
+            <size android:height="@dimen/quick_action_search_widget_medium_search_bar_height" />
+            <solid android:color="@color/default_chip_ripple_color" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="@dimen/quick_action_search_widget_medium_search_bar_corner_radius" />
+            <size android:height="@dimen/quick_action_search_widget_medium_search_bar_height" />
+            <solid android:color="@color/omnibox_bg_color" />
+        </shape>
+    </item>
+</ripple>
