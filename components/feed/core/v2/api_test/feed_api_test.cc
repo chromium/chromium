@@ -300,6 +300,13 @@ void TestReliabilityLoggingBridge::LogActionsUploadRequestStart(
                                   base::NumberToString(id.GetUnsafeValue())}));
 }
 
+void TestReliabilityLoggingBridge::LogWebFeedRequestStart(
+    NetworkRequestId id,
+    base::TimeTicks timestamp) {
+  events_.push_back(base::StrCat({"LogWebFeedRequestStart id=",
+                                  base::NumberToString(id.GetUnsafeValue())}));
+}
+
 void TestReliabilityLoggingBridge::LogRequestSent(NetworkRequestId id,
                                                   base::TimeTicks timestamp) {
   events_.push_back(base::StrCat(

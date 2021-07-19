@@ -12,16 +12,22 @@ package org.chromium.chrome.browser.xsurface;
  */
 public interface FeedNetworkRequestReliabilityLogger {
     /**
-     * Log when making a feed query request.
+     * Log before filling out and serializing a feed query request. Starts the network request flow.
      * @param timestamp Event time.
      */
     default void logFeedQueryRequestStart(long timestamp) {}
 
     /**
-     * Log just before making a feed actions upload request.
+     * Log before filling out and serializing a feed actions upload request. Starts the network
+     * request flow.
      * @param timestamp Event time.
      */
     default void logActionsUploadRequestStart(long timestamp) {}
+
+    /**
+     * Log before filling out and serializing a web feed request. Starts the network request flow.
+     */
+    default void logWebFeedRequestStart(long timestamp) {}
 
     /**
      * Log after the request has been sent.
@@ -40,7 +46,7 @@ public interface FeedNetworkRequestReliabilityLogger {
 
     /**
      * Log after logResponseReceived() if there's a network error, or after parsing the response
-     * otherwise.
+     * otherwise. Ends the network request flow.
      * @param timestamp Event time.
      * @param canonicalStatus Network request status code. See
      *         //third_party/abseil-cpp/absl/status/status.h.

@@ -751,7 +751,6 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
     // both before and during the load process, we need to ignore this check
     // when |model_loading| is true.
     if (stream.model || (!model_loading && stream.model_loading_in_progress)) {
-      // TODO(iwells): log the end of the launch flow if stream.model exists
       return {LoadStreamStatus::kModelAlreadyLoaded,
               feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
     }

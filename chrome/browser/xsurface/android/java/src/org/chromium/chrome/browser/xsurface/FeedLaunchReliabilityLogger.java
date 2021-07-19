@@ -63,6 +63,12 @@ public interface FeedLaunchReliabilityLogger {
     default void logUiStarting(@SurfaceType int surfaceType, long timestamp) {}
 
     /**
+     * Log when a feed refresh is requested manually.
+     * @param timestamp Time at which the surface was shown.
+     */
+    default void logManualRefresh(long timestamp) {}
+
+    /**
      * Log when the feed is launched because its surface was shown and cards needed to be
      * re-rendered.
      * @param timestamp Time at which the surface was shown.
@@ -124,4 +130,13 @@ public interface FeedLaunchReliabilityLogger {
      * @param result DiscoverLaunchResult.
      */
     default void logLaunchFinished(long timestamp, int result) {}
+
+    /**
+     * Log to mark the end of the feed launch.
+     * @param timestamp Event time, possibly the same as one of the other events.
+     * @param result DiscoverLaunchResult.
+     * @param onlyIfLaunchInProgress Pass true if this event should only be logged if there is a
+     *         feed launch in progress.
+     */
+    default void logLaunchFinished(long timestamp, int result, boolean onlyIfLaunchInProgress) {}
 }

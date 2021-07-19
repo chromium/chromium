@@ -157,6 +157,8 @@ public class FeedSurfaceMediator
             if (onSelectCallback != null) {
                 onSelectCallback.run();
             }
+
+            maybeLogLaunchFinished(DiscoverLaunchResult.SWITCHED_FEED_TABS);
             bindStream(mTabToStreamMap.get(index));
         }
     }
@@ -571,13 +573,9 @@ public class FeedSurfaceMediator
         mCurrentStream.removeOnContentChangedListener(mStreamContentChangedListener);
         mCurrentStream = null;
 
-        FeedLaunchReliabilityLogger launchLogger = mCoordinator.getLaunchReliabilityLogger();
-        if (launchLogger.isLaunchInProgress()) {
-            // This is the catch-all feed launch end event to ensure a complete flow is logged
-            // even if we don't know a more specific reason for the stream unbinding.
-            launchLogger.logLaunchFinished(
-                    System.nanoTime(), DiscoverLaunchResult.FRAGMENT_STOPPED.getNumber());
-        }
+        // This is the catch-all feed launch end event to ensure a complete flow is logged
+        // even if we don't know a more specific reason for the stream unbinding.
+        maybeLogLaunchFinished(DiscoverLaunchResult.FRAGMENT_STOPPED);
     }
 
     void onSurfaceOpened() {
@@ -1129,5 +1127,11 @@ public class FeedSurfaceMediator
             // There might still be more items that will be animated after this one.
             new Handler().post(() -> { checkFinish(); });
         }
+    }
+
+    private void maybeLogLaunchFinished(DiscoverLaunchResult result) {
+        FeedLaunchReliabilityLogger logger = mCoordinator.getLaunchReliabilityLogger();
+        if (!logger.isLaunchInProgress()) return;
+        logger.logLaunchFinished(System.nanoTime(), result.getNumber());
     }
 }

@@ -86,6 +86,8 @@ class TestReliabilityLoggingBridge : public ReliabilityLoggingBridge {
                            base::TimeTicks timestamp) override;
   void LogActionsUploadRequestStart(NetworkRequestId id,
                                     base::TimeTicks timestamp) override;
+  void LogWebFeedRequestStart(NetworkRequestId id,
+                              base::TimeTicks timestamp) override;
   void LogRequestSent(NetworkRequestId id, base::TimeTicks timestamp) override;
   void LogResponseReceived(NetworkRequestId id,
                            int64_t server_receive_timestamp_ns,
