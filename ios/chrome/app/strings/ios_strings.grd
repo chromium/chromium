@@ -2402,13 +2402,13 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>reset sync<ph name=
       <message name="IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_INFO" desc="The information text for encrypting sync using a passphrase, shown on the passphrase screen [iOS only]">
         Passphrase encryption doesn’t include payment methods and addresses from Google Pay. Only someone with your passphrase can read your encrypted data. The passphrase is not sent to or stored by Google. If you forget your passphrase or want to change this setting, you will need to reset sync. <ph name="BEGIN_LINK">BEGIN_LINK</ph>Learn more<ph name="END_LINK">END_LINK</ph>
       </message>
-      <message name="IDS_IOS_SYNC_ENCRYPTION_FIX_NOW" desc="Title displayed when the signed in user needs to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
+      <message name="IDS_IOS_SYNC_VERIFY_ITS_YOU_BUTTON" desc="Button title displayed when the signed in user needs to reauthenticate. Syncing of encrypted types (e.g. passwords) is blocked until the user completes the reauth flow.">
         Verify It's You
       </message>
       <message name="IDS_IOS_SYNC_ENCRYPTION_TITLE" desc="The title for the Sync Encryption item [iOS only]">
         Encryption
       </message>
-      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE" desc="Title displayed when the signed in user needs to enter its sync passphrase. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON" desc="Button title displayed when the signed in user needs to enter its sync passphrase. [Length: 20em] [iOS only]">
         Enter Passphrase
       </message>
       <message name="IDS_IOS_SYNC_ENTER_PASSPHRASE_BODY_WITH_EMAIL" desc="Instructions for the dialog where the user enters the passphrase.">
@@ -2472,7 +2472,7 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
         Initial sync setup was not finished. Sync is off.
       </message>
-      <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_ACTION" desc="Button title to invite the user to review sync settings. The sign-in flow has been interrupted and the user never confirmed Sync.">
+      <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_BUTTON" desc="Button title to invite the user to review sync settings. The sign-in flow has been interrupted and the user never confirmed Sync.">
         Open Settings
       </message>
       <message name="IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_DESCRIPTION" desc="The error message to display when sign-in was interrupted and the user didn't review the sync settings.">
@@ -2484,13 +2484,13 @@ Your data was encrypted with your sync passphrase on <ph name="TIME">$2<ex>Sept 
       <message name="IDS_IOS_SYNC_SETUP_NOT_CONFIRMED_TITLE" desc="Title of the error message shown for sync errors. [Length: 60em] [iOS only]">
         Initial Sync Setup Not Finished
       </message>
-      <message name="IDS_IOS_SYNC_SIGN_IN_AGAIN" desc="Title displayed when the signed in user needs sign in again. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON" desc="Button title displayed when the signed in user needs sign in again. [Length: 20em] [iOS only]">
         Sign in again
       </message>
       <message name="IDS_IOS_SYNC_STATUS_UNRECOVERABLE_ERROR" desc="Message shown throughout the sync settings screens when there is an unrecoverable error. [Length: 80em, can be multiple lines] [iOS only]">
         Sync has stopped working.
       </message>
-      <message name="IDS_IOS_SYNC_UPDATE_CREDENTIALS" desc="Title displayed when the signed in user needs to update its credentials. [Length: 20em] [iOS only]">
+      <message name="IDS_IOS_SYNC_UPDATE_CREDENTIALS_BUTTON" desc="Button title displayed when the signed in user needs to update its credentials. [Length: 20em] [iOS only]">
         Update
       </message>
       <message name="IDS_IOS_TAB_GRID_DONE_BUTTON" desc="Title of the Done button in the tab grid UI. [iOS only]">

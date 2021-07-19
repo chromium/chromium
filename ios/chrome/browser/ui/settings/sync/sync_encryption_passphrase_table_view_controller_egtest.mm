@@ -49,7 +49,7 @@ using chrome_test_util::PrimarySignInButton;
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey openNewTab];
   [[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_SYNC_ENTER_PASSPHRASE)]
+                                          IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:NavigationBarCancelButton()]
       performAction:grey_tap()];
@@ -73,8 +73,9 @@ using chrome_test_util::PrimarySignInButton;
 
   [[EarlGrey
       selectElementWithMatcher:MatchInWindowWithNumber(
-                                   1, ButtonWithAccessibilityLabelId(
-                                          IDS_IOS_SYNC_ENTER_PASSPHRASE))]
+                                   1,
+                                   ButtonWithAccessibilityLabelId(
+                                       IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON))]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:MatchInWindowWithNumber(
                                           1, NavigationBarCancelButton())]

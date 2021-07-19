@@ -116,16 +116,16 @@ NSString* GetSyncErrorButtonTitleForBrowserState(
       syncSetupService->GetSyncServiceState();
   switch (syncState) {
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_UPDATE_CREDENTIALS);
+      return l10n_util::GetNSString(IDS_IOS_SYNC_UPDATE_CREDENTIALS_BUTTON);
     case SyncSetupService::kSyncServiceNeedsPassphrase:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE);
+      return l10n_util::GetNSString(IDS_IOS_SYNC_ENTER_PASSPHRASE_BUTTON);
     case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
     case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_FIX_NOW);
+      return l10n_util::GetNSString(IDS_IOS_SYNC_VERIFY_ITS_YOU_BUTTON);
     case SyncSetupService::kSyncServiceUnrecoverableError:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_SIGN_IN_AGAIN);
+      return l10n_util::GetNSString(IDS_IOS_SYNC_SIGN_IN_AGAIN_BUTTON);
     case SyncSetupService::kSyncSettingsNotConfirmed:
-      return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_ACTION);
+      return l10n_util::GetNSString(IDS_IOS_SYNC_SETTINGS_NOT_CONFIRMED_BUTTON);
     case SyncSetupService::kNoSyncServiceError:
     case SyncSetupService::kSyncServiceServiceUnavailable:
     case SyncSetupService::kSyncServiceCouldNotConnect:
