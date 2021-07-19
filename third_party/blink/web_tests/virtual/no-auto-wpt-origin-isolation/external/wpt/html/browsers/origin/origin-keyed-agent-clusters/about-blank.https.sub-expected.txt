@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = TypeError: Cannot read properties of undefined (reading 'createElement')
+NOTRUN parent to about:blank: message event must occur
+NOTRUN parent to about:blank: setting document.domain must give sync access
+NOTRUN about:blank to child2: messageerror event must occur
+NOTRUN about:blank to child2: setting document.domain must not give sync access
+NOTRUN child2 to about:blank: messageerror event must occur
+NOTRUN child2 to about:blank: setting document.domain must not give sync access
+NOTRUN parent: originAgentCluster must equal true
+NOTRUN about:blank: originAgentCluster must equal true
+NOTRUN child2: originAgentCluster must equal false
+Harness: the test ran to completion.
+

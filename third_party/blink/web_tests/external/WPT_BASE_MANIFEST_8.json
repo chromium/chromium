@@ -512,6 +512,13 @@
       ]
      ],
      "crashtests": {
+      "multicol-cached-consumed-bsize-crash.html": [
+       "f82bddfef1c1f7f9f32abeb0dad4a215db807f9a",
+       [
+        null,
+        {}
+       ]
+      ],
       "multicol-dynamic-contain-crash.html": [
        "e20a6e70e32c911856b2ef44cc4c1e8ac1694d18",
        [
@@ -390908,7 +390915,7 @@
         ]
        },
        "about-blank.https.sub.html": [
-        "edc98b363e46471b3e5db54b6b5a0b827dbb0a6d",
+        "556d528aa05e5c08f624cddd1fd226205ce7731a",
         [
          null,
          {}
@@ -421583,6 +421590,13 @@
          {}
         ]
        ],
+       "button-submit-remove-jssubmit.html": [
+        "6e71d958d6c4614aff586b4f2ba3f69e95d4ec0b",
+        [
+         null,
+         {}
+        ]
+       ],
        "button-type-enumerated-ascii-case-insensitive.html": [
         "30a2c24a80bab390c3401ee70c8bdc985cd8a21d",
         [
@@ -422007,6 +422021,13 @@
        ],
        "input-stepup.html": [
         "8f5888a6e4e1504a7451e8ec66337af88f1314d8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "input-submit-remove-jssubmit.html": [
+        "f992ff9ed54d4bde669f45d3b8b725fd5a6e86a5",
         [
          null,
          {}
@@ -458338,7 +458359,7 @@
      ],
      "inheritance": {
       "iframe-inheritance-about-blank.html": [
-       "60f91a5e47b431feb8784a650a8c6ad304e904f8",
+       "fc7d39a4cf1c2a63728860e2f37f2962e8bf244f",
        [
         null,
         {}

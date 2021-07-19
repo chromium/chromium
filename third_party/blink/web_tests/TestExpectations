@@ -2611,6 +2611,9 @@ crbug.com/958381 [ Mac ] external/wpt/css/CSS2/tables/table-anonymous-objects-20
 crbug.com/626703 external/wpt/service-workers/service-worker/worker-interception.https.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/crashtests/multicol-cached-consumed-bsize-crash.html [ Crash ]
+crbug.com/626703 [ Mac10.15 ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/crashtests/multicol-cached-consumed-bsize-crash.html [ Crash ]
+crbug.com/626703 [ Win10 ] virtual/layout_ng_block_frag/external/wpt/css/css-multicol/crashtests/multicol-cached-consumed-bsize-crash.html [ Crash ]
 crbug.com/626703 [ Win10 ] external/wpt/wasm/jsapi/exception/basic.tentative.any.html [ Failure Timeout ]
 crbug.com/626703 external/wpt/density-size-correction/density-corrected-image-svg-aspect-ratio-cross-origin.sub.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/html/browsers/browsing-the-web/navigating-across-documents/replace-before-load/location-setter-user-click.html [ Timeout ]
