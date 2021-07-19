@@ -67,8 +67,7 @@ public class SigninFirstRunFragmentTest {
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
                 R.string.signin_promo_continue_as, GIVEN_NAME1);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_account_picker_dismiss_button))
-                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
     }
 
     @Test
@@ -85,8 +84,7 @@ public class SigninFirstRunFragmentTest {
         final String continueAsText = mChromeActivityTestRule.getActivity().getString(
                 R.string.signin_promo_continue_as, TEST_EMAIL2);
         onView(withText(continueAsText)).check(matches(isDisplayed()));
-        onView(withText(R.string.signin_account_picker_dismiss_button))
-                .check(matches(isDisplayed()));
+        onView(withText(R.string.signin_fre_dismiss_button)).check(matches(isDisplayed()));
     }
 
     private void launchActivityWithFragment() {
