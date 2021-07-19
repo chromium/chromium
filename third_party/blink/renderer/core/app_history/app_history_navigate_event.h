@@ -18,6 +18,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class AppHistoryDestination;
 class AppHistoryNavigateEventInit;
 class ExceptionState;
@@ -45,6 +46,7 @@ class AppHistoryNavigateEvent final : public Event,
   bool userInitiated() const { return user_initiated_; }
   bool hashChange() const { return hash_change_; }
   AppHistoryDestination* destination() { return destination_; }
+  AbortSignal* signal() { return signal_; }
   FormData* formData() const { return form_data_; }
   ScriptValue info() const { return info_; }
 
@@ -65,6 +67,7 @@ class AppHistoryNavigateEvent final : public Event,
   bool user_initiated_;
   bool hash_change_;
   Member<AppHistoryDestination> destination_;
+  Member<AbortSignal> signal_;
   Member<FormData> form_data_;
   ScriptValue info_;
 

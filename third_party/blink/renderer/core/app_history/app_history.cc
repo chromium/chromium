@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/app_history/app_history_entry.h"
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
+#include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/events/error_event.h"
 #include "third_party/blink/renderer/core/frame/history_util.h"
@@ -180,6 +181,7 @@ void AppHistory::UpdateForNavigation(HistoryItem& item, WebFrameLoadType type) {
   // A same-document navigation (e.g., a document.open()) in a newly created
   // iframe will try to operate on an empty |entries_|. appHistory considers
   // this a no-op.
+  post_navigate_event_ongoing_navigation_signal_ = nullptr;
   if (entries_.IsEmpty())
     return;
 
@@ -467,8 +469,10 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
   DispatchEvent(*navigate_event);
   ongoing_navigate_event_ = nullptr;
 
-  if (!GetSupplementable()->GetFrame())
+  if (!GetSupplementable()->GetFrame()) {
+    FinalizeWithAbortedNavigationError(script_state, navigate_event->signal());
     return DispatchResult::kAbort;
+  }
 
   ScriptPromise promise = navigate_event->GetNavigationActionPromise();
   bool respondWithCalled = false;
@@ -498,29 +502,53 @@ AppHistory::DispatchResult AppHistory::DispatchNavigateEvent(
     navigate_serialized_state_.reset();
   }
 
-  if (navigate_event->defaultPrevented() && promise.IsEmpty()) {
-    promise = ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "Navigation was aborted"));
-    if (navigate_method_call_promise_resolver_)
-      did_react_to_promise_ = true;
-    NavigateReaction::React(script_state, promise,
-                            navigate_method_call_promise_resolver_);
-  }
+  if (navigate_event->defaultPrevented() && promise.IsEmpty())
+    FinalizeWithAbortedNavigationError(script_state, navigate_event->signal());
 
-  if (!navigate_event->defaultPrevented())
+  if (!navigate_event->defaultPrevented()) {
+    post_navigate_event_ongoing_navigation_signal_ = navigate_event->signal();
     return DispatchResult::kContinue;
+  }
   return respondWithCalled ? DispatchResult::kRespondWith
                            : DispatchResult::kAbort;
 }
 
 void AppHistory::CancelOngoingNavigateEvent() {
-  if (!ongoing_navigate_event_)
+  DCHECK(!ongoing_navigate_event_ ||
+         !post_navigate_event_ongoing_navigation_signal_);
+  AbortSignal* signal = nullptr;
+  if (ongoing_navigate_event_) {
+    ongoing_navigate_event_->preventDefault();
+    ongoing_navigate_event_->ClearNavigationActionPromise();
+    signal = ongoing_navigate_event_->signal();
+    ongoing_navigate_event_ = nullptr;
+  } else if (post_navigate_event_ongoing_navigation_signal_) {
+    signal = post_navigate_event_ongoing_navigation_signal_;
+    post_navigate_event_ongoing_navigation_signal_ = nullptr;
+  }
+
+  if (!signal)
     return;
-  ongoing_navigate_event_->preventDefault();
-  ongoing_navigate_event_->ClearNavigationActionPromise();
-  ongoing_navigate_event_ = nullptr;
+  auto* script_state =
+      ToScriptStateForMainWorld(GetSupplementable()->GetFrame());
+  ScriptState::Scope scope(script_state);
+  FinalizeWithAbortedNavigationError(script_state, signal);
+}
+
+void AppHistory::FinalizeWithAbortedNavigationError(ScriptState* script_state,
+                                                    AbortSignal* signal) {
+  if (did_react_to_promise_)
+    return;
+  navigate_serialized_state_ = nullptr;
+  signal->SignalAbort();
+  ScriptPromise promise = ScriptPromise::RejectWithDOMException(
+      script_state,
+      MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
+                                         "Navigation was aborted"));
+  if (navigate_method_call_promise_resolver_)
+    did_react_to_promise_ = true;
+  NavigateReaction::React(script_state, promise,
+                          navigate_method_call_promise_resolver_);
 }
 
 int AppHistory::GetIndexFor(AppHistoryEntry* entry) {
@@ -543,6 +571,7 @@ void AppHistory::Trace(Visitor* visitor) const {
   visitor->Trace(goto_promise_resolver_);
   visitor->Trace(navigate_event_info_);
   visitor->Trace(goto_navigate_event_info_);
+  visitor->Trace(post_navigate_event_ongoing_navigation_signal_);
 }
 
 }  // namespace blink

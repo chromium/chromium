@@ -1083,6 +1083,8 @@ void FrameLoader::StopAllLoaders(bool abort_client) {
   }
 
   frame_->GetDocument()->CancelParsing();
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+    app_history->CancelOngoingNavigateEvent();
   if (document_loader_)
     document_loader_->StopLoading();
   if (abort_client)

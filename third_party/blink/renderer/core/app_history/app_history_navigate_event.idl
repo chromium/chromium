@@ -13,7 +13,7 @@
   readonly attribute boolean userInitiated;
   readonly attribute boolean hashChange;
   readonly attribute AppHistoryDestination destination;
-  // readonly attribute AbortSignal signal;
+  readonly attribute AbortSignal signal;
   readonly attribute FormData? formData;
   readonly attribute any info;
 

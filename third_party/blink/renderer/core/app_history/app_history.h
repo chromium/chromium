@@ -16,6 +16,7 @@
 
 namespace blink {
 
+class AbortSignal;
 class AppHistoryEntry;
 class AppHistoryNavigateEvent;
 class AppHistoryNavigateOptions;
@@ -101,6 +102,7 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
 
  private:
   void PopulateKeySet();
+  void FinalizeWithAbortedNavigationError(ScriptState*, AbortSignal*);
 
   HeapVector<Member<AppHistoryEntry>> entries_;
   HashMap<String, int> keys_to_indices_;
@@ -116,6 +118,8 @@ class CORE_EXPORT AppHistory final : public EventTargetWithInlineData,
   ScriptValue navigate_event_info_;
   ScriptValue goto_navigate_event_info_;
   int64_t goto_item_sequence_number_ = 0;
+
+  Member<AbortSignal> post_navigate_event_ongoing_navigation_signal_;
 };
 
 }  // namespace blink

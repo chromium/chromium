@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL window.stop() cancels AppHistoryNavigateEvent.respondWith and signals AppHistoryNavigateEvent.signal assert_true: expected true got false
+Harness: the test ran to completion.
+
