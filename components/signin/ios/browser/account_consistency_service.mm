@@ -137,8 +137,8 @@ class AccountConsistencyService::AccountConsistencyHandler
       web::WebStatePolicyDecider::PolicyDecisionCallback callback) override;
   void WebStateDestroyed() override;
 
-  // Loads |url| in the current tab.
-  void NavigateToURL(GURL url);
+  // Handles the AddAccount request depending on |has_cookie_changed|.
+  void HandleAddAccountRequest(GURL url, BOOL has_cookie_changed);
 
   bool show_consistency_promo_ = false;
   AccountConsistencyService* account_consistency_service_;  // Weak.
@@ -255,7 +255,7 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
                   !params.continue_url.empty() && !continue_url.is_valid())
               << "Invalid continuation URL: \"" << continue_url << "\"";
           if (account_consistency_service_->RestoreGaiaCookies(base::BindOnce(
-                  &AccountConsistencyHandler::NavigateToURL,
+                  &AccountConsistencyHandler::HandleAddAccountRequest,
                   weak_ptr_factory_.GetWeakPtr(), continue_url))) {
             // Continue URL will be processed in a callback once Gaia cookies
             // have been restored.
@@ -292,8 +292,16 @@ void AccountConsistencyService::AccountConsistencyHandler::ShouldAllowResponse(
   std::move(callback).Run(PolicyDecision::Cancel());
 }
 
-void AccountConsistencyService::AccountConsistencyHandler::NavigateToURL(
-    GURL url) {
+void AccountConsistencyService::AccountConsistencyHandler::
+    HandleAddAccountRequest(GURL url, BOOL has_cookie_changed) {
+  if (!has_cookie_changed) {
+    // If the cookies on the device did not need to be updated then the user
+    // is not in an inconsistent state (where the identities on the device
+    // are different than those on the web). Fallback to asking the user to
+    // add an account.
+    [delegate_ onAddAccount];
+    return;
+  }
   web_state_->OpenURL(web::WebState::OpenURLParams(
       url, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
       ui::PAGE_TRANSITION_AUTO_TOPLEVEL, false));
@@ -347,19 +355,60 @@ AccountConsistencyService::AccountConsistencyService(
 AccountConsistencyService::~AccountConsistencyService() {}
 
 BOOL AccountConsistencyService::RestoreGaiaCookies(
-    base::OnceClosure cookies_restored_callback) {
-  // Only processes a single restoration attempt for a given amount of time to
-  // avoid redirect loops.
+    base::OnceCallback<void(BOOL)> cookies_restored_callback) {
+  // We currently enforce a time threshold to update the Gaia cookie
+  // for signed-in users to prevent calling the expensive method
+  // |GetAllCookies| in the cookie manager.
   if (last_gaia_cookie_update_time_.is_null() ||
       base::Time::Now() - last_gaia_cookie_update_time_ >
           GetDelayThresholdToUpdateGaiaCookie()) {
-    gaia_cookies_restored_callbacks_.push_back(
-        std::move(cookies_restored_callback));
-    identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
+    network::mojom::CookieManager* cookie_manager =
+        browser_state_->GetCookieManager();
+    cookie_manager->GetCookieList(
+        GaiaUrls::GetInstance()->secure_google_url(),
+        net::CookieOptions::MakeAllInclusive(),
+        base::BindOnce(
+            &AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted,
+            base::Unretained(this), std::move(cookies_restored_callback)));
     last_gaia_cookie_update_time_ = base::Time::Now();
     return YES;
   }
   return NO;
+}
+
+void AccountConsistencyService::TriggerGaiaCookieChangeIfDeleted(
+    base::OnceCallback<void(BOOL)> cookies_restored_callback,
+    const net::CookieAccessResultList& cookie_list,
+    const net::CookieAccessResultList& unused_excluded_cookies) {
+  gaia_cookies_restored_callbacks_.push_back(
+      std::move(cookies_restored_callback));
+
+  for (const auto& cookie : cookie_list) {
+    if (cookie.cookie.Name() == GaiaConstants::kGaiaSigninCookieName) {
+      LogIOSGaiaCookiesState(
+          GaiaCookieStateOnSignedInNavigation::kGaiaCookiePresentOnNavigation);
+      RunGaiaCookiesRestoredCallbacks(/*has_cookie_changed=*/NO);
+      return;
+    }
+  }
+
+  // The SAPISID cookie may have been deleted previous to this update due to
+  // ITP restrictions marking Google domains as potential trackers.
+  LogIOSGaiaCookiesState(
+      GaiaCookieStateOnSignedInNavigation::
+          kGaiaCookieAbsentOnGoogleAssociatedDomainNavigation);
+
+  // Re-generate cookie to ensure that the user is properly signed in.
+  identity_manager_->GetAccountsCookieMutator()->ForceTriggerOnCookieChange();
+}
+
+void AccountConsistencyService::RunGaiaCookiesRestoredCallbacks(
+    BOOL has_cookie_changed) {
+  std::vector<base::OnceCallback<void(BOOL)>> callbacks;
+  std::swap(gaia_cookies_restored_callbacks_, callbacks);
+  for (base::OnceCallback<void(BOOL)>& callback : callbacks) {
+    std::move(callback).Run(has_cookie_changed);
+  }
 }
 
 void AccountConsistencyService::SetWebStateHandler(
@@ -511,12 +560,7 @@ void AccountConsistencyService::OnAccountsInCookieUpdated(
 
   // If signed-in accounts have been recently restored through GAIA cookie
   // restoration then run the relevant callback to finish the update process.
-  if (accounts_in_cookie_jar_info.signed_in_accounts.size() > 0 &&
-      !gaia_cookies_restored_callbacks_.empty()) {
-    std::vector<base::OnceClosure> callbacks;
-    std::swap(gaia_cookies_restored_callbacks_, callbacks);
-    for (base::OnceClosure& callback : callbacks) {
-      std::move(callback).Run();
-    }
+  if (accounts_in_cookie_jar_info.signed_in_accounts.size() > 0) {
+    RunGaiaCookiesRestoredCallbacks(/*has_cookie_changed=*/YES);
   }
 }
