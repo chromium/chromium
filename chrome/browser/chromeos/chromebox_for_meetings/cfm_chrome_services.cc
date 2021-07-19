@@ -7,6 +7,7 @@
 #include "chrome/browser/chromeos/chromebox_for_meetings/browser/cfm_browser_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/device_info/device_info_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/diagnostics/diagnostics_service.h"
+#include "chrome/browser/chromeos/chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/logger/cfm_logger_service.h"
 #include "chrome/browser/chromeos/chromebox_for_meetings/network_settings/network_settings_service.h"
 #include "chromeos/components/chromebox_for_meetings/features/features.h"
@@ -26,6 +27,7 @@ void InitializeCfmServices() {
   DeviceInfoService::Initialize();
   DiagnosticsService::Initialize();
   NetworkSettingsService::Initialize();
+  ExternalDisplayBrightnessService::Initialize();
 }
 
 void ShutdownCfmServices() {
@@ -34,6 +36,7 @@ void ShutdownCfmServices() {
     return;
   }
 
+  ExternalDisplayBrightnessService::Shutdown();
   NetworkSettingsService::Shutdown();
   DiagnosticsService::Shutdown();
   DeviceInfoService::Shutdown();

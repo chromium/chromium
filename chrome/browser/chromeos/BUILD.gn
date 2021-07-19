@@ -3314,6 +3314,8 @@ source_set("chromeos") {
       "chromebox_for_meetings/device_info/device_info_service.h",
       "chromebox_for_meetings/diagnostics/diagnostics_service.cc",
       "chromebox_for_meetings/diagnostics/diagnostics_service.h",
+      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.cc",
+      "chromebox_for_meetings/external_display_brightness/external_display_brightness_service.h",
       "chromebox_for_meetings/logger/cfm_logger_service.cc",
       "chromebox_for_meetings/logger/cfm_logger_service.h",
       "chromebox_for_meetings/logger/reporting_pipeline.cc",
