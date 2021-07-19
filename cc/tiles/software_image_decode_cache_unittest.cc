@@ -52,7 +52,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyNoneQuality) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kNone_SkFilterQuality,
+      PaintFlags::FilterQuality::kNone,
       CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -75,7 +75,7 @@ TEST(SoftwareImageDecodeCacheTest,
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kLow_SkFilterQuality,
+      PaintFlags::FilterQuality::kLow,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -94,7 +94,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropsToLowIfMipLevel0) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality::kMedium,
       CreateMatrix(SkSize::Make(0.75f, 0.75f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -114,7 +114,7 @@ TEST(SoftwareImageDecodeCacheTest, LowUnscalableFormatStaysLow) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kLow_SkFilterQuality,
+      PaintFlags::FilterQuality::kLow,
       CreateMatrix(SkSize::Make(0.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -134,7 +134,7 @@ TEST(SoftwareImageDecodeCacheTest, HighUnscalableFormatBecomesLow) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kHigh_SkFilterQuality,
+      PaintFlags::FilterQuality::kHigh,
       CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -154,7 +154,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityKeptLowIfUpscale) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kLow_SkFilterQuality,
+      PaintFlags::FilterQuality::kLow,
       CreateMatrix(SkSize::Make(1.5f, 1.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -171,7 +171,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityKeptLowIfUpscale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQuality) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -191,7 +191,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQuality) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropToLowIfEnlarging) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -212,7 +212,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropToLowIfEnlarging) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityDropToLowIfIdentity) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -234,7 +234,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyMediumQualityDropToLowIfNearlyIdentity) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -256,7 +256,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyMediumQualityDropToLowIfNearlyIdentity2) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -278,7 +278,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyMediumQualityDropToLowIfNotDecomposable) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = false;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -300,7 +300,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_5Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -321,7 +321,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_5Scale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_0cale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -342,7 +342,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt1_0cale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt0_75Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -363,7 +363,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyLowQualityAt0_75Scale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_5Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -383,7 +383,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_5Scale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_49Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -403,7 +403,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_49Scale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_1Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -423,7 +423,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_1Scale) {
 TEST(SoftwareImageDecodeCacheTest, ImageKeyMediumQualityAt0_01Scale) {
   PaintImage paint_image = CreatePaintImage(500, 200);
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   DrawImage draw_image(
       paint_image, false,
@@ -444,7 +444,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyFullDowscalesDropsHighQualityToMedium) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -464,7 +464,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, ImageKeyUpscaleIsLowQuality) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -486,7 +486,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyHighQualityDropToMediumIfTooLarge) {
   // Just over 64MB when scaled.
   PaintImage paint_image = CreatePaintImage(4555, 2048);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   // At least one dimension should scale down, so that medium quality doesn't
   // become low.
@@ -509,7 +509,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyHighQualityDropToLowIfNotDecomposable) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = false;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -530,7 +530,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, ImageKeyHighQualityDropToLowIfIdentity) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -552,7 +552,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyHighQualityDropToLowIfNearlyIdentity) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -574,7 +574,7 @@ TEST(SoftwareImageDecodeCacheTest,
      ImageKeyHighQualityDropToLowIfNearlyIdentity2) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -614,7 +614,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyDownscaleMipLevelWithRounding) {
   DrawImage draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality::kMedium,
       CreateMatrix(SkSize::Make(0.2f, 0.2f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -631,7 +631,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageKeyDownscaleMipLevelWithRounding) {
 TEST(SoftwareImageDecodeCacheTest, OriginalDecodesAreEqual) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kNone_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kNone;
 
   DrawImage draw_image(
       paint_image, false,
@@ -669,7 +669,7 @@ TEST(SoftwareImageDecodeCacheTest, OriginalDecodesAreEqual) {
 TEST(SoftwareImageDecodeCacheTest, ImageRectDoesNotContainSrcRect) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -690,7 +690,7 @@ TEST(SoftwareImageDecodeCacheTest, ImageRectDoesNotContainSrcRect) {
 TEST(SoftwareImageDecodeCacheTest, ImageRectDoesNotContainSrcRectWithScale) {
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -712,7 +712,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImage) {
   TestSoftwareImageDecodeCache cache;
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -744,7 +744,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageProcessUnrefCancel) {
   TestSoftwareImageDecodeCache cache;
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage draw_image(
       paint_image, false,
@@ -779,7 +779,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentQuality) {
   DrawImage high_quality_draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kHigh_SkFilterQuality,
+      PaintFlags::FilterQuality::kHigh,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult high_quality_result =
@@ -791,7 +791,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentQuality) {
   DrawImage none_quality_draw_image(
       paint_image, false,
       SkIRect::MakeWH(paint_image.width(), paint_image.height()),
-      kNone_SkFilterQuality,
+      PaintFlags::FilterQuality::kNone,
       CreateMatrix(SkSize::Make(0.5f, 0.5f), is_decomposable),
       PaintImage::kDefaultFrameIndex, DefaultColorSpace());
   ImageDecodeCache::TaskResult none_quality_result =
@@ -812,7 +812,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentSize) {
   TestSoftwareImageDecodeCache cache;
   PaintImage paint_image = CreatePaintImage(100, 100);
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   DrawImage half_size_draw_image(
       paint_image, false,
@@ -846,7 +846,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageSameImageDifferentSize) {
 TEST(SoftwareImageDecodeCacheTest, GetTaskForImageDifferentImage) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage first_paint_image = CreatePaintImage(100, 100);
   DrawImage first_draw_image(
@@ -889,7 +889,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageDifferentImage) {
 TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   gfx::ColorSpace color_space_a(gfx::ColorSpace::PrimaryID::XYZ_D50,
                                 gfx::ColorSpace::TransferID::IEC61966_2_1);
@@ -941,7 +941,7 @@ TEST(SoftwareImageDecodeCacheTest, MAYBE_GetTaskForImageDifferentColorSpace) {
 TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyDecoded) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -971,7 +971,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyDecoded) {
 TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyPrerolled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kLow_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1007,7 +1007,7 @@ TEST(SoftwareImageDecodeCacheTest, GetTaskForImageAlreadyPrerolled) {
 TEST(SoftwareImageDecodeCacheTest, GetTaskForImageCanceledGetsNewTask) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1049,7 +1049,7 @@ TEST(SoftwareImageDecodeCacheTest,
      GetTaskForImageCanceledWhileReffedGetsNewTask) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1090,7 +1090,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDraw) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1112,7 +1112,8 @@ TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDraw) {
   EXPECT_EQ(50, decoded_draw_image.image()->height());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().width());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().height());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_FALSE(decoded_draw_image.is_scale_adjustment_identity());
 
   cache.DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -1123,7 +1124,7 @@ TEST(SoftwareImageDecodeCacheTest,
      GetDecodedImageForDrawWithNonContainedSrcRect) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1145,7 +1146,8 @@ TEST(SoftwareImageDecodeCacheTest,
   EXPECT_EQ(35, decoded_draw_image.image()->height());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().width());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().height());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_FALSE(decoded_draw_image.is_scale_adjustment_identity());
 
   cache.DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -1155,7 +1157,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1171,7 +1173,8 @@ TEST(SoftwareImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
   EXPECT_EQ(50, decoded_draw_image.image()->height());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().width());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().height());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_FALSE(decoded_draw_image.is_scale_adjustment_identity());
 
   cache.DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -1181,7 +1184,7 @@ TEST(SoftwareImageDecodeCacheTest,
      GetDecodedImageForDrawAtRasterDecodeMultipleTimes) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1197,7 +1200,8 @@ TEST(SoftwareImageDecodeCacheTest,
   EXPECT_EQ(50, decoded_draw_image.image()->height());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().width());
   EXPECT_FLOAT_EQ(0.5f, decoded_draw_image.scale_adjustment().height());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_FALSE(decoded_draw_image.is_scale_adjustment_identity());
 
   DecodedDrawImage another_decoded_draw_image =
@@ -1212,7 +1216,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, ZeroSizedImagesAreSkipped) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1236,7 +1240,7 @@ TEST(SoftwareImageDecodeCacheTest, ZeroSizedImagesAreSkipped) {
 TEST(SoftwareImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1260,7 +1264,7 @@ TEST(SoftwareImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
 TEST(SoftwareImageDecodeCacheTest, LowQualityFilterIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kLow_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(
@@ -1290,7 +1294,7 @@ TEST(SoftwareImageDecodeCacheTest, LowQualityFilterIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, LowQualityScaledSubrectIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kLow_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(paint_image, false, SkIRect::MakeXYWH(10, 10, 80, 80),
@@ -1311,7 +1315,8 @@ TEST(SoftwareImageDecodeCacheTest, LowQualityScaledSubrectIsHandled) {
   // If we decoded the image and cached it, it would be stored in a different
   // SkImage object.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   // Low quality will be upgraded to medium and mip-mapped.
   EXPECT_FALSE(decoded_draw_image.is_scale_adjustment_identity());
   EXPECT_EQ(0.5f, decoded_draw_image.scale_adjustment().width());
@@ -1324,7 +1329,7 @@ TEST(SoftwareImageDecodeCacheTest, LowQualityScaledSubrectIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, NoneQualityScaledSubrectIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kNone_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kNone;
 
   PaintImage paint_image = CreatePaintImage(100, 100);
   DrawImage draw_image(paint_image, false, SkIRect::MakeXYWH(10, 10, 80, 80),
@@ -1345,7 +1350,8 @@ TEST(SoftwareImageDecodeCacheTest, NoneQualityScaledSubrectIsHandled) {
   // If we decoded the image and cached it, it would be stored in a different
   // SkImage object.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kNone_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kNone,
+            decoded_draw_image.filter_quality());
   EXPECT_TRUE(decoded_draw_image.is_scale_adjustment_identity());
 
   cache.DrawWithImageFinished(draw_image, decoded_draw_image);
@@ -1355,7 +1361,7 @@ TEST(SoftwareImageDecodeCacheTest, NoneQualityScaledSubrectIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1376,7 +1382,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(500, decoded_draw_image.image()->width());
   EXPECT_EQ(200, decoded_draw_image.image()->height());
 
@@ -1387,7 +1394,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt01_5ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1408,7 +1415,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(500, decoded_draw_image.image()->width());
   EXPECT_EQ(200, decoded_draw_image.image()->height());
 
@@ -1419,7 +1427,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt1_0ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1440,7 +1448,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(500, decoded_draw_image.image()->width());
   EXPECT_EQ(200, decoded_draw_image.image()->height());
 
@@ -1451,7 +1460,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_75ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1472,7 +1481,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(250, decoded_draw_image.image()->width());
   EXPECT_EQ(100, decoded_draw_image.image()->height());
 
@@ -1483,7 +1493,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_5ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1504,7 +1514,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(250, decoded_draw_image.image()->width());
   EXPECT_EQ(100, decoded_draw_image.image()->height());
 
@@ -1515,7 +1526,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_49ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1536,7 +1547,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(63, decoded_draw_image.image()->width());
   EXPECT_EQ(25, decoded_draw_image.image()->height());
 
@@ -1547,7 +1559,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_1ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1568,7 +1580,8 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
   EXPECT_TRUE(decoded_draw_image.image());
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image.filter_quality());
   EXPECT_EQ(8, decoded_draw_image.image()->width());
   EXPECT_EQ(4, decoded_draw_image.image()->height());
 
@@ -1579,7 +1592,7 @@ TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_01ScaleIsHandled) {
 TEST(SoftwareImageDecodeCacheTest, MediumQualityAt0_001ScaleIsHandled) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image(
@@ -1604,7 +1617,7 @@ TEST(SoftwareImageDecodeCacheTest,
      MediumQualityImagesAreTheSameAt0_5And0_49Scale) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   PaintImage paint_image = CreatePaintImage(500, 200);
   DrawImage draw_image_50(
@@ -1638,8 +1651,10 @@ TEST(SoftwareImageDecodeCacheTest,
   // Decoded image should not be lazy generated.
   EXPECT_FALSE(decoded_draw_image_50.image()->isLazyGenerated());
   EXPECT_FALSE(decoded_draw_image_49.image()->isLazyGenerated());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image_50.filter_quality());
-  EXPECT_EQ(kLow_SkFilterQuality, decoded_draw_image_49.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image_50.filter_quality());
+  EXPECT_EQ(PaintFlags::FilterQuality::kLow,
+            decoded_draw_image_49.filter_quality());
   EXPECT_EQ(250, decoded_draw_image_50.image()->width());
   EXPECT_EQ(250, decoded_draw_image_49.image()->width());
   EXPECT_EQ(100, decoded_draw_image_50.image()->height());
@@ -1656,7 +1671,7 @@ TEST(SoftwareImageDecodeCacheTest,
 TEST(SoftwareImageDecodeCacheTest, ClearCache) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   for (int i = 0; i < 10; ++i) {
     PaintImage paint_image = CreatePaintImage(100, 100);
@@ -1698,7 +1713,7 @@ TEST(SoftwareImageDecodeCacheTest, CacheDecodesExpectedFrames) {
                          .TakePaintImage();
 
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(1.0f, 1.0f), is_decomposable),
@@ -1737,7 +1752,7 @@ TEST(SoftwareImageDecodeCacheTest, SizeSubrectingIsHandled) {
   const int min_dimension = 4 * 1024 + 2;
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kLow_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 
   auto paint_image =
       CreateDiscardablePaintImage(gfx::Size(min_dimension, min_dimension),
@@ -1771,7 +1786,7 @@ TEST(SoftwareImageDecodeCacheTest, EmptyTargetSizeDecode) {
 
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kLow_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kLow;
 
   // Populate the cache with an original sized decode.
   auto paint_image = CreateDiscardablePaintImage(
@@ -1798,7 +1813,7 @@ TEST(SoftwareImageDecodeCacheTest, EmptyTargetSizeDecode) {
 TEST(SoftwareImageDecodeCacheTest, BitmapImageColorConverted) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateDisplayP3D65();
 
   PaintImage paint_image = CreateBitmapImage(gfx::Size(100, 100));
@@ -1824,7 +1839,7 @@ TEST(SoftwareImageDecodeCacheTest, BitmapImageColorConverted) {
 TEST(SoftwareImageDecodeCacheTest, BitmapImageNotColorConverted) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
 
   PaintImage paint_image = CreateBitmapImage(gfx::Size(100, 100));
   DrawImage draw_image(
@@ -1842,7 +1857,7 @@ TEST(SoftwareImageDecodeCacheTest, BitmapImageNotColorConverted) {
 TEST(SoftwareImageDecodeCacheTest, DISABLED_ContentIdCaching) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kHigh_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   PaintImage::Id stable_id = 1001;
 
   for (int i = 0; i < 10; ++i) {
@@ -1875,7 +1890,7 @@ TEST(SoftwareImageDecodeCacheTest, DISABLED_ContentIdCaching) {
 TEST(SoftwareImageDecodeCacheTest, DecodeToScale) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   SkISize full_size = SkISize::Make(100, 100);
   std::vector<SkISize> supported_sizes = {SkISize::Make(25, 25),
@@ -1935,7 +1950,7 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScale) {
 TEST(SoftwareImageDecodeCacheTest, DecodeToScaleSubrect) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
 
   SkISize full_size = SkISize::Make(100, 100);
   std::vector<SkISize> supported_sizes = {SkISize::Make(25, 25),
@@ -1972,7 +1987,7 @@ TEST(SoftwareImageDecodeCacheTest, DecodeToScaleSubrect) {
 TEST(SoftwareImageDecodeCacheTest, DecodeToScaleNoneQuality) {
   TestSoftwareImageDecodeCache cache;
   bool is_decomposable = true;
-  SkFilterQuality quality = kNone_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kNone;
 
   SkISize full_size = SkISize::Make(100, 100);
   std::vector<SkISize> supported_sizes = {SkISize::Make(25, 25),
@@ -2022,10 +2037,11 @@ TEST(SoftwareImageDecodeCacheTest, HdrDecodeToHdr) {
                                     PaintImage::GetNextContentId())
                          .TakePaintImage();
 
-  DrawImage draw_image(
-      image, false, SkIRect::MakeWH(image.width(), image.height()),
-      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(0.5, 0.5), true),
-      PaintImage::kDefaultFrameIndex, color_space);
+  DrawImage draw_image(image, false,
+                       SkIRect::MakeWH(image.width(), image.height()),
+                       PaintFlags::FilterQuality::kMedium,
+                       CreateMatrix(SkSize::Make(0.5, 0.5), true),
+                       PaintImage::kDefaultFrameIndex, color_space);
 
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
   EXPECT_EQ(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
@@ -2052,10 +2068,11 @@ TEST(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
   // Note: We use P3 here since software cache shouldn't be used when conversion
   // to SRGB is needed.
   auto raster_color_space = gfx::ColorSpace::CreateDisplayP3D65();
-  DrawImage draw_image(
-      image, false, SkIRect::MakeWH(image.width(), image.height()),
-      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(0.5, 0.5), true),
-      PaintImage::kDefaultFrameIndex, raster_color_space);
+  DrawImage draw_image(image, false,
+                       SkIRect::MakeWH(image.width(), image.height()),
+                       PaintFlags::FilterQuality::kMedium,
+                       CreateMatrix(SkSize::Make(0.5, 0.5), true),
+                       PaintImage::kDefaultFrameIndex, raster_color_space);
 
   DecodedDrawImage decoded_image = cache.GetDecodedImageForDraw(draw_image);
   EXPECT_NE(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);

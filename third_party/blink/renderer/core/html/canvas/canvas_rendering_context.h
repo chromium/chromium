@@ -235,7 +235,7 @@ class CORE_EXPORT CanvasRenderingContext
 
   // WebGL-specific interface
   virtual bool UsingSwapChain() const { return false; }
-  virtual void SetFilterQuality(SkFilterQuality) { NOTREACHED(); }
+  virtual void SetFilterQuality(cc::PaintFlags::FilterQuality) { NOTREACHED(); }
   virtual void Reshape(int width, int height) {}
   virtual void MarkLayerComposited() { NOTREACHED(); }
   virtual sk_sp<SkData> PaintRenderingResultsToDataArray(SourceDrawingBuffer) {

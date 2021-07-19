@@ -9,17 +9,18 @@
 
 #include "base/compiler_specific.h"
 #include "cc/paint/paint_export.h"
-#include "cc/paint/paint_shader.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 #include "third_party/skia/include/core/SkDrawLooper.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPathEffect.h"
+#include "third_party/skia/include/core/SkSamplingOptions.h"
 
 class SkCanvas;
 
 namespace cc {
 class PaintFilter;
+class PaintShader;
 
 class CC_PAINT_EXPORT PaintFlags {
  public:
@@ -57,11 +58,19 @@ class CC_PAINT_EXPORT PaintFlags {
   ALWAYS_INLINE void setAntiAlias(bool aa) { bitfields_.antialias_ = aa; }
   ALWAYS_INLINE bool isDither() const { return bitfields_.dither_; }
   ALWAYS_INLINE void setDither(bool dither) { bitfields_.dither_ = dither; }
-  ALWAYS_INLINE void setFilterQuality(SkFilterQuality quality) {
-    bitfields_.filter_quality_ = quality;
+
+  enum class FilterQuality {
+    kNone,
+    kLow,
+    kMedium,
+    kHigh,
+    kLast = kHigh,
+  };
+  ALWAYS_INLINE void setFilterQuality(FilterQuality quality) {
+    bitfields_.filter_quality_ = static_cast<int>(quality);
   }
-  ALWAYS_INLINE SkFilterQuality getFilterQuality() const {
-    return static_cast<SkFilterQuality>(bitfields_.filter_quality_);
+  ALWAYS_INLINE FilterQuality getFilterQuality() const {
+    return static_cast<FilterQuality>(bitfields_.filter_quality_);
   }
   ALWAYS_INLINE bool useDarkModeForImage() const {
     return bitfields_.use_dark_mode_for_image_;
@@ -118,11 +127,9 @@ class CC_PAINT_EXPORT PaintFlags {
 
   // Returns whether the shader is opaque. Note that it is only valid to call
   // this function if HasShader() returns true.
-  ALWAYS_INLINE bool ShaderIsOpaque() const { return shader_->IsOpaque(); }
+  bool ShaderIsOpaque() const;
 
-  ALWAYS_INLINE void setShader(sk_sp<PaintShader> shader) {
-    shader_ = std::move(shader);
-  }
+  void setShader(sk_sp<PaintShader> shader);
 
   ALWAYS_INLINE const sk_sp<SkPathEffect>& getPathEffect() const {
     return path_effect_;
@@ -170,7 +177,7 @@ class CC_PAINT_EXPORT PaintFlags {
   }
 
   static SkSamplingOptions FilterQualityToSkSamplingOptions(
-      SkFilterQuality filter_quality);
+      FilterQuality filter_quality);
 
   bool IsValid() const;
   bool operator==(const PaintFlags& other) const;

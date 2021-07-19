@@ -118,7 +118,7 @@ scoped_refptr<DrawingBuffer> DrawingBuffer::Create(
     PreserveDrawingBuffer preserve,
     WebGLVersion webgl_version,
     ChromiumImageUsage chromium_image_usage,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasColorParams& color_params,
     gl::GpuPreference gpu_preference) {
   if (g_should_fail_drawing_buffer_creation_for_testing) {
@@ -193,7 +193,7 @@ DrawingBuffer::DrawingBuffer(
     bool want_depth,
     bool want_stencil,
     ChromiumImageUsage chromium_image_usage,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasColorParams& color_params,
     gl::GpuPreference gpu_preference)
     : client_(client),
@@ -290,11 +290,14 @@ void DrawingBuffer::SetIsInHiddenPage(bool hidden) {
   gl_->Flush();
 }
 
-void DrawingBuffer::SetFilterQuality(SkFilterQuality filter_quality) {
+void DrawingBuffer::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (filter_quality_ != filter_quality) {
     filter_quality_ = filter_quality;
-    if (layer_)
-      layer_->SetNearestNeighbor(filter_quality == kNone_SkFilterQuality);
+    if (layer_) {
+      layer_->SetNearestNeighbor(filter_quality ==
+                                 cc::PaintFlags::FilterQuality::kNone);
+    }
   }
 }
 
@@ -729,7 +732,8 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportLowLatencyCanvasResource(
   return ExternalCanvasResource::Create(
       canvas_resource_buffer->mailbox, viz::ReleaseCallback(), gpu::SyncToken(),
       canvas_resource_buffer->size, texture_target_, resource_params,
-      context_provider_->GetWeakPtr(), resource_provider, kLow_SkFilterQuality,
+      context_provider_->GetWeakPtr(), resource_provider,
+      cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/opengl_flip_y_extension_,
       /*is_overlay_candidate=*/true);
 }
@@ -768,7 +772,7 @@ scoped_refptr<CanvasResource> DrawingBuffer::ExportCanvasResource() {
       out_resource.mailbox_holder.sync_token, IntSize(out_resource.size),
       out_resource.mailbox_holder.texture_target, resource_params,
       context_provider_->GetWeakPtr(), /*resource_provider=*/nullptr,
-      kLow_SkFilterQuality,
+      cc::PaintFlags::FilterQuality::kLow,
       /*is_origin_top_left=*/opengl_flip_y_extension_,
       out_resource.is_overlay_candidate);
 }
@@ -1098,7 +1102,8 @@ cc::Layer* DrawingBuffer::CcLayer() {
     DCHECK(!(premultiplied_alpha_ && premultiplied_alpha_false_texture_));
     layer_->SetPremultipliedAlpha(premultiplied_alpha_ ||
                                   premultiplied_alpha_false_texture_);
-    layer_->SetNearestNeighbor(filter_quality_ == kNone_SkFilterQuality);
+    layer_->SetNearestNeighbor(filter_quality_ ==
+                               cc::PaintFlags::FilterQuality::kNone);
 
     if (opengl_flip_y_extension_)
       layer_->SetFlipped(false);

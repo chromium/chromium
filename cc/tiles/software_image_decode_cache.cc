@@ -129,10 +129,10 @@ SkSize GetScaleAdjustment(const SoftwareImageDecodeCache::CacheKey& key) {
 // to do a bilinear interpolation. The exception to this is if the developer
 // specified a pixelated effect, which results in a None filter quality (nearest
 // neighbor).
-SkFilterQuality GetDecodedFilterQuality(
+PaintFlags::FilterQuality GetDecodedFilterQuality(
     const SoftwareImageDecodeCache::CacheKey& key) {
-  return key.is_nearest_neighbor() ? kNone_SkFilterQuality
-                                   : kLow_SkFilterQuality;
+  return key.is_nearest_neighbor() ? PaintFlags::FilterQuality::kNone
+                                   : PaintFlags::FilterQuality::kLow;
 }
 
 }  // namespace
@@ -415,8 +415,8 @@ SoftwareImageDecodeCache::DecodeImageIfNecessary(const CacheKey& key,
               ? SkIRect::MakeWH(paint_image.width(), paint_image.height())
               : gfx::RectToSkIRect(key.src_rect());
       DrawImage candidate_draw_image(
-          paint_image, false, src_rect, kNone_SkFilterQuality, SkM44(),
-          key.frame_key().frame_index(), key.target_color_space());
+          paint_image, false, src_rect, PaintFlags::FilterQuality::kNone,
+          SkM44(), key.frame_key().frame_index(), key.target_color_space());
       candidate_key.emplace(CacheKey::FromDrawImage(
           candidate_draw_image,
           GetColorTypeForPaintImage(key.target_color_space(), paint_image)));

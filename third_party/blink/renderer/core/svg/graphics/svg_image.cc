@@ -443,7 +443,7 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
   // Reset filter quality.
-  flags.setFilterQuality(kNone_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
 
   context.DrawRect(dst_rect, flags);
 

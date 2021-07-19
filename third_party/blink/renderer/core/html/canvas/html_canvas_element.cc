@@ -741,7 +741,8 @@ bool HTMLCanvasElement::LowLatencyEnabled() const {
   return !!frame_dispatcher_;
 }
 
-void HTMLCanvasElement::SetFilterQuality(SkFilterQuality filter_quality) {
+void HTMLCanvasElement::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
   CanvasResourceHost::SetFilterQuality(filter_quality);
   if (IsOffscreenCanvasRegistered())
     UpdateOffscreenCanvasFilterQuality(filter_quality);
@@ -818,7 +819,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
     if (IsPrinting() && IsRenderingContext2D() && canvas2d_bridge_) {
       canvas2d_bridge_->FlushRecording();
       if (canvas2d_bridge_->getLastRecord()) {
-        if (FilterQuality() != kNone_SkFilterQuality) {
+        if (FilterQuality() != cc::PaintFlags::FilterQuality::kNone) {
           context.Canvas()->save();
           context.Canvas()->translate(r.X(), r.Y());
           context.Canvas()->scale(r.Width() / Size().Width(),
@@ -1283,9 +1284,10 @@ bool HTMLCanvasElement::StyleChangeNeedsDidDraw(
 
 void HTMLCanvasElement::StyleDidChange(const ComputedStyle* old_style,
                                        const ComputedStyle& new_style) {
-  SkFilterQuality filter_quality = kLow_SkFilterQuality;
+  cc::PaintFlags::FilterQuality filter_quality =
+      cc::PaintFlags::FilterQuality::kLow;
   if (new_style.ImageRendering() == EImageRendering::kPixelated)
-    filter_quality = kNone_SkFilterQuality;
+    filter_quality = cc::PaintFlags::FilterQuality::kNone;
   SetFilterQuality(filter_quality);
   style_is_visible_ = new_style.Visibility() == EVisibility::kVisible;
   if (context_) {

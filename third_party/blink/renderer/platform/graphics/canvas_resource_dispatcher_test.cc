@@ -94,7 +94,8 @@ class CanvasResourceDispatcherTest
   void CreateCanvasResourceDispatcher() {
     dispatcher_ = std::make_unique<MockCanvasResourceDispatcher>();
     resource_provider_ = CanvasResourceProvider::CreateSharedBitmapProvider(
-        IntSize(kWidth, kHeight), kLow_SkFilterQuality, CanvasResourceParams(),
+        IntSize(kWidth, kHeight), cc::PaintFlags::FilterQuality::kLow,
+        CanvasResourceParams(),
         CanvasResourceProvider::ShouldInitialize::kCallClear,
         dispatcher_->GetWeakPtr());
   }
@@ -225,7 +226,7 @@ TEST_P(CanvasResourceDispatcherTest, DispatchFrame) {
 
   auto canvas_resource = CanvasResourceSharedBitmap::Create(
       GetSize(), CanvasResourceParams(), nullptr /* provider */,
-      kLow_SkFilterQuality);
+      cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   EXPECT_EQ(canvas_resource->Size(), GetSize());
 

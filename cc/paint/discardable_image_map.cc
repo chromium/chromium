@@ -166,7 +166,7 @@ class DiscardableImageGenerator {
   void AddImageFromShader(const gfx::Rect& op_rect,
                           const PaintShader* shader,
                           const SkM44& ctm,
-                          SkFilterQuality filter_quality) {
+                          PaintFlags::FilterQuality filter_quality) {
     if (!shader || !shader->has_discardable_images())
       return;
 
@@ -236,7 +236,7 @@ class DiscardableImageGenerator {
                 const SkRect& src_rect,
                 const gfx::Rect& image_rect,
                 const SkM44& matrix,
-                SkFilterQuality filter_quality) {
+                PaintFlags::FilterQuality filter_quality) {
     if (paint_image.IsTextureBacked())
       return;
 

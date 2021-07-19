@@ -9,6 +9,7 @@
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_writer.h"
+#include "cc/paint/paint_shader.h"
 
 namespace {
 
@@ -26,7 +27,8 @@ PaintFlags::PaintFlags() {
   bitfields_.cap_type_ = SkPaint::kDefault_Cap;
   bitfields_.join_type_ = SkPaint::kDefault_Join;
   bitfields_.style_ = SkPaint::kFill_Style;
-  bitfields_.filter_quality_ = SkFilterQuality::kNone_SkFilterQuality;
+  bitfields_.filter_quality_ =
+      static_cast<int>(PaintFlags::FilterQuality::kNone);
 
   static_assert(sizeof(bitfields_) <= sizeof(bitfields_uint_),
                 "Too many bitfields");
@@ -57,6 +59,14 @@ PaintFlags& PaintFlags::operator=(PaintFlags&& other) = default;
 
 void PaintFlags::setImageFilter(sk_sp<PaintFilter> filter) {
   image_filter_ = std::move(filter);
+}
+
+bool PaintFlags::ShaderIsOpaque() const {
+  return shader_->IsOpaque();
+}
+
+void PaintFlags::setShader(sk_sp<PaintShader> shader) {
+  shader_ = std::move(shader);
 }
 
 bool PaintFlags::nothingToDraw() const {
@@ -146,15 +156,15 @@ SkPaint PaintFlags::ToSkPaint() const {
 }
 
 SkSamplingOptions PaintFlags::FilterQualityToSkSamplingOptions(
-    SkFilterQuality filter_quality) {
+    PaintFlags::FilterQuality filter_quality) {
   switch (filter_quality) {
-    case SkFilterQuality::kHigh_SkFilterQuality:
+    case PaintFlags::FilterQuality::kHigh:
       return SkSamplingOptions(SkCubicResampler::CatmullRom());
-    case SkFilterQuality::kMedium_SkFilterQuality:
+    case PaintFlags::FilterQuality::kMedium:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kLinear);
-    case SkFilterQuality::kLow_SkFilterQuality:
+    case PaintFlags::FilterQuality::kLow:
       return SkSamplingOptions(SkFilterMode::kLinear, SkMipmapMode::kNone);
-    case SkFilterQuality::kNone_SkFilterQuality:
+    case PaintFlags::FilterQuality::kNone:
       return SkSamplingOptions(SkFilterMode::kNearest, SkMipmapMode::kNone);
     default:
       NOTREACHED();

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/read_only_shared_memory_region.h"
+#include "cc/paint/paint_flags.h"
 #include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/resource_id.h"
@@ -27,7 +28,8 @@ class CanvasResource;
 class CanvasResourceDispatcherClient {
  public:
   virtual bool BeginFrame() = 0;
-  virtual void SetFilterQualityInResource(SkFilterQuality filter_quality) = 0;
+  virtual void SetFilterQualityInResource(
+      cc::PaintFlags::FilterQuality filter_quality) = 0;
 };
 
 class PLATFORM_EXPORT CanvasResourceDispatcher
@@ -87,7 +89,7 @@ class PLATFORM_EXPORT CanvasResourceDispatcher
                                const gpu::Mailbox& id);
   void DidDeleteSharedBitmap(const gpu::Mailbox& id);
 
-  void SetFilterQuality(SkFilterQuality filter_quality);
+  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality);
   void SetPlaceholderCanvasDispatcher(int placeholder_canvas_id);
 
  private:

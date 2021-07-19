@@ -7,12 +7,14 @@
 
 #include <memory>
 
+#include "base/stl_util.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_types.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 class SkColorFilter;
+class SkPixmap;
 
 namespace blink {
 

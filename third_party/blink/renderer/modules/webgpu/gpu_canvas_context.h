@@ -60,7 +60,7 @@ class GPUCanvasContext : public CanvasRenderingContext {
   bool IsComposited() const final { return true; }
   bool IsAccelerated() const final { return true; }
   bool IsOriginTopLeft() const final { return true; }
-  void SetFilterQuality(SkFilterQuality) override;
+  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
   bool IsPaintable() const final { return true; }
   int ExternallyAllocatedBufferCountPerPixel() final { return 1; }
   void Stop() final;
@@ -97,7 +97,8 @@ class GPUCanvasContext : public CanvasRenderingContext {
                          ExceptionState&,
                          bool deprecated_resize_behavior = false);
 
-  SkFilterQuality filter_quality_ = kLow_SkFilterQuality;
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
   Member<GPUSwapChain> swapchain_;
   Member<GPUDevice> configured_device_;
   bool stopped_ = false;

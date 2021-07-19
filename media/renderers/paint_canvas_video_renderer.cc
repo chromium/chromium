@@ -907,7 +907,7 @@ void PaintCanvasVideoRenderer::Paint(
   if (!need_transform && video_frame->IsMappable() &&
       flags.getAlpha() == SK_AlphaOPAQUE &&
       flags.getBlendMode() == SkBlendMode::kSrc &&
-      flags.getFilterQuality() == kLow_SkFilterQuality &&
+      flags.getFilterQuality() == cc::PaintFlags::FilterQuality::kLow &&
       (pixels = canvas->accessTopLayerPixels(&info, &row_bytes, &origin)) &&
       info.colorType() == kBGRA_8888_SkColorType) {
     const size_t offset = info.computeOffset(origin.x(), origin.y(), row_bytes);
@@ -956,7 +956,7 @@ void PaintCanvasVideoRenderer::Copy(
     viz::RasterContextProvider* raster_context_provider) {
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
-  flags.setFilterQuality(kLow_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
   auto dest_rect = gfx::RectF(gfx::SizeF(video_frame->visible_rect().size()));
   Paint(std::move(video_frame), canvas, dest_rect, flags,

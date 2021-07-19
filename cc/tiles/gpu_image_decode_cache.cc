@@ -102,8 +102,10 @@ bool SkipImage(const DrawImage& draw_image) {
 // Returns the filter quality to use for scaling the image to upload scale as
 // well as for using when passing the decoded image to skia. Due to parity with
 // SW and power impliciation, limit the filter quality to medium.
-SkFilterQuality CalculateDesiredFilterQuality(const DrawImage& draw_image) {
-  return std::min(kMedium_SkFilterQuality, draw_image.filter_quality());
+PaintFlags::FilterQuality CalculateDesiredFilterQuality(
+    const DrawImage& draw_image) {
+  return std::min(PaintFlags::FilterQuality::kMedium,
+                  draw_image.filter_quality());
 }
 
 // Calculates the scale factor which can be used to scale an image to a given
@@ -128,7 +130,7 @@ gfx::Size CalculateSizeForMipLevel(const DrawImage& draw_image,
 bool ShouldGenerateMips(const DrawImage& draw_image,
                         int upload_scale_mip_level) {
   // If filter quality is less than medium, don't generate mips.
-  if (draw_image.filter_quality() < kMedium_SkFilterQuality)
+  if (draw_image.filter_quality() < PaintFlags::FilterQuality::kMedium)
     return false;
 
   gfx::Size base_size(draw_image.paint_image().width(),
@@ -235,7 +237,7 @@ bool DrawAndScaleImage(
       SkISize::Make(paint_image.width(), paint_image.height()) ==
       pixmap.bounds().size();
   const bool is_nearest_neighbor =
-      draw_image.filter_quality() == kNone_SkFilterQuality;
+      draw_image.filter_quality() == PaintFlags::FilterQuality::kNone;
   SkImageInfo info = pixmap.info();
   SkYUVAPixmapInfo yuva_pixmap_info;
   if (do_yuv_decode) {
@@ -303,7 +305,7 @@ bool DrawAndScaleImage(
     decode_info = info.makeWH(decode_size.width(), decode_size.height());
   }
 
-  const SkFilterQuality filter_quality =
+  const PaintFlags::FilterQuality filter_quality =
       CalculateDesiredFilterQuality(draw_image);
   const SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
@@ -477,9 +479,10 @@ size_t GpuImageDecodeCache::InUseCacheKeyHash::operator()(
     const InUseCacheKey& cache_key) const {
   return base::HashInts(
       cache_key.target_color_space.GetHash(),
-      base::HashInts(cache_key.frame_key.hash(),
-                     base::HashInts(cache_key.upload_scale_mip_level,
-                                    cache_key.filter_quality)));
+      base::HashInts(
+          cache_key.frame_key.hash(),
+          base::HashInts(cache_key.upload_scale_mip_level,
+                         static_cast<int>(cache_key.filter_quality))));
 }
 
 GpuImageDecodeCache::InUseCacheEntry::InUseCacheEntry(
@@ -838,7 +841,7 @@ GpuImageDecodeCache::ImageData::ImageData(
     DecodedDataMode mode,
     size_t size,
     const gfx::ColorSpace& target_color_space,
-    SkFilterQuality quality,
+    PaintFlags::FilterQuality quality,
     int upload_scale_mip_level,
     bool needs_mips,
     bool is_bitmap_backed,

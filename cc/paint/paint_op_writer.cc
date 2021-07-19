@@ -431,7 +431,7 @@ void PaintOpWriter::Write(const sk_sp<SkTextBlob>& blob) {
 
 sk_sp<PaintShader> PaintOpWriter::TransformShaderIfNecessary(
     const PaintShader* original,
-    SkFilterQuality quality,
+    PaintFlags::FilterQuality quality,
     const SkM44& current_ctm,
     uint32_t* paint_image_transfer_cache_entry_id,
     gfx::SizeF* paint_record_post_scale,
@@ -476,7 +476,7 @@ void PaintOpWriter::Write(const SkM44& matrix) {
 }
 
 void PaintOpWriter::Write(const PaintShader* shader,
-                          SkFilterQuality quality,
+                          PaintFlags::FilterQuality quality,
                           const SkM44& current_ctm) {
   sk_sp<PaintShader> transformed_shader;
   uint32_t paint_image_transfer_cache_id = kInvalidImageTransferCacheEntryId;

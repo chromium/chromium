@@ -57,7 +57,8 @@ class CORE_EXPORT OffscreenCanvas final
 
   // CanvasResourceDispatcherClient
   bool BeginFrame() override;
-  void SetFilterQualityInResource(SkFilterQuality filter_quality) override;
+  void SetFilterQualityInResource(
+      cc::PaintFlags::FilterQuality filter_quality) override;
 
   // API Methods
   ImageBitmap* transferToImageBitmap(ScriptState*, ExceptionState&);

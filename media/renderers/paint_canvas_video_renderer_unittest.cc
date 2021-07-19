@@ -265,7 +265,7 @@ PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
 
 void PaintCanvasVideoRendererTest::PaintWithoutFrame(cc::PaintCanvas* canvas) {
   cc::PaintFlags flags;
-  flags.setFilterQuality(kLow_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   renderer_.Paint(nullptr, canvas, kNaturalRect, flags, kNoTransformation,
                   nullptr);
 }
@@ -299,7 +299,7 @@ void PaintCanvasVideoRendererTest::PaintRotated(
   }
   cc::PaintFlags flags;
   flags.setBlendMode(mode);
-  flags.setFilterQuality(kLow_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   renderer_.Paint(std::move(video_frame), canvas, dest_rect, flags,
                   video_transformation, nullptr);
 }
@@ -666,7 +666,7 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
 
   cc::SkiaPaintCanvas canvas(bitmap);
   cc::PaintFlags flags;
-  flags.setFilterQuality(kNone_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
   renderer_.Paint(std::move(video_frame), &canvas,
                   gfx::RectF(bitmap.width(), bitmap.height()), flags,
                   kNoTransformation, nullptr);
@@ -759,7 +759,7 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
       gfx::Rect(size), size, kNoTimestamp);
 
   cc::PaintFlags flags;
-  flags.setFilterQuality(kLow_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   renderer_.Paint(std::move(video_frame), &canvas, kNaturalRect, flags,
                   kNoTransformation, context_provider.get());
 }

@@ -30,7 +30,7 @@ bool ExtractScale(const SkM44& matrix, SkSize* scale) {
 DrawImage::DrawImage()
     : use_dark_mode_(false),
       src_rect_(SkIRect::MakeXYWH(0, 0, 0, 0)),
-      filter_quality_(kNone_SkFilterQuality),
+      filter_quality_(PaintFlags::FilterQuality::kNone),
       scale_(SkSize::Make(1.f, 1.f)),
       matrix_is_decomposable_(true) {}
 
@@ -39,14 +39,14 @@ DrawImage::DrawImage(PaintImage image)
       use_dark_mode_(false),
       src_rect_(
           SkIRect::MakeXYWH(0, 0, paint_image_.width(), paint_image_.height())),
-      filter_quality_(kNone_SkFilterQuality),
+      filter_quality_(PaintFlags::FilterQuality::kNone),
       scale_(SkSize::Make(1.f, 1.f)),
       matrix_is_decomposable_(true) {}
 
 DrawImage::DrawImage(PaintImage image,
                      bool use_dark_mode,
                      const SkIRect& src_rect,
-                     SkFilterQuality filter_quality,
+                     PaintFlags::FilterQuality filter_quality,
                      const SkM44& matrix,
                      absl::optional<size_t> frame_index,
                      const absl::optional<gfx::ColorSpace>& color_space,

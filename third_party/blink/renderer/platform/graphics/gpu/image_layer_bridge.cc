@@ -39,7 +39,7 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
 
   auto paint_image = source->PaintImageForCurrentFrame();
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      source->Size(), kLow_SkFilterQuality,
+      source->Size(), cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceParams(paint_image.GetSkImageInfo()),
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, source->IsOriginTopLeft(),
@@ -60,7 +60,8 @@ ImageLayerBridge::ImageLayerBridge(OpacityMode opacity_mode)
   layer_ = cc::TextureLayer::CreateForMailbox(this);
   layer_->SetIsDrawable(true);
   layer_->SetHitTestable(true);
-  layer_->SetNearestNeighbor(filter_quality_ == kNone_SkFilterQuality);
+  layer_->SetNearestNeighbor(filter_quality_ ==
+                             cc::PaintFlags::FilterQuality::kNone);
   if (opacity_mode_ == kOpaque) {
     layer_->SetContentsOpaque(true);
     layer_->SetBlendBackgroundColor(false);
@@ -155,8 +156,9 @@ bool ImageLayerBridge::PrepareTransferableResource(
 
     const gfx::Size size(image_for_compositor->width(),
                          image_for_compositor->height());
-    uint32_t filter =
-        filter_quality_ == kNone_SkFilterQuality ? GL_NEAREST : GL_LINEAR;
+    uint32_t filter = filter_quality_ == cc::PaintFlags::FilterQuality::kNone
+                          ? GL_NEAREST
+                          : GL_LINEAR;
     auto mailbox_holder = image_for_compositor->GetMailboxHolder();
     auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
     bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &

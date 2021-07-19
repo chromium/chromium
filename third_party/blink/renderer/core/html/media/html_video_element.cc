@@ -391,7 +391,7 @@ void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
     media_flags = *flags;
   } else {
     media_flags.setAlpha(0xFF);
-    media_flags.setFilterQuality(kLow_SkFilterQuality);
+    media_flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
     media_flags.setBlendMode(SkBlendMode::kSrc);
   }
 

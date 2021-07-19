@@ -23,7 +23,7 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            GPUDevice* device,
                            WGPUTextureUsage usage,
                            WGPUTextureFormat format,
-                           SkFilterQuality filter_quality,
+                           cc::PaintFlags::FilterQuality filter_quality,
                            IntSize size)
     : DawnObjectImpl(device),
       context_(context),
@@ -59,7 +59,8 @@ cc::Layer* GPUSwapChain::CcLayer() {
   return swap_buffers_->CcLayer();
 }
 
-void GPUSwapChain::SetFilterQuality(SkFilterQuality filter_quality) {
+void GPUSwapChain::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
   DCHECK(swap_buffers_);
   if (swap_buffers_) {
     swap_buffers_->SetFilterQuality(filter_quality);
@@ -124,7 +125,8 @@ scoped_refptr<CanvasResource> GPUSwapChain::ExportCanvasResource() {
       IntSize(transferable_resource.size),
       transferable_resource.mailbox_holder.texture_target, resource_params,
       swap_buffers_->GetContextProviderWeakPtr(), /*resource_provider=*/nullptr,
-      kLow_SkFilterQuality, /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
+      cc::PaintFlags::FilterQuality::kLow,
+      /*is_origin_top_left=*/kBottomLeft_GrSurfaceOrigin,
       transferable_resource.is_overlay_candidate);
 }
 

@@ -95,8 +95,9 @@ class CC_PAINT_EXPORT PaintOpReader {
   void Read(SkColorType* color_type) {
     ReadEnum<SkColorType, kLastEnum_SkColorType>(color_type);
   }
-  void Read(SkFilterQuality* quality) {
-    ReadEnum<SkFilterQuality, kLast_SkFilterQuality>(quality);
+  void Read(PaintFlags::FilterQuality* quality) {
+    ReadEnum<PaintFlags::FilterQuality, PaintFlags::FilterQuality::kLast>(
+        quality);
   }
   void Read(SkBlendMode* blend_mode) {
     ReadEnum<SkBlendMode, SkBlendMode::kLastMode>(blend_mode);

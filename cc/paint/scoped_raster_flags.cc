@@ -64,7 +64,7 @@ void ScopedRasterFlags::DecodeImageShader(const SkMatrix& ctm) {
   }
 
   uint32_t transfer_cache_entry_id = kInvalidImageTransferCacheEntryId;
-  SkFilterQuality raster_quality = flags()->getFilterQuality();
+  PaintFlags::FilterQuality raster_quality = flags()->getFilterQuality();
   bool transfer_cache_entry_needs_mips = false;
   gpu::Mailbox mailbox;
   auto decoded_shader = flags()->getShader()->CreateDecodedImage(

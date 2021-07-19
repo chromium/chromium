@@ -493,7 +493,8 @@ class GpuImageDecodeCacheTest
       const PaintImage& paint_image,
       const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
-      SkFilterQuality filter_quality = kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality filter_quality =
+          PaintFlags::FilterQuality::kMedium,
       SkIRect* src_rect = nullptr,
       size_t frame_index = PaintImage::kDefaultFrameIndex,
       float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel,
@@ -517,7 +518,8 @@ class GpuImageDecodeCacheTest
       const PaintImage& paint_image,
       const SkM44& matrix = SkM44(),
       gfx::ColorSpace* color_space = nullptr,
-      SkFilterQuality filter_quality = kMedium_SkFilterQuality,
+      PaintFlags::FilterQuality filter_quality =
+          PaintFlags::FilterQuality::kMedium,
       SkIRect* src_rect = nullptr,
       size_t frame_index = PaintImage::kDefaultFrameIndex,
       float sdr_white_level = gfx::ColorSpace::kDefaultSDRWhiteLevel) {
@@ -753,8 +755,9 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageLowerQuality) {
   EXPECT_TRUE(result.need_unref);
   EXPECT_TRUE(result.task);
 
-  DrawImage another_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage another_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult another_result = cache->GetTaskForImageAndRef(
       another_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(another_result.need_unref);
@@ -871,8 +874,9 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
   auto cache = CreateCache();
   SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
   PaintImage first_image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage first_draw_image = CreateDrawImageInternal(
-      first_image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage first_draw_image =
+      CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult first_result = cache->GetTaskForImageAndRef(
       first_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(first_result.need_unref);
@@ -883,8 +887,9 @@ TEST_P(GpuImageDecodeCacheTest, GetTaskForImageHigherQuality) {
 
   cache->UnrefImage(first_draw_image);
 
-  DrawImage second_draw_image = CreateDrawImageInternal(
-      first_image, matrix, nullptr /* color_space */, kMedium_SkFilterQuality);
+  DrawImage second_draw_image =
+      CreateDrawImageInternal(first_image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kMedium);
   ImageDecodeCache::TaskResult second_result = cache->GetTaskForImageAndRef(
       second_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(second_result.need_unref);
@@ -1173,8 +1178,8 @@ TEST_P(GpuImageDecodeCacheTest, GetHdrDecodedImageForDrawToHdr) {
   constexpr float kCustomWhiteLevel = 200.f;
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), &color_space,
-      kMedium_SkFilterQuality, nullptr, PaintImage::kDefaultFrameIndex,
-      kCustomWhiteLevel);
+      PaintFlags::FilterQuality::kMedium, nullptr,
+      PaintImage::kDefaultFrameIndex, kCustomWhiteLevel);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_EQ(draw_image.target_color_space(), color_space);
@@ -1316,9 +1321,9 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawAtRasterDecode) {
 TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawLargerScale) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
+      PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1366,8 +1371,9 @@ TEST_P(GpuImageDecodeCacheTest, GetDecodedImageForDrawHigherQuality) {
   auto cache = CreateCache();
   SkM44 matrix = CreateMatrix(SkSize::Make(0.5f, 0.5f));
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1446,9 +1452,9 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeScaledDecodedImageForDraw) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageForFallbackToRGB(
       gfx::Size(GetLargeImageSize().width(), GetLargeImageSize().height() * 2));
-  DrawImage draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr /* color_space */, kHigh_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr /* color_space */,
+      PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(result.need_unref);
@@ -1468,7 +1474,8 @@ TEST_P(GpuImageDecodeCacheTest, GetLargeScaledDecodedImageForDraw) {
   EXPECT_EQ(GetLargeImageSize().width(), decoded_draw_image.image()->width());
   EXPECT_EQ(GetLargeImageSize().height(), decoded_draw_image.image()->height());
 
-  EXPECT_EQ(decoded_draw_image.filter_quality(), kMedium_SkFilterQuality);
+  EXPECT_EQ(decoded_draw_image.filter_quality(),
+            PaintFlags::FilterQuality::kMedium);
 
   EXPECT_FALSE(decoded_draw_image.image()->isTextureBacked());
   EXPECT_TRUE_IF_NOT_USING_TRANSFER_CACHE(
@@ -1610,7 +1617,7 @@ TEST_P(GpuImageDecodeCacheTest, NonOverlappingSrcRectImagesAreSkipped) {
   DrawImage draw_image(image, false,
                        SkIRect::MakeXYWH(image.width() + 1, image.height() + 1,
                                          image.width(), image.height()),
-                       kMedium_SkFilterQuality,
+                       PaintFlags::FilterQuality::kMedium,
                        CreateMatrix(SkSize::Make(1.f, 1.f)),
                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
@@ -1635,7 +1642,7 @@ TEST_P(GpuImageDecodeCacheTest, CanceledTasksDoNotCountAgainstBudget) {
   SkIRect src_rect = SkIRect::MakeXYWH(0, 0, image.width(), image.height());
   DrawImage draw_image = CreateDrawImageInternal(
       image, CreateMatrix(SkSize::Make(1.f, 1.f)), nullptr /* color_space */,
-      kMedium_SkFilterQuality, &src_rect);
+      PaintFlags::FilterQuality::kMedium, &src_rect);
 
   ImageDecodeCache::TaskResult result =
       cache->GetTaskForImageAndRef(draw_image, ImageDecodeCache::TracingInfo());
@@ -1793,15 +1800,16 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   SkM44 matrix = CreateMatrix(SkSize::Make(0.4f, 0.4f));
 
   // Create an image with kLow_FilterQuality.
-  DrawImage low_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage low_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
   ImageDecodeCache::TaskResult low_result = cache->GetTaskForImageAndRef(
       low_draw_image, ImageDecodeCache::TracingInfo());
   EXPECT_TRUE(low_result.need_unref);
   EXPECT_TRUE(low_result.task);
 
-  // Get the same image at kMedium_SkFilterQuality. We can't re-use low, so we
-  // should get a new task/ref.
+  // Get the same image at PaintFlags::FilterQuality::kMedium. We can't re-use
+  // low, so we should get a new task/ref.
   DrawImage medium_draw_image = CreateDrawImageInternal(image);
   ImageDecodeCache::TaskResult medium_result = cache->GetTaskForImageAndRef(
       medium_draw_image, ImageDecodeCache::TracingInfo());
@@ -1809,9 +1817,11 @@ TEST_P(GpuImageDecodeCacheTest, QualityCappedAtMedium) {
   EXPECT_TRUE(medium_result.task.get());
   EXPECT_FALSE(low_result.task.get() == medium_result.task.get());
 
-  // Get the same image at kHigh_SkFilterQuality. We should re-use medium.
-  DrawImage high_quality_draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kHigh_SkFilterQuality);
+  // Get the same image at PaintFlags::FilterQuality::kHigh. We should re-use
+  // medium.
+  DrawImage high_quality_draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kHigh);
   ImageDecodeCache::TaskResult high_quality_result =
       cache->GetTaskForImageAndRef(high_quality_draw_image,
                                    ImageDecodeCache::TracingInfo());
@@ -1864,8 +1874,9 @@ TEST_P(GpuImageDecodeCacheTest, OutOfRasterDecodeTask) {
   auto cache = CreateCache();
   PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
   SkM44 matrix = CreateMatrix(SkSize::Make(1.0f, 1.0f));
-  DrawImage draw_image = CreateDrawImageInternal(
-      image, matrix, nullptr /* color_space */, kLow_SkFilterQuality);
+  DrawImage draw_image =
+      CreateDrawImageInternal(image, matrix, nullptr /* color_space */,
+                              PaintFlags::FilterQuality::kLow);
 
   ImageDecodeCache::TaskResult result =
       cache->GetOutOfRasterDecodeTaskForImageAndRef(draw_image);
@@ -1935,10 +1946,11 @@ TEST_P(GpuImageDecodeCacheTest, SmallCacheNormalWorkingSet) {
   DrawImage draw_image = CreateDrawImageInternal(image);
 
   PaintImage image2 = CreatePaintImageInternal(GetNormalImageSize());
-  DrawImage draw_image2(
-      image2, false, SkIRect::MakeWH(image2.width(), image2.height()),
-      kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(1.0f, 1.0f)),
-      PaintImage::kDefaultFrameIndex, DefaultColorSpace());
+  DrawImage draw_image2(image2, false,
+                        SkIRect::MakeWH(image2.width(), image2.height()),
+                        PaintFlags::FilterQuality::kMedium,
+                        CreateMatrix(SkSize::Make(1.0f, 1.0f)),
+                        PaintImage::kDefaultFrameIndex, DefaultColorSpace());
 
   // Add an image to the cache and un-ref it.
   {
@@ -2141,7 +2153,7 @@ TEST_P(GpuImageDecodeCacheTest, CacheDecodesExpectedFrames) {
 
   viz::ContextProvider::ScopedContextLock context_lock(context_provider());
 
-  SkFilterQuality quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kMedium;
   DrawImage draw_image(
       image, false, SkIRect::MakeWH(image.width(), image.height()), quality,
       CreateMatrix(SkSize::Make(1.0f, 1.0f)), 1u, DefaultColorSpace());
@@ -2657,9 +2669,9 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
                                .set_paint_image_generator(generator)
                                .TakePaintImage();
 
-  DrawImage draw_image =
-      CreateDrawImageInternal(paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)),
-                              nullptr /* color_space */, kNone_SkFilterQuality);
+  DrawImage draw_image = CreateDrawImageInternal(
+      paint_image, CreateMatrix(SkSize::Make(0.5, 0.5)),
+      nullptr /* color_space */, PaintFlags::FilterQuality::kNone);
   DecodedDrawImage decoded_image =
       EnsureImageBacked(cache->GetDecodedImageForDraw(draw_image));
   ASSERT_TRUE(decoded_image.image());
@@ -2678,7 +2690,7 @@ TEST_P(GpuImageDecodeCacheTest, DecodeToScaleNoneQuality) {
 }
 
 TEST_P(GpuImageDecodeCacheTest, BasicMips) {
-  auto decode_and_check_mips = [this](SkFilterQuality filter_quality,
+  auto decode_and_check_mips = [this](PaintFlags::FilterQuality filter_quality,
                                       SkSize scale, gfx::ColorSpace color_space,
                                       bool should_have_mips) {
     auto cache = CreateCache();
@@ -2726,22 +2738,23 @@ TEST_P(GpuImageDecodeCacheTest, BasicMips) {
   };
 
   // No scale == no mips.
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(1.0f, 1.0f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(1.0f, 1.0f), DefaultColorSpace(), false);
   // Full mip level scale == no mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.5f, 0.5f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.5f, 0.5f), DefaultColorSpace(), false);
   // Low filter quality == no mips
-  decode_and_check_mips(kLow_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kLow,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), false);
   // None filter quality == no mips
-  decode_and_check_mips(kNone_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), false);
+  decode_and_check_mips(PaintFlags::FilterQuality::kNone,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), false);
   // Medium filter quality == mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
-                        DefaultColorSpace(), true);
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.6f, 0.6f), DefaultColorSpace(), true);
   // Color conversion preserves mips
-  decode_and_check_mips(kMedium_SkFilterQuality, SkSize::Make(0.6f, 0.6f),
+  decode_and_check_mips(PaintFlags::FilterQuality::kMedium,
+                        SkSize::Make(0.6f, 0.6f),
                         gfx::ColorSpace::CreateXYZD50(), true);
 }
 
@@ -2972,8 +2985,8 @@ TEST_P(GpuImageDecodeCacheTest,
   // This test creates an image that will be YUV decoded and drawn at 80% scale.
   // Because the final size is between mip levels, we expect the image to be
   // decoded and uploaded at original size (mip level 0 for all planes) but to
-  // have mips attached since kMedium_SkFilterQuality uses bilinear filtering
-  // between mip levels.
+  // have mips attached since PaintFlags::FilterQuality::kMedium uses bilinear
+  // filtering between mip levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -2981,7 +2994,8 @@ TEST_P(GpuImageDecodeCacheTest,
   }
   auto owned_cache = CreateCache();
   auto decode_and_check_plane_sizes = [this, cache = owned_cache.get()]() {
-    SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+    PaintFlags::FilterQuality filter_quality =
+        PaintFlags::FilterQuality::kMedium;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
     PaintImage image = CreatePaintImageInternal(GetNormalImageSize());
@@ -3041,8 +3055,8 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
   // This test creates a high bit depth image that will be YUV decoded and drawn
   // at 80% scale. Because the final size is between mip levels, we expect the
   // image to be decoded and uploaded at original size (mip level 0 for all
-  // planes) but to have mips attached since kMedium_SkFilterQuality uses
-  // bilinear filtering between mip levels.
+  // planes) but to have mips attached since PaintFlags::FilterQuality::kMedium
+  // uses bilinear filtering between mip levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -3057,7 +3071,8 @@ TEST_P(GpuImageDecodeCacheTest, HighBitDepthYUVDecoding) {
                                                   DataType::kUnorm8,
                                           gfx::ColorSpace target_cs =
                                               gfx::ColorSpace::CreateSRGB()) {
-    SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+    PaintFlags::FilterQuality filter_quality =
+        PaintFlags::FilterQuality::kMedium;
     SkSize requires_decode_at_original_scale = SkSize::Make(0.8f, 0.8f);
 
     // When we're targeting HDR output, select a reasonable HDR color space for
@@ -3271,7 +3286,8 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
   // Because the final size is between mip levels, we expect the image to be
   // decoded and uploaded at half its original size (mip level 1 for Y plane but
   // level 0 for chroma planes) and to have mips attached since
-  // kMedium_SkFilterQuality uses bilinear filtering between mip levels.
+  // PaintFlags::FilterQuality::kMedium uses bilinear filtering between mip
+  // levels.
   if (!do_yuv_decode_) {
     // The YUV case may choose different mip levels between chroma and luma
     // planes.
@@ -3282,7 +3298,8 @@ TEST_P(GpuImageDecodeCacheTest, ScaledYUVDecodeScaledDrawCorrectlyMipsPlanes) {
       [this, cache = owned_cache.get()](
           SkSize scaled_size,
           const SkISize mipped_plane_sizes[SkYUVAInfo::kMaxPlanes]) {
-        SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+        PaintFlags::FilterQuality filter_quality =
+            PaintFlags::FilterQuality::kMedium;
 
         gfx::Size image_size = GetNormalImageSize();
         PaintImage image = CreatePaintImageInternal(image_size);
@@ -3478,7 +3495,7 @@ TEST_P(GpuImageDecodeCacheTest, DarkModeImageCacheSize) {
   // Another draw image with smaller src rect for image1.
   SkIRect src = SkIRect::MakeWH(10, 10);
   DrawImage draw_image12 = CreateDrawImageWithDarkModeInternal(
-      image1, SkM44(), nullptr, kMedium_SkFilterQuality, &src);
+      image1, SkM44(), nullptr, PaintFlags::FilterQuality::kMedium, &src);
   ImageDecodeCache::TaskResult result12 = cache->GetTaskForImageAndRef(
       draw_image12, ImageDecodeCache::TracingInfo());
   GetImageAndDrawFinishedForDarkMode(cache.get(), draw_image12,
@@ -3573,9 +3590,9 @@ TEST_P(GpuImageDecodeCacheTest, ClippedAndScaledDrawImageRemovesCacheEntry) {
 
   // Get task for clipped and scaled image.
   auto clipped_rect = SkIRect::MakeWH(image.width() * 0.9f, image.height());
-  DrawImage clipped_draw_image =
-      CreateDrawImageInternal(image, CreateMatrix(SkSize::Make(0.5f, 0.5f)),
-                              nullptr, kMedium_SkFilterQuality, &clipped_rect);
+  DrawImage clipped_draw_image = CreateDrawImageInternal(
+      image, CreateMatrix(SkSize::Make(0.5f, 0.5f)), nullptr,
+      PaintFlags::FilterQuality::kMedium, &clipped_rect);
   ImageDecodeCache::TaskResult clipped_result = cache->GetTaskForImageAndRef(
       clipped_draw_image, ImageDecodeCache::TracingInfo());
 
@@ -3668,7 +3685,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
     ASSERT_TRUE(target_color_space.IsValid());
     const PaintImage image = CreatePaintImageForDecodeAcceleration(
         ImageType::kJPEG, subsampling_and_expected_data_size.first);
-    const SkFilterQuality quality = kHigh_SkFilterQuality;
+    const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
     DrawImage draw_image(image, false,
                          SkIRect::MakeWH(image.width(), image.height()),
                          quality, CreateMatrix(SkSize::Make(0.75f, 0.75f)),
@@ -3708,7 +3725,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
@@ -3747,7 +3764,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateXYZD50();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
@@ -3795,7 +3812,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(1.0f, 1.0f)),
@@ -3818,7 +3835,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.5f, 0.5f)),
@@ -3843,7 +3860,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
@@ -3893,7 +3910,7 @@ TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesTest,
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
   ASSERT_TRUE(target_color_space.IsValid());
   const PaintImage image = CreatePaintImageForDecodeAcceleration();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   DrawImage draw_image(image, false,
                        SkIRect::MakeWH(image.width(), image.height()), quality,
                        CreateMatrix(SkSize::Make(0.75f, 0.75f)),
@@ -3936,7 +3953,7 @@ class GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest
 TEST_P(GpuImageDecodeCacheWithAcceleratedDecodesFlagsTest,
        RequestAcceleratedDecodeSuccessfully) {
   auto cache = CreateCache();
-  const SkFilterQuality quality = kHigh_SkFilterQuality;
+  const PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kHigh;
   const gfx::ColorSpace target_color_space = gfx::ColorSpace::CreateSRGB();
   ASSERT_TRUE(target_color_space.IsValid());
 

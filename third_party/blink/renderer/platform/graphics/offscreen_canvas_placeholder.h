@@ -8,11 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/single_thread_task_runner.h"
+#include "cc/paint/paint_flags.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 
 namespace blink {
 
@@ -48,7 +48,8 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     return placeholder_id_ != kNoPlaceholderId;
   }
 
-  void UpdateOffscreenCanvasFilterQuality(SkFilterQuality filter_quality);
+  void UpdateOffscreenCanvasFilterQuality(
+      cc::PaintFlags::FilterQuality filter_quality);
 
   virtual bool HasCanvasCapture() const { return false; }
 
@@ -73,7 +74,7 @@ class PLATFORM_EXPORT OffscreenCanvasPlaceholder {
     kShouldActivateAnimation,
   };
   AnimationState animation_state_ = kActiveAnimation;
-  absl::optional<SkFilterQuality> filter_quality_ = absl::nullopt;
+  absl::optional<cc::PaintFlags::FilterQuality> filter_quality_ = absl::nullopt;
 };
 
 }  // namespace blink

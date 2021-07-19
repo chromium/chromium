@@ -1557,7 +1557,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
   // Take the highest quality filter, since this single draw will reflect the
   // filtering decisions made both when drawing into the RP and when drawing the
   // RP results itself. The ord() lambda simulates this notion of "highest" when
-  // we used to use SkFilterQuality.
+  // we used to use FilterQuality.
   auto ord = [](const SkSamplingOptions& sampling) {
     if (sampling.useCubic)
       return 3;

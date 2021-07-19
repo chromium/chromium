@@ -149,7 +149,7 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
   DCHECK(!key.is_nearest_neighbor());
   SkPixmap target_pixmap(target_info, target_pixels->data(),
                          target_info.minRowBytes());
-  SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kMedium;
   if (decoded_pixmap.colorType() == kRGBA_F16_SkColorType &&
       !ImageDecodeCacheUtils::CanResizeF16Image(filter_quality)) {
     result = ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
@@ -199,7 +199,8 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
   }
 
   ProcessingType type = kOriginal;
-  bool is_nearest_neighbor = image.filter_quality() == kNone_SkFilterQuality;
+  bool is_nearest_neighbor =
+      image.filter_quality() == PaintFlags::FilterQuality::kNone;
   int mip_level = MipMapUtil::GetLevelForSize(src_rect.size(), target_size);
   // If any of the following conditions hold, then use at most low filter
   // quality and adjust the target size to match the original image:

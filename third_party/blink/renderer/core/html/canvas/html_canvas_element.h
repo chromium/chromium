@@ -226,7 +226,7 @@ class CORE_EXPORT HTMLCanvasElement final
   CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
       RasterModeHint hint) override;
   bool IsPrinting() const override;
-  void SetFilterQuality(SkFilterQuality filter_quality) override;
+  void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) override;
 
   // CanvasRenderingContextHost implementation.
   UkmParameters GetUkmParameters() override;

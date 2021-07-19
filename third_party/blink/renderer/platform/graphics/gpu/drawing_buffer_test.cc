@@ -687,7 +687,7 @@ TEST(DrawingBufferDepthStencilTest, packedDepthStencilSupported) {
         IntSize(10, 10), premultiplied_alpha, want_alpha_channel,
         want_depth_buffer, want_stencil_buffer, want_antialiasing, preserve,
         DrawingBuffer::kWebGL1, DrawingBuffer::kAllowChromiumImage,
-        kLow_SkFilterQuality, CanvasColorParams(),
+        cc::PaintFlags::FilterQuality::kLow, CanvasColorParams(),
         gl::GpuPreference::kHighPerformance);
 
     // When we request a depth or a stencil buffer, we will get both.
@@ -759,7 +759,7 @@ TEST_F(DrawingBufferTest,
       nullptr, graphics_info, false /* using_swap_chain */, nullptr,
       too_big_size, false, false, false, false, false, DrawingBuffer::kDiscard,
       DrawingBuffer::kWebGL1, DrawingBuffer::kAllowChromiumImage,
-      kLow_SkFilterQuality, CanvasColorParams(),
+      cc::PaintFlags::FilterQuality::kLow, CanvasColorParams(),
       gl::GpuPreference::kHighPerformance);
   EXPECT_EQ(too_big_drawing_buffer, nullptr);
   drawing_buffer_->BeginDestruction();

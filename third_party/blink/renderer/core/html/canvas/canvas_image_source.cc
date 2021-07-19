@@ -18,7 +18,8 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     bool fallback_to_software) {
   IntSize size(info.width(), info.height());
 
-  const SkFilterQuality filter_quality = kLow_SkFilterQuality;
+  const cc::PaintFlags::FilterQuality filter_quality =
+      cc::PaintFlags::FilterQuality::kLow;
   const CanvasResourceParams resource_params(info);
 
   if (context_provider) {

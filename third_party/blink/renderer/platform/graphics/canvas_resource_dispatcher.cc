@@ -249,7 +249,7 @@ bool CanvasResourceDispatcher::PrepareFrame(
   auto frame_resource = std::make_unique<FrameResource>();
 
   bool nearest_neighbor =
-      canvas_resource->FilterQuality() == kNone_SkFilterQuality;
+      canvas_resource->FilterQuality() == cc::PaintFlags::FilterQuality::kNone;
 
   canvas_resource->PrepareTransferableResource(
       &resource, &frame_resource->release_callback, kVerifiedSyncToken);
@@ -439,7 +439,7 @@ void CanvasResourceDispatcher::DidDeleteSharedBitmap(const gpu::Mailbox& id) {
 }
 
 void CanvasResourceDispatcher::SetFilterQuality(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (Client())
     Client()->SetFilterQualityInResource(filter_quality);
 }

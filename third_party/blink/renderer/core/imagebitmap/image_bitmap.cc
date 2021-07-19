@@ -131,13 +131,13 @@ ImageBitmap::ParsedOptions ParseOptions(const ImageBitmapOptions* options,
   parsed_options.should_scale_input = true;
 
   if (options->resizeQuality() == kImageBitmapOptionResizeQualityHigh)
-    parsed_options.resize_quality = kHigh_SkFilterQuality;
+    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kHigh;
   else if (options->resizeQuality() == kImageBitmapOptionResizeQualityMedium)
-    parsed_options.resize_quality = kMedium_SkFilterQuality;
+    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kMedium;
   else if (options->resizeQuality() == kImageBitmapOptionResizeQualityPixelated)
-    parsed_options.resize_quality = kNone_SkFilterQuality;
+    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kNone;
   else
-    parsed_options.resize_quality = kLow_SkFilterQuality;
+    parsed_options.resize_quality = cc::PaintFlags::FilterQuality::kLow;
   return parsed_options;
 }
 
@@ -218,7 +218,8 @@ std::unique_ptr<CanvasResourceProvider> CreateProvider(
     bool fallback_to_software) {
   IntSize size(info.width(), info.height());
 
-  const SkFilterQuality filter_quality = kLow_SkFilterQuality;
+  const cc::PaintFlags::FilterQuality filter_quality =
+      cc::PaintFlags::FilterQuality::kLow;
   const CanvasResourceParams resource_params(info);
 
   if (context_provider) {

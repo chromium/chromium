@@ -6,9 +6,9 @@
 #define CC_PAINT_DRAW_IMAGE_H_
 
 #include "cc/paint/paint_export.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkM44.h"
 #include "third_party/skia/include/core/SkRect.h"
@@ -29,7 +29,7 @@ class CC_PAINT_EXPORT DrawImage {
   DrawImage(PaintImage image,
             bool use_dark_mode,
             const SkIRect& src_rect,
-            SkFilterQuality filter_quality,
+            PaintFlags::FilterQuality filter_quality,
             const SkM44& matrix,
             absl::optional<size_t> frame_index = absl::nullopt,
             const absl::optional<gfx::ColorSpace>& color_space = absl::nullopt,
@@ -54,7 +54,7 @@ class CC_PAINT_EXPORT DrawImage {
   bool use_dark_mode() const { return use_dark_mode_; }
   const SkSize& scale() const { return scale_; }
   const SkIRect& src_rect() const { return src_rect_; }
-  SkFilterQuality filter_quality() const { return filter_quality_; }
+  PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   bool matrix_is_decomposable() const { return matrix_is_decomposable_; }
   const gfx::ColorSpace& target_color_space() const {
     DCHECK(target_color_space_.has_value());
@@ -73,7 +73,7 @@ class CC_PAINT_EXPORT DrawImage {
   PaintImage paint_image_;
   bool use_dark_mode_;
   SkIRect src_rect_;
-  SkFilterQuality filter_quality_;
+  PaintFlags::FilterQuality filter_quality_;
   SkSize scale_;
   bool matrix_is_decomposable_;
   absl::optional<size_t> frame_index_;

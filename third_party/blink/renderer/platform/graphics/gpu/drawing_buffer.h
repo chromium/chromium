@@ -138,7 +138,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
       PreserveDrawingBuffer,
       WebGLVersion,
       ChromiumImageUsage,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       const CanvasColorParams&,
       gl::GpuPreference);
 
@@ -211,8 +211,10 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   GLbitfield GetBuffersToAutoClear() const;
 
   void SetIsInHiddenPage(bool);
-  void SetFilterQuality(SkFilterQuality);
-  SkFilterQuality FilterQuality() const { return filter_quality_; }
+  void SetFilterQuality(cc::PaintFlags::FilterQuality);
+  cc::PaintFlags::FilterQuality FilterQuality() const {
+    return filter_quality_;
+  }
 
   // Whether the target for draw operations has format GL_RGBA, but is
   // emulating format GL_RGB. When the target's storage is first
@@ -328,7 +330,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
                 bool wants_depth,
                 bool wants_stencil,
                 ChromiumImageUsage,
-                SkFilterQuality,
+                cc::PaintFlags::FilterQuality,
                 const CanvasColorParams&,
                 gl::GpuPreference gpu_preference);
 
@@ -653,7 +655,8 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   bool destruction_in_progress_ = false;
   bool is_hidden_ = false;
   bool has_eqaa_support = false;
-  SkFilterQuality filter_quality_ = kLow_SkFilterQuality;
+  cc::PaintFlags::FilterQuality filter_quality_ =
+      cc::PaintFlags::FilterQuality::kLow;
 
   scoped_refptr<cc::TextureLayer> layer_;
 

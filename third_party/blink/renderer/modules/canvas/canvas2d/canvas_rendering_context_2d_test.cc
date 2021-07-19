@@ -333,7 +333,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                              RasterModeHint hint)
       : CanvasResourceProvider(CanvasResourceProvider::kBitmap,
                                size,
-                               kLow_SkFilterQuality,
+                               cc::PaintFlags::FilterQuality::kLow,
                                params,
                                /*is_origin_top_left=*/false,
                                nullptr,

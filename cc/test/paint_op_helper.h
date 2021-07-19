@@ -363,18 +363,18 @@ class PaintOpHelper {
     return "<SkPath>";
   }
 
-  static std::string SkiaTypeToString(SkFilterQuality quality) {
+  static std::string SkiaTypeToString(PaintFlags::FilterQuality quality) {
     switch (quality) {
-      case kNone_SkFilterQuality:
+      case PaintFlags::FilterQuality::kNone:
         return "kNone_SkFilterQuality";
-      case kLow_SkFilterQuality:
+      case PaintFlags::FilterQuality::kLow:
         return "kLow_SkFilterQuality";
-      case kMedium_SkFilterQuality:
+      case PaintFlags::FilterQuality::kMedium:
         return "kMedium_SkFilterQuality";
-      case kHigh_SkFilterQuality:
+      case PaintFlags::FilterQuality::kHigh:
         return "kHigh_SkFilterQuality";
     }
-    return "<unknown SkFilterQuality>";
+    return "<unknown FilterQuality>";
   }
 
   static std::string SkiaTypeToString(PaintFlags::Cap cap) {

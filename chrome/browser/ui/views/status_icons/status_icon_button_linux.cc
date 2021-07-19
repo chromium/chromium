@@ -128,7 +128,7 @@ void StatusIconButtonLinux::PaintButtonContents(gfx::Canvas* canvas) {
   canvas->Transform(transform);
 
   cc::PaintFlags flags;
-  flags.setFilterQuality(kHigh_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   canvas->DrawImageInt(image, 0, 0, image.width(), image.height(), 0, 0,
                        image.width(), image.height(), true, flags);
 }

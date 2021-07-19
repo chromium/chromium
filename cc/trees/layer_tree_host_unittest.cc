@@ -8254,8 +8254,8 @@ class LayerTreeHostTestQueueImageDecode : public LayerTreeHostTest {
 
     image_ =
         DrawImage(CreateDiscardablePaintImage(gfx::Size(400, 400)), false,
-                  SkIRect::MakeWH(400, 400), kNone_SkFilterQuality, SkM44(),
-                  PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
+                  SkIRect::MakeWH(400, 400), PaintFlags::FilterQuality::kNone,
+                  SkM44(), PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
     auto callback = base::BindRepeating(
         &LayerTreeHostTestQueueImageDecode::ImageDecodeFinished,
         base::Unretained(this));

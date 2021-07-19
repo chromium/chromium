@@ -118,7 +118,7 @@ class CanvasResourceProviderBitmap : public CanvasResourceProvider {
  public:
   CanvasResourceProviderBitmap(
       const IntSize& size,
-      SkFilterQuality filter_quality,
+      cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
       : CanvasResourceProvider(kBitmap,
@@ -163,7 +163,7 @@ class CanvasResourceProviderSharedBitmap : public CanvasResourceProviderBitmap {
  public:
   CanvasResourceProviderSharedBitmap(
       const IntSize& size,
-      SkFilterQuality filter_quality,
+      cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher)
       : CanvasResourceProviderBitmap(size,
@@ -212,7 +212,7 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
  public:
   CanvasResourceProviderSharedImage(
       const IntSize& size,
-      SkFilterQuality filter_quality,
+      cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
@@ -669,7 +669,7 @@ class CanvasResourceProviderPassThrough final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderPassThrough(
       const IntSize& size,
-      SkFilterQuality filter_quality,
+      cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
@@ -722,7 +722,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
  public:
   CanvasResourceProviderSwapChain(
       const IntSize& size,
-      SkFilterQuality filter_quality,
+      cc::PaintFlags::FilterQuality filter_quality,
       const CanvasResourceParams& params,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>
           context_provider_wrapper,
@@ -886,7 +886,7 @@ class CanvasResourceProviderSwapChain final : public CanvasResourceProvider {
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateBitmapProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     ShouldInitialize should_initialize) {
   auto provider = std::make_unique<CanvasResourceProviderBitmap>(
@@ -904,7 +904,7 @@ CanvasResourceProvider::CreateBitmapProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSharedBitmapProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     ShouldInitialize should_initialize,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher) {
@@ -928,7 +928,7 @@ CanvasResourceProvider::CreateSharedBitmapProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSharedImageProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
@@ -1013,7 +1013,7 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
     bool is_origin_top_left) {
   auto context_provider_wrapper = SharedGpuContext::ContextProviderWrapper();
   return CreateSharedImageProvider(
-      size, kLow_SkFilterQuality, params,
+      size, cc::PaintFlags::FilterQuality::kLow, params,
       CanvasResourceProvider::ShouldInitialize::kNo,
       std::move(context_provider_wrapper), RasterMode::kGPU, is_origin_top_left,
       gpu::SHARED_IMAGE_USAGE_WEBGPU);
@@ -1022,7 +1022,7 @@ CanvasResourceProvider::CreateWebGPUImageProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreatePassThroughProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceDispatcher> resource_dispatcher,
@@ -1063,7 +1063,7 @@ CanvasResourceProvider::CreatePassThroughProvider(
 std::unique_ptr<CanvasResourceProvider>
 CanvasResourceProvider::CreateSwapChainProvider(
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     ShouldInitialize should_initialize,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
@@ -1197,7 +1197,7 @@ bool CanvasResourceProvider::CanvasImageProvider::IsHardwareDecodeCache()
 CanvasResourceProvider::CanvasResourceProvider(
     const ResourceProviderType& type,
     const IntSize& size,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     bool is_origin_top_left,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,

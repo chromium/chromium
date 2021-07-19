@@ -42,7 +42,7 @@ void SetSuspendAnimation(
 
 void UpdateDispatcherFilterQuality(
     base::WeakPtr<blink::CanvasResourceDispatcher> dispatcher,
-    SkFilterQuality filter) {
+    cc::PaintFlags::FilterQuality filter) {
   if (dispatcher) {
     dispatcher->SetFilterQuality(filter);
   }
@@ -86,7 +86,7 @@ void OffscreenCanvasPlaceholder::SetOffscreenCanvasDispatcher(
   // quality before this function. We need to first apply the filter changes to
   // the corresponding offscreen canvas.
   if (filter_quality_) {
-    SkFilterQuality quality = filter_quality_.value();
+    cc::PaintFlags::FilterQuality quality = filter_quality_.value();
     filter_quality_ = absl::nullopt;
     UpdateOffscreenCanvasFilterQuality(quality);
   }
@@ -107,7 +107,7 @@ void OffscreenCanvasPlaceholder::ReleaseOffscreenCanvasFrame() {
 }
 
 void OffscreenCanvasPlaceholder::UpdateOffscreenCanvasFilterQuality(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   DCHECK(IsOffscreenCanvasRegistered());
   if (!frame_dispatcher_task_runner_) {
     filter_quality_ = filter_quality;

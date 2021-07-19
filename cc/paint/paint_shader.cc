@@ -321,10 +321,10 @@ sk_sp<PaintShader> PaintShader::CreatePaintWorkletRecord(
 
 sk_sp<PaintShader> PaintShader::CreateDecodedImage(
     const SkMatrix& ctm,
-    SkFilterQuality quality,
+    PaintFlags::FilterQuality quality,
     ImageProvider* image_provider,
     uint32_t* transfer_cache_entry_id,
-    SkFilterQuality* raster_quality,
+    PaintFlags::FilterQuality* raster_quality,
     bool* needs_mips,
     gpu::Mailbox* mailbox) const {
   DCHECK_EQ(shader_type_, Type::kImage);
@@ -378,7 +378,8 @@ sk_sp<PaintShader> PaintShader::CreateDecodedImage(
   return PaintShader::MakeImage(decoded_paint_image, tx_, ty_, &final_matrix);
 }
 
-sk_sp<SkShader> PaintShader::GetSkShader(SkFilterQuality quality) const {
+sk_sp<SkShader> PaintShader::GetSkShader(
+    PaintFlags::FilterQuality quality) const {
   SkSamplingOptions sampling(
       PaintFlags::FilterQualityToSkSamplingOptions(quality));
 

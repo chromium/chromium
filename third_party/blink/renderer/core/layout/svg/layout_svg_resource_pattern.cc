@@ -188,7 +188,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
     transform = *additional_transform * transform;
   pattern_data->pattern->ApplyToFlags(flags,
                                       AffineTransformToSkMatrix(transform));
-  flags.setFilterQuality(kLow_SkFilterQuality);
+  flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
   return true;
 }
 

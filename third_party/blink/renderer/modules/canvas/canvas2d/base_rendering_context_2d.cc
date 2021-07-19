@@ -1654,7 +1654,8 @@ void BaseRenderingContext2D::drawImage(ScriptState* script_state,
       {
         SkSamplingOptions sampling =
             PaintFlags::FilterQualityToSkSamplingOptions(
-                flags ? flags->getFilterQuality() : kNone_SkFilterQuality);
+                flags ? flags->getFilterQuality()
+                      : cc::PaintFlags::FilterQuality::kNone);
         DrawImageInternal(c, image_source, image.get(), src_rect, dst_rect,
                           sampling, flags);
       },

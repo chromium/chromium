@@ -29,7 +29,7 @@ class GPUSwapChain : public DawnObjectImpl,
                         GPUDevice*,
                         WGPUTextureUsage,
                         WGPUTextureFormat,
-                        SkFilterQuality,
+                        cc::PaintFlags::FilterQuality,
                         IntSize);
   ~GPUSwapChain() override;
 
@@ -37,7 +37,7 @@ class GPUSwapChain : public DawnObjectImpl,
 
   void Neuter();
   cc::Layer* CcLayer();
-  void SetFilterQuality(SkFilterQuality);
+  void SetFilterQuality(cc::PaintFlags::FilterQuality);
 
   const gfx::Size& Size() const { return swap_buffers_->Size(); }
 

@@ -372,7 +372,7 @@ TEST_F(DisplayItemListTest, FilterPairedRange) {
   // below.
   SkRect rect = SkRect::MakeWH(source_image.width(), source_image.height());
   sk_sp<PaintFilter> image_filter = sk_make_sp<ImagePaintFilter>(
-      source_image, rect, rect, kHigh_SkFilterQuality);
+      source_image, rect, rect, PaintFlags::FilterQuality::kHigh);
   filters.Append(FilterOperation::CreateReferenceFilter(image_filter));
   filters.Append(FilterOperation::CreateBrightnessFilter(0.5f));
   gfx::RectF filter_bounds(10.f, 10.f, 50.f, 50.f);

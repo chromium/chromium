@@ -38,7 +38,7 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
 
   auto image_filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(100.f, 100.f), SkRect::MakeWH(100.f, 100.f),
-      kNone_SkFilterQuality);
+      PaintFlags::FilterQuality::kNone);
   auto record = sk_make_sp<PaintOpBuffer>();
   record->push<DrawImageOp>(image, 0.f, 0.f);
   auto record_filter =
@@ -114,12 +114,12 @@ sk_sp<PaintFilter> CreateTestFilter(PaintFilter::Type filter_type,
       return sk_make_sp<ShaderPaintFilter>(
           PaintShader::MakeImage(image, SkTileMode::kClamp, SkTileMode::kClamp,
                                  nullptr),
-          /*alpha=*/255, kNone_SkFilterQuality, SkImageFilters::Dither::kNo,
-          &crop_rect);
+          /*alpha=*/255, PaintFlags::FilterQuality::kNone,
+          SkImageFilters::Dither::kNo, &crop_rect);
     }
     case PaintFilter::Type::kMatrix:
-      return sk_make_sp<MatrixPaintFilter>(SkMatrix::I(), kNone_SkFilterQuality,
-                                           record_filter);
+      return sk_make_sp<MatrixPaintFilter>(
+          SkMatrix::I(), PaintFlags::FilterQuality::kNone, record_filter);
     case PaintFilter::Type::kLightingDistant:
       return sk_make_sp<LightingDistantPaintFilter>(
           PaintFilter::LightingType::kDiffuse, SkPoint3::Make(0.1f, 0.2f, 0.3f),

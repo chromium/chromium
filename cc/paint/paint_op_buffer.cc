@@ -34,15 +34,17 @@ namespace cc {
 namespace {
 // In a future CL, convert DrawImage to explicitly take sampling instead of
 // quality
-SkFilterQuality sampling_to_quality(const SkSamplingOptions& sampling) {
+PaintFlags::FilterQuality sampling_to_quality(
+    const SkSamplingOptions& sampling) {
   if (sampling.useCubic) {
-    return kHigh_SkFilterQuality;
+    return PaintFlags::FilterQuality::kHigh;
   }
   if (sampling.mipmap != SkMipmapMode::kNone) {
-    return kMedium_SkFilterQuality;
+    return PaintFlags::FilterQuality::kMedium;
   }
-  return sampling.filter == SkFilterMode::kLinear ? kLow_SkFilterQuality
-                                                  : kNone_SkFilterQuality;
+  return sampling.filter == SkFilterMode::kLinear
+             ? PaintFlags::FilterQuality::kLow
+             : PaintFlags::FilterQuality::kNone;
 }
 
 DrawImage CreateDrawImage(const PaintImage& image,

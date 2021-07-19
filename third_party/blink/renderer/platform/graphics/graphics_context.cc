@@ -320,7 +320,7 @@ void GraphicsContext::CompositeRecord(sk_sp<PaintRecord> record,
   flags.setBlendMode(op);
 
   SkSamplingOptions sampling(cc::PaintFlags::FilterQualityToSkSamplingOptions(
-      static_cast<SkFilterQuality>(ImageInterpolationQuality())));
+      static_cast<cc::PaintFlags::FilterQuality>(ImageInterpolationQuality())));
   canvas_->save();
   canvas_->concat(SkMatrix::RectToRect(src, dest));
   canvas_->drawImage(PaintImageBuilder::WithDefault()
@@ -871,7 +871,7 @@ void GraphicsContext::DrawImageRRect(
   paint_controller_.SetImagePainted();
 }
 
-SkFilterQuality GraphicsContext::ComputeFilterQuality(
+cc::PaintFlags::FilterQuality GraphicsContext::ComputeFilterQuality(
     Image* image,
     const FloatRect& dest,
     const FloatRect& src) const {
@@ -893,7 +893,7 @@ SkFilterQuality GraphicsContext::ComputeFilterQuality(
       resampling = kInterpolationLow;
     }
   }
-  return static_cast<SkFilterQuality>(
+  return static_cast<cc::PaintFlags::FilterQuality>(
       std::min(resampling, ImageInterpolationQuality()));
 }
 

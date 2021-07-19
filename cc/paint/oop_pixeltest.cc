@@ -421,7 +421,9 @@ class OopImagePixelTest : public OopPixelTest,
                           public ::testing::WithParamInterface<bool> {
  public:
   bool UseTooLargeImage() { return GetParam(); }
-  SkFilterQuality FilterQuality() { return kNone_SkFilterQuality; }
+  PaintFlags::FilterQuality FilterQuality() {
+    return PaintFlags::FilterQuality::kNone;
+  }
 
   gfx::Size GetImageSize() {
     const int kMaxSize = 20000;
@@ -1912,7 +1914,7 @@ class OopTextBlobPixelTest
 
     // Use bilerp sampling with the PaintRecord to help reduce max RGB error
     // from pixel-snapping flakiness when using NN sampling.
-    record_flags.setFilterQuality(kLow_SkFilterQuality);
+    record_flags.setFilterQuality(PaintFlags::FilterQuality::kLow);
 
     // The text blob is embedded in a paint record, which is attached to the
     // paint via a shader or image filter. Just draw a rect with the paint.

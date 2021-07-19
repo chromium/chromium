@@ -242,14 +242,14 @@ int kDefaultTimeoutSeconds = 10;
 DrawImage CreateDiscardableDrawImage(gfx::Size size) {
   return DrawImage(CreateDiscardablePaintImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
-                   kNone_SkFilterQuality, SkM44(),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
                    PaintImage::kDefaultFrameIndex, gfx::ColorSpace());
 }
 
 DrawImage CreateBitmapDrawImage(gfx::Size size) {
   return DrawImage(CreateBitmapImage(size), false,
                    SkIRect::MakeWH(size.width(), size.height()),
-                   kNone_SkFilterQuality, SkM44(),
+                   PaintFlags::FilterQuality::kNone, SkM44(),
                    PaintImage::kDefaultFrameIndex);
 }
 

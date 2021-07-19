@@ -1078,7 +1078,7 @@ void PaintOpReader::ReadImagePaintFilter(
   Read(&src_rect);
   SkRect dst_rect;
   Read(&dst_rect);
-  SkFilterQuality quality;
+  PaintFlags::FilterQuality quality;
   Read(&quality);
 
   if (!valid_)
@@ -1226,7 +1226,7 @@ void PaintOpReader::ReadShaderPaintFilter(
 
   sk_sp<PaintShader> shader;
   uint8_t alpha = 255;
-  SkFilterQuality quality = kNone_SkFilterQuality;
+  PaintFlags::FilterQuality quality = PaintFlags::FilterQuality::kNone;
   Dither dither = Dither::kNo;
 
   Read(&shader);
@@ -1245,7 +1245,7 @@ void PaintOpReader::ReadMatrixPaintFilter(
     sk_sp<PaintFilter>* filter,
     const absl::optional<PaintFilter::CropRect>& crop_rect) {
   SkMatrix matrix = SkMatrix::I();
-  SkFilterQuality filter_quality = kNone_SkFilterQuality;
+  PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kNone;
   sk_sp<PaintFilter> input;
 
   Read(&matrix);

@@ -48,7 +48,8 @@ class BaseTest : public testing::Test {
         src_rect.isEmpty()
             ? SkIRect::MakeWH(paint_image().width(), paint_image().height())
             : src_rect,
-        kMedium_SkFilterQuality, CreateMatrix(SkSize::Make(scale, scale), true),
+        PaintFlags::FilterQuality::kMedium,
+        CreateMatrix(SkSize::Make(scale, scale), true),
         PaintImage::kDefaultFrameIndex, GetColorSpace());
   }
 

@@ -138,7 +138,7 @@ class CC_EXPORT CheckerImageTracker {
   struct DecodeState {
     DecodePolicy policy = DecodePolicy::SYNC;
     bool use_dark_mode = false;
-    SkFilterQuality filter_quality = kNone_SkFilterQuality;
+    PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kNone;
     SkSize scale = SkSize::MakeEmpty();
     gfx::ColorSpace color_space;
     size_t frame_index = PaintImage::kDefaultFrameIndex;

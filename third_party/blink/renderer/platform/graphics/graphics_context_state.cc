@@ -8,14 +8,14 @@
 
 namespace blink {
 
-static inline SkFilterQuality FilterQualityForPaint(
+static inline cc::PaintFlags::FilterQuality FilterQualityForPaint(
     InterpolationQuality quality) {
   // The filter quality "selected" here will primarily be used when painting a
   // primitive using one of the PaintFlags below. For the most part this will
   // not affect things that are part of the Image class hierarchy (which use
   // the unmodified m_interpolationQuality.)
-  return quality != kInterpolationNone ? kLow_SkFilterQuality
-                                       : kNone_SkFilterQuality;
+  return quality != kInterpolationNone ? cc::PaintFlags::FilterQuality::kLow
+                                       : cc::PaintFlags::FilterQuality::kNone;
 }
 
 GraphicsContextState::GraphicsContextState()

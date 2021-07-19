@@ -890,7 +890,7 @@ bool DisplacementMapEffectPaintFilter::operator==(
 ImagePaintFilter::ImagePaintFilter(PaintImage image,
                                    const SkRect& src_rect,
                                    const SkRect& dst_rect,
-                                   SkFilterQuality filter_quality)
+                                   PaintFlags::FilterQuality filter_quality)
     : PaintFilter(kType, nullptr, !image.IsTextureBacked()),
       image_(std::move(image)),
       src_rect_(src_rect),
@@ -984,7 +984,8 @@ RecordPaintFilter::RecordPaintFilter(sk_sp<PaintRecord> record,
     SkRect dst = {inv_x * src.fLeft, inv_y * src.fTop, inv_x * src.fRight,
                   inv_y * src.fBottom};
 
-    // Use Mitchell cubic filter, matching historic kHigh_SkFilterQuality
+    // Use Mitchell cubic filter, matching historic
+    // PaintFlags::FilterQuality::kHigh
     SkSamplingOptions sampling(SkCubicResampler::Mitchell());
     cached_sk_filter_ =
         SkImageFilters::Image(std::move(image), src, dst, sampling);
@@ -1264,7 +1265,7 @@ bool TurbulencePaintFilter::operator==(
 
 ShaderPaintFilter::ShaderPaintFilter(sk_sp<PaintShader> shader,
                                      uint8_t alpha,
-                                     SkFilterQuality filter_quality,
+                                     PaintFlags::FilterQuality filter_quality,
                                      SkImageFilters::Dither dither,
                                      const CropRect* crop_rect)
     : PaintFilter(kType, crop_rect, shader->has_discardable_images()),
@@ -1328,7 +1329,7 @@ bool ShaderPaintFilter::operator==(const ShaderPaintFilter& other) const {
 }
 
 MatrixPaintFilter::MatrixPaintFilter(const SkMatrix& matrix,
-                                     SkFilterQuality filter_quality,
+                                     PaintFlags::FilterQuality filter_quality,
                                      sk_sp<PaintFilter> input)
     : PaintFilter(Type::kMatrix, nullptr, HasDiscardableImages(input)),
       matrix_(matrix),

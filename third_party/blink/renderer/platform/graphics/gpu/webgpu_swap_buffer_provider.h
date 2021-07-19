@@ -43,7 +43,7 @@ class PLATFORM_EXPORT WebGPUSwapBufferProvider
   viz::ResourceFormat Format() const { return format_; }
   const gfx::Size& Size() const;
   cc::Layer* CcLayer();
-  void SetFilterQuality(SkFilterQuality);
+  void SetFilterQuality(cc::PaintFlags::FilterQuality);
   void Neuter();
   WGPUTexture GetNewTexture(const IntSize& size);
 

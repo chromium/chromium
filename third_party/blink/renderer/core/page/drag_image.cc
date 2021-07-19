@@ -203,7 +203,8 @@ std::unique_ptr<DragImage> DragImage::Create(const KURL& url,
   // TODO(fserb): are we sure this should be software?
   std::unique_ptr<CanvasResourceProvider> resource_provider(
       CanvasResourceProvider::CreateBitmapProvider(
-          scaled_image_size, kLow_SkFilterQuality, CanvasResourceParams(),
+          scaled_image_size, cc::PaintFlags::FilterQuality::kLow,
+          CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kNo));
   if (!resource_provider)
     return nullptr;

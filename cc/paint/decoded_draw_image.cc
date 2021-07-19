@@ -12,7 +12,7 @@ DecodedDrawImage::DecodedDrawImage(sk_sp<const SkImage> image,
                                    sk_sp<SkColorFilter> dark_mode_color_filter,
                                    const SkSize& src_rect_offset,
                                    const SkSize& scale_adjustment,
-                                   SkFilterQuality filter_quality,
+                                   PaintFlags::FilterQuality filter_quality,
                                    bool is_budgeted)
     : image_(std::move(image)),
       dark_mode_color_filter_(std::move(dark_mode_color_filter)),
@@ -22,7 +22,7 @@ DecodedDrawImage::DecodedDrawImage(sk_sp<const SkImage> image,
       is_budgeted_(is_budgeted) {}
 
 DecodedDrawImage::DecodedDrawImage(const gpu::Mailbox& mailbox,
-                                   SkFilterQuality filter_quality)
+                                   PaintFlags::FilterQuality filter_quality)
     : mailbox_(mailbox),
       src_rect_offset_(SkSize::MakeEmpty()),
       scale_adjustment_(SkSize::Make(1.f, 1.f)),
@@ -34,7 +34,7 @@ DecodedDrawImage::DecodedDrawImage(
     sk_sp<SkColorFilter> dark_mode_color_filter,
     const SkSize& src_rect_offset,
     const SkSize& scale_adjustment,
-    SkFilterQuality filter_quality,
+    PaintFlags::FilterQuality filter_quality,
     bool needs_mips,
     bool is_budgeted)
     : transfer_cache_entry_id_(transfer_cache_entry_id),
@@ -50,7 +50,7 @@ DecodedDrawImage::DecodedDrawImage()
                        nullptr,
                        SkSize::MakeEmpty(),
                        SkSize::Make(1.f, 1.f),
-                       kNone_SkFilterQuality,
+                       PaintFlags::FilterQuality::kNone,
                        true) {}
 
 DecodedDrawImage::DecodedDrawImage(const DecodedDrawImage&) = default;

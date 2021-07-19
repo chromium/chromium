@@ -7259,7 +7259,7 @@ cc::Layer* WebGLRenderingContextBase::CcLayer() const {
 }
 
 void WebGLRenderingContextBase::SetFilterQuality(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (!isContextLost() && GetDrawingBuffer()) {
     GetDrawingBuffer()->SetFilterQuality(filter_quality);
   }
@@ -8696,7 +8696,7 @@ CanvasResourceProvider* WebGLRenderingContextBase::
   } else {
     // TODO(fserb): why is this a BITMAP?
     temp = CanvasResourceProvider::CreateBitmapProvider(
-        size, kLow_SkFilterQuality, CanvasResourceParams(),
+        size, cc::PaintFlags::FilterQuality::kLow, CanvasResourceParams(),
         CanvasResourceProvider::ShouldInitialize::kNo);  // TODO: should this
                                                          // use the canvas's
   }

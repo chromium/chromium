@@ -27,7 +27,7 @@ TEST(CanvasResourceTest, PrepareTransferableResource_SharedBitmap) {
       CanvasResourceSharedBitmap::Create(IntSize(10, 10),
                                          CanvasResourceParams(),
                                          nullptr,  // CanvasResourceProvider
-                                         kLow_SkFilterQuality);
+                                         cc::PaintFlags::FilterQuality::kLow);
   EXPECT_TRUE(!!canvas_resource);
   viz::TransferableResource resource;
   viz::ReleaseCallback release_callback;

@@ -520,7 +520,8 @@ void Canvas::DrawImageIntHelper(const ImageSkiaRep& image_rep,
   shader_scale.postTranslate(SkIntToScalar(dest_x), SkIntToScalar(dest_y));
 
   cc::PaintFlags flags(original_flags);
-  flags.setFilterQuality(filter ? kLow_SkFilterQuality : kNone_SkFilterQuality);
+  flags.setFilterQuality(filter ? cc::PaintFlags::FilterQuality::kLow
+                                : cc::PaintFlags::FilterQuality::kNone);
   flags.setShader(CreateImageRepShaderForScale(
       image_rep, SkTileMode::kRepeat, SkTileMode::kRepeat, shader_scale,
       remove_image_scale ? image_rep.scale() : 1.f));

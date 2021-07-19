@@ -11,6 +11,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/paint_shader.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"

@@ -9,6 +9,7 @@
 #include "base/timer/lap_timer.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
+#include "cc/paint/paint_shader.h"
 #include "cc/test/test_options_provider.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"

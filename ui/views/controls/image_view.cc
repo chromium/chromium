@@ -261,7 +261,7 @@ void ImageView::OnPaintImage(gfx::Canvas* canvas) {
   if (image_bounds.size() != gfx::Size(image.width(), image.height())) {
     // Resize case
     cc::PaintFlags flags;
-    flags.setFilterQuality(kLow_SkFilterQuality);
+    flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
     canvas->DrawImageInt(image, 0, 0, image.width(), image.height(),
                          image_bounds.x(), image_bounds.y(),
                          image_bounds.width(), image_bounds.height(), true,

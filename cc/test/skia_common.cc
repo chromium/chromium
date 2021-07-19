@@ -181,7 +181,7 @@ PaintImage CreateDiscardablePaintImage(
 DrawImage CreateDiscardableDrawImage(const gfx::Size& size,
                                      sk_sp<SkColorSpace> color_space,
                                      SkRect rect,
-                                     SkFilterQuality filter_quality,
+                                     PaintFlags::FilterQuality filter_quality,
                                      const SkM44& matrix) {
   SkIRect irect;
   rect.roundOut(&irect);

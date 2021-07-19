@@ -6,7 +6,7 @@
 #define CC_TILES_IMAGE_DECODE_CACHE_UTILS_H_
 
 #include "build/build_config.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
 #if defined(OS_ANDROID)
@@ -17,7 +17,7 @@ namespace cc {
 
 class ImageDecodeCacheUtils {
  public:
-  static bool CanResizeF16Image(SkFilterQuality filter_quality) {
+  static bool CanResizeF16Image(PaintFlags::FilterQuality filter_quality) {
 #if defined(OS_ANDROID)
     // Return false on Android KitKat or lower if filter quality is medium or
     // high (hence, mipmaps are used), return true otherwise. This is because
@@ -25,7 +25,7 @@ class ImageDecodeCacheUtils {
     // these configs. crbug.com/876349
     return (base::android::BuildInfo::GetInstance()->sdk_int() >=
             base::android::SDK_VERSION_LOLLIPOP) ||
-           (filter_quality < kMedium_SkFilterQuality);
+           (filter_quality < PaintFlags::FilterQuality::kMedium);
 #else
     return true;
 #endif
@@ -34,7 +34,7 @@ class ImageDecodeCacheUtils {
   static bool ScaleToHalfFloatPixmapUsingN32Intermediate(
       const SkPixmap& source_pixmap,
       SkPixmap* scaled_pixmap,
-      SkFilterQuality filter_quality);
+      PaintFlags::FilterQuality filter_quality);
 };
 
 }  // namespace cc

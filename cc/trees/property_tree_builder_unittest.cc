@@ -356,8 +356,9 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithClippingAndFilters) {
 
   gfx::Transform vertical_flip;
   vertical_flip.Scale(1, -1);
-  sk_sp<PaintFilter> flip_filter = sk_make_sp<MatrixPaintFilter>(
-      SkMatrix(vertical_flip.matrix()), kLow_SkFilterQuality, nullptr);
+  sk_sp<PaintFilter> flip_filter =
+      sk_make_sp<MatrixPaintFilter>(SkMatrix(vertical_flip.matrix()),
+                                    PaintFlags::FilterQuality::kLow, nullptr);
   FilterOperations reflection_filter;
   reflection_filter.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<XfermodePaintFilter>(
@@ -416,8 +417,9 @@ TEST_F(PropertyTreeBuilderTest, VisibleRectWithScalingClippingAndFilters) {
 
   gfx::Transform vertical_flip;
   vertical_flip.Scale(1, -1);
-  sk_sp<PaintFilter> flip_filter = sk_make_sp<MatrixPaintFilter>(
-      SkMatrix(vertical_flip.matrix()), kLow_SkFilterQuality, nullptr);
+  sk_sp<PaintFilter> flip_filter =
+      sk_make_sp<MatrixPaintFilter>(SkMatrix(vertical_flip.matrix()),
+                                    PaintFlags::FilterQuality::kLow, nullptr);
   FilterOperations reflection_filter;
   reflection_filter.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<XfermodePaintFilter>(

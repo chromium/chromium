@@ -178,7 +178,7 @@ class PLATFORM_EXPORT GraphicsContext {
 
   SkSamplingOptions ImageSamplingOptions() const {
     return PaintFlags::FilterQualityToSkSamplingOptions(
-        static_cast<SkFilterQuality>(ImageInterpolationQuality()));
+        static_cast<PaintFlags::FilterQuality>(ImageInterpolationQuality()));
   }
 
   // Specify the device scale factor which may change the way document markers
@@ -408,9 +408,9 @@ class PLATFORM_EXPORT GraphicsContext {
   void Translate(float x, float y);
   // ---------- End transformation methods -----------------
 
-  SkFilterQuality ComputeFilterQuality(Image*,
-                                       const FloatRect& dest,
-                                       const FloatRect& src) const;
+  PaintFlags::FilterQuality ComputeFilterQuality(Image*,
+                                                 const FloatRect& dest,
+                                                 const FloatRect& src) const;
 
   SkSamplingOptions ComputeSamplingOptions(Image* image,
                                            const FloatRect& dest,

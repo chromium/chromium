@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/test/gpu_memory_buffer_test_platform.h"
 #include "third_party/blink/renderer/platform/graphics/test/gpu_test_utils.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 #include "ui/gfx/buffer_types.h"
 
 using testing::_;
@@ -39,7 +38,7 @@ class MockCanvasResourceDispatcherClient
   MockCanvasResourceDispatcherClient() = default;
 
   MOCK_METHOD0(BeginFrame, bool());
-  MOCK_METHOD1(SetFilterQualityInResource, void(SkFilterQuality));
+  MOCK_METHOD1(SetFilterQualityInResource, void(cc::PaintFlags::FilterQuality));
 };
 
 }  // anonymous namespace
@@ -82,7 +81,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -110,7 +109,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderTexture) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kLow_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
@@ -139,7 +138,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderUnacceleratedOverlay) {
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kLow_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kCPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -171,7 +170,7 @@ TEST_F(CanvasResourceProviderTest,
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -226,7 +225,7 @@ TEST_F(CanvasResourceProviderTest,
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -274,7 +273,7 @@ TEST_F(CanvasResourceProviderTest,
       gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU,
       true /* is_origin_top_left */, shared_image_usage_flags);
@@ -294,7 +293,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderBitmap) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      kSize, kLow_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear);
 
   EXPECT_EQ(provider->Size(), kSize);
@@ -322,7 +321,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderSharedBitmap) {
       1 /* placeholder_canvas_id */, kSize);
 
   auto provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-      kSize, kLow_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       resource_dispatcher.GetWeakPtr());
 
@@ -353,7 +352,7 @@ TEST_F(CanvasResourceProviderTest,
       gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       shared_image_usage_flags);
@@ -382,8 +381,9 @@ TEST_F(CanvasResourceProviderTest,
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      kSize, kLow_SkFilterQuality, kColorParams, context_provider_wrapper_,
-      nullptr /*resource_dispatcher */, true /*is_origin_top_left*/);
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      context_provider_wrapper_, nullptr /*resource_dispatcher */,
+      true /*is_origin_top_left*/);
 
   EXPECT_EQ(provider->Size(), kSize);
   EXPECT_TRUE(provider->IsValid());
@@ -406,7 +406,7 @@ TEST_F(CanvasResourceProviderTest,
           mailbox, viz::ReleaseCallback(), gpu::SyncToken(), kSize,
           GL_TEXTURE_2D, kColorParams,
           SharedGpuContext::ContextProviderWrapper(), provider->CreateWeakPtr(),
-          kMedium_SkFilterQuality, true /*is_origin_top_left*/,
+          cc::PaintFlags::FilterQuality::kMedium, true /*is_origin_top_left*/,
           true /*is_overlay_candidate*/);
 
   // NewOrRecycledResource() would return nullptr before an ImportResource().
@@ -421,16 +421,19 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_Bitmap) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear);
+      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear);
+      IntSize(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateBitmapProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear);
+      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear);
   EXPECT_FALSE(provider->SupportsDirectCompositing());
 }
 
@@ -439,20 +442,23 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SharedImage) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
   // The CanvasResourceProvider for SharedImage should not be created or valid
@@ -464,20 +470,23 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_SwapChain) {
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreateSwapChainProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, CanvasResourceProvider::ShouldInitialize::kCallClear,
+      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
 
@@ -490,19 +499,22 @@ TEST_F(CanvasResourceProviderTest, DimensionsExceedMaxTextureSize_PassThrough) {
   const CanvasResourceParams kColorParams(
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
   auto provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize - 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      IntSize(kMaxTextureSize - 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      context_provider_wrapper_, nullptr /* resource_dispatcher */,
+      true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      IntSize(kMaxTextureSize, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      context_provider_wrapper_, nullptr /* resource_dispatcher */,
+      true /*is_origin_top_left*/);
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   provider = CanvasResourceProvider::CreatePassThroughProvider(
-      IntSize(kMaxTextureSize + 1, kMaxTextureSize), kLow_SkFilterQuality,
-      kColorParams, context_provider_wrapper_,
-      nullptr /* resource_dispatcher */, true /*is_origin_top_left*/);
+      IntSize(kMaxTextureSize + 1, kMaxTextureSize),
+      cc::PaintFlags::FilterQuality::kLow, kColorParams,
+      context_provider_wrapper_, nullptr /* resource_dispatcher */,
+      true /*is_origin_top_left*/);
   // The CanvasResourceProvider for PassThrough should not be created or valid
   // if the texture size is greater than the maximum value
   EXPECT_TRUE(!provider || !provider->IsValid());
@@ -514,7 +526,7 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderDirect2DSwapChain) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto provider = CanvasResourceProvider::CreateSwapChainProvider(
-      kSize, kLow_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kLow, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, nullptr /* resource_dispatcher */,
       true /*is_origin_top_left*/);
@@ -539,13 +551,13 @@ TEST_F(CanvasResourceProviderTest, FlushForImage) {
       CanvasColorSpace::kSRGB, kN32_SkColorType, kPremul_SkAlphaType);
 
   auto src_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);
 
   auto dst_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      kSize, kMedium_SkFilterQuality, kColorParams,
+      kSize, cc::PaintFlags::FilterQuality::kMedium, kColorParams,
       CanvasResourceProvider::ShouldInitialize::kCallClear,
       context_provider_wrapper_, RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);

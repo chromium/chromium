@@ -142,9 +142,13 @@ class PLATFORM_EXPORT CanvasResource
   // should not be recycled for writing again but can be safely read from.
   virtual void NotifyResourceLost() = 0;
 
-  void SetFilterQuality(SkFilterQuality filter) { filter_quality_ = filter; }
+  void SetFilterQuality(cc::PaintFlags::FilterQuality filter) {
+    filter_quality_ = filter;
+  }
   // The filter quality to use when the resource is drawn by the compositor.
-  SkFilterQuality FilterQuality() const { return filter_quality_; }
+  cc::PaintFlags::FilterQuality FilterQuality() const {
+    return filter_quality_;
+  }
 
   SkImageInfo CreateSkImageInfo() const;
 
@@ -159,7 +163,7 @@ class PLATFORM_EXPORT CanvasResource
 
  protected:
   CanvasResource(base::WeakPtr<CanvasResourceProvider>,
-                 SkFilterQuality,
+                 cc::PaintFlags::FilterQuality,
                  const CanvasResourceParams&);
 
   // Called during resource destruction if the resource is destroyed on a thread
@@ -212,7 +216,7 @@ class PLATFORM_EXPORT CanvasResource
   gpu::SyncToken sync_token_for_release_;
   base::WeakPtr<CanvasResourceProvider> provider_;
   // TODO(https://crbug.com/1157747): Merge |filter_quality_| into |params_|.
-  SkFilterQuality filter_quality_;
+  cc::PaintFlags::FilterQuality filter_quality_;
   CanvasResourceParams params_;
 #if DCHECK_IS_ON()
   bool did_call_on_destroy_ = false;
@@ -226,7 +230,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
       const IntSize&,
       const CanvasResourceParams&,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality);
+      cc::PaintFlags::FilterQuality);
   ~CanvasResourceSharedBitmap() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsAccelerated() const final { return false; }
@@ -249,7 +253,7 @@ class PLATFORM_EXPORT CanvasResourceSharedBitmap final : public CanvasResource {
   CanvasResourceSharedBitmap(const IntSize&,
                              const CanvasResourceParams&,
                              base::WeakPtr<CanvasResourceProvider>,
-                             SkFilterQuality);
+                             cc::PaintFlags::FilterQuality);
 
   viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
@@ -272,7 +276,7 @@ class PLATFORM_EXPORT CanvasResourceSharedImage : public CanvasResource {
 
  protected:
   CanvasResourceSharedImage(base::WeakPtr<CanvasResourceProvider>,
-                            SkFilterQuality,
+                            cc::PaintFlags::FilterQuality,
                             const CanvasResourceParams&);
 };
 
@@ -284,7 +288,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
       const IntSize&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       const CanvasResourceParams&,
       bool is_origin_top_left,
       bool is_accelerated,
@@ -371,7 +375,7 @@ class PLATFORM_EXPORT CanvasResourceRasterSharedImage final
       const IntSize&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       const CanvasResourceParams&,
       bool is_origin_top_left,
       bool is_accelerated,
@@ -429,7 +433,7 @@ class PLATFORM_EXPORT CanvasResourceSkiaDawnSharedImage final
       const IntSize&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       const CanvasResourceParams&,
       bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
@@ -502,7 +506,7 @@ class PLATFORM_EXPORT CanvasResourceSkiaDawnSharedImage final
       const IntSize&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       const CanvasResourceParams&,
       bool is_origin_top_left,
       uint32_t shared_image_usage_flags);
@@ -566,7 +570,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
       const CanvasResourceParams&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality,
+      cc::PaintFlags::FilterQuality,
       bool is_origin_top_left,
       bool is_overlay_candidate);
 
@@ -603,7 +607,7 @@ class PLATFORM_EXPORT ExternalCanvasResource final : public CanvasResource {
                          const CanvasResourceParams&,
                          base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                          base::WeakPtr<CanvasResourceProvider>,
-                         SkFilterQuality,
+                         cc::PaintFlags::FilterQuality,
                          bool is_origin_top_left,
                          bool is_overlay_candidate);
 
@@ -628,7 +632,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
       const CanvasResourceParams&,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::WeakPtr<CanvasResourceProvider>,
-      SkFilterQuality);
+      cc::PaintFlags::FilterQuality);
   ~CanvasResourceSwapChain() override;
   bool IsRecycleable() const final { return IsValid(); }
   bool IsAccelerated() const final { return true; }
@@ -667,7 +671,7 @@ class PLATFORM_EXPORT CanvasResourceSwapChain final : public CanvasResource {
                           const CanvasResourceParams&,
                           base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
                           base::WeakPtr<CanvasResourceProvider>,
-                          SkFilterQuality);
+                          cc::PaintFlags::FilterQuality);
 
   const base::WeakPtr<WebGraphicsContext3DProviderWrapper>
       context_provider_wrapper_;

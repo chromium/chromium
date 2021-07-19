@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_STATE_H_
 
 #include "base/macros.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/clip_list.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
@@ -234,7 +235,7 @@ class CanvasRenderingContext2DState final
   void UpdateStrokeStyle() const;
   void UpdateFillStyle() const;
   void UpdateFilterQuality() const;
-  void UpdateFilterQualityWithSkFilterQuality(const SkFilterQuality&) const;
+  void UpdateFilterQuality(cc::PaintFlags::FilterQuality) const;
   void ShadowParameterChanged();
   sk_sp<SkDrawLooper>& EmptyDrawLooper() const;
   sk_sp<SkDrawLooper>& ShadowOnlyDrawLooper() const;
@@ -302,7 +303,7 @@ class CanvasRenderingContext2DState final
   mutable bool line_dash_dirty_ : 1;
 
   bool image_smoothing_enabled_;
-  SkFilterQuality image_smoothing_quality_;
+  cc::PaintFlags::FilterQuality image_smoothing_quality_;
 
   ClipList clip_list_;
 

@@ -255,7 +255,7 @@ TEST_F(ImageBitmapTest, AvoidGPUReadback) {
       SharedGpuContext::ContextProviderWrapper();
   CanvasResourceParams resource_params;
   auto resource_provider = CanvasResourceProvider::CreateSharedImageProvider(
-      IntSize(100, 100), kLow_SkFilterQuality, resource_params,
+      IntSize(100, 100), cc::PaintFlags::FilterQuality::kLow, resource_params,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
       RasterMode::kGPU, true /*is_origin_top_left*/,
       0u /*shared_image_usage_flags*/);

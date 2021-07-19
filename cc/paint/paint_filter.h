@@ -477,13 +477,13 @@ class CC_PAINT_EXPORT ImagePaintFilter final : public PaintFilter {
   ImagePaintFilter(PaintImage image,
                    const SkRect& src_rect,
                    const SkRect& dst_rect,
-                   SkFilterQuality filter_quality);
+                   PaintFlags::FilterQuality filter_quality);
   ~ImagePaintFilter() override;
 
   const PaintImage& image() const { return image_; }
   const SkRect& src_rect() const { return src_rect_; }
   const SkRect& dst_rect() const { return dst_rect_; }
-  SkFilterQuality filter_quality() const { return filter_quality_; }
+  PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
 
   size_t SerializedSize() const override;
   bool operator==(const ImagePaintFilter& other) const;
@@ -496,7 +496,7 @@ class CC_PAINT_EXPORT ImagePaintFilter final : public PaintFilter {
   PaintImage image_;
   SkRect src_rect_;
   SkRect dst_rect_;
-  SkFilterQuality filter_quality_;
+  PaintFlags::FilterQuality filter_quality_;
 };
 
 class CC_PAINT_EXPORT RecordPaintFilter final : public PaintFilter {
@@ -702,7 +702,7 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
 
   ShaderPaintFilter(sk_sp<PaintShader> shader,
                     uint8_t alpha,
-                    SkFilterQuality filter_quality,
+                    PaintFlags::FilterQuality filter_quality,
                     SkImageFilters::Dither dither,
                     const CropRect* crop_rect = nullptr);
 
@@ -710,7 +710,7 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
 
   const PaintShader& shader() const { return *shader_; }
   uint8_t alpha() const { return alpha_; }
-  SkFilterQuality filter_quality() const { return filter_quality_; }
+  PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   SkImageFilters::Dither dither() const { return dither_; }
 
   size_t SerializedSize() const override;
@@ -723,7 +723,7 @@ class CC_PAINT_EXPORT ShaderPaintFilter final : public PaintFilter {
  private:
   sk_sp<PaintShader> shader_;
   uint8_t alpha_;
-  SkFilterQuality filter_quality_;
+  PaintFlags::FilterQuality filter_quality_;
   SkImageFilters::Dither dither_;
 };
 
@@ -731,12 +731,12 @@ class CC_PAINT_EXPORT MatrixPaintFilter final : public PaintFilter {
  public:
   static constexpr Type kType = Type::kMatrix;
   MatrixPaintFilter(const SkMatrix& matrix,
-                    SkFilterQuality filter_quality,
+                    PaintFlags::FilterQuality filter_quality,
                     sk_sp<PaintFilter> input);
   ~MatrixPaintFilter() override;
 
   const SkMatrix& matrix() const { return matrix_; }
-  SkFilterQuality filter_quality() const { return filter_quality_; }
+  PaintFlags::FilterQuality filter_quality() const { return filter_quality_; }
   const sk_sp<PaintFilter>& input() const { return input_; }
 
   size_t SerializedSize() const override;
@@ -748,7 +748,7 @@ class CC_PAINT_EXPORT MatrixPaintFilter final : public PaintFilter {
 
  private:
   SkMatrix matrix_;
-  SkFilterQuality filter_quality_;
+  PaintFlags::FilterQuality filter_quality_;
   sk_sp<PaintFilter> input_;
 };
 

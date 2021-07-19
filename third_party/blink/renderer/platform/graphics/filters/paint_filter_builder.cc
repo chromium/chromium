@@ -142,8 +142,9 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
           SkBlendMode::kSrcIn,
           sk_make_sp<OffsetPaintFilter>(
               mask_record_bounds.x(), mask_record_bounds.y(),
-              sk_make_sp<ImagePaintFilter>(std::move(image), image_rect,
-                                           image_rect, kHigh_SkFilterQuality)),
+              sk_make_sp<ImagePaintFilter>(
+                  std::move(image), image_rect, image_rect,
+                  cc::PaintFlags::FilterQuality::kHigh)),
           input, &crop_rect);
     } else {
       // If the buffer is excessively big, give up and make an
@@ -159,7 +160,7 @@ sk_sp<PaintFilter> BuildBoxReflectFilter(const BoxReflection& reflection,
     masked_input = input;
   }
   sk_sp<PaintFilter> flip_image_filter = sk_make_sp<MatrixPaintFilter>(
-      reflection.ReflectionMatrix(), kLow_SkFilterQuality,
+      reflection.ReflectionMatrix(), cc::PaintFlags::FilterQuality::kLow,
       std::move(masked_input));
   return sk_make_sp<XfermodePaintFilter>(
       SkBlendMode::kSrcOver, std::move(flip_image_filter), std::move(input));

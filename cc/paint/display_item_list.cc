@@ -454,8 +454,8 @@ DisplayItemList::GetDirectlyCompositedImageResult(
   result.intrinsic_image_size = gfx::Size(width, height);
   // Ensure the layer will use nearest neighbor when drawn by the display
   // compositor, if required.
-  result.nearest_neighbor =
-      draw_image_rect_op->flags.getFilterQuality() == kNone_SkFilterQuality;
+  result.nearest_neighbor = draw_image_rect_op->flags.getFilterQuality() ==
+                            PaintFlags::FilterQuality::kNone;
   return result;
 }
 

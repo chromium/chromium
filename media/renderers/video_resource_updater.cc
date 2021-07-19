@@ -1076,7 +1076,7 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForSoftwarePlanes(
         cc::SkiaPaintCanvas canvas(sk_bitmap);
         cc::PaintFlags flags;
         flags.setBlendMode(SkBlendMode::kSrc);
-        flags.setFilterQuality(kLow_SkFilterQuality);
+        flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
         // Note that PaintCanvasVideoRenderer::Copy would copy to the origin,
         // not |video_frame->visible_rect|, so call Paint instead.

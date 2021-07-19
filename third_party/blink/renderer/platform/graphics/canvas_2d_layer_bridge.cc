@@ -267,7 +267,7 @@ CanvasResourceProvider* Canvas2DLayerBridge::GetOrCreateResourceProvider() {
     layer_->SetContentsOpaque(ColorParams().GetOpacityMode() == kOpaque);
     layer_->SetBlendBackgroundColor(ColorParams().GetOpacityMode() != kOpaque);
     layer_->SetNearestNeighbor(resource_host_->FilterQuality() ==
-                               kNone_SkFilterQuality);
+                               cc::PaintFlags::FilterQuality::kNone);
   }
 
   if (!IsHibernating())
@@ -307,11 +307,13 @@ cc::PaintCanvas* Canvas2DLayerBridge::GetPaintCanvas() {
   return ResourceProvider()->Canvas();
 }
 
-void Canvas2DLayerBridge::SetFilterQuality(SkFilterQuality filter_quality) {
+void Canvas2DLayerBridge::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (CanvasResourceProvider* resource_provider = ResourceProvider())
     resource_provider->SetFilterQuality(filter_quality);
   if (layer_)
-    layer_->SetNearestNeighbor(filter_quality == kNone_SkFilterQuality);
+    layer_->SetNearestNeighbor(filter_quality ==
+                               cc::PaintFlags::FilterQuality::kNone);
 }
 
 void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {

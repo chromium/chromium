@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 #include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
@@ -426,7 +425,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
 
   const CanvasResourceParams resource_params =
       context_->CanvasRenderingContextColorParams().GetAsResourceParams();
-  const SkFilterQuality filter_quality = FilterQuality();
+  const cc::PaintFlags::FilterQuality filter_quality = FilterQuality();
   if (can_use_gpu) {
     provider = CanvasResourceProvider::CreateSharedImageProvider(
         surface_size, filter_quality, resource_params,
@@ -501,7 +500,7 @@ bool OffscreenCanvas::BeginFrame() {
 }
 
 void OffscreenCanvas::SetFilterQualityInResource(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (FilterQuality() == filter_quality)
     return;
 

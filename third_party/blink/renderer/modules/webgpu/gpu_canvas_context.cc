@@ -127,7 +127,8 @@ bool GPUCanvasContext::CopyRenderingResultsFromDrawingBuffer(
   return false;
 }
 
-void GPUCanvasContext::SetFilterQuality(SkFilterQuality filter_quality) {
+void GPUCanvasContext::SetFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (filter_quality != filter_quality_) {
     filter_quality_ = filter_quality;
     if (swapchain_) {

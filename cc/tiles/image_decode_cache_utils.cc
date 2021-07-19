@@ -17,13 +17,13 @@ namespace cc {
 bool ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
     const SkPixmap& source_pixmap,
     SkPixmap* scaled_pixmap,
-    SkFilterQuality filter_quality) {
+    PaintFlags::FilterQuality filter_quality) {
   // Target pixmap should be half float backed.
   DCHECK(scaled_pixmap->colorType() == kRGBA_F16_SkColorType);
   // Filter quality should be medium or high. This is needed if the device
   // (Android KitKat and lower) does not support mipmaps properly. Mipmaps are
   // used only for medium and high filter qualities.
-  DCHECK(filter_quality >= kMedium_SkFilterQuality);
+  DCHECK(filter_quality >= PaintFlags::FilterQuality::kMedium);
 
   // Convert to kN32 color type if necessary
   SkPixmap n32_pixmap = source_pixmap;

@@ -53,7 +53,7 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       fill_style_dirty_(true),
       stroke_style_dirty_(true),
       line_dash_dirty_(false),
-      image_smoothing_quality_(kLow_SkFilterQuality) {
+      image_smoothing_quality_(cc::PaintFlags::FilterQuality::kLow) {
   fill_flags_.setStyle(PaintFlags::kFill_Style);
   fill_flags_.setAntiAlias(true);
   image_flags_.setStyle(PaintFlags::kFill_Style);
@@ -622,11 +622,11 @@ bool CanvasRenderingContext2DState::ImageSmoothingEnabled() const {
 void CanvasRenderingContext2DState::SetImageSmoothingQuality(
     const String& quality_string) {
   if (quality_string == "low") {
-    image_smoothing_quality_ = kLow_SkFilterQuality;
+    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kLow;
   } else if (quality_string == "medium") {
-    image_smoothing_quality_ = kMedium_SkFilterQuality;
+    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kMedium;
   } else if (quality_string == "high") {
-    image_smoothing_quality_ = kHigh_SkFilterQuality;
+    image_smoothing_quality_ = cc::PaintFlags::FilterQuality::kHigh;
   } else {
     return;
   }
@@ -635,11 +635,11 @@ void CanvasRenderingContext2DState::SetImageSmoothingQuality(
 
 String CanvasRenderingContext2DState::ImageSmoothingQuality() const {
   switch (image_smoothing_quality_) {
-    case kLow_SkFilterQuality:
+    case cc::PaintFlags::FilterQuality::kLow:
       return "low";
-    case kMedium_SkFilterQuality:
+    case cc::PaintFlags::FilterQuality::kMedium:
       return "medium";
-    case kHigh_SkFilterQuality:
+    case cc::PaintFlags::FilterQuality::kHigh:
       return "high";
     default:
       NOTREACHED();
@@ -649,14 +649,14 @@ String CanvasRenderingContext2DState::ImageSmoothingQuality() const {
 
 void CanvasRenderingContext2DState::UpdateFilterQuality() const {
   if (!image_smoothing_enabled_) {
-    UpdateFilterQualityWithSkFilterQuality(kNone_SkFilterQuality);
+    UpdateFilterQuality(cc::PaintFlags::FilterQuality::kNone);
   } else {
-    UpdateFilterQualityWithSkFilterQuality(image_smoothing_quality_);
+    UpdateFilterQuality(image_smoothing_quality_);
   }
 }
 
-void CanvasRenderingContext2DState::UpdateFilterQualityWithSkFilterQuality(
-    const SkFilterQuality& filter_quality) const {
+void CanvasRenderingContext2DState::UpdateFilterQuality(
+    cc::PaintFlags::FilterQuality filter_quality) const {
   stroke_flags_.setFilterQuality(filter_quality);
   fill_flags_.setFilterQuality(filter_quality);
   image_flags_.setFilterQuality(filter_quality);

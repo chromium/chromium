@@ -42,7 +42,6 @@
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
-#include "third_party/skia/include/core/SkFilterQuality.h"
 
 namespace blink {
 
@@ -552,9 +551,9 @@ ScriptWrappable* V8ScriptValueDeserializer::ReadDOMObject(
       canvas->SetPlaceholderCanvasId(canvas_id);
       canvas->SetFrameSinkId(client_id, sink_id);
       if (filter_quality == 0)
-        canvas->SetFilterQuality(kNone_SkFilterQuality);
+        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kNone);
       else
-        canvas->SetFilterQuality(kLow_SkFilterQuality);
+        canvas->SetFilterQuality(cc::PaintFlags::FilterQuality::kLow);
       return canvas;
     }
     case kReadableStreamTransferTag: {

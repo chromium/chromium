@@ -40,7 +40,7 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
       uint32_t shared_image_usage_flags =
           gpu::SHARED_IMAGE_USAGE_DISPLAY | gpu::SHARED_IMAGE_USAGE_SCANOUT;
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          size_, kMedium_SkFilterQuality, CanvasResourceParams(),
+          size_, cc::PaintFlags::FilterQuality::kMedium, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kCallClear,
           SharedGpuContext::ContextProviderWrapper(),
           hint == RasterModeHint::kPreferGPU ? RasterMode::kGPU
@@ -49,13 +49,13 @@ class FakeCanvasResourceHost : public CanvasResourceHost {
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-          size_, kMedium_SkFilterQuality, CanvasResourceParams(),
+          size_, cc::PaintFlags::FilterQuality::kMedium, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kCallClear,
           nullptr /* dispatcher_weakptr */);
     }
     if (!provider) {
       provider = CanvasResourceProvider::CreateBitmapProvider(
-          size_, kMedium_SkFilterQuality, CanvasResourceParams(),
+          size_, cc::PaintFlags::FilterQuality::kMedium, CanvasResourceParams(),
           CanvasResourceProvider::ShouldInitialize::kCallClear);
     }
 

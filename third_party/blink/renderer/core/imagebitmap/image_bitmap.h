@@ -123,7 +123,8 @@ class CORE_EXPORT ImageBitmap final : public ScriptWrappable,
     unsigned resize_width = 0;
     unsigned resize_height = 0;
     IntRect crop_rect;
-    SkFilterQuality resize_quality = kLow_SkFilterQuality;
+    cc::PaintFlags::FilterQuality resize_quality =
+        cc::PaintFlags::FilterQuality::kLow;
   };
 
  private:

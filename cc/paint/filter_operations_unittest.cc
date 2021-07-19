@@ -116,7 +116,7 @@ TEST(FilterOperationsTest, MapRectCombineNonCommutative) {
   scaleMatrix.setScale(2, 2);
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<MatrixPaintFilter>(
-          scaleMatrix, kNone_SkFilterQuality, nullptr)));
+          scaleMatrix, PaintFlags::FilterQuality::kNone, nullptr)));
 
   EXPECT_EQ(gfx::Rect(200, 200, 20, 20),
             ops.MapRect(gfx::Rect(10, 10), SkMatrix::I()));
@@ -135,7 +135,7 @@ TEST(FilterOperationsTest, MapRectReverseCombineNonCommutative) {
   scaleMatrix.setScale(2, 2);
   ops.Append(
       FilterOperation::CreateReferenceFilter(sk_make_sp<MatrixPaintFilter>(
-          scaleMatrix, kNone_SkFilterQuality, nullptr)));
+          scaleMatrix, PaintFlags::FilterQuality::kNone, nullptr)));
 
   EXPECT_EQ(gfx::Rect(10, 10),
             ops.MapRectReverse(gfx::Rect(200, 200, 20, 20), SkMatrix::I()));

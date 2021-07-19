@@ -74,9 +74,10 @@ cc::Layer* WebGPUSwapBufferProvider::CcLayer() {
 }
 
 void WebGPUSwapBufferProvider::SetFilterQuality(
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   if (layer_) {
-    layer_->SetNearestNeighbor(filter_quality == kNone_SkFilterQuality);
+    layer_->SetNearestNeighbor(filter_quality ==
+                               cc::PaintFlags::FilterQuality::kNone);
   }
 }
 

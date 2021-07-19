@@ -208,7 +208,7 @@ sk_sp<PaintFilter> FEImage::CreateImageFilter() {
     if (crop_rect != dst_rect)
       src_rect = blink::MapRect(crop_rect, dst_rect, src_rect);
     return sk_make_sp<ImagePaintFilter>(std::move(image), src_rect, crop_rect,
-                                        kHigh_SkFilterQuality);
+                                        cc::PaintFlags::FilterQuality::kHigh);
   }
   // "A href reference that is an empty image (zero width or zero height),
   //  that fails to download, is non-existent, or that cannot be displayed

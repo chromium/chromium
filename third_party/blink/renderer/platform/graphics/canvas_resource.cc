@@ -39,7 +39,7 @@
 namespace blink {
 
 CanvasResource::CanvasResource(base::WeakPtr<CanvasResourceProvider> provider,
-                               SkFilterQuality filter_quality,
+                               cc::PaintFlags::FilterQuality filter_quality,
                                const CanvasResourceParams& params)
     : owning_thread_ref_(base::PlatformThread::CurrentRef()),
       owning_thread_task_runner_(Thread::Current()->GetTaskRunner()),
@@ -193,7 +193,8 @@ SkImageInfo CanvasResource::CreateSkImageInfo() const {
 }
 
 GLenum CanvasResource::GLFilter() const {
-  return filter_quality_ == kNone_SkFilterQuality ? GL_NEAREST : GL_LINEAR;
+  return filter_quality_ == cc::PaintFlags::FilterQuality::kNone ? GL_NEAREST
+                                                                 : GL_LINEAR;
 }
 
 // CanvasResourceSharedBitmap
@@ -203,7 +204,7 @@ CanvasResourceSharedBitmap::CanvasResourceSharedBitmap(
     const IntSize& size,
     const CanvasResourceParams& params,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality)
+    cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider), filter_quality, params), size_(size) {
   // Software compositing lazily uses RGBA_8888 as the resource format
   // everywhere but the content is expected to be rendered in N32 format.
@@ -264,7 +265,7 @@ scoped_refptr<CanvasResourceSharedBitmap> CanvasResourceSharedBitmap::Create(
     const IntSize& size,
     const CanvasResourceParams& params,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   auto resource = AdoptRef(new CanvasResourceSharedBitmap(
       size, params, std::move(provider), filter_quality));
   return resource->IsValid() ? resource : nullptr;
@@ -312,7 +313,7 @@ void CanvasResourceSharedBitmap::TakeSkImage(sk_sp<SkImage> image) {
 
 CanvasResourceSharedImage::CanvasResourceSharedImage(
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params)
     : CanvasResource(provider, filter_quality, params) {}
 
@@ -323,7 +324,7 @@ CanvasResourceRasterSharedImage::CanvasResourceRasterSharedImage(
     const IntSize& size,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     bool is_origin_top_left,
     bool is_accelerated,
@@ -444,7 +445,7 @@ CanvasResourceRasterSharedImage::Create(
     const IntSize& size,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     bool is_origin_top_left,
     bool is_accelerated,
@@ -729,7 +730,7 @@ CanvasResourceSkiaDawnSharedImage::CanvasResourceSkiaDawnSharedImage(
     const IntSize& size,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     bool is_origin_top_left,
     uint32_t shared_image_usage_flags)
@@ -778,7 +779,7 @@ CanvasResourceSkiaDawnSharedImage::Create(
     const IntSize& size,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     const CanvasResourceParams& params,
     bool is_origin_top_left,
     uint32_t shared_image_usage_flags) {
@@ -1044,7 +1045,7 @@ scoped_refptr<ExternalCanvasResource> ExternalCanvasResource::Create(
     const CanvasResourceParams& params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left,
     bool is_overlay_candidate) {
   TRACE_EVENT0("blink", "ExternalCanvasResource::Create");
@@ -1144,7 +1145,7 @@ ExternalCanvasResource::ExternalCanvasResource(
     const CanvasResourceParams& params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality,
+    cc::PaintFlags::FilterQuality filter_quality,
     bool is_origin_top_left,
     bool is_overlay_candidate)
     : CanvasResource(std::move(provider), filter_quality, params),
@@ -1166,7 +1167,7 @@ scoped_refptr<CanvasResourceSwapChain> CanvasResourceSwapChain::Create(
     const CanvasResourceParams& params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality) {
+    cc::PaintFlags::FilterQuality filter_quality) {
   TRACE_EVENT0("blink", "CanvasResourceSwapChain::Create");
   auto resource = AdoptRef(new CanvasResourceSwapChain(
       size, params, std::move(context_provider_wrapper), std::move(provider),
@@ -1297,7 +1298,7 @@ CanvasResourceSwapChain::CanvasResourceSwapChain(
     const CanvasResourceParams& params,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::WeakPtr<CanvasResourceProvider> provider,
-    SkFilterQuality filter_quality)
+    cc::PaintFlags::FilterQuality filter_quality)
     : CanvasResource(std::move(provider), filter_quality, params),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       size_(size),

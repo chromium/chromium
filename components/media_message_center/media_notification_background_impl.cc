@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "cc/paint/paint_shader.h"
 #include "skia/ext/image_operations.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"

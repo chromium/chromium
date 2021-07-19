@@ -37,9 +37,9 @@ class SoftwareImageDecodeCachePerfTest : public testing::Test {
                kTimeCheckInterval) {}
 
   void RunFromImage() {
-    SkFilterQuality qualities[] = {kNone_SkFilterQuality, kLow_SkFilterQuality,
-                                   kMedium_SkFilterQuality,
-                                   kHigh_SkFilterQuality};
+    PaintFlags::FilterQuality qualities[] = {
+        PaintFlags::FilterQuality::kNone, PaintFlags::FilterQuality::kLow,
+        PaintFlags::FilterQuality::kMedium, PaintFlags::FilterQuality::kHigh};
     std::pair<SkIRect, SkIRect> image_rect_subrect[] = {
         std::make_pair(SkIRect::MakeWH(100, 100), SkIRect::MakeWH(100, 100)),
         std::make_pair(SkIRect::MakeWH(100, 100), SkIRect::MakeWH(50, 50)),

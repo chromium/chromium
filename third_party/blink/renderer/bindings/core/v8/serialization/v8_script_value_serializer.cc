@@ -684,7 +684,9 @@ bool V8ScriptValueSerializer::WriteDOMObject(ScriptWrappable* wrappable,
     WriteUint64(canvas->PlaceholderCanvasId());
     WriteUint32(canvas->ClientId());
     WriteUint32(canvas->SinkId());
-    WriteUint32(canvas->FilterQuality() == kNone_SkFilterQuality ? 0 : 1);
+    WriteUint32(canvas->FilterQuality() == cc::PaintFlags::FilterQuality::kNone
+                    ? 0
+                    : 1);
     return true;
   }
   if (wrapper_type_info == V8ReadableStream::GetWrapperTypeInfo() &&

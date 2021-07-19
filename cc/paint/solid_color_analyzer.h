@@ -14,6 +14,7 @@
 #include "ui/gfx/skia_util.h"
 
 namespace cc {
+class PaintOpBuffer;
 
 class CC_PAINT_EXPORT SolidColorAnalyzer {
  public:

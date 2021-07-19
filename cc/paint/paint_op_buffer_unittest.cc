@@ -1150,7 +1150,7 @@ std::vector<PaintFlags> test_flags = {
       flags.setStrokeCap(PaintFlags::kSquare_Cap);
       flags.setStrokeJoin(PaintFlags::kBevel_Join);
       flags.setStyle(PaintFlags::kStroke_Style);
-      flags.setFilterQuality(SkFilterQuality::kMedium_SkFilterQuality);
+      flags.setFilterQuality(PaintFlags::FilterQuality::kMedium);
       flags.setShader(PaintShader::MakeColor(SkColorSetARGB(1, 2, 3, 4)));
       return flags;
     }(),
@@ -1164,7 +1164,7 @@ std::vector<PaintFlags> test_flags = {
       flags.setStrokeCap(PaintFlags::kRound_Cap);
       flags.setStrokeJoin(PaintFlags::kRound_Join);
       flags.setStyle(PaintFlags::kFill_Style);
-      flags.setFilterQuality(SkFilterQuality::kHigh_SkFilterQuality);
+      flags.setFilterQuality(PaintFlags::FilterQuality::kHigh);
 
       SkScalar intervals[] = {1.f, 1.f};
       flags.setPathEffect(SkDashPathEffect::Make(intervals, 2, 0));
@@ -2809,7 +2809,7 @@ class MockImageProvider : public ImageProvider {
       : fail_all_decodes_(fail_all_decodes) {}
   MockImageProvider(std::vector<SkSize> src_rect_offset,
                     std::vector<SkSize> scale,
-                    std::vector<SkFilterQuality> quality)
+                    std::vector<PaintFlags::FilterQuality> quality)
       : src_rect_offset_(src_rect_offset), scale_(scale), quality_(quality) {}
 
   ~MockImageProvider() override = default;
@@ -2836,7 +2836,7 @@ class MockImageProvider : public ImageProvider {
  private:
   std::vector<SkSize> src_rect_offset_;
   std::vector<SkSize> scale_;
-  std::vector<SkFilterQuality> quality_;
+  std::vector<PaintFlags::FilterQuality> quality_;
   size_t index_ = 0;
   bool fail_all_decodes_ = false;
   sk_sp<PaintRecord> record_;
@@ -2976,7 +2976,8 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectTranslated) {
 
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f)};
-  std::vector<SkFilterQuality> quality = {kHigh_SkFilterQuality};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
   MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
   provider.SetRecord(paint_worklet_buffer);
 
@@ -3022,7 +3023,8 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectScaled) {
 
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f)};
-  std::vector<SkFilterQuality> quality = {kHigh_SkFilterQuality};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
   MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
   provider.SetRecord(paint_worklet_buffer);
 
@@ -3071,7 +3073,8 @@ TEST(PaintOpBufferTest, RasterPaintWorkletImageRectClipped) {
 
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f)};
-  std::vector<SkFilterQuality> quality = {kHigh_SkFilterQuality};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
   MockImageProvider provider(src_rect_offset, scale_adjustment, quality);
   provider.SetRecord(paint_worklet_buffer);
 
@@ -3110,8 +3113,9 @@ TEST(PaintOpBufferTest, ReplacesImagesFromProvider) {
   std::vector<SkSize> scale_adjustment = {SkSize::Make(0.2f, 0.2f),
                                           SkSize::Make(0.3f, 0.3f),
                                           SkSize::Make(0.4f, 0.4f)};
-  std::vector<SkFilterQuality> quality = {
-      kHigh_SkFilterQuality, kMedium_SkFilterQuality, kHigh_SkFilterQuality};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh, PaintFlags::FilterQuality::kMedium,
+      PaintFlags::FilterQuality::kHigh};
 
   MockImageProvider image_provider(src_rect_offset, scale_adjustment, quality);
   PaintOpBuffer buffer;
@@ -3201,7 +3205,8 @@ TEST(PaintOpBufferTest, DrawImageRectOpWithLooperWithImageProvider) {
 
   std::vector<SkSize> src_rect_offset = {SkSize::MakeEmpty()};
   std::vector<SkSize> scale_adjustment = {SkSize::Make(1.0f, 1.0f)};
-  std::vector<SkFilterQuality> quality = {kHigh_SkFilterQuality};
+  std::vector<PaintFlags::FilterQuality> quality = {
+      PaintFlags::FilterQuality::kHigh};
   MockImageProvider image_provider(src_rect_offset, scale_adjustment, quality);
   buffer.Playback(&canvas, PlaybackParams(&image_provider));
 }
@@ -3295,8 +3300,8 @@ TEST_P(PaintFilterSerializationTest, Basic) {
       sk_sp<PaintFilter>{new TurbulencePaintFilter(
           TurbulencePaintFilter::TurbulenceType::kFractalNoise, 3.3f, 4.4f, 2,
           123, nullptr)},
-      sk_sp<PaintFilter>{
-          new MatrixPaintFilter(SkMatrix::I(), kHigh_SkFilterQuality, nullptr)},
+      sk_sp<PaintFilter>{new MatrixPaintFilter(
+          SkMatrix::I(), PaintFlags::FilterQuality::kHigh, nullptr)},
       sk_sp<PaintFilter>{new LightingDistantPaintFilter(
           PaintFilter::LightingType::kSpecular, SkPoint3::Make(1, 2, 3),
           SK_ColorCYAN, 1.1f, 2.2f, 3.3f, nullptr)},
@@ -3310,7 +3315,7 @@ TEST_P(PaintFilterSerializationTest, Basic) {
       sk_sp<PaintFilter>{
           new ImagePaintFilter(CreateDiscardablePaintImage(gfx::Size(100, 100)),
                                SkRect::MakeWH(50, 50), SkRect::MakeWH(70, 70),
-                               kMedium_SkFilterQuality)}};
+                               PaintFlags::FilterQuality::kMedium)}};
 
   filters.emplace_back(new ComposePaintFilter(filters[0], filters[1]));
   filters.emplace_back(
@@ -3569,7 +3574,7 @@ TEST(PaintOpBufferTest, SecurityConstrainedImageSerialization) {
   auto image = CreateDiscardablePaintImage(gfx::Size(10, 10));
   sk_sp<PaintFilter> filter = sk_make_sp<ImagePaintFilter>(
       image, SkRect::MakeWH(10, 10), SkRect::MakeWH(10, 10),
-      kLow_SkFilterQuality);
+      PaintFlags::FilterQuality::kLow);
   const bool enable_security_constraints = true;
 
   std::unique_ptr<char, base::AlignedFreeDeleter> memory(

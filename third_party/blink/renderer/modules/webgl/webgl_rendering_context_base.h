@@ -634,7 +634,7 @@ class MODULES_EXPORT WebGLRenderingContextBase : public CanvasRenderingContext,
     return color_params_;
   }
   scoped_refptr<StaticBitmapImage> GetImage() override;
-  void SetFilterQuality(SkFilterQuality) override;
+  void SetFilterQuality(cc::PaintFlags::FilterQuality) override;
 
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
