@@ -15,6 +15,7 @@
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/field_formatter.h"
+#include "components/autofill_assistant/browser/web/element_action_util.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -423,12 +424,16 @@ void RequiredFieldsFallbackHandler::FillJsDrivenDropdown(
     // default: TAP
     click_type = ClickType::TAP;
   }
-  action_delegate_util::ClickOrTapElement(
-      action_delegate_, required_field.selector, click_type,
+  action_delegate_->FindElement(
+      required_field.selector,
       base::BindOnce(
-          &RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement,
-          weak_ptr_factory_.GetWeakPtr(), re2_value, case_sensitive,
-          required_field, std::move(set_next_field)));
+          &element_action_util::TakeElementAndPerform,
+          base::BindOnce(&action_delegate_util::PerformClickOrTapElement,
+                         action_delegate_, click_type),
+          base::BindOnce(
+              &RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement,
+              weak_ptr_factory_.GetWeakPtr(), re2_value, case_sensitive,
+              required_field, std::move(set_next_field))));
 }
 
 void RequiredFieldsFallbackHandler::OnClickOrTapFallbackElement(
@@ -481,12 +486,16 @@ void RequiredFieldsFallbackHandler::OnShortWaitForElement(
     // default: TAP
     click_type = ClickType::TAP;
   }
-  action_delegate_util::ClickOrTapElement(
-      action_delegate_, selector_to_click, click_type,
-      base::BindOnce(&RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
-                     weak_ptr_factory_.GetWeakPtr(), required_field,
-                     std::move(set_next_field),
-                     /* element= */ nullptr));
+  action_delegate_->FindElement(
+      selector_to_click,
+      base::BindOnce(
+          &element_action_util::TakeElementAndPerform,
+          base::BindOnce(&action_delegate_util::PerformClickOrTapElement,
+                         action_delegate_, click_type),
+          base::BindOnce(
+              &RequiredFieldsFallbackHandler::OnSetFallbackFieldValue,
+              weak_ptr_factory_.GetWeakPtr(), required_field,
+              std::move(set_next_field), /* element= */ nullptr)));
 }
 
 void RequiredFieldsFallbackHandler::OnSetFallbackFieldValue(

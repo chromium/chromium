@@ -224,16 +224,6 @@ void FindElementAndPerform(const ActionDelegate* delegate,
                             std::move(done));
 }
 
-void ClickOrTapElement(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       ClickType click_type,
-                       base::OnceCallback<void(const ClientStatus&)> done) {
-  FindElementAndPerformImpl(
-      delegate, selector,
-      base::BindOnce(&PerformClickOrTapElement, delegate, click_type),
-      std::move(done));
-}
-
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
@@ -246,55 +236,6 @@ void PerformClickOrTapElement(
   element_action_util::PerformAll(std::move(actions), element, std::move(done));
 }
 
-void SendKeyboardInput(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       const std::vector<UChar32> codepoints,
-                       int delay_in_millis,
-                       bool use_focus,
-                       base::OnceCallback<void(const ClientStatus&)> done) {
-  FindElementAndPerformImpl(
-      delegate, selector,
-      base::BindOnce(&PerformSendKeyboardInput, delegate, codepoints,
-                     delay_in_millis, use_focus),
-      std::move(done));
-}
-
-void PerformSendKeyboardInput(
-    const ActionDelegate* delegate,
-    const std::vector<UChar32> codepoints,
-    int delay_in_millis,
-    bool use_focus,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> done) {
-  VLOG(3) << __func__ << " focus: " << use_focus;
-
-  auto actions = std::make_unique<element_action_util::ElementActionVector>();
-  if (use_focus) {
-    actions->emplace_back(
-        base::BindOnce(&WebController::FocusField,
-                       delegate->GetWebController()->GetWeakPtr()));
-  } else {
-    AddClickOrTapSequence(delegate, ClickType::TAP, actions.get());
-  }
-  actions->emplace_back(base::BindOnce(
-      &WebController::SendKeyboardInput,
-      delegate->GetWebController()->GetWeakPtr(), codepoints, delay_in_millis));
-
-  element_action_util::PerformAll(std::move(actions), element, std::move(done));
-}
-
-void SetFieldValue(const ActionDelegate* delegate,
-                   const Selector& selector,
-                   const std::string& value,
-                   KeyboardValueFillStrategy fill_strategy,
-                   int key_press_delay_in_millisecond,
-                   base::OnceCallback<void(const ClientStatus&)> done) {
-  FindElementAndPerformImpl(
-      delegate, selector,
-      base::BindOnce(&PerformSetFieldValue, delegate, value, fill_strategy,
-                     key_press_delay_in_millisecond),
-      std::move(done));
-}
 void PerformSetFieldValue(const ActionDelegate* delegate,
                           const std::string& value,
                           KeyboardValueFillStrategy fill_strategy,

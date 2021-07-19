@@ -70,36 +70,12 @@ void AddStepWithoutCallback(
     base::OnceCallback<void(const ElementFinder::Result&)> step,
     element_action_util::ElementActionVector* actions);
 
-void ClickOrTapElement(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       ClickType click_type,
-                       base::OnceCallback<void(const ClientStatus&)> callback);
 void PerformClickOrTapElement(
     const ActionDelegate* delegate,
     ClickType click_type,
     const ElementFinder::Result& element,
     base::OnceCallback<void(const ClientStatus&)> callback);
 
-void SendKeyboardInput(const ActionDelegate* delegate,
-                       const Selector& selector,
-                       const std::vector<UChar32> codepoints,
-                       int delay_in_millis,
-                       bool use_focus,
-                       base::OnceCallback<void(const ClientStatus&)> callback);
-void PerformSendKeyboardInput(
-    const ActionDelegate* delegate,
-    const std::vector<UChar32> codepoints,
-    int delay_in_millis,
-    bool use_focus,
-    const ElementFinder::Result& element,
-    base::OnceCallback<void(const ClientStatus&)> callback);
-
-void SetFieldValue(const ActionDelegate* delegate,
-                   const Selector& selector,
-                   const std::string& value,
-                   KeyboardValueFillStrategy fill_strategy,
-                   int key_press_delay_in_millisecond,
-                   base::OnceCallback<void(const ClientStatus&)> callback);
 void PerformSetFieldValue(
     const ActionDelegate* delegate,
     const std::string& value,

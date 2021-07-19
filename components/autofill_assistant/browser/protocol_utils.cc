@@ -32,7 +32,6 @@
 #include "components/autofill_assistant/browser/actions/save_generated_password_action.h"
 #include "components/autofill_assistant/browser/actions/select_option_action.h"
 #include "components/autofill_assistant/browser/actions/set_attribute_action.h"
-#include "components/autofill_assistant/browser/actions/set_form_field_value_action.h"
 #include "components/autofill_assistant/browser/actions/set_persistent_ui_action.h"
 #include "components/autofill_assistant/browser/actions/set_touchable_area_action.h"
 #include "components/autofill_assistant/browser/actions/show_cast_action.h"
@@ -202,8 +201,6 @@ std::unique_ptr<Action> ProtocolUtils::CreateAction(ActionDelegate* delegate,
       return std::make_unique<ShowDetailsAction>(delegate, action);
     case ActionProto::ActionInfoCase::kCollectUserData:
       return std::make_unique<CollectUserDataAction>(delegate, action);
-    case ActionProto::ActionInfoCase::kSetFormValue:
-      return std::make_unique<SetFormFieldValueAction>(delegate, action);
     case ActionProto::ActionInfoCase::kShowProgressBar:
       return std::make_unique<ShowProgressBarAction>(delegate, action);
     case ActionProto::ActionInfoCase::kSetAttribute:
