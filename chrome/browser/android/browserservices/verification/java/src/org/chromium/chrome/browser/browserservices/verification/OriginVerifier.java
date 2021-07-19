@@ -405,8 +405,9 @@ public class OriginVerifier {
         VerificationResultStore.getInstance().clearStoredRelationships();
     }
 
+    // TODO: Make this not public.
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init(OriginVerifier caller, @Nullable WebContents webContents, Profile profile);
         boolean verifyOrigin(long nativeOriginVerifier, OriginVerifier caller, String packageName,
                 String signatureFingerprint, String origin, String relationship);

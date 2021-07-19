@@ -25,14 +25,17 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 
 /**
  * Unit tests for IncognitoTabSnapshotController.java.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@DisableFeatures({ChromeFeatureList.INCOGNITO_SCREENSHOT})
 public class IncognitoTabSnapshotControllerTest {
     private IncognitoTabSnapshotController mController;
     private WindowManager.LayoutParams mParams;

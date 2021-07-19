@@ -41,7 +41,7 @@ import org.chromium.components.installedapp.InstalledAppProviderImpl;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.Referrer;
-import org.chromium.url.URI;
+import org.chromium.url.GURL;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -273,8 +273,24 @@ class ClientManager {
         }
     }
 
-    // TODO(crbug.com/1164866): Inject the Factory/Supplier.
-    private final OriginVerifierFactory mOriginVerifierFactory = new OriginVerifierFactoryImpl();
+    /** A wrapper around {@link InstalledAppProviderImpl} to aid testing. */
+    interface InstalledAppProviderWrapper {
+        /**
+         * Calls through to {@link InstalledAppProviderImpl#isAppInstalledAndAssociatedWithOrigin}.
+         */
+        boolean isAppInstalledAndAssociatedWithOrigin(String packageName, Origin origin);
+    }
+
+    private static class ProdInstalledAppProviderWrapper implements InstalledAppProviderWrapper {
+        @Override
+        public boolean isAppInstalledAndAssociatedWithOrigin(String packageName, Origin origin) {
+            return InstalledAppProviderImpl.isAppInstalledAndAssociatedWithOrigin(
+                    packageName, new GURL(origin.toString()));
+        }
+    }
+
+    private final OriginVerifierFactory mOriginVerifierFactory;
+    private final InstalledAppProviderWrapper mInstalledAppProviderWrapper;
 
     private final Map<CustomTabsSessionToken, SessionParams> mSessionParams = new HashMap<>();
 
@@ -282,6 +298,13 @@ class ClientManager {
     private boolean mWarmupHasBeenCalled;
 
     public ClientManager() {
+        this(new OriginVerifierFactoryImpl(), new ProdInstalledAppProviderWrapper());
+    }
+
+    public ClientManager(OriginVerifierFactory originVerifierFactory,
+            InstalledAppProviderWrapper installedAppProviderWrapper) {
+        mOriginVerifierFactory = originVerifierFactory;
+        mInstalledAppProviderWrapper = installedAppProviderWrapper;
         RequestThrottler.loadInBackground();
     }
 
@@ -485,8 +508,8 @@ class ClientManager {
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { params.originVerifier.start(listener, origin); });
         if (relation == CustomTabsService.RELATION_HANDLE_ALL_URLS
-                && InstalledAppProviderImpl.isAppInstalledAndAssociatedWithOrigin(
-                        params.getPackageName(), URI.create(origin.toString()))) {
+                && mInstalledAppProviderWrapper.isAppInstalledAndAssociatedWithOrigin(
+                        params.getPackageName(), origin)) {
             params.mLinkedOrigins.add(origin);
         }
         return true;

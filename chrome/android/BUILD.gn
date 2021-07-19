@@ -904,6 +904,7 @@ junit_binary("chrome_junit_tests") {
     "//chrome/browser/android/browserservices/intents:junit",
     "//chrome/browser/android/browserservices/metrics:java",
     "//chrome/browser/android/browserservices/verification:java",
+    "//chrome/browser/android/browserservices/verification:junit_test_support",
     "//chrome/browser/android/lifecycle:java",
     "//chrome/browser/android/webapps/launchpad:junit_tests",
     "//chrome/browser/attribution_reporting/android/internal:junit_tests",
