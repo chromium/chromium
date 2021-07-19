@@ -1062,41 +1062,28 @@ LayoutUnit NGInlineLayoutAlgorithm::ComputeContentSize(
 scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
   NGExclusionSpace initial_exclusion_space(ConstraintSpace().ExclusionSpace());
 
+  container_builder_.SetAdjoiningObjectTypes(
+      ConstraintSpace().AdjoiningObjectTypes());
+
   const bool is_empty_inline = Node().IsEmptyInline();
 
-  if (is_empty_inline) {
-    // Margins should collapse across "certain zero-height line boxes".
-    // https://drafts.csswg.org/css2/box.html#collapsing-margins
-    container_builder_.SetEndMarginStrut(ConstraintSpace().MarginStrut());
-
-    // We're just going to collapse through this one, so whatever went in on one
-    // side will go out on the other side. The position of the adjoining objects
-    // will be affected by any subsequent block, until the BFC block offset is
-    // resolved.
-    container_builder_.AddAdjoiningObjectTypes(
-        ConstraintSpace().AdjoiningObjectTypes());
-
-    // For the empty lines, most of the logic here are not necessary, but in
-    // some edge cases we still need to create box fragments, such as when it
-    // has a containing block for out of flow objects. For now, use the code
-    // path than to create a fast code path for the stability.
-  } else {
+#if DCHECK_IS_ON()
+  if (!is_empty_inline) {
+    // The BFC block-offset was determined before entering this algorithm. This
+    // means that there should be no adjoining objects, or margins.
     DCHECK(ConstraintSpace().MarginStrut().IsEmpty() ||
            (BreakToken() && BreakToken()->IsAfterBlockInInline()));
-
-    // The BFC block-offset was determined before entering this algorithm. This
-    // means that there should be no adjoining objects.
     DCHECK(!ConstraintSpace().AdjoiningObjectTypes());
+    // Only empty-inlines should have the "forced" BFC block-offset set.
+    DCHECK(!ConstraintSpace().ForcedBfcBlockOffset());
   }
+#endif
 
   // In order to get the correct list of layout opportunities, we need to
   // position any "leading" floats within the exclusion space first.
   STACK_UNINITIALIZED NGPositionedFloatVector leading_floats;
   unsigned handled_leading_floats_index =
       PositionLeadingFloats(&initial_exclusion_space, &leading_floats);
-
-  // Only empty-inlines should have the "forced" BFC block-offset set.
-  DCHECK(is_empty_inline || !ConstraintSpace().ForcedBfcBlockOffset());
 
   // We query all the layout opportunities on the initial exclusion space up
   // front, as if the line breaker may add floats and change the opportunities.
@@ -1239,6 +1226,10 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 
     if (is_empty_inline) {
       DCHECK_EQ(container_builder_.BlockSize(), 0);
+
+      // Margins should collapse across "certain zero-height line boxes".
+      // https://drafts.csswg.org/css2/box.html#collapsing-margins
+      container_builder_.SetEndMarginStrut(ConstraintSpace().MarginStrut());
     } else {
       // A <br clear=both> will strech the line-box height, such that the
       // block-end edge will clear any floats.
