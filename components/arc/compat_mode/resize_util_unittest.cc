@@ -25,6 +25,11 @@ class FakeToastManager : public ash::ToastManager {
   void Show(const ash::ToastData& data) override { called_show_ = true; }
   void Cancel(const std::string& id) override { called_cancel_ = true; }
 
+  void ResetState() {
+    called_show_ = false;
+    called_cancel_ = false;
+  }
+
   bool called_show() { return called_show_; }
   bool called_cancel() { return called_cancel_; }
 
@@ -134,6 +139,13 @@ TEST_F(ResizeUtilTest, TestEnableResizing) {
   EXPECT_EQ(PredictCurrentMode(widget()), ResizeCompatMode::kResizable);
   EXPECT_TRUE(fake_toast_manager.called_cancel());
   EXPECT_TRUE(fake_toast_manager.called_show());
+
+  // Test the state is not updated redundantly.
+  fake_toast_manager.ResetState();
+  EnableResizingWithConfirmationIfNeeded(widget(), pref_delegate());
+  SyncResizeLockPropertyWithMojoState(widget());
+  EXPECT_FALSE(fake_toast_manager.called_cancel());
+  EXPECT_FALSE(fake_toast_manager.called_show());
 }
 
 // Test that should show dialog screen dialog caps at a preset limit
