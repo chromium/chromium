@@ -93,8 +93,8 @@ ResultExpr BrokerProcessPolicy::EvaluateSyscall(int sysno) const {
         return Allow();
       break;
 #endif
-#if defined(__NR_fstatat)
-    case __NR_fstatat:
+#if defined(__NR_fstatat64)
+    case __NR_fstatat64:
       if (allowed_command_set_.test(syscall_broker::COMMAND_STAT))
         return Allow();
       break;

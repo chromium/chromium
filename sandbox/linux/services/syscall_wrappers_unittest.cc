@@ -5,15 +5,19 @@
 #include "sandbox/linux/services/syscall_wrappers.h"
 
 #include <stdint.h>
+#include <string.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
-#include <cstring>
 
+#include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
+#include "sandbox/linux/tests/scoped_temporary_file.h"
 #include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -91,6 +95,129 @@ TEST(SyscallWrappers, LinuxSigSet) {
               std::min(sizeof(sigset), sizeof(linux_sigset)));
   EXPECT_EQ((1ULL << (LINUX_SIGSEGV - 1)) | (1ULL << (LINUX_SIGBUS - 1)),
             linux_sigset);
+}
+
+TEST(SyscallWrappers, Stat) {
+  // Create a file to stat, with 12 bytes of data.
+  ScopedTemporaryFile tmp_file;
+  EXPECT_EQ(12, write(tmp_file.fd(), "blahblahblah", 12));
+
+  // To test we have the correct stat structures for each kernel/platform, we
+  // will right-align them on a page, with a guard page after.
+  char* two_pages = static_cast<char*>(TestUtils::MapPagesOrDie(2));
+  TestUtils::MprotectLastPageOrDie(two_pages, 2);
+  char* page1_end = two_pages + base::GetPageSize();
+
+  // First, check that calling stat with |stat_buf| pointing to the last byte on
+  // a page causes EFAULT.
+  int res = sys_stat(tmp_file.full_file_name(),
+                     reinterpret_cast<struct kernel_stat*>(page1_end - 1));
+  ASSERT_EQ(res, -1);
+  ASSERT_EQ(errno, EFAULT);
+
+  // Now, check that we have the correctly sized stat structure.
+  struct kernel_stat* sb = reinterpret_cast<struct kernel_stat*>(
+      page1_end - sizeof(struct kernel_stat));
+  // Memset to c's so we can check the kernel zero'd the padding...
+  memset(sb, 'c', sizeof(struct kernel_stat));
+  res = sys_stat(tmp_file.full_file_name(), sb);
+  ASSERT_EQ(res, 0);
+
+  // Following fields may never be consistent but should be non-zero.
+  // Don't trust the platform to define fields with any particular sign.
+  EXPECT_NE(0u, static_cast<unsigned int>(sb->st_dev));
+  EXPECT_NE(0u, static_cast<unsigned int>(sb->st_ino));
+  EXPECT_NE(0u, static_cast<unsigned int>(sb->st_mode));
+  EXPECT_NE(0u, static_cast<unsigned int>(sb->st_blksize));
+  EXPECT_NE(0u, static_cast<unsigned int>(sb->st_blocks));
+
+// We are the ones that made the file.
+// Note: normally gid and uid overflow on backwards-compatible 32-bit systems
+// and we end up with dummy uids and gids in place here.
+#if defined(ARCH_CPU_64_BITS)
+  EXPECT_EQ(geteuid(), sb->st_uid);
+  EXPECT_EQ(getegid(), sb->st_gid);
+#endif
+
+  // Wrote 12 bytes above which should fit in one block.
+  EXPECT_EQ(12u, sb->st_size);
+
+  // Can't go backwards in time, 1500000000 was some time ago.
+  EXPECT_LT(1500000000u, static_cast<unsigned int>(sb->st_atime_));
+  EXPECT_LT(1500000000u, static_cast<unsigned int>(sb->st_mtime_));
+  EXPECT_LT(1500000000u, static_cast<unsigned int>(sb->st_ctime_));
+
+  // Checking the padding for good measure.
+#if defined(__x86_64__)
+  EXPECT_EQ(0u, sb->__pad0);
+  EXPECT_EQ(0u, sb->__unused4[0]);
+  EXPECT_EQ(0u, sb->__unused4[1]);
+  EXPECT_EQ(0u, sb->__unused4[2]);
+#elif defined(__aarch64__)
+  EXPECT_EQ(0u, sb->__pad1);
+  EXPECT_EQ(0, sb->__pad2);
+  EXPECT_EQ(0u, sb->__unused4);
+  EXPECT_EQ(0u, sb->__unused5);
+#endif
+}
+
+TEST(SyscallWrappers, LStat) {
+  // Create a file to stat, with 12 bytes of data.
+  ScopedTemporaryFile tmp_file;
+  EXPECT_EQ(12, write(tmp_file.fd(), "blahblahblah", 12));
+
+  // Also create a symlink.
+  std::string symlink_name;
+  {
+    ScopedTemporaryFile tmp_file2;
+    symlink_name = tmp_file2.full_file_name();
+  }
+  int rc = symlink(tmp_file.full_file_name(), symlink_name.c_str());
+  if (rc != 0) {
+    PLOG(ERROR) << "Couldn't symlink " << symlink_name << " to target "
+                << tmp_file.full_file_name();
+    GTEST_FAIL();
+  }
+
+  struct kernel_stat lstat_info;
+  rc = sys_lstat(symlink_name.c_str(), &lstat_info);
+  if (rc < 0 && errno == EOVERFLOW) {
+    GTEST_SKIP();
+  }
+  if (rc != 0) {
+    PLOG(ERROR) << "Couldn't sys_lstat " << symlink_name;
+    GTEST_FAIL();
+  }
+
+  struct kernel_stat stat_info;
+  rc = sys_stat(symlink_name.c_str(), &stat_info);
+  if (rc < 0 && errno == EOVERFLOW) {
+    GTEST_SKIP();
+  }
+  if (rc != 0) {
+    PLOG(ERROR) << "Couldn't sys_stat " << symlink_name;
+    GTEST_FAIL();
+  }
+
+  struct kernel_stat tmp_file_stat_info;
+  rc = sys_stat(tmp_file.full_file_name(), &tmp_file_stat_info);
+  if (rc < 0 && errno == EOVERFLOW) {
+    GTEST_SKIP();
+  }
+  if (rc != 0) {
+    PLOG(ERROR) << "Couldn't sys_stat " << tmp_file.full_file_name();
+    GTEST_FAIL();
+  }
+
+  // lstat should produce information about a symlink.
+  ASSERT_TRUE(S_ISLNK(lstat_info.st_mode));
+
+  // stat-ing symlink_name and tmp_file should produce the same inode.
+  ASSERT_EQ(stat_info.st_ino, tmp_file_stat_info.st_ino);
+
+  // lstat-ing symlink_name should give a different inode than stat-ing
+  // symlink_name.
+  ASSERT_NE(stat_info.st_ino, lstat_info.st_ino);
 }
 
 }  // namespace

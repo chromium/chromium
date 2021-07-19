@@ -19,6 +19,8 @@ class TestUtils {
   // makes sure that if fork() succeeded the child exits
   // and the parent waits for it.
   static void HandlePostForkReturn(pid_t pid);
+  static void* MapPagesOrDie(size_t num_pages);
+  static void MprotectLastPageOrDie(char* addr, size_t num_pages);
 
  private:
   DISALLOW_IMPLICIT_CONSTRUCTORS(TestUtils);

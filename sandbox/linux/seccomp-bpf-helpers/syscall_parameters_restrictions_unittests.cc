@@ -37,10 +37,6 @@
 #include "sandbox/linux/system_headers/linux_time.h"
 #include "sandbox/linux/tests/unit_tests.h"
 
-#if !defined(OS_ANDROID)
-#include "third_party/lss/linux_syscall_support.h"  // for MAKE_PROCESS_CPUCLOCK
-#endif
-
 namespace sandbox {
 
 namespace {

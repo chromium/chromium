@@ -16,6 +16,7 @@
 #include "base/memory/page_size.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/test/bind.h"
+#include "sandbox/linux/tests/test_utils.h"
 #include "sandbox/linux/tests/unit_tests.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -50,19 +51,6 @@ void VerifyCorrectString(std::string str, size_t size) {
     curr_path_part_pos++;
     curr_path_part_pos %= strlen(kPathPart);
   }
-}
-
-void* MapPagesOrDie(size_t num_pages) {
-  void* addr = mmap(nullptr, num_pages * base::GetPageSize(),
-                    PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
-  PCHECK(addr);
-  return addr;
-}
-
-void MprotectLastPageOrDie(char* addr, size_t num_pages) {
-  size_t last_page_offset = (num_pages - 1) * base::GetPageSize();
-  PCHECK(mprotect(addr + last_page_offset, base::GetPageSize(), PROT_NONE) >=
-         0);
 }
 
 pid_t ForkWaitingChild(base::OnceCallback<void(int)>
@@ -105,13 +93,13 @@ void ReadTest(const ReadTestConfig& test_config) {
   size_t total_pages = (test_config.start_at + test_config.total_size +
                         base::GetPageSize() - 1) /
                        base::GetPageSize();
-  char* mmap_addr = static_cast<char*>(MapPagesOrDie(total_pages));
+  char* mmap_addr = static_cast<char*>(TestUtils::MapPagesOrDie(total_pages));
   char* addr = mmap_addr + test_config.start_at;
   FillBufferWithPath(addr, test_config.total_size,
                      test_config.include_null_byte);
 
   if (test_config.last_page_inaccessible)
-    MprotectLastPageOrDie(mmap_addr, total_pages);
+    TestUtils::MprotectLastPageOrDie(mmap_addr, total_pages);
 
   pid_t pid = ForkWaitingChild();
   munmap(mmap_addr, base::GetPageSize() * total_pages);
@@ -212,7 +200,7 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChunkPlus1EndingOnePastPage) {
 }
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChildExited) {
-  void* addr = MapPagesOrDie(1);
+  void* addr = TestUtils::MapPagesOrDie(1);
   FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart) + 1, true);
 
   base::ScopedFD parent_sync, child_sync;
@@ -240,10 +228,10 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, ReadChildExited) {
 }
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
-  void* read_from = MapPagesOrDie(1);
+  void* read_from = TestUtils::MapPagesOrDie(1);
   const size_t write_size = base::GetPageSize();
   FillBufferWithPath(static_cast<char*>(read_from), write_size, false);
-  char* write_to = static_cast<char*>(MapPagesOrDie(1));
+  char* write_to = static_cast<char*>(TestUtils::MapPagesOrDie(1));
   base::ScopedFD parent_signal_fd;
   const std::vector<int> empty_fd_vec;
 
@@ -278,8 +266,8 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, BasicWrite) {
 }
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteToInvalidAddress) {
-  char* write_to = static_cast<char*>(MapPagesOrDie(1));
-  MprotectLastPageOrDie(write_to, 1);
+  char* write_to = static_cast<char*>(TestUtils::MapPagesOrDie(1));
+  TestUtils::MprotectLastPageOrDie(write_to, 1);
   base::ScopedFD parent_signal_fd;
   const std::vector<int> empty_fd_vec;
 
@@ -295,11 +283,11 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteToInvalidAddress) {
 }
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
-  char* read_from = static_cast<char*>(MapPagesOrDie(2));
+  char* read_from = static_cast<char*>(TestUtils::MapPagesOrDie(2));
   const size_t write_size = base::GetPageSize();
   FillBufferWithPath(static_cast<char*>(read_from), write_size, false);
-  char* write_to = static_cast<char*>(MapPagesOrDie(2));
-  MprotectLastPageOrDie(write_to, 2);
+  char* write_to = static_cast<char*>(TestUtils::MapPagesOrDie(2));
+  TestUtils::MprotectLastPageOrDie(write_to, 2);
   write_to += base::GetPageSize() / 2;
   base::ScopedFD parent_signal_fd;
   const std::vector<int> empty_fd_vec;
@@ -314,7 +302,7 @@ SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WritePartiallyToInvalidAddress) {
 }
 
 SANDBOX_TEST(BrokerRemoteSyscallArgHandler, WriteChildExited) {
-  char* addr = static_cast<char*>(MapPagesOrDie(1));
+  char* addr = static_cast<char*>(TestUtils::MapPagesOrDie(1));
   FillBufferWithPath(static_cast<char*>(addr), strlen(kPathPart) + 1, true);
 
   base::ScopedFD parent_sync, child_sync;

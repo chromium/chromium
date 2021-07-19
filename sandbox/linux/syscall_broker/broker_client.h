@@ -61,10 +61,10 @@ class SANDBOX_EXPORT BrokerClient : public SyscallDispatcher {
   int Rmdir(const char* path) const override;
   int Stat(const char* pathname,
            bool follow_links,
-           struct stat* sb) const override;
+           struct kernel_stat* sb) const override;
   int Stat64(const char* pathname,
              bool follow_links,
-             struct stat64* sb) const override;
+             struct kernel_stat64* sb) const override;
   int Unlink(const char* unlink) const override;
 
  private:
