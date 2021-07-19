@@ -358,14 +358,9 @@ void ArcResizeLockManager::UpdateCompatModeButton(aura::Window* window) {
     frame_view->GetHeaderView()->UpdateCaptionButtons();
   }
 
-  const auto currentMode =
-      PredictCurrentMode(frame_view->frame(), pref_delegate_);
-  if (!currentMode)
-    return;
-
   const auto resize_lock_type = window->GetProperty(ash::kArcResizeLockTypeKey);
 
-  switch (*currentMode) {
+  switch (PredictCurrentMode(frame_view->frame())) {
     case ResizeCompatMode::kPhone:
       compat_mode_button->SetImage(views::CAPTION_BUTTON_ICON_CENTER,
                                    views::FrameCaptionButton::Animate::kNo,

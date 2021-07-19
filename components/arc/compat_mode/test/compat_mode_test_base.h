@@ -35,6 +35,9 @@ class CompatModeTestBase : public views::ViewsTestBase {
   void LeftClickOnView(const views::Widget* widget,
                        const views::View* view) const;
 
+  // Emulates the round-trip between Android and Chrome.
+  void SyncResizeLockPropertyWithMojoState(const views::Widget* widget);
+
   ArcResizeLockPrefDelegate* pref_delegate() { return pref_delegate_.get(); }
 
  private:

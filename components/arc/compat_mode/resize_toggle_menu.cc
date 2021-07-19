@@ -4,6 +4,7 @@
 
 #include "components/arc/compat_mode/resize_toggle_menu.h"
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -190,13 +191,14 @@ void ResizeToggleMenu::OnWindowPropertyChanged(aura::Window* window,
                                                const void* key,
                                                intptr_t old) {
   DCHECK(window_observation_.IsObservingSource(window));
-  if (key != aura::client::kShowStateKey)
-    return;
-
-  const ui::WindowShowState state =
-      window->GetProperty(aura::client::kShowStateKey);
-  if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
-    CloseBubble();
+  if (key == aura::client::kShowStateKey) {
+    const ui::WindowShowState state =
+        window->GetProperty(aura::client::kShowStateKey);
+    if (state == ui::SHOW_STATE_FULLSCREEN || state == ui::SHOW_STATE_MAXIMIZED)
+      CloseBubble();
+  } else if (key == ash::kArcResizeLockTypeKey) {
+    UpdateSelectedButton();
+  }
 }
 
 void ResizeToggleMenu::OnWindowDestroying(aura::Window* window) {
@@ -268,13 +270,10 @@ void ResizeToggleMenu::UpdateSelectedButton() {
   if (!widget_)
     return;
 
-  const auto selected_mode = PredictCurrentMode(widget_, pref_delegate_);
-  phone_button_->SetSelected(selected_mode &&
-                             *selected_mode == ResizeCompatMode::kPhone);
-  tablet_button_->SetSelected(selected_mode &&
-                              *selected_mode == ResizeCompatMode::kTablet);
-  resizable_button_->SetSelected(
-      selected_mode && *selected_mode == ResizeCompatMode::kResizable);
+  const auto selected_mode = PredictCurrentMode(widget_);
+  phone_button_->SetSelected(selected_mode == ResizeCompatMode::kPhone);
+  tablet_button_->SetSelected(selected_mode == ResizeCompatMode::kTablet);
+  resizable_button_->SetSelected(selected_mode == ResizeCompatMode::kResizable);
 }
 
 void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
@@ -289,10 +288,6 @@ void ResizeToggleMenu::ApplyResizeCompatMode(ResizeCompatMode mode) {
       EnableResizingWithConfirmationIfNeeded(widget_, pref_delegate_);
       break;
   }
-
-  // Enabling/disabling resizing might not trigger bounds change, so force to
-  // update selected button status here.
-  UpdateSelectedButton();
 
   auto_close_closure_.Reset(base::BindOnce(&ResizeToggleMenu::CloseBubble,
                                            weak_ptr_factory_.GetWeakPtr()));

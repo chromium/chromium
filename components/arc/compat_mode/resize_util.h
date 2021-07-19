@@ -31,9 +31,7 @@ void EnableResizingWithConfirmationIfNeeded(
     views::Widget* widget,
     ArcResizeLockPrefDelegate* pref_delegate);
 
-absl::optional<ResizeCompatMode> PredictCurrentMode(
-    views::Widget* widget,
-    ArcResizeLockPrefDelegate* pref_delegate);
+ResizeCompatMode PredictCurrentMode(const views::Widget* widget);
 
 bool ShouldShowSplashScreenDialog(ArcResizeLockPrefDelegate* pref_delegate);
 

@@ -26,8 +26,10 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
   void SetUp() override {
     CompatModeTestBase::SetUp();
     widget_ = CreateArcWidget(std::string(kTestAppId));
+    // Resizable mode by default.
     pref_delegate()->SetResizeLockState(kTestAppId,
-                                        mojom::ArcResizeLockState::ON);
+                                        mojom::ArcResizeLockState::OFF);
+    SyncResizeLockPropertyWithMojoState(widget());
     resize_toggle_menu_ =
         std::make_unique<ResizeToggleMenu>(widget_.get(), pref_delegate());
   }
@@ -56,6 +58,7 @@ class ResizeToggleMenuTest : public CompatModeTestBase {
   void ClickButton(ResizeCompatMode command_id) {
     const auto* button = GetButtonByCommandId(command_id);
     LeftClickOnView(widget_.get(), button);
+    SyncResizeLockPropertyWithMojoState(widget());
   }
 
   views::Widget* widget() { return widget_.get(); }
@@ -127,13 +130,20 @@ TEST_F(ResizeToggleMenuTest, TestResizeTablet) {
 TEST_F(ResizeToggleMenuTest, TestResizable) {
   // Verify pre-conditions.
   EXPECT_TRUE(IsMenuRunning());
-  EXPECT_EQ(pref_delegate()->GetResizeLockState(kTestAppId),
-            mojom::ArcResizeLockState::ON);
+  // Set resize locked mode to enable Resizable button.
+  pref_delegate()->SetResizeLockState(kTestAppId,
+                                      mojom::ArcResizeLockState::ON);
+  SyncResizeLockPropertyWithMojoState(widget());
 
   // Test that resize command is properly handled.
   ClickButton(ResizeCompatMode::kResizable);
   EXPECT_EQ(pref_delegate()->GetResizeLockState(kTestAppId),
             mojom::ArcResizeLockState::OFF);
+
+  // Test that the selected item is changed dynamically.
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kPhone));
+  EXPECT_FALSE(IsCommandButtonDisabled(ResizeCompatMode::kTablet));
+  EXPECT_TRUE(IsCommandButtonDisabled(ResizeCompatMode::kResizable));
 
   // Test that the item is selected after the resize.
   ReshowMenu();
@@ -201,11 +211,17 @@ TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToPhone)));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::TurnOnResizeLock)));
 
   ClickButton(ResizeCompatMode::kTablet);
   EXPECT_EQ(1,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToTablet)));
+  EXPECT_EQ(1,
+            user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
+                ResizeLockActionType::TurnOnResizeLock)));
 
   ClickButton(ResizeCompatMode::kResizable);
   EXPECT_EQ(1,
@@ -216,7 +232,7 @@ TEST_F(ResizeToggleMenuTest, TestUserActionMetrics) {
   EXPECT_EQ(2,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::ResizeToPhone)));
-  EXPECT_EQ(1,
+  EXPECT_EQ(2,
             user_action_tester.GetActionCount(GetResizeLockActionNameForTesting(
                 ResizeLockActionType::TurnOnResizeLock)));
 }

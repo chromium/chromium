@@ -7,9 +7,11 @@
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/containers/flat_map.h"
+#include "components/arc/compat_mode/arc_window_property_util.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
+#include "ui/views/widget/widget_delegate.h"
 #include "ui/views/widget/widget_utils.h"
 
 namespace arc {
@@ -81,6 +83,7 @@ void CompatModeTestBase::TearDown() {
 
 std::unique_ptr<views::Widget> CompatModeTestBase::CreateWidget(bool show) {
   auto widget = CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
+  widget->widget_delegate()->SetCanResize(true);
   if (show)
     widget->Show();
   return widget;
@@ -109,6 +112,30 @@ void CompatModeTestBase::LeftClickOnView(const views::Widget* widget,
   ui::test::EventGenerator event_generator(GetRootWindow(widget));
   event_generator.MoveMouseTo(view->GetBoundsInScreen().CenterPoint());
   event_generator.ClickLeftButton();
+}
+
+void CompatModeTestBase::SyncResizeLockPropertyWithMojoState(
+    const views::Widget* widget) {
+  auto* const window = widget->GetNativeWindow();
+  const auto app_id = GetAppId(window);
+  switch (pref_delegate()->GetResizeLockState(*app_id)) {
+    case mojom::ArcResizeLockState::UNDEFINED:
+    case mojom::ArcResizeLockState::OFF:
+      window->SetProperty(ash::kArcResizeLockTypeKey,
+                          ash::ArcResizeLockType::RESIZABLE);
+      break;
+    case mojom::ArcResizeLockState::ON:
+    case mojom::ArcResizeLockState::READY:
+    case mojom::ArcResizeLockState::FULLY_LOCKED:
+      if (widget->widget_delegate()->CanResize()) {
+        window->SetProperty(ash::kArcResizeLockTypeKey,
+                            ash::ArcResizeLockType::RESIZE_LIMITED);
+      } else {
+        window->SetProperty(ash::kArcResizeLockTypeKey,
+                            ash::ArcResizeLockType::FULLY_LOCKED);
+      }
+      break;
+  }
 }
 
 }  // namespace arc
