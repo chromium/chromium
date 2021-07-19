@@ -176,8 +176,9 @@ void MockChromePromptResponder::ReadRequests(
 
   // Read the protocol version handshake.
   uint8_t version;
+  DWORD bytes_read;
   ASSERT_TRUE(
-      ::ReadFile(read_handle, &version, sizeof(version), nullptr, nullptr))
+      ::ReadFile(read_handle, &version, sizeof(version), &bytes_read, nullptr))
       << "errno " << ::GetLastError();
   ASSERT_EQ(version, 1);  // kVersion from proto_chrome_prompt_ipc.cc
 
@@ -185,14 +186,14 @@ void MockChromePromptResponder::ReadRequests(
     // Read the length of the next message.
     uint32_t message_length;
     ASSERT_TRUE(::ReadFile(read_handle, &message_length, sizeof(message_length),
-                           nullptr, nullptr))
+                           &bytes_read, nullptr))
         << "errno " << ::GetLastError();
 
     // Read the next message.
     std::string message;
     ASSERT_TRUE(::ReadFile(read_handle,
                            base::WriteInto(&message, message_length + 1),
-                           message_length, nullptr, nullptr))
+                           message_length, &bytes_read, nullptr))
         << "errno " << ::GetLastError();
 
     // Parse the message into a proto and invoke a mocked function for each
@@ -244,10 +245,11 @@ void MockChromePromptResponder::WriteResponseMessage(
 
   HANDLE write_handle = handles_.response_write_handle.Get();
   uint32_t message_size = response_string.size();
+  DWORD bytes_written;
   ASSERT_TRUE(::WriteFile(write_handle, &message_size, sizeof(uint32_t),
-                          nullptr, nullptr));
+                          &bytes_written, nullptr));
   ASSERT_TRUE(::WriteFile(write_handle, response_string.data(), message_size,
-                          nullptr, nullptr));
+                          &bytes_written, nullptr));
 }
 
 ChromePromptPipeHandles CreateTestChromePromptMessagePipes(

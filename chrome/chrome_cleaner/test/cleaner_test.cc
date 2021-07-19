@@ -21,7 +21,6 @@
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
-#include "base/win/windows_version.h"
 #include "chrome/chrome_cleaner/buildflags.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
 #include "chrome/chrome_cleaner/ipc/chrome_prompt_test_util.h"
@@ -602,12 +601,6 @@ class CleanerScanningModeTest
 
   void SetUp() override {
     CleanerTestBase::SetUp();
-
-    // TODO(crbug.com/1210601): All uses of MockChromePromptResponder are
-    // failing on Windows 7. Disable this test suite until the problem can be
-    // investigated.
-    if (base::win::GetVersion() < base::win::Version::WIN8)
-      GTEST_SKIP() << "Skipping on Win7: crbug.com/1210601";
 
     command_line_ =
         BuildCommandLine(kCleanerExecutable, ExecutionMode::kScanning);
