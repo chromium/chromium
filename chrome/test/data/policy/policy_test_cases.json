@@ -382,7 +382,27 @@
           "SavingBrowserHistoryDisabled": true
         },
         "prefs": {
-          "history.saving_disabled": {}
+          "history.saving_disabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
+          "SavingBrowserHistoryDisabled": false
+        },
+        "prefs": {
+          "history.saving_disabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "history.saving_disabled": {
+            "default_value": false
+          }
         }
       }
     ]
@@ -11511,12 +11531,20 @@
     ]
   },
   "DataLeakPreventionClipboardCheckSizeLimit": {
-    "os": ["chromeos"],
+    "os": [
+      "chromeos"
+    ],
     "can_be_recommended": false,
     "policy_pref_mapping_tests": [
       {
-        "policies": { "DataLeakPreventionClipboardCheckSizeLimit": 50 },
-        "prefs": { "policy.dlp_clipboard_check_size_limit": { "location": "local_state" } }
+        "policies": {
+          "DataLeakPreventionClipboardCheckSizeLimit": 50
+        },
+        "prefs": {
+          "policy.dlp_clipboard_check_size_limit": {
+            "location": "local_state"
+          }
+        }
       }
     ]
   },
