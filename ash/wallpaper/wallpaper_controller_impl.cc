@@ -2459,6 +2459,10 @@ void WallpaperControllerImpl::SetDailyRefreshCollectionId(
   pref_service->SetString(kWallpaperCollectionId, collection_id);
 }
 
+std::string WallpaperControllerImpl::GetDailyRefreshCollectionId() const {
+  return GetCollectionId();
+}
+
 void WallpaperControllerImpl::OnGoogleDriveMounted() {
   AccountId account_id = GetActiveAccountId();
   WallpaperInfo local_info;
@@ -2488,9 +2492,11 @@ std::string WallpaperControllerImpl::GetCollectionId() const {
   return pref_service->GetString(kWallpaperCollectionId);
 }
 
-void WallpaperControllerImpl::UpdateDailyRefreshWallpaper() {
+void WallpaperControllerImpl::UpdateDailyRefreshWallpaper(
+    RefreshWallpaperCallback callback) {
   if (!IsDailyRefreshEnabled()) {
     daily_refresh_timer_.Stop();
+    std::move(callback).Run(false);
     return;
   }
 
@@ -2502,29 +2508,36 @@ void WallpaperControllerImpl::UpdateDailyRefreshWallpaper() {
         base::BindOnce(&WallpaperControllerImpl::SetDailyWallpaper,
                        weak_factory_.GetWeakPtr(), GetActiveAccountId(),
                        ash::WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED,
-                       /*preview_mode=*/false));
+                       /*preview_mode=*/false, std::move(callback)));
   } else {
     StartDailyRefreshTimer();
+    std::move(callback).Run(false);
   }
 }
 
-void WallpaperControllerImpl::SetDailyWallpaper(const AccountId& account_id,
-                                                WallpaperLayout layout,
-                                                bool preview_mode,
-                                                const std::string& image_url) {
+void WallpaperControllerImpl::SetDailyWallpaper(
+    const AccountId& account_id,
+    WallpaperLayout layout,
+    bool preview_mode,
+    RefreshWallpaperCallback callback,
+    const std::string& image_url) {
   if (!image_url.empty()) {
     SetOnlineWallpaper(
         OnlineWallpaperParams{
             account_id, /*asset_id=*/absl::nullopt, GURL(image_url),
             /*collection_id=*/std::string(), layout, preview_mode},
         base::BindOnce(&WallpaperControllerImpl::OnSetDailyWallpaper,
-                       weak_factory_.GetWeakPtr()));
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
   } else {
     OnFetchDailyWallpaperFailed();
+    std::move(callback).Run(false);
   }
 }
 
-void WallpaperControllerImpl::OnSetDailyWallpaper(bool success) {
+void WallpaperControllerImpl::OnSetDailyWallpaper(
+    RefreshWallpaperCallback callback,
+    bool success) {
+  std::move(callback).Run(success);
   if (success) {
     StartDailyRefreshTimer();
   } else {
@@ -2557,7 +2570,8 @@ void WallpaperControllerImpl::StartDailyRefreshTimer(base::TimeDelta delay) {
   daily_refresh_timer_.Start(
       FROM_HERE, desired_run_time,
       base::BindOnce(&WallpaperControllerImpl::UpdateDailyRefreshWallpaper,
-                     weak_factory_.GetWeakPtr()));
+                     weak_factory_.GetWeakPtr(),
+                     base::DoNothing::Once<bool>()));
 }
 
 base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()

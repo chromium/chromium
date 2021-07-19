@@ -7,11 +7,16 @@
  * wallpaper.
  */
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
+import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
+import 'chrome://resources/polymer/v3_0/iron-iconset-svg/iron-iconset-svg.js';
+import '../common/icons.js';
 import {assert} from 'chrome://resources/js/assert.m.js'
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
-import {getCurrentWallpaper, setCustomWallpaperLayout} from './personalization_controller.js';
+import {getCurrentWallpaper, getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './personalization_controller.js';
 import {WallpaperLayout, WallpaperType} from './personalization_reducers.js';
+import {Paths} from './personalization_router_element.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
 /**
@@ -48,11 +53,33 @@ export class WallpaperSelected extends WithPersonalizationStore {
   static get properties() {
     return {
       /**
+       * The current collection id to display.
+       */
+      collectionId: {
+        type: String,
+      },
+
+      /**
+       * The current path of the page.
+       */
+      path: {
+        type: String,
+      },
+
+      /**
        * @type {?chromeos.personalizationApp.mojom.WallpaperImage}
        * @private
        */
       image_: {
         type: Object,
+      },
+
+      /**
+       * @type {?string}
+       * @private
+       */
+      dailyRefreshCollectionId_: {
+        type: String,
       },
 
       /** @private */
@@ -74,9 +101,35 @@ export class WallpaperSelected extends WithPersonalizationStore {
       },
 
       /** @private */
-      showMoreOptions_: {
+      showWallpaperOptions_: {
         type: Boolean,
-        computed: 'computeShowMoreOptions_(image_)',
+        computed: 'computeShowWallpaperOptions_(image_)',
+      },
+
+      /** @private */
+      showCollectionOptions_: {
+        type: Boolean,
+        computed: 'computeShowCollectionOptions_(path)',
+      },
+
+      /** @private */
+      showRefreshButton_: {
+        type: Boolean,
+        computed:
+            'isDailyRefreshCollectionId_(collectionId,dailyRefreshCollectionId_)',
+      },
+
+      /** @private */
+      dailyRefreshIcon_: {
+        type: String,
+        computed:
+            'computeDailyRefreshIcon_(collectionId,dailyRefreshCollectionId_)',
+      },
+
+      /** @private */
+      ariaPressed_: {
+        type: String,
+        computed: 'computeAriaPressed_(collectionId,dailyRefreshCollectionId_)',
       },
     };
   }
@@ -91,9 +144,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
   connectedCallback() {
     super.connectedCallback();
     this.watch('image_', state => state.selected);
-    this.watch('isLoading_', state => state.loading.selected);
+    this.watch(
+        'isLoading_',
+        state => state.loading.selected || state.loading.refreshWallpaper);
+    this.watch(
+        'dailyRefreshCollectionId_', state => state.dailyRefresh.collectionId);
     this.updateFromStore();
     getCurrentWallpaper(this.wallpaperProvider_, this.getStore());
+    getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
   }
 
   /**
@@ -127,8 +185,17 @@ export class WallpaperSelected extends WithPersonalizationStore {
    * @param {?chromeos.personalizationApp.mojom.CurrentWallpaper} image
    * @return {boolean}
    */
-  computeShowMoreOptions_(image) {
-    return !!image && !!image.type && image.type === WallpaperType.kCustomized;
+  computeShowWallpaperOptions_(image) {
+    return !!image && image.type === WallpaperType.kCustomized;
+  }
+
+  /**
+   * @private
+   * @param {string} path
+   * @return {boolean}
+   */
+  computeShowCollectionOptions_(path) {
+    return path === Paths.CollectionImages;
   }
 
   /**
@@ -164,6 +231,71 @@ export class WallpaperSelected extends WithPersonalizationStore {
         layout === 'CENTER' ? WallpaperLayout.kCenter :
                               WallpaperLayout.kCenterCropped,
         this.wallpaperProvider_, this.getStore());
+  }
+
+  /**
+   * @private
+   * @param {!string} collectionId
+   * @param {!string} dailyRefreshCollectionId
+   * @return {string}
+   */
+  computeDailyRefreshIcon_(collectionId, dailyRefreshCollectionId) {
+    if (this.isDailyRefreshCollectionId_(
+            collectionId, dailyRefreshCollectionId))
+      return 'personalization:checkmark';
+    return 'personalization:change-daily';
+  }
+
+  /**
+   * @private
+   * @param {!string} collectionId
+   * @param {!string} dailyRefreshCollectionId
+   * @return {string}
+   */
+  computeAriaPressed_(collectionId, dailyRefreshCollectionId) {
+    if (this.isDailyRefreshCollectionId_(
+            collectionId, dailyRefreshCollectionId))
+      return 'true';
+    return 'false';
+  }
+
+  /**
+   * @private
+   * @param {!Event} event
+   */
+  onClickDailyRefreshToggle_(event) {
+    const collectionId = event.currentTarget.dataset['collectionId'];
+    const dailyRefreshCollectionId =
+        event.currentTarget.dataset['dailyRefreshCollectionId'];
+    const isDailyRefreshCollectionId = this.isDailyRefreshCollectionId_(
+        collectionId, dailyRefreshCollectionId);
+    setDailyRefreshCollectionId(
+        isDailyRefreshCollectionId ? '' : collectionId, this.wallpaperProvider_,
+        this.getStore());
+    // Only refresh the wallpaper if daily refresh is toggled on.
+    if (!isDailyRefreshCollectionId) {
+      updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
+    }
+  }
+
+  /**
+   * Determine the current collection view belongs to the collection that is
+   * enabled with daily refresh. If true, highlight the toggle and display the
+   * refresh button
+   * @private
+   * @param {!string} collectionId
+   * @param {!string} dailyRefreshCollectionId
+   * @return {boolean}
+   */
+  isDailyRefreshCollectionId_(collectionId, dailyRefreshCollectionId) {
+    return collectionId === dailyRefreshCollectionId;
+  }
+
+  /**
+   * @private
+   */
+  onClickUpdateDailyRefreshWallpaper_() {
+    updateDailyRefreshWallpaper(this.wallpaperProvider_, this.getStore());
   }
 
   /**

@@ -56,6 +56,7 @@ export let BackdropState;
  *   },
  *   selected: boolean,
  *   setWallpaper: boolean,
+ *   refreshWallpaper: boolean,
  * }}
  */
 export let LoadingState;
@@ -72,12 +73,21 @@ export let LoadingState;
 export let LocalState;
 
 /**
+ * Stores daily refresh state.
+ * @typedef {{
+ *   collectionId: ?string
+ * }}
+ */
+export let DailyRefreshState;
+
+/**
  * Top level personalization app state.
  * @typedef {{
  *   backdrop: !BackdropState,
  *   loading: !LoadingState,
  *   local: !LocalState,
  *   selected: ?DisplayableImage,
+ *   dailyRefresh: !DailyRefreshState,
  * }}
  */
 export let PersonalizationState;
@@ -95,9 +105,11 @@ export function emptyState() {
       local: {images: true, data: {}},
       selected: true,
       setWallpaper: false,
+      refreshWallpaper: false,
     },
     local: {images: null, data: {}},
     selected: null,
+    dailyRefresh: {collectionId: null},
   };
 }
 
@@ -202,6 +214,10 @@ function loadingReducer(state, action) {
       });
     case ActionName.SET_SELECTED_IMAGE:
       return /** @type {!LoadingState} */ ({...state, selected: false});
+    case ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE:
+      return /** @type {!LoadingState} */ ({...state, refreshWallpaper: true});
+    case ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE:
+      return /** @type {!LoadingState} */ ({...state, refreshWallpaper: false});
     default:
       return state;
   }
@@ -246,11 +262,29 @@ function selectedReducer(state, action) {
   }
 }
 
+/**
+ * @param {!DailyRefreshState} state
+ * @param {!Action} action
+ * @returns {!DailyRefreshState}
+ */
+function dailyRefreshReducer(state, action) {
+  switch (action.name) {
+    case ActionName.SET_DAILY_REFRESH_COLLECTION_ID:
+      return /** @type {!DailyRefreshState} */ ({
+        ...state,
+        collectionId: action.collectionId,
+      });
+    default:
+      return state;
+  }
+}
+
 const root = combineReducers({
   backdrop: backdropReducer,
   loading: loadingReducer,
   local: localReducer,
   selected: selectedReducer,
+  dailyRefresh: dailyRefreshReducer,
 });
 
 /**

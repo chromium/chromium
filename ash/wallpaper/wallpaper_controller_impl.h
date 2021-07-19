@@ -24,6 +24,7 @@
 #include "ash/wallpaper/wallpaper_utils/wallpaper_decoder.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
 #include "ash/wm/overview/overview_observer.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
@@ -297,6 +298,9 @@ class ASH_EXPORT WallpaperControllerImpl
   WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
+  std::string GetDailyRefreshCollectionId() const override;
+  void UpdateDailyRefreshWallpaper(
+      RefreshWallpaperCallback callback = base::DoNothing()) override;
   void OnGoogleDriveMounted() override;
 
   // WindowTreeHostManager::Observer:
@@ -584,21 +588,18 @@ class ASH_EXPORT WallpaperControllerImpl
   // enabled. Is an empty string when it is not enabled.
   std::string GetCollectionId() const;
 
-  // With daily refresh enabled, this updates the wallpaper by asking for a
-  // wallpaper from within the user specified collection.
-  void UpdateDailyRefreshWallpaper();
-
   // Callback from the client providing a url to a wallpaper from the user
   // specified collection when daily refresh is enabled. If |image_url| is
   // empty, fetching the url failed, and should be tried again soon.
   void SetDailyWallpaper(const AccountId& account_id,
                          WallpaperLayout layout,
                          bool preview_mode,
+                         RefreshWallpaperCallback callback,
                          const std::string& image_url);
 
   // Called after attempting to download and set a daily refresh wallpaper.
   // On failure retry again in a while.
-  void OnSetDailyWallpaper(bool success);
+  void OnSetDailyWallpaper(RefreshWallpaperCallback callback, bool success);
 
   // Starts a wall clock timer, to update the wallpaper 24 hours since the last
   // wallpaper was set.

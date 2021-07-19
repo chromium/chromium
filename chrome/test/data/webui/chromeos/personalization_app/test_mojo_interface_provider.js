@@ -19,6 +19,9 @@ export class TestWallpaperProvider extends TestBrowserProxy {
       'getLocalImageThumbnail',
       'getCurrentWallpaper',
       'selectWallpaper',
+      'setDailyRefreshCollectionId',
+      'getDailyRefreshCollectionId',
+      'updateDailyRefreshWallpaper',
     ]);
 
     /**
@@ -91,6 +94,8 @@ export class TestWallpaperProvider extends TestBrowserProxy {
     this.selectWallpaperResponse = true;
 
     this.selectLocalImageResponse = true;
+
+    this.updateDailyRefreshWallpaperResponse = true;
   }
 
   /**
@@ -157,6 +162,23 @@ export class TestWallpaperProvider extends TestBrowserProxy {
   /** @override */
   setCustomWallpaperLayout(layout) {
     this.methodCalled('selectCustomWallpaperLayout', layout);
+  }
+
+  /** @override */
+  setDailyRefreshCollectionId(collectionId) {
+    this.methodCalled('setDailyRefreshCollectionId', collectionId);
+  }
+
+  /** @override */
+  getDailyRefreshCollectionId() {
+    this.methodCalled('getDailyRefreshCollectionId');
+    return Promise.resolve({collectionId: this.collections_[0].id});
+  }
+
+  /** @override */
+  updateDailyRefreshWallpaper() {
+    this.methodCalled('updateDailyRefreshWallpaper');
+    return Promise.resolve({success: this.updateDailyRefreshWallpaperResponse});
   }
 
   /**

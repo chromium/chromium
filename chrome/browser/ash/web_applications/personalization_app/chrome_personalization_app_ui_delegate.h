@@ -85,6 +85,14 @@ class ChromePersonalizationAppUiDelegate : public PersonalizationAppUiDelegate {
 
   void SetCustomWallpaperLayout(ash::WallpaperLayout layout) override;
 
+  void SetDailyRefreshCollectionId(const std::string& collection_id) override;
+
+  void GetDailyRefreshCollectionId(
+      GetDailyRefreshCollectionIdCallback callback) override;
+
+  void UpdateDailyRefreshWallpaper(
+      UpdateDailyRefreshWallpaperCallback callback) override;
+
  private:
   mojo::Receiver<chromeos::personalization_app::mojom::WallpaperProvider>
       wallpaper_receiver_{this};

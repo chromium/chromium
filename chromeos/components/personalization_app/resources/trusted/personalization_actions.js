@@ -15,11 +15,14 @@ export const ActionName = {
   BEGIN_LOAD_IMAGES_FOR_COLLECTIONS: 'begin_load_images_for_collections',
   BEGIN_LOAD_LOCAL_IMAGE_DATA: 'begin_load_local_image_data',
   BEGIN_SELECT_IMAGE: 'begin_select_image',
+  BEGIN_UPDATE_DAILY_REFRESH_IMAGE: 'begin_update_daily_refresh_image',
   SET_COLLECTIONS: 'set_collections',
+  SET_DAILY_REFRESH_COLLECTION_ID: 'set_daily_refresh_collection_id',
   SET_IMAGES_FOR_COLLECTION: 'set_images_for_collection',
   SET_LOCAL_IMAGES: 'set_local_images',
   SET_LOCAL_IMAGE_DATA: 'set_local_image_data',
   SET_SELECTED_IMAGE: 'set_selected_image',
+  SET_UPDATED_DAILY_REFRESH_IMAGE: 'set_updated_daily_refreshed_image',
 };
 
 
@@ -49,6 +52,16 @@ export function beginLoadLocalImageDataAction(image) {
 }
 
 /**
+ * Notify that a user has clicked on the refresh button.
+ * @return {!Action}
+ */
+export function beginUpdateDailyRefreshImageAction() {
+  return {
+    name: ActionName.BEGIN_UPDATE_DAILY_REFRESH_IMAGE,
+  };
+}
+
+/**
  * Notify that a user has clicked on an image to set as wallpaper.
  * @param {!DisplayableImage} image
  * @return {!Action}
@@ -68,6 +81,17 @@ export function setCollectionsAction(collections) {
     collections,
     name: ActionName.SET_COLLECTIONS,
   };
+}
+
+/**
+ * Set and enable daily refresh for given collectionId.
+ * @param {?string} collectionId
+ * @return {!Action}
+ */
+export function setDailyRefreshCollectionIdAction(collectionId) {
+  return {
+    collectionId, name: ActionName.SET_DAILY_REFRESH_COLLECTION_ID,
+  }
 }
 
 /**
@@ -108,6 +132,16 @@ export function setLocalImagesAction(images) {
   return {
     images,
     name: ActionName.SET_LOCAL_IMAGES,
+  };
+}
+
+/**
+ * Notify that a image has been refreshed.
+ * @return {!Action}
+ */
+export function setUpdatedDailyRefreshImageAction() {
+  return {
+    name: ActionName.SET_UPDATED_DAILY_REFRESH_IMAGE,
   };
 }
 

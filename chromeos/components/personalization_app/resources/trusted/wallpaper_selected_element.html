@@ -58,22 +58,35 @@
     line-height: 20px;
   }
 
-  #currentWallpaperMoreOptions {
+  #wallpaperOptions,
+  #collectionOptions {
     display: flex;
   }
 
-  #currentWallpaperMoreOptions > div {
+  #wallpaperOptions > div {
     display: flex;
     padding: 8px;
     margin-right: 8px;
     border: 1px solid var(--google-grey-refresh-300);
     border-radius: 16px;
+    cursor: pointer;
   }
 
-  #currentWallpaperMoreOptions #center.selected,
-  #currentWallpaperMoreOptions #fill.selected {
+  #wallpaperOptions .text,
+  #collectionOptions .text {
+    margin-left: 8px;
+  }
+
+  #wallpaperOptions #fill.selected,
+  #wallpaperOptions #center.selected {
     color: var(--cros-toggle-color);
     pointer-events: none;
+  }
+
+  #collectionOptions > cr-button {
+    padding: 16px;
+    margin-right: 8px;
+    border-radius: 16px;
   }
 </style>
 <header id="container" tabindex="0" aria-label="[[getAriaLabel_(image_)]]"
@@ -89,22 +102,39 @@
           <p title="[[item]]">[[item]]</p>
         </template>
       </dom-repeat>
-      <template is="dom-if" if="[[showMoreOptions_]]">
-        <div id="currentWallpaperMoreOptions">
-          <div id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
-              class$="[[computeFillOptionClass_(image_)]]">
-            <!-- TODO(b/178105894) add icon -->
-            <div class="text">[[i18n('fill')]]</div>
-          </div>
-          <div id="center" data-layout="CENTER" on-click="onClickLayoutIcon_"
-              class$="[[computeCenterOptionClass_(image_)]]">
-            <!-- TODO(b/178105894) add icon -->
-            <div class="text">[[i18n('center')]]</div>
-          </div>
-        </div>
-      </template>
+      <div id="wallpaperOptions">
+        <template is="dom-if" if="[[showWallpaperOptions_]]">
+            <div id="fill" data-layout="FILL" on-click="onClickLayoutIcon_"
+                class$="[[computeFillOptionClass_(image_)]]">
+              <!-- TODO(b/178105894) add icon -->
+              <div class="text">[[i18n('fill')]]</div>
+            </div>
+            <div id="center" data-layout="CENTER" on-click="onClickLayoutIcon_"
+                class$="[[computeCenterOptionClass_(image_)]]">
+              <!-- TODO(b/178105894) add icon -->
+              <div class="text">[[i18n('center')]]</div>
+            </div>
+        </template>
+      </div>
+      <div id="collectionOptions">
+        <template is="dom-if" if="[[showRefreshButton_]]">
+          <cr-button id="refreshWallpaper"
+              on-click="onClickUpdateDailyRefreshWallpaper_">
+              <iron-icon icon="personalization:refresh"></iron-icon>
+            <div class="text">[[i18n('refresh')]]</div>
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[showCollectionOptions_]]">
+          <cr-button id="dailyRefresh" data-collection-id$="[[collectionId]]"
+              data-daily-refresh-collection-id$="[[dailyRefreshCollectionId_]]"
+              aria-pressed="[[ariaPressed_]]"
+              on-click="onClickDailyRefreshToggle_">
+            <iron-icon icon="[[dailyRefreshIcon_]]"></iron-icon>
+            <div class="text">[[i18n('changeDaily')]]</div>
+          </cr-button>
+        </template>
+      </div>
     </div>
-
   </template>
   <template is="dom-if" if="[[hasError_]]">
     <!-- TODO(b/186668250) real error state -->

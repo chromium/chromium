@@ -131,4 +131,14 @@ interface WallpaperProvider {
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);
+
+    // Set and enable daily refresh for the given |collection_id|.
+    SetDailyRefreshCollectionId(string collection_id);
+
+    // Get the daily refresh collection id. It can be empty if daily refresh is
+    // not enabled.
+    GetDailyRefreshCollectionId() => (string collection_id);
+
+    // Refresh the wallpaper. Noop if daily refresh is not enabled.
+    UpdateDailyRefreshWallpaper() => (bool success);
 };

@@ -109,6 +109,8 @@ class TestWallpaperController : public ash::WallpaperController {
   ash::WallpaperInfo GetActiveUserWallpaperInfo() override;
   bool ShouldShowWallpaperSetting() override;
   void SetDailyRefreshCollectionId(const std::string& collection_id) override;
+  std::string GetDailyRefreshCollectionId() const override;
+  void UpdateDailyRefreshWallpaper(RefreshWallpaperCallback callback) override;
   void OnGoogleDriveMounted() override;
 
  private:

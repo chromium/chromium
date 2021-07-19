@@ -152,10 +152,14 @@ js_library("wallpaper_selected_element") {
   deps = [
     ":personalization_controller",
     ":personalization_reducers",
+    ":personalization_router_element",
     ":personalization_store",
     ":styles",
+    "../common:icons",
     "../common:styles",
     "../common:utils",
+    "//third_party/polymer/v3_0/components-chromium/iron-icon:iron-icon",
+    "//third_party/polymer/v3_0/components-chromium/iron-iconset-svg:iron-iconset-svg",
     "//third_party/polymer/v3_0/components-chromium/paper-spinner:paper-spinner-lite",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]

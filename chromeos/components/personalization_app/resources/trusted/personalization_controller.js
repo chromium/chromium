@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {isNonEmptyArray} from '../common/utils.js';
-import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginSelectImageAction, setCollectionsAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction} from './personalization_actions.js';
+import {beginLoadImagesForCollectionsAction, beginLoadLocalImageDataAction, beginSelectImageAction, beginUpdateDailyRefreshImageAction, setCollectionsAction, setDailyRefreshCollectionIdAction, setImagesForCollectionAction, setLocalImageDataAction, setLocalImagesAction, setSelectedImageAction, setUpdatedDailyRefreshImageAction} from './personalization_actions.js';
 import {PersonalizationStore} from './personalization_store.js';
 
 /**
@@ -124,6 +124,9 @@ export async function selectWallpaper(image, provider, store) {
   if (!success) {
     console.warn('Error setting wallpaper');
   }
+  // Explicitly disable daily refresh if wallpaper is manually selected.
+  setDailyRefreshCollectionId('', provider, store);
+  // Retrieve the current wallpaper from client to get the correct attribution.
   getCurrentWallpaper(provider, store);
 }
 
@@ -136,6 +139,46 @@ export async function selectWallpaper(image, provider, store) {
 export async function setCustomWallpaperLayout(layout, provider, store) {
   await provider.setCustomWallpaperLayout(layout);
   getCurrentWallpaper(provider, store);
+}
+
+/**
+ * @param {string} collectionId
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function setDailyRefreshCollectionId(
+    collectionId, provider, store) {
+  await provider.setDailyRefreshCollectionId(collectionId);
+  // Dispatch action to highlight enabled daily refresh.
+  getDailyRefreshCollectionId(provider, store);
+}
+
+/**
+ * Get the daily refresh collection id. It can be empty if daily refresh is not
+ * enabled.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function getDailyRefreshCollectionId(provider, store) {
+  const {collectionId} = await provider.getDailyRefreshCollectionId();
+  store.dispatch(setDailyRefreshCollectionIdAction(collectionId));
+}
+
+/**
+ * Refresh the wallpaper. Noop if daily refresh is not enabled.
+ * @param {!chromeos.personalizationApp.mojom.WallpaperProviderInterface}
+ *     provider
+ * @param {!PersonalizationStore} store
+ */
+export async function updateDailyRefreshWallpaper(provider, store) {
+  store.dispatch(beginUpdateDailyRefreshImageAction());
+  const {success} = await provider.updateDailyRefreshWallpaper();
+  if (success) {
+    store.dispatch(setUpdatedDailyRefreshImageAction());
+    getCurrentWallpaper(provider, store);
+  }
 }
 
 /**

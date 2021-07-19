@@ -214,6 +214,7 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
       GURL(webui::GetBitmapDataUrl(*current_wallpaper_resized.bitmap()));
 
   switch (info.type) {
+    case ash::WallpaperType::DAILY:
     case ash::WallpaperType::ONLINE: {
       if (info.collection_id.empty() || !info.asset_id.has_value()) {
         // Cannot fetch attribution info from server without collection_id and
@@ -256,7 +257,6 @@ void ChromePersonalizationAppUiDelegate::GetCurrentWallpaper(
 
       return;
     }
-    case ash::WallpaperType::DAILY:
     case ash::WallpaperType::DEFAULT:
     case ash::WallpaperType::DEVICE:
     case ash::WallpaperType::ONE_SHOT:
@@ -333,6 +333,24 @@ void ChromePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
 
   const auto& account_id = user->GetAccountId();
   controller->UpdateCustomWallpaperLayout(account_id, layout);
+}
+
+void ChromePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  auto* controller = ash::WallpaperController::Get();
+  controller->SetDailyRefreshCollectionId(collection_id);
+}
+
+void ChromePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
+    GetDailyRefreshCollectionIdCallback callback) {
+  auto* controller = ash::WallpaperController::Get();
+  std::move(callback).Run(controller->GetDailyRefreshCollectionId());
+}
+
+void ChromePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
+    UpdateDailyRefreshWallpaperCallback callback) {
+  auto* controller = ash::WallpaperController::Get();
+  controller->UpdateDailyRefreshWallpaper(std::move(callback));
 }
 
 void ChromePersonalizationAppUiDelegate::OnFetchCollections(

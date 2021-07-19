@@ -6,6 +6,7 @@
 
 import {ActionName} from 'chrome://personalization/trusted/personalization_actions.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_reducers.js';
+import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
 import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper_selected_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, waitAfterNextRender} from '../../test_util.m.js';
@@ -200,4 +201,52 @@ export function WallpaperSelectedTest() {
     const img = wallpaperSelectedElement.shadowRoot.querySelector('img');
     assertEquals('data:image/png;base64,abc=', img.src);
   });
+
+  test('shows daily refresh option on the collection view', async () => {
+    personalizationStore.data.selected = {
+      url: {url: 'data:image/png;base64,abc='},
+      attribution: [],
+      assetId: BigInt(100),
+    };
+    personalizationStore.data.loading.selected = false;
+
+    wallpaperSelectedElement =
+        initElement(WallpaperSelected.is, {'path': Paths.CollectionImages});
+    await waitAfterNextRender(wallpaperSelectedElement);
+
+    const dailyRefresh =
+        wallpaperSelectedElement.shadowRoot.getElementById('dailyRefresh');
+    assertTrue(!!dailyRefresh);
+
+    const refreshWallpaper =
+        wallpaperSelectedElement.shadowRoot.getElementById('refreshWallpaper');
+    assertFalse(!!refreshWallpaper);
+  });
+
+  test(
+      'shows refresh button only on collection with daily refresh enabled',
+      async () => {
+        personalizationStore.data.selected = {
+          url: {url: 'data:image/png;base64,abc='},
+          attribution: [],
+          assetId: BigInt(100),
+        };
+        personalizationStore.data.loading.selected = false;
+        const collection_id = wallpaperProvider.collections[0].id;
+        personalizationStore.data.dailyRefresh = {
+          collectionId: collection_id,
+        };
+
+        wallpaperSelectedElement = initElement(
+            WallpaperSelected.is,
+            {'path': Paths.CollectionImages, 'collectionId': collection_id});
+        personalizationStore.notifyObservers();
+
+        await waitAfterNextRender(wallpaperSelectedElement);
+
+        const newRefreshWallpaper =
+            wallpaperSelectedElement.shadowRoot.getElementById(
+                'refreshWallpaper');
+        assertTrue(!!newRefreshWallpaper);
+      });
 }

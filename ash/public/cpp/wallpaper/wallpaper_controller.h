@@ -13,6 +13,7 @@
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/time/time.h"
 
@@ -288,6 +289,15 @@ class ASH_PUBLIC_EXPORT WallpaperController {
   // Empty if daily refresh is not enabled.
   virtual void SetDailyRefreshCollectionId(
       const std::string& collection_id) = 0;
+
+  // Get the daily refresh collection id. Empty if daily refresh is not enabled;
+  virtual std::string GetDailyRefreshCollectionId() const = 0;
+
+  // With daily refresh enabled, this updates the wallpaper by asking for a
+  // wallpaper from within the user specified collection.
+  using RefreshWallpaperCallback = base::OnceCallback<void(bool success)>;
+  virtual void UpdateDailyRefreshWallpaper(
+      RefreshWallpaperCallback callback = base::DoNothing()) = 0;
 
   // DriveFS is available for the active user.
   virtual void OnGoogleDriveMounted() = 0;

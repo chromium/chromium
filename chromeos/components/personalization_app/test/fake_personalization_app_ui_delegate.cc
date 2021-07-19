@@ -88,3 +88,18 @@ void FakePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
     ash::WallpaperLayout layout) {
   return;
 }
+
+void FakePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
+    const std::string& collection_id) {
+  return;
+}
+
+void FakePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
+    GetDailyRefreshCollectionIdCallback callback) {
+  std::move(callback).Run(kFakeCollectionId);
+}
+
+void FakePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
+    UpdateDailyRefreshWallpaperCallback callback) {
+  std::move(callback).Run(/*success=*/true);
+}

@@ -231,6 +231,15 @@ void TestWallpaperController::SetDailyRefreshCollectionId(
   collection_id_ = collection_id;
 }
 
+std::string TestWallpaperController::GetDailyRefreshCollectionId() const {
+  return collection_id_;
+}
+
+void TestWallpaperController::UpdateDailyRefreshWallpaper(
+    RefreshWallpaperCallback callback) {
+  NOTIMPLEMENTED();
+}
+
 void TestWallpaperController::OnGoogleDriveMounted() {
   NOTIMPLEMENTED();
 }

@@ -63,7 +63,9 @@ void AddStrings(content::WebUIDataSource* source) {
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
       {"wallpaperCollections", IDS_PERSONALIZATION_APP_WALLPAPER_COLLECTIONS},
       {"center", IDS_PERSONALIZATION_APP_CENTER},
-      {"fill", IDS_PERSONALIZATION_APP_FILL}};
+      {"fill", IDS_PERSONALIZATION_APP_FILL},
+      {"changeDaily", IDS_PERSONALIZATION_APP_CHANGE_DAILY},
+      {"refresh", IDS_PERSONALIZATION_APP_REFRESH}};
   source->AddLocalizedStrings(kLocalizedStrings);
   source->UseStringsJs();
 }
