@@ -209,8 +209,7 @@ help.
   some issues reported in Chromium are already known or even fixed upstream.
 * **URL spoofing issues**, especially related to RTL or IDNs? See
   [go/url-spoofs](http://go/url-spoofs) for a guide to triaging these.
-* **SQLite bugs** can be assigned to huangdarwin@. CC drhsqlite@ for upstream
-  issues.
+* **SQLite bugs** can be assigned to mek@. CC drhsqlite@ for upstream issues.
 
 Tips for reproducing bugs:
 
