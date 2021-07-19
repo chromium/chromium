@@ -1406,6 +1406,7 @@
       'android-11-x86-fyi-rel': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_11.content_shell_test_apk.filter',
+          '--timeout-scale=2.0',
         ],
       },
       'android-marshmallow-x86-rel-non-cq': {
