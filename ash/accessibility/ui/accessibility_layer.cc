@@ -101,14 +101,16 @@ void AccessibilityLayer::OnDeviceScaleFactorChanged(
 }
 
 void AccessibilityLayer::OnAnimationStep(base::TimeTicks timestamp) {
-  if (!delegate_->OnAnimationStep(timestamp) ||
-      !animation_observation_.IsObserving()) {
-    return;
+  // Require the |delegate_| get forwarded the call after the first such
+  // callback from the compositor. This avoids a crash within tests under low
+  // resource situations.
+  if (got_first_animation_step_ && delegate_->OnAnimationStep(timestamp)) {
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&AccessibilityLayer::Reset, weak_factory_.GetWeakPtr()));
   }
 
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AccessibilityLayer::Reset, weak_factory_.GetWeakPtr()));
+  got_first_animation_step_ = true;
 }
 
 void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
@@ -118,6 +120,7 @@ void AccessibilityLayer::OnCompositingShuttingDown(ui::Compositor* compositor) {
 
 void AccessibilityLayer::Reset() {
   animation_observation_.Reset();
+  got_first_animation_step_ = false;
 }
 
 }  // namespace ash

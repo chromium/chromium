@@ -114,6 +114,8 @@ class AccessibilityLayer : public ui::LayerDelegate,
                           &ui::Compositor::RemoveAnimationObserver>
       animation_observation_{this};
 
+  bool got_first_animation_step_ = false;
+
   base::WeakPtrFactory<AccessibilityLayer> weak_factory_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AccessibilityLayer);
