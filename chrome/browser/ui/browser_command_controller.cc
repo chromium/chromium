@@ -1070,11 +1070,11 @@ void BrowserCommandController::InitCommandState() {
   command_updater_.UpdateCommandEnabled(IDC_TAKE_SCREENSHOT, true);
   // Chrome OS uses the system tray menu to handle multi-profiles. Avatar menu
   // is only required in incognito mode.
-  if (profile()->IsIncognitoProfile())
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_AVATAR_MENU, true);
+  command_updater_.UpdateCommandEnabled(
+      IDC_SHOW_AVATAR_MENU, /*state=*/profile()->IsIncognitoProfile());
 #else
-  if (normal_window)
-    command_updater_.UpdateCommandEnabled(IDC_SHOW_AVATAR_MENU, true);
+  command_updater_.UpdateCommandEnabled(IDC_SHOW_AVATAR_MENU,
+                                        /*state=*/normal_window);
 #endif
   command_updater_.UpdateCommandEnabled(
       IDC_SHOW_SAVE_LOCAL_CARD_SIGN_IN_PROMO_IF_APPLICABLE, true);
