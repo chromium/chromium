@@ -638,14 +638,6 @@ id<GREYMatcher> ContentViewSmallerThanScrollView() {
   return [ChromeMatchersAppInterface contentViewSmallerThanScrollView];
 }
 
-id<GREYMatcher> AutofillSaveCardLocallyInfobar() {
-  return [ChromeMatchersAppInterface autofillSaveCardLocallyInfobar];
-}
-
-id<GREYMatcher> AutofillUploadCardInfobar() {
-  return [ChromeMatchersAppInterface autofillUploadCardInfobar];
-}
-
 id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title) {
   return [ChromeMatchersAppInterface
       historyEntryForURL:base::SysUTF8ToNSString(url)

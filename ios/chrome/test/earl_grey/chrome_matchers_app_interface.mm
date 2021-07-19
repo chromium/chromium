@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_cell.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_mediator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/password_view_controller.h"
-#import "ios/chrome/browser/ui/autofill/save_card_infobar_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_constants.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_view_controller.h"
@@ -965,14 +964,6 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
   };
   return [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
                                               descriptionBlock:describe];
-}
-
-+ (id<GREYMatcher>)autofillSaveCardLocallyInfobar {
-  return grey_accessibilityID(kSaveCardInfobarViewLocalAccessibilityID);
-}
-
-+ (id<GREYMatcher>)autofillUploadCardInfobar {
-  return grey_accessibilityID(kSaveCardInfobarViewUploadAccessibilityID);
 }
 
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title {

@@ -101,11 +101,6 @@ source_set("autofill_ui") {
   sources = [
     "expiration_date_picker.h",
     "expiration_date_picker.mm",
-    "save_card_infobar_controller.h",
-    "save_card_infobar_controller.mm",
-    "save_card_infobar_view.h",
-    "save_card_infobar_view.mm",
-    "save_card_infobar_view_delegate.h",
   ]
   deps = [
     ":autofill_message",

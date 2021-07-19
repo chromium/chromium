@@ -508,12 +508,6 @@ id<GREYMatcher> AutofillSuggestionViewMatcher();
 // smaller than the scroll view bounds.
 id<GREYMatcher> ContentViewSmallerThanScrollView();
 
-// Returns a matcher for the infobar asking to save a credit card locally.
-id<GREYMatcher> AutofillSaveCardLocallyInfobar();
-
-// Returns a matcher for the infobar asking to upload a credit card.
-id<GREYMatcher> AutofillUploadCardInfobar();
-
 // Returns a matcher for a history entry with |url| and |title|.
 id<GREYMatcher> HistoryEntry(const std::string& url, const std::string& title);
 

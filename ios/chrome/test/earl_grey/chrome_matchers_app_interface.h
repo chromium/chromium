@@ -502,12 +502,6 @@
 // smaller than the scroll view bounds.
 + (id<GREYMatcher>)contentViewSmallerThanScrollView;
 
-// Returns a matcher for the infobar asking to save a credit card locally.
-+ (id<GREYMatcher>)autofillSaveCardLocallyInfobar;
-
-// Returns a matcher for the infobar asking to upload a credit card.
-+ (id<GREYMatcher>)autofillUploadCardInfobar;
-
 // Returns a matcher for a history entry with |url| and |title|.
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title;
 
