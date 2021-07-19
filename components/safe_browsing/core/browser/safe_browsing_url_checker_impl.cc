@@ -169,8 +169,8 @@ SafeBrowsingUrlCheckerImpl::~SafeBrowsingUrlCheckerImpl() {
       database_manager_->CancelCheck(this);
     }
     const GURL& url = urls_[next_index_].url;
-    TRACE_EVENT_ASYNC_END1("safe_browsing", "CheckUrl", this, "url",
-                           url.spec());
+    TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
+                                    TRACE_ID_LOCAL(this), "url", url.spec());
   }
 }
 
@@ -241,7 +241,8 @@ void SafeBrowsingUrlCheckerImpl::OnUrlResult(const GURL& url,
                               threat_type, SB_THREAT_TYPE_MAX + 1);
   }
 
-  TRACE_EVENT_ASYNC_END1("safe_browsing", "CheckUrl", this, "url", url.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
+                                  TRACE_ID_LOCAL(this), "url", url.spec());
 
   const bool is_prefetch = (load_flags_ & net::LOAD_PREFETCH);
 
@@ -401,8 +402,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
     SBThreatType threat_type = CheckWebUIUrls(url);
     if (threat_type != safe_browsing::SB_THREAT_TYPE_SAFE) {
       state_ = STATE_CHECKING_URL;
-      TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
-                               url.spec());
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+          "safe_browsing", "CheckUrl", TRACE_ID_LOCAL(this), "url", url.spec());
 
       base::SequencedTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
@@ -412,8 +413,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       break;
     }
 
-    TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "CheckUrl", this, "url",
-                             url.spec());
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "CheckUrl",
+                                      TRACE_ID_LOCAL(this), "url", url.spec());
 
     // Start a timer to abort the check if it takes too long.
     timer_.Start(FROM_HERE,
@@ -477,8 +478,8 @@ void SafeBrowsingUrlCheckerImpl::ProcessUrls() {
       timer_.Stop();
       RecordCheckUrlTimeout(/*timed_out=*/false);
 
-      TRACE_EVENT_ASYNC_END1("safe_browsing", "CheckUrl", this, "url",
-                             url.spec());
+      TRACE_EVENT_NESTABLE_ASYNC_END1("safe_browsing", "CheckUrl",
+                                      TRACE_ID_LOCAL(this), "url", url.spec());
 
       if (!RunNextCallback(true, false))
         return;

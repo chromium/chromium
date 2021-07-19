@@ -56,12 +56,12 @@
 //     static int send_count = 0;
 //     ++send_count;
 //     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
-//         "ipc", "message", TRACE_ID_LOCAL(send_count));
+//         "ipc", "message", TRACE_ID_WITH_SCOPE("message", send_count));
 //     Send(new MyMessage(send_count));
 //   [receive code]
 //     void OnMyMessage(send_count) {
 //       TRACE_NESTABLE_EVENT_ASYNC_END0(
-//           "ipc", "message", TRACE_ID_LOCAL(send_count));
+//           "ipc", "message", TRACE_ID_WITH_SCOPE("message", send_count));
 //     }
 // The third parameter is a unique ID to match NESTABLE_ASYNC_BEGIN/ASYNC_END
 // pairs. NESTABLE_ASYNC_BEGIN and ASYNC_END can occur on any thread of any
@@ -71,10 +71,12 @@
 //   class MyTracedClass {
 //    public:
 //     MyTracedClass() {
-//       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("category", "MyTracedClass", this);
+//       TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("category", "MyTracedClass",
+//                                         TRACE_ID_LOCAL(this));
 //     }
 //     ~MyTracedClass() {
-//       TRACE_EVENT_NESTABLE_ASYNC_END0("category", "MyTracedClass", this);
+//       TRACE_EVENT_NESTABLE_ASYNC_END0("category", "MyTracedClass",
+//                                       TRACE_ID_LOCAL(this));
 //     }
 //   }
 //
@@ -925,6 +927,16 @@ struct BASE_EXPORT TraceTimestampTraits<::base::TimeTicks> {
   INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN, \
                                    category_group, name, id,               \
                                    TRACE_EVENT_FLAG_COPY)
+#define TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN1(category_group, name, id,   \
+                                               arg1_name, arg1_val)        \
+  INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN, \
+                                   category_group, name, id,               \
+                                   TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val)
+#define TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN2(                         \
+    category_group, name, id, arg1_name, arg1_val, arg2_name, arg2_val) \
+  INTERNAL_TRACE_EVENT_ADD_WITH_ID(                                     \
+      TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN, category_group, name, id, \
+      TRACE_EVENT_FLAG_COPY, arg1_name, arg1_val, arg2_name, arg2_val)
 #define TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(category_group, name, id)   \
   INTERNAL_TRACE_EVENT_ADD_WITH_ID(TRACE_EVENT_PHASE_NESTABLE_ASYNC_END, \
                                    category_group, name, id,             \

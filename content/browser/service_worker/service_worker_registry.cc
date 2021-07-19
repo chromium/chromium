@@ -199,9 +199,11 @@ void ServiceWorkerRegistry::FindRegistrationForClientUrl(
   // trace event id.
   int64_t trace_event_id =
       base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds();
-  TRACE_EVENT_ASYNC_BEGIN1(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
       "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
-      trace_event_id, "URL", client_url.spec());
+      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry::FindRegistrationForClientUrl",
+                          trace_event_id),
+      "URL", client_url.spec());
   CreateInvokerAndStartRemoteCall(
       &storage::mojom::ServiceWorkerStorageControl::
           FindRegistrationForClientUrl,
@@ -920,9 +922,12 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
           installing_registration->is_deleted()
               ? blink::ServiceWorkerStatusCode::kErrorNotFound
               : blink::ServiceWorkerStatusCode::kOk;
-      TRACE_EVENT_ASYNC_END2(
+      TRACE_EVENT_NESTABLE_ASYNC_END2(
           "ServiceWorker",
-          "ServiceWorkerRegistry::FindRegistrationForClientUrl", trace_event_id,
+          "ServiceWorkerRegistry::FindRegistrationForClientUrl",
+          TRACE_ID_WITH_SCOPE(
+              "ServiceWorkerRegistry::FindRegistrationForClientUrl",
+              trace_event_id),
           "Status", blink::ServiceWorkerStatusToString(status), "Info",
           (installing_status == blink::ServiceWorkerStatusCode::kOk)
               ? "Installing registration is found"
@@ -950,9 +955,11 @@ void ServiceWorkerRegistry::DidFindRegistrationForClientUrl(
     }
   }
 
-  TRACE_EVENT_ASYNC_END1(
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
       "ServiceWorker", "ServiceWorkerRegistry::FindRegistrationForClientUrl",
-      trace_event_id, "Status", blink::ServiceWorkerStatusToString(status));
+      TRACE_ID_WITH_SCOPE("ServiceWorkerRegistry::FindRegistrationForClientUrl",
+                          trace_event_id),
+      "Status", blink::ServiceWorkerStatusToString(status));
   CompleteFindNow(std::move(registration), status, std::move(callback));
 }
 

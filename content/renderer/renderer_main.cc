@@ -107,7 +107,9 @@ std::unique_ptr<base::MessagePump> CreateMainThreadMessagePump() {
 int RendererMain(const MainFunctionParams& parameters) {
   // Don't use the TRACE_EVENT0 macro because the tracing infrastructure doesn't
   // expect synchronous events around the main loop of a thread.
-  TRACE_EVENT_ASYNC_BEGIN1("startup", "RendererMain", 0, "zygote_child", false);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("startup", "RendererMain",
+                                    TRACE_ID_WITH_SCOPE("RendererMain", 0),
+                                    "zygote_child", false);
 
   base::trace_event::TraceLog::GetInstance()->set_process_name("Renderer");
   base::trace_event::TraceLog::GetInstance()->SetProcessSortIndex(
@@ -235,8 +237,9 @@ int RendererMain(const MainFunctionParams& parameters) {
     // the tracing SMB on our behalf due to the zygote sandbox.
     if (parameters.zygote_child) {
       tracing::EnableStartupTracingIfNeeded();
-      TRACE_EVENT_ASYNC_BEGIN1("startup", "RendererMain", 0, "zygote_child",
-                               true);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("startup", "RendererMain",
+                                        TRACE_ID_WITH_SCOPE("RendererMain", 0),
+                                        "zygote_child", true);
     }
 #endif  // OS_POSIX && !OS_ANDROID && !OS_MAC
 
@@ -257,9 +260,13 @@ int RendererMain(const MainFunctionParams& parameters) {
       if (pool)
         pool->Recycle();
 #endif
-      TRACE_EVENT_ASYNC_BEGIN0("toplevel", "RendererMain.START_MSG_LOOP", 0);
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+          "toplevel", "RendererMain.START_MSG_LOOP",
+          TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
       run_loop.Run();
-      TRACE_EVENT_ASYNC_END0("toplevel", "RendererMain.START_MSG_LOOP", 0);
+      TRACE_EVENT_NESTABLE_ASYNC_END0(
+          "toplevel", "RendererMain.START_MSG_LOOP",
+          TRACE_ID_WITH_SCOPE("RendererMain.START_MSG_LOOP", 0));
     }
 
 #if defined(LEAK_SANITIZER)
@@ -269,7 +276,8 @@ int RendererMain(const MainFunctionParams& parameters) {
 #endif
   }
   platform.PlatformUninitialize();
-  TRACE_EVENT_ASYNC_END0("startup", "RendererMain", 0);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("startup", "RendererMain",
+                                  TRACE_ID_WITH_SCOPE("RendererMain", 0));
   return 0;
 }
 

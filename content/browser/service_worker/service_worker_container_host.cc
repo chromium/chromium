@@ -192,8 +192,9 @@ void ServiceWorkerContainerHost::Register(
   }
 
   int64_t trace_id = base::TimeTicks::Now().since_origin().InMicroseconds();
-  TRACE_EVENT_ASYNC_BEGIN2(
-      "ServiceWorker", "ServiceWorkerContainerHost::Register", trace_id,
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+      "ServiceWorker", "ServiceWorkerContainerHost::Register",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::Register", trace_id),
       "Scope", options->scope.spec(), "Script URL", script_url.spec());
 
   // Wrap the callback with default invoke before passing it, since
@@ -257,9 +258,11 @@ void ServiceWorkerContainerHost::GetRegistration(
   }
 
   int64_t trace_id = base::TimeTicks::Now().since_origin().InMicroseconds();
-  TRACE_EVENT_ASYNC_BEGIN1("ServiceWorker",
-                           "ServiceWorkerContainerHost::GetRegistration",
-                           trace_id, "Client URL", client_url.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistration",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistration",
+                          trace_id),
+      "Client URL", client_url.spec());
 
   // The client_url may be cross-origin if "disable-web-security" is active,
   // make sure we get the correct key.
@@ -295,9 +298,10 @@ void ServiceWorkerContainerHost::GetRegistrations(
   }
 
   int64_t trace_id = base::TimeTicks::Now().since_origin().InMicroseconds();
-  TRACE_EVENT_ASYNC_BEGIN0("ServiceWorker",
-                           "ServiceWorkerContainerHost::GetRegistrations",
-                           trace_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrations",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
+                          trace_id));
   context_->registry()->GetRegistrationsForStorageKey(
       key_, base::BindOnce(
                 &ServiceWorkerContainerHost::GetRegistrationsComplete,
@@ -317,9 +321,9 @@ void ServiceWorkerContainerHost::GetRegistrationForReady(
     return;
   }
 
-  TRACE_EVENT_ASYNC_BEGIN0(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrationForReady",
-      this);
+      TRACE_ID_LOCAL(this));
   DCHECK(!get_ready_callback_);
   get_ready_callback_ =
       std::make_unique<GetRegistrationForReadyCallback>(std::move(callback));
@@ -1208,9 +1212,9 @@ void ServiceWorkerContainerHost::ReturnRegistrationForReadyIfNeeded() {
   ServiceWorkerRegistration* registration = MatchRegistration();
   if (!registration || !registration->active_version())
     return;
-  TRACE_EVENT_ASYNC_END1("ServiceWorker",
-                         "ServiceWorkerContainerHost::GetRegistrationForReady",
-                         this, "Registration ID", registration->id());
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrationForReady",
+      TRACE_ID_LOCAL(this), "Registration ID", registration->id());
   if (!context_) {
     // Here no need to run or destroy |get_ready_callback_|, which will destroy
     // together with |receiver_| when |this| destroys.
@@ -1369,10 +1373,11 @@ void ServiceWorkerContainerHost::RegistrationComplete(
     int64_t registration_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TRACE_EVENT_ASYNC_END2("ServiceWorker",
-                         "ServiceWorkerContainerHost::Register", trace_id,
-                         "Status", blink::ServiceWorkerStatusToString(status),
-                         "Registration ID", registration_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "ServiceWorker", "ServiceWorkerContainerHost::Register",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::Register", trace_id),
+      "Status", blink::ServiceWorkerStatusToString(status), "Registration ID",
+      registration_id);
 
   // kErrorInvalidArguments means the renderer gave unexpectedly bad arguments,
   // so terminate it.
@@ -1430,8 +1435,10 @@ void ServiceWorkerContainerHost::GetRegistrationComplete(
     scoped_refptr<ServiceWorkerRegistration> registration) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TRACE_EVENT_ASYNC_END2(
-      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistration", trace_id,
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistration",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistration",
+                          trace_id),
       "Status", blink::ServiceWorkerStatusToString(status), "Registration ID",
       registration ? registration->id()
                    : blink::mojom::kInvalidServiceWorkerRegistrationId);
@@ -1479,8 +1486,10 @@ void ServiceWorkerContainerHost::GetRegistrationsComplete(
         registrations) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  TRACE_EVENT_ASYNC_END1(
-      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrations", trace_id,
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "ServiceWorker", "ServiceWorkerContainerHost::GetRegistrations",
+      TRACE_ID_WITH_SCOPE("ServiceWorkerContainerHost::GetRegistrations",
+                          trace_id),
       "Status", blink::ServiceWorkerStatusToString(status));
 
   if (!context_) {

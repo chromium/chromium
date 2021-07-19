@@ -20,10 +20,12 @@ namespace {
 class ScopedBrowserMainEvent {
  public:
   ScopedBrowserMainEvent() {
-    TRACE_EVENT_ASYNC_BEGIN0("startup", "BrowserMain", 0);
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("startup", "BrowserMain",
+                                      TRACE_ID_WITH_SCOPE("BrowserMain", 0));
   }
   ~ScopedBrowserMainEvent() {
-    TRACE_EVENT_ASYNC_END0("startup", "BrowserMain", 0);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("startup", "BrowserMain",
+                                    TRACE_ID_WITH_SCOPE("BrowserMain", 0));
   }
 };
 

@@ -2208,9 +2208,10 @@ StoragePartitionImpl::DataDeletionHelper::CreateTaskCompletionClosure(
                         << static_cast<int>(data_type);
 
   static int tracing_id = 0;
-  TRACE_EVENT_ASYNC_BEGIN1("browsing_data", "StoragePartitionImpl",
-                           ++tracing_id, "data_type",
-                           static_cast<int>(data_type));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "browsing_data", "StoragePartitionImpl",
+      TRACE_ID_WITH_SCOPE("StoragePartitionImpl", ++tracing_id), "data_type",
+      static_cast<int>(data_type));
   return base::BindOnce(
       &StoragePartitionImpl::DataDeletionHelper::OnTaskComplete,
       base::Unretained(this), data_type, tracing_id);
@@ -2228,7 +2229,9 @@ void StoragePartitionImpl::DataDeletionHelper::OnTaskComplete(
   }
   size_t num_erased = pending_tasks_.erase(data_type);
   DCHECK_EQ(num_erased, 1U) << static_cast<int>(data_type);
-  TRACE_EVENT_ASYNC_END0("browsing_data", "StoragePartitionImpl", tracing_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "browsing_data", "StoragePartitionImpl",
+      TRACE_ID_WITH_SCOPE("StoragePartitionImpl", tracing_id));
 
   if (pending_tasks_.empty()) {
     std::move(callback_).Run();

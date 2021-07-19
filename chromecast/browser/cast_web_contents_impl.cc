@@ -1039,14 +1039,16 @@ void CastWebContentsImpl::MediaStoppedPlaying(
 
 void CastWebContentsImpl::TracePageLoadBegin(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_ASYNC_BEGIN1("browser,navigation", "CastWebContentsImpl Launch",
-                           this, "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
+      "URL", url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::TracePageLoadEnd(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  TRACE_EVENT_ASYNC_END1("browser,navigation", "CastWebContentsImpl Launch",
-                         this, "URL", url.possibly_invalid_spec());
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "browser,navigation", "CastWebContentsImpl Launch", TRACE_ID_LOCAL(this),
+      "URL", url.possibly_invalid_spec());
 }
 
 void CastWebContentsImpl::DisableDebugging() {

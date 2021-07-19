@@ -26,11 +26,12 @@ void BeginFrameTracker::Start(const viz::BeginFrameArgs& new_args) {
                          "location", location_string_);
 
   // Trace this specific begin frame tracker Start/Finish times.
-  TRACE_EVENT_COPY_ASYNC_BEGIN2(
+  TRACE_EVENT_COPY_NESTABLE_ASYNC_BEGIN2(
       TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
       location_string_.c_str(),
-      new_args.frame_time.since_origin().InMicroseconds(), "new args",
-      new_args.AsValue(), "current args", current_args_.AsValue());
+      TRACE_ID_WITH_SCOPE(location_string_.c_str(),
+                          new_args.frame_time.since_origin().InMicroseconds()),
+      "new args", new_args.AsValue(), "current args", current_args_.AsValue());
 
   // Check the new viz::BeginFrameArgs are valid and monotonically increasing.
   DCHECK(new_args.IsValid());
@@ -58,10 +59,12 @@ const viz::BeginFrameArgs& BeginFrameTracker::Current() const {
 void BeginFrameTracker::Finish() {
   DCHECK(!HasFinished()) << "Tried to finish an already finished frame";
   current_finished_at_ = base::TimeTicks::Now();
-  TRACE_EVENT_COPY_ASYNC_END0(
+  TRACE_EVENT_COPY_NESTABLE_ASYNC_END0(
       TRACE_DISABLED_BY_DEFAULT("cc.debug.scheduler.frames"),
       location_string_.c_str(),
-      current_args_.frame_time.since_origin().InMicroseconds());
+      TRACE_ID_WITH_SCOPE(
+          location_string_.c_str(),
+          current_args_.frame_time.since_origin().InMicroseconds()));
 }
 
 const viz::BeginFrameArgs& BeginFrameTracker::Last() const {

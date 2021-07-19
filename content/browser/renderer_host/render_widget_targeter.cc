@@ -59,7 +59,7 @@ class TracingUmaTracker {
       : id_(next_id_++),
         start_time_(base::TimeTicks::Now()),
         metric_name_(metric_name) {
-    TRACE_EVENT_ASYNC_BEGIN0(
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
         kTracingCategory, metric_name_,
         TRACE_ID_WITH_SCOPE("UmaTracker", TRACE_ID_LOCAL(id_)));
   }
@@ -67,7 +67,7 @@ class TracingUmaTracker {
   TracingUmaTracker(TracingUmaTracker&& tracker) = default;
 
   void StopAndRecord() {
-    TRACE_EVENT_ASYNC_END0(
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
         kTracingCategory, metric_name_,
         TRACE_ID_WITH_SCOPE("UmaTracker", TRACE_ID_LOCAL(id_)));
     UmaHistogramTimes(metric_name_, base::TimeTicks::Now() - start_time_);

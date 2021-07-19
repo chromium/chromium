@@ -70,8 +70,9 @@ base::Time BrowsingDataCounter::GetPeriodEnd() {
 
 void BrowsingDataCounter::Restart() {
   DCHECK(initialized_);
-  TRACE_EVENT_ASYNC_BEGIN1("browsing_data", "BrowsingDataCounter::Restart",
-                           this, "data_type", GetPrefName());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
+      "data_type", GetPrefName());
   if (state_ == State::IDLE) {
     DCHECK(!timer_.IsRunning());
     DCHECK(!staged_result_);
@@ -103,8 +104,9 @@ void BrowsingDataCounter::ReportResult(ResultInt value) {
 void BrowsingDataCounter::ReportResult(std::unique_ptr<Result> result) {
   DCHECK(initialized_);
   DCHECK(result->Finished());
-  TRACE_EVENT_ASYNC_END1("browsing_data", "BrowsingDataCounter::Restart", this,
-                         "data_type", GetPrefName());
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "browsing_data", "BrowsingDataCounter::Restart", TRACE_ID_LOCAL(this),
+      "data_type", GetPrefName());
   switch (state_) {
     case State::RESTARTED:
     case State::READY_TO_REPORT_RESULT:

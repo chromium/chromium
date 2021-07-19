@@ -1158,8 +1158,8 @@ NavigationURLLoaderImpl::NavigationURLLoaderImpl(
       download_policy_(request_info_->common_params->download_policy) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP1(
-      "navigation", "Navigation timeToResponseStarted", this,
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
+      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
       request_info_->common_params->navigation_start, "FrameTreeNode id",
       frame_tree_node_id_);
 
@@ -1324,9 +1324,9 @@ void NavigationURLLoaderImpl::NotifyResponseStarted(
   // TODO(https://crbug.com/1068896): Remove
   // "Navigation.NavigationURLLoaderImplIOPostTime" histogram as well.
 
-  TRACE_EVENT_ASYNC_END2("navigation", "Navigation timeToResponseStarted", this,
-                         "&NavigationURLLoaderImpl", static_cast<void*>(this),
-                         "success", true);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
+      "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", true);
 
   if (is_download)
     download_policy_.RecordHistogram();
@@ -1366,9 +1366,9 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
 
 void NavigationURLLoaderImpl::NotifyRequestFailed(
     const network::URLLoaderCompletionStatus& status) {
-  TRACE_EVENT_ASYNC_END2("navigation", "Navigation timeToResponseStarted", this,
-                         "&NavigationURLLoaderImpl", static_cast<void*>(this),
-                         "success", false);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
+      "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", false);
   delegate_->OnRequestFailed(status);
 }
 

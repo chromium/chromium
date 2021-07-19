@@ -1517,8 +1517,10 @@ void DownloadItemImpl::Init(bool active,
       file_name, GetDangerType(), GetReceivedBytes(), HasUserGesture());
 
   if (active) {
-    TRACE_EVENT_ASYNC_BEGIN1("download", "DownloadItemActive", download_id_,
-                             "download_item", std::move(active_data));
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "download", "DownloadItemActive",
+        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_),
+        "download_item", std::move(active_data));
     ukm_download_id_ = GetUniqueDownloadId();
   } else {
     TRACE_EVENT_INSTANT1("download", "DownloadItemActive",
@@ -2477,13 +2479,17 @@ void DownloadItemImpl::TransitionTo(DownloadInternalState new_state) {
 
   // Termination
   if (is_done && !was_done)
-    TRACE_EVENT_ASYNC_END0("download", "DownloadItemActive", download_id_);
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "download", "DownloadItemActive",
+        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_));
 
   // Resumption
   if (was_done && !is_done) {
     std::string file_name(GetTargetFilePath().BaseName().AsUTF8Unsafe());
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
-        "download", "DownloadItemActive", download_id_, "download_item",
+        "download", "DownloadItemActive",
+        TRACE_ID_WITH_SCOPE("DownloadItemActive", download_id_),
+        "download_item",
         std::make_unique<DownloadItemActivatedData>(
             TYPE_ACTIVE_DOWNLOAD, GetId(), GetOriginalUrl().spec(),
             GetURL().spec(), file_name, GetDangerType(), GetReceivedBytes(),

@@ -15,9 +15,9 @@
   TRACE_EVENT2("IndexedDB", (a), (b), (b_val), (c), (c_val));
 
 #define IDB_ASYNC_TRACE_BEGIN(a, id) \
-  TRACE_EVENT_ASYNC_BEGIN0("IndexedDB", (a), (id));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("IndexedDB", (a), (id));
 #define IDB_ASYNC_TRACE_END(a, id) \
-  TRACE_EVENT_ASYNC_END0("IndexedDB", (a), (id));
+  TRACE_EVENT_NESTABLE_ASYNC_END0("IndexedDB", (a), (id));
 
 #define IDB_TRACE_COUNTER1(a, value) TRACE_COUNTER1("IndexedDB", (a), (value))
 

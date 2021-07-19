@@ -25,8 +25,9 @@ MHTMLHandleWriter::~MHTMLHandleWriter() {}
 
 void MHTMLHandleWriter::WriteContents(
     std::vector<blink::WebThreadSafeData> mhtml_contents) {
-  TRACE_EVENT_ASYNC_BEGIN0("page-serialization",
-                           "Writing MHTML contents to handle", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("page-serialization",
+                                    "Writing MHTML contents to handle",
+                                    TRACE_ID_LOCAL(this));
   DCHECK(mhtml_write_start_time_.is_null());
   mhtml_write_start_time_ = base::TimeTicks::Now();
 
@@ -39,8 +40,9 @@ void MHTMLHandleWriter::Finish(mojom::MhtmlSaveStatus save_status) {
 
   // Only record UMA if WriteContents has been called.
   if (!mhtml_write_start_time_.is_null()) {
-    TRACE_EVENT_ASYNC_END0("page-serialization",
-                           "WriteContentsImpl (MHTMLHandleWriter)", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("page-serialization",
+                                    "WriteContentsImpl (MHTMLHandleWriter)",
+                                    TRACE_ID_LOCAL(this));
     base::TimeDelta mhtml_write_time =
         base::TimeTicks::Now() - mhtml_write_start_time_;
     UMA_HISTOGRAM_TIMES(

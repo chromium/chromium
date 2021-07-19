@@ -24,7 +24,8 @@ RendererURLLoaderThrottle::RendererURLLoaderThrottle(
 
 RendererURLLoaderThrottle::~RendererURLLoaderThrottle() {
   if (deferred_)
-    TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this));
 }
 
 void RendererURLLoaderThrottle::DetachFromCurrentSequence() {
@@ -110,8 +111,9 @@ void RendererURLLoaderThrottle::WillProcessResponse(
   deferred_ = true;
   defer_start_time_ = base::TimeTicks::Now();
   *defer = true;
-  TRACE_EVENT_ASYNC_BEGIN1("safe_browsing", "Deferred", this, "original_url",
-                           original_url_.spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this), "original_url",
+                                    original_url_.spec());
 }
 
 const char* RendererURLLoaderThrottle::NameForLoggingWillProcessResponse() {
@@ -182,7 +184,8 @@ void RendererURLLoaderThrottle::OnCompleteCheckInternal(
 
     if (pending_checks_ == 0 && deferred_) {
       deferred_ = false;
-      TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+      TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                      TRACE_ID_LOCAL(this));
       base::UmaHistogramTimes("SafeBrowsing.RendererThrottle.TotalDelay",
                               total_delay_);
       delegate_->Resume();
@@ -220,7 +223,8 @@ void RendererURLLoaderThrottle::OnMojoDisconnect() {
     total_delay_ = base::TimeTicks::Now() - defer_start_time_;
 
     deferred_ = false;
-    TRACE_EVENT_ASYNC_END0("safe_browsing", "Deferred", this);
+    TRACE_EVENT_NESTABLE_ASYNC_END0("safe_browsing", "Deferred",
+                                    TRACE_ID_LOCAL(this));
     delegate_->Resume();
   }
 }

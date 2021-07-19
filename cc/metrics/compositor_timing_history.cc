@@ -729,12 +729,14 @@ void CompositorTimingHistory::DidDraw(bool used_new_active_tree,
     // Emit a trace event to highlight a long time lapse between the draw times
     // of back-to-back BeginImplFrames.
     if (draw_interval > kDrawIntervalTraceThreshold) {
-      TRACE_EVENT_ASYNC_BEGIN_WITH_TIMESTAMP0(
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
           "latency", "Long Draw Interval",
-          TRACE_ID_LOCAL(g_num_long_draw_intervals), draw_start_time_);
-      TRACE_EVENT_ASYNC_END_WITH_TIMESTAMP0(
+          TRACE_ID_WITH_SCOPE("Long Draw Interval", g_num_long_draw_intervals),
+          draw_start_time_);
+      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
           "latency", "Long Draw Interval",
-          TRACE_ID_LOCAL(g_num_long_draw_intervals), draw_end_time);
+          TRACE_ID_WITH_SCOPE("Long Draw Interval", g_num_long_draw_intervals),
+          draw_end_time);
       g_num_long_draw_intervals++;
     }
     if (has_custom_property_animations &&
