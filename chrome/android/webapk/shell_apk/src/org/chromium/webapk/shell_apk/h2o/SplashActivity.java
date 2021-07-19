@@ -282,7 +282,7 @@ public class SplashActivity extends Activity {
      *
      * @return {@code true} if S APIs are available for use, {@code false} otherwise
      */
-    private static boolean isAtLeastS() {
+    static boolean isAtLeastS() {
         return Build.VERSION.SDK_INT >= 31;
     }
 }

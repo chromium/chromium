@@ -4,6 +4,8 @@
 
 package org.chromium.webapk.shell_apk.h2o;
 
+import static org.chromium.webapk.shell_apk.h2o.SplashActivity.isAtLeastS;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -102,7 +104,9 @@ public class SplashUtils {
             Context context, int splashWidth, int splashHeight, int maxSizeBytes) {
         if (splashWidth <= 0 || splashHeight <= 0) return null;
 
-        View splashView = createSplashView(context);
+        View splashView = isAtLeastS() ? SplashUtilsForS.createSplashView(context)
+                                       : createSplashView(context);
+
         splashView.measure(View.MeasureSpec.makeMeasureSpec(splashWidth, View.MeasureSpec.EXACTLY),
                 View.MeasureSpec.makeMeasureSpec(splashHeight, View.MeasureSpec.EXACTLY));
         splashView.layout(0, 0, splashWidth, splashHeight);
