@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -22,6 +21,8 @@ namespace policy {
 class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
  public:
   BrowserDMTokenStorageWin();
+  BrowserDMTokenStorageWin(const BrowserDMTokenStorageWin&) = delete;
+  BrowserDMTokenStorageWin& operator=(const BrowserDMTokenStorageWin&) = delete;
   ~BrowserDMTokenStorageWin() override;
 
  private:
@@ -45,8 +46,6 @@ class BrowserDMTokenStorageWin : public BrowserDMTokenStorage::Delegate {
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest, InitDMToken);
   FRIEND_TEST_ALL_PREFIXES(BrowserDMTokenStorageWinTest,
                            InitDMTokenFromBrowserLocation);
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserDMTokenStorageWin);
 };
 
 }  // namespace policy

@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -143,6 +142,9 @@ class QuicTestBase : public InProcessBrowserTest {
 class QuicAllowedPolicyTestBase : public QuicTestBase {
  public:
   QuicAllowedPolicyTestBase() : QuicTestBase() {}
+  QuicAllowedPolicyTestBase(const QuicAllowedPolicyTestBase&) = delete;
+  QuicAllowedPolicyTestBase& operator=(const QuicAllowedPolicyTestBase&) =
+      delete;
 
  protected:
   void SetUpInProcessBrowserTestFixture() override {
@@ -168,22 +170,20 @@ class QuicAllowedPolicyTestBase : public QuicTestBase {
 
  private:
   testing::NiceMock<MockConfigurationPolicyProvider> provider_;
-  DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyTestBase);
 };
 
 // Policy QuicAllowed set to false.
 class QuicAllowedPolicyIsFalse: public QuicAllowedPolicyTestBase {
  public:
   QuicAllowedPolicyIsFalse() : QuicAllowedPolicyTestBase() {}
+  QuicAllowedPolicyIsFalse(const QuicAllowedPolicyIsFalse&) = delete;
+  QuicAllowedPolicyIsFalse& operator=(const QuicAllowedPolicyIsFalse&) = delete;
 
  protected:
   void GetQuicAllowedPolicy(PolicyMap* values) override {
     values->Set(key::kQuicAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                 POLICY_SOURCE_CLOUD, base::Value(false), nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyIsFalse);
 };
 
 // It's important that all these tests be separate, as the first NetworkContext
@@ -240,15 +240,14 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsFalse, QuicDisallowedForProfile) {
 class QuicAllowedPolicyIsTrue: public QuicAllowedPolicyTestBase {
  public:
   QuicAllowedPolicyIsTrue() : QuicAllowedPolicyTestBase() {}
+  QuicAllowedPolicyIsTrue(const QuicAllowedPolicyIsTrue&) = delete;
+  QuicAllowedPolicyIsTrue& operator=(const QuicAllowedPolicyIsTrue&) = delete;
 
  protected:
   void GetQuicAllowedPolicy(PolicyMap* values) override {
     values->Set(key::kQuicAllowed, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
                 POLICY_SOURCE_CLOUD, base::Value(true), nullptr);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyIsTrue);
 };
 
 // It's important that all these tests be separate, as the first NetworkContext
@@ -312,12 +311,12 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsTrue,
 class QuicAllowedPolicyIsNotSet : public QuicAllowedPolicyTestBase {
  public:
   QuicAllowedPolicyIsNotSet() : QuicAllowedPolicyTestBase() {}
+  QuicAllowedPolicyIsNotSet(const QuicAllowedPolicyIsNotSet&) = delete;
+  QuicAllowedPolicyIsNotSet& operator=(const QuicAllowedPolicyIsNotSet&) =
+      delete;
 
  protected:
   void GetQuicAllowedPolicy(PolicyMap* values) override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyIsNotSet);
 };
 
 // Flaky test on Win7. https://crbug.com/961049
@@ -332,6 +331,9 @@ IN_PROC_BROWSER_TEST_F(QuicAllowedPolicyIsNotSet, DISABLED_NoQuicRegulations) {
 class QuicAllowedPolicyDynamicTest : public QuicTestBase {
  public:
   QuicAllowedPolicyDynamicTest() : profile_1_(nullptr), profile_2_(nullptr) {}
+  QuicAllowedPolicyDynamicTest(const QuicAllowedPolicyDynamicTest&) = delete;
+  QuicAllowedPolicyDynamicTest& operator=(const QuicAllowedPolicyDynamicTest&) =
+      delete;
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -454,8 +456,6 @@ class QuicAllowedPolicyDynamicTest : public QuicTestBase {
   MockConfigurationPolicyProvider policy_for_profile_1_;
   // Mock Policy for profile_2_.
   MockConfigurationPolicyProvider policy_for_profile_2_;
-
-  DISALLOW_COPY_AND_ASSIGN(QuicAllowedPolicyDynamicTest);
 };
 
 // QUIC is disallowed by policy after the profile has been initialized.

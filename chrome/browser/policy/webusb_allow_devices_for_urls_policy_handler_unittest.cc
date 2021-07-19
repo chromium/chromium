@@ -215,6 +215,10 @@ class WebUsbAllowDevicesForUrlsPolicyHandlerTest
     : public ConfigurationPolicyPrefStoreTest {
  public:
   WebUsbAllowDevicesForUrlsPolicyHandlerTest() = default;
+  WebUsbAllowDevicesForUrlsPolicyHandlerTest(
+      const WebUsbAllowDevicesForUrlsPolicyHandlerTest&) = delete;
+  WebUsbAllowDevicesForUrlsPolicyHandlerTest& operator=(
+      const WebUsbAllowDevicesForUrlsPolicyHandlerTest&) = delete;
   ~WebUsbAllowDevicesForUrlsPolicyHandlerTest() override = default;
 
   WebUsbAllowDevicesForUrlsPolicyHandler* handler() { return handler_; }
@@ -229,8 +233,6 @@ class WebUsbAllowDevicesForUrlsPolicyHandlerTest
   }
 
   WebUsbAllowDevicesForUrlsPolicyHandler* handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebUsbAllowDevicesForUrlsPolicyHandlerTest);
 };
 
 TEST_F(WebUsbAllowDevicesForUrlsPolicyHandlerTest, CheckPolicySettings) {

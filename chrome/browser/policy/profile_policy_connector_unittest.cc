@@ -60,6 +60,10 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
       : policy_service_(policy_service), policy_domain_(policy_domain) {
     policy_service_->AddObserver(policy_domain_, this);
   }
+  PolicyServiceInitializedWaiter(const PolicyServiceInitializedWaiter&) =
+      delete;
+  PolicyServiceInitializedWaiter& operator=(
+      const PolicyServiceInitializedWaiter&) = delete;
 
   ~PolicyServiceInitializedWaiter() override {
     policy_service_->RemoveObserver(policy_domain_, this);
@@ -88,8 +92,6 @@ class PolicyServiceInitializedWaiter : PolicyService::Observer {
   PolicyService* policy_service_;
   PolicyDomain policy_domain_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyServiceInitializedWaiter);
 };
 
 void UpdateChromePolicyToMockProviderAndVerify(

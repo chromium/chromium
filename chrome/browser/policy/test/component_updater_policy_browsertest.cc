@@ -30,6 +30,9 @@ namespace policy {
 class ComponentUpdaterPolicyTest : public PolicyTest {
  public:
   ComponentUpdaterPolicyTest();
+  ComponentUpdaterPolicyTest(const ComponentUpdaterPolicyTest&) = delete;
+  ComponentUpdaterPolicyTest& operator=(const ComponentUpdaterPolicyTest&) =
+      delete;
   ~ComponentUpdaterPolicyTest() override;
 
   void SetUpCommandLine(base::CommandLine* command_line) override;
@@ -88,8 +91,6 @@ class ComponentUpdaterPolicyTest : public PolicyTest {
   component_updater::ComponentUpdateService* cus_ = nullptr;
 
   net::EmbeddedTestServer https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterPolicyTest);
 };
 
 const char ComponentUpdaterPolicyTest::component_id_[] =

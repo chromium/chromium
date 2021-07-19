@@ -20,8 +20,10 @@ namespace policy {
 
 class ArcPolicyTest : public PolicyTest {
  public:
-  ArcPolicyTest() {}
-  ~ArcPolicyTest() override {}
+  ArcPolicyTest() = default;
+  ArcPolicyTest(const ArcPolicyTest&) = delete;
+  ArcPolicyTest& operator=(const ArcPolicyTest&) = delete;
+  ~ArcPolicyTest() override = default;
 
  protected:
   void SetUpOnMainThread() override {
@@ -57,9 +59,6 @@ class ArcPolicyTest : public PolicyTest {
       EXPECT_EQ(prefs->GetBoolean(arc::prefs::kArcEnabled), enabled);
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcPolicyTest);
 };
 
 // Test ArcEnabled policy.

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_DEFAULT_GEOLOCATION_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_DEFAULT_GEOLOCATION_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -17,14 +16,15 @@ class PolicyMap;
 class DefaultGeolocationPolicyHandler : public IntRangePolicyHandlerBase {
  public:
   DefaultGeolocationPolicyHandler();
+  DefaultGeolocationPolicyHandler(const DefaultGeolocationPolicyHandler&) =
+      delete;
+  DefaultGeolocationPolicyHandler& operator=(
+      const DefaultGeolocationPolicyHandler&) = delete;
   ~DefaultGeolocationPolicyHandler() override;
 
   // IntRangePolicyHandlerBase:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultGeolocationPolicyHandler);
 };
 
 }  // namespace policy

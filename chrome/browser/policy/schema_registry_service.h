@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace policy {
 
 class CombinedSchemaRegistry;
@@ -24,14 +22,14 @@ class SchemaRegistryService {
   SchemaRegistryService(std::unique_ptr<SchemaRegistry> registry,
                         const Schema& chrome_schema,
                         CombinedSchemaRegistry* global_registry);
+  SchemaRegistryService(const SchemaRegistryService&) = delete;
+  SchemaRegistryService& operator=(const SchemaRegistryService&) = delete;
   ~SchemaRegistryService();
 
   SchemaRegistry* registry() const { return registry_.get(); }
 
  private:
   std::unique_ptr<SchemaRegistry> registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchemaRegistryService);
 };
 
 }  // namespace policy

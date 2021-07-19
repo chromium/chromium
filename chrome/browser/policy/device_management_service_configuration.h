@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 
 namespace content {
@@ -26,6 +25,10 @@ class DeviceManagementServiceConfiguration
       const std::string& dm_server_url,
       const std::string& realtime_reporting_server_url,
       const std::string& encrypted_reporting_server_url);
+  DeviceManagementServiceConfiguration(
+      const DeviceManagementServiceConfiguration&) = delete;
+  DeviceManagementServiceConfiguration& operator=(
+      const DeviceManagementServiceConfiguration&) = delete;
   ~DeviceManagementServiceConfiguration() override;
 
   std::string GetDMServerUrl() const override;
@@ -40,8 +43,6 @@ class DeviceManagementServiceConfiguration
   const std::string dm_server_url_;
   const std::string realtime_reporting_server_url_;
   const std::string encrypted_reporting_server_url_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagementServiceConfiguration);
 };
 
 }  // namespace policy

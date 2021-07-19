@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_POLICY_BROWSER_SIGNIN_POLICY_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 namespace policy {
@@ -24,14 +23,14 @@ enum class BrowserSigninMode {
 class BrowserSigninPolicyHandler : public IntRangePolicyHandler {
  public:
   explicit BrowserSigninPolicyHandler(Schema chrome_schema);
+  BrowserSigninPolicyHandler(const BrowserSigninPolicyHandler&) = delete;
+  BrowserSigninPolicyHandler& operator=(const BrowserSigninPolicyHandler&) =
+      delete;
   ~BrowserSigninPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserSigninPolicyHandler);
 };
 
 }  // namespace policy

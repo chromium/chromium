@@ -161,6 +161,10 @@ IN_PROC_BROWSER_TEST_F(LoginPolicyTestBase, AllowedInputMethods) {
 class StartupBrowserWindowLaunchSuppressedTest : public LoginPolicyTestBase {
  public:
   StartupBrowserWindowLaunchSuppressedTest() = default;
+  StartupBrowserWindowLaunchSuppressedTest(
+      const StartupBrowserWindowLaunchSuppressedTest&) = delete;
+  StartupBrowserWindowLaunchSuppressedTest& operator=(
+      const StartupBrowserWindowLaunchSuppressedTest&) = delete;
 
   void SetUpPolicy(bool enabled) {
     std::unique_ptr<base::DictionaryValue> policy =
@@ -180,9 +184,6 @@ class StartupBrowserWindowLaunchSuppressedTest : public LoginPolicyTestBase {
 
     ASSERT_EQ(count, chrome::GetBrowserCount(profile));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StartupBrowserWindowLaunchSuppressedTest);
 };
 
 // Test that the browser window is not launched when
@@ -204,9 +205,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWindowLaunchSuppressedTest,
 class PrimaryUserPoliciesProxiedTest : public LoginPolicyTestBase {
  public:
   PrimaryUserPoliciesProxiedTest() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrimaryUserPoliciesProxiedTest);
+  PrimaryUserPoliciesProxiedTest(const PrimaryUserPoliciesProxiedTest&) =
+      delete;
+  PrimaryUserPoliciesProxiedTest& operator=(
+      const PrimaryUserPoliciesProxiedTest&) = delete;
 };
 
 IN_PROC_BROWSER_TEST_F(PrimaryUserPoliciesProxiedTest,

@@ -427,8 +427,10 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, WaitForInitialUserActivitySatisfied) {
 
 class NetworkTimePolicyTest : public PolicyTest {
  public:
-  NetworkTimePolicyTest() {}
-  ~NetworkTimePolicyTest() override {}
+  NetworkTimePolicyTest() = default;
+  NetworkTimePolicyTest(const NetworkTimePolicyTest&) = delete;
+  NetworkTimePolicyTest& operator=(const NetworkTimePolicyTest&) = delete;
+  ~NetworkTimePolicyTest() override = default;
 
   void SetUpOnMainThread() override {
     std::map<std::string, std::string> parameters;
@@ -459,8 +461,6 @@ class NetworkTimePolicyTest : public PolicyTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   uint32_t num_requests_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkTimePolicyTest);
 };
 
 // TODO(https://crbug.com/1012853): This test is using ScopedFeatureList

@@ -5,7 +5,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -41,23 +40,30 @@ void VerifyLocalState() {
 class ChromeBrowserMainExtraPartsPolicyValueChecker
     : public ChromeBrowserMainExtraParts {
  public:
-  ChromeBrowserMainExtraPartsPolicyValueChecker() {}
+  ChromeBrowserMainExtraPartsPolicyValueChecker() = default;
+  ChromeBrowserMainExtraPartsPolicyValueChecker(
+      const ChromeBrowserMainExtraPartsPolicyValueChecker&) = delete;
+  ChromeBrowserMainExtraPartsPolicyValueChecker& operator=(
+      const ChromeBrowserMainExtraPartsPolicyValueChecker&) = delete;
 
   // ChromeBrowserMainExtraParts
   void PreCreateThreads() override { VerifyLocalState(); }
   void PreBrowserStart() override { VerifyLocalState(); }
   void PreMainMessageLoopRun() override { VerifyLocalState(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsPolicyValueChecker);
 };
 
 }  // namespace
 
 // Test if the policy value can be read from the pref properly on Windows.
 class PolicyInitializationBrowserTest : public InProcessBrowserTest {
+ public:
+  PolicyInitializationBrowserTest(const PolicyInitializationBrowserTest&) =
+      delete;
+  PolicyInitializationBrowserTest& operator=(
+      const PolicyInitializationBrowserTest&) = delete;
+
  protected:
-  PolicyInitializationBrowserTest() {}
+  PolicyInitializationBrowserTest() = default;
 
   // content::BrowserTestBase:
   void SetUpInProcessBrowserTestFixture() override {
@@ -88,8 +94,6 @@ class PolicyInitializationBrowserTest : public InProcessBrowserTest {
   // This test hasn't supported other platform yet.
   void SetUpPlatformPolicyValue() {}
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(PolicyInitializationBrowserTest);
 };
 
 #if defined(OS_WIN)
