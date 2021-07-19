@@ -33,7 +33,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/public/common/dom_storage/session_storage_namespace_id.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -67,7 +66,6 @@ class WebRemotePlaybackClient;
 
 class CORE_EXPORT CoreInitializer {
   USING_FAST_MALLOC(CoreInitializer);
-  DISALLOW_COPY_AND_ASSIGN(CoreInitializer);
 
  public:
   // Initialize must be called before GetInstance.
@@ -76,6 +74,8 @@ class CORE_EXPORT CoreInitializer {
     return *instance_;
   }
 
+  CoreInitializer(const CoreInitializer&) = delete;
+  CoreInitializer& operator=(const CoreInitializer&) = delete;
   virtual ~CoreInitializer() = default;
 
   // Should be called by clients before trying to create Frames.

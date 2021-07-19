@@ -10,7 +10,6 @@
 #include <initializer_list>
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_queue.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_reaction_stack.h"
@@ -25,54 +24,57 @@ class Element;
 class Command : public GarbageCollected<Command> {
  public:
   Command() = default;
+  Command(const Command&) = delete;
+  Command& operator=(const Command&) = delete;
   virtual ~Command() = default;
   virtual void Trace(Visitor* visitor) const {}
   virtual void Run(Element&) = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(Command);
 };
 
 class Call : public Command {
  public:
   using Callback = base::OnceCallback<void(Element&)>;
   Call(Callback callback) : callback_(std::move(callback)) {}
+  Call(const Call&) = delete;
+  Call& operator=(const Call&) = delete;
   ~Call() override = default;
   void Run(Element& element) override { std::move(callback_).Run(element); }
 
  private:
   Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(Call);
 };
 
 class Unreached : public Command {
  public:
   Unreached(const char* message) : message_(message) {}
+  Unreached(const Unreached&) = delete;
+  Unreached& operator=(const Unreached&) = delete;
   ~Unreached() override = default;
   void Run(Element&) override { EXPECT_TRUE(false) << message_; }
 
  private:
   const char* message_;
-
-  DISALLOW_COPY_AND_ASSIGN(Unreached);
 };
 
 class Log : public Command {
  public:
   Log(char what, Vector<char>& where) : what_(what), where_(where) {}
+  Log(const Log&) = delete;
+  Log& operator=(const Log&) = delete;
   ~Log() override = default;
   void Run(Element&) override { where_.push_back(what_); }
 
  private:
   char what_;
   Vector<char>& where_;
-
-  DISALLOW_COPY_AND_ASSIGN(Log);
 };
 
 class Recurse : public Command {
  public:
   Recurse(CustomElementReactionQueue* queue) : queue_(queue) {}
+  Recurse(const Recurse&) = delete;
+  Recurse& operator=(const Recurse&) = delete;
   ~Recurse() override = default;
   void Trace(Visitor* visitor) const override {
     Command::Trace(visitor);
@@ -82,14 +84,14 @@ class Recurse : public Command {
 
  private:
   Member<CustomElementReactionQueue> queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(Recurse);
 };
 
 class Enqueue : public Command {
  public:
   Enqueue(CustomElementReactionQueue* queue, CustomElementReaction* reaction)
       : queue_(queue), reaction_(reaction) {}
+  Enqueue(const Enqueue&) = delete;
+  Enqueue& operator=(const Enqueue&) = delete;
   ~Enqueue() override = default;
   void Trace(Visitor* visitor) const override {
     Command::Trace(visitor);
@@ -101,8 +103,6 @@ class Enqueue : public Command {
  private:
   Member<CustomElementReactionQueue> queue_;
   Member<CustomElementReaction> reaction_;
-
-  DISALLOW_COPY_AND_ASSIGN(Enqueue);
 };
 
 class TestReaction : public CustomElementReaction {
@@ -112,6 +112,8 @@ class TestReaction : public CustomElementReaction {
             *MakeGarbageCollected<TestCustomElementDefinition>(
                 CustomElementDescriptor("mock-element", "mock-element"))),
         commands_(std::move(commands)) {}
+  TestReaction(const TestReaction&) = delete;
+  TestReaction& operator=(const TestReaction&) = delete;
   ~TestReaction() override = default;
   void Trace(Visitor* visitor) const override {
     CustomElementReaction::Trace(visitor);
@@ -124,8 +126,6 @@ class TestReaction : public CustomElementReaction {
 
  private:
   HeapVector<Member<Command>> commands_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestReaction);
 };
 
 class ResetCustomElementReactionStackForTest final {
@@ -135,6 +135,10 @@ class ResetCustomElementReactionStackForTest final {
       : stack_(MakeGarbageCollected<CustomElementReactionStack>()),
         old_stack_(
             CustomElementReactionStackTestSupport::SetCurrentForTest(stack_)) {}
+  ResetCustomElementReactionStackForTest(
+      const ResetCustomElementReactionStackForTest&) = delete;
+  ResetCustomElementReactionStackForTest& operator=(
+      const ResetCustomElementReactionStackForTest&) = delete;
 
   ~ResetCustomElementReactionStackForTest() {
     CustomElementReactionStackTestSupport::SetCurrentForTest(old_stack_);
@@ -145,8 +149,6 @@ class ResetCustomElementReactionStackForTest final {
  private:
   CustomElementReactionStack* stack_;
   CustomElementReactionStack* old_stack_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResetCustomElementReactionStackForTest);
 };
 
 }  // namespace blink

@@ -20,7 +20,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELEMENT_RARE_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_ELEMENT_RARE_DATA_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -39,6 +38,8 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
         instances_updates_blocked_(false),
         needs_override_computed_style_update_(false),
         web_animated_attributes_dirty_(false) {}
+  SVGElementRareData(const SVGElementRareData&) = delete;
+  SVGElementRareData& operator=(const SVGElementRareData&) = delete;
 
   SVGElementSet& OutgoingReferences() { return outgoing_references_; }
   const SVGElementSet& OutgoingReferences() const {
@@ -116,7 +117,6 @@ class SVGElementRareData final : public GarbageCollected<SVGElementRareData> {
   scoped_refptr<ComputedStyle> override_computed_style_;
   // Used by <animateMotion>
   AffineTransform animate_motion_transform_;
-  DISALLOW_COPY_AND_ASSIGN(SVGElementRareData);
 };
 
 }  // namespace blink

@@ -22,6 +22,8 @@ class SVGTreeScopeResources final
     : public GarbageCollected<SVGTreeScopeResources> {
  public:
   explicit SVGTreeScopeResources(TreeScope*);
+  SVGTreeScopeResources(const SVGTreeScopeResources&) = delete;
+  SVGTreeScopeResources& operator=(const SVGTreeScopeResources&) = delete;
 
   LocalSVGResource* ResourceForId(const AtomicString& id);
   LocalSVGResource* ExistingResourceForId(const AtomicString& id) const;
@@ -33,8 +35,6 @@ class SVGTreeScopeResources final
 
   HeapHashMap<AtomicString, WeakMember<LocalSVGResource>> resources_;
   Member<TreeScope> tree_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(SVGTreeScopeResources);
 };
 
 }  // namespace blink

@@ -30,7 +30,6 @@
 
 #include "third_party/blink/public/web/web_frame_serializer.h"
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/platform/web_url_response.h"

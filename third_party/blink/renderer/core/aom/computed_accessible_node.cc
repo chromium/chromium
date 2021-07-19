@@ -29,6 +29,10 @@ class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
       ComputedAccessibleNodePromiseResolver* resolver)
       : resolver_(resolver) {}
 
+  RequestAnimationFrameCallback(const RequestAnimationFrameCallback&) = delete;
+  RequestAnimationFrameCallback& operator=(
+      const RequestAnimationFrameCallback&) = delete;
+
   void Invoke(double) override {
     resolver_->continue_callback_request_id_ = 0;
     resolver_->UpdateTreeAndResolve();
@@ -41,8 +45,6 @@ class ComputedAccessibleNodePromiseResolver::RequestAnimationFrameCallback final
 
  private:
   Member<ComputedAccessibleNodePromiseResolver> resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestAnimationFrameCallback);
 };
 
 ComputedAccessibleNodePromiseResolver::ComputedAccessibleNodePromiseResolver(

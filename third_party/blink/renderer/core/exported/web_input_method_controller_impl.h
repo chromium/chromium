@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_INPUT_METHOD_CONTROLLER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_INPUT_METHOD_CONTROLLER_IMPL_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/web/web_input_method_controller.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -30,6 +29,9 @@ class CORE_EXPORT WebInputMethodControllerImpl
 
  public:
   explicit WebInputMethodControllerImpl(WebLocalFrameImpl& web_frame);
+  WebInputMethodControllerImpl(const WebInputMethodControllerImpl&) = delete;
+  WebInputMethodControllerImpl& operator=(const WebInputMethodControllerImpl&) =
+      delete;
   ~WebInputMethodControllerImpl() override;
 
   // WebInputMethodController overrides.
@@ -70,8 +72,6 @@ class CORE_EXPORT WebInputMethodControllerImpl
   WebPlugin* FocusedPluginIfInputMethodSupported() const;
 
   const Member<WebLocalFrameImpl> web_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebInputMethodControllerImpl);
 };
 }  // namespace blink
 

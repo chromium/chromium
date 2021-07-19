@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_ANIMATED_PROPERTY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_ANIMATED_PROPERTY_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_info.h"
@@ -47,6 +46,8 @@ class SVGElement;
 
 class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
  public:
+  SVGAnimatedPropertyBase(const SVGAnimatedPropertyBase&) = delete;
+  SVGAnimatedPropertyBase& operator=(const SVGAnimatedPropertyBase&) = delete;
   virtual ~SVGAnimatedPropertyBase();
 
   virtual const SVGPropertyBase& BaseValueBase() const = 0;
@@ -108,7 +109,6 @@ class SVGAnimatedPropertyBase : public GarbageCollectedMixin {
   unsigned base_value_needs_synchronization_ : 1;
   Member<SVGElement> context_element_;
   const QualifiedName& attribute_name_;
-  DISALLOW_COPY_AND_ASSIGN(SVGAnimatedPropertyBase);
 };
 
 template <typename Property>

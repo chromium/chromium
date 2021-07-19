@@ -83,6 +83,9 @@ class HTMLMarqueeElement::RequestAnimationFrameCallback final
  public:
   explicit RequestAnimationFrameCallback(HTMLMarqueeElement* marquee)
       : marquee_(marquee) {}
+  RequestAnimationFrameCallback(const RequestAnimationFrameCallback&) = delete;
+  RequestAnimationFrameCallback& operator=(
+      const RequestAnimationFrameCallback&) = delete;
 
   void Invoke(double) override {
     marquee_->continue_callback_request_id_ = 0;
@@ -96,8 +99,6 @@ class HTMLMarqueeElement::RequestAnimationFrameCallback final
 
  private:
   Member<HTMLMarqueeElement> marquee_;
-
-  DISALLOW_COPY_AND_ASSIGN(RequestAnimationFrameCallback);
 };
 
 class HTMLMarqueeElement::AnimationFinished final : public NativeEventListener {

@@ -20,7 +20,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
@@ -34,6 +33,8 @@ class SVGPathByteStreamSource {
  public:
   explicit SVGPathByteStreamSource(const SVGPathByteStream& stream)
       : stream_current_(stream.begin()), stream_end_(stream.end()) {}
+  SVGPathByteStreamSource(const SVGPathByteStreamSource&) = delete;
+  SVGPathByteStreamSource& operator=(const SVGPathByteStreamSource&) = delete;
 
   bool HasMoreData() const { return stream_current_ < stream_end_; }
   PathSegmentData ParseSegment();
@@ -63,7 +64,6 @@ class SVGPathByteStreamSource {
 
   SVGPathByteStream::DataIterator stream_current_;
   SVGPathByteStream::DataIterator stream_end_;
-  DISALLOW_COPY_AND_ASSIGN(SVGPathByteStreamSource);
 };
 
 }  // namespace blink

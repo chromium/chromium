@@ -25,6 +25,8 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
 
  public:
   ElementInternals(HTMLElement& target);
+  ElementInternals(const ElementInternals&) = delete;
+  ElementInternals& operator=(const ElementInternals&) = delete;
   void Trace(Visitor* visitor) const override;
 
   HTMLElement& Target() const { return *target_; }
@@ -115,8 +117,6 @@ class CORE_EXPORT ElementInternals : public ScriptWrappable,
   // https://whatpr.org/html/3917/common-dom-interfaces.html#reflecting-content-attributes-in-idl-attributes:element
   HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>
       explicitly_set_attr_elements_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(ElementInternals);
 };
 
 template <>

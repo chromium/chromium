@@ -7,7 +7,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
@@ -30,16 +29,16 @@ class TestCustomElementDefinitionBuilder
 
  public:
   TestCustomElementDefinitionBuilder() = default;
+  TestCustomElementDefinitionBuilder(
+      const TestCustomElementDefinitionBuilder&) = delete;
+  TestCustomElementDefinitionBuilder& operator=(
+      const TestCustomElementDefinitionBuilder&) = delete;
 
   bool CheckConstructorIntrinsics() override { return true; }
   bool CheckConstructorNotRegistered() override { return true; }
   bool RememberOriginalProperties() override { return true; }
   CustomElementDefinition* Build(const CustomElementDescriptor&,
                                  CustomElementDefinition::Id) override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinitionBuilder);
 };
 
 class TestCustomElementDefinition : public CustomElementDefinition {
@@ -54,6 +53,10 @@ class TestCustomElementDefinition : public CustomElementDefinition {
                                 std::move(observed_attributes),
                                 disabled_features,
                                 FormAssociationFlag::kNo) {}
+
+  TestCustomElementDefinition(const TestCustomElementDefinition&) = delete;
+  TestCustomElementDefinition& operator=(const TestCustomElementDefinition&) =
+      delete;
 
   ~TestCustomElementDefinition() override = default;
 
@@ -119,8 +122,6 @@ class TestCustomElementDefinition : public CustomElementDefinition {
                                    const String& mode) override {
     NOTREACHED() << "definition does not have restoreValueCallback";
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinition);
 };
 
 class CreateElement {

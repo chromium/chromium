@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_SVG_IMAGE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
@@ -255,11 +254,13 @@ class ImageObserverDisabler {
     image_->SetImageObserverDisabled(true);
   }
 
+  ImageObserverDisabler(const ImageObserverDisabler&) = delete;
+  ImageObserverDisabler& operator=(const ImageObserverDisabler&) = delete;
+
   ~ImageObserverDisabler() { image_->SetImageObserverDisabled(false); }
 
  private:
   Image* image_;
-  DISALLOW_COPY_AND_ASSIGN(ImageObserverDisabler);
 };
 
 }  // namespace blink

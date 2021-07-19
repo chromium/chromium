@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_DEFINITION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_DEFINITION_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -40,6 +39,8 @@ class CORE_EXPORT CustomElementDefinition
   // CustomElementRegistry that created it.
   using Id = uint32_t;
 
+  CustomElementDefinition(const CustomElementDefinition&) = delete;
+  CustomElementDefinition& operator=(const CustomElementDefinition&) = delete;
   ~CustomElementDefinition() override;
 
   virtual void Trace(Visitor*) const;
@@ -126,10 +127,11 @@ class CORE_EXPORT CustomElementDefinition
 
   class CORE_EXPORT ConstructionStackScope final {
     STACK_ALLOCATED();
-    DISALLOW_COPY_AND_ASSIGN(ConstructionStackScope);
 
    public:
     ConstructionStackScope(CustomElementDefinition&, Element&);
+    ConstructionStackScope(const ConstructionStackScope&) = delete;
+    ConstructionStackScope& operator=(const ConstructionStackScope&) = delete;
     ~ConstructionStackScope();
 
    private:
@@ -168,8 +170,6 @@ class CORE_EXPORT CustomElementDefinition
   HeapVector<Member<CSSStyleSheet>> default_style_sheets_;
 
   void EnqueueAttributeChangedCallbackForAllAttributes(Element&);
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementDefinition);
 };
 
 }  // namespace blink

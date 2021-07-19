@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -62,6 +61,8 @@ class TreeScope;
 //
 class SVGResource : public GarbageCollected<SVGResource> {
  public:
+  SVGResource(const SVGResource&) = delete;
+  SVGResource& operator=(const SVGResource&) = delete;
   virtual ~SVGResource();
 
   virtual void Load(Document&) {}
@@ -103,9 +104,6 @@ class SVGResource : public GarbageCollected<SVGResource> {
     CycleState cached_cycle_check = kNeedCheck;
   };
   mutable HeapHashMap<Member<SVGResourceClient>, ClientEntry> clients_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SVGResource);
 };
 
 // Local resource reference (see SVGResource.)

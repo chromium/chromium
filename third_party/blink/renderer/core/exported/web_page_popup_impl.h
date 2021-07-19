@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PAGE_POPUP_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_PAGE_POPUP_IMPL_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-blink-forward.h"
@@ -71,6 +70,8 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
   USING_FAST_MALLOC(WebPagePopupImpl);
 
  public:
+  WebPagePopupImpl(const WebPagePopupImpl&) = delete;
+  WebPagePopupImpl& operator=(const WebPagePopupImpl&) = delete;
   ~WebPagePopupImpl() override;
 
   void Initialize(WebViewImpl*, PagePopupClient*);
@@ -279,8 +280,6 @@ class CORE_EXPORT WebPagePopupImpl final : public WebPagePopup,
 
   friend class WebPagePopup;
   friend class PagePopupChromeClient;
-
-  DISALLOW_COPY_AND_ASSIGN(WebPagePopupImpl);
 };
 
 // WebPagePopupImpl is the only implementation of WebPagePopup and PagePopup, so

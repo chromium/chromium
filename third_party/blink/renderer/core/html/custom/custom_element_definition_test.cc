@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/node.h"  // CustomElementState
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
@@ -20,10 +19,10 @@ class ConstructorFails : public TestCustomElementDefinition {
  public:
   ConstructorFails(const CustomElementDescriptor& descriptor)
       : TestCustomElementDefinition(descriptor) {}
+  ConstructorFails(const ConstructorFails&) = delete;
+  ConstructorFails& operator=(const ConstructorFails&) = delete;
   ~ConstructorFails() override = default;
   bool RunConstructor(Element&) override { return false; }
-
-  DISALLOW_COPY_AND_ASSIGN(ConstructorFails);
 };
 
 }  // namespace

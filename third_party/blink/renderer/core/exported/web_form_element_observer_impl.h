@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_FORM_ELEMENT_OBSERVER_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_FORM_ELEMENT_OBSERVER_IMPL_H_
 
-#include "base/macros.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -24,6 +23,9 @@ class CORE_EXPORT WebFormElementObserverImpl final
   WebFormElementObserverImpl(base::PassKey<WebFormElementObserver>,
                              HTMLElement&,
                              base::OnceClosure);
+  WebFormElementObserverImpl(const WebFormElementObserverImpl&) = delete;
+  WebFormElementObserverImpl& operator=(const WebFormElementObserverImpl&) =
+      delete;
   ~WebFormElementObserverImpl() override;
 
   // WebFormElementObserver implementation.
@@ -38,8 +40,6 @@ class CORE_EXPORT WebFormElementObserverImpl final
 
   // WebFormElementObserverImpl must remain alive until Disconnect() is called.
   SelfKeepAlive<WebFormElementObserverImpl> self_keep_alive_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebFormElementObserverImpl);
 };
 
 }  // namespace blink

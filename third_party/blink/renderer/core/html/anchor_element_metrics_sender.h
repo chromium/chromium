@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_METRICS_SENDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_ANCHOR_ELEMENT_METRICS_SENDER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -54,6 +53,9 @@ class CORE_EXPORT AnchorElementMetricsSender final
   static const char kSupplementName[];
 
   explicit AnchorElementMetricsSender(Document&);
+  AnchorElementMetricsSender(const AnchorElementMetricsSender&) = delete;
+  AnchorElementMetricsSender& operator=(const AnchorElementMetricsSender&) =
+      delete;
   virtual ~AnchorElementMetricsSender();
 
   // LocalFrameView::LifecycleNotificationObserver
@@ -105,8 +107,6 @@ class CORE_EXPORT AnchorElementMetricsSender final
   WTF::Vector<mojom::blink::AnchorElementEnteredViewportPtr>
       entered_viewport_messages_;
   WTF::Vector<mojom::blink::AnchorElementClickPtr> clicked_messages_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnchorElementMetricsSender);
 };
 
 }  // namespace blink
