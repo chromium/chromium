@@ -7,9 +7,10 @@ package org.chromium.chrome.browser.omnibox;
 import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
-import android.support.test.filters.SmallTest;
 import android.text.SpannableStringBuilder;
 import android.view.ViewStructure;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

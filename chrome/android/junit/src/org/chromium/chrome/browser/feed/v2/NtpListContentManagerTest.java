@@ -13,11 +13,12 @@ import static org.junit.Assert.assertTrue;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.view.ViewParent;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.test.filters.SmallTest;
 
 import com.google.common.collect.ImmutableList;
 

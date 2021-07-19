@@ -19,7 +19,8 @@ import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_NEW;
 import static org.chromium.chrome.browser.tab.TabSelectionType.FROM_USER;
 
 import android.app.Activity;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;

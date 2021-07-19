@@ -18,11 +18,11 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.support.test.filters.SmallTest;
 import android.util.TypedValue;
 import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.SmallTest;
 
 import com.google.protobuf.ByteString;
 

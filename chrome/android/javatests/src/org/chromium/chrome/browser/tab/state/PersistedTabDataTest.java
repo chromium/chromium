@@ -8,7 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

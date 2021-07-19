@@ -12,7 +12,8 @@ import static org.mockito.Mockito.when;
 import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;

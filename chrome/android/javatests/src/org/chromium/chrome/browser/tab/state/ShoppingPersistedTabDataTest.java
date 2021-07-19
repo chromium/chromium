@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tab.state;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

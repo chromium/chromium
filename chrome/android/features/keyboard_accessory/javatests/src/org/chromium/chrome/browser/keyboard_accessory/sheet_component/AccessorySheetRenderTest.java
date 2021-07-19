@@ -19,7 +19,6 @@ import static org.chromium.ui.base.LocalizationUtils.setRtlForTesting;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.support.test.filters.MediumTest;
 import android.view.Gravity;
 import android.view.ViewStub;
 import android.widget.FrameLayout;
@@ -29,6 +28,7 @@ import androidx.annotation.DimenRes;
 import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
 import androidx.annotation.Nullable;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;

@@ -6,7 +6,7 @@ package org.chromium.chrome.browser.tab;
 
 import static org.mockito.Mockito.when;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

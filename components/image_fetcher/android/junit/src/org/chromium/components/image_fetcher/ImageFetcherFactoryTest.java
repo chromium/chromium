@@ -8,7 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;

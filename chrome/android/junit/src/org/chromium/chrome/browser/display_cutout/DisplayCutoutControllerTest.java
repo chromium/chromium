@@ -11,9 +11,10 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.support.test.filters.SmallTest;
 import android.view.Window;
 import android.view.WindowManager.LayoutParams;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

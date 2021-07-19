@@ -8,7 +8,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.verify;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;

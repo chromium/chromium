@@ -11,7 +11,8 @@ import static org.mockito.Mockito.verify;
 
 import android.content.Context;
 import android.content.Intent;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;

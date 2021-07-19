@@ -13,12 +13,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.graphics.Rect;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

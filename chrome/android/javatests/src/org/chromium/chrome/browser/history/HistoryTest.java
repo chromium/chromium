@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.history;
 import static org.junit.Assert.assertNull;
 
 import android.graphics.Bitmap;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Rule;
 import org.junit.Test;

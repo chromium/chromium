@@ -6,9 +6,10 @@ package org.chromium.chrome.browser.survey;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.filters.MediumTest;
 import android.text.style.ClickableSpan;
 import android.view.View;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;

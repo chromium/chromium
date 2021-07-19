@@ -7,7 +7,7 @@ package org.chromium.android_webview.test;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.MULTI_PROCESS;
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

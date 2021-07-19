@@ -12,7 +12,8 @@ import static org.chromium.chrome.browser.browserservices.TrustedWebActivityTest
 import android.net.Uri;
 import android.os.Build;
 import android.os.RemoteException;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;

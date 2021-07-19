@@ -38,7 +38,6 @@ import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Build;
-import android.support.test.filters.MediumTest;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -49,6 +48,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.espresso.matcher.BoundedMatcher;
 import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
 
 import org.hamcrest.Description;

@@ -7,7 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
