@@ -39,6 +39,22 @@ cast_source_set("grpc_impl") {
   ]
 }
 
+cast_source_set("url_rewrite") {
+  sources = [
+    "url_rewrite_rules_adapter.cc",
+    "url_rewrite_rules_adapter.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromecast/common/mojom",
+    "//mojo/public/cpp/bindings",
+    "//third_party/openscreen/src/cast/cast_core/api:url_rewrite_proto",
+  ]
+
+  deps = [ "//url" ]
+}
+
 cast_source_set("renderer") {
   sources = [
     "cast_runtime_content_renderer_client.cc",
@@ -144,16 +160,22 @@ if (enable_cast_media_runtime) {
 }
 
 test("cast_cast_core_unittests") {
-  sources = [ "streaming_receiver_session_client_unittest.cc" ]
+  sources = [
+    "streaming_receiver_session_client_unittest.cc",
+    "url_rewrite_rules_adapter_unittests.cc",
+  ]
 
   deps = [
     ":streaming_receiver_session_client",
+    ":url_rewrite",
+    "//base",
     "//base/test:test_support",
     "//chromecast/shared:platform_info_serializer",
     "//components/cast_streaming/browser",
     "//components/cast_streaming/public/mojom",
+    "//mojo/core/test:run_all_unittests",
+    "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
-    "//testing/gtest:gtest_main",
   ]
 }
