@@ -32,7 +32,7 @@
 #include "chromeos/dbus/util/version_loader.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_manager_facade.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -93,7 +93,7 @@ class ChildSigninHelper : public SigninHelper {
  public:
   ChildSigninHelper(
       account_manager::AccountManager* account_manager,
-      crosapi::AccountManagerAsh* account_manager_ash,
+      crosapi::AccountManagerMojoService* account_manager_mojo_service,
       const base::RepeatingClosure& close_dialog_closure,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& gaia_id,
@@ -105,7 +105,7 @@ class ChildSigninHelper : public SigninHelper {
       const std::string& parent_obfuscated_gaia_id,
       const std::string& re_auth_proof_token)
       : SigninHelper(account_manager,
-                     account_manager_ash,
+                     account_manager_mojo_service,
                      close_dialog_closure,
                      url_loader_factory,
                      gaia_id,
@@ -172,7 +172,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
  public:
   EduCoexistenceChildSigninHelper(
       account_manager::AccountManager* account_manager,
-      crosapi::AccountManagerAsh* account_manager_ash,
+      crosapi::AccountManagerMojoService* account_manager_mojo_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& gaia_id,
       const std::string& email,
@@ -181,7 +181,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
       PrefService* pref_service,
       const content::WebUI* web_ui)
       : SigninHelper(account_manager,
-                     account_manager_ash,
+                     account_manager_mojo_service,
                      // EduCoexistenceChildSigninHelper will not be closing the
                      // dialog. Therefore, passing a void callback.
                      base::DoNothing(),
@@ -327,10 +327,10 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
                               ->GetAccountManagerFactory()
                               ->GetAccountManager(profile->GetPath().value());
 
-  crosapi::AccountManagerAsh* account_manager_ash =
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManagerAsh(profile->GetPath().value());
+          ->GetAccountManagerMojoService(profile->GetPath().value());
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
@@ -352,15 +352,15 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
 
       // ChildSigninHelper deletes itself after its work is done.
       new ChildSigninHelper(
-          account_manager, account_manager_ash, close_dialog_closure_,
+          account_manager, account_manager_mojo_service, close_dialog_closure_,
           profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
           GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                              gaia_id),
           identity_manager, profile->GetPrefs(), *parentId, *rapt);
     } else {
       new EduCoexistenceChildSigninHelper(
-          account_manager, account_manager_ash, profile->GetURLLoaderFactory(),
-          gaia_id, email, auth_code,
+          account_manager, account_manager_mojo_service,
+          profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
           GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                              gaia_id),
           profile->GetPrefs(), web_ui());
@@ -371,7 +371,7 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
 
   // SigninHelper deletes itself after its work is done.
   new SigninHelper(
-      account_manager, account_manager_ash, close_dialog_closure_,
+      account_manager, account_manager_mojo_service, close_dialog_closure_,
       profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
       GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id));
 }

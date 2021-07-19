@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "components/account_manager_core/account_manager_facade_impl.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -16,14 +16,15 @@ namespace signin {
 TestProfileOAuth2TokenServiceDelegateChromeOS::
     TestProfileOAuth2TokenServiceDelegateChromeOS(
         AccountTrackerService* account_tracker_service,
-        crosapi::AccountManagerAsh* account_manager_ash,
+        crosapi::AccountManagerMojoService* account_manager_mojo_service,
         bool is_regular_profile) {
   if (!network::TestNetworkConnectionTracker::HasInstance()) {
     owned_tracker_ = network::TestNetworkConnectionTracker::CreateInstance();
   }
 
   mojo::Remote<crosapi::mojom::AccountManager> remote;
-  account_manager_ash->BindReceiver(remote.BindNewPipeAndPassReceiver());
+  account_manager_mojo_service->BindReceiver(
+      remote.BindNewPipeAndPassReceiver());
   account_manager_facade_ =
       std::make_unique<account_manager::AccountManagerFacadeImpl>(
           std::move(remote),

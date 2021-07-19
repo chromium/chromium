@@ -354,14 +354,14 @@ class IdentityManagerTest : public testing::Test {
             &test_url_loader_factory_));
     ash_account_manager->SetPrefService(&pref_service_);
 
-    auto* ash_account_manager_ash =
-        GetAccountManagerFactory()->GetAccountManagerAsh(
+    auto* ash_account_manager_mojo_service =
+        GetAccountManagerFactory()->GetAccountManagerMojoService(
             temp_profile_dir_.GetPath().value());
 
     auto token_service = std::make_unique<CustomFakeProfileOAuth2TokenService>(
         &pref_service_,
         std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
-            account_tracker_service.get(), ash_account_manager_ash,
+            account_tracker_service.get(), ash_account_manager_mojo_service,
             /*is_regular_profile=*/true));
 #else
     auto token_service =

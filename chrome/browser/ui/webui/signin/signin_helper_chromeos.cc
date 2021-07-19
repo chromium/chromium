@@ -7,14 +7,14 @@
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "google_apis/gaia/gaia_auth_fetcher.h"
 
 namespace chromeos {
 
 SigninHelper::SigninHelper(
     account_manager::AccountManager* account_manager,
-    crosapi::AccountManagerAsh* account_manager_ash,
+    crosapi::AccountManagerMojoService* account_manager_mojo_service,
     const base::RepeatingClosure& close_dialog_closure,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const std::string& gaia_id,
@@ -22,7 +22,7 @@ SigninHelper::SigninHelper(
     const std::string& auth_code,
     const std::string& signin_scoped_device_id)
     : account_manager_(account_manager),
-      account_manager_ash_(account_manager_ash),
+      account_manager_mojo_service_(account_manager_mojo_service),
       close_dialog_closure_(close_dialog_closure),
       email_(email),
       url_loader_factory_(std::move(url_loader_factory)),
@@ -59,8 +59,9 @@ void SigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
 void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
   // TODO(sinhak): Display an error.
 
-  // Notify `AccountManagerAsh` about account addition failure and send `error`.
-  account_manager_ash_->OnAccountAdditionFinished(
+  // Notify `AccountManagerMojoService` about account addition failure and send
+  // `error`.
+  account_manager_mojo_service_->OnAccountAdditionFinished(
       account_manager::AccountAdditionResult(
           account_manager::AccountAdditionResult::Status::kNetworkError,
           error));
@@ -70,9 +71,9 @@ void SigninHelper::OnClientOAuthFailure(const GoogleServiceAuthError& error) {
 void SigninHelper::UpsertAccount(const std::string& refresh_token) {
   account_manager_->UpsertAccount(account_key_, email_, refresh_token);
 
-  // Notify `AccountManagerAsh` about successful account addition and send
-  // the account.
-  account_manager_ash_->OnAccountAdditionFinished(
+  // Notify `AccountManagerMojoService` about successful account addition and
+  // send the account.
+  account_manager_mojo_service_->OnAccountAdditionFinished(
       account_manager::AccountAdditionResult(
           account_manager::AccountAdditionResult::Status::kSuccess,
           account_manager::Account{account_key_, email_}));

@@ -67,7 +67,7 @@
 #include "chromeos/services/machine_learning/public/cpp/service_connection.h"
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/device_service.h"
 #include "content/public/browser/media_session_service.h"
@@ -163,14 +163,14 @@ void CrosapiAsh::BindAutomationFactory(
 void CrosapiAsh::BindAccountManager(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
   // Given `GetAshProfile()` assumptions, there is 1 and only 1
-  // `AccountManagerAsh` that can/should be contacted - the one attached to the
-  // regular `Profile` in ash-chrome for the active `User`.
-  crosapi::AccountManagerAsh* const account_manager_ash =
+  // `AccountManagerMojoService` that can/should be contacted - the one attached
+  // to the regular `Profile` in ash-chrome for the active `User`.
+  crosapi::AccountManagerMojoService* const account_manager_mojo_service =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManagerAsh(
+          ->GetAccountManagerMojoService(
               /*profile_path=*/GetAshProfile()->GetPath().value());
-  account_manager_ash->BindReceiver(std::move(receiver));
+  account_manager_mojo_service->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindBrowserServiceHost(

@@ -24,8 +24,8 @@ component("account_manager_core") {
     "chromeos/access_token_fetcher.h",
     "chromeos/account_manager.cc",
     "chromeos/account_manager.h",
-    "chromeos/account_manager_ash.cc",
-    "chromeos/account_manager_ash.h",
+    "chromeos/account_manager_mojo_service.cc",
+    "chromeos/account_manager_mojo_service.h",
     "chromeos/account_manager_ui.cc",
     "chromeos/account_manager_ui.h",
     "pref_names.cc",
@@ -62,7 +62,7 @@ source_set("unit_tests") {
 
   sources = [
     "account_manager_facade_impl_unittest.cc",
-    "chromeos/account_manager_ash_unittest.cc",
+    "chromeos/account_manager_mojo_service_unittest.cc",
     "chromeos/account_manager_unittest.cc",
   ]
 

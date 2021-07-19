@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 
 #include <cstddef>
 #include <memory>
@@ -200,28 +200,32 @@ class AccountManagerSpy : public account_manager::AccountManager {
   mutable account_manager::AccountKey last_access_token_account_key_;
 };
 
-class AccountManagerAshTest : public ::testing::Test {
+class AccountManagerMojoServiceTest : public ::testing::Test {
  public:
-  AccountManagerAshTest() = default;
-  AccountManagerAshTest(const AccountManagerAshTest&) = delete;
-  AccountManagerAshTest& operator=(const AccountManagerAshTest&) = delete;
-  ~AccountManagerAshTest() override = default;
+  AccountManagerMojoServiceTest() = default;
+  AccountManagerMojoServiceTest(const AccountManagerMojoServiceTest&) = delete;
+  AccountManagerMojoServiceTest& operator=(
+      const AccountManagerMojoServiceTest&) = delete;
+  ~AccountManagerMojoServiceTest() override = default;
 
  protected:
   void SetUp() override {
-    account_manager_ash_ =
-        std::make_unique<AccountManagerAsh>(&account_manager_);
-    account_manager_ash_->SetAccountManagerUI(
+    account_manager_mojo_service_ =
+        std::make_unique<AccountManagerMojoService>(&account_manager_);
+    account_manager_mojo_service_->SetAccountManagerUI(
         std::make_unique<FakeAccountManagerUI>());
-    account_manager_ash_->BindReceiver(remote_.BindNewPipeAndPassReceiver());
+    account_manager_mojo_service_->BindReceiver(
+        remote_.BindNewPipeAndPassReceiver());
     account_manager_async_waiter_ =
         std::make_unique<mojom::AccountManagerAsyncWaiter>(
-            account_manager_ash_.get());
+            account_manager_mojo_service_.get());
   }
 
   void RunAllPendingTasks() { task_environment_.RunUntilIdle(); }
 
-  void FlushMojoForTesting() { account_manager_ash_->FlushMojoForTesting(); }
+  void FlushMojoForTesting() {
+    account_manager_mojo_service_->FlushMojoForTesting();
+  }
 
   // Returns |true| if initialization was successful.
   bool InitializeAccountManager() {
@@ -236,13 +240,13 @@ class AccountManagerAshTest : public ::testing::Test {
 
   FakeAccountManagerUI* GetFakeAccountManagerUI() {
     return static_cast<FakeAccountManagerUI*>(
-        account_manager_ash_->account_manager_ui_.get());
+        account_manager_mojo_service_->account_manager_ui_.get());
   }
 
   mojom::AccountAdditionResultPtr ShowAddAccountDialog(
       base::OnceClosure quit_closure) {
     auto add_account_result = mojom::AccountAdditionResult::New();
-    account_manager_ash_->ShowAddAccountDialog(base::BindOnce(
+    account_manager_mojo_service_->ShowAddAccountDialog(base::BindOnce(
         [](base::OnceClosure quit_closure,
            mojom::AccountAdditionResultPtr* add_account_result,
            mojom::AccountAdditionResultPtr result) {
@@ -256,18 +260,18 @@ class AccountManagerAshTest : public ::testing::Test {
 
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure close_dialog_closure) {
-    account_manager_ash_->ShowReauthAccountDialog(
+    account_manager_mojo_service_->ShowReauthAccountDialog(
         email, std::move(close_dialog_closure));
   }
 
   void CallAccountAdditionFinished(
       const account_manager::AccountAdditionResult& result) {
-    account_manager_ash_->OnAccountAdditionFinished(result);
+    account_manager_mojo_service_->OnAccountAdditionFinished(result);
     GetFakeAccountManagerUI()->CloseDialog();
   }
 
   void ShowManageAccountsSettings() {
-    account_manager_ash_->ShowManageAccountsSettings();
+    account_manager_mojo_service_->ShowManageAccountsSettings();
   }
 
   mojom::AccessTokenResultPtr FetchAccessToken(
@@ -305,11 +309,11 @@ class AccountManagerAshTest : public ::testing::Test {
   }
 
   int GetNumObservers() const {
-    return account_manager_ash_->observers_.size();
+    return account_manager_mojo_service_->observers_.size();
   }
 
   int GetNumPendingAccessTokenRequests() const {
-    return account_manager_ash_->GetNumPendingAccessTokenRequests();
+    return account_manager_mojo_service_->GetNumPendingAccessTokenRequests();
   }
 
   mojom::AccountManagerAsyncWaiter* account_manager_async_waiter() {
@@ -325,19 +329,19 @@ class AccountManagerAshTest : public ::testing::Test {
   TestingPrefServiceSimple pref_service_;
   AccountManagerSpy account_manager_;
   mojo::Remote<mojom::AccountManager> remote_;
-  std::unique_ptr<AccountManagerAsh> account_manager_ash_;
+  std::unique_ptr<AccountManagerMojoService> account_manager_mojo_service_;
   std::unique_ptr<mojom::AccountManagerAsyncWaiter>
       account_manager_async_waiter_;
 };
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        IsInitializedReturnsFalseForUninitializedAccountManager) {
   bool is_initialized = true;
   account_manager_async_waiter()->IsInitialized(&is_initialized);
   EXPECT_FALSE(is_initialized);
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        IsInitializedReturnsTrueForInitializedAccountManager) {
   bool is_initialized = true;
   account_manager_async_waiter()->IsInitialized(&is_initialized);
@@ -348,7 +352,7 @@ TEST_F(AccountManagerAshTest,
 }
 
 // Test that lacros remotes do not leak.
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        LacrosRemotesAreAutomaticallyRemovedOnConnectionClose) {
   EXPECT_EQ(0, GetNumObservers());
   {
@@ -361,7 +365,8 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(0, GetNumObservers());
 }
 
-TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
+TEST_F(AccountManagerMojoServiceTest,
+       LacrosObserversAreNotifiedOnAccountUpdates) {
   const account_manager::AccountKey kTestAccountKey{
       kFakeGaiaId, account_manager::AccountType::kGaia};
   ASSERT_TRUE(InitializeAccountManager());
@@ -377,7 +382,8 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountUpdates) {
   EXPECT_EQ(kFakeEmail, observer.GetLastUpsertedAccount().raw_email);
 }
 
-TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
+TEST_F(AccountManagerMojoServiceTest,
+       LacrosObserversAreNotifiedOnAccountRemovals) {
   const account_manager::AccountKey kTestAccountKey{
       kFakeGaiaId, account_manager::AccountType::kGaia};
   ASSERT_TRUE(InitializeAccountManager());
@@ -395,7 +401,7 @@ TEST_F(AccountManagerAshTest, LacrosObserversAreNotifiedOnAccountRemovals) {
   EXPECT_EQ(kFakeEmail, observer.GetLastRemovedAccount().raw_email);
 }
 
-TEST_F(AccountManagerAshTest, GetAccounts) {
+TEST_F(AccountManagerMojoServiceTest, GetAccounts) {
   ASSERT_TRUE(InitializeAccountManager());
   {
     std::vector<mojom::AccountPtr> accounts;
@@ -414,7 +420,7 @@ TEST_F(AccountManagerAshTest, GetAccounts) {
   EXPECT_EQ(mojom::AccountType::kGaia, accounts[0]->key->account_type);
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogReturnsInProgressIfDialogIsOpen) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(true);
@@ -429,7 +435,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogReturnsCancelledAfterDialogIsClosed) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
@@ -448,7 +454,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogReturnsSuccessAfterAccountIsAdded) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
@@ -476,7 +482,8 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest, ShowAddAccountDialogCanHandleMultipleCalls) {
+TEST_F(AccountManagerMojoServiceTest,
+       ShowAddAccountDialogCanHandleMultipleCalls) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
 
@@ -511,7 +518,7 @@ TEST_F(AccountManagerAshTest, ShowAddAccountDialogCanHandleMultipleCalls) {
   EXPECT_EQ(1, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        ShowAddAccountDialogCanHandleMultipleSequentialCalls) {
   EXPECT_EQ(0, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
   GetFakeAccountManagerUI()->SetIsDialogShown(false);
@@ -556,7 +563,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(2, GetFakeAccountManagerUI()->show_account_addition_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        ShowReauthAccountDialogDoesntCallTheDialogIfItsAlreadyShown) {
   EXPECT_EQ(
       0,
@@ -574,7 +581,7 @@ TEST_F(AccountManagerAshTest,
       GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest, ShowReauthAccountDialogOpensTheDialog) {
+TEST_F(AccountManagerMojoServiceTest, ShowReauthAccountDialogOpensTheDialog) {
   EXPECT_EQ(
       0,
       GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
@@ -591,7 +598,7 @@ TEST_F(AccountManagerAshTest, ShowReauthAccountDialogOpensTheDialog) {
       GetFakeAccountManagerUI()->show_account_reauthentication_dialog_calls());
 }
 
-TEST_F(AccountManagerAshTest, ShowManageAccountSettingsTest) {
+TEST_F(AccountManagerMojoServiceTest, ShowManageAccountSettingsTest) {
   EXPECT_EQ(0,
             GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
   ShowManageAccountsSettings();
@@ -599,7 +606,7 @@ TEST_F(AccountManagerAshTest, ShowManageAccountSettingsTest) {
             GetFakeAccountManagerUI()->show_manage_accounts_settings_calls());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        FetchingAccessTokenResultsInErrorForInvalidAccountKey) {
   ASSERT_TRUE(InitializeAccountManager());
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
@@ -616,7 +623,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        FetchingAccessTokenResultsInErrorForActiveDirectoryAccounts) {
   ASSERT_TRUE(InitializeAccountManager());
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
@@ -633,7 +640,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
 }
 
-TEST_F(AccountManagerAshTest,
+TEST_F(AccountManagerMojoServiceTest,
        FetchingAccessTokenResultsInErrorForUnknownAccountKey) {
   ASSERT_TRUE(InitializeAccountManager());
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
@@ -650,7 +657,7 @@ TEST_F(AccountManagerAshTest,
   EXPECT_EQ(0, GetNumPendingAccessTokenRequests());
 }
 
-TEST_F(AccountManagerAshTest, FetchAccessTokenRequestsCanBeCancelled) {
+TEST_F(AccountManagerMojoServiceTest, FetchAccessTokenRequestsCanBeCancelled) {
   // Setup.
   ASSERT_TRUE(InitializeAccountManager());
   account_manager::AccountKey account_key{kFakeGaiaId,
@@ -684,7 +691,7 @@ TEST_F(AccountManagerAshTest, FetchAccessTokenRequestsCanBeCancelled) {
   EXPECT_TRUE(result.is_null());
 }
 
-TEST_F(AccountManagerAshTest, FetchAccessToken) {
+TEST_F(AccountManagerMojoServiceTest, FetchAccessToken) {
   constexpr char kFakeScope[] = "fake-scope";
   ASSERT_TRUE(InitializeAccountManager());
   account_manager::AccountKey account_key{kFakeGaiaId,

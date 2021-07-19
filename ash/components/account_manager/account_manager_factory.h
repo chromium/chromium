@@ -17,7 +17,7 @@ class AccountManager;
 }  // namespace account_manager
 
 namespace crosapi {
-class AccountManagerAsh;
+class AccountManagerMojoService;
 }  // namespace crosapi
 
 namespace ash {
@@ -42,28 +42,31 @@ class COMPONENT_EXPORT(ASH_COMPONENTS_ACCOUNT_MANAGER) AccountManagerFactory {
   account_manager::AccountManager* GetAccountManager(
       const std::string& profile_path);
 
-  // Returns the |AccountManagerAsh| corresponding to the given |profile_path|.
-  crosapi::AccountManagerAsh* GetAccountManagerAsh(
+  // Returns the |AccountManagerMojoService| corresponding to the given
+  // |profile_path|.
+  crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
       const std::string& profile_path);
 
  private:
   struct AccountManagerHolder {
     AccountManagerHolder(
         std::unique_ptr<account_manager::AccountManager> account_manager,
-        std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash);
+        std::unique_ptr<crosapi::AccountManagerMojoService>
+            account_manager_mojo_service);
     AccountManagerHolder(const AccountManagerHolder&) = delete;
     AccountManagerHolder& operator=(const AccountManagerHolder&) = delete;
     ~AccountManagerHolder();
 
     const std::unique_ptr<account_manager::AccountManager> account_manager;
-    const std::unique_ptr<crosapi::AccountManagerAsh> account_manager_ash;
+    const std::unique_ptr<crosapi::AccountManagerMojoService>
+        account_manager_mojo_service;
   };
 
   const AccountManagerHolder& GetAccountManagerHolder(
       const std::string& profile_path);
 
   // A mapping from Profile path to an |AccountManagerHolder|. Acts a cache of
-  // Account Managers and AccountManagerAsh objects.
+  // Account Managers and AccountManagerMojoService objects.
   std::unordered_map<std::string, AccountManagerHolder> account_managers_;
 
   SEQUENCE_CHECKER(sequence_checker_);

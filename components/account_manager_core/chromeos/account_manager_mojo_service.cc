@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 
 #include <algorithm>
 #include <memory>
@@ -51,45 +51,45 @@ void ReportErrorStatusFromHasDummyGaiaToken(
 
 }  // namespace
 
-AccountManagerAsh::AccountManagerAsh(
+AccountManagerMojoService::AccountManagerMojoService(
     account_manager::AccountManager* account_manager)
     : account_manager_(account_manager) {
   DCHECK(account_manager_);
   account_manager_->AddObserver(this);
 }
 
-AccountManagerAsh::~AccountManagerAsh() {
+AccountManagerMojoService::~AccountManagerMojoService() {
   account_manager_->RemoveObserver(this);
 }
 
-void AccountManagerAsh::BindReceiver(
+void AccountManagerMojoService::BindReceiver(
     mojo::PendingReceiver<mojom::AccountManager> receiver) {
   receivers_.Add(this, std::move(receiver));
 }
 
-void AccountManagerAsh::SetAccountManagerUI(
+void AccountManagerMojoService::SetAccountManagerUI(
     std::unique_ptr<account_manager::AccountManagerUI> account_manager_ui) {
   account_manager_ui_ = std::move(account_manager_ui);
 }
 
-void AccountManagerAsh::IsInitialized(IsInitializedCallback callback) {
+void AccountManagerMojoService::IsInitialized(IsInitializedCallback callback) {
   std::move(callback).Run(account_manager_->IsInitialized());
 }
 
-void AccountManagerAsh::AddObserver(AddObserverCallback callback) {
+void AccountManagerMojoService::AddObserver(AddObserverCallback callback) {
   mojo::Remote<mojom::AccountManagerObserver> remote;
   auto receiver = remote.BindNewPipeAndPassReceiver();
   observers_.Add(std::move(remote));
   std::move(callback).Run(std::move(receiver));
 }
 
-void AccountManagerAsh::GetAccounts(
+void AccountManagerMojoService::GetAccounts(
     mojom::AccountManager::GetAccountsCallback callback) {
   account_manager_->GetAccounts(
       base::BindOnce(&MarshalAccounts, std::move(callback)));
 }
 
-void AccountManagerAsh::GetPersistentErrorForAccount(
+void AccountManagerMojoService::GetPersistentErrorForAccount(
     mojom::AccountKeyPtr mojo_account_key,
     mojom::AccountManager::GetPersistentErrorForAccountCallback callback) {
   absl::optional<account_manager::AccountKey> maybe_account_key =
@@ -102,7 +102,7 @@ void AccountManagerAsh::GetPersistentErrorForAccount(
                      std::move(callback)));
 }
 
-void AccountManagerAsh::ShowAddAccountDialog(
+void AccountManagerMojoService::ShowAddAccountDialog(
     ShowAddAccountDialogCallback callback) {
   DCHECK(account_manager_ui_);
   if (account_manager_ui_->IsDialogShown()) {
@@ -117,12 +117,13 @@ void AccountManagerAsh::ShowAddAccountDialog(
   account_addition_in_progress_ = true;
   account_addition_callback_ = std::move(callback);
   account_manager_ui_->ShowAddAccountDialog(
-      base::BindOnce(&AccountManagerAsh::OnAddAccountDialogClosed,
+      base::BindOnce(&AccountManagerMojoService::OnAddAccountDialogClosed,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AccountManagerAsh::ShowReauthAccountDialog(const std::string& email,
-                                                base::OnceClosure closure) {
+void AccountManagerMojoService::ShowReauthAccountDialog(
+    const std::string& email,
+    base::OnceClosure closure) {
   DCHECK(account_manager_ui_);
   if (account_manager_ui_->IsDialogShown())
     return;
@@ -130,11 +131,11 @@ void AccountManagerAsh::ShowReauthAccountDialog(const std::string& email,
   account_manager_ui_->ShowReauthAccountDialog(email, std::move(closure));
 }
 
-void AccountManagerAsh::ShowManageAccountsSettings() {
+void AccountManagerMojoService::ShowManageAccountsSettings() {
   account_manager_ui_->ShowManageAccountsSettings();
 }
 
-void AccountManagerAsh::CreateAccessTokenFetcher(
+void AccountManagerMojoService::CreateAccessTokenFetcher(
     mojom::AccountKeyPtr mojo_account_key,
     const std::string& oauth_consumer_name,
     CreateAccessTokenFetcherCallback callback) {
@@ -146,26 +147,27 @@ void AccountManagerAsh::CreateAccessTokenFetcher(
   auto access_token_fetcher = std::make_unique<AccessTokenFetcher>(
       account_manager_, std::move(mojo_account_key), oauth_consumer_name,
       /*done_closure=*/
-      base::BindOnce(&AccountManagerAsh::DeletePendingAccessTokenFetchRequest,
-                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(
+          &AccountManagerMojoService::DeletePendingAccessTokenFetchRequest,
+          weak_ptr_factory_.GetWeakPtr()),
       /*receiver=*/pending_remote.InitWithNewPipeAndPassReceiver());
   pending_access_token_requests_.emplace_back(std::move(access_token_fetcher));
   std::move(callback).Run(std::move(pending_remote));
 }
 
-void AccountManagerAsh::OnTokenUpserted(
+void AccountManagerMojoService::OnTokenUpserted(
     const account_manager::Account& account) {
   for (auto& observer : observers_)
     observer->OnTokenUpserted(ToMojoAccount(account));
 }
 
-void AccountManagerAsh::OnAccountRemoved(
+void AccountManagerMojoService::OnAccountRemoved(
     const account_manager::Account& account) {
   for (auto& observer : observers_)
     observer->OnAccountRemoved(ToMojoAccount(account));
 }
 
-void AccountManagerAsh::OnAccountAdditionFinished(
+void AccountManagerMojoService::OnAccountAdditionFinished(
     const account_manager::AccountAdditionResult& result) {
   if (!account_addition_in_progress_)
     return;
@@ -173,7 +175,7 @@ void AccountManagerAsh::OnAccountAdditionFinished(
   FinishAddAccount(result);
 }
 
-void AccountManagerAsh::OnAddAccountDialogClosed() {
+void AccountManagerMojoService::OnAddAccountDialogClosed() {
   if (!account_addition_in_progress_)
     return;
 
@@ -183,7 +185,7 @@ void AccountManagerAsh::OnAddAccountDialogClosed() {
       account_manager::AccountAdditionResult::Status::kCancelledByUser));
 }
 
-void AccountManagerAsh::FinishAddAccount(
+void AccountManagerMojoService::FinishAddAccount(
     const account_manager::AccountAdditionResult& result) {
   account_addition_in_progress_ = false;
 
@@ -192,7 +194,7 @@ void AccountManagerAsh::FinishAddAccount(
       .Run(ToMojoAccountAdditionResult(result));
 }
 
-void AccountManagerAsh::DeletePendingAccessTokenFetchRequest(
+void AccountManagerMojoService::DeletePendingAccessTokenFetchRequest(
     AccessTokenFetcher* request) {
   pending_access_token_requests_.erase(
       std::remove_if(
@@ -203,11 +205,11 @@ void AccountManagerAsh::DeletePendingAccessTokenFetchRequest(
       pending_access_token_requests_.end());
 }
 
-void AccountManagerAsh::FlushMojoForTesting() {
+void AccountManagerMojoService::FlushMojoForTesting() {
   observers_.FlushForTesting();
 }
 
-int AccountManagerAsh::GetNumPendingAccessTokenRequests() const {
+int AccountManagerMojoService::GetNumPendingAccessTokenRequests() const {
   return pending_access_token_requests_.size();
 }
 

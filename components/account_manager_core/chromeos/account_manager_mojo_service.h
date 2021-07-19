@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_
-#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_
+#ifndef COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_MOJO_SERVICE_H_
+#define COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_MOJO_SERVICE_H_
 
 #include <memory>
 #include <vector>
@@ -29,14 +29,16 @@ namespace crosapi {
 // Implements the |crosapi::mojom::AccountManager| interface in ash-chrome.
 // It enables lacros-chrome to interact with accounts stored in the Chrome OS
 // Account Manager.
-class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerAsh
+class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
     : public mojom::AccountManager,
       public account_manager::AccountManager::Observer {
  public:
-  explicit AccountManagerAsh(account_manager::AccountManager* account_manager);
-  AccountManagerAsh(const AccountManagerAsh&) = delete;
-  AccountManagerAsh& operator=(const AccountManagerAsh&) = delete;
-  ~AccountManagerAsh() override;
+  explicit AccountManagerMojoService(
+      account_manager::AccountManager* account_manager);
+  AccountManagerMojoService(const AccountManagerMojoService&) = delete;
+  AccountManagerMojoService& operator=(const AccountManagerMojoService&) =
+      delete;
+  ~AccountManagerMojoService() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::AccountManager> receiver);
 
@@ -64,7 +66,7 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerAsh
   void OnAccountRemoved(const account_manager::Account& account) override;
 
  private:
-  friend class AccountManagerAshTest;
+  friend class AccountManagerMojoServiceTest;
   friend class TestAccountManagerObserver;
   friend class AccountManagerFacadeAshTest;
   friend class chromeos::SigninHelper;
@@ -95,9 +97,9 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerAsh
   mojo::ReceiverSet<mojom::AccountManager> receivers_;
   mojo::RemoteSet<mojom::AccountManagerObserver> observers_;
 
-  base::WeakPtrFactory<AccountManagerAsh> weak_ptr_factory_{this};
+  base::WeakPtrFactory<AccountManagerMojoService> weak_ptr_factory_{this};
 };
 
 }  // namespace crosapi
 
-#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_ASH_H_
+#endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_CHROMEOS_ACCOUNT_MANAGER_MOJO_SERVICE_H_

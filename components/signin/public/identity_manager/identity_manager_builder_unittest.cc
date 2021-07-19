@@ -27,7 +27,7 @@
 #include "ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #endif
 
 #if defined(OS_IOS)
@@ -109,7 +109,7 @@ TEST_F(IdentityManagerBuilderTest, BuildIdentityManagerInitParameters) {
 
   mojo::Remote<crosapi::mojom::AccountManager> remote;
   GetAccountManagerFactory()
-      ->GetAccountManagerAsh(dest_path.value())
+      ->GetAccountManagerMojoService(dest_path.value())
       ->BindReceiver(remote.BindNewPipeAndPassReceiver());
   auto account_manager_facade =
       std::make_unique<account_manager::AccountManagerFacadeImpl>(

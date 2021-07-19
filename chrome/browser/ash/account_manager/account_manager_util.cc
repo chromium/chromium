@@ -16,7 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 #include "components/account_manager_core/chromeos/account_manager_ui.h"
 #include "components/user_manager/user_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -65,12 +65,13 @@ void InitializeAccountManager(const base::FilePath& cryptohome_root_dir,
                               chromeos::kDefaultNetworkRetryDelayMS)),
       std::move(initialization_callback));
 
-  crosapi::AccountManagerAsh* account_manager_ash =
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManagerAsh(/*profile_path=*/cryptohome_root_dir.value());
+          ->GetAccountManagerMojoService(
+              /*profile_path=*/cryptohome_root_dir.value());
 
-  account_manager_ash->SetAccountManagerUI(
+  account_manager_mojo_service->SetAccountManagerUI(
       std::make_unique<ash::AccountManagerUIImpl>());
 }
 

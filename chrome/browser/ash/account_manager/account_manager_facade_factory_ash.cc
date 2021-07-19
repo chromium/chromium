@@ -15,19 +15,19 @@
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
 #include "components/account_manager_core/account_manager_facade_impl.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
-#include "components/account_manager_core/chromeos/account_manager_ash.h"
+#include "components/account_manager_core/chromeos/account_manager_mojo_service.h"
 
 namespace {
 
-crosapi::AccountManagerAsh* GetAccountManagerAsh(
+crosapi::AccountManagerMojoService* GetAccountManagerMojoService(
     const std::string& profile_path) {
-  crosapi::AccountManagerAsh* account_manager_ash =
+  crosapi::AccountManagerMojoService* account_manager_mojo_service =
       g_browser_process->platform_part()
           ->GetAccountManagerFactory()
-          ->GetAccountManagerAsh(profile_path);
-  DCHECK(account_manager_ash);
+          ->GetAccountManagerMojoService(profile_path);
+  DCHECK(account_manager_mojo_service);
 
-  return account_manager_ash;
+  return account_manager_mojo_service;
 }
 
 }  // namespace
@@ -42,7 +42,7 @@ account_manager::AccountManagerFacade* GetAccountManagerFacade(
   auto it = account_manager_facade_map->find(profile_path);
   if (it == account_manager_facade_map->end()) {
     mojo::Remote<crosapi::mojom::AccountManager> remote;
-    GetAccountManagerAsh(profile_path)
+    GetAccountManagerMojoService(profile_path)
         ->BindReceiver(remote.BindNewPipeAndPassReceiver());
     // This is set to a sentinel value which will pass all minimum version
     // checks.

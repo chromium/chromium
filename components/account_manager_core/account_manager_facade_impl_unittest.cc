@@ -333,8 +333,9 @@ TEST_F(AccountManagerFacadeImplTest, OnAccountRemovedIsPropagatedToObservers) {
   run_loop.Run();
 }
 
-TEST_F(AccountManagerFacadeImplTest,
-       GetAccountsReturnsEmptyListOfAccountsWhenAccountManagerAshIsEmpty) {
+TEST_F(
+    AccountManagerFacadeImplTest,
+    GetAccountsReturnsEmptyListOfAccountsWhenAccountManagerMojoServiceIsEmpty) {
   std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
       CreateFacade();
   account_manager().SetAccounts({});

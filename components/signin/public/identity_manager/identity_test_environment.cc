@@ -243,7 +243,8 @@ IdentityTestEnvironment::BuildIdentityManagerForTests(
       pref_service,
       std::make_unique<TestProfileOAuth2TokenServiceDelegateChromeOS>(
           account_tracker_service.get(),
-          account_manager_factory->GetAccountManagerAsh(user_data_dir.value()),
+          account_manager_factory->GetAccountManagerMojoService(
+              user_data_dir.value()),
           /*is_regular_profile=*/true));
 
   return FinishBuildIdentityManagerForTests(
