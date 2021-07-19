@@ -819,7 +819,7 @@ class CORE_EXPORT Node : public EventTarget {
   void ClearFlatTreeNodeData();
   void ClearFlatTreeNodeDataIfHostChanged(const ContainerNode& parent);
 
-  virtual bool WillRespondToMouseMoveEvents();
+  virtual bool WillRespondToMouseMoveEvents() const;
   virtual bool WillRespondToMouseClickEvents();
 
   enum ShadowTreesTreatment {

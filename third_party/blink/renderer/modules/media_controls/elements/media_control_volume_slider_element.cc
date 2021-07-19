@@ -112,7 +112,7 @@ void MediaControlVolumeSliderElement::CloseSlider() {
   classList().Add(kClosedCSSClass);
 }
 
-bool MediaControlVolumeSliderElement::WillRespondToMouseMoveEvents() {
+bool MediaControlVolumeSliderElement::WillRespondToMouseMoveEvents() const {
   if (!isConnected() || !GetDocument().IsActive())
     return false;
 

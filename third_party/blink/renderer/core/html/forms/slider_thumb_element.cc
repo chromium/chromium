@@ -236,7 +236,7 @@ void SliderThumbElement::DefaultEventHandler(Event& event) {
   HTMLDivElement::DefaultEventHandler(event);
 }
 
-bool SliderThumbElement::WillRespondToMouseMoveEvents() {
+bool SliderThumbElement::WillRespondToMouseMoveEvents() const {
   const HTMLInputElement* input = HostInput();
   if (input && !input->IsDisabledFormControl() && in_drag_mode_)
     return true;

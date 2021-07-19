@@ -3039,7 +3039,7 @@ bool Node::HasActivationBehavior() const {
   return false;
 }
 
-bool Node::WillRespondToMouseMoveEvents() {
+bool Node::WillRespondToMouseMoveEvents() const {
   if (IsDisabledFormControl(this))
     return false;
   return HasEventListeners(event_type_names::kMousemove) ||

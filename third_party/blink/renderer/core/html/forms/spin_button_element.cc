@@ -146,7 +146,7 @@ void SpinButtonElement::ForwardEvent(Event& event) {
   event.SetDefaultHandled();
 }
 
-bool SpinButtonElement::WillRespondToMouseMoveEvents() {
+bool SpinButtonElement::WillRespondToMouseMoveEvents() const {
   if (GetLayoutBox() && ShouldRespondToMouseEvents())
     return true;
 
@@ -216,7 +216,7 @@ void SpinButtonElement::RepeatingTimerFired(TimerBase*) {
     Step(up_down_state_ == kUp ? 1 : -1);
 }
 
-bool SpinButtonElement::ShouldRespondToMouseEvents() {
+bool SpinButtonElement::ShouldRespondToMouseEvents() const {
   return !spin_button_owner_ ||
          spin_button_owner_->ShouldSpinButtonRespondToMouseEvents();
 }

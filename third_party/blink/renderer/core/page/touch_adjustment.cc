@@ -89,7 +89,8 @@ typedef float (*DistanceFunction)(const IntPoint&,
                                   const IntRect&,
                                   const SubtargetGeometry&);
 
-// Takes non-const Node* because isContentEditable is a non-const function.
+// Takes non-const |Node*| because |Node::WillRespondToMouseClickEvents()| is
+// non-const.
 bool NodeRespondsToTapGesture(Node* node) {
   if (node->WillRespondToMouseClickEvents() ||
       node->WillRespondToMouseMoveEvents())
@@ -286,7 +287,8 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
   // line-breaks.
   for (unsigned i = 0; i < candidates.size(); i++) {
     Node* candidate = candidates[i];
-    // Skip nodes who's responders are ancestors of other responders. This gives
+
+    // Skip nodes whose responders are ancestors of other responders. This gives
     // preference to the inner-most event-handlers. So that a link is always
     // preferred even when contained in an element that monitors all
     // click-events.
@@ -294,6 +296,7 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
     DCHECK(responding_node);
     if (ancestors_to_responders_set.Contains(responding_node))
       continue;
+
     // Consolidate bounds for editable content.
     if (editable_ancestors.Contains(candidate))
       continue;
@@ -301,7 +304,10 @@ void CompileSubtargetList(const HeapVector<Member<Node>>& intersected_nodes,
     if (HasEditableStyle(*candidate)) {
       Node* replacement = candidate;
       Node* parent = candidate->ParentOrShadowHostNode();
-      while (parent && HasEditableStyle(*parent)) {
+
+      // Ignore parents without layout objects.  E.g. editable elements with
+      // display:contents.  https://crbug.com/1196872
+      while (parent && HasEditableStyle(*parent) && parent->GetLayoutObject()) {
         replacement = parent;
         if (editable_ancestors.Contains(replacement)) {
           replacement = nullptr;

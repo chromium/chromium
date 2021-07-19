@@ -315,7 +315,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
 
   // Node
   bool IsMediaControls() const override { return true; }
-  bool WillRespondToMouseMoveEvents() override { return true; }
+  bool WillRespondToMouseMoveEvents() const override { return true; }
   void DefaultEventHandler(Event&) override;
   bool ContainsRelatedTarget(Event*);
 

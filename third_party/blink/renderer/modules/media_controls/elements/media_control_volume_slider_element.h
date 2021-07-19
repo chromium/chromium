@@ -27,7 +27,7 @@ class MediaControlVolumeSliderElement final : public MediaControlSliderElement {
   void CloseSlider();
 
   // MediaControlInputElement overrides.
-  bool WillRespondToMouseMoveEvents() override;
+  bool WillRespondToMouseMoveEvents() const override;
   bool WillRespondToMouseClickEvents() override;
 
   void OnMediaKeyboardEvent(Event* event) { DefaultEventHandler(*event); }

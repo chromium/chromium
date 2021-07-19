@@ -975,6 +975,25 @@ TEST_F(EventHandlerTest, MisspellingContextMenuEvent) {
   ASSERT_TRUE(Selection().IsHandleVisible());
 }
 
+// Tests that touch adjustment algorithm can handle editable elements without
+// layout objects.
+//
+// TODO(mustaq): A fix for https://crbug.com/1230045 can make this test
+// obsolete.
+TEST_F(EventHandlerTest, TouchAdjustmentOnEditableDisplayContents) {
+  SetHtmlInnerHTML(
+      "<div style='display:contents' contenteditable='true'>TEXT</div>");
+  TapEventBuilder single_tap_event(FloatPoint(1, 1), 1);
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      single_tap_event);
+
+  LongPressEventBuilder long_press_event(FloatPoint(1, 1));
+  GetDocument().GetFrame()->GetEventHandler().HandleGestureEvent(
+      long_press_event);
+
+  // This test passes if it doesn't crash.
+}
+
 TEST_F(EventHandlerTest, dragEndInNewDrag) {
   SetHtmlInnerHTML(
       "<style>.box { width: 100px; height: 100px; display: block; }</style>"
