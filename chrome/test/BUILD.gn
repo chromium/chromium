@@ -6918,10 +6918,6 @@ test("unit_tests") {
 
   if (is_linux || is_chromeos || is_mac || is_win) {
     sources += [
-      "../browser/enterprise/connectors/device_trust/device_trust_service_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/mock_signal_reporter.cc",
-      "../browser/enterprise/connectors/device_trust/mock_signal_reporter.h",
-      "../browser/enterprise/connectors/device_trust/signal_reporter_unittest.cc",
       "../browser/enterprise/connectors/file_system/access_token_fetcher_unittest.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_flow_unittest.cc",
       "../browser/enterprise/connectors/file_system/box_api_call_test_helper.cc",
@@ -6935,11 +6931,20 @@ test("unit_tests") {
     ]
   }
 
+  if (is_linux || is_chromeos_ash || is_mac || is_win) {
+    sources += [
+      "../browser/enterprise/connectors/device_trust/device_trust_service_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/mock_signal_reporter.cc",
+      "../browser/enterprise/connectors/device_trust/mock_signal_reporter.h",
+      "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
+      "../browser/enterprise/connectors/device_trust/signal_reporter_unittest.cc",
+    ]
+  }
+
   if (is_linux || is_mac || is_win) {
     sources += [
       "../browser/enterprise/connectors/device_trust/attestation_service_unittest.cc",
       "../browser/enterprise/connectors/device_trust/device_trust_key_pair_unittest.cc",
-      "../browser/enterprise/connectors/device_trust/navigation_throttle_unittest.cc",
     ]
   }
 

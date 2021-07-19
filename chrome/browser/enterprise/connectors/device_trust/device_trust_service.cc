@@ -4,9 +4,14 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 
+#include "base/base64.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/signal_reporter.h"
 #include "chrome/browser/profiles/profile.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#endif
 
 namespace enterprise_connectors {
 
@@ -24,6 +29,7 @@ bool DeviceTrustService::IsEnabled(PrefService* prefs) {
 
 DeviceTrustService::DeviceTrustService(Profile* profile)
     : prefs_(profile->GetPrefs()),
+      profile_(profile),
       signal_report_callback_(
           base::BindOnce(&DeviceTrustService::OnSignalReported,
                          base::Unretained(this))) {
@@ -144,13 +150,37 @@ void DeviceTrustService::SetSignalReportCallbackForTesting(
 std::string DeviceTrustService::GetAttestationCredentialForTesting() const {
   return attestation_service_->ExportPublicKey();
 }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 void DeviceTrustService::BuildChallengeResponse(const std::string& challenge,
                                                 AttestationCallback callback) {
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   attestation_service_->BuildChallengeResponseForVAChallenge(
       challenge, std::move(callback));
-}
+#else
+  tpm_key_challenger_ =
+      std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
+  tpm_key_challenger_->BuildResponse(
+      base::TimeDelta::FromSeconds(15), ash::attestation::KEY_DEVICE, profile_,
+      base::BindOnce(&DeviceTrustService::ReturnResult,
+                     weak_factory_.GetWeakPtr(), std::move(callback)),
+      JsonChallengeToProtobufChallenge(challenge), /*register_key=*/false,
+      /*key_name_for_spkac=*/"");
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+}
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+void DeviceTrustService::ReturnResult(
+    AttestationCallback callback,
+    const ash::attestation::TpmChallengeKeyResult& result) {
+  if (!result.IsSuccess())
+    LOG(WARNING) << "Device attestation error: " << result.GetErrorMessage();
+
+  std::string encoded_response;
+  base::Base64Encode(result.challenge_response, &encoded_response);
+  std::move(callback).Run(encoded_response);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 base::CallbackListSubscription
 DeviceTrustService::RegisterTrustedUrlPatternsChangedCallback(

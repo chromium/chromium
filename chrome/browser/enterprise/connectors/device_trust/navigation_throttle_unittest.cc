@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/navigation_throttle.h"
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
@@ -25,6 +26,7 @@ namespace {
 const base::Value kOrigins[]{base::Value("https://www.example.com"),
                              base::Value("example2.example.com")};
 
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 constexpr char challenge[] =
     "{"
     "\"challenge\": {"
@@ -40,6 +42,7 @@ constexpr char challenge[] =
     "nuJn3H6583SsiaTbKgyHKmObbGdt0GVWLQ==\""
     "}"
     "}";
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace
 
@@ -106,6 +109,9 @@ scoped_refptr<net::HttpResponseHeaders> GetHeaderChallenge(
       net::HttpUtil::AssembleRawHeaders(raw_response_headers));
 }
 
+// TODO(b/194041030): Enable for Chrome OS after navigation is deferred before
+// the challenge response is created.
+#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
   EnableDeviceTrust();
   GURL url("https://www.example.com/");
@@ -118,5 +124,6 @@ TEST_F(DeviceTrustNavigationThrottleTest, BuildChallengeResponseFromHeader) {
 
   EXPECT_EQ(NavigationThrottle::DEFER, throttle->WillStartRequest().action());
 }
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
 }  // namespace enterprise_connectors

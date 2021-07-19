@@ -34,36 +34,6 @@ class AttestationService {
   void SignEnterpriseChallenge(const SignEnterpriseChallengeRequest& request,
                                SignEnterpriseChallengeReply* result);
 
-  // Take the challenge that comes from the Idp in json format and generate a
-  // SignedData proto.
-  // The expected format of the challenge is the following:
-  // {
-  //    "challenge": {
-  //        object (SignedData)
-  //    }
-  // }
-  // SignedData has the following scheme:
-  // {
-  //    "data": string (base64 encoded string),
-  //    "signature": string (base64 encoded string),
-  // }
-  std::string JsonChallengeToProtobufChallenge(const std::string& challenge);
-
-  // Take a challenge_response proto and return the json version of it.
-  // The format is the following:
-  // {
-  //    "challengeResponse": {
-  //        object (SignedData)
-  //    }
-  // }
-  // SignedData has the following scheme:
-  // {
-  //    "data": string (base64 encoded string),
-  //    "signature": string (base64 encoded string),
-  // }
-  std::string ProtobufChallengeToJsonChallenge(
-      const std::string& challenge_response);
-
   // Verify challenge comes from Verify Access.
   bool ChallengeComesFromVerifiedAccess(
       const std::string& serialized_signed_data,

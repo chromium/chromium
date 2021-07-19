@@ -7,6 +7,7 @@
 #include "base/base64.h"
 #include "base/json/json_reader.h"
 #include "base/values.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -66,8 +67,7 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
   SignEnterpriseChallengeRequest request;
   SignEnterpriseChallengeReply result;
   // Get the challenge from the SignedData json and create request.
-  request.set_challenge(
-      attestation_service_.JsonChallengeToProtobufChallenge(challenge));
+  request.set_challenge(JsonChallengeToProtobufChallenge(challenge));
   // If challenge is equal to empty string, then
   // `JsonChallengeToProtobufChallenge()` failed.
   EXPECT_NE(request.challenge(), std::string());
@@ -78,8 +78,7 @@ TEST_F(AttestationServiceTest, BuildChallengeResponse) {
   EXPECT_NE(result.challenge_response(), std::string());
 
   absl::optional<base::Value> challenge_response = base::JSONReader::Read(
-      attestation_service_.ProtobufChallengeToJsonChallenge(
-          result.challenge_response()),
+      ProtobufChallengeToJsonChallenge(result.challenge_response()),
       base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
 
   EXPECT_NE(challenge_response.value()

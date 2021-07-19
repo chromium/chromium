@@ -12,10 +12,12 @@
 #include "components/policy/core/browser/configuration_policy_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
-
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 #include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/attestation/tpm_challenge_key_with_timeout.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #include <memory>
 
@@ -58,11 +60,11 @@ class DeviceTrustService : public KeyedService {
 
 #if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
   std::string GetAttestationCredentialForTesting() const;
-  // Starts flow that actually builds a response. This method is called
-  // from a non_UI thread.
+#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+
+  // Starts flow that actually builds a response.
   void BuildChallengeResponse(const std::string& challenge,
                               AttestationCallback callback);
-#endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   // Register a callback that listens for changes in the trust URL patterns.
   base::CallbackListSubscription RegisterTrustedUrlPatternsChangedCallback(
@@ -82,6 +84,7 @@ class DeviceTrustService : public KeyedService {
   base::RepeatingCallback<bool()> MakePolicyCheck();
 
   PrefService* prefs_;
+  Profile* profile_;
 
   // Caches whether the device trust service is enabled or not.  This is used
   // to implement IsEnabled() so the method does not need to access the prefs.
@@ -100,6 +103,15 @@ class DeviceTrustService : public KeyedService {
 #endif  // defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
 
   TrustedUrlPatternsChangedCallbackList callbacks_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Run the callback that may resume the navigation with the challenge
+  // response. In case the challenge response was not successfully built. An
+  // empty challenge response will be used.
+  void ReturnResult(AttestationCallback callback,
+                    const ash::attestation::TpmChallengeKeyResult& result);
+  std::unique_ptr<ash::attestation::TpmChallengeKeyWithTimeout>
+      tpm_key_challenger_;
+#endif  // IS_CHROMEOS_ASH
 
   base::WeakPtrFactory<DeviceTrustService> weak_factory_{this};
 };

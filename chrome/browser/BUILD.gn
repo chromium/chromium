@@ -3610,12 +3610,6 @@ static_library("browser") {
       "enterprise/connectors/connectors_prefs.h",
       "enterprise/connectors/connectors_service.cc",
       "enterprise/connectors/connectors_service.h",
-      "enterprise/connectors/device_trust/device_trust_factory.cc",
-      "enterprise/connectors/device_trust/device_trust_factory.h",
-      "enterprise/connectors/device_trust/device_trust_service.cc",
-      "enterprise/connectors/device_trust/device_trust_service.h",
-      "enterprise/connectors/device_trust/signal_reporter.cc",
-      "enterprise/connectors/device_trust/signal_reporter.h",
       "enterprise/connectors/enterprise_connectors_policy_handler.cc",
       "enterprise/connectors/enterprise_connectors_policy_handler.h",
       "enterprise/connectors/file_system/access_token_fetcher.cc",
@@ -4268,7 +4262,6 @@ static_library("browser") {
       "//chrome/services/media_gallery_util/public/cpp",
       "//components/accuracy_tips",
       "//components/constrained_window",
-      "//components/enterprise/common/proto:device_trust_report_event_proto",
       "//components/feedback",
       "//components/feedback/content:factory",
       "//components/image_fetcher/core",
@@ -5285,6 +5278,24 @@ static_library("browser") {
     deps += [ "//chrome/browser/privacy:traffic_annotation_proto" ]
   }
 
+  if (is_linux || is_win || is_mac || is_chromeos_ash) {
+    sources += [
+      "enterprise/connectors/device_trust/device_trust_factory.cc",
+      "enterprise/connectors/device_trust/device_trust_factory.h",
+      "enterprise/connectors/device_trust/device_trust_service.cc",
+      "enterprise/connectors/device_trust/device_trust_service.h",
+      "enterprise/connectors/device_trust/device_trust_utils.cc",
+      "enterprise/connectors/device_trust/device_trust_utils.h",
+      "enterprise/connectors/device_trust/navigation_throttle.cc",
+      "enterprise/connectors/device_trust/navigation_throttle.h",
+      "enterprise/connectors/device_trust/signal_reporter.cc",
+      "enterprise/connectors/device_trust/signal_reporter.h",
+    ]
+    deps += [
+      "//components/enterprise/common/proto:device_trust_report_event_proto",
+    ]
+  }
+
   if (is_linux || is_win || is_mac) {
     sources += [
       "enterprise/connectors/device_trust/attestation_service.cc",
@@ -5295,8 +5306,6 @@ static_library("browser") {
       "enterprise/connectors/device_trust/device_trust_key_pair.h",
       "enterprise/connectors/device_trust/google_keys.cc",
       "enterprise/connectors/device_trust/google_keys.h",
-      "enterprise/connectors/device_trust/navigation_throttle.cc",
-      "enterprise/connectors/device_trust/navigation_throttle.h",
     ]
     deps += [
       "//chrome/browser/enterprise/connectors/device_trust:attestation_ca_proto",

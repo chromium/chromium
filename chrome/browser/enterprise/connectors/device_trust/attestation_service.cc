@@ -4,10 +4,6 @@
 
 #include "chrome/browser/enterprise/connectors/device_trust/attestation_service.h"
 
-#include "base/base64.h"
-#include "base/bind.h"
-#include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/task/task_traits.h"
@@ -16,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/device_trust/crypto_utility.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_key_pair.h"
+#include "chrome/browser/enterprise/connectors/device_trust/device_trust_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "components/enterprise/browser/controller/browser_dm_token_storage.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
@@ -75,56 +72,6 @@ bool AttestationService::ChallengeComesFromVerifiedAccess(
   return CryptoUtility::VerifySignatureUsingHexKey(
       public_key_modulus_hex, signed_challenge.data(),
       signed_challenge.signature());
-}
-
-std::string AttestationService::JsonChallengeToProtobufChallenge(
-    const std::string& challenge) {
-  SignedData signed_challenge;
-  // Get challenge and decode it.
-  absl::optional<base::Value> data = base::JSONReader::Read(
-      challenge, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
-
-  // If json is malformed or it doesn't include the needed fields return
-  // an empty string.
-  if (!data || !data.value().FindPath("challenge.data") ||
-      !data.value().FindPath("challenge.signature"))
-    return std::string();
-
-  if (!base::Base64Decode(data.value().FindPath("challenge.data")->GetString(),
-                          signed_challenge.mutable_data()))
-    LOG(ERROR) << "Error during decoding base64 challenge data.";
-  if (!base::Base64Decode(
-          data.value().FindPath("challenge.signature")->GetString(),
-          signed_challenge.mutable_signature()))
-    LOG(ERROR) << "Error during decoding base64 challenge signature.";
-
-  std::string serialized_signed_challenge;
-  if (!signed_challenge.SerializeToString(&serialized_signed_challenge)) {
-    LOG(ERROR) << __func__ << ": Failed to serialize signed data.";
-    return std::string();
-  }
-  return serialized_signed_challenge;
-}
-
-std::string AttestationService::ProtobufChallengeToJsonChallenge(
-    const std::string& challenge_response) {
-  base::Value signed_data(base::Value::Type::DICTIONARY);
-
-  SignedData signed_data_proto;
-  signed_data_proto.ParseFromString(challenge_response);
-  std::string encoded;
-  base::Base64Encode(signed_data_proto.data(), &encoded);
-  signed_data.SetKey("data", base::Value(encoded));
-
-  base::Base64Encode(signed_data_proto.signature(), &encoded);
-  signed_data.SetKey("signature", base::Value(encoded));
-
-  base::Value dict(base::Value::Type::DICTIONARY);
-  dict.SetKey("challengeResponse", std::move(signed_data));
-
-  std::string json;
-  base::JSONWriter::Write(dict, &json);
-  return json;
 }
 
 std::string AttestationService::ExportPublicKey() {

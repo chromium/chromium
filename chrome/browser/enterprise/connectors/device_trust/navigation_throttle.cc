@@ -8,7 +8,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_factory.h"
-#include "chrome/browser/enterprise/connectors/device_trust/device_trust_interface.pb.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/policy/core/browser/url_util.h"
@@ -76,7 +75,7 @@ void DeviceTrustNavigationThrottle::OnTrustedUrlPatternsChanged(
     matcher_->RemoveConditionSets({id});
   }
 
-  if (device_trust_service_->IsEnabled()) {
+  if (device_trust_service_ && device_trust_service_->IsEnabled()) {
     // Add the new endpoints to the conditions.
     policy::url_util::AddFilters(matcher_.get(), true /* allowed */, &id,
                                  origins);
@@ -106,8 +105,7 @@ DeviceTrustNavigationThrottle::AddHeadersIfNeeded() {
   if (!url.is_valid() || !url.SchemeIsHTTPOrHTTPS())
     return PROCEED;
 
-  DCHECK(device_trust_service_);
-  if (!device_trust_service_->IsEnabled())
+  if (!device_trust_service_ || !device_trust_service_->IsEnabled())
     return PROCEED;
 
   DCHECK(matcher_);
