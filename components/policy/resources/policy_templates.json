@@ -7242,7 +7242,7 @@
       'tags': ['system-security'],
       'desc': '''Controls whether insecure websites are allowed to make requests to more-private network endpoints.
 
-          This policy relates to the CORS-RFC1918 specification. See https://wicg.github.io/cors-rfc1918 for more details.
+          This policy relates to the Private Network Access specification. See https://wicg.github.io/private-network-access/ for more details.
 
           A network endpoint is more private than another if:
           1) Its IP address is localhost and the other is not.
