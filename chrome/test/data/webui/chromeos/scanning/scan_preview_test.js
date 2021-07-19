@@ -144,11 +144,9 @@ export function scanPreviewTest() {
     scanPreview.objectUrls = ['image'];
     scanPreview.appState = AppState.DONE;
     scanPreview.multiPageScanChecked = false;
-    assertFalse(isVisible(
-        /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'))));
+    assertTrue(scanPreview.$$('action-toolbar').hidden);
     scanPreview.multiPageScanChecked = true;
     flush();
-    assertTrue(isVisible(
-        /** @type {!HTMLElement} */ (scanPreview.$$('action-toolbar'))));
+    assertFalse(scanPreview.$$('action-toolbar').hidden);
   });
 }

@@ -100,9 +100,14 @@
   }
 
   action-toolbar {
+    display: none;
     left: 270px;
     position: fixed;
     top: 425px;
+  }
+
+  .preview:hover action-toolbar {
+    display: block;
   }
 </style>
 <div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
