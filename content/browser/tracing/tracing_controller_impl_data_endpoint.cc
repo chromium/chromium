@@ -96,7 +96,11 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
     base::File temp_file = CreateAndOpenTemporaryFileInDir(file_path_.DirName(),
                                                            &pending_file_path_);
     if (temp_file.IsValid()) {
-      file_ = FileToFILE(std::move(temp_file), "w");
+      // On Android, fdsan prohibits associating a new stream with a file while
+      // it's still owned by base::File. So we have to close it first and then
+      // reopen as FILE*.
+      temp_file.Close();
+      file_ = base::OpenFile(pending_file_path_, "w");
     } else {
       LOG(WARNING) << "Unable to use temporary file " << pending_file_path_
                    << ": "
