@@ -37,6 +37,7 @@ class AutofillSuggestionGeneratorTest : public testing::Test {
                         /*client_profile_validator=*/nullptr,
                         /*history_service=*/nullptr,
                         /*strike_database=*/nullptr,
+                        /*image_fetcher=*/nullptr,
                         /*is_off_the_record=*/false);
     suggestion_generator_ = std::make_unique<AutofillSuggestionGenerator>(
         &autofill_client_, &personal_data_);

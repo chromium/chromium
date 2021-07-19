@@ -116,6 +116,7 @@ class CreditCardFIDOAuthenticatorTest : public testing::Test {
                                 /*client_profile_validator=*/nullptr,
                                 /*history_service=*/nullptr,
                                 /*strike_database=*/nullptr,
+                                /*image_fetcher=*/nullptr,
                                 /*is_off_the_record=*/false);
     personal_data_manager_.SetPrefService(autofill_client_.GetPrefs());
 

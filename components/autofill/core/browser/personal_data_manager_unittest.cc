@@ -244,7 +244,8 @@ class PersonalDataManagerTestBase {
             : nullptr,
         prefs_.get(), prefs_.get(), identity_test_env_.identity_manager(),
         TestAutofillProfileValidator::GetInstance(),
-        /*history_service=*/nullptr, strike_database_.get(), is_incognito);
+        /*history_service=*/nullptr, strike_database_.get(),
+        /*image_fetcher=*/nullptr, is_incognito);
 
     personal_data->AddObserver(&personal_data_observer_);
     AccountInfo account_info;

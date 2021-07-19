@@ -16,10 +16,10 @@
 namespace autofill {
 
 // static
-AutofillImageFetcher* AutofillImageFetcherFactory::GetForBrowserContext(
-    content::BrowserContext* context) {
+AutofillImageFetcher* AutofillImageFetcherFactory::GetForProfile(
+    Profile* profile) {
   return static_cast<AutofillImageFetcher*>(
-      GetInstance()->GetServiceForBrowserContext(context, true));
+      GetInstance()->GetServiceForBrowserContext(profile, true));
 }
 
 // static
