@@ -8,4 +8,5 @@
     android:minWidth="@dimen/quick_action_search_widget_width"
     android:minHeight="@dimen/quick_action_search_widget_small_height"
     android:resizeMode="horizontal|vertical"
+    android:previewImage="@drawable/quick_action_search_widget_small_preview"
     android:widgetCategory="home_screen|searchbox" />
