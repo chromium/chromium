@@ -59,14 +59,12 @@ class ProfilingServiceImpl
   // memory_instrumentation::mojom::HeapProfiler implementation:
   void DumpProcessesForTracing(
       bool strip_path_from_mapped_files,
-      bool write_proto,
       DumpProcessesForTracingCallback callback) override {
     std::vector<base::ProcessId> pids =
         connection_manager_.GetConnectionPidsThatNeedVmRegions();
     if (pids.empty()) {
       connection_manager_.DumpProcessesForTracing(
-          strip_path_from_mapped_files, write_proto, std::move(callback),
-          VmRegions());
+          strip_path_from_mapped_files, std::move(callback), VmRegions());
       return;
     }
 
@@ -77,18 +75,17 @@ class ProfilingServiceImpl
         base::BindOnce(&ProfilingServiceImpl::
                            OnGetVmRegionsCompleteForDumpProcessesForTracing,
                        weak_factory_.GetWeakPtr(), strip_path_from_mapped_files,
-                       write_proto, std::move(callback)));
+                       std::move(callback)));
   }
 
  private:
   void OnGetVmRegionsCompleteForDumpProcessesForTracing(
       bool strip_path_from_mapped_files,
-      bool write_proto,
       DumpProcessesForTracingCallback callback,
       VmRegions vm_regions) {
-    connection_manager_.DumpProcessesForTracing(
-        strip_path_from_mapped_files, write_proto, std::move(callback),
-        std::move(vm_regions));
+    connection_manager_.DumpProcessesForTracing(strip_path_from_mapped_files,
+                                                std::move(callback),
+                                                std::move(vm_regions));
   }
 
   mojo::Receiver<memory_instrumentation::mojom::HeapProfiler>

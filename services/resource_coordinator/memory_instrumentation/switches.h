@@ -12,7 +12,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 extern const char kDisableChromeTracingComputation[];
 extern const char kUseMemoryTrackingJsonWriter[];
-extern const char kUseHeapProfilingProtoWriter[];
 
 }  // namespace switches
 }  // namespace memory_instrumentation
