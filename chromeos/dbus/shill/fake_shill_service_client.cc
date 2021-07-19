@@ -361,6 +361,23 @@ void FakeShillServiceClient::GetWiFiPassphrase(
   std::move(callback).Run(passphrase ? *passphrase : std::string());
 }
 
+void FakeShillServiceClient::GetEapPassphrase(
+    const dbus::ObjectPath& service_path,
+    StringCallback callback,
+    ErrorCallback error_callback) {
+  base::Value* service_properties =
+      GetModifiableServiceProperties(service_path.value(), false);
+  if (!service_properties) {
+    LOG(ERROR) << "Service not found: " << service_path.value();
+    std::move(error_callback).Run("Error.InvalidService", "Invalid Service");
+    return;
+  }
+
+  const std::string* passphrase =
+      service_properties->FindStringKey(shill::kEapPasswordProperty);
+  std::move(callback).Run(passphrase ? *passphrase : std::string());
+}
+
 void FakeShillServiceClient::RequestTrafficCounters(
     const dbus::ObjectPath& service_path,
     ListValueCallback callback,

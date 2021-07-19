@@ -211,10 +211,15 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillServiceClient {
       const dbus::ObjectPath& service_path,
       DBusMethodCallback<base::Value> callback) = 0;
 
-  // Retrieves the saved passphrase for the given network.
+  // Retrieves the saved WiFi passphrase for the given network.
   virtual void GetWiFiPassphrase(const dbus::ObjectPath& service_path,
                                  StringCallback callback,
                                  ErrorCallback error_callback) = 0;
+
+  // Retrieves the saved EAP passphrase for the given network.
+  virtual void GetEapPassphrase(const dbus::ObjectPath& service_path,
+                                StringCallback callback,
+                                ErrorCallback error_callback) = 0;
 
   // Calls the RequestTrafficCounters method.
   // |callback| is called after the method call succeeds.
