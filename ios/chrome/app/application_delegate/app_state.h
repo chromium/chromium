@@ -97,6 +97,10 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 // resets.
 @property(nonatomic, readonly) BOOL firstSceneHasInitializedUI;
 
+// YES if the views being presented should only support the portrait
+// orientation.
+@property(nonatomic, readonly) BOOL portraitOnly;
+
 // Saves the launchOptions to be used from -newTabFromLaunchOptions. If the
 // application is in background, initialize the browser to basic. If not, launch
 // the browser.
