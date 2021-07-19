@@ -8,6 +8,7 @@ BookmarkBubbleViewBrowserTest.*
 BookmarkEditorViewBrowserTest.*
 ChromeLabsUiTest.*
 ContentSettingBubbleDialogTest.*
+CookieControlsBubbleViewTest.*
 ExtensionInstallDialogViewInteractiveBrowserTest.*
 ExtensionUninstallDialogViewInteractiveBrowserTest.*
 FeaturePromoDialogTest.*

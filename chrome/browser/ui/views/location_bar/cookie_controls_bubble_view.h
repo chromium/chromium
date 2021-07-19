@@ -31,6 +31,11 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
                                  public views::TooltipIcon::Observer,
                                  public content_settings::CookieControlsView {
  public:
+  enum DialogViewID {
+    VIEW_ID_NONE = 0,
+    VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK,
+  };
+
   static void ShowBubble(views::View* anchor_view,
                          views::Button* highlighted_button,
                          content::WebContents* web_contents,
@@ -69,8 +74,8 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
 
-  void ShowCookiesLinkClicked();
-  void NotWorkingLinkClicked();
+  void OnShowCookiesLinkClicked();
+  void OnNotWorkingLinkClicked();
   void OnDialogAccepted();
 
   // views::TooltipIcon::Observer:
