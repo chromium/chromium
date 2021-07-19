@@ -99,6 +99,10 @@ class WebFeedFollowIntroView {
                         .setOnDismissCallback(() -> {
                             mHandler.postDelayed(this::turnOffHighlightForFollowMenuItem,
                                     ViewHighlighter.IPH_MIN_DELAY_BETWEEN_TWO_HIGHLIGHTS);
+                            if (!mPrefService.getBoolean(Pref.ENABLE_WEB_FEED_FOLLOW_INTRO_DEBUG)) {
+                                featureEngagementTracker.dismissed(
+                                        FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE);
+                            }
                         })
                         .build());
     }
