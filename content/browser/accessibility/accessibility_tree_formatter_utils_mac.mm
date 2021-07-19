@@ -83,14 +83,26 @@ OptionalNSObject AttributeInvoker::Invoke(
   // a working solution that works nicely in both cases. Use LOG(ERROR) for now
   // as a console warning.
 
-  // Get a target to invoke an attribute for. First, check the storage if it has
-  // an associated target for the property node, then query the tree indexer if
-  // the property node refers to a DOM id or line index of an accessible object.
-  // If the property node doesn't provide a target then use the default one
-  // (if any).
+  // Executes a scripting statement coded in a given property node.
+  // The statement represents a chainable sequence of attribute calls, where
+  // each subsequent call is invoked on an object returned by a previous call.
+  // For example, p.AXChildren[0].AXRole will unroll into a sequence of
+  // `p.AXChildren`, `(p.AXChildren)[0]` and `((p.AXChildren)[0]).AXRole`.
+
+  // Get an initial target to invoke an attribute for. First, check the storage
+  // if it has an associated target for the property node, then query the tree
+  // indexer if the property node refers to a DOM id or line index of
+  // an accessible object. If the property node doesn't provide a target then
+  // use the default one (if any, the default node is provided in case of
+  // a tree dumping only, the scripts never have default target).
   id target = nil;
 
-  // Case 1: try to get a target from the storage.
+  // Case 1: try to get a target from the storage. The target may refer to
+  // a variable which is kept in the storage. For example,
+  // `text_leaf:= p.AXChildren[0]` will define `text_leaf` variable and put it
+  // into the storage, and then the variable value will be extracted from
+  // the storage for other instruction referring the variable, for example,
+  // `text_leaf.AXRole`.
   if (storage_) {
     auto storage_iterator = storage_->find(property_node.name_or_value);
     if (storage_iterator != storage_->end()) {
@@ -102,14 +114,20 @@ OptionalNSObject AttributeInvoker::Invoke(
       }
     }
   }
-  // Case 2: try to get target from the tree indexer.
+  // Case 2: try to get target from the tree indexer. The target may refer to
+  // an accessible element by DOM id or by a line number (:LINE_NUM format) in
+  // a result accessible tree. The tree indexer keeps the mappings between
+  // accesible elements and their DOM ids and line numbers.
   if (!target)
     target = line_indexer->NodeBy(property_node.name_or_value);
 
   // Case 3: no target either indicates an error or the property node is a
-  // scalar value and thus nothing to invoke or, if default target is given,
-  // then the target is deemed (|node| is null) and we should use the default
-  // target.
+  // scalar value (for example, `0` in `AXChildren[0]`) and thus nothing to
+  // invoke or, if default target is given, i.e. |node| is not null, then
+  // the target is deemed and we use the default target. The latter case is
+  // about ax tree dumping where a scripting instruction with no target can be
+  // used. For example, `AXRole` property filter means it is applied to all
+  // nodes and `AXRole` attribute should be called for all nodes in the tree.
   if (!target) {
     if (property_node.IsTarget())
       return OptionalNSObject::Error();
@@ -131,14 +149,15 @@ OptionalNSObject AttributeInvoker::Invoke(
   // Invoke the call chain.
   while (current_node) {
     auto target_optional = InvokeFor(target, *current_node);
+    // Result of the current step is either null or error. Don't go any further.
     if (!target_optional.IsNotNil()) {
-      LOG(ERROR) << "Null result of " << current_node->ToFlatString();
       return target_optional;
     }
     target = *target_optional;
     current_node = current_node->next.get();
   }
 
+  // Variable case: store the variable value in the storage.
   if (!property_node.key.empty())
     (*storage_)[property_node.key] = target;
 
