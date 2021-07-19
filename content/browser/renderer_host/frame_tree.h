@@ -28,6 +28,11 @@
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom-forward.h"
 
 namespace blink {
+namespace mojom {
+class BrowserInterfaceBroker;
+enum class TreeScopeType;
+}  // namespace mojom
+
 struct FramePolicy;
 }  // namespace blink
 
@@ -35,6 +40,7 @@ namespace content {
 
 class BrowserContext;
 class PageDelegate;
+class PageImpl;
 class RenderFrameHostDelegate;
 class RenderViewHostDelegate;
 class RenderViewHostImpl;
