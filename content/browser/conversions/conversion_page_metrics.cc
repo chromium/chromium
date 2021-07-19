@@ -20,7 +20,7 @@ ConversionPageMetrics::~ConversionPageMetrics() {
                                 num_impressions_on_current_page_, 100);
 }
 
-void ConversionPageMetrics::OnConversion(const StorableConversion& conversion) {
+void ConversionPageMetrics::OnConversion() {
   num_conversions_on_current_page_++;
 }
 

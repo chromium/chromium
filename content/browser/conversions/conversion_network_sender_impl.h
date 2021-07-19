@@ -39,6 +39,9 @@ class CONTENT_EXPORT ConversionNetworkSenderImpl
   ConversionNetworkSenderImpl(const ConversionNetworkSenderImpl&) = delete;
   ConversionNetworkSenderImpl& operator=(const ConversionNetworkSenderImpl&) =
       delete;
+  ConversionNetworkSenderImpl(ConversionNetworkSenderImpl&&) = delete;
+  ConversionNetworkSenderImpl& operator=(ConversionNetworkSenderImpl&&) =
+      delete;
   ~ConversionNetworkSenderImpl() override;
 
   // Generates a resource request for |report| and creates a new UrlLoader to

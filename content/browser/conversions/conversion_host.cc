@@ -315,7 +315,7 @@ void ConversionHost::RegisterConversion(
           : absl::make_optional(conversion->dedup_key->value));
 
   if (conversion_page_metrics_)
-    conversion_page_metrics_->OnConversion(storable_conversion);
+    conversion_page_metrics_->OnConversion();
   conversion_manager->HandleConversion(std::move(storable_conversion));
 }
 

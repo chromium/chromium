@@ -54,6 +54,8 @@ class CONTENT_EXPORT ConversionReporterImpl
                          const base::Clock* clock);
   ConversionReporterImpl(const ConversionReporterImpl&) = delete;
   ConversionReporterImpl& operator=(const ConversionReporterImpl&) = delete;
+  ConversionReporterImpl(ConversionReporterImpl&&) = delete;
+  ConversionReporterImpl& operator=(ConversionReporterImpl&&) = delete;
   ~ConversionReporterImpl() override;
 
   // ConversionManagerImpl::ConversionReporter:

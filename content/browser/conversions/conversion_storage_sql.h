@@ -40,6 +40,8 @@ class CONTENT_EXPORT ConversionStorageSql : public ConversionStorage {
                        const base::Clock* clock);
   ConversionStorageSql(const ConversionStorageSql& other) = delete;
   ConversionStorageSql& operator=(const ConversionStorageSql& other) = delete;
+  ConversionStorageSql(ConversionStorageSql&& other) = delete;
+  ConversionStorageSql& operator=(ConversionStorageSql&& other) = delete;
   ~ConversionStorageSql() override;
 
   void set_ignore_errors_for_testing(bool ignore_for_testing) {

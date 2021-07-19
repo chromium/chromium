@@ -59,6 +59,8 @@ class CONTENT_EXPORT ConversionPolicy {
   explicit ConversionPolicy(bool debug_mode = false);
   ConversionPolicy(const ConversionPolicy& other) = delete;
   ConversionPolicy& operator=(const ConversionPolicy& other) = delete;
+  ConversionPolicy(ConversionPolicy&& other) = delete;
+  ConversionPolicy& operator=(ConversionPolicy&& other) = delete;
   virtual ~ConversionPolicy();
 
   // Gets the sanitized conversion data for a conversion. This strips entropy

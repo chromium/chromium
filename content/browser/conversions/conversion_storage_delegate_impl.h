@@ -27,6 +27,9 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
       delete;
   ConversionStorageDelegateImpl& operator=(
       const ConversionStorageDelegateImpl& other) = delete;
+  ConversionStorageDelegateImpl(ConversionStorageDelegateImpl&& other) = delete;
+  ConversionStorageDelegateImpl& operator=(
+      ConversionStorageDelegateImpl&& other) = delete;
   ~ConversionStorageDelegateImpl() override = default;
 
   // ConversionStorageDelegate:
@@ -44,7 +47,7 @@ class CONTENT_EXPORT ConversionStorageDelegateImpl
  private:
   // Whether the API is running in debug mode, meaning that there should be
   // no delays or noise added to reports.
-  bool debug_mode_ = false;
+  const bool debug_mode_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

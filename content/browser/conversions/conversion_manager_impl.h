@@ -48,6 +48,9 @@ class ConversionManagerProviderImpl : public ConversionManager::Provider {
       delete;
   ConversionManagerProviderImpl& operator=(
       const ConversionManagerProviderImpl& other) = delete;
+  ConversionManagerProviderImpl(ConversionManagerProviderImpl&& other) = delete;
+  ConversionManagerProviderImpl& operator=(
+      ConversionManagerProviderImpl&& other) = delete;
   ~ConversionManagerProviderImpl() override = default;
 
   // ConversionManagerProvider:
@@ -92,6 +95,8 @@ class CONTENT_EXPORT ConversionManagerImpl : public ConversionManager {
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy);
   ConversionManagerImpl(const ConversionManagerImpl& other) = delete;
   ConversionManagerImpl& operator=(const ConversionManagerImpl& other) = delete;
+  ConversionManagerImpl(ConversionManagerImpl&& other) = delete;
+  ConversionManagerImpl& operator=(ConversionManagerImpl&& other) = delete;
   ~ConversionManagerImpl() override;
 
   // ConversionManager:

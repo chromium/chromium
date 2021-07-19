@@ -36,6 +36,8 @@ class CONTENT_EXPORT RateLimitTable {
                  const base::Clock* clock);
   RateLimitTable(const RateLimitTable& other) = delete;
   RateLimitTable& operator=(const RateLimitTable& other) = delete;
+  RateLimitTable(RateLimitTable&& other) = delete;
+  RateLimitTable& operator=(RateLimitTable&& other) = delete;
   ~RateLimitTable();
 
   // Creates the table in |db| if it doesn't exist.

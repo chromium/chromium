@@ -294,7 +294,7 @@ void ConversionManagerImpl::MaybeStoreSentReportInfo(
   if (info.has_value()) {
     while (sent_reports_.size() >= max_sent_reports_to_store_)
       sent_reports_.pop_front();
-    sent_reports_.push_back(*info);
+    sent_reports_.push_back(std::move(*info));
   }
 }
 

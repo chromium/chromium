@@ -34,6 +34,8 @@ class CONTENT_EXPORT ConversionHost
   explicit ConversionHost(WebContents* web_contents);
   ConversionHost(const ConversionHost& other) = delete;
   ConversionHost& operator=(const ConversionHost& other) = delete;
+  ConversionHost(ConversionHost&& other) = delete;
+  ConversionHost& operator=(ConversionHost&& other) = delete;
   ~ConversionHost() override;
 
   static absl::optional<blink::Impression> ParseImpressionFromApp(
