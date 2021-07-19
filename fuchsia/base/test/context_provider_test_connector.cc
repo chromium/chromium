@@ -71,14 +71,6 @@ fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTestsInternal(
 
 }  // namespace
 
-fidl::InterfaceHandle<fuchsia::io::Directory> StartWebEngineForTests(
-    fidl::InterfaceRequest<fuchsia::sys::ComponentController>
-        component_controller_request,
-    const base::CommandLine& command_line) {
-  return StartWebEngineForTestsInternal(std::move(component_controller_request),
-                                        command_line, false);
-}
-
 fuchsia::web::ContextProviderPtr ConnectContextProvider(
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         component_controller_request,

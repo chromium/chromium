@@ -505,7 +505,6 @@ enum CastRunnerFeatures {
 };
 
 sys::ServiceDirectory StartCastRunner(
-    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_host_directory,
     CastRunnerFeatures runner_features,
     fidl::InterfaceRequest<fuchsia::sys::ComponentController>
         component_controller_request) {
@@ -539,14 +538,6 @@ sys::ServiceDirectory StartCastRunner(
   launch_info.directory_request =
       cast_runner_services_dir.NewRequest().TakeChannel();
 
-  // Redirect ContextProvider to |web_engine_host_directory|.
-  launch_info.additional_services =
-      std::make_unique<fuchsia::sys::ServiceList>();
-  launch_info.additional_services->host_directory =
-      web_engine_host_directory.TakeChannel();
-  launch_info.additional_services->names.push_back(
-      fuchsia::web::ContextProvider::Name_);
-
   fuchsia::sys::LauncherPtr launcher;
   base::ComponentContextForProcess()->svc()->Connect(launcher.NewRequest());
   launcher->CreateComponent(std::move(launch_info),
@@ -573,16 +564,9 @@ class CastRunnerIntegrationTest : public testing::Test {
 
  protected:
   explicit CastRunnerIntegrationTest(CastRunnerFeatures runner_features) {
-    StartAndPublishWebEngine();
-
     // Start CastRunner.
-    fidl::InterfaceHandle<::fuchsia::io::Directory> incoming_services;
-    services_for_cast_runner_.GetOrCreateDirectory("svc")->Serve(
-        ::fuchsia::io::OPEN_RIGHT_READABLE | ::fuchsia::io::OPEN_RIGHT_WRITABLE,
-        incoming_services.NewRequest().TakeChannel());
-    sys::ServiceDirectory cast_runner_services =
-        StartCastRunner(std::move(incoming_services), runner_features,
-                        cast_runner_controller_.ptr().NewRequest());
+    sys::ServiceDirectory cast_runner_services = StartCastRunner(
+        runner_features, cast_runner_controller_.ptr().NewRequest());
 
     // Connect to the CastRunner's fuchsia.sys.Runner interface.
     cast_runner_ = cast_runner_services.Connect<fuchsia::sys::Runner>();
@@ -594,27 +578,6 @@ class CastRunnerIntegrationTest : public testing::Test {
     test_server_.ServeFilesFromSourceDirectory(kTestServerRoot);
     net::test_server::RegisterDefaultHandlers(&test_server_);
     EXPECT_TRUE(test_server_.Start());
-  }
-
-  void StartAndPublishWebEngine() {
-    fidl::InterfaceHandle<fuchsia::io::Directory> web_engine_outgoing_dir =
-        cr_fuchsia::StartWebEngineForTests(
-            web_engine_controller_.ptr().NewRequest());
-    sys::ServiceDirectory web_engine_outgoing_services(
-        std::move(web_engine_outgoing_dir));
-    ignore_result(services_for_cast_runner_
-                      .RemovePublicService<fuchsia::web::ContextProvider>());
-    ASSERT_EQ(services_for_cast_runner_.AddPublicService(
-                  std::make_unique<vfs::Service>(
-                      [web_engine_outgoing_services =
-                           std::move(web_engine_outgoing_services)](
-                          zx::channel channel, async_dispatcher_t* dispatcher) {
-                        web_engine_outgoing_services.Connect(
-                            fuchsia::web::ContextProvider::Name_,
-                            std::move(channel));
-                      }),
-                  fuchsia::web::ContextProvider::Name_),
-              ZX_OK);
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_{
@@ -679,7 +642,6 @@ TEST_F(CastRunnerIntegrationTest, DISABLED_CanRecreateContext) {
   // disconnecting yet, so attempts to launch Cast components could fail.
   // WebContentRunner::CreateFrameWithParams() will synchronously verify that
   // the web.Context is not-yet-closed, to work-around that.
-  StartAndPublishWebEngine();
   TestCastComponent second_component(cast_runner_.get());
   second_component.app_config_manager()->AddApp(kTestAppId, app_url);
   second_component.CreateComponentContextAndStartComponent(kTestAppId);
