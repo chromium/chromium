@@ -183,6 +183,8 @@ void SyncConsentScreen::OnStateChanged(syncer::SyncService* sync) {
   UpdateScreen();
 }
 
+// TODO(https://crbug.com/1229582) Break SplitSettings names into
+// SyncConsentOptional and SyncSettingsCategorization in the whole file.
 void SyncConsentScreen::OnNonSplitSettingsContinue(
     const bool opted_in,
     const bool review_sync,
@@ -203,7 +205,7 @@ void SyncConsentScreen::OnContinue(
     const std::vector<int>& consent_description,
     int consent_confirmation,
     SyncConsentScreenHandler::UserChoice choice) {
-  DCHECK(features::IsSplitSettingsSyncEnabled());
+  DCHECK(features::IsSyncConsentOptionalEnabled());
   if (is_hidden())
     return;
   base::UmaHistogramEnumeration("OOBE.SyncConsentScreen.UserChoice", choice);
@@ -216,7 +218,7 @@ void SyncConsentScreen::OnContinue(
 }
 
 void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
-  DCHECK(features::IsSplitSettingsSyncEnabled());
+  DCHECK(features::IsSyncConsentOptionalEnabled());
   // For historical reasons, Chrome OS always has a "sync-consented" primary
   // account in IdentityManager and always has browser sync "enabled". If the
   // user disables the browser sync toggle we disable all browser data types,
@@ -229,7 +231,9 @@ void SyncConsentScreen::UpdateSyncSettings(bool enable_sync) {
   syncer::SyncService* sync_service = GetSyncService(profile_);
   if (sync_service) {
     syncer::SyncUserSettings* sync_settings = sync_service->GetUserSettings();
-    sync_settings->SetOsSyncFeatureEnabled(enable_sync);
+    // TODO(crbug.com/1229582) Revisit this logic.
+    if (features::IsSplitSettingsSyncEnabled())
+      sync_settings->SetOsSyncFeatureEnabled(enable_sync);
     if (!enable_sync) {
       syncer::UserSelectableTypeSet empty_set;
       sync_settings->SetSelectedTypes(/*sync_everything=*/false, empty_set);
@@ -271,10 +275,11 @@ void SyncConsentScreen::MaybeEnableSyncForSkip() {
     case SyncScreenBehavior::kSkipAndEnableNonBrandedBuild:
     case SyncScreenBehavior::kSkipAndEnableEmphemeralUser:
     case SyncScreenBehavior::kSkipAndEnableScreenPolicy:
-      // Prior to SplitSettingsSync, sync is autostarted during SyncService
-      // with "sync everything" toggle off. We need to turn it on here. For
-      // SplitSettingsSync, we also need to update other sync-related flags.
-      if (features::IsSplitSettingsSyncEnabled()) {
+      // Prior to SyncConsentOptional, sync is autostarted during SyncService
+      // creation with "sync everything" toggle off. We need to turn it on here.
+      // For SyncConsentOptional, we also need to update other sync-related
+      // flags.
+      if (features::IsSyncConsentOptionalEnabled()) {
         UpdateSyncSettings(/*enable_sync=*/true);
       } else {
         SetSyncEverythingEnabled(/*enabled=*/true);

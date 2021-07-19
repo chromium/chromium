@@ -129,8 +129,8 @@
 -SigninToUserProfileSwitchTest.*
 -SiteIsolationFlagHandlingTest.*
 -StartupBrowserWindowLaunchSuppressedTest.*
+-SyncConsentOptionalTest.*
 -SyncConsentRecorderTest.*
--SyncConsentSplitSettingsSyncTest.*
 -SyncConsentTest.*
 -SyncConsentTimezoneOverride.*
 -SystemWebDialogOobeTest.*

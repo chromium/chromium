@@ -70,6 +70,8 @@ namespace chromeos {
 
 constexpr StaticOobeScreenId SyncConsentScreenView::kScreenId;
 
+// TODO(https://crbug.com/1229582) Break SplitSettings names into
+// SyncConsentOptional and SyncSettingsCategorization in the whole file.
 SyncConsentScreenHandler::SyncConsentScreenHandler(
     JSCallsContainer* js_calls_container)
     : BaseScreenHandler(kScreenId, js_calls_container) {
@@ -167,7 +169,7 @@ void SyncConsentScreenHandler::Show() {
   base::DictionaryValue data;
   data.SetBoolean("isChildAccount", user_manager->IsLoggedInAsChildUser());
   data.SetBoolean("splitSettingsSyncEnabled",
-                  chromeos::features::IsSplitSettingsSyncEnabled());
+                  chromeos::features::IsSyncConsentOptionalEnabled());
   ShowScreenWithData(kScreenId, &data);
 }
 
@@ -197,7 +199,7 @@ void SyncConsentScreenHandler::HandleNonSplitSettingsContinue(
     const bool review_sync,
     const login::StringList& consent_description,
     const std::string& consent_confirmation) {
-  DCHECK(!chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(!chromeos::features::IsSyncConsentOptionalEnabled());
   std::vector<int> consent_description_ids;
   int consent_confirmation_id;
   GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,
@@ -228,7 +230,7 @@ void SyncConsentScreenHandler::Continue(
     const login::StringList& consent_description,
     const std::string& consent_confirmation,
     UserChoice choice) {
-  DCHECK(chromeos::features::IsSplitSettingsSyncEnabled());
+  DCHECK(chromeos::features::IsSyncConsentOptionalEnabled());
   std::vector<int> consent_description_ids;
   int consent_confirmation_id;
   GetConsentIDs(known_string_ids_, consent_description, consent_confirmation,

@@ -378,6 +378,9 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSmartLockUIRevamp;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kSplitSettingsSync;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kStylusBatteryStatus;
+COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kSyncConsentOptional;
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kSyncSettingsCategorization;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kSystemLatinPhysicalTyping;
 COMPONENT_EXPORT(ASH_CONSTANTS)

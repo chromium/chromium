@@ -1406,7 +1406,7 @@ void UserSessionManager::InitProfilePreferences(
         accounts_mutator->SeedAccountInfo(gaia_id, user->GetDisplayEmail());
 
     // 3. Set it as the Primary Account.
-    if (features::IsSplitSettingsSyncEnabled()) {
+    if (features::IsSyncConsentOptionalEnabled()) {
       // In theory this should only be done for new profiles. However, if user
       // profile prefs failed to save or the prefs are corrupted by a crash then
       // the IdentityManager will start up without a primary account. See test
@@ -1423,7 +1423,7 @@ void UserSessionManager::InitProfilePreferences(
           gaia_id);
     } else {
       // Set a primary account here because the profile might have been
-      // created with the feature SplitSettingsSync enabled. Then the
+      // created with the feature SyncConsentOptional enabled. Then the
       // profile might only have an unconsented primary account.
       identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
           account_id, ConsentLevel::kSync);

@@ -1604,8 +1604,9 @@ IN_PROC_BROWSER_TEST_F(SigninToUserProfileSwitchTest, DISABLED_LoginAsNewUser) {
         nullptr, ui::VKEY_ESCAPE, false, false, false, false));
   });
 
-  std::string button_title =
-      features::IsSplitSettingsSyncEnabled() ? "Got it" : "Accept and continue";
+  std::string button_title = features::IsSyncConsentOptionalEnabled()
+                                 ? "Got it"
+                                 : "Accept and continue";
   sm_.ExpectSpeech(button_title);
 
   // Check that profile switched to the active user.

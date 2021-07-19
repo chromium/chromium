@@ -193,7 +193,7 @@ void RunSyncConsentScreenChecks() {
   screen->OnStateChanged(nullptr);
 
   const std::string button_name =
-      chromeos::features::IsSplitSettingsSyncEnabled()
+      chromeos::features::IsSyncConsentOptionalEnabled()
           ? "acceptButton"
           : "nonSplitSettingsAcceptButton";
   test::OobeJS().ExpectEnabledPath({"sync-consent", button_name});
