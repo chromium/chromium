@@ -26,9 +26,9 @@ namespace blink {
 
 namespace {
 
-absl::optional<uint64_t> ParseExpiry(const String& expiry) {
+absl::optional<int64_t> ParseExpiry(const String& expiry) {
   bool expiry_is_valid = false;
-  uint64_t parsed_expiry = expiry.ToUInt64Strict(&expiry_is_valid);
+  int64_t parsed_expiry = expiry.ToInt64Strict(&expiry_is_valid);
   return expiry_is_valid ? absl::make_optional(parsed_expiry) : absl::nullopt;
 }
 
@@ -56,7 +56,7 @@ WebImpressionOrError GetImpression(
     const String& impression_data_string,
     const String& conversion_destination_string,
     const absl::optional<String>& reporting_origin_string,
-    absl::optional<uint64_t> impression_expiry_milliseconds,
+    absl::optional<int64_t> impression_expiry_milliseconds,
     absl::optional<int64_t> attribution_source_priority,
     HTMLAnchorElement* element,
     bool allow_invalid_impression_data) {
@@ -192,7 +192,7 @@ WebImpressionOrError GetImpression(
 
 absl::optional<WebImpression> GetImpressionForAnchor(
     HTMLAnchorElement* element) {
-  absl::optional<uint64_t> expiry;
+  absl::optional<int64_t> expiry;
   if (element->hasAttribute(html_names::kAttributionexpiryAttr)) {
     expiry = ParseExpiry(
         element->FastGetAttribute(html_names::kAttributionexpiryAttr)

@@ -7,6 +7,6 @@ dictionary AttributionSourceParams {
   required USVString attributionDestination;
   required DOMString attributionSourceEventId;
   USVString attributionReportTo;
-  unsigned long long attributionExpiry;
+  long long attributionExpiry;
   long long attributionSourcePriority;
 };
