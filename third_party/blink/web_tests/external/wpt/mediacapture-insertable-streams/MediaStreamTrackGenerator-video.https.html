@@ -84,24 +84,24 @@
       video.srcObject = new MediaStream([generator]);
       video.play();
 
-      // Allow async setup of the track generator and stream.
-      await new Promise(r => t.step_timeout(r, 1));
+      // Wait for the video element to be connected to the generator and
+      // generate the frame.
+      video.onloadstart = () => generator.writable.getWriter().write(videoFrame);
 
-      await generator.writable.getWriter().write(videoFrame);
-
-      await t.step_wait(() => video.currentTime > 0, "video has played");
-
-
-      const canvas = document.createElement("canvas");
-      canvas.width = originalWidth;
-      canvas.height = originalHeight;
-      const context = canvas.getContext('2d');
-      context.drawImage(video, 0, 0);
-      // Pick a pixel in the centre of the video and check that it has the colour of the frame provided.
-      const pixel = context.getImageData(videoFrame.displayWidth/2, videoFrame.displayHeight/2, 1, 1);
-      assertPixel(t, pixel.data, pixelColour);
+      return new Promise((resolve)=> {
+        video.ontimeupdate = t.step_func(() => {
+          const canvas = document.createElement("canvas");
+          canvas.width = originalWidth;
+          canvas.height = originalHeight;
+          const context = canvas.getContext('2d');
+          context.drawImage(video, 0, 0);
+          // Pick a pixel in the centre of the video and check that it has the colour of the frame provided.
+          const pixel = context.getImageData(videoFrame.displayWidth/2, videoFrame.displayHeight/2, 1, 1);
+          assertPixel(t, pixel.data, pixelColour);
+          resolve();
+        });
+      });
     }, 'Tests that frames are actually rendered correctly in a stream used for a video element.');
-
 
     promise_test(async t => {
       const generator = new MediaStreamTrackGenerator("video");
