@@ -1,9 +1,5 @@
 # https://crbug.com/1189284
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureI420/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTextureNV12/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture_FlipY/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.PaintI420/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.PaintI420NotSubset/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.PaintNV12/1
--OopRasterMode/PaintCanvasVideoRendererWithGLTest.PaintRGBA/1
+# Not applicable to emulator due to not supporting fence sync
+-OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameTexturesToGLTexture*/1
+-OopRasterMode/PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture*/1
+-OopRasterMode/PaintCanvasVideoRendererWithGLTest.Paint*/1
