@@ -86,6 +86,8 @@ void ContextInfoFetcher::Fetch(ContextInfoCallback callback) {
       GetPasswordProtectionWarningTrigger();
   info.chrome_cleanup_enabled = GetChromeCleanupEnabled();
   info.chrome_remote_desktop_app_blocked = GetChromeRemoteDesktopAppBlocked();
+  info.third_party_blocking_enabled = GetThirdPartyBLockingEnabled();
+
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(info)));
 }
@@ -135,6 +137,15 @@ ContextInfoFetcher::GetSafeBrowsingProtectionLevel() {
   } else {
     return safe_browsing::NO_SAFE_BROWSING;
   }
+}
+
+absl::optional<bool> ContextInfoFetcher::GetThirdPartyBLockingEnabled() {
+#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  return g_browser_process->local_state()->GetBoolean(
+      prefs::kThirdPartyBlockingEnabled);
+#else
+  return absl::nullopt;
+#endif
 }
 
 bool ContextInfoFetcher::GetBuiltInDnsClientEnabled() {

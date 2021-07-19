@@ -44,6 +44,7 @@ struct ContextInfo {
       password_protection_warning_trigger;
   absl::optional<bool> chrome_cleanup_enabled;
   bool chrome_remote_desktop_app_blocked;
+  absl::optional<bool> third_party_blocking_enabled;
 };
 
 // Interface used by the chrome.enterprise.reportingPrivate.getContextInfo()
@@ -93,6 +94,8 @@ class ContextInfoFetcher {
 
   absl::optional<safe_browsing::PasswordProtectionTrigger>
   GetPasswordProtectionWarningTrigger();
+
+  absl::optional<bool> GetThirdPartyBLockingEnabled();
 
   absl::optional<bool> GetChromeCleanupEnabled();
 

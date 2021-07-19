@@ -74,6 +74,7 @@ namespace enterprise.reportingPrivate {
     PasswordProtectionTrigger passwordProtectionWarningTrigger;
     boolean? chromeCleanupEnabled;
     boolean chromeRemoteDesktopAppBlocked;
+    boolean? thirdPartyBlockingEnabled;
   };
 
   // Invoked by <code>getContextInfo</code> to return context information.
