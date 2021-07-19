@@ -17,8 +17,6 @@ import org.chromium.base.compat.ApiHelperForN;
  */
 @JNINamespace("chrome::android")
 public class UmaUtils {
-    private static boolean sRunningApplicationStart;
-
     // All these values originate from SystemClock.uptimeMillis().
     private static long sApplicationStartTimeMs;
     private static long sForegroundStartTimeMs;
