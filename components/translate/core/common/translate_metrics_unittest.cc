@@ -21,7 +21,6 @@ using base::StatisticsRecorder;
 using base::TimeTicks;
 
 namespace translate {
-
 namespace {
 
 const int kTrue = 1;
@@ -42,43 +41,37 @@ class MetricsRecorder {
                                  int expected_model_disagree,
                                  int expected_trust_model,
                                  int expected_model_complement_sub_code) {
-    ASSERT_EQ(translate::metrics_internal::
-                  kTranslateLanguageDetectionLanguageVerification,
+    ASSERT_EQ(metrics_internal::kTranslateLanguageDetectionLanguageVerification,
               key_);
 
     Snapshot();
 
     EXPECT_EQ(expected_model_disabled,
               GetCountWithoutSnapshot(
-                  translate::DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED));
-    EXPECT_EQ(
-        expected_model_only,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_MODEL_ONLY));
-    EXPECT_EQ(expected_unknown, GetCountWithoutSnapshot(
-                                    translate::LANGUAGE_VERIFICATION_UNKNOWN));
-    EXPECT_EQ(
-        expected_model_agree,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_MODEL_AGREE));
+                  DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED));
+    EXPECT_EQ(expected_model_only,
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_ONLY));
+    EXPECT_EQ(expected_unknown,
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_UNKNOWN));
+    EXPECT_EQ(expected_model_agree,
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_AGREE));
     EXPECT_EQ(expected_model_disagree,
-              GetCountWithoutSnapshot(
-                  translate::LANGUAGE_VERIFICATION_MODEL_DISAGREE));
-    EXPECT_EQ(
-        expected_trust_model,
-        GetCountWithoutSnapshot(translate::LANGUAGE_VERIFICATION_TRUST_MODEL));
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_MODEL_DISAGREE));
+    EXPECT_EQ(expected_trust_model,
+              GetCountWithoutSnapshot(LANGUAGE_VERIFICATION_TRUST_MODEL));
     EXPECT_EQ(expected_model_complement_sub_code,
               GetCountWithoutSnapshot(
-                  translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE));
+                  LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE));
   }
 
   void CheckScheme(int expected_http, int expected_https, int expected_others) {
-    ASSERT_EQ(translate::metrics_internal::kTranslatePageScheme, key_);
+    ASSERT_EQ(metrics_internal::kTranslatePageScheme, key_);
 
     Snapshot();
 
-    EXPECT_EQ(expected_http, GetCountWithoutSnapshot(translate::SCHEME_HTTP));
-    EXPECT_EQ(expected_https, GetCountWithoutSnapshot(translate::SCHEME_HTTPS));
-    EXPECT_EQ(expected_others,
-              GetCountWithoutSnapshot(translate::SCHEME_OTHERS));
+    EXPECT_EQ(expected_http, GetCountWithoutSnapshot(SCHEME_HTTP));
+    EXPECT_EQ(expected_https, GetCountWithoutSnapshot(SCHEME_HTTPS));
+    EXPECT_EQ(expected_others, GetCountWithoutSnapshot(SCHEME_OTHERS));
   }
 
   void CheckTotalCount(int count) {
@@ -139,105 +132,93 @@ class MetricsRecorder {
   DISALLOW_COPY_AND_ASSIGN(MetricsRecorder);
 };
 
-}  // namespace
-
 TEST(TranslateMetricsTest, ReportLanguageVerification) {
-  MetricsRecorder recorder(translate::metrics_internal::
-                               kTranslateLanguageDetectionLanguageVerification);
+  MetricsRecorder recorder(
+      metrics_internal::kTranslateLanguageDetectionLanguageVerification);
 
   recorder.CheckLanguageVerification(0, 0, 0, 0, 0, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED);
+  ReportLanguageVerification(DEPRECATED_LANGUAGE_VERIFICATION_MODEL_DISABLED);
   recorder.CheckLanguageVerification(1, 0, 0, 0, 0, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_MODEL_ONLY);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_ONLY);
   recorder.CheckLanguageVerification(1, 1, 0, 0, 0, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_UNKNOWN);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_UNKNOWN);
   recorder.CheckLanguageVerification(1, 1, 1, 0, 0, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_MODEL_AGREE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_AGREE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 0, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_MODEL_DISAGREE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_DISAGREE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 0, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_TRUST_MODEL);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_TRUST_MODEL);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 0);
-  translate::ReportLanguageVerification(
-      translate::LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE);
+  ReportLanguageVerification(LANGUAGE_VERIFICATION_MODEL_COMPLEMENT_SUB_CODE);
   recorder.CheckLanguageVerification(1, 1, 1, 1, 1, 1, 1);
 }
 
 TEST(TranslateMetricsTest, ReportTimeToBeReady) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateTimeToBeReady);
+  MetricsRecorder recorder(metrics_internal::kTranslateTimeToBeReady);
   recorder.CheckTotalCount(0);
-  translate::ReportTimeToBeReady(3.14);
+  ReportTimeToBeReady(3.14);
   recorder.CheckValueInLogs(3.14);
   recorder.CheckTotalCount(1);
 }
 
 TEST(TranslateMetricsTest, ReportTimeToLoad) {
-  MetricsRecorder recorder(translate::metrics_internal::kTranslateTimeToLoad);
+  MetricsRecorder recorder(metrics_internal::kTranslateTimeToLoad);
   recorder.CheckTotalCount(0);
-  translate::ReportTimeToLoad(573.0);
+  ReportTimeToLoad(573.0);
   recorder.CheckValueInLogs(573.0);
   recorder.CheckTotalCount(1);
 }
 
 TEST(TranslateMetricsTest, ReportTimeToTranslate) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateTimeToTranslate);
+  MetricsRecorder recorder(metrics_internal::kTranslateTimeToTranslate);
   recorder.CheckTotalCount(0);
-  translate::ReportTimeToTranslate(4649.0);
+  ReportTimeToTranslate(4649.0);
   recorder.CheckValueInLogs(4649.0);
   recorder.CheckTotalCount(1);
 }
 
 TEST(TranslateMetricsTest, ReportUserActionDuration) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateUserActionDuration);
+  MetricsRecorder recorder(metrics_internal::kTranslateUserActionDuration);
   recorder.CheckTotalCount(0);
   TimeTicks begin = TimeTicks::Now();
   TimeTicks end = begin + base::TimeDelta::FromSeconds(3776);
-  translate::ReportUserActionDuration(begin, end);
+  ReportUserActionDuration(begin, end);
   recorder.CheckValueInLogs(3776000.0);
   recorder.CheckTotalCount(1);
 }
 
 TEST(TranslateMetricsTest, ReportPageScheme) {
-  MetricsRecorder recorder(translate::metrics_internal::kTranslatePageScheme);
+  MetricsRecorder recorder(metrics_internal::kTranslatePageScheme);
   recorder.CheckScheme(0, 0, 0);
-  translate::ReportPageScheme("http");
+  ReportPageScheme("http");
   recorder.CheckScheme(1, 0, 0);
-  translate::ReportPageScheme("https");
+  ReportPageScheme("https");
   recorder.CheckScheme(1, 1, 0);
-  translate::ReportPageScheme("ftp");
+  ReportPageScheme("ftp");
   recorder.CheckScheme(1, 1, 1);
 }
 
 TEST(TranslateMetricsTest, ReportSimilarLanguageMatch) {
-  MetricsRecorder recorder(
-      translate::metrics_internal::kTranslateSimilarLanguageMatch);
+  MetricsRecorder recorder(metrics_internal::kTranslateSimilarLanguageMatch);
   recorder.CheckTotalCount(0);
   EXPECT_EQ(0, recorder.GetCount(kTrue));
   EXPECT_EQ(0, recorder.GetCount(kFalse));
-  translate::ReportSimilarLanguageMatch(true);
+  ReportSimilarLanguageMatch(true);
   EXPECT_EQ(1, recorder.GetCount(kTrue));
   EXPECT_EQ(0, recorder.GetCount(kFalse));
-  translate::ReportSimilarLanguageMatch(false);
+  ReportSimilarLanguageMatch(false);
   EXPECT_EQ(1, recorder.GetCount(kTrue));
   EXPECT_EQ(1, recorder.GetCount(kFalse));
 }
 
 TEST(TranslateMetricsTest, ReportTranslatedLanguageDetectionContentLength) {
   MetricsRecorder recorder(
-      translate::metrics_internal::kTranslatedLanguageDetectionContentLength);
+      metrics_internal::kTranslatedLanguageDetectionContentLength);
   recorder.CheckTotalCount(0);
-  translate::ReportTranslatedLanguageDetectionContentLength(12345);
+  ReportTranslatedLanguageDetectionContentLength(12345);
   recorder.CheckValueInLogs(12345);
   recorder.CheckTotalCount(1);
 }
 
+}  // namespace
 }  // namespace translate

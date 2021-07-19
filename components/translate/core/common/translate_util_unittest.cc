@@ -9,17 +9,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-typedef testing::Test TranslateUtilTest;
+namespace translate {
+namespace {
 
-TEST_F(TranslateUtilTest, SecurityOrigin) {
-  GURL origin = translate::GetTranslateSecurityOrigin();
-  EXPECT_EQ(std::string(translate::kSecurityOrigin), origin.spec());
+TEST(TranslateUtilTest, SecurityOrigin) {
+  GURL origin = GetTranslateSecurityOrigin();
+  EXPECT_EQ(std::string(kSecurityOrigin), origin.spec());
 
   const std::string running_origin("http://www.tamurayukari.com/");
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitchASCII(translate::switches::kTranslateSecurityOrigin,
+  command_line->AppendSwitchASCII(switches::kTranslateSecurityOrigin,
                                   running_origin);
-  GURL modified_origin = translate::GetTranslateSecurityOrigin();
+  GURL modified_origin = GetTranslateSecurityOrigin();
   EXPECT_EQ(running_origin, modified_origin.spec());
 }
 
+}  // namespace
+}  // namespace translate

@@ -11,17 +11,18 @@
 #include "components/translate/core/browser/mock_translate_infobar_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Return;
-using testing::Test;
-
-using translate::testing::MockTranslateInfoBarDelegate;
-using translate::testing::MockTranslateInfoBarDelegateFactory;
-
 namespace translate {
 namespace {
+
+using ::testing::_;
+using ::testing::Return;
+using ::testing::Test;
+
+using testing::MockTranslateInfoBarDelegate;
+using testing::MockTranslateInfoBarDelegateFactory;
+
 const std::vector<std::string> kCodes = {"en", "de", "pl"};
-}  // namespace
+
 class TranslateUtilsTest : public ::testing::Test {
  public:
   TranslateUtilsTest() = default;
@@ -37,6 +38,7 @@ class TranslateUtilsTest : public ::testing::Test {
   MockTranslateInfoBarDelegate* delegate_;
   JNIEnv* env_;
 };
+
 // Tests that content languages information in the java format is correct for
 // content languages (names, native names, codes are as expected, hashcodes are
 // empty).
@@ -106,4 +108,5 @@ TEST_F(TranslateUtilsTest, GetJavaLangauges) {
   EXPECT_THAT(actual_hash_codes, ::testing::ContainerEq(expected_hash_codes));
 }
 
+}  // namespace
 }  // namespace translate

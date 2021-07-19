@@ -34,14 +34,15 @@
 #include "third_party/metrics_proto/translate_event.pb.h"
 #include "url/gurl.h"
 
-using testing::_;
-using testing::Return;
-using testing::Test;
-using translate::testing::MockTranslateClient;
-using translate::testing::MockTranslateDriver;
-using translate::testing::MockTranslateRanker;
-
 namespace translate {
+namespace {
+
+using ::testing::_;
+using testing::MockTranslateClient;
+using testing::MockTranslateDriver;
+using testing::MockTranslateRanker;
+using ::testing::Return;
+using ::testing::Test;
 
 class MockLanguageModel : public language::LanguageModel {
   std::vector<LanguageDetails> GetLanguages() override {
@@ -216,12 +217,6 @@ TEST_F(TranslateUIDelegateTest, LanguageCodes) {
   EXPECT_EQ("fr", delegate_->GetTargetLanguageCode());
 }
 
-TEST_F(TranslateUIDelegateTest, GetPageHost) {
-  const GURL url("https://www.example.com/hello/world?fg=1");
-  driver_.SetLastCommittedURL(url);
-  EXPECT_EQ("www.example.com", delegate_->GetPageHost());
-}
-
 TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenEnabled) {
   scoped_feature_list_.InitAndEnableFeature(
       language::kContentLanguagesInLanguagePicker);
@@ -264,6 +259,14 @@ TEST_F(TranslateUIDelegateTest, ContentLanguagesWhenDisabled) {
 
   delegate->GetContentLanguagesCodes(&actual_codes);
   EXPECT_TRUE(actual_codes.empty());
+}
+
+}  // namespace
+
+TEST_F(TranslateUIDelegateTest, GetPageHost) {
+  const GURL url("https://www.example.com/hello/world?fg=1");
+  driver_.SetLastCommittedURL(url);
+  EXPECT_EQ("www.example.com", delegate_->GetPageHost());
 }
 
 }  // namespace translate

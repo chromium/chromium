@@ -13,6 +13,9 @@
 #error "This file requires ARC support."
 #endif
 
+namespace translate {
+namespace {
+
 typedef web::WebTestWithWebState JsTranslateManagerTest;
 
 // Checks that cr.googleTranslate.libReady is available after the code has
@@ -32,3 +35,6 @@ TEST_F(JsTranslateManagerTest, Inject) {
   result = ExecuteJavaScript(@"cr.googleTranslate.libReady");
   EXPECT_NSEQ(@NO, result);
 }
+
+}  // namespace
+}  // namespace translate

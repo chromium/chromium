@@ -9,6 +9,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace translate {
+namespace {
+
 // Tests that a regular sentence is clipped correctly.
 TEST(StringByClippingLastWordTest, ClipRegularSentence) {
   const std::u16string kInput = u"\nSome text here and there.";
@@ -40,3 +43,6 @@ TEST(StringByClippingLastWordTest, ClipLongTextContentNoSpace) {
   EXPECT_EQ(kLongStringLength, result.size());
   EXPECT_EQ(0u, long_string.find_first_of(result));
 }
+
+}  // namespace
+}  // namespace translate

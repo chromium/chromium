@@ -8,9 +8,7 @@
 
 namespace translate {
 
-class TranslateAgentTest : public testing::Test {};
-
-TEST_F(TranslateAgentTest, TestBuildTranslationScript) {
+TEST(TranslateAgentTest, TestBuildTranslationScript) {
   // Test expected cases.
   EXPECT_EQ(TranslateAgent::BuildTranslationScript("en", "es"),
             "cr.googleTranslate.translate(\"en\",\"es\")");

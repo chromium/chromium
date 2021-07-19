@@ -21,6 +21,7 @@ namespace translate {
 namespace testing {
 
 namespace {
+
 const char* kAllUkmMetricNames[] = {
     ukm::builders::TranslatePageLoad::kSequenceNumberName,
     ukm::builders::TranslatePageLoad::kTriggerDecisionName,
@@ -48,6 +49,7 @@ const char* kAllUkmMetricNames[] = {
     ukm::builders::TranslatePageLoad::kHTMLContentLanguageName,
     ukm::builders::TranslatePageLoad::kModelDetectedLanguageName,
     ukm::builders::TranslatePageLoad::kModelDetectionReliabilityScoreName};
+
 }  // namespace
 
 class TranslateMetricsLoggerImplTest : public ::testing::Test {

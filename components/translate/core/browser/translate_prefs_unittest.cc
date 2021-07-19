@@ -32,15 +32,13 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_collator.h"
 
+namespace translate {
+
 namespace {
 
 using ::testing::ElementsAreArray;
 using ::testing::IsEmpty;
 using ::testing::UnorderedElementsAreArray;
-
-}  // namespace
-
-namespace translate {
 
 static void ExpectEqualLanguageLists(
     const base::ListValue& language_values,
@@ -54,12 +52,14 @@ static void ExpectEqualLanguageLists(
   }
 }
 
+}  // namespace
+
 class TranslatePrefsTest : public testing::Test {
  protected:
   TranslatePrefsTest() {
     language::LanguagePrefs::RegisterProfilePrefs(prefs_.registry());
     TranslatePrefs::RegisterProfilePrefs(prefs_.registry());
-    translate_prefs_ = std::make_unique<translate::TranslatePrefs>(&prefs_);
+    translate_prefs_ = std::make_unique<TranslatePrefs>(&prefs_);
     accept_languages_tester_ =
         std::make_unique<language::test::LanguagePrefTester>(&prefs_);
     now_ = base::Time::Now();
@@ -121,7 +121,7 @@ class TranslatePrefsTest : public testing::Test {
   }
 
   sync_preferences::TestingPrefServiceSyncable prefs_;
-  std::unique_ptr<translate::TranslatePrefs> translate_prefs_;
+  std::unique_ptr<TranslatePrefs> translate_prefs_;
   std::unique_ptr<language::test::LanguagePrefTester> accept_languages_tester_;
 
   // Shared time constants.

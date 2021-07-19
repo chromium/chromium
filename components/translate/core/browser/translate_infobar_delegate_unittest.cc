@@ -27,21 +27,20 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::_;
-using testing::Return;
-using testing::Test;
-using translate::testing::MockTranslateClient;
-using translate::testing::MockTranslateDriver;
-using translate::testing::MockTranslateRanker;
-
 namespace translate {
-
-const char kSourceLanguage[] = "fr";
-const char kTargetLanguage[] = "en";
 
 namespace {
 
+using ::testing::_;
+using testing::MockTranslateClient;
+using testing::MockTranslateDriver;
+using testing::MockTranslateRanker;
+using ::testing::Return;
+using ::testing::Test;
+
 const int kAutoAlwaysThreshold = 5;
+const char kSourceLanguage[] = "fr";
+const char kTargetLanguage[] = "en";
 
 class TestInfoBarManager : public infobars::InfoBarManager {
  public:
@@ -58,8 +57,6 @@ class TestInfoBarManager : public infobars::InfoBarManager {
   }
 };
 
-}  // namespace
-
 class MockObserver : public TranslateInfoBarDelegate::Observer {
  public:
   MOCK_METHOD(void,
@@ -68,7 +65,7 @@ class MockObserver : public TranslateInfoBarDelegate::Observer {
               (override));
   MOCK_METHOD(void,
               OnTranslateStepChanged,
-              (translate::TranslateStep, TranslateErrors::Type),
+              (TranslateStep, TranslateErrors::Type),
               (override));
   MOCK_METHOD(void, OnTargetLanguageChanged, (const std::string&), (override));
   MOCK_METHOD(bool, IsDeclinedByUser, (), (override));
@@ -79,6 +76,8 @@ class TestLanguageModel : public language::LanguageModel {
     return {LanguageDetails("en", 1.0)};
   }
 };
+
+}  // namespace
 
 class TranslateInfoBarDelegateTest : public ::testing::Test {
  public:
@@ -111,8 +110,8 @@ class TranslateInfoBarDelegateTest : public ::testing::Test {
     return std::unique_ptr<TranslateInfoBarDelegate>(
         new TranslateInfoBarDelegate(
             manager_->GetWeakPtr(), /*is_off_the_record=*/false,
-            translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
-            kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
+            TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, kSourceLanguage,
+            kTargetLanguage, TranslateErrors::Type::NONE,
             /*triggered_from_menu=*/false));
   }
 
@@ -132,16 +131,15 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
   EXPECT_FALSE(delegate->is_error());
-  EXPECT_EQ(translate::TranslateStep::TRANSLATE_STEP_TRANSLATING,
+  EXPECT_EQ(TranslateStep::TRANSLATE_STEP_TRANSLATING,
             delegate->translate_step());
   EXPECT_FALSE(delegate->is_off_the_record());
   EXPECT_FALSE(delegate->triggered_from_menu());
@@ -152,31 +150,30 @@ TEST_F(TranslateInfoBarDelegateTest, CreateTranslateInfobarDelegate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
-      /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
-      /*triggered_from_menu=*/false);
-
-  EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
-  delegate =
-      infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
-  EXPECT_EQ(delegate->translate_step(),
-            translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
-
-  // Create but don't replace existing one.
-  TranslateInfoBarDelegate::Create(
-      /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
-      infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE,
+      /*is_off_the_record=*/true, TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE,
       kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
   EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
   delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
+  EXPECT_EQ(delegate->translate_step(),
+            TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
+
+  // Create but don't replace existing one.
+  TranslateInfoBarDelegate::Create(
+      /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
+      infobar_manager_.get(),
+      /*is_off_the_record=*/false,
+      TranslateStep::TRANSLATE_STEP_BEFORE_TRANSLATE, kSourceLanguage,
+      kTargetLanguage, TranslateErrors::Type::NONE,
+      /*triggered_from_menu=*/false);
+
+  EXPECT_EQ(infobar_manager_->infobar_count(), 1u);
+  delegate =
+      infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
   ASSERT_EQ(delegate->translate_step(),
-            translate::TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
+            TranslateStep::TRANSLATE_STEP_AFTER_TRANSLATE);
 }
 
 TEST_F(TranslateInfoBarDelegateTest, DestructTranslateInfobarDelegate) {
@@ -231,9 +228,8 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoAlwaysTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
@@ -267,8 +263,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslateUnknown) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
       kUnknownLanguageCode, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
@@ -291,7 +286,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldNotAutoAlwaysTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
+      TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 
@@ -323,9 +318,8 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/true, manager_->GetWeakPtr(),
       infobar_manager_.get(),
-      /*is_off_the_record=*/false,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
-      kTargetLanguage, TranslateErrors::Type::NONE,
+      /*is_off_the_record=*/false, TranslateStep::TRANSLATE_STEP_TRANSLATING,
+      kSourceLanguage, kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
   TranslateInfoBarDelegate* delegate =
       infobar_manager_->infobar_at(0)->delegate()->AsTranslateInfoBarDelegate();
@@ -347,7 +341,7 @@ TEST_F(TranslateInfoBarDelegateTest, ShouldAutoNeverTranslate_Not) {
   TranslateInfoBarDelegate::Create(
       /*replace_existing_infobar=*/false, manager_->GetWeakPtr(),
       infobar_manager_.get(), /*is_off_the_record=*/true,
-      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
+      TranslateStep::TRANSLATE_STEP_TRANSLATING, kSourceLanguage,
       kTargetLanguage, TranslateErrors::Type::NONE,
       /*triggered_from_menu=*/false);
 

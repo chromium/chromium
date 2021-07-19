@@ -11,10 +11,11 @@
 #include "components/translate/core/common/translate_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-typedef testing::Test LanguageDetectionUtilTest;
+namespace translate {
+namespace {
 
 // Tests that well-known language code typos are fixed.
-TEST_F(LanguageDetectionUtilTest, LanguageCodeTypoCorrection) {
+TEST(LanguageDetectionUtilTest, LanguageCodeTypoCorrection) {
   std::string language;
 
   // Strip the second and later codes.
@@ -34,7 +35,7 @@ TEST_F(LanguageDetectionUtilTest, LanguageCodeTypoCorrection) {
 }
 
 // Tests if the language codes' format is invalid.
-TEST_F(LanguageDetectionUtilTest, IsValidLanguageCode) {
+TEST(LanguageDetectionUtilTest, IsValidLanguageCode) {
   std::string language;
 
   language = std::string("ja");
@@ -63,7 +64,7 @@ TEST_F(LanguageDetectionUtilTest, IsValidLanguageCode) {
 }
 
 // Tests that similar language table works.
-TEST_F(LanguageDetectionUtilTest, SimilarLanguageCode) {
+TEST(LanguageDetectionUtilTest, SimilarLanguageCode) {
   EXPECT_TRUE(translate::IsSameOrSimilarLanguages("en", "en"));
   EXPECT_FALSE(translate::IsSameOrSimilarLanguages("en", "ja"));
 
@@ -85,7 +86,7 @@ TEST_F(LanguageDetectionUtilTest, SimilarLanguageCode) {
 
 // Tests that well-known languages which often have wrong server configuration
 // are handles.
-TEST_F(LanguageDetectionUtilTest, WellKnownWrongConfiguration) {
+TEST(LanguageDetectionUtilTest, WellKnownWrongConfiguration) {
   EXPECT_TRUE(translate::MaybeServerWrongConfiguration("en", "ja"));
   EXPECT_TRUE(translate::MaybeServerWrongConfiguration("en-US", "ja"));
   EXPECT_TRUE(translate::MaybeServerWrongConfiguration("en", "zh-CN"));
@@ -95,7 +96,7 @@ TEST_F(LanguageDetectionUtilTest, WellKnownWrongConfiguration) {
 
 // Tests that the language meta tag providing wrong information is ignored by
 // LanguageDetectionUtil due to disagreement between meta tag and CLD.
-TEST_F(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
+TEST(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
   base::HistogramTester histogram_tester;
   std::u16string contents =
       u"<html><head><meta http-equiv='Content-Language' content='ja'></head>"
@@ -118,7 +119,7 @@ TEST_F(LanguageDetectionUtilTest, CLDDisagreeWithWrongLanguageCode) {
 
 // Tests that the language meta tag providing "en-US" style information is
 // agreed by CLD.
-TEST_F(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
+TEST(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
   base::HistogramTester histogram_tester;
   std::u16string contents =
       u"<html><head><meta http-equiv='Content-Language' content='en-US'></head>"
@@ -142,7 +143,7 @@ TEST_F(LanguageDetectionUtilTest, CLDAgreeWithLanguageCodeHavingCountryCode) {
 // Tests that the language meta tag providing wrong information is ignored and
 // CLD's language will be adopted by LanguageDetectionUtil due to an invalid
 // meta tag.
-TEST_F(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
+TEST(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
   base::HistogramTester histogram_tester;
   std::u16string contents =
       u"<html><head><meta http-equiv='Content-Language' content='utf-8'></head>"
@@ -165,7 +166,7 @@ TEST_F(LanguageDetectionUtilTest, InvalidLanguageMetaTagProviding) {
 
 // Tests that the language meta tag providing wrong information is ignored
 // because of valid html lang attribute.
-TEST_F(LanguageDetectionUtilTest, AdoptHtmlLang) {
+TEST(LanguageDetectionUtilTest, AdoptHtmlLang) {
   base::HistogramTester histogram_tester;
   std::u16string contents =
       u"<html lang='en'><head><meta http-equiv='Content-Language' content='ja'>"
@@ -189,7 +190,7 @@ TEST_F(LanguageDetectionUtilTest, AdoptHtmlLang) {
 // Tests that languages that often have the wrong server configuration are
 // correctly identified. All incorrect language codes should be checked to
 // make sure the binary_search is correct.
-TEST_F(LanguageDetectionUtilTest, IsServerWrongConfigurationLanguage) {
+TEST(LanguageDetectionUtilTest, IsServerWrongConfigurationLanguage) {
   // These languages should all be identified as having the wrong server
   // configuration.
   const char* const wrong_languages[] = {"es", "pt",    "ja",    "ru",
@@ -206,3 +207,6 @@ TEST_F(LanguageDetectionUtilTest, IsServerWrongConfigurationLanguage) {
     EXPECT_FALSE(translate::IsServerWrongConfigurationLanguage(language));
   }
 }
+
+}  // namespace
+}  // namespace translate
