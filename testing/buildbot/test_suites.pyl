@@ -1429,6 +1429,12 @@
       }
     },
 
+    'finch_smoke_tests': {
+      # TODO(crbug.com/1227222): Change this to the actual finch smoke test
+      # once it exists.
+      'base_unittests': {},
+    },
+
     'fuchsia_common_gtests': {
       'absl_hardening_tests': {},
       'accessibility_unittests': {
@@ -4271,6 +4277,7 @@
       'chromeos_unittests': {},
       'unit_tests': {},
     },
+
 
     'linux_chromeos_lacros_gtests': {
       # Chrome OS (Ash) and Lacros only.

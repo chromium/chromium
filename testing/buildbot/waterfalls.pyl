@@ -172,6 +172,7 @@
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_sizes',
+          'gtest_tests': 'finch_smoke_tests',
         },
       },
       'linux-chromeos-chrome': {
