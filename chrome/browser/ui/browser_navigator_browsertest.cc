@@ -741,10 +741,16 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
             OmniboxFocusState::OMNIBOX_FOCUS_NONE);
 }
 
+#if defined(OS_LINUX)
+// Flaky on Linux Ozone. See https://crbug.com/1230723.
+#define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
+#else
+#define MAYBE_SwitchToTabCorrectWindow SwitchToTabCorrectWindow
+#endif
 // This test verifies that we're picking the correct browser and tab to
 // switch to. It verifies that we don't recommend the active tab, and that,
 // when switching, we don't mistakenly pick the current browser.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabCorrectWindow) {
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_SwitchToTabCorrectWindow) {
   const GURL singleton_url("http://maps.google.com/");
 
   // Make singleton tab.
