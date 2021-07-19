@@ -148,8 +148,9 @@ TrafficAnnotationAuditor::TrafficAnnotationAuditor(
       build_path_.IsAbsolute() ? build_path_
                                : absolute_source_path_.Append(build_path_);
   source_tree.MapPath("",
-                      absolute_source_path_.Append(FILE_PATH_LITERAL("tools"))
-                          .Append(FILE_PATH_LITERAL("traffic_annotation"))
+                      absolute_source_path_.Append(FILE_PATH_LITERAL("chrome"))
+                          .Append(FILE_PATH_LITERAL("browser"))
+                          .Append(FILE_PATH_LITERAL("privacy"))
                           .MaybeAsASCII());
   source_tree.MapPath("", absolute_build_path_.Append(FILE_PATH_LITERAL("gen"))
                               .Append(FILE_PATH_LITERAL("components"))
