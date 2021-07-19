@@ -811,10 +811,9 @@ class ErrorPageOfflineTest : public ErrorPageTest {
  protected:
   void SetUpInProcessBrowserTestFixture() override {
     // Sets up a mock policy provider for user and device policies.
-    EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
-    EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
 
     policy::PolicyMap policy_map;
     if (set_allow_dinosaur_easter_egg_) {
