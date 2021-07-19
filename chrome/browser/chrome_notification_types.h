@@ -119,12 +119,6 @@ enum NotificationType {
   NOTIFICATION_LOGIN_OR_LOCK_WEBUI_VISIBLE,
 #endif
 
-  // Sent when the applications in the NTP app launcher have been reordered.
-  // The details, if not NoDetails, is the std::string ID of the extension that
-  // was moved.
-  // TODO(https://crbug.com/1174798): Remove.
-  NOTIFICATION_APP_LAUNCHER_REORDERED,
-
   // Note:-
   // Currently only Content and Chrome define and use notifications.
   // Custom notifications not belonging to Content and Chrome should start

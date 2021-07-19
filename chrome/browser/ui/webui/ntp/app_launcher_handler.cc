@@ -182,7 +182,8 @@ AppLauncherHandler::AppLauncherHandler(
       has_loaded_apps_(false) {}
 
 AppLauncherHandler::~AppLauncherHandler() {
-  ExtensionRegistry::Get(Profile::FromWebUI(web_ui()))->RemoveObserver(this);
+  Profile* webui_profile = Profile::FromWebUI(web_ui());
+  ExtensionRegistry::Get(webui_profile)->RemoveObserver(this);
 }
 
 void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
@@ -473,39 +474,29 @@ void AppLauncherHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void AppLauncherHandler::Observe(int type,
-                                 const content::NotificationSource& source,
-                                 const content::NotificationDetails& details) {
+void AppLauncherHandler::OnAppsReordered(
+    const absl::optional<std::string>& extension_id) {
   if (ignore_changes_ || !has_loaded_apps_)
     return;
 
-  switch (type) {
-    case chrome::NOTIFICATION_APP_LAUNCHER_REORDERED: {
-      const std::string* id =
-          content::Details<const std::string>(details).ptr();
-      if (id) {
-        base::DictionaryValue app_info;
-        if (web_app_provider_->registrar().IsInstalled(*id)) {
-          CreateWebAppInfo(*id, &app_info);
-        } else {
-          const Extension* extension =
-              ExtensionRegistry::Get(extension_service_->profile())
-                  ->GetInstalledExtension(*id);
-          if (!extension) {
-            // Extension could still be downloading or installing.
-            return;
-          }
-
-          CreateExtensionInfo(extension, &app_info);
-        }
-        web_ui()->CallJavascriptFunctionUnsafe("ntp.appMoved", app_info);
-      } else {
-        HandleGetApps(nullptr);
+  if (extension_id) {
+    base::DictionaryValue app_info;
+    if (web_app_provider_->registrar().IsInstalled(*extension_id)) {
+      CreateWebAppInfo(*extension_id, &app_info);
+    } else {
+      const Extension* extension =
+          ExtensionRegistry::Get(extension_service_->profile())
+              ->GetInstalledExtension(*extension_id);
+      if (!extension) {
+        // Extension could still be downloading or installing.
+        return;
       }
-      break;
+
+      CreateExtensionInfo(extension, &app_info);
     }
-    default:
-      NOTREACHED();
+    web_ui()->CallJavascriptFunctionUnsafe("ntp.appMoved", app_info);
+  } else {
+    HandleGetApps(nullptr);
   }
 }
 
@@ -727,9 +718,8 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     extension_pref_change_registrar_.Add(prefs::kNtpAppPageNames, callback);
 
     ExtensionRegistry::Get(profile)->AddObserver(this);
-    registrar_.Add(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-                   content::Source<AppSorting>(
-                       ExtensionSystem::Get(profile)->app_sorting()));
+    install_tracker_observation_.Observe(
+        extensions::InstallTracker::Get(profile));
     web_apps_observation_.Observe(&web_app_provider_->registrar());
     web_apps_policy_manager_observation_.Observe(
         &web_app_provider_->policy_manager());

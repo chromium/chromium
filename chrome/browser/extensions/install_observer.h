@@ -7,6 +7,8 @@
 
 #include <string>
 
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace extensions {
@@ -62,8 +64,10 @@ class InstallObserver {
   // simply forwarded from the chrome::NOTIFICATIONs.
   virtual void OnDisabledExtensionUpdated(const Extension* extension) {}
 
-  // Called when the app list is reordered.
-  virtual void OnAppsReordered() {}
+  // Called when the app list is reordered. If |extension_id| is set, it
+  // indicates the extension ID that was re-ordered.
+  virtual void OnAppsReordered(
+      const absl::optional<ExtensionId>& extension_id) {}
 
   // Notifies observers that the observed object is going away.
   virtual void OnShutdown() {}

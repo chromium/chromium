@@ -10,7 +10,6 @@
 #include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/test/integration/sync_app_helper.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
@@ -22,7 +21,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/manifest.h"
@@ -275,10 +273,10 @@ AppsMatchChecker::AppsMatchChecker() : profiles_(test()->GetAllProfiles()) {
     extensions::ExtensionPrefs* prefs =
         extensions::ExtensionPrefs::Get(profile);
     prefs->AddObserver(this);
-  }
 
-  registrar_.Add(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-                 content::NotificationService::AllSources());
+    install_tracker_observation_.AddObservation(
+        extensions::InstallTracker::Get(profile));
+  }
 }
 
 AppsMatchChecker::~AppsMatchChecker() {
@@ -290,9 +288,6 @@ AppsMatchChecker::~AppsMatchChecker() {
         extensions::ExtensionPrefs::Get(profile);
     prefs->RemoveObserver(this);
   }
-
-  registrar_.Remove(this, chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-                    content::NotificationService::AllSources());
 }
 
 bool AppsMatchChecker::IsExitConditionSatisfied(std::ostream* os) {
@@ -364,9 +359,7 @@ void AppsMatchChecker::OnExtensionStateChanged(const std::string& extension_id,
   CheckExitCondition();
 }
 
-void AppsMatchChecker::Observe(int type,
-                               const content::NotificationSource& source,
-                               const content::NotificationDetails& details) {
-  DCHECK_EQ(chrome::NOTIFICATION_APP_LAUNCHER_REORDERED, type);
+void AppsMatchChecker::OnAppsReordered(
+    const absl::optional<std::string>& extension_id) {
   CheckExitCondition();
 }

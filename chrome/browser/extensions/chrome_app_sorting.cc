@@ -14,8 +14,8 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_sync_service.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/web_app.h"
@@ -23,9 +23,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -267,11 +265,7 @@ void ChromeAppSorting::FixNTPOrdinalCollisions() {
       }
     }
   }
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-      content::Source<ChromeAppSorting>(this),
-      content::NotificationService::NoDetails());
+  InstallTracker::Get(browser_context_)->OnAppsReordered(absl::nullopt);
 }
 
 void ChromeAppSorting::EnsureValidOrdinals(
@@ -350,10 +344,7 @@ void ChromeAppSorting::OnExtensionMoved(
 
   SyncIfNeeded(moved_extension_id);
 
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_APP_LAUNCHER_REORDERED,
-      content::Source<ChromeAppSorting>(this),
-      content::Details<const std::string>(&moved_extension_id));
+  InstallTracker::Get(browser_context_)->OnAppsReordered(moved_extension_id);
 }
 
 syncer::StringOrdinal ChromeAppSorting::GetAppLaunchOrdinal(

@@ -14,6 +14,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/common/chrome_paths.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
@@ -67,6 +68,11 @@ void ExtensionPrefsTest::SetUp() {
 
 void ExtensionPrefsTest::TearDown() {
   Verify();
+
+  // Shutdown the InstallTracker early, which is a dependency on some
+  // ExtensionPrefTests (and depends on PrefService being available in
+  // shutdown).
+  InstallTracker::Get(prefs_.profile())->Shutdown();
 
   // Reset ExtensionPrefs, and re-verify.
   prefs_.ResetPrefRegistry();

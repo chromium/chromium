@@ -18,6 +18,8 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/common/extension_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -71,8 +73,12 @@ class InstallTracker : public KeyedService,
   // Overriddes for KeyedService.
   void Shutdown() override;
 
+  // Called directly by AppSorting logic when apps are re-ordered on the new tab
+  // page.
+  void OnAppsReordered(const absl::optional<ExtensionId>& extension_id);
+
  private:
-  void OnAppsReordered();
+  void OnExtensionPrefChanged();
 
   // content::NotificationObserver implementation.
   void Observe(int type,

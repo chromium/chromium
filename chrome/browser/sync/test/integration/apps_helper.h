@@ -10,13 +10,14 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/scoped_multi_source_observation.h"
+#include "chrome/browser/extensions/install_observer.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
 #include "chrome/browser/web_applications/components/web_application_info.h"
 #include "components/sync/model/string_ordinal.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry_observer.h"
 
@@ -120,7 +121,7 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles);
 class AppsMatchChecker : public StatusChangeChecker,
                          public extensions::ExtensionRegistryObserver,
                          public extensions::ExtensionPrefsObserver,
-                         public content::NotificationObserver {
+                         public extensions::InstallObserver {
  public:
   AppsMatchChecker();
   ~AppsMatchChecker() override;
@@ -153,10 +154,9 @@ class AppsMatchChecker : public StatusChangeChecker,
   void OnExtensionStateChanged(const std::string& extension_id,
                                bool state) override;
 
-  // Implementation of content::NotificationObserver.
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // Implementation of extensions::InstallObserver.
+  void OnAppsReordered(
+      const absl::optional<std::string>& extension_id) override;
 
  private:
   std::vector<Profile*> profiles_;
@@ -166,6 +166,10 @@ class AppsMatchChecker : public StatusChangeChecker,
   // This installs apps, too.
   std::vector<std::unique_ptr<SyncedExtensionInstaller>>
       synced_extension_installers_;
+
+  base::ScopedMultiSourceObservation<extensions::InstallTracker,
+                                     extensions::InstallObserver>
+      install_tracker_observation_{this};
 
   DISALLOW_COPY_AND_ASSIGN(AppsMatchChecker);
 };

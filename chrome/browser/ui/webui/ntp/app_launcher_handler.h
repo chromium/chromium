@@ -13,6 +13,8 @@
 #include "base/scoped_observation.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
+#include "chrome/browser/extensions/install_observer.h"
+#include "chrome/browser/extensions/install_tracker.h"
 #include "chrome/browser/ui/extensions/extension_enable_flow_delegate.h"
 #include "chrome/browser/web_applications/components/app_registrar_observer.h"
 #include "chrome/browser/web_applications/components/os_integration_manager.h"
@@ -24,8 +26,6 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/sync/model/string_ordinal.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -57,7 +57,7 @@ class AppLauncherHandler
     : public content::WebUIMessageHandler,
       public extensions::ExtensionUninstallDialog::Delegate,
       public ExtensionEnableFlowDelegate,
-      public content::NotificationObserver,
+      public extensions::InstallObserver,
       public web_app::AppRegistrarObserver,
       public web_app::WebAppPolicyManagerObserver,
       public extensions::ExtensionRegistryObserver {
@@ -82,10 +82,9 @@ class AppLauncherHandler
   // WebUIMessageHandler:
   void RegisterMessages() override;
 
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  // extensions::InstallObserver
+  void OnAppsReordered(
+      const absl::optional<std::string>& extension_id) override;
 
   // extensions::ExtensionRegistryObserver:
   void OnExtensionLoaded(content::BrowserContext* browser_context,
@@ -236,9 +235,9 @@ class AppLauncherHandler
                           web_app::WebAppPolicyManagerObserver>
       web_apps_policy_manager_observation_{this};
 
-  // We monitor changes to the extension system so that we can reload the apps
-  // when necessary.
-  content::NotificationRegistrar registrar_;
+  base::ScopedObservation<extensions::InstallTracker,
+                          extensions::InstallObserver>
+      install_tracker_observation_{this};
 
   // Monitor extension preference changes so that the Web UI can be notified.
   PrefChangeRegistrar extension_pref_change_registrar_;
