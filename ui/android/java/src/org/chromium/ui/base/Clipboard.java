@@ -9,9 +9,11 @@ import android.annotation.TargetApi;
 import android.content.ClipData;
 import android.content.ClipDescription;
 import android.content.ClipboardManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
+import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
@@ -32,6 +34,7 @@ import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.StreamUtil;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -47,6 +50,7 @@ import org.chromium.ui.R;
 import org.chromium.ui.widget.Toast;
 import org.chromium.url.GURL;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -57,6 +61,8 @@ import java.util.Locale;
 @JNINamespace("ui")
 public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener {
     private static final float CONFIDENCE_THRESHOLD_FOR_URL_DETECTION = 0.99f;
+
+    private static final long MAX_ALLOWED_PNG_SIZE_BYTES = (long) 100e6; // 100 MB.
 
     @SuppressLint("StaticFieldLeak")
     private static Clipboard sInstance;
@@ -359,6 +365,43 @@ public class Clipboard implements ClipboardManager.OnPrimaryClipChangedListener 
     private String getImageUriString() {
         Uri uri = getImageUri();
         return uri == null ? null : uri.toString();
+    }
+
+    /**
+     * Reads the Uri of top item on the primary clip on the Android clipboard,
+     * returning a byte array of PNG data.
+     * Fetching images can result in I/O, so should not be called on UI thread.
+     *
+     * @return a byte array of PNG data if available, otherwise null.
+     */
+    @CalledByNative
+    public byte[] getPng() {
+        ThreadUtils.assertOnBackgroundThread();
+
+        Uri uri = getImageUri();
+        if (uri == null) return null;
+
+        ContentResolver cr = ContextUtils.getApplicationContext().getContentResolver();
+        String mimeType = cr.getType(uri);
+        if (!"image/png".equalsIgnoreCase(mimeType)) return null;
+
+        FileInputStream fileStream = null;
+        try (AssetFileDescriptor afd = cr.openAssetFileDescriptor(uri, "r")) {
+            if (afd == null || afd.getLength() > MAX_ALLOWED_PNG_SIZE_BYTES
+                    || afd.getLength() == AssetFileDescriptor.UNKNOWN_LENGTH) {
+                return null;
+            }
+            byte[] data = new byte[(int) afd.getLength()];
+
+            fileStream = new FileInputStream(afd.getFileDescriptor());
+            fileStream.read(data);
+
+            return data;
+        } catch (IOException e) {
+            return null;
+        } finally {
+            StreamUtil.closeQuietly(fileStream);
+        }
     }
 
     /**

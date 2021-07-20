@@ -526,7 +526,7 @@ public class ApiCompatibilityUtils {
     }
 
     /**
-     * Retrieves an image for the given url as a Bitmap.
+     * Retrieves an image for the given uri as a Bitmap.
      */
     public static Bitmap getBitmapByUri(ContentResolver cr, Uri uri) throws IOException {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {

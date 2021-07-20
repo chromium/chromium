@@ -69,6 +69,22 @@ constexpr char kPngExtension[] = ".png";
 using ReadPngCallback = ClipboardAndroid::ReadPngCallback;
 using ReadImageCallback = ClipboardAndroid::ReadImageCallback;
 
+// Fetching image data from Java as PNG bytes.
+std::vector<uint8_t> GetPngData(
+    const base::android::ScopedJavaGlobalRef<jobject>& clipboard_manager) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jbyteArray> jimage_data =
+      Java_Clipboard_getPng(env, clipboard_manager);
+  if (jimage_data.is_null()) {
+    return std::vector<uint8_t>();
+  }
+  DCHECK(jimage_data.obj());
+
+  std::vector<uint8_t> png_data;
+  JavaByteArrayToByteVector(env, jimage_data, &png_data);
+  return png_data;
+}
+
 // Fetching image data from Java.
 SkBitmap GetImageData(
     const base::android::ScopedJavaGlobalRef<jobject>& clipboard_manager) {
@@ -115,7 +131,7 @@ class ClipboardMap {
   std::string Get(const ClipboardFormatType& format);
   void GetPng(ReadPngCallback callback);
   void GetImage(ReadImageCallback callback);
-  void DidGetPng(ReadPngCallback callback, const SkBitmap& result);
+  void DidGetPng(ReadPngCallback callback, std::vector<uint8_t> result);
   void DidGetImage(ReadImageCallback callback, const SkBitmap& result);
   uint64_t GetSequenceNumber() const;
   base::Time GetLastModifiedTime() const;
@@ -189,7 +205,7 @@ std::string ClipboardMap::Get(const ClipboardFormatType& format) {
 void ClipboardMap::GetPng(ReadPngCallback callback) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
-      base::BindOnce(&GetImageData, clipboard_manager_),
+      base::BindOnce(&GetPngData, clipboard_manager_),
       base::BindOnce(&ClipboardMap::DidGetPng, base::Unretained(this),
                      std::move(callback)));
 }
@@ -202,15 +218,12 @@ void ClipboardMap::GetImage(ReadImageCallback callback) {
                      std::move(callback)));
 }
 
-void ClipboardMap::DidGetPng(ReadPngCallback callback, const SkBitmap& result) {
-  // GetImageData attempts to read from the Java Clipboard, which sometimes is
+void ClipboardMap::DidGetPng(ReadPngCallback callback,
+                             std::vector<uint8_t> result) {
+  // GetPngData attempts to read from the Java Clipboard, which sometimes is
   // not available (ex. the app is not in focus).
-  std::vector<uint8_t> png_data;
-  if (!result.isNull()) {
-    // TODO(crbug.com/1223809): Read PNGs directly from the clipboard.
-    gfx::PNGCodec::EncodeBGRASkBitmap(result, /*discard_transparency=*/false,
-                                      &png_data);
-    std::move(callback).Run(std::move(png_data));
+  if (!result.empty()) {
+    std::move(callback).Run(std::move(result));
     return;
   }
 
@@ -221,8 +234,8 @@ void ClipboardMap::DidGetPng(ReadPngCallback callback, const SkBitmap& result) {
     return;
   }
   std::string png_str = g_map.Get().Get(ClipboardFormatType::GetPngType());
-  png_data = {png_str.begin(), png_str.end()};
-  std::move(callback).Run(std::move(png_data));
+  std::vector<uint8_t> png_data{png_str.begin(), png_str.end()};
+  std::move(callback).Run(png_data);
 }
 
 void ClipboardMap::DidGetImage(ReadImageCallback callback,
