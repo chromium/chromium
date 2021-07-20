@@ -38,6 +38,15 @@ Polymer({
      * @protected
      * @type {string}
      */
+    gateway_: {
+      type: String,
+      computed: 'computeGateway_(network.ipConfig.gateway)',
+    },
+
+    /**
+     * @protected
+     * @type {string}
+     */
     macAddress_: {
       type: String,
       computed: 'computeMacAddress_(network.macAddress)',
@@ -47,6 +56,17 @@ Polymer({
     network: {
       type: Object,
     },
+  },
+
+  /**
+   * @protected
+   * @return {string}
+   */
+  computeGateway_() {
+    if (this.network.ipConfig && this.network.ipConfig.gateway) {
+      return this.network.ipConfig.gateway;
+    }
+    return '';
   },
 
   /**

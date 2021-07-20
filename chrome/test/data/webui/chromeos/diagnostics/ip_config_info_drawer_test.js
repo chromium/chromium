@@ -5,7 +5,7 @@
 import 'chrome://diagnostics/ip_config_info_drawer.js';
 
 import {Network} from 'chrome://diagnostics/diagnostics_types.js';
-import {fakeEthernetNetwork} from 'chrome://diagnostics/fake_data.js';
+import {fakeEthernetNetwork, fakeWifiNetwork} from 'chrome://diagnostics/fake_data.js';
 import {assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks, isVisible} from '../../test_util.m.js';
 
@@ -101,6 +101,18 @@ export function ipConfigInfoDrawerTestSuite() {
               '#macAddress',
               ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerMacAddress'),
               `${fakeEthernetNetwork.macAddress}`);
+        });
+  });
+
+  test('ConfigDrawerOpenDisplaysGatewayBasedOnNetwork', () => {
+    return initializeIpConfigInfoDrawerElement(fakeWifiNetwork)
+        // Opening drawer to test visibility and content of data points.
+        .then(() => getDrawerToggle().click())
+        .then(() => {
+          assertDataPointHasExpectedHeaderAndValue(
+              '#gateway',
+              ipConfigInfoDrawerElement.i18n('ipConfigInfoDrawerGateway'),
+              `${fakeWifiNetwork.ipConfig.gateway}`);
         });
   });
 }
