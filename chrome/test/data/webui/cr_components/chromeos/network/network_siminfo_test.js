@@ -126,21 +126,6 @@ suite('NetworkSiminfoTest', function() {
     assertEquals(getUnlockPinButton(), getDeepActiveElement());
   });
 
-  test('SIM missing UI shown ', function() {
-    const isSimMissingShown = (updatedUiEnabled) => {
-      simInfo.isUpdatedCellularUiEnabled_ = updatedUiEnabled;
-      Polymer.dom.flush();
-      return !!simInfo.$$('#simMissing');
-    };
-
-    // SIM lock status is not set on the device state, so the SIM is considered
-    // missing if the flag is off. If the flag is on, the UI is not shown.
-    simInfo.deviceState = {};
-    Polymer.dom.flush();
-    assertTrue(isSimMissingShown(/*updatedUiEnabled=*/ false));
-    assertFalse(isSimMissingShown(/*updatedUiEnabled=*/ true));
-  });
-
   test('Show sim lock dialog when unlock button is clicked', async function() {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);

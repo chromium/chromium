@@ -11,9 +11,7 @@
 const TOGGLE_DEBOUNCE_MS = 500;
 
 /**
- * State of the element. <network-siminfo> shows 1 of 3 modes:
- *   SIM_MISSING: Shows a UI explaining that no SIM card is present. Note that
- *       this UI is only shown if the isUpdatedCellularUiEnabled_ flag is off.
+ * State of the element. <network-siminfo> shows 1 of 2 modes:
  *   SIM_LOCKED: Shows an alert that the SIM is locked and provides an "Unlock"
  *       button which allows the user to unlock the SIM.
  *   SIM_UNLOCKED: Provides an option to lock the SIM if desired. If SIM-lock is
@@ -21,9 +19,8 @@ const TOGGLE_DEBOUNCE_MS = 500;
  * @enum {number}
  */
 const State = {
-  SIM_MISSING: 0,
-  SIM_LOCKED: 1,
-  SIM_UNLOCKED: 2
+  SIM_LOCKED: 0,
+  SIM_UNLOCKED: 1
 };
 
 Polymer({
@@ -143,8 +140,6 @@ Polymer({
    */
   updateFocus_() {
     const state = this.computeState_();
-    // State.SIM_MISSING state is not needed here because it does not have a
-    // click event to open the sim lock dialogs
     switch (state) {
       case State.SIM_LOCKED:
         if (this.$$('#unlockPinButton')) {
@@ -284,13 +279,6 @@ Polymer({
    */
   computeState_() {
     const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
-
-    // No SIM lock status corresponds to a missing SIM. Note that this state is
-    // only returned if the updated UI flag is *off*, since we show a
-    // "Mobile data" subpage in place of this warning UI when the flag is on.
-    if (!this.isUpdatedCellularUiEnabled_ && !simLockStatus) {
-      return State.SIM_MISSING;
-    }
 
     // If a lock is set and the network in question is the active SIM, show the
     // "locked SIM" UI. Note that we can only detect the locked state of the

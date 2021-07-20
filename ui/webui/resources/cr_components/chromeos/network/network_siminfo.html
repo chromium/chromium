@@ -49,16 +49,6 @@
       }
     </style>
 
-    <!-- SIM missing UI -->
-    <template is="dom-if" if="[[eq_(State.SIM_MISSING, state_)]]" restamp>
-      <div id="simMissing" class="property-box two-line">
-        <div class="start layout horizontal center">
-          <iron-icon id="simMissingIcon" icon="cr:sim-card-alert"></iron-icon>
-          <div class="error">[[i18n('networkSimCardMissing')]]</div>
-        </div>
-      </div>
-    </template>
-
     <!-- SIM locked -->
     <template is="dom-if" if="[[eq_(State.SIM_LOCKED, state_)]]" restamp>
       <div id="simLocked" class="property-box two-line">
