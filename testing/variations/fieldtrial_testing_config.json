@@ -961,7 +961,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Enabled_20210611",
                     "enable_features": [
                         "AutofillAssistantInCctTriggering",
                         "AutofillAssistantUrlHeuristics"
