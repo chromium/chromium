@@ -9194,11 +9194,24 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Checking default value (no policies set)",
+        "policies": {},
+        "prefs": {
+          "crostini.arc_adb_sideloading.user_pref": {
+            "location": "user_profile",
+            "default_value": 0
+          }
+        }
+      },
+      {
         "policies": {
           "CrostiniArcAdbSideloadingAllowed": 0
         },
         "prefs": {
-          "crostini.arc_adb_sideloading.user_pref": {}
+          "crostini.arc_adb_sideloading.user_pref": {
+            "location": "user_profile",
+            "value": 0
+          }
         }
       },
       {
@@ -9206,7 +9219,10 @@
           "CrostiniArcAdbSideloadingAllowed": 1
         },
         "prefs": {
-          "crostini.arc_adb_sideloading.user_pref": {}
+          "crostini.arc_adb_sideloading.user_pref": {
+            "location": "user_profile",
+            "value": 1
+          }
         }
       }
     ]
@@ -9227,7 +9243,7 @@
     ]
   },
   "DeviceCrostiniArcAdbSideloadingAllowed": {
-    "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
+    "reason_for_missing_test": "Maps into CrosSettings"
   },
   "DeviceSamlLoginAuthenticationType": {
     "reason_for_missing_test": "TODO(crbug.com/1213429) add test case"
