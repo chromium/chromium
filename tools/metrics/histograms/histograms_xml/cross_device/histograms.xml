@@ -829,7 +829,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="CryptAuth.Enrollment.Result" enum="BooleanSuccess"
-    expires_after="2021-10-06">
+    expires_after="2022-01-16">
   <owner>nohle@chromium.org</owner>
   <owner>better-together-dev@google.com</owner>
   <summary>
