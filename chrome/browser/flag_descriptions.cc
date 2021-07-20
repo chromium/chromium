@@ -3678,6 +3678,10 @@ const char kXsurfaceMetricsReportingName[] = "Xsurface Metrics Reporting";
 const char kXsurfaceMetricsReportingDescription[] =
     "Allows metrics reporting state to be passed to Xsurface";
 
+const char kWebNotesPublishName[] = "WebNotes Publish";
+const char kWebNotesPublishDescription[] =
+    "Allows users to save their created notes.";
+
 // Non-Android -----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)

@@ -59,6 +59,7 @@ class NotesRepository {
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   std::unique_ptr<NotesServerSaver> notes_saver_;
   const version_info::Channel channel_;
+  bool has_failed_publish_ = false;
 
   base::WeakPtrFactory<NotesRepository> weak_ptr_factory_{this};
 };

@@ -30,6 +30,11 @@ void NotesRepository::PublishNote(const NoteData& note_data,
     return;
   }
 
+  // Only start publishing if it has not failed in the past.
+  if (has_failed_publish_) {
+    return;
+  }
+
   notes_saver_ = std::make_unique<NotesServerSaver>(
       url_loader_factory_, identity_manager_, note_data,
       base::BindOnce(&NotesRepository::OnNotePublished,
@@ -39,7 +44,8 @@ void NotesRepository::PublishNote(const NoteData& note_data,
 }
 
 bool NotesRepository::IsPublishAvailable() const {
-  return channel_ == version_info::Channel::CANARY && IsPublishEnabled();
+  return channel_ == version_info::Channel::CANARY && IsPublishEnabled() &&
+         !has_failed_publish_;
 }
 
 // Used for tests.
@@ -49,9 +55,15 @@ void NotesRepository::OnNotePublished(PublishNoteCallback callback,
                                       SaveNoteResponse save_response) {
   DCHECK(IsPublishAvailable());
 
+  if (save_response.account_id.empty() && save_response.note_id.empty()) {
+    has_failed_publish_ = true;
+  }
+
   notes_saver_.reset();
 
-  NOTIMPLEMENTED();
+  std::move(callback).Run("channel-staging.sandbox.google.com/" +
+                          save_response.account_id + "/" +
+                          save_response.note_id);
 }
 
 }  // namespace content_creation

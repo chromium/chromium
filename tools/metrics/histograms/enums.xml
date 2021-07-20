@@ -48074,6 +48074,7 @@ from previous Chrome versions.
   <int value="-683370370" label="EnableAppDataSearch:enabled"/>
   <int value="-683306022" label="OverscrollHistoryNavigation:enabled"/>
   <int value="-682580680" label="DisableOfficeEditingComponentApp:disabled"/>
+  <int value="-682440269" label="WebNotesPublish:disabled"/>
   <int value="-681434111" label="WebFeed:disabled"/>
   <int value="-680787130" label="ExperimentalVRFeatures:disabled"/>
   <int value="-680589442" label="MacRTL:disabled"/>
@@ -49681,6 +49682,7 @@ from previous Chrome versions.
   <int value="659871291"
       label="ClearCrossSiteCrossBrowsingContextGroupWindowName:enabled"/>
   <int value="661020875" label="AutofillSaveCardShowNoThanks:disabled"/>
+  <int value="661537613" label="WebNotesPublish:enabled"/>
   <int value="662001716" label="ToolbarIphAndroid:disabled"/>
   <int value="662331859" label="ConversionMeasurement:enabled"/>
   <int value="662707634" label="DynamicColorAndroid:enabled"/>

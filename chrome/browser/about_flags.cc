@@ -3465,6 +3465,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"sharing-hub-link-toggle", flag_descriptions::kSharingHubLinkToggleName,
      flag_descriptions::kSharingHubLinkToggleDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSharingHubLinkToggle)},
+    {"webnotes-publish", flag_descriptions::kWebNotesPublishName,
+     flag_descriptions::kWebNotesPublishDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(content_creation::kWebNotesPublish)},
 #endif  // OS_ANDROID
     {"in-product-help-demo-mode-choice",
      flag_descriptions::kInProductHelpDemoModeChoiceName,

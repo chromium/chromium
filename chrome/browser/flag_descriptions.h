@@ -2096,6 +2096,9 @@ extern const char kWebNotesStylizeDescription[];
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
 
+extern const char kWebNotesPublishName[];
+extern const char kWebNotesPublishDescription[];
+
 // Non-Android ----------------------------------------------------------------
 
 #else  // !defined(OS_ANDROID)
