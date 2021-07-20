@@ -55273,6 +55273,7 @@ Called by update_use_counter_css.py.-->
   <int value="12" label="DOLBYVISION"/>
   <int value="13" label="FLAC"/>
   <int value="14" label="AV1"/>
+  <int value="15" label="MPEG_H_AUDIO"/>
 </enum>
 
 <enum name="MultiAccountUpdateBubbleUserAction">
