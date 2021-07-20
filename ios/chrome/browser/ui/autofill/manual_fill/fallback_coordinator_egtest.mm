@@ -425,7 +425,8 @@ BOOL WaitForKeyboardToAppear() {
 
 // Test the input accessory bar is present when undocking then docking the
 // keyboard.
-- (void)testInputAccessoryBarIsPresentAfterUndockingKeyboard {
+// TODO(crbug.com/1218869): Re-enable this test.
+- (void)DISABLED_testInputAccessoryBarIsPresentAfterUndockingKeyboard {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test not applicable for iPhone.");
   }
