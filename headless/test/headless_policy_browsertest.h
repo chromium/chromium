@@ -23,10 +23,11 @@ class HeadlessBrowserTestWithPolicy : public Base {
   virtual void SetPolicy() {}
 
   void SetUp() override {
-    mock_provider_ =
-        std::make_unique<policy::MockConfigurationPolicyProvider>();
-    EXPECT_CALL(*mock_provider_.get(), IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(false));
+    mock_provider_ = std::make_unique<
+        testing::NiceMock<policy::MockConfigurationPolicyProvider>>();
+    mock_provider_->SetDefaultReturns(
+        /*is_initialization_complete_return=*/false,
+        /*is_first_policy_load_complete_return=*/false);
     policy::BrowserPolicyConnectorBase::SetPolicyProviderForTesting(
         mock_provider_.get());
     SetPolicy();

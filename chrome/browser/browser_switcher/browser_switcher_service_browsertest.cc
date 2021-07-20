@@ -99,10 +99,9 @@ class BrowserSwitcherServiceTest : public InProcessBrowserTest {
   ~BrowserSwitcherServiceTest() override = default;
 
   void SetUpInProcessBrowserTestFixture() override {
-    ON_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillByDefault(testing::Return(true));
-    ON_CALL(provider_, IsFirstPolicyLoadComplete(testing::_))
-        .WillByDefault(testing::Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     BrowserSwitcherService::SetRefreshDelayForTesting(base::TimeDelta());
   }
