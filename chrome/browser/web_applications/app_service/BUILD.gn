@@ -21,7 +21,6 @@ source_set("app_service") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/web_applications",
-    "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//components/content_settings/core/browser",
     "//components/services/app_service/public/cpp:publisher",

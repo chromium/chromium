@@ -57,7 +57,7 @@ source_set("platform_apps") {
     "//chrome/browser/media/router/discovery",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/sharing/proto:proto",
-    "//chrome/browser/web_applications/components:components",
+    "//chrome/browser/web_applications",
     "//chrome/browser/web_applications/extensions",
     "//chrome/common",
     "//components/crx_file",

@@ -4252,7 +4252,7 @@ static_library("browser") {
       "//chrome/browser/share/core:share_targets",
       "//chrome/browser/share/proto:proto",
       "//chrome/browser/ui/color:color_headers",
-      "//chrome/browser/web_applications/components",
+      "//chrome/browser/web_applications",
       "//chrome/common/apps/platform_apps",
       "//chrome/common/cart:mojo_bindings",
       "//chrome/common/importer:interfaces",
@@ -6038,7 +6038,6 @@ static_library("browser") {
       # TODO(crbug.com/1200215): Remove cycles and simplify all dependencies.
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
-      "//chrome/browser/web_applications/components",
       "//chrome/browser/web_applications/extensions",
     ]
     deps += [
@@ -6046,7 +6045,6 @@ static_library("browser") {
       "//chrome/browser/sync_file_system/drive_backend:sync_file_system_drive_proto",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
-      "//chrome/browser/web_applications/components",
       "//chrome/browser/web_applications/extensions",
       "//chrome/common/extensions/api",
       "//chrome/common/extensions/api:extensions_features",

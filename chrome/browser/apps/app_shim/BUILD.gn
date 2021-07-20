@@ -27,7 +27,6 @@ source_set("app_shim") {
     "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/web_applications:web_applications",
-    "//chrome/browser/web_applications/components",
     "//chrome/common",
     "//chrome/common:app_mode_app_support",
     "//chrome/common:constants",
