@@ -180,13 +180,10 @@
       ]
     },
   },
-  # TODO(crbug.com/1225851): Update "S" and "_s" to the right value once S is
-  # released. Using "_s" in stead of "S" in swarming as it does not accept
-  # uppercase character.
   '12-x64-emulator': {
     '$mixin_append': {
       'args': [
-        '--avd-config=../../tools/android/avd/proto/generic_androidS.textpb',
+        '--avd-config=../../tools/android/avd/proto/generic_android31.textpb',
       ],
     },
     'swarming': {
@@ -194,17 +191,17 @@
       'optional_dimensions': {
         '60': [
           {
-            'caches': 'avd_generic_android_s',
+            'caches': 'avd_generic_android31',
           }
         ],
       },
       'named_caches': [
         {
-          'name': 'avd_generic_android_s',
+          'name': 'avd_generic_android31',
           'path': '.android',
         },
         {
-          'name': 'system_images_android_s_google_apis_x64',
+          'name': 'system_images_android_31_google_apis_x64',
           'path': '.emulator_sdk',
         },
       ]

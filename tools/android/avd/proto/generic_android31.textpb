@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86_64 android-12 AVD (userdebug build).
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "gMHhUuoQRKfxr-MBn3fNNXZtkAVXtOwMwT7kfx8jkIgC"  # 30.7.5
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-31/google_apis/x86_64"
+  version: "R6Jh5_P21Euu-kdb11zcNjdJKN4vV1mdQTb8t4gph4IC"  # 6
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-31;google_apis;x86_64"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-31/google_apis/x86_64"
+  version: "Ur_zl6_BRKRkf_9X3SMZ3eH2auoOyJ2kLslpTZZwi3gC"  # created in bb_id 8841388797862621664
+  dest_path: ".android"
+}
+avd_name: "android_31_google_apis_x86_64"
