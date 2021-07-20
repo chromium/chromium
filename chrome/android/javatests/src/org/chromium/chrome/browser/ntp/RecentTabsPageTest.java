@@ -29,11 +29,10 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.RecentTabsPageTestUtils;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
-import org.chromium.components.signin.test.util.FakeProfileDataSource;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.url.GURL;
@@ -47,14 +46,14 @@ import java.util.concurrent.ExecutionException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
-@EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS})
+@EnableFeatures({ChromeFeatureList.MOBILE_IDENTITY_CONSISTENCY_PROMOS,
+        ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class RecentTabsPageTest {
-    // FakeProfileDataSource is required to create the ProfileDataCache entry with sync_off badge
+    // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_off badge
     // for Sync promo.
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule =
-            new AccountManagerTestRule(new FakeProfileDataSource());
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -103,8 +102,8 @@ public class RecentTabsPageTest {
     @LargeTest
     @Feature("RenderTest")
     public void testPersonalizedSigninPromoInRecentTabsPage() throws Exception {
-        mAccountManagerTestRule.addAccount(mAccountManagerTestRule.createProfileDataFromName(
-                AccountManagerTestRule.TEST_ACCOUNT_EMAIL));
+        mAccountManagerTestRule.addAccountWithNameAndAvatar(
+                AccountManagerTestRule.TEST_ACCOUNT_EMAIL);
         mPage = loadRecentTabsPage();
         mRenderTestRule.render(mPage.getView(), "personalized_signin_promo_recent_tabs_page");
     }

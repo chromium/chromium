@@ -74,7 +74,8 @@ public class SigninFirstRunFragmentTest {
     @MediumTest
     public void testFragmentWhenChoosingAnotherAccount() {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
-        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        mAccountManagerTestRule.addAccount(
+                TEST_EMAIL2, /* fullName= */ null, /* givenName= */ null, /* avatar= */ null);
         launchActivityWithFragment();
         onView(withText(TEST_EMAIL1)).perform(click());
 
