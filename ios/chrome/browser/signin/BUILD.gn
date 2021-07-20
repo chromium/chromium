@@ -127,6 +127,7 @@ source_set("unit_tests") {
     "chrome_identity_service_observer_bridge_unittest.mm",
     "gaia_auth_fetcher_ios_ns_url_session_bridge_unittests.mm",
     "gaia_auth_fetcher_ios_unittest.mm",
+    "pattern_account_restriction_unittest.mm",
     "signin_browser_state_info_updater_unittest.mm",
     "user_approved_account_list_manager_unittest.mm",
   ]
