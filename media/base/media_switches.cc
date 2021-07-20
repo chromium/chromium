@@ -516,11 +516,11 @@ const base::Feature kVaapiVP9Encoder{"VaapiVP9Encoder",
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 // Enable VP9 k-SVC decoding with HW decoder for webrtc use case on ChromeOS.
-const base::Feature kVp9kSVCHWDecoding{"Vp9kSVCHWDecoding",
-                                       base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kVaapiVp9kSVCHWDecoding{"VaapiVp9kSVCHWDecoding",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 // Enable VP9 k-SVC encoding with HW encoder for webrtc use case on ChromeOS.
-const base::Feature kVp9kSVCHWEncoding{"Vp9kSVCHWEncoding",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kVaapiVp9kSVCHWEncoding{"VaapiVp9kSVCHWEncoding",
+                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
 

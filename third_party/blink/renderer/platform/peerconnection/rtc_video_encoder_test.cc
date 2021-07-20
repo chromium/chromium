@@ -80,8 +80,8 @@ class RTCVideoEncoderTest
                      base::WaitableEvent::InitialState::NOT_SIGNALED) {
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
     // TODO(crbug.com/1186051): remove once enabled by default.
-    feature_list_.InitAndEnableFeature(media::kVp9kSVCHWEncoding);
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+    feature_list_.InitAndEnableFeature(media::kVaapiVp9kSVCHWEncoding);
+#endif
   }
 
   media::MockVideoEncodeAccelerator* ExpectCreateInitAndDestroyVEA() {

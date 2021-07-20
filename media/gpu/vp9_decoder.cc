@@ -26,7 +26,7 @@ std::vector<uint32_t> GetSpatialLayerFrameSize(
   if (!cue_data) {
     return {};
   }
-  if (!base::FeatureList::IsEnabled(media::kVp9kSVCHWDecoding)) {
+  if (!base::FeatureList::IsEnabled(media::kVaapiVp9kSVCHWDecoding)) {
     DLOG(ERROR) << "Vp9Parser doesn't support parsing SVC stream";
     return {};
   }

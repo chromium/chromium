@@ -157,13 +157,13 @@ bool VaapiVideoEncodeAccelerator::Initialize(const Config& config,
   VLOGF(2) << "Initializing VAVEA, " << config.AsHumanReadableString();
 
   if (config.HasSpatialLayer()) {
-#if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
-    if (!base::FeatureList::IsEnabled(kVp9kSVCHWEncoding) &&
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
         !IsConfiguredForTesting()) {
       VLOGF(1) << "Spatial layer encoding is not yet enabled by default";
       return false;
     }
-#endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     if (config.inter_layer_pred != Config::InterLayerPredMode::kOnKeyPic) {
       VLOGF(1) << "Only K-SVC encoding is supported.";
