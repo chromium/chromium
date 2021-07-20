@@ -11,7 +11,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/mojom/url_request.mojom.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 
 namespace content {
 

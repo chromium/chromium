@@ -11,9 +11,9 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/http_raw_headers.mojom-forward.h"
 #include "services/network/public/mojom/ip_address_space.mojom-forward.h"
-#include "services/network/public/mojom/url_request.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {

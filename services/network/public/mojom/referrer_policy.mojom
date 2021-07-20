@@ -6,13 +6,25 @@ module network.mojom;
 
 [Stable]
 enum ReferrerPolicy {
-    kAlways,
-    kDefault,
-    kNoReferrerWhenDowngrade,
-    kNever,
-    kOrigin,
-    kOriginWhenCrossOrigin,
-    kStrictOriginWhenCrossOrigin,
-    kSameOrigin,
-    kStrictOrigin,
+  kAlways,
+  kDefault,
+  kNoReferrerWhenDowngrade,
+  kNever,
+  kOrigin,
+  kOriginWhenCrossOrigin,
+  kStrictOriginWhenCrossOrigin,
+  kSameOrigin,
+  kStrictOrigin,
+};
+
+// This enum corresponds to net::ReferrerPolicy. See its comments.
+enum URLRequestReferrerPolicy {
+  kClearReferrerOnTransitionFromSecureToInsecure,
+  kReduceReferrerGranularityOnTransitionCrossOrigin,
+  kOriginOnlyOnTransitionCrossOrigin,
+  kNeverClearReferrer,
+  kOrigin,
+  kClearReferrerOnTransitionCrossOrigin,
+  kOriginClearOnTransitionFromSecureToInsecure,
+  kNoReferrer
 };

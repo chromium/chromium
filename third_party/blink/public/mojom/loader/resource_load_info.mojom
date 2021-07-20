@@ -4,12 +4,12 @@
 
 module blink.mojom;
 
+import "services/network/public/mojom/fetch_api.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/load_timing_info.mojom";
 import "services/network/public/mojom/network_param.mojom";
-import "services/network/public/mojom/url_request.mojom";
-import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/request_priority.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
