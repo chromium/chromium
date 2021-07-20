@@ -187,6 +187,28 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Arc.AppShortcutSearchResult.ShortcutStatus"
+    enum="ArcAppShortcutStatus" expires_after="M98">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Emitted for each ARC app shortcut search result. Records whether the icon is
+    empty. This will let us know how often the Google Play Store icon is shown
+    in place of a shortcut.
+  </summary>
+</histogram>
+
+<histogram name="Arc.AppShortcutsRequest.ShortcutStatus"
+    enum="ArcAppShortcutStatus" expires_after="M98">
+  <owner>batoon@google.com</owner>
+  <owner>arc-core@google.com</owner>
+  <summary>
+    Emitted for each requested ARC app shortcut. Records whether the icon is
+    empty. This will let us know how often the Google Play Store icon is shown
+    in place of a shortcut.
+  </summary>
+</histogram>
+
 <histogram name="Arc.AppsInstalledAtStartup" units="App Count"
     expires_after="M92">
   <owner>elijahtaylor@google.com</owner>

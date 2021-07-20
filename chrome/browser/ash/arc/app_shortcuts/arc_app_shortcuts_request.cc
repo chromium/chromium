@@ -9,6 +9,7 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/apps/app_service/menu_item_constants.h"
@@ -79,6 +80,15 @@ void ArcAppShortcutsRequest::OnGetAppShortcutItems(
     item.type = shortcut_item_ptr->type;
     item.rank = shortcut_item_ptr->rank;
     items_->emplace_back(std::move(item));
+
+    if (!shortcut_item_ptr->icon || !shortcut_item_ptr->icon->icon_png_data ||
+        shortcut_item_ptr->icon->icon_png_data->empty()) {
+      UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutsRequest.ShortcutStatus",
+                                arc::ArcAppShortcutStatus::kEmpty);
+    } else {
+      UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutsRequest.ShortcutStatus",
+                                arc::ArcAppShortcutStatus::kNotEmpty);
+    }
 
     if (base::FeatureList::IsEnabled(features::kAppServiceAdaptiveIcon)) {
       apps::ArcRawIconPngDataToImageSkia(

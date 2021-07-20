@@ -17,6 +17,16 @@ class ImageSkia;
 
 namespace arc {
 
+// This is used for metrics, so do not remove or reorder existing entries.
+enum class ArcAppShortcutStatus {
+  kEmpty = 0,
+  kNotEmpty = 1,
+
+  // Add any new values above this one, and update kMaxValue to the highest
+  // enumerator value.
+  kMaxValue = kNotEmpty
+};
+
 class IconDecodeRequest : public ImageDecoder::ImageRequest {
  public:
   using SetIconCallback = base::OnceCallback<void(const gfx::ImageSkia& icon)>;

@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/apps/app_service/app_icon_factory.h"
 #include "chrome/browser/ash/arc/icon_decode_request.h"
@@ -49,6 +50,15 @@ ArcAppShortcutSearchResult::ArcAppShortcutSearchResult(
   SetDisplayType(ash::SearchResultDisplayType::kTile);
   SetMetricsType(ash::PLAY_STORE_APP_SHORTCUT);
   SetIsRecommendation(is_recommendation);
+
+  if (!data_->icon || !data_->icon->icon_png_data ||
+      data_->icon->icon_png_data->empty()) {
+    UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutSearchResult.ShortcutStatus",
+                              arc::ArcAppShortcutStatus::kEmpty);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION("Arc.AppShortcutSearchResult.ShortcutStatus",
+                              arc::ArcAppShortcutStatus::kNotEmpty);
+  }
 
   const int icon_dimension =
       ash::SharedAppListConfig::instance().search_tile_icon_dimension();
