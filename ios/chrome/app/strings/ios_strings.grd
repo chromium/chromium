@@ -1611,10 +1611,10 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Try again
       </message>
       <message name="IDS_IOS_PRIVACY_POLICY" desc="The label to access the privacy policy, displayed in the application settings, with no product name. [Length: 30em] [iOS only]">
-        Privacy Notice
+        Google Privacy Policy
       </message>
       <message name="IDS_IOS_PRIVACY_POLICY_URL" translateable="false">
-        http://www.google.com/intl/[GRITLANGCODE]/chrome/browser/privacy/
+        https://policies.google.com/privacy
       </message>
       <message name="IDS_IOS_PROGRESS_BAR_ACCESSIBILITY" desc="Text read by voice over to inform the user about the progress of the page load. [Read by Text To Speech].">
         Page load progress bar, <ph name="EMAIL">$1<ex>20%</ex></ph> loaded.
