@@ -1,8 +1,8 @@
 Name: Wuffs (Wrangling Untrusted File Formats Safely)
 Short name: Wuffs
 URL: https://github.com/google/wuffs
-Version: 0.3.0-beta.6
-Revision: d0451190ca0a4d0566d142261548cc264819f6c4
+Version: 0.3.0-beta.8
+Revision: 1b9a6cb85b9f359595bd264d4c95da5d1291adc5
 Security critical: yes
 License: Apache 2.0
 
