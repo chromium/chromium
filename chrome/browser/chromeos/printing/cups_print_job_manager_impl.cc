@@ -169,7 +169,6 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
                                  ? State::STATE_FAILED
                                  : State::STATE_ERROR);
       } else {
-        print_job->set_state(State::STATE_STARTED);
         print_job->set_error_code(PrinterErrorCode::NO_ERROR);
       }
       break;
