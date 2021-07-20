@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/history_clusters_service.h"
 
 #include <algorithm>
+#include <iterator>
 #include <numeric>
 #include <utility>
 
@@ -12,7 +13,10 @@
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
+#include "base/time/time_to_iso8601.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/history_clusters_buildflags.h"
 #include "components/history_clusters/core/memories_features.h"
@@ -102,14 +106,6 @@ std::vector<history::Cluster> SortClusters(
   });
 
   return clusters;
-}
-
-HistoryClustersService::QueryClustersResult MakeQueryClustersResult(
-    std::vector<history::Cluster> clusters) {
-  HistoryClustersService::QueryClustersResult result;
-  result.clusters = std::move(clusters);
-  // TODO(tommycli): Fill `continuation_end_time` once pagination done.
-  return result;
 }
 
 }  // namespace
@@ -217,6 +213,9 @@ void HistoryClustersService::QueryClusters(
     QueryClustersCallback callback,
     base::CancelableTaskTracker* task_tracker) {
   NotifyDebugMessage("HistoryClustersService::QueryClusters()");
+  NotifyDebugMessage("  end_time = " + (end_time.is_null()
+                                            ? "null"
+                                            : base::TimeToISO8601(end_time)));
 
   if (!backend_ || !backend_weak_factory_) {
     NotifyDebugMessage(
@@ -226,58 +225,15 @@ void HistoryClustersService::QueryClusters(
     return;
   }
 
-  // TODO(crbug.com/1220765): Fully support pagination using `end_time` and
-  //  `max_count`.
-  auto on_visits_callback = base::BindOnce(
-      &ClusteringBackend::GetClusters, backend_weak_factory_->GetWeakPtr(),
-      base::BindOnce(&FilterClustersMatchingQuery, query)
-          .Then(base::BindOnce(&SortClusters))
-          .Then(base::BindOnce(&MakeQueryClustersResult))
-          .Then(std::move(callback)));
+  size_t max_visit_count = kMaxVisitsToCluster.Get();
+  if (max_count > 0) {
+    // As a primitive heuristic, fetch 3x the amount of visits as requested
+    // clusters. We don't know in advance how big the clusters will be.
+    max_visit_count = max_count * 3;
+  }
 
-  // TODO(tommycli): Support pagination by setting `begin_time` on `options`.
-  history::QueryOptions options;
-  options.max_count = kMaxVisitsToCluster.Get();
-
-  history_service_->GetAnnotatedVisits(
-      options,
-      base::BindOnce(
-          [](const IncompleteVisitMap& incomplete_visits,
-             const history::QueryOptions& options,
-             std::vector<history::AnnotatedVisit> visits) {
-            // Append incomplete visits to `visits` too, as otherwise they will
-            // be mysteriously missing from the Clusters UI. They haven't
-            // recorded the page end metrics yet, but that's fine.
-            for (const auto& item : incomplete_visits) {
-              auto& incomplete_visit = item.second;
-              if (incomplete_visit.url_row.id() == 0 ||
-                  incomplete_visit.visit_row.visit_id == 0) {
-                // Discard incomplete visits that don't have visit_ids yet.
-                continue;
-              }
-
-              const auto& visit_time = incomplete_visit.visit_row.visit_time;
-              if (visit_time < options.begin_time ||
-                  (!options.end_time.is_null() &&
-                   visit_time >= options.end_time)) {
-                // Discard incomplete visits outside the `options` time bounds.
-                // `begin_time` is inclusive, and `end_time` is exclusive.
-                continue;
-              }
-
-              visits.push_back({incomplete_visit.url_row,
-                                incomplete_visit.visit_row,
-                                incomplete_visit.context_annotations,
-                                // Content annotations not provided, but it's
-                                // not provided for complete visits either.
-                                {}});
-            }
-
-            return visits;
-          },
-          incomplete_visit_context_annotations_, options)
-          .Then(std::move(on_visits_callback)),
-      task_tracker);
+  StartOnTheFlyClustering(query, end_time, max_visit_count, std::move(callback),
+                          task_tracker);
 }
 
 void HistoryClustersService::RemoveVisits(
@@ -335,6 +291,155 @@ void HistoryClustersService::PopulateClusterKeywordCache(
   }
 
   all_keywords_cache_timestamp_ = base::Time::Now();
+}
+
+void HistoryClustersService::StartOnTheFlyClustering(
+    const std::string& query,
+    base::Time end_time,
+    size_t max_visit_count,
+    QueryClustersCallback callback,
+    base::CancelableTaskTracker* task_tracker) const {
+  DCHECK(history_service_);
+
+  history::QueryOptions options;
+  options.end_time = end_time;
+
+  // Super simple method of pagination: one day a time, broken up at 4AM.
+  {
+    // Get 4AM yesterday in the morning, and 4AM today in the afternoon.
+    base::Time begin = end_time.is_null() ? base::Time::Now() : end_time;
+    begin -= base::TimeDelta::FromHours(12);
+
+    base::Time::Exploded exploded_begin;
+    begin.LocalExplode(&exploded_begin);
+    exploded_begin.hour = 4;
+    exploded_begin.minute = 0;
+    exploded_begin.second = 0;
+    exploded_begin.millisecond = 0;
+
+    // If for some reason this fails, fallback to 24 hours ago.
+    if (!base::Time::FromLocalExploded(exploded_begin, &options.begin_time)) {
+      options.begin_time = end_time - base::TimeDelta::FromDays(1);
+    }
+  }
+
+  NotifyDebugMessage("HistoryClustersService::StartOnTheFlyClustering()");
+  NotifyDebugMessage("  begin_time = " +
+                     (options.begin_time.is_null()
+                          ? "null"
+                          : base::TimeToISO8601(options.begin_time)));
+  NotifyDebugMessage("  end_time = " +
+                     (options.end_time.is_null()
+                          ? "null"
+                          : base::TimeToISO8601(options.end_time)));
+  history_service_->GetAnnotatedVisits(
+      options,
+      base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
+                     weak_ptr_factory_.GetWeakPtr(), query,
+                     /*original_end_time=*/end_time, max_visit_count,
+                     std::move(callback), options, task_tracker,
+                     std::vector<history::AnnotatedVisit>()),
+      task_tracker);
+}
+
+void HistoryClustersService::OnGotHistoryVisits(
+    const std::string& query,
+    base::Time original_end_time,
+    size_t max_visit_count,
+    QueryClustersCallback callback,
+    history::QueryOptions options,
+    base::CancelableTaskTracker* task_tracker,
+    std::vector<history::AnnotatedVisit> accumulated_visits,
+    std::vector<history::AnnotatedVisit> newly_fetched_visits) const {
+  NotifyDebugMessage("HistoryClustersService::OnGotHistoryVisits()");
+  NotifyDebugMessage(base::StringPrintf("  newly_fetched_visits.size() = %zu",
+                                        newly_fetched_visits.size()));
+
+  // Tack on all the newly fetched visits onto our accumulator vector.
+  base::ranges::move(newly_fetched_visits,
+                     std::back_inserter(accumulated_visits));
+
+  // TODO(tommycli): Connect this to History's limit defined internally in
+  // components/history.
+  bool exhausted_history =
+      (base::Time::Now() - options.begin_time) >= base::TimeDelta::FromDays(90);
+  NotifyDebugMessage(
+      base::StringPrintf("  exhausted_history = %d", exhausted_history));
+
+  // If we didn't get enough visits, ask for another day's worth from
+  // History and call this method again when done.
+  if (!exhausted_history && accumulated_visits.size() < max_visit_count) {
+    options.end_time = options.begin_time;
+    options.begin_time = options.end_time - base::TimeDelta::FromDays(1);
+
+    NotifyDebugMessage("Starting History Query:");
+    NotifyDebugMessage("  begin_time = " +
+                       (options.begin_time.is_null()
+                            ? "null"
+                            : base::TimeToISO8601(options.begin_time)));
+    NotifyDebugMessage("  end_time = " +
+                       (options.end_time.is_null()
+                            ? "null"
+                            : base::TimeToISO8601(options.end_time)));
+    history_service_->GetAnnotatedVisits(
+        options,
+        base::BindOnce(&HistoryClustersService::OnGotHistoryVisits,
+                       weak_ptr_factory_.GetWeakPtr(), query, original_end_time,
+                       max_visit_count, std::move(callback), options,
+                       task_tracker, std::move(accumulated_visits)),
+        task_tracker);
+    return;
+  }
+
+  // Assuming we didn't completely exhaust history, the `continuation_end_time`
+  // is the `options.begin_time` of the latest History query we completed.
+  base::Time continuation_end_time;
+  if (!exhausted_history)
+    continuation_end_time = options.begin_time;
+
+  // Now we have enough visits for clustering, add all incomplete visits between
+  // the current `options.begin_time` and `original_end_time`, as otherwise they
+  // will be mysteriously missing from the Clusters UI. They haven't recorded
+  // the page end metrics yet, but that's fine.
+  for (const auto& item : incomplete_visit_context_annotations_) {
+    auto& incomplete_visit = item.second;
+    if (incomplete_visit.url_row.id() == 0 ||
+        incomplete_visit.visit_row.visit_id == 0) {
+      // Discard incomplete visits that don't have visit_ids yet.
+      continue;
+    }
+
+    const auto& visit_time = incomplete_visit.visit_row.visit_time;
+    if (visit_time < options.begin_time ||
+        (!original_end_time.is_null() && visit_time >= original_end_time)) {
+      // Discard incomplete visits outside the `options` time bounds.
+      // `begin_time` is inclusive, and `end_time` is exclusive.
+      continue;
+    }
+
+    accumulated_visits.push_back({
+        incomplete_visit.url_row,
+        incomplete_visit.visit_row,
+        incomplete_visit.context_annotations,
+        // TODO(tommycli): Add content annotations.
+        {},
+    });
+  }
+
+  NotifyDebugMessage("Calling backend_->GetClusters()");
+  backend_->GetClusters(
+      base::BindOnce(
+          [](const std::string& query, base::Time continuation_end_time,
+             QueryClustersCallback callback,
+             const std::vector<history::Cluster>& clusters) {
+            HistoryClustersService::QueryClustersResult result;
+            result.continuation_end_time = continuation_end_time;
+            result.clusters = FilterClustersMatchingQuery(query, clusters);
+            result.clusters = SortClusters(result.clusters);
+            std::move(callback).Run(std::move(result));
+          },
+          query, continuation_end_time, std::move(callback)),
+      accumulated_visits);
 }
 
 }  // namespace history_clusters

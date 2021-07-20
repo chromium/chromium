@@ -119,6 +119,27 @@ class HistoryClustersService : public KeyedService {
   // keywords in `clusters`.
   void PopulateClusterKeywordCache(QueryClustersResult result);
 
+  // Queries `HistoryService` for visits, one day at a time, until there's
+  // at least `max_visit_count`. This also appends eligible incomplete visits.
+  // Finally, this calls `callback` with the resulting vector, and the
+  // `continuation_end_time` needed for the next page of visits.
+  void StartOnTheFlyClustering(const std::string& query,
+                               base::Time end_time,
+                               size_t max_visit_count,
+                               QueryClustersCallback callback,
+                               base::CancelableTaskTracker* task_tracker) const;
+
+  // Internally used callback for GetVisitsForOnTheFlyClustering.
+  void OnGotHistoryVisits(
+      const std::string& query,
+      base::Time original_end_time,
+      size_t max_visit_count,
+      QueryClustersCallback callback,
+      history::QueryOptions options,
+      base::CancelableTaskTracker* task_tracker,
+      std::vector<history::AnnotatedVisit> accumulated_visits,
+      std::vector<history::AnnotatedVisit> newly_fetched_visits) const;
+
   // `VisitContextAnnotations`s are constructed stepwise; they're initially
   // placed in `incomplete_visit_context_annotations_` and saved to the history
   // database once completed (if persistence is enabled).

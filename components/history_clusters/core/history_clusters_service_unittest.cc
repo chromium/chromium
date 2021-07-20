@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/containers/contains.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -41,6 +42,8 @@ class TestClusteringBackend : public ClusteringBackend {
       const std::vector<history::AnnotatedVisit>& visits) override {
     callback_ = std::move(callback);
     last_clustered_visits_ = visits;
+
+    std::move(wait_for_get_clusters_closure_).Run();
   }
 
   void FulfillCallback(const std::vector<history::Cluster>& clusters) {
@@ -64,7 +67,15 @@ class TestClusteringBackend : public ClusteringBackend {
     return history::ScoredAnnotatedVisit();
   }
 
+  void WaitForGetClustersCall() {
+    base::RunLoop loop;
+    wait_for_get_clusters_closure_ = loop.QuitClosure();
+    loop.Run();
+  }
+
  private:
+  base::OnceClosure wait_for_get_clusters_closure_;
+
   ClustersCallback callback_;
   std::vector<history::AnnotatedVisit> last_clustered_visits_;
 };
@@ -129,7 +140,9 @@ class HistoryClustersServiceTest : public testing::Test {
   }
 
   // Verifies that the hardcoded visits were passed to the clustering backend.
-  void VerifyTestClusteringBackendRequest() {
+  void AwaitAndVerifyTestClusteringBackendRequest() {
+    test_clustering_backend_->WaitForGetClustersCall();
+
     std::vector<history::AnnotatedVisit> visits =
         test_clustering_backend_->last_clustered_visits();
     ASSERT_EQ(visits.size(), 2u);
@@ -184,7 +197,7 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
   AddHardcodedTestDataToHistoryService();
 
   history_clusters_service_->QueryClusters(
-      /*query=*/"", /*max_time=*/base::Time::Now(), /* max_count=*/0,
+      /*query=*/"", /*end_time=*/base::Time(), /* max_count=*/0,
       // This "expect" block is not run until after the fake response is sent
       // further down in this method.
       base::BindLambdaForTesting(
@@ -211,8 +224,7 @@ TEST_F(HistoryClustersServiceTest, ClusterAndVisitSorting) {
           }),
       &task_tracker_);
 
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  VerifyTestClusteringBackendRequest();
+  AwaitAndVerifyTestClusteringBackendRequest();
 
   std::vector<history::Cluster> clusters;
   // This first cluster is meant to validate that the higher scoring "visit 1"
@@ -269,7 +281,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
     auto run_loop_quit = run_loop.QuitClosure();
 
     history_clusters_service_->QueryClusters(
-        test_data[i].query, /*max_time=*/base::Time::Now(),
+        test_data[i].query, /*end_time=*/base::Time(),
         /* max_count=*/0,
         // This "expect" block is not run until after the fake response is sent
         // further down in this method.
@@ -333,8 +345,7 @@ TEST_F(HistoryClustersServiceTest, QueryClustersVariousQueries) {
         }),
         &task_tracker_);
 
-    history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-    VerifyTestClusteringBackendRequest();
+    AwaitAndVerifyTestClusteringBackendRequest();
 
     std::vector<history::Cluster> clusters;
     clusters.push_back(
@@ -499,8 +510,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
 
   // Providing the response and running the task loop should populate the cache.
-  history::BlockUntilHistoryProcessesPendingRequests(history_service_.get());
-  VerifyTestClusteringBackendRequest();
+  AwaitAndVerifyTestClusteringBackendRequest();
 
   std::vector<history::Cluster> clusters;
   clusters.push_back(
