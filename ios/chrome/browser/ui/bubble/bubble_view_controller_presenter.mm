@@ -132,6 +132,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   self.bubbleViewController.view.frame =
       [self frameForBubbleInRect:parentView.bounds
                    atAnchorPoint:anchorPointInParent];
+  // If the bubble's frame is not set, we abandon this IPH attempt.
+  if (CGRectIsEmpty(self.bubbleViewController.view.frame)) {
+    return;
+  }
   [parentView addSubview:self.bubbleViewController.view];
   [self.bubbleViewController animateContentIn];
 
@@ -265,8 +269,10 @@ const CGFloat kVoiceOverAnnouncementDelay = 1;
   // partially off screen and not look good. This is most likely a result of
   // an incorrect value for |alignment| (such as a trailing aligned bubble
   // anchored to an element on the leading edge of the screen).
-  DCHECK(bubbleSize.width <= maxBubbleSize.width);
-  DCHECK(bubbleSize.height <= maxBubbleSize.height);
+  if (bubbleSize.width > maxBubbleSize.width ||
+      bubbleSize.height > maxBubbleSize.height) {
+    return CGRectNull;
+  }
   CGRect bubbleFrame =
       bubble_util::BubbleFrame(anchorPoint, bubbleSize, self.arrowDirection,
                                self.alignment, CGRectGetWidth(rect));
