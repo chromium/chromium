@@ -1,5 +1,6 @@
 include_rules = [
   "+chromecast/app",
+  "+chromecast/bindings",
   "+chromecast/browser",
   "+chromecast/chromecast_buildflags.h",
   "+chromecast/common",

@@ -55,6 +55,45 @@ cast_source_set("url_rewrite") {
   deps = [ "//url" ]
 }
 
+cast_source_set("message_port") {
+  sources = [
+    "message_port_handler.cc",
+    "message_port_handler.h",
+    "message_port_service.cc",
+    "message_port_service.h",
+  ]
+
+  public_deps = [
+    ":grpc_support",
+    "//base",
+    "//components/cast/message_port",
+    "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
+    "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
+  ]
+}
+
+if (is_linux) {
+  cast_source_set("core_runtime_bindings") {
+    sources = [
+      "bindings_manager_web_runtime.cc",
+      "bindings_manager_web_runtime.h",
+    ]
+
+    public_deps = [
+      ":message_port",
+      "//base",
+      "//chromecast/bindings/public/mojom",
+      "//components/cast/api_bindings:manager",
+      "//components/cast/message_port",
+      "//mojo/public/cpp/bindings",
+      "//third_party/openscreen/src/cast/cast_core/api:core_application_service_proto",
+      "//third_party/openscreen/src/cast/cast_core/api:message_channel_proto",
+    ]
+
+    deps = [ "//chromecast/bindings:bindings_manager_cast" ]
+  }
+}
+
 cast_source_set("renderer") {
   sources = [
     "cast_runtime_content_renderer_client.cc",
