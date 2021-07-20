@@ -163,6 +163,8 @@ cast_source_set("browser_base") {
     "media/media_caps_impl.h",
     "media/supported_codec_finder.cc",
     "media/supported_codec_finder.h",
+    "metrics/metrics_helper_impl.cc",
+    "metrics/metrics_helper_impl.h",
     "renderer_prelauncher.cc",
     "renderer_prelauncher.h",
     "service/cast_service_simple.cc",

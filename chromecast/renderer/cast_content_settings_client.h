@@ -5,8 +5,9 @@
 #ifndef CHROMECAST_RENDERER_CAST_CONTENT_SETTINGS_CLIENT_H_
 #define CHROMECAST_RENDERER_CAST_CONTENT_SETTINGS_CLIENT_H_
 
-#include "base/macros.h"
+#include "chromecast/common/mojom/metrics_helper.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
 
 namespace chromecast {
@@ -33,9 +34,14 @@ class CastContentSettingsClient : public content::RenderFrameObserver,
   void PassiveInsecureContentFound(const blink::WebURL&) override;
   bool ShouldAutoupgradeMixedContent() override;
 
+  void ReportRendererFeatureUse(const std::string& app_id,
+                                const std::string& feature_name);
+
   std::string app_id_;
   // TODO(b/150022618): Add decisions from Cast service to control the
   // availibilitiy of the Renderer features.
+
+  mojo::Remote<metrics::mojom::MetricsHelper> metrics_helper_remote_;
 };
 
 }  // namespace chromecast

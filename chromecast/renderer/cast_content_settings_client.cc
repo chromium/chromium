@@ -4,23 +4,11 @@
 
 #include "chromecast/renderer/cast_content_settings_client.h"
 
-#include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "content/public/renderer/render_frame.h"
+#include "content/public/renderer/render_thread.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_local_frame.h"
-
-namespace {
-
-void ReportRendererFeatureUse(const std::string& app_id,
-                              const std::string& feature_name) {
-  std::string action = "Cast.Platform.RendererFeatureUse.";
-  action.append(feature_name);
-  action.append(".");
-  action.append(app_id);
-  base::RecordComputedAction(action);
-}
-
-}  // namespace
 
 namespace chromecast {
 
@@ -29,9 +17,15 @@ CastContentSettingsClient::CastContentSettingsClient(
     const std::string& app_id)
     : content::RenderFrameObserver(render_frame), app_id_(app_id) {
   render_frame->GetWebFrame()->SetContentSettingsClient(this);
+  content::RenderThread::Get()->BindHostReceiver(
+      metrics_helper_remote_.BindNewPipeAndPassReceiver());
 }
 
 CastContentSettingsClient::~CastContentSettingsClient() {}
+
+void CastContentSettingsClient::OnDestruct() {
+  delete this;
+}
 
 bool CastContentSettingsClient::AllowRunningInsecureContent(
     bool enabled_per_settings,
@@ -50,8 +44,14 @@ bool CastContentSettingsClient::ShouldAutoupgradeMixedContent() {
   return false;
 }
 
-void CastContentSettingsClient::OnDestruct() {
-  delete this;
+void CastContentSettingsClient::ReportRendererFeatureUse(
+    const std::string& app_id,
+    const std::string& feature_name) {
+  std::string event =
+      base::StrCat({"Cast.Platform.RendererFeatureUse.", feature_name});
+  metrics_helper_remote_->RecordApplicationEvent(app_id,
+                                                 /*session_id=*/"",
+                                                 /*sdk_version=*/"", event);
 }
 
 }  // namespace chromecast

@@ -31,7 +31,8 @@ namespace metrics {
 // Currently, browser startup code should instantiate this once; it can be
 // accessed thereafter through GetInstance. It's not deleted since it may be
 // called during teardown of other global objects.
-// TODO(halliwell): convert to mojo service, eliminate singleton pattern.
+// TODO(halliwell,guohuideng): convert to mojo service, eliminate singleton
+// pattern.
 class CastMetricsHelper {
  public:
   enum BufferingType {

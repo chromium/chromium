@@ -58,6 +58,10 @@ class MediaPipelineBackendManager;
 class VideoPlaneController;
 }  // namespace media
 
+namespace metrics {
+class MetricsHelperImpl;
+}  // namespace metrics
+
 namespace shell {
 class CastBrowserProcess;
 class CastContentBrowserClient;
@@ -77,6 +81,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 
   media::MediaPipelineBackendManager* media_pipeline_backend_manager();
   media::MediaCapsImpl* media_caps();
+  metrics::MetricsHelperImpl* metrics_helper();
   content::BrowserContext* browser_context();
 
   // content::BrowserMainParts implementation:
@@ -99,6 +104,7 @@ class CastBrowserMainParts : public content::BrowserMainParts {
   std::unique_ptr<ServiceManagerContext> service_manager_context_;
   std::unique_ptr<media::VideoPlaneController> video_plane_controller_;
   std::unique_ptr<media::MediaCapsImpl> media_caps_;
+  std::unique_ptr<metrics::MetricsHelperImpl> metrics_helper_;
   std::unique_ptr<ServiceConnector> service_connector_;
 
 #if defined(USE_AURA)
