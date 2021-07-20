@@ -12,7 +12,6 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "chrome/installer/util/app_commands.h"
-#include "chrome/installer/util/channel_info.h"
 
 namespace base {
 class Version;
@@ -35,9 +34,6 @@ class ProductState {
   // Returns true if the product is installed (i.e., the product's Clients key
   // exists and has a "pv" value); false otherwise.
   bool Initialize(bool system_install);
-
-  // Returns the product's channel info (i.e., the Google Update "ap" value).
-  const ChannelInfo& channel() const { return channel_; }
 
   // Returns the path to the product's "setup.exe"; may be empty.
   base::FilePath GetSetupPath() const;
@@ -93,7 +89,6 @@ class ProductState {
   void Clear();
 
  protected:
-  ChannelInfo channel_;
   std::unique_ptr<base::Version> version_;
   std::unique_ptr<base::Version> old_version_;
   std::wstring brand_;

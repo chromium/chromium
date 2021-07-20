@@ -46,7 +46,6 @@
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/setup/user_hive_visitor.h"
 #include "chrome/installer/util/auto_launch_util.h"
-#include "chrome/installer/util/channel_info.h"
 #include "chrome/installer/util/delete_after_reboot_helper.h"
 #include "chrome/installer/util/firewall_manager_win.h"
 #include "chrome/installer/util/google_update_constants.h"

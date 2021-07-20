@@ -22,7 +22,7 @@
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
 #include "chrome/install_static/install_util.h"
-#include "chrome/installer/util/channel_info.h"
+#include "chrome/installer/util/additional_parameters.h"
 #include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/installation_state.h"
 
@@ -139,16 +139,6 @@ bool RemoveUserGoogleUpdateStrKey(const wchar_t* const name) {
          key.DeleteValue(name) == ERROR_SUCCESS;
 }
 
-// Initializes |channel_info| based on |system_install|. Returns false on
-// failure.
-bool InitChannelInfo(bool system_install,
-                     installer::ChannelInfo* channel_info) {
-  HKEY root_key = system_install ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  RegKey key(root_key, install_static::GetClientStateKeyPath().c_str(),
-             KEY_QUERY_VALUE | KEY_WOW64_32KEY);
-  return channel_info->Initialize(key);
-}
-
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 // Populates |update_policy| with the UpdatePolicy enum value corresponding to a
 // DWORD read from the registry and returns true if |value| is within range.
@@ -262,13 +252,14 @@ bool GoogleUpdateSettings::SetCollectStatsConsent(bool consented) {
 // static
 bool GoogleUpdateSettings::GetCollectStatsConsentDefault(
     bool* stats_consent_default) {
-  installer::ChannelInfo channel_info;
-  if (InitChannelInfo(IsSystemInstall(), &channel_info)) {
-    std::wstring stats_default = channel_info.GetStatsDefault();
-    if (stats_default == L"0" || stats_default == L"1") {
-      *stats_consent_default = (stats_default == L"1");
-      return true;
-    }
+  wchar_t stats_default = installer::AdditionalParameters().GetStatsDefault();
+  if (stats_default == L'0') {
+    *stats_consent_default = false;
+    return true;
+  }
+  if (stats_default == L'1') {
+    *stats_consent_default = true;
+    return true;
   }
   return false;
 }
@@ -389,44 +380,17 @@ bool GoogleUpdateSettings::ClearReferral() {
 void GoogleUpdateSettings::UpdateInstallStatus(
     bool system_install,
     installer::ArchiveType archive_type,
-    int install_return_code,
-    const std::wstring& product_guid) {
+    int install_return_code) {
   DCHECK(archive_type != installer::UNKNOWN_ARCHIVE_TYPE ||
          install_return_code != 0);
-  HKEY reg_root = (system_install) ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
 
-  RegKey key;
-  installer::ChannelInfo channel_info;
-  std::wstring reg_key(google_update::kRegPathClientState);
-  reg_key.append(L"\\");
-  reg_key.append(product_guid);
-  LONG result = key.Open(reg_root, reg_key.c_str(),
-                         KEY_QUERY_VALUE | KEY_SET_VALUE | KEY_WOW64_32KEY);
-  if (result == ERROR_SUCCESS)
-    channel_info.Initialize(key);
-  else if (result != ERROR_FILE_NOT_FOUND)
-    LOG(ERROR) << "Failed to open " << reg_key << "; Error: " << result;
-
+  installer::AdditionalParameters additional_parameters;
   if (UpdateGoogleUpdateApKey(archive_type, install_return_code,
-                              &channel_info)) {
-    // We have a modified channel_info value to write.
-    // Create the app's ClientState key if it doesn't already exist.
-    if (!key.Valid()) {
-      result = key.Open(reg_root, google_update::kRegPathClientState,
-                        KEY_CREATE_SUB_KEY | KEY_WOW64_32KEY);
-      if (result == ERROR_SUCCESS)
-        result = key.CreateKey(product_guid.c_str(),
-                               KEY_SET_VALUE | KEY_WOW64_32KEY);
-
-      if (result != ERROR_SUCCESS) {
-        LOG(ERROR) << "Failed to create " << reg_key << "; Error: " << result;
-        return;
-      }
-    }
-    if (!channel_info.Write(&key)) {
-      LOG(ERROR) << "Failed to write to application's ClientState key "
-                 << google_update::kRegApField << " = " << channel_info.value();
-    }
+                              &additional_parameters) &&
+      !additional_parameters.Commit()) {
+    PLOG(ERROR) << "Failed to write to application's ClientState key "
+                << google_update::kRegApField << " = "
+                << additional_parameters.value();
   }
 }
 
@@ -446,37 +410,31 @@ void GoogleUpdateSettings::SetProgress(bool system_install,
 bool GoogleUpdateSettings::UpdateGoogleUpdateApKey(
     installer::ArchiveType archive_type,
     int install_return_code,
-    installer::ChannelInfo* value) {
+    installer::AdditionalParameters* additional_parameters) {
   DCHECK(archive_type != installer::UNKNOWN_ARCHIVE_TYPE ||
          install_return_code != 0);
   bool modified = false;
 
   if (archive_type == installer::FULL_ARCHIVE_TYPE || !install_return_code) {
-    if (value->SetFullSuffix(false)) {
+    if (additional_parameters->SetFullSuffix(false)) {
       VLOG(1) << "Removed incremental installer failure key; "
                  "switching to channel: "
-              << value->value();
+              << additional_parameters->value();
       modified = true;
     }
   } else if (archive_type == installer::INCREMENTAL_ARCHIVE_TYPE) {
-    if (value->SetFullSuffix(true)) {
+    if (additional_parameters->SetFullSuffix(true)) {
       VLOG(1) << "Incremental installer failed; switching to channel: "
-              << value->value();
+              << additional_parameters->value();
       modified = true;
     } else {
       VLOG(1) << "Incremental installer failure; already on channel: "
-              << value->value();
+              << additional_parameters->value();
     }
   } else {
     // It's okay if we don't know the archive type.  In this case, leave the
     // "-full" suffix as we found it.
     DCHECK_EQ(installer::UNKNOWN_ARCHIVE_TYPE, archive_type);
-  }
-
-  if (value->ClearStage()) {
-    VLOG(1) << "Removed (legacy) stage information; switching to channel: "
-            << value->value();
-    modified = true;
   }
 
   return modified;

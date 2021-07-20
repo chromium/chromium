@@ -187,38 +187,6 @@ TEST_P(ProductStateTest, InitializeRenameCmd) {
   }
 }
 
-// Test extraction of the "ap" value from the ClientState key.
-TEST_P(ProductStateTest, InitializeChannelInfo) {
-  MinimallyInstallProduct(L"10.0.1.1");
-
-  // No "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.DeleteValue(google_update::kRegApField);
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Empty "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_TRUE(state.channel().value().empty());
-  }
-
-  // Valid "ap" value.
-  {
-    ProductState state;
-    LONG result = client_state_.WriteValue(google_update::kRegApField, L"spam");
-    EXPECT_TRUE(result == ERROR_SUCCESS || result == ERROR_FILE_NOT_FOUND);
-    EXPECT_TRUE(state.Initialize(system_install_));
-    EXPECT_EQ(L"spam", state.channel().value());
-  }
-}
-
 // Test extraction of the uninstall command and arguments from the ClientState
 // key.
 TEST_P(ProductStateTest, InitializeUninstallCommand) {

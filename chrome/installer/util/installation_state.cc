@@ -89,8 +89,6 @@ bool ProductState::Initialize(bool system_install) {
   if (key.Open(root_key, state_key.c_str(), kAccess) == ERROR_SUCCESS) {
     std::wstring setup_path;
     std::wstring uninstall_arguments;
-    // "ap" will be absent if not managed by Google Update.
-    channel_.Initialize(key);
 
     // Read in the brand code, it may be absent
     key.ReadValue(google_update::kRegBrandField, &brand_);
@@ -151,7 +149,6 @@ const base::Version& ProductState::version() const {
 }
 
 ProductState& ProductState::CopyFrom(const ProductState& other) {
-  channel_.set_value(other.channel_.value());
   version_.reset(other.version_.get() ? new base::Version(*other.version_)
                                       : nullptr);
   old_version_.reset(other.old_version_.get()
@@ -173,7 +170,6 @@ ProductState& ProductState::CopyFrom(const ProductState& other) {
 }
 
 void ProductState::Clear() {
-  channel_.set_value(std::wstring());
   version_.reset();
   old_version_.reset();
   brand_.clear();

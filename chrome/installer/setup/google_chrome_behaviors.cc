@@ -104,8 +104,7 @@ void UpdateInstallStatus(installer::ArchiveType archive_type,
                          installer::InstallStatus install_status) {
   GoogleUpdateSettings::UpdateInstallStatus(
       install_static::IsSystemInstall(), archive_type,
-      InstallUtil::GetInstallReturnCode(install_status),
-      install_static::GetAppGuid());
+      InstallUtil::GetInstallReturnCode(install_status));
 }
 
 // Returns a string holding the following URL query parameters:

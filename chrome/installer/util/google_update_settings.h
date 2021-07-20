@@ -23,7 +23,7 @@
 #include "components/metrics/client_info.h"
 
 namespace installer {
-class ChannelInfo;
+class AdditionalParameters;
 class InstallationState;
 }  // namespace installer
 
@@ -176,8 +176,7 @@ class GoogleUpdateSettings {
   // - Unconditionally clear a legacy "-stage:" modifier.
   static void UpdateInstallStatus(bool system_install,
                                   installer::ArchiveType archive_type,
-                                  int install_return_code,
-                                  const std::wstring& product_guid);
+                                  int install_return_code);
 
   // Sets the InstallerProgress value in the registry so that Google Update can
   // provide informative user feedback. |path| is the full path to the app's
@@ -204,7 +203,7 @@ class GoogleUpdateSettings {
   // Returns true if |value| is modified.
   static bool UpdateGoogleUpdateApKey(installer::ArchiveType archive_type,
                                       int install_return_code,
-                                      installer::ChannelInfo* value);
+                                      installer::AdditionalParameters* value);
 
   // Returns the effective update policy for |app_guid| as dictated by
   // Group Policy settings.  |is_overridden|, if non-nullptr, is populated with
