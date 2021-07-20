@@ -2184,7 +2184,7 @@ try_.presubmit_builder(
                 "branch_types": [branch_type.DESKTOP_EXTENDED_STABLE, branch_type.CROS_LTS],
             },
         ],
-        "verification_scripts": ["infra/config/main.star", "infra/config/dev.star"],
+        "starlark_entry_points": ["infra/config/main.star", "infra/config/dev.star"],
     },
     tryjob = try_.job(
         location_regexp = [r".+/[+]/infra/config/.+"],
