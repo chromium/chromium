@@ -39,6 +39,7 @@ extern const base::Feature kClobberTriggersContextualWebZeroSuggest;
 extern const base::Feature kOmniboxLocalZeroSuggestAgeThreshold;
 extern const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP;
 extern const base::Feature kOnFocusSuggestionsContextualWeb;
+extern const base::Feature kOnFocusSuggestionsContextualWebAllowSRP;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kLocalHistoryZeroSuggest;
 // Related, kMaxZeroSuggestMatches.

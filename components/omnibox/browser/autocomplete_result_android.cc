@@ -97,6 +97,8 @@ ScopedJavaLocalRef<jobjectArray> AutocompleteResult::BuildJavaMatches(
 void AutocompleteResult::GroupSuggestionsBySearchVsURL(JNIEnv* env,
                                                        int first_index,
                                                        int last_index) {
+  if (first_index == last_index)
+    return;
   const int num_elements = matches_.size();
   if (first_index < 0 || last_index <= first_index ||
       last_index > num_elements) {

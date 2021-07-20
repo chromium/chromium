@@ -138,9 +138,13 @@ const base::Feature kOmniboxTrendingZeroPrefixSuggestionsOnNTP{
 //
 // There's multiple flags here for multiple backend configurations:
 //  - Default (search queries)
+//  - SRP specific toggle (enables SRP on top of Web Pages for features below)
 //  - On-Content Suggestions
 const base::Feature kOnFocusSuggestionsContextualWeb{
     "OmniboxOnFocusSuggestionsContextualWeb",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kOnFocusSuggestionsContextualWebAllowSRP{
+    "OmniboxOnFocusSuggestionsContextualWebAllowSRP",
     base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kOnFocusSuggestionsContextualWebOnContent{
     "OmniboxOnFocusSuggestionsContextualWebOnContent",

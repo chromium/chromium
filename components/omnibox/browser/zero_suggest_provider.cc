@@ -573,9 +573,15 @@ ZeroSuggestProvider::ResultType ZeroSuggestProvider::TypeOfResultToRun(
   if (current_page_classification == OmniboxEventProto::CHROMEOS_APP_LIST)
     return REMOTE_NO_URL;
 
+  const bool context_eligible_for_web_contextual_suggestions =
+      (current_page_classification == OmniboxEventProto::OTHER) ||
+      (current_page_classification ==
+           OmniboxEventProto::SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT &&
+       base::FeatureList::IsEnabled(
+           omnibox::kOnFocusSuggestionsContextualWebAllowSRP));
+
   // Contextual Open Web - (same client side behavior for multiple variants).
-  if (current_page_classification == OmniboxEventProto::OTHER &&
-      can_send_current_url) {
+  if (context_eligible_for_web_contextual_suggestions && can_send_current_url) {
     if (input.focus_type() == OmniboxFocusType::ON_FOCUS &&
         (base::FeatureList::IsEnabled(
              omnibox::kOnFocusSuggestionsContextualWeb) ||
