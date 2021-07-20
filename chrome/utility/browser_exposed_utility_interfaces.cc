@@ -40,6 +40,7 @@ void ExposeElevatedChromeUtilityInterfacesToBrowser(mojo::BinderMap* binders) {
                base::ThreadTaskRunnerHandle::Get());
 #endif
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-  binders->Add(base::BindRepeating(&BindCloudPrintUtility));
+  binders->Add(base::BindRepeating(&BindCloudPrintUtility),
+               base::ThreadTaskRunnerHandle::Get());
 #endif
 }
