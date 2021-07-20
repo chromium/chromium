@@ -70,6 +70,10 @@ void FullRestoreArcTaskHandler::OnAppConnectionReady() {
     arc_app_launch_handler_->OnAppConnectionReady();
 }
 
+void FullRestoreArcTaskHandler::OnArcAppListPrefsDestroyed() {
+  arc_prefs_observer_.Reset();
+}
+
 void FullRestoreArcTaskHandler::OnShelfReady() {
   if (arc_app_launch_handler_)
     arc_app_launch_handler_->OnShelfReady();
