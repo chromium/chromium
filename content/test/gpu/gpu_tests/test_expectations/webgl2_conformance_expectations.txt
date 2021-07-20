@@ -392,6 +392,7 @@ crbug.com/870856 [ mac amd no-passthrough ] conformance2/textures/misc/tex-mipma
 
 crbug.com/1044638 [ mac amd ] conformance2/rendering/framebuffer-texture-level1.html [ RetryOnFailure ]
 crbug.com/1214931 [ mojave amd-0x6821 angle-opengl passthrough ] deqp/functional/gles3/shadertexturefunction/texturesize.html [ RetryOnFailure ]
+crbug.com/1230781 [ mac amd-0x6821 ] conformance/canvas/to-data-url-test.html [ Failure ]
 
 # The transformfeedback tests are specialized for two different AMD
 # GPUs because of different failure modes on each.

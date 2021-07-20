@@ -19,6 +19,7 @@
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/gl2_types.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
+#include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/raster_cmd_ids.h"
 #include "ui/gfx/buffer_types.h"
 

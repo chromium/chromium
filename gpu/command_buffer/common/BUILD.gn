@@ -161,6 +161,7 @@ source_set("raster_sources") {
   visibility = [ "//gpu/*" ]
 
   sources = [
+    "raster_cmd_enums.h",
     "raster_cmd_format.cc",
     "raster_cmd_format.h",
     "raster_cmd_format_autogen.h",

@@ -179,11 +179,16 @@ class OopPixelTest : public testing::Test,
     raster_implementation->WaitSyncTokenCHROMIUM(
         sii->GenUnverifiedSyncToken().GetConstData());
 
+    // Assume legacy MSAA if sample count is positive.
+    gpu::raster::MsaaMode msaa_mode = options.msaa_sample_count > 0
+                                          ? gpu::raster::kMSAA
+                                          : gpu::raster::kNoMSAA;
+
     if (options.preclear) {
       raster_implementation->BeginRasterCHROMIUM(
           options.preclear_color, /*needs_clear=*/options.preclear,
-          options.msaa_sample_count, options.use_lcd_text, options.color_space,
-          mailbox.name);
+          options.msaa_sample_count, msaa_mode, options.use_lcd_text,
+          options.color_space, mailbox.name);
       raster_implementation->EndRasterCHROMIUM();
     }
 
@@ -193,8 +198,8 @@ class OopPixelTest : public testing::Test,
     // cleared, so set |needs_clear| to false here.
     raster_implementation->BeginRasterCHROMIUM(
         options.background_color, /*needs_clear=*/!options.preclear,
-        options.msaa_sample_count, options.use_lcd_text, options.color_space,
-        mailbox.name);
+        options.msaa_sample_count, msaa_mode, options.use_lcd_text,
+        options.color_space, mailbox.name);
     size_t max_op_size_limit =
         gpu::raster::RasterInterface::kDefaultMaxOpSizeHint;
     raster_implementation->RasterCHROMIUM(

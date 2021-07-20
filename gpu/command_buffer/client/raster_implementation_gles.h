@@ -83,6 +83,7 @@ class RASTER_EXPORT RasterImplementationGLES : public RasterInterface {
   void BeginRasterCHROMIUM(GLuint sk_color,
                            GLboolean needs_clear,
                            GLuint msaa_sample_count,
+                           MsaaMode msaa_mode,
                            GLboolean can_use_lcd_text,
                            const gfx::ColorSpace& color_space,
                            const GLbyte* mailbox) override;

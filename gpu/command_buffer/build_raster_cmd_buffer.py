@@ -141,6 +141,15 @@ _NAMED_TYPE_INFO = {
       'viz::ResourceFormat::ETC1',
     ],
   },
+  'gpu::raster::MsaaMode': {
+    'type': 'gpu::raster::MsaaMode',
+    'is_complete': True,
+    'valid': [
+      'gpu::raster::MsaaMode::kNoMSAA',
+      'gpu::raster::MsaaMode::kMSAA',
+      'gpu::raster::MsaaMode::kDMSAA',
+    ],
+  },
 }
 
 # A function info object specifies the type and other special data for the

@@ -1964,6 +1964,10 @@ crbug.com/483653 accessibility/scroll-containers.html [ Skip ]
 # Temporarily disabled until document marker serialization is enabled for AXInlineTextBox
 crbug.com/1227485 accessibility/spelling-markers.html [ Failure ]
 
+# Bugs caused by enabling DMSAA on OOPR-Canvas
+crbug.com/1229463 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-largedraws.html [ Crash ]
+crbug.com/1229486 virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Failure ]
+
 # Temporarily disabled after chromium change
 crbug.com/492511 [ Mac ] virtual/text-antialias/atsui-negative-spacing-features.html [ Failure ]
 crbug.com/492511 [ Mac ] virtual/text-antialias/international/arabic-justify.html [ Failure ]

@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/client/interface_base.h"
+#include "gpu/command_buffer/common/raster_cmd_enums.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkYUVAInfo.h"
@@ -74,9 +75,12 @@ class RasterInterface : public InterfaceBase {
       const gpu::Mailbox yuva_plane_mailboxes[]) = 0;
 
   // OOP-Raster
+
+  // msaa_sample_count has no effect unless msaa_mode is set to kMSAA
   virtual void BeginRasterCHROMIUM(GLuint sk_color,
                                    GLboolean needs_clear,
                                    GLuint msaa_sample_count,
+                                   MsaaMode msaa_mode,
                                    GLboolean can_use_lcd_text,
                                    const gfx::ColorSpace& color_space,
                                    const GLbyte* mailbox) = 0;

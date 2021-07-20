@@ -743,6 +743,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   void DoBeginRasterCHROMIUM(GLuint sk_color,
                              GLboolean needs_clear,
                              GLuint msaa_sample_count,
+                             MsaaMode msaa_mode,
                              GLboolean can_use_lcd_text,
                              const volatile GLbyte* key);
   void DoRasterCHROMIUM(GLuint raster_shm_id,
@@ -872,6 +873,7 @@ class RasterDecoderImpl final : public RasterDecoder,
   bool supports_oop_raster_ = false;
   bool use_passthrough_ = false;
   bool use_ddl_ = false;
+  bool use_ddl_in_current_raster_session_ = false;
 
   // The current decoder error communicates the decoder error through command
   // processing functions that do not return the error value. Should be set
@@ -3327,6 +3329,7 @@ void RasterDecoderImpl::DoClearPaintCacheINTERNAL() {
 void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
                                               GLboolean needs_clear,
                                               GLuint msaa_sample_count,
+                                              MsaaMode msaa_mode,
                                               GLboolean can_use_lcd_text,
                                               const volatile GLbyte* key) {
   // Workaround for https://crbug.com/906453: Flush before BeginRaster (the
@@ -3373,20 +3376,40 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
   DCHECK(!raster_canvas_);
   shared_context_state_->set_need_context_state_reset(true);
 
+  SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
+      /*gpu_compositing=*/true, shared_image_->format());
+
+  int final_msaa_count;
+  uint32_t flags;
+  switch (msaa_mode) {
+    default:
+    case kNoMSAA:
+      final_msaa_count = 0;
+      flags = 0;
+      use_ddl_in_current_raster_session_ = use_ddl_;
+      break;
+    case kMSAA:
+      // If we can't match requested MSAA samples, don't use MSAA.
+      final_msaa_count = std::max(static_cast<int>(msaa_sample_count), 0);
+      if (final_msaa_count >
+          gr_context()->maxSurfaceSampleCountForColorType(sk_color_type))
+        final_msaa_count = 0;
+      flags = 0;
+      use_ddl_in_current_raster_session_ = use_ddl_;
+      break;
+    case kDMSAA:
+      final_msaa_count = 1;
+      flags = SkSurfaceProps::kDynamicMSAA_Flag;
+      // DMSAA is not compatible with DDL
+      use_ddl_in_current_raster_session_ = false;
+      break;
+  }
+
   // Use unknown pixel geometry to disable LCD text.
-  uint32_t flags = 0;
   SkSurfaceProps surface_props(flags, kUnknown_SkPixelGeometry);
   if (can_use_lcd_text) {
     surface_props = skia::LegacyDisplayGlobals::GetSkSurfaceProps(flags);
   }
-
-  SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
-      /*gpu_compositing=*/true, shared_image_->format());
-  // If we can't match requested MSAA samples, don't use MSAA.
-  int final_msaa_count = std::max(static_cast<int>(msaa_sample_count), 0);
-  if (final_msaa_count >
-      gr_context()->maxSurfaceSampleCountForColorType(sk_color_type))
-    final_msaa_count = 0;
 
   std::vector<GrBackendSemaphore> begin_semaphores;
   DCHECK(end_semaphores_.empty());
@@ -3412,7 +3435,7 @@ void RasterDecoderImpl::DoBeginRasterCHROMIUM(GLuint sk_color,
     DCHECK(result);
   }
 
-  if (use_ddl_) {
+  if (use_ddl_in_current_raster_session_) {
     SkSurfaceCharacterization characterization;
     bool result = sk_surface_->characterize(&characterization);
     DCHECK(result) << "Failed to characterize raster SkSurface.";
@@ -3532,7 +3555,7 @@ void RasterDecoderImpl::DoRasterCHROMIUM(GLuint raster_shm_id,
 }
 
 bool RasterDecoderImpl::EnsureDDLReadyForRaster() {
-  DCHECK(use_ddl_);
+  DCHECK(use_ddl_in_current_raster_session_);
   DCHECK_EQ(current_decoder_error_, error::kNoError);
 
   if (!ddl_) {
@@ -3569,7 +3592,7 @@ void RasterDecoderImpl::DoEndRasterCHROMIUM() {
   shared_context_state_->set_need_context_state_reset(true);
   raster_canvas_ = nullptr;
 
-  if (use_ddl_) {
+  if (use_ddl_in_current_raster_session_) {
     if (!EnsureDDLReadyForRaster()) {
       // This decoder error indicates that this command has not finished
       // executing. The decoder will yield and re-execute this command when it

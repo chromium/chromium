@@ -78,10 +78,15 @@ static void RasterizeSourceOOP(
     ri->WaitSyncTokenCHROMIUM(sync_token.GetConstData());
   }
 
+  // Assume legacy MSAA if sample count is positive.
+  gpu::raster::MsaaMode msaa_mode = playback_settings.msaa_sample_count > 0
+                                        ? gpu::raster::kMSAA
+                                        : gpu::raster::kNoMSAA;
+
   ri->BeginRasterCHROMIUM(
       raster_source->background_color(), mailbox_needs_clear,
-      playback_settings.msaa_sample_count, playback_settings.use_lcd_text,
-      color_space, mailbox->name);
+      playback_settings.msaa_sample_count, msaa_mode,
+      playback_settings.use_lcd_text, color_space, mailbox->name);
   gfx::Vector2dF recording_to_raster_scale = transform.scale();
   recording_to_raster_scale.Scale(1 / raster_source->recording_scale_factor());
   gfx::Size content_size = raster_source->GetContentSize(transform.scale());
