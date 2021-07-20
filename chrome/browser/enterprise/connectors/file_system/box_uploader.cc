@@ -15,7 +15,6 @@
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_flow.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_api_call_response.h"
 #include "chrome/browser/enterprise/connectors/file_system/box_upload_file_chunks_handler.h"
-#include "chrome/browser/enterprise/connectors/file_system/rename_handler.h"
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/prefs/pref_service.h"
 #include "net/http/http_status_code.h"
@@ -129,12 +128,8 @@ BoxUploader::BoxUploader(download::DownloadItem* download_item)
   }
 }
 
-BoxUploader::~BoxUploader() {
-  for (auto& observer : observers_)
-    observer.OnDestruction();
-  // TODO(https://crbug.com/1213761) May need to TerminateTask() to resume
-  // later.
-}
+BoxUploader::~BoxUploader() = default;
+// TODO(https://crbug.com/1213761) May need to TerminateTask() to resume later.
 
 void BoxUploader::Init(
     base::RepeatingCallback<void(void)> authen_retry_callback,
@@ -194,8 +189,6 @@ void BoxUploader::StartUpload() {
   LogUniquifierCountToUma();
   SendProgressUpdate();
   SetCurrentApiCall(MakeFileUploadApiCall());
-  for (auto& observer : observers_)
-    observer.OnUploadStart();
   TryCurrentApiCall();
 }
 
@@ -221,9 +214,6 @@ void BoxUploader::OnApiCallFlowFailure(InterruptReason reason) {
 
 void BoxUploader::OnApiCallFlowDone(InterruptReason reason,
                                     std::string file_id) {
-  for (auto& observer : observers_)
-    observer.OnUploadDone(reason == kSuccess);
-
   if (reason != kSuccess) {
     LOG(ERROR) << "Upload failed: " << DownloadInterruptReasonToString(reason);
     // TODO(https://crbug.com/1165972): on upload failure, decide whether to
@@ -429,8 +419,6 @@ void BoxUploader::PostDeleteFileTask(InterruptReason upload_reason) {
   auto delete_file_task = base::BindOnce(&DeleteIfExists, GetLocalFilePath());
   auto delete_file_reply = base::BindOnce(
       &BoxUploader::OnFileDeleted, weak_factory_.GetWeakPtr(), upload_reason);
-  for (auto& observer : observers_)
-    observer.OnFileDeletionStart();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::TaskPriority::USER_VISIBLE, base::MayBlock()},
       std::move(delete_file_task), std::move(delete_file_reply));
@@ -447,8 +435,6 @@ void BoxUploader::OnFileDeleted(InterruptReason upload_reason,
                 << base::File::ErrorToString(delete_status);
   }
   NotifyResult(final_reason);
-  for (auto& observer : observers_)
-    observer.OnFileDeletionDone(delete_status == base::File::Error::FILE_OK);
 }
 
 // Helper methods for tests ////////////////////////////////////////////////////
@@ -647,60 +633,6 @@ void BoxChunkedUploader::OnApiCallFlowFailure(InterruptReason reason) {
   } else {
     BoxUploader::OnApiCallFlowFailure(reason);
   }
-}
-
-// BoxUploader::TestObserver
-BoxUploader::TestObserver::TestObserver(FileSystemRenameHandler* rename_handler)
-    : uploader_(
-          FileSystemRenameHandler::TestObserver::GetBoxUploader(rename_handler)
-              ->weak_factory_.GetWeakPtr()) {
-  uploader_->observers_.AddObserver(this);
-}
-
-BoxUploader::TestObserver::~TestObserver() {
-  uploader_->observers_.RemoveObserver(this);
-}
-
-void BoxUploader::TestObserver::OnUploadStart() {
-  upload_status_ = Status::kInProgress;
-}
-
-void BoxUploader::TestObserver::OnUploadDone(bool succeeded) {
-  upload_status_ = succeeded ? Status::kSucceeded : Status::kFailed;
-  if (upload_run_loop_.running())
-    upload_run_loop_.Quit();
-}
-
-void BoxUploader::TestObserver::OnFileDeletionStart() {
-  tmp_file_deletion_status_ = Status::kInProgress;
-}
-
-void BoxUploader::TestObserver::OnFileDeletionDone(bool succeeded) {
-  tmp_file_deletion_status_ = succeeded ? Status::kSucceeded : Status::kFailed;
-  if (delete_run_loop_.running())
-    delete_run_loop_.Quit();
-}
-
-void BoxUploader::TestObserver::OnDestruction() {
-  uploader_.reset();
-}
-
-bool BoxUploader::TestObserver::WaitForUpload() {
-  if (upload_status_ != Status::kSucceeded && upload_status_ != Status::kFailed)
-    upload_run_loop_.Run();
-  return upload_status_ == Status::kSucceeded;
-}
-
-bool BoxUploader::TestObserver::WaitForTmpFileDeletion() {
-  if ((tmp_file_deletion_status_ != Status::kSucceeded) &&
-      (tmp_file_deletion_status_ != Status::kFailed)) {
-    delete_run_loop_.Run();
-  }
-  return tmp_file_deletion_status_ == Status::kSucceeded;
-}
-
-GURL BoxUploader::TestObserver::GetFileUrl() {
-  return uploader_->GetUploadedFileUrl();
 }
 
 }  // namespace enterprise_connectors
