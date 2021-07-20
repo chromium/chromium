@@ -20,6 +20,7 @@
 #include "chrome/browser/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
+#include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/cert/x509_certificate.h"
@@ -462,6 +463,49 @@ void KeystoreServiceAsh::DidRemoveCertificate(
     std::move(callback).Run(/*error=*/"");
   else
     std::move(callback).Run(chromeos::platform_keys::StatusToString(status));
+}
+
+//------------------------------------------------------------------------------
+
+void KeystoreServiceAsh::GetPublicKey(
+    const std::vector<uint8_t>& certificate,
+    mojom::KeystoreSigningAlgorithmName algorithm_name,
+    GetPublicKeyCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  absl::optional<std::string> name =
+      StringFromSigningAlgorithmName(algorithm_name);
+  if (!name) {
+    std::move(callback).Run(mojom::GetPublicKeyResult::NewError(
+        mojom::KeystoreError::kAlgorithmNotPermittedByCertificate));
+    return;
+  }
+
+  chromeos::platform_keys::GetPublicKeyAndAlgorithmOutput output =
+      chromeos::platform_keys::GetPublicKeyAndAlgorithm(certificate,
+                                                        name.value());
+
+  mojom::GetPublicKeyResultPtr result_ptr = mojom::GetPublicKeyResult::New();
+  if (output.status == chromeos::platform_keys::Status::kSuccess) {
+    absl::optional<crosapi::mojom::KeystoreSigningAlgorithmPtr>
+        signing_algorithm =
+            crosapi::keystore_service_util::SigningAlgorithmFromDictionary(
+                output.algorithm);
+    if (signing_algorithm) {
+      mojom::GetPublicKeySuccessResultPtr success_result_ptr =
+          mojom::GetPublicKeySuccessResult::New();
+      success_result_ptr->public_key = std::move(output.public_key);
+      success_result_ptr->algorithm_properties =
+          std::move(signing_algorithm.value());
+      result_ptr->set_success_result(std::move(success_result_ptr));
+    } else {
+      result_ptr->set_error(
+          crosapi::mojom::KeystoreError::kUnsupportedAlgorithmType);
+    }
+  } else {
+    result_ptr->set_error(
+        chromeos::platform_keys::StatusToKeystoreError(output.status));
+  }
+  std::move(callback).Run(std::move(result_ptr));
 }
 
 //------------------------------------------------------------------------------

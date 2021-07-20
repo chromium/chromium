@@ -100,6 +100,14 @@ const std::vector<uint8_t>& GetDataBin() {
   return *result;
 }
 
+std::vector<uint8_t> CertToBlob(
+    const scoped_refptr<net::X509Certificate>& cert) {
+  const uint8_t* cert_buffer =
+      reinterpret_cast<const uint8_t*>(CRYPTO_BUFFER_data(cert->cert_buffer()));
+  return std::vector<uint8_t>(
+      cert_buffer, cert_buffer + CRYPTO_BUFFER_len(cert->cert_buffer()));
+}
+
 void AssertBlobEq(const mojom::KeystoreBinaryResultPtr& result,
                   const std::vector<uint8_t>& expected_blob) {
   ASSERT_TRUE(result);
@@ -390,6 +398,79 @@ TEST_F(KeystoreServiceAshTest, CanUserGrantPermissionForKey) {
                                                  observer.GetCallback());
 
   EXPECT_EQ(observer.result, false);
+}
+
+TEST_F(KeystoreServiceAshTest, GetPublicKeySuccess) {
+  const std::vector<uint8_t> cert_bin =
+      CertToBlob(GetCertificateList()->front());
+
+  CallbackObserver<mojom::GetPublicKeyResultPtr> observer;
+  keystore_service_.GetPublicKey(
+      cert_bin, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_success_result());
+  ASSERT_EQ(observer.result->get_success_result()->public_key,
+            GetPublicKeyBin());
+  ASSERT_TRUE(observer.result->get_success_result()
+                  ->algorithm_properties->is_pkcs115());
+  const mojom::KeystorePKCS115ParamsPtr& params =
+      observer.result->get_success_result()
+          ->algorithm_properties->get_pkcs115();
+  EXPECT_EQ(params->modulus_length, 2048);
+  EXPECT_EQ(params->public_exponent, (std::vector<uint8_t>{1, 0, 1}));
+}
+
+TEST_F(KeystoreServiceAshTest, GetPublicKeyFail) {
+  const std::vector<uint8_t> cert_bin =
+      CertToBlob(GetCertificateList()->front());
+
+  CallbackObserver<mojom::GetPublicKeyResultPtr> observer;
+  keystore_service_.GetPublicKey(cert_bin,
+                                 mojom::KeystoreSigningAlgorithmName::kUnknown,
+                                 observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_error());
+  EXPECT_EQ(observer.result->get_error(),
+            mojom::KeystoreError::kAlgorithmNotPermittedByCertificate);
+}
+
+// Tests for deprecated methods.
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeySuccess) {
+  const std::vector<uint8_t> cert_bin =
+      CertToBlob(GetCertificateList()->front());
+
+  CallbackObserver<mojom::DEPRECATED_GetPublicKeyResultPtr> observer;
+  keystore_service_.DEPRECATED_GetPublicKey(
+      cert_bin, mojom::KeystoreSigningAlgorithmName::kRsassaPkcs115,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_success_result());
+  ASSERT_EQ(observer.result->get_success_result()->public_key,
+            GetPublicKeyBin());
+  ASSERT_TRUE(observer.result->get_success_result()
+                  ->algorithm_properties->is_pkcs115());
+  const mojom::KeystorePKCS115ParamsPtr& params =
+      observer.result->get_success_result()
+          ->algorithm_properties->get_pkcs115();
+  EXPECT_EQ(params->modulus_length, 2048);
+  EXPECT_EQ(params->public_exponent, (std::vector<uint8_t>{1, 0, 1}));
+}
+
+TEST_F(KeystoreServiceAshTest, DeprecatedGetPublicKeyFail) {
+  const std::vector<uint8_t> cert_bin =
+      CertToBlob(GetCertificateList()->front());
+
+  CallbackObserver<mojom::DEPRECATED_GetPublicKeyResultPtr> observer;
+  keystore_service_.DEPRECATED_GetPublicKey(
+      cert_bin, mojom::KeystoreSigningAlgorithmName::kUnknown,
+      observer.GetCallback());
+
+  ASSERT_TRUE(observer.result->is_error_message());
+  EXPECT_EQ(observer.result->get_error_message(),
+            chromeos::platform_keys::KeystoreErrorToString(
+                mojom::KeystoreError::kAlgorithmNotPermittedByCertificate));
 }
 
 }  // namespace

@@ -75,10 +75,9 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
   void RemoveCertificate(mojom::KeystoreType keystore,
                          const std::vector<uint8_t>& certificate,
                          RemoveCertificateCallback callback) override;
-  void DEPRECATED_GetPublicKey(
-      const std::vector<uint8_t>& certificate,
-      mojom::KeystoreSigningAlgorithmName algorithm_name,
-      DEPRECATED_GetPublicKeyCallback callback) override;
+  void GetPublicKey(const std::vector<uint8_t>& certificate,
+                    mojom::KeystoreSigningAlgorithmName algorithm_name,
+                    GetPublicKeyCallback callback) override;
   void GenerateKey(mojom::KeystoreType keystore,
                    mojom::KeystoreSigningAlgorithmPtr algorithm,
                    GenerateKeyCallback callback) override;
@@ -114,6 +113,11 @@ class KeystoreServiceAsh : public mojom::KeystoreService, public KeyedService {
       const std::vector<uint8_t>& data,
       const std::string& extension_id,
       DEPRECATED_ExtensionSignCallback callback) override;
+  // DEPRECATED, use `GetPublicKey` instead.
+  void DEPRECATED_GetPublicKey(
+      const std::vector<uint8_t>& certificate,
+      mojom::KeystoreSigningAlgorithmName algorithm_name,
+      DEPRECATED_GetPublicKeyCallback callback) override;
 
  private:
   // Returns a correct instance of PlatformKeysService to use. If a specific
