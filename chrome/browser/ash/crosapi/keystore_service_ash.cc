@@ -512,15 +512,15 @@ void KeystoreServiceAsh::DEPRECATED_GetPublicKey(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::ExtensionGenerateKey(
+void KeystoreServiceAsh::DEPRECATED_ExtensionGenerateKey(
     mojom::KeystoreType keystore,
     mojom::KeystoreSigningAlgorithmPtr algorithm,
     const absl::optional<std::string>& extension_id,
-    ExtensionGenerateKeyCallback callback) {
+    DEPRECATED_ExtensionGenerateKeyCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!extension_id) {
     std::move(callback).Run(
-        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+        mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
             kUnsupportedLacrosVersion));
     return;
   }
@@ -530,23 +530,25 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
   absl::optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
     std::move(callback).Run(
-        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+        mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
             kUnsupportedKeystoreType));
     return;
   }
 
   switch (algorithm->which()) {
     case mojom::KeystoreSigningAlgorithm::Tag::PKCS115: {
-      auto c = base::BindOnce(&KeystoreServiceAsh::DidExtensionGenerateKey,
-                              std::move(callback));
+      auto c = base::BindOnce(
+          &KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey,
+          std::move(callback));
       ext_platform_keys_service->GenerateRSAKey(
           token_id.value(), algorithm->get_pkcs115()->modulus_length,
           *extension_id, std::move(c));
       break;
     }
     case mojom::KeystoreSigningAlgorithm::Tag::ECDSA: {
-      auto c = base::BindOnce(&KeystoreServiceAsh::DidExtensionGenerateKey,
-                              std::move(callback));
+      auto c = base::BindOnce(
+          &KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey,
+          std::move(callback));
       ext_platform_keys_service->GenerateECKey(
           token_id.value(), algorithm->get_ecdsa()->named_curve, *extension_id,
           std::move(c));
@@ -554,7 +556,7 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
     }
     default: {
       std::move(callback).Run(
-          mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+          mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
               chromeos::platform_keys::StatusToString(
                   chromeos::platform_keys::Status::
                       kErrorAlgorithmNotSupported)));
@@ -564,13 +566,13 @@ void KeystoreServiceAsh::ExtensionGenerateKey(
 }
 
 // static
-void KeystoreServiceAsh::DidExtensionGenerateKey(
-    ExtensionGenerateKeyCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidExtensionGenerateKey(
+    DEPRECATED_ExtensionGenerateKeyCallback callback,
     const std::string& public_key,
     absl::optional<crosapi::mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result_ptr =
-      mojom::ExtensionKeystoreBinaryResult::New();
+  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result_ptr =
+      mojom::DEPRECATED_ExtensionKeystoreBinaryResult::New();
   if (!error) {
     result_ptr->set_blob(
         std::vector<uint8_t>(public_key.begin(), public_key.end()));
@@ -583,17 +585,18 @@ void KeystoreServiceAsh::DidExtensionGenerateKey(
 
 //------------------------------------------------------------------------------
 
-void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
-                                       const std::vector<uint8_t>& public_key,
-                                       SigningScheme scheme,
-                                       const std::vector<uint8_t>& data,
-                                       const std::string& extension_id,
-                                       ExtensionSignCallback callback) {
+void KeystoreServiceAsh::DEPRECATED_ExtensionSign(
+    KeystoreType keystore,
+    const std::vector<uint8_t>& public_key,
+    SigningScheme scheme,
+    const std::vector<uint8_t>& data,
+    const std::string& extension_id,
+    DEPRECATED_ExtensionSignCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   absl::optional<TokenId> token_id = KeystoreToToken(keystore);
   if (!token_id) {
     std::move(callback).Run(
-        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+        mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
             kUnsupportedKeystoreType));
     return;
   }
@@ -604,14 +607,14 @@ void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
   switch (scheme) {
     case SigningScheme::kUnknown:
       std::move(callback).Run(
-          mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+          mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
               kUnsupportedAlgorithmType));
       return;
     case SigningScheme::kRsassaPkcs1V15None:
       service->SignRSAPKCS1Raw(
           token_id, std::string(data.begin(), data.end()),
           std::string(public_key.begin(), public_key.end()), extension_id,
-          base::BindOnce(&KeystoreServiceAsh::DidExtensionSign,
+          base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidExtensionSign,
                          std::move(callback)));
       return;
     case SigningScheme::kRsassaPkcs1V15Sha1:
@@ -648,26 +651,28 @@ void KeystoreServiceAsh::ExtensionSign(KeystoreType keystore,
       break;
   }
 
-  service->SignDigest(token_id, std::string(data.begin(), data.end()),
-                      std::string(public_key.begin(), public_key.end()),
-                      key_type, hash_algorithm, extension_id,
-                      base::BindOnce(&KeystoreServiceAsh::DidExtensionSign,
-                                     std::move(callback)));
+  service->SignDigest(
+      token_id, std::string(data.begin(), data.end()),
+      std::string(public_key.begin(), public_key.end()), key_type,
+      hash_algorithm, extension_id,
+      base::BindOnce(&KeystoreServiceAsh::DEPRECATED_DidExtensionSign,
+                     std::move(callback)));
 }
 
 // static
-void KeystoreServiceAsh::DidExtensionSign(
-    ExtensionSignCallback callback,
+void KeystoreServiceAsh::DEPRECATED_DidExtensionSign(
+    DEPRECATED_ExtensionSignCallback callback,
     const std::string& signature,
     absl::optional<mojom::KeystoreError> error) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!error) {
-    std::move(callback).Run(mojom::ExtensionKeystoreBinaryResult::NewBlob(
-        std::vector<uint8_t>(signature.begin(), signature.end())));
+    std::move(callback).Run(
+        mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewBlob(
+            std::vector<uint8_t>(signature.begin(), signature.end())));
   } else {
     std::move(callback).Run(
-        mojom::ExtensionKeystoreBinaryResult::NewErrorMessage(
+        mojom::DEPRECATED_ExtensionKeystoreBinaryResult::NewErrorMessage(
             chromeos::platform_keys::KeystoreErrorToString(error.value())));
   }
 }

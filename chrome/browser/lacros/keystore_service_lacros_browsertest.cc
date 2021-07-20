@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, GetCertificatesEmpty) {
 // Tests that extension generate key works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
                        ExtensionGenerateKeyPKCS) {
-  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
+  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
@@ -82,9 +82,9 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
       crosapi::mojom::KeystorePKCS115Params::New();
   params->modulus_length = 1024;
   algo->set_pkcs115(std::move(params));
-  async_waiter.ExtensionGenerateKey(crosapi::mojom::KeystoreType::kUser,
-                                    std::move(algo),
-                                    /*extension_id=*/"123", &result);
+  async_waiter.DEPRECATED_ExtensionGenerateKey(
+      crosapi::mojom::KeystoreType::kUser, std::move(algo),
+      /*extension_id=*/"123", &result);
   // Errors out because Ash-Chrome is not running on ChromeOS.
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
@@ -98,7 +98,7 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
 // simple way to prevent this at the moment.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
                        DISABLED_ExtensionGenerateKeyECDSA) {
-  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
+  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
   crosapi::mojom::KeystoreSigningAlgorithmPtr algo =
@@ -107,9 +107,9 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
       crosapi::mojom::KeystoreECDSAParams::New();
   params->named_curve = "P-256";
   algo->set_ecdsa(std::move(params));
-  async_waiter.ExtensionGenerateKey(crosapi::mojom::KeystoreType::kUser,
-                                    std::move(algo),
-                                    /*extension_id=*/"123", &result);
+  async_waiter.DEPRECATED_ExtensionGenerateKey(
+      crosapi::mojom::KeystoreType::kUser, std::move(algo),
+      /*extension_id=*/"123", &result);
   // Errors out because Ash-Chrome is not running on ChromeOS.
   ASSERT_TRUE(result->is_error_message());
   EXPECT_EQ(result->get_error_message(), kFailedToSetAttribute);
@@ -117,10 +117,10 @@ IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest,
 
 // Tests that extension sign works.
 IN_PROC_BROWSER_TEST_F(KeystoreServiceLacrosBrowserTest, ExtensionSign) {
-  crosapi::mojom::ExtensionKeystoreBinaryResultPtr result;
+  crosapi::mojom::DEPRECATED_ExtensionKeystoreBinaryResultPtr result;
   crosapi::mojom::KeystoreServiceAsyncWaiter async_waiter(
       keystore_service_remote().get());
-  async_waiter.ExtensionSign(
+  async_waiter.DEPRECATED_ExtensionSign(
       crosapi::mojom::KeystoreType::kUser,
       /*public_key=*/{1, 2, 3, 4, 5},
       /*scheme=*/crosapi::mojom::KeystoreSigningScheme::kRsassaPkcs1V15Sha256,
