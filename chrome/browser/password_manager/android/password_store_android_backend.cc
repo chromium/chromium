@@ -85,4 +85,8 @@ void PasswordStoreAndroidBackend::OnCompleteWithLogins(
   // TODO(https://crbug.com/1229654): Implement.
 }
 
+SmartBubbleStatsStore* PasswordStoreAndroidBackend::GetSmartBubbleStatsStore() {
+  return nullptr;
+}
+
 }  // namespace password_manager

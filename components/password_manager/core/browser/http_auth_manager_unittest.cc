@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/http_auth_manager_impl.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
@@ -109,8 +110,8 @@ class HttpAuthManagerTest : public testing::Test {
         .WillByDefault(Return(store_.get()));
     ON_CALL(client_, GetAccountPasswordStore())
         .WillByDefault(Return(account_store_.get()));
-
-    EXPECT_CALL(*store_, GetSiteStatsImpl(_)).Times(AnyNumber());
+    EXPECT_CALL(*store_, GetSmartBubbleStatsStore)
+        .WillRepeatedly(Return(&smart_bubble_stats_store_));
 
     httpauth_manager_ = std::make_unique<HttpAuthManagerImpl>(&client_);
 
@@ -136,6 +137,7 @@ class HttpAuthManagerTest : public testing::Test {
   scoped_refptr<MockPasswordStore> store_;
   scoped_refptr<MockPasswordStore> account_store_;
   testing::NiceMock<MockPasswordManagerClient> client_;
+  testing::NiceMock<MockSmartBubbleStatsStore> smart_bubble_stats_store_;
   std::unique_ptr<HttpAuthManagerImpl> httpauth_manager_;
 };
 

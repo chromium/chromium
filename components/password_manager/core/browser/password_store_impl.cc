@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "components/password_manager/core/browser/password_store_change.h"
+#include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/sync/password_sync_bridge.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
@@ -96,14 +97,6 @@ PasswordStoreChangeList PasswordStoreImpl::DisableAutoSignInForOriginsImpl(
   return changes;
 }
 
-bool PasswordStoreImpl::RemoveStatisticsByOriginAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end) {
-  return login_db_ && login_db_->stats_table().RemoveStatsByOriginAndTime(
-                          origin_filter, delete_begin, delete_end);
-}
-
 std::vector<std::unique_ptr<PasswordForm>>
 PasswordStoreImpl::FillMatchingLoginsByPassword(
     const std::u16string& plain_text_password) {
@@ -121,23 +114,33 @@ DatabaseCleanupResult PasswordStoreImpl::DeleteUndecryptableLogins() {
   return login_db_->DeleteUndecryptableLogins();
 }
 
-void PasswordStoreImpl::AddSiteStatsImpl(const InteractionsStats& stats) {
+void PasswordStoreImpl::AddSiteStatsInternal(const InteractionsStats& stats) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().AddRow(stats);
 }
 
-void PasswordStoreImpl::RemoveSiteStatsImpl(const GURL& origin_domain) {
+void PasswordStoreImpl::RemoveSiteStatsInternal(const GURL& origin_domain) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   if (login_db_)
     login_db_->stats_table().RemoveRow(origin_domain);
 }
 
-std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsImpl(
+std::vector<InteractionsStats> PasswordStoreImpl::GetSiteStatsInternal(
     const GURL& origin_domain) {
   DCHECK(background_task_runner()->RunsTasksInCurrentSequence());
   return login_db_ ? login_db_->stats_table().GetRows(origin_domain)
                    : std::vector<InteractionsStats>();
+}
+
+void PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::Time delete_begin,
+    base::Time delete_end) {
+  if (login_db_) {
+    login_db_->stats_table().RemoveStatsByOriginAndTime(
+        origin_filter, delete_begin, delete_end);
+  }
 }
 
 PasswordStoreChangeList PasswordStoreImpl::AddInsecureCredentialImpl(
@@ -469,6 +472,49 @@ void PasswordStoreImpl::RemoveLoginsByURLAndTimeAsync(
                      url_filter, delete_begin, delete_end,
                      std::move(sync_completion)),
       std::move(callback));
+}
+
+SmartBubbleStatsStore* PasswordStoreImpl::GetSmartBubbleStatsStore() {
+  return this;
+}
+
+void PasswordStoreImpl::AddSiteStats(const InteractionsStats& stats) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::AddSiteStatsInternal, this, stats));
+}
+
+void PasswordStoreImpl::RemoveSiteStats(const GURL& origin_domain) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&PasswordStoreImpl::RemoveSiteStatsInternal,
+                                this, origin_domain));
+}
+
+void PasswordStoreImpl::GetSiteStats(const GURL& origin_domain,
+                                     PasswordStoreConsumer* consumer) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  consumer->cancelable_task_tracker()->PostTaskAndReplyWithResult(
+      background_task_runner().get(), FROM_HERE,
+      base::BindOnce(&PasswordStoreImpl::GetSiteStatsInternal, this,
+                     origin_domain),
+      base::BindOnce(&PasswordStoreConsumer::OnGetSiteStatistics,
+                     consumer->GetWeakPtr()));
+}
+
+void PasswordStoreImpl::RemoveStatisticsByOriginAndTime(
+    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+    base::Time delete_begin,
+    base::Time delete_end,
+    base::OnceClosure completion) {
+  DCHECK(main_task_runner()->RunsTasksInCurrentSequence());
+  background_task_runner()->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(
+          &PasswordStoreImpl::RemoveStatisticsByOriginAndTimeInternal, this,
+          origin_filter, delete_begin, delete_end),
+      std::move(completion));
 }
 
 bool PasswordStoreImpl::InitOnBackgroundSequence(

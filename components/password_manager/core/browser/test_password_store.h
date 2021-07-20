@@ -109,12 +109,11 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordStoreChangeListReply callback) override;
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
 
   // PasswordStore interface
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
-  std::vector<InteractionsStats> GetSiteStatsImpl(
-      const GURL& origin_domain) override;
 
   // Unused portions of PasswordStore interface
   void ReportMetricsImpl(const std::string& sync_username,
@@ -122,12 +121,6 @@ class TestPasswordStore : public PasswordStore, public PasswordStoreBackend {
                          BulkCheckDone bulk_check_done) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
-  bool RemoveStatisticsByOriginAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end) override;
-  void AddSiteStatsImpl(const InteractionsStats& stats) override;
-  void RemoveSiteStatsImpl(const GURL& origin_domain) override;
   PasswordStoreChangeList AddInsecureCredentialImpl(
       const InsecureCredential& insecure_credentials) override;
   PasswordStoreChangeList RemoveInsecureCredentialsImpl(

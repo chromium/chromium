@@ -515,6 +515,8 @@ static_library("test_support") {
     "mock_password_store_interface.h",
     "mock_password_sync_metadata_store.cc",
     "mock_password_sync_metadata_store.h",
+    "mock_smart_bubble_stats_store.cc",
+    "mock_smart_bubble_stats_store.h",
     "password_manager_test_utils.cc",
     "password_manager_test_utils.h",
     "site_affiliation/mock_affiliation_fetcher_factory.cc",

@@ -57,8 +57,7 @@ struct FieldInfo;
 // from the UI thread.
 // PasswordStoreSync is a hidden base class because only PasswordSyncBridge
 // needs to access these methods.
-class PasswordStore : public PasswordStoreInterface,
-                      protected SmartBubbleStatsStore {
+class PasswordStore : public PasswordStoreInterface {
  public:
   // Used to notify that unsynced credentials are about to be deleted.
   class UnsyncedCredentialsDeletionNotifier {
@@ -207,17 +206,6 @@ class PasswordStore : public PasswordStoreInterface,
   PasswordStore();
   ~PasswordStore() override;
 
-  // SmartBubbleStatsStore:
-  void AddSiteStats(const InteractionsStats& stats) override;
-  void RemoveSiteStats(const GURL& origin_domain) override;
-  void GetSiteStats(const GURL& origin_domain,
-                    PasswordStoreConsumer* consumer) override;
-  void RemoveStatisticsByOriginAndTime(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end,
-      base::OnceClosure completion) override;
-
   // Create a TaskRunner to be saved in |background_task_runner_|.
   virtual scoped_refptr<base::SequencedTaskRunner> CreateBackgroundTaskRunner()
       const;
@@ -228,12 +216,6 @@ class PasswordStore : public PasswordStoreInterface,
                                  bool custom_passphrase_sync_enabled,
                                  BulkCheckDone bulk_check_done);
 
-  // Synchronous implementation to remove the statistics.
-  virtual bool RemoveStatisticsByOriginAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end);
-
   // Synchronous implementation to disable auto sign-in.
   virtual PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter);
@@ -242,12 +224,6 @@ class PasswordStore : public PasswordStoreInterface,
   // |plain_text_password| stored in the credential database.
   virtual std::vector<std::unique_ptr<PasswordForm>>
   FillMatchingLoginsByPassword(const std::u16string& plain_text_password);
-
-  // Synchronous implementation for manipulating with statistics.
-  virtual void AddSiteStatsImpl(const InteractionsStats& stats);
-  virtual void RemoveSiteStatsImpl(const GURL& origin_domain);
-  virtual std::vector<InteractionsStats> GetSiteStatsImpl(
-      const GURL& origin_domain);
 
   // Synchronous implementation for manipulating with information about
   // insecure credentials.

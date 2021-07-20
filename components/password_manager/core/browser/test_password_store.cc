@@ -228,6 +228,10 @@ void TestPasswordStore::RemoveLoginsByURLAndTimeAsync(
   NOTIMPLEMENTED();
 }
 
+SmartBubbleStatsStore* TestPasswordStore::GetSmartBubbleStatsStore() {
+  return nullptr;
+}
+
 std::vector<std::unique_ptr<PasswordForm>>
 TestPasswordStore::FillMatchingLoginsByPassword(
     const std::u16string& plain_text_password) {
@@ -241,11 +245,6 @@ TestPasswordStore::FillMatchingLoginsByPassword(
   return matched_forms;
 }
 
-std::vector<InteractionsStats> TestPasswordStore::GetSiteStatsImpl(
-    const GURL& origin_domain) {
-  return std::vector<InteractionsStats>();
-}
-
 void TestPasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                           bool custom_passphrase_sync_enabled,
                                           BulkCheckDone bulk_check_done) {
@@ -256,22 +255,6 @@ PasswordStoreChangeList TestPasswordStore::DisableAutoSignInForOriginsImpl(
     const base::RepeatingCallback<bool(const GURL&)>& origin_filter) {
   NOTIMPLEMENTED();
   return PasswordStoreChangeList();
-}
-
-bool TestPasswordStore::RemoveStatisticsByOriginAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end) {
-  NOTIMPLEMENTED();
-  return false;
-}
-
-void TestPasswordStore::AddSiteStatsImpl(const InteractionsStats& stats) {
-  NOTIMPLEMENTED();
-}
-
-void TestPasswordStore::RemoveSiteStatsImpl(const GURL& origin_domain) {
-  NOTIMPLEMENTED();
 }
 
 PasswordStoreChangeList TestPasswordStore::AddInsecureCredentialImpl(

@@ -58,6 +58,8 @@ class PasswordStoreAndroidBackend
   void OnCompleteWithLogins(PasswordStoreAndroidBackendBridge::TaskId task_id,
                             std::vector<PasswordForm> passwords) override;
 
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+
   // Observer to propagate remote form changes to.
   RemoteChangesReceived remote_form_changes_received_;
 

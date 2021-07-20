@@ -19,6 +19,7 @@
 #include "components/password_manager/core/browser/android_affiliation/affiliated_match_helper.h"
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/multi_store_form_fetcher.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -230,15 +231,16 @@ class FormFetcherImplTest : public testing::Test,
     }
   }
 
+  void SetUp() override {
+    ON_CALL(*mock_store_, GetSmartBubbleStatsStore)
+        .WillByDefault(Return(&mock_smart_bubble_stats_store_));
+  }
+
   ~FormFetcherImplTest() override { mock_store_->ShutdownOnUIThread(); }
 
  protected:
   // A wrapper around form_fetcher_.Fetch(), adding the call expectations.
   void Fetch() {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-    EXPECT_CALL(*mock_store_, GetSiteStatsImpl(_))
-        .WillOnce(Return(std::vector<InteractionsStats>()));
-#endif
     EXPECT_CALL(*mock_store_, GetLogins(form_digest_, form_fetcher_.get()));
     form_fetcher_->Fetch();
     task_environment_.RunUntilIdle();
@@ -253,6 +255,7 @@ class FormFetcherImplTest : public testing::Test,
   std::unique_ptr<FormFetcherImpl> form_fetcher_;
   MockConsumer consumer_;
   scoped_refptr<MockPasswordStore> mock_store_;
+  testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store_;
   FakePasswordManagerClient client_;
 
  private:
@@ -504,8 +507,19 @@ TEST_P(FormFetcherImplTest, FetchStatistics) {
   stats.dismissal_count = 5;
   std::vector<InteractionsStats> db_stats = {stats};
   EXPECT_CALL(*mock_store_, GetLogins(form_digest_, form_fetcher_.get()));
-  EXPECT_CALL(*mock_store_, GetSiteStatsImpl(stats.origin_domain))
-      .WillOnce(Return(db_stats));
+  EXPECT_CALL(mock_smart_bubble_stats_store_,
+              GetSiteStats(stats.origin_domain, _))
+      .WillOnce(
+          testing::WithArg<1>([db_stats](PasswordStoreConsumer* consumer) {
+            base::ThreadTaskRunnerHandle::Get()->PostTask(
+                FROM_HERE, base::BindOnce(
+                               [](PasswordStoreConsumer* con,
+                                  const std::vector<InteractionsStats>& stats) {
+                                 con->OnGetSiteStatistics(
+                                     std::vector<InteractionsStats>(stats));
+                               },
+                               consumer, db_stats));
+          }));
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
 
@@ -529,7 +543,7 @@ TEST_P(FormFetcherImplTest, FetchInsecure) {
 #else
 TEST_P(FormFetcherImplTest, DontFetchStatistics) {
   EXPECT_CALL(*mock_store_, GetLogins(form_digest_, form_fetcher_.get()));
-  EXPECT_CALL(*mock_store_, GetSiteStatsImpl(_)).Times(0);
+  EXPECT_CALL(mock_smart_bubble_stats_store_, GetSiteStats).Times(0);
   form_fetcher_->Fetch();
   task_environment_.RunUntilIdle();
 }

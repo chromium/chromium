@@ -99,6 +99,7 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
 #include "components/password_manager/core/browser/mock_password_sync_metadata_store.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -579,10 +580,16 @@ class RemovePasswordsTester {
     return &account_metadata_store_;
   }
 
+  password_manager::MockSmartBubbleStatsStore* mock_smart_bubble_stats_store() {
+    return &mock_smart_bubble_stats_store_;
+  }
+
  private:
   password_manager::MockPasswordStore* profile_store_;
   password_manager::MockPasswordStore* account_store_;
   password_manager::MockPasswordSyncMetadataStore account_metadata_store_;
+  testing::NiceMock<password_manager::MockSmartBubbleStatsStore>
+      mock_smart_bubble_stats_store_;
 };
 
 class RemovePermissionPromptCountsTest {
@@ -1985,9 +1992,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemovePasswordStatistics) {
   RemovePasswordsTester tester(GetProfile());
   base::RepeatingCallback<bool(const GURL&)> empty_filter;
 
-  EXPECT_CALL(*tester.profile_store(), RemoveStatisticsByOriginAndTimeImpl(
-                                           ProbablySameFilter(empty_filter),
-                                           base::Time(), base::Time::Max()));
+  ON_CALL(*tester.profile_store(), GetSmartBubbleStatsStore)
+      .WillByDefault(Return(tester.mock_smart_bubble_stats_store()));
+  EXPECT_CALL(
+      *tester.mock_smart_bubble_stats_store(),
+      RemoveStatisticsByOriginAndTime(ProbablySameFilter(empty_filter),
+                                      base::Time(), base::Time::Max(), _))
+      .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      std::move(completion));
+      }));
   BlockUntilBrowsingDataRemoved(base::Time(), base::Time::Max(),
                                 constants::DATA_TYPE_HISTORY, false);
 }
@@ -2004,9 +2018,17 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   builder->AddRegisterableDomain(kTestRegisterableDomain1);
   base::RepeatingCallback<bool(const GURL&)> filter = builder->BuildUrlFilter();
 
-  EXPECT_CALL(*tester.profile_store(),
-              RemoveStatisticsByOriginAndTimeImpl(
-                  ProbablySameFilter(filter), base::Time(), base::Time::Max()));
+  ON_CALL(*tester.profile_store(), GetSmartBubbleStatsStore)
+      .WillByDefault(Return(tester.mock_smart_bubble_stats_store()));
+  EXPECT_CALL(
+      *tester.mock_smart_bubble_stats_store(),
+      RemoveStatisticsByOriginAndTime(ProbablySameFilter(filter), base::Time(),
+                                      base::Time::Max(), _))
+      .WillOnce(testing::WithArg<3>([](base::OnceClosure completion) {
+        base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                      std::move(completion));
+      }));
+
   BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
                               constants::DATA_TYPE_HISTORY, std::move(builder));
 }

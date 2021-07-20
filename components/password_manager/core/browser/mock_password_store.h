@@ -13,7 +13,6 @@
 #include "components/password_manager/core/browser/insecure_credentials_table.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store.h"
-#include "components/password_manager/core/browser/statistics_table.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace password_manager {
@@ -61,12 +60,6 @@ class MockPasswordStore : public PasswordStore {
               ReportMetricsImpl,
               (const std::string&, bool, BulkCheckDone),
               (override));
-  MOCK_METHOD(bool,
-              RemoveStatisticsByOriginAndTimeImpl,
-              (const base::RepeatingCallback<bool(const GURL&)>&,
-               base::Time,
-               base::Time),
-              (override));
   MOCK_METHOD(PasswordStoreChangeList,
               DisableAutoSignInForOriginsImpl,
               (const base::RepeatingCallback<bool(const GURL&)>&),
@@ -75,12 +68,6 @@ class MockPasswordStore : public PasswordStore {
               FillMatchingLoginsByPassword,
               (const std::u16string&),
               (override));
-  MOCK_METHOD(std::vector<InteractionsStats>,
-              GetSiteStatsImpl,
-              (const GURL& origin_domain),
-              (override));
-  MOCK_METHOD(void, AddSiteStatsImpl, (const InteractionsStats&));
-  MOCK_METHOD(void, RemoveSiteStatsImpl, (const GURL&), (override));
   MOCK_METHOD(PasswordStoreChangeList,
               AddInsecureCredentialImpl,
               (const InsecureCredential&),
@@ -120,6 +107,8 @@ class MockPasswordStore : public PasswordStore {
   }
 
   MOCK_METHOD(bool, IsAbleToSavePasswords, (), (override, const));
+
+  MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
 
  protected:
   ~MockPasswordStore() override;

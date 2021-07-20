@@ -218,6 +218,7 @@ class MockPasswordStoreBackend : public PasswordStoreBackend {
                base::Time delete_end,
                PasswordStoreChangeListReply callback),
               (override));
+  MOCK_METHOD(SmartBubbleStatsStore*, GetSmartBubbleStatsStore, (), (override));
 };
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {

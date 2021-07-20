@@ -315,7 +315,7 @@ void PasswordStore::GetAllLoginsWithAffiliationAndBrandingInformation(
 }
 
 SmartBubbleStatsStore* PasswordStore::GetSmartBubbleStatsStore() {
-  return this;
+  return backend_->GetSmartBubbleStatsStore();
 }
 
 void PasswordStore::ReportMetrics(const std::string& sync_username,
@@ -454,36 +454,6 @@ PasswordStore::~PasswordStore() {
   DCHECK(shutdown_called_);
 }
 
-void PasswordStore::AddSiteStats(const InteractionsStats& stats) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(&PasswordStore::AddSiteStatsImpl, this, stats));
-}
-
-void PasswordStore::RemoveSiteStats(const GURL& origin_domain) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(
-      base::BindOnce(&PasswordStore::RemoveSiteStatsImpl, this, origin_domain));
-}
-
-void PasswordStore::GetSiteStats(const GURL& origin_domain,
-                                 PasswordStoreConsumer* consumer) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  PostStatsTaskAndReplyToConsumerWithResult(
-      consumer,
-      base::BindOnce(&PasswordStore::GetSiteStatsImpl, this, origin_domain));
-}
-
-void PasswordStore::RemoveStatisticsByOriginAndTime(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceClosure completion) {
-  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-  ScheduleTask(base::BindOnce(
-      &PasswordStore::RemoveStatisticsByOriginAndTimeInternal, this,
-      origin_filter, delete_begin, delete_end, std::move(completion)));
-}
-
 scoped_refptr<base::SequencedTaskRunner>
 PasswordStore::CreateBackgroundTaskRunner() const {
   return base::ThreadPool::CreateSequencedTaskRunner(
@@ -495,15 +465,6 @@ void PasswordStore::ReportMetricsImpl(const std::string& sync_username,
                                       BulkCheckDone bulk_check_done) {
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
-}
-
-bool PasswordStore::RemoveStatisticsByOriginAndTimeImpl(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return false;
 }
 
 PasswordStoreChangeList PasswordStore::DisableAutoSignInForOriginsImpl(
@@ -521,23 +482,6 @@ PasswordStore::FillMatchingLoginsByPassword(
   // TODO(crbug.com/1217070): Move as implementation detail into backend.
   LOG(ERROR) << "Called function without implementation: " << __func__;
   return std::vector<std::unique_ptr<PasswordForm>>();
-}
-
-void PasswordStore::AddSiteStatsImpl(const InteractionsStats& stats) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-}
-
-void PasswordStore::RemoveSiteStatsImpl(const GURL& origin_domain) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-}
-
-std::vector<InteractionsStats> PasswordStore::GetSiteStatsImpl(
-    const GURL& origin_domain) {
-  // TODO(crbug.com/1217070): Move as implementation detail into backend.
-  LOG(ERROR) << "Called function without implementation: " << __func__;
-  return std::vector<InteractionsStats>();
 }
 
 PasswordStoreChangeList PasswordStore::AddInsecureCredentialImpl(
@@ -649,19 +593,6 @@ void PasswordStore::PostInsecureCredentialsTaskAndReplyToConsumerWithResult(
       background_task_runner_.get(), FROM_HERE, std::move(task),
       base::BindOnce(&InsecureCredentialsConsumer::OnGetInsecureCredentialsFrom,
                      consumer->GetWeakPtr(), base::RetainedRef(this)));
-}
-
-void PasswordStore::RemoveStatisticsByOriginAndTimeInternal(
-    const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-    base::Time delete_begin,
-    base::Time delete_end,
-    base::OnceClosure completion) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
-  TRACE_EVENT0("passwords",
-               "PasswordStore::RemoveStatisticsByOriginAndTimeInternal");
-  RemoveStatisticsByOriginAndTimeImpl(origin_filter, delete_begin, delete_end);
-  if (completion)
-    main_task_runner_->PostTask(FROM_HERE, std::move(completion));
 }
 
 void PasswordStore::DisableAutoSignInForOriginsInternal(

@@ -12,7 +12,9 @@
 #include "build/build_config.h"
 #include "components/autofill/core/common/gaia_id_hash.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/statistics_table.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "url/gurl.h"
@@ -147,15 +149,16 @@ class MultiStoreFormFetcherTest : public testing::Test {
     account_mock_store_->ShutdownOnUIThread();
   }
 
+  void SetUp() override {
+    ON_CALL(*profile_mock_store_, GetSmartBubbleStatsStore)
+        .WillByDefault(Return(&mock_smart_bubble_stats_store));
+  }
+
   FakePasswordManagerClient* client() { return &client_; }
 
  protected:
   // A wrapper around form_fetcher_.Fetch(), adding the call expectations.
   void Fetch() {
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-    EXPECT_CALL(*profile_mock_store_, GetSiteStatsImpl(_))
-        .WillOnce(Return(std::vector<InteractionsStats>()));
-#endif
     EXPECT_CALL(*profile_mock_store_,
                 GetLogins(form_digest_, form_fetcher_.get()));
     EXPECT_CALL(*account_mock_store_,
@@ -173,6 +176,7 @@ class MultiStoreFormFetcherTest : public testing::Test {
   MockConsumer consumer_;
   scoped_refptr<MockPasswordStore> profile_mock_store_;
   scoped_refptr<MockPasswordStore> account_mock_store_;
+  testing::NiceMock<MockSmartBubbleStatsStore> mock_smart_bubble_stats_store;
   FakePasswordManagerClient client_;
 
  private:

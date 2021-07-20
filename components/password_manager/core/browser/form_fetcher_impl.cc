@@ -123,7 +123,9 @@ void FormFetcherImpl::Fetch() {
   // The statistics is needed for the "Save password?" bubble.
   password_manager::SmartBubbleStatsStore* stats_store =
       password_store->GetSmartBubbleStatsStore();
-  stats_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
+  // `stats_store` can be null in tests.
+  if (stats_store)
+    stats_store->GetSiteStats(form_digest_.url.GetOrigin(), this);
 
   // The desktop bubble needs this information.
   password_store->GetMatchingInsecureCredentials(form_digest_.signon_realm,

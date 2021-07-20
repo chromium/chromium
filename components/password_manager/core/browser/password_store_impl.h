@@ -22,7 +22,8 @@ class PasswordSyncBridge;
 // the LoginDatabase.
 class PasswordStoreImpl : protected PasswordStoreSync,
                           public PasswordStore,
-                          public PasswordStoreBackend {
+                          public PasswordStoreBackend,
+                          public SmartBubbleStatsStore {
  public:
   // The |login_db| must not have been Init()-ed yet. It will be initialized in
   // a deferred manner on the background sequence.
@@ -45,17 +46,9 @@ class PasswordStoreImpl : protected PasswordStoreSync,
                          BulkCheckDone bulk_check_done) override;
   PasswordStoreChangeList DisableAutoSignInForOriginsImpl(
       const base::RepeatingCallback<bool(const GURL&)>& origin_filter) override;
-  bool RemoveStatisticsByOriginAndTimeImpl(
-      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
-      base::Time delete_begin,
-      base::Time delete_end) override;
   std::vector<std::unique_ptr<PasswordForm>> FillMatchingLoginsByPassword(
       const std::u16string& plain_text_password) override;
   DatabaseCleanupResult DeleteUndecryptableLogins() override;
-  void AddSiteStatsImpl(const InteractionsStats& stats) override;
-  void RemoveSiteStatsImpl(const GURL& origin_domain) override;
-  std::vector<InteractionsStats> GetSiteStatsImpl(
-      const GURL& origin_domain) override;
   PasswordStoreChangeList AddInsecureCredentialImpl(
       const InsecureCredential& insecure_credential) override;
   PasswordStoreChangeList RemoveInsecureCredentialsImpl(
@@ -131,6 +124,18 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion,
       PasswordStoreChangeListReply callback) override;
+  SmartBubbleStatsStore* GetSmartBubbleStatsStore() override;
+
+  // SmartBubbleStatsStore:
+  void AddSiteStats(const InteractionsStats& stats) override;
+  void RemoveSiteStats(const GURL& origin_domain) override;
+  void GetSiteStats(const GURL& origin_domain,
+                    PasswordStoreConsumer* consumer) override;
+  void RemoveStatisticsByOriginAndTime(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::Time delete_begin,
+      base::Time delete_end,
+      base::OnceClosure completion) override;
 
   // Opens |login_db_| and creates |sync_bridge_| on the background sequence.
   bool InitOnBackgroundSequence(
@@ -161,6 +166,16 @@ class PasswordStoreImpl : protected PasswordStoreSync,
       base::Time delete_begin,
       base::Time delete_end,
       base::OnceCallback<void(bool)> sync_completion);
+
+  // Synchronous implementation for manipulating with statistics.
+  void AddSiteStatsInternal(const InteractionsStats& stats);
+  void RemoveSiteStatsInternal(const GURL& origin_domain);
+  std::vector<InteractionsStats> GetSiteStatsInternal(
+      const GURL& origin_domain);
+  void RemoveStatisticsByOriginAndTimeInternal(
+      const base::RepeatingCallback<bool(const GURL&)>& origin_filter,
+      base::Time delete_begin,
+      base::Time delete_end);
 
   // The login SQL database. The LoginDatabase instance is received via the
   // in an uninitialized state, so as to allow injecting mocks, then Init() is

@@ -34,6 +34,7 @@
 #include "components/password_manager/core/browser/leak_detection/mock_leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/mock_password_reuse_manager.h"
 #include "components/password_manager/core/browser/mock_password_store.h"
+#include "components/password_manager/core/browser/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_autofill_manager.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -373,7 +374,9 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
 
     ON_CALL(client_, GetProfilePasswordStore())
         .WillByDefault(Return(store_.get()));
-    EXPECT_CALL(*store_, GetSiteStatsImpl(_)).Times(AnyNumber());
+
+    ON_CALL(*store_, GetSmartBubbleStatsStore)
+        .WillByDefault(Return(&smart_bubble_stats_store_));
 
     if (base::FeatureList::IsEnabled(
             features::kEnablePasswordsAccountStorage)) {
@@ -627,6 +630,7 @@ class PasswordManagerTest : public testing::TestWithParam<bool> {
   MockPasswordReuseManager reuse_manager_;
   testing::NiceMock<MockPasswordManagerClient> client_;
   MockPasswordManagerDriver driver_;
+  testing::NiceMock<MockSmartBubbleStatsStore> smart_bubble_stats_store_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<PasswordAutofillManager> password_autofill_manager_;
   std::unique_ptr<PasswordManager> manager_;
