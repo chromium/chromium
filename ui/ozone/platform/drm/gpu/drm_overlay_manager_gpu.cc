@@ -25,8 +25,9 @@ DrmOverlayManagerGpu::~DrmOverlayManagerGpu() = default;
 void DrmOverlayManagerGpu::SendOverlayValidationRequest(
     const std::vector<OverlaySurfaceCandidate>& candidates,
     gfx::AcceleratedWidget widget) {
-  TRACE_EVENT_ASYNC_BEGIN0(
-      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest",
+      TRACE_ID_LOCAL(this));
   SetClearCacheCallbackIfNecessary();
   drm_thread_proxy_->CheckOverlayCapabilities(
       widget, candidates,
@@ -38,9 +39,9 @@ std::vector<OverlayStatus>
 DrmOverlayManagerGpu::SendOverlayValidationRequestSync(
     const std::vector<OverlaySurfaceCandidate>& candidates,
     gfx::AcceleratedWidget widget) {
-  TRACE_EVENT_ASYNC_BEGIN0(
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
       "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequestSync",
-      this);
+      TRACE_ID_LOCAL(this));
   SetClearCacheCallbackIfNecessary();
   return drm_thread_proxy_->CheckOverlayCapabilitiesSync(widget, candidates);
 }
@@ -63,8 +64,9 @@ void DrmOverlayManagerGpu::ReceiveOverlayValidationResponse(
     gfx::AcceleratedWidget widget,
     const std::vector<OverlaySurfaceCandidate>& candidates,
     const std::vector<OverlayStatus>& status) {
-  TRACE_EVENT_ASYNC_END0(
-      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "hwoverlays", "DrmOverlayManagerGpu::SendOverlayValidationRequest",
+      TRACE_ID_LOCAL(this));
 
   UpdateCacheForOverlayCandidates(candidates, widget, status);
 }

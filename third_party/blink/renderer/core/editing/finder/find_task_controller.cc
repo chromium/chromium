@@ -167,7 +167,9 @@ void FindTaskController::StartRequest(
     int identifier,
     const WebString& search_text,
     const mojom::blink::FindOptions& options) {
-  TRACE_EVENT_ASYNC_BEGIN0("blink", "FindInPageRequest", identifier);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "blink", "FindInPageRequest",
+      TRACE_ID_WITH_SCOPE("FindInPageRequest", identifier));
   current_request_start_time_ = base::TimeTicks::Now();
   total_task_duration_for_current_request_ = base::TimeDelta();
   task_count_for_current_request_ = 0;
@@ -252,8 +254,10 @@ void FindTaskController::DidFinishTask(
 void FindTaskController::RecordRequestMetrics(
     RequestEndState request_end_state) {
   bool aborted = (request_end_state == RequestEndState::ABORTED);
-  TRACE_EVENT_ASYNC_END1("blink", "FindInPageRequest", current_find_identifier_,
-                         "aborted", aborted);
+  TRACE_EVENT_NESTABLE_ASYNC_END1(
+      "blink", "FindInPageRequest",
+      TRACE_ID_WITH_SCOPE("FindInPageRequest", current_find_identifier_),
+      "aborted", aborted);
   if (aborted) {
     UMA_HISTOGRAM_MEDIUM_TIMES("WebCore.FindInPage.TotalTaskDuration.Aborted",
                                total_task_duration_for_current_request_);

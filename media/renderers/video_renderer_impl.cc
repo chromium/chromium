@@ -162,7 +162,8 @@ void VideoRendererImpl::Initialize(
     const TimeSource::WallClockTimeCB& wall_clock_time_cb,
     PipelineStatusCallback init_cb) {
   DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT_ASYNC_BEGIN0("media", "VideoRendererImpl::Initialize", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "VideoRendererImpl::Initialize",
+                                    TRACE_ID_LOCAL(this));
 
   base::AutoLock auto_lock(lock_);
   DCHECK(stream);
@@ -314,14 +315,16 @@ void VideoRendererImpl::OnVideoDecoderStreamInitialized(bool success) {
 
 void VideoRendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_ASYNC_END1("media", "VideoRendererImpl::Initialize", this,
-                         "status", PipelineStatusToString(status));
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "VideoRendererImpl::Initialize",
+                                  TRACE_ID_LOCAL(this), "status",
+                                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void VideoRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_ASYNC_END0("media", "VideoRendererImpl::Flush", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "VideoRendererImpl::Flush",
+                                  TRACE_ID_LOCAL(this));
   std::move(flush_cb_).Run();
 }
 

@@ -325,10 +325,10 @@ void FrameSender::SendEncodedFrame(
         target_playout_delay_.InMilliseconds();
   }
 
-  TRACE_EVENT_ASYNC_BEGIN1("cast.stream",
-                           is_audio_ ? "Audio Transport" : "Video Transport",
-                           frame_id.lower_32_bits(), "rtp_timestamp",
-                           encoded_frame->rtp_timestamp.lower_32_bits());
+  const char* name = is_audio_ ? "Audio Transport" : "Video Transport";
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "cast.stream", name, TRACE_ID_WITH_SCOPE(name, frame_id.lower_32_bits()),
+      "rtp_timestamp", encoded_frame->rtp_timestamp.lower_32_bits());
   transport_sender_->InsertFrame(ssrc_, *encoded_frame);
 }
 
@@ -421,10 +421,11 @@ void FrameSender::OnReceivedCastFeedback(const RtcpCastMessage& cast_feedback) {
       // This is a good place to match the trace for frame ids
       // since this ensures we not only track frame ids that are
       // implicitly ACKed, but also handles duplicate ACKs
-      TRACE_EVENT_ASYNC_END1(
-          "cast.stream", is_audio_ ? "Audio Transport" : "Video Transport",
-          latest_acked_frame_id_.lower_32_bits(), "RTT_usecs",
-          current_round_trip_time_.InMicroseconds());
+      const char* name = is_audio_ ? "Audio Transport" : "Video Transport";
+      TRACE_EVENT_NESTABLE_ASYNC_END1(
+          "cast.stream", name,
+          TRACE_ID_WITH_SCOPE(name, latest_acked_frame_id_.lower_32_bits()),
+          "RTT_usecs", current_round_trip_time_.InMicroseconds());
     } while (latest_acked_frame_id_ < cast_feedback.ack_frame_id);
     transport_sender_->CancelSendingFrames(ssrc_, frames_to_cancel);
     OnCancelSendingFrames();

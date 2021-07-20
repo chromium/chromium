@@ -147,19 +147,19 @@ class AudioEncoder::ImplBase
       audio_frame->rtp_timestamp = frame_rtp_timestamp_;
       audio_frame->reference_time = frame_capture_time_;
 
-      TRACE_EVENT_ASYNC_BEGIN2("cast.stream", "Audio Encode", audio_frame.get(),
-                               "frame_id", frame_id_.lower_32_bits(),
-                               "rtp_timestamp",
-                               frame_rtp_timestamp_.lower_32_bits());
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+          "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
+          "frame_id", frame_id_.lower_32_bits(), "rtp_timestamp",
+          frame_rtp_timestamp_.lower_32_bits());
       if (EncodeFromFilledBuffer(&audio_frame->data)) {
         // Compute encoder utilization as the real-world time elapsed divided
         // by the signal duration.
         audio_frame->encoder_utilization =
             (base::TimeTicks::Now() - start_time) / frame_duration_;
 
-        TRACE_EVENT_ASYNC_END1("cast.stream", "Audio Encode", audio_frame.get(),
-                               "encoder_utilization",
-                               audio_frame->encoder_utilization);
+        TRACE_EVENT_NESTABLE_ASYNC_END1(
+            "cast.stream", "Audio Encode", TRACE_ID_LOCAL(audio_frame.get()),
+            "encoder_utilization", audio_frame->encoder_utilization);
 
         audio_frame->encode_completion_time =
             cast_environment_->Clock()->NowTicks();

@@ -127,9 +127,10 @@ bool ThreadSafeCaptureOracle::ObserveEventAndDecideCapture(
         base::saturated_cast<int>(attenuated_utilization * 100.0 + 0.5));
   }
 
-  TRACE_EVENT_ASYNC_BEGIN2("gpu.capture", "Capture", output_buffer.id,
-                           "frame_number", frame_number, "trigger",
-                           VideoCaptureOracle::EventAsString(event));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2(
+      "gpu.capture", "Capture",
+      TRACE_ID_WITH_SCOPE("Capture", output_buffer.id), "frame_number",
+      frame_number, "trigger", VideoCaptureOracle::EventAsString(event));
 
   std::unique_ptr<VideoCaptureBufferHandle> output_buffer_access =
       output_buffer.handle_provider->GetHandleForInProcessAccess();
@@ -214,9 +215,11 @@ void ThreadSafeCaptureOracle::DidCaptureFrame(
   const bool should_deliver_frame =
       oracle_.CompleteCapture(capture->frame_number, success, &reference_time);
 
-  TRACE_EVENT_ASYNC_END2("gpu.capture", "Capture", capture->buffer.id,
-                         "success", should_deliver_frame, "timestamp",
-                         (reference_time - base::TimeTicks()).InMicroseconds());
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "gpu.capture", "Capture",
+      TRACE_ID_WITH_SCOPE("Capture", capture->buffer.id), "success",
+      should_deliver_frame, "timestamp",
+      (reference_time - base::TimeTicks()).InMicroseconds());
 
   if (!should_deliver_frame || !client_)
     return;

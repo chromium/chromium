@@ -61,8 +61,10 @@ void VideoCaptureJpegDecoderImpl::DecodeCapturedData(
     media::VideoCaptureDevice::Client::Buffer out_buffer) {
   DCHECK(decoder_);
 
-  TRACE_EVENT_ASYNC_BEGIN0("jpeg", "VideoCaptureJpegDecoderImpl decoding",
-                           next_task_id_);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "jpeg", "VideoCaptureJpegDecoderImpl decoding",
+      TRACE_ID_WITH_SCOPE("VideoCaptureJpegDecoderImpl decoding",
+                          next_task_id_));
   TRACE_EVENT0("jpeg", "VideoCaptureJpegDecoderImpl::DecodeCapturedData");
 
   // TODO(kcwu): enqueue decode requests in case decoding is not fast enough
@@ -188,8 +190,9 @@ void VideoCaptureJpegDecoderImpl::VideoFrameReady(int32_t task_id) {
 
   std::move(decode_done_closure_).Run();
 
-  TRACE_EVENT_ASYNC_END0("jpeg", "VideoCaptureJpegDecoderImpl decoding",
-                         task_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "jpeg", "VideoCaptureJpegDecoderImpl decoding",
+      TRACE_ID_WITH_SCOPE("VideoCaptureJpegDecoderImpl decoding", task_id));
 }
 
 void VideoCaptureJpegDecoderImpl::NotifyError(

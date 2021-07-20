@@ -41,17 +41,18 @@ ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      base::TimeDelta timestamp)
     : trace_name_(trace_name) {
   DCHECK(trace_name_);
-  TRACE_EVENT_ASYNC_BEGIN2("media", trace_name_, this, "is_key_frame",
-                           is_key_frame, "timestamp_us",
-                           timestamp.InMicroseconds());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN2("media", trace_name_, TRACE_ID_LOCAL(this),
+                                    "is_key_frame", is_key_frame,
+                                    "timestamp_us", timestamp.InMicroseconds());
 }
 
 ScopedDecodeTrace::ScopedDecodeTrace(const char* trace_name,
                                      const DecoderBuffer& buffer)
     : trace_name_(trace_name) {
   DCHECK(trace_name_);
-  TRACE_EVENT_ASYNC_BEGIN1("media", trace_name_, this, "decoder_buffer",
-                           buffer.AsHumanReadableString(/*verbose=*/true));
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+      "media", trace_name_, TRACE_ID_LOCAL(this), "decoder_buffer",
+      buffer.AsHumanReadableString(/*verbose=*/true));
 }
 
 ScopedDecodeTrace::~ScopedDecodeTrace() {
@@ -62,8 +63,9 @@ ScopedDecodeTrace::~ScopedDecodeTrace() {
 void ScopedDecodeTrace::EndTrace(const Status& status) {
   DCHECK(!closed_);
   closed_ = true;
-  TRACE_EVENT_ASYNC_END1("media", trace_name_, this, "status",
-                         GetDecodeStatusString(status.code()));
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media", trace_name_, TRACE_ID_LOCAL(this),
+                                  "status",
+                                  GetDecodeStatusString(status.code()));
 }
 
 }  // namespace media

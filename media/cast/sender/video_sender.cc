@@ -250,9 +250,9 @@ void VideoSender::InsertRawVideoFrame(
           frame_to_encode, reference_time,
           base::BindOnce(&VideoSender::OnEncodedVideoFrame, AsWeakPtr(),
                          frame_to_encode, bitrate))) {
-    TRACE_EVENT_ASYNC_BEGIN1("cast.stream", "Video Encode",
-                             frame_to_encode.get(), "rtp_timestamp",
-                             rtp_timestamp.lower_32_bits());
+    TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+        "cast.stream", "Video Encode", TRACE_ID_LOCAL(frame_to_encode.get()),
+        "rtp_timestamp", rtp_timestamp.lower_32_bits());
     frames_in_encoder_++;
     duration_in_encoder_ += duration_added_by_next_frame;
     last_enqueued_frame_rtp_timestamp_ = rtp_timestamp;
@@ -306,10 +306,10 @@ void VideoSender::OnEncodedVideoFrame(
   last_reported_encoder_utilization_ = encoded_frame->encoder_utilization;
   last_reported_lossy_utilization_ = encoded_frame->lossy_utilization;
 
-  TRACE_EVENT_ASYNC_END2("cast.stream", "Video Encode", video_frame.get(),
-                         "encoder_utilization",
-                         last_reported_encoder_utilization_,
-                         "lossy_utilization", last_reported_lossy_utilization_);
+  TRACE_EVENT_NESTABLE_ASYNC_END2(
+      "cast.stream", "Video Encode", TRACE_ID_LOCAL(video_frame.get()),
+      "encoder_utilization", last_reported_encoder_utilization_,
+      "lossy_utilization", last_reported_lossy_utilization_);
 
   // Report the resource utilization for processing this frame.  Take the
   // greater of the two utilization values and attenuate them such that the

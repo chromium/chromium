@@ -277,7 +277,8 @@ TimeSource* AudioRendererImpl::GetTimeSource() {
 void AudioRendererImpl::Flush(base::OnceClosure callback) {
   DVLOG(1) << __func__;
   DCHECK(task_runner_->BelongsToCurrentThread());
-  TRACE_EVENT_ASYNC_BEGIN0("media", "AudioRendererImpl::Flush", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "AudioRendererImpl::Flush",
+                                    TRACE_ID_LOCAL(this));
 
   // Flush |sink_| now.  |sink_| must only be accessed on |task_runner_| and not
   // be called under |lock_|.
@@ -365,7 +366,8 @@ void AudioRendererImpl::Initialize(DemuxerStream* stream,
   DCHECK(init_cb);
   DCHECK(state_ == kUninitialized || state_ == kFlushed);
   DCHECK(sink_);
-  TRACE_EVENT_ASYNC_BEGIN0("media", "AudioRendererImpl::Initialize", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("media", "AudioRendererImpl::Initialize",
+                                    TRACE_ID_LOCAL(this));
 
   // If we are re-initializing playback (e.g. switching media tracks), stop the
   // sink first.
@@ -679,14 +681,16 @@ void AudioRendererImpl::OnAudioDecoderStreamInitialized(bool success) {
 
 void AudioRendererImpl::FinishInitialization(PipelineStatus status) {
   DCHECK(init_cb_);
-  TRACE_EVENT_ASYNC_END1("media", "AudioRendererImpl::Initialize", this,
-                         "status", PipelineStatusToString(status));
+  TRACE_EVENT_NESTABLE_ASYNC_END1("media", "AudioRendererImpl::Initialize",
+                                  TRACE_ID_LOCAL(this), "status",
+                                  PipelineStatusToString(status));
   std::move(init_cb_).Run(status);
 }
 
 void AudioRendererImpl::FinishFlush() {
   DCHECK(flush_cb_);
-  TRACE_EVENT_ASYNC_END0("media", "AudioRendererImpl::Flush", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("media", "AudioRendererImpl::Flush",
+                                  TRACE_ID_LOCAL(this));
   std::move(flush_cb_).Run();
 }
 

@@ -17,13 +17,15 @@ ServiceMetrics::~ServiceMetrics() {
 }
 
 void ServiceMetrics::HasConnections() {
-  TRACE_EVENT_ASYNC_BEGIN0("audio", "Audio service has connections", this);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("audio", "Audio service has connections",
+                                    TRACE_ID_LOCAL(this));
   has_connections_start_ = clock_->NowTicks();
   LogHasNoConnectionsDuration();
 }
 
 void ServiceMetrics::HasNoConnections() {
-  TRACE_EVENT_ASYNC_END0("audio", "Audio service has connections", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("audio", "Audio service has connections",
+                                  TRACE_ID_LOCAL(this));
   has_no_connections_start_ = clock_->NowTicks();
   DCHECK_NE(base::TimeTicks(), has_connections_start_);
   UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.HasConnectionsDuration",

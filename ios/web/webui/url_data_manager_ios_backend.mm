@@ -246,8 +246,9 @@ URLRequestChromeJob::~URLRequestChromeJob() {
 }
 
 void URLRequestChromeJob::Start() {
-  TRACE_EVENT_ASYNC_BEGIN1("browser", "DataManager:Request", this, "URL",
-                           request_->url().possibly_invalid_spec());
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN1("browser", "DataManager:Request",
+                                    TRACE_ID_LOCAL(this), "URL",
+                                    request_->url().possibly_invalid_spec());
 
   if (!request_)
     return;
@@ -339,7 +340,8 @@ void URLRequestChromeJob::MimeTypeAvailable(URLDataSourceIOSImpl* source,
 }
 
 void URLRequestChromeJob::DataAvailable(base::RefCountedMemory* bytes) {
-  TRACE_EVENT_ASYNC_END0("browser", "DataManager:Request", this);
+  TRACE_EVENT_NESTABLE_ASYNC_END0("browser", "DataManager:Request",
+                                  TRACE_ID_LOCAL(this));
   if (bytes) {
     data_ = bytes;
     if (pending_buf_.get()) {
