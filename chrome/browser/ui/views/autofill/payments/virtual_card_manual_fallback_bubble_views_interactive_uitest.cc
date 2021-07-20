@@ -79,28 +79,6 @@ class VirtualCardManualFallbackBubbleViewsInteractiveUiTest
     event_waiter_->Wait();
   }
 
-  void ClickOnViewAndWaitForBubbleDismissal(views::View* view) {
-    views::test::WidgetDestroyedWaiter destroyed_waiter(
-        GetBubbleViews()->GetWidget());
-    GetBubbleViews()->ResetViewShownTimeStampForTesting();
-    views::BubbleFrameView* bubble_frame_view =
-        static_cast<views::BubbleFrameView*>(
-            GetBubbleViews()->GetWidget()->non_client_view()->frame_view());
-    bubble_frame_view->ResetViewShownTimeStampForTesting();
-    ClickOnView(view);
-    destroyed_waiter.Wait();
-    EXPECT_FALSE(GetBubbleViews());
-    EXPECT_TRUE(IsIconVisible());
-  }
-
-  void ClickOnView(views::View* view) {
-    base::RunLoop closure_loop;
-    ui_test_utils::MoveMouseToCenterAndPress(
-        view, ui_controls::LEFT, ui_controls::DOWN | ui_controls::UP,
-        closure_loop.QuitClosure());
-    closure_loop.Run();
-  }
-
   bool IsIconVisible() { return GetIconView() && GetIconView()->GetVisible(); }
 
   std::u16string GetValueForField(VirtualCardManualFallbackBubbleField field) {
@@ -259,16 +237,8 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
       1);
 }
 
-// Disabled on Mac due to flakiness: crbug.com/1223042
-#if defined(OS_MAC)
-#define MAYBE_Metrics_BubbleShownAndClosedByUser \
-  DISABLED_Metrics_BubbleShownAndClosedByUser
-#else
-#define MAYBE_Metrics_BubbleShownAndClosedByUser \
-  Metrics_BubbleShownAndClosedByUser
-#endif
 IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
-                       MAYBE_Metrics_BubbleShownAndClosedByUser) {
+                       Metrics_BubbleShownAndClosedByUser) {
   base::HistogramTester histogram_tester;
 
   ShowBubble();
@@ -278,13 +248,15 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.Shown", false, 1);
 
-  // Dismiss the bubble by clicking the close button.
-  auto* close_button =
-      GetBubbleViews()->GetBubbleFrameView()->GetCloseButtonForTesting();
-  EXPECT_TRUE(close_button);
-  ClickOnViewAndWaitForBubbleDismissal(close_button);
+  // Mock deactivation due to clicking the close button.
+  views::test::WidgetDestroyedWaiter destroyed_waiter1(
+      GetBubbleViews()->GetWidget());
+  GetBubbleViews()->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter1.Wait();
 
-  histogram_tester.ExpectBucketCount(
+  // Confirm .FirstShow metrics.
+  histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.FirstShow",
       AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
@@ -296,19 +268,23 @@ IN_PROC_BROWSER_TEST_F(VirtualCardManualFallbackBubbleViewsInteractiveUiTest,
   histogram_tester.ExpectBucketCount(
       "Autofill.VirtualCardManualFallbackBubble.Shown", true, 1);
 
-  // Dismiss the bubble by clicking the close button.
-  close_button =
-      GetBubbleViews()->GetBubbleFrameView()->GetCloseButtonForTesting();
-  EXPECT_TRUE(close_button);
-  ClickOnViewAndWaitForBubbleDismissal(close_button);
+  // Mock deactivation due to clicking the close button.
+  views::test::WidgetDestroyedWaiter destroyed_waiter2(
+      GetBubbleViews()->GetWidget());
+  GetBubbleViews()->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kCloseButtonClicked);
+  destroyed_waiter2.Wait();
 
-  histogram_tester.ExpectBucketCount(
+  // Confirm .Reshows metrics.
+  histogram_tester.ExpectUniqueSample(
       "Autofill.VirtualCardManualFallbackBubble.Result.Reshows",
       AutofillMetrics::VirtualCardManualFallbackBubbleResultMetric::
           VIRTUAL_CARD_MANUAL_FALLBACK_BUBBLE_CLOSED,
       1);
 
-  // Bubble is reshown by the user.
+  // Bubble is reshown by the user. Closing a reshown bubble makes the browser
+  // inactive for some reason, so we must reactivate it first.
+  browser()->window()->Activate();
   ReshowBubble();
 
   histogram_tester.ExpectBucketCount(
