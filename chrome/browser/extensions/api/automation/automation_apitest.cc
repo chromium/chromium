@@ -49,7 +49,7 @@
 #include "chrome/browser/ui/aura/accessibility/automation_manager_aura.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
-#include "ui/display/test/display_manager_test_api.h"
+#include "ui/display/test/display_manager_test_api.h"  // nogncheck
 #endif
 
 namespace extensions {

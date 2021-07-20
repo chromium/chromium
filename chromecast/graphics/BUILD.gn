@@ -168,7 +168,6 @@ if (use_aura && !is_cast_audio_only) {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/base:test_support",
-      "//ui/display/manager:manager",
       "//ui/events:test_support",
       "//ui/gfx",
       "//ui/gl:test_support",

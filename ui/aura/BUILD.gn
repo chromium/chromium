@@ -245,7 +245,6 @@ static_library("test_support") {
     "//ui/base/ime/init",
     "//ui/compositor:test_support",
     "//ui/display",
-    "//ui/display/manager",
     "//ui/events",
     "//ui/events:events_base",
     "//ui/events:test_support",

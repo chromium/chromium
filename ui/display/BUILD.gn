@@ -5,7 +5,6 @@
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
-import("//ui/display/display.gni")
 
 component("display") {
   sources = [
@@ -122,23 +121,25 @@ component("display") {
   }
 }
 
-component("display_manager_test_api") {
-  testonly = true
-  sources = [
-    "test/display_manager_test_api.cc",
-    "test/display_manager_test_api.h",
-  ]
+if (is_chromeos_ash) {
+  component("display_manager_test_api") {
+    testonly = true
+    sources = [
+      "test/display_manager_test_api.cc",
+      "test/display_manager_test_api.h",
+    ]
 
-  defines = [ "DISPLAY_IMPLEMENTATION" ]
+    defines = [ "DISPLAY_IMPLEMENTATION" ]
 
-  public_deps = [ "//ui/display/manager" ]
+    public_deps = [ "//ui/display/manager" ]
 
-  deps = [
-    "//base",
-    "//build:chromeos_buildflags",
-    "//ui/display",
-    "//ui/display/types",
-  ]
+    deps = [
+      "//base",
+      "//build:chromeos_buildflags",
+      "//ui/display",
+      "//ui/display/types",
+    ]
+  }
 }
 
 static_library("test_support") {
@@ -151,6 +152,16 @@ static_library("test_support") {
     "test/scoped_screen_override.h",
     "test/test_screen.cc",
     "test/test_screen.h",
+  ]
+  public_deps = [ ":display" ]
+  deps = [
+    "//base",
+    "//testing/gmock",
+    "//ui/display/types",
+    "//ui/events/devices",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/gfx/geometry",
   ]
 
   if (is_win) {
@@ -169,7 +180,7 @@ static_library("test_support") {
     ]
   }
 
-  if (build_display_configuration) {
+  if (is_chromeos_ash) {
     sources += [
       "manager/test/action_logger.cc",
       "manager/test/action_logger.h",
@@ -184,21 +195,8 @@ static_library("test_support") {
       "manager/test/touch_transform_controller_test_api.cc",
       "manager/test/touch_transform_controller_test_api.h",
     ]
+    public_deps += [ "//ui/display/manager" ]
   }
-
-  public_deps = [
-    ":display",
-    "//ui/display/manager",
-  ]
-  deps = [
-    "//base",
-    "//testing/gmock",
-    "//ui/display/types",
-    "//ui/events/devices",
-    "//ui/gfx",
-    "//ui/gfx:test_support",
-    "//ui/gfx/geometry",
-  ]
 }
 
 # This test covers all testable components in display.
@@ -208,10 +206,6 @@ test("display_unittests") {
     "display_layout_unittest.cc",
     "display_list_unittest.cc",
     "display_unittest.cc",
-    "fake/fake_display_snapshot_unittest.cc",
-    "manager/display_manager_utilities_unittest.cc",
-    "manager/json_converter_unittest.cc",
-    "manager/managed_display_info_unittest.cc",
     "mojom/display_list_mojom_traits_unittest.cc",
     "mojom/display_mojom_traits_unittest.cc",
     "mojom/screen_infos_mojom_traits_unittest.cc",
@@ -228,24 +222,8 @@ test("display_unittests") {
     ]
   }
 
-  if (build_display_configuration) {
-    sources += [
-      "manager/apply_content_protection_task_unittest.cc",
-      "manager/configure_displays_task_unittest.cc",
-      "manager/content_protection_manager_unittest.cc",
-      "manager/display_change_observer_unittest.cc",
-      "manager/display_configurator_unittest.cc",
-      "manager/display_utils_unittest.cc",
-      "manager/query_content_protection_task_unittest.cc",
-      "manager/touch_device_manager_unittest.cc",
-      "manager/touch_transform_controller_unittest.cc",
-      "manager/update_display_configuration_task_unittest.cc",
-    ]
-  }
-
   deps = [
     ":display",
-    ":display_manager_test_api",
     ":test_support",
     "//base",
     "//base/test:test_support",
@@ -256,7 +234,6 @@ test("display_unittests") {
     "//testing/gmock",
     "//testing/gtest",
     "//ui/display/fake",
-    "//ui/display/manager",
     "//ui/display/mojom",
     "//ui/display/types",
     "//ui/display/util",
@@ -273,6 +250,26 @@ test("display_unittests") {
   }
 
   if (is_chromeos_ash) {
-    deps += [ "//ash/constants" ]
+    sources += [
+      "fake/fake_display_snapshot_unittest.cc",
+      "manager/apply_content_protection_task_unittest.cc",
+      "manager/configure_displays_task_unittest.cc",
+      "manager/content_protection_manager_unittest.cc",
+      "manager/display_change_observer_unittest.cc",
+      "manager/display_configurator_unittest.cc",
+      "manager/display_manager_utilities_unittest.cc",
+      "manager/display_utils_unittest.cc",
+      "manager/json_converter_unittest.cc",
+      "manager/managed_display_info_unittest.cc",
+      "manager/query_content_protection_task_unittest.cc",
+      "manager/touch_device_manager_unittest.cc",
+      "manager/touch_transform_controller_unittest.cc",
+      "manager/update_display_configuration_task_unittest.cc",
+    ]
+    deps += [
+      ":display_manager_test_api",
+      "//ash/constants",
+      "//ui/display/manager",
+    ]
   }
 }

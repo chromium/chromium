@@ -4,51 +4,19 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
-import("//ui/display/display.gni")
+
+assert(is_chromeos_ash || is_chromecast)
 
 component("manager") {
   sources = [
-    "display_layout_store.cc",
-    "display_layout_store.h",
-    "display_manager.cc",
-    "display_manager.h",
     "display_manager_export.h",
     "display_manager_utilities.cc",
     "display_manager_utilities.h",
     "display_util.cc",
     "display_util.h",
-    "json_converter.cc",
-    "json_converter.h",
     "managed_display_info.cc",
     "managed_display_info.h",
   ]
-
-  if (build_display_configuration) {
-    sources += [
-      "apply_content_protection_task.cc",
-      "apply_content_protection_task.h",
-      "configure_displays_task.cc",
-      "configure_displays_task.h",
-      "content_protection_manager.cc",
-      "content_protection_manager.h",
-      "default_touch_transform_setter.cc",
-      "default_touch_transform_setter.h",
-      "display_change_observer.cc",
-      "display_change_observer.h",
-      "display_configurator.cc",
-      "display_configurator.h",
-      "display_layout_manager.h",
-      "query_content_protection_task.cc",
-      "query_content_protection_task.h",
-      "touch_device_manager.cc",
-      "touch_device_manager.h",
-      "touch_transform_controller.cc",
-      "touch_transform_controller.h",
-      "touch_transform_setter.h",
-      "update_display_configuration_task.cc",
-      "update_display_configuration_task.h",
-    ]
-  }
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
@@ -68,6 +36,36 @@ component("manager") {
   defines = [ "DISPLAY_MANAGER_IMPLEMENTATION" ]
 
   if (is_chromeos_ash) {
+    sources += [
+      "apply_content_protection_task.cc",
+      "apply_content_protection_task.h",
+      "configure_displays_task.cc",
+      "configure_displays_task.h",
+      "content_protection_manager.cc",
+      "content_protection_manager.h",
+      "default_touch_transform_setter.cc",
+      "default_touch_transform_setter.h",
+      "display_change_observer.cc",
+      "display_change_observer.h",
+      "display_configurator.cc",
+      "display_configurator.h",
+      "display_layout_manager.h",
+      "display_layout_store.cc",
+      "display_layout_store.h",
+      "display_manager.cc",
+      "display_manager.h",
+      "json_converter.cc",
+      "json_converter.h",
+      "query_content_protection_task.cc",
+      "query_content_protection_task.h",
+      "touch_device_manager.cc",
+      "touch_device_manager.h",
+      "touch_transform_controller.cc",
+      "touch_transform_controller.h",
+      "touch_transform_setter.h",
+      "update_display_configuration_task.cc",
+      "update_display_configuration_task.h",
+    ]
     deps += [ "//chromeos/system" ]
   }
 }

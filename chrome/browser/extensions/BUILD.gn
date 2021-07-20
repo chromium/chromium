@@ -943,7 +943,6 @@ static_library("extensions") {
     "//ui/base/clipboard",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//ui/base/ime",
-    "//ui/display/manager",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/message_center",
@@ -962,7 +961,10 @@ static_library("extensions") {
       "api/printing/printer_capabilities_provider.cc",
       "api/printing/printer_capabilities_provider.h",
     ]
-    deps += [ "//chromeos/resources:media_app_bundle_resources_grit" ]
+    deps += [
+      "//chromeos/resources:media_app_bundle_resources_grit",
+      "//ui/display/manager",
+    ]
     if (use_cups) {
       sources += [
         "api/printing/print_job_submitter.cc",

@@ -400,7 +400,6 @@ if (is_android) {
       "//testing/gtest",
       "//ui/android:ui_java",
       "//ui/base",
-      "//ui/display/manager",
       "//ui/gfx",
       "//ui/gfx:test_support",
       "//ui/gfx/geometry",

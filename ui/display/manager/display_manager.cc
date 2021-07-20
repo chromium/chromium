@@ -55,10 +55,6 @@
 #include "ui/events/devices/touchscreen_device.h"
 #endif
 
-#if defined(OS_WIN)
-#include "base/win/windows_version.h"
-#endif
-
 namespace display {
 
 namespace {
@@ -885,12 +881,6 @@ void DisplayManager::UpdateDisplays() {
 void DisplayManager::UpdateDisplaysWith(
     const DisplayInfoList& updated_display_info_list) {
   BeginEndNotifier notifier(this);
-
-#if defined(OS_WIN)
-  DCHECK_EQ(1u, updated_display_info_list.size())
-      << ": Multiple display test does not work on Windows bots. Please "
-         "skip (don't disable) the test.";
-#endif
 
   DisplayInfoList new_display_info_list = updated_display_info_list;
   std::sort(active_display_list_.begin(), active_display_list_.end(),

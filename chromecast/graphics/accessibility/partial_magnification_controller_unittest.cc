@@ -5,7 +5,6 @@
 #include "chromecast/graphics/accessibility/partial_magnification_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/test/test_window_delegate.h"
-#include "ui/display/manager/display_manager.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"

@@ -371,7 +371,6 @@ test("exo_unittests") {
     "//ui/aura:test_support",
     "//ui/base",
     "//ui/compositor:test_support",
-    "//ui/display:display_manager_test_api",
     "//ui/gl:test_support",
   ]
 
@@ -391,6 +390,7 @@ test("exo_unittests") {
       "//ash:test_support",
       "//ash/public/cpp",
       "//components/exo/server:unit_tests",
+      "//ui/display:display_manager_test_api",
     ]
 
     data_deps += [
