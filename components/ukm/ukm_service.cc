@@ -28,6 +28,7 @@
 #include "components/ukm/ukm_recorder_impl.h"
 #include "components/ukm/ukm_rotation_scheduler.h"
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/metrics_proto/ukm/report.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
 #include "third_party/zlib/google/compression_utils.h"
@@ -106,8 +107,9 @@ void FilterReportElements(Predicate predicate,
   mutable_elements->DeleteSubrange(start, entries_size - start);
 }
 
-void PurgeExtensionDataFromUnsentLogStore(
-    metrics::UnsentLogStore* ukm_log_store) {
+template <typename Predicate>
+void PurgeDataFromUnsentLogStore(metrics::UnsentLogStore* ukm_log_store,
+                                 Predicate source_purging_condition) {
   for (size_t index = 0; index < ukm_log_store->size(); index++) {
     // Uncompress log data from store back into a Report.
     const std::string& compressed_log_data =
@@ -123,34 +125,28 @@ void PurgeExtensionDataFromUnsentLogStore(
         report.ParseFromString(uncompressed_log_data);
     DCHECK(report_parse_successful);
 
-    std::unordered_set<SourceId> extension_source_ids;
+    std::unordered_set<SourceId> relevant_source_ids;
 
-    // Grab all extension-related source ids.
+    // Grab ids of all sources satisfying the condition for purging.
     for (const auto& source : report.sources()) {
-      // Check if any URL on the source has extension scheme. It is possible
-      // that only one of multiple URLs does due to redirect, in this case, we
-      // should still purge the source.
-      for (const auto& url_info : source.urls()) {
-        if (GURL(url_info.url()).SchemeIs(kExtensionScheme)) {
-          extension_source_ids.insert(source.id());
-          break;
-        }
+      if (source_purging_condition(source)) {
+        relevant_source_ids.insert(source.id());
       }
     }
-    if (extension_source_ids.empty())
+    if (relevant_source_ids.empty())
       continue;
 
-    // Remove all extension-related sources from the report.
+    // Remove all relevant sources from the report.
     FilterReportElements(
         [&](const Source& element) {
-          return extension_source_ids.count(element.id());
+          return relevant_source_ids.count(element.id());
         },
         report.sources(), report.mutable_sources());
 
-    // Remove all entries originating from extension-related sources.
+    // Remove all entries originating from these sources.
     FilterReportElements(
         [&](const Entry& element) {
-          return extension_source_ids.count(element.source_id());
+          return relevant_source_ids.count(element.source_id());
         },
         report.entries(), report.mutable_entries());
 
@@ -162,8 +158,8 @@ void PurgeExtensionDataFromUnsentLogStore(
         ukm_log_store->ReplaceLogAtIndex(index, reserialized_log_data,
                                          metrics::LogMetadata());
 
-    // Reached here only if extensions were found in the log, so data should now
-    // be different after filtering.
+    // Reached here only if some Sources satisfied the condition for purging, so
+    // reserialized data should now be different.
     DCHECK(ukm_log_store->GetLogAtIndex(index) != old_compressed_log_data);
   }
 }
@@ -322,14 +318,51 @@ void UkmService::Purge() {
   UkmRecorderImpl::Purge();
 }
 
-void UkmService::PurgeExtensions() {
+void UkmService::PurgeExtensionsData() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DVLOG(1) << "UkmService::PurgeExtensions";
+  DVLOG(1) << "UkmService::PurgeExtensionsData";
   // Filter out any extension-related data from the serialized logs in the
+  // UnsentLogStore for uploading, base on having kExtensionScheme URL scheme.
+  PurgeDataFromUnsentLogStore(
+      reporting_service_.ukm_log_store(), [&](const Source& source) {
+        // Check if any URL on the Source has the kExtensionScheme URL scheme.
+        // It is possible that only one of multiple URLs does due to redirect,
+        // in this case, we should still purge the source.
+        for (const auto& url_info : source.urls()) {
+          if (GURL(url_info.url()).SchemeIs(kExtensionScheme))
+            return true;
+        }
+        return false;
+      });
+
+  // Purge data currently in the recordings intended for the next
+  // ukm::Report.
+  UkmRecorderImpl::PurgeRecordingsWithUrlScheme(kExtensionScheme);
+}
+
+void UkmService::PurgeAppsData() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(1) << "UkmService::PurgeAppsData";
+  // Filter out any apps-related data from the serialized logs in the
   // UnsentLogStore for uploading.
-  PurgeExtensionDataFromUnsentLogStore(reporting_service_.ukm_log_store());
+  // Also purge based on source id type, because some apps don't use app://
+  // scheme.
+  // For example, OS Settings is an ChromeOS app with "chrome://os-settings" as
+  // its URL.
+  PurgeDataFromUnsentLogStore(
+      reporting_service_.ukm_log_store(), [&](const Source& source) {
+        if (GetSourceIdType(source.id()) == SourceIdType::APP_ID)
+          return true;
+        for (const auto& url_info : source.urls()) {
+          if (GURL(url_info.url()).SchemeIs(kAppScheme))
+            return true;
+        }
+        return false;
+      });
+
   // Purge data currently in the recordings intended for the next ukm::Report.
-  UkmRecorderImpl::PurgeExtensionRecordings();
+  UkmRecorderImpl::PurgeRecordingsWithUrlScheme(kAppScheme);
+  UkmRecorderImpl::PurgeRecordingsWithSourceIdType(SourceIdType::APP_ID);
 }
 
 void UkmService::ResetClientState(ResetReason reason) {

@@ -12,7 +12,6 @@
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_provider.h"
 #include "components/metrics/ukm_demographic_metrics_provider.h"
-#include "components/sync/driver/sync_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/user_demographics.pb.h"
@@ -21,6 +20,10 @@ class PrefService;
 
 namespace base {
 struct Feature;
+}
+
+namespace syncer {
+class SyncService;
 }
 
 namespace metrics {

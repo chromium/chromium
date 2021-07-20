@@ -53,8 +53,10 @@ class TestProfileClient : public DemographicMetricsProvider::ProfileClient {
 
       case SYNC_FEATURE_NOT_ENABLED:
         sync_service_ = std::make_unique<syncer::TestSyncService>();
-        // Mimic sync-the-feature being disabled.
-        sync_service_->SetFirstSetupComplete(false);
+        // Set an arbitrary disable reason to mimic sync feature being unable to
+        // start.
+        sync_service_->SetDisableReasons(
+            syncer::SyncService::DISABLE_REASON_UNRECOVERABLE_ERROR);
         break;
 
       case SYNC_FEATURE_ENABLED:

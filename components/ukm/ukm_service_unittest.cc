@@ -310,7 +310,7 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   unsent_log_store->StoreLog(serialized_log, log_metadata);
 
   // Do extension purging.
-  service.PurgeExtensions();
+  service.PurgeExtensionsData();
 
   // Get the Report in the log store and verify extension-related data have been
   // filtered.
@@ -323,12 +323,97 @@ TEST_F(UkmServiceTest, PurgeExtensionDataFromUnsentLogStore) {
   Report filtered_report;
   filtered_report.ParseFromString(uncompressed_log_data);
 
-  // Only proto_source_1  with non-extension URL is kept.
+  // Only proto_source_1 with non-extension URL is kept.
   EXPECT_EQ(1, filtered_report.sources_size());
   EXPECT_EQ(source_id_1, filtered_report.sources(0).id());
   EXPECT_EQ(non_extension_url, filtered_report.sources(0).urls(0).url());
 
   // Only entry_2 from the non-extension source is kept.
+  EXPECT_EQ(1, filtered_report.entries_size());
+  EXPECT_EQ(source_id_1, filtered_report.entries(0).source_id());
+}
+
+TEST_F(UkmServiceTest, PurgeAppDataFromUnsentLogStore) {
+  UkmService service(&prefs_, &client_,
+                     std::make_unique<MockDemographicMetricsProvider>());
+  auto* unsent_log_store = service.reporting_service_.ukm_log_store();
+
+  // Initialize a Report to be saved to the log store.
+  Report report;
+  report.set_client_id(1);
+  report.set_session_id(1);
+  report.set_report_id(1);
+
+  // A URL from browser navigation.
+  std::string non_app_url = "https://www.google.ca";
+  // A URL with app:// scheme.
+  std::string app_url = "app://mgndgikekgjfcpckkfioiadnlibdjbkf";
+  // OS Settings is an app on ChromeOS without the app:// scheme.
+  std::string os_settings_url = "chrome://os-settings";
+
+  // Add sources to the Report.
+  // Non-app source.
+  Source* proto_source_1 = report.add_sources();
+  SourceId source_id_1 = ConvertToSourceId(1, SourceIdType::NAVIGATION_ID);
+  proto_source_1->set_id(source_id_1);
+  proto_source_1->add_urls()->set_url(non_app_url);
+  // App source with app:// URL.
+  Source* proto_source_2 = report.add_sources();
+  SourceId source_id_2 = ConvertToSourceId(2, SourceIdType::APP_ID);
+  proto_source_2->set_id(source_id_2);
+  proto_source_2->add_urls()->set_url(app_url);
+  // App source with non-app:// URL.
+  Source* proto_source_3 = report.add_sources();
+  SourceId source_id_3 = ConvertToSourceId(3, SourceIdType::APP_ID);
+  proto_source_3->set_id(source_id_3);
+  proto_source_3->add_urls()->set_url(os_settings_url);
+  // Non-app source with app:// URL. This shouldn't happen in practice, but
+  // if it does, this source should be purged when app data are purged.
+  Source* proto_source_4 = report.add_sources();
+  SourceId source_id_4 = ConvertToSourceId(4, SourceIdType::NAVIGATION_ID);
+  proto_source_4->set_id(source_id_4);
+  proto_source_4->add_urls()->set_url(app_url);
+
+  // Add entries to each of the sources.
+  Entry* entry_1 = report.add_entries();
+  entry_1->set_source_id(source_id_2);
+  Entry* entry_2 = report.add_entries();
+  entry_2->set_source_id(source_id_1);
+  Entry* entry_3 = report.add_entries();
+  entry_3->set_source_id(source_id_2);
+  Entry* entry_4 = report.add_entries();
+  entry_4->set_source_id(source_id_3);
+  Entry* entry_5 = report.add_entries();
+  entry_5->set_source_id(source_id_4);
+
+  // Save the Report to the store.
+  std::string serialized_log;
+  report.SerializeToString(&serialized_log);
+  // Make sure that the serialized ukm report can be parsed.
+  ASSERT_TRUE(UkmService::LogCanBeParsed(serialized_log));
+  metrics::LogMetadata log_metadata;
+  unsent_log_store->StoreLog(serialized_log, log_metadata);
+
+  // Do app data purging.
+  service.PurgeAppsData();
+
+  // Get the Report in the log store and verify app-related data have been
+  // filtered.
+  unsent_log_store->StageNextLog();
+  const std::string& compressed_log_data = unsent_log_store->staged_log();
+
+  std::string uncompressed_log_data;
+  // TODO(crbug/1086910): Use the utilities in log_decoder.h instead.
+  compression::GzipUncompress(compressed_log_data, &uncompressed_log_data);
+  Report filtered_report;
+  filtered_report.ParseFromString(uncompressed_log_data);
+
+  // Only proto_source_1 with non-app URL is kept.
+  EXPECT_EQ(1, filtered_report.sources_size());
+  EXPECT_EQ(source_id_1, filtered_report.sources(0).id());
+  EXPECT_EQ(non_app_url, filtered_report.sources(0).urls(0).url());
+
+  // Only entry_2 from the non-app source is kept.
   EXPECT_EQ(1, filtered_report.entries_size());
   EXPECT_EQ(source_id_1, filtered_report.entries(0).source_id());
 }
