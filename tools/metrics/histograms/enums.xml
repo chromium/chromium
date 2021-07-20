@@ -999,6 +999,12 @@ Unknown properties are collapsed to zero. -->
 <enum name="AccountCapabilitiesGetFromSystemLibraryResult">
   <int value="0" label="Success"/>
   <int value="1" label="Error (Generic)"/>
+  <int value="10" label="Error (Api Request Failed)"/>
+  <int value="11" label="Error (Api Error)"/>
+  <int value="12" label="Error (Api Not Permitted)"/>
+  <int value="13" label="Error (Api Unknown Capability)"/>
+  <int value="14" label="Error (Api Failed To Sync)"/>
+  <int value="15" label="Error (Api Not Available)"/>
   <int value="20" label="Error (Missing Capability)"/>
   <int value="21" label="Error (Unexpected Value)"/>
 </enum>
