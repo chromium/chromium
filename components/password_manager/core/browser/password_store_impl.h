@@ -69,13 +69,8 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   // Implements PasswordStoreSync interface.
   PasswordStoreChangeList AddLoginSync(const PasswordForm& form,
                                        AddLoginError* error) override;
-  bool AddInsecureCredentialsSync(
-      base::span<const InsecureCredential> credentials) override;
   PasswordStoreChangeList UpdateLoginSync(const PasswordForm& form,
                                           UpdateLoginError* error) override;
-  bool UpdateInsecureCredentialsSync(
-      const PasswordForm& form,
-      base::span<const InsecureCredential> credentials) override;
   void NotifyLoginsChanged(const PasswordStoreChangeList& changes) override;
   void NotifyDeletionsHaveSynced(bool success) override;
   void NotifyUnsyncedCredentialsWillBeDeleted(
@@ -85,8 +80,6 @@ class PasswordStoreImpl : protected PasswordStoreSync,
   bool CommitTransaction() override;
   FormRetrievalResult ReadAllLogins(
       PrimaryKeyToFormMap* key_to_form_map) override;
-  std::vector<InsecureCredential> ReadSecurityIssues(
-      FormPrimaryKey parent_key) override;
   PasswordStoreChangeList RemoveLoginByPrimaryKeySync(
       FormPrimaryKey primary_key) override;
   PasswordStoreSync::MetadataStore* GetMetadataStore() override;

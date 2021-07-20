@@ -257,13 +257,6 @@ PasswordStoreChangeList PasswordStoreImpl::AddLoginSync(
   return login_db_->AddLogin(form, error);
 }
 
-bool PasswordStoreImpl::AddInsecureCredentialsSync(
-    base::span<const InsecureCredential> credentials) {
-  return base::ranges::all_of(credentials, [this](const auto& cred) {
-    return !AddInsecureCredentialImpl(cred).empty();
-  });
-}
-
 PasswordStoreChangeList PasswordStoreImpl::UpdateLoginSync(
     const PasswordForm& form,
     UpdateLoginError* error) {
@@ -274,14 +267,6 @@ PasswordStoreChangeList PasswordStoreImpl::UpdateLoginSync(
     return PasswordStoreChangeList();
   }
   return login_db_->UpdateLogin(form, error);
-}
-
-bool PasswordStoreImpl::UpdateInsecureCredentialsSync(
-    const PasswordForm& form,
-    base::span<const InsecureCredential> credentials) {
-  RemoveInsecureCredentialsImpl(form.signon_realm, form.username_value,
-                                RemoveInsecureCredentialsReason::kSyncUpdate);
-  return AddInsecureCredentialsSync(credentials);
 }
 
 void PasswordStoreImpl::NotifyLoginsChanged(
@@ -343,13 +328,6 @@ FormRetrievalResult PasswordStoreImpl::ReadAllLogins(
   if (!login_db_)
     return FormRetrievalResult::kDbError;
   return login_db_->GetAllLogins(key_to_form_map);
-}
-
-std::vector<InsecureCredential> PasswordStoreImpl::ReadSecurityIssues(
-    FormPrimaryKey parent_key) {
-  if (!login_db_)
-    return {};
-  return login_db_->insecure_credentials_table().GetRows(parent_key);
 }
 
 PasswordStoreChangeList PasswordStoreImpl::RemoveLoginByPrimaryKeySync(
