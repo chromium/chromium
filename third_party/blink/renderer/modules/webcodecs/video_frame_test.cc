@@ -297,146 +297,91 @@ TEST_F(VideoFrameTest, HandleMonitoring) {
   // Test all constructors.
   scoped_refptr<media::VideoFrame> media_frame1 =
       CreateDefaultBlackMediaVideoFrame();
-  auto handle_1_1 = base::MakeRefCounted<VideoFrameHandle>(
-      media_frame1, scope.GetExecutionContext(), source1);
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 1);
-
   scoped_refptr<media::VideoFrame> media_frame2 =
       CreateDefaultBlackMediaVideoFrame();
+
+  auto verify_expectations =
+      [&](wtf_size_t num_frames_source1, int num_refs_frame1_source1,
+          int num_refs_frame2_source1, wtf_size_t num_frames_source2,
+          int num_refs_frame1_source2, int num_refs_frame2_source2) {
+        EXPECT_EQ(monitor.NumFrames(source1), num_frames_source1);
+        EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()),
+                  num_refs_frame1_source1);
+        EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()),
+                  num_refs_frame2_source1);
+        EXPECT_EQ(monitor.NumFrames(source2), num_frames_source2);
+        EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()),
+                  num_refs_frame1_source2);
+        EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()),
+                  num_refs_frame2_source2);
+      };
+
+  auto handle_1_1 = base::MakeRefCounted<VideoFrameHandle>(
+      media_frame1, scope.GetExecutionContext(), source1);
+  verify_expectations(/* source1 */ 1, 1, 0, /* source2 */ 0, 0, 0);
+
   sk_sp<SkSurface> surface(SkSurface::MakeRaster(
       SkImageInfo::MakeN32Premul(5, 5, SkColorSpace::MakeSRGB())));
   sk_sp<SkImage> sk_image = surface->makeImageSnapshot();
   auto handle_2_1 = base::MakeRefCounted<VideoFrameHandle>(
       media_frame2, sk_image, scope.GetExecutionContext(), source1);
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-
-  auto non_monitored1 = base::MakeRefCounted<VideoFrameHandle>(
-      media_frame2, sk_image, scope.GetExecutionContext());
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
+  verify_expectations(/* source1 */ 2, 1, 1, /* source2 */ 0, 0, 0);
 
   auto& logger = WebCodecsLogger::From(*scope.GetExecutionContext());
   auto handle_1_1b = base::MakeRefCounted<VideoFrameHandle>(
       media_frame1, sk_image, logger.GetCloseAuditor(), source1);
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 0, 0, 0);
 
   auto handle_1_2 =
       base::MakeRefCounted<VideoFrameHandle>(media_frame1, sk_image, source2);
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 1, 1, 0);
+
+  auto non_monitored1 = base::MakeRefCounted<VideoFrameHandle>(
+      media_frame2, sk_image, scope.GetExecutionContext());
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 1, 1, 0);
 
   auto non_monitored2 =
       base::MakeRefCounted<VideoFrameHandle>(media_frame1, sk_image);
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 1, 1, 0);
 
   // Move constructor
   auto handle_1_1c = std::move(handle_1_1b);
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 1, 1, 0);
 
   // Test all clone methods.
   auto clone_1_1a = handle_1_1->Clone();
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 3);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 3, 1, /* source2 */ 1, 1, 0);
 
   auto clone_1_1b = handle_1_1->CloneForInternalUse();
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 4);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 4, 1, /* source2 */ 1, 1, 0);
 
   // Clone non-monitored frame
   auto non_monitored_clone = non_monitored2->CloneForInternalUse();
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 4);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 4, 1, /* source2 */ 1, 1, 0);
 
   // Test invalidate
   handle_1_1->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 3);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 3, 1, /* source2 */ 1, 1, 0);
 
   // handle_1_1b was moved to handle_1_1c
   handle_1_1c->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 2u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 2, 2, 1, /* source2 */ 1, 1, 0);
 
   handle_2_1->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 1, 2, 0, /* source2 */ 1, 1, 0);
 
   non_monitored1->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 1, 2, 0, /* source2 */ 1, 1, 0);
 
   non_monitored2->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 2);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 1, 2, 0, /* source2 */ 1, 1, 0);
 
   clone_1_1a->Invalidate();
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumFrames(source2), 1u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 1, 1, 0, /* source2 */ 1, 1, 0);
 
   // Resetting handles instead of invalidating.
   handle_1_2.reset();
-  EXPECT_EQ(monitor.NumFrames(source1), 1u);
-  EXPECT_EQ(monitor.NumFrames(source2), 0u);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame1->unique_id()), 1);
-  EXPECT_EQ(monitor.NumRefs(source1, media_frame2->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame1->unique_id()), 0);
-  EXPECT_EQ(monitor.NumRefs(source2, media_frame2->unique_id()), 0);
+  verify_expectations(/* source1 */ 1, 1, 0, /* source2 */ 0, 0, 0);
 
   clone_1_1b.reset();
   EXPECT_TRUE(monitor.IsEmpty());
@@ -450,55 +395,50 @@ TEST_F(VideoFrameTest, VideoFrameMonitoring) {
   V8TestingScope scope;
   VideoFrameMonitor& monitor = VideoFrameMonitor::Instance();
   const std::string source = "source";
-  EXPECT_TRUE(monitor.IsEmpty());
-
   scoped_refptr<media::VideoFrame> media_frame =
       CreateDefaultBlackMediaVideoFrame();
+  auto verify_expectations = [&](wtf_size_t num_frames, int num_refs) {
+    EXPECT_EQ(monitor.NumFrames(source), num_frames);
+    EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), num_refs);
+  };
+  EXPECT_TRUE(monitor.IsEmpty());
+
   // Test all constructors
   auto* frame1 = MakeGarbageCollected<VideoFrame>(
       media_frame, scope.GetExecutionContext(), source);
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 1);
+  verify_expectations(1u, 1);
 
   auto* non_monitored1 = MakeGarbageCollected<VideoFrame>(
       media_frame, scope.GetExecutionContext());
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 1);
+  verify_expectations(1u, 1);
 
   auto monitored_handle = base::MakeRefCounted<VideoFrameHandle>(
       media_frame, scope.GetExecutionContext(), source);
   auto* frame2 = MakeGarbageCollected<VideoFrame>(std::move(monitored_handle));
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 2);
+  verify_expectations(1u, 2);
 
   auto non_monitored_handle = base::MakeRefCounted<VideoFrameHandle>(
       media_frame, scope.GetExecutionContext());
   auto* non_monitored2 =
       MakeGarbageCollected<VideoFrame>(std::move(non_monitored_handle));
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 2);
+  verify_expectations(1u, 2);
 
   auto* clone = frame1->clone(scope.GetExceptionState());
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 3);
+  verify_expectations(1u, 3);
 
   auto* non_monitored_clone = non_monitored1->clone(scope.GetExceptionState());
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 3);
+  verify_expectations(1u, 3);
 
   frame1->close();
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 2);
+  verify_expectations(1u, 2);
 
   frame2->close();
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 1);
+  verify_expectations(1u, 1);
 
   non_monitored1->close();
   non_monitored2->close();
   non_monitored_clone->close();
-  EXPECT_EQ(monitor.NumFrames(source), 1u);
-  EXPECT_EQ(monitor.NumRefs(source, media_frame->unique_id()), 1);
+  verify_expectations(1u, 1);
 
   // Garbage-collecting a non-closed monitored frame should reclaim it and
   // update the monitor.
