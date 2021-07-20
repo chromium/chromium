@@ -133,7 +133,7 @@ class ClipboardMap {
   void GetImage(ReadImageCallback callback);
   void DidGetPng(ReadPngCallback callback, std::vector<uint8_t> result);
   void DidGetImage(ReadImageCallback callback, const SkBitmap& result);
-  uint64_t GetSequenceNumber() const;
+  const ClipboardSequenceNumberToken& GetSequenceNumber() const;
   base::Time GetLastModifiedTime() const;
   void ClearLastModifiedTime();
   bool HasFormat(const ClipboardFormatType& format);
@@ -170,7 +170,7 @@ class ClipboardMap {
   // This lock is for read/write |map_|.
   base::Lock lock_;
 
-  uint64_t sequence_number_;
+  ClipboardSequenceNumberToken sequence_number_;
   base::Time last_modified_time_;
 
   ClipboardAndroid::ModifiedCallback modified_cb_;
@@ -260,7 +260,7 @@ void ClipboardMap::DidGetImage(ReadImageCallback callback,
   std::move(callback).Run(std::move(bitmap));
 }
 
-uint64_t ClipboardMap::GetSequenceNumber() const {
+const ClipboardSequenceNumberToken& ClipboardMap::GetSequenceNumber() const {
   return sequence_number_;
 }
 
@@ -349,7 +349,7 @@ std::vector<ClipboardFormatType> ClipboardMap::GetFormats() {
 }
 
 void ClipboardMap::OnPrimaryClipboardChanged() {
-  sequence_number_++;
+  sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
   map_state_ = MapState::kOutOfDate;
 }
@@ -357,7 +357,7 @@ void ClipboardMap::OnPrimaryClipboardChanged() {
 void ClipboardMap::OnPrimaryClipTimestampInvalidated(int64_t timestamp_ms) {
   base::Time timestamp = base::Time::FromJavaTime(timestamp_ms);
   if (GetLastModifiedTime() < timestamp) {
-    sequence_number_++;
+    sequence_number_ = ClipboardSequenceNumberToken();
     UpdateLastModifiedTime(timestamp);
     map_state_ = MapState::kOutOfDate;
   }
@@ -413,7 +413,7 @@ void ClipboardMap::CommitToAndroidClipboard() {
     NOTIMPLEMENTED();
   }
   map_state_ = MapState::kUpToDate;
-  sequence_number_++;
+  sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
 }
 
@@ -423,7 +423,7 @@ void ClipboardMap::Clear() {
   map_.clear();
   Java_Clipboard_clear(env, clipboard_manager_);
   map_state_ = MapState::kUpToDate;
-  sequence_number_++;
+  sequence_number_ = ClipboardSequenceNumberToken();
   UpdateLastModifiedTime(base::Time::Now());
 }
 
@@ -523,7 +523,7 @@ DataTransferEndpoint* ClipboardAndroid::GetSource(
   return nullptr;
 }
 
-uint64_t ClipboardAndroid::GetSequenceNumber(
+const ClipboardSequenceNumberToken& ClipboardAndroid::GetSequenceNumber(
     ClipboardBuffer /* buffer */) const {
   DCHECK(CalledOnValidThread());
   return g_map.Get().GetSequenceNumber();

@@ -36,7 +36,7 @@ class CORE_EXPORT SystemClipboard final
   SystemClipboard(const SystemClipboard&) = delete;
   SystemClipboard& operator=(const SystemClipboard&) = delete;
 
-  uint64_t SequenceNumber();
+  ClipboardSequenceNumberToken SequenceNumber();
   bool IsSelectionMode() const;
   void SetSelectionMode(bool);
   Vector<String> ReadAvailableTypes();

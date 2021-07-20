@@ -256,9 +256,16 @@ DataTransferEndpoint* ClipboardWin::GetSource(ClipboardBuffer buffer) const {
   return nullptr;
 }
 
-uint64_t ClipboardWin::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& ClipboardWin::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
-  return ::GetClipboardSequenceNumber();
+
+  DWORD sequence_number = ::GetClipboardSequenceNumber();
+  if (sequence_number != clipboard_sequence_.sequence_number) {
+    // Generate a unique token associated with the current sequence number.
+    clipboard_sequence_ = {sequence_number, ClipboardSequenceNumberToken()};
+  }
+  return clipboard_sequence_.token;
 }
 
 // |data_dst| is not used. It's only passed to be consistent with other

@@ -91,12 +91,14 @@ class ClipboardInternal {
   ~ClipboardInternal() = default;
 
   void Clear() {
-    ++sequence_number_;
+    sequence_number_ = ClipboardSequenceNumberToken();
     data_.reset();
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
-  uint64_t sequence_number() const { return sequence_number_; }
+  const ClipboardSequenceNumberToken& sequence_number() const {
+    return sequence_number_;
+  }
 
   // Returns the current clipboard data, which may be nullptr if nothing has
   // been written since the last Clear().
@@ -250,7 +252,7 @@ class ClipboardInternal {
     DCHECK(data);
     std::unique_ptr<ClipboardData> previous_data = std::move(data_);
     data_ = std::move(data);
-    ++sequence_number_;
+    sequence_number_ = ClipboardSequenceNumberToken();
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
     return previous_data;
   }
@@ -276,7 +278,7 @@ class ClipboardInternal {
   std::unique_ptr<ClipboardData> data_;
 
   // Sequence number uniquely identifying clipboard state.
-  uint64_t sequence_number_ = 0;
+  ClipboardSequenceNumberToken sequence_number_;
 };
 
 // Helper class to build a ClipboardData object and write it to clipboard.
@@ -413,7 +415,8 @@ DataTransferEndpoint* ClipboardNonBacked::GetSource(
   return data ? data->source() : nullptr;
 }
 
-uint64_t ClipboardNonBacked::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& ClipboardNonBacked::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   return clipboard_internal_->sequence_number();
 }

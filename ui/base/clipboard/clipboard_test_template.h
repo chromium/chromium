@@ -1201,7 +1201,7 @@ TYPED_TEST(ClipboardTest, WriteEverything) {
 // written to.
 // TODO(dcheng): Add a version to test ClipboardBuffer::kSelection.
 TYPED_TEST(ClipboardTest, GetSequenceNumber) {
-  const uint64_t first_sequence_number =
+  const ClipboardSequenceNumberToken first_sequence_number =
       this->clipboard().GetSequenceNumber(ClipboardBuffer::kCopyPaste);
 
   {
@@ -1213,7 +1213,7 @@ TYPED_TEST(ClipboardTest, GetSequenceNumber) {
   // the message loop to make sure we get the notification.
   base::RunLoop().RunUntilIdle();
 
-  const uint64_t second_sequence_number =
+  const ClipboardSequenceNumberToken second_sequence_number =
       this->clipboard().GetSequenceNumber(ClipboardBuffer::kCopyPaste);
 
   EXPECT_NE(first_sequence_number, second_sequence_number);

@@ -542,7 +542,7 @@ void ClipboardHostImpl::PasteIfPolicyAllowedCallback(
 }
 
 void ClipboardHostImpl::PerformPasteIfContentAllowed(
-    uint64_t seqno,
+    const ui::ClipboardSequenceNumberToken& seqno,
     const ui::ClipboardFormatType& data_type,
     std::string data,
     IsClipboardPasteContentAllowedCallback callback) {
@@ -555,7 +555,7 @@ void ClipboardHostImpl::PerformPasteIfContentAllowed(
 }
 
 void ClipboardHostImpl::StartIsPasteContentAllowedRequest(
-    uint64_t seqno,
+    const ui::ClipboardSequenceNumberToken& seqno,
     const ui::ClipboardFormatType& data_type,
     std::string data) {
   static_cast<RenderFrameHostImpl*>(render_frame_host())
@@ -566,7 +566,7 @@ void ClipboardHostImpl::StartIsPasteContentAllowedRequest(
 }
 
 void ClipboardHostImpl::FinishPasteIfContentAllowed(
-    uint64_t seqno,
+    const ui::ClipboardSequenceNumberToken& seqno,
     ClipboardPasteContentAllowed allowed) {
   if (is_allowed_requests_.count(seqno) == 0)
     return;

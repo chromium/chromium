@@ -8,6 +8,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 #include "ui/gfx/codec/png_codec.h"
@@ -27,7 +28,7 @@ ui::DataTransferEndpoint* HeadlessClipboard::GetSource(
   return nullptr;
 }
 
-uint64_t HeadlessClipboard::GetSequenceNumber(
+const ui::ClipboardSequenceNumberToken& HeadlessClipboard::GetSequenceNumber(
     ui::ClipboardBuffer buffer) const {
   return GetStore(buffer).sequence_number;
 }
@@ -291,7 +292,7 @@ void HeadlessClipboard::WriteData(const ui::ClipboardFormatType& format,
   GetDefaultStore().data[format] = std::string(data_data, data_len);
 }
 
-HeadlessClipboard::DataStore::DataStore() : sequence_number(0) {}
+HeadlessClipboard::DataStore::DataStore() = default;
 
 HeadlessClipboard::DataStore::DataStore(const DataStore& other) = default;
 
@@ -314,7 +315,7 @@ HeadlessClipboard::DataStore& HeadlessClipboard::GetStore(
     ui::ClipboardBuffer buffer) {
   CHECK(IsSupportedClipboardBuffer(buffer));
   DataStore& store = stores_[buffer];
-  ++store.sequence_number;
+  store.sequence_number = ui::ClipboardSequenceNumberToken();
   return store;
 }
 

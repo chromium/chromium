@@ -8,6 +8,7 @@
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/common/common_export.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom-blink.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
@@ -63,7 +64,7 @@ class MockClipboardHost : public mojom::blink::ClipboardHost {
 #endif
 
   mojo::ReceiverSet<mojom::blink::ClipboardHost> receivers_;
-  uint64_t sequence_number_ = 0;
+  ClipboardSequenceNumberToken sequence_number_;
   String plain_text_ = g_empty_string;
   String html_text_ = g_empty_string;
   String svg_text_ = g_empty_string;

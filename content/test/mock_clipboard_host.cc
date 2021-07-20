@@ -10,6 +10,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/gfx/codec/png_codec.h"
 
 namespace content {
@@ -171,7 +172,7 @@ void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
 }
 
 void MockClipboardHost::CommitWrite() {
-  ++sequence_number_;
+  sequence_number_ = ui::ClipboardSequenceNumberToken();
   needs_reset_ = true;
 }
 

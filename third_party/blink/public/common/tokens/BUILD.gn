@@ -20,5 +20,6 @@ source_set("tokens_headers") {
     "//mojo/public/cpp/system",
     "//mojo/public/mojom/base",
     "//third_party/blink/public/common:common_export",
+    "//ui/base/clipboard:clipboard",
   ]
 }

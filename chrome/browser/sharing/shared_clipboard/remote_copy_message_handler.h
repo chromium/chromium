@@ -13,6 +13,7 @@
 #include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/sharing/shared_clipboard/remote_copy_handle_message_result.h"
 #include "chrome/browser/sharing/sharing_message_handler.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -49,7 +50,7 @@ class RemoteCopyMessageHandler : public SharingMessageHandler,
   void OnURLLoadComplete(std::unique_ptr<std::string> content);
   void WriteImageAndShowNotification(const SkBitmap& image);
   void ShowNotification(const std::u16string& title, const SkBitmap& image);
-  void DetectWrite(uint64_t old_sequence_number,
+  void DetectWrite(const ui::ClipboardSequenceNumberToken& old_sequence_number,
                    base::TimeTicks start_ticks,
                    bool is_image);
   void Finish(RemoteCopyHandleMessageResult result);

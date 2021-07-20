@@ -140,7 +140,7 @@ void RemoteCopyMessageHandler::HandleText(const std::string& text) {
 
   LogRemoteCopyReceivedTextSize(text.size());
 
-  uint64_t old_sequence_number =
+  ui::ClipboardSequenceNumberToken old_sequence_number =
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste);
   base::ElapsedTimer write_timer;
@@ -254,7 +254,7 @@ void RemoteCopyMessageHandler::WriteImageAndShowNotification(
                "RemoteCopyMessageHandler::WriteImageAndShowNotification",
                "bytes", image.computeByteSize());
 
-  uint64_t old_sequence_number =
+  ui::ClipboardSequenceNumberToken old_sequence_number =
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste);
   base::ElapsedTimer write_timer;
@@ -300,12 +300,13 @@ void RemoteCopyMessageHandler::ShowNotification(const std::u16string& title,
       NotificationHandler::Type::SHARING, notification, /*metadata=*/nullptr);
 }
 
-void RemoteCopyMessageHandler::DetectWrite(uint64_t old_sequence_number,
-                                           base::TimeTicks start_ticks,
-                                           bool is_image) {
+void RemoteCopyMessageHandler::DetectWrite(
+    const ui::ClipboardSequenceNumberToken& old_sequence_number,
+    base::TimeTicks start_ticks,
+    bool is_image) {
   TRACE_EVENT0("sharing", "RemoteCopyMessageHandler::DetectWrite");
 
-  uint64_t current_sequence_number =
+  ui::ClipboardSequenceNumberToken current_sequence_number =
       ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste);
   base::TimeDelta elapsed = base::TimeTicks::Now() - start_ticks;

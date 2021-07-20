@@ -54,7 +54,7 @@ void CopyAndMaintainClipboard(
  * `decoded_image` is the image we are attempting to copy to the clipboard.
  */
 void CopyImageToClipboard(bool maintain_clipboard,
-                          uint64_t clipboard_sequence,
+                          ui::ClipboardSequenceNumberToken clipboard_sequence,
                           base::OnceCallback<void(bool)> callback,
                           scoped_refptr<base::RefCountedString> png_data,
                           const SkBitmap& decoded_image) {
@@ -81,7 +81,7 @@ void CopyImageToClipboard(bool maintain_clipboard,
     return;
   }
 
-  uint64_t current_sequence =
+  ui::ClipboardSequenceNumberToken current_sequence =
       ui::ClipboardNonBacked::GetForCurrentThread()->GetSequenceNumber(
           ui::ClipboardBuffer::kCopyPaste);
   if (current_sequence != clipboard_sequence) {
@@ -119,14 +119,15 @@ void ReadFileAndCopyToClipboardLocal(const base::FilePath& local_file) {
   }
 
   content::GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindOnce(&DecodeImageFileAndCopyToClipboard,
-                                /*clipboard_sequence=*/0,
-                                /*maintain_clipboard=*/false, png_data,
-                                base::DoNothing::Once<bool>()));
+      FROM_HERE,
+      base::BindOnce(&DecodeImageFileAndCopyToClipboard,
+                     /*clipboard_sequence=*/ui::ClipboardSequenceNumberToken(),
+                     /*maintain_clipboard=*/false, png_data,
+                     base::DoNothing::Once<bool>()));
 }
 
 void DecodeImageFileAndCopyToClipboard(
-    uint64_t clipboard_sequence,
+    ui::ClipboardSequenceNumberToken clipboard_sequence,
     bool maintain_clipboard,
     scoped_refptr<base::RefCountedString> png_data,
     base::OnceCallback<void(bool)> callback) {

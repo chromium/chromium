@@ -35,7 +35,8 @@ class ClipboardWin : public Clipboard {
   // Clipboard overrides:
   void OnPreShutdown() override;
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
-  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
+  const ClipboardSequenceNumberToken& GetSequenceNumber(
+      ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -118,6 +119,12 @@ class ClipboardWin : public Clipboard {
 
   // Mark this as mutable so const methods can still do lazy initialization.
   mutable std::unique_ptr<base::win::MessageWindow> clipboard_owner_;
+
+  // Mapping of OS-provided sequence number to a unique token.
+  mutable struct {
+    DWORD sequence_number;
+    ClipboardSequenceNumberToken token;
+  } clipboard_sequence_;
 };
 
 }  // namespace ui

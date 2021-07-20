@@ -25,6 +25,7 @@
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
@@ -117,14 +118,11 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual const DataTransferEndpoint* GetSource(
       ClipboardBuffer buffer) const = 0;
 
-  // Returns a sequence number which uniquely identifies clipboard state.
-  // This can be used to version the data on the clipboard and determine
-  // whether it has changed.
-  // TODO(https://crbug.com/1226356): Note that the sequence number uniquely
-  // identifies the clipboard state within this particular ui::Clipboard
-  // instance. It is not guaranteed to be unique across multiple / subsequent
-  // ui::Clipborad instances. Consider changing that.
-  virtual uint64_t GetSequenceNumber(ClipboardBuffer buffer) const = 0;
+  // Returns a token which uniquely identifies clipboard state.
+  // ClipboardSequenceNumberTokens are used since there may be multiple
+  // ui::Clipboard instances that have the same sequence number.
+  virtual const ClipboardSequenceNumberToken& GetSequenceNumber(
+      ClipboardBuffer buffer) const = 0;
 
   // Tests whether the clipboard contains a certain format.
   virtual bool IsFormatAvailable(

@@ -21,6 +21,7 @@ include_rules = [
     "+skia/public/mojom",
     "+third_party/blink/public/common",
     "+third_party/blink/public/mojom",
+    "+ui/base/clipboard/clipboard_sequence_number_token.h",
     "+ui/base/pointer/pointer_device.h",
     "+ui/base/page_transition_types.h",
     "+ui/base/ui_base_types.h",

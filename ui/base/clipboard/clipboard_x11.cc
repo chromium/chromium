@@ -51,7 +51,8 @@ DataTransferEndpoint* ClipboardX11::GetSource(ClipboardBuffer buffer) const {
   return it == data_src_.end() ? nullptr : it->second.get();
 }
 
-uint64_t ClipboardX11::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& ClipboardX11::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   DCHECK(CalledOnValidThread());
   return buffer == ClipboardBuffer::kCopyPaste ? clipboard_sequence_number_
                                                : primary_sequence_number_;
@@ -449,9 +450,9 @@ std::vector<uint8_t> ClipboardX11::ReadPngInternal(
 
 void ClipboardX11::OnSelectionChanged(ClipboardBuffer buffer) {
   if (buffer == ClipboardBuffer::kCopyPaste)
-    clipboard_sequence_number_++;
+    clipboard_sequence_number_ = ClipboardSequenceNumberToken();
   else
-    primary_sequence_number_++;
+    primary_sequence_number_ = ClipboardSequenceNumberToken();
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 

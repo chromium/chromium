@@ -106,3 +106,7 @@ struct PortalToken {
 struct V8ContextToken {
   mojo_base.mojom.UnguessableToken value;
 };
+
+struct ClipboardSequenceNumberToken {
+  mojo_base.mojom.UnguessableToken value;
+};

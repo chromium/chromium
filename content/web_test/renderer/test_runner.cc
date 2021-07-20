@@ -1923,14 +1923,14 @@ void TestRunnerBindings::CopyImageThen(int x,
   frame_->GetBrowserInterfaceBroker()->GetInterface(
       remote_clipboard.BindNewPipeAndPassReceiver());
 
-  uint64_t sequence_number_before = 0;
-  remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
-                                      &sequence_number_before);
+  blink::ClipboardSequenceNumberToken sequence_number_before;
+  CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                            &sequence_number_before));
   GetWebFrame()->CopyImageAtForTesting(gfx::Point(x, y));
-  uint64_t sequence_number_after = 0;
-  while (sequence_number_before == sequence_number_after) {
-    remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
-                                        &sequence_number_after);
+  auto sequence_number_after = sequence_number_before;
+  while (sequence_number_before.value() == sequence_number_after.value()) {
+    CHECK(remote_clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
+                                              &sequence_number_after));
   }
 
   SkBitmap bitmap;

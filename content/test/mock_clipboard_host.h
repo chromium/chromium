@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "third_party/blink/public/mojom/clipboard/clipboard.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 
 namespace content {
 
@@ -64,7 +65,7 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
 #endif
  private:
   mojo::ReceiverSet<blink::mojom::ClipboardHost> receivers_;
-  uint64_t sequence_number_ = 0;
+  ui::ClipboardSequenceNumberToken sequence_number_;
   std::u16string plain_text_;
   std::u16string html_text_;
   std::u16string svg_text_;

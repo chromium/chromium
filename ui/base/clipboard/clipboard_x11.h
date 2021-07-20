@@ -29,7 +29,8 @@ class ClipboardX11 : public Clipboard {
   // Clipboard overrides:
   void OnPreShutdown() override;
   DataTransferEndpoint* GetSource(ClipboardBuffer buffer) const override;
-  uint64_t GetSequenceNumber(ClipboardBuffer buffer) const override;
+  const ClipboardSequenceNumberToken& GetSequenceNumber(
+      ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(const ClipboardFormatType& format,
                          ClipboardBuffer buffer,
                          const DataTransferEndpoint* data_dst) const override;
@@ -110,8 +111,8 @@ class ClipboardX11 : public Clipboard {
 
   std::unique_ptr<XClipboardHelper> x_clipboard_helper_;
 
-  uint64_t clipboard_sequence_number_ = 0;
-  uint64_t primary_sequence_number_ = 0;
+  ClipboardSequenceNumberToken clipboard_sequence_number_;
+  ClipboardSequenceNumberToken primary_sequence_number_;
 
   base::flat_map<ClipboardBuffer, std::unique_ptr<DataTransferEndpoint>>
       data_src_;

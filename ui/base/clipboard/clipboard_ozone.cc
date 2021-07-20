@@ -164,7 +164,8 @@ class ClipboardOzone::AsyncClipboardOzone {
     }
   }
 
-  uint64_t GetSequenceNumber(ClipboardBuffer buffer) {
+  const ClipboardSequenceNumberToken& GetSequenceNumber(
+      ClipboardBuffer buffer) const {
     return buffer == ClipboardBuffer::kCopyPaste ? clipboard_sequence_number_
                                                  : selection_sequence_number_;
   }
@@ -275,9 +276,9 @@ class ClipboardOzone::AsyncClipboardOzone {
     DCHECK(buffer == ClipboardBuffer::kCopyPaste ||
            platform_clipboard_->IsSelectionBufferAvailable());
     if (buffer == ClipboardBuffer::kCopyPaste)
-      clipboard_sequence_number_++;
+      clipboard_sequence_number_ = ClipboardSequenceNumberToken();
     else
-      selection_sequence_number_++;
+      selection_sequence_number_ = ClipboardSequenceNumberToken();
     ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
   }
 
@@ -296,8 +297,8 @@ class ClipboardOzone::AsyncClipboardOzone {
   // Provides communication to a system clipboard under ozone level.
   PlatformClipboard* const platform_clipboard_ = nullptr;
 
-  uint64_t clipboard_sequence_number_ = 0;
-  uint64_t selection_sequence_number_ = 0;
+  ClipboardSequenceNumberToken clipboard_sequence_number_;
+  ClipboardSequenceNumberToken selection_sequence_number_;
 
   base::WeakPtrFactory<AsyncClipboardOzone> weak_factory_;
 };
@@ -327,7 +328,8 @@ DataTransferEndpoint* ClipboardOzone::GetSource(ClipboardBuffer buffer) const {
   return it == data_src_.end() ? nullptr : it->second.get();
 }
 
-uint64_t ClipboardOzone::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& ClipboardOzone::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   return async_clipboard_ozone_->GetSequenceNumber(buffer);
 }
 

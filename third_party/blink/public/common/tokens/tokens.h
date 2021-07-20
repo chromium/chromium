@@ -7,6 +7,7 @@
 
 #include "base/types/token_type.h"
 #include "third_party/blink/public/common/tokens/multi_token.h"
+#include "ui/base/clipboard/clipboard_sequence_number_token.h"
 
 namespace blink {
 
@@ -106,6 +107,9 @@ using PortalToken = base::TokenType<class PortalTokenTypeMarker>;
 
 // Identifies a v8::Context / blink::ScriptState.
 using V8ContextToken = base::TokenType<class V8ContextTokenTypeMarker>;
+
+// Identifies a unique clipboard state.
+using ClipboardSequenceNumberToken = ui::ClipboardSequenceNumberToken;
 
 }  // namespace blink
 

@@ -28,7 +28,8 @@ class HeadlessClipboard : public ui::Clipboard {
   void OnPreShutdown() override;
   ui::DataTransferEndpoint* GetSource(
       ui::ClipboardBuffer buffer) const override;
-  uint64_t GetSequenceNumber(ui::ClipboardBuffer buffer) const override;
+  const ui::ClipboardSequenceNumberToken& GetSequenceNumber(
+      ui::ClipboardBuffer buffer) const override;
   bool IsFormatAvailable(
       const ui::ClipboardFormatType& format,
       ui::ClipboardBuffer buffer,
@@ -108,7 +109,7 @@ class HeadlessClipboard : public ui::Clipboard {
     DataStore(const DataStore& other);
     ~DataStore();
     void Clear();
-    uint64_t sequence_number;
+    ui::ClipboardSequenceNumberToken sequence_number;
     std::map<ui::ClipboardFormatType, std::string> data;
     std::string url_title;
     std::string html_src_url;

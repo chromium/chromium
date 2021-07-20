@@ -25,10 +25,8 @@ const int64_t kClipboardPollingIntervalMs = 500;
 namespace remoting {
 
 ClipboardAura::ClipboardAura()
-    : current_change_count_(0),
-      polling_interval_(
-          base::TimeDelta::FromMilliseconds(kClipboardPollingIntervalMs)) {
-}
+    : polling_interval_(
+          base::TimeDelta::FromMilliseconds(kClipboardPollingIntervalMs)) {}
 
 ClipboardAura::~ClipboardAura() {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -58,9 +56,9 @@ void ClipboardAura::InjectClipboardEvent(
   ui::ScopedClipboardWriter clipboard_writer(ui::ClipboardBuffer::kCopyPaste);
   clipboard_writer.WriteText(base::UTF8ToUTF16(event.data()));
 
-  // Update local change-count to prevent this change from being picked up by
+  // Update local change-token to prevent this change from being picked up by
   // CheckClipboardForChanges.
-  current_change_count_++;
+  current_change_token_ = ui::ClipboardSequenceNumberToken();
 }
 
 void ClipboardAura::SetPollingIntervalForTesting(
@@ -74,14 +72,14 @@ void ClipboardAura::CheckClipboardForChanges() {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   ui::Clipboard* clipboard = ui::Clipboard::GetForCurrentThread();
-  uint64_t change_count =
+  ui::ClipboardSequenceNumberToken change_token =
       clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
 
-  if (change_count == current_change_count_) {
+  if (change_token == current_change_token_) {
     return;
   }
 
-  current_change_count_ = change_count;
+  current_change_token_ = change_token;
 
   protocol::ClipboardEvent event;
   std::string data;

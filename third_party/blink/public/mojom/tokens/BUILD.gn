@@ -83,6 +83,10 @@ mojom_component("tokens") {
           mojom = "blink.mojom.V8ContextToken"
           cpp = "::blink::V8ContextToken"
         },
+        {
+          mojom = "blink.mojom.ClipboardSequenceNumberToken"
+          cpp = "::blink::ClipboardSequenceNumberToken"
+        },
       ]
       traits_headers = [
         "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",

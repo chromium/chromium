@@ -7,6 +7,7 @@
 #include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/renderer/platform/graphics/color_behavior.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -179,7 +180,7 @@ void MockClipboardHost::WriteImage(const SkBitmap& bitmap) {
 }
 
 void MockClipboardHost::CommitWrite() {
-  ++sequence_number_;
+  sequence_number_ = ClipboardSequenceNumberToken();
   needs_reset_ = true;
 }
 

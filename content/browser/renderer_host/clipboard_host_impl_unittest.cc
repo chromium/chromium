@@ -20,7 +20,9 @@
 #include "skia/ext/skia_utils_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/tokens/tokens.mojom-forward.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/test/clipboard_test_util.h"
@@ -45,11 +47,11 @@ class FakeClipboardHostImpl : public ClipboardHostImpl {
       : ClipboardHostImpl(render_frame_host, std::move(receiver)) {}
 
   void StartIsPasteContentAllowedRequest(
-      uint64_t seqno,
+      const ui::ClipboardSequenceNumberToken& seqno,
       const ui::ClipboardFormatType& data_type,
       std::string data) override {}
 
-  void CompleteRequest(uint64_t seqno) {
+  void CompleteRequest(const ui::ClipboardSequenceNumberToken& seqno) {
     FinishPasteIfContentAllowed(
         seqno, ClipboardHostImpl::ClipboardPasteContentAllowed(true));
   }
@@ -128,7 +130,7 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadBitmap) {
   bitmap.allocN32Pixels(3, 2);
   bitmap.eraseARGB(255, 0, 255, 0);
   mojo_clipboard()->WriteImage(bitmap);
-  uint64_t sequence_number =
+  ui::ClipboardSequenceNumberToken sequence_number =
       system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
   mojo_clipboard()->CommitWrite();
   base::RunLoop().RunUntilIdle();
@@ -151,7 +153,7 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
   bitmap.allocN32Pixels(3, 2);
   bitmap.eraseARGB(255, 0, 255, 0);
   mojo_clipboard()->WriteImage(bitmap);
-  uint64_t sequence_number =
+  ui::ClipboardSequenceNumberToken sequence_number =
       system_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
   mojo_clipboard()->CommitWrite();
   base::RunLoop().RunUntilIdle();
@@ -176,7 +178,7 @@ TEST_F(ClipboardHostImplTest, SimpleImage_ReadPng) {
 }
 
 TEST_F(ClipboardHostImplTest, DoesNotCacheClipboard) {
-  uint64_t unused_sequence_number;
+  ui::ClipboardSequenceNumberToken unused_sequence_number;
   mojo_clipboard()->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste,
                                       &unused_sequence_number);
 
@@ -312,9 +314,9 @@ TEST_F(ClipboardHostImplScanTest, PasteIfPolicyAllowed_EmptyData) {
 
 TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed) {
   int count = 0;
-
+  ui::ClipboardSequenceNumberToken sequence_number;
   clipboard_host_impl()->PerformPasteIfContentAllowed(
-      1, ui::ClipboardFormatType::GetPlainTextType(), "data",
+      sequence_number, ui::ClipboardFormatType::GetPlainTextType(), "data",
       base::BindLambdaForTesting(
           [&count](ClipboardHostImpl::ClipboardPasteContentAllowed allowed) {
             ++count;
@@ -327,7 +329,7 @@ TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed) {
 
   // Completing the request invokes the callback.  The request will
   // remain pending until it is cleaned up.
-  clipboard_host_impl()->CompleteRequest(1);
+  clipboard_host_impl()->CompleteRequest(sequence_number);
   EXPECT_EQ(
       1u,
       clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());
@@ -335,11 +337,12 @@ TEST_F(ClipboardHostImplScanTest, PerformPasteIfContentAllowed) {
 }
 
 TEST_F(ClipboardHostImplScanTest, CleanupObsoleteScanRequests) {
+  ui::ClipboardSequenceNumberToken sequence_number;
   // Perform a request and complete it.
   clipboard_host_impl()->PerformPasteIfContentAllowed(
-      1, ui::ClipboardFormatType::GetPlainTextType(), "data",
+      sequence_number, ui::ClipboardFormatType::GetPlainTextType(), "data",
       base::DoNothing());
-  clipboard_host_impl()->CompleteRequest(1);
+  clipboard_host_impl()->CompleteRequest(sequence_number);
   EXPECT_EQ(
       1u,
       clipboard_host_impl()->is_paste_allowed_requests_for_testing().size());

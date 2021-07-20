@@ -3214,14 +3214,14 @@ TEST_F(CaptureModeTest, ClipboardWrite) {
   auto* clipboard = ui::Clipboard::GetForCurrentThread();
   ASSERT_NE(clipboard, nullptr);
 
-  const uint64_t before_sequence_number =
+  const ui::ClipboardSequenceNumberToken before_sequence_number =
       clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
 
   CaptureNotificationWaiter waiter;
   CaptureModeController::Get()->CaptureScreenshotsOfAllDisplays();
   waiter.Wait();
 
-  const uint64_t after_sequence_number =
+  const ui::ClipboardSequenceNumberToken after_sequence_number =
       clipboard->GetSequenceNumber(ui::ClipboardBuffer::kCopyPaste);
 
   EXPECT_NE(before_sequence_number, after_sequence_number);

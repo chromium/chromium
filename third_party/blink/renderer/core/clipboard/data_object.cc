@@ -51,7 +51,8 @@ DataObject* DataObject::CreateFromClipboard(SystemClipboard* system_clipboard,
 #if DCHECK_IS_ON()
   HashSet<String> types_seen;
 #endif
-  uint64_t sequence_number = system_clipboard->SequenceNumber();
+  ClipboardSequenceNumberToken sequence_number =
+      system_clipboard->SequenceNumber();
   for (const String& type : system_clipboard->ReadAvailableTypes()) {
     if (paste_mode == PasteMode::kPlainTextOnly && type != kMimeTypeTextPlain)
       continue;

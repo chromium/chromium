@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "skia/ext/skia_utils_base.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_monitor.h"
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
@@ -60,7 +61,8 @@ DataTransferEndpoint* TestClipboard::GetSource(ClipboardBuffer buffer) const {
   return GetStore(buffer).GetDataSource();
 }
 
-uint64_t TestClipboard::GetSequenceNumber(ClipboardBuffer buffer) const {
+const ClipboardSequenceNumberToken& TestClipboard::GetSequenceNumber(
+    ClipboardBuffer buffer) const {
   return GetStore(buffer).sequence_number;
 }
 
@@ -469,7 +471,7 @@ const TestClipboard::DataStore& TestClipboard::GetStore(
 TestClipboard::DataStore& TestClipboard::GetStore(ClipboardBuffer buffer) {
   CHECK(IsSupportedClipboardBuffer(buffer));
   DataStore& store = stores_[buffer];
-  ++store.sequence_number;
+  store.sequence_number = ClipboardSequenceNumberToken();
   return store;
 }
 

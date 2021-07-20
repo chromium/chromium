@@ -177,6 +177,13 @@ struct StructTraits<blink::mojom::V8ContextTokenDataView, blink::V8ContextToken>
     : public blink::TokenMojomTraitsHelper<blink::mojom::V8ContextTokenDataView,
                                            blink::V8ContextToken> {};
 
+template <>
+struct StructTraits<blink::mojom::ClipboardSequenceNumberTokenDataView,
+                    blink::ClipboardSequenceNumberToken>
+    : public blink::TokenMojomTraitsHelper<
+          blink::mojom::ClipboardSequenceNumberTokenDataView,
+          blink::ClipboardSequenceNumberToken> {};
+
 }  // namespace mojo
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_COMMON_TOKENS_TOKENS_MOJOM_TRAITS_H_
