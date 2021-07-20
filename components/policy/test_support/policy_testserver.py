@@ -402,9 +402,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     elif request_type == 'register_browser':
       response = self.ProcessRegisterBrowserRequest(
           rmsg.register_browser_request)
-    elif request_type == 'chrome_desktop_report':
-      response = self.ProcessChromeDesktopReportUploadRequest(
-          rmsg.chrome_desktop_report_request)
     elif request_type == 'app_install_report':
       response = self.ProcessAppInstallReportRequest(
           rmsg.app_install_report_request)
@@ -907,21 +904,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     response.register_response.device_management_token = (
         dm_token)
     self.server.RegisterBrowser(dm_token, device_id, msg.machine_name)
-
-    return (200, response)
-
-  def ProcessChromeDesktopReportUploadRequest(self, chrome_desktop_report):
-    """Handles a chrome desktop report upload request.
-
-    Returns:
-      A tuple of HTTP status code and response data to send to the client.
-    """
-    # Empty responses indicate a successful upload.
-    chrome_desktop_report_response = dm.ChromeDesktopReportResponse()
-
-    response = dm.DeviceManagementResponse()
-    response.chrome_desktop_report_response.CopyFrom(
-        chrome_desktop_report_response)
 
     return (200, response)
 
