@@ -405,9 +405,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="spellcheck_hunspell_dictionary"/>
       <traffic_annotation unique_id="spellcheck_lookup"/>
     </sender>
-    <sender name="Suggestions">
-      <traffic_annotation unique_id="suggestions_service"/>
-    </sender>
     <sender name="Translate">
       <traffic_annotation unique_id="translate_url_fetcher"/>
     </sender>
