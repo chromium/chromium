@@ -7,11 +7,11 @@ Before selecting origin view:
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
-            <DIV class=lock-icon lock-icon-secure >
+            <DIV class=lock-icon lock-icon-secure title=Secure >
             </DIV>
-            <DIV class=lock-icon lock-icon-neutral >
+            <DIV class=lock-icon lock-icon-neutral title=Info >
             </DIV>
-            <DIV class=lock-icon lock-icon-insecure >
+            <DIV class=lock-icon lock-icon-insecure title=Not secure >
             </DIV>
         </DIV>
         <DIV class=triangle-pointer-container >
@@ -75,11 +75,11 @@ After interstitial is shown:
 Security overview
         </DIV>
         <DIV class=lock-spectrum >
-            <DIV class=lock-icon lock-icon-secure >
+            <DIV class=lock-icon lock-icon-secure title=Secure >
             </DIV>
-            <DIV class=lock-icon lock-icon-neutral >
+            <DIV class=lock-icon lock-icon-neutral title=Info >
             </DIV>
-            <DIV class=lock-icon lock-icon-insecure >
+            <DIV class=lock-icon lock-icon-insecure title=Not secure >
             </DIV>
         </DIV>
         <DIV class=triangle-pointer-container >

@@ -7292,9 +7292,6 @@ crbug.com/1226112 http/tests/text-autosizing/narrow-iframe.html [ Failure Pass ]
 crbug.com/1226445 [ Mac ] virtual/storage-access-api/external/wpt/storage-access-api/storageAccess.testdriver.sub.html [ Failure Pass ]
 
 # DevTools roll
-crbug.com/1223391 http/tests/devtools/security/interstitial-sidebar.js [ Skip ]
-crbug.com/1223391 http/tests/devtools/security/mixed-content-sidebar.js [ Skip ]
-crbug.com/1223391 http/tests/devtools/security/origin-view-then-interstitial.js [ Skip ]
 crbug.com/1215068 http/tests/devtools/tracing/tracing-timeline-load.js [ Skip ]
 
 # Sheriff 2021-07-07
