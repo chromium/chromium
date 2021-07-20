@@ -505,6 +505,42 @@ TEST_F(CounterStyleTest, UpperArmenian) {
   }
 }
 
+TEST_F(CounterStyleTest, ExtendArmenianRangeToIncludeZero) {
+  // 'lower-armenian' and 'upper-armenian' counter styles cannot represent 0.
+  // Even if we extend them to include 0 into the range, we still fall back.
+  const CounterStyle& extends_lower_armenian =
+      AddCounterStyle("extends-lower-armenian", R"CSS(
+    system: extends lower-armenian;
+    range: 0 infinity;
+  )CSS");
+  EXPECT_EQ("0", extends_lower_armenian.GenerateRepresentation(0));
+
+  const CounterStyle& extends_upper_armenian =
+      AddCounterStyle("extends-upper-armenian", R"CSS(
+    system: extends upper-armenian;
+    range: 0 infinity;
+  )CSS");
+  EXPECT_EQ("0", extends_upper_armenian.GenerateRepresentation(0));
+}
+
+TEST_F(CounterStyleTest, ExtendArmenianRangeToAuto) {
+  // 'lower-armenian' and 'upper-armenian' counter styles cannot represent 0,
+  // even if we extend their range to 'auto'.
+  const CounterStyle& extends_lower_armenian =
+      AddCounterStyle("extends-lower-armenian", R"CSS(
+    system: extends lower-armenian;
+    range: auto;
+  )CSS");
+  EXPECT_EQ("0", extends_lower_armenian.GenerateRepresentation(0));
+
+  const CounterStyle& extends_upper_armenian =
+      AddCounterStyle("extends-upper-armenian", R"CSS(
+    system: extends upper-armenian;
+    range: 0 auto;
+  )CSS");
+  EXPECT_EQ("0", extends_upper_armenian.GenerateRepresentation(0));
+}
+
 TEST_F(CounterStyleTest, KoreanHangulFormal) {
   // Verifies that our 'korean-hangul-formal' implementation matches the spec in
   // the officially specified range 1-9999.

@@ -201,64 +201,6 @@ namespace {
 // TODO(xiaochengh): Reorganize these legacy implementations. Get rid of the
 // EListStyleType enum, and merge them into their callers if possible.
 
-static int ToArmenianUnder10000(int number,
-                                bool upper,
-                                bool add_circumflex,
-                                UChar letters[9]) {
-  DCHECK_GE(number, 0);
-  DCHECK_LT(number, 10000);
-  int length = 0;
-
-  int lower_offset = upper ? 0 : 0x0030;
-
-  if (int thousands = number / 1000) {
-    if (thousands == 7) {
-      letters[length++] = 0x0552 + lower_offset;
-      if (add_circumflex)
-        letters[length++] = 0x0302;
-    } else {
-      letters[length++] = (0x054C - 1 + lower_offset) + thousands;
-      if (add_circumflex)
-        letters[length++] = 0x0302;
-    }
-  }
-
-  if (int hundreds = (number / 100) % 10) {
-    letters[length++] = (0x0543 - 1 + lower_offset) + hundreds;
-    if (add_circumflex)
-      letters[length++] = 0x0302;
-  }
-
-  if (int tens = (number / 10) % 10) {
-    letters[length++] = (0x053A - 1 + lower_offset) + tens;
-    if (add_circumflex)
-      letters[length++] = 0x0302;
-  }
-
-  if (int ones = number % 10) {
-    letters[length++] = (0x531 - 1 + lower_offset) + ones;
-    if (add_circumflex)
-      letters[length++] = 0x0302;
-  }
-
-  return length;
-}
-
-static String ToArmenian(int number, bool upper) {
-  DCHECK_GE(number, 1);
-  DCHECK_LE(number, 99999999);
-
-  const int kLettersSize = 18;  // twice what toArmenianUnder10000 needs
-  UChar letters[kLettersSize];
-
-  int length = ToArmenianUnder10000(number / 10000, upper, true, letters);
-  length +=
-      ToArmenianUnder10000(number % 10000, upper, false, letters + length);
-
-  DCHECK_LE(length, kLettersSize);
-  return String(letters, length);
-}
-
 enum CJKLang { kChinese = 1, kKorean, kJapanese };
 
 enum CJKStyle { kFormal, kInformal };
@@ -539,18 +481,53 @@ String KoreanHanjaFormalAlgorithm(int value) {
                           kKoreanHanjaFormalTable, kFormal);
 }
 
-String LowerArmenianAlgorithm(unsigned value) {
-  if (value > 99999999)
-    return String();
-  const bool lower_case = false;
-  return ToArmenian(value, lower_case);
+String ArmenianAlgorithmUnder10000(unsigned number,
+                                   bool upper,
+                                   bool add_circumflex) {
+  DCHECK_LT(number, 10000u);
+  StringBuilder letters;
+
+  unsigned lower_offset = upper ? 0 : 0x0030;
+
+  if (unsigned thousands = number / 1000) {
+    if (thousands == 7) {
+      letters.Append(static_cast<UChar>(0x0552 + lower_offset));
+      if (add_circumflex)
+        letters.Append(static_cast<UChar>(0x0302));
+    } else {
+      letters.Append(
+          static_cast<UChar>((0x054C - 1 + lower_offset) + thousands));
+      if (add_circumflex)
+        letters.Append(static_cast<UChar>(0x0302));
+    }
+  }
+
+  if (unsigned hundreds = (number / 100) % 10) {
+    letters.Append(static_cast<UChar>((0x0543 - 1 + lower_offset) + hundreds));
+    if (add_circumflex)
+      letters.Append(static_cast<UChar>(0x0302));
+  }
+
+  if (unsigned tens = (number / 10) % 10) {
+    letters.Append(static_cast<UChar>((0x053A - 1 + lower_offset) + tens));
+    if (add_circumflex)
+      letters.Append(static_cast<UChar>(0x0302));
+  }
+
+  if (unsigned ones = number % 10) {
+    letters.Append(static_cast<UChar>((0x531 - 1 + lower_offset) + ones));
+    if (add_circumflex)
+      letters.Append(static_cast<UChar>(0x0302));
+  }
+
+  return letters.ToString();
 }
 
-String UpperArmenianAlgorithm(unsigned value) {
-  if (value > 99999999)
+String ArmenianAlgorithm(unsigned number, bool upper) {
+  if (!number || number > 99999999)
     return String();
-  const bool upper_case = true;
-  return ToArmenian(value, upper_case);
+  return ArmenianAlgorithmUnder10000(number / 10000, upper, true) +
+         ArmenianAlgorithmUnder10000(number % 10000, upper, false);
 }
 
 // https://drafts.csswg.org/css-counter-styles-3/#ethiopic-numeric-counter-style
@@ -818,7 +795,7 @@ bool CounterStyle::RangeContains(int value) const {
       return value >= 0 && value <= 999999;
     case CounterStyleSystem::kLowerArmenian:
     case CounterStyleSystem::kUpperArmenian:
-      return value >= 0 && value <= 99999999;
+      return value >= 1 && value <= 99999999;
     case CounterStyleSystem::kUnresolvedExtends:
       NOTREACHED();
       return false;
@@ -939,10 +916,14 @@ String CounterStyle::GenerateInitialRepresentation(int value) const {
       return KoreanHanjaInformalAlgorithm(value);
     case CounterStyleSystem::kKoreanHanjaFormal:
       return KoreanHanjaFormalAlgorithm(value);
-    case CounterStyleSystem::kLowerArmenian:
-      return LowerArmenianAlgorithm(abs_value);
-    case CounterStyleSystem::kUpperArmenian:
-      return UpperArmenianAlgorithm(abs_value);
+    case CounterStyleSystem::kLowerArmenian: {
+      const bool lower_case = false;
+      return ArmenianAlgorithm(abs_value, lower_case);
+    }
+    case CounterStyleSystem::kUpperArmenian: {
+      const bool upper_case = true;
+      return ArmenianAlgorithm(abs_value, upper_case);
+    }
     case CounterStyleSystem::kEthiopicNumeric:
       return EthiopicNumericAlgorithm(abs_value);
     case CounterStyleSystem::kUnresolvedExtends:
