@@ -3610,3 +3610,14 @@ TEST_F('ChromeVoxBackgroundTest', 'SkipLabelDescriptionFor', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxBackgroundTest', 'Abbreviation', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <abbr title="uniform resource locator">URL</abbr>
+  `;
+  this.runWithLoadedTree(site, function(root) {
+    mockFeedback.expectSpeech('URL', 'uniform resource locator', 'Abbreviation')
+        .replay();
+  });
+});

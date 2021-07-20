@@ -3339,4 +3339,7 @@
   <message desc="Spoken to describe a candidate in the IME conversion window." name="IDS_CHROMEVOX_IME_CANDIDATE" is_accessibility_with_no_ui="true">
     Text conversion candidate
   </message>
+  <message desc="Spoken to describe a &lt;abbr&gt; tag. For example, &lt;abbr title='uniform resource locator'&gt;URL/&lt;abbr&gt; would be spoken as 'URL, uniform resource locator, Abbreviation'" name="IDS_CHROMEVOX_TAG_ABBR" is_accessibility_with_no_ui="true">
+    Abbreviation
+  </message>
 </grit-part>

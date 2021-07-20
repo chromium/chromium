@@ -2543,6 +2543,7 @@ Output.SPACE = ' ';
  * @private
  */
 Output.ROLE_INFO_ = {
+  abbr: {msgId: 'tag_abbr', inherits: 'abstractContainer'},
   alert: {msgId: 'role_alert'},
   alertDialog:
       {msgId: 'role_alertdialog', contextOrder: OutputContextOrder.FIRST},
