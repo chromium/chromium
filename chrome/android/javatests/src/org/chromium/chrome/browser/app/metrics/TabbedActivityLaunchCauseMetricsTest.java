@@ -59,6 +59,7 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.network.mojom.ReferrerPolicy;
 import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
@@ -135,7 +136,8 @@ public final class TabbedActivityLaunchCauseMetricsTest {
                         }
                     };
                 };
-        ApplicationStatus.registerStateListenerForAllActivities(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.registerStateListenerForAllActivities(listener));
 
         final int mainCount =
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON);
@@ -148,7 +150,8 @@ public final class TabbedActivityLaunchCauseMetricsTest {
         });
         Assert.assertEquals(mainCount,
                 histogramCountForValue(LaunchCauseMetrics.LaunchCause.MAIN_LAUNCHER_ICON));
-        ApplicationStatus.unregisterActivityStateListener(listener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.unregisterActivityStateListener(listener));
     }
 
     @Test

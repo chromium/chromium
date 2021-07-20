@@ -71,6 +71,11 @@ public class ActivityTabProviderTest {
         protected void removeObserverFromTabProvider() {
             TestThreadUtils.runOnUiThreadBlocking(super::removeObserverFromTabProvider);
         }
+
+        @Override
+        public void destroy() {
+            TestThreadUtils.runOnUiThreadBlocking(super::destroy);
+        }
     }
 
     @Rule

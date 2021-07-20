@@ -33,8 +33,10 @@ public class AwContentsAnchorViewTest {
 
     @Before
     public void setUp() {
-        mContainerView = new FrameLayout(mActivityTestRule.getActivity());
-        mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null);
+        mActivityTestRule.runOnUiThread(() -> {
+            mContainerView = new FrameLayout(mActivityTestRule.getActivity());
+            mViewDelegate = new AwViewAndroidDelegate(mContainerView, null, null);
+        });
     }
 
     @Test

@@ -355,7 +355,10 @@ public class TabPersistentStoreTest {
                 mAppContext, "TabPersistentStoreTest", Integer.toString(SELECTOR_INDEX));
         TabStateDirectory.setBaseStateDirectoryForTests(mMockDirectory.getBaseDirectory());
 
-        ApplicationStatus.registerStateListenerForActivity(mActivityStateListener, mChromeActivity);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ApplicationStatus.registerStateListenerForActivity(
+                    mActivityStateListener, mChromeActivity);
+        });
     }
 
     @After
@@ -363,8 +366,8 @@ public class TabPersistentStoreTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             sTabWindowManager.onActivityStateChange(mChromeActivity, ActivityState.DESTROYED);
             ApplicationStatus.onStateChangeForTesting(mChromeActivity, ActivityState.DESTROYED);
+            ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
         });
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
         mMockDirectory.tearDown();
     }
 

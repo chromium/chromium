@@ -51,6 +51,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.NavigationHandle;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Tests attribution reporting intents.
@@ -108,13 +109,17 @@ public class AttributionIntentIntegrationTest {
                 };
             }
         };
-        ApplicationStatus.registerStateListenerForAllActivities(mActivityStateListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> ApplicationStatus.registerStateListenerForAllActivities(
+                                mActivityStateListener));
     }
 
     @After
     public void tearDown() {
         ContextUtils.getApplicationContext().unregisterReceiver(mReceiver);
-        ApplicationStatus.unregisterActivityStateListener(mActivityStateListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> ApplicationStatus.unregisterActivityStateListener(mActivityStateListener));
     }
 
     private Intent makeValidAttributionIntent(

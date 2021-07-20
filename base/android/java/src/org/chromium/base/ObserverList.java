@@ -30,6 +30,8 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public class ObserverList<E> implements Iterable<E> {
+    private static final boolean ENABLE_THREAD_ASSERTS = false;
+
     /**
      * Extended iterator interface that provides rewind functionality.
      */
@@ -44,11 +46,14 @@ public class ObserverList<E> implements Iterable<E> {
     }
 
     public final List<E> mObservers = new ArrayList<E>();
+    private final ThreadUtils.ThreadChecker mThreadChecker;
     private int mIterationDepth;
     private int mCount;
     private boolean mNeedsCompact;
 
-    public ObserverList() {}
+    public ObserverList() {
+        mThreadChecker = new ThreadUtils.ThreadChecker();
+    }
 
     /**
      * Add an observer to the list.
@@ -59,6 +64,8 @@ public class ObserverList<E> implements Iterable<E> {
      * @return true if the observer list changed as a result of the call.
      */
     public boolean addObserver(E obs) {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         // Avoid adding null elements to the list as they may be removed on a compaction.
         if (obs == null || mObservers.contains(obs)) {
             return false;
@@ -79,6 +86,8 @@ public class ObserverList<E> implements Iterable<E> {
      * @return true if an element was removed as a result of this call.
      */
     public boolean removeObserver(E obs) {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         if (obs == null) {
             return false;
         }
@@ -102,10 +111,14 @@ public class ObserverList<E> implements Iterable<E> {
     }
 
     public boolean hasObserver(E obs) {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         return mObservers.contains(obs);
     }
 
     public void clear() {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         mCount = 0;
 
         if (mIterationDepth == 0) {
@@ -122,6 +135,8 @@ public class ObserverList<E> implements Iterable<E> {
 
     @Override
     public Iterator<E> iterator() {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         return new ObserverListIterator();
     }
 
@@ -131,6 +146,8 @@ public class ObserverList<E> implements Iterable<E> {
      * {@link RewindableIterator#rewind()}.
      */
     public RewindableIterator<E> rewindableIterator() {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         return new ObserverListIterator();
     }
 
@@ -139,6 +156,8 @@ public class ObserverList<E> implements Iterable<E> {
      * This is equivalent to the number of non-empty spaces in |mObservers|.
      */
     public int size() {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         return mCount;
     }
 
@@ -146,6 +165,8 @@ public class ObserverList<E> implements Iterable<E> {
      * Returns true if the ObserverList contains no observers.
      */
     public boolean isEmpty() {
+        if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
         return mCount == 0;
     }
 
@@ -200,6 +221,8 @@ public class ObserverList<E> implements Iterable<E> {
 
         @Override
         public void rewind() {
+            if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
             compactListIfNeeded();
             ObserverList.this.incrementIterationDepth();
             mListEndMarker = ObserverList.this.capacity();
@@ -209,6 +232,8 @@ public class ObserverList<E> implements Iterable<E> {
 
         @Override
         public boolean hasNext() {
+            if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
             int lookupIndex = mIndex;
             while (lookupIndex < mListEndMarker
                     && ObserverList.this.getObserverAt(lookupIndex) == null) {
@@ -223,6 +248,8 @@ public class ObserverList<E> implements Iterable<E> {
 
         @Override
         public E next() {
+            if (ENABLE_THREAD_ASSERTS) mThreadChecker.assertOnValidThread();
+
             // Advance if the current element is null.
             while (mIndex < mListEndMarker && ObserverList.this.getObserverAt(mIndex) == null) {
                 mIndex++;

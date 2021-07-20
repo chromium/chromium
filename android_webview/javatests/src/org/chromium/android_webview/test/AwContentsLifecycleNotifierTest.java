@@ -4,8 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.support.test.InstrumentationRegistry;
-
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -16,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.android_webview.AwContentsLifecycleNotifier;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * AwContentsLifecycleNotifier tests.
@@ -47,7 +46,9 @@ public class AwContentsLifecycleNotifierTest {
     @Feature({"AndroidWebView"})
     public void testNotifierCreate() throws Throwable {
         LifecycleObserver observer = new LifecycleObserver();
-        AwContentsLifecycleNotifier.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AwContentsLifecycleNotifier.addObserver(observer);
+        });
         Assert.assertFalse(AwContentsLifecycleNotifier.hasWebViewInstances());
 
         AwTestContainerView awTestContainerView =
@@ -55,7 +56,7 @@ public class AwContentsLifecycleNotifierTest {
         observer.mFirstWebViewCreatedCallback.waitForCallback(0, 1);
         Assert.assertTrue(AwContentsLifecycleNotifier.hasWebViewInstances());
 
-        InstrumentationRegistry.getInstrumentation().runOnMainSync(
+        TestThreadUtils.runOnUiThreadBlocking(
                 () -> mActivityTestRule.getActivity().removeAllViews());
         mActivityTestRule.destroyAwContentsOnMainSync(awTestContainerView.getAwContents());
         observer.mLastWebViewDestroyedCallback.waitForCallback(0, 1);

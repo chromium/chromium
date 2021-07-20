@@ -23,13 +23,7 @@ public class MainIntentBehaviorMetrics {
 
     private static long sTimeoutDurationMs = TIMEOUT_DURATION_MS;
     private static boolean sLoggedLaunchBehavior;
-    static {
-        ApplicationStatus.registerApplicationStateListener(newState -> {
-            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
-                sLoggedLaunchBehavior = false;
-            }
-        });
-    }
+    private static boolean sHasRegisteredApplicationStateListener;
 
     // Constants used to log UMA "enum" histogram about launch type.
     private static final int LAUNCH_FROM_ICON = 0;
@@ -43,6 +37,16 @@ public class MainIntentBehaviorMetrics {
      */
     public MainIntentBehaviorMetrics() {
         mLogLaunchRunnable = () -> logLaunchBehavior(false);
+    }
+
+    private void ensureApplicationStateListenerRegistered() {
+        if (sHasRegisteredApplicationStateListener) return;
+        sHasRegisteredApplicationStateListener = true;
+        ApplicationStatus.registerApplicationStateListener(newState -> {
+            if (newState == ApplicationState.HAS_STOPPED_ACTIVITIES) {
+                sLoggedLaunchBehavior = false;
+            }
+        });
     }
 
     /**
@@ -78,11 +82,13 @@ public class MainIntentBehaviorMetrics {
      * and the type of each launch.
      */
     public void logLaunchBehavior() {
+        ensureApplicationStateListenerRegistered();
         if (sLoggedLaunchBehavior) return;
         ThreadUtils.getUiThreadHandler().postDelayed(mLogLaunchRunnable, sTimeoutDurationMs);
     }
 
     private void logLaunchBehavior(boolean isLaunchFromIcon) {
+        ensureApplicationStateListenerRegistered();
         if (sLoggedLaunchBehavior) return;
         sLoggedLaunchBehavior = true;
 

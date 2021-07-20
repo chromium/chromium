@@ -21,8 +21,10 @@ import org.chromium.base.ApplicationStatus.ApplicationStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.StreamUtil;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
@@ -33,6 +35,7 @@ import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 import org.chromium.components.minidump_uploader.MinidumpUploadJobService;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
+import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -150,7 +153,15 @@ public class MinidumpUploadServiceImpl extends MinidumpUploadService.Impl {
         sharedPrefs.writeInt(ChromePreferenceKeys.LAST_SESSION_BROWSER_PID, Process.myPid());
         ApplicationStateListener appStateListener = createApplicationStateListener();
         appStateListener.onApplicationStateChange(ApplicationStatus.getStateForApplication());
-        ApplicationStatus.registerApplicationStateListener(appStateListener);
+
+        if (ThreadUtils.runningOnUiThread()) {
+            ApplicationStatus.registerApplicationStateListener(appStateListener);
+        } else {
+            PostTask.postTask(UiThreadTaskTraits.BEST_EFFORT, () -> {
+                ApplicationStatus.registerApplicationStateListener(appStateListener);
+            });
+        }
+
         if (previousPid != 0) {
             int reason = ProcessExitReasonFromSystem.getExitReason(previousPid);
             ProcessExitReasonFromSystem.recordAsEnumHistogram(

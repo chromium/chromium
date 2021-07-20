@@ -383,13 +383,15 @@ public class ChromeTabUtils {
             Instrumentation instrumentation, ChromeTabbedActivity activity) {
         final TabModel normalTabModel = activity.getTabModelSelector().getModel(false);
         final CallbackHelper createdCallback = new CallbackHelper();
-        normalTabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                createdCallback.notifyCalled();
-                normalTabModel.removeObserver(this);
-            }
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            normalTabModel.addObserver(new TabModelObserver() {
+                @Override
+                public void didAddTab(
+                        Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                    createdCallback.notifyCalled();
+                    normalTabModel.removeObserver(this);
+                }
+            });
         });
         // Tablet and phone have different new tab buttons; click the right one.
         if (activity.isTablet()) {
@@ -442,7 +444,7 @@ public class ChromeTabUtils {
                 selectedCallback.notifyCalled();
             }
         };
-        tabModel.addObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(observer));
 
         MenuUtils.invokeCustomMenuActionSync(instrumentation, activity,
                 incognito ? R.id.new_incognito_tab_menu_id : R.id.new_tab_menu_id);
@@ -457,7 +459,7 @@ public class ChromeTabUtils {
         } catch (TimeoutException ex) {
             Assert.fail("Never received tab selected event");
         }
-        tabModel.removeObserver(observer);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
 
         Tab tab = activity.getActivityTab();
         waitForTabPageLoaded(tab, (String) null);
