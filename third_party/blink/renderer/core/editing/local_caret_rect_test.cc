@@ -174,6 +174,26 @@ TEST_P(ParameterizedLocalCaretRectTest, RtlText) {
                 Position(foo, 3), TextAffinity::kDownstream)));
 }
 
+TEST_P(ParameterizedLocalCaretRectTest, ClampingAndRounding) {
+  // crbug.com/1228620
+  LoadAhem();
+  SetBodyContent(R"HTML(
+      <style>
+      #root {
+        margin-left: 0.6px;
+        width: 150.6px;
+        text-align: right;
+        font: 30px/30px Ahem;
+      }
+      </style>
+      <div id=root>def</div>)HTML");
+  const Node* text = GetElementById("root")->firstChild();
+  EXPECT_EQ(
+      LocalCaretRect(text->GetLayoutObject(), PhysicalRect(149, 0, 1, 30)),
+      LocalCaretRectOfPosition(
+          PositionWithAffinity(Position(text, 3), TextAffinity::kDownstream)));
+}
+
 TEST_P(ParameterizedLocalCaretRectTest, OverflowTextLtr) {
   // This test only records the current behavior. Future changes are allowed.
 
