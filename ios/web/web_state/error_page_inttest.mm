@@ -169,7 +169,7 @@ TEST_F(ErrorPageTest, MAYBE_BackForwardErrorPage) {
   if (base::FeatureList::IsEnabled(features::kUseJSForErrorPage)) {
     // TODO(crbug.com/1153261): this test should be fixed in newer versions of
     // WebKit.
-    if (@available(iOS 14.4, *)) {
+    if (@available(iOS 15, *)) {
     } else {
       return;
     }

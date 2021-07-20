@@ -1089,6 +1089,10 @@ TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
   }));
   session_storage = web_state_->BuildSessionStorage();
   EXPECT_EQ(0, session_storage.lastCommittedItemIndex);
+
+  // Wait for the error to be displayed.
+  EXPECT_TRUE(web::test::WaitForWebViewContainingText(
+      web_state_.get(), "error", base::test::ios::kWaitForJSCompletionTimeout));
 }
 
 // Tests that CanTakeSnapshot() is false when a JavaScript dialog is being

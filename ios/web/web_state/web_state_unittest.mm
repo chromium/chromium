@@ -605,6 +605,10 @@ TEST_F(WebStateTest, CallStopDuringSessionRestore) {
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return !navigation_manager->GetPendingItem() && !web_state_ptr->IsLoading();
   }));
+
+  // Wait for the error to be displayed.
+  EXPECT_TRUE(web::test::WaitForWebViewContainingText(
+      web_state_ptr, "error", base::test::ios::kWaitForJSCompletionTimeout));
 }
 
 // Verifies that calling NavigationManager::LoadURLWithParams() does not stop
@@ -707,6 +711,10 @@ TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
   EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return !navigation_manager->GetPendingItem() && !web_state_ptr->IsLoading();
   }));
+
+  // Wait for the error to be displayed.
+  EXPECT_TRUE(web::test::WaitForWebViewContainingText(
+      web_state_ptr, "error", base::test::ios::kWaitForJSCompletionTimeout));
 }
 
 // Verifies that each page title is restored.
