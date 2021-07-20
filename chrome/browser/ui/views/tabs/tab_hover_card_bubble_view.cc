@@ -498,6 +498,18 @@ TabHoverCardBubbleView::TabHoverCardBubbleView(Tab* tab)
   if (using_rounded_corners())
     GetBubbleFrameView()->SetCornerRadius(corner_radius_.value());
 
+  // Placeholder image should be used when there is no image data for the
+  // given tab. Otherwise don't flash the placeholder while we wait for the
+  // existing thumbnail to be decompressed.
+  //
+  // Note that this code has to go after CreateBubble() above, since setting up
+  // the placeholder image and background color require a ThemeProvider, which
+  // is only available once this View has been added to its widget.
+  if (thumbnail_view_ && !tab->data().thumbnail->has_data() &&
+      !tab->IsActive()) {
+    thumbnail_view_->SetPlaceholderImage();
+  }
+
   // Start in the fully "faded-in" position so that whatever text we initially
   // display is visible.
   SetTextFade(1.0);
