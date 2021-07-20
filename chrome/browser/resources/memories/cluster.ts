@@ -110,7 +110,7 @@ class HistoryClusterElement extends PolymerElement {
 
     // Depending on the selected option, removing a top visit results in the
     // Cluster to either be removed or restructured. Notify the enclosing
-    // <clusters-app> to refresh the list of displayed Clusters.
+    // <history-clusters> to refresh the list of displayed Clusters.
     if (this.cluster.visits.length === 0) {
       this.dispatchEvent(new CustomEvent('cluster-changed-or-removed', {
         bubbles: true,

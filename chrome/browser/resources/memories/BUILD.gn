@@ -19,6 +19,7 @@ ts_library("build_ts") {
     "app.ts",
     "browser_proxy.ts",
     "cluster.ts",
+    "clusters.ts",
     "history_clusters.mojom-webui.js",
     "history_clusters.ts",
     "page_favicon.ts",
@@ -51,6 +52,7 @@ html_to_js("web_components_local") {
   js_files = [
     "app.ts",
     "cluster.ts",
+    "clusters.ts",
     "page_favicon.ts",
     "router.ts",
     "search_query.ts",
@@ -82,6 +84,7 @@ preprocess_if_expr("preprocess_generated") {
   in_files = [
     "app.ts",
     "cluster.ts",
+    "clusters.ts",
     "page_favicon.ts",
     "router.ts",
     "search_query.ts",
