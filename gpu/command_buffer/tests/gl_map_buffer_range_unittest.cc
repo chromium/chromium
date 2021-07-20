@@ -8,6 +8,7 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
@@ -314,6 +315,12 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
 
   glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
   GLTestHelper::CheckGLError("no errors", __LINE__);
+
+#if defined(OS_MAC)
+  // TODO(crbug.com/1230038): This step causes a crash on mac intel-uhd bot.
+  if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
+    return;
+#endif
 
   glReadPixels(0, 0, kCanvasSize, kCanvasSize, GL_RGBA, GL_UNSIGNED_BYTE, 0);
   GLTestHelper::CheckGLError("no errors", __LINE__);
