@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_confirm_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/coordinators/infobar_password_coordinator.h"
 #import "ios/chrome/browser/ui/infobars/infobar_constants.h"
+#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
 #import "ios/chrome/browser/ui/infobars/test/test_infobar_password_delegate.h"
 #import "ios/chrome/browser/ui/infobars/test_infobar_delegate.h"
@@ -60,6 +61,7 @@
 @end
 
 // Test fixture for testing InfobarContainerCoordinatorTest.
+// TODO(crbug.com/927064): Remove once Overlays is turned on by default.
 class InfobarContainerCoordinatorTest : public PlatformTest {
  protected:
   InfobarContainerCoordinatorTest()
@@ -223,6 +225,9 @@ class InfobarContainerCoordinatorTest : public PlatformTest {
 // InfobarBanner is presented.
 TEST_F(InfobarContainerCoordinatorTest,
        InfobarBannerPresentationStatePresented) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   EXPECT_NE(infobar_container_coordinator_.infobarBannerState,
             InfobarBannerPresentationState::Presented);
   AddInfobar(/*high_priority_presentation=*/false);
@@ -238,6 +243,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // Tests that the InfobarBanner is automatically dismissed after
 // kInfobarBannerPresentationDurationInSeconds seconds.
 TEST_F(InfobarContainerCoordinatorTest, TestAutomaticInfobarBannerDismissal) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   EXPECT_NE(infobar_container_coordinator_.infobarBannerState,
             InfobarBannerPresentationState::Presented);
 
@@ -263,6 +271,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestAutomaticInfobarBannerDismissal) {
 // Tests that the InfobarBanner is correctly dismissed after calling
 // dismissInfobarBannerAnimated.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarBannerDismissal) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   EXPECT_FALSE(infobar_container_coordinator_.infobarBannerState ==
                InfobarBannerPresentationState::Presented);
 
@@ -290,6 +301,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarBannerDismissal) {
 // Tests that the InfobarBanner is dismissed when changing Webstates.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarBannerDismissAtWebStateChange) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondWebstate();
 
@@ -316,6 +330,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // different Webstate.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarBannerNotPresentAfterWebStateChange) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondWebstate();
 
@@ -351,6 +368,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // Tests infobarBannerState is NotPresented once an InfobarBanner has been
 // dismissed directly by its base VC.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarBannerDismissalByBaseVC) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
@@ -373,6 +393,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarBannerDismissalByBaseVC) {
 // Tests that the Infobar is dismissed before its presentation is completed.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarBannerDismissalMidPresentation) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   // Call dismiss without calling WaitUntilConditionOrTimeout before.
   [base_view_controller_ dismissViewControllerAnimated:NO completion:nil];
@@ -390,6 +413,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // presentation is completed.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarBannerDismissedClosingWebstate) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   // Close the Webstate without calling WaitUntilConditionOrTimeout.
   browser_->GetWebStateList()->CloseWebStateAt(0, 0);
@@ -404,6 +430,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 
 // Tests that the Infobar is dismissed when both the VC and Webstate are closed.
 TEST_F(InfobarContainerCoordinatorTest, TestDismissingAndClosingWebstate) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   ASSERT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
       base::test::ios::kWaitForUIElementTimeout, ^bool {
@@ -429,6 +458,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestDismissingAndClosingWebstate) {
 // and there's more than one webstate.
 TEST_F(InfobarContainerCoordinatorTest,
        TestDismissingAndClosingWebstateSecondWebstate) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondWebstate();
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -454,6 +486,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // Tests that the ChildCoordinators are deleted once the Webstate is closed.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarChildCoordinatorCountWebstate) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -511,6 +546,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 
 // Tests that the ChildCoordinators are deleted once they stop.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarChildCoordinatorCountStop) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
 
   EXPECT_TRUE(base::test::ios::WaitUntilConditionOrTimeout(
@@ -567,6 +605,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarChildCoordinatorCountStop) {
 // Tests that that a second Infobar (added right after the first one) is
 // displayed after the first one has been dismissed.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueAndDisplay) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondInfobar(/*high_priority_presentation=*/false);
   ASSERT_EQ(NSUInteger(2),
@@ -605,6 +646,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueAndDisplay) {
 // added after a high priority one will appear first.
 TEST_F(InfobarContainerCoordinatorTest,
        TestInfobarQueueAndDisplayWhenAppeared) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   [scoped_key_window_.Get() setRootViewController:nil];
   AddInfobar(/*high_priority_presentation=*/true);
   AddSecondInfobar(/*high_priority_presentation=*/false);
@@ -647,6 +691,9 @@ TEST_F(InfobarContainerCoordinatorTest,
 // Tests that that a second Infobar (added right after the first one) is
 // not displayed if its destroyed before presentation.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueStoppedNoDisplay) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondInfobar(/*high_priority_presentation=*/false);
   ASSERT_EQ(NSUInteger(2),
@@ -678,6 +725,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueStoppedNoDisplay) {
 // Tests that a High Priority Presentation Infobar added after a non High
 // Priority Presentation Infobar is presented first.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueuePriority) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   [scoped_key_window_.Get() setRootViewController:nil];
   AddInfobar(/*high_priority_presentation=*/false);
   AddSecondInfobar(/*high_priority_presentation=*/true);
@@ -720,6 +770,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueuePriority) {
 // Tests that a High Priority Presentation Infobar added after a High
 // Priority Presentation Infobar is presented first.
 TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueHighPriority) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   [scoped_key_window_.Get() setRootViewController:nil];
   AddInfobar(/*high_priority_presentation=*/true);
   AddSecondInfobar(/*high_priority_presentation=*/true);
@@ -761,6 +814,9 @@ TEST_F(InfobarContainerCoordinatorTest, TestInfobarQueueHighPriority) {
 
 // Tests that a Confirm Infobar is stopped after it has been dismissed.
 TEST_F(InfobarContainerCoordinatorTest, TestConfirmInfobarStoppedOnDismissal) {
+  if (IsInfobarOverlayUIEnabled()) {
+    return;
+  }
   AddConfirmInfobar(/*high_priority_presentation=*/false);
   ASSERT_EQ(NSUInteger(1),
             infobar_container_coordinator_.childCoordinators.count);

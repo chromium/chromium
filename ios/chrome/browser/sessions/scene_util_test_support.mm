@@ -39,6 +39,8 @@
 
 @property(nonatomic, strong, readonly) FakeSceneSession* session;
 
+@property(nonatomic, strong, readonly) NSArray<UIWindow*>* windows;
+
 @end
 
 @implementation FakeScene {
@@ -54,6 +56,10 @@
 
 - (FakeSceneSession*)session {
   return _session;
+}
+
+- (NSArray<UIWindow*>*)windows {
+  return nil;
 }
 
 @end
