@@ -106,7 +106,7 @@ TEST_F(KernelFeatureManagerTest, EnableIfDeviceSupports) {
 
   EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial1->trial_name()));
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial2->trial_name()));
-  EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial3->trial_name()));
+  EXPECT_TRUE(base::FieldTrialList::IsTrialActive(trial3->trial_name()));
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(trial4->trial_name()));
 }
 

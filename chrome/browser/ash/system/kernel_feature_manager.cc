@@ -62,37 +62,49 @@ void KernelFeatureManager::OnKernelFeatureList(bool result,
 }
 
 void KernelFeatureManager::EnableKernelFeatures() {
-  base::FeatureList* feature_list_instance = base::FeatureList::GetInstance();
-  DCHECK(feature_list_instance);
+  base::FeatureList* feature_list_ins = base::FeatureList::GetInstance();
+  DCHECK(feature_list_ins);
 
   for (const auto& name : kernel_feature_list_) {
     VLOG(1) << "Enabling kernel feature via debugd: " << name << std::endl;
 
-    // Was this feature requested in the field trial and also enabled?
-    // Note: We don't support dynamic disabling of kernel features right now.
-    // So any requests to disable a feature are ignored. Disabled is the
-    // default.
-    if (!feature_list_instance->GetEnabledFieldTrialByFeatureName(name)) {
+    base::FieldTrial* trial = base::FeatureList::GetInstance()
+                                  ->GetAssociatedFieldTrialByFeatureName(name);
+
+    // Skip enabling features that are not a part of the field trial.
+    // Note: We don't support dynamic disabling of kernel features on the device
+    // right now. Requests to disable result in *only* the disabled group getting
+    // activated. The kernel default for the device is already disabled.
+    if (!trial) {
       continue;
     }
 
-    debug_daemon_client_->KernelFeatureEnable(
-        name, base::BindOnce(&KernelFeatureManager::OnKernelFeatureEnable,
-                             weak_ptr_factory_.GetWeakPtr()));
+    if (feature_list_ins->GetEnabledFieldTrialByFeatureName(name)) {
+      // Features marked as enabled need to be enabled on the device.
+      // The actual finch experiment will be activated in the dbus callback
+      // later once the feature is enabled on the device.
+      debug_daemon_client_->KernelFeatureEnable(
+          name, base::BindOnce(&KernelFeatureManager::OnKernelFeatureEnable,
+          weak_ptr_factory_.GetWeakPtr()));
+    } else {
+      // The device defaults to "disabled", so no need to send any dbus commands
+      // to disable. Just enable the field trial experiment for disabled group.
+      trial->group();
+      VLOG(1) << "Kernel experiment " << name << "activated as disabled.";
+    }
   }
 }
 
 void KernelFeatureManager::OnKernelFeatureEnable(bool result,
                                                  const std::string& out) {
-  DCHECK(!result ||
-         base::FeatureList::GetInstance()->GetAssociatedFieldTrialByFeatureName(
-             out));
+  base::FieldTrial* trial = base::FeatureList::GetInstance()
+                                ->GetAssociatedFieldTrialByFeatureName(out);
+
+  DCHECK(!result || trial);
 
   if (result) {
-    base::FeatureList::GetInstance()
-        ->GetAssociatedFieldTrialByFeatureName(out)
-        ->group();
-    VLOG(1) << "Kernel feature " << out << "activated successfully!";
+    trial->group();
+    VLOG(1) << "Kernel experiment " << out << "activated as enabled.";
     return;
   }
   VLOG(1) << "Kernel feature has not been activated: " << out;
