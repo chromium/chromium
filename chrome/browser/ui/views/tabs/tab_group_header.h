@@ -63,6 +63,12 @@ class TabGroupHeader : public TabSlotView,
   // Removes {editor_bubble_tracker_} from observing the widget.
   void RemoveObserverFromWidget(views::Widget* widget);
 
+  // Assigns this view as the tooltip handler to avoid delegation to child views.
+  views::View* GetTooltipHandlerForPoint(const gfx::Point& point) override;
+
+  // Updates tooltip text as either name of group or static text if unnamed
+  std::u16string GetTooltipText(const gfx::Point& p) const override;
+
  private:
   friend class TabGroupEditorBubbleViewDialogBrowserTest;
 

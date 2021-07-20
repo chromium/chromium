@@ -6354,6 +6354,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_TAB_GROUPS_NEW_GROUP_PROMO" desc="Text shown on promotional UI encouraging users to create a tab group in their tab strip">
         To group tabs together, right-click a tab
       </message>
+      <message name="IDS_TAB_GROUPS_UNNAMED_GROUP_TOOLTIP" desc="Static tooltip to display on hover over unnamed tab group.">
+        Unnamed Tab Group
+      </message>
       <if expr="use_titlecase">
         <message name="IDS_PROMO_DISMISS_BUTTON" desc="Text shown on the button for the user to acknowledge that they understand the message">
           Got It
