@@ -144,7 +144,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_screenshot),
+                ImmutableList.of(
+                        mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
+                        mActivity.getResources().getString(R.string.sharing_screenshot),
                         mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
@@ -168,7 +170,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image),
+                ImmutableList.of(
+                        mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
+                        mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
@@ -268,7 +272,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         /*isMultiWindow=*/true);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_image),
+                ImmutableList.of(
+                        mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
+                        mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
                                 R.string.send_tab_to_self_share_activity_title),
@@ -327,7 +333,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
                         ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
 
         assertCorrectModelsAreInTheRightOrder(propertyModels,
-                ImmutableList.of(mActivity.getResources().getString(R.string.sharing_copy_text),
+                ImmutableList.of(
+                        mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
+                        mActivity.getResources().getString(R.string.sharing_copy_text),
                         mActivity.getResources().getString(R.string.sharing_highlights)));
     }
 
@@ -347,7 +355,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 mChromeProvidedSharingOptionsProvider.getPropertyModels(
                         ImmutableSet.of(ContentType.HIGHLIGHTED_TEXT), /*isMultiWindow=*/false);
 
-        assertCorrectMetrics(propertyModels, linkGenerationStatus);
+        assertCorrectLinkGenerationMetrics(propertyModels, linkGenerationStatus);
     }
 
     @Test
@@ -374,6 +382,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
         ShareParams shareParams = new ShareParams.Builder(null, /*title=*/"", /*url=*/"")
                                           .setCallback(mTargetChosenCallback)
+                                          .setText("")
                                           .build();
         mChromeProvidedSharingOptionsProvider = new ChromeProvidedSharingOptionsProvider(mActivity,
                 mTabProvider, mBottomSheetController,
@@ -397,37 +406,48 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 "Property models in the wrong order.", expectedOrder, actualLabelOrder.build());
     }
 
-    private void assertCorrectMetrics(
+    private void assertCorrectLinkGenerationMetrics(
             List<PropertyModel> propertyModels, @LinkGeneration int linkGenerationStatus) {
         Looper.prepare();
         mActionTester = new UserActionTester();
         View view = Mockito.mock(View.class);
         for (PropertyModel propertyModel : propertyModels) {
+            // There is no link generation for Stylize Cards yet.
+            if (propertyModel.get(ShareSheetItemViewProperties.LABEL)
+                            .equals(mActivity.getResources().getString(
+                                    R.string.sharing_webnotes_create_card))) {
+                continue;
+            }
+
             View.OnClickListener listener =
                     propertyModel.get(ShareSheetItemViewProperties.CLICK_LISTENER);
             listener.onClick(view);
 
             switch (linkGenerationStatus) {
                 case LinkGeneration.LINK:
-                    assertTrue(mActionTester.getActions().contains(
-                            "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared"));
-                    assertEquals(1,
+                    assertTrue(
+                            "Expected a SharingHubAndroid...Success.LinkToTextShared user action",
+                            mActionTester.getActions().contains(
+                                    "SharingHubAndroid.LinkGeneration.Success.LinkToTextShared"));
+                    assertEquals("Expected a 'link' shared stated metric to be a recorded", 1,
                             RecordHistogram.getHistogramValueCountForTesting(
                                     "SharedHighlights.AndroidShareSheet.SharedState",
                                     LinkGeneration.LINK));
                     break;
                 case LinkGeneration.TEXT:
-                    assertTrue(mActionTester.getActions().contains(
-                            "SharingHubAndroid.LinkGeneration.Success.TextShared"));
-                    assertEquals(1,
+                    assertTrue("Expected a SharingHubAndroid...Success.TextShared user action",
+                            mActionTester.getActions().contains(
+                                    "SharingHubAndroid.LinkGeneration.Success.TextShared"));
+                    assertEquals("Expected a 'text' shared stated metric to be a recorded", 1,
                             RecordHistogram.getHistogramValueCountForTesting(
                                     "SharedHighlights.AndroidShareSheet.SharedState",
                                     LinkGeneration.TEXT));
                     break;
                 case LinkGeneration.FAILURE:
-                    assertTrue(mActionTester.getActions().contains(
-                            "SharingHubAndroid.LinkGeneration.Failure.TextShared"));
-                    assertEquals(1,
+                    assertTrue("Expected a SharingHubAndroid...Failure.TextShared user action",
+                            mActionTester.getActions().contains(
+                                    "SharingHubAndroid.LinkGeneration.Failure.TextShared"));
+                    assertEquals("Expected a 'failure' shared stated metric to be a recorded", 1,
                             RecordHistogram.getHistogramValueCountForTesting(
                                     "SharedHighlights.AndroidShareSheet.SharedState",
                                     LinkGeneration.FAILURE));
