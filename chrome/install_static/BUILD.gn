@@ -20,13 +20,13 @@ if (is_win) {
   # Please don't add dependencies on other system libraries.
   static_library("install_static_util") {
     deps = [
-      ":buildflags",
       "//components/nacl/common:buildflags",
       "//components/version_info:channel",
       "//components/version_info:generate_version_info",
     ]
 
     public_deps = [
+      ":buildflags",
       "//build:branding_buildflags",
       "//chrome/chrome_elf:nt_registry",
     ]

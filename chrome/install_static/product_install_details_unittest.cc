@@ -331,6 +331,7 @@ TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
 
     std::unique_ptr<PrimaryInstallDetails> details(
         MakeProductDetails(test_data().path));
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
     if (kInstallModes[test_data().index].channel_strategy ==
         ChannelStrategy::ADDITIONAL_PARAMETERS) {
       EXPECT_THAT(details->channel(), StrEq(expected_channel));
@@ -341,6 +342,12 @@ TEST_P(MakeProductDetailsTest, PolicyOverrideChannel) {
       // "ap" and override are ignored for this mode.
       EXPECT_THAT(details->channel(), StrEq(test_data().channel));
     }
+#else
+    // "ap" and override are ignored for this mode.
+    EXPECT_THAT(kInstallModes[test_data().index].channel_strategy,
+                Eq(ChannelStrategy::UNSUPPORTED));
+    EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+#endif
   }
 }
 
@@ -387,6 +394,7 @@ TEST_P(MakeProductDetailsTest, AdditionalParametersChannels) {
     SetAp(ap_and_channel.first);
     std::unique_ptr<PrimaryInstallDetails> details(
         MakeProductDetails(test_data().path));
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
     if (kInstallModes[test_data().index].channel_strategy ==
         ChannelStrategy::ADDITIONAL_PARAMETERS) {
       EXPECT_THAT(details->channel(), StrEq(ap_and_channel.second));
@@ -394,6 +402,12 @@ TEST_P(MakeProductDetailsTest, AdditionalParametersChannels) {
       // "ap" is ignored for this mode.
       EXPECT_THAT(details->channel(), StrEq(test_data().channel));
     }
+#else
+    // "ap" is ignored for this mode.
+    EXPECT_THAT(kInstallModes[test_data().index].channel_strategy,
+                Eq(ChannelStrategy::UNSUPPORTED));
+    EXPECT_THAT(details->channel(), StrEq(test_data().channel));
+#endif
   }
 }
 

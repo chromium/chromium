@@ -106,9 +106,7 @@ TEST(InstallModes, VerifyModes) {
     ASSERT_THAT(mode.elevator_iid, Ne(CLSID_NULL));
 
     // UNSUPPORTED and USE_GOOGLE_UPDATE_INTEGRATION are mutually exclusive.
-#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
-    ASSERT_THAT(mode.channel_strategy, Ne(ChannelStrategy::UNSUPPORTED));
-#else
+#if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
     ASSERT_THAT(mode.channel_strategy, Eq(ChannelStrategy::UNSUPPORTED));
 #endif
   }

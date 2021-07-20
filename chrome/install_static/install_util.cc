@@ -954,7 +954,7 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
 #if !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   return {std::wstring(), ChannelOrigin::kInstallMode,
           /*is_extended_stable=*/false};
-#else
+#else   // !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // Read the "ap" value and cache it if requested.
   std::wstring client_state(GetClientStateKeyPath(mode.app_guid));
   std::wstring ap_value;
@@ -972,9 +972,6 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
   }
 
   switch (mode.channel_strategy) {
-    case ChannelStrategy::UNSUPPORTED:
-      assert(false);
-      break;
     case ChannelStrategy::ADDITIONAL_PARAMETERS: {
       std::wstring channel_override_value;
       bool is_extended_stable = false;
@@ -994,7 +991,7 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
   }
   return {std::wstring(), ChannelOrigin::kInstallMode,
           /*is_extended_stable=*/false};
-#endif
+#endif  // !BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 }
 
 }  // namespace install_static

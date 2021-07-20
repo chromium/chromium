@@ -9,24 +9,29 @@
 #ifndef CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 #define CHROME_INSTALL_STATIC_INSTALL_CONSTANTS_H_
 
+#include <stdint.h>
 #include <windows.h>
 
-#include <stdint.h>
+#include "chrome/install_static/buildflags.h"
 
 namespace install_static {
 
 // Identifies different strategies for determining an update channel.
 enum class ChannelStrategy {
-  // Update channels are not supported. This value is for exclusive use by
-  // brands that do not integrate with Google Update.
-  UNSUPPORTED,
+#if BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
   // Update channel is determined by parsing the "ap" value in the registry.
   // This is used by Google Chrome's primary install mode to differentiate the
   // beta and dev channels from the default stable channel.
   ADDITIONAL_PARAMETERS,
+
   // Update channel is a fixed value. This is used by to pin Google Chrome's SxS
   // secondary install mode to the canary channel.
   FIXED,
+#else   // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
+  // Update channels are not supported. This value is for exclusive use by
+  // brands that do not integrate with Google Update.
+  UNSUPPORTED,
+#endif  // BUILDFLAG(USE_GOOGLE_UPDATE_INTEGRATION)
 };
 
 // A POD-struct defining constants for a brand's install mode. A brand has one
