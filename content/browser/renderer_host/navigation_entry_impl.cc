@@ -75,17 +75,18 @@ void RecursivelyGenerateFrameEntries(
   blink::EncodePageState(page_state, &data);
   DCHECK(!data.empty()) << "Shouldn't generate an empty PageState.";
 
+  GURL state_url(state.url_string.value_or(std::u16string()));
   scoped_refptr<FrameNavigationEntry> entry =
       context->GetFrameNavigationEntryForItemSequenceNumber(
           state.item_sequence_number,
-          state.target ? base::UTF16ToUTF8(*state.target) : "");
+          state.target ? base::UTF16ToUTF8(*state.target) : "", state_url);
   DCHECK(!entry || entry->initiator_origin() == state.initiator_origin);
   if (!entry) {
     entry = base::MakeRefCounted<FrameNavigationEntry>(
         UTF16ToUTF8(state.target.value_or(std::u16string())),
         state.item_sequence_number, state.document_sequence_number,
         UTF16ToUTF8(state.app_history_key.value_or(std::u16string())), nullptr,
-        nullptr, GURL(state.url_string.value_or(std::u16string())),
+        nullptr, state_url,
         // TODO(nasko): Supply valid origin once the value is persisted across
         // session restore.
         absl::nullopt /* origin */,
@@ -273,8 +274,8 @@ NavigationEntryImpl::TreeNode::CloneAndReplace(
       // for the given item sequence number, share that FrameNavigationEntry
       // rather than creating a duplicate.
       new_entry = restore_context->GetFrameNavigationEntryForItemSequenceNumber(
-          frame_entry->item_sequence_number(),
-          frame_entry->frame_unique_name());
+          frame_entry->item_sequence_number(), frame_entry->frame_unique_name(),
+          frame_entry->url());
     }
     if (!new_entry) {
       new_entry = frame_entry->Clone();

@@ -10,6 +10,8 @@
 
 #include "content/public/browser/navigation_entry_restore_context.h"
 
+class GURL;
+
 namespace content {
 
 class FrameNavigationEntry;
@@ -30,9 +32,15 @@ class CONTENT_EXPORT NavigationEntryRestoreContextImpl
       const NavigationEntryRestoreContextImpl&) = delete;
 
   void AddFrameNavigationEntry(FrameNavigationEntry* entry);
+  // If there is an existing FrameNavigationEntry with the given
+  // |item_sequence_number| targeting |unique_name|, this returns it so that it
+  // can be shared. Entries with the same ISN should always have the same URL,
+  // so this returns null if the located FrameNavigationEntry differs from
+  // |expected_url| to avoid bugs.
   FrameNavigationEntry* GetFrameNavigationEntryForItemSequenceNumber(
       int64_t item_sequence_number,
-      const std::string& unique_name);
+      const std::string& unique_name,
+      const GURL& expected_url);
 
  private:
   // As an added precaution, we key based on both item sequence number and
