@@ -422,7 +422,7 @@ static String ToCJKIdeographic(int number,
 String HebrewAlgorithmUnder1000(unsigned number) {
   // FIXME: CSS3 mentions various refinements not implemented here.
   // FIXME: Should take a look at Mozilla's HebrewToText function (in
-  // nsBulletFrame).
+  // CounterStyleManager.cpp).
   DCHECK_LT(number, 1000u);
   StringBuilder letters;
   unsigned four_hundreds = number / 400;
