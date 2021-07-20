@@ -42,6 +42,8 @@ content::WebUIDataSource* CreateAndSetupWebUIDataSource(Profile* profile) {
   source->AddString("headerTitle", u"Based on web activity related to \"$1\"");
   source->AddString("relatedSearchesLabel", u"Related:");
   source->AddString("removeAllFromHistory", u"Remove all from history");
+  source->AddString("removeAllFromHistoryToast", u"Pages removed");
+  source->AddString("removeFromHistoryToast", u"Page removed");
   source->AddString("savedInTabGroup", u"Saved in tab group");
   source->AddString("searchPrompt", u"Search clusters");
   source->AddString("toggleButtonLabelLess", u"Show less");

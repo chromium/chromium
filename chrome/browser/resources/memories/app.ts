@@ -8,12 +8,14 @@ import './shared_style.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
+import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.m.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
 import {CrToolbarSearchFieldElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
@@ -45,9 +47,10 @@ declare global {
 interface HistoryClustersAppElement {
   $: {
     confirmationDialog: CrLazyRenderElement<CrDialogElement>,
+    confirmationToast: CrLazyRenderElement<CrToastElement>,
+    container: Element,
     scrollThreshold: IronScrollThresholdElement,
     toolbar: CrToolbarElement,
-    container: Element,
   };
 }
 
@@ -88,6 +91,12 @@ class HistoryClustersAppElement extends PolymerElement {
       },
 
       /**
+       * The message to show in the toast when the request to browser to remove
+       * visits succeeds.
+       */
+      toastMessage_: String,
+
+      /**
        * The list of visits to be removed. A non-empty array indicates a pending
        * remove request to the browser.
        */
@@ -109,6 +118,7 @@ class HistoryClustersAppElement extends PolymerElement {
   private query_: string = '';
   private result_: QueryResult = new QueryResult();
   private title_: string = '';
+  private toastMessage_: string = '';
   private visitsToBeRemoved_: Array<URLVisit> = [];
 
   //============================================================================
@@ -193,7 +203,12 @@ class HistoryClustersAppElement extends PolymerElement {
     }
 
     this.visitsToBeRemoved_ = event.detail;
-    this.$.confirmationDialog.get().showModal();
+    if (assert(this.visitsToBeRemoved_.length) > 1) {
+      this.$.confirmationDialog.get().showModal();
+    } else {
+      // Bypass the confirmation dialog if removing one visit only.
+      this.onRemoveButtonClick_();
+    }
   }
 
   /**
@@ -280,6 +295,11 @@ class HistoryClustersAppElement extends PolymerElement {
    * Called when the last accepted request to browser to remove visits succeeds.
    */
   private onVisitsRemoved_() {
+    this.toastMessage_ = loadTimeData.getString(
+        assert(this.visitsToBeRemoved_.length) > 1 ?
+            'removeAllFromHistoryToast' :
+            'removeFromHistoryToast');
+    this.$.confirmationToast.get().show();
     this.visitsToBeRemoved_ = [];
   }
 
