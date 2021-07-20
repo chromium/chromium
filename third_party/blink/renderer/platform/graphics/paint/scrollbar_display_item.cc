@@ -23,10 +23,12 @@ ScrollbarDisplayItem::ScrollbarDisplayItem(
     scoped_refptr<cc::Scrollbar> scrollbar,
     const IntRect& visual_rect,
     const TransformPaintPropertyNode* scroll_translation,
-    CompositorElementId element_id)
+    CompositorElementId element_id,
+    PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client,
                   type,
                   visual_rect,
+                  paint_invalidation_reason,
                   /*draws_content*/ true),
       data_(new Data{std::move(scrollbar), scroll_translation, element_id}) {
   DCHECK(IsScrollbar());
@@ -117,7 +119,7 @@ void ScrollbarDisplayItem::Record(
 
   paint_controller.CreateAndAppend<ScrollbarDisplayItem>(
       client, type, std::move(scrollbar), visual_rect, scroll_translation,
-      element_id);
+      element_id, client.GetPaintInvalidationReason());
 }
 
 }  // namespace blink

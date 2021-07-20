@@ -69,7 +69,8 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayer(
   DEFINE_STATIC_LOCAL(LiteralDebugNameClient, client, ("ForeignLayer"));
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<ForeignLayerDisplayItem>(
-          client, DisplayItem::kForeignLayerFirst, std::move(layer), offset);
+          client, DisplayItem::kForeignLayerFirst, std::move(layer), offset,
+          client.GetPaintInvalidationReason());
   DidAddDisplayItem();
   return *this;
 }
@@ -87,7 +88,8 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
   paint_artifact_->GetDisplayItemList()
       .AllocateAndConstruct<DrawingDisplayItem>(
           client, DisplayItem::kDrawingFirst, bounds,
-          recorder.finishRecordingAsPicture());
+          recorder.finishRecordingAsPicture(),
+          client.GetPaintInvalidationReason());
   DidAddDisplayItem();
   return *this;
 }

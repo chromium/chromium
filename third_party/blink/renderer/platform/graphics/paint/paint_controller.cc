@@ -141,8 +141,11 @@ bool PaintController::UseCachedItemIfPossible(const DisplayItemClient& client,
     return false;
   }
 
-  ProcessNewItem(new_paint_artifact_->GetDisplayItemList().AppendByMoving(
-      current_paint_artifact_->GetDisplayItemList()[cached_item]));
+  DisplayItem& new_item =
+      new_paint_artifact_->GetDisplayItemList().AppendByMoving(
+          current_paint_artifact_->GetDisplayItemList()[cached_item]);
+  new_item.SetPaintInvalidationReason(PaintInvalidationReason::kNone);
+  ProcessNewItem(new_item);
 
   return true;
 }
@@ -309,7 +312,8 @@ void PaintController::CheckNewItem(DisplayItem& display_item) {
 void PaintController::ProcessNewItem(DisplayItem& display_item) {
   if (IsSkippingCache() && usage_ == kMultiplePaints) {
     display_item.Client().Invalidate(PaintInvalidationReason::kUncacheable);
-    display_item.SetUncacheable();
+    display_item.SetPaintInvalidationReason(
+        PaintInvalidationReason::kUncacheable);
   }
 
   if (paint_chunker_.IncrementDisplayItemIndex(display_item))
@@ -385,6 +389,7 @@ wtf_size_t PaintController::FindItemFromIdIndexMap(
   if (existing_item.IsTombstone())
     return kNotFound;
   DCHECK_EQ(existing_item.GetId(), id);
+  DCHECK(existing_item.IsCacheable());
   return index;
 }
 
@@ -409,6 +414,7 @@ wtf_size_t PaintController::FindCachedItem(const DisplayItem::Id& id) {
     // We encounter an item that has already been copied which indicates we
     // can't do sequential matching.
     if (!item.IsTombstone() && id == item.GetId()) {
+      DCHECK(item.IsCacheable());
 #if DCHECK_IS_ON()
       ++num_sequential_matches_;
 #endif
@@ -492,22 +498,24 @@ void PaintController::AppendSubsequenceByMoving(const DisplayItemClient& client,
   }
 
   auto& new_display_item_list = new_paint_artifact_->GetDisplayItemList();
-#if DCHECK_IS_ON()
   wtf_size_t new_item_start_index = new_display_item_list.size();
-#endif
   new_display_item_list.AppendSubsequenceByMoving(
       current_paint_artifact_->GetDisplayItemList(),
       current_chunks[start_chunk_index].begin_index,
       current_chunks[end_chunk_index - 1].end_index);
 
-#if DCHECK_IS_ON()
+  bool skip_cache = IsSkippingCache();
   for (auto& item : new_display_item_list.ItemsInRange(
            new_item_start_index, new_display_item_list.size())) {
     DCHECK(!item.IsTombstone());
+    item.SetPaintInvalidationReason(skip_cache || !item.IsCacheable()
+                                        ? PaintInvalidationReason::kUncacheable
+                                        : PaintInvalidationReason::kNone);
     DCHECK(!item.IsCacheable() || ClientCacheIsValid(item.Client()));
+#if DCHECK_IS_ON()
     CheckNewItem(item);
-  }
 #endif
+  }
 
   // Keep descendant subsequence entries.
   for (wtf_size_t i = subsequence_index + 1;

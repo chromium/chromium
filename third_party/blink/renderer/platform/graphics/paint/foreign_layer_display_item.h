@@ -27,7 +27,8 @@ class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
   ForeignLayerDisplayItem(const DisplayItemClient& client,
                           Type,
                           scoped_refptr<cc::Layer>,
-                          const IntPoint& offset);
+                          const IntPoint& offset,
+                          PaintInvalidationReason);
 
   cc::Layer* GetLayer() const {
     DCHECK(!IsTombstone());

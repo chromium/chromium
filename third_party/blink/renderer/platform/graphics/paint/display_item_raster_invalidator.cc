@@ -36,7 +36,7 @@ void DisplayItemRasterInvalidator::Generate() {
                           .stored_value->value;
         value.new_visual_rect.Unite(new_item.VisualRect());
         if (value.reason == PaintInvalidationReason::kNone) {
-          value.reason = new_item.Client().IsCacheable()
+          value.reason = new_item.IsCacheable()
                              ? PaintInvalidationReason::kAppeared
                              : PaintInvalidationReason::kUncacheable;
         }
@@ -44,7 +44,7 @@ void DisplayItemRasterInvalidator::Generate() {
       continue;
     }
 
-    auto reason = new_item.Client().GetPaintInvalidationReason();
+    auto reason = new_item.GetPaintInvalidationReason();
     if (!IsFullPaintInvalidationReason(reason) &&
         matched_old_item < latest_cached_old_item) {
       // |new_item| has been moved above other cached items.

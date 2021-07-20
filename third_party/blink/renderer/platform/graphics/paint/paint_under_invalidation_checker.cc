@@ -87,6 +87,9 @@ void PaintUnderInvalidationChecker::CheckNewItem() {
   // leaving only disappeared or invalidated display items in the old list after
   // painting.
   NewDisplayItemList().ReplaceLastByMoving(old_item);
+  NewDisplayItemList().back().SetPaintInvalidationReason(
+      old_item.IsCacheable() ? PaintInvalidationReason::kNone
+                             : PaintInvalidationReason::kUncacheable);
 
   if (subsequence_client_) {
     // We are checking under-invalidation of a cached subsequence.

@@ -37,8 +37,7 @@ bool DisplayItem::EqualsForUnderInvalidation(const DisplayItem& other) const {
   if (client_ != other.client_ || type_ != other.type_ ||
       fragment_ != other.fragment_ ||
       raster_effect_outset_ != other.raster_effect_outset_ ||
-      draws_content_ != other.draws_content_ ||
-      is_cacheable_ != other.is_cacheable_)
+      draws_content_ != other.draws_content_)
     return false;
 
   if (visual_rect_ != other.visual_rect_ &&
@@ -224,7 +223,7 @@ void DisplayItem::PropertiesAsJSON(JSONObject& json,
                  Client().SafeDebugName(client_known_to_be_alive));
   if (client_known_to_be_alive) {
     json.SetString("invalidation", PaintInvalidationReasonToString(
-                                       Client().GetPaintInvalidationReason()));
+                                       GetPaintInvalidationReason()));
   }
   json.SetString("visualRect", VisualRect().ToString());
   if (GetRasterEffectOutset() != RasterEffectOutset::kNone) {

@@ -8,6 +8,7 @@
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
+#include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -154,6 +155,9 @@ class PLATFORM_EXPORT DisplayItem {
     kTypeLast = kScrollbarVertical,
   };
 
+  static_assert(kTypeLast < (1 << 8),
+                "DisplayItem::Type should fit in uint8_t");
+
   DisplayItem(const DisplayItem&) = delete;
   DisplayItem(DisplayItem&&) = delete;
   DisplayItem& operator=(const DisplayItem&) = delete;
@@ -244,8 +248,16 @@ class PLATFORM_EXPORT DisplayItem {
     return type_ == kScrollbarHorizontal || type_ == kScrollbarVertical;
   }
 
-  bool IsCacheable() const { return is_cacheable_; }
-  void SetUncacheable() { is_cacheable_ = false; }
+  PaintInvalidationReason GetPaintInvalidationReason() const {
+    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_);
+  }
+  void SetPaintInvalidationReason(PaintInvalidationReason reason) {
+    paint_invalidation_reason_ = static_cast<unsigned>(reason);
+  }
+  bool IsCacheable() const {
+    return static_cast<PaintInvalidationReason>(paint_invalidation_reason_) !=
+           PaintInvalidationReason::kUncacheable;
+  }
 
   bool EqualsForUnderInvalidation(const DisplayItem& other) const;
 
@@ -271,15 +283,17 @@ class PLATFORM_EXPORT DisplayItem {
   DisplayItem(const DisplayItemClient& client,
               Type type,
               const IntRect& visual_rect,
+              PaintInvalidationReason paint_invalidation_reason,
               bool draws_content = false)
       : client_(&client),
         visual_rect_(visual_rect),
         fragment_(0),
+        paint_invalidation_reason_(
+            static_cast<unsigned>(paint_invalidation_reason)),
         type_(type),
         raster_effect_outset_(
             static_cast<unsigned>(client.VisualRectOutsetForRasterEffects())),
         draws_content_(draws_content),
-        is_cacheable_(client.IsCacheable()),
         is_not_tombstone_(true),
         known_to_be_opaque_is_set_(false),
         known_to_be_opaque_(false) {
@@ -309,12 +323,13 @@ class PLATFORM_EXPORT DisplayItem {
   const DisplayItemClient* client_;
   IntRect visual_rect_;
   wtf_size_t fragment_;
-  static_assert(kTypeLast < (1 << 8),
-                "DisplayItem::Type should fit in uint8_t");
+  // paint_invalidation_reason_ is set during construction (or, in the case of a
+  // DisplayItem copied from the cache, shortly thereafter). Once set, it is
+  // never modified. It is used to inform raster invalidation.
+  unsigned paint_invalidation_reason_ : 8;
   unsigned type_ : 8;
   unsigned raster_effect_outset_ : 2;
   unsigned draws_content_ : 1;
-  unsigned is_cacheable_ : 1;
   // This is not |is_tombstone_| to allow memset(0) to clear a display item to
   // be a tombstone.
   unsigned is_not_tombstone_ : 1;

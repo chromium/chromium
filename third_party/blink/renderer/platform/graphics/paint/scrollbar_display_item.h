@@ -35,7 +35,9 @@ class PLATFORM_EXPORT ScrollbarDisplayItem final : public DisplayItem {
                        scoped_refptr<cc::Scrollbar>,
                        const IntRect& visual_rect,
                        const TransformPaintPropertyNode* scroll_translation,
-                       CompositorElementId element_id);
+                       CompositorElementId element_id,
+                       PaintInvalidationReason paint_invalidation_reason =
+                           PaintInvalidationReason::kJustCreated);
 
   const TransformPaintPropertyNode* ScrollTranslation() const {
     DCHECK(!IsTombstone());

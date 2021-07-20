@@ -19,10 +19,12 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
     const DisplayItemClient& client,
     Type type,
     scoped_refptr<cc::Layer> layer,
-    const IntPoint& offset)
+    const IntPoint& offset,
+    PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client,
                   type,
-                  IntRect(offset, IntSize(layer->bounds()))),
+                  IntRect(offset, IntSize(layer->bounds())),
+                  paint_invalidation_reason),
       layer_(std::move(layer)) {
   DCHECK(IsForeignLayerType(type));
 }
@@ -62,7 +64,8 @@ void RecordForeignLayer(GraphicsContext& context,
     paint_controller.UpdateCurrentPaintChunkProperties(nullptr, *properties);
   }
   paint_controller.CreateAndAppend<ForeignLayerDisplayItem>(
-      client, type, std::move(layer), offset);
+      client, type, std::move(layer), offset,
+      client.GetPaintInvalidationReason());
   if (properties) {
     paint_controller.UpdateCurrentPaintChunkProperties(nullptr,
                                                        *previous_properties);

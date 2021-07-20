@@ -47,7 +47,8 @@ DrawingRecorder::~DrawingRecorder() {
   context_.SetInDrawingRecorder(false);
 
   context_.GetPaintController().CreateAndAppend<DrawingDisplayItem>(
-      client_, type_, visual_rect_, context_.EndRecording());
+      client_, type_, visual_rect_, context_.EndRecording(),
+      client_.GetPaintInvalidationReason());
 }
 
 }  // namespace blink

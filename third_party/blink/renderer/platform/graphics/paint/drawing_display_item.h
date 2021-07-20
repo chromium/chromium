@@ -23,7 +23,9 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
   DrawingDisplayItem(const DisplayItemClient& client,
                      Type type,
                      const IntRect& visual_rect,
-                     sk_sp<const PaintRecord> record);
+                     sk_sp<const PaintRecord> record,
+                     PaintInvalidationReason paint_invalidation_reason =
+                         PaintInvalidationReason::kJustCreated);
 
   const sk_sp<const PaintRecord>& GetPaintRecord() const {
     DCHECK(!IsTombstone());
@@ -74,15 +76,18 @@ class PLATFORM_EXPORT DrawingDisplayItem : public DisplayItem {
 
 // TODO(dcheng): Move this ctor back inline once the clang plugin is fixed.
 DISABLE_CFI_PERF
-inline DrawingDisplayItem::DrawingDisplayItem(const DisplayItemClient& client,
-                                              Type type,
-                                              const IntRect& visual_rect,
-                                              sk_sp<const PaintRecord> record)
+inline DrawingDisplayItem::DrawingDisplayItem(
+    const DisplayItemClient& client,
+    Type type,
+    const IntRect& visual_rect,
+    sk_sp<const PaintRecord> record,
+    PaintInvalidationReason paint_invalidation_reason)
     : DisplayItem(client,
                   type,
                   UNLIKELY(ShouldTightenVisualRect(record))
                       ? TightenVisualRect(visual_rect, record)
                       : visual_rect,
+                  paint_invalidation_reason,
                   /* draws_content*/ record && record->size()),
       record_(DrawsContent() ? std::move(record) : nullptr) {
   DCHECK(IsDrawing());

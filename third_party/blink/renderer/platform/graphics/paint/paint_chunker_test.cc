@@ -39,7 +39,11 @@ class TestChunkerDisplayItem : public DrawingDisplayItem {
       const DisplayItemClient& client,
       DisplayItem::Type type = DisplayItem::kDrawingFirst,
       const IntRect& visual_rect = IntRect())
-      : DrawingDisplayItem(client, type, visual_rect, nullptr) {}
+      : DrawingDisplayItem(client,
+                           type,
+                           visual_rect,
+                           nullptr,
+                           client.GetPaintInvalidationReason()) {}
 };
 
 class TestChunkerOpaqueDisplayItem : public DrawingDisplayItem {
@@ -48,7 +52,11 @@ class TestChunkerOpaqueDisplayItem : public DrawingDisplayItem {
       const DisplayItemClient& client,
       DisplayItem::Type type = DisplayItem::kDrawingFirst,
       const IntRect& visual_rect = IntRect())
-      : DrawingDisplayItem(client, type, visual_rect, nullptr) {
+      : DrawingDisplayItem(client,
+                           type,
+                           visual_rect,
+                           nullptr,
+                           client.GetPaintInvalidationReason()) {
     SetKnownToBeOpaqueForTesting();
   }
 };
@@ -60,7 +68,8 @@ class TestDisplayItemRequiringSeparateChunk : public ForeignLayerDisplayItem {
       : ForeignLayerDisplayItem(client,
                                 DisplayItem::kForeignLayerPlugin,
                                 cc::Layer::Create(),
-                                IntPoint()) {}
+                                IntPoint(),
+                                client.GetPaintInvalidationReason()) {}
 };
 
 TEST_F(PaintChunkerTest, Empty) {
