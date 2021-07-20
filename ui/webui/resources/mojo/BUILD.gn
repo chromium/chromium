@@ -20,9 +20,20 @@ ts_library("library") {
     "url/mojom/url.mojom-webui.js",
   ]
 
+  definitions = [ "$preprocessed_folder/mojo/public/js/bindings.d.ts" ]
+
   extra_deps = [
+    ":copy_bindings_dts",
     "//mojo/public/mojom/base:base_js__generator",
     "//skia/public/mojom:mojom_js__generator",
     "//url/mojom:url_mojom_gurl_js__generator",
   ]
+}
+
+# Copy bindings.d.ts file under the same location where other shared Mojo JS
+# generated files reside, so that it can be located by the TS compiler when
+# resolving chrome://resources/mojo/mojo/public/js/bindings.js.
+copy("copy_bindings_dts") {
+  sources = [ "bindings.d.ts" ]
+  outputs = [ "$preprocessed_folder/mojo/public/js/{{source_file_part}}" ]
 }
