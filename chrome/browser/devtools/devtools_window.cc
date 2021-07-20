@@ -1281,10 +1281,8 @@ void DevToolsWindow::WebContentsCreated(WebContents* source_contents,
                                         const GURL& target_url,
                                         WebContents* new_contents) {
   if (target_url.SchemeIs(content::kChromeDevToolsScheme) &&
-      (target_url.path().rfind("device_mode_emulation_frame.html") !=
-           std::string::npos
-       // TODO(crbug.com/1228264): Remove toolbox.html allowance
-       || target_url.path().rfind("toolbox.html") != std::string::npos)) {
+      target_url.path().rfind("device_mode_emulation_frame.html") !=
+          std::string::npos) {
     CHECK(can_dock_);
 
     // Ownership will be passed in DevToolsWindow::AddNewContents.
