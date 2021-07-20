@@ -58,6 +58,9 @@ class TestArcResizeLockManager : public ArcResizeLockManager {
   bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
     return update_compat_mode_button_called.contains(window);
   }
+  void ResetUpdateCompatModeButtonCalled() {
+    update_compat_mode_button_called.clear();
+  }
 
   // ArcResizeLockManager:
   void UpdateCompatModeButton(aura::Window* window) override {
@@ -69,6 +72,10 @@ class TestArcResizeLockManager : public ArcResizeLockManager {
 };
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kNonInterestedPropKey, false)
+
+constexpr std::array<ash::ArcResizeLockType, 3> kArcResizeLockTypes{
+    ash::ArcResizeLockType::RESIZABLE, ash::ArcResizeLockType::RESIZE_LIMITED,
+    ash::ArcResizeLockType::FULLY_LOCKED};
 
 }  // namespace
 
@@ -99,6 +106,9 @@ class ArcResizeLockManagerTest : public CompatModeTestBase {
 
   bool IsUpdateCompatModeButtonCalled(const aura::Window* window) const {
     return arc_resize_lock_manager_.IsUpdateCompatModeButtonCalled(window);
+  }
+  void ResetUpdateCompatModeButtonCalled() {
+    arc_resize_lock_manager_.ResetUpdateCompatModeButtonCalled();
   }
 
  private:
@@ -355,20 +365,38 @@ TEST_F(ArcResizeLockManagerTest, TestWindowDestruction) {
 }
 
 // Test that UpdateCompatModeButton is called properly according to the property
-// changes.
+// or bounds changes.
 TEST_F(ArcResizeLockManagerTest, UpdateCompatModeButton) {
-  auto arc_window = CreateFakeWindow(true);
+  for (const auto initial_type : kArcResizeLockTypes) {
+    for (const auto next_type : kArcResizeLockTypes) {
+      if (initial_type == next_type)
+        continue;
+      auto arc_window = CreateFakeWindow(true);
 
-  // Test for RESIZABLE.
-  EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
-  arc_window->SetProperty(ash::kArcResizeLockTypeKey,
-                          ash::ArcResizeLockType::RESIZABLE);
-  EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      // Test for initial ArcResizeLockType property.
+      EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      arc_window->SetProperty(ash::kArcResizeLockTypeKey, initial_type);
+      EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
+      EXPECT_TRUE(IsUpdateCompatModeButtonCalled(arc_window.get()));
 
-  arc_window->SetProperty(ash::kAppIDKey, std::string("app-id"));
-  EXPECT_TRUE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      ResetUpdateCompatModeButtonCalled();
 
-  // TODO(b/191956214): Add more test cases.
+      // Test for ArcResizeLockType property change.
+      EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      arc_window->SetProperty(ash::kArcResizeLockTypeKey, next_type);
+      EXPECT_TRUE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+
+      ResetUpdateCompatModeButtonCalled();
+
+      // Test for bounds change.
+      EXPECT_FALSE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+      arc_window->SetBounds(gfx::Rect(0, 0, 10, 30));
+      EXPECT_TRUE(IsUpdateCompatModeButtonCalled(arc_window.get()));
+
+      ResetUpdateCompatModeButtonCalled();
+    }
+  }
 }
 
 }  // namespace arc
