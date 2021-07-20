@@ -10,16 +10,14 @@ from other Python2 files. See the
 
 ## Status
 
-As of the time of writing (2021-05-12), we're in the following state:
+As of the time of writing (2021-07-19), we're in the following state:
 
 * depot_tools is fully Python3-compatible.
 * [gclient hooks](#gclient_hooks) are being migrated to use Python3
   ([crbug.com/1208028](https://crbug.com/1208028)).
 * GN is fully Python3-compatible, meaning that all the scripts invoked
   through exec_script() are using Python3.
-* The [build](#gn_ninja-actions) (scripts invoked by Ninja) is using Python3 by default,
-  but some actions are still run using Python2
-  ([crbug.com/1112471](https://crbug.com/1112471)).
+* The [build](#gn_ninja-actions) (scripts invoked by Ninja) uses Python3.
 * We are updating the various test harnesses and frameworks to use
   Python3, but most still use Python2. It is possible to use
   Python3 for tests if you're ready to do so.
@@ -109,12 +107,8 @@ to `python3` in the DEPS file, and make sure things still run :).
 
 ### GN/Ninja actions
 
-Most targets in the build use Python3 now, and anything declared via an
+All targets in the build use Python3 now, and anything declared via an
 `action()` rule in GN will use Python3.
-
-Some targets still require Python2; they are declared as [python2_action]
-targets instead. To migrate them to Python3, change the `python2_action` to
-`action` and make sure things still build.
 
 ### Tests
 
@@ -139,6 +133,5 @@ Presubmit checks are run using Python 2 by default. To run them using
 Python3, add the line `USE_PYTHON3 = True` to the PRESUBMIT.py file in
 question (effectively creating a global variable).
 
-[python2_action]: https://source.chromium.org/chromium/chromium/src/+/main:build/config/python.gni;l=68?q=python2_action%20file:python.gni&ss=chromium
 [script_test]: https://source.chromium.org/?q=script_test%20file:testing%2Ftest.gni&ss=chromium
 [vpython]: https://chromium.googlesource.com/infra/infra/+/refs/heads/main/doc/users/vpython.md
