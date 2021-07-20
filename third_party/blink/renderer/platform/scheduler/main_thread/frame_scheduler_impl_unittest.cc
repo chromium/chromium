@@ -153,10 +153,11 @@ constexpr TaskType kAllFrameTaskTypes[] = {
     TaskType::kInternalHighPriorityLocalFrame,
     TaskType::kInternalInputBlocking,
     TaskType::kWakeLock,
-    TaskType::kWebGPU};
+    TaskType::kWebGPU,
+    TaskType::kInternalPostMessageForwarding};
 
 static_assert(
-    static_cast<int>(TaskType::kCount) == 79,
+    static_cast<int>(TaskType::kCount) == 80,
     "When adding a TaskType, make sure that kAllFrameTaskTypes is updated.");
 
 void AppendToVectorTestTask(Vector<String>* vector, String value) {
@@ -4087,6 +4088,29 @@ TEST_F(FrameSchedulerImplThrottleForegroundTimersEnabledTest,
                   start + base::TimeDelta::FromMilliseconds(1000),
                   start + base::TimeDelta::FromMilliseconds(1000),
                   start + base::TimeDelta::FromMilliseconds(1000)));
+}
+
+class FrameSchedulerImplDisablePrioritizedPostMessageForwarding
+    : public FrameSchedulerImplTest {
+ public:
+  FrameSchedulerImplDisablePrioritizedPostMessageForwarding()
+      : FrameSchedulerImplTest({kDisablePrioritizedPostMessageForwarding}, {}) {
+  }
+};
+
+TEST_F(FrameSchedulerImplTest, PostMessageForwardingHasControlPriority) {
+  auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
+
+  EXPECT_EQ(TaskQueue::QueuePriority::kVeryHighPriority,
+            task_queue->GetTaskQueue()->GetQueuePriority());
+}
+
+TEST_F(FrameSchedulerImplDisablePrioritizedPostMessageForwarding,
+       PostMessageForwardingHasNormalPriority) {
+  auto task_queue = GetTaskQueue(TaskType::kInternalPostMessageForwarding);
+
+  EXPECT_EQ(TaskQueue::QueuePriority::kNormalPriority,
+            task_queue->GetTaskQueue()->GetQueuePriority());
 }
 
 }  // namespace frame_scheduler_impl_unittest

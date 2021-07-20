@@ -502,6 +502,14 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     // Navigation IPCs do not run using virtual time to avoid hanging.
     case TaskType::kInternalNavigationAssociatedUnfreezable:
       return DoesNotUseVirtualTimeTaskQueueTraits();
+    case TaskType::kInternalPostMessageForwarding:
+      if (base::FeatureList::IsEnabled(
+              kDisablePrioritizedPostMessageForwarding)) {
+        return UnpausableTaskQueueTraits();
+      } else {
+        return UnpausableTaskQueueTraits().SetPrioritisationType(
+            QueueTraits::PrioritisationType::kPostMessageForwarding);
+      }
     case TaskType::kDeprecatedNone:
     case TaskType::kMainThreadTaskQueueV8:
     case TaskType::kMainThreadTaskQueueCompositor:
@@ -1054,6 +1062,9 @@ TaskQueue::QueuePriority FrameSchedulerImpl::ComputePriority(
       return TaskQueue::QueuePriority::kVeryHighPriority;
     case MainThreadTaskQueue::QueueTraits::PrioritisationType::kBestEffort:
       return TaskQueue::QueuePriority::kBestEffortPriority;
+    case MainThreadTaskQueue::QueueTraits::PrioritisationType::
+        kPostMessageForwarding:
+      return TaskQueue::QueuePriority::kVeryHighPriority;
     default:
       break;
   }

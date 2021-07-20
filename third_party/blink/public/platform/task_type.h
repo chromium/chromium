@@ -261,6 +261,9 @@ enum class TaskType : unsigned char {
   // Tasks related to the WebGPU API
   kWebGPU = 78,
 
+  // Cross-process PostMessage IPCs that are deferred in the current task.
+  kInternalPostMessageForwarding = 79,
+
   ///////////////////////////////////////
   // The following task types are only for thread-local queues.
   ///////////////////////////////////////
@@ -288,7 +291,7 @@ enum class TaskType : unsigned char {
   kWorkerThreadTaskQueueV8 = 47,
   kWorkerThreadTaskQueueCompositor = 48,
 
-  kCount = 79,
+  kCount = 80,
 };
 
 }  // namespace blink

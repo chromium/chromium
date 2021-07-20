@@ -2150,7 +2150,7 @@ void RenderFrameImpl::Unload(
   auto& agent_scheduling_group = agent_scheduling_group_;
   blink::LocalFrameToken frame_token = frame_->GetLocalFrameToken();
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      GetTaskRunner(blink::TaskType::kPostedMessage);
+      GetTaskRunner(blink::TaskType::kInternalPostMessageForwarding);
 
   // Important: |this| is deleted after this call!
   if (!SwapOutAndDeleteThis(

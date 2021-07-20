@@ -166,8 +166,9 @@ class PLATFORM_EXPORT MainThreadTaskQueue
       kHighPriorityLocalFrame = 8,
       kCompositor = 9,  // Main-thread only.
       kInput = 10,
+      kPostMessageForwarding = 11,
 
-      kCount = 11
+      kCount = 12
     };
 
     // kPrioritisationTypeWidthBits is the number of bits required

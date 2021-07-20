@@ -151,6 +151,8 @@ const char* TaskTypeNames::TaskTypeToString(TaskType task_type) {
       return "WakeLock";
     case TaskType::kWebGPU:
       return "WebGPU";
+    case TaskType::kInternalPostMessageForwarding:
+      return "InternalPostMessageForwarding";
     case TaskType::kCount:
       return "Count";
   }

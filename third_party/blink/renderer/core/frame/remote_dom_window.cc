@@ -42,7 +42,8 @@ void RemoteDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // should also be observable by the target frame prior to receiving the
   // postMessage. We might consider forcing layout in ForwardPostMessage or
   // further delaying postMessage forwarding until after the next BeginFrame.
-  posted_message->source->GetTaskRunner(TaskType::kPostedMessage)
+  posted_message->source
+      ->GetTaskRunner(TaskType::kInternalPostMessageForwarding)
       ->PostTask(FROM_HERE, WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
                                       WrapPersistent(this),
                                       WrapPersistent(posted_message)));

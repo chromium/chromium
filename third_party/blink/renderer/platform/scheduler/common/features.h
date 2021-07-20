@@ -226,6 +226,13 @@ PLATFORM_EXPORT extern const base::FeatureParam<
 PLATFORM_EXPORT extern const base::FeatureParam<DeprioritizeDOMTimersPhase>
     kDeprioritizeDOMTimersPhase;
 
+// Killswitch for prioritizing cross-process postMessage forwarding.
+//
+// TODO(crbug.com/1212894): Remove after M95.
+const base::Feature kDisablePrioritizedPostMessageForwarding{
+    "DisablePrioritizedPostMessageForwarding",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace scheduler
 }  // namespace blink
 

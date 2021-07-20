@@ -58,6 +58,7 @@ pausable. Some internal task queues are not.
 | InternalNavigationAssociated      | No          | No                      |  No        | No        | No       | No           |
 | InternalFreezableIPC              | No          | No                      |  No        | Yes       | No       | No           |
 | InternalContinueScriptLoading     | No          | No                      |  No        | Yes       | Yes      | Yes          |
+| InternalPostMessageForwarding     | No          | No                      |  No        | No        | Yes      | Yes          |
 
 Internal Translation queue supports concept of it running only in the foreground. It is disabled if the page that owns it goes in background.
 

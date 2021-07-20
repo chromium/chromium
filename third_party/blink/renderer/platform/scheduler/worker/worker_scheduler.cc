@@ -221,6 +221,7 @@ scoped_refptr<base::SingleThreadTaskRunner> WorkerScheduler::GetTaskRunner(
     case TaskType::kInternalHighPriorityLocalFrame:
     case TaskType::kInternalInputBlocking:
     case TaskType::kMainThreadTaskQueueIPCTracking:
+    case TaskType::kInternalPostMessageForwarding:
     case TaskType::kCount:
       NOTREACHED();
       break;
