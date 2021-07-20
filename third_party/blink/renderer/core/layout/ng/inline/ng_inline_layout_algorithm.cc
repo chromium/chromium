@@ -1074,8 +1074,10 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
     DCHECK(ConstraintSpace().MarginStrut().IsEmpty() ||
            (BreakToken() && BreakToken()->IsAfterBlockInInline()));
     DCHECK(!ConstraintSpace().AdjoiningObjectTypes());
-    // Only empty-inlines should have the "forced" BFC block-offset set.
+    // Only empty-inlines should have the "forced"/"optimistic" BFC
+    // block-offset set.
     DCHECK(!ConstraintSpace().ForcedBfcBlockOffset());
+    DCHECK(!ConstraintSpace().OptimisticBfcBlockOffset());
   }
 #endif
 
@@ -1266,8 +1268,6 @@ scoped_refptr<const NGLayoutResult> NGInlineLayoutAlgorithm::Layout() {
 unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
     NGExclusionSpace* exclusion_space,
     NGPositionedFloatVector* positioned_floats) {
-  bool is_empty_inline = Node().IsEmptyInline();
-
   const Vector<NGInlineItem>& items =
       Node().ItemsData(/* is_first_line */ false).items;
 
@@ -1275,11 +1275,9 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
   for (; index < items.size(); ++index) {
     const NGInlineItem& item = items[index];
 
-    // Abort if we've found something that makes this a non-empty inline.
-    if (!item.IsEmptyItem()) {
-      DCHECK(!is_empty_inline);
+    // Abort if we've found something non-empty.
+    if (!item.IsEmptyItem())
       break;
-    }
 
     if (item.Type() != NGInlineItem::kFloating)
       continue;
@@ -1292,10 +1290,8 @@ unsigned NGInlineLayoutAlgorithm::PositionLeadingFloats(
 
     // Place any floats at the "expected" BFC block-offset, this may be an
     // optimistic guess.
-    LayoutUnit origin_bfc_block_offset =
-        is_empty_inline ? ConstraintSpace().ExpectedBfcBlockOffset()
-                        : ConstraintSpace().BfcOffset().block_offset;
-
+    const LayoutUnit origin_bfc_block_offset =
+        ConstraintSpace().ExpectedBfcBlockOffset();
     NGPositionedFloat positioned_float = PositionFloat(
         origin_bfc_block_offset, item.GetLayoutObject(), exclusion_space);
 
