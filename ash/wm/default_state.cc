@@ -243,6 +243,10 @@ void DefaultState::HandleCompoundEvents(WindowState* window_state,
         window_state->Restore();
       } else if (window_state->CanMaximize()) {
         window_state->Maximize();
+      } else {
+        // If `window` cannot be maximized, then do a window bounce animation.
+        wm::AnimateWindow(window_state->window(),
+                          wm::WINDOW_ANIMATION_TYPE_BOUNCE);
       }
       return;
     case WM_EVENT_TOGGLE_VERTICAL_MAXIMIZE: {
