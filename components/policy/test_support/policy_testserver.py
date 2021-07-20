@@ -203,8 +203,6 @@ SIGNING_KEYS = [
     },
 ]
 
-INVALID_ENROLLMENT_TOKEN = 'invalid_enrollment_token'
-
 POLICY_COMMON_DEFINITIONS_TYPES = [
   'StringList',
   'PolicyOptions',
@@ -399,9 +397,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
       response = self.ProcessCheckAndroidManagementRequest(
           rmsg.check_android_management_request,
           str(self.GetUniqueParam('oauth_token')))
-    elif request_type == 'register_browser':
-      response = self.ProcessRegisterBrowserRequest(
-          rmsg.register_browser_request)
     elif request_type == 'app_install_report':
       response = self.ProcessAppInstallReportRequest(
           rmsg.app_install_report_request)
@@ -872,38 +867,6 @@ class PolicyRequestHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     app_install_report_response = dm.AppInstallReportResponse()
     response = dm.DeviceManagementResponse()
     response.app_install_report_response.CopyFrom(app_install_report_response)
-
-    return (200, response)
-
-  def ProcessRegisterBrowserRequest(self, msg):
-    """Handles a browser registration request.
-
-    Returns:
-      A tuple of HTTP status code and response data to send to the client.
-    """
-    enrollment_token = None
-    match = re.match('GoogleEnrollmentToken token=(\\w+)',
-                     self.headers.get('Authorization', ''))
-    if match:
-      enrollment_token = match.group(1)
-    if not enrollment_token:
-      return (401, 'Missing enrollment token.')
-
-    device_id = self.GetUniqueParam('deviceid')
-    if not device_id:
-      return (400, 'Parameter deviceid is missing.')
-
-    if not msg.machine_name and not msg.device_model:
-      return (400, 'Either machine name or device model must be non-empty.')
-
-    if enrollment_token == INVALID_ENROLLMENT_TOKEN:
-      return (401, 'Invalid enrollment token')
-
-    dm_token = 'fake_device_management_token'
-    response = dm.DeviceManagementResponse()
-    response.register_response.device_management_token = (
-        dm_token)
-    self.server.RegisterBrowser(dm_token, device_id, msg.machine_name)
 
     return (200, response)
 
@@ -1626,16 +1589,6 @@ class PolicyTestServer(testserver_base.BrokenPipeHandlerMixIn,
     }
     self.WriteClientState()
     return self._registered_tokens[dmtoken]
-
-  def RegisterBrowser(self, dm_token, device_id, machine_name):
-    self._registered_tokens[dm_token] = {
-      'device_id': device_id,
-      'device_token': dm_token,
-      'allowed_policy_types': ['google/chrome/machine-level-user',
-                               'google/chrome/machine-level-extension'],
-      'machine_name': machine_name
-    }
-    self.WriteClientState()
 
   def UpdateStateKeys(self, dmtoken, state_keys):
     """Updates the state keys for a given client.
