@@ -60,6 +60,7 @@
 #include "ios/web/public/thread/web_task_traits.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "ui/base/device_form_factor.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -219,6 +220,16 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
   [self.observers appState:self willTransitionToInitStage:newInitStage];
   _initStage = newInitStage;
   [self.observers appState:self didTransitionFromInitStage:previousInitStage];
+}
+
+- (BOOL)portraitOnly {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_PHONE) {
+    return NO;
+  }
+
+  // Return YES if the First Run UI is showing.
+  return self.initStage == InitStageFirstRun &&
+         self.startupInformation.isFirstRun;
 }
 
 #pragma mark - Public methods.

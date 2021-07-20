@@ -171,6 +171,15 @@ const int kMainIntentCheckDelay = 1;
   [_appState application:application didDiscardSceneSessions:sceneSessions];
 }
 
+- (UIInterfaceOrientationMask)application:(UIApplication*)application
+    supportedInterfaceOrientationsForWindow:(UIWindow*)window {
+  if (_appState.portraitOnly) {
+    return UIInterfaceOrientationMaskPortrait;
+  }
+  // Apply a no-op mask by default.
+  return UIInterfaceOrientationMaskAll;
+}
+
 #pragma mark - Scenes lifecycle
 
 - (NSInteger)foregroundSceneCount {
