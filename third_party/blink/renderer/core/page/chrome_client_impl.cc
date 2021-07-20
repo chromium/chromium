@@ -618,6 +618,9 @@ ColorChooser* ChromeClientImpl::OpenColorChooser(
     controller = MakeGarbageCollected<ColorChooserPopupUIController>(
         frame, this, chooser_client);
   } else {
+#if !defined(OS_ANDROID)
+    NOTREACHED() << "Page popups should be enabled on all but Android";
+#endif
     controller =
         MakeGarbageCollected<ColorChooserUIController>(frame, chooser_client);
   }

@@ -29,7 +29,6 @@
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/color_chooser.h"
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -293,12 +292,6 @@ void ChromeAppDelegate::AddNewContents(
                     : WindowOpenDisposition::NEW_FOREGROUND_TAB;
   chrome::AddWebContents(displayer.browser(), nullptr, std::move(new_contents),
                          target_url, disposition, initial_rect);
-}
-
-std::unique_ptr<content::ColorChooser> ChromeAppDelegate::ShowColorChooser(
-    content::WebContents* web_contents,
-    SkColor initial_color) {
-  return chrome::ShowColorChooser(web_contents, initial_color);
 }
 
 void ChromeAppDelegate::RunFileChooser(

@@ -5,6 +5,7 @@
 #include "content/public/browser/color_chooser.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/public/browser/render_frame_host.h"
@@ -63,6 +64,8 @@ class OpenColorChooserDelegate : public WebContentsDelegate {
 
 class ColorChooserUnitTest : public RenderViewHostImplTestHarness {};
 
+#if defined(OS_ANDROID)
+// The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
   GURL kUrl1("https://foo.com");
   GURL kUrl2("https://bar.com");
@@ -95,6 +98,7 @@ TEST_F(ColorChooserUnitTest, ColorChooserCallsEndOnNavigatingAway) {
 
   contents()->SetDelegate(nullptr);
 }
+#endif
 
 // Run tests with BackForwardCache.
 class ColorChooserTestWithBackForwardCache : public ColorChooserUnitTest {
@@ -115,6 +119,8 @@ class ColorChooserTestWithBackForwardCache : public ColorChooserUnitTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+#if defined(OS_ANDROID)
+// The ColorChooser is only available/called on Android.
 TEST_F(ColorChooserTestWithBackForwardCache,
        ColorChooserCallsEndOnEnteringBackForwardCache) {
   ASSERT_TRUE(IsBackForwardCacheEnabled());
@@ -151,5 +157,6 @@ TEST_F(ColorChooserTestWithBackForwardCache,
 
   contents()->SetDelegate(nullptr);
 }
+#endif
 
 }  // namespace content

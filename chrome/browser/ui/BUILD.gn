@@ -82,7 +82,6 @@ static_library("ui") {
     "browser_ui_prefs.h",
     "chrome_select_file_policy.cc",
     "chrome_select_file_policy.h",
-    "color_chooser.h",
     "confirm_bubble.h",
     "cookie_controls/cookie_controls_service.cc",
     "cookie_controls/cookie_controls_service.h",
@@ -674,7 +673,6 @@ static_library("ui") {
       "android/chrome_http_auth_handler.cc",
       "android/chrome_http_auth_handler.h",
       "android/chrome_javascript_app_modal_dialog_android.cc",
-      "android/color_chooser_dialog_android.cc",
       "android/context_menu_helper.cc",
       "android/context_menu_helper.h",
       "android/device_dialog/chrome_bluetooth_chooser_android_delegate.cc",
@@ -3216,8 +3214,6 @@ static_library("ui") {
       "cocoa/browser_window_command_handler.mm",
       "cocoa/chrome_command_dispatcher_delegate.h",
       "cocoa/chrome_command_dispatcher_delegate.mm",
-      "cocoa/color_chooser_mac.h",
-      "cocoa/color_chooser_mac.mm",
       "cocoa/confirm_quit.cc",
       "cocoa/confirm_quit.h",
       "cocoa/confirm_quit_panel_controller.h",
@@ -3390,9 +3386,6 @@ static_library("ui") {
       "views/chrome_cleaner_dialog_win.h",
       "views/chrome_cleaner_reboot_dialog_win.cc",
       "views/chrome_cleaner_reboot_dialog_win.h",
-      "views/color_chooser_dialog.cc",
-      "views/color_chooser_dialog.h",
-      "views/color_chooser_win.cc",
       "views/critical_notification_bubble_view.cc",
       "views/critical_notification_bubble_view.h",
       "views/frame/browser_desktop_window_tree_host.h",
@@ -4734,13 +4727,6 @@ static_library("ui") {
       sources += [
         "views/frame/desktop_browser_frame_aura.cc",
         "views/frame/desktop_browser_frame_aura.h",
-      ]
-    }
-
-    if (!is_win) {
-      sources += [
-        "views/color_chooser_aura.cc",
-        "views/color_chooser_aura.h",
       ]
     }
   }

@@ -505,8 +505,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   RenderFrameHostImpl* GetOpener() override;
   bool HasOriginalOpener() override;
   RenderFrameHostImpl* GetOriginalOpener() override;
+#if defined(OS_ANDROID)
   void DidChooseColorInColorChooser(SkColor color) override;
   void DidEndColorChooser() override;
+#endif
   int DownloadImage(const GURL& url,
                     bool is_favicon,
                     uint32_t preferred_size,
@@ -1000,14 +1002,15 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void OnBackgroundColorChanged(PageImpl& page) override;
 
   // blink::mojom::ColorChooserFactory ---------------------------------------
-
   void OnColorChooserFactoryReceiver(
       mojo::PendingReceiver<blink::mojom::ColorChooserFactory> receiver);
+#if defined(OS_ANDROID)
   void OpenColorChooser(
       mojo::PendingReceiver<blink::mojom::ColorChooser> chooser,
       mojo::PendingRemote<blink::mojom::ColorChooserClient> client,
       SkColor color,
       std::vector<blink::mojom::ColorSuggestionPtr> suggestions) override;
+#endif
 
   // FrameTree::Delegate -------------------------------------------------------
 
@@ -1978,9 +1981,11 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   gfx::Size device_emulation_size_;
   gfx::Size view_size_before_emulation_;
 
+#if defined(OS_ANDROID)
   // Holds information about a current color chooser dialog, if one is visible.
   class ColorChooserHolder;
   std::unique_ptr<ColorChooserHolder> color_chooser_holder_;
+#endif
 
   // Manages the embedder state for browser plugins, if this WebContents is an
   // embedder; NULL otherwise.

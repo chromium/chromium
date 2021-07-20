@@ -637,17 +637,6 @@ void GuestViewBase::LoadingStateChanged(WebContents* source,
       embedder_web_contents(), to_different_document);
 }
 
-std::unique_ptr<content::ColorChooser> GuestViewBase::OpenColorChooser(
-    WebContents* web_contents,
-    SkColor color,
-    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  if (!attached() || !embedder_web_contents()->GetDelegate())
-    return nullptr;
-
-  return embedder_web_contents()->GetDelegate()->OpenColorChooser(
-      web_contents, color, suggestions);
-}
-
 void GuestViewBase::ResizeDueToAutoResize(WebContents* web_contents,
                                           const gfx::Size& new_size) {
   UpdateGuestSize(new_size, auto_size_enabled_);

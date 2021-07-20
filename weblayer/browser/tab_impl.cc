@@ -989,17 +989,15 @@ content::JavaScriptDialogManager* TabImpl::GetJavaScriptDialogManager(
 #endif
 }
 
+#if defined(OS_ANDROID)
 std::unique_ptr<content::ColorChooser> TabImpl::OpenColorChooser(
     content::WebContents* web_contents,
     SkColor color,
     const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-#if defined(OS_ANDROID)
   return std::make_unique<web_contents_delegate_android::ColorChooserAndroid>(
       web_contents, color, suggestions);
-#else
-  return nullptr;
-#endif
 }
+#endif
 
 void TabImpl::CreateSmsPrompt(content::RenderFrameHost* render_frame_host,
                               const std::vector<url::Origin>& origin_list,

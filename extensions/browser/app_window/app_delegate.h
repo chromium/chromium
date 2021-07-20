@@ -22,7 +22,6 @@ class FileChooserParams;
 namespace content {
 enum class PictureInPictureResult;
 class BrowserContext;
-class ColorChooser;
 class FileSelectListener;
 class RenderFrameHost;
 class WebContents;
@@ -70,9 +69,6 @@ class AppDelegate {
       bool user_gesture) = 0;
 
   // Feature support.
-  virtual std::unique_ptr<content::ColorChooser> ShowColorChooser(
-      content::WebContents* web_contents,
-      SkColor initial_color) = 0;
   virtual void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
       scoped_refptr<content::FileSelectListener> listener,

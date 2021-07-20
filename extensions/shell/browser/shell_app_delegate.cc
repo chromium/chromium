@@ -59,13 +59,6 @@ void ShellAppDelegate::AddNewContents(
   NOTIMPLEMENTED();
 }
 
-std::unique_ptr<content::ColorChooser> ShellAppDelegate::ShowColorChooser(
-    content::WebContents* web_contents,
-    SkColor initial_color) {
-  NOTIMPLEMENTED();
-  return NULL;
-}
-
 void ShellAppDelegate::RunFileChooser(
     content::RenderFrameHost* render_frame_host,
     scoped_refptr<content::FileSelectListener> listener,

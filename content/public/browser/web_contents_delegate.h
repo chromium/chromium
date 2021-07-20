@@ -396,13 +396,15 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual JavaScriptDialogManager* GetJavaScriptDialogManager(
       WebContents* source);
 
+#if defined(OS_ANDROID)
   // Called when color chooser should open. Returns the opened color chooser.
-  // Returns nullptr if we failed to open the color chooser (e.g. when there is
-  // a ColorChooserDialog already open on Windows).
+  // Returns nullptr if we failed to open the color chooser. The color chooser
+  // is only supported/required for Android.
   virtual std::unique_ptr<ColorChooser> OpenColorChooser(
       WebContents* web_contents,
       SkColor color,
       const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions);
+#endif
 
   // Called when an eye dropper should open. Returns the eye dropper window.
   // The eye dropper is responsible for calling listener->ColorSelected() or

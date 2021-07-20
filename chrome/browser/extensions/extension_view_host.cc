@@ -14,7 +14,6 @@
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/color_chooser.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -214,16 +213,6 @@ bool ExtensionViewHost::PreHandleGestureEvent(
     const blink::WebGestureEvent& event) {
   // Disable pinch zooming.
   return blink::WebInputEvent::IsPinchGestureEventType(event.GetType());
-}
-
-std::unique_ptr<content::ColorChooser> ExtensionViewHost::OpenColorChooser(
-    content::WebContents* web_contents,
-    SkColor initial_color,
-    const std::vector<blink::mojom::ColorSuggestionPtr>& suggestions) {
-  // Similar to the file chooser below, opening a color chooser requires a
-  // visible <input> element to click on. Therefore this code only exists for
-  // extensions with a view.
-  return chrome::ShowColorChooser(web_contents, initial_color);
 }
 
 void ExtensionViewHost::RunFileChooser(

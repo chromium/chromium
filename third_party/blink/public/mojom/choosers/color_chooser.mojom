@@ -11,6 +11,7 @@ struct ColorSuggestion {
 
 // A ColorChooser window is shown for <input type="color">.
 interface ColorChooserFactory {
+  [EnableIf=is_android]
   OpenColorChooser(
       pending_receiver<ColorChooser> chooser,
       pending_remote<ColorChooserClient> client,
