@@ -27,7 +27,4 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
     const std::string& reason,
     int net_error_code);
 
-std::string GetThreatTypeStringForInterstitial(
-    safe_browsing::SBThreatType threat_type);
-
 #endif  // CHROME_BROWSER_INTERSTITIALS_ENTERPRISE_UTIL_H_

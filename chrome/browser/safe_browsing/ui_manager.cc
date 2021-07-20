@@ -22,6 +22,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/safe_browsing_blocking_page.h"
 #include "components/safe_browsing/content/browser/threat_details.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -210,6 +211,46 @@ void SafeBrowsingUIManager::CreateAllowlistForTesting(
   EnsureAllowlistCreated(web_contents);
 }
 
+// static
+std::string SafeBrowsingUIManager::GetThreatTypeStringForInterstitial(
+    safe_browsing::SBThreatType threat_type) {
+  switch (threat_type) {
+    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+      return "SOCIAL_ENGINEERING";
+    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
+      return "MALWARE";
+    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+      return "UNWANTED_SOFTWARE";
+    case safe_browsing::SB_THREAT_TYPE_BILLING:
+      return "THREAT_TYPE_UNSPECIFIED";
+    case safe_browsing::SB_THREAT_TYPE_UNUSED:
+    case safe_browsing::SB_THREAT_TYPE_SAFE:
+    case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
+    case safe_browsing::SB_THREAT_TYPE_EXTENSION:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
+    case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
+    case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
+    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
+    case safe_browsing::
+        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
+    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
+    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
+    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
+    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
+    case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
+    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
+    case safe_browsing::SB_THREAT_TYPE_ACCURACY_TIPS:
+      NOTREACHED();
+      break;
+  }
+  return std::string();
+}
 void SafeBrowsingUIManager::AddObserver(Observer* observer) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   observer_list_.AddObserver(observer);

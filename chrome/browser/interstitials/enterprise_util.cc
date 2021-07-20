@@ -7,7 +7,6 @@
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -58,44 +57,4 @@ void MaybeTriggerSecurityInterstitialProceededEvent(
   event_router->OnSecurityInterstitialProceeded(page_url, reason,
                                                 net_error_code);
 #endif
-}
-
-std::string GetThreatTypeStringForInterstitial(
-    safe_browsing::SBThreatType threat_type) {
-  switch (threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-      return "SOCIAL_ENGINEERING";
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_MALWARE:
-      return "MALWARE";
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
-      return "UNWANTED_SOFTWARE";
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
-      return "THREAT_TYPE_UNSPECIFIED";
-    case safe_browsing::SB_THREAT_TYPE_UNUSED:
-    case safe_browsing::SB_THREAT_TYPE_SAFE:
-    case safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_EXTENSION:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKLISTED_RESOURCE:
-    case safe_browsing::SB_THREAT_TYPE_API_ABUSE:
-    case safe_browsing::SB_THREAT_TYPE_SUBRESOURCE_FILTER:
-    case safe_browsing::SB_THREAT_TYPE_CSD_ALLOWLIST:
-    case safe_browsing::
-        DEPRECATED_SB_THREAT_TYPE_URL_PASSWORD_PROTECTION_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_SAVED_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_SYNC_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_SIGNED_IN_NON_SYNC_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_AD_SAMPLE:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_POPUP:
-    case safe_browsing::SB_THREAT_TYPE_BLOCKED_AD_REDIRECT:
-    case safe_browsing::SB_THREAT_TYPE_SUSPICIOUS_SITE:
-    case safe_browsing::SB_THREAT_TYPE_ENTERPRISE_PASSWORD_REUSE:
-    case safe_browsing::SB_THREAT_TYPE_APK_DOWNLOAD:
-    case safe_browsing::SB_THREAT_TYPE_HIGH_CONFIDENCE_ALLOWLIST:
-    case safe_browsing::SB_THREAT_TYPE_ACCURACY_TIPS:
-      NOTREACHED();
-      break;
-  }
-  return std::string();
 }
