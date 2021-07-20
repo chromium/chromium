@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram
     name="Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison"
-    enum="PsmHashDanceDifferentResultsComparison" expires_after="2021-09-01">
+    enum="PsmHashDanceDifferentResultsComparison" expires_after="2022-03-01">
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
