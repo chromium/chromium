@@ -265,14 +265,15 @@
           aria-labelledby="deviceAccountFullName"
           aria-describedby="deviceAccountEmail">
         <div class="profile-icon device-account-icon"
+            aria-hidden="true"
             style="background-image: [[getIconImageSet_(deviceAccount_.pic)]]">
-            <template is="dom-if"
-                if="[[shouldShowManagedBadge_(isDeviceAccountManaged_,
-                      isChildUser_)]]">
-              <div class="managed-badge">
-                <iron-icon icon="cr:work"></iron-icon>
-              </div>
-            </template>
+          <template is="dom-if"
+              if="[[shouldShowManagedBadge_(isDeviceAccountManaged_,
+                    isChildUser_)]]">
+            <div class="managed-badge">
+              <iron-icon icon="cr:work"></iron-icon>
+            </div>
+          </template>
         </div>
         <span id="deviceAccountFullName" class="primary" aria-hidden="true">
           [[deviceAccount_.fullName]]
