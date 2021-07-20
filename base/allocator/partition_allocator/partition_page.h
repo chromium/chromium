@@ -187,6 +187,15 @@ struct __attribute__((packed)) SlotSpanMetadata {
     return GetRawSize();
   }
 
+  // This includes padding due to rounding done at allocation; we don't know the
+  // requested size at deallocation, so we use this in both places.
+  ALWAYS_INLINE size_t GetSizeForBookkeeping() const {
+    // This could be more precise for allocations where CanStoreRawSize()
+    // returns true (large allocations). However this is called for *every*
+    // allocation, so we don't want an extra branch there.
+    return bucket->slot_size;
+  }
+
   // Returns the size available to the app. It can be equal or higher than the
   // requested size. If higher, the overage won't exceed what's actually usable
   // by the app without a risk of running out of an allocated region or into
@@ -631,7 +640,8 @@ ALWAYS_INLINE void SlotSpanMetadata<thread_safe>::SetFreelistHead(
 
 template <bool thread_safe>
 ALWAYS_INLINE DeferredUnmap
-SlotSpanMetadata<thread_safe>::Free(void* slot_start) {
+SlotSpanMetadata<thread_safe>::Free(void* slot_start) EXCLUSIVE_LOCKS_REQUIRED(
+    PartitionRoot<thread_safe>::FromSlotSpan(this)->lock_) {
 #if DCHECK_IS_ON()
   auto* root = PartitionRoot<thread_safe>::FromSlotSpan(this);
   root->lock_.AssertAcquired();

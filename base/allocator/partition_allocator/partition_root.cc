@@ -930,11 +930,20 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
   {
     ScopedGuard guard{lock_};
 
+    PA_DCHECK(total_size_of_allocated_bytes <= total_size_of_committed_pages);
+    PA_DCHECK(max_size_of_allocated_bytes <= max_size_of_committed_pages);
+    PA_DCHECK(total_size_of_committed_pages <= max_size_of_committed_pages);
+    PA_DCHECK(total_size_of_allocated_bytes <= max_size_of_allocated_bytes);
+
     stats.total_mmapped_bytes =
         total_size_of_super_pages.load(std::memory_order_relaxed) +
         total_size_of_direct_mapped_pages.load(std::memory_order_relaxed);
     stats.total_committed_bytes =
         total_size_of_committed_pages.load(std::memory_order_relaxed);
+    stats.max_committed_bytes =
+        max_size_of_committed_pages.load(std::memory_order_relaxed);
+    stats.total_allocated_bytes = total_size_of_allocated_bytes;
+    stats.max_allocated_bytes = max_size_of_allocated_bytes;
 
     size_t direct_mapped_allocations_total_size = 0;
     for (size_t i = 0; i < kNumBuckets; ++i) {
@@ -1000,6 +1009,13 @@ void PartitionRoot<thread_safe>::DumpStats(const char* partition_name,
     }
   }
   dumper->PartitionDumpTotals(partition_name, &stats);
+}
+
+template <bool thread_safe>
+void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
+  ScopedGuard guard{lock_};
+  max_size_of_allocated_bytes = total_size_of_allocated_bytes;
+  max_size_of_committed_pages.store(total_size_of_committed_pages);
 }
 
 template <>
