@@ -54,12 +54,6 @@ const base::Feature kExtensionsSidePanel{"ExtensionsSidePanel",
 const base::FeatureParam<std::string> kExtensionsSidePanelId{
     &kExtensionsSidePanel, "ExtensionsSidePanelId", ""};
 
-// When enabled, the browser uses a bespoke permissions UI for PWA File
-// Handlers. This will mean ContentSettingType::FILE_HANDLING is not handled by
-// PermissionManager. See crbug.com/1203480
-const base::Feature kFileHandlingPermissionUiV2{
-    "FileHandlingPermissionUiV2", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables the reauth flow for authenticated profiles with invalid credentials
 // when the force sign-in policy is enabled.
 const base::Feature kForceSignInReauth{"ForceSignInReauth",
