@@ -3503,7 +3503,6 @@ void RenderFrameHostImpl::DidNavigate(
 
 void RenderFrameHostImpl::SetLastCommittedOrigin(const url::Origin& origin) {
   last_committed_origin_ = origin;
-  SetStorageKey(blink::StorageKey(origin));
 }
 
 void RenderFrameHostImpl::SetLastCommittedOriginForTesting(
@@ -3622,6 +3621,14 @@ void RenderFrameHostImpl::SetOriginDependentStateOfNewFrame(
   isolation_info_ = ComputeIsolationInfoInternal(
       new_frame_origin, net::IsolationInfo::RequestType::kOther);
   SetLastCommittedOrigin(new_frame_origin);
+
+  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
+  // top frame origin.
+  SetStorageKey(anonymous()
+                    ? blink::StorageKey::CreateWithNonce(
+                          new_frame_origin,
+                          GetMainFrame()->GetPage().anonymous_iframes_nonce())
+                    : blink::StorageKey(new_frame_origin));
 
   // Apply private network request policy according to our new origin.
   if (GetContentClient()->browser()->ShouldAllowInsecurePrivateNetworkRequests(
@@ -10114,6 +10121,15 @@ void RenderFrameHostImpl::TakeNewDocumentPropertiesFromNavigation(
   // this frame embeds a subframe when that subframe navigates).
   required_csp_ = navigation_request->TakeRequiredCSP();
   anonymous_ = navigation_request->anonymous();
+
+  // TODO(https://crbug.com/1199077): Initialize the StorageKey also with the
+  // top frame origin.
+  blink::StorageKey storage_key_to_commit =
+      anonymous() ? blink::StorageKey::CreateWithNonce(
+                        GetLastCommittedOrigin(),
+                        GetMainFrame()->GetPage().anonymous_iframes_nonce())
+                  : blink::StorageKey(GetLastCommittedOrigin());
+  SetStorageKey(storage_key_to_commit);
 
   coep_reporter_ = navigation_request->TakeCoepReporter();
   if (coep_reporter_) {

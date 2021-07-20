@@ -301,9 +301,11 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
       content::RenderFrameHostTester::For(main_test_rfh())
           ->AppendChild("child"));
   EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   child_frame->frame_tree_node()->set_anonymous(true);
   EXPECT_FALSE(child_frame->anonymous());
+  EXPECT_FALSE(child_frame->storage_key().nonce().has_value());
 
   // A navigation in the anonymous iframe commits an anonymous RFH.
   std::unique_ptr<NavigationSimulator> navigation =
@@ -313,12 +315,18 @@ TEST_F(RenderFrameHostImplTest, ChildOfAnonymousIsAnonymous) {
   child_frame =
       static_cast<TestRenderFrameHost*>(navigation->GetFinalRenderFrameHost());
   EXPECT_TRUE(child_frame->anonymous());
+  EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
 
   // A child of an anonymous RFH is anonymous.
   auto* grandchild_frame = static_cast<TestRenderFrameHost*>(
       content::RenderFrameHostTester::For(child_frame)
           ->AppendChild("grandchild"));
   EXPECT_TRUE(grandchild_frame->anonymous());
+  EXPECT_TRUE(child_frame->storage_key().nonce().has_value());
+
+  // The two anonymous RFH's storage keys should have the same nonce.
+  EXPECT_EQ(child_frame->storage_key().nonce().value(),
+            grandchild_frame->storage_key().nonce().value());
 }
 
 }  // namespace content

@@ -5789,6 +5789,12 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(child->anonymous());
   EXPECT_TRUE(child->current_frame_host()->anonymous());
+  // An anonymous document has a storage key with a nonce.
+  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  base::UnguessableToken anonymous_nonce =
+      current_frame_host()->GetPage().anonymous_iframes_nonce();
+  EXPECT_EQ(anonymous_nonce,
+            child->current_frame_host()->storage_key().nonce().value());
 
   // Create a grandchild iframe.
   EXPECT_TRUE(ExecJs(
@@ -5804,12 +5810,23 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   EXPECT_FALSE(grandchild->anonymous());
   EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
 
+  // The storage key's nonce is the same for all anonymous documents in the same
+  // page.
+  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_EQ(anonymous_nonce,
+            child->current_frame_host()->storage_key().nonce().value());
+
   // Now navigate the grandchild iframe.
   EXPECT_TRUE(ExecJs(
       child, JsReplace("document.getElementById('grandchild_iframe').src = $1",
                        iframe_url_2)));
   WaitForLoadStop(web_contents());
   EXPECT_TRUE(grandchild->current_frame_host()->anonymous());
+
+  // The storage key's nonce is still the same.
+  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_EQ(anonymous_nonce,
+            child->current_frame_host()->storage_key().nonce().value());
 
   // Remove the 'anonymous' attribute from the iframe. This propagates to the
   // FrameTreeNode. The RenderFrameHost, however, is updated only on navigation.
@@ -5818,6 +5835,9 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
              "document.getElementById('test_iframe').anonymous = false;"));
   EXPECT_FALSE(child->anonymous());
   EXPECT_TRUE(child->current_frame_host()->anonymous());
+  EXPECT_TRUE(child->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_EQ(anonymous_nonce,
+            child->current_frame_host()->storage_key().nonce().value());
 
   // Create another grandchild iframe. Even if the parent iframe element does
   // not have the 'anonymous' attribute anymore, the grandchild document is
@@ -5831,6 +5851,10 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   FrameTreeNode* grandchild2 = child->child_at(1);
   EXPECT_FALSE(grandchild2->anonymous());
   EXPECT_TRUE(grandchild2->current_frame_host()->anonymous());
+  EXPECT_TRUE(
+      grandchild2->current_frame_host()->storage_key().nonce().has_value());
+  EXPECT_EQ(anonymous_nonce,
+            grandchild2->current_frame_host()->storage_key().nonce().value());
 
   // Navigate the child iframe. Since the iframe element does not set the
   // 'anonymous' attribute, the resulting RenderFrameHost will not be anonymous.
@@ -5841,6 +5865,27 @@ IN_PROC_BROWSER_TEST_F(NavigationBrowserTestAnonymousIframe,
   WaitForLoadStop(web_contents());
   EXPECT_FALSE(child->anonymous());
   EXPECT_FALSE(child->current_frame_host()->anonymous());
+  EXPECT_FALSE(child->current_frame_host()->storage_key().nonce().has_value());
+
+  // Now navigate the whole page away.
+  GURL main_url_b = embedded_test_server()->GetURL(
+      "b.com", "/page_with_anonymous_iframe.html");
+  GURL iframe_url_b = embedded_test_server()->GetURL("b.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), main_url_b));
+
+  // The main page has an anonymous child iframe with url `iframe_url_b`.
+  EXPECT_EQ(1U, main_frame()->child_count());
+  FrameTreeNode* child_b = main_frame()->child_at(0);
+  EXPECT_EQ(iframe_url_b, child_b->current_url());
+  EXPECT_TRUE(child_b->anonymous());
+  EXPECT_TRUE(child_b->current_frame_host()->anonymous());
+
+  EXPECT_TRUE(child_b->current_frame_host()->storage_key().nonce().has_value());
+  base::UnguessableToken anonymous_nonce_b =
+      current_frame_host()->GetPage().anonymous_iframes_nonce();
+  EXPECT_NE(anonymous_nonce, anonymous_nonce_b);
+  EXPECT_EQ(anonymous_nonce_b,
+            child_b->current_frame_host()->storage_key().nonce().value());
 }
 
 }  // namespace content

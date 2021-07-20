@@ -88,6 +88,10 @@ class CONTENT_EXPORT PageImpl : public Page {
     return last_main_document_source_id_;
   }
 
+  const base::UnguessableToken& anonymous_iframes_nonce() const {
+    return anonymous_iframes_nonce_;
+  }
+
  private:
   // This method is needed to ensure that PageImpl can both implement a Page's
   // method and define a new GetMainDocument(). Please refer to page.h for more
@@ -146,6 +150,11 @@ class CONTENT_EXPORT PageImpl : public Page {
   // This page is owned by the RenderFrameHostImpl, which in turn does not
   // outlive the delegate (the contents).
   PageDelegate& delegate_;
+
+  // Nonce to be used for initializing the storage key and the network isolation
+  // key of anonymous iframes which are children of this page's document.
+  const base::UnguessableToken anonymous_iframes_nonce_ =
+      base::UnguessableToken::Create();
 };
 
 }  // namespace content
