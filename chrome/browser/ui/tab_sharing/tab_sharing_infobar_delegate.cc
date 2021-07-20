@@ -119,22 +119,22 @@ infobars::InfoBar* TabSharingInfoBarDelegate::Create(
     const std::u16string& shared_tab_name,
     const std::u16string& app_name,
     bool shared_tab,
-    bool can_share,
+    bool can_share_instead,
     absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     bool favicons_used_for_switch_to_tab_button) {
   DCHECK(infobar_manager);
   return infobar_manager->AddInfoBar(
       CreateConfirmInfoBar(base::WrapUnique(new TabSharingInfoBarDelegate(
-          shared_tab_name, app_name, shared_tab, can_share, focus_target, ui,
-          favicons_used_for_switch_to_tab_button))));
+          shared_tab_name, app_name, shared_tab, can_share_instead,
+          focus_target, ui, favicons_used_for_switch_to_tab_button))));
 }
 
 TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
     std::u16string shared_tab_name,
     std::u16string app_name,
     bool shared_tab,
-    bool can_share,
+    bool can_share_instead,
     absl::optional<FocusTarget> focus_target,
     TabSharingUI* ui,
     bool favicons_used_for_switch_to_tab_button)
@@ -147,7 +147,7 @@ TabSharingInfoBarDelegate::TabSharingInfoBarDelegate(
   if (focus_target.has_value()) {
     secondary_button_ =
         std::make_unique<SwitchToTabButton>(*focus_target, shared_tab);
-  } else if (can_share) {
+  } else if (can_share_instead) {
     secondary_button_ = std::make_unique<ShareTabInsteadButton>(ui_);
   }
 }

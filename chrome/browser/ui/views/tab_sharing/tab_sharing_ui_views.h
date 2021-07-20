@@ -112,6 +112,7 @@ class TabSharingUIViews : public TabSharingUI,
 
   std::map<content::WebContents*, infobars::InfoBar*> infobars_;
   const content::GlobalRenderFrameHostId capturer_;
+  const bool can_focus_capturer_;
   content::DesktopMediaID shared_tab_media_id_;
   const std::u16string app_name_;
   content::WebContents* shared_tab_;

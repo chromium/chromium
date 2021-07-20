@@ -27,6 +27,7 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/common/constants.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "ui/gfx/color_palette.h"
@@ -130,6 +131,18 @@ uint32_t GetHash(const ui::ImageModel& image) {
       static_cast<uint8_t*>(bitmap->getPixels()), bitmap->computeByteSize()));
 }
 
+bool CanFocusCapturer(GlobalRenderFrameHostId capturer_id) {
+  // Note that both FromID() and FromRenderFrameHost() are robust to null input.
+  WebContents* const capturer =
+      WebContents::FromRenderFrameHost(RenderFrameHost::FromID(capturer_id));
+  if (!capturer) {
+    return false;
+  }
+
+  return !capturer->GetLastCommittedURL().SchemeIs(
+      extensions::kExtensionScheme);
+}
+
 }  // namespace
 
 // static
@@ -148,6 +161,7 @@ TabSharingUIViews::TabSharingUIViews(
     std::u16string app_name,
     bool favicons_used_for_switch_to_tab_button)
     : capturer_(capturer),
+      can_focus_capturer_(CanFocusCapturer(capturer)),
       shared_tab_media_id_(media_id),
       app_name_(std::move(app_name)),
       favicons_used_for_switch_to_tab_button_(
@@ -329,24 +343,30 @@ void TabSharingUIViews::CreateInfobarForWebContents(WebContents* contents) {
   const bool is_capturing_tab = (GetGlobalId(contents) == capturer_);
   const bool is_captured_tab = (contents == shared_tab_);
 
-  // Self-capture -> no switch-to button.
-  // Capturer -> switch-to-captured.
-  // Captured -> switch-to-capturer.
-  // Otherwise -> no switch-to button.
+  // Never show the [share this tab instead] button on either the capturing
+  // tab or the captured tab.
+  const bool can_share_instead =
+      !source_callback_.is_null() && !is_capturing_tab && !is_captured_tab;
+
   absl::optional<TabSharingInfoBarDelegate::FocusTarget> focus_target;
-  if (is_capturing_tab && !is_captured_tab) {
-    focus_target = {GetGlobalId(shared_tab_), TabFavicon(shared_tab_)};
-    captured_favicon_hash_ = GetHash(focus_target->icon);
-  } else if (!is_capturing_tab && is_captured_tab) {
-    focus_target = {capturer_, TabFavicon(capturer_)};
-    capturer_favicon_hash_ = GetHash(focus_target->icon);
+  if (can_focus_capturer_) {
+    // Self-capture -> no switch-to button.
+    // Capturer -> switch-to-captured.
+    // Captured -> switch-to-capturer.
+    // Otherwise -> no switch-to button.
+    if (is_capturing_tab && !is_captured_tab) {
+      focus_target = {GetGlobalId(shared_tab_), TabFavicon(shared_tab_)};
+      captured_favicon_hash_ = GetHash(focus_target->icon);
+    } else if (!is_capturing_tab && is_captured_tab) {
+      focus_target = {capturer_, TabFavicon(capturer_)};
+      capturer_favicon_hash_ = GetHash(focus_target->icon);
+    }
   }
 
   infobars_[contents] = TabSharingInfoBarDelegate::Create(
       infobar_manager, shared_tab_name_, app_name_,
-      shared_tab_ == contents /*shared_tab*/,
-      !source_callback_.is_null() /*can_share*/, focus_target, this,
-      favicons_used_for_switch_to_tab_button_);
+      shared_tab_ == contents /*shared_tab*/, can_share_instead, focus_target,
+      this, favicons_used_for_switch_to_tab_button_);
 }
 
 void TabSharingUIViews::RemoveInfobarsForAllTabs() {
