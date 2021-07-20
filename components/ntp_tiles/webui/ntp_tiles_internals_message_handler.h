@@ -14,7 +14,6 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/ntp_tiles/most_visited_sites.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class ListValue;

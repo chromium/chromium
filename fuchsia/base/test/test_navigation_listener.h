@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace cr_fuchsia {

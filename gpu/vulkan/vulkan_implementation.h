@@ -14,7 +14,6 @@
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/semaphore_handle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_memory_buffer.h"

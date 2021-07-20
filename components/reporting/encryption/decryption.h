@@ -17,7 +17,6 @@
 #include "components/reporting/encryption/encryption.h"
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 namespace test {

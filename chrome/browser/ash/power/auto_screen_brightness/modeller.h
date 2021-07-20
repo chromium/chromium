@@ -7,7 +7,6 @@
 
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/monotone_cubic_spline.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {

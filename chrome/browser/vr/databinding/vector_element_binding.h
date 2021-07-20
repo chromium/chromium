@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/macros.h"
 #include "chrome/browser/vr/databinding/binding_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace vr {
 

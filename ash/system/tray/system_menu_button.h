@@ -7,7 +7,6 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/controls/button/image_button.h"

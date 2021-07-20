@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace keyboard {

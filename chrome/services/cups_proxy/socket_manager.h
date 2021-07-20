@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 

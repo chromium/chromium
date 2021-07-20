@@ -8,7 +8,6 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/time/time.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 

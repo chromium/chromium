@@ -12,7 +12,6 @@
 #include "cc/animation/animation_export.h"
 #include "cc/paint/element_id.h"
 #include "cc/paint/paint_worklet_input.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/keyframe/keyframe_model.h"
 
 namespace cc {

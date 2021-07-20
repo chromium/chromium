@@ -11,7 +11,6 @@
 #include "media/capture/video/video_capture_device_info.h"
 #include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 

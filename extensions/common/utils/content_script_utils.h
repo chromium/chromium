@@ -12,7 +12,6 @@
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_resource.h"
 #include "extensions/common/user_script.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Contains helper methods for parsing content script fields.
 

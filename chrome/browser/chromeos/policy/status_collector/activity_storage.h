@@ -14,7 +14,6 @@
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefService;
 

@@ -19,7 +19,6 @@
 #include "components/reporting/util/status.h"
 #include "components/reporting/util/statusor.h"
 #include "components/reporting/util/task_runner_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
 

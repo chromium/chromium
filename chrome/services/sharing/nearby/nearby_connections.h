@@ -26,7 +26,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/core/internal/service_controller.h"
 
 namespace location {

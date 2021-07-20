@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/url_loader_throttle.h"
 #include "third_party/blink/public/platform/web_common.h"
 #include "third_party/blink/public/platform/web_frame_request_blocker.h"

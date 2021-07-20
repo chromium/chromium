@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "components/signin/public/identity_manager/account_info.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace infobars {
 class InfoBar;

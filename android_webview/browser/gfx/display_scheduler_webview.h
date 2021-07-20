@@ -10,7 +10,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_checker.h"
 #include "components/viz/service/display/display_scheduler.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 class RootFrameSink;

@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_registry_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "storage/browser/file_system/file_system_url.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 

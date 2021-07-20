@@ -13,7 +13,6 @@
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/file_transfer/file_operations.h"
 #include "remoting/protocol/file_transfer_helpers.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace remoting {
 

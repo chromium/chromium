@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/snoopable.h"
 #include "services/audio/stream_monitor.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 class AudioBus;

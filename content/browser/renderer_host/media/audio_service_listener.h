@@ -14,7 +14,6 @@
 #include "content/public/browser/service_process_host.h"
 #include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

@@ -10,7 +10,6 @@
 
 #include "base/containers/linked_list.h"
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/cookie_store/cookie_store.mojom.h"
 #include "url/gurl.h"
 

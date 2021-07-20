@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/global_media_controls/global_media_controls_types.h"
 #include "components/soda/constants.h"
 #include "components/soda/soda_installer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 

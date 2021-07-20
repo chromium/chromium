@@ -20,7 +20,6 @@
 #include "cc/paint/paint_image_generator.h"
 #include "cc/tiles/tile_priority.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintImage;

@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "components/download/database/download_namespace.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 

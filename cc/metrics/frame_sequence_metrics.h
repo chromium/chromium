@@ -11,7 +11,6 @@
 #include "base/callback.h"
 #include "base/trace_event/traced_value.h"
 #include "cc/cc_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class ThroughputUkmReporter;

@@ -19,7 +19,6 @@
 #include "base/macros.h"
 #include "base/test/scoped_command_line.h"
 #include "chromeos/system/fake_statistics_provider.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/test/aura_test_helper.h"
 
 class PrefService;

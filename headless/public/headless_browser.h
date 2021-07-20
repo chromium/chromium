@@ -21,7 +21,6 @@
 #include "headless/public/headless_export.h"
 #include "headless/public/headless_web_contents.h"
 #include "net/base/host_port_pair.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 

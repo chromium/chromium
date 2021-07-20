@@ -11,7 +11,6 @@
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "weblayer/public/navigation.h"
 #include "weblayer/public/navigation_observer.h"
 

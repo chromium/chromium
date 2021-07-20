@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace libvpx {
 struct VP9FrameParamsQpRTC;

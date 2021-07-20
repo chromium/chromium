@@ -16,7 +16,6 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config.h"
 #include "chrome/browser/ash/power/auto_screen_brightness/model_config_loader.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace power {

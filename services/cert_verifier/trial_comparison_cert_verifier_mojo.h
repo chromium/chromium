@@ -15,7 +15,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/cert/cert_verifier.h"
 #include "services/cert_verifier/public/mojom/trial_comparison_cert_verifier.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 class CertVerifyProc;

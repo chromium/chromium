@@ -13,7 +13,6 @@
 #include "base/containers/flat_map.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/frame_sequence_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 struct PresentationFeedback;

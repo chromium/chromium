@@ -8,7 +8,6 @@
 #include "base/types/id_type.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_or_resource_context.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

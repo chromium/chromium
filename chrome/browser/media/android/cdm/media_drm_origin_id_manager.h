@@ -14,7 +14,6 @@
 #include "base/unguessable_token.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/base/media_drm_storage.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaDrmOriginIdManagerFactory;
 class PrefRegistrySimple;

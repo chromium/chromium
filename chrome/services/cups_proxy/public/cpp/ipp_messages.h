@@ -13,7 +13,6 @@
 
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 #include "printing/backend/cups_ipp_helper.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // POD representations of HTTP/IPP objects.
 namespace cups_proxy {

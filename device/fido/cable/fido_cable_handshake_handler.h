@@ -20,7 +20,6 @@
 #include "device/fido/cable/noise.h"
 #include "device/fido/cable/v2_handshake.h"
 #include "device/fido/fido_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/boringssl/src/include/openssl/base.h"
 
 namespace device {

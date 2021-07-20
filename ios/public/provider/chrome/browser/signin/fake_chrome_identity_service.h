@@ -10,7 +10,6 @@
 #import <Foundation/Foundation.h>
 
 #include "testing/gmock/include/gmock/gmock.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 @class FakeChromeIdentityInteractionManager;
 

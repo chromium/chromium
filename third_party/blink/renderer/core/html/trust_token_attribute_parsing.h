@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "services/network/public/mojom/trust_tokens.mojom-blink-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 
 namespace blink {

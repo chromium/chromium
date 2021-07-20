@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;

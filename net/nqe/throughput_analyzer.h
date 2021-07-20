@@ -17,7 +17,6 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/log/net_log_with_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 typedef base::RepeatingCallback<void(int32_t)> ThroughputObservationCallback;

@@ -10,7 +10,6 @@
 #include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace signin_metrics {
 enum class SourceForRefreshTokenOperation;

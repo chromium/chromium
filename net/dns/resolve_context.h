@@ -18,7 +18,6 @@
 #include "net/base/net_export.h"
 #include "net/dns/dns_config.h"
 #include "net/dns/public/secure_dns_mode.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 

@@ -25,7 +25,6 @@
 #include "content/browser/background_fetch/storage/database_task.h"
 #include "content/browser/background_fetch/storage/get_initialization_data_task.h"
 #include "content/common/content_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 

@@ -17,7 +17,6 @@
 #include "media/base/media_export.h"
 #include "media/fuchsia/common/stream_processor_helper.h"
 #include "media/fuchsia/common/vmo_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

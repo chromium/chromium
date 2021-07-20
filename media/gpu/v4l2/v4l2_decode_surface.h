@@ -12,7 +12,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "media/gpu/v4l2/v4l2_device.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 struct v4l2_ext_controls;

@@ -10,7 +10,6 @@
 #include "cc/paint/draw_image.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_op_buffer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 class PaintImage;

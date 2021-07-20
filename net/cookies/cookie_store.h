@@ -20,7 +20,6 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_deletion_info.h"
 #include "net/cookies/cookie_options.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

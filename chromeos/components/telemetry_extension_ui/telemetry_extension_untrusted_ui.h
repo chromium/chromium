@@ -13,7 +13,6 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/webui/untrusted_web_ui_controller.h"
 #include "ui/webui/webui_config.h"
 #include "url/gurl.h"

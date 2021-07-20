@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "ash/shortcut_viewer/ksv_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace gfx {

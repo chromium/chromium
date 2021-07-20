@@ -17,7 +17,6 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/browser/blob/blob_memory_controller.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace storage {
 class BlobDataHandle;

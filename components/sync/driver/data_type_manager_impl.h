@@ -17,7 +17,6 @@
 #include "components/sync/driver/configure_context.h"
 #include "components/sync/driver/model_load_manager.h"
 #include "components/sync/engine/model_type_configurer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 

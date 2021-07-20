@@ -7,7 +7,6 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "components/viz/common/surfaces/surface_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/blob/blob_url_store.mojom-shared.h"

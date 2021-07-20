@@ -10,7 +10,6 @@
 #include "base/callback.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/nearby_sharing/instantmessaging/proto/instantmessaging.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace google {
 namespace protobuf {

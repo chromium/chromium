@@ -8,7 +8,6 @@
 #include "base/timer/timer.h"
 #include "cc/input/browser_controls_state.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace weblayer {
 

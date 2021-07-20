@@ -14,7 +14,6 @@
 #include "chromeos/services/secure_channel/public/cpp/client/connection_attempt.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 

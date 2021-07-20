@@ -15,7 +15,6 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
 #include "chrome/updater/updater_scope.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 

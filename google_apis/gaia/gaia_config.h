@@ -11,7 +11,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

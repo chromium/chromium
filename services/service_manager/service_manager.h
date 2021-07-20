@@ -29,7 +29,6 @@
 #include "services/service_manager/public/mojom/service_manager.mojom.h"
 #include "services/service_manager/service_instance_registry.h"
 #include "services/service_manager/service_process_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 

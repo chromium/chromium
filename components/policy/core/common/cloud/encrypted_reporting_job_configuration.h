@@ -16,7 +16,6 @@
 #include "components/policy/core/common/cloud/reporting_job_configuration_base.h"
 #include "components/policy/policy_export.h"
 #include "components/reporting/proto/record_constants.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 

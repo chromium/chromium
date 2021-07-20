@@ -13,7 +13,6 @@
 #include "components/exo/shell_surface.h"
 #include "components/exo/surface_observer.h"
 #include "components/exo/surface_tree_host.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "ui/aura/window_observer.h"
 #include "ui/base/hit_test.h"

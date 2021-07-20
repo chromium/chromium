@@ -15,7 +15,6 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/offline_pages/task/task_queue.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feedkvstore {
 class Entry;

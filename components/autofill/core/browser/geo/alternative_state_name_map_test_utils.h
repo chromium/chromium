@@ -7,7 +7,6 @@
 
 #include "components/autofill/core/browser/geo/alternative_state_name_map.h"
 #include "components/autofill/core/browser/proto/states.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 

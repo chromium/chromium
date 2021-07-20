@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cr_fuchsia {
 class WebInstanceHost;

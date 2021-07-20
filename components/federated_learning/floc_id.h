@@ -8,7 +8,6 @@
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/prefs/prefs_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/federated_learning/floc.mojom-forward.h"
 
 #include <stdint.h>

@@ -16,7 +16,6 @@
 #include "components/optimization_guide/core/memory_hint.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
 #include "components/optimization_guide/proto/hints.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

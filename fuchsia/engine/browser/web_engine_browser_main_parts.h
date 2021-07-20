@@ -15,7 +15,6 @@
 #include "fuchsia/engine/browser/context_impl.h"
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 #include "fuchsia/engine/web_engine_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class FuchsiaIntlProfileWatcher;

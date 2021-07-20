@@ -16,7 +16,6 @@
 #include "base/macros.h"
 #include "components/url_matcher/string_pattern.h"
 #include "components/url_matcher/url_matcher_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace url_matcher {
 

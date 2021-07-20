@@ -11,6 +11,7 @@
 #include "sql/recover_module/cursor.h"
 #include "sql/recover_module/integers.h"
 #include "sql/recover_module/pager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sql {
 namespace recover {

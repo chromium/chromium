@@ -6,7 +6,10 @@
 #define CONTENT_TEST_MOCK_DISPLAY_FEATURE_H_
 
 #include "build/build_config.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_ANDROID)
+#include <memory>
+#endif
 
 namespace content {
 
@@ -15,7 +18,7 @@ class RenderWidgetHostViewBase;
 
 #if defined(OS_ANDROID)
 class TestViewAndroidDelegate;
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 
 class MockDisplayFeature {
  public:
@@ -28,7 +31,7 @@ class MockDisplayFeature {
   RenderWidgetHostViewBase* render_widget_host_view_;
 #if defined(OS_ANDROID)
   std::unique_ptr<TestViewAndroidDelegate> test_view_android_delegate_;
-#endif  // OS_ANDROID
+#endif  // defined(OS_ANDROID)
 };
 
 }  // namespace content

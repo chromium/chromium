@@ -9,7 +9,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 

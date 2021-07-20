@@ -7,7 +7,6 @@
 
 #include "chrome/browser/badging/badge_manager.h"
 #include "chrome/browser/web_applications/components/web_app_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;

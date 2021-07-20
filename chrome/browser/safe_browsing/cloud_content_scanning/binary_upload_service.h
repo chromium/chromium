@@ -25,7 +25,6 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 

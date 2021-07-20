@@ -15,7 +15,6 @@
 #include "base/component_export.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/x/future.h"
 #include "ui/gfx/x/xproto.h"
 #include "ui/gfx/x/xproto_types.h"

@@ -11,7 +11,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace gpu {

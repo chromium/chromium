@@ -9,7 +9,6 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Time;

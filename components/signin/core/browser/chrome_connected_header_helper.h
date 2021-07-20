@@ -9,7 +9,6 @@
 
 #include "components/signin/core/browser/signin_header_helper.h"
 #include "components/signin/public/base/account_consistency_method.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

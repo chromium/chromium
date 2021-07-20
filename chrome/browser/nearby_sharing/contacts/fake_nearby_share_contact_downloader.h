@@ -12,7 +12,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader.h"
 #include "chrome/browser/nearby_sharing/contacts/nearby_share_contact_downloader_impl.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class NearbyShareClientFactory;
 

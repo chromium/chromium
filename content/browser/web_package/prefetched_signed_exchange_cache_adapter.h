@@ -8,7 +8,6 @@
 #include "content/browser/web_package/prefetched_signed_exchange_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "mojo/public/cpp/system/data_pipe.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 

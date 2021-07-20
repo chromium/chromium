@@ -11,7 +11,6 @@
 
 #include "base/containers/span.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sharing {
 

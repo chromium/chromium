@@ -6,7 +6,6 @@
 #define UI_COMPOSITOR_PAINT_CACHE_H_
 
 #include "base/macros.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/compositor/compositor_export.h"
 #include "ui/gfx/geometry/rect.h"

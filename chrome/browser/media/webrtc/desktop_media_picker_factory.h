@@ -13,7 +13,6 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Interface for factory creating DesktopMediaList and DesktopMediaPicker
 // instances.

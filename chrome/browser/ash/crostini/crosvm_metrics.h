@@ -14,7 +14,6 @@
 #include "base/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/system/procfs_util.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crostini {
 

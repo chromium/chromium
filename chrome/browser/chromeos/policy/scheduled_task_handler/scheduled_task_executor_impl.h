@@ -13,7 +13,6 @@
 #include "base/values.h"
 #include "chrome/browser/chromeos/policy/scheduled_task_handler/scheduled_task_executor.h"
 #include "chromeos/dbus/power/native_timer.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/icu/source/i18n/unicode/calendar.h"
 
 namespace policy {

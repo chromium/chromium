@@ -14,7 +14,6 @@
 #include "base/strings/string_piece.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_buffer_android.h"
 #include "services/tracing/public/cpp/perfetto/java_heap_profiler/hprof_instances_android.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/perfetto/protos/perfetto/trace/profiling/heap_graph.pbzero.h"
 
 namespace tracing {

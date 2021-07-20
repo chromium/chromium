@@ -10,7 +10,6 @@
 
 #include "media/base/video_facing.h"
 #include "media/capture/capture_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 

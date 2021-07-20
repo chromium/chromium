@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/mojom/system_info.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace audio {
 

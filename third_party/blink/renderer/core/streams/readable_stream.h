@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_byob_reader.h"

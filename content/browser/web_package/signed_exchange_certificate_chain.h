@@ -14,7 +14,6 @@
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/spki_hash_set.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;

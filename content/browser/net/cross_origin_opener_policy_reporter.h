@@ -14,7 +14,6 @@
 #include "net/base/network_isolation_key.h"
 #include "services/network/public/mojom/cross_origin_opener_policy.mojom.h"
 #include "services/network/public/mojom/source_location.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {

@@ -15,7 +15,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "chrome/chrome_cleaner/os/registry_util.h"
 #include "chrome/chrome_cleaner/parsers/json_parser/json_parser_api.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome_cleaner {
 

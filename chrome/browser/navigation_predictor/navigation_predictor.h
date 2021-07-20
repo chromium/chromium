@@ -17,7 +17,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/loader/navigation_predictor.mojom.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/origin.h"

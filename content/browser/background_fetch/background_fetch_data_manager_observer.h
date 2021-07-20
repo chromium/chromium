@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 class SkBitmap;

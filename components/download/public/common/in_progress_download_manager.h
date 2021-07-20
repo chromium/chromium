@@ -24,7 +24,6 @@
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "services/device/public/mojom/wake_lock_provider.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace network {

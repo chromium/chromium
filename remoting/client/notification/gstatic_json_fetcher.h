@@ -11,7 +11,6 @@
 #include "base/single_thread_task_runner.h"
 #include "net/url_request/url_fetcher_delegate.h"
 #include "remoting/client/notification/json_fetcher.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace remoting {

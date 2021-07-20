@@ -21,7 +21,6 @@
 #include "media/gpu/android/video_frame_factory.h"
 #include "media/gpu/gles2_decoder_helper.h"
 #include "media/gpu/media_gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gl/gl_bindings.h"
 
 namespace media {

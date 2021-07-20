@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_UI_ASH_ASSISTANT_ASSISTANT_CONTEXT_UTIL_H_
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 #include "ui/gfx/geometry/rect.h"
 

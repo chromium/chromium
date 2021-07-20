@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/upgrade_detector/get_installed_version.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class BuildState;
 class InstalledVersionMonitor;

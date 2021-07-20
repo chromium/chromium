@@ -14,7 +14,6 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "printing/backend/print_backend.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crash_keys {
 class ScopedPrinterInfo;

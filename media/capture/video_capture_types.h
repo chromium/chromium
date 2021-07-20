@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "media/base/video_types.h"
 #include "media/capture/capture_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {

@@ -20,7 +20,6 @@
 #include "services/device/public/cpp/test/fake_usb_device_info.h"
 #include "services/device/public/mojom/usb_device.mojom.h"
 #include "services/device/public/mojom/usb_manager.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

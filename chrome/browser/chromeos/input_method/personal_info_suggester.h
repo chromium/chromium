@@ -15,7 +15,6 @@
 #include "chrome/browser/chromeos/input_method/tts_handler.h"
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #include "chromeos/services/ime/public/cpp/suggestions.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class PersonalDataManager;

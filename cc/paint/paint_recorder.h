@@ -8,7 +8,6 @@
 #include "base/compiler_specific.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/record_paint_canvas.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 

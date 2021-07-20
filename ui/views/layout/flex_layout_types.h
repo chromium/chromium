@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/views/layout/layout_types.h"
 #include "ui/views/views_export.h"
 

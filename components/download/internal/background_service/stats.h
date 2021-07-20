@@ -12,7 +12,6 @@
 #include "components/download/public/background_service/clients.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/task/download_task_types.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace download {
 

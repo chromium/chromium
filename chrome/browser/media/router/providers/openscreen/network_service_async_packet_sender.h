@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_OPENSCREEN_NETWORK_SERVICE_ASYNC_PACKET_SENDER_H_
 
 #include "base/callback.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/net_errors.h"

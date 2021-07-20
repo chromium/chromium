@@ -5,8 +5,9 @@
 #ifndef GPU_CONFIG_SKIA_LIMITS_H_
 #define GPU_CONFIG_SKIA_LIMITS_H_
 
+#include <stddef.h>
+
 #include "gpu/gpu_export.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 

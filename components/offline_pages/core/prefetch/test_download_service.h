@@ -13,7 +13,6 @@
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/offline_pages/core/prefetch/test_download_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace offline_pages {
 

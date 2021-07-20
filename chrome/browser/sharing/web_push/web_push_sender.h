@@ -8,7 +8,6 @@
 #include "base/macros.h"
 #include "chrome/browser/sharing/web_push/web_push_common.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 class SimpleURLLoader;

@@ -13,7 +13,6 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/fido/fido_request_handler_base.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 

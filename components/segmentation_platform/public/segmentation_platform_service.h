@@ -12,7 +12,6 @@
 #include "base/supports_user_data.h"
 #include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/jni_android.h"
