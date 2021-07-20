@@ -260,8 +260,8 @@ ScrollView* ScrollView::GetScrollViewForContents(View* contents) {
 
 void ScrollView::SetContentsImpl(std::unique_ptr<View> a_view) {
   // Protect against clients passing a contents view that has its own Layer.
-  DCHECK(!a_view->layer());
-  if (ScrollsWithLayers()) {
+  DCHECK(!a_view || !a_view->layer());
+  if (a_view && ScrollsWithLayers()) {
     a_view->SetPaintToLayer();
     a_view->layer()->SetDidScrollCallback(base::BindRepeating(
         &ScrollView::OnLayerScrolled, base::Unretained(this)));
@@ -877,7 +877,8 @@ void ScrollView::UpdateViewportLayerForClipping() {
 void ScrollView::SetHeaderOrContents(View* parent,
                                      std::unique_ptr<View> new_view,
                                      View** member) {
-  delete *member;
+  if (*member)
+    parent->RemoveChildViewT(*member);
   if (new_view.get())
     *member = parent->AddChildViewAt(std::move(new_view), 0);
   else

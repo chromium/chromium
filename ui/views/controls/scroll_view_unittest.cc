@@ -6,10 +6,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <string>
 #include <utility>
 
 #include "base/macros.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -29,6 +31,7 @@
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/test/widget_test.h"
+#include "ui/views/view_observer.h"
 #include "ui/views/view_test_api.h"
 
 #if defined(OS_MAC)
@@ -44,6 +47,9 @@ class ScrollViewTestApi {
  public:
   explicit ScrollViewTestApi(ScrollView* scroll_view)
       : scroll_view_(scroll_view) {}
+  ScrollViewTestApi(const ScrollViewTestApi&) = delete;
+  ScrollViewTestApi& operator=(const ScrollViewTestApi&) = delete;
+  ~ScrollViewTestApi() = default;
 
   ScrollBar* GetScrollBar(ScrollBarOrientation orientation) {
     ScrollBar* scroll_bar = orientation == VERTICAL
@@ -86,8 +92,22 @@ class ScrollViewTestApi {
 
  private:
   ScrollView* scroll_view_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(ScrollViewTestApi);
+class ObserveViewDeletion : public ViewObserver {
+ public:
+  explicit ObserveViewDeletion(View* view) { observer_.Observe(view); }
+
+  void OnViewIsDeleting(View* observed_view) override {
+    deleted_view_ = observed_view;
+    observer_.Reset();
+  }
+
+  View* deleted_view() { return deleted_view_; }
+
+ private:
+  base::ScopedObservation<View, ViewObserver> observer_{this};
+  View* deleted_view_ = nullptr;
 };
 
 }  // namespace test
@@ -242,9 +262,9 @@ class ScrollViewTest : public ViewsTestBase {
 
   View* InstallContents() {
     const gfx::Rect default_outer_bounds(0, 0, 100, 100);
-    scroll_view_->SetContents(std::make_unique<View>());
+    auto* view = scroll_view_->SetContents(std::make_unique<View>());
     scroll_view_->SetBoundsRect(default_outer_bounds);
-    return scroll_view_->contents();
+    return view;
   }
 
  protected:
@@ -1927,6 +1947,24 @@ TEST_F(ScrollViewTest, IgnoreOverlapWithHiddenVerticalScroll) {
   gfx::Size expected_size = scroll_view_->size();
   expected_size.Enlarge(0, -kThickness);
   EXPECT_EQ(expected_size, test_api.contents_viewport()->size());
+}
+
+TEST_F(ScrollViewTest, TestSettingContentsToNull) {
+  View* contents = InstallContents();
+  test::ObserveViewDeletion view_deletion{contents};
+
+  // Make sure the content is installed and working.
+  scroll_view_->Layout();
+  EXPECT_EQ("0,0 100x100", contents->parent()->bounds().ToString());
+
+  // This should be legal and not DCHECK.
+  scroll_view_->SetContents(nullptr);
+
+  // The content should now be gone.
+  EXPECT_FALSE(scroll_view_->contents());
+
+  // The contents view should have also been deleted.
+  EXPECT_EQ(contents, view_deletion.deleted_view());
 }
 
 // Test scrolling behavior when clicking on the scroll track.
