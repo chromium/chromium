@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/singleton.h"
-#include "base/metrics/histogram_functions.h"
 #include "ui/gfx/x/connection.h"
 #include "ui/gfx/x/future.h"
 
@@ -218,12 +217,6 @@ Atom X11AtomCache::GetAtom(const std::string& name) const {
         << " Use x11::Atom::" << name << " instead of x11::GetAtom(\"" << name
         << "\")";
     cached_atoms_.emplace(name, atom);
-  } else {
-    static int error_count = 0;
-    ++error_count;
-    // TODO(https://crbug.com/1000919): Evaluate and remove UMA metrics after
-    // enough data is gathered.
-    base::UmaHistogramCounts100("X11.XInternAtomFailure", error_count);
   }
   return atom;
 }

@@ -2964,6 +2964,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Clipboard.RegisterClipboardFormatFailure" units="count"
     expires_after="2021-01-01">
+  <obsolete>
+    Removed July 2021 as enough data was collected.
+  </obsolete>
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
@@ -20058,6 +20061,9 @@ regressions. -->
 
 <histogram name="X11.XInternAtomFailure" units="count"
     expires_after="2021-01-01">
+  <obsolete>
+    Removed July 2021 as enough data was collected.
+  </obsolete>
   <owner>huangdarwin@chromium.org</owner>
   <owner>src/ui/base/clipboard/OWNERS</owner>
   <summary>
