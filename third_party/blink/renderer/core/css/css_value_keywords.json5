@@ -1439,5 +1439,9 @@
     "numbers",
     "words",
     // spell-out,
+
+    // ([video]-dynamic-range) media feature
+    "standard",
+    "high",
   ],
 }

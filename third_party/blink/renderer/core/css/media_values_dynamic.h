@@ -16,7 +16,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   static MediaValues* Create(Document&);
   static MediaValues* Create(LocalFrame*);
 
-  MediaValuesDynamic(LocalFrame*);
+  explicit MediaValuesDynamic(LocalFrame*);
   MediaValuesDynamic(LocalFrame*,
                      bool overridden_viewport_dimensions,
                      double viewport_width,
@@ -35,6 +35,7 @@ class CORE_EXPORT MediaValuesDynamic : public MediaValues {
   int DeviceWidth() const override;
   int DeviceHeight() const override;
   float DevicePixelRatio() const override;
+  bool DeviceSupportsHDR() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;

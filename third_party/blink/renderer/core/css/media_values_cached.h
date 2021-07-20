@@ -32,6 +32,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     int device_width = 0;
     int device_height = 0;
     float device_pixel_ratio = 1.0;
+    bool device_supports_hdr = false;
     int color_bits_per_component = 24;
     int monochrome_bits_per_component = 0;
     mojom::blink::PointerType primary_pointer_type =
@@ -72,6 +73,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
       data.device_width = device_width;
       data.device_height = device_height;
       data.device_pixel_ratio = device_pixel_ratio;
+      data.device_supports_hdr = device_supports_hdr;
       data.color_bits_per_component = color_bits_per_component;
       data.monochrome_bits_per_component = monochrome_bits_per_component;
       data.primary_pointer_type = primary_pointer_type;
@@ -114,6 +116,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   int DeviceWidth() const override;
   int DeviceHeight() const override;
   float DevicePixelRatio() const override;
+  bool DeviceSupportsHDR() const override;
   int ColorBitsPerComponent() const override;
   int MonochromeBitsPerComponent() const override;
   mojom::blink::PointerType PrimaryPointerType() const override;

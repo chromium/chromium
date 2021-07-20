@@ -110,6 +110,15 @@ float MediaValues::CalculateDevicePixelRatio(LocalFrame* frame) {
   return frame->DevicePixelRatio();
 }
 
+bool MediaValues::CalculateDeviceSupportsHDR(LocalFrame* frame) {
+  DCHECK(frame);
+  DCHECK(frame->GetPage());
+  return frame->GetPage()
+      ->GetChromeClient()
+      .GetScreenInfo(*frame)
+      .display_color_spaces.SupportsHDR();
+}
+
 int MediaValues::CalculateColorBitsPerComponent(LocalFrame* frame) {
   DCHECK(frame);
   DCHECK(frame->GetPage());

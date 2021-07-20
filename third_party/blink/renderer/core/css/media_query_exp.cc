@@ -89,6 +89,12 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
   if (media_feature == media_feature_names::kPrefersReducedMotionMediaFeature)
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
 
+  if (RuntimeEnabledFeatures::CSSDynamicRangeMediaQueriesEnabled()) {
+    if (media_feature == media_feature_names::kDynamicRangeMediaFeature ||
+        media_feature == media_feature_names::kVideoDynamicRangeMediaFeature)
+      return ident == CSSValueID::kStandard || ident == CSSValueID::kHigh;
+  }
+
   if (RuntimeEnabledFeatures::PrefersReducedDataEnabled() &&
       media_feature == media_feature_names::kPrefersReducedDataMediaFeature) {
     return ident == CSSValueID::kNoPreference || ident == CSSValueID::kReduce;
@@ -282,7 +288,9 @@ bool MediaQueryExp::IsDeviceDependent() const {
          media_feature_ == media_feature_names::kMinDeviceHeightMediaFeature ||
          media_feature_ == kMaxDeviceAspectRatioMediaFeature ||
          media_feature_ == media_feature_names::kMaxDeviceWidthMediaFeature ||
-         media_feature_ == media_feature_names::kMaxDeviceHeightMediaFeature;
+         media_feature_ == media_feature_names::kMaxDeviceHeightMediaFeature ||
+         media_feature_ == media_feature_names::kDynamicRangeMediaFeature ||
+         media_feature_ == media_feature_names::kVideoDynamicRangeMediaFeature;
 }
 
 bool MediaQueryExp::IsWidthDependent() const {

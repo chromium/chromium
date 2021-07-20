@@ -327,6 +327,35 @@ static bool DeviceAspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
   return true;
 }
 
+static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaFeaturePrefix op,
+                                         const MediaValues& media_values) {
+  if (!value.is_id)
+    return false;
+
+  bool const supports_hdr = media_values.DeviceSupportsHDR();
+
+  switch (value.id) {
+    case CSSValueID::kStandard:
+      return !supports_hdr;
+
+    case CSSValueID::kHigh:
+      return supports_hdr;
+
+    default:
+      NOTREACHED();
+      return false;
+  }
+}
+
+static bool VideoDynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
+                                              MediaFeaturePrefix op,
+                                              const MediaValues& media_values) {
+  // For now, Chrome makes no distinction between video-dynamic-range and
+  // dynamic-range
+  return DynamicRangeMediaFeatureEval(value, op, media_values);
+}
+
 static bool EvalResolution(const MediaQueryExpValue& value,
                            MediaFeaturePrefix op,
                            const MediaValues& media_values) {

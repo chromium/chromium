@@ -69,6 +69,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual int DeviceWidth() const = 0;
   virtual int DeviceHeight() const = 0;
   virtual float DevicePixelRatio() const = 0;
+  virtual bool DeviceSupportsHDR() const = 0;
   virtual int ColorBitsPerComponent() const = 0;
   virtual int MonochromeBitsPerComponent() const = 0;
   virtual mojom::blink::PointerType PrimaryPointerType() const = 0;
@@ -102,6 +103,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static int CalculateDeviceHeight(LocalFrame*);
   static bool CalculateStrictMode(LocalFrame*);
   static float CalculateDevicePixelRatio(LocalFrame*);
+  static bool CalculateDeviceSupportsHDR(LocalFrame*);
   static int CalculateColorBitsPerComponent(LocalFrame*);
   static int CalculateMonochromeBitsPerComponent(LocalFrame*);
   static int CalculateDefaultFontSize(LocalFrame*);

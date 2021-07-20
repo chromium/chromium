@@ -305,6 +305,48 @@ MediaQueryEvaluatorTestCase g_device_posture_folded_over_cases[] = {
     {nullptr, false}  // Do not remove the terminator line.
 };
 
+MediaQueryEvaluatorTestCase g_dynamic_range_standard_cases[] = {
+    {"(dynamic-range: standard)", true},
+    {"(dynamic-range: high)", false},
+    {"(dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_dynamic_range_high_cases[] = {
+    {"(dynamic-range: standard)", false},
+    {"(dynamic-range: high)", true},
+    {"(dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_dynamic_range_feature_disabled_cases[] = {
+    {"(dynamic-range: standard)", false},
+    {"(dynamic-range: high)", false},
+    {"(dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_video_dynamic_range_standard_cases[] = {
+    {"(video-dynamic-range: standard)", true},
+    {"(video-dynamic-range: high)", false},
+    {"(video-dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_video_dynamic_range_high_cases[] = {
+    {"(video-dynamic-range: standard)", false},
+    {"(video-dynamic-range: high)", true},
+    {"(video-dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
+MediaQueryEvaluatorTestCase g_video_dynamic_range_feature_disabled_cases[] = {
+    {"(video-dynamic-range: standard)", false},
+    {"(video-dynamic-range: high)", false},
+    {"(video-dynamic-range: invalid)", false},
+    {nullptr, false}  // Do not remove the terminator line.
+};
+
 void TestMQEvaluator(MediaQueryEvaluatorTestCase* test_cases,
                      const MediaQueryEvaluator& media_query_evaluator,
                      CSSParserMode mode) {
@@ -571,6 +613,108 @@ TEST(MediaQueryEvaluatorTest, CachedDevicePosture) {
     MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
     MediaQueryEvaluator media_query_evaluator(*media_values);
     TestMQEvaluator(g_device_posture_folded_over_cases, media_query_evaluator);
+  }
+}
+
+TEST(MediaQueryEvaluatorTest, CachedDynamicRange) {
+  MediaValuesCached::MediaValuesCachedData data;
+
+  // Test with color spaces supporting standard dynamic range
+  {
+    data.device_supports_hdr = gfx::DisplayColorSpaces().SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_standard_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_standard_cases,
+                    media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+  }
+  {
+    data.device_supports_hdr =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateDisplayP3D65())
+            .SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_standard_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_standard_cases,
+                    media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+  }
+
+  // Test with color spaces supporting high dynamic range
+  {
+    data.device_supports_hdr =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateExtendedSRGB())
+            .SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+  }
+  {
+    data.device_supports_hdr =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateSCRGBLinear())
+            .SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+  }
+  {
+    data.device_supports_hdr =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateHDR10()).SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+  }
+  {
+    data.device_supports_hdr =
+        gfx::DisplayColorSpaces(gfx::ColorSpace::CreateHLG()).SupportsHDR();
+    MediaValues* media_values = MakeGarbageCollected<MediaValuesCached>(data);
+    MediaQueryEvaluator media_query_evaluator(*media_values);
+    TestMQEvaluator(g_dynamic_range_high_cases, media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_high_cases, media_query_evaluator);
+
+    // Test again with the feature disabled
+    ScopedCSSDynamicRangeMediaQueriesForTest const disable_feature{false};
+    TestMQEvaluator(g_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
+    TestMQEvaluator(g_video_dynamic_range_feature_disabled_cases,
+                    media_query_evaluator);
   }
 }
 

@@ -19,6 +19,8 @@
     "orientation",
     "aspect-ratio",
     "device-aspect-ratio",
+    "dynamic-range",
+    "video-dynamic-range",
     "-webkit-device-pixel-ratio",
     "device-height",
     "device-width",

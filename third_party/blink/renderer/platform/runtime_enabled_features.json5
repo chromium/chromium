@@ -567,6 +567,10 @@
       status: "experimental"
     },
     {
+      name: "CSSDynamicRangeMediaQueries",
+      status: "experimental"
+    },
+    {
       // Include custom properties in CSSComputedStyleDeclaration::item/length.
       // https://crbug.com/949807
       name: "CSSEnumeratedCustomProperties",

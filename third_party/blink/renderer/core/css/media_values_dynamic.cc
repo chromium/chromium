@@ -91,6 +91,10 @@ float MediaValuesDynamic::DevicePixelRatio() const {
   return CalculateDevicePixelRatio(frame_);
 }
 
+bool MediaValuesDynamic::DeviceSupportsHDR() const {
+  return CalculateDeviceSupportsHDR(frame_);
+}
+
 int MediaValuesDynamic::ColorBitsPerComponent() const {
   return CalculateColorBitsPerComponent(frame_);
 }

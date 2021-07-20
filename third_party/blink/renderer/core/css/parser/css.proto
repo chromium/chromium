@@ -811,7 +811,9 @@ message MfName {
     SCAN = 43;
     SHAPE = 44;
     IMMERSIVE = 45;
-    INVALID_NAME = 46;
+    DYNAMIC_RANGE = 46;
+    VIDEO_DYNAMIC_RANGE = 47;
+    INVALID_NAME = 48;
   }
   required ValueId id = 1;
 }
@@ -2385,7 +2387,9 @@ message PropertyAndValue {
     NO_DRAG = 759;
     JIS_B5 = 760;
     JIS_B4 = 761;
-    INVALID_VALUE = 762;
+    STANDARD = 762;
+    HIGH = 763;
+    INVALID_VALUE = 764;
   };
 
   optional ValueId value_id = 4;

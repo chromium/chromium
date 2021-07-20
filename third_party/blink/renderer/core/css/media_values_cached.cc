@@ -32,6 +32,7 @@ MediaValuesCached::MediaValuesCachedData::MediaValuesCachedData(
     device_width = MediaValues::CalculateDeviceWidth(frame);
     device_height = MediaValues::CalculateDeviceHeight(frame);
     device_pixel_ratio = MediaValues::CalculateDevicePixelRatio(frame);
+    device_supports_hdr = MediaValues::CalculateDeviceSupportsHDR(frame);
     color_bits_per_component =
         MediaValues::CalculateColorBitsPerComponent(frame);
     monochrome_bits_per_component =
@@ -102,6 +103,10 @@ int MediaValuesCached::DeviceHeight() const {
 
 float MediaValuesCached::DevicePixelRatio() const {
   return data_.device_pixel_ratio;
+}
+
+bool MediaValuesCached::DeviceSupportsHDR() const {
+  return data_.device_supports_hdr;
 }
 
 int MediaValuesCached::ColorBitsPerComponent() const {

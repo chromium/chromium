@@ -190,6 +190,8 @@ const std::string Converter::kMfNameLookupTable[] = {
     "scan",
     "shape",
     "immersive",
+    "dynamic-range",
+    "video-dynamic-range",
     "INVALID_NAME"};
 
 const std::string Converter::kImportLookupTable[] = {
@@ -964,6 +966,8 @@ const std::string Converter::kValueLookupTable[] = {
     "no-drag",
     "jis-b5",
     "jis-b4",
+    "standard",
+    "high",
     "INVALID_VALUE",
 };
 
