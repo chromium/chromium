@@ -962,6 +962,9 @@
             "experiments": [
                 {
                     "name": "Enabled_20210611",
+                    "params": {
+                        "json_parameters": "\n{\n  \"denylistedDomains\": [\"google.com\", \"facebook.com\", \"ampproject.org\",\n                        \"amazon.com\", \"pornhub.com\", \"xnxx.com\",\n                        \"xvideos.com\", \"twitter.com\", \"instagram.com\",\n                        \"craigslist.org\", \"yahoo.com\",\n                        \"googleadservices.com\", \"youtube.com\",\n                        \"zillow.com\", \"wikipedia.org\", \"xhamster.com\",\n                        \"pinterest.com\", \"reddit.com\", \"indeed.com\",\n                        \"dailymail.co.uk\", \"weather.com\", \"mlb.com\",\n                        \"live.com\", \"realtor.com\", \"trulia.com\",\n                        \"ca.gov\", \"pch.com\", \"paypal.com\", \"office.com\",\n                        \"espn.com\"],\n  \"heuristics\":[\n    {\n      \"intent\":\"SHOPPING_ASSISTED_CHECKOUT\",\n      \"conditionSet\":{\n        \"schemes\":[\"https\"],\n        \"urlMatches\":\"(?i)cart|trolley|basket|checkout|fulfil+ment|bag|shipping|pay|buy\"\n      }\n    },\n    {\n      \"intent\":\"SHOPPING_ASSISTED_CHECKOUT\",\n      \"conditionSet\":{\n        \"urlPrefix\":\"https://www.jegs.com/webapp/wcs/stores/servlet/OrderItemDisplay\"\n      }\n    }\n  ]\n}"
+                    },
                     "enable_features": [
                         "AutofillAssistantInCctTriggering",
                         "AutofillAssistantUrlHeuristics"
