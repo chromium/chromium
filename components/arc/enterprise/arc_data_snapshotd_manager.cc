@@ -548,8 +548,6 @@ void ArcDataSnapshotdManager::OnSnapshotSessionPolicyCompliant() {
 
       break;
     case State::kRunning:
-      state_ = State::kNone;
-
       snapshot_.GetCurrentSnapshot()->set_verified(true);
       snapshot_.GetCurrentSnapshot()->set_updated(false);
       snapshot_.Sync();

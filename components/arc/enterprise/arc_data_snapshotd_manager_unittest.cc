@@ -1070,11 +1070,12 @@ TEST_P(ArcDataSnapshotdManagerFlowTest, LoadSnapshotsBasic) {
     CheckVerifiedLastSnapshot();
     CheckSnapshots(2 /* expected_snapshots_number */,
                    false /* expected_blocked_ui_mode */);
+    EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kRunning);
   } else {
     CheckSnapshots(0 /* expected_snapshots_number */,
                    false /* expected_blocked_ui_mode */);
+    EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
   }
-  EXPECT_EQ(manager->state(), ArcDataSnapshotdManager::State::kNone);
 
   // Exit MGS successfully.
   LogoutPublicSession();

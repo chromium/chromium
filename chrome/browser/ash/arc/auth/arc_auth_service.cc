@@ -39,6 +39,7 @@
 #include "components/arc/arc_prefs.h"
 #include "components/arc/arc_service_manager.h"
 #include "components/arc/arc_util.h"
+#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
 #include "components/arc/session/arc_management_transition.h"
 #include "components/prefs/pref_service.h"
@@ -655,6 +656,16 @@ void ArcAuthService::OnPrimaryAccountAuthCodeFetched(
                           std::string() /* auth_name */,
                           mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
                           true /* is_managed */));
+  } else if (arc::data_snapshotd::ArcDataSnapshotdManager::Get()->state() ==
+             arc::data_snapshotd::ArcDataSnapshotdManager::State::kRunning) {
+    // If MGS is running with a snapshotted data/, it could be offline.
+    const std::string& full_account_id = GetAccountName(profile_);
+    std::move(callback).Run(
+        mojom::ArcAuthCodeStatus::SUCCESS,
+        CreateAccountInfo(false /* is_enforced */,
+                          std::string() /* auth_info */, full_account_id,
+                          GetAccountType(profile_),
+                          policy_util::IsAccountManaged(profile_)));
   } else {
     // Send error to ARC.
     std::move(callback).Run(
