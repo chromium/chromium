@@ -122,9 +122,8 @@ class VisualDebuggerTest : public testing::Test {
 
     EXPECT_TRUE(global_dict->is_dict());
 
-    std::string str;
-    global_dict->FindKey("frame")->GetAsString(&str);
-    base::StringToUint64(str.c_str(), &counter_);
+    base::StringToUint64(global_dict->FindKey("frame")->GetString().c_str(),
+                         &counter_);
     static const int kNoVal = -1;
     int expected_version =
         global_dict->FindKey("version")->GetIfInt().value_or(kNoVal);
@@ -141,15 +140,9 @@ class VisualDebuggerTest : public testing::Test {
     for (size_t i = 0; i < list_source->GetList().size(); i++) {
       auto&& local_dict = list_source->GetList()[i];
       StaticSource ss;
-      local_dict.FindKey("file")->GetAsString(&str);
-      ss.file = str;
-
-      local_dict.FindKey("func")->GetAsString(&str);
-      ss.func = str;
-
-      local_dict.FindKey("anno")->GetAsString(&str);
-      ss.anno = str;
-
+      ss.file = local_dict.FindKey("file")->GetString();
+      ss.func = local_dict.FindKey("func")->GetString();
+      ss.anno = local_dict.FindKey("anno")->GetString();
       ss.line = local_dict.FindKey("line")->GetIfInt().value_or(kNoVal);
       ss.index = local_dict.FindKey("index")->GetIfInt().value_or(kNoVal);
       sources_.push_back(ss);
@@ -164,14 +157,13 @@ class VisualDebuggerTest : public testing::Test {
       *draw_index = dict.FindKey("drawindex")->GetIfInt().value_or(kNoVal);
       *source_index = dict.FindKey("source_index")->GetIfInt().value_or(kNoVal);
 
-      std::string str;
       const base::Value* option_dict = dict.FindDictKey("option");
-      option_dict->FindKey("color")->GetAsString(&str);
 
       uint32_t red;
       uint32_t green;
       uint32_t blue;
-      std::sscanf(str.c_str(), "#%x%x%x", &red, &green, &blue);
+      std::sscanf(option_dict->FindKey("color")->GetString().c_str(), "#%x%x%x",
+                  &red, &green, &blue);
 
       option->color_r = red;
       option->color_g = green;
@@ -215,9 +207,6 @@ class VisualDebuggerTest : public testing::Test {
 
       func_common_call(local_dict, &draw_index, &source_index, &option);
 
-      local_dict.FindKey("text")->GetAsString(&str);
-      std::string text_str = str;
-
       const base::Value* list_pos = local_dict.FindListKey("pos");
       EXPECT_TRUE(list_pos->is_list());
       float pos_x = list_pos->GetList()[0].GetIfDouble().value_or(kNoVal);
@@ -225,7 +214,7 @@ class VisualDebuggerTest : public testing::Test {
 
       VizDebuggerInternal::DrawTextCall text_call(
           draw_index, source_index, option, gfx::Vector2dF(pos_x, pos_y),
-          text_str);
+          local_dict.FindKey("text")->GetString());
 
       draw_text_calls_.push_back(text_call);
     }
@@ -240,11 +229,9 @@ class VisualDebuggerTest : public testing::Test {
       VizDebugger::DrawOption option;
       func_common_call(local_dict, &draw_index, &source_index, &option);
 
-      local_dict.FindKey("value")->GetAsString(&str);
-      std::string log_str = str;
-
-      VizDebuggerInternal::LogCall log_call(draw_index, source_index, option,
-                                            log_str);
+      VizDebuggerInternal::LogCall log_call(
+          draw_index, source_index, option,
+          local_dict.FindKey("value")->GetString());
 
       log_calls_.push_back(log_call);
     }
