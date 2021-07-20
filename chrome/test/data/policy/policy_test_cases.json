@@ -6365,21 +6365,6 @@
       }
     ]
   },
-  "ScreenLockDelayAC": {
-    "os": [
-      "chromeos"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ScreenLockDelayAC": 600000
-        },
-        "prefs": {
-          "power.ac_screen_lock_delay_ms": {}
-        }
-      }
-    ]
-  },
   "IdleWarningDelayAC": {
     "os": [
       "chromeos"
@@ -6457,21 +6442,6 @@
         },
         "prefs": {
           "power.battery_screen_off_delay_ms": {}
-        }
-      }
-    ]
-  },
-  "ScreenLockDelayBattery": {
-    "os": [
-      "chromeos"
-    ],
-    "policy_pref_mapping_tests": [
-      {
-        "policies": {
-          "ScreenLockDelayBattery": 600000
-        },
-        "prefs": {
-          "power.battery_screen_lock_delay_ms": {}
         }
       }
     ]
@@ -6737,12 +6707,77 @@
       }
     ]
   },
+  "ScreenLockDelayAC": {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "ScreenLockDelayAC": 600000
+        },
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "location": "user_profile",
+            "value": 600000
+          }
+        }
+      }
+    ]
+  },
+  "ScreenLockDelayBattery": {
+    "os": [
+      "chromeos"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "power.battery_screen_lock_delay_ms": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value",
+        "policies": {
+          "ScreenLockDelayBattery": 600000
+        },
+        "prefs": {
+          "power.battery_screen_lock_delay_ms": {
+            "value": 600000
+          }
+        }
+      }
+    ]
+  },
   "ScreenLockDelays": {
     "os": [
       "chromeos"
     ],
     "policy_pref_mapping_tests": [
       {
+        "note":"Check default values (no policies set)",
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "default_value": 0
+          },
+          "power.battery_screen_lock_delay_ms": {
+            "default_value": 0
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "ScreenLockDelays": {
             "AC": 6000,
@@ -6755,6 +6790,25 @@
           },
           "power.battery_screen_lock_delay_ms": {
             "value": 2000
+          }
+        }
+      },
+      {
+        "note": "Policy merging precedence (ScreenLockDelays wins)",
+        "policies": {
+          "ScreenLockDelays": {
+            "AC": 1,
+            "Battery": 2
+          },
+          "ScreenLockDelayBattery": 3,
+          "ScreenLockDelayAC": 4
+        },
+        "prefs": {
+          "power.ac_screen_lock_delay_ms": {
+            "value": 1
+          },
+          "power.battery_screen_lock_delay_ms": {
+            "value": 2
           }
         }
       }
