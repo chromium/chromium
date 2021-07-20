@@ -13,6 +13,7 @@
 #include "build/branding_buildflags.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
+#include "components/autofill/core/browser/payments/autofill_save_card_ui_utils_mobile.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -115,8 +116,7 @@ std::u16string AutofillSaveCardInfoBarDelegateMobile::GetDescriptionText()
 }
 
 int AutofillSaveCardInfoBarDelegateMobile::GetIconId() const {
-  return IsGooglePayBrandingEnabled() ? IDR_AUTOFILL_GOOGLE_PAY_WITH_DIVIDER
-                                      : IDR_INFOBAR_AUTOFILL_CC;
+  return GetSaveCardIconId(IsGooglePayBrandingEnabled());
 }
 
 std::u16string AutofillSaveCardInfoBarDelegateMobile::GetMessageText() const {
@@ -232,11 +232,8 @@ void AutofillSaveCardInfoBarDelegateMobile::LogUserAction(
       user_action, upload_, options_,
       pref_service_->GetInteger(
           prefs::kAutofillAcceptSaveCreditCardPromptState));
-  pref_service_->SetInteger(
-      prefs::kAutofillAcceptSaveCreditCardPromptState,
-      user_action == AutofillMetrics::INFOBAR_ACCEPTED
-          ? prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_ACCEPTED
-          : prefs::PREVIOUS_SAVE_CREDIT_CARD_PROMPT_USER_DECISION_DENIED);
+  UpdateAutofillAcceptSaveCreditCardPromptState(
+      pref_service_, user_action == AutofillMetrics::INFOBAR_ACCEPTED);
   had_user_interaction_ = true;
 }
 

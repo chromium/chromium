@@ -93,6 +93,7 @@
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
+#include "components/messages/android/messages_feature.h"
 #include "components/webauthn/android/internal_authenticator_android.h"
 #include "ui/android/window_android.h"
 #else  // !OS_ANDROID
@@ -458,6 +459,13 @@ void ChromeAutofillClient::ConfirmSaveCreditCardLocally(
     LocalSaveCardPromptCallback callback) {
 #if defined(OS_ANDROID)
   DCHECK(options.show_prompt);
+  if (messages::IsSaveCardMessagesUiEnabled()) {
+    save_card_message_controller_android_.Show(
+        web_contents(), options, card,
+        /*upload_save_card_callback=*/{},
+        /*local_save_card_callback=*/std::move(callback));
+    return;
+  }
   infobars::ContentInfoBarManager::FromWebContents(web_contents())
       ->AddInfoBar(CreateSaveCardInfoBarMobile(
           std::make_unique<AutofillSaveCardInfoBarDelegateMobile>(
@@ -481,6 +489,13 @@ void ChromeAutofillClient::ConfirmSaveCreditCardToCloud(
     UploadSaveCardPromptCallback callback) {
 #if defined(OS_ANDROID)
   DCHECK(options.show_prompt);
+  if (messages::IsSaveCardMessagesUiEnabled()) {
+    save_card_message_controller_android_.Show(web_contents(), options, card,
+                                               /*upload_save_card_callback=*/
+                                               std::move(callback),
+                                               /*local_save_card_callback=*/{});
+    return;
+  }
   bool sync_disabled_wallet_transport_enabled =
       GetPersonalDataManager()->GetSyncSigninState() ==
       autofill::AutofillSyncSigninState::kSignedInAndWalletSyncTransportEnabled;

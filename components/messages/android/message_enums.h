@@ -82,6 +82,7 @@ enum class MessageIdentifier {
   SEND_TAB_TO_SELF = 9,
   READER_MODE = 10,
   CHROME_SURVEY = 11,
+  SAVE_CARD = 12,
 
   // Insert new values before this line.
   COUNT

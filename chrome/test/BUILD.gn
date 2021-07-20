@@ -4707,6 +4707,7 @@ test("unit_tests") {
       "../browser/share/share_history_unittest.cc",
       "../browser/share/share_ranking_unittest.cc",
       "../browser/translate/android/translate_bridge_unittest.cc",
+      "../browser/ui/android/autofill/save_card_message_controller_android_unittest.cc",
       "../browser/ui/android/tab_model/tab_model_list_unittest.cc",
       "../browser/ui/android/toolbar/location_bar_model_android_unittest.cc",
     ]
