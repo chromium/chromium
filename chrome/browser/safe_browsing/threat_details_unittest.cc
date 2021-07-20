@@ -15,6 +15,7 @@
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/url_constants.h"
@@ -165,6 +166,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   MockSafeBrowsingUIManager()
       : SafeBrowsingUIManager(
             nullptr,
+            std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)),
         report_sent_(false) {}

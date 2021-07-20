@@ -30,6 +30,7 @@
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/network_context_service.h"
 #include "chrome/browser/safe_browsing/network_context_service_factory.h"
 #include "chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
@@ -277,7 +278,8 @@ void SafeBrowsingService::AddDownloadManager(
 
 SafeBrowsingUIManager* SafeBrowsingService::CreateUIManager() {
   return new SafeBrowsingUIManager(
-      this, std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
+      this, std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
+      std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
       GURL(chrome::kChromeUINewTabURL));
 }
 

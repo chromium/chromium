@@ -50,9 +50,11 @@ namespace safe_browsing {
 
 SafeBrowsingUIManager::SafeBrowsingUIManager(
     const scoped_refptr<SafeBrowsingService>& service,
+    std::unique_ptr<Delegate> delegate,
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
     const GURL& default_safe_page)
     : sb_service_(service),
+      delegate_(std::move(delegate)),
       blocking_page_factory_(std::move(blocking_page_factory)),
       default_safe_page_(default_safe_page) {}
 
@@ -263,7 +265,7 @@ void SafeBrowsingUIManager::RemoveObserver(Observer* observer) {
 
 const std::string SafeBrowsingUIManager::app_locale() const {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return g_browser_process->GetApplicationLocale();
+  return delegate_->GetApplicationLocale();
 }
 
 history::HistoryService* SafeBrowsingUIManager::history_service(

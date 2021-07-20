@@ -159,12 +159,26 @@ class TestSafeBrowsingBlockingPageFactory
   }
 };
 
+class TestSafeBrowsingUIManagerDelegate
+    : public SafeBrowsingUIManager::Delegate {
+ public:
+  TestSafeBrowsingUIManagerDelegate() = default;
+  ~TestSafeBrowsingUIManagerDelegate() override = default;
+
+  // SafeBrowsingUIManager::Delegate:
+  const std::string& GetApplicationLocale() override { return app_locale_; }
+
+ private:
+  std::string app_locale_ = "en-us";
+};
+
 class SafeBrowsingUIManagerTest : public ChromeRenderViewHostTestHarness {
  public:
   SafeBrowsingUIManagerTest()
       : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {
     ui_manager_ = new SafeBrowsingUIManager(
-        nullptr, std::make_unique<TestSafeBrowsingBlockingPageFactory>(),
+        nullptr, std::make_unique<TestSafeBrowsingUIManagerDelegate>(),
+        std::make_unique<TestSafeBrowsingBlockingPageFactory>(),
         GURL("chrome://new-tab-page/"));
   }
 

@@ -1,0 +1,30 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_SAFE_BROWSING_CHROME_UI_MANAGER_DELEGATE_H_
+#define CHROME_BROWSER_SAFE_BROWSING_CHROME_UI_MANAGER_DELEGATE_H_
+
+#include "chrome/browser/safe_browsing/ui_manager.h"
+
+namespace safe_browsing {
+
+// Provides embedder-specific logic for SafeBrowsingUIManager.
+class ChromeSafeBrowsingUIManagerDelegate
+    : public SafeBrowsingUIManager::Delegate {
+ public:
+  ChromeSafeBrowsingUIManagerDelegate();
+  ~ChromeSafeBrowsingUIManagerDelegate() override;
+
+  ChromeSafeBrowsingUIManagerDelegate(
+      const ChromeSafeBrowsingUIManagerDelegate&) = delete;
+  ChromeSafeBrowsingUIManagerDelegate& operator=(
+      const ChromeSafeBrowsingUIManagerDelegate&) = delete;
+
+  // SafeBrowsingUIManager::Delegate:
+  const std::string& GetApplicationLocale() override;
+};
+
+}  // namespace safe_browsing
+
+#endif  // CHROME_BROWSER_SAFE_BROWSING_CHROME_UI_MANAGER_DELEGATE_H_

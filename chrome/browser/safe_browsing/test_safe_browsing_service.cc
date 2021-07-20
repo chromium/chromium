@@ -6,6 +6,7 @@
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_reporting_service.h"
 #include "chrome/browser/safe_browsing/services_delegate.h"
@@ -201,6 +202,7 @@ void TestSafeBrowsingServiceFactory::UseV4LocalDatabaseManager() {
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager()
     : SafeBrowsingUIManager(
           nullptr,
+          std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
           GURL(chrome::kChromeUINewTabURL)) {}
 
@@ -208,14 +210,17 @@ TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
     const scoped_refptr<SafeBrowsingService>& service)
     : SafeBrowsingUIManager(
           service,
+          std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
           std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
           GURL(chrome::kChromeUINewTabURL)) {}
 
 TestSafeBrowsingUIManager::TestSafeBrowsingUIManager(
     std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory)
-    : SafeBrowsingUIManager(nullptr,
-                            std::move(blocking_page_factory),
-                            GURL(chrome::kChromeUINewTabURL)) {}
+    : SafeBrowsingUIManager(
+          nullptr,
+          std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
+          std::move(blocking_page_factory),
+          GURL(chrome::kChromeUINewTabURL)) {}
 
 void TestSafeBrowsingUIManager::SetSafeBrowsingService(
     SafeBrowsingService* sb_service) {

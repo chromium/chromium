@@ -56,8 +56,26 @@ class SafeBrowsingUIManager : public BaseUIManager {
     DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
+  // Interface via which the embedder supplies contextual information to
+  // SafeBrowsingUIManager.
+  class Delegate {
+   public:
+    Delegate() = default;
+    virtual ~Delegate() = default;
+
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
+
+    // Returns the locale used by the application. It is the IETF language tag,
+    // defined in BCP 47. The region subtag is not included when it adds no
+    // distinguishing information to the language tag (e.g. both "en-US" and
+    // "fr" are correct here).
+    virtual const std::string& GetApplicationLocale() = 0;
+  };
+
   SafeBrowsingUIManager(
       const scoped_refptr<SafeBrowsingService>& service,
+      std::unique_ptr<Delegate> delegate,
       std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory,
       const GURL& default_safe_page);
 
@@ -143,6 +161,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
 
   // Safebrowsing service.
   scoped_refptr<SafeBrowsingService> sb_service_;
+
+  std::unique_ptr<Delegate> delegate_;
 
   std::unique_ptr<SafeBrowsingBlockingPageFactory> blocking_page_factory_;
 

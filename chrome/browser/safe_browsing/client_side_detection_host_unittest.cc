@@ -21,6 +21,7 @@
 #include "base/test/scoped_command_line.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
+#include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/browser/safe_browsing/ui_manager.h"
 #include "chrome/common/chrome_switches.h"
@@ -152,6 +153,7 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   explicit MockSafeBrowsingUIManager(SafeBrowsingService* service)
       : SafeBrowsingUIManager(
             service,
+            std::make_unique<ChromeSafeBrowsingUIManagerDelegate>(),
             std::make_unique<ChromeSafeBrowsingBlockingPageFactory>(),
             GURL(chrome::kChromeUINewTabURL)) {}
 
