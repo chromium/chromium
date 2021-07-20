@@ -92,6 +92,8 @@ public class LinkToTextCoordinatorTest {
     private static final String MOBILE_SUBDOMAIN_URL = "https://m.foo.com";
     private static final String AMP_MOBILE_SUBDOMAIN_URL =
             "https://m.google.com/amp/www.nyt.com/ampthml/blogs.html";
+    private static final String SELECTED_TEXT_LONG =
+            "This textbook has more freedom than most (but see some exceptions).";
 
     @Before
     public void setUpTest() {
@@ -227,5 +229,29 @@ public class LinkToTextCoordinatorTest {
 
         Assert.assertEquals(true, coordinator.isAmpUrl(AMP_MOBILE_SUBDOMAIN_URL));
         Assert.assertEquals(false, coordinator.isAmpUrl(MOBILE_SUBDOMAIN_URL));
+    }
+
+    @Test
+    @SmallTest
+    public void getPreviewTextLongTest() {
+        ShareParams shareParams = new ShareParams.Builder(/*window=*/null, "", AMP_URL)
+                                          .setText(SELECTED_TEXT_LONG)
+                                          .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
+                shareParams, mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL);
+        Assert.assertEquals("This textbook has more freedom t...", coordinator.getPreviewText());
+    }
+
+    @Test
+    @SmallTest
+    public void getPreviewTextTest() {
+        ShareParams shareParams = new ShareParams.Builder(/*window=*/null, "", AMP_URL)
+                                          .setText(SELECTED_TEXT)
+                                          .build();
+        ChromeShareExtras chromeShareExtras = new ChromeShareExtras.Builder().build();
+        MockLinkToTextCoordinator coordinator = new MockLinkToTextCoordinator(
+                shareParams, mTab, mShareCallback, chromeShareExtras, 1, VISIBLE_URL);
+        Assert.assertEquals("selection", coordinator.getPreviewText());
     }
 }

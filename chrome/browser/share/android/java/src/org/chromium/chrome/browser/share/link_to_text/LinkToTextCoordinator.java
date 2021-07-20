@@ -50,6 +50,9 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private static final Set<String> AMP_VIEWER_DOMAINS =
             new HashSet<>(Arrays.asList("google.com/amp/", "bing.com/amp"));
     private static final int LENGTH_AMP_DOMAIN = 15;
+    private static final int PREVIEW_MAX_LENGTH = 35;
+    private static final int PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH = 32;
+    private static final String PREVIEW_ELLIPSIS = "...";
     private final Context mContext;
     private final ChromeOptionShareCallback mChromeOptionShareCallback;
     private final Tab mTab;
@@ -134,6 +137,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
                 new ShareParams
                         .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
                         .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
+                        .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
                         .build();
 
         mChromeOptionShareCallback.showThirdPartyShareSheet(params,
@@ -155,12 +159,25 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         cleanup();
     }
 
+    @VisibleForTesting
+    String getPreviewText() {
+        if (mSelectedText.length() <= PREVIEW_MAX_LENGTH) {
+            return mSelectedText;
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append(mSelectedText.substring(0, PREVIEW_SELECTED_TEXT_CUTOFF_LENGTH));
+        sb.append(PREVIEW_ELLIPSIS);
+        return sb.toString();
+    }
+
     private void showPreemptiveShareSheet(String selector) {
         mShareLinkParams = selector.isEmpty()
                 ? null
                 : new ShareParams
                           .Builder(mTab.getWindowAndroid(), /*title=*/"", getUrlToShare(selector))
                           .setText(mSelectedText, SHARE_TEXT_TEMPLATE)
+                          .setPreviewText(getPreviewText(), SHARE_TEXT_TEMPLATE)
                           .setLinkToTextSuccessful(true)
                           .build();
         mShareTextParams =

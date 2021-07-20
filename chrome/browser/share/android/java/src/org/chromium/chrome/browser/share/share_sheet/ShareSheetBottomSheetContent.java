@@ -240,7 +240,7 @@ class ShareSheetBottomSheetContent implements BottomSheetContent, OnItemClickLis
         if ((contentTypes.contains(ContentType.TEXT)
                     || contentTypes.contains(ContentType.HIGHLIGHTED_TEXT))
                 && contentTypes.contains(ContentType.LINK_PAGE_NOT_VISIBLE)) {
-            title = mParams.getText();
+            title = mParams.getPreviewText() != null ? mParams.getPreviewText() : mParams.getText();
             setTitleStyle(R.style.TextAppearance_TextMedium_Primary);
             setSubtitleMaxLines(1);
         } else if (!TextUtils.isEmpty(title)) {
