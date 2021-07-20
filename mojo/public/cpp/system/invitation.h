@@ -163,6 +163,8 @@ class MOJO_CPP_SYSTEM_EXPORT IncomingInvitation {
 
   IncomingInvitation& operator=(IncomingInvitation&& other);
 
+  bool is_valid() const { return handle_.is_valid(); }
+
   // Accepts an incoming invitation from |channel_endpoint|. If the invitation
   // was sent using one end of a |PlatformChannel|, |channel_endpoint| should be
   // the other end of that channel. If the invitation was sent using a
