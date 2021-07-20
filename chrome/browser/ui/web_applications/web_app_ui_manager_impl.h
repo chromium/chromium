@@ -28,7 +28,7 @@ class WebAppDialogManager;
 // this class serves a wide range of Web Applications <-> Browser purposes.
 class WebAppUiManagerImpl : public BrowserListObserver, public WebAppUiManager {
  public:
-  static WebAppUiManagerImpl* Get(Profile* profile);
+  static WebAppUiManagerImpl* Get(WebAppProvider* provider);
 
   explicit WebAppUiManagerImpl(Profile* profile);
   WebAppUiManagerImpl(const WebAppUiManagerImpl&) = delete;

@@ -28,7 +28,7 @@ class WebApps : public WebAppsBase {
   ~WebApps() override;
 
   // Uninstall for web apps on Chrome.
-  static void UninstallImpl(Profile* profile,
+  static void UninstallImpl(WebAppProvider* provider,
                             const std::string& app_id,
                             apps::mojom::UninstallSource uninstall_source,
                             gfx::NativeWindow parent_window);

@@ -915,7 +915,7 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
     } else {
       Browser* browser =
           chrome::FindBrowserWithWebContents(web_ui()->GetWebContents());
-      web_app::WebAppUiManagerImpl::Get(Profile::FromWebUI(web_ui()))
+      web_app::WebAppUiManagerImpl::Get(web_app_provider_)
           ->dialog_manager()
           .UninstallWebApp(extension_id_prompting_,
                            webapps::WebappUninstallSource::kAppsPage,

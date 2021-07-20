@@ -224,14 +224,14 @@ std::u16string WebAppBrowserController::GetFormattedUrlOrigin() const {
 }
 
 bool WebAppBrowserController::CanUserUninstall() const {
-  return WebAppUiManagerImpl::Get(browser()->profile())
+  return WebAppUiManagerImpl::Get(&provider_)
       ->dialog_manager()
       .CanUserUninstallWebApp(GetAppId());
 }
 
 void WebAppBrowserController::Uninstall(
     webapps::WebappUninstallSource webapp_uninstall_source) {
-  WebAppUiManagerImpl::Get(browser()->profile())
+  WebAppUiManagerImpl::Get(&provider_)
       ->dialog_manager()
       .UninstallWebApp(GetAppId(), webapps::WebappUninstallSource::kAppMenu,
                        browser()->window(), base::DoNothing());

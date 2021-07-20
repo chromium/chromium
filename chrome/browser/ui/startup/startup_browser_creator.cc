@@ -116,6 +116,7 @@
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win.h"
 #include "chrome/browser/ui/webui/settings/reset_settings_handler.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #include "chrome/browser/printing/print_dialog_cloud_win.h"
@@ -981,7 +982,8 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
     std::string app_id =
         command_line.GetSwitchValueASCII(switches::kUninstallAppId);
 
-    web_app::WebAppUiManagerImpl::Get(privacy_safe_profile)
+    web_app::WebAppUiManagerImpl::Get(
+        web_app::WebAppProvider::GetForWebApps(privacy_safe_profile))
         ->UninstallWebAppFromStartupSwitch(app_id);
 
     // Return true to allow startup to continue and for the main event loop to

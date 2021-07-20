@@ -69,8 +69,8 @@ bool IsAppInstalled(apps::AppServiceProxyBase* proxy, const AppId& app_id) {
 // UninstallWebAppWithDialogFromStartupSwitch handles WebApp uninstallation from
 // the Windows Settings.
 void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
-                                                Profile* profile) {
-  auto* provider = WebAppProvider::Get(profile);
+                                                Profile* profile,
+                                                WebAppProvider* provider) {
   if (!provider->registrar().IsLocallyInstalled(app_id)) {
     // App does not exist and controller is destroyed.
     return;
@@ -79,7 +79,7 @@ void UninstallWebAppWithDialogFromStartupSwitch(const AppId& app_id,
   // Note: WebAppInstallFinalizer::UninstallWebApp creates a ScopedKeepAlive
   // object which ensures the browser stays alive during the WebApp
   // uninstall.
-  WebAppUiManagerImpl::Get(profile)->dialog_manager().UninstallWebApp(
+  WebAppUiManagerImpl::Get(provider)->dialog_manager().UninstallWebApp(
       app_id, webapps::WebappUninstallSource::kOsSettings,
       gfx::kNullNativeWindow, base::DoNothing());
 }
@@ -94,8 +94,8 @@ std::unique_ptr<WebAppUiManager> WebAppUiManager::Create(Profile* profile) {
 }
 
 // static
-WebAppUiManagerImpl* WebAppUiManagerImpl::Get(Profile* profile) {
-  auto* provider = WebAppProvider::Get(profile);
+WebAppUiManagerImpl* WebAppUiManagerImpl::Get(
+    web_app::WebAppProvider* provider) {
   return provider ? provider->ui_manager().AsImpl() : nullptr;
 }
 
@@ -421,9 +421,10 @@ void WebAppUiManagerImpl::OnBrowserRemoved(Browser* browser) {
 #if defined(OS_WIN)
 void WebAppUiManagerImpl::UninstallWebAppFromStartupSwitch(
     const AppId& app_id) {
-  WebAppProvider::Get(profile_)->on_registry_ready().Post(
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile_);
+  provider->on_registry_ready().Post(
       FROM_HERE, base::BindOnce(&UninstallWebAppWithDialogFromStartupSwitch,
-                                app_id, profile_));
+                                app_id, profile_, provider));
 }
 #endif  //  defined(OS_WIN)
 

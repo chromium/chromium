@@ -22,11 +22,11 @@ WebApps::WebApps(const mojo::Remote<apps::mojom::AppService>& app_service,
 WebApps::~WebApps() = default;
 
 // static
-void WebApps::UninstallImpl(Profile* profile,
+void WebApps::UninstallImpl(WebAppProvider* provider,
                             const std::string& app_id,
                             apps::mojom::UninstallSource uninstall_source,
                             gfx::NativeWindow parent_window) {
-  WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(profile);
+  WebAppUiManagerImpl* web_app_ui_manager = WebAppUiManagerImpl::Get(provider);
   if (!web_app_ui_manager) {
     return;
   }
