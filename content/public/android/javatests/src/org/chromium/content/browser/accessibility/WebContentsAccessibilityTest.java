@@ -49,13 +49,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.content_public.browser.test.ContentJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -68,7 +68,7 @@ import java.util.concurrent.ExecutionException;
  * Tests for WebContentsAccessibility. Actually tests WebContentsAccessibilityImpl that
  * implements the interface.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(ContentJUnit4ClassRunner.class)
 @MinAndroidSdkLevel(Build.VERSION_CODES.LOLLIPOP)
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
 @SuppressLint("VisibleForTests")
