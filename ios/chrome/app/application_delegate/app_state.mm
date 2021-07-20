@@ -660,7 +660,7 @@ initWithBrowserLauncher:(id<BrowserLauncher>)browserLauncher
 
 #pragma mark - SceneStateObserver
 
-- (void)sceneStateHasInitializedUI:(SceneState*)sceneState {
+- (void)sceneStateDidEnableUI:(SceneState*)sceneState {
   if (self.firstSceneHasInitializedUI) {
     return;
   }

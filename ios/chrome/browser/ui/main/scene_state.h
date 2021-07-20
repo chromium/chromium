@@ -102,8 +102,9 @@ typedef NS_ENUM(NSUInteger, SceneActivationLevel) {
 // |UISceneDelegate scene:continueUserActivity:| and needs to be opened.
 @property(nonatomic) NSUserActivity* pendingUserActivity;
 
-// A flag that keeps track of the UI initialization for the controlled scene.
-@property(nonatomic, assign) BOOL hasInitializedUI;
+// YES if the UI is enabled. The browser UI objects are available when this is
+// YES.
+@property(nonatomic, assign) BOOL UIEnabled;
 
 // YES if the QR scanner is visible.
 @property(nonatomic, assign) BOOL QRScannerVisible;

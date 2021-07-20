@@ -50,7 +50,8 @@ enum class LocationPermissionsUI {
 
 @interface FirstRunAppAgent () <AppStateObserver,
                                 PolicyWatcherBrowserAgentObserving,
-                                FirstRunCoordinatorDelegate>
+                                FirstRunCoordinatorDelegate,
+                                SceneStateObserver>
 
 // The app state for the app.
 @property(nonatomic, weak, readonly) AppState* appState;
@@ -95,6 +96,17 @@ enum class LocationPermissionsUI {
 
   _appState = appState;
   [appState addObserver:self];
+}
+
+#pragma mark - SceneStateObserver
+
+- (void)sceneStateDidDisableUI:(SceneState*)sceneState {
+  [self.firstRunCoordinator stop];
+
+  [self tearDownPolicyWatcher];
+
+  [sceneState removeObserver:self];
+  self.presentingSceneState = nil;
 }
 
 #pragma mark - AppStateObserver
@@ -145,6 +157,8 @@ enum class LocationPermissionsUI {
   // Select the first scene that the app declares as initialized to present
   // the FRE UI on.
   self.presentingSceneState = sceneState;
+  [self.presentingSceneState addObserver:self];
+
   self.presentingInterface =
       self.presentingSceneState.interfaceProvider.currentInterface;
   self.mainBrowser =
@@ -193,8 +207,13 @@ enum class LocationPermissionsUI {
 }
 
 - (void)tearDownPolicyWatcher {
+  if (!_policyWatcherObserverBridge) {
+    return;
+  }
+
   PolicyWatcherBrowserAgent::FromBrowser(self.mainBrowser)
       ->RemoveObserver(_policyWatcherObserverBridge.get());
+  _policyWatcherObserverBridge = nil;
 }
 
 - (void)showFirstRunUI {
