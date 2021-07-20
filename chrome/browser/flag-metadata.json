@@ -2748,6 +2748,11 @@
     "expiry_milestone": 90
   },
   {
+    "name": "enable-vaapi-vp9-kSVC-encode-acceleration",
+    "owners": [ "mcasas", "chromeos-gfx-video@google.com" ],
+    "expiry_milestone": 100
+  },
+  {
     "name": "enable-vaapi-webp-image-decode-acceleration",
     "owners": [ "andrescj", "chromeos-gfx@google.com" ],
     "expiry_milestone": 90
