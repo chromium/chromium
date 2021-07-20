@@ -7,7 +7,8 @@
     aria-setsize$="[[tiles_.length]]">
   <template>
     <div class="photo-container"
-        data-id$="[[item.id]]" on-click="onCollectionClicked_"
+        data-id$="[[item.id]]" on-click="onCollectionSelected_"
+        on-keypress="onCollectionSelected_"
         tabindex$="[[tabIndex]]" role="option" aria-selected="false"
         aria-posinset$="[[getAriaIndex_(index)]]">
       <div class="photo-inner-container">

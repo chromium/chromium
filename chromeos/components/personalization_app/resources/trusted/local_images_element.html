@@ -2,11 +2,13 @@
   :host {
     overflow: hidden;
   }
+
   #main {
     height: 100%;
     overflow-y: auto;
     width: 100%;
   }
+
 </style>
 <paper-spinner-lite active="[[imagesLoading_]]">
 </paper-spinner-lite>
@@ -18,14 +20,15 @@
         aria-setsize$="[[getImageCount_(hidden, images_)]]">
       <template>
         <div class="photo-container" role="option" tabindex$="[[tabIndex]]"
+            data-id$="[[getImageKey_(item)]]" on-click="onImageSelected_"
+            on-keypress="onImageSelected_"
             aria-posinset$="[[getAriaIndex_(index)]]"
             aria-selected$="[[getAriaSelected_(item, selected_)]]">
           <div class="photo-inner-container">
             <div class="photo-images-container">
               <template is="dom-if"
                   if="[[shouldShowImage_(item, imageData_, imageDataLoading_)]]">
-                <img on-click="onClickImage_" data-id$="[[getImageKey_(item)]]"
-                    src="[[getImageData_(item, imageData_)]]"
+                <img src="[[getImageData_(item, imageData_)]]"
                     alt="[[item.name]]">
                 <iron-icon icon="personalization:checkmark"></iron-icon>
               </template>

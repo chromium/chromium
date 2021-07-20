@@ -8,7 +8,7 @@ import './styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType, kMaximumLocalImagePreviews} from '../common/constants.js';
 import {selectCollection, selectLocalCollection, validateReceivedData} from '../common/iframe_api.js';
-import {unguessableTokenToString} from '../common/utils.js';
+import {isSelectionEvent, unguessableTokenToString} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendCollectionsEvent| from trusted. Handles user
@@ -241,11 +241,14 @@ class CollectionsGrid extends PolymerElement {
   }
 
   /**
-   * Notify trusted code that a user clicked on a collection.
+   * Notify trusted code that a user selected a collection.
    * @private
    * @param {!Event} e
    */
-  onCollectionClicked_(e) {
+  onCollectionSelected_(e) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
     const id = e.currentTarget.dataset.id;
     if (id === kLocalCollectionId) {
       selectLocalCollection(window.parent);

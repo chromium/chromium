@@ -63,3 +63,13 @@ export function unguessableTokensEqual(a, b) {
   return a.hasOwnProperty('high') && a.high === b.high &&
       a.hasOwnProperty('low') && a.low === b.low;
 }
+
+/**
+ * Returns true if this event is a user action to select an item.
+ * @param {!Event} event
+ * @return {boolean}
+ */
+export function isSelectionEvent(event) {
+  return (event instanceof MouseEvent && event.type === 'click') ||
+      (event instanceof KeyboardEvent && event.key === 'Enter');
+}

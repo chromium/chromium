@@ -18,7 +18,7 @@ import '../common/icons.js';
 import '../common/styles.js';
 import {assert} from '/assert.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {isNonEmptyArray, stringToUnguessableToken, unguessableTokensEqual, unguessableTokenToString} from '../common/utils.js';
+import {isNonEmptyArray, isSelectionEvent, stringToUnguessableToken, unguessableTokensEqual, unguessableTokenToString} from '../common/utils.js';
 import {getWallpaperProvider} from './mojo_interface_provider.js';
 import {selectWallpaper} from './personalization_controller.js';
 import {WithPersonalizationStore} from './personalization_store.js';
@@ -196,7 +196,10 @@ export class LocalImages extends WithPersonalizationStore {
    * @private
    * @param {!Event} event
    */
-  onClickImage_(event) {
+  onImageSelected_(event) {
+    if (!isSelectionEvent(event)) {
+      return;
+    }
     const id = stringToUnguessableToken(event.currentTarget.dataset.id);
     const image =
         this.images_.find(image => unguessableTokensEqual(id, image.id));

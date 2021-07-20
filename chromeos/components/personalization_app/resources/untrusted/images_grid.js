@@ -8,6 +8,7 @@ import './styles.js';
 import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {EventType} from '../common/constants.js';
 import {selectImage, validateReceivedData} from '../common/iframe_api.js';
+import {isSelectionEvent} from '../common/utils.js';
 
 /**
  * @fileoverview Responds to |SendImagesEvent| from trusted. Handles user input
@@ -100,13 +101,16 @@ class ImagesGrid extends PolymerElement {
   }
 
   /**
-   * Notify trusted code that a user clicked on an image.
+   * Notify trusted code that a user selected an image.
    * @private
    * @param {!Event} e
    */
-  onImageClicked_(e) {
-    const img = e.currentTarget;
-    selectImage(window.parent, BigInt(img.dataset.id));
+  onImageSelected_(e) {
+    if (!isSelectionEvent(e)) {
+      return;
+    }
+    const assetId = BigInt(e.currentTarget.dataset.id);
+    selectImage(window.parent, assetId);
   }
 
   /**
