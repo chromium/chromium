@@ -2077,7 +2077,8 @@
         },
         "prefs": {
           "auth.server_allowlist": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "localhost"
           }
         }
       }
@@ -2093,12 +2094,25 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "policies": { },
+        "prefs": {
+          "auth.server_allowlist": {
+            "location": "local_state",
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "New policy override deprecated one.",
         "policies": {
-          "AuthServerAllowlist": "localhost"
+          "AuthServerAllowlist": "192.168.0.*,192.168.1.*",
+          "AuthServerWhitelist": "192.168.0.*,192.168.1.*,192.168.2.*"
         },
         "prefs": {
           "auth.server_allowlist": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "192.168.0.*,192.168.1.*"
           }
         }
       }
