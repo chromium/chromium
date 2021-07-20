@@ -85,6 +85,9 @@ class MetadataExtractor:
   def Initialize(self):
     """Extracts metadata from perfetto system trace.
     """
+    # TODO(rhuckleberry): Implement Trace Processor method to run multiple
+    # SQL queries without processing trace for every query.
+
     if self._initialized:
       return
     self._initialized = True
