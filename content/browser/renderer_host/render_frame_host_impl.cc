@@ -1505,8 +1505,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
 
   // IdleManager should be unique per RenderFrame to provide proper isolation
   // of overrides.
-  idle_manager_ =
-      std::make_unique<IdleManagerImpl>(GetProcess()->GetBrowserContext());
+  idle_manager_ = std::make_unique<IdleManagerImpl>(this);
 
   preferred_color_scheme_ =
       ui::NativeTheme::GetInstanceForWeb()->GetPreferredColorScheme() ==

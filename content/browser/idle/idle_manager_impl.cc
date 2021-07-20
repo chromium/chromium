@@ -12,6 +12,7 @@
 #include "content/public/browser/idle_manager.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
+#include "content/public/browser/render_frame_host.h"
 #include "ui/base/idle/idle.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -64,9 +65,9 @@ blink::mojom::IdleStatePtr IdleTimeToIdleState(bool locked,
 
 }  // namespace
 
-IdleManagerImpl::IdleManagerImpl(BrowserContext* browser_context)
+IdleManagerImpl::IdleManagerImpl(RenderFrameHost* render_frame_host)
     : idle_time_provider_(new DefaultIdleProvider()),
-      browser_context_(browser_context) {}
+      render_frame_host_(render_frame_host) {}
 
 IdleManagerImpl::~IdleManagerImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -134,7 +135,7 @@ void IdleManagerImpl::AddMonitor(
 
 bool IdleManagerImpl::HasPermission(const url::Origin& origin) {
   PermissionController* permission_controller =
-      browser_context_->GetPermissionController();
+      render_frame_host_->GetBrowserContext()->GetPermissionController();
   DCHECK(permission_controller);
   PermissionStatus status = permission_controller->GetPermissionStatus(
       PermissionType::IDLE_DETECTION, origin.GetURL(), origin.GetURL());

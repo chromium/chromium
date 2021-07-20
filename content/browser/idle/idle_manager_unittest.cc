@@ -12,15 +12,15 @@
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
 #include "content/browser/permissions/permission_controller_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_permission_manager.h"
 #include "content/public/test/test_browser_context.h"
+#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/service_manager/public/cpp/bind_source_info.h"
@@ -63,21 +63,26 @@ class MockIdleTimeProvider : public IdleManager::IdleTimeProvider {
   MOCK_METHOD0(CheckIdleStateIsLocked, bool());
 };
 
-class IdleManagerTest : public testing::Test {
+class IdleManagerTest : public RenderViewHostTestHarness {
  protected:
   IdleManagerTest()
-      : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        browser_context_(new TestBrowserContext()) {}
+      : RenderViewHostTestHarness(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~IdleManagerTest() override = default;
   IdleManagerTest(const IdleManagerTest&) = delete;
   IdleManagerTest& operator=(const IdleManagerTest&) = delete;
 
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
+
     permission_manager_ = new NiceMock<MockPermissionManager>();
-    idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
-    browser_context_->SetPermissionControllerDelegate(
+    auto* test_browser_context =
+        static_cast<TestBrowserContext*>(browser_context());
+    test_browser_context->SetPermissionControllerDelegate(
         base::WrapUnique(permission_manager_));
-    idle_manager_ = std::make_unique<IdleManagerImpl>(browser_context_.get());
+
+    idle_time_provider_ = new NiceMock<MockIdleTimeProvider>();
+    idle_manager_ = std::make_unique<IdleManagerImpl>(main_rfh());
     idle_manager_->SetIdleTimeProviderForTest(
         base::WrapUnique(idle_time_provider_));
     idle_manager_->CreateService(service_remote_.BindNewPipeAndPassReceiver(),
@@ -86,6 +91,7 @@ class IdleManagerTest : public testing::Test {
 
   void TearDown() override {
     idle_manager_.reset();
+    RenderViewHostTestHarness::TearDown();
   }
 
   IdleManagerImpl* GetIdleManager() { return idle_manager_.get(); }
@@ -131,7 +137,7 @@ class IdleManagerTest : public testing::Test {
             }));
 
     // Fast forward to run polling task.
-    task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+    task_environment()->FastForwardBy(base::TimeDelta::FromSeconds(1));
     loop.Run();
     return std::make_tuple(user_result, screen_result);
   }
@@ -155,8 +161,6 @@ class IdleManagerTest : public testing::Test {
   mojo::Remote<blink::mojom::IdleManager> service_remote_;
 
  private:
-  BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<IdleManagerImpl> idle_manager_;
   MockPermissionManager* permission_manager_;
   MockIdleTimeProvider* idle_time_provider_;

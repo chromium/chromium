@@ -24,12 +24,12 @@
 
 namespace content {
 
-class BrowserContext;
+class RenderFrameHost;
 
 class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
                                        public blink::mojom::IdleManager {
  public:
-  explicit IdleManagerImpl(BrowserContext* browser_context);
+  explicit IdleManagerImpl(RenderFrameHost* render_frame_host);
   ~IdleManagerImpl() override;
 
   IdleManagerImpl(const IdleManagerImpl&) = delete;
@@ -82,10 +82,8 @@ class CONTENT_EXPORT IdleManagerImpl : public IdleManager,
 
   blink::mojom::IdleStatePtr state_override_;
 
-  // Raw pointer should always be valid. IdleManagerImpl is owned by the
-  // StoragePartitionImpl which is owned by BrowserContext. Therefore when the
-  // BrowserContext is destroyed, |this| will be destroyed as well.
-  BrowserContext* const browser_context_;
+  // Raw pointer is safe because this object is owned by |render_frame_host_|.
+  RenderFrameHost* const render_frame_host_;
 
   // Registered clients.
   mojo::ReceiverSet<blink::mojom::IdleManager, url::Origin> receivers_;
