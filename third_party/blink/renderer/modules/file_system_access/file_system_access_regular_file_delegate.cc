@@ -21,21 +21,23 @@ FileSystemAccessRegularFileDelegate::FileSystemAccessRegularFileDelegate(
     base::PassKey<FileSystemAccessFileDelegate>)
     : backing_file_(std::move(backing_file)) {}
 
-int FileSystemAccessRegularFileDelegate::Read(int64_t offset,
-                                              base::span<uint8_t> data) {
+FileErrorOr<int> FileSystemAccessRegularFileDelegate::Read(
+    int64_t offset,
+    base::span<uint8_t> data) {
   // TODO(crbug.com/1218431): Implement this method.
   NOTIMPLEMENTED();
   return 0;
 }
 
-int FileSystemAccessRegularFileDelegate::Write(int64_t offset,
-                                               const base::span<uint8_t> data) {
+FileErrorOr<int> FileSystemAccessRegularFileDelegate::Write(
+    int64_t offset,
+    const base::span<uint8_t> data) {
   // TODO(crbug.com/1218431): Implement this method.
   NOTIMPLEMENTED();
   return 0;
 }
 
-int64_t FileSystemAccessRegularFileDelegate::GetLength() {
+FileErrorOr<int64_t> FileSystemAccessRegularFileDelegate::GetLength() {
   // TODO(crbug.com/1218431): Implement this method.
   NOTIMPLEMENTED();
   return 0;
@@ -56,12 +58,6 @@ bool FileSystemAccessRegularFileDelegate::Flush() {
 void FileSystemAccessRegularFileDelegate::Close() {
   // TODO(crbug.com/1218431): Implement this method.
   NOTIMPLEMENTED();
-}
-
-base::File::Error FileSystemAccessRegularFileDelegate::GetLastFileError() {
-  // TODO(crbug.com/1218431): Implement this method.
-  NOTIMPLEMENTED();
-  return base::File::Error::FILE_OK;
 }
 
 }  // namespace blink

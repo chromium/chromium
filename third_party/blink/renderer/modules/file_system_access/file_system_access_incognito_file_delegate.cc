@@ -38,14 +38,15 @@ void FileSystemAccessIncognitoFileDelegate::Trace(Visitor* visitor) const {
   FileSystemAccessFileDelegate::Trace(visitor);
 }
 
-int FileSystemAccessIncognitoFileDelegate::Read(int64_t offset,
-                                                base::span<uint8_t> data) {
+FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Read(
+    int64_t offset,
+    base::span<uint8_t> data) {
   // TODO(crbug.com/1225653): Implement this method.
   NOTIMPLEMENTED();
   return 0;
 }
 
-int FileSystemAccessIncognitoFileDelegate::Write(
+FileErrorOr<int> FileSystemAccessIncognitoFileDelegate::Write(
     int64_t offset,
     const base::span<uint8_t> data) {
   // TODO(crbug.com/1225653): Implement this method.
@@ -53,7 +54,7 @@ int FileSystemAccessIncognitoFileDelegate::Write(
   return 0;
 }
 
-int64_t FileSystemAccessIncognitoFileDelegate::GetLength() {
+FileErrorOr<int64_t> FileSystemAccessIncognitoFileDelegate::GetLength() {
   // TODO(crbug.com/1225653): Implement this method.
   NOTIMPLEMENTED();
   return 0;
@@ -74,12 +75,6 @@ bool FileSystemAccessIncognitoFileDelegate::Flush() {
 void FileSystemAccessIncognitoFileDelegate::Close() {
   // TODO(crbug.com/1225653): Implement this method.
   NOTIMPLEMENTED();
-}
-
-base::File::Error FileSystemAccessIncognitoFileDelegate::GetLastFileError() {
-  // TODO(crbug.com/1225653): Implement this method.
-  NOTIMPLEMENTED();
-  return base::File::Error::FILE_OK;
 }
 
 }  // namespace blink

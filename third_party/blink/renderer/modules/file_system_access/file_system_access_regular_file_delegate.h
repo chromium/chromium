@@ -30,18 +30,17 @@ class FileSystemAccessRegularFileDelegate final
   FileSystemAccessRegularFileDelegate& operator=(
       const FileSystemAccessRegularFileDelegate&) = delete;
 
-  int Read(int64_t offset, base::span<uint8_t> data) override;
-  int Write(int64_t offset, const base::span<uint8_t> data) override;
+  FileErrorOr<int> Read(int64_t offset, base::span<uint8_t> data) override;
+  FileErrorOr<int> Write(int64_t offset,
+                         const base::span<uint8_t> data) override;
 
-  int64_t GetLength() override;
+  FileErrorOr<int64_t> GetLength() override;
   bool SetLength(int64_t length) override;
 
   bool Flush() override;
   void Close() override;
 
   bool IsValid() const override { return backing_file_.IsValid(); }
-
-  base::File::Error GetLastFileError() override;
 
  private:
   // The file on disk backing the parent FileSystemFileHandle.
