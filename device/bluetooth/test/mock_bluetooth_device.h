@@ -137,7 +137,7 @@ class MockBluetoothDevice : public BluetoothDevice {
   // ON_CALL(*mock_device, GetGattServices))
   //   .WillByDefault(Invoke(*mock_device,
   //                         &MockBluetoothDevice::GetMockServices));
-  void AddMockService(std::unique_ptr<MockBluetoothGattService> mock_device);
+  void AddMockService(std::unique_ptr<MockBluetoothGattService> mock_service);
   std::vector<BluetoothRemoteGattService*> GetMockServices() const;
   BluetoothRemoteGattService* GetMockService(
       const std::string& identifier) const;

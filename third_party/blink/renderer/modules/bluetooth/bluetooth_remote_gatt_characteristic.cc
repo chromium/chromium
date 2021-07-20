@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_remote_gatt_utils.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth_uuid.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/microtask.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -51,7 +52,16 @@ void BluetoothRemoteGATTCharacteristic::RemoteCharacteristicValueChanged(
   if (!GetGatt()->connected())
     return;
   SetValue(BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value));
-  DispatchEvent(*Event::Create(event_type_names::kCharacteristicvaluechanged));
+  if (notification_registration_in_progress()) {
+    // Save event and value to be dispatched after notification is registered.
+    deferred_value_change_data_.insert(
+        MakeGarbageCollected<DeferredValueChange>(
+            Event::Create(event_type_names::kCharacteristicvaluechanged),
+            value_, /*promise=*/nullptr));
+  } else {
+    DispatchEvent(
+        *Event::Create(event_type_names::kCharacteristicvaluechanged));
+  }
 }
 
 const WTF::AtomicString& BluetoothRemoteGATTCharacteristic::InterfaceName()
@@ -98,9 +108,17 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     DOMDataView* dom_data_view =
         BluetoothRemoteGATTUtils::ConvertWTFVectorToDataView(value.value());
     SetValue(dom_data_view);
-    DispatchEvent(
-        *Event::Create(event_type_names::kCharacteristicvaluechanged));
-    resolver->Resolve(dom_data_view);
+    if (notification_registration_in_progress()) {
+      // Save event to be dispatched after notification is registered.
+      deferred_value_change_data_.insert(
+          MakeGarbageCollected<DeferredValueChange>(
+              Event::Create(event_type_names::kCharacteristicvaluechanged),
+              dom_data_view, resolver));
+    } else {
+      DispatchEvent(
+          *Event::Create(event_type_names::kCharacteristicvaluechanged));
+      resolver->Resolve(dom_data_view);
+    }
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
   }
@@ -252,7 +270,12 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::writeValueWithoutResponse(
 
 void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
     ScriptPromiseResolver* resolver,
+    bool started,
     mojom::blink::WebBluetoothResult result) {
+  if (started) {
+    DCHECK_NE(num_in_flight_notification_registrations_, 0U);
+    num_in_flight_notification_registrations_--;
+  }
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed())
     return;
@@ -268,6 +291,24 @@ void BluetoothRemoteGATTCharacteristic::NotificationsCallback(
     resolver->Resolve(this);
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
+  }
+
+  if (started && !notification_registration_in_progress() &&
+      !deferred_value_change_data_.IsEmpty()) {
+    // Ensure promises are resolved before dispatching events allows them
+    // to add listeners.
+    blink::Microtask::PerformCheckpoint(V8PerIsolateData::MainThreadIsolate());
+    // Dispatch deferred characteristicvaluechanged events created during the
+    // registration of notifications.
+    auto deferred_value_change_data = std::move(deferred_value_change_data_);
+    for (const auto& value_changed_data : deferred_value_change_data) {
+      auto prior_value = value_;
+      value_ = value_changed_data->dom_data_view;
+      DispatchEvent(*value_changed_data->event);
+      if (value_changed_data->resolver)
+        value_changed_data->resolver->Resolve(value_);
+      value_ = prior_value;
+    }
   }
 }
 
@@ -303,10 +344,12 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::startNotifications(
       client.InitWithNewEndpointAndPassReceiver(),
       GetExecutionContext()->GetTaskRunner(TaskType::kMiscPlatformAPI));
 
+  num_in_flight_notification_registrations_++;
   service->RemoteCharacteristicStartNotifications(
       characteristic_->instance_id, std::move(client),
       WTF::Bind(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
-                WrapPersistent(this), WrapPersistent(resolver)));
+                WrapPersistent(this), WrapPersistent(resolver),
+                /*starting=*/true));
 
   return promise;
 }
@@ -340,7 +383,7 @@ ScriptPromise BluetoothRemoteGATTCharacteristic::stopNotifications(
       characteristic_->instance_id,
       WTF::Bind(&BluetoothRemoteGATTCharacteristic::NotificationsCallback,
                 WrapPersistent(this), WrapPersistent(resolver),
-                mojom::blink::WebBluetoothResult::SUCCESS));
+                /*starting=*/false, mojom::blink::WebBluetoothResult::SUCCESS));
   return promise;
 }
 
@@ -482,8 +525,18 @@ void BluetoothRemoteGATTCharacteristic::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   visitor->Trace(device_);
   visitor->Trace(receivers_);
+  visitor->Trace(deferred_value_change_data_);
+
   EventTargetWithInlineData::Trace(visitor);
   ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+void BluetoothRemoteGATTCharacteristic::DeferredValueChange::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(event);
+  visitor->Trace(dom_data_view);
+  if (resolver)
+    visitor->Trace(resolver);
 }
 
 }  // namespace blink

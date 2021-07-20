@@ -126,6 +126,8 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                            ReadCharacteristicValueErrorWithValueIgnored);
   FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplBrowserTest,
                            NoShowBluetoothScanningPromptInPrerendering);
+  FRIEND_TEST_ALL_PREFIXES(WebBluetoothServiceImplTest,
+                           DeferredStartNotifySession);
 
   friend class FrameConnectedBluetoothDevicesTest;
   friend class WebBluetoothServiceImplTest;
@@ -136,6 +138,7 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   class AdvertisementClient;
   class WatchAdvertisementsClient;
   class ScanningClient;
+  struct DeferredStartNotificationData;
 
   // WebContentsObserver:
   // These functions should always check that the affected RenderFrameHost
@@ -317,12 +320,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
 
   // Callbacks for BluetoothRemoteGattCharacteristic::StartNotifySession.
   void OnStartNotifySessionSuccess(
-      mojo::AssociatedRemote<blink::mojom::WebBluetoothCharacteristicClient>
-          client,
       RemoteCharacteristicStartNotificationsCallback callback,
       std::unique_ptr<device::BluetoothGattNotifySession> notify_session);
   void OnStartNotifySessionFailed(
       RemoteCharacteristicStartNotificationsCallback callback,
+      const std::string& characteristic_instance_id,
       device::BluetoothGattService::GattErrorCode error_code);
 
   // Callback for BluetoothGattNotifySession::Stop.
@@ -440,6 +442,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
   std::unordered_map<std::string,
                      std::unique_ptr<GATTNotifySessionAndCharacteristicClient>>
       characteristic_id_to_notify_session_;
+  // Map characteristic instance ID to deferred startNotification data.
+  std::unordered_map<
+      std::string,
+      base::queue<std::unique_ptr<DeferredStartNotificationData>>>
+      characteristic_id_to_deferred_start_;
 
   // The RFH that owns this instance.
   RenderFrameHost* render_frame_host_;

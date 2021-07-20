@@ -38,12 +38,16 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/bluetooth_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_gatt_connection.h"
+#include "device/bluetooth/bluetooth_gatt_notify_session.h"
+#include "device/bluetooth/bluetooth_remote_gatt_characteristic.h"
 #include "device/bluetooth/bluetooth_remote_gatt_service.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_connection.h"
+#include "device/bluetooth/test/mock_bluetooth_gatt_notify_session.h"
 #include "device/bluetooth/test/mock_bluetooth_gatt_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -51,10 +55,26 @@
 
 namespace {
 
+using ::device::BluetoothAdapter;
+using ::device::BluetoothGattCharacteristic;
+using ::device::BluetoothGattNotifySession;
+using ::device::BluetoothGattService;
+using ::device::BluetoothRemoteGattCharacteristic;
+using ::device::BluetoothRemoteGattService;
+using ::device::BluetoothUUID;
+using ::device::MockBluetoothGattCharacteristic;
+using ::device::MockBluetoothGattNotifySession;
+using ::device::MockBluetoothGattService;
+
 constexpr char kDeviceAddress[] = "00:00:00:00:00:00";
 constexpr char kDeviceAddress2[] = "00:00:00:00:00:01";
 constexpr char kHeartRateUUIDString[] = "0000180d-0000-1000-8000-00805f9b34fb";
+constexpr char kHeartRateMeasurementUUIDString[] =
+    "00001234-0000-1000-8000-00805f9b34fb";
+
 const device::BluetoothUUID kHeartRateUUID(kHeartRateUUIDString);
+const device::BluetoothUUID kHeartRateMeasurementUUID(
+    kHeartRateMeasurementUUIDString);
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -121,21 +141,105 @@ class FakeBluetoothAdapter
   bool is_present_ = true;
 };
 
-class FakeBluetoothGattService
-    : public testing::NiceMock<device::MockBluetoothGattService> {
+class FakeBluetoothGattCharacteristic
+    : public testing::NiceMock<MockBluetoothGattCharacteristic> {
  public:
-  FakeBluetoothGattService(device::MockBluetoothDevice* device,
-                           const std::string& identifier,
-                           const device::BluetoothUUID& uuid)
-      : testing::NiceMock<device::MockBluetoothGattService>(
-            device,
-            identifier,
-            uuid,
-            /*is_primary=*/true) {}
+  FakeBluetoothGattCharacteristic(MockBluetoothGattService* service,
+                                  const std::string& identifier,
+                                  const BluetoothUUID& uuid,
+                                  Properties properties,
+                                  Permissions permissions)
+      : testing::NiceMock<MockBluetoothGattCharacteristic>(service,
+                                                           identifier,
+                                                           uuid,
+                                                           properties,
+                                                           permissions),
+        value_({1}) {}
 
   // Move-only class
-  FakeBluetoothGattService(const FakeBluetoothGattService&) = delete;
-  FakeBluetoothGattService operator=(const FakeBluetoothGattService&) = delete;
+  FakeBluetoothGattCharacteristic(const FakeBluetoothGattCharacteristic&) =
+      delete;
+  FakeBluetoothGattCharacteristic operator=(
+      const FakeBluetoothGattCharacteristic&) = delete;
+
+  void ReadRemoteCharacteristic(ValueCallback callback) override {
+    if (!(GetProperties() & BluetoothGattCharacteristic::PROPERTY_READ)) {
+      std::move(callback).Run(BluetoothGattService::GATT_ERROR_NOT_PERMITTED,
+                              std::vector<uint8_t>());
+      return;
+    }
+    if (defer_read_until_notification_start_) {
+      DCHECK(!deferred_read_callback_);
+      deferred_read_callback_ = std::move(callback);
+      return;
+    }
+    std::move(callback).Run(/*error_code=*/absl::nullopt, value_);
+  }
+
+  void StartNotifySession(NotifySessionCallback callback,
+                          ErrorCallback error_callback) override {
+    if (!(GetProperties() & BluetoothGattCharacteristic::PROPERTY_NOTIFY)) {
+      std::move(error_callback)
+          .Run(BluetoothGattService::GATT_ERROR_NOT_PERMITTED);
+      return;
+    }
+    auto fake_notify_session =
+        std::make_unique<testing::NiceMock<MockBluetoothGattNotifySession>>(
+            GetWeakPtr());
+    active_notify_sessions_.insert(fake_notify_session.get());
+
+    if (deferred_read_callback_) {
+      // A new value as a result of calling readValue().
+      std::move(deferred_read_callback_)
+          .Run(/*error_code=*/absl::nullopt, value_);
+    }
+
+    if (emit_value_change_at_notification_start_) {
+      BluetoothAdapter* adapter = GetService()->GetDevice()->GetAdapter();
+      adapter->NotifyGattCharacteristicValueChanged(this, value_);
+
+      // NotifyGattCharacteristicValueChanged(...) posts a task to notify the
+      // renderer of the change. Do the same for |callback| to ensure
+      // StartNotifySession completes after the value change notification is
+      // received.
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(callback), std::move(fake_notify_session)));
+    } else {
+      // Complete StartNotifySession normally.
+      std::move(callback).Run(std::move(fake_notify_session));
+    }
+    EXPECT_TRUE(IsNotifying());
+  }
+
+  void StopNotifySession(BluetoothGattNotifySession* session,
+                         base::OnceClosure callback) override {
+    EXPECT_TRUE(base::Contains(active_notify_sessions_, session));
+    std::move(callback).Run();
+  }
+
+  bool IsNotifying() const override { return !active_notify_sessions_.empty(); }
+
+  // Do not call the readValue callback until midway through the completion
+  // of the startNotification callback registration.
+  // https://crbug.com/1153426
+  void DeferReadUntilNotificationStart() {
+    defer_read_until_notification_start_ = true;
+  }
+
+  // Possibly trigger value characteristicvaluechanged events on the page
+  // during the setup of startNotifications.
+  // https://crbug.com/1153426.
+  void EmitChangeNotificationAtNotificationStart() {
+    emit_value_change_at_notification_start_ = true;
+  }
+
+ private:
+  std::vector<uint8_t> value_;
+  ValueCallback deferred_read_callback_;
+  bool defer_read_until_notification_start_ = false;
+  bool emit_value_change_at_notification_start_ = false;
+  std::set<BluetoothGattNotifySession*> active_notify_sessions_;
 };
 
 class FakeBluetoothGattConnection
@@ -178,6 +282,11 @@ class FakeBluetoothDevice
 
   bool IsGattServicesDiscoveryComplete() const override {
     return gatt_services_discovery_complete_;
+  }
+
+  BluetoothRemoteGattService* GetGattService(
+      const std::string& identifier) const override {
+    return GetMockService(identifier);
   }
 
   std::vector<device::BluetoothRemoteGattService*> GetGattServices()
@@ -303,10 +412,8 @@ class WebBluetoothTest : public InProcessBrowserTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    // TODO(juncai): Remove this switch once Web Bluetooth is supported on Linux
-    // and Windows.
-    // https://crbug.com/570344
-    // https://crbug.com/507419
+    // TODO(crbug.com/570344): Remove this switch once Web Bluetooth is
+    // supported on Linux.
     command_line->AppendSwitch(
         switches::kEnableExperimentalWebPlatformFeatures);
   }
@@ -350,11 +457,24 @@ class WebBluetoothTest : public InProcessBrowserTest {
   }
 
   void AddFakeDevice(const std::string& device_address) {
+    constexpr int kProperties = BluetoothGattCharacteristic::PROPERTY_READ |
+                                BluetoothGattCharacteristic::PROPERTY_NOTIFY;
+    constexpr int kPermissions = BluetoothGattCharacteristic::PERMISSION_READ;
+
     auto fake_device =
         std::make_unique<FakeBluetoothDevice>(adapter_.get(), device_address);
     fake_device->AddUUID(kHeartRateUUID);
-    fake_device->AddMockService(std::make_unique<FakeBluetoothGattService>(
-        fake_device.get(), kHeartRateUUIDString, kHeartRateUUID));
+    auto fake_service =
+        std::make_unique<testing::NiceMock<device::MockBluetoothGattService>>(
+            fake_device.get(), kHeartRateUUIDString, kHeartRateUUID,
+            /*is_primary=*/true);
+    auto fake_characteristic =
+        std::make_unique<FakeBluetoothGattCharacteristic>(
+            fake_service.get(), kHeartRateMeasurementUUIDString,
+            kHeartRateMeasurementUUID, kProperties, kPermissions);
+    characteristic_ = fake_characteristic.get();
+    fake_service->AddMockCharacteristic(std::move(fake_characteristic));
+    fake_device->AddMockService(std::move(fake_service));
     adapter_->AddMockDevice(std::move(fake_device));
   }
 
@@ -379,6 +499,7 @@ class WebBluetoothTest : public InProcessBrowserTest {
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
   content::ContentBrowserClient* old_browser_client_ = nullptr;
+  FakeBluetoothGattCharacteristic* characteristic_ = nullptr;
 
   content::WebContents* web_contents_ = nullptr;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
@@ -531,6 +652,67 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, ShowChooserInBackgroundTab) {
       } catch (e) {
         return `${e.name}: ${e.message}`;
       }
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
+  AddFakeDevice(kDeviceAddress);
+  ASSERT_TRUE(characteristic_);
+  characteristic_->DeferReadUntilNotificationStart();
+  SetDeviceToSelect(kDeviceAddress);
+
+  auto js_values = content::EvalJs(web_contents_, R"((async () => {
+      const kHeartRateMeasurementUUID = '00001234-0000-1000-8000-00805f9b34fb';
+      const device = await navigator.bluetooth.requestDevice(
+          {filters: [{name: 'Test Device', services: ['heart_rate']}]});
+      const gatt = await device.gatt.connect();
+      const service = await gatt.getPrimaryService('heart_rate');
+      const characteristic =
+          await service.getCharacteristic(kHeartRateMeasurementUUID);
+
+      const readPromise = (async () => {
+        const dataview = await characteristic.readValue();
+        return dataview.getUint8(0);
+      })();
+
+      const notifyCharacteristic = await characteristic.startNotifications();
+      const notifyPromise = new Promise(resolve => {
+        notifyCharacteristic.addEventListener(
+            'characteristicvaluechanged', event => {
+          resolve(event.target.value.getUint8(0));
+        });
+      });
+
+      return Promise.all([readPromise, notifyPromise]);
+    })())");
+
+  const base::ListValue promise_values = js_values.ExtractList();
+  EXPECT_EQ(2U, promise_values.GetSize());
+  EXPECT_EQ(content::ListValueOf(1, 1), js_values);
+}
+
+IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeNotify) {
+  AddFakeDevice(kDeviceAddress);
+  ASSERT_TRUE(characteristic_);
+  characteristic_->EmitChangeNotificationAtNotificationStart();
+  SetDeviceToSelect(kDeviceAddress);
+
+  EXPECT_EQ(1, content::EvalJs(web_contents_, R"((async () => {
+      const kHeartRateMeasurementUUID = '00001234-0000-1000-8000-00805f9b34fb';
+      const device = await navigator.bluetooth.requestDevice(
+          {filters: [{name: 'Test Device', services: ['heart_rate']}]});
+      const gatt = await device.gatt.connect();
+      const service = await gatt.getPrimaryService('heart_rate');
+      const characteristic =
+          await service.getCharacteristic(kHeartRateMeasurementUUID);
+      const notifyCharacteristic = await characteristic.startNotifications();
+      return new Promise((resolve) => {
+        notifyCharacteristic.addEventListener(
+            'characteristicvaluechanged', event => {
+          const value = event.target.value.getUint8(0);
+          resolve(value);
+        });
+      });
     })())"));
 }
 
