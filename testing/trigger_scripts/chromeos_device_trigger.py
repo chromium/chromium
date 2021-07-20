@@ -127,7 +127,7 @@ def main():
     ])
     new_args += additional_args[1:]
 
-    return triggerer.run_swarming_go(new_args, True, args.dump_json,
+    return triggerer.run_swarming_go(new_args, args.dump_json,
                                      args.shard_index or 0, args.shards)
 
 

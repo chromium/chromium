@@ -51,23 +51,20 @@ class FakeTriggerer(perf_device_trigger.PerfDeviceTriggerer):
 
     def list_bots(self,
                   dimensions,
-                  verbose,
                   server='chromium-swarm.appspot.com'):
         return self._list_bots_result
 
-    def run_swarming(self, args, verbose):
-        del verbose  #unused
+    def run_swarming(self, args):
         self._swarming_runs.append(args)
 
     def run_swarming_go(self,
                         args,
-                        verbose,
                         _json_path,
                         _shard_index,
                         _shard,
                         _merged_json=None):
         self._triggered_with_swarming_go += 1
-        self.run_swarming(args, verbose)
+        self.run_swarming(args)
 
 
 class UnitTest(unittest.TestCase):
