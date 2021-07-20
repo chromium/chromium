@@ -360,7 +360,7 @@ TEST_F(ExploreSitesGetCatalogTaskTest,
   SetDownloadingAndCurrentVersion("1234", "");
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
     sql::Statement cat_count(db->GetUniqueStatement(
-        "DELETE FROM categories where version_token <> \"1234\";"));
+        "DELETE FROM categories where version_token <> '1234'"));
     return cat_count.Run();
   }));
   auto callback = base::BindLambdaForTesting(

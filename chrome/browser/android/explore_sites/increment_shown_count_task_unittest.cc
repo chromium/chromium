@@ -59,13 +59,15 @@ class ExploreSitesIncrementShownCountTaskTest : public TaskTestBase {
 
 void ExploreSitesIncrementShownCountTaskTest::PopulateCategories() {
   ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
-    sql::Statement insert_categories(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label, ntp_shown_count)
-VALUES
-(1, "1234", 1, "label_1", 5),
-(2, "1234", 2, "label_2", 2)
-    )"));
+    static constexpr char kSql[] =
+        // clang-format off
+        "INSERT INTO categories"
+            "(category_id, version_token, type, label, ntp_shown_count)"
+            "VALUES "
+            "(1, '1234', 1, 'label_1', 5),"
+            "(2, '1234', 2, 'label_2', 2)";
+    // clang-format on
+    sql::Statement insert_categories(db->GetUniqueStatement(kSql));
     return insert_categories.Run();
   }));
 }
