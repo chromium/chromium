@@ -14,7 +14,6 @@ js_type_check("closure_compile") {
     ":edit_dictionary_page",
     ":languages",
     ":languages_browser_proxy",
-    ":languages_metrics_proxy",
     ":languages_page",
     ":languages_settings_metrics_proxy",
     ":languages_subpage",
@@ -86,11 +85,6 @@ js_library("languages_browser_proxy") {
   ]
 }
 
-js_library("languages_metrics_proxy") {
-  deps = [ "//ui/webui/resources/js:cr.m" ]
-  externs_list = [ "$externs_path/metrics_private.js" ]
-}
-
 js_library("languages_settings_metrics_proxy") {
   deps = [ "//ui/webui/resources/js:cr.m" ]
   externs_list = [ "$externs_path/metrics_private.js" ]
@@ -99,7 +93,6 @@ js_library("languages_settings_metrics_proxy") {
 js_library("languages_page") {
   deps = [
     ":languages",
-    ":languages_metrics_proxy",
     ":languages_settings_metrics_proxy",
     "..:lifetime_browser_proxy",
     "..:route",
@@ -117,7 +110,6 @@ js_library("languages_page") {
 js_library("languages_subpage") {
   deps = [
     ":languages",
-    ":languages_metrics_proxy",
     ":languages_settings_metrics_proxy",
     "..:lifetime_browser_proxy",
     "..:route",

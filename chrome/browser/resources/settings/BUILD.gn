@@ -136,9 +136,6 @@ preprocess_if_expr("preprocess") {
     "hats_browser_proxy.js",
     "i18n_setup.js",
     "incompatible_applications_page/incompatible_applications_browser_proxy.js",
-    "languages_page/languages.js",
-    "languages_page/languages_browser_proxy.js",
-    "languages_page/languages_settings_metrics_proxy.js",
     "lazy_load.js",
     "lifetime_browser_proxy.js",
     "metrics_browser_proxy.js",
@@ -175,7 +172,6 @@ preprocess_if_expr("preprocess") {
   if (is_chromeos_ash) {
     in_files += [
       "autofill_page/blocking_request_manager.js",
-      "languages_page/languages_metrics_proxy.js",
       "people_page/account_manager_browser_proxy.js",
       "site_settings/android_info_browser_proxy.js",
     ]
@@ -187,6 +183,9 @@ preprocess_if_expr("preprocess") {
       ]
     }
     in_files += [
+      "languages_page/languages.js",
+      "languages_page/languages_browser_proxy.js",
+      "languages_page/languages_settings_metrics_proxy.js",
       "people_page/import_data_browser_proxy.js",
       "people_page/manage_profile_browser_proxy.js",
     ]
@@ -248,9 +247,6 @@ preprocess_if_expr("preprocess_generated") {
     "controls/settings_toggle_button.js",
     "downloads_page/downloads_page.js",
     "icons.js",
-    "languages_page/add_languages_dialog.js",
-    "languages_page/languages_page.js",
-    "languages_page/languages_subpage.js",
     "settings_menu/settings_menu.js",
     "on_startup_page/on_startup_page.js",
     "on_startup_page/startup_url_dialog.js",
@@ -340,18 +336,22 @@ preprocess_if_expr("preprocess_generated") {
     ]
   }
 
-  if (!is_mac) {
+  if (!is_chromeos_ash && !is_mac) {
     in_files += [ "languages_page/edit_dictionary_page.js" ]
   }
 
-  if (!is_chromeos_ash) {
-    if (!is_chromeos_lacros) {
-      in_files += [
-        "default_browser_page/default_browser_page.js",
-        "system_page/system_page.js",
-      ]
-    }
+  if (!is_chromeos) {
     in_files += [
+      "default_browser_page/default_browser_page.js",
+      "system_page/system_page.js",
+    ]
+  }
+
+  if (!is_chromeos_ash) {
+    in_files += [
+      "languages_page/add_languages_dialog.js",
+      "languages_page/languages_page.js",
+      "languages_page/languages_subpage.js",
       "people_page/import_data_dialog.js",
       "people_page/manage_profile.js",
     ]
@@ -386,7 +386,6 @@ group("closure_compile") {
     "clear_browsing_data_dialog:closure_compile",
     "controls:closure_compile",
     "downloads_page:closure_compile",
-    "languages_page:closure_compile",
     "on_startup_page:closure_compile",
     "people_page:closure_compile",
     "prefs:closure_compile",
@@ -404,7 +403,12 @@ group("closure_compile") {
     "site_settings:closure_compile",
     "site_settings_page:closure_compile",
   ]
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+
+  if (!is_chromeos_ash) {
+    deps += [ "languages_page:closure_compile" ]
+  }
+
+  if (!is_chromeos) {
     deps += [
       "default_browser_page:closure_compile",
       "system_page:closure_compile",
@@ -498,10 +502,6 @@ js_library("lazy_load") {
     "autofill_page:payments_section",
     "chrome_cleanup_page:chrome_cleanup_proxy",
     "clear_browsing_data_dialog:clear_browsing_data_browser_proxy",
-    "languages_page:languages_browser_proxy",
-    "languages_page:languages_metrics_proxy",
-    "languages_page:languages_settings_metrics_proxy",
-    "languages_page:languages_subpage",
     "privacy_page:cookies_page",
     "privacy_page:security_page",
     "privacy_page/privacy_review:privacy_review_page",
@@ -512,6 +512,15 @@ js_library("lazy_load") {
     "site_settings:site_settings_prefs_browser_proxy",
     "site_settings_page",
   ]
+
+  if (!is_chromeos_ash) {
+    deps += [
+      "languages_page:languages_browser_proxy",
+      "languages_page:languages_page",
+      "languages_page:languages_settings_metrics_proxy",
+      "languages_page:languages_subpage",
+    ]
+  }
 }
 
 js_library("lifetime_browser_proxy") {
@@ -587,7 +596,6 @@ group("polymer3_elements") {
     "clear_browsing_data_dialog:web_components",
     "controls:web_components",
     "downloads_page:web_components",
-    "languages_page:web_components",
     "on_startup_page:web_components",
     "people_page:web_components",
     "privacy_page:polymer3_elements",
@@ -607,7 +615,11 @@ group("polymer3_elements") {
     ":web_components_local",
   ]
 
-  if (!is_chromeos_ash && !is_chromeos_lacros) {
+  if (!is_chromeos_ash) {
+    public_deps += [ "languages_page:web_components" ]
+  }
+
+  if (!is_chromeos) {
     public_deps += [
       "default_browser_page:web_components",
       "system_page:web_components",

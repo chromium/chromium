@@ -21,11 +21,14 @@ export function ensureLazyLoaded() {
       'certificate-manager',
       // </if>
       'settings-a11y-page', 'settings-downloads-page',
-      'settings-languages-page', 'settings-reset-page',
+      // <if expr="not chromeos">
+      'settings-languages-page',
+      // </if>
+      'settings-reset-page',
       // <if expr="not chromeos and not lacros">
       'settings-system-page',
       // </if>
-      // <if expr="not is_macosx">
+      // <if expr="not chromeos and not is_macosx">
       'settings-edit-dictionary-page',
       // </if>
     ].map(name => customElements.whenDefined(name)));

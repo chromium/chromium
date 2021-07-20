@@ -48,10 +48,6 @@ import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js'
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
-// <if expr="chromeos">
-import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
-// </if>
-
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 
 /**
@@ -203,24 +199,10 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   constructor() {
     super();
 
-    // <if expr="chromeos">
-    /** @private {!LanguagesMetricsProxy} */
-    this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
-    // </if>
     /** @private {!LanguageSettingsMetricsProxy} */
     this.languageSettingsMetricsProxy_ =
         LanguageSettingsMetricsProxyImpl.getInstance();
   }
-
-  // <if expr="chromeos">
-  /** @private */
-  onOpenChromeOSLanguagesSettingsClick_() {
-    const chromeOSLanguagesSettingsPath =
-        loadTimeData.getString('chromeOSLanguagesSettingsPath');
-    window.location.href =
-        `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
-  }
-  // </if>
 
   // <if expr="not is_macosx">
   /**
@@ -337,10 +319,6 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
    * @private
    */
   onEditDictionaryTap_() {
-    // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordInteraction(
-        LanguagesPageInteraction.OPEN_CUSTOM_SPELL_CHECK);
-    // </if>
     Router.getInstance().navigateTo(
         /** @type {!Route} */ (routes.EDIT_DICTIONARY));
   }
@@ -367,16 +345,6 @@ class SettingsLanguagesPageElement extends SettingsLanguagesPageElementBase {
   getProspectiveUILanguageName_(languageCode) {
     return this.languageHelper.getLanguage(languageCode).displayName;
   }
-
-  // <if expr="chromeos">
-  /**
-   * @param {!Event} e
-   * @private
-   */
-  onSpellcheckToggleChange_(e) {
-    this.languagesMetricsProxy_.recordToggleSpellCheck(e.target.checked);
-  }
-  // </if>
 
   /**
    * Handler to initiate another attempt at downloading the spell check

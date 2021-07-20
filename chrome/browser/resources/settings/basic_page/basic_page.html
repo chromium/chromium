@@ -168,8 +168,16 @@
                 restamp>
               <settings-section page-title="$i18n{languagesPageTitle}"
                   section="languages">
+<if expr="chromeos">
+                <cr-link-row id="openChromeOSLanguagesSettings"
+                    on-click="onOpenChromeOSLanguagesSettingsClick_"
+                    label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
+                </cr-link-row>
+</if>
+<if expr="not chromeos">
                 <settings-languages-page prefs="{{prefs}}">
                 </settings-languages-page>
+</if>
               </settings-section>
             </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"

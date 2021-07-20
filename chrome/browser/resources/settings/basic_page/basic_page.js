@@ -309,6 +309,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
   // </if>
 
+  // <if expr="chromeos">
+  /** @private */
+  onOpenChromeOSLanguagesSettingsClick_() {
+    const chromeOSLanguagesSettingsPath =
+        loadTimeData.getString('chromeOSLanguagesSettingsPath');
+    window.location.href =
+        `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
+  }
+  // </if>
+
   /** @private */
   onResetProfileBannerClosed_() {
     this.showResetProfileBanner_ = false;

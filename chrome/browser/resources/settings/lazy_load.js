@@ -39,13 +39,15 @@ import 'chrome://resources/cr_components/certificate_manager/certificate_manager
 // Sections
 import './a11y_page/a11y_page.js';
 import './downloads_page/downloads_page.js';
+// <if expr="not chromeos">
 import './languages_page/languages_page.js';
+// </if>
 import './reset_page/reset_page.js';
 // <if expr="not chromeos and not lacros">
 import './system_page/system_page.js';
 // </if>
 
-// <if expr="not is_macosx">
+// <if expr="not chromeos and not is_macosx">
 import './languages_page/edit_dictionary_page.js';
 
 // </if>
@@ -68,12 +70,11 @@ export {DownloadsBrowserProxyImpl} from './downloads_page/downloads_browser_prox
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 // </if>
+// <if expr="not chromeos">
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
-// <if expr="chromeos">
-export {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_page/languages_metrics_proxy.js';
-// </if>
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
 export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page/languages_subpage.js';
+// </if>
 // <if expr="not chromeos">
 export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './people_page/manage_profile_browser_proxy.js';

@@ -39,10 +39,6 @@ import {loadTimeData} from '../i18n_setup.js';
 import {LifetimeBrowserProxyImpl} from '../lifetime_browser_proxy.js';
 import {PrefsBehavior, PrefsBehaviorInterface} from '../prefs/prefs_behavior.js';
 
-// <if expr="chromeos">
-import {LanguagesMetricsProxy, LanguagesMetricsProxyImpl, LanguagesPageInteraction} from './languages_metrics_proxy.js';
-// </if>
-
 import {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_settings_metrics_proxy.js';
 
 /**
@@ -166,10 +162,6 @@ export class SettingsLanguagesSubpageElement extends
   constructor() {
     super();
 
-    // <if expr="chromeos">
-    /** @private {!LanguagesMetricsProxy} */
-    this.languagesMetricsProxy_ = LanguagesMetricsProxyImpl.getInstance();
-    // </if>
     /** @private {!LanguageSettingsMetricsProxy} */
     this.languageSettingsMetricsProxy_ =
         LanguageSettingsMetricsProxyImpl.getInstance();
@@ -180,16 +172,6 @@ export class SettingsLanguagesSubpageElement extends
     // </if>
   }
 
-  // <if expr="chromeos">
-  /** @private */
-  onOpenChromeOSLanguagesSettingsClick_() {
-    const chromeOSLanguagesSettingsPath =
-        loadTimeData.getString('chromeOSLanguagesSettingsPath');
-    window.location.href =
-        `chrome://os-settings/${chromeOSLanguagesSettingsPath}`;
-  }
-  // </if>
-
   /**
    * Stamps and opens the Add Languages dialog, registering a listener to
    * disable the dialog's dom-if again on close.
@@ -198,9 +180,6 @@ export class SettingsLanguagesSubpageElement extends
    */
   onAddLanguagesTap_(e) {
     e.preventDefault();
-    // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordAddLanguages();
-    // </if>
     this.languageSettingsMetricsProxy_.recordPageImpressionMetric(
         LanguageSettingsPageImpressionType.ADD_LANGUAGE);
 
@@ -439,9 +418,6 @@ export class SettingsLanguagesSubpageElement extends
    * @private
    */
   onTranslateToggleChange_(e) {
-    // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordToggleTranslate(e.target.checked);
-    // </if>
     this.languageSettingsMetricsProxy_.recordSettingsMetric(
         e.target.checked ?
             LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY :
@@ -530,10 +506,6 @@ export class SettingsLanguagesSubpageElement extends
     // We don't support unchecking this checkbox. TODO(michaelpg): Ask for a
     // simpler widget.
     assert(e.target.checked);
-    // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordInteraction(
-        LanguagesPageInteraction.SWITCH_SYSTEM_LANGUAGE);
-    // </if>
     this.isChangeInProgress_ = true;
     this.languageHelper.setProspectiveUILanguage(
         this.detailLanguage_.language.code);
@@ -563,8 +535,6 @@ export class SettingsLanguagesSubpageElement extends
    */
   onRestartTap_() {
     // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordInteraction(
-        LanguagesPageInteraction.RESTART);
     LifetimeBrowserProxyImpl.getInstance().signOutAndRestart();
     // </if>
     // <if expr="is_win">
@@ -613,10 +583,6 @@ export class SettingsLanguagesSubpageElement extends
       this.languageSettingsMetricsProxy_.recordSettingsMetric(
           LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE);
     }
-    // <if expr="chromeos">
-    this.languagesMetricsProxy_.recordTranslateCheckboxChanged(
-        e.target.checked);
-    // </if>
     this.closeMenuSoon_();
   }
 

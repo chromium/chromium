@@ -107,14 +107,6 @@
         focus-config="[[focusConfig_]]">
       <div route-path="default">
 <if expr="chromeos">
-        <template is="dom-if" if="[[isChromeOSLanguagesSettingsUpdate_]]">
-          <cr-link-row id="openChromeOSLanguagesSettings"
-              on-click="onOpenChromeOSLanguagesSettingsClick_"
-              label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
-          </cr-link-row>
-        </template>
-</if> <!-- chromeos -->
-<if expr="chromeos">
         <template is="dom-if" if="[[!isChromeOSLanguagesSettingsUpdate_]]">
 </if> <!-- chromeos -->
           <template is="dom-if" if="[[enableDesktopRestructuredLanguageSettings_]]">
@@ -151,9 +143,6 @@
               sub-label="[[getSpellCheckSubLabel_(spellCheckLanguages_)]]"
               pref="{{prefs.browser.enable_spellchecking}}"
               disabled="[[!spellCheckLanguages_.length]]"
-          <if expr="chromeos">
-              on-settings-boolean-control-change="onSpellcheckToggleChange_"
-          </if>
           >
           </settings-toggle-button>
 <if expr="_google_chrome or not is_macosx">
