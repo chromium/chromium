@@ -2027,6 +2027,8 @@ RenderWidgetHostViewAura::~RenderWidgetHostViewAura() {
   // Ask the RWH to drop reference to us.
   host()->ViewDestroyed();
 
+  // Dismiss any visible touch selection handles or touch selection menu.
+  selection_controller_->HideAndDisallowShowingAutomatically();
   selection_controller_.reset();
   selection_controller_client_.reset();
 
