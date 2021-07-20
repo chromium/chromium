@@ -46,6 +46,7 @@ static_library("test_support") {
     "//components/policy/core/common:common_constants",
     "//components/policy/proto",
     "//crypto",
+    "//google_apis:google_apis",
     "//net",
     "//net:test_support",
     "//third_party/re2:re2",

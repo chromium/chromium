@@ -33,7 +33,7 @@ ClientStorage& ClientStorage::operator=(ClientStorage&& client_storage) =
 
 ClientStorage::~ClientStorage() = default;
 
-void ClientStorage::RegisterClient(ClientInfo&& client_info) {
+void ClientStorage::RegisterClient(const ClientInfo& client_info) {
   CHECK(!client_info.device_id.empty());
 
   clients_[client_info.device_id] = client_info;

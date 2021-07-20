@@ -6,7 +6,8 @@
 
 namespace policy {
 
-PolicyStorage::PolicyStorage() = default;
+PolicyStorage::PolicyStorage()
+    : signature_provider_(std::make_unique<SignatureProvider>()) {}
 
 PolicyStorage::PolicyStorage(PolicyStorage&& policy_storage) = default;
 

@@ -10,6 +10,8 @@
 #include <string>
 #include <vector>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace policy {
 
 // Stores information about registered clients.
@@ -26,7 +28,7 @@ class ClientStorage {
     std::string device_id;
     std::string device_token;
     std::string machine_name;
-    std::string username;
+    absl::optional<std::string> username;
     std::vector<std::string> state_keys;
     std::set<std::string> allowed_policy_types;
   };
@@ -39,7 +41,7 @@ class ClientStorage {
   // Register client so the server returns policy without the client having to
   // make a registration call. This could be called at any time (before or after
   // starting the server).
-  void RegisterClient(ClientInfo&& client_info);
+  void RegisterClient(const ClientInfo& client_info);
 
   // Returns true if there is a client associated with |device_id|.
   bool HasClient(const std::string& device_id) const;
