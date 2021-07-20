@@ -33,6 +33,8 @@ struct FeedbackParams {
   bool send_histograms = false;
   // If true, include bluetooth logs in the feedback.
   bool send_bluetooth_logs = false;
+  // The time when the feedback form submission was received by the backend.
+  base::TimeTicks form_submit_time;
 };
 
 // Callback invoked when the feedback report is ready to be sent.
@@ -72,6 +74,7 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data);
   void OnSystemInformationFetched(
+      base::TimeTicks fetch_start_time,
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       std::unique_ptr<system_logs::SystemLogsResponse> sys_info);

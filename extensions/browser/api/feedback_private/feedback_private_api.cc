@@ -13,6 +13,7 @@
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_base.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
@@ -20,6 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -99,6 +101,7 @@ void SendFeedback(content::BrowserContext* browser_context,
                                           bool)> callback) {
   // Populate feedback_params
   FeedbackParams feedback_params;
+  feedback_params.form_submit_time = base::TimeTicks::Now();
   feedback_params.is_internal_email =
       IsGoogleInternalAccountEmail(browser_context);
   feedback_params.load_system_info = load_system_info;
@@ -398,6 +401,14 @@ ExtensionFunction::ResponseAction FeedbackPrivateSendFeedbackFunction::Run() {
 
   bool load_system_info =
       (params->load_system_info && *params->load_system_info);
+  if (params->form_open_time) {
+    const auto form_open_time =
+        base::TimeTicks::UnixEpoch() +
+        base::TimeDelta::FromMilliseconds(*params->form_open_time);
+    base::UmaHistogramLongTimes("Feedback.Duration.FormOpenToSubmit",
+                                base::TimeTicks::Now() - form_open_time);
+  }
+
   SendFeedback(
       browser_context(), params->feedback, load_system_info,
       base::BindOnce(&FeedbackPrivateSendFeedbackFunction::OnCompleted, this));

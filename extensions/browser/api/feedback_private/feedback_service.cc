@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
@@ -144,6 +145,10 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
+  base::UmaHistogramMediumTimes(
+      "Feedback.Duration.FormSubmitToConfirmation",
+      base::TimeTicks::Now() - params.form_submit_time);
+
   // True means report will be sent shortly.
   // False means report will be sent once the device is online.
   const bool status = !net::NetworkChangeNotifier::IsOffline();
@@ -155,16 +160,21 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
 void FeedbackService::FetchSystemInformation(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data) {
+  base::TimeTicks fetch_start_time = base::TimeTicks::Now();
   delegate_->FetchSystemInformation(
       browser_context_,
-      base::BindOnce(&FeedbackService::OnSystemInformationFetched, this, params,
-                     feedback_data));
+      base::BindOnce(&FeedbackService::OnSystemInformationFetched, this,
+                     fetch_start_time, params, feedback_data));
 }
 
 void FeedbackService::OnSystemInformationFetched(
+    base::TimeTicks fetch_start_time,
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
     std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
+  // Fetching is currently slow and could take up to 2 minutes on Chrome OS.
+  base::UmaHistogramMediumTimes("Feedback.Duration.FetchSystemInformation",
+                                base::TimeTicks::Now() - fetch_start_time);
   if (sys_info) {
     for (auto& itr : *sys_info) {
       if (FeedbackCommon::IncludeInSystemLogs(itr.first,
@@ -257,6 +267,8 @@ void FeedbackService::OnAllLogsFetched(
   // Signal the feedback object that the data from the feedback page has been
   // filled - the object will manage sending of the actual report.
   feedback_data->OnFeedbackPageDataComplete();
+  base::UmaHistogramTimes("Feedback.Duration.FormSubmitToSendQueue",
+                          base::TimeTicks::Now() - params.form_submit_time);
 }
 
 }  // namespace extensions

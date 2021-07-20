@@ -6111,6 +6111,52 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="Feedback.Duration.FetchSystemInformation" units="ms"
+    expires_after="2022-06-22">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the elapsed time from the start of fetching system information to
+    when the data has been retrieved. Fires during the process of sending a
+    feedback report on Chrome or Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.Duration.FormOpenToSubmit" units="s"
+    expires_after="2022-06-22">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the elapsed time from when the feedback app window is opened to when
+    the backend receives the send report request submitted by a user. Fires
+    during the process of sending a feedback report on Chrome or Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.Duration.FormSubmitToConfirmation" units="ms"
+    expires_after="2022-06-22">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the elapsed time from when the backend receives the send report
+    request submitted by a user to when it starts to send confirmation back to
+    the frontend. Fires during the process of sending a feedback report on
+    Chrome or Chrome OS.
+  </summary>
+</histogram>
+
+<histogram name="Feedback.Duration.FormSubmitToSendQueue" units="ms"
+    expires_after="2022-06-22">
+  <owner>xiangdongkong@google.com</owner>
+  <owner>cros-feedback-app@google.com</owner>
+  <summary>
+    Records the elapsed time from when the backend receives the send report
+    request submitted by a user and the report has been added to the send queue.
+    Fires during the process of sending a feedback report on Chrome or Chrome
+    OS.
+  </summary>
+</histogram>
+
 <histogram name="Feedback.HappinessTrackingSurvey.BubbleUsage"
     enum="HappinessTrackingSurveyDesktopBubbleUsage" expires_after="M82">
   <owner>weili@chromium.org</owner>
