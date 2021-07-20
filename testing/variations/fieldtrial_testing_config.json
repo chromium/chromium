@@ -6872,8 +6872,18 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "EnabledWithoutBottomSheet",
                     "enable_features": [
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarkBottomSheet"
+                    ]
+                },
+                {
+                    "name": "EnabledWithBottomSheet",
+                    "enable_features": [
+                        "BookmarkBottomSheet",
                         "ReadLater"
                     ]
                 }
