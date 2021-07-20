@@ -40,8 +40,8 @@ bool CloudDeviceDescription::IsValidTicket(const base::Value& ticket) {
   if (!ticket.is_dict())
     return false;
 
-  const base::Value* version = ticket.FindKey(json::kVersion);
-  return version && version->GetString() == json::kVersion10;
+  const std::string* version = ticket.FindStringKey(json::kVersion);
+  return version && *version == json::kVersion10;
 }
 
 std::string CloudDeviceDescription::ToString() const {
