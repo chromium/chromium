@@ -1838,6 +1838,138 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
       MatchesCookieAccessResult(net::IsInclude(), _, _, true));
 }
 
+// Test that the CookieInclusionStatus warning for inclusion changed by
+// cross-site redirect context downgrade is applied correctly.
+TEST(CanonicalCookieTest, IncludeForRequestURL_RedirectDowngradeWarning) {
+  using Context = CookieOptions::SameSiteCookieContext;
+  using ContextType = Context::ContextType;
+
+  Context::ContextMetadata strict_lax_downgrade_metadata,
+      strict_cross_downgrade_metadata;
+  strict_lax_downgrade_metadata.cross_site_redirect_downgrade =
+      Context::ContextMetadata::ContextDowngradeType::kStrictToLax;
+  strict_cross_downgrade_metadata.cross_site_redirect_downgrade =
+      Context::ContextMetadata::ContextDowngradeType::kStrictToCross;
+
+  GURL url("https://www.example.test/test");
+  GURL insecure_url("http://www.example.test/test");
+
+  const struct {
+    ContextType context_type;
+    Context::ContextMetadata metadata;
+    CookieSameSite samesite;
+    bool expect_cross_site_redirect_warning;
+  } kTestCases[] = {
+      // Strict-to-lax downgrade.
+      {ContextType::SAME_SITE_STRICT, strict_lax_downgrade_metadata,
+       CookieSameSite::STRICT_MODE, true},
+      {ContextType::SAME_SITE_LAX, strict_lax_downgrade_metadata,
+       CookieSameSite::STRICT_MODE, true},
+      {ContextType::SAME_SITE_STRICT, strict_lax_downgrade_metadata,
+       CookieSameSite::LAX_MODE, false},
+      {ContextType::SAME_SITE_LAX, strict_lax_downgrade_metadata,
+       CookieSameSite::LAX_MODE, false},
+      {ContextType::SAME_SITE_STRICT, strict_lax_downgrade_metadata,
+       CookieSameSite::NO_RESTRICTION, false},
+      {ContextType::SAME_SITE_LAX, strict_lax_downgrade_metadata,
+       CookieSameSite::NO_RESTRICTION, false},
+
+      // Strict-to-cross downgrade.
+      {ContextType::SAME_SITE_STRICT, strict_cross_downgrade_metadata,
+       CookieSameSite::STRICT_MODE, true},
+      {ContextType::CROSS_SITE, strict_cross_downgrade_metadata,
+       CookieSameSite::STRICT_MODE, true},
+      {ContextType::SAME_SITE_STRICT, strict_cross_downgrade_metadata,
+       CookieSameSite::LAX_MODE, true},
+      {ContextType::CROSS_SITE, strict_cross_downgrade_metadata,
+       CookieSameSite::LAX_MODE, true},
+      {ContextType::SAME_SITE_STRICT, strict_cross_downgrade_metadata,
+       CookieSameSite::NO_RESTRICTION, false},
+      {ContextType::CROSS_SITE, strict_cross_downgrade_metadata,
+       CookieSameSite::NO_RESTRICTION, false},
+  };
+
+  for (bool consider_redirects : {true, false}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        features::kCookieSameSiteConsidersRedirectChain, consider_redirects);
+
+    for (CookieAccessSemantics semantics :
+         {CookieAccessSemantics::LEGACY, CookieAccessSemantics::NONLEGACY}) {
+      // There are no downgrade warnings for undowngraded contexts.
+      for (ContextType context_type :
+           {ContextType::SAME_SITE_STRICT, ContextType::SAME_SITE_LAX,
+            ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
+            ContextType::CROSS_SITE}) {
+        for (CookieSameSite samesite :
+             {CookieSameSite::UNSPECIFIED, CookieSameSite::NO_RESTRICTION,
+              CookieSameSite::LAX_MODE, CookieSameSite::STRICT_MODE}) {
+          std::unique_ptr<CanonicalCookie> cookie =
+              CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "1", "www.example.test", "/test", base::Time::Now(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/false, samesite, COOKIE_PRIORITY_DEFAULT,
+                  /*same_party=*/false);
+
+          CookieOptions options;
+          options.set_same_site_cookie_context(Context(context_type));
+
+          EXPECT_FALSE(
+              cookie
+                  ->IncludeForRequestURL(
+                      url, options,
+                      CookieAccessParams(
+                          semantics,
+                          /*delegate_treats_url_as_trustworthy=*/false,
+                          CookieSamePartyStatus::kNoSamePartyEnforcement))
+                  .status.HasWarningReason(
+                      CookieInclusionStatus::
+                          WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
+        }
+      }
+
+      for (const auto& test : kTestCases) {
+        std::unique_ptr<CanonicalCookie> cookie =
+            CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "1", "www.example.test", "/test", base::Time::Now(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+                test.samesite, COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+
+        CookieOptions options;
+        options.set_same_site_cookie_context(
+            Context(test.context_type, test.context_type, test.metadata,
+                    test.metadata));
+        EXPECT_EQ(
+            cookie
+                ->IncludeForRequestURL(
+                    url, options,
+                    CookieAccessParams(
+                        semantics,
+                        /*delegate_treats_url_as_trustworthy=*/false,
+                        CookieSamePartyStatus::kNoSamePartyEnforcement))
+                .status.HasWarningReason(
+                    CookieInclusionStatus::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION),
+            test.expect_cross_site_redirect_warning);
+
+        // SameSite warnings not applied if other exclusion reasons apply (e.g.
+        // non-https with Secure attribute).
+        EXPECT_FALSE(
+            cookie
+                ->IncludeForRequestURL(
+                    insecure_url, options,
+                    CookieAccessParams(
+                        semantics,
+                        /*delegate_treats_url_as_trustworthy=*/false,
+                        CookieSamePartyStatus::kNoSamePartyEnforcement))
+                .status.HasWarningReason(
+                    CookieInclusionStatus::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
+      }
+    }
+  }
+}
+
 TEST(CanonicalCookieTest, MultipleExclusionReasons) {
   GURL url("http://www.not-secure.com/foo");
   base::Time creation_time = base::Time::Now();
@@ -4211,6 +4343,116 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameParty) {
                     CookieSamePartyStatus::kEnforceSamePartyInclude),
                 kCookieableSchemes),
             MatchesCookieAccessResult(IsInclude(), _, _, true));
+      }
+    }
+  }
+}
+
+// Test that the CookieInclusionStatus warning for inclusion changed by
+// cross-site redirect context downgrade is applied correctly.
+TEST(CanonicalCookieTest, IsSetPermittedInContext_RedirectDowngradeWarning) {
+  using Context = CookieOptions::SameSiteCookieContext;
+  using ContextType = Context::ContextType;
+
+  GURL url("https://www.example.test/test");
+  GURL insecure_url("http://www.example.test/test");
+
+  // Test cases to be used with a lax-to-cross context downgrade.
+  const struct {
+    ContextType context_type;
+    CookieSameSite samesite;
+    bool expect_cross_site_redirect_warning;
+  } kTestCases[] = {
+      {ContextType::SAME_SITE_LAX, CookieSameSite::STRICT_MODE, true},
+      {ContextType::CROSS_SITE, CookieSameSite::STRICT_MODE, true},
+      {ContextType::SAME_SITE_LAX, CookieSameSite::LAX_MODE, true},
+      {ContextType::CROSS_SITE, CookieSameSite::LAX_MODE, true},
+      {ContextType::SAME_SITE_LAX, CookieSameSite::NO_RESTRICTION, false},
+      {ContextType::CROSS_SITE, CookieSameSite::NO_RESTRICTION, false},
+  };
+
+  for (bool consider_redirects : {true, false}) {
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatureState(
+        features::kCookieSameSiteConsidersRedirectChain, consider_redirects);
+
+    for (CookieAccessSemantics semantics :
+         {CookieAccessSemantics::LEGACY, CookieAccessSemantics::NONLEGACY}) {
+      // There are no downgrade warnings for undowngraded contexts.
+      for (ContextType context_type : {ContextType::SAME_SITE_LAX,
+                                       ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
+                                       ContextType::CROSS_SITE}) {
+        for (CookieSameSite samesite :
+             {CookieSameSite::UNSPECIFIED, CookieSameSite::NO_RESTRICTION,
+              CookieSameSite::LAX_MODE, CookieSameSite::STRICT_MODE}) {
+          std::unique_ptr<CanonicalCookie> cookie =
+              CanonicalCookie::CreateUnsafeCookieForTesting(
+                  "A", "1", "www.example.test", "/test", base::Time::Now(),
+                  base::Time(), base::Time(), /*secure=*/true,
+                  /*httponly=*/false, samesite, COOKIE_PRIORITY_DEFAULT,
+                  /*same_party=*/false);
+
+          CookieOptions options;
+          options.set_same_site_cookie_context(Context(context_type));
+
+          EXPECT_FALSE(
+              cookie
+                  ->IsSetPermittedInContext(
+                      url, options,
+                      CookieAccessParams(
+                          semantics,
+                          /*delegate_treats_url_as_trustworthy=*/false,
+                          CookieSamePartyStatus::kNoSamePartyEnforcement),
+                      kCookieableSchemes)
+                  .status.HasWarningReason(
+                      CookieInclusionStatus::
+                          WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
+        }
+      }
+
+      for (const auto& test : kTestCases) {
+        std::unique_ptr<CanonicalCookie> cookie =
+            CanonicalCookie::CreateUnsafeCookieForTesting(
+                "A", "1", "www.example.test", "/test", base::Time::Now(),
+                base::Time(), base::Time(), /*secure=*/true, /*httponly=*/false,
+                test.samesite, COOKIE_PRIORITY_DEFAULT, /*same_party=*/false);
+
+        Context::ContextMetadata lax_cross_downgrade_metadata;
+        lax_cross_downgrade_metadata.cross_site_redirect_downgrade =
+            Context::ContextMetadata::ContextDowngradeType::kLaxToCross;
+        CookieOptions options;
+        options.set_same_site_cookie_context(Context(
+            test.context_type, test.context_type, lax_cross_downgrade_metadata,
+            lax_cross_downgrade_metadata));
+
+        EXPECT_EQ(
+            cookie
+                ->IsSetPermittedInContext(
+                    url, options,
+                    CookieAccessParams(
+                        semantics,
+                        /*delegate_treats_url_as_trustworthy=*/false,
+                        CookieSamePartyStatus::kNoSamePartyEnforcement),
+                    kCookieableSchemes)
+                .status.HasWarningReason(
+                    CookieInclusionStatus::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION),
+            test.expect_cross_site_redirect_warning);
+
+        // SameSite warnings not applied if other exclusion reasons apply (e.g.
+        // non-https with Secure attribute).
+        EXPECT_FALSE(
+            cookie
+                ->IsSetPermittedInContext(
+                    insecure_url, options,
+                    CookieAccessParams(
+                        semantics,
+                        /*delegate_treats_url_as_trustworthy=*/false,
+                        CookieSamePartyStatus::kNoSamePartyEnforcement),
+                    kCookieableSchemes)
+                .status.HasWarningReason(
+                    CookieInclusionStatus::
+                        WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION));
       }
     }
   }

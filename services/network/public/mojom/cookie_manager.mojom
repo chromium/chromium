@@ -96,9 +96,17 @@ enum ContextType {
   SAME_SITE_STRICT
 };
 
+enum CookieSameSiteContextMetadataDowngradeType {
+  kNoDowngrade,
+  kStrictToLax,
+  kStrictToCross,
+  kLaxToCross,
+};
+
 // Keep defaults here in sync with net/cookies/cookie_options.h.
 struct CookieSameSiteContextMetadata {
   bool affected_by_bugfix_1166211 = false;
+  CookieSameSiteContextMetadataDowngradeType cross_site_redirect_downgrade = kNoDowngrade;
 };
 
 // Keep defaults here in sync with net/cookies/cookie_options.h.

@@ -14815,6 +14815,13 @@ Called by update_net_error_codes.py.-->
   <int value="4" label="Securely Set Cookie Nonsecure Request"/>
 </enum>
 
+<enum name="CookieSameSite">
+  <int value="-1" label="No SameSite attribute is specified."/>
+  <int value="0" label="SameSite=None"/>
+  <int value="1" label="SameSite=Lax"/>
+  <int value="2" label="SameSite=Strict"/>
+</enum>
+
 <enum name="CookieSameSiteString">
   <int value="0" label="No SameSite attribute is present."/>
   <int value="1" label="SameSite attribute is specified but has no value."/>
@@ -34041,6 +34048,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3959" label="V8URLPattern_Constructor"/>
   <int value="3960" label="V8URLPattern_Test_Method"/>
   <int value="3961" label="V8URLPattern_Exec_Method"/>
+  <int value="3962" label="SameSiteCookieInclusionChangedByCrossSiteRedirect"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

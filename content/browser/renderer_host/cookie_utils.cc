@@ -97,6 +97,8 @@ void EmitCookieWarningsAndMetrics(
   bool samesite_none_cookie_included_by_samesite_lax = false;
   bool samesite_none_cookie_included_by_samesite_strict = false;
 
+  bool samesite_cookie_inclusion_changed_by_cross_site_redirect = false;
+
   for (const network::mojom::CookieOrLineWithAccessResultPtr& cookie :
        cookie_details->cookie_list) {
     if (ShouldReportDevToolsIssueForStatus(cookie->access_result.status)) {
@@ -171,6 +173,12 @@ void EmitCookieWarningsAndMetrics(
           status.HasWarningReason(
               net::CookieInclusionStatus::
                   WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT);
+
+      samesite_cookie_inclusion_changed_by_cross_site_redirect =
+          samesite_cookie_inclusion_changed_by_cross_site_redirect ||
+          status.HasWarningReason(
+              net::CookieInclusionStatus::
+                  WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
     }
 
     breaking_context_downgrade =
@@ -243,6 +251,12 @@ void EmitCookieWarningsAndMetrics(
   if (samesite_none_cookie_included_by_samesite_strict) {
     GetContentClient()->browser()->LogWebFeatureForCurrentPage(
         rfh, blink::mojom::WebFeature::kSameSiteNoneIncludedBySameSiteStrict);
+  }
+
+  if (samesite_cookie_inclusion_changed_by_cross_site_redirect) {
+    GetContentClient()->browser()->LogWebFeatureForCurrentPage(
+        rfh, blink::mojom::WebFeature::
+                 kSameSiteCookieInclusionChangedByCrossSiteRedirect);
   }
 }
 

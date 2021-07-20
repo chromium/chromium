@@ -63,6 +63,7 @@
 #include "net/base/url_util.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
+#include "net/cookies/cookie_options.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/parsed_cookie.h"
 #include "url/gurl.h"
@@ -194,7 +195,7 @@ void ApplySameSiteCookieWarningToStatus(
     CookieSameSite samesite,
     CookieEffectiveSameSite effective_samesite,
     bool is_secure,
-    CookieOptions::SameSiteCookieContext same_site_context,
+    const CookieOptions::SameSiteCookieContext& same_site_context,
     CookieInclusionStatus* status,
     bool is_cookie_being_set) {
   if (samesite == CookieSameSite::UNSPECIFIED &&
@@ -256,8 +257,48 @@ void ApplySameSiteCookieWarningToStatus(
     }
   }
 
-  // If there are reasons to exclude the cookie other than the new SameSite
-  // rules, don't warn about the cookie at all.
+  // Apply warning for whether inclusion was changed by considering redirects
+  // for the SameSite context calculation. This does not look at the actual
+  // inclusion or exclusion, but only at whether the inclusion differs between
+  // considering redirects and not.
+  using ContextDowngradeType = CookieOptions::SameSiteCookieContext::
+      ContextMetadata::ContextDowngradeType;
+  const auto& metadata = same_site_context.GetMetadataForCurrentSchemefulMode();
+  bool apply_cross_site_redirect_downgrade_warning = false;
+  switch (effective_samesite) {
+    case CookieEffectiveSameSite::STRICT_MODE:
+      // Strict contexts are all normalized to lax for cookie writes, so a
+      // strict-to-{lax,cross} downgrade cannot occur for response cookies.
+      apply_cross_site_redirect_downgrade_warning =
+          is_cookie_being_set ? metadata.cross_site_redirect_downgrade ==
+                                    ContextDowngradeType::kLaxToCross
+                              : (metadata.cross_site_redirect_downgrade ==
+                                     ContextDowngradeType::kStrictToLax ||
+                                 metadata.cross_site_redirect_downgrade ==
+                                     ContextDowngradeType::kStrictToCross);
+      break;
+    case CookieEffectiveSameSite::LAX_MODE:
+    case CookieEffectiveSameSite::LAX_MODE_ALLOW_UNSAFE:
+      // Note that a lax-to-cross downgrade can only happen for response
+      // cookies, because a laxly same-site context only happens for a safe
+      // top-level cross-site request, which cannot be downgraded due to a
+      // cross-site redirect to a non-top-level or unsafe cross-site request.
+      apply_cross_site_redirect_downgrade_warning =
+          metadata.cross_site_redirect_downgrade ==
+          (is_cookie_being_set ? ContextDowngradeType::kLaxToCross
+                               : ContextDowngradeType::kStrictToCross);
+      break;
+    default:
+      break;
+  }
+  if (apply_cross_site_redirect_downgrade_warning) {
+    status->AddWarningReason(
+        CookieInclusionStatus::
+            WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
+  }
+
+  // If there are reasons to exclude the cookie other than SameSite, don't warn
+  // about the cookie at all.
   status->MaybeClearSameSiteWarning();
 }
 
@@ -922,15 +963,13 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
       break;
     }
     case CookieSamePartyStatus::kNoSamePartyEnforcement:
+      // Only apply SameSite-related warnings if SameParty is not in effect.
+      ApplySameSiteCookieWarningToStatus(
+          SameSite(), effective_same_site, IsSecure(),
+          options.same_site_cookie_context(), &status,
+          false /* is_cookie_being_set */);
       break;
   }
-
-  // TODO(chlily): Apply warning if SameSite-by-default is enabled but
-  // params.access_semantics is LEGACY?
-  ApplySameSiteCookieWarningToStatus(SameSite(), effective_same_site,
-                                     IsSecure(),
-                                     options.same_site_cookie_context(),
-                                     &status, false /* is_cookie_being_set */);
 
   if (status.IsInclude()) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedRequestEffectiveSameSite",
@@ -982,6 +1021,13 @@ CookieAccessResult CanonicalCookie::IncludeForRequestURL(
   if (status.ShouldRecordDowngradeMetrics()) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.SameSiteContextDowngradeRequest",
                               status.GetBreakingDowngradeMetricsEnumValue(url));
+  }
+
+  if (status.HasWarningReason(
+          CookieInclusionStatus::
+              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Read", SameSite());
   }
 
   return CookieAccessResult(effective_same_site, status,
@@ -1153,13 +1199,13 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
       break;
     }
     case CookieSamePartyStatus::kNoSamePartyEnforcement:
+      // Only apply SameSite-related warnings if SameParty is not in effect.
+      ApplySameSiteCookieWarningToStatus(
+          SameSite(), access_result.effective_same_site, IsSecure(),
+          options.same_site_cookie_context(), &access_result.status,
+          true /* is_cookie_being_set */);
       break;
   }
-
-  ApplySameSiteCookieWarningToStatus(
-      SameSite(), access_result.effective_same_site, IsSecure(),
-      options.same_site_cookie_context(), &access_result.status,
-      true /* is_cookie_being_set */);
 
   if (access_result.status.IsInclude()) {
     UMA_HISTOGRAM_ENUMERATION("Cookie.IncludedResponseEffectiveSameSite",
@@ -1201,6 +1247,13 @@ CookieAccessResult CanonicalCookie::IsSetPermittedInContext(
             SameSiteNonePartyContextType::kSameSiteStrict);
       }
     }
+  }
+
+  if (access_result.status.HasWarningReason(
+          CookieInclusionStatus::
+              WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION)) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "Cookie.CrossSiteRedirectDowngradeChangesInclusion.Write", SameSite());
   }
 
   return access_result;

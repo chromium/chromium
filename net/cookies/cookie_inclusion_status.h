@@ -203,6 +203,18 @@ class NET_EXPORT CookieInclusionStatus {
     // if it had been SameSite=Strict.
     WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT = 17,
 
+    // The cookie would have been included prior to the spec change considering
+    // redirects in the SameSite context calculation
+    // (https://github.com/httpwg/http-extensions/pull/1348)
+    // but would have been excluded after the spec change, due to a cross-site
+    // redirect causing the SameSite context calculation to be downgraded.
+    // This is applied if and only if the cookie's inclusion was changed by
+    // considering redirect chains (and is applied regardless of which context
+    // was actually used for the inclusion decision). This is not applied if
+    // the context was downgraded but the cookie would have been
+    // included/excluded in both cases.
+    WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION = 18,
+
     // This should be kept last.
     NUM_WARNING_REASONS
   };
@@ -268,8 +280,8 @@ class NET_EXPORT CookieInclusionStatus {
   void RemoveExclusionReasons(const std::vector<ExclusionReason>& reasons);
 
   // If the cookie would have been excluded for reasons other than
-  // SAMESITE_UNSPECIFIED_TREATED_AS_LAX or SAMESITE_NONE_INSECURE, don't bother
-  // warning about it (clear the warning).
+  // SameSite-related reasons, don't bother warning about it (clear the
+  // warning).
   void MaybeClearSameSiteWarning();
 
   // Whether to record the breaking downgrade metrics if the cookie is included

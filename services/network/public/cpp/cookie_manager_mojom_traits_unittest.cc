@@ -284,33 +284,87 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieChangeCause) {
   }
 }
 
+TEST(CookieManagerTraitsTest,
+     Roundtrips_CookieSameSiteContextMetadataDowngradeType) {
+  for (auto type : {net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextDowngradeType::kNoDowngrade,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextDowngradeType::kStrictToLax,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextDowngradeType::kStrictToCross,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextDowngradeType::kLaxToCross}) {
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextDowngradeType roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::CookieSameSiteContextMetadataDowngradeType>(type,
+                                                                   roundtrip));
+    EXPECT_EQ(type, roundtrip);
+  }
+}
+
+TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
+  net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata,
+      roundtrip;
+
+  // Default values.
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
+          metadata, roundtrip));
+  EXPECT_EQ(metadata, roundtrip);
+
+  metadata.affected_by_bugfix_1166211 = true;
+  metadata.cross_site_redirect_downgrade =
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextDowngradeType::kStrictToLax;
+  ASSERT_TRUE(
+      mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
+          metadata, roundtrip));
+  EXPECT_EQ(metadata, roundtrip);
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   using ContextType = net::CookieOptions::SameSiteCookieContext::ContextType;
+  using ContextMetadata =
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata;
 
   const ContextType all_context_types[]{
       ContextType::CROSS_SITE, ContextType::SAME_SITE_LAX_METHOD_UNSAFE,
       ContextType::SAME_SITE_LAX, ContextType::SAME_SITE_STRICT};
 
-  for (bool metadata_affected_by_bugfix_1166211 : {true, false}) {
-    net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata;
-    metadata.affected_by_bugfix_1166211 = metadata_affected_by_bugfix_1166211;
-    for (ContextType context_type : all_context_types) {
-      for (ContextType schemeful_context_type : all_context_types) {
-        net::CookieOptions::SameSiteCookieContext copy;
-        net::CookieOptions::SameSiteCookieContext context_in(
-            context_type, context_type, metadata, metadata);
-        // We want to test malformed SameSiteCookieContexts. Since the
-        // constructor will DCHECK for these use this setter to bypass it.
-        context_in.SetContextTypesForTesting(context_type,
-                                             schemeful_context_type);
+  ContextMetadata metadata1;
+  metadata1.affected_by_bugfix_1166211 = true;
+  ContextMetadata metadata2;
+  metadata2.cross_site_redirect_downgrade =
+      ContextMetadata::ContextDowngradeType::kStrictToLax;
+  ContextMetadata metadata3;
+  metadata3.affected_by_bugfix_1166211 = true;
+  metadata3.cross_site_redirect_downgrade =
+      ContextMetadata::ContextDowngradeType::kLaxToCross;
 
-        EXPECT_EQ(
-            mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContext>(
-                context_in, copy),
-            schemeful_context_type <= context_type);
+  const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2,
+                                    metadata3};
 
-        if (schemeful_context_type <= context_type)
-          EXPECT_TRUE(context_in.CompleteEquivalenceForTesting(copy));
+  for (ContextType context_type : all_context_types) {
+    for (ContextType schemeful_context_type : all_context_types) {
+      for (const ContextMetadata& metadata : metadatas) {
+        for (const ContextMetadata& schemeful_metadata : metadatas) {
+          net::CookieOptions::SameSiteCookieContext copy;
+          net::CookieOptions::SameSiteCookieContext context_in(
+              context_type, context_type, metadata, schemeful_metadata);
+          // We want to test malformed SameSiteCookieContexts. Since the
+          // constructor will DCHECK for these use this setter to bypass it.
+          context_in.SetContextTypesForTesting(context_type,
+                                               schemeful_context_type);
+
+          EXPECT_EQ(
+              mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContext>(
+                  context_in, copy),
+              schemeful_context_type <= context_type);
+
+          if (schemeful_context_type <= context_type)
+            EXPECT_TRUE(context_in.CompleteEquivalenceForTesting(copy));
+        }
       }
     }
   }

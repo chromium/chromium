@@ -45,10 +45,38 @@ class NET_EXPORT CookieOptions {
     //
     // When adding a field, also update CompleteEquivalenceForTesting.
     struct NET_EXPORT ContextMetadata {
+      // Possible "downgrades" for the SameSite context type, e.g. from a more
+      // trusted context to a less trusted context, as a result of some behavior
+      // change affecting the same-site calculation.
+      enum class ContextDowngradeType {
+        // Context not downgraded.
+        kNoDowngrade,
+        // Context was originally strictly same-site, was downgraded to laxly
+        // same-site.
+        kStrictToLax,
+        // Context was originally strictly same-site, was downgraded to
+        // cross-site.
+        kStrictToCross,
+        // Context was originally laxly same-site, was downgraded to cross-site.
+        kLaxToCross,
+      };
+
       // Whether the ContextType calculation was affected by the bugfix for
       // crbug.com/1166211.
       // TODO(crbug.com/1166211): Remove once no longer needed.
       bool affected_by_bugfix_1166211 = false;
+
+      // Records the type of any context downgrade due to a cross-site redirect,
+      // i.e. whether the spec change in
+      // https://github.com/httpwg/http-extensions/pull/1348 changed the result
+      // of the context calculation. Note that a lax-to-cross downgrade can only
+      // happen for response cookies, because a laxly same-site context only
+      // happens for a top-level cross-site request, which cannot be downgraded
+      // due to a cross-site redirect to a non-top-level cross-site request.
+      // This only records whether the context was downgraded, not whether the
+      // cookie's inclusion result was changed.
+      ContextDowngradeType cross_site_redirect_downgrade =
+          ContextDowngradeType::kNoDowngrade;
     };
 
     // The following three constructors apply default values for the metadata
@@ -251,6 +279,13 @@ class NET_EXPORT CookieOptions {
   bool is_in_nontrivial_first_party_set_ = false;
 };
 
+NET_EXPORT bool operator==(
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs);
+NET_EXPORT bool operator!=(
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs);
+
 // Allows gtest to print more helpful error messages instead of printing hex.
 // (No need to null-check `os` because we can assume gtest will properly pass a
 // non-null pointer, and it is dereferenced immediately anyway.)
@@ -259,12 +294,27 @@ inline void PrintTo(CookieOptions::SameSiteCookieContext::ContextType ct,
   *os << static_cast<int>(ct);
 }
 
+inline void PrintTo(
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& m,
+    std::ostream* os) {
+  *os << "{";
+  if (m.affected_by_bugfix_1166211)
+    *os << " affected_by_bugfix_1166211,";
+  *os << " cross_site_redirect_downgrade: "
+      << static_cast<int>(m.cross_site_redirect_downgrade);
+  *os << " }";
+}
+
 inline void PrintTo(const CookieOptions::SameSiteCookieContext& sscc,
                     std::ostream* os) {
   *os << "{ context: ";
   PrintTo(sscc.context(), os);
   *os << ", schemeful_context: ";
   PrintTo(sscc.schemeful_context(), os);
+  *os << ", metadata: ";
+  PrintTo(sscc.metadata(), os);
+  *os << ", schemeful_metadata: ";
+  PrintTo(sscc.schemeful_metadata(), os);
   *os << " }";
 }
 

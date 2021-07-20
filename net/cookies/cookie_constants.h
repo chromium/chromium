@@ -31,13 +31,17 @@ enum CookiePriority {
 // information about same site cookie restrictions.
 // These values are allowed for the SameSite field of a cookie. They mostly
 // correspond to CookieEffectiveSameSite values.
-// Note: Don't renumber, as these values are persisted to a database.
+// Note: Don't renumber, as these values are persisted to a database and
+// recorded to histograms.
 enum class CookieSameSite {
   UNSPECIFIED = -1,
   NO_RESTRICTION = 0,
   LAX_MODE = 1,
   STRICT_MODE = 2,
   // Reserved 3 (was EXTENDED_MODE), next number is 4.
+
+  // Keep last, used for histograms.
+  kMaxValue = STRICT_MODE
 };
 
 // These are the enforcement modes that may be applied to a cookie when deciding

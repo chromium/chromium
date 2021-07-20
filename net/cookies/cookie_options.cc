@@ -73,13 +73,8 @@ void CookieOptions::SameSiteCookieContext::
 
 bool CookieOptions::SameSiteCookieContext::CompleteEquivalenceForTesting(
     const SameSiteCookieContext& other) const {
-  bool metadata_equal = metadata_.affected_by_bugfix_1166211 ==
-                        other.metadata().affected_by_bugfix_1166211;
-  bool schemeful_metadata_equal =
-      schemeful_metadata_.affected_by_bugfix_1166211 ==
-      other.schemeful_metadata().affected_by_bugfix_1166211;
-
-  return *this == other && metadata_equal && schemeful_metadata_equal;
+  return (*this == other) && (metadata() == other.metadata()) &&
+         (schemeful_metadata() == other.schemeful_metadata());
 }
 
 bool operator==(const CookieOptions::SameSiteCookieContext& lhs,
@@ -93,7 +88,23 @@ bool operator!=(const CookieOptions::SameSiteCookieContext& lhs,
   return !(lhs == rhs);
 }
 
-// Keep default values in sync with content/public/common/cookie_manager.mojom.
+bool operator==(
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
+  return std::tie(lhs.affected_by_bugfix_1166211,
+                  lhs.cross_site_redirect_downgrade) ==
+         std::tie(rhs.affected_by_bugfix_1166211,
+                  rhs.cross_site_redirect_downgrade);
+}
+
+bool operator!=(
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& lhs,
+    const CookieOptions::SameSiteCookieContext::ContextMetadata& rhs) {
+  return !(lhs == rhs);
+}
+
+// Keep default values in sync with
+// services/network/public/mojom/cookie_manager.mojom.
 CookieOptions::CookieOptions()
     : same_site_cookie_context_(SameSiteCookieContext(
           SameSiteCookieContext::ContextType::CROSS_SITE)) {}

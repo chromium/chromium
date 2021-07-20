@@ -88,24 +88,19 @@ void CookieInclusionStatus::MaybeClearSameSiteWarning() {
           EXCLUDE_SAMESITE_UNSPECIFIED_TREATED_AS_LAX,
           EXCLUDE_SAMESITE_NONE_INSECURE,
       }) != 0u) {
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
-    RemoveWarningReason(CookieInclusionStatus::WARN_SAMESITE_NONE_INSECURE);
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
+    RemoveWarningReason(WARN_SAMESITE_UNSPECIFIED_CROSS_SITE_CONTEXT);
+    RemoveWarningReason(WARN_SAMESITE_NONE_INSECURE);
+    RemoveWarningReason(WARN_SAMESITE_UNSPECIFIED_LAX_ALLOW_UNSAFE);
   }
 
   if (!ShouldRecordDowngradeMetrics()) {
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
-    RemoveWarningReason(
-        CookieInclusionStatus::WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
+    RemoveWarningReason(WARN_STRICT_LAX_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(WARN_STRICT_CROSS_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(WARN_STRICT_CROSS_DOWNGRADE_LAX_SAMESITE);
+    RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_STRICT_SAMESITE);
+    RemoveWarningReason(WARN_LAX_CROSS_DOWNGRADE_LAX_SAMESITE);
+
+    RemoveWarningReason(WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION);
   }
 }
 
@@ -272,6 +267,8 @@ std::string CookieInclusionStatus::GetDebugString() const {
             "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_LAX"},
            {WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT,
             "WARN_SAMESITE_NONE_INCLUDED_BY_SAMESITE_STRICT"},
+           {WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION,
+            "WARN_CROSS_SITE_REDIRECT_DOWNGRADE_CHANGES_INCLUSION"},
        }) {
     if (HasWarningReason(reason.first))
       base::StrAppend(&out, {reason.second, ", "});
