@@ -133,7 +133,8 @@ class PolicyLoaderLacrosTest : public PolicyTestBase {
 TEST_F(PolicyLoaderLacrosTest, BasicTest) {
   SetSystemWidePolicy();
 
-  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
+  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner(),
+                            PolicyPerProfileFilter::kFalse);
   base::RunLoop().RunUntilIdle();
   CheckOnlySystemWidePoliciesAreSet(loader.Load().get());
 }
@@ -141,7 +142,8 @@ TEST_F(PolicyLoaderLacrosTest, BasicTest) {
 TEST_F(PolicyLoaderLacrosTest, BasicTestPerProfile) {
   SetProfilePolicy();
 
-  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
+  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner(),
+                            PolicyPerProfileFilter::kFalse);
   base::RunLoop().RunUntilIdle();
   CheckOnlySystemWidePoliciesAreSet(loader.Load().get());
 }
@@ -153,7 +155,8 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
   chromeos::LacrosService::Get()->SetInitParamsForTests(std::move(init_params));
 
   PolicyLoaderLacros* loader =
-      new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner());
+      new PolicyLoaderLacros(task_environment_.GetMainThreadTaskRunner(),
+                             PolicyPerProfileFilter::kFalse);
   AsyncPolicyProvider provider(&schema_registry_,
                                std::unique_ptr<AsyncPolicyLoader>(loader));
   provider.Init(&schema_registry_);
@@ -172,7 +175,8 @@ TEST_F(PolicyLoaderLacrosTest, UpdateTest) {
 TEST_F(PolicyLoaderLacrosTest, EnterpriseDefaultsTest) {
   SetAllPolicy();
 
-  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner());
+  PolicyLoaderLacros loader(task_environment_.GetMainThreadTaskRunner(),
+                            PolicyPerProfileFilter::kFalse);
   base::RunLoop().RunUntilIdle();
 
   CheckOnlySystemWidePoliciesAreSet(loader.Load().get());

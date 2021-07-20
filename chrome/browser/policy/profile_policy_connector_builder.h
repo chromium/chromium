@@ -29,6 +29,7 @@ std::unique_ptr<ProfilePolicyConnector>
 CreateProfilePolicyConnectorForBrowserContext(
     SchemaRegistry* schema_registry,
     UserCloudPolicyManager* user_cloud_policy_manager,
+    ConfigurationPolicyProvider* user_policy_provider,
     policy::ChromeBrowserPolicyConnector* browser_policy_connector,
     bool force_immediate_load,
     content::BrowserContext* context);

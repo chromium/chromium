@@ -51,6 +51,7 @@ class SequencedTaskRunner;
 }
 
 namespace policy {
+class AsyncPolicyProvider;
 class ConfigurationPolicyProvider;
 class ProfilePolicyConnector;
 }  // namespace policy
@@ -269,6 +270,9 @@ class ProfileImpl : public Profile {
       active_directory_policy_manager_;
 #else
   std::unique_ptr<policy::UserCloudPolicyManager> user_cloud_policy_manager_;
+#endif
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<policy::AsyncPolicyProvider> user_policy_provider_;
 #endif
 
   std::unique_ptr<policy::ProfilePolicyConnector> profile_policy_connector_;

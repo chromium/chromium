@@ -14,22 +14,24 @@
 #include "base/sequenced_task_runner.h"
 #include "chromeos/lacros/lacros_service.h"
 #include "components/policy/core/common/async_policy_loader.h"
+#include "components/policy/core/common/policy_proto_decoders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
-// A policy loader for Lacros. The data is taken from Ash and the validatity of
-// data is trusted, since they have been validated by Ash. This class loads only
-// the user policy that has to apply browser-wide (non per_profile).
+// A policy loader for Lacros. The data is taken from Ash and the validitity of
+// data is trusted, since they have been validated by Ash.
 class POLICY_EXPORT PolicyLoaderLacros
     : public AsyncPolicyLoader,
       public chromeos::LacrosService::Observer {
  public:
   // Creates the policy loader, saving the task_runner internally. Later
   // task_runner is used to have in sequence the process of policy parsing and
-  // validation.
+  // validation. The |per_profile| parameter specifies which policy should be
+  // installed.
   explicit PolicyLoaderLacros(
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      PolicyPerProfileFilter per_profile);
   // Not copyable or movable
   PolicyLoaderLacros(const PolicyLoaderLacros&) = delete;
   PolicyLoaderLacros& operator=(const PolicyLoaderLacros&) = delete;
@@ -52,6 +54,9 @@ class POLICY_EXPORT PolicyLoaderLacros
  private:
   // Task runner for running background jobs.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  // The filter for policy data to install.
+  const PolicyPerProfileFilter per_profile_;
 
   // Serialized blob of PolicyFetchResponse object received from the server.
   absl::optional<std::vector<uint8_t>> policy_fetch_response_;

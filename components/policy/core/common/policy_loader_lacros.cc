@@ -24,9 +24,11 @@
 namespace policy {
 
 PolicyLoaderLacros::PolicyLoaderLacros(
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    scoped_refptr<base::SequencedTaskRunner> task_runner,
+    PolicyPerProfileFilter per_profile)
     : AsyncPolicyLoader(task_runner, /*periodic_updates=*/false),
-      task_runner_(task_runner) {
+      task_runner_(task_runner),
+      per_profile_(per_profile) {
   auto* lacros_service = chromeos::LacrosService::Get();
   const crosapi::mojom::BrowserInitParams* init_params =
       lacros_service->init_params();
@@ -85,8 +87,7 @@ std::unique_ptr<PolicyBundle> PolicyLoaderLacros::Load() {
   base::WeakPtr<CloudExternalDataManager> external_data_manager;
   DecodeProtoFields(*(validator.payload()), external_data_manager,
                     PolicySource::POLICY_SOURCE_CLOUD_FROM_ASH,
-                    PolicyScope::POLICY_SCOPE_USER, &policy_map,
-                    PolicyPerProfileFilter::kFalse);
+                    PolicyScope::POLICY_SCOPE_USER, &policy_map, per_profile_);
   SetEnterpriseUsersSystemWideDefaults(&policy_map);
   bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .MergeFrom(policy_map);
