@@ -46,9 +46,12 @@ status of Chromium's C++ support is covered in more detail in
   * Classes used only for testing should be in a GN build target that is
     marked `testonly=true`. Tests can depend on such targets, but production
     code can not.
-  * The code for `testonly` targets should be placed in a `test/` subdirectory.
-    For test classes used across multiple directories, it might make sense to
-    move them into a nested `test` namespace for clarity.
+  * While test files generally appear alongside the production code they test,
+    support code for `testonly` targets should be placed in a `test/` subdirectory.
+    For example, see `//mojo/core/core_unittest.cc` and
+    `//mojo/core/test/mojo_test_base.cc`. For test classes used across multiple
+    directories, it might make sense to move them into a nested `test` namespace for
+    clarity.
   * Despite the Google C++ style guide
     [deprecating](https://google.github.io/styleguide/cppguide.html#File_Names)
     the `_unittest.cc` suffix for unit test files, in Chromium we still use this
