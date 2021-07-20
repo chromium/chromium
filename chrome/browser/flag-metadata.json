@@ -2416,6 +2416,11 @@
     "expiry_milestone": 98
   },
   {
+    "name": "enable-quick-action-search-widget-android-dino-variant",
+    "owners": [ "maxtauro@google.com", "ender@google.com" ],
+    "expiry_milestone": 98
+  },
+  {
     "name": "enable-quick-answers",
     "owners": [ "croissant-eng" ],
     "expiry_milestone": 95

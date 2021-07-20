@@ -622,6 +622,9 @@ extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
 extern const char kMemlogStackModePseudo[];
 
+extern const char kQuickActionSearchWidgetAndroidDinoVariantName[];
+extern const char kQuickActionSearchWidgetAndroidDinoVariantDescription[];
+
 extern const char kDownloadAutoResumptionNativeName[];
 extern const char kDownloadAutoResumptionNativeDescription[];
 

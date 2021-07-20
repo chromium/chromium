@@ -2205,6 +2205,11 @@ const char kQuickActionSearchWidgetAndroidDescription[] =
     "When enabled, the quick action search widget will be available to add to "
     "the homescreen.";
 
+const char kQuickActionSearchWidgetAndroidDinoVariantName[] =
+    "Quick Action Search Widget - Dino Variant";
+const char kQuickActionSearchWidgetAndroidDinoVariantDescription[] =
+    "When enabled, the Dino widget will be available to add to the homescreen";
+
 const char kQuietNotificationPromptsName[] =
     "Quieter notification permission prompts";
 const char kQuietNotificationPromptsDescription[] =

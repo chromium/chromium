@@ -173,6 +173,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTResizableForThirdParties,
     &kCCTResourcePrefetch,
     &kDarkenWebsitesCheckboxInThemesSetting,
+    &kQuickActionSearchWidgetAndroidDinoVariant,
     &kDontAutoHideBrowserControls,
     &kChromeShareHighlightsAndroid,
     &kChromeShareLongScreenshot,
@@ -540,6 +541,10 @@ const base::Feature kContextualSearchTranslations{
 
 const base::Feature kDarkenWebsitesCheckboxInThemesSetting{
     "DarkenWebsitesCheckboxInThemesSetting", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kQuickActionSearchWidgetAndroidDinoVariant{
+    "QuickActionSearchWidgetAndroidDinoVariant",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDirectActions{"DirectActions",
                                    base::FEATURE_ENABLED_BY_DEFAULT};

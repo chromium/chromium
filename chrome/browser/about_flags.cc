@@ -5054,6 +5054,13 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kQuickActionSearchWidgetAndroidDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kQuickActionSearchWidgetAndroid)},
 
+    {"enable-quick-action-search-widget-android-dino-variant",
+     flag_descriptions::kQuickActionSearchWidgetAndroidDinoVariantName,
+     flag_descriptions::kQuickActionSearchWidgetAndroidDinoVariantDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(
+         chrome::android::kQuickActionSearchWidgetAndroidDinoVariant)},
+
 #endif  // OS_ANDROID
 
     {"enable-layout-ng", flag_descriptions::kEnableLayoutNGName,

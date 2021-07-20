@@ -73,6 +73,7 @@ extern const base::Feature kContextualSearchTapDisableOverride;
 extern const base::Feature kContextualSearchThinWebViewImplementation;
 extern const base::Feature kContextualSearchTranslations;
 extern const base::Feature kDarkenWebsitesCheckboxInThemesSetting;
+extern const base::Feature kQuickActionSearchWidgetAndroidDinoVariant;
 extern const base::Feature kDirectActions;
 extern const base::Feature kDontPrefetchLibraries;
 extern const base::Feature kDownloadAutoResumptionThrottling;
