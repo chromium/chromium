@@ -225,11 +225,8 @@ declare_args() {
 # deterministic builds to reduce compile times, so this is less relevant for
 # official builders.
 strip_absolute_paths_from_debug_symbols_default =
-    # TODO(crbug.com/1010267): remove '!use_clang_coverage', coverage build has
-    # dependency to absolute path of source files.
-    !use_clang_coverage &&
-    (is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
-     is_chromeos || (is_apple && !enable_dsyms))
+    is_android || is_fuchsia || is_nacl || (is_win && use_lld) || is_linux ||
+    is_chromeos || (is_apple && !enable_dsyms)
 
 # If the platform uses stripped absolute paths by default, then we don't expose
 # it as a configuration option. If this is causing problems, please file a bug.
