@@ -389,6 +389,20 @@ void AudioBuffer::ReadFrames(int frames_to_copy,
     return;
   }
 
+  if (sample_format_ == kSampleFormatPlanarS32) {
+    // Format is planar signed32. Convert each value into float and insert into
+    // output channel data.
+    for (int ch = 0; ch < channel_count_; ++ch) {
+      const int32_t* source_data =
+          reinterpret_cast<const int32_t*>(channel_data_[ch]) +
+          source_frame_offset;
+      float* dest_data = dest->channel(ch) + dest_frame_offset;
+      for (int i = 0; i < frames_to_copy; ++i)
+        dest_data[i] = SignedInt32SampleTypeTraits::ToFloat(source_data[i]);
+    }
+    return;
+  }
+
   const int bytes_per_channel = SampleFormatToBytesPerChannel(sample_format_);
   const int frame_size = channel_count_ * bytes_per_channel;
   const uint8_t* source_data = data_.get() + source_frame_offset * frame_size;
