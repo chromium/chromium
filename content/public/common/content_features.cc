@@ -479,6 +479,11 @@ const base::Feature kMojoVideoCaptureSecondary{
 const base::Feature kMouseSubframeNoImplicitCapture{
     "MouseSubframeNoImplicitCapture", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables optimizations for renderer->browser mojo calls to avoid waiting on
+// the UI thread during navigation.
+const base::Feature kNavigationThreadingOptimizations{
+    "NavigationThreadingOptimizations", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // If the network service is enabled, runs it in process.
 const base::Feature kNetworkServiceInProcess {
   "NetworkServiceInProcess",

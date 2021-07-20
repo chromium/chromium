@@ -19,6 +19,7 @@ import "third_party/blink/public/mojom/permissions_policy/permissions_policy_fea
 import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 import "third_party/blink/public/mojom/frame/policy_container.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "third_party/blink/public/mojom/loader/code_cache.mojom";
 import "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom";
@@ -229,7 +230,8 @@ interface NavigationClient {
       blink.mojom.ServiceWorkerContainerInfoForClient? container_info,
       pending_remote<network.mojom.URLLoaderFactory>? prefetch_loader_factory,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
-      blink.mojom.PolicyContainer policy_container)
+      blink.mojom.PolicyContainer policy_container,
+      pending_remote<blink.mojom.CodeCacheHost>? code_cache_host)
       => (DidCommitProvisionalLoadParams params,
           DidCommitProvisionalLoadInterfaceParams? interface_params);
 

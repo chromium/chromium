@@ -2628,6 +2628,7 @@ void RenderFrameImpl::CommitNavigation(
         prefetch_loader_factory,
     const base::UnguessableToken& devtools_navigation_token,
     blink::mojom::PolicyContainerPtr policy_container,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     mojom::NavigationClient::CommitNavigationCallback commit_callback) {
   DCHECK(navigation_client_impl_);
   DCHECK(!blink::IsRendererDebugURL(common_params->url));
@@ -2670,7 +2671,8 @@ void RenderFrameImpl::CommitNavigation(
       common_params.Clone(), commit_params.Clone(),
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller_service_worker_info), std::move(container_info),
-      std::move(prefetch_loader_factory), std::move(document_state));
+      std::move(prefetch_loader_factory), std::move(code_cache_host),
+      std::move(document_state));
 
   // Perform a "loadDataWithBaseURL" navigation. This is different from a normal
   // data: URL navigation in various ways:
@@ -2805,6 +2807,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         prefetch_loader_factory,
+    mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host,
     std::unique_ptr<DocumentState> document_state,
     std::unique_ptr<WebNavigationParams> navigation_params) {
   // Here, creator means either the parent frame or the window opener.
@@ -2923,6 +2926,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
 
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
+  pending_code_cache_host_ = std::move(code_cache_host);
 
   base::WeakPtr<RenderFrameImpl> weak_self = weak_factory_.GetWeakPtr();
   frame_->CommitNavigation(std::move(navigation_params),
@@ -2932,6 +2936,7 @@ void RenderFrameImpl::CommitNavigationWithParams(
     return;
 
   pending_loader_factories_ = nullptr;
+  pending_code_cache_host_.reset();
 }
 
 void RenderFrameImpl::CommitFailedNavigation(
@@ -3851,6 +3856,11 @@ void RenderFrameImpl::DidCommitNavigation(
 
   ui::PageTransition transition =
       GetTransitionType(frame_->GetDocumentLoader(), IsMainFrame());
+
+  if (pending_code_cache_host_) {
+    frame_->GetDocumentLoader()->SetCodeCacheHost(
+        std::move(pending_code_cache_host_));
+  }
 
   DidCommitNavigationInternal(
       commit_type, transition, permissions_policy_header,

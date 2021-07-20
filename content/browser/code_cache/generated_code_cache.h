@@ -106,7 +106,7 @@ class CONTENT_EXPORT GeneratedCodeCache {
   void SetLastUsedTimeForTest(const GURL& resource_url,
                               const GURL& origin_lock,
                               base::Time time,
-                              base::RepeatingCallback<void(void)> callback);
+                              base::OnceClosure callback);
 
   const base::FilePath& path() const { return path_; }
 
@@ -177,10 +177,9 @@ class CONTENT_EXPORT GeneratedCodeCache {
 
   void DoPendingGetBackend(PendingOperation* op);
 
-  void OpenCompleteForSetLastUsedForTest(
-      base::Time time,
-      base::RepeatingCallback<void(void)> callback,
-      disk_cache::EntryResult result);
+  void OpenCompleteForSetLastUsedForTest(base::Time time,
+                                         base::OnceClosure callback,
+                                         disk_cache::EntryResult result);
 
   void CollectStatistics(GeneratedCodeCache::CacheEntryStatus status);
 

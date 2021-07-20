@@ -310,8 +310,7 @@ void CodeCacheHostTestcase::AddCodeCacheHostImpl(
     const Origin& origin,
     mojo::PendingReceiver<::blink::mojom::CodeCacheHost>&& receiver) {
   auto code_cache_host = std::make_unique<content::CodeCacheHostImpl>(
-      renderer_id, /*render_process_host_impl=*/nullptr,
-      generated_code_cache_context_);
+      renderer_id, generated_code_cache_context_);
   code_cache_host->SetCacheStorageControlForTesting(
       cache_storage_control_wrapper_.get());
   auto receivers =

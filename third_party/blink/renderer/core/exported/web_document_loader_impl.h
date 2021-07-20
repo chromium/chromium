@@ -88,6 +88,8 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   WebArchiveInfo GetArchiveInfo() const override;
   bool LastNavigationHadTransientUserActivation() const override;
   bool IsListingFtpDirectory() const override;
+  void SetCodeCacheHost(
+      mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) override;
 
   void Trace(Visitor*) const override;
 

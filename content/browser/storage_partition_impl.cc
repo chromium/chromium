@@ -2499,10 +2499,18 @@ void StoragePartitionImpl::WaitForCodeCacheShutdownForTesting() {
     // enabled features on a sequenced worker pool which could race
     // between ScopedFeatureList destruction.
     base::RunLoop loop;
-    generated_code_cache_context_->generated_js_code_cache()->GetBackend(
-        base::BindOnce([](base::OnceClosure quit,
-                          disk_cache::Backend*) { std::move(quit).Run(); },
-                       loop.QuitClosure()));
+    GeneratedCodeCacheContext::RunOrPostTask(
+        generated_code_cache_context_, FROM_HERE,
+        base::BindOnce(
+            [](scoped_refptr<GeneratedCodeCacheContext> context,
+               base::OnceClosure quit) {
+              context->generated_js_code_cache()->GetBackend(base::BindOnce(
+                  [](base::OnceClosure quit, disk_cache::Backend*) {
+                    std::move(quit).Run();
+                  },
+                  std::move(quit)));
+            },
+            generated_code_cache_context_, loop.QuitClosure()));
     loop.Run();
     generated_code_cache_context_->Shutdown();
   }

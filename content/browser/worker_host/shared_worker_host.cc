@@ -127,6 +127,9 @@ SharedWorkerHost::SharedWorkerHost(
           std::make_unique<ScopedProcessHostRef>(site_instance_->GetProcess())),
       next_connection_request_id_(1),
       devtools_handle_(std::make_unique<ScopedDevToolsHandle>(this)),
+      code_cache_host_receivers_(GetProcessHost()
+                                     ->GetStoragePartition()
+                                     ->GetGeneratedCodeCacheContext()),
       ukm_source_id_(ukm::ConvertToSourceId(ukm::AssignNewSourceId(),
                                             ukm::SourceIdType::WORKER_ID)),
       reporting_source_(base::UnguessableToken::Create()),
@@ -446,12 +449,8 @@ void SharedWorkerHost::BindCacheStorage(
 void SharedWorkerHost::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  RenderProcessHost* rph = GetProcessHost();
-  code_cache_host_receivers_.Add(
-      std::make_unique<CodeCacheHostImpl>(
-          rph->GetID(), rph,
-          rph->GetStoragePartition()->GetGeneratedCodeCacheContext()),
-      std::move(receiver));
+  code_cache_host_receivers_.Add(GetProcessHost()->GetID(),
+                                 std::move(receiver));
 }
 
 void SharedWorkerHost::Destruct() {

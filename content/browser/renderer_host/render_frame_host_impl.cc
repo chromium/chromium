@@ -1400,7 +1400,9 @@ RenderFrameHostImpl::RenderFrameHostImpl(
       document_associated_data_(
           std::make_unique<DocumentAssociatedData>(*this)),
       lifecycle_state_(lifecycle_state),
-      anonymous_(parent_ ? parent_->anonymous() : false) {
+      anonymous_(parent_ ? parent_->anonymous() : false),
+      code_cache_host_receivers_(
+          GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()) {
   DCHECK(delegate_);
   DCHECK(lifecycle_state_ == LifecycleStateImpl::kSpeculative ||
          lifecycle_state_ == LifecycleStateImpl::kPrerendering ||
@@ -8920,11 +8922,7 @@ void RenderFrameHostImpl::CreateInstalledAppProvider(
 void RenderFrameHostImpl::CreateCodeCacheHost(
     mojo::PendingReceiver<blink::mojom::CodeCacheHost> receiver) {
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
-  code_cache_host_receivers_.Add(
-      std::make_unique<CodeCacheHostImpl>(
-          GetProcess()->GetID(), GetProcess(),
-          GetProcess()->GetStoragePartition()->GetGeneratedCodeCacheContext()),
-      std::move(receiver));
+  code_cache_host_receivers_.Add(GetProcess()->GetID(), std::move(receiver));
 }
 
 void RenderFrameHostImpl::CreateDedicatedWorkerHostFactory(
@@ -10320,6 +10318,11 @@ void RenderFrameHostImpl::SendCommitNavigation(
     const base::UnguessableToken& devtools_navigation_token) {
   DCHECK_EQ(net::OK, navigation_request->GetNetErrorCode());
   IncreaseCommitNavigationCounter();
+  mojo::PendingRemote<blink::mojom::CodeCacheHost> code_cache_host;
+  if (base::FeatureList::IsEnabled(
+          features::kNavigationThreadingOptimizations)) {
+    CreateCodeCacheHost(code_cache_host.InitWithNewPipeAndPassReceiver());
+  }
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
       std::move(response_head), std::move(response_body),
@@ -10327,7 +10330,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(subresource_loader_factories), std::move(subresource_overrides),
       std::move(controller), std::move(container_info),
       std::move(prefetch_loader_factory), devtools_navigation_token,
-      std::move(policy_container),
+      std::move(policy_container), std::move(code_cache_host),
       BuildCommitNavigationCallback(navigation_request));
 }
 

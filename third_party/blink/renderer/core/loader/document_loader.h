@@ -360,6 +360,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   blink::mojom::CodeCacheHost* GetCodeCacheHost();
   void OnCodeCacheHostClosed();
+  void SetCodeCacheHost(
+      mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host);
   static void DisableCodeCacheForTesting();
 
   HashSet<KURL> GetEarlyHintsPreloadedResources();

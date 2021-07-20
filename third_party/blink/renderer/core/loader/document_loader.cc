@@ -2751,6 +2751,14 @@ void DocumentLoader::OnCodeCacheHostClosed() {
   code_cache_host_.reset();
 }
 
+void DocumentLoader::SetCodeCacheHost(
+    mojo::PendingRemote<mojom::CodeCacheHost> code_cache_host) {
+  code_cache_host_.reset();
+  code_cache_host_.Bind(std::move(code_cache_host));
+  code_cache_host_.set_disconnect_handler(WTF::Bind(
+      &DocumentLoader::OnCodeCacheHostClosed, WrapWeakPersistent(this)));
+}
+
 // static
 void DocumentLoader::DisableCodeCacheForTesting() {
   GetDisableCodeCacheForTesting() = true;

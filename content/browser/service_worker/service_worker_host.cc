@@ -148,11 +148,13 @@ void ServiceWorkerHost::CreateCodeCacheHost(
 
   // Create a new CodeCacheHostImpl and bind it to the given receiver.
   StoragePartition* storage_partition = process->GetStoragePartition();
-  code_cache_host_receivers_.Add(
-      std::make_unique<CodeCacheHostImpl>(
-          version_->embedded_worker()->process_id(), process,
-          storage_partition->GetGeneratedCodeCacheContext()),
-      std::move(receiver));
+  if (!code_cache_host_receivers_) {
+    code_cache_host_receivers_ =
+        std::make_unique<CodeCacheHostImpl::ReceiverSet>(
+            storage_partition->GetGeneratedCodeCacheContext());
+  }
+  code_cache_host_receivers_->Add(version_->embedded_worker()->process_id(),
+                                  std::move(receiver));
 }
 
 base::WeakPtr<ServiceWorkerHost> ServiceWorkerHost::GetWeakPtr() {

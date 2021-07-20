@@ -4,6 +4,7 @@
 
 #include "content/browser/code_cache/generated_code_cache.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -854,27 +855,29 @@ void GeneratedCodeCache::SetLastUsedTimeForTest(
     const GURL& resource_url,
     const GURL& origin_lock,
     base::Time time,
-    base::RepeatingCallback<void(void)> user_callback) {
+    base::OnceClosure user_callback) {
   // This is used only for tests. So reasonable to assume that backend is
   // initialized here. All other operations handle the case when backend was not
   // yet opened.
   DCHECK_EQ(backend_state_, kInitialized);
+  auto split = base::SplitOnceCallback(std::move(user_callback));
 
-  disk_cache::EntryResultCallback callback =
-      base::BindOnce(&GeneratedCodeCache::OpenCompleteForSetLastUsedForTest,
-                     weak_ptr_factory_.GetWeakPtr(), time, user_callback);
+  disk_cache::EntryResultCallback callback = base::BindOnce(
+      &GeneratedCodeCache::OpenCompleteForSetLastUsedForTest,
+      weak_ptr_factory_.GetWeakPtr(), time, std::move(split.first));
 
   std::string key = GetCacheKey(resource_url, origin_lock);
   disk_cache::EntryResult result =
       backend_->OpenEntry(key, net::LOWEST, std::move(callback));
   if (result.net_error() != net::ERR_IO_PENDING) {
-    OpenCompleteForSetLastUsedForTest(time, user_callback, std::move(result));
+    OpenCompleteForSetLastUsedForTest(time, std::move(split.second),
+                                      std::move(result));
   }
 }
 
 void GeneratedCodeCache::OpenCompleteForSetLastUsedForTest(
     base::Time time,
-    base::RepeatingCallback<void(void)> callback,
+    base::OnceClosure callback,
     disk_cache::EntryResult result) {
   DCHECK_EQ(result.net_error(), net::OK);
   {

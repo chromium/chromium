@@ -10,6 +10,7 @@
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "content/browser/browser_interface_broker_impl.h"
+#include "content/browser/renderer_host/code_cache_host_impl.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
@@ -317,8 +318,7 @@ class DedicatedWorkerHost final : public blink::mojom::DedicatedWorkerHost,
 
   // CodeCacheHost processes requests to fetch / write generated code for
   // JavaScript / WebAssembly resources.
-  mojo::UniqueReceiverSet<blink::mojom::CodeCacheHost>
-      code_cache_host_receivers_;
+  CodeCacheHostImpl::ReceiverSet code_cache_host_receivers_;
 
   base::WeakPtrFactory<DedicatedWorkerHost> weak_factory_{this};
 
