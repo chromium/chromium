@@ -9,6 +9,7 @@
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/dom_action.pb.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
 
@@ -28,10 +29,12 @@ class GetElementStatusAction : public Action {
   // Overrides Action:
   void InternalProcessAction(ProcessActionCallback callback) override;
 
-  void OnWaitForElement(const ClientStatus& element_status);
-  void OnFindElement(const std::vector<std::string>& attribute_list,
-                     const ClientStatus& status,
-                     std::unique_ptr<ElementFinder::Result> element);
+  void GetElementBySelector(const Selector& selector);
+  void OnWaitForElement(const Selector& selector,
+                        const ClientStatus& element_status);
+  void GetElementByClientId(const ClientIdProto& client_id);
+  void OnGetElement(const ClientStatus& status,
+                    std::unique_ptr<ElementFinder::Result> element);
   void OnGetStringAttribute(const ClientStatus& status,
                             const std::string& text);
   void OnResolveTextValue(const std::string& text,
@@ -45,7 +48,6 @@ class GetElementStatusAction : public Action {
 
   std::unique_ptr<ElementFinder::Result> element_;
 
-  Selector selector_;
   ProcessActionCallback callback_;
   base::WeakPtrFactory<GetElementStatusAction> weak_ptr_factory_{this};
 };

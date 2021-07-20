@@ -2865,7 +2865,10 @@ message PopupMessageProto {
 
 // Action to get an element's status.
 message GetElementStatusProto {
-  optional SelectorProto element = 1;
+  oneof element {
+    SelectorProto selector = 1;
+    ClientIdProto client_id = 5;
+  }
 
   optional ValueMatch expected_value_match = 2;
   optional ValueSource value_source = 4;

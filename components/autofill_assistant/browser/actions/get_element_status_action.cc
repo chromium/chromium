@@ -13,6 +13,7 @@
 #include "components/autofill_assistant/browser/client_status.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data_util.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -93,28 +94,65 @@ GetElementStatusAction::~GetElementStatusAction() = default;
 void GetElementStatusAction::InternalProcessAction(
     ProcessActionCallback callback) {
   callback_ = std::move(callback);
-  selector_ = Selector(proto_.get_element_status().element());
 
-  if (selector_.empty()) {
+  switch (proto_.get_element_status().element_case()) {
+    case GetElementStatusProto::kSelector:
+      GetElementBySelector(Selector(proto_.get_element_status().selector()));
+      return;
+    case GetElementStatusProto::kClientId:
+      GetElementByClientId(proto_.get_element_status().client_id());
+      return;
+    case GetElementStatusProto::ELEMENT_NOT_SET:
+      EndAction(ClientStatus(INVALID_ACTION));
+      return;
+  }
+}
+
+void GetElementStatusAction::GetElementBySelector(const Selector& selector) {
+  if (selector.empty()) {
     VLOG(1) << __func__ << ": empty selector";
     EndAction(ClientStatus(INVALID_SELECTOR));
     return;
   }
 
   delegate_->ShortWaitForElementWithSlowWarning(
-      selector_,
+      selector,
       base::BindOnce(&GetElementStatusAction::OnWaitForElementTimed,
                      weak_ptr_factory_.GetWeakPtr(),
                      base::BindOnce(&GetElementStatusAction::OnWaitForElement,
-                                    weak_ptr_factory_.GetWeakPtr())));
+                                    weak_ptr_factory_.GetWeakPtr(), selector)));
 }
 
 void GetElementStatusAction::OnWaitForElement(
+    const Selector& selector,
     const ClientStatus& element_status) {
   if (!element_status.ok()) {
     EndAction(element_status);
     return;
   }
+
+  delegate_->FindElement(selector,
+                         base::BindOnce(&GetElementStatusAction::OnGetElement,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void GetElementStatusAction::GetElementByClientId(
+    const ClientIdProto& client_id) {
+  auto element = std::make_unique<ElementFinder::Result>();
+  auto* element_ptr = element.get();
+  OnGetElement(delegate_->GetElementStore()->GetElement(client_id.identifier(),
+                                                        element_ptr),
+               std::move(element));
+}
+
+void GetElementStatusAction::OnGetElement(
+    const ClientStatus& status,
+    std::unique_ptr<ElementFinder::Result> element) {
+  if (!status.ok()) {
+    EndAction(status);
+    return;
+  }
+  element_ = std::move(element);
 
   std::vector<std::string> attribute_list;
   switch (proto_.get_element_status().value_source()) {
@@ -128,22 +166,6 @@ void GetElementStatusAction::OnWaitForElement(
       EndAction(ClientStatus(INVALID_ACTION));
       return;
   }
-
-  delegate_->FindElement(
-      selector_,
-      base::BindOnce(&GetElementStatusAction::OnFindElement,
-                     weak_ptr_factory_.GetWeakPtr(), attribute_list));
-}
-
-void GetElementStatusAction::OnFindElement(
-    const std::vector<std::string>& attribute_list,
-    const ClientStatus& status,
-    std::unique_ptr<ElementFinder::Result> element) {
-  if (!status.ok()) {
-    EndAction(status);
-    return;
-  }
-  element_ = std::move(element);
 
   delegate_->GetWebController()->GetStringAttribute(
       attribute_list, *element_,

@@ -18,6 +18,7 @@
 #include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "components/autofill_assistant/browser/web/element_store.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -86,16 +87,24 @@ class GetElementStatusActionTest : public testing::Test {
   MockWebsiteLoginManager mock_website_login_manager_;
 };
 
+TEST_F(GetElementStatusActionTest, NoElementSpecifiedFails) {
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(Property(&ProcessedActionProto::status, INVALID_ACTION))));
+  Run();
+}
+
 TEST_F(GetElementStatusActionTest, EmptySelectorFails) {
+  proto_.mutable_selector();
   EXPECT_CALL(
       callback_,
       Run(Pointee(Property(&ProcessedActionProto::status, INVALID_SELECTOR))));
   Run();
 }
 
-TEST_F(GetElementStatusActionTest, ActionFailsForNonExistentElement) {
+TEST_F(GetElementStatusActionTest, ActionFailsForSelectorNotFound) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -110,9 +119,43 @@ TEST_F(GetElementStatusActionTest, ActionFailsForNonExistentElement) {
   Run();
 }
 
-TEST_F(GetElementStatusActionTest, ActionReportsAllVariations) {
+TEST_F(GetElementStatusActionTest, ActionFailsForClientIdNotFound) {
+  proto_.mutable_client_id()->set_identifier("element");
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_text_value()
+      ->set_text(kValue);
+
+  EXPECT_CALL(callback_, Run(Pointee(Property(&ProcessedActionProto::status,
+                                              CLIENT_ID_RESOLUTION_FAILED))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForSelector) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
+  proto_.mutable_expected_value_match()
+      ->mutable_text_match()
+      ->mutable_text_value()
+      ->set_text(kValue);
+
+  EXPECT_CALL(
+      callback_,
+      Run(Pointee(AllOf(
+          Property(&ProcessedActionProto::status, ACTION_APPLIED),
+          Property(
+              &ProcessedActionProto::get_element_status_result,
+              AllOf(Property(&GetElementStatusProto::Result::not_empty, true),
+                    Property(&GetElementStatusProto::Result::reports,
+                             SizeIs(4))))))));
+  Run();
+}
+
+TEST_F(GetElementStatusActionTest, ActionReportsAllVariationsForClientId) {
+  ElementFinder::Result element;
+  mock_action_delegate_.GetElementStore()->AddElement("element",
+                                                      element.dom_object);
+  proto_.mutable_client_id()->set_identifier("element");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -132,7 +175,7 @@ TEST_F(GetElementStatusActionTest, ActionReportsAllVariations) {
 
 TEST_F(GetElementStatusActionTest, ActionFailsForMismatchIfRequired) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -157,7 +200,7 @@ TEST_F(GetElementStatusActionTest, ActionFailsForMismatchIfRequired) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForMismatchIfAllowed) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -181,7 +224,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForMismatchIfAllowed) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForNoExpectation) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -200,7 +243,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForNoExpectation) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveFullMatch) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -237,7 +280,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveFullMatch) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveContains) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -267,7 +310,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveContains) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveStartsWith) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -297,7 +340,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveStartsWith) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveEndsWith) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -327,7 +370,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseSensitiveEndsWith) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseInsensitiveFullMatch) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -357,7 +400,7 @@ TEST_F(GetElementStatusActionTest, ActionSucceedsForCaseInsensitiveFullMatch) {
 
 TEST_F(GetElementStatusActionTest, ActionSucceedsForFullMatchWithoutSpaces) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -395,7 +438,7 @@ TEST_F(GetElementStatusActionTest, EmptyTextForEmptyValueIsSuccess) {
       .WillByDefault(RunOnceCallback<2>(OkClientStatus(), std::string()));
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -422,7 +465,7 @@ TEST_F(GetElementStatusActionTest, EmptyTextForEmptyValueIsSuccess) {
 
 TEST_F(GetElementStatusActionTest, InnerTextLookupSuccess) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -455,7 +498,7 @@ TEST_F(GetElementStatusActionTest, InnerTextLookupSuccess) {
 
 TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseSensitive) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("Valu.");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
@@ -482,7 +525,7 @@ TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseSensitive) {
 
 TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseInsensitive) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("vAlU.");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
@@ -509,7 +552,7 @@ TEST_F(GetElementStatusActionTest, MatchingValueWithRegexpCaseInsensitive) {
 
 TEST_F(GetElementStatusActionTest, ActionFailsForRegexMismatchIfRequired) {
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("none");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
@@ -534,7 +577,7 @@ TEST_F(GetElementStatusActionTest, EmptyRegexpForEmptyValueIsSuccess) {
       .WillByDefault(RunOnceCallback<2>(OkClientStatus(), std::string()));
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()->mutable_text_match()->set_re2("^$");
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
@@ -561,7 +604,7 @@ TEST_F(GetElementStatusActionTest, BlankTextWithRemovingSpacesIsExpectedEmpty) {
       .WillByDefault(RunOnceCallback<2>(OkClientStatus(), "   "));
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
@@ -612,7 +655,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithAutofillValue) {
       static_cast<int>(autofill::ServerFieldType::NAME_LAST));
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   *proto_.mutable_expected_value_match()
        ->mutable_text_match()
        ->mutable_text_value()
@@ -648,7 +691,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithPasswordManagerValue) {
   password_manager_value.set_credential_type(PasswordManagerValue::PASSWORD);
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   *proto_.mutable_expected_value_match()
        ->mutable_text_match()
        ->mutable_text_value()
@@ -688,7 +731,7 @@ TEST_F(GetElementStatusActionTest, SucceedsWithClientMemoryValue) {
   user_data_.additional_values_["__password__"] = value_proto;
 
   Selector selector({"#element"});
-  *proto_.mutable_element() = selector.proto;
+  *proto_.mutable_selector() = selector.proto;
   proto_.mutable_expected_value_match()
       ->mutable_text_match()
       ->mutable_text_value()
