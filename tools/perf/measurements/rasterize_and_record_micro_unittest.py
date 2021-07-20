@@ -18,8 +18,7 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
 
   # Fails or flaky on some bots.  See http://crbug.com/956798
   # TODO(crbug.com/1197307): Re-enable on mojave.
-  # TODO(crbug.com/1226402): Update the expectations for CompositeAfterPaint.
-  @decorators.Disabled('win', 'chromeos', 'linux', 'win7', 'mac')
+  @decorators.Disabled('win', 'chromeos', 'linux', 'win7', 'mojave')
   def testRasterizeAndRecordMicro(self):
     pate_test = rasterize_and_record_micro.RasterizeAndRecordMicro(
         rasterize_repeat=1, record_repeat=1, start_wait_time=0.0,
@@ -36,7 +35,6 @@ class RasterizeAndRecordMicroUnitTest(legacy_page_test_case.LegacyPageTestCase):
         'pixels_rasterized_as_opaque',
         'total_layers',
         'total_picture_layers',
-        'total_picture_layers_with_no_content',
         'painter_memory_usage',
         'paint_op_memory_usage',
         'paint_op_count',
