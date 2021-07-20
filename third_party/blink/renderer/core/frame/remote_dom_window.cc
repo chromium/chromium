@@ -31,10 +31,7 @@ void RemoteDOMWindow::FrameDetached() {
   DisconnectFromFrame();
 }
 
-void RemoteDOMWindow::SchedulePostMessage(
-    MessageEvent* event,
-    scoped_refptr<const SecurityOrigin> target,
-    LocalDOMWindow* source) {
+void RemoteDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
   // To match same-process behavior, the IPC to forward postMessage
   // cross-process should only be sent after the current script finishes
   // running, to preserve relative ordering of IPCs.  See
@@ -45,27 +42,26 @@ void RemoteDOMWindow::SchedulePostMessage(
   // should also be observable by the target frame prior to receiving the
   // postMessage. We might consider forcing layout in ForwardPostMessage or
   // further delaying postMessage forwarding until after the next BeginFrame.
-  source->GetTaskRunner(TaskType::kPostedMessage)
-      ->PostTask(FROM_HERE,
-                 WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
-                           WrapPersistent(this), WrapPersistent(event),
-                           std::move(target), WrapPersistent(source)));
+  posted_message->source->GetTaskRunner(TaskType::kPostedMessage)
+      ->PostTask(FROM_HERE, WTF::Bind(&RemoteDOMWindow::ForwardPostMessage,
+                                      WrapPersistent(this),
+                                      WrapPersistent(posted_message)));
 }
 
-void RemoteDOMWindow::ForwardPostMessage(
-    MessageEvent* event,
-    scoped_refptr<const SecurityOrigin> target,
-    LocalDOMWindow* source) {
+void RemoteDOMWindow::ForwardPostMessage(PostedMessage* posted_message) {
   // If the target frame was detached after the message was scheduled,
   // don't deliver the message.
   if (!GetFrame())
     return;
 
-  absl::optional<base::UnguessableToken> agent_cluster;
-  if (event->IsLockedToAgentCluster())
-    agent_cluster = source->GetAgentClusterID();
-  GetFrame()->ForwardPostMessage(event, agent_cluster, std::move(target),
-                                 source->GetFrame());
+  LocalFrame* source_frame = posted_message->source->GetFrame();
+  scoped_refptr<const SecurityOrigin> source_origin =
+      posted_message->source_origin;
+  scoped_refptr<const SecurityOrigin> target_origin =
+      posted_message->target_origin;
+  GetFrame()->ForwardPostMessage(
+      std::move(*posted_message).ToBlinkTransferableMessage(), source_frame,
+      std::move(source_origin), std::move(target_origin));
 }
 
 }  // namespace blink

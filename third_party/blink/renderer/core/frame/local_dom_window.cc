@@ -973,10 +973,9 @@ Navigator* LocalDOMWindow::navigator() {
   return navigator_.Get();
 }
 
-void LocalDOMWindow::SchedulePostMessage(
-    MessageEvent* event,
-    scoped_refptr<const SecurityOrigin> target,
-    LocalDOMWindow* source) {
+void LocalDOMWindow::SchedulePostMessage(PostedMessage* posted_message) {
+  LocalDOMWindow* source = posted_message->source;
+
   // Record UKM metrics for postMessage event.
   ukm::SourceId source_frame_ukm_source_id = source->UkmSourceID();
   if (ShouldRecordPostMessageIncomingFrameUkmEvent(
@@ -986,6 +985,14 @@ void LocalDOMWindow::SchedulePostMessage(
         .Record(UkmRecorder());
   }
 
+  // Convert the posted message to a MessageEvent so it can be unpacked for
+  // local dispatch.
+  MessageEvent* event = MessageEvent::Create(
+      std::move(posted_message->channels), std::move(posted_message->data),
+      posted_message->source_origin->ToString(), String(),
+      posted_message->source, posted_message->user_activation,
+      posted_message->delegate_payment_request);
+
   // Allowing unbounded amounts of messages to build up for a suspended context
   // is problematic; consider imposing a limit or other restriction if this
   // surfaces often as a problem (see crbug.com/587012).
@@ -994,7 +1001,8 @@ void LocalDOMWindow::SchedulePostMessage(
       ->PostTask(
           FROM_HERE,
           WTF::Bind(&LocalDOMWindow::DispatchPostMessage, WrapPersistent(this),
-                    WrapPersistent(event), std::move(target),
+                    WrapPersistent(event),
+                    std::move(posted_message->target_origin),
                     std::move(location), source->GetAgent()->cluster_id()));
   probe::AsyncTaskScheduled(this, "postMessage", event->async_task_id());
 }

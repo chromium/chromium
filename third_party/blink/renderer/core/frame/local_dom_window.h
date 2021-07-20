@@ -443,9 +443,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
                             const RegisteredEventListener&) override;
 
   // Protected DOMWindow overrides.
-  void SchedulePostMessage(MessageEvent*,
-                           scoped_refptr<const SecurityOrigin> target,
-                           LocalDOMWindow* source) override;
+  void SchedulePostMessage(PostedMessage*) override;
 
  private:
   // Intentionally private to prevent redundant checks when the type is

@@ -33,13 +33,14 @@ class FrameSinkId;
 namespace blink {
 
 class AssociatedInterfaceProvider;
+class ChildFrameCompositingHelper;
 class InterfaceRegistry;
 class LocalFrame;
-class MessageEvent;
 class RemoteFrameClient;
-struct FrameLoadRequest;
-class ChildFrameCompositingHelper;
 class WebFrameWidget;
+
+struct BlinkTransferableMessage;
+struct FrameLoadRequest;
 
 // A RemoteFrame is a frame that is possibly hosted outside this process.
 class CORE_EXPORT RemoteFrame final : public Frame,
@@ -96,10 +97,10 @@ class CORE_EXPORT RemoteFrame final : public Frame,
   void CreateView();
 
   void ForwardPostMessage(
-      MessageEvent* message_event,
-      absl::optional<base::UnguessableToken> cluster_id,
-      scoped_refptr<const SecurityOrigin> target_security_origin,
-      LocalFrame* source_frame);
+      BlinkTransferableMessage,
+      LocalFrame* source_frame,
+      scoped_refptr<const SecurityOrigin> source_security_origin,
+      scoped_refptr<const SecurityOrigin> target_security_origin);
 
   mojom::blink::RemoteFrameHost& GetRemoteFrameHostRemote();
 

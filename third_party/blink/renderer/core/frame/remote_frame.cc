@@ -486,22 +486,24 @@ void RemoteFrame::CreateView() {
 }
 
 void RemoteFrame::ForwardPostMessage(
-    MessageEvent* message_event,
-    absl::optional<base::UnguessableToken> cluster_id,
-    scoped_refptr<const SecurityOrigin> target_security_origin,
-    LocalFrame* source_frame) {
+    BlinkTransferableMessage transferable_message,
+    LocalFrame* source_frame,
+    scoped_refptr<const SecurityOrigin> source_security_origin,
+    scoped_refptr<const SecurityOrigin> target_security_origin) {
   absl::optional<blink::LocalFrameToken> source_token;
   if (source_frame)
     source_token = source_frame->GetLocalFrameToken();
 
-  String source_origin = message_event->origin();
-  String target_origin = g_empty_string;
-  if (target_security_origin)
-    target_origin = target_security_origin->ToString();
+  String source_origin = source_security_origin
+                             ? source_security_origin->ToString()
+                             : g_empty_string;
+  String target_origin = target_security_origin
+                             ? target_security_origin->ToString()
+                             : g_empty_string;
 
-  GetRemoteFrameHostRemote().RouteMessageEvent(
-      source_token, source_origin, target_origin,
-      BlinkTransferableMessage::FromMessageEvent(message_event, cluster_id));
+  GetRemoteFrameHostRemote().RouteMessageEvent(source_token, source_origin,
+                                               target_origin,
+                                               std::move(transferable_message));
 }
 
 mojom::blink::RemoteFrameHost& RemoteFrame::GetRemoteFrameHostRemote() {

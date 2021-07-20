@@ -17,16 +17,11 @@
 
 namespace blink {
 
-class MessageEvent;
-
 // This struct represents messages as they are posted over a message port. This
 // type can be serialized as a blink::mojom::TransferableMessage struct.
 // This is the renderer-side equivalent of blink::TransferableMessage, where
 // this struct uses blink types, while the other struct uses std:: types.
 struct CORE_EXPORT BlinkTransferableMessage : BlinkCloneableMessage {
-  static BlinkTransferableMessage FromMessageEvent(
-      MessageEvent*,
-      absl::optional<base::UnguessableToken> cluster_id = absl::nullopt);
   static BlinkTransferableMessage FromTransferableMessage(TransferableMessage);
 
   BlinkTransferableMessage();

@@ -712,12 +712,44 @@ void DOMWindow::DoPostMessage(scoped_refptr<SerializedScriptValue> message,
     delegate_payment_request = capability_list.Contains("paymentrequest");
   }
 
-  MessageEvent* event =
-      MessageEvent::Create(std::move(channels), std::move(message),
-                           source->GetSecurityOrigin()->ToString(), String(),
-                           source, user_activation, delegate_payment_request);
+  PostedMessage* posted_message = MakeGarbageCollected<PostedMessage>();
+  posted_message->source_origin = source->GetSecurityOrigin();
+  posted_message->target_origin = std::move(target);
+  posted_message->data = std::move(message);
+  posted_message->channels = std::move(channels);
+  posted_message->source = source;
+  posted_message->user_activation = user_activation;
+  posted_message->delegate_payment_request = delegate_payment_request;
+  SchedulePostMessage(posted_message);
+}
 
-  SchedulePostMessage(event, std::move(target), source);
+void DOMWindow::PostedMessage::Trace(Visitor* visitor) const {
+  visitor->Trace(source);
+  visitor->Trace(user_activation);
+}
+
+BlinkTransferableMessage
+DOMWindow::PostedMessage::ToBlinkTransferableMessage() && {
+  BlinkTransferableMessage result;
+
+  // Message data and cluster ID (optional).
+  result.message = std::move(data);
+  if (result.message->IsLockedToAgentCluster())
+    result.locked_agent_cluster_id = source->GetAgentClusterID();
+
+  // Ports
+  result.ports = std::move(channels);
+
+  // User activation
+  if (user_activation) {
+    result.user_activation = mojom::blink::UserActivationSnapshot::New(
+        user_activation->hasBeenActive(), user_activation->isActive());
+  }
+
+  // Capability delegation
+  result.delegate_payment_request = delegate_payment_request;
+
+  return result;
 }
 
 void DOMWindow::Trace(Visitor* visitor) const {

@@ -161,6 +161,7 @@
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
+#include "third_party/blink/renderer/core/messaging/blink_cloneable_message.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/drag_image.h"
@@ -1249,23 +1250,25 @@ TEST_F(WebFrameTest, PostMessageEvent) {
   auto* frame =
       To<LocalFrame>(web_view_helper.GetWebView()->GetPage()->MainFrame());
 
-  scoped_refptr<SerializedScriptValue> data = SerializedScriptValue::Create();
-  MessageEvent* message_event = MessageEvent::Create(
-      /*ports=*/nullptr, std::move(data), "http://origin.com");
+  auto make_message = []() {
+    BlinkTransferableMessage message;
+    message.message = SerializedScriptValue::NullValue();
+    message.sender_origin =
+        SecurityOrigin::CreateFromString("https://origin.com");
+    return message;
+  };
 
   // Send a message with the correct origin.
   scoped_refptr<SecurityOrigin> correct_origin =
       SecurityOrigin::Create(ToKURL(base_url_));
-  frame->PostMessageEvent(
-      absl::nullopt, g_empty_string, correct_origin->ToString(),
-      BlinkTransferableMessage::FromMessageEvent(message_event));
+  frame->PostMessageEvent(absl::nullopt, g_empty_string,
+                          correct_origin->ToString(), make_message());
 
   // Send another message with incorrect origin.
   scoped_refptr<SecurityOrigin> incorrect_origin =
       SecurityOrigin::Create(ToKURL(chrome_url_));
-  frame->PostMessageEvent(
-      absl::nullopt, g_empty_string, incorrect_origin->ToString(),
-      BlinkTransferableMessage::FromMessageEvent(message_event));
+  frame->PostMessageEvent(absl::nullopt, g_empty_string,
+                          incorrect_origin->ToString(), make_message());
 
   // Verify that only the first addition is in the body of the page.
   std::string content = TestWebFrameContentDumper::DumpWebViewAsText(
