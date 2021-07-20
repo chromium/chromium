@@ -129,6 +129,41 @@ WARN_UNUSED_RESULT bool ShouldReplaceImpressionToAttribute(
   return impression_to_attribute->impression_time() < candidate_impression_time;
 }
 
+WARN_UNUSED_RESULT int SerializeAttributionLogic(
+    StorableImpression::AttributionLogic val) {
+  return static_cast<int>(val);
+}
+
+WARN_UNUSED_RESULT absl::optional<StorableImpression::AttributionLogic>
+DeserializeAttributionLogic(int val) {
+  switch (val) {
+    case static_cast<int>(StorableImpression::AttributionLogic::kNever):
+      return StorableImpression::AttributionLogic::kNever;
+    case static_cast<int>(StorableImpression::AttributionLogic::kTruthfully):
+      return StorableImpression::AttributionLogic::kTruthfully;
+    case static_cast<int>(StorableImpression::AttributionLogic::kFalsely):
+      return StorableImpression::AttributionLogic::kFalsely;
+    default:
+      return absl::nullopt;
+  }
+}
+
+WARN_UNUSED_RESULT int SerializeSourceType(StorableImpression::SourceType val) {
+  return static_cast<int>(val);
+}
+
+WARN_UNUSED_RESULT absl::optional<StorableImpression::SourceType>
+DeserializeSourceType(int val) {
+  switch (val) {
+    case static_cast<int>(StorableImpression::SourceType::kNavigation):
+      return StorableImpression::SourceType::kNavigation;
+    case static_cast<int>(StorableImpression::SourceType::kEvent):
+      return StorableImpression::SourceType::kEvent;
+    default:
+      return absl::nullopt;
+  }
+}
+
 }  // namespace
 
 // static
@@ -229,8 +264,8 @@ void ConversionStorageSql::StoreImpression(
   statement.BindString(4, serialized_reporting_origin);
   statement.BindTime(5, impression.impression_time());
   statement.BindTime(6, impression.expiry_time());
-  statement.BindInt(7, static_cast<int>(impression.source_type()));
-  statement.BindInt(8, static_cast<int>(attribution_logic));
+  statement.BindInt(7, SerializeSourceType(impression.source_type()));
+  statement.BindInt(8, SerializeAttributionLogic(attribution_logic));
   statement.BindInt64(9, impression.priority());
   statement.BindString(10, impression.ImpressionSite().Serialize());
 
@@ -369,8 +404,8 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
   // past their expiry time.
   static constexpr char kGetMatchingImpressionsSql[] =
       "SELECT impression_origin,impression_id,impression_time,priority,"
-      "impression_data,conversion_origin,expiry_time,"
-      "attributed_truthfully,source_type,num_conversions "
+      "conversion_origin,attributed_truthfully,source_type,num_conversions,"
+      "impression_data,expiry_time "
       "FROM impressions "
       "WHERE conversion_destination = ? AND reporting_origin = ? "
       "AND active = 1 AND expiry_time > ? "
@@ -392,14 +427,29 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(0));
 
-    // Skip the report if the impression origin is opaque. This should only
-    // happen if there is some sort of database corruption.
-    if (impression_origin.opaque())
-      continue;
-
     int64_t impression_id = statement.ColumnInt64(1);
     base::Time impression_time = statement.ColumnTime(2);
     int64_t attribution_source_priority = statement.ColumnInt64(3);
+
+    url::Origin conversion_origin =
+        DeserializeOrigin(statement.ColumnString(4));
+    absl::optional<StorableImpression::AttributionLogic> attribution_logic_opt =
+        DeserializeAttributionLogic(statement.ColumnInt(5));
+    absl::optional<StorableImpression::SourceType> source_type =
+        DeserializeSourceType(statement.ColumnInt(6));
+    int num_conversions_maybe_invalid = statement.ColumnInt(7);
+
+    // Skip the report if any of the columns are invalid. This should only
+    // happen if there is some sort of database corruption.
+    // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
+    if (impression_origin.opaque() || conversion_origin.opaque() ||
+        !attribution_logic_opt.has_value() ||
+        // There should never be an unattributed impression with `kFalsely`.
+        attribution_logic_opt ==
+            StorableImpression::AttributionLogic::kFalsely ||
+        !source_type.has_value() || num_conversions_maybe_invalid < 0) {
+      continue;
+    }
 
     // Select the row to attribute to the conversion. All other matching rows
     // will be deleted by the attribution logic.
@@ -412,24 +462,16 @@ bool ConversionStorageSql::MaybeCreateAndStoreConversionReport(
       }
 
       uint64_t impression_data =
-          DeserializeImpressionOrConversionData(statement.ColumnInt64(4));
-      url::Origin conversion_origin =
-          DeserializeOrigin(statement.ColumnString(5));
-      base::Time expiry_time = statement.ColumnTime(6);
-      attribution_logic = static_cast<StorableImpression::AttributionLogic>(
-          statement.ColumnInt(7));
-      StorableImpression::SourceType source_type =
-          static_cast<StorableImpression::SourceType>(statement.ColumnInt(8));
-      num_conversions = statement.ColumnInt(9);
+          DeserializeImpressionOrConversionData(statement.ColumnInt64(8));
+      base::Time expiry_time = statement.ColumnTime(9);
 
-      // There should never be an unattributed impression with `kFalsely`.
-      DCHECK_NE(attribution_logic,
-                StorableImpression::AttributionLogic::kFalsely);
-
-      impression_to_attribute = StorableImpression(
-          impression_data, std::move(impression_origin),
-          std::move(conversion_origin), reporting_origin, impression_time,
-          expiry_time, source_type, attribution_source_priority, impression_id);
+      impression_to_attribute =
+          StorableImpression(impression_data, std::move(impression_origin),
+                             std::move(conversion_origin), reporting_origin,
+                             impression_time, expiry_time, *source_type,
+                             attribution_source_priority, impression_id);
+      attribution_logic = *attribution_logic_opt;
+      num_conversions = num_conversions_maybe_invalid;
     } else
       impression_ids_to_delete.push_back(impression_id);
   }
@@ -605,8 +647,8 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     base::Time impression_time = statement.ColumnTime(8);
     base::Time expiry_time = statement.ColumnTime(9);
     int64_t impression_id = statement.ColumnInt64(10);
-    StorableImpression::SourceType source_type =
-        static_cast<StorableImpression::SourceType>(statement.ColumnInt(11));
+    absl::optional<StorableImpression::SourceType> source_type =
+        DeserializeSourceType(statement.ColumnInt(11));
     int64_t attribution_source_priority = statement.ColumnInt64(12);
 
     // Ensure origins are valid before continuing. This could happen if there is
@@ -614,16 +656,18 @@ std::vector<ConversionReport> ConversionStorageSql::GetConversionsToReport(
     // TODO(csharrison): This should be an extremely rare occurrence but it
     // would entail that some records will remain in the DB as vestigial if a
     // conversion is never sent. We should delete these entries from the DB.
+    // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
     if (impression_origin.opaque() || conversion_origin.opaque() ||
-        reporting_origin.opaque())
+        reporting_origin.opaque() || !source_type.has_value()) {
       continue;
+    }
 
     // Create the impression and ConversionReport objects from the retrieved
     // columns.
     StorableImpression impression(impression_data, std::move(impression_origin),
                                   std::move(conversion_origin),
                                   std::move(reporting_origin), impression_time,
-                                  expiry_time, source_type,
+                                  expiry_time, *source_type,
                                   attribution_source_priority, impression_id);
 
     ConversionReport report(std::move(impression), conversion_data,
@@ -1020,14 +1064,20 @@ std::vector<StorableImpression> ConversionStorageSql::GetActiveImpressions(
     base::Time impression_time = statement.ColumnTime(4);
     base::Time expiry_time = statement.ColumnTime(5);
     int64_t impression_id = statement.ColumnInt64(6);
-    StorableImpression::SourceType source_type =
-        static_cast<StorableImpression::SourceType>(statement.ColumnInt(7));
+    absl::optional<StorableImpression::SourceType> source_type =
+        DeserializeSourceType(statement.ColumnInt(7));
     int64_t attribution_source_priority = statement.ColumnInt64(8);
+
+    // TODO(apaseltiner): Should we also check whether any of the report's
+    // origins are opaque here?
+    // TODO(apaseltiner): Should we raze the DB if we've detected corruption?
+    if (!source_type.has_value())
+      continue;
 
     StorableImpression impression(impression_data, std::move(impression_origin),
                                   std::move(conversion_origin),
                                   std::move(reporting_origin), impression_time,
-                                  expiry_time, source_type,
+                                  expiry_time, *source_type,
                                   attribution_source_priority, impression_id);
     impressions.push_back(std::move(impression));
   }
@@ -1340,8 +1390,8 @@ bool ConversionStorageSql::EnsureCapacityForPendingDestinationLimit(
   sql::Statement statement(
       db_->GetCachedStatement(SQL_FROM_HERE, kSelectImpressionsSql));
   statement.BindString(0, impression.ImpressionSite().Serialize());
-  statement.BindInt(1,
-                    static_cast<int>(StorableImpression::SourceType::kEvent));
+  statement.BindInt(
+      1, SerializeSourceType(StorableImpression::SourceType::kEvent));
 
   base::flat_map<std::string, size_t> conversion_destinations;
 
