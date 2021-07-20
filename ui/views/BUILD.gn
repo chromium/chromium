@@ -1307,6 +1307,15 @@ test("views_unittests") {
     ]
   }
 
+  if (is_fuchsia) {
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/font_capabilities.test-cmx",
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+      "//build/config/fuchsia/test/present_view_capabilities.test-cmx",
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
+    ]
+  }
+
   if (use_aura) {
     sources += [
       "accessibility/accessibility_alert_window_unittest.cc",
