@@ -452,6 +452,11 @@ bool WaylandToplevelWindow::IsSurfaceConfigured() {
   return shell_toplevel() ? shell_toplevel()->IsConfigured() : false;
 }
 
+void WaylandToplevelWindow::OcclusionChanged(void* data,
+                                             zaura_surface* surface,
+                                             wl_fixed_t occlusion_fraction,
+                                             uint32_t occlusion_reason) {}
+
 void WaylandToplevelWindow::LockFrame(void* data, zaura_surface* surface) {
   WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
@@ -462,6 +467,29 @@ void WaylandToplevelWindow::UnlockFrame(void* data, zaura_surface* surface) {
   WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
   DCHECK(self);
   self->OnFrameLockingChanged(false);
+}
+
+void WaylandToplevelWindow::OcclusionStateChanged(void* data,
+                                                  zaura_surface* surface,
+                                                  uint32_t mode) {
+  WaylandToplevelWindow* self = static_cast<WaylandToplevelWindow*>(data);
+  DCHECK(self);
+  auto state = PlatformWindowOcclusionState::kUnknown;
+  switch (mode) {
+    case ZAURA_SURFACE_OCCLUSION_STATE_UNKNOWN:
+      state = PlatformWindowOcclusionState::kUnknown;
+      break;
+    case ZAURA_SURFACE_OCCLUSION_STATE_VISIBLE:
+      state = PlatformWindowOcclusionState::kVisible;
+      break;
+    case ZAURA_SURFACE_OCCLUSION_STATE_OCCLUDED:
+      state = PlatformWindowOcclusionState::kOccluded;
+      break;
+    case ZAURA_SURFACE_OCCLUSION_STATE_HIDDEN:
+      state = PlatformWindowOcclusionState::kHidden;
+      break;
+  }
+  self->OnOcclusionStateChanged(state);
 }
 
 bool WaylandToplevelWindow::RunMoveLoop(const gfx::Vector2d& drag_offset) {
@@ -648,16 +676,17 @@ void WaylandToplevelWindow::SetUpShellIntegration() {
 
   if (connection()->zaura_shell() && !aura_surface_) {
     static const zaura_surface_listener zaura_surface_listener = {
-        nullptr,
+        &WaylandToplevelWindow::OcclusionChanged,
         &WaylandToplevelWindow::LockFrame,
         &WaylandToplevelWindow::UnlockFrame,
+        &WaylandToplevelWindow::OcclusionStateChanged,
     };
-
     aura_surface_.reset(zaura_shell_get_aura_surface(
         connection()->zaura_shell()->wl_object(), root_surface()->surface()));
 
     zaura_surface_add_listener(aura_surface_.get(), &zaura_surface_listener,
                                this);
+    zaura_surface_set_occlusion_tracking(aura_surface_.get());
     SetImmersiveFullscreenStatus(false);
   }
 
@@ -689,6 +718,11 @@ void WaylandToplevelWindow::OnDecorationModeChanged() {
 void WaylandToplevelWindow::OnFrameLockingChanged(bool lock) {
   DCHECK(delegate());
   delegate()->OnSurfaceFrameLockingChanged(lock);
+}
+
+void WaylandToplevelWindow::OnOcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {
+  delegate()->OnOcclusionStateChanged(occlusion_state);
 }
 
 void WaylandToplevelWindow::UpdateWindowMask() {

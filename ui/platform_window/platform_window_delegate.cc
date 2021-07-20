@@ -38,4 +38,7 @@ absl::optional<MenuType> PlatformWindowDelegate::GetMenuType() {
   return absl::nullopt;
 }
 
+void PlatformWindowDelegate::OnOcclusionStateChanged(
+    PlatformWindowOcclusionState occlusion_state) {}
+
 }  // namespace ui

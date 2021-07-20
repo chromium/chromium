@@ -35,6 +35,13 @@ enum class PlatformWindowState {
   kFullScreen,
 };
 
+enum class PlatformWindowOcclusionState {
+  kUnknown,
+  kVisible,
+  kOccluded,
+  kHidden,
+};
+
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
  public:
   struct COMPONENT_EXPORT(PLATFORM_WINDOW) BoundsChange {
@@ -117,6 +124,11 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowDelegate {
   // different from ui::ET_MOUSE_ENTERED which may not be generated when mouse
   // is captured either by implicitly or explicitly.
   virtual void OnMouseEnter() = 0;
+
+  // Called when the occlusion state changes, if the underlying platform
+  // is providing us with occlusion information.
+  virtual void OnOcclusionStateChanged(
+      PlatformWindowOcclusionState occlusion_state);
 };
 
 }  // namespace ui

@@ -82,8 +82,15 @@ class WaylandToplevelWindow : public WaylandWindow,
   bool IsSurfaceConfigured() override;
 
   // zaura_surface listeners
+  static void OcclusionChanged(void* data,
+                               zaura_surface* surface,
+                               wl_fixed_t occlusion_fraction,
+                               uint32_t occlusion_reason);
   static void LockFrame(void* data, zaura_surface* surface);
   static void UnlockFrame(void* data, zaura_surface* surface);
+  static void OcclusionStateChanged(void* data,
+                                    zaura_surface* surface,
+                                    uint32_t mode);
 
   // Calls UpdateWindowShape, set_input_region and set_opaque_region
   // for this toplevel window.
@@ -128,6 +135,9 @@ class WaylandToplevelWindow : public WaylandWindow,
   // Called when frame is locked to normal state or unlocked from
   // previously locked state.
   void OnFrameLockingChanged(bool lock);
+
+  // Called when the occlusion state is updated.
+  void OnOcclusionStateChanged(PlatformWindowOcclusionState occlusion_state);
 
   // Wrappers around shell surface.
   std::unique_ptr<ShellToplevelWrapper> shell_toplevel_;
