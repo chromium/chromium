@@ -12,8 +12,19 @@ message SessionAffiliatedUser {
   optional string user_email = 1;
 }
 
+enum LoginFailureReason {
+  UNKNOWN = 0;
+  AUTHENTICATION_ERROR = 1;
+  COULD_NOT_MOUNT_TMPFS = 2;
+  OWNER_REQUIRED = 3;
+  TPM_ERROR = 4;
+  TPM_UPDATE_REQUIRED = 5;
+  MISSING_CRYPTOHOME = 6;
+  UNRECOVERABLE_CRYPTOHOME = 7;
+}
+
 message LoginFailure {
-  optional string reason = 1;
+  optional LoginFailureReason reason = 1;
 }
 
 message LoginEvent {
@@ -27,8 +38,10 @@ message LoginLogoutRecord {
 
   optional SessionAffiliatedUser affiliated_user = 2;
 
+  optional bool is_guest_session = 3;
+
   oneof event {
-    LoginEvent login_event = 3;
-    LogoutEvent logout_event = 4;
+    LoginEvent login_event = 4;
+    LogoutEvent logout_event = 5;
   }
 }

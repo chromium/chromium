@@ -24,26 +24,26 @@
 namespace ash {
 
 // EncryptedReportingServiceProvider is the link between Missive and
-// |reporting::UploadClient|. Missive is a daemon on ChromeOS that encrypts and
-// stores |reporting::Records|. |reporting::Records| contain events and messages
-// for enterprise customers to monitor their fleet. |reporting::UploadClient|
-// uploads these messages to the backend service.
+// `::reporting::UploadClient`. Missive is a daemon on ChromeOS that encrypts
+// and stores `::reporting::Records`. `::reporting::Records` contain events and
+// messages for enterprise customers to monitor their fleet.
+// `::reporting::UploadClient` uploads these messages to the backend service.
 class EncryptedReportingServiceProvider
     : public CrosDBusService::ServiceProviderInterface {
  public:
-  // Resulting |reporting::UploadClient| will handle uploading requests to the
-  // server. In order to do this it requires a |policy::CloudPolicyClient|.
+  // Resulting `::reporting::UploadClient` will handle uploading requests to the
+  // server. In order to do this it requires a `policy::CloudPolicyClient`.
   // |policy::CloudPolicyClient| may or may not be ready, so we attempt to get
   // it, and if we fail we repost with a backoff. Until an UploadClient is
-  // built, all requests to |RequestUploadEncryptedRecord| will fail.
+  // built, all requests to `RequestUploadEncryptedRecord` will fail.
   using UploadClientBuilderCb = base::RepeatingCallback<void(
-      scoped_refptr<reporting::StorageModuleInterface>,
+      scoped_refptr<::reporting::StorageModuleInterface>,
       policy::CloudPolicyClient*,
-      reporting::UploadClient::CreatedCallback)>;
+      ::reporting::UploadClient::CreatedCallback)>;
 
   explicit EncryptedReportingServiceProvider(
-      reporting::GetCloudPolicyClientCallback build_cloud_policy_client_cb =
-          reporting::GetCloudPolicyClientCb(),
+      ::reporting::GetCloudPolicyClientCallback build_cloud_policy_client_cb =
+          ::reporting::GetCloudPolicyClientCb(),
       UploadClientBuilderCb upload_client_builder_cb =
           EncryptedReportingServiceProvider::GetUploadClientBuilder());
   EncryptedReportingServiceProvider(

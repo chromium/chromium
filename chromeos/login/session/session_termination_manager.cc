@@ -33,8 +33,22 @@ SessionTerminationManager* SessionTerminationManager::Get() {
   return g_instance;
 }
 
+void SessionTerminationManager::AddObserver(
+    SessionTerminationManager::Observer* observer) {
+  observers_.AddObserver(observer);
+}
+
+void SessionTerminationManager::RemoveObserver(
+    SessionTerminationManager::Observer* observer) {
+  observers_.RemoveObserver(observer);
+}
+
 void SessionTerminationManager::StopSession(
     login_manager::SessionStopReason reason) {
+  for (auto& observer : observers_) {
+    observer.OnSessionWillBeTerminated();
+  }
+
   // If the device is locked to single user, it must reboot on sign out.
   if (is_locked_to_single_user_) {
     Reboot();

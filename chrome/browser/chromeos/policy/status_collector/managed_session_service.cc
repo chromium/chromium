@@ -36,6 +36,10 @@ ManagedSessionService::~ManagedSessionService() {
     ash::ExistingUserController::current_controller()
         ->RemoveLoginStatusConsumer(this);
   }
+
+  if (chromeos::SessionTerminationManager::Get()) {
+    chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
+  }
 }
 
 void ManagedSessionService::AddObserver(
@@ -70,6 +74,10 @@ void ManagedSessionService::OnUserProfileLoaded(const AccountId& account_id) {
   Profile* profile =
       chromeos::ProfileHelper::Get()->GetProfileByAccountId(account_id);
   profile_observations_.AddObservation(profile);
+  if (chromeos::SessionTerminationManager::Get() &&
+      chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile)) {
+    chromeos::SessionTerminationManager::Get()->AddObserver(this);
+  }
   for (auto& observer : observers_) {
     observer.OnLogin(profile);
   }
@@ -81,6 +89,19 @@ void ManagedSessionService::OnProfileWillBeDestroyed(Profile* profile) {
     observer.OnLogout(profile);
   }
   profile_observations_.RemoveObservation(profile);
+}
+
+void ManagedSessionService::OnSessionWillBeTerminated() {
+  if (!user_manager::UserManager::Get() ||
+      !user_manager::UserManager::Get()->GetPrimaryUser()) {
+    return;
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnSessionTerminationStarted(
+        user_manager::UserManager::Get()->GetPrimaryUser());
+  }
+  chromeos::SessionTerminationManager::Get()->RemoveObserver(this);
 }
 
 void ManagedSessionService::SuspendDone(base::TimeDelta sleep_duration) {

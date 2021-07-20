@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 
+#include "components/account_id/account_id.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/mock_report_queue.h"
 
@@ -19,7 +20,8 @@ class LoginLogoutReporterTestDelegate : public LoginLogoutReporter::Delegate {
       bool should_report_event,
       bool should_report_user,
       policy::DMToken dm_token,
-      std::unique_ptr<::reporting::MockReportQueue> mock_queue);
+      std::unique_ptr<::reporting::MockReportQueue> mock_queue,
+      AccountId account_id = EmptyAccountId());
   ~LoginLogoutReporterTestDelegate() override;
 
   void CreateReportingQueue(
@@ -33,12 +35,14 @@ class LoginLogoutReporterTestDelegate : public LoginLogoutReporter::Delegate {
 
   policy::DMToken GetDMToken() const override;
 
+  AccountId GetLastLoginAttemptAccountId() const override;
+
  private:
   const bool should_report_event_;
   const bool should_report_user_;
   const policy::DMToken dm_token_;
-
   std::unique_ptr<::reporting::MockReportQueue> mock_queue_;
+  const AccountId account_id_;
 };
 }  // namespace reporting
 }  // namespace chromeos

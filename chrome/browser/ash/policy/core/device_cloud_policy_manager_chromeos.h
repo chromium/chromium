@@ -33,6 +33,11 @@ class SequencedTaskRunner;
 }  // namespace base
 
 namespace chromeos {
+
+namespace reporting {
+class LoginLogoutReporter;
+}  // namespace reporting
+
 class InstallAttributes;
 }  // namespace chromeos
 
@@ -167,6 +172,10 @@ class DeviceCloudPolicyManagerChromeOS : public CloudPolicyManager {
   // Helper object that handles sending heartbeats over the GCM channel to
   // the server, to monitor connectivity.
   std::unique_ptr<HeartbeatScheduler> heartbeat_scheduler_;
+
+  // Object that reports login/logout events to the server.
+  std::unique_ptr<chromeos::reporting::LoginLogoutReporter>
+      login_logout_reporter_;
 
   // The TaskRunner used to do device status and log uploads.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

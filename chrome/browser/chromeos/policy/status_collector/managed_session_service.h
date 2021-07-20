@@ -16,17 +16,20 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
+#include "chromeos/login/session/session_termination_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
 
 namespace policy {
 
-class ManagedSessionService : public session_manager::SessionManagerObserver,
-                              public ProfileObserver,
-                              public chromeos::PowerManagerClient::Observer,
-                              public chromeos::AuthStatusConsumer,
-                              public ash::UserAuthenticatorObserver {
+class ManagedSessionService
+    : public session_manager::SessionManagerObserver,
+      public ProfileObserver,
+      public chromeos::PowerManagerClient::Observer,
+      public chromeos::AuthStatusConsumer,
+      public ash::UserAuthenticatorObserver,
+      public chromeos::SessionTerminationManager::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -37,6 +40,8 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
     virtual void OnLogin(Profile* profile) {}
 
     // Occurs when a user has logged out.
+    // TODO(b/194215634):: Check if this function can be replaced by
+    // `OnSessionTerminationStarted`
     virtual void OnLogout(Profile* profile) {}
 
     // Occurs when the active user has locked the user session.
@@ -49,6 +54,9 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
     // |suspend_time| is the time when the suspend state
     // first occurred. Short duration suspends are not reported.
     virtual void OnResumeActive(base::Time suspend_time) {}
+
+    // Occurs in the beginning of the session termination process.
+    virtual void OnSessionTerminationStarted(const user_manager::User* user) {}
   };
 
   explicit ManagedSessionService(
@@ -76,6 +84,8 @@ class ManagedSessionService : public session_manager::SessionManagerObserver,
   void OnAuthFailure(const chromeos::AuthFailure& error) override;
 
   void OnAuthAttemptStarted() override;
+
+  void OnSessionWillBeTerminated() override;
 
  private:
   bool is_session_locked_;

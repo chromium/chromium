@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/attestation/enrollment_policy_observer.h"
 #include "chrome/browser/ash/attestation/machine_certificate_uploader_impl.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/login/reporting/login_logout_reporter.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_chromeos.h"
 #include "chrome/browser/ash/policy/core/policy_pref_names.h"
 #include "chrome/browser/ash/policy/remote_commands/device_commands_factory_chromeos.h"
@@ -121,6 +122,8 @@ void DeviceCloudPolicyManagerChromeOS::RemoveDeviceCloudPolicyManagerObserver(
 
 // Keep clean up order as the reversed creation order.
 void DeviceCloudPolicyManagerChromeOS::Shutdown() {
+  login_logout_reporter_.reset();
+
   heartbeat_scheduler_.reset();
   syslog_uploader_.reset();
   status_uploader_.reset();
@@ -237,6 +240,8 @@ void DeviceCloudPolicyManagerChromeOS::StartConnection(
     heartbeat_scheduler_ = std::make_unique<HeartbeatScheduler>(
         g_browser_process->gcm_driver(), client(), device_store_.get(),
         install_attributes->GetDeviceId(), task_runner_);
+    login_logout_reporter_ =
+        std::make_unique<chromeos::reporting::LoginLogoutReporter>();
   }
 
   NotifyConnected();

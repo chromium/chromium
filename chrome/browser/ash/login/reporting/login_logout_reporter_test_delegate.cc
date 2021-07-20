@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ash/login/reporting/login_logout_reporter_test_delegate.h"
+#include "base/memory/ptr_util.h"
 
 namespace chromeos {
 namespace reporting {
@@ -13,11 +14,13 @@ LoginLogoutReporterTestDelegate::LoginLogoutReporterTestDelegate(
     bool should_report_event,
     bool should_report_user,
     policy::DMToken dm_token,
-    std::unique_ptr<::reporting::MockReportQueue> mock_queue)
+    std::unique_ptr<::reporting::MockReportQueue> mock_queue,
+    AccountId account_id)
     : should_report_event_(should_report_event),
       should_report_user_(should_report_user),
       dm_token_(dm_token),
-      mock_queue_(std::move(mock_queue)) {}
+      mock_queue_(std::move(mock_queue)),
+      account_id_(account_id) {}
 
 bool LoginLogoutReporterTestDelegate::ShouldReportEvent() const {
   return should_report_event_;
@@ -37,6 +40,11 @@ void LoginLogoutReporterTestDelegate::CreateReportingQueue(
     ::reporting::ReportQueueProvider::CreateReportQueueCallback
         create_queue_cb) {
   std::move(create_queue_cb).Run(std::move(mock_queue_));
+}
+
+AccountId LoginLogoutReporterTestDelegate::GetLastLoginAttemptAccountId()
+    const {
+  return account_id_;
 }
 }  // namespace reporting
 }  // namespace chromeos

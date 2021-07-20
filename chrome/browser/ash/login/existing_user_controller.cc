@@ -1746,4 +1746,8 @@ void ExistingUserController::ClearActiveDirectoryState() {
   AuthPolicyHelper::Restart();
 }
 
+AccountId ExistingUserController::GetLastLoginAttemptAccountId() const {
+  return last_login_attempt_account_id_;
+}
+
 }  // namespace chromeos
