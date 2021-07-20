@@ -74,8 +74,8 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         initializeNightModeStateProvider();
         mNightModeStateProvider.addObserver(this);
-        applyThemeOverlays();
         super.onCreate(savedInstanceState);
+        applyThemeOverlays();
 
         // Activity level locale overrides must be done in onCreate.
         GlobalAppLocaleController.getInstance().maybeOverrideContextConfig(this);
