@@ -567,6 +567,10 @@ bool TouchSelectionControllerImpl::ShouldShowHandleFor(
   return client_bounds.Contains(BoundToRect(bound));
 }
 
+const char* TouchSelectionControllerImpl::GetType() {
+  return "TouchSelectionControllerImpl";
+}
+
 bool TouchSelectionControllerImpl::IsCommandIdEnabled(int command_id) const {
   return client_view_->IsCommandIdEnabled(command_id);
 }

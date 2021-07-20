@@ -56,6 +56,7 @@ class CONTENT_EXPORT TouchSelectionControllerClientChildFrame
   void DidScroll() override;
 
   // ui::TouchSelectionMenuClient:
+  const char* GetType() override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;

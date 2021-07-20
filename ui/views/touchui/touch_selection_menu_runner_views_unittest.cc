@@ -43,6 +43,8 @@ class TouchSelectionMenuRunnerViewsTest : public ViewsTestBase,
 
  private:
   // ui::TouchSelectionMenuClient:
+  const char* GetType() override { return ""; }
+
   bool IsCommandIdEnabled(int command_id) const override {
     return !no_command_available_;
   }

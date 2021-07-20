@@ -56,7 +56,8 @@ class PDFWebContentsHelper
   std::unique_ptr<ui::TouchHandleDrawable> CreateDrawable() override;
   void DidScroll() override;
 
-  // ui::TouchSelectionMenuRunner:
+  // ui::TouchSelectionMenuClient:
+  const char* GetType() override;
   bool IsCommandIdEnabled(int command_id) const override;
   void ExecuteCommand(int command_id, int event_flags) override;
   void RunContextMenu() override;

@@ -430,6 +430,10 @@ TouchSelectionControllerClientAura::InternalClient::CreateDrawable() {
 // process, there is nothing to do here.
 void TouchSelectionControllerClientAura::InternalClient::DidScroll() {}
 
+const char* TouchSelectionControllerClientAura::GetType() {
+  return "TouchSelectionControllerClientAura";
+}
+
 bool TouchSelectionControllerClientAura::IsCommandIdEnabled(
     int command_id) const {
   bool editable = rwhva_->GetTextInputType() != ui::TEXT_INPUT_TYPE_NONE;

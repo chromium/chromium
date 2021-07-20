@@ -178,6 +178,10 @@ void PDFWebContentsHelper::OnManagerWillDestroy(
   touch_selection_controller_client_manager_ = nullptr;
 }
 
+const char* PDFWebContentsHelper::GetType() {
+  return "PDFWebContentsHelper";
+}
+
 bool PDFWebContentsHelper::IsCommandIdEnabled(int command_id) const {
   // TODO(wjmaclean|dsinclair): Make PDFium send readability information in the
   // selection changed message?

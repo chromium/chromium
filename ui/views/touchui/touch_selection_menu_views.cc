@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "base/check.h"
+#include "base/debug/crash_logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -46,9 +48,14 @@ TouchSelectionMenuViews::TouchSelectionMenuViews(
     aura::Window* context)
     : BubbleDialogDelegateView(nullptr, BubbleBorder::BOTTOM_CENTER),
       owner_(owner),
-      client_(client) {
+      client_(client),
+      client_type_(client_->GetType()) {
   DCHECK(owner_);
   DCHECK(client_);
+
+  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
+  SCOPED_CRASH_KEY_STRING64("TouchSelectionMenuViews", "client", client_type_);
+  CHECK(ui::TouchSelectionMenuClient::IsValid(client_)) << client_type_;
 
   DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
   set_shadow(BubbleBorder::STANDARD_SHADOW);
@@ -132,12 +139,9 @@ void TouchSelectionMenuViews::CreateButtons() {
   }
 
   // Finally, add ellipsis button.
-  CreateButton(u"...", base::BindRepeating(
-                           [](TouchSelectionMenuViews* menu) {
-                             menu->CloseMenu();
-                             menu->client_->RunContextMenu();
-                           },
-                           base::Unretained(this)))
+  CreateButton(u"...",
+               base::BindRepeating(&TouchSelectionMenuViews::EllipsisPressed,
+                                   base::Unretained(this)))
       ->SetID(ButtonViewId::kEllipsisButton);
   InvalidateLayout();
 }
@@ -176,7 +180,9 @@ void TouchSelectionMenuViews::OnPaint(gfx::Canvas* canvas) {
 }
 
 void TouchSelectionMenuViews::WindowClosing() {
-  DCHECK(!owner_ || owner_->menu_ == this);
+  // TODO(jamescook): Change back to DCHECK after investigation of
+  // https://crbug.com/1146270
+  CHECK(!owner_ || owner_->menu_ == this);
   BubbleDialogDelegateView::WindowClosing();
   if (owner_)
     DisconnectOwner();
@@ -185,7 +191,20 @@ void TouchSelectionMenuViews::WindowClosing() {
 void TouchSelectionMenuViews::ButtonPressed(int command,
                                             const ui::Event& event) {
   CloseMenu();
+
+  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
+  SCOPED_CRASH_KEY_STRING64("TouchSelectionMenuViews", "client", client_type_);
+  CHECK(ui::TouchSelectionMenuClient::IsValid(client_)) << client_type_;
   client_->ExecuteCommand(command, event.flags());
+}
+
+void TouchSelectionMenuViews::EllipsisPressed(const ui::Event& event) {
+  CloseMenu();
+
+  // TODO(jamescook): Remove after investigation of https://crbug.com/1146270
+  SCOPED_CRASH_KEY_STRING64("TouchSelectionMenuViews", "client", client_type_);
+  CHECK(ui::TouchSelectionMenuClient::IsValid(client_)) << client_type_;
+  client_->RunContextMenu();
 }
 
 BEGIN_METADATA(TouchSelectionMenuViews, BubbleDialogDelegateView)
