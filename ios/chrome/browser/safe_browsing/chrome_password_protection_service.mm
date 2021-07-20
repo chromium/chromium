@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/notreached.h"
@@ -76,6 +77,13 @@ using ShowWarningCallback =
     safe_browsing::PasswordProtectionService::ShowWarningCallback;
 
 namespace {
+
+// Records changes in the phished status of saved credential.
+void LogCredentialPhishedStatusChanged(
+    safe_browsing::CredentialPhishedStatus status) {
+  base::UmaHistogramEnumeration("SafeBrowsing.CredentialPhishedStatusChange",
+                                status);
+}
 
 // Returns true if the command line has an artificial unsafe cached verdict.
 bool HasArtificialCachedVerdict() {
@@ -255,6 +263,8 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
+    LogCredentialPhishedStatusChanged(
+        safe_browsing::CredentialPhishedStatus::kMarkedAsPhished);
     password_store->AddInsecureCredential(password_manager::InsecureCredential(
         credential.signon_realm, credential.username, base::Time::Now(),
         password_manager::InsecureType::kPhished,
@@ -275,6 +285,8 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
+    LogCredentialPhishedStatusChanged(
+        safe_browsing::CredentialPhishedStatus::kSiteMarkedAsLegitimate);
     password_store->RemoveInsecureCredentials(
         credential.signon_realm, credential.username,
         password_manager::RemoveInsecureCredentialsReason::

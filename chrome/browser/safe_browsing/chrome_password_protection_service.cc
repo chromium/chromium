@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -155,6 +156,12 @@ PasswordReuseLookup::ReputationVerdict GetVerdictToLogFromResponse(
   }
   NOTREACHED() << "Unexpected response_verdict: " << response_verdict;
   return PasswordReuseLookup::VERDICT_UNSPECIFIED;
+}
+
+// Records changes in the phished status of saved credential.
+void LogCredentialPhishedStatusChanged(CredentialPhishedStatus status) {
+  base::UmaHistogramEnumeration("SafeBrowsing.CredentialPhishedStatusChange",
+                                status);
 }
 
 // Given a |web_contents|, returns the navigation id of its last committed
@@ -1742,6 +1749,8 @@ void ChromePasswordProtectionService::PersistPhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
+    LogCredentialPhishedStatusChanged(
+        CredentialPhishedStatus::kMarkedAsPhished);
     password_store->AddInsecureCredential(password_manager::InsecureCredential(
         credential.signon_realm, credential.username, base::Time::Now(),
         password_manager::InsecureType::kPhished,
@@ -1762,6 +1771,8 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
     if (!password_store) {
       continue;
     }
+    LogCredentialPhishedStatusChanged(
+        CredentialPhishedStatus::kSiteMarkedAsLegitimate);
     password_store->RemoveInsecureCredentials(
         credential.signon_realm, credential.username,
         password_manager::RemoveInsecureCredentialsReason::

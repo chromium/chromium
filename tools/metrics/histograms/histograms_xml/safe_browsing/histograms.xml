@@ -201,6 +201,17 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="SafeBrowsing.CredentialPhishedStatusChange"
+    enum="CredentialPhishedStatus" expires_after="2021-12-01">
+  <owner>bdea@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Recorded when the phished status of a saved credential changes. Records when
+    a credential is marked phished or when a phished insecure credential entry
+    is removed because the site was marked as legitimate.
+  </summary>
+</histogram>
+
 <histogram
     name="SafeBrowsing.Daily.BypassCountLast28Days.{UserState}.{EventType}"
     units="events" expires_after="2022-02-12">

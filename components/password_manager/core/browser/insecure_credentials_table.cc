@@ -89,9 +89,6 @@ bool InsecureCredentialsTable::AddRow(
 
   DCHECK(db_->DoesTableExist(kTableName));
 
-  base::UmaHistogramEnumeration("PasswordManager.CompromisedCredentials.Add",
-                                compromised_credentials.insecure_type);
-
   // In case there is an error, expect it to be a constraint violation.
   db_->set_error_callback(base::BindRepeating([](int error, sql::Statement*) {
     constexpr int kSqliteErrorMask = 0xFF;
@@ -178,15 +175,6 @@ bool InsecureCredentialsTable::RemoveRows(
       GetRows(signon_realm);
   if (compromised_credentials.empty())
     return false;
-  for (const auto& compromised_credential : compromised_credentials) {
-    if (username == compromised_credential.username) {
-      base::UmaHistogramEnumeration(
-          "PasswordManager.CompromisedCredentials.Remove",
-          compromised_credential.insecure_type);
-      base::UmaHistogramEnumeration(
-          "PasswordManager.RemoveCompromisedCredentials.RemoveReason", reason);
-    }
-  }
 
   sql::Statement s(db_->GetCachedStatement(
       SQL_FROM_HERE,

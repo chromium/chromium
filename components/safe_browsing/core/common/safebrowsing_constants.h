@@ -66,6 +66,16 @@ enum class ResourceType {
   kNavigationPreloadSubFrame = 20,
   kMaxValue = kNavigationPreloadSubFrame,
 };
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class CredentialPhishedStatus {
+  // The credential was just marked as phished.
+  kMarkedAsPhished = 0,
+  // The credential's site was marked as legitimate.
+  kSiteMarkedAsLegitimate = 1,
+  kMaxValue = kSiteMarkedAsLegitimate,
+};
 }
 
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_SAFEBROWSING_CONSTANTS_H_

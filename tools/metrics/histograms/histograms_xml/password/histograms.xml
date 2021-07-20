@@ -1081,6 +1081,9 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="PasswordManager.CompromisedCredentials"
     enum="InsecureCredentialsType" expires_after="2021-12-05">
+  <obsolete>
+    Removed 07/2021
+  </obsolete>
   <owner>bdea@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
