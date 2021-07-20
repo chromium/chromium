@@ -70,7 +70,8 @@ export class FeedbackUiBrowserProxyImpl {
   /** @override */
   sendFeedback(info) {
     return new Promise(
-        resolve => chrome.feedbackPrivate.sendFeedback(info, resolve));
+        resolve => chrome.feedbackPrivate.sendFeedback(
+            info, /*loadSystemInfo=*/ null, /*formOpenTime=*/ null, resolve));
   }
 }
 

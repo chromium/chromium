@@ -28,6 +28,10 @@ using testing::StrictMock;
 
 namespace {
 
+const std::string kFakeKey = "fake key";
+const std::string kFakeValue = "fake value";
+const std::string kTabTitleValue = "some sensitive info";
+
 class MockFeedbackUploader : public FeedbackUploader {
  public:
   MockFeedbackUploader(
@@ -45,10 +49,14 @@ class MockFeedbackUploader : public FeedbackUploader {
 class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
  public:
   MockFeedbackPrivateDelegate() {
-    ON_CALL(*this, CreateSystemLogsFetcher)
-        .WillByDefault([](content::BrowserContext* context) {
-          auto delegate = std::make_unique<ShellFeedbackPrivateDelegate>();
-          return delegate->CreateSystemLogsFetcher(context);
+    ON_CALL(*this, FetchSystemInformation)
+        .WillByDefault([](content::BrowserContext* context,
+                          system_logs::SysLogsFetcherCallback callback) {
+          auto sys_info = std::make_unique<system_logs::SystemLogsResponse>();
+          sys_info->emplace(kFakeKey, kFakeValue);
+          sys_info->emplace(feedback::FeedbackReport::kMemUsageWithTabTitlesKey,
+                            kTabTitleValue);
+          std::move(callback).Run(std::move(sys_info));
         });
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     ON_CALL(*this, FetchExtraLogs)
@@ -61,9 +69,9 @@ class MockFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
 
   ~MockFeedbackPrivateDelegate() override = default;
 
-  MOCK_METHOD(system_logs::SystemLogsFetcher*,
-              CreateSystemLogsFetcher,
-              (content::BrowserContext*),
+  MOCK_METHOD(void,
+              FetchSystemInformation,
+              (content::BrowserContext*, system_logs::SysLogsFetcherCallback),
               (const, override));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   MOCK_METHOD(void,
@@ -92,9 +100,11 @@ class FeedbackServiceTest : public ApiUnitTest {
   ~FeedbackServiceTest() override = default;
 
   void TestSendFeedbackConcerningTabTitles(bool send_tab_titles) {
-    feedback_data_->AddLog("fake key", "fake value");
-    feedback_data_->AddLog("mem_usage_with_title", "some sensitive info");
+    feedback_data_->AddLog(kFakeKey, kFakeValue);
+    feedback_data_->AddLog(feedback::FeedbackReport::kMemUsageWithTabTitlesKey,
+                           kTabTitleValue);
     const FeedbackParams params{/*is_internal_email=*/false,
+                                /*load_system_info=*/false,
                                 /*send_tab_titles=*/send_tab_titles,
                                 /*send_histograms=*/true,
                                 /*send_bluetooth_logs=*/true};
@@ -112,7 +122,7 @@ class FeedbackServiceTest : public ApiUnitTest {
         browser_context(), mock_delegate.get());
     feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
 
-    EXPECT_EQ(1u, feedback_data_->sys_info()->count("fake key"));
+    EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
   }
 
   base::ScopedTempDir scoped_temp_dir_;
@@ -124,6 +134,7 @@ class FeedbackServiceTest : public ApiUnitTest {
 
 TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
   const FeedbackParams params{/*is_internal_email=*/false,
+                              /*load_system_info=*/false,
                               /*send_tab_titles=*/true,
                               /*send_histograms=*/true,
                               /*send_bluetooth_logs=*/true};
@@ -139,14 +150,42 @@ TEST_F(FeedbackServiceTest, SendFeedbackWithoutSysInfo) {
   feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
 }
 
+TEST_F(FeedbackServiceTest, SendFeedbackLoadSysInfo) {
+  const FeedbackParams params{/*is_internal_email=*/false,
+                              /*load_system_info=*/true,
+                              /*send_tab_titles=*/true,
+                              /*send_histograms=*/true,
+                              /*send_bluetooth_logs=*/true};
+
+  EXPECT_CALL(*mock_uploader_, QueueReport).Times(1);
+  base::MockCallback<SendFeedbackCallback> mock_callback;
+  EXPECT_CALL(mock_callback, Run(true));
+
+  auto mock_delegate = std::make_unique<MockFeedbackPrivateDelegate>();
+  EXPECT_CALL(*mock_delegate, FetchSystemInformation(_, _)).Times(1);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  EXPECT_CALL(*mock_delegate, FetchExtraLogs(_, _)).Times(1);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  auto feedback_service = base::MakeRefCounted<FeedbackService>(
+      browser_context(), mock_delegate.get());
+
+  feedback_service->SendFeedback(params, feedback_data_, mock_callback.Get());
+  EXPECT_EQ(1u, feedback_data_->sys_info()->count(kFakeKey));
+  EXPECT_EQ(1u, feedback_data_->sys_info()->count(
+                    feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
+}
+
 TEST_F(FeedbackServiceTest, SendFeedbackDoNotSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(false);
-  EXPECT_EQ(0u, feedback_data_->sys_info()->count("mem_usage_with_title"));
+  EXPECT_EQ(0u, feedback_data_->sys_info()->count(
+                    feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
 }
 
 TEST_F(FeedbackServiceTest, SendFeedbackDoSendTabTitles) {
   TestSendFeedbackConcerningTabTitles(true);
-  EXPECT_EQ(1u, feedback_data_->sys_info()->count("mem_usage_with_title"));
+  EXPECT_EQ(1u, feedback_data_->sys_info()->count(
+                    feedback::FeedbackReport::kMemUsageWithTabTitlesKey));
 }
 
 }  // namespace extensions

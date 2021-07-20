@@ -28,10 +28,12 @@ std::unique_ptr<base::DictionaryValue> ShellFeedbackPrivateDelegate::GetStrings(
   return nullptr;
 }
 
-system_logs::SystemLogsFetcher*
-ShellFeedbackPrivateDelegate::CreateSystemLogsFetcher(
-    content::BrowserContext* context) const {
-  return system_logs::BuildShellSystemLogsFetcher(context);
+void ShellFeedbackPrivateDelegate::FetchSystemInformation(
+    content::BrowserContext* context,
+    system_logs::SysLogsFetcherCallback callback) const {
+  // self-deleting object
+  auto* fetcher = system_logs::BuildShellSystemLogsFetcher(context);
+  fetcher->Fetch(std::move(callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

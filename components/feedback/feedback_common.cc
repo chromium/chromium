@@ -180,7 +180,14 @@ void FeedbackCommon::PrepareReport(
     feedback_data->set_bucket(category_tag());
 }
 
-FeedbackCommon::~FeedbackCommon() {}
+// static
+bool FeedbackCommon::IncludeInSystemLogs(const std::string& key,
+                                         bool is_google_email) {
+  return is_google_email ||
+         key != feedback::FeedbackReport::kAllCrashReportIdsKey;
+}
+
+FeedbackCommon::~FeedbackCommon() = default;
 
 void FeedbackCommon::CompressFile(const base::FilePath& filename,
                                   const std::string& zipname,
@@ -216,19 +223,17 @@ void FeedbackCommon::AddFilesAndLogsToReport(
     AddAttachment(feedback_data, file->name.c_str(), file->data);
   }
 
+  const bool is_google_email = gaia::IsGoogleInternalAccountEmail(user_email());
   for (const auto& iter : logs_) {
     if (BelowCompressionThreshold(iter.second)) {
       // We only send the list of all the crash report IDs if the user has a
       // @google.com email. We do this also in feedback_private_api, but not all
       // code paths go through that so we need to check again here.
-      if (iter.first == feedback::FeedbackReport::kAllCrashReportIdsKey &&
-          !gaia::IsGoogleInternalAccountEmail(user_email())) {
-        continue;
+      if (FeedbackCommon::IncludeInSystemLogs(iter.first, is_google_email)) {
+        // Small enough logs should end up in the report data itself. However,
+        // they're still added as part of the system_logs.zip file.
+        AddFeedbackData(feedback_data, iter.first, iter.second);
       }
-
-      // Small enough logs should end up in the report data itself. However,
-      // they're still added as part of the system_logs.zip file.
-      AddFeedbackData(feedback_data, iter.first, iter.second);
     }
   }
 }

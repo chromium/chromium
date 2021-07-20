@@ -158,6 +158,7 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
           // Verify that the flags in params are set correctly
           EXPECT_EQ(expected_params.is_internal_email,
                     params.is_internal_email);
+          EXPECT_EQ(expected_params.load_system_info, params.load_system_info);
           EXPECT_EQ(expected_params.send_tab_titles, params.send_tab_titles);
           EXPECT_EQ(expected_params.send_histograms, params.send_histograms);
           EXPECT_EQ(expected_params.send_bluetooth_logs,
@@ -443,6 +444,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
 ])";
 
   const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
                                        /*send_tab_titles=*/true,
                                        /*send_histograms=*/true,
                                        /*send_bluetooth_logs=*/true};
@@ -493,6 +495,7 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
 ])";
 
   const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
                                        /*send_tab_titles=*/false,
                                        /*send_histograms=*/false,
                                        /*send_bluetooth_logs=*/false};
@@ -512,6 +515,113 @@ TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
   EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
   EXPECT_TRUE(feedback_data->sys_info());
   EXPECT_FALSE(feedback_data->sys_info()->count("mem_usage_with_title"));
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name": "C:\\fakepath\\chrome_40px.svg"
+    },
+    "assistantDebugInfoAllowed": true,
+    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "categoryTag": "test-tag",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "tester@test.com",
+    "flow": "regular",
+    "fromAssistant": true,
+    "includeBluetoothLogs": true,
+    "pageUrl": "https://test.com",
+    "productId": 1122,
+    "screenshot": {},
+    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendBluetoothLogs": true,
+    "sendHistograms": true,
+    "sendTabTitles": true,
+    "systemInformation": [],
+    "traceId": 9966,
+    "useSystemWindowFrame": false
+  },
+  true,
+  1.625859975163e+12
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/true,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/true};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(9966, feedback_data->trace_id());
+  EXPECT_EQ(1122, feedback_data->product_id());
+  EXPECT_EQ("chrome_40px.svg", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-tag", feedback_data->category_tag());
+  EXPECT_EQ("tester@test.com", feedback_data->user_email());
+  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+            feedback_data->attached_file_uuid());
+  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+            feedback_data->screenshot_uuid());
+  EXPECT_EQ("https://test.com", feedback_data->page_url());
+
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name":""
+    },
+    "assistantDebugInfoAllowed": false,
+    "categoryTag": "",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "regular",
+    "fromAssistant": false,
+    "includeBluetoothLogs": false,
+    "pageUrl": "",
+    "screenshot": {},
+    "screenshotBlobUuid": "",
+    "sendBluetoothLogs": false,
+    "sendHistograms": false,
+    "sendTabTitles": false,
+    "systemInformation": [],
+    "useSystemWindowFrame": false
+  },
+  false,
+  1.625859975163e+12
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(0, feedback_data->trace_id());
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("", feedback_data->category_tag());
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->attached_file_uuid());
+  EXPECT_EQ("", feedback_data->screenshot_uuid());
+  EXPECT_EQ("", feedback_data->page_url());
+
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
 }
 
 }  // namespace extensions

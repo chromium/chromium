@@ -22,8 +22,9 @@ class ShellFeedbackPrivateDelegate : public FeedbackPrivateDelegate {
   std::unique_ptr<base::DictionaryValue> GetStrings(
       content::BrowserContext* browser_context,
       bool from_crash) const override;
-  system_logs::SystemLogsFetcher* CreateSystemLogsFetcher(
-      content::BrowserContext* context) const override;
+  void FetchSystemInformation(
+      content::BrowserContext* context,
+      system_logs::SysLogsFetcherCallback callback) const override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const override;

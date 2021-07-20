@@ -24,6 +24,9 @@ namespace extensions {
 struct FeedbackParams {
   // The user has a @google.com email or not.
   bool is_internal_email = false;
+  // Set this to true if system information should be loaded. If the data has
+  // been pre-loaded into the feedback_data, this should be set to false.
+  bool load_system_info = false;
   // If true, include the browser tab titles in the feedback.
   bool send_tab_titles = false;
   // If true, include histograms in the feedback.
@@ -65,20 +68,21 @@ class FeedbackService : public base::RefCountedThreadSafe<FeedbackService> {
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,
       SendFeedbackCallback callback);
+  void FetchSystemInformation(
+      const FeedbackParams& params,
+      scoped_refptr<feedback::FeedbackData> feedback_data);
+  void OnSystemInformationFetched(
+      const FeedbackParams& params,
+      scoped_refptr<feedback::FeedbackData> feedback_data,
+      std::unique_ptr<system_logs::SystemLogsResponse> sys_info);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Gets logs that aren't covered by FetchSystemInformation, but should be
   // included in the feedback report. These currently consist of the Intel Wi-Fi
   // debug logs (if they exist).
-  // Modifies |feedback_data| and passes it on to |callback|.
-  void FetchExtraLogs(scoped_refptr<feedback::FeedbackData> feedback_data,
-                      FetchExtraLogsCallback callback);
+  void FetchExtraLogs(const FeedbackParams& params,
+                      scoped_refptr<feedback::FeedbackData> feedback_data);
   void OnExtraLogsFetched(const FeedbackParams& params,
                           scoped_refptr<feedback::FeedbackData> feedback_data);
-
-  using GetHistogramsCallback = base::OnceCallback<void(const std::string&)>;
-  // Gets Lacros histograms in zip compressed format which will be attached
-  // as a file in unified feedback report.
-  void FetchLacrosHistograms(GetHistogramsCallback callback);
   void OnLacrosHistogramsFetched(
       const FeedbackParams& params,
       scoped_refptr<feedback::FeedbackData> feedback_data,

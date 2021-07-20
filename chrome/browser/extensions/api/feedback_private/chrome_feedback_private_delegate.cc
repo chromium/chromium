@@ -118,10 +118,13 @@ ChromeFeedbackPrivateDelegate::GetStrings(
   return dict;
 }
 
-system_logs::SystemLogsFetcher*
-ChromeFeedbackPrivateDelegate::CreateSystemLogsFetcher(
-    content::BrowserContext* context) const {
-  return system_logs::BuildChromeSystemLogsFetcher(/*scrub_data=*/true);
+void ChromeFeedbackPrivateDelegate::FetchSystemInformation(
+    content::BrowserContext* context,
+    system_logs::SysLogsFetcherCallback callback) const {
+  // self-deleting object
+  auto* fetcher =
+      system_logs::BuildChromeSystemLogsFetcher(/*scrub_data=*/true);
+  fetcher->Fetch(std::move(callback));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

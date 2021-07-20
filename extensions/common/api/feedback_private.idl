@@ -197,7 +197,15 @@ namespace feedbackPrivate {
     static void getSystemInformation(GetSystemInformationCallback callback);
 
     // Sends a feedback report.
+    // |loadSystemInfo|: Optional flag when present and is true, the backend
+    // should load system information before sending the report. This is added
+    // to reduce user's wait time when sending reports because loading system
+    // information is slow.
+    // |formOpenTime|: The epoch time when the feedback form was opened. This is
+    // used for metrics.
     static void sendFeedback(FeedbackInfo feedback,
+                             optional boolean loadSystemInfo,
+                             optional double formOpenTime,
                              SendFeedbackCallback callback);
 
     // Gets localized translated strings for feedback. It returns the

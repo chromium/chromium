@@ -28,7 +28,6 @@ class FeedbackUploader;
 }  // namespace feedback
 
 namespace system_logs {
-class SystemLogsFetcher;
 class SystemLogsSource;
 }  // namespace system_logs
 
@@ -50,9 +49,9 @@ class FeedbackPrivateDelegate {
       content::BrowserContext* browser_context,
       bool from_crash) const = 0;
 
-  // Returns a SystemLogsFetcher for responding to a request for system logs.
-  virtual system_logs::SystemLogsFetcher* CreateSystemLogsFetcher(
-      content::BrowserContext* context) const = 0;
+  virtual void FetchSystemInformation(
+      content::BrowserContext* context,
+      system_logs::SysLogsFetcherCallback callback) const = 0;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Creates a SystemLogsSource for the given type of log file.

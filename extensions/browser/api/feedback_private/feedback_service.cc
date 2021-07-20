@@ -125,13 +125,24 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data,
     SendFeedbackCallback callback) {
+  if (params.load_system_info) {
+    // The user has chosen to send system logs. They (and on ash more logs)
+    // will be loaded in the background without blocking the client.
+    FetchSystemInformation(params, feedback_data);
+  } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  FetchExtraLogs(
-      feedback_data,
-      base::BindOnce(&FeedbackService::OnExtraLogsFetched, this, params));
+    if (feedback_data->sys_info()->size() > 0) {
+      // The user has chosen to send system logs which has been loaded from the
+      // client side. On ash, extra logs need to be fetched.
+      FetchExtraLogs(params, feedback_data);
+    } else {
+      // The user has chosen not to send system logs.
+      OnAllLogsFetched(params, feedback_data);
+    }
 #else
-  OnAllLogsFetched(params, feedback_data);
+    OnAllLogsFetched(params, feedback_data);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+  }
 
   // True means report will be sent shortly.
   // False means report will be sent once the device is online.
@@ -141,23 +152,48 @@ void FeedbackService::OnAttachedFileAndScreenshotFetched(
   std::move(callback).Run(status);
 }
 
+void FeedbackService::FetchSystemInformation(
+    const FeedbackParams& params,
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
+  delegate_->FetchSystemInformation(
+      browser_context_,
+      base::BindOnce(&FeedbackService::OnSystemInformationFetched, this, params,
+                     feedback_data));
+}
+
+void FeedbackService::OnSystemInformationFetched(
+    const FeedbackParams& params,
+    scoped_refptr<feedback::FeedbackData> feedback_data,
+    std::unique_ptr<system_logs::SystemLogsResponse> sys_info) {
+  if (sys_info) {
+    for (auto& itr : *sys_info) {
+      if (FeedbackCommon::IncludeInSystemLogs(itr.first,
+                                              params.is_internal_email))
+        feedback_data->AddLog(std::move(itr.first), std::move(itr.second));
+    }
+  }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  FetchExtraLogs(params, feedback_data);
+#else
+  OnAllLogsFetched(params, feedback_data);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void FeedbackService::FetchExtraLogs(
-    scoped_refptr<feedback::FeedbackData> feedback_data,
-    FetchExtraLogsCallback callback) {
-  delegate_->FetchExtraLogs(feedback_data, std::move(callback));
+    const FeedbackParams& params,
+    scoped_refptr<feedback::FeedbackData> feedback_data) {
+  delegate_->FetchExtraLogs(
+      feedback_data,
+      base::BindOnce(&FeedbackService::OnExtraLogsFetched, this, params));
 }
 
 void FeedbackService::OnExtraLogsFetched(
     const FeedbackParams& params,
     scoped_refptr<feedback::FeedbackData> feedback_data) {
-  FetchLacrosHistograms(
+  delegate_->GetLacrosHistograms(
       base::BindOnce(&FeedbackService::OnLacrosHistogramsFetched, this, params,
                      feedback_data));
-}
-
-void FeedbackService::FetchLacrosHistograms(GetHistogramsCallback callback) {
-  delegate_->GetLacrosHistograms(std::move(callback));
 }
 
 void FeedbackService::OnLacrosHistogramsFetched(

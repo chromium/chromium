@@ -7,7 +7,7 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.feedbackPrivate.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: feedbackPrivate */
 
@@ -135,10 +135,16 @@ chrome.feedbackPrivate.getSystemInformation = function(callback) {};
 /**
  * Sends a feedback report.
  * @param {!chrome.feedbackPrivate.FeedbackInfo} feedback
+ * @param {?boolean|undefined} loadSystemInfo Optional flag when present and is
+ *     true, the backend should load system information before sending the
+ *     report. This is added to reduce user's wait time when sending reports
+ *     because loading system information is slow.
+ * @param {?number|undefined} formOpenTime The epoch time when the feedback form
+ *     was opened. This is used for metrics.
  * @param {function(!chrome.feedbackPrivate.Status, !chrome.feedbackPrivate.LandingPageType): void}
  *     callback
  */
-chrome.feedbackPrivate.sendFeedback = function(feedback, callback) {};
+chrome.feedbackPrivate.sendFeedback = function(feedback, loadSystemInfo, formOpenTime, callback) {};
 
 /**
  * Gets localized translated strings for feedback. It returns the strings as a

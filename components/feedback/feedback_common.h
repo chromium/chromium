@@ -50,6 +50,10 @@ class FeedbackCommon : public base::RefCountedThreadSafe<FeedbackCommon> {
   // CompressLogs() must have already been called.
   void PrepareReport(userfeedback::ExtensionSubmit* feedback_data) const;
 
+  // Return true if we want to include the feedback item with a key of |key| in
+  // the feedback report's system logs.
+  static bool IncludeInSystemLogs(const std::string& key, bool is_google_email);
+
   // Getters
   const std::string& category_tag() const { return category_tag_; }
   const std::string& page_url() const { return page_url_; }

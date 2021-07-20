@@ -9,6 +9,8 @@ import {$} from 'chrome://resources/js/util.m.js';
 import {FEEDBACK_LANDING_PAGE, FEEDBACK_LANDING_PAGE_TECHSTOP, FEEDBACK_LEGAL_HELP_URL, FEEDBACK_PRIVACY_POLICY_URL, FEEDBACK_TERM_OF_SERVICE_URL, openUrlInAppWindow} from './feedback_util.js';
 import {takeScreenshot} from './take_screenshot.js';
 
+/** @type {!number} */
+const formOpenTime = new Date().getTime();
 
 /** @type {string} */
 const dialogArgs = chrome.getVariableValue('dialogArguments');
@@ -51,29 +53,15 @@ class FeedbackHelper {
    * @param {boolean} useSystemInfo
    */
   sendFeedbackReport(useSystemInfo) {
-    if (!useSystemInfo) {
-      feedbackInfo.systemInformation = [];
-      this.sendFeedbackReportNow();
-      return;
-    }
-
-    this.getSystemInformation().then(sysInfo => {
-      if (feedbackInfo.systemInformation) {
-        feedbackInfo.systemInformation =
-            feedbackInfo.systemInformation.concat(sysInfo);
-      } else {
-        feedbackInfo.systemInformation = sysInfo;
-      }
-      this.sendFeedbackReportNow();
-    });
-  }
-
-  sendFeedbackReportNow() {
     const ID = Math.round(Date.now() / 1000);
     const FLOW = feedbackInfo.flow;
 
+    if (!useSystemInfo) {
+      feedbackInfo.systemInformation = [];
+    }
     chrome.feedbackPrivate.sendFeedback(
-        feedbackInfo, function(result, landingPageType) {
+        feedbackInfo, useSystemInfo, formOpenTime,
+        function(result, landingPageType) {
           if (result == chrome.feedbackPrivate.Status.SUCCESS) {
             if (FLOW != chrome.feedbackPrivate.FeedbackFlow.LOGIN &&
                 landingPageType !=
