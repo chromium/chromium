@@ -2095,7 +2095,7 @@
     "policy_pref_mapping_tests": [
       {
         "note": "Default value (no policies set).",
-        "policies": { },
+        "policies": {},
         "prefs": {
           "auth.server_allowlist": {
             "location": "local_state",
@@ -3608,10 +3608,30 @@
     "policy_pref_mapping_tests": [
       {
         "policies": {
+          "ScreenCaptureAllowed": true
+        },
+        "prefs": {
+          "hardware.screen_capture_enabled": {
+            "value": true
+          }
+        }
+      },
+      {
+        "policies": {
           "ScreenCaptureAllowed": false
         },
         "prefs": {
-          "hardware.screen_capture_enabled": {}
+          "hardware.screen_capture_enabled": {
+            "value": false
+          }
+        }
+      },
+      {
+        "policies": {},
+        "prefs": {
+          "hardware.screen_capture_enabled": {
+            "default_value": true
+          }
         }
       }
     ]
@@ -6766,7 +6786,7 @@
     ],
     "policy_pref_mapping_tests": [
       {
-        "note":"Check default values (no policies set)",
+        "note": "Check default values (no policies set)",
         "prefs": {
           "power.ac_screen_lock_delay_ms": {
             "default_value": 0
