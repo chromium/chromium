@@ -221,7 +221,7 @@ void ClipboardMap::GetImage(ReadImageCallback callback) {
 void ClipboardMap::DidGetPng(ReadPngCallback callback,
                              std::vector<uint8_t> result) {
   // GetPngData attempts to read from the Java Clipboard, which sometimes is
-  // not available (ex. the app is not in focus).
+  // not available (ex. the app is not in focus, such as in unit tests).
   if (!result.empty()) {
     std::move(callback).Run(std::move(result));
     return;
@@ -241,7 +241,7 @@ void ClipboardMap::DidGetPng(ReadPngCallback callback,
 void ClipboardMap::DidGetImage(ReadImageCallback callback,
                                const SkBitmap& result) {
   // GetImageData attempts to read from the Java Clipboard, which sometimes is
-  // not available (ex. the app is not in focus).
+  // not available (ex. the app is not in focus, such as in unit tests).
   if (!result.isNull()) {
     std::move(callback).Run(std::move(result));
     return;
