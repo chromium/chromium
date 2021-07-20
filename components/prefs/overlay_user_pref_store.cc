@@ -5,6 +5,7 @@
 #include "components/prefs/overlay_user_pref_store.h"
 
 #include <memory>
+#include <ostream>
 #include <utility>
 
 #include "base/memory/ptr_util.h"

@@ -5,6 +5,7 @@
 #include "sql/recover_module/parsing.h"
 
 #include <cstddef>
+#include <ostream>
 #include <tuple>
 #include <utility>
 

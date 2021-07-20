@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/webrtc/webrtc_log_buffer.h"
 
+#include <ostream>
+
 #include "base/check_op.h"
 
 WebRtcLogBuffer::WebRtcLogBuffer()

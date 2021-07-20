@@ -4,6 +4,9 @@
 
 #include "cc/raster/task.h"
 
+#include <ostream>
+#include <utility>
+
 #include "base/check.h"
 #include "base/notreached.h"
 

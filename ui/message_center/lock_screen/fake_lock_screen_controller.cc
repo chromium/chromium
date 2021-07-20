@@ -4,6 +4,8 @@
 
 #include "ui/message_center/lock_screen/fake_lock_screen_controller.h"
 
+#include <ostream>
+
 namespace message_center {
 
 FakeLockScreenController::FakeLockScreenController() = default;

@@ -6,6 +6,7 @@
 #define SQL_RECOVER_MODULE_PAYLOAD_H_
 
 #include <cstdint>
+#include <ostream>
 #include <vector>
 
 #include "base/check_op.h"

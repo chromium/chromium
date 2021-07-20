@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <ostream>
 
 #include "base/check_op.h"
 #include "base/sequence_checker.h"

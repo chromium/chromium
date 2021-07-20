@@ -11,6 +11,7 @@
 #include <climits>
 #include <map>
 #include <memory>
+#include <ostream>
 #include <set>
 #include <utility>
 

@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <ostream>
 #include <vector>
 
 #include "base/base64.h"

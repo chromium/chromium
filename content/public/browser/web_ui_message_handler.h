@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEB_UI_MESSAGE_HANDLER_H_
 #define CONTENT_PUBLIC_BROWSER_WEB_UI_MESSAGE_HANDLER_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 

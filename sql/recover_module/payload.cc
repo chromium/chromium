@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <cstddef>
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
 #include "base/check_op.h"

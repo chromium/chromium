@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_response_validator.h"
 
+#include <ostream>
+
 #include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"

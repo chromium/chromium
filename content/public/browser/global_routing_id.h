@@ -5,6 +5,7 @@
 #ifndef CONTENT_PUBLIC_BROWSER_GLOBAL_ROUTING_ID_H_
 #define CONTENT_PUBLIC_BROWSER_GLOBAL_ROUTING_ID_H_
 
+#include <ostream>
 #include <tuple>
 
 #include "base/hash/hash.h"

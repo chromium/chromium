@@ -5,6 +5,7 @@
 #include "extensions/browser/value_store/testing_value_store.h"
 
 #include <memory>
+#include <ostream>
 #include <utility>
 
 #include "base/notreached.h"

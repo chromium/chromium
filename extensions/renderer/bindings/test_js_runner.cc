@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/test_js_runner.h"
 
+#include <ostream>
+
 #include "base/bind.h"
 #include "extensions/renderer/bindings/api_binding_test_util.h"
 

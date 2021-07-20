@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_DATABASE_MAINTENANCE_IMPL_H_
 
 #include <set>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,7 @@
 
 namespace base {
 class Clock;
+class Time;
 }  // namespace base
 
 using optimization_guide::proto::OptimizationTarget;
