@@ -11,8 +11,7 @@ namespace chromecast {
 
 class CastFeatureListCreator;
 
-class CastRuntimeContentBrowserClient final
-    : public shell::CastContentBrowserClient {
+class CastRuntimeContentBrowserClient : public shell::CastContentBrowserClient {
  public:
   static std::unique_ptr<CastRuntimeContentBrowserClient> Create(
       CastFeatureListCreator* feature_list_creator);

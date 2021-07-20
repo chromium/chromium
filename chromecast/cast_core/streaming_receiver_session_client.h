@@ -11,6 +11,10 @@
 #include "components/cast/message_port/message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 
+namespace content {
+class NavigationHandle;
+}  // namespace content
+
 namespace chromecast {
 
 // This class wraps all //components/cast_streaming functionality, only
