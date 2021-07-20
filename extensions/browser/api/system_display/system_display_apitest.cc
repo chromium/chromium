@@ -63,29 +63,7 @@ class SystemDisplayApiTest : public ShellApiTest {
   DISALLOW_COPY_AND_ASSIGN(SystemDisplayApiTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, GetDisplayInfo) {
-  ASSERT_TRUE(RunAppTest("system/display/info")) << message_;
-}
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-
-IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetDisplay) {
-  scoped_refptr<SystemDisplaySetDisplayPropertiesFunction> set_info_function(
-      new SystemDisplaySetDisplayPropertiesFunction());
-
-  set_info_function->set_has_callback(true);
-
-  EXPECT_EQ(
-      SystemDisplayCrOSRestrictedFunction::kCrosOnlyError,
-      api_test_utils::RunFunctionAndReturnError(
-          set_info_function.get(), "[\"display_id\", {}]", browser_context()));
-
-  std::unique_ptr<base::DictionaryValue> set_info =
-      provider_->GetSetInfoValue();
-  EXPECT_FALSE(set_info);
-}
-
-#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 // TODO(stevenjb): Add API tests for {GS}etDisplayLayout. That code currently
 // lives in src/chrome but should be getting moved soon.
@@ -348,6 +326,6 @@ IN_PROC_BROWSER_TEST_F(SystemDisplayApiTest, SetMirrorMode) {
   }
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace extensions

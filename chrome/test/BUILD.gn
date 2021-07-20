@@ -2618,6 +2618,7 @@ if (!is_android) {
         "../browser/extensions/api/settings_private/settings_private_apitest.cc",
         "../browser/extensions/api/socket/socket_apitest.cc",
         "../browser/extensions/api/storage/settings_apitest.cc",
+        "../browser/extensions/api/system_display/system_display_extension_apitest.cc",
         "../browser/extensions/api/system_indicator/system_indicator_apitest.cc",
         "../browser/extensions/api/system_private/system_private_apitest.cc",
         "../browser/extensions/api/tab_capture/tab_capture_apitest.cc",
