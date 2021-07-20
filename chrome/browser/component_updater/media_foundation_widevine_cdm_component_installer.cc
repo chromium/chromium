@@ -17,6 +17,8 @@
 #include "base/logging.h"
 #include "base/native_library.h"
 #include "base/version.h"
+#include "base/win/security_util.h"
+#include "base/win/sid.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "content/public/browser/cdm_registry.h"
 #include "content/public/common/cdm_info.h"
@@ -52,11 +54,26 @@ bool MediaFoundationWidevineCdmComponentInstallerPolicy::
   return false;
 }
 
+// Set permission on `install_dir` so the CDM can be loaded in the LPAC process.
 update_client::CrxInstaller::Result
 MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomInstall(
     const base::DictionaryValue& manifest,
     const base::FilePath& install_dir) {
-  return update_client::CrxInstaller::Result(0);  // Nothing custom here.
+  DVLOG(1) << __func__ << ": Set permission on " << install_dir;
+
+  auto sids =
+      base::win::Sid::FromNamedCapabilityVector({L"mediaFoundationCdmFiles"});
+
+  bool success = false;
+  if (sids) {
+    success = base::win::GrantAccessToPath(
+        install_dir, *sids, FILE_GENERIC_READ | FILE_GENERIC_EXECUTE,
+        CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE);
+  }
+
+  return update_client::CrxInstaller::Result(
+      success ? update_client::InstallError::NONE
+              : update_client::InstallError::SET_PERMISSIONS_FAILED);
 }
 
 void MediaFoundationWidevineCdmComponentInstallerPolicy::OnCustomUninstall() {}

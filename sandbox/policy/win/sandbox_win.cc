@@ -704,7 +704,8 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
         !container->AddCapability(L"lpacAppExperience") ||
         !container->AddCapability(L"lpacInstrumentation") ||
         !container->AddCapability(L"lpacCryptoServices") ||
-        !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications")) {
+        !container->AddCapability(L"lpacEnterprisePolicyChangeNotifications") ||
+        !container->AddCapability(L"mediaFoundationCdmFiles")) {
       DLOG(ERROR)
           << "AppContainer::AddCapability() - "
           << "SandboxType::kMediaFoundationCdm lpac capabilities failed";

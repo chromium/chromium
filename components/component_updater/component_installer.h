@@ -58,8 +58,9 @@ class ComponentInstallerPolicy {
 
   // OnCustomInstall is called during the installation process. Components that
   // require custom installation operations should implement them here.
-  // Returns false if a custom operation failed, and true otherwise.
-  // Called only from a thread belonging to a blocking thread pool.
+  // Returns a failure result if a custom operation failed, and
+  // update_client::InstallError::NONE otherwise. Called only from a thread
+  // belonging to a blocking thread pool.
   virtual update_client::CrxInstaller::Result OnCustomInstall(
       const base::DictionaryValue& manifest,
       const base::FilePath& install_dir) = 0;
