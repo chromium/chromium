@@ -113,7 +113,9 @@ cr.define('cr.ui.login.debug', function() {
             screen.setKeyboardDeviceName('Some Keyboard');
             screen.setPointingDeviceName('Some Mouse');
             screen.setKeyboardState('searching');
-            screen.setMouseState('usb');
+            screen.setMouseState('searching');
+            screen.setTouchscreenDetectedState(false);
+            screen.setContinueButtonEnabled(false);
             screen.setPinDialogVisible(false);
           },
         },
@@ -124,6 +126,8 @@ cr.define('cr.ui.login.debug', function() {
             screen.setPointingDeviceName('Some Mouse');
             screen.setKeyboardState('connected');
             screen.setMouseState('paired');
+            screen.setTouchscreenDetectedState(false);
+            screen.setContinueButtonEnabled(true);
             screen.setPinDialogVisible(false);
           },
         },
@@ -134,10 +138,25 @@ cr.define('cr.ui.login.debug', function() {
             screen.setPointingDeviceName('Some Mouse');
             screen.setKeyboardState('pairing');
             screen.setMouseState('pairing');
+            screen.setTouchscreenDetectedState(false);
+            screen.setContinueButtonEnabled(false);
             screen.setPinDialogVisible(true);
             screen.setNumKeysEnteredPinCode(1);
           },
         },
+        {
+          id: 'touchscreen-detected',
+          trigger: (screen) => {
+            screen.setKeyboardDeviceName('Some Keyboard');
+            screen.setPointingDeviceName('Some Mouse');
+            screen.setKeyboardState('searching');
+            screen.setMouseState('searching');
+            screen.setTouchscreenDetectedState(true);
+            screen.setContinueButtonEnabled(true);
+            screen.setPinDialogVisible(false);
+          },
+        },
+
       ],
     },
     {
