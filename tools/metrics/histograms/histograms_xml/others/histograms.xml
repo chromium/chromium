@@ -11811,6 +11811,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     multiplied by 100. The histogram is capped at 20000 (equivalent to 2 cores
     fully loaded). I.e. 4 cores busy at 25% each will read as 25 * 4 * 100 =
     10000.
+
+    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
+    usage of processes that terminate before the end of the interval. This means
+    that short lived processes will rarely be included in the data. Furthermore,
+    we know that short-lived processes are very common (see
+    Renderer.ProcessLifetime). A future version of this metric will address this
+    limitation.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 <!-- Usage scenario variant defined in tools/metrics/histograms/histograms_xml/power/histograms.xml  -->
@@ -11829,6 +11836,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Average disk utilization of a process, recorded at every two-minute
     interval. The amount of data transferred (Total I/O bytes per second) for a
     given process.
+
+    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
+    usage of processes that terminate before the end of the interval. This means
+    that short lived processes will rarely be included in the data. Furthermore,
+    we know that short-lived processes are very common (see
+    Renderer.ProcessLifetime). A future version of this metric will address this
+    limitation.
   </summary>
 </histogram>
 
@@ -11842,6 +11856,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Monitor and the battery menu. This incorporates CPU utilization, idle
     wakeups, IO, and task QoS level using per-machine-model weights. Divide by
     100 to match Activity Monitor's scale. Recorded every two minutes.
+
+    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
+    usage of processes that terminate before the end of the interval. This means
+    that short lived processes will rarely be included in the data. Furthermore,
+    we know that short-lived processes are very common (see
+    Renderer.ProcessLifetime). A future version of this metric will address this
+    limitation.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 <!-- Usage scenario variant defined in tools/metrics/histograms/histograms_xml/power/histograms.xml  -->
@@ -11869,6 +11890,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <owner>markchang@chromium.org</owner>
   <summary>
     The average CPU idle wakeups per second, sampled every two minutes.
+
+    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
+    usage of processes that terminate before the end of the interval. This means
+    that short lived processes will rarely be included in the data. Furthermore,
+    we know that short-lived processes are very common (see
+    Renderer.ProcessLifetime). A future version of this metric will address this
+    limitation.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 <!-- Usage scenario variant defined in tools/metrics/histograms/histograms_xml/power/histograms.xml  -->
@@ -11886,6 +11914,13 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     two minutes. This is a subset of wakeups that indicate that the processor
     complex was taken out of low-power state. For more info, see the
     powermetrics man page on macOS.
+
+    NOTE: This metric has one signigicant limitation, it doesn't report the CPU
+    usage of processes that terminate before the end of the interval. This means
+    that short lived processes will rarely be included in the data. Furthermore,
+    we know that short-lived processes are very common (see
+    Renderer.ProcessLifetime). A future version of this metric will address this
+    limitation.
   </summary>
   <token key="ProcessName" variants="ProcessName"/>
 <!-- Usage scenario variant defined in tools/metrics/histograms/histograms_xml/power/histograms.xml  -->
