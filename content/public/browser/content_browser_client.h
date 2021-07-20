@@ -30,6 +30,7 @@
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/generated_code_cache_settings.h"
+#include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/page_visibility_state.h"
@@ -72,14 +73,17 @@
 #endif
 
 namespace net {
-class AuthCredentials;
 class SiteForCookies;
 class IsolationInfo;
 }  // namespace net
 
 class GURL;
+
+// TODO(ellyjones): This synonym shouldn't need to exist - call sites should get
+// the definition from LoginDelegate directly. Migrate all users over, then
+// delete this.
 using LoginAuthRequiredCallback =
-    base::OnceCallback<void(const absl::optional<net::AuthCredentials>&)>;
+    content::LoginDelegate::LoginAuthRequiredCallback;
 
 namespace base {
 class CommandLine;

@@ -36,6 +36,7 @@
 #include "content/public/browser/plugin_service.h"
 #include "content/public/common/pepper_plugin_info.h"
 #include "net/base/filename_util.h"
+#include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
 using content::PluginService;
