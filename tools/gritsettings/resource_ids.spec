@@ -278,6 +278,10 @@
     "META": {"sizes": {"includes": [10],}},
     "includes": [2030],
   },
+  "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/chromebox_for_meetings/resources.grd": {
+    "META": {"sizes": {"includes": [5]}},
+    "includes": [2035],
+  },
   "<(SHARED_INTERMEDIATE_DIR)/chrome/browser/resources/chromeos/internet_config_dialog/internet_config_dialog_resources.grd": {
     "META": {"sizes": {"includes": [10],}},
     "includes": [2040],

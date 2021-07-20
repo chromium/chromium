@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright (c) 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,14 +10,21 @@
 #include "chrome/browser/ash/app_mode/certificate_manager_dialog.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/chromeos/cellular_setup/cellular_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/browser_resources.h"
+#include "chrome/grit/cfm_network_settings_resources.h"
+#include "chrome/grit/cfm_network_settings_resources_map.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/onc/onc_constants.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/network_element_localized_strings_provider.h"
 
 namespace chromeos {
 namespace cfm {
@@ -87,8 +94,9 @@ void NetworkSettingsDialog::ShowDialog() {
 }
 
 NetworkSettingsDialog::NetworkSettingsDialog()
-    : SystemWebDialogDelegate(GURL(chrome::kCfmNetworkSettingsURL),
-                              /* title= */ u"") {
+    : SystemWebDialogDelegate(
+          GURL(chrome::kCfmNetworkSettingsURL),
+          l10n_util::GetStringUTF16(IDS_CFM_NETWORK_SETTINGS_TITLE)) {
   g_cfm_network_settings_shown = true;
 }
 
@@ -106,7 +114,24 @@ NetworkSettingsDialogUi::NetworkSettingsDialogUi(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kCfmNetworkSettingsHost);
 
-  // TODO(b/35772861): attach required resources
+  source->AddLocalizedString("headTitle", IDS_CFM_NETWORK_SETTINGS_TITLE);
+  source->AddLocalizedString("availableNetworks",
+                             IDS_CFM_NETWORK_SETTINGS_AVAILABLE_NETWORKS);
+  source->AddLocalizedString("addWiFiListItemName",
+                             IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME);
+  source->AddLocalizedString("proxySettingsListItemName",
+                             IDS_NETWORK_PROXY_SETTINGS_LIST_ITEM_NAME);
+  source->AddLocalizedString("manageCertsListItemName",
+                             IDS_MANAGE_CERTIFICATES);
+  ui::network_element::AddLocalizedStrings(source);
+  cellular_setup::AddNonStringLoadTimeData(source);
+  source->UseStringsJs();
+
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kCfmNetworkSettingsResources,
+                      kCfmNetworkSettingsResourcesSize),
+      IDR_CFM_NETWORK_SETTINGS_CFM_NETWORK_SETTINGS_CONTAINER_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<NetworkSettingsMessageHandler>());
 

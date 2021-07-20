@@ -1,0 +1,79 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos, "CFM Network Settings is only available on ChromeOS builds")
+assert(is_cfm, "CFM Network Settings is only available on CFM builds")
+
+preprocess_folder = "preprocessed"
+preprocess_gen_manifest = "preprocessed_gen_manifest.json"
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+html_to_js("web_components") {
+  js_files = [ "cfm_network_settings.js" ]
+}
+
+preprocess_if_expr("preprocess_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
+  in_files = [ "cfm_network_settings.js" ]
+}
+
+js_library("cfm_network_settings") {
+  deps = [
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
+    "//ui/webui/resources/cr_components/chromeos/network:network_list_types.m",
+    "//ui/webui/resources/cr_components/chromeos/network:onc_mojo.m",
+    "//ui/webui/resources/js:cr.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+}
+
+js_library("cfm_network_settings_browser_proxy") {
+  deps = [ "//ui/webui/resources/js:cr.m" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [ "language_in=ECMASCRIPT_2020" ]
+  deps = [
+    ":cfm_network_settings",
+    ":cfm_network_settings_browser_proxy",
+  ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "cfm_network_settings"
+  out_grd = resources_grd_file
+  input_files = [
+    "cfm_network_settings_container.html",
+    "cfm_network_settings_browser_proxy.js",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":preprocess_generated" ]
+  manifest_files = [ "$target_gen_dir/$preprocess_gen_manifest" ]
+}
+
+grit("resources") {
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/cfm_network_settings_resources.h",
+    "grit/cfm_network_settings_resources_map.h",
+    "grit/cfm_network_settings_resources_map.cc",
+    "cfm_network_settings_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

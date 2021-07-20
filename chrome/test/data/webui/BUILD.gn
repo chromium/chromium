@@ -7,6 +7,7 @@ import("//build/config/crypto.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/include_js_tests.gni")
+import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//ui/webui/resources/tools/js_modulizer.gni")
@@ -200,6 +201,11 @@ if (include_js_tests) {
     }
     if (!is_android) {
       sources += [ "commander/commander_browsertest.js" ]
+    }
+    if (is_cfm) {
+      sources += [
+        "chromeos/chromebox_for_meetings/cfm_network_settings_browsertest.js",
+      ]
     }
 
     data = [

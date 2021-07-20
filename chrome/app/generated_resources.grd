@@ -11654,6 +11654,15 @@ Please help our engineers fix this problem. Tell us what happened right before y
     <message name="IDS_TAB_SEARCH_EXPERIMENT_DESCRIPTION" desc="Description for Tab Search experiment">
       Enable a popup bubble in Top Chrome UI to search over currently open tabs.
     </message>
+
+    <if expr="is_cfm">
+      <message name="IDS_CFM_NETWORK_SETTINGS_TITLE" desc="Title for CFM Network Settings dialog">
+        Network Settings
+      </message>
+      <message name="IDS_CFM_NETWORK_SETTINGS_AVAILABLE_NETWORKS" desc="Subheader displayed above list of discovered and available WiFi networks">
+        Available WiFi networks
+      </message>
+    </if>
   </messages>
 </release>
 </grit>
