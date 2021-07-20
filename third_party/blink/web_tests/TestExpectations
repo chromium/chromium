@@ -5715,7 +5715,7 @@ crbug.com/1048149 [ Mac ] fast/forms/calendar-picker/month-picker-appearance-ste
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-appearance-zoom125.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-top-left-selection-position-after-reopen.html [ Crash Pass ]
 crbug.com/1048149 [ Mac ] fast/forms/color/color-picker-zoom150-bottom-edge-no-nan.html [ Crash Pass ]
-crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Crash Pass ]
+crbug.com/1048149 crbug.com/1050121 [ Mac ] fast/forms/month/month-picker-appearance-zoom150.html [ Crash Pass Failure ]
 
 # SwANGLE issues
 crbug.com/1204234 css3/blending/background-blend-mode-single-accelerated-element.html [ Failure ]
@@ -7382,3 +7382,5 @@ crbug.com/1230599 [ Linux ] fast/workers/worker-close-more.html [ Crash Pass ]
 crbug.com/1230599 [ Linux ] fast/workers/worker-lifecycle.html [ Crash Pass ]
 crbug.com/1230599 [ Linux ] virtual/plz-dedicated-worker/fast/workers/chromium/worker-document-leak.html [ Crash ]
 crbug.com/1230599 [ Linux ] virtual/shared_array_buffer_on_desktop/fast/workers/dedicated-worker-lifecycle.html [ Crash Pass ]
+
+crbug.com/1230836 [ Mac ] fast/forms/calendar-picker/date-picker-appearance-zoom150.html [ Pass Failure Crash ]
