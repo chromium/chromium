@@ -7,11 +7,15 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/synchronization/lock_impl.h"
 #include "base/thread_annotations.h"
-#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
+
+#if DCHECK_IS_ON()
+#include "base/threading/platform_thread.h"
+#endif
 
 namespace base {
 

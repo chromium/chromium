@@ -878,6 +878,7 @@ component("base") {
     sources += [
       "debug/debugger_posix.cc",
       "debug/stack_trace_posix.cc",
+      "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
       "files/file_descriptor_watcher_posix.cc",
@@ -1618,6 +1619,7 @@ component("base") {
       "debug/elf_reader.cc",
       "debug/elf_reader.h",
       "debug/stack_trace_fuchsia.cc",
+      "file_descriptor_posix.cc",
       "file_descriptor_posix.h",
       "files/dir_reader_posix.h",
       "files/file_descriptor_watcher_posix.cc",
