@@ -5225,12 +5225,23 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Default value (no policies set).",
+        "prefs": {
+          "ssl.version_min": {
+            "location": "local_state",
+            "default_value": ""
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "SSLVersionMin": "tls1.1"
         },
         "prefs": {
           "ssl.version_min": {
-            "location": "local_state"
+            "location": "local_state",
+            "value": "tls1.1"
           }
         }
       }
@@ -7436,11 +7447,22 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note":"Check default values (no policies set)",
+        "prefs": {
+          "ssl.error_override_allowed": {
+            "default_value": true
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
-          "SSLErrorOverrideAllowed": true
+          "SSLErrorOverrideAllowed": false
         },
         "prefs": {
-          "ssl.error_override_allowed": {}
+          "ssl.error_override_allowed": {
+            "value": false
+          }
         }
       }
     ]
@@ -7455,15 +7477,26 @@
     ],
     "policy_pref_mapping_tests": [
       {
+        "note": "Check default values (no policies set)",
+        "prefs": {
+          "ssl.error_override_allowed_for_origins": {
+            "default_value": []
+          }
+        }
+      },
+      {
+        "note": "Simple value",
         "policies": {
           "SSLErrorOverrideAllowedForOrigins": [
-            "google.com"
+            "meow.com",
+            "woof.net"
           ]
         },
         "prefs": {
           "ssl.error_override_allowed_for_origins": {
             "value": [
-              "google.com"
+              "meow.com",
+              "woof.net"
             ]
           }
         }
