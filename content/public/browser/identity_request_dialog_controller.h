@@ -34,6 +34,23 @@ struct CONTENT_EXPORT IdentityRequestAccount {
   std::string name;
   std::string given_name;
   GURL picture;
+
+  enum class LoginState {
+    // This is a returning user signing in with RP/IDP in this browser.
+    kSignIn,
+    // This is a new user sign up for RP/IDP in *this browser*. Note that this
+    // is the browser's notion of login state which may not match that of the
+    // IDP. For example the user may actually be a returning user having
+    // previously signed-up with this RP/IDP outside this browser. This is a
+    // consequence of not relying the IDP's login state. This means that we
+    // should be mindful to *NOT* rely on this value to mean definitely a new
+    // user when using it to customize the UI.
+    kSignUp,
+  };
+  // The account login state. Unlike the other fields this one is not populated
+  // by the IDP but instead by the browser based on its stored permission
+  // grants.
+  LoginState login_state;
 };
 
 // IdentityRequestDialogController is in interface for control of the UI

@@ -16,6 +16,8 @@
 #include "content/browser/webid/test/mock_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/mock_idp_network_request_manager.h"
 #include "content/browser/webid/test/mock_request_permission_delegate.h"
+#include "content/browser/webid/test/mock_sharing_permission_delegate.h"
+#include "content/public/browser/identity_request_dialog_controller.h"
 #include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,6 +25,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
@@ -33,6 +36,8 @@ using LogoutResponse = content::IdpNetworkRequestManager::LogoutResponse;
 using SigninResponse = content::IdpNetworkRequestManager::SigninResponse;
 using TokenResponse = content::IdpNetworkRequestManager::TokenResponse;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
+using AccountList = content::IdentityRequestDialogController::AccountList;
+using LoginState = content::IdentityRequestAccount::LoginState;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::NiceMock;
@@ -86,7 +91,7 @@ typedef struct {
 
 typedef struct {
   absl::optional<AccountsResponse> accounts_response;
-  IdpNetworkRequestManager::AccountList accounts;
+  AccountList accounts;
   absl::optional<TokenResponse> token_response;
 } MockMediatedConfiguration;
 
@@ -360,7 +365,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
             base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   ~FederatedAuthRequestImplTest() override = default;
 
-  void CreateAuthRequest(const GURL& provider) {
+  FederatedAuthRequestImpl& CreateAuthRequest(const GURL& provider) {
     provider_ = provider;
     auth_request_impl_ = std::make_unique<FederatedAuthRequestImpl>(
         main_rfh(), request_remote_.BindNewPipeAndPassReceiver());
@@ -372,6 +377,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
 
     mock_request_permission_delegate_ =
         std::make_unique<NiceMock<MockRequestPermissionDelegate>>();
+
+    return *auth_request_impl_;
   }
 
   std::pair<RequestIdTokenStatus, absl::optional<std::string>>
@@ -466,21 +473,24 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
           .WillOnce(Invoke(
               [&](content::WebContents* rp_web_contents,
                   content::WebContents* idp_web_contents,
-                  const GURL& idp_signin_url,
-                  IdpNetworkRequestManager::AccountList accounts,
+                  const GURL& idp_signin_url, AccountList accounts,
                   IdentityRequestDialogController::AccountSelectionCallback
                       on_selected) {
+                displayed_accounts_ = accounts;
                 std::move(on_selected).Run(accounts[0].sub);
               }));
     }
 
-    if (conf.token_response == TokenResponse::kSuccess) {
+    if (conf.token_response) {
+      auto delivered_token = conf.token_response == TokenResponse::kSuccess
+                                 ? token
+                                 : std::string();
       EXPECT_CALL(*mock_request_manager_, SendTokenRequest(_, _, _, _))
           .WillOnce(Invoke(
               [=](const GURL& idp_signin_url, const std::string& account_id,
                   const std::string& request,
                   IdpNetworkRequestManager::TokenRequestCallback callback) {
-                std::move(callback).Run(*conf.token_response, token);
+                std::move(callback).Run(*conf.token_response, delivered_token);
               }));
     }
   }
@@ -558,6 +568,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
     return logout_request_permissions_;
   }
 
+  const AccountList& displayed_accounts() const { return displayed_accounts_; }
+
  private:
   mojo::Remote<blink::mojom::FederatedAuthRequest> request_remote_;
   std::unique_ptr<FederatedAuthRequestImpl> auth_request_impl_;
@@ -574,6 +586,9 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
   std::vector<LogoutResponse> logout_return_status_;
   std::vector<std::string> logout_endpoints_;
   std::vector<bool> logout_request_permissions_;
+
+  // Storage for displayed accounts
+  AccountList displayed_accounts_;
 
   GURL provider_;
 };
@@ -671,6 +686,121 @@ TEST_F(BasicFederatedAuthRequestImplTest, LogoutWithoutPermission) {
   SetLogoutMockExpectations();
   auto logout_response = PerformLogoutRequest(logout_endpoints());
   EXPECT_EQ(logout_response, LogoutStatus::kError);
+}
+
+// Tests for Login State
+
+static const AuthRequestTestCase kSuccessfulMediatedSignUpTestCase{
+    "Successful mediated flow with one account",
+    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+    {RequestIdTokenStatus::kSuccess, kToken},
+    {kToken,
+     absl::nullopt,
+     FetchStatus::kSuccess,
+     "",
+     kAccountsEndpoint,
+     kTokenEndpoint,
+     kPermissionNoop,
+     {AccountsResponse::kSuccess, kAccounts, TokenResponse::kSuccess}}};
+
+static const AuthRequestTestCase kFailedMediatedSignUpTestCase{
+    "Failed mediated flow with one account",
+    {kIdpTestOrigin, kClientId, kNonce, RequestMode::kMediated},
+    {RequestIdTokenStatus::kSuccess, kToken},
+    {kToken,
+     absl::nullopt,
+     FetchStatus::kSuccess,
+     "",
+     kAccountsEndpoint,
+     kTokenEndpoint,
+     kPermissionNoop,
+     {AccountsResponse::kSuccess, kAccounts,
+      TokenResponse::kInvalidResponseError}}};
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       LoginStateShouldBeSignUpForFirstTimeUser) {
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.mode);
+
+  EXPECT_EQ(LoginState::kSignUp, displayed_accounts()[0].login_state);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       LoginStateShouldBeSignInForReturningUser) {
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Set specific expectations for sharing permission:
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  // Pretend the sharing permission has been granted for this account.
+  //
+  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
+  // but web contents has not navigated to that URL so origin() is null in
+  // tests. We should fix this.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .WillOnce(Return(true));
+
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.mode);
+  EXPECT_EQ(LoginState::kSignIn, displayed_accounts()[0].login_state);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       LoginStateSuccessfulSignUpGrantsSharingPermission) {
+  const auto& test_case = kSuccessfulMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Set specific expectations for sharing permission.
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(_, _, _))
+      .WillOnce(Return(false));
+  // TODO(majidvp): Ideally we would use the kRpTestOrigin for second argument
+  // but web contents has not navigated to that URL so origin() is null in
+  // tests. We should fix this.
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              GrantSharingPermissionForAccount(
+                  url::Origin::Create(GURL(kIdpTestOrigin)), _, "1234"))
+      .Times(1);
+
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.mode);
+}
+
+TEST_F(BasicFederatedAuthRequestImplTest,
+       LoginStateFailedSignUpNotGrantSharingPermission) {
+  const auto& test_case = kFailedMediatedSignUpTestCase;
+  auto& auth_request = CreateAuthRequest(GURL(test_case.inputs.provider));
+  SetMockExpectations(test_case);
+  // Set specific expectations for sharing permission.
+  NiceMock<MockSharingPermissionDelegate> mock_sharing_permission_delegate;
+  auth_request.SetSharingPermissionDelegateForTests(
+      &mock_sharing_permission_delegate);
+
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              HasSharingPermissionForAccount(_, _, _))
+      .WillOnce(Return(false));
+  EXPECT_CALL(mock_sharing_permission_delegate,
+              GrantSharingPermissionForAccount(_, _, _))
+      .Times(0);
+
+  auto auth_response =
+      PerformAuthRequest(test_case.inputs.client_id, test_case.inputs.nonce,
+                         test_case.inputs.mode);
 }
 
 }  // namespace content

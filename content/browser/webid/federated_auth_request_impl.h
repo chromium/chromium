@@ -79,7 +79,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       IdentityRequestDialogController::UserApproval approval);
   void OnAccountsResponseReceived(
       IdpNetworkRequestManager::AccountsResponse status,
-      const IdpNetworkRequestManager::AccountList& accounts);
+      IdpNetworkRequestManager::AccountList accounts);
   void OnAccountSelected(const std::string& account_id);
   void OnTokenResponseReceived(IdpNetworkRequestManager::TokenResponse status,
                                const std::string& id_token);
@@ -108,8 +108,17 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // Parameters of auth request.
   GURL provider_;
+
+  // The federated auth request parameters provided by RP. Note that these
+  // parameters will uniquely identify the users so they should only be passed
+  // to IDP after user permission has been granted.
+  //
+  // TODO(majidvp): Implement a mechanism (e.g., a getter) that checks the
+  // request permission is granted before providing access to this parameter
+  // this way we avoid accidentally sharing these values.
   std::string client_id_;
   std::string nonce_;
+
   blink::mojom::RequestMode mode_;
 
   // Fetched from the IDP well-known configuration.
@@ -130,6 +139,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   FederatedIdentitySharingPermissionContextDelegate*
       sharing_permission_delegate_ = nullptr;
 
+  // The account that was selected by the user. This is only applicable to the
+  // mediation flow.
+  std::string account_id_;
   std::string id_token_;
   RequestIdTokenCallback auth_request_callback_;
 

@@ -13,13 +13,13 @@
 #include "content/public/browser/federated_identity_request_permission_context_delegate.h"
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "content/public/common/content_client.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_constants.h"
 
 using blink::mojom::LogoutStatus;
 using blink::mojom::RequestIdTokenStatus;
 using blink::mojom::RequestMode;
 using UserApproval = content::IdentityRequestDialogController::UserApproval;
+using LoginState = content::IdentityRequestAccount::LoginState;
 
 namespace content {
 
@@ -98,36 +98,30 @@ void FederatedAuthRequestImpl::RequestIdToken(const GURL& provider,
 
   request_dialog_controller_ = CreateDialogController();
 
-  if (GetRequestPermissionContext() &&
-      GetRequestPermissionContext()->HasRequestPermission(
-          origin(), url::Origin::Create(provider_))) {
+  // Skip request permission if it is already given for this IDP or if we are
+  // using the mediated mode in which case the permission is combined with
+  // account selector UI.
+  if (mode_ == RequestMode::kMediated ||
+      (GetRequestPermissionContext() &&
+       GetRequestPermissionContext()->HasRequestPermission(
+           origin(), url::Origin::Create(provider_)))) {
     network_manager_->FetchIdpWellKnown(
         base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
+  DCHECK_EQ(mode_, RequestMode::kPermission);
   // Use the web contents of the page that initiated the WebID request (i.e.
   // the Relying Party) for showing the initial permission dialog.
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(render_frame_host());
 
-  switch (mode_) {
-    case RequestMode::kMediated:
-      // Skip permissions for Mediated mode since they are combined with
-      // account selection UX.
-      network_manager_->FetchIdpWellKnown(
-          base::BindOnce(&FederatedAuthRequestImpl::OnWellKnownFetched,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-    case RequestMode::kPermission:
-      request_dialog_controller_->ShowInitialPermissionDialog(
-          web_contents, provider_,
-          IdentityRequestDialogController::PermissionDialogMode::kStateful,
-          base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
-                         weak_ptr_factory_.GetWeakPtr()));
-      break;
-  }
+  request_dialog_controller_->ShowInitialPermissionDialog(
+      web_contents, provider_,
+      IdentityRequestDialogController::PermissionDialogMode::kStateful,
+      base::BindOnce(&FederatedAuthRequestImpl::OnSigninApproved,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 // TODO(kenrb): Depending on how this code evolves, it might make sense to
@@ -368,6 +362,7 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
   }
 
   if (GetSharingPermissionContext()) {
+    // Grant sharing permission for RP/IDP pair without a specific account.
     GetSharingPermissionContext()->GrantSharingPermission(
         url::Origin::Create(provider_), origin());
   }
@@ -377,7 +372,7 @@ void FederatedAuthRequestImpl::OnTokenProvisionApproved(
 
 void FederatedAuthRequestImpl::OnAccountsResponseReceived(
     IdpNetworkRequestManager::AccountsResponse status,
-    const IdpNetworkRequestManager::AccountList& accounts) {
+    IdpNetworkRequestManager::AccountList accounts) {
   switch (status) {
     case IdpNetworkRequestManager::AccountsResponse::kNetError: {
       CompleteRequest(RequestIdTokenStatus::kError, "");
@@ -391,6 +386,21 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       WebContents* rp_web_contents =
           WebContents::FromRenderFrameHost(render_frame_host());
       DCHECK(!idp_web_contents_);
+
+      // Populate the accounts login state.
+      for (auto& account : accounts) {
+        LoginState login_state = LoginState::kSignUp;
+        // Consider this a sign-in if we have seen a successful sign-up for
+        // this account before.
+        if (GetSharingPermissionContext() &&
+            GetSharingPermissionContext()->HasSharingPermissionForAccount(
+                url::Origin::Create(provider_), origin(), account.sub)) {
+          login_state = LoginState::kSignIn;
+        }
+
+        account.login_state = login_state;
+      }
+
       idp_web_contents_ = CreateIdpWebContents();
       request_dialog_controller_->ShowAccountsDialog(
           rp_web_contents, idp_web_contents_.get(), provider_, accounts,
@@ -403,22 +413,22 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 
 void FederatedAuthRequestImpl::OnAccountSelected(
     const std::string& account_id) {
-  // This could happen if provider didn't provide any token or user closed the
-  // IdP window before it could.
+  // This could happen if user didn't select any accounts.
   if (account_id.empty()) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
     return;
   }
 
-  // Account selection is considered sufficient for logout permission
-  // user consent.
+  // Account selection is considered sufficient for granting request permission
+  // (which also implies the logout permission).
   if (GetRequestPermissionContext()) {
     GetRequestPermissionContext()->GrantRequestPermission(
         origin(), url::Origin::Create(provider_));
   }
 
+  account_id_ = account_id;
   network_manager_->SendTokenRequest(
-      endpoints_.token, account_id, FormatRequestParams(client_id_, nonce_),
+      endpoints_.token, account_id_, FormatRequestParams(client_id_, nonce_),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -440,6 +450,25 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::TokenResponse::kSuccess: {
+      if (GetSharingPermissionContext()) {
+        DCHECK_EQ(mode_, RequestMode::kMediated);
+        // Grant sharing permission specific to *this account*.
+        //
+        // TODO(majidvp): But wait which account?
+        //   1) The account that user selected in our UI (i.e., account_id_) or
+        //   2) The one for which the IDP generated a token.
+        //
+        // Ideally these are one and the same but currently there is no
+        // enforcement for that equality so they could be different. In the
+        // future we may want to enforce that the token account (aka subject)
+        // matches the user selected account. But for now these questions are
+        // moot since we don't actually inspect the returned idtoken.
+        // https://crbug.com/1199088
+        CHECK(!account_id_.empty());
+        GetSharingPermissionContext()->GrantSharingPermissionForAccount(
+            url::Origin::Create(provider_), origin(), account_id_);
+      }
+
       id_token_ = id_token;
       CompleteRequest(RequestIdTokenStatus::kSuccess, id_token_);
       return;
@@ -502,6 +531,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
   // Given that |request_dialog_controller_| has reference to this web content
   // instance we destroy that first.
   idp_web_contents_.reset();
+  account_id_ = std::string();
   if (auth_request_callback_)
     std::move(auth_request_callback_).Run(status, id_token);
 }

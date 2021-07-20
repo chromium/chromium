@@ -522,7 +522,7 @@ void IdpNetworkRequestManager::OnAccountsRequestParsed(
     return;
   }
   std::move(accounts_request_callback_)
-      .Run(AccountsResponse::kSuccess, account_list);
+      .Run(AccountsResponse::kSuccess, std::move(account_list));
 }
 
 void IdpNetworkRequestManager::OnTokenRequestResponse(

@@ -7,6 +7,7 @@
 
 #include "content/public/browser/federated_identity_sharing_permission_context_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -21,12 +22,39 @@ class MockSharingPermissionDelegate
   MockSharingPermissionDelegate& operator=(
       const MockSharingPermissionDelegate&) = delete;
 
-  MOCK_METHOD2(HasSharingPermission,
-               bool(const url::Origin&, const url::Origin&));
-  MOCK_METHOD2(GrantSharingPermission,
-               void(const url::Origin&, const url::Origin&));
-  MOCK_METHOD2(RevokeSharingPermission,
-               void(const url::Origin&, const url::Origin&));
+  MOCK_METHOD(bool,
+              HasSharingPermission,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party),
+              (override));
+  MOCK_METHOD(bool,
+              HasSharingPermissionForAccount,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party,
+               const std::string& account_id),
+              (override));
+  MOCK_METHOD(void,
+              GrantSharingPermission,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party),
+              (override));
+  MOCK_METHOD(void,
+              GrantSharingPermissionForAccount,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party,
+               const std::string& account_id),
+              (override));
+  MOCK_METHOD(void,
+              RevokeSharingPermission,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party),
+              (override));
+  MOCK_METHOD(void,
+              RevokeSharingPermissionForAccount,
+              (const url::Origin& identity_provider,
+               const url::Origin& relying_party,
+               const std::string& account_id),
+              (override));
 };
 
 }  // namespace content

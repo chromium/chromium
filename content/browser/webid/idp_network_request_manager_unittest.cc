@@ -51,7 +51,7 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     AccountsResponse parsed_accounts_response;
     AccountList parsed_accounts;
     auto callback = base::BindLambdaForTesting(
-        [&](AccountsResponse response, const AccountList& accounts) {
+        [&](AccountsResponse response, AccountList accounts) {
           parsed_accounts_response = response;
           parsed_accounts = accounts;
           run_loop.Quit();
