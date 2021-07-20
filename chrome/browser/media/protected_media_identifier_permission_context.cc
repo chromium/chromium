@@ -150,7 +150,8 @@ bool ProtectedMediaIdentifierPermissionContext::
     return false;
   }
 
-  // This could be disabled by the device policy or by user's master switch.
+  // This could be disabled by the device policy or by a switch in content
+  // settings.
   bool enabled_for_device = false;
   if (!ash::CrosSettings::Get()->GetBoolean(
           chromeos::kAttestationForContentProtectionEnabled,

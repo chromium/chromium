@@ -35,8 +35,8 @@ class ProtectedMediaIdentifierPermissionContext
 
   // Returns whether "Protected content" is enabled based on factors other
   // than the protected media identifier content setting itself. For example,
-  // it can be disabled by a master switch in content settings, in incognito or
-  // guest mode, or by the device policy.
+  // it can be disabled by a switch in content settings, in incognito or guest
+  // mode, or by the device policy.
   bool IsProtectedMediaIdentifierEnabled() const;
 
   DISALLOW_COPY_AND_ASSIGN(ProtectedMediaIdentifierPermissionContext);
