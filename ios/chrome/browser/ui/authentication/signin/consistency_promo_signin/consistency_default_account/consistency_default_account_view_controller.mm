@@ -103,7 +103,8 @@ constexpr CGFloat kContentSpacing = 16.;
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:scrollView];
   [NSLayoutConstraint activateConstraints:@[
-    [scrollView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [scrollView.topAnchor
+        constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor],
     [scrollView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor],
     [scrollView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
     [scrollView.trailingAnchor
