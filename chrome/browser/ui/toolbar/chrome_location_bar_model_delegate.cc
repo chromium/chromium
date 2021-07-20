@@ -82,7 +82,8 @@ bool ChromeLocationBarModelDelegate::ShouldPreventElision() {
   if (GetElisionConfig() != ELISION_CONFIG_DEFAULT) {
     return true;
   }
-  return false;
+
+  return net::IsCertStatusError(GetVisibleSecurityState()->cert_status);
 }
 
 bool ChromeLocationBarModelDelegate::ShouldDisplayURL() const {
