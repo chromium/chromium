@@ -1729,7 +1729,8 @@ class PolicyTemplateChecker(object):
             self._Error('Missing atomic group id %s' % (delete_id))
             return
 
-  def Main(self, filename, options, original_file_contents, current_version):
+  def Main(self, filename, options, original_file_contents, current_version,
+           skip_compability_check):
     try:
       with open(filename, 'rb') as f:
         raw_data = f.read().decode('UTF-8')
@@ -1886,7 +1887,7 @@ class PolicyTemplateChecker(object):
     # errors).
     self.non_compatibility_error_count = self.error_count
     if (not self.non_compatibility_error_count
-        and original_file_contents is not None and current_version is not None):
+        and original_file_contents is not None and not skip_compability_check):
       self._CheckPolicyDefinitionsChangeCompatibility(
           policy_definitions, original_file_contents, current_version)
 
@@ -1920,7 +1921,8 @@ class PolicyTemplateChecker(object):
           argv,
           filename=None,
           original_file_contents=None,
-          current_version=None):
+          current_version=None,
+          skip_compability_check=False):
     parser = argparse.ArgumentParser(
         usage='usage: %prog [options] filename',
         description='Syntax check a policy_templates.json file.')
@@ -1942,4 +1944,5 @@ class PolicyTemplateChecker(object):
     if args.device_policy_proto_path is None:
       print('Error: Missing --device_policy_proto_path argument.')
       return 1
-    return self.Main(filename, args, original_file_contents, current_version)
+    return self.Main(filename, args, original_file_contents, current_version,
+                     skip_compability_check)
