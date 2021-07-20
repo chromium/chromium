@@ -19,6 +19,7 @@
 #include "ui/ozone/platform/wayland/test/test_data_device_manager.h"
 #include "ui/ozone/platform/wayland/test/test_data_offer.h"
 #include "ui/ozone/platform/wayland/test/test_data_source.h"
+#include "ui/ozone/platform/wayland/test/test_touch.h"
 
 using testing::_;
 
@@ -85,14 +86,39 @@ void WaylandDragDropTest::SendPointerButton(
                          state);
 }
 
+void WaylandDragDropTest::SendTouchDown(WaylandWindow* window,
+                                        MockPlatformWindowDelegate* delegate,
+                                        int id,
+                                        const gfx::Point& location) {
+  auto* surface = server_.GetObject<wl::MockSurface>(
+      window->root_surface()->GetSurfaceId());
+  wl_touch_send_down(
+      touch_->resource(), NextSerial(), NextTime(), surface->resource(), id,
+      wl_fixed_from_double(location.x()), wl_fixed_from_double(location.y()));
+}
+
+void WaylandDragDropTest::SendTouchMotion(WaylandWindow* window,
+                                          MockPlatformWindowDelegate* delegate,
+                                          int id,
+                                          const gfx::Point& location) {
+  wl_touch_send_motion(touch_->resource(), NextSerial(), id,
+                       wl_fixed_from_double(location.x()),
+                       wl_fixed_from_double(location.y()));
+}
+
 void WaylandDragDropTest::SetUp() {
   WaylandTest::SetUp();
 
-  wl_seat_send_capabilities(server_.seat()->resource(),
-                            WL_SEAT_CAPABILITY_POINTER);
+  wl_seat_send_capabilities(
+      server_.seat()->resource(),
+      WL_SEAT_CAPABILITY_POINTER | WL_SEAT_CAPABILITY_TOUCH);
+
   Sync();
   pointer_ = server_.seat()->pointer();
   ASSERT_TRUE(pointer_);
+
+  touch_ = server_.seat()->touch();
+  ASSERT_TRUE(touch_);
 
   data_device_manager_ = server_.data_device_manager();
   ASSERT_TRUE(data_device_manager_);

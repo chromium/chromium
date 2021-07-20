@@ -34,6 +34,7 @@ class Vector2dF;
 
 namespace ui {
 
+class WaylandConnection;
 class WaylandWindow;
 class WaylandWindowManager;
 
@@ -54,7 +55,8 @@ class WaylandEventSource : public PlatformEventSource,
  public:
   WaylandEventSource(wl_display* display,
                      wl_event_queue* event_queue,
-                     WaylandWindowManager* window_manager);
+                     WaylandWindowManager* window_manager,
+                     WaylandConnection* connection);
   WaylandEventSource(const WaylandEventSource&) = delete;
   WaylandEventSource& operator=(const WaylandEventSource&) = delete;
   ~WaylandEventSource() override;
@@ -122,6 +124,7 @@ class WaylandEventSource : public PlatformEventSource,
                           base::TimeTicks timestamp,
                           PointerId id) override;
   void OnTouchCancelEvent() override;
+  std::vector<PointerId> GetActiveTouchPointIds() override;
 
   // WaylandZwpPointerGesture::Delegate:
   void OnPinchEvent(EventType event_type,
@@ -169,6 +172,8 @@ class WaylandEventSource : public PlatformEventSource,
   gfx::Vector2dF ComputeFlingVelocity();
 
   WaylandWindowManager* const window_manager_;
+
+  WaylandConnection* const connection_;
 
   // Bitmask of EventFlags used to keep track of the the pointer state.
   int pointer_flags_ = 0;

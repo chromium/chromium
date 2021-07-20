@@ -23,6 +23,7 @@
 #include "ui/ozone/platform/wayland/host/wayland_data_source.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 #include "ui/ozone/platform/wayland/host/wayland_toplevel_window.h"
+#include "ui/ozone/platform/wayland/host/wayland_touch.h"
 #include "ui/ozone/platform/wayland/host/wayland_window_observer.h"
 
 namespace ui {
@@ -52,10 +53,15 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     kDropped,    // Drop event was just received.
     kAttaching,  // About to transition back to |kAttached|.
   };
+  enum class DragSource {
+    kMouse,
+    kTouch,
+  };
 
   WaylandWindowDragController(WaylandConnection* connection,
                               WaylandDataDeviceManager* device_manager,
-                              WaylandPointer::Delegate* pointer_delegate);
+                              WaylandPointer::Delegate* pointer_delegate,
+                              WaylandTouch::Delegate* touch_delegate);
   WaylandWindowDragController(const WaylandWindowDragController&) = delete;
   WaylandWindowDragController& operator=(const WaylandWindowDragController&) =
       delete;
@@ -101,7 +107,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   // Handles drag/move mouse |event|, while in |kDetached| mode, forwarding it
   // as a bounds change event to the upper layer handlers.
-  void HandleMotionEvent(MouseEvent* event);
+  void HandleMotionEvent(LocatedEvent* event);
   // Handles the mouse button release (i.e: drop). Dispatches the required
   // events and resets the internal state.
   void HandleDropAndResetState();
@@ -123,8 +129,11 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   WaylandDataDevice* const data_device_;
   WaylandWindowManager* const window_manager_;
   WaylandPointer::Delegate* const pointer_delegate_;
+  WaylandTouch::Delegate* const touch_delegate_;
 
   State state_ = State::kIdle;
+  absl::optional<DragSource> drag_source_;
+
   gfx::Vector2d drag_offset_;
 
   // The last known pointer location in DIP.

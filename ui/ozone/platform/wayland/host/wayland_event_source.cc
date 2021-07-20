@@ -78,8 +78,10 @@ WaylandEventSource::PointerFrame& WaylandEventSource::PointerFrame::operator=(
 
 WaylandEventSource::WaylandEventSource(wl_display* display,
                                        wl_event_queue* event_queue,
-                                       WaylandWindowManager* window_manager)
+                                       WaylandWindowManager* window_manager,
+                                       WaylandConnection* connection)
     : window_manager_(window_manager),
+      connection_(connection),
       event_watcher_(
           std::make_unique<WaylandEventWatcher>(display, event_queue)) {
   DCHECK(window_manager_);
@@ -341,6 +343,13 @@ void WaylandEventSource::OnTouchMotionEvent(const gfx::PointF& location,
 }
 
 void WaylandEventSource::OnTouchCancelEvent() {
+  // Some compositors emit a TouchCancel event when a drag'n drop
+  // session is started on the server, eg Exo.
+  // On Chrome, this event would actually abort the whole drag'n drop
+  // session on the client side.
+  if (connection_->IsDragInProgress())
+    return;
+
   gfx::PointF location;
   base::TimeTicks timestamp = base::TimeTicks::Now();
   for (auto& touch_point : touch_points_) {
@@ -351,6 +360,13 @@ void WaylandEventSource::OnTouchCancelEvent() {
     HandleTouchFocusChange(touch_point.second->window, false);
   }
   touch_points_.clear();
+}
+
+std::vector<PointerId> WaylandEventSource::GetActiveTouchPointIds() {
+  std::vector<PointerId> pointer_ids;
+  for (auto& touch_point : touch_points_)
+    pointer_ids.push_back(touch_point.first);
+  return pointer_ids;
 }
 
 void WaylandEventSource::OnPinchEvent(EventType event_type,

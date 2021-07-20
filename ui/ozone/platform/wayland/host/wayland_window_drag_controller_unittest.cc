@@ -119,6 +119,32 @@ class WaylandWindowDragControllerTest : public WaylandDragDropTest {
   //
   // TODO(crbug.com/1116431): Support extended-drag in test compositor.
   void SendDndDrop() { SendDndCancelled(); }
+
+  void SendTouchDown(WaylandWindow* window,
+                     MockPlatformWindowDelegate* delegate,
+                     int id,
+                     const gfx::Point& location) override {
+    WaylandDragDropTest::SendTouchDown(window, delegate, id, location);
+    EXPECT_CALL(*delegate, DispatchEvent(_)).Times(1);
+    Sync();
+
+    EXPECT_EQ(window, window_manager()->GetCurrentFocusedWindow());
+  }
+  void SendTouchMotion(WaylandWindow* window,
+                       MockPlatformWindowDelegate* delegate,
+                       int id,
+                       const gfx::Point& location) override {
+    WaylandDragDropTest::SendTouchMotion(window, delegate, id, location);
+
+    EXPECT_CALL(*delegate, DispatchEvent(_)).WillOnce([](Event* event) {
+      EXPECT_TRUE(event->IsTouchEvent());
+      EXPECT_EQ(ET_TOUCH_MOVED, event->type());
+    });
+    Sync();
+
+    EXPECT_EQ(window->GetWidget(),
+              screen_->GetLocalProcessWidgetAtPoint(location, {}));
+  }
 };
 
 // Check the following flow works as expected:
@@ -163,6 +189,94 @@ TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop) {
         break;
       case kDropping:
         EXPECT_EQ(ET_MOUSE_RELEASED, event->type());
+        EXPECT_EQ(State::kDropped, drag_controller()->state());
+        // Ensure PlatformScreen keeps consistent.
+        EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+        test_step = kDone;
+        break;
+      case kDone:
+        EXPECT_EQ(ET_MOUSE_EXITED, event->type());
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+        break;
+      case kDragging:
+      default:
+        FAIL() << " event=" << event->GetName()
+               << " state=" << drag_controller()->state()
+               << " step=" << static_cast<int>(test_step);
+        return;
+    }
+  });
+
+  EXPECT_CALL(delegate_, OnBoundsChanged(_))
+      .WillOnce([&](const PlatformWindowDelegate::BoundsChange& bounds) {
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        EXPECT_EQ(kDragging, test_step);
+        EXPECT_EQ(gfx::Point(20, 20), bounds.bounds.origin());
+
+        SendDndDrop();
+        test_step = kDropping;
+      });
+
+  // RunMoveLoop() blocks until the dragging session ends, so resume test
+  // server's run loop until it returns.
+  server_.Resume();
+  move_loop_handler->RunMoveLoop({});
+  server_.Pause();
+
+  SendPointerEnter(window_.get(), &delegate_);
+  Sync();
+
+  EXPECT_EQ(State::kIdle, drag_controller()->state());
+  EXPECT_EQ(window_.get(), window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(window_->GetWidget(),
+            screen_->GetLocalProcessWidgetAtPoint({20, 20}, {}));
+}
+
+// Check the following flow works as expected:
+// 1. With a single window open,
+// 2. Touch down and move the touch point a bit (drag),
+// 3. Run move loop, drag it within the window bounds and drop.
+TEST_P(WaylandWindowDragControllerTest, DragInsideWindowAndDrop_TOUCH) {
+  // Ensure there is no window currently focused
+  EXPECT_FALSE(window_manager()->GetCurrentFocusedWindow());
+  EXPECT_EQ(gfx::kNullAcceleratedWidget,
+            screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+
+  SendTouchDown(window_.get(), &delegate_, 0 /*point id*/, {0, 0} /*location*/);
+  SendTouchMotion(window_.get(), &delegate_, 0 /*point id*/,
+                  {10, 10} /*location*/);
+
+  // Set up an "interaction flow", start the drag session and run move loop:
+  //  - Event dispatching and bounds changes are monitored
+  //  - At each event, emulates a new event at server side and proceeds to the
+  //  next test step.
+  auto* wayland_extension = GetWaylandExtension(*window_);
+  wayland_extension->StartWindowDraggingSessionIfNeeded();
+  EXPECT_EQ(State::kAttached, drag_controller()->state());
+
+  auto* move_loop_handler = GetWmMoveLoopHandler(*window_);
+  DCHECK(move_loop_handler);
+
+  enum { kStarted, kDragging, kDropping, kDone } test_step = kStarted;
+
+  EXPECT_CALL(delegate_, DispatchEvent(_)).WillRepeatedly([&](Event* event) {
+    switch (test_step) {
+      case kStarted:
+        // TODO(tonikitoo,nickdiego): Is it correct to emit a mouse enter here?
+        EXPECT_EQ(ET_MOUSE_ENTERED, event->type());
+        EXPECT_EQ(State::kDetached, drag_controller()->state());
+        // Ensure PlatformScreen keeps consistent.
+        EXPECT_EQ(window_->GetWidget(),
+                  screen_->GetLocalProcessWidgetAtPoint({10, 10}, {}));
+        // Drag it a bit more.
+        SendDndMotion({20, 20});
+        test_step = kDragging;
+        break;
+      case kDropping:
+        EXPECT_EQ(ET_TOUCH_RELEASED, event->type());
         EXPECT_EQ(State::kDropped, drag_controller()->state());
         // Ensure PlatformScreen keeps consistent.
         EXPECT_EQ(gfx::Point(20, 20), screen_->GetCursorScreenPoint());

@@ -5,6 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOUCH_H_
 #define UI_OZONE_PLATFORM_WAYLAND_HOST_WAYLAND_TOUCH_H_
 
+#include <vector>
+
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "ui/events/pointer_details.h"
@@ -70,6 +72,7 @@ class WaylandTouch::Delegate {
                                   base::TimeTicks timestamp,
                                   PointerId id) = 0;
   virtual void OnTouchCancelEvent() = 0;
+  virtual std::vector<PointerId> GetActiveTouchPointIds() = 0;
 };
 
 }  // namespace ui

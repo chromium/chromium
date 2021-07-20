@@ -218,7 +218,7 @@ bool WaylandConnection::Initialize() {
   // estabilished, initialize the event source and input objects.
   DCHECK(!event_source_);
   event_source_ = std::make_unique<WaylandEventSource>(
-      display(), event_queue_.get(), wayland_window_manager());
+      display(), event_queue_.get(), wayland_window_manager(), this);
 
   wl_registry_add_listener(registry_.get(), &registry_listener, this);
   while (!wayland_output_manager_ ||
@@ -299,8 +299,12 @@ void WaylandConnection::SetCursorBitmap(const std::vector<SkBitmap>& bitmaps,
 
 bool WaylandConnection::IsDragInProgress() const {
   // |data_drag_controller_| can be null when running on headless weston.
-  return data_drag_controller_ && data_drag_controller_->state() !=
-                                      WaylandDataDragController::State::kIdle;
+  return (data_drag_controller_ &&
+          data_drag_controller_->state() !=
+              WaylandDataDragController::State::kIdle) ||
+         (window_drag_controller_ &&
+          window_drag_controller_->state() !=
+              WaylandWindowDragController::State::kIdle);
 }
 
 wl::Object<wl_surface> WaylandConnection::CreateSurface() {
@@ -413,7 +417,7 @@ void WaylandConnection::CreateDataObjectsIfReady() {
 
     DCHECK(!window_drag_controller_);
     window_drag_controller_ = std::make_unique<WaylandWindowDragController>(
-        this, data_device_manager_.get(), event_source());
+        this, data_device_manager_.get(), event_source(), event_source());
 
     DCHECK(!clipboard_);
     clipboard_ =

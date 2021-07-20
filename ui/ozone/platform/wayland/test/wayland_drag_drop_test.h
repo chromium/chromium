@@ -51,6 +51,15 @@ class WaylandDragDropTest : public WaylandTest,
                                  int button,
                                  bool pressed);
 
+  virtual void SendTouchDown(WaylandWindow* window,
+                             MockPlatformWindowDelegate* delegate,
+                             int id,
+                             const gfx::Point& location);
+  virtual void SendTouchMotion(WaylandWindow* window,
+                               MockPlatformWindowDelegate* delegate,
+                               int id,
+                               const gfx::Point& location);
+
  protected:
   // WaylandTest:
   void SetUp() override;
@@ -75,6 +84,7 @@ class WaylandDragDropTest : public WaylandTest,
   wl::TestDataDeviceManager* data_device_manager_;
   wl::TestDataSource* data_source_;
   wl::MockPointer* pointer_;
+  wl::TestTouch* touch_;
 };
 
 }  // namespace ui
