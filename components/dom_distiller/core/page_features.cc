@@ -147,13 +147,12 @@ std::vector<double> CalculateDerivedFeatures(bool isOGArticle,
 
 std::vector<double> CalculateDerivedFeaturesFromJSON(
     const base::Value* stringified_json) {
-  std::string stringified;
-  if (!stringified_json->GetAsString(&stringified)) {
+  if (!stringified_json->is_string()) {
     return std::vector<double>();
   }
 
   std::unique_ptr<base::Value> json =
-      base::JSONReader::ReadDeprecated(stringified);
+      base::JSONReader::ReadDeprecated(stringified_json->GetString());
   if (!json) {
     return std::vector<double>();
   }
