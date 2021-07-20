@@ -586,11 +586,6 @@ ImageBitmap* WebGLRenderingContextBase::TransferToImageBitmapBase(
     ScriptState* script_state) {
   WebFeature feature = WebFeature::kOffscreenCanvasTransferToImageBitmapWebGL;
   UseCounter::Count(ExecutionContext::From(script_state), feature);
-  if (!GetDrawingBuffer()) {
-    // Context is lost.
-    return nullptr;
-  }
-
   return MakeGarbageCollected<ImageBitmap>(
       GetDrawingBuffer()->TransferToStaticBitmapImage());
 }
