@@ -187,17 +187,6 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   // reordering.
   void UpdateAfterReorder(NGLogicalLineItems*);
 
-  // Update start/end of the first BoxData found at |index|.
-  //
-  // If inline fragmentation is found, a new BoxData is added.
-  //
-  // Returns the index to process next. It should be given to the next call to
-  // this function.
-  unsigned UpdateBoxDataFragmentRange(NGLogicalLineItems*, unsigned index);
-
-  // Update edges of inline fragmented boxes.
-  void UpdateFragmentedBoxDataEdges();
-
   // Compute inline positions of fragments and boxes.
   LayoutUnit ComputeInlinePositions(NGLogicalLineItems*, LayoutUnit position);
 
@@ -296,6 +285,19 @@ class CORE_EXPORT NGInlineLayoutStateStack {
         const NGConstraintSpace&,
         NGLogicalLineItems*);
   };
+
+  // Update start/end of the first BoxData found at |index|.
+  //
+  // If inline fragmentation is found, a new BoxData is added.
+  //
+  // Returns the index to process next. It should be given to the next call to
+  // this function.
+  unsigned UpdateBoxDataFragmentRange(NGLogicalLineItems*,
+                                      unsigned index,
+                                      Vector<BoxData>* fragmented_boxes);
+
+  // Update edges of inline fragmented boxes.
+  void UpdateFragmentedBoxDataEdges(Vector<BoxData>* fragmented_boxes);
 
   Vector<NGInlineBoxState, 4> stack_;
   Vector<BoxData, 4> box_data_list_;
