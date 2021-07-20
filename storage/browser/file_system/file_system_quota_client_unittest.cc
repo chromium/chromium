@@ -344,7 +344,7 @@ TEST_F(FileSystemQuotaClientTest, MultiTypeTest) {
                                            kFileSystemTypeTemporary);
   const int64_t file_paths_cost_persistent =
       ComputeFilePathsCostForOriginAndType(kFiles, kDummyURL1,
-                                           kFileSystemTypeTemporary);
+                                           kFileSystemTypePersistent);
 
   for (int i = 0; i < 2; i++) {
     EXPECT_EQ(133 + 14 + file_paths_cost_temporary,
