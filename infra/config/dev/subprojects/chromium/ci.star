@@ -52,11 +52,16 @@ defaults.swarming_tags.set(["vpython:native-python-wrapper"])
 
 def ci_builder(*, name, resultdb_bigquery_exports = None, **kwargs):
     resultdb_bigquery_exports = resultdb_bigquery_exports or []
-    resultdb_bigquery_exports.append(
+    resultdb_bigquery_exports.extend([
+        # TODO(chanli): Remove "luci-resultdb-dev.chromium.ci_test_results"
+        # after all test results are
         resultdb.export_test_results(
             bq_table = "luci-resultdb-dev.chromium.ci_test_results",
         ),
-    )
+        resultdb.export_test_results(
+            bq_table = "chrome-luci-data.chromium_staging.ci_test_results",
+        ),
+    ])
     return builder(
         name = name,
         triggered_by = ["chromium-gitiles-trigger"],
