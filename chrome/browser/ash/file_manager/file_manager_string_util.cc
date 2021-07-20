@@ -1018,6 +1018,9 @@ void AddFileManagerFeatureStrings(const std::string& locale,
   dict->SetBoolKey("FILES_SINGLE_PARTITION_FORMAT_ENABLED",
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
+  dict->SetBoolKey(
+      "FILES_BANNER_FRAMEWORK",
+      base::FeatureList::IsEnabled(chromeos::features::kFilesBannerFramework));
 
   dict->SetStringKey("UI_LOCALE", locale);
 }
