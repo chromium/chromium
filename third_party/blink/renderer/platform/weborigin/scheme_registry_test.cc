@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/threading.h"
 
 namespace blink {
 namespace {
@@ -61,6 +62,9 @@ TEST_F(SchemeRegistryTest, BypassSecureContextCheck) {
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme2));
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme3));
 
+#if DCHECK_IS_ON()
+  WTF::SetIsBeforeThreadCreatedForTest();  // Required for next operation:
+#endif
   SchemeRegistry::RegisterURLSchemeBypassingSecureContextCheck("random-scheme");
 
   EXPECT_FALSE(SchemeRegistry::SchemeShouldBypassSecureContextCheck(scheme1));
