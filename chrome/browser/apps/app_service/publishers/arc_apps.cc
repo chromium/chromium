@@ -1388,8 +1388,16 @@ apps::mojom::AppPtr ArcApps::Convert(ArcAppListPrefs* prefs,
   // persisted.
   app->show_in_shelf = apps::mojom::OptionalBool::kTrue;
   app->show_in_launcher = show;
-  app->show_in_search = show;
-  app->show_in_management = show;
+
+  if (app_id == arc::kPlayGamesAppId &&
+      show == apps::mojom::OptionalBool::kFalse) {
+    // Play Games should only be hidden in the launcher.
+    app->show_in_search = apps::mojom::OptionalBool::kTrue;
+    app->show_in_management = apps::mojom::OptionalBool::kTrue;
+  } else {
+    app->show_in_search = show;
+    app->show_in_management = show;
+  }
 
   app->has_badge = app_notifications_.HasNotification(app_id)
                        ? apps::mojom::OptionalBool::kTrue
