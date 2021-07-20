@@ -49,12 +49,7 @@ bool SignalStrengthRoutine::CanRun() {
   return true;
 }
 
-void SignalStrengthRoutine::RunRoutine(SignalStrengthRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), std::move(problems_));
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void SignalStrengthRoutine::Run() {
   FetchActiveWirelessNetworks();
 }
 
@@ -67,7 +62,8 @@ void SignalStrengthRoutine::AnalyzeResultsAndExecuteCallback() {
   } else {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
   }
-  std::move(routine_completed_callback_).Run(verdict(), std::move(problems_));
+  set_problems(mojom::RoutineProblems::NewSignalStrengthProblems(problems_));
+  ExecuteCallback();
 }
 
 void SignalStrengthRoutine::FetchActiveWirelessNetworks() {

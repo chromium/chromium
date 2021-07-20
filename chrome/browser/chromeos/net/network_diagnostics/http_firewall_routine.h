@@ -47,12 +47,8 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   ~HttpFirewallRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(HttpFirewallRoutineCallback callback);
 
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) {
     delegate_ = std::move(delegate);
@@ -88,7 +84,6 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   int num_no_dns_failure_tls_probes_attempted_ = 0;
   std::unique_ptr<TlsProber> tls_prober_;
   std::vector<mojom::HttpFirewallProblem> problems_;
-  HttpFirewallRoutineCallback routine_completed_callback_;
 
   base::WeakPtrFactory<HttpFirewallRoutine> weak_factory_{this};
 };

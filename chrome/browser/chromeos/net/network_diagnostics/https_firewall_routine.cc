@@ -63,12 +63,7 @@ HttpsFirewallRoutine::HttpsFirewallRoutine()
 
 HttpsFirewallRoutine::~HttpsFirewallRoutine() = default;
 
-void HttpsFirewallRoutine::RunRoutine(HttpsFirewallRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), std::move(problems_));
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void HttpsFirewallRoutine::Run() {
   ProbeNextUrl();
 }
 
@@ -97,7 +92,8 @@ void HttpsFirewallRoutine::AnalyzeResultsAndExecuteCallback() {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.push_back(mojom::HttpsFirewallProblem::kPotentialFirewall);
   }
-  std::move(routine_completed_callback_).Run(verdict(), std::move(problems_));
+  set_problems(mojom::RoutineProblems::NewHttpsFirewallProblems(problems_));
+  ExecuteCallback();
 }
 
 void HttpsFirewallRoutine::ProbeNextUrl() {

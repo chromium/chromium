@@ -33,12 +33,8 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(GatewayCanBePingedRoutineCallback callback);
 
  private:
   void FetchActiveNetworks();
@@ -69,7 +65,6 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
   std::vector<mojom::GatewayCanBePingedProblem> problems_;
   // An unowned pointer to the DebugDaemonClient instance.
   chromeos::DebugDaemonClient* debug_daemon_client_;
-  GatewayCanBePingedRoutineCallback routine_completed_callback_;
   std::vector<std::string> gateways_;
   bool unreachable_gateways_ = true;
   int non_default_network_unsuccessful_ping_count_ = 0;

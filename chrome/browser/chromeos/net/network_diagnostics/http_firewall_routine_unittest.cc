@@ -99,19 +99,19 @@ class HttpFirewallRoutineTest : public ::testing::Test {
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpFirewallProblem>& expected_problems) {
     http_firewall_routine_->RunRoutine(base::BindOnce(
-        &HttpFirewallRoutineTest::CompareVerdict, weak_factory_.GetWeakPtr(),
+        &HttpFirewallRoutineTest::CompareResult, weak_factory_.GetWeakPtr(),
         expected_routine_verdict, expected_problems));
     run_loop_.Run();
   }
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::HttpFirewallProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::HttpFirewallProblem>& actual_problems) {
+      mojom::RoutineResultPtr result) {
     DCHECK(run_loop_.running());
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_http_firewall_problems());
     run_loop_.Quit();
   }
 

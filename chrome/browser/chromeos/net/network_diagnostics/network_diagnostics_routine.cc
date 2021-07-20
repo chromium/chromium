@@ -4,15 +4,35 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 
+#include "base/time/time.h"
+
 namespace chromeos {
 namespace network_diagnostics {
 
-NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() = default;
+NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() {
+  result_.verdict = mojom::RoutineVerdict::kNotRun;
+}
 
 NetworkDiagnosticsRoutine::~NetworkDiagnosticsRoutine() = default;
 
 bool NetworkDiagnosticsRoutine::CanRun() {
   return true;
+}
+
+void NetworkDiagnosticsRoutine::RunRoutine(RoutineResultCallback callback) {
+  callback_ = std::move(callback);
+
+  if (!CanRun()) {
+    ExecuteCallback();
+    return;
+  }
+
+  Run();
+}
+
+void NetworkDiagnosticsRoutine::ExecuteCallback() {
+  result_.timestamp = base::Time::Now();
+  std::move(callback_).Run(result_.Clone());
 }
 
 }  // namespace network_diagnostics

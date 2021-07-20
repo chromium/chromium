@@ -28,12 +28,8 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticRoutine:
   bool CanRun() override;
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(SignalStrengthRoutineCallback callback);
 
  private:
   void FetchActiveWirelessNetworks();
@@ -47,7 +43,6 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
   static constexpr int kUnknownSignalStrength = 0;
   int signal_strength_ = kUnknownSignalStrength;
   std::vector<mojom::SignalStrengthProblem> problems_;
-  SignalStrengthRoutineCallback routine_completed_callback_;
 };
 
 }  // namespace network_diagnostics

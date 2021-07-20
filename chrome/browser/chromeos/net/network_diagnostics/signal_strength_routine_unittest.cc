@@ -29,13 +29,13 @@ class SignalStrengthRoutineTest : public ::testing::Test {
   SignalStrengthRoutineTest& operator=(const SignalStrengthRoutineTest&) =
       delete;
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::SignalStrengthProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::SignalStrengthProblem>& actual_problems) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_signal_strength_problems());
   }
 
   void SetUpWiFi(const char* state, int signal_strength) {
@@ -85,7 +85,7 @@ TEST_F(SignalStrengthRoutineTest, TestGoodWiFiSignal) {
   SetUpWiFi(shill::kStateOnline, kGoodWiFiSignal);
   std::vector<mojom::SignalStrengthProblem> expected_problems = {};
   signal_strength_routine()->RunRoutine(
-      base::BindOnce(&SignalStrengthRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&SignalStrengthRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kNoProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -95,7 +95,7 @@ TEST_F(SignalStrengthRoutineTest, TestBadWiFiSignal) {
   std::vector<mojom::SignalStrengthProblem> expected_problems = {
       mojom::SignalStrengthProblem::kWeakSignal};
   signal_strength_routine()->RunRoutine(
-      base::BindOnce(&SignalStrengthRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&SignalStrengthRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -104,7 +104,7 @@ TEST_F(SignalStrengthRoutineTest, TestNoWiFiConnection) {
   SetUpWiFi(shill::kStateOffline, kGoodWiFiSignal);
   std::vector<mojom::SignalStrengthProblem> expected_problems = {};
   signal_strength_routine()->RunRoutine(
-      base::BindOnce(&SignalStrengthRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&SignalStrengthRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kNotRun, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -118,7 +118,7 @@ TEST_F(SignalStrengthRoutineTest, TestEthernet) {
 
   std::vector<mojom::SignalStrengthProblem> expected_problems = {};
   signal_strength_routine()->RunRoutine(
-      base::BindOnce(&SignalStrengthRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&SignalStrengthRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kNotRun, expected_problems));
   base::RunLoop().RunUntilIdle();
 }

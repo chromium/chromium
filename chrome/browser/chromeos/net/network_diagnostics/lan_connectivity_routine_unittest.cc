@@ -23,9 +23,9 @@ class LanConnectivityRoutineTest : public ::testing::Test {
   LanConnectivityRoutineTest& operator=(const LanConnectivityRoutineTest&) =
       delete;
 
-  void CompareVerdict(mojom::RoutineVerdict expected,
-                      mojom::RoutineVerdict actual) {
-    EXPECT_EQ(expected, actual);
+  void CompareVerdict(mojom::RoutineVerdict expected_verdict,
+                      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
   }
 
   void SetUpEthernet() {

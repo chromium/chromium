@@ -30,12 +30,8 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(DnsResolverPresentRoutineCallback callback);
 
  private:
   void FetchActiveNetworks();
@@ -53,7 +49,6 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
   std::vector<mojom::DnsResolverPresentProblem> problems_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  DnsResolverPresentRoutineCallback routine_completed_callback_;
 };
 
 }  // namespace network_diagnostics

@@ -39,6 +39,7 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   ~DnsResolutionRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
   // network::mojom::ResolveHostClient:
@@ -46,11 +47,6 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
       const absl::optional<net::AddressList>& resolved_addresses) override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(DnsResolutionRoutineCallback callback);
 
   void set_network_context_for_testing(
       network::mojom::NetworkContext* network_context) {
@@ -77,7 +73,6 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   std::vector<mojom::DnsResolutionProblem> problems_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
-  DnsResolutionRoutineCallback routine_completed_callback_;
 };
 
 }  // namespace network_diagnostics

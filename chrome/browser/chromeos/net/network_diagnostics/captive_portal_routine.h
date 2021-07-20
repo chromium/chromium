@@ -27,12 +27,8 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
   ~CaptivePortalRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(CaptivePortalRoutineCallback callback);
 
  private:
   void FetchActiveNetworks();
@@ -49,7 +45,6 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   std::vector<mojom::CaptivePortalProblem> problems_;
-  CaptivePortalRoutineCallback routine_completed_callback_;
 };
 
 }  // namespace network_diagnostics

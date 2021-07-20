@@ -31,7 +31,7 @@ class TestUdpProber final : public UdpProber {
   TestUdpProber(UdpProber::UdpProbeCompleteCallback callback,
                 int result,
                 UdpProber::ProbeExitEnum probe_exit_enum) {
-    // Post an asynchronus task simulating a completed probe. This mimics the
+    // Post an asynchronous task simulating a completed probe. This mimics the
     // behavior of the production UdpProber constructor since the TestUdpProber
     // instance will be complete before FinishProbe is invoked. In the
     // production UdpProber, the constructor completes before DNS host
@@ -62,7 +62,7 @@ class TestTlsProber final : public TlsProber {
   TestTlsProber(TlsProber::TlsProbeCompleteCallback callback,
                 int result,
                 TlsProber::ProbeExitEnum probe_exit_enum) {
-    // Post an asynchronus task simulating a completed probe. This mimics the
+    // Post an asynchronous task simulating a completed probe. This mimics the
     // behavior of the production TlsProber constructor since the TestTlsProber
     // instance will be complete before FinishProbe is invoked. In the
     // production TlsProber, the constructor completes before DNS host
@@ -106,22 +106,13 @@ class VideoConferencingRoutineTest : public ::testing::Test {
       delete;
   ~VideoConferencingRoutineTest() override = default;
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const absl::optional<std::string>& expected_support_details,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::VideoConferencingProblem>& actual_problems,
-      const absl::optional<std::string>& actual_support_details) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
-    EXPECT_EQ(expected_support_details.has_value(),
-              actual_support_details.has_value());
-    if (expected_support_details.has_value() &&
-        actual_support_details.has_value()) {
-      EXPECT_EQ(expected_support_details.has_value(),
-                actual_support_details.has_value());
-    }
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_video_conferencing_problems());
     run_loop_.Quit();
   }
 
@@ -158,11 +149,10 @@ class VideoConferencingRoutineTest : public ::testing::Test {
  protected:
   void RunRoutine(
       mojom::RoutineVerdict expected_routine_verdict,
-      const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const absl::optional<std::string>& expected_support_details) {
-    video_conferencing_routine_->RunRoutine(base::BindOnce(
-        &VideoConferencingRoutineTest::CompareVerdict, weak_ptr(),
-        expected_routine_verdict, expected_problems, expected_support_details));
+      const std::vector<mojom::VideoConferencingProblem>& expected_problems) {
+    video_conferencing_routine_->RunRoutine(
+        base::BindOnce(&VideoConferencingRoutineTest::CompareResult, weak_ptr(),
+                       expected_routine_verdict, expected_problems));
     run_loop_.Run();
   }
 
@@ -188,18 +178,14 @@ class VideoConferencingRoutineTest : public ::testing::Test {
   // |fake_tls_probe_results|: Represents the results of TCP and TLS probes.
   // |expected_routine_verdict|: Represents the expected verdict
   // reported by this test.
-  // |expected_problems|: Represents the expected problem
-  // reported by this test.
   void SetUpAndRunRoutine(
       std::deque<UdpProberReturnValue> fake_udp_probe_results,
       std::deque<TlsProberReturnValue> fake_tls_probe_results,
       mojom::RoutineVerdict expected_routine_verdict,
-      const std::vector<mojom::VideoConferencingProblem>& expected_problems,
-      const absl::optional<std::string>& expected_support_details) {
+      const std::vector<mojom::VideoConferencingProblem>& expected_problems) {
     SetUpRoutine(std::move(fake_udp_probe_results),
                  std::move(fake_tls_probe_results));
-    RunRoutine(expected_routine_verdict, expected_problems,
-               expected_support_details);
+    RunRoutine(expected_routine_verdict, expected_problems);
   }
 
   base::WeakPtr<VideoConferencingRoutineTest> weak_ptr() {
@@ -255,10 +241,10 @@ TEST_F(VideoConferencingRoutineTest, TestSuccessfulPath) {
         TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
   }
 
-  SetUpAndRunRoutine(
-      std::move(fake_udp_probe_results), std::move(fake_tls_probe_results),
-      mojom::RoutineVerdict::kNoProblem,
-      /*expected_problems=*/{}, /*expected_support_problems=*/absl::nullopt);
+  SetUpAndRunRoutine(std::move(fake_udp_probe_results),
+                     std::move(fake_tls_probe_results),
+                     mojom::RoutineVerdict::kNoProblem,
+                     /*expected_problems=*/{});
 }
 
 // Tests the scenario where:
@@ -295,10 +281,10 @@ TEST_F(VideoConferencingRoutineTest, TestUdpFailure) {
         TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
   }
 
-  SetUpAndRunRoutine(
-      std::move(fake_udp_probe_results), std::move(fake_tls_probe_results),
-      mojom::RoutineVerdict::kProblem,
-      {mojom::VideoConferencingProblem::kUdpFailure}, kSupportDetails);
+  SetUpAndRunRoutine(std::move(fake_udp_probe_results),
+                     std::move(fake_tls_probe_results),
+                     mojom::RoutineVerdict::kProblem,
+                     {mojom::VideoConferencingProblem::kUdpFailure});
 }
 
 // Tests the scenario where:
@@ -335,10 +321,10 @@ TEST_F(VideoConferencingRoutineTest, TestTcpFailure) {
         TlsProberReturnValue{net::OK, TlsProber::ProbeExitEnum::kSuccess});
   }
 
-  SetUpAndRunRoutine(
-      std::move(fake_udp_probe_results), std::move(fake_tls_probe_results),
-      mojom::RoutineVerdict::kProblem,
-      {mojom::VideoConferencingProblem::kTcpFailure}, kSupportDetails);
+  SetUpAndRunRoutine(std::move(fake_udp_probe_results),
+                     std::move(fake_tls_probe_results),
+                     mojom::RoutineVerdict::kProblem,
+                     {mojom::VideoConferencingProblem::kTcpFailure});
 }
 
 // Tests the scenario where:
@@ -377,10 +363,10 @@ TEST_F(VideoConferencingRoutineTest, TestMediaFailure) {
   fake_tls_probe_results.push_back(TlsProberReturnValue{
       net::ERR_FAILED, TlsProber::ProbeExitEnum::kTlsUpgradeFailure});
 
-  SetUpAndRunRoutine(
-      std::move(fake_udp_probe_results), std::move(fake_tls_probe_results),
-      mojom::RoutineVerdict::kProblem,
-      {mojom::VideoConferencingProblem::kMediaFailure}, kSupportDetails);
+  SetUpAndRunRoutine(std::move(fake_udp_probe_results),
+                     std::move(fake_tls_probe_results),
+                     mojom::RoutineVerdict::kProblem,
+                     {mojom::VideoConferencingProblem::kMediaFailure});
 }
 
 // Tests the scenario where:
@@ -417,8 +403,7 @@ TEST_F(VideoConferencingRoutineTest, TestUdpAndTcpFailure) {
                      std::move(fake_tls_probe_results),
                      mojom::RoutineVerdict::kProblem,
                      {mojom::VideoConferencingProblem::kUdpFailure,
-                      mojom::VideoConferencingProblem::kTcpFailure},
-                     kSupportDetails);
+                      mojom::VideoConferencingProblem::kTcpFailure});
 }
 
 // Tests the scenario where:
@@ -457,8 +442,7 @@ TEST_F(VideoConferencingRoutineTest, TestUdpAndMediaFailure) {
                      std::move(fake_tls_probe_results),
                      mojom::RoutineVerdict::kProblem,
                      {mojom::VideoConferencingProblem::kUdpFailure,
-                      mojom::VideoConferencingProblem::kMediaFailure},
-                     kSupportDetails);
+                      mojom::VideoConferencingProblem::kMediaFailure});
 }
 
 // Tests the scenario where:
@@ -497,8 +481,7 @@ TEST_F(VideoConferencingRoutineTest, TestTcpAndMediaFailure) {
                      std::move(fake_tls_probe_results),
                      mojom::RoutineVerdict::kProblem,
                      {mojom::VideoConferencingProblem::kTcpFailure,
-                      mojom::VideoConferencingProblem::kMediaFailure},
-                     kSupportDetails);
+                      mojom::VideoConferencingProblem::kMediaFailure});
 }
 
 // Tests the scenario where:
@@ -534,8 +517,7 @@ TEST_F(VideoConferencingRoutineTest, TestTcpAndUdpAndMediaFailure) {
                      mojom::RoutineVerdict::kProblem,
                      {mojom::VideoConferencingProblem::kUdpFailure,
                       mojom::VideoConferencingProblem::kTcpFailure,
-                      mojom::VideoConferencingProblem::kMediaFailure},
-                     kSupportDetails);
+                      mojom::VideoConferencingProblem::kMediaFailure});
 }
 
 }  // namespace network_diagnostics

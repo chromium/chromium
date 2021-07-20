@@ -26,6 +26,7 @@ const char kDefaultStunServer[] = "stun.l.google.com";
 
 }  // namespace
 
+// TODO(crbug/1227877): Move support details to the UI.
 const char kSupportDetails[] = "https://support.google.com/a/answer/1279090";
 const base::TimeDelta kTimeoutAfterHostResolution =
     base::TimeDelta::FromSeconds(10);
@@ -53,6 +54,10 @@ VideoConferencingRoutine::VideoConferencingRoutine(
 
 VideoConferencingRoutine::~VideoConferencingRoutine() = default;
 
+void VideoConferencingRoutine::Run() {
+  ProbeStunServerOverUdp();
+}
+
 void VideoConferencingRoutine::AnalyzeResultsAndExecuteCallback() {
   absl::optional<std::string> support_details = kSupportDetails;
   set_verdict(mojom::RoutineVerdict::kProblem);
@@ -69,19 +74,10 @@ void VideoConferencingRoutine::AnalyzeResultsAndExecuteCallback() {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
     support_details = absl::nullopt;
   }
-  std::move(routine_completed_callback_)
-      .Run(verdict(), std::move(problems_), support_details);
+  set_problems(mojom::RoutineProblems::NewVideoConferencingProblems(problems_));
+  ExecuteCallback();
 }
 
-void VideoConferencingRoutine::RunRoutine(
-    VideoConferencingRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), std::move(problems_), absl::nullopt);
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
-  ProbeStunServerOverUdp();
-}
 
 void VideoConferencingRoutine::ProbeStunServerOverUdp() {
   if (udp_ports_.empty()) {

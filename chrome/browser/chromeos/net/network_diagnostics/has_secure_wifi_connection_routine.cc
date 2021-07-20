@@ -63,13 +63,7 @@ bool HasSecureWiFiConnectionRoutine::CanRun() {
   return true;
 }
 
-void HasSecureWiFiConnectionRoutine::RunRoutine(
-    HasSecureWiFiConnectionRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), std::move(problems_));
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void HasSecureWiFiConnectionRoutine::Run() {
   FetchActiveWiFiNetworks();
 }
 
@@ -102,7 +96,10 @@ void HasSecureWiFiConnectionRoutine::AnalyzeResultsAndExecuteCallback() {
     problems_.emplace_back(
         mojom::HasSecureWiFiConnectionProblem::kUnknownSecurityType);
   }
-  std::move(routine_completed_callback_).Run(verdict(), std::move(problems_));
+
+  set_problems(
+      mojom::RoutineProblems::NewHasSecureWifiConnectionProblems(problems_));
+  ExecuteCallback();
 }
 
 void HasSecureWiFiConnectionRoutine::FetchActiveWiFiNetworks() {

@@ -173,13 +173,13 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
   HttpsLatencyRoutineTest& operator=(const HttpsLatencyRoutineTest&) = delete;
   ~HttpsLatencyRoutineTest() override = default;
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::HttpsLatencyProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::HttpsLatencyProblem>& actual_problems) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_https_latency_problems());
     run_loop_.Quit();
   }
 
@@ -188,7 +188,7 @@ class HttpsLatencyRoutineTest : public ::testing::Test {
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::HttpsLatencyProblem>& expected_problems) {
     https_latency_routine_->RunRoutine(
-        base::BindOnce(&HttpsLatencyRoutineTest::CompareVerdict, weak_ptr(),
+        base::BindOnce(&HttpsLatencyRoutineTest::CompareResult, weak_ptr(),
                        expected_routine_verdict, expected_problems));
     run_loop_.Run();
   }

@@ -59,14 +59,14 @@ class CaptivePortalRoutineTest : public ::testing::Test {
     LoginState::Shutdown();
   }
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::CaptivePortalProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::CaptivePortalProblem>& actual_problems) {
+      mojom::RoutineResultPtr result) {
     DCHECK(run_loop_.running());
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_captive_portal_problems());
     run_loop_.Quit();
   }
 
@@ -166,7 +166,7 @@ TEST_F(CaptivePortalRoutineTest, TestNoCaptivePortal) {
   SetUpWiFi(shill::kStateOnline);
   std::vector<mojom::CaptivePortalProblem> expected_problems = {};
   captive_portal_routine()->RunRoutine(
-      base::BindOnce(&CaptivePortalRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&CaptivePortalRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kNoProblem, expected_problems));
   run_loop().Run();
 }
@@ -177,7 +177,7 @@ TEST_F(CaptivePortalRoutineTest, TestNoActiveNetworks) {
   std::vector<mojom::CaptivePortalProblem> expected_problems = {
       mojom::CaptivePortalProblem::kNoActiveNetworks};
   captive_portal_routine()->RunRoutine(
-      base::BindOnce(&CaptivePortalRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&CaptivePortalRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   run_loop().Run();
 }
@@ -188,7 +188,7 @@ TEST_F(CaptivePortalRoutineTest, TestPortalSuspected) {
   std::vector<mojom::CaptivePortalProblem> expected_problems = {
       mojom::CaptivePortalProblem::kPortalSuspected};
   captive_portal_routine()->RunRoutine(
-      base::BindOnce(&CaptivePortalRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&CaptivePortalRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   run_loop().Run();
 }
@@ -199,7 +199,7 @@ TEST_F(CaptivePortalRoutineTest, TestPortalDetected) {
   std::vector<mojom::CaptivePortalProblem> expected_problems = {
       mojom::CaptivePortalProblem::kPortal};
   captive_portal_routine()->RunRoutine(
-      base::BindOnce(&CaptivePortalRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&CaptivePortalRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   run_loop().Run();
 }
@@ -210,7 +210,7 @@ TEST_F(CaptivePortalRoutineTest, TestNoInternet) {
   std::vector<mojom::CaptivePortalProblem> expected_problems = {
       mojom::CaptivePortalProblem::kNoInternet};
   captive_portal_routine()->RunRoutine(
-      base::BindOnce(&CaptivePortalRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&CaptivePortalRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   run_loop().Run();
 }

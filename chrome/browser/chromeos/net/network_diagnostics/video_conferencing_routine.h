@@ -57,12 +57,8 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
   ~VideoConferencingRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(VideoConferencingRoutineCallback callback);
 
   void set_udp_prober_getter_callback_for_testing(
       UdpProberGetterCallback udp_prober_getter_callback) {
@@ -129,7 +125,6 @@ class VideoConferencingRoutine : public NetworkDiagnosticsRoutine {
   }
 
   std::vector<mojom::VideoConferencingProblem> problems_;
-  VideoConferencingRoutineCallback routine_completed_callback_;
   std::string stun_server_hostname_;
   bool open_udp_port_found_ = false;
   bool open_tcp_port_found_ = false;

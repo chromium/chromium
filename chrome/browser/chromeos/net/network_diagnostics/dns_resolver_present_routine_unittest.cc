@@ -82,13 +82,13 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
     network_profile_handler_.reset();
   }
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::DnsResolverPresentProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::DnsResolverPresentProblem>& actual_problems) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_dns_resolver_present_problems());
     run_loop_.Quit();
   }
 
@@ -178,7 +178,7 @@ class DnsResolverPresentRoutineTest : public ::testing::Test {
       mojom::RoutineVerdict routine_verdict,
       const std::vector<mojom::DnsResolverPresentProblem>& expected_problems) {
     dns_resolver_present_routine_->RunRoutine(
-        base::BindOnce(&DnsResolverPresentRoutineTest::CompareVerdict,
+        base::BindOnce(&DnsResolverPresentRoutineTest::CompareResult,
                        weak_ptr(), routine_verdict, expected_problems));
     run_loop().Run();
   }

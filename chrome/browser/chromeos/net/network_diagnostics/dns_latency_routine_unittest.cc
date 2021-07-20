@@ -138,13 +138,12 @@ class DnsLatencyRoutineTest : public ::testing::Test {
   DnsLatencyRoutineTest(const DnsLatencyRoutineTest&) = delete;
   DnsLatencyRoutineTest& operator=(const DnsLatencyRoutineTest&) = delete;
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::DnsLatencyProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::DnsLatencyProblem>& actual_problems) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems, result->problems->get_dns_latency_problems());
     run_loop_.Quit();
   }
 
@@ -170,7 +169,7 @@ class DnsLatencyRoutineTest : public ::testing::Test {
       mojom::RoutineVerdict expected_routine_verdict,
       const std::vector<mojom::DnsLatencyProblem>& expected_problems) {
     dns_latency_routine_->RunRoutine(
-        base::BindOnce(&DnsLatencyRoutineTest::CompareVerdict, weak_ptr(),
+        base::BindOnce(&DnsLatencyRoutineTest::CompareResult, weak_ptr(),
                        expected_routine_verdict, expected_problems));
     run_loop_.Run();
   }

@@ -44,13 +44,7 @@ bool LanConnectivityRoutine::CanRun() {
   return true;
 }
 
-void LanConnectivityRoutine::RunRoutine(
-    LanConnectivityRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict());
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void LanConnectivityRoutine::Run() {
   FetchActiveNetworks();
 }
 
@@ -59,8 +53,10 @@ void LanConnectivityRoutine::AnalyzeResultsAndExecuteCallback() {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
   } else {
     set_verdict(mojom::RoutineVerdict::kProblem);
+    problems_.push_back(mojom::LanConnectivityProblem::kNoLanConnectivity);
   }
-  std::move(routine_completed_callback_).Run(verdict());
+  set_problems(mojom::RoutineProblems::NewLanConnectivityProblems(problems_));
+  ExecuteCallback();
 }
 
 void LanConnectivityRoutine::FetchActiveNetworks() {

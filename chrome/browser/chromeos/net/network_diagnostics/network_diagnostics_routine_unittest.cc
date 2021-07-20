@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -31,6 +33,7 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
     ~TestNetworkDiagnosticsRoutine() override {}
 
     // NetworkDiagnosticRoutine:
+    void Run() override { ExecuteCallback(); }
     void AnalyzeResultsAndExecuteCallback() override {}
   };
 
@@ -43,23 +46,52 @@ class NetworkDiagnosticsRoutineTest : public ::testing::Test {
     return test_network_diagnostics_routine_.get();
   }
 
-  mojom::RoutineVerdict verdict() {
-    return test_network_diagnostics_routine()->verdict();
+  void set_verdict(mojom::RoutineVerdict verdict) {
+    test_network_diagnostics_routine()->set_verdict(verdict);
   }
 
-  void set_verdict(mojom::RoutineVerdict routine_verdict) {
-    test_network_diagnostics_routine()->set_verdict(routine_verdict);
+  void set_problems(mojom::RoutineProblemsPtr problems) {
+    test_network_diagnostics_routine()->set_problems(problems.Clone());
   }
+
+  void set_can_run(bool can_run) { can_run_ = can_run; }
 
  private:
   std::unique_ptr<TestNetworkDiagnosticsRoutine>
       test_network_diagnostics_routine_;
+  bool can_run_ = true;
+
+  base::test::TaskEnvironment task_environment_;
 };
 
-TEST_F(NetworkDiagnosticsRoutineTest, TestVerdictFunctionality) {
-  EXPECT_EQ(verdict(), kInitialVerdict);
+TEST_F(NetworkDiagnosticsRoutineTest, TestDefaultRoutine) {
+  TestNetworkDiagnosticsRoutine* routine = test_network_diagnostics_routine();
   set_verdict(kVerdict);
-  EXPECT_EQ(verdict(), kVerdict);
+  base::RunLoop run_loop;
+
+  routine->RunRoutine(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr result) {
+        EXPECT_EQ(result->verdict, kVerdict);
+        EXPECT_FALSE(result->timestamp.is_null());
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
+}
+
+TEST_F(NetworkDiagnosticsRoutineTest, NotRunRoutine) {
+  TestNetworkDiagnosticsRoutine* routine = test_network_diagnostics_routine();
+  set_can_run(false);
+  base::RunLoop run_loop;
+
+  routine->RunRoutine(
+      base::BindLambdaForTesting([&](mojom::RoutineResultPtr result) {
+        EXPECT_EQ(result->verdict, kInitialVerdict);
+        EXPECT_FALSE(result->timestamp.is_null());
+        run_loop.Quit();
+      }));
+
+  run_loop.Run();
 }
 
 }  // namespace network_diagnostics

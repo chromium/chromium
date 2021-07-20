@@ -164,12 +164,7 @@ HttpsLatencyRoutine::HttpsLatencyRoutine()
 
 HttpsLatencyRoutine::~HttpsLatencyRoutine() = default;
 
-void HttpsLatencyRoutine::RunRoutine(HttpsLatencyRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), problems_);
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void HttpsLatencyRoutine::Run() {
   // Before making HTTPS requests to the hosts, add the IP addresses are added
   // to the DNS cache. This ensures the HTTPS latency does not include DNS
   // resolution time, allowing us to identify issues with HTTPS more precisely.
@@ -194,7 +189,8 @@ void HttpsLatencyRoutine::AnalyzeResultsAndExecuteCallback() {
   } else {
     set_verdict(mojom::RoutineVerdict::kNoProblem);
   }
-  std::move(routine_completed_callback_).Run(verdict(), problems_);
+  set_problems(mojom::RoutineProblems::NewHttpsLatencyProblems(problems_));
+  ExecuteCallback();
 }
 
 void HttpsLatencyRoutine::AttemptNextResolution() {

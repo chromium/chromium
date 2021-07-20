@@ -31,12 +31,8 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(LanConnectivityRoutineCallback callback);
 
  private:
   void FetchActiveNetworks();
@@ -47,7 +43,7 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   bool lan_connected_ = false;
-  LanConnectivityRoutineCallback routine_completed_callback_;
+  std::vector<mojom::LanConnectivityProblem> problems_;
 };
 
 }  // namespace network_diagnostics

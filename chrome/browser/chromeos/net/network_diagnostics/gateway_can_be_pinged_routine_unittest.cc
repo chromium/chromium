@@ -125,13 +125,13 @@ class GatewayCanBePingedRoutineTest : public ::testing::Test {
     network_profile_handler_.reset();
   }
 
-  void CompareVerdict(
+  void CompareResult(
       mojom::RoutineVerdict expected_verdict,
       const std::vector<mojom::GatewayCanBePingedProblem>& expected_problems,
-      mojom::RoutineVerdict actual_verdict,
-      const std::vector<mojom::GatewayCanBePingedProblem>& actual_problems) {
-    EXPECT_EQ(expected_verdict, actual_verdict);
-    EXPECT_EQ(expected_problems, actual_problems);
+      mojom::RoutineResultPtr result) {
+    EXPECT_EQ(expected_verdict, result->verdict);
+    EXPECT_EQ(expected_problems,
+              result->problems->get_gateway_can_be_pinged_problems());
   }
 
   void SetUpRoutine(const std::string& icmp_output) {
@@ -246,7 +246,7 @@ TEST_F(GatewayCanBePingedRoutineTest, TestSingleActiveNetwork) {
   SetUpWiFi(shill::kStateOnline);
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {};
   gateway_can_be_pinged_routine()->RunRoutine(
-      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kNoProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -257,7 +257,7 @@ TEST_F(GatewayCanBePingedRoutineTest, TestNoActiveNetworks) {
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
       mojom::GatewayCanBePingedProblem::kUnreachableGateway};
   gateway_can_be_pinged_routine()->RunRoutine(
-      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -270,7 +270,7 @@ TEST_F(GatewayCanBePingedRoutineTest, TestFailureToPingDefaultNetwork) {
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
       mojom::GatewayCanBePingedProblem::kFailedToPingDefaultNetwork};
   gateway_can_be_pinged_routine()->RunRoutine(
-      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }
@@ -283,7 +283,7 @@ TEST_F(GatewayCanBePingedRoutineTest, TestDefaultNetworkAboveLatencyThreshold) {
   std::vector<mojom::GatewayCanBePingedProblem> expected_problems = {
       mojom::GatewayCanBePingedProblem::kDefaultNetworkAboveLatencyThreshold};
   gateway_can_be_pinged_routine()->RunRoutine(
-      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareVerdict, weak_ptr(),
+      base::BindOnce(&GatewayCanBePingedRoutineTest::CompareResult, weak_ptr(),
                      mojom::RoutineVerdict::kProblem, expected_problems));
   base::RunLoop().RunUntilIdle();
 }

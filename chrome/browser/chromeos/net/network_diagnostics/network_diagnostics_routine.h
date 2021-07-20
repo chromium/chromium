@@ -6,10 +6,13 @@
 #define CHROME_BROWSER_CHROMEOS_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_ROUTINE_H_
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 
 namespace chromeos {
 namespace network_diagnostics {
+
+using RoutineResultCallback = base::OnceCallback<void(mojom::RoutineResultPtr)>;
 
 // Defines the key components of a network diagnostics routine. This class is
 // expected to be implemented by every network diagnostics routine.
@@ -24,17 +27,28 @@ class NetworkDiagnosticsRoutine {
   // Determines whether this test is capable of being run.
   virtual bool CanRun();
 
+  // Runs the routine.
+  void RunRoutine(RoutineResultCallback callback);
+
+ protected:
+  // Implemented routine logic.
+  virtual void Run() = 0;
+
   // Analyze the results gathered by the function and execute the callback.
   virtual void AnalyzeResultsAndExecuteCallback() = 0;
 
- protected:
-  void set_verdict(mojom::RoutineVerdict routine_verdict) {
-    verdict_ = routine_verdict;
+  // Runs the routine callback and returns the result.
+  void ExecuteCallback();
+
+  void set_verdict(mojom::RoutineVerdict verdict) { result_.verdict = verdict; }
+
+  void set_problems(mojom::RoutineProblemsPtr problems) {
+    result_.problems = std::move(problems);
   }
-  mojom::RoutineVerdict verdict() const { return verdict_; }
 
  private:
-  mojom::RoutineVerdict verdict_ = mojom::RoutineVerdict::kNotRun;
+  mojom::RoutineResult result_;
+  RoutineResultCallback callback_;
   friend class NetworkDiagnosticsRoutineTest;
 };
 

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/chromeos/net/network_diagnostics/network_diagnostics_routine.h"
 #include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -60,10 +61,17 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
                             RunVideoConferencingCallback callback) override;
 
  private:
+  void RunRoutine(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
+                  RoutineResultCallback callback);
+  void HandleResult(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
+                    RoutineResultCallback callback,
+                    mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
   chromeos::DebugDaemonClient* debug_daemon_client_;
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
   mojo::ReceiverSet<mojom::NetworkDiagnosticsRoutines> receivers_;
+
+  base::WeakPtrFactory<NetworkDiagnostics> weak_ptr_factory_{this};
 };
 
 }  // namespace network_diagnostics

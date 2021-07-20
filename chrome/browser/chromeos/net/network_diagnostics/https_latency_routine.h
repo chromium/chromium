@@ -52,12 +52,8 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   ~HttpsLatencyRoutine() override;
 
   // NetworkDiagnosticsRoutine:
+  void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
-
-  // Run the core logic of this routine. Set |callback| to
-  // |routine_completed_callback_|, which is to be executed in
-  // AnalyzeResultsAndExecuteCallback().
-  void RunRoutine(HttpsLatencyRoutineCallback callback);
 
   // Processes the results of the DNS resolution done by |host_resolver_|.
   void OnHostResolutionComplete(
@@ -109,7 +105,6 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<HttpRequestManager> http_request_manager_;
   std::vector<mojom::HttpsLatencyProblem> problems_;
-  HttpsLatencyRoutineCallback routine_completed_callback_;
   base::WeakPtrFactory<HttpsLatencyRoutine> weak_factory_{this};
 };
 

@@ -45,12 +45,7 @@ CaptivePortalRoutine::CaptivePortalRoutine() {
 
 CaptivePortalRoutine::~CaptivePortalRoutine() = default;
 
-void CaptivePortalRoutine::RunRoutine(CaptivePortalRoutineCallback callback) {
-  if (!CanRun()) {
-    std::move(callback).Run(verdict(), std::move(problems_));
-    return;
-  }
-  routine_completed_callback_ = std::move(callback);
+void CaptivePortalRoutine::Run() {
   FetchActiveNetworks();
 }
 
@@ -64,7 +59,9 @@ void CaptivePortalRoutine::AnalyzeResultsAndExecuteCallback() {
     set_verdict(mojom::RoutineVerdict::kProblem);
     problems_.emplace_back(GetProblemFromPortalState(portal_state_));
   }
-  std::move(routine_completed_callback_).Run(verdict(), problems_);
+
+  set_problems(mojom::RoutineProblems::NewCaptivePortalProblems(problems_));
+  ExecuteCallback();
 }
 
 void CaptivePortalRoutine::FetchActiveNetworks() {
