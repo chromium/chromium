@@ -287,6 +287,9 @@ builder.
   * [`//chromeos/dbus/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/dbus/chromebox_for_meetings/)
   * [`//chromeos/services/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chromeos/services/chromebox_for_meetings/)
   * [`//chrome/browser/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/chromeos/chromebox_for_meetings/)
+  * [`//chrome/browser/resources/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/resources/chromeos/chromebox_for_meetings/)
+  * [`//chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/)
+  * [`//chrome/test/data/webui/chromeos/chromebox_for_meetings/.+`](https://cs.chromium.org/chromium/src/chrome/test/data/webui/chromeos/chromebox_for_meetings/)
 
 * [linux_chromium_dbg_ng](https://ci.chromium.org/p/chromium/builders/try/linux_chromium_dbg_ng) ([definition](https://cs.chromium.org/search?q=package:%5Echromium$+file:/cq.star$+-file:/beta/+-file:/stable/+linux_chromium_dbg_ng)) ([matching builders](https://cs.chromium.org/search?q=+file:trybots.py+linux_chromium_dbg_ng))
 

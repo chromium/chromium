@@ -890,6 +890,9 @@ try_.chromium_chromiumos_builder(
             ".+/[+]/chromeos/dbus/chromebox_for_meetings/.+",
             ".+/[+]/chromeos/services/chromebox_for_meetings/.+",
             ".+/[+]/chrome/browser/chromeos/chromebox_for_meetings/.+",
+            ".+/[+]/chrome/browser/resources/chromeos/chromebox_for_meetings/.+",
+            ".+/[+]/chrome/browser/ui/webui/chromeos/chromebox_for_meetings/.+",
+            ".+/[+]/chrome/test/data/webui/chromeos/chromebox_for_meetings/.+",
         ],
     ),
 )
