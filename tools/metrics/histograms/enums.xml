@@ -86260,6 +86260,11 @@ Called by update_scheduler_enums.py.-->
   <int value="19" label="History page opened"/>
   <int value="20" label="History page individual entry removed"/>
   <int value="21" label="History page individual entry clicked"/>
+  <int value="22" label="Password reuse allowed"/>
+  <int value="23" label="Change password clicked"/>
+  <int value="24" label="Safety tip help opened"/>
+  <int value="25" label="Chooser object deleted"/>
+  <int value="26" label="Reset certificate decisions clicked"/>
 </enum>
 
 <enum name="WebSiteSettingsAllSitesAction">

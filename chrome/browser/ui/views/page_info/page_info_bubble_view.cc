@@ -24,8 +24,6 @@
 #include "chrome/browser/ssl/security_state_tab_helper.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service.h"
-#include "chrome/browser/ui/hats/trust_safety_sentiment_service_factory.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/ui/page_info/chrome_page_info_ui_delegate.h"
 #include "chrome/browser/ui/page_info/page_info_dialog.h"
@@ -231,11 +229,6 @@ views::BubbleDialogDelegateView* PageInfoBubbleView::CreatePageInfoBubble(
 }
 
 void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->InteractedWithPageInfo();
-  }
-
   if (GetSecurityDescriptionType() == SecurityDescriptionType::SAFETY_TIP)
     presenter_->OpenSafetyTipHelpCenterPage();
   else
@@ -243,11 +236,6 @@ void PageInfoBubbleView::SecurityDetailsClicked(const ui::Event& event) {
 }
 
 void PageInfoBubbleView::ResetDecisionsClicked() {
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->InteractedWithPageInfo();
-  }
-
   presenter_->OnRevokeSSLErrorBypassButtonPressed();
   GetWidget()->Close();
 }
@@ -269,11 +257,6 @@ PageInfoBubbleView::PageInfoBubbleView(
       closing_callback_(std::move(closing_callback)) {
   DCHECK(closing_callback_);
   DCHECK(web_contents());
-
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->PageInfoOpened();
-  }
 
   // Capture the default bubble margin, and move it to the Layout classes. This
   // is necessary so that the views::Separator can extend the full width of the
@@ -359,11 +342,6 @@ void PageInfoBubbleView::WebContentsDestroyed() {
 
 void PageInfoBubbleView::OnPermissionChanged(
     const PageInfo::PermissionInfo& permission) {
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->InteractedWithPageInfo();
-  }
-
   presenter_->OnSitePermissionChanged(permission.type, permission.setting,
                                       permission.is_one_time);
   // The menu buttons for the permissions might have longer strings now, so we
@@ -374,11 +352,6 @@ void PageInfoBubbleView::OnPermissionChanged(
 
 void PageInfoBubbleView::OnChosenObjectDeleted(
     const PageInfoUI::ChosenObjectInfo& info) {
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->InteractedWithPageInfo();
-  }
-
   presenter_->OnSiteChosenObjectDeleted(info.ui_info,
                                         info.chooser_object->value);
 }
@@ -386,21 +359,16 @@ void PageInfoBubbleView::OnChosenObjectDeleted(
 void PageInfoBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
-  bool reload_prompt;
-  presenter_->OnUIClosing(&reload_prompt);
-
   // This method mostly shouldn't be re-entrant but there are a few cases where
   // it can be (see crbug/966308). In that case, we have already run the closing
   // callback so should not attempt to do it again. As there will always be a
-  // |closing_callback_|, this is also used to ensure that the sentiment service
-  // is informed exactly once.
+  // |closing_callback_|, this is also used to ensure that |presenter_| is
+  // informed exactly once.
   if (closing_callback_) {
-    std::move(closing_callback_).Run(widget->closed_reason(), reload_prompt);
+    bool reload_prompt;
+    presenter_->OnUIClosing(&reload_prompt);
 
-    if (auto* sentiment_service =
-            TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-      sentiment_service->PageInfoClosed();
-    }
+    std::move(closing_callback_).Run(widget->closed_reason(), reload_prompt);
   }
 }
 
@@ -649,23 +617,13 @@ void PageInfoBubbleView::SetIdentityInfo(const IdentityInfo& identity_info) {
         identity_info.safe_browsing_status,
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
-              if (auto* sentiment_service =
-                      TrustSafetySentimentServiceFactory::GetForProfile(
-                          view->profile_)) {
-                sentiment_service->InteractedWithPageInfo();
-              }
               view->presenter_->OnChangePasswordButtonPressed();
             },
             this),
         base::BindRepeating(
             [](PageInfoBubbleView* view) {
-              if (auto* sentiment_service =
-                      TrustSafetySentimentServiceFactory::GetForProfile(
-                          view->profile_)) {
-                sentiment_service->InteractedWithPageInfo();
-              }
-              view->GetWidget()->Close();
               view->presenter_->OnAllowlistPasswordReuseButtonPressed();
+              view->GetWidget()->Close();
             },
             this));
   }
@@ -820,11 +778,6 @@ void PageInfoBubbleView::HandleMoreInfoRequest(views::View* source) {
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&PageInfoBubbleView::HandleMoreInfoRequestAsync,
                                 weak_factory_.GetWeakPtr(), source->GetID()));
-
-  if (auto* sentiment_service =
-          TrustSafetySentimentServiceFactory::GetForProfile(profile_)) {
-    sentiment_service->InteractedWithPageInfo();
-  }
 }
 
 void PageInfoBubbleView::HandleMoreInfoRequestAsync(int view_id) {

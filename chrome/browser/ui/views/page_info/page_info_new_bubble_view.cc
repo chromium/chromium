@@ -91,14 +91,17 @@ void PageInfoNewBubbleView::DidChangeVisibleSecurityState() {
 void PageInfoNewBubbleView::OnWidgetDestroying(views::Widget* widget) {
   PageInfoBubbleViewBase::OnWidgetDestroying(widget);
 
-  bool reload_prompt;
-  presenter_->OnUIClosing(&reload_prompt);
-
   // This method mostly shouldn't be re-entrant but there are a few cases where
   // it can be (see crbug/966308). In that case, we have already run the closing
-  // callback so should not attempt to do it again.
-  if (closing_callback_)
+  // callback so should not attempt to do it again. As there will always be a
+  // |closing_callback_|, this is also used to ensure that the |presenter_| is
+  // informed exactly once.
+  if (closing_callback_) {
+    bool reload_prompt;
+    presenter_->OnUIClosing(&reload_prompt);
+
     std::move(closing_callback_).Run(widget->closed_reason(), reload_prompt);
+  }
 }
 
 void PageInfoNewBubbleView::WebContentsDestroyed() {

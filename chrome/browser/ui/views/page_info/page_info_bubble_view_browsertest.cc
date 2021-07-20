@@ -260,8 +260,6 @@ class PageInfoBubbleViewBrowserTest
   }
 
   void SetupSentimentServiceExpectations(bool interacted) {
-    if (is_page_info_v2_enabled())
-      return;
     testing::InSequence sequence;
     EXPECT_CALL(*mock_sentiment_service_, PageInfoOpened);
     EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo)
@@ -504,9 +502,7 @@ IN_PROC_BROWSER_TEST_P(PageInfoBubbleViewBrowserTest,
   // and increment the corresponding bucket of
   // PasswordProtection.PageInfoAction.NonGaiaEnterprisePasswordEntry
   // histogram.
-  if (!is_page_info_v2_enabled()) {
-    EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
-  }
+  EXPECT_CALL(*mock_sentiment_service_, InteractedWithPageInfo).Times(2);
 
   PerformMouseClickOnView(change_password_button);
   EXPECT_THAT(
