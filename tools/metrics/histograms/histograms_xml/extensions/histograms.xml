@@ -21,6 +21,34 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="ExtensionFunctionExecutionTime">
+  <variant name=".1msTo5ms"
+      summary="Execution took between 1ms and 5ms (tolerable)."/>
+  <variant name=".5msTo10ms"
+      summary="Execution took between 5ms and 10ms (slow)."/>
+  <variant name=".LessThan1ms" summary="Execution took less than 1ms (fast)."/>
+  <variant name=".Over10ms" summary="Execution took over 10ms (glacial)."/>
+</variants>
+
+<variants name="ExtensionMessagingPortType">
+  <variant name=".Extension" summary="A port opened to an extension context."/>
+  <variant name=".NativeApp" summary="A port opened to a native application."/>
+  <variant name=".Tab" summary="A port opened to a tab context."/>
+</variants>
+
+<variants name="ExtensionWebUiPageType">
+  <variant name=".MD" summary="The Material Design chrome://extensions page.">
+    <obsolete>
+      Deprecated and removed from code as of 10/2020.
+    </obsolete>
+  </variant>
+  <variant name=".Uber" summary="The Uber chrome://extensions page.">
+    <obsolete>
+      Deprecated and removed from code as of 04/2018.
+    </obsolete>
+  </variant>
+</variants>
+
 <histogram name="Extensions.ActionSetIconFailureType"
     enum="ExtensionActionSetIconFailureType" expires_after="M88">
   <owner>rdevlin.cronin@chromium.org</owner>
@@ -235,7 +263,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Bindings.UpdateBindingsForContextTime"
+<histogram
+    name="Extensions.Bindings.UpdateBindingsForContextTime{ExtensionContextType}"
     units="microseconds" expires_after="2021-01-31">
   <obsolete>
     Code removed 2021/06.
@@ -250,8 +279,54 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {ExtensionContextType}
   </summary>
+  <token key="ExtensionContextType">
+    <variant name=""/>
+    <variant name=".BlessedExtensionContext"
+        summary="Blessed Extension Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".BlessedWebPageContext" summary="Blessed Web Page Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".ContentScriptContext" summary="Content Script Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".LockScreenExtensionContext"
+        summary="Lock Screen Extension Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".ServiceWorkerContext" summary="Service Worker Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".UnblessedExtensionContext"
+        summary="Unblessed Extension Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".WebPageContext" summary="(unblessed) Web Page Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+    <variant name=".WebUIContext" summary="WebUI Context">
+      <obsolete>
+        Removed 2021/06.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Extensions.BookmarkAppLaunchContainer"
@@ -564,13 +639,22 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Database.Open" enum="LevelDBStatus"
-    expires_after="never">
+<histogram name="Extensions.Database.Open{ExtensionsDatabaseOpen}"
+    enum="LevelDBStatus" expires_after="never">
 <!-- expires-never: core storage metric; consumed in separate dashboard (go/chrome-storage-dashboard) -->
 
   <owner>dmurph@chromium.org</owner>
   <owner>pwnall@chromium.org</owner>
-  <summary>The result of an open attempt to an Extensions database.</summary>
+  <summary>
+    The result of an open attempt to an Extensions database.
+    {ExtensionsDatabaseOpen}
+  </summary>
+  <token key="ExtensionsDatabaseOpen">
+    <variant name=""/>
+    <variant name=".Rules" summary="Rules backing stores"/>
+    <variant name=".Settings" summary="Settings backing stores"/>
+    <variant name=".State" summary="State backing stores"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Database.Value.Restore"
@@ -1322,13 +1406,20 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>An extension has been uninstalled.</summary>
 </histogram>
 
-<histogram name="Extensions.ExternalExtensionEvent" enum="SideloadUIEvents"
-    expires_after="M81">
+<histogram name="Extensions.ExternalExtensionEvent{ExternalExtensionEvent}"
+    enum="SideloadUIEvents" expires_after="M81">
   <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
   <summary>
     Records what happens to extensions that are sideloaded, grouped by the
-    ExternalExtensionEvent enum.
+    ExternalExtensionEvent enum. {ExternalExtensionEvent}
   </summary>
+  <token key="ExternalExtensionEvent">
+    <variant name=""/>
+    <variant name="NonWebstore"
+        summary="sideloaded extensions that don't update from the webstore"/>
+    <variant name="Webstore"
+        summary="sideloaded extensions that update from the webstore"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.ExternalItemState" enum="ExternalItemState"
@@ -1729,17 +1820,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Extensions.ForceInstalledTime" units="ms"
-    expires_after="2021-11-21">
-  <owner>swapnilgupta@google.com</owner>
-  <owner>burunduk@chromium.org</owner>
-  <owner>managed-devices@google.com</owner>
-  <summary>
-    The amount of time elapsed during different stage of the installation
-    process for the enterprise policy forced extensions.
-  </summary>
-</histogram>
-
 <histogram name="Extensions.ForceInstalledTimedOutAndNotInstalledCount"
     units="units" expires_after="2021-12-05">
   <owner>burunduk@chromium.org</owner>
@@ -1760,6 +1840,43 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Number of enterprise policy forced extensions that are not loaded after 5
     minutes timeout, while might be already installed.
   </summary>
+</histogram>
+
+<histogram name="Extensions.ForceInstalledTime{ExtensionInstallStages}"
+    units="ms" expires_after="2021-11-21">
+  <owner>swapnilgupta@google.com</owner>
+  <owner>burunduk@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    The amount of time elapsed during different stage of the installation
+    process for the enterprise policy forced extensions.
+    {ExtensionInstallStages}
+  </summary>
+  <token key="ExtensionInstallStages">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".CheckingExpectationsStartTo.FinalizingStart"
+        summary="Time taken to perform the expectations checks to confirm
+                 that the extension can be installed."/>
+    <variant name=".CopyingStartTo.UnpackingStart"
+        summary="Time taken to complete copying of extension archive into the
+                 working directory"/>
+    <variant name=".DownloadingStartTo.ManifestDownloadComplete"
+        summary="Time taken to complete download of update manifest"/>
+    <variant name=".FinalizingStartTo.CRXInstallComplete"
+        summary="Time taken to complete the installation of the unpacked
+                 extension."/>
+    <variant name=".ManifestDownloadCompleteTo.CRXDownloadComplete"
+        summary="Time taken to complete download of CRX"/>
+    <variant name=".UnpackingStartTo.CheckingExpectationsStart"
+        summary="Time taken to complete the unpacking of the extension
+                 archive."/>
+    <variant name=".VerificationStartTo.CopyingStart"
+        summary="Time taken to complete signature verification of CRX"/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.ForceInstalledTotalCandidateCount" units="units"
@@ -1883,15 +2000,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Functions.FailedTime" enum="ExtensionFunctions"
-    expires_after="2021-12-12">
+<histogram
+    name="Extensions.Functions.FailedTime{ExtensionFunctionExecutionTime}"
+    enum="ExtensionFunctions" expires_after="2021-12-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded when an extension function call fails and finishes execution. The
     suffix indicates the exact bucket the function is in. See also
     Extensions.Functions.FailedTotalExecutionTime.
+    {ExtensionFunctionExecutionTime}
   </summary>
+  <token key="ExtensionFunctionExecutionTime"
+      variants="ExtensionFunctionExecutionTime">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Functions.FailedTotalExecutionTime" units="ms"
@@ -1935,15 +2058,21 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Functions.SucceededTime" enum="ExtensionFunctions"
-    expires_after="2021-12-12">
+<histogram
+    name="Extensions.Functions.SucceededTime{ExtensionFunctionExecutionTime}"
+    enum="ExtensionFunctions" expires_after="2021-12-12">
   <owner>rdevlin.cronin@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>
     Recorded when an extension function call succeeds and finishes execution.
     The suffix indicates the exact bucket the function is in. See also
     Extensions.Functions.SucceededTotalExecutionTime.
+    {ExtensionFunctionExecutionTime}
   </summary>
+  <token key="ExtensionFunctionExecutionTime"
+      variants="ExtensionFunctionExecutionTime">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Functions.SucceededTotalExecutionTime" units="ms"
@@ -2835,7 +2964,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <summary>The manifest version of each loaded extension.</summary>
 </histogram>
 
-<histogram name="Extensions.Messaging.ExtensionPortsCreated"
+<histogram
+    name="Extensions.Messaging.ExtensionPortsCreated{ExtensionMessagingPortCreationTime}"
     units="number of ports" expires_after="M85">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
@@ -2843,28 +2973,59 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Recorded once at the destruction of the script context (when no more ports
     could be created) if and only if at least one port was created in the
     context. Only includes ports to extension contexts (i.e., not ports created
-    to tabs or native apps).
+    to tabs or native apps). {ExtensionMessagingPortCreationTime}
   </summary>
+  <token key="ExtensionMessagingPortCreationTime">
+    <variant name=""/>
+    <variant name=".InBeforeUnload"
+        summary="Created during an event handler for the 'beforeunload' event.">
+      <obsolete>
+        Deprecated and removed from code as of 05/2015.
+      </obsolete>
+    </variant>
+    <variant name=".InUnload"
+        summary="Created during an event handler for the 'unload' event.">
+      <obsolete>
+        Deprecated and removed from code as of 05/2015.
+      </obsolete>
+    </variant>
+    <variant name=".Normal"
+        summary="Created during any time other than the 'unload' or
+                 'beforeunload' handlers.">
+      <obsolete>
+        Deprecated and removed from code as of 05/2015.
+      </obsolete>
+    </variant>
+    <variant name=".Total" summary="The total number of ports created."/>
+  </token>
 </histogram>
 
-<histogram name="Extensions.Messaging.GetPortIdAsyncTime" units="ms"
-    expires_after="M85">
+<histogram
+    name="Extensions.Messaging.GetPortIdAsyncTime{ExtensionMessagingPortType}"
+    units="ms" expires_after="M85">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The total amount of time between when an extension opens a new channel and
     when it receives the global port id from the browser and can begin sending
-    messages.
+    messages. {ExtensionMessagingPortType}
   </summary>
+  <token key="ExtensionMessagingPortType" variants="ExtensionMessagingPortType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Extensions.Messaging.GetPortIdSyncTime" units="ms"
-    expires_after="M85">
+<histogram
+    name="Extensions.Messaging.GetPortIdSyncTime{ExtensionMessagingPortType}"
+    units="ms" expires_after="M85">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The amount of synchronous time taken for the renderer to request an
     extension message port id from the browser when a new channel is first
-    opened by an extension.
+    opened by an extension. {ExtensionMessagingPortType}
   </summary>
+  <token key="ExtensionMessagingPortType" variants="ExtensionMessagingPortType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.Messaging.MessageSize" units="bytes"
@@ -2878,14 +3039,18 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.Messaging.SetPortIdTime" units="ms"
-    expires_after="M85">
+<histogram
+    name="Extensions.Messaging.SetPortIdTime{ExtensionMessagingPortType}"
+    units="ms" expires_after="M85">
   <owner>rdevlin.cronin@chromium.org</owner>
   <summary>
     The amount of time for the renderer to inform the browser process of a new
     port being created with a certain id. This replaces the flow for
-    Extensions.Messaging.GetPortId[A]SyncTime.
+    Extensions.Messaging.GetPortId[A]SyncTime. {ExtensionMessagingPortType}
   </summary>
+  <token key="ExtensionMessagingPortType" variants="ExtensionMessagingPortType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Extensions.MimeHandlerViewEvents" enum="MimeHandlerViewEvents"
@@ -3944,19 +4109,25 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Extensions.WebUi.DocumentLoadedInMainFrameTime" units="ms"
-    expires_after="2021-12-01">
+<histogram
+    name="Extensions.WebUi.DocumentLoadedInMainFrameTime{ExtensionWebUiPageType}"
+    units="ms" expires_after="2021-12-01">
   <owner>dpapad@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
   <summary>
     The amount of time between starting the provisional load and fully loading
     the document in the main frame of the chrome://extensions page. This
     corresponds to the WebContentsObserver::DocumentLoadedInFrame method.
+    {ExtensionWebUiPageType}
   </summary>
+  <token key="ExtensionWebUiPageType" variants="ExtensionWebUiPageType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Extensions.WebUi.LoadCompletedInMainFrame" units="ms"
-    expires_after="2021-12-01">
+<histogram
+    name="Extensions.WebUi.LoadCompletedInMainFrame{ExtensionWebUiPageType}"
+    units="ms" expires_after="2021-12-01">
   <owner>dpapad@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
   <summary>
@@ -3964,7 +4135,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     completed the onload handler in the main frame of the chrome://extensions
     page. This corresponds to the
     WebContentsObserver::DocumentOnLoadCompletedInMainFrame method.
+    {ExtensionWebUiPageType}
   </summary>
+  <token key="ExtensionWebUiPageType" variants="ExtensionWebUiPageType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram

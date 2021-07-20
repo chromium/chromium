@@ -21,6 +21,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="TopControlsState">
+  <variant name=".NoTopControlsMoved" summary="Top controls did not change."/>
+  <variant name=".TopControlsMoved" summary="Top controls changed."/>
+</variants>
+
 <histogram name="Event.AggregatedLatency.Renderer2" units="microseconds"
     expires_after="2021-12-12">
   <owner>flackr@chromium.org</owner>
@@ -842,7 +847,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4"
+<histogram
+    name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4{TopControlsState}"
     units="microseconds" expires_after="2021-12-19">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
@@ -860,8 +866,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {TopControlsState}
   </summary>
+  <token key="TopControlsState" variants="TopControlsState">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -1492,7 +1501,8 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4"
+<histogram
+    name="Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4{TopControlsState}"
     units="microseconds" expires_after="never">
 <!-- expires-never: guiding metric (internal: go/chrome-browser-guiding-metrics) -->
 
@@ -1514,8 +1524,11 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     clocks (i.e. on Windows, ref. |TimeTicks::IsHighResolution()|). Such reports
     will cause this metric to have an abnormal distribution. When considering
     revising this histogram, see UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES for the
-    solution.
+    solution. {TopControlsState}
   </summary>
+  <token key="TopControlsState" variants="TopControlsState">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram

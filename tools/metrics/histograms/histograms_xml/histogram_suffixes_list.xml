@@ -5817,30 +5817,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </affected-histogram>
 </histogram_suffixes>
 
-<histogram_suffixes name="Enterprise_RemoteCommandType" separator=".">
-  <suffix name="BrowserClearBrowsingData" label="Clear Browsing Data"/>
-  <suffix name="CommandEchoTest" label="Command echo test"/>
-  <suffix name="DeviceFetchStatus" label="Fetch status"/>
-  <suffix name="DeviceGetAvailableDiagnosticRoutines"
-      label="Get available diagnostic routines"/>
-  <suffix name="DeviceGetDiagnosticRoutineUpdate"
-      label="Get diagnostic routine update"/>
-  <suffix name="DeviceReboot" label="Reboot"/>
-  <suffix name="DeviceRefreshEnterpriseMachineCertificate"
-      label="Refresh enterprise machine certificate"/>
-  <suffix name="DeviceRemotePowerwash" label="Powerwash"/>
-  <suffix name="DeviceRunDiagnosticRoutine" label="Run diagnostic routine"/>
-  <suffix name="DeviceScreenshot" label="Screenshot"/>
-  <suffix name="DeviceSetVolume" label="Set volume"/>
-  <suffix name="DeviceStartCrdSession" label="Device start CRD session"/>
-  <suffix name="DeviceWipeUsers" label="Wipe users"/>
-  <suffix name="UserArcCommand" label="ARC command"/>
-  <affected-histogram name="Enterprise.DeviceRemoteCommand.Executed"/>
-  <affected-histogram name="Enterprise.DeviceRemoteCommand.Executed.Unsigned"/>
-  <affected-histogram name="Enterprise.UserRemoteCommand.Executed"/>
-  <affected-histogram name="Enterprise.UserRemoteCommand.Executed.Unsigned"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Enterprise_ResourceCacheTiming" separator=".">
   <obsolete>
     Removed 01/2020 since the histogram indicators were stable.
@@ -5873,82 +5849,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       label="The time to perform the 'store' operation on a ResourceCache,
              which stores data under given key."/>
   <affected-histogram name="Enterprise.ResourceCacheTiming"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EnterpriseAutoEnrollmentType" separator=".">
-  <suffix name="ForcedReenrollment" label="Forced Re-Enrollment"/>
-  <suffix name="InitialEnrollment" label="Initial Enrollment Exchange"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentBucketDownloadTime"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentExtraTime"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentHashDanceSuccessTime"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentProtocolTime"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus"/>
-  <affected-histogram
-      name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentPsmResult"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentRequestNetworkErrorCode"/>
-  <affected-histogram name="Enterprise.AutoEnrollmentRequestStatus"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EnterpriseDevicePolicyDeviceIdValidity" separator=".">
-  <obsolete>
-    Removed in M91 since the data is no longer required.
-  </obsolete>
-  <suffix name="InitialStore"
-      label="the initial device policy stored during enrollment"/>
-  <suffix name="Update"
-      label="the updated device policy that overwrites the previous one"/>
-  <affected-histogram name="Enterprise.DevicePolicyDeviceIdValidity"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EnterpriseDMServerRequest" separator=".">
-  <owner>poromov@chromium.org</owner>
-  <owner>zmin@chromium.org</owner>
-  <suffix name="ActiveDirectoryEnrollPlayUser"
-      label="Active Directory Enroll Play User."/>
-  <suffix name="ActiveDirectoryPlayActivity"
-      label="Active Directory Play Activity."/>
-  <suffix name="AndroidManagementCheck" label="Android Management Check."/>
-  <suffix name="ApiAuthCodeFetch" label="Api Auth Code Fetch."/>
-  <suffix name="AttributeUpdate" label="Attribute Update."/>
-  <suffix name="AttributeUpdatePermission"
-      label="Attribute Update Permission."/>
-  <suffix name="AutoEnrollment" label="Auto Enrollment."/>
-  <suffix name="CertBasedRegistration" label="Cert Based Registration."/>
-  <suffix name="ChromeDesktopReport" label="Chrome Desktop Report."/>
-  <suffix name="DeviceStateRetrieval" label="Device State Retrieval."/>
-  <suffix name="GcmIdUpdate" label="Gcm Id Update."/>
-  <suffix name="InitialEnrollmentStateRetrieval"
-      label="Initial Enrollment State Retrieval."/>
-  <suffix name="Invalid" label="Invalid."/>
-  <suffix name="PolicyFetch" label="Policy Fetch."/>
-  <suffix name="Registration" label="Registration."/>
-  <suffix name="RemoteCommands" label="Remote Commands."/>
-  <suffix name="RequestLicenseTypes" label="Request License Types."/>
-  <suffix name="TokenEnrollment" label="Token Enrollment."/>
-  <suffix name="Unregistration" label="Unregistration."/>
-  <suffix name="UploadAppInstallReport" label="Upload App Install Report."/>
-  <suffix name="UploadCertificate" label="Upload Certificate."/>
-  <suffix name="UploadPolicyValidationReport"
-      label="Upload Policy Validation Report."/>
-  <suffix name="UploadrealtimeReport" label="Upload of real-time reports."/>
-  <suffix name="UploadStatus" label="Upload Status."/>
-  <affected-histogram name="Enterprise.DMServerRequestSuccess"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="EnterpriseRetrievePolicyResponse" separator=".">
-  <obsolete>
-    Removed in M91 since the data is no longer monitored.
-  </obsolete>
-  <owner>emaxx@chromium.org</owner>
-  <owner>igorcov@chromium.org</owner>
-  <suffix name="Device" label="Device policy fetch response."/>
-  <suffix name="DeviceLocalAccount"
-      label="DeviceLocalAccount policy fetch response."/>
-  <suffix name="User" label="User policy fetch response."/>
-  <suffix name="UserDuringLogin"
-      label="User policy fetch response during login."/>
-  <affected-histogram name="Enterprise.RetrievePolicyResponse"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="EventLatencyBreakdowns" separator=".">
@@ -6393,86 +6293,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
       name="RendererScheduler.QueueingDurationWhenExpectedQueueingTime"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ExtensionContextType" separator=".">
-  <obsolete>
-    Removed 2021/06.
-  </obsolete>
-  <suffix name="BlessedExtensionContext" label="Blessed Extension Context"/>
-  <suffix name="BlessedWebPageContext" label="Blessed Web Page Context"/>
-  <suffix name="ContentScriptContext" label="Content Script Context"/>
-  <suffix name="LockScreenExtensionContext"
-      label="Lock Screen Extension Context"/>
-  <suffix name="ServiceWorkerContext" label="Service Worker Context"/>
-  <suffix name="UnblessedExtensionContext" label="Unblessed Extension Context"/>
-  <suffix name="WebPageContext" label="(unblessed) Web Page Context"/>
-  <suffix name="WebUIContext" label="WebUI Context"/>
-  <affected-histogram name="Extensions.Bindings.UpdateBindingsForContextTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExtensionFunctionExecutionTime" separator=".">
-  <suffix name="1msTo5ms"
-      label="Execution took between 1ms and 5ms (tolerable)."/>
-  <suffix name="5msTo10ms" label="Execution took between 5ms and 10ms (slow)."/>
-  <suffix name="LessThan1ms" label="Execution took less than 1ms (fast)."/>
-  <suffix name="Over10ms" label="Execution took over 10ms (glacial)."/>
-  <affected-histogram name="Extensions.Functions.FailedTime"/>
-  <affected-histogram name="Extensions.Functions.SucceededTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExtensionInstallStages" separator=".">
-  <suffix name="CheckingExpectationsStartTo.FinalizingStart"
-      label="Time taken to perform the expectations checks to confirm that
-             the extension can be installed."/>
-  <suffix name="CopyingStartTo.UnpackingStart"
-      label="Time taken to complete copying of extension archive into the
-             working directory"/>
-  <suffix name="DownloadingStartTo.ManifestDownloadComplete"
-      label="Time taken to complete download of update manifest"/>
-  <suffix name="FinalizingStartTo.CRXInstallComplete"
-      label="Time taken to complete the installation of the unpacked
-             extension."/>
-  <suffix name="ManifestDownloadCompleteTo.CRXDownloadComplete"
-      label="Time taken to complete download of CRX"/>
-  <suffix name="UnpackingStartTo.CheckingExpectationsStart"
-      label="Time taken to complete the unpacking of the extension archive."/>
-  <suffix name="VerificationStartTo.CopyingStart"
-      label="Time taken to complete signature verification of CRX"/>
-  <affected-histogram name="Extensions.ForceInstalledTime"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExtensionMessagingPortCreationTime" separator=".">
-  <suffix name="InBeforeUnload"
-      label="Created during an event handler for the 'beforeunload' event.">
-    <obsolete>
-      Deprecated and removed from code as of 05/2015.
-    </obsolete>
-  </suffix>
-  <suffix name="InUnload"
-      label="Created during an event handler for the 'unload' event.">
-    <obsolete>
-      Deprecated and removed from code as of 05/2015.
-    </obsolete>
-  </suffix>
-  <suffix name="Normal"
-      label="Created during any time other than the 'unload' or 'beforeunload'
-             handlers.">
-    <obsolete>
-      Deprecated and removed from code as of 05/2015.
-    </obsolete>
-  </suffix>
-  <suffix name="Total" label="The total number of ports created."/>
-  <affected-histogram name="Extensions.Messaging.ExtensionPortsCreated"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExtensionMessagingPortType" separator=".">
-  <suffix name="Extension" label="A port opened to an extension context."/>
-  <suffix name="NativeApp" label="A port opened to a native application."/>
-  <suffix name="Tab" label="A port opened to a tab context."/>
-  <affected-histogram name="Extensions.Messaging.GetPortIdAsyncTime"/>
-  <affected-histogram name="Extensions.Messaging.GetPortIdSyncTime"/>
-  <affected-histogram name="Extensions.Messaging.SetPortIdTime"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="Extensions_WebRequest_WS_RequestHeaders"
     separator="_">
   <obsolete>
@@ -6494,13 +6314,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <affected-histogram name="Extensions.WebRequest.WS_RequestHeaders"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ExtensionsDatabaseOpen" separator=".">
-  <suffix name="Rules" label="Rules backing stores"/>
-  <suffix name="Settings" label="Settings backing stores"/>
-  <suffix name="State" label="State backing stores"/>
-  <affected-histogram name="Extensions.Database.Open"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ExtensionsDatabaseRestore" separator=".">
   <suffix name="Rules" label="Rules backing stores"/>
   <suffix name="Settings" label="Settings backing stores"/>
@@ -6513,29 +6326,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="WebStore" label="Extension from the Chrome Web Store"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason2"/>
   <affected-histogram name="Extensions.ForceInstalledFailureReason3"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExtensionWebUiPageType" separator=".">
-  <suffix name="MD" label="The Material Design chrome://extensions page.">
-    <obsolete>
-      Deprecated and removed from code as of 10/2020.
-    </obsolete>
-  </suffix>
-  <suffix name="Uber" label="The Uber chrome://extensions page.">
-    <obsolete>
-      Deprecated and removed from code as of 04/2018.
-    </obsolete>
-  </suffix>
-  <affected-histogram name="Extensions.WebUi.DocumentLoadedInMainFrameTime"/>
-  <affected-histogram name="Extensions.WebUi.LoadCompletedInMainFrame"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="ExternalExtensionEvent" separator="">
-  <suffix name="NonWebstore"
-      label="sideloaded extensions that don't update from the webstore"/>
-  <suffix name="Webstore"
-      label="sideloaded extensions that update from the webstore"/>
-  <affected-histogram name="Extensions.ExternalExtensionEvent"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="FaviconIconType" separator=".">
@@ -19601,15 +19391,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <suffix name="Browser" label=""/>
   <suffix name="Renderer" label=""/>
   <affected-histogram name="Event.TimestampHasValidTimebase"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="TopControlsState" separator=".">
-  <suffix name="NoTopControlsMoved" label="Top controls did not change."/>
-  <suffix name="TopControlsMoved" label="Top controls changed."/>
-  <affected-histogram
-      name="Event.Latency.ScrollBegin.Touch.TimeToScrollUpdateSwapBegin4"/>
-  <affected-histogram
-      name="Event.Latency.ScrollUpdate.Touch.TimeToScrollUpdateSwapBegin4"/>
 </histogram_suffixes>
 
 <histogram_suffixes name="TotalTimeToHttpsGoogle" separator=".">

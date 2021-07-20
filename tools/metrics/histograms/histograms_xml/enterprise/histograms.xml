@@ -21,6 +21,31 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histograms>
 
+<variants name="Enterprise_RemoteCommandType">
+  <variant name=".BrowserClearBrowsingData" summary="Clear Browsing Data"/>
+  <variant name=".CommandEchoTest" summary="Command echo test"/>
+  <variant name=".DeviceFetchStatus" summary="Fetch status"/>
+  <variant name=".DeviceGetAvailableDiagnosticRoutines"
+      summary="Get available diagnostic routines"/>
+  <variant name=".DeviceGetDiagnosticRoutineUpdate"
+      summary="Get diagnostic routine update"/>
+  <variant name=".DeviceReboot" summary="Reboot"/>
+  <variant name=".DeviceRefreshEnterpriseMachineCertificate"
+      summary="Refresh enterprise machine certificate"/>
+  <variant name=".DeviceRemotePowerwash" summary="Powerwash"/>
+  <variant name=".DeviceRunDiagnosticRoutine" summary="Run diagnostic routine"/>
+  <variant name=".DeviceScreenshot" summary="Screenshot"/>
+  <variant name=".DeviceSetVolume" summary="Set volume"/>
+  <variant name=".DeviceStartCrdSession" summary="Device start CRD session"/>
+  <variant name=".DeviceWipeUsers" summary="Wipe users"/>
+  <variant name=".UserArcCommand" summary="ARC command"/>
+</variants>
+
+<variants name="EnterpriseAutoEnrollmentType">
+  <variant name=".ForcedReenrollment" summary="Forced Re-Enrollment"/>
+  <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
+</variants>
+
 <histogram name="Enterprise.AccountStatusCheckResult"
     enum="EnterpriseAccountStatus" expires_after="M99">
   <owner>raleksandrov@google.com</owner>
@@ -83,39 +108,63 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentBucketDownloadTime"
+<histogram
+    name="Enterprise.AutoEnrollmentBucketDownloadTime{EnterpriseAutoEnrollmentType}"
     units="ms" expires_after="2021-12-26">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Duration of the bucket download part of the auto-enrollment protocol.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentExtraTime" units="ms"
-    expires_after="2021-03-01">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
+<histogram
+    name="Enterprise.AutoEnrollmentExtraTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2021-03-01">
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Time since the user logged in until the auto-enrollment protocol completed.
     0 is sampled when the protocol is done by the time the user logs in.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentHashDanceSuccessTime"
+<histogram
+    name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
     units="ms" expires_after="2022-01-09">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Duration of the hash dance to determine enrollment state of the device. Only
     recorded if the hash dance finished successfully.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram
@@ -153,24 +202,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentProtocolTime" units="ms"
-    expires_after="2022-01-09">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
+<histogram
+    name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2022-01-09">
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
-  <summary>Total duration time of the auto-enrollment protocol.</summary>
+  <summary>
+    Total duration time of the auto-enrollment protocol.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus"
+<histogram
+    name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
     enum="EnterpriseDeviceManagementStatus" expires_after="2021-10-31">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Device management server request status for auto-enrollment PSM requests.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram
@@ -185,48 +248,73 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode"
+<histogram
+    name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
     enum="NetErrorCodes" expires_after="2021-10-31">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment PSM requests.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram name="Enterprise.AutoEnrollmentPsmResult" enum="PsmResult"
-    expires_after="2021-10-31">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
+<histogram
+    name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
+    enum="PsmResult" expires_after="2021-10-31">
   <owner>amraboelkher@google.com</owner>
   <owner>mpolzer@google.com</owner>
   <summary>
     All possible PSM protocol results after it has executed succcessfully or
     terminated due to an error or timeout. This request is used to determine the
-    initial enrollment state of the device.
+    initial enrollment state of the device. {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentRequestNetworkErrorCode"
+<histogram
+    name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
     enum="NetErrorCodes" expires_after="2021-12-19">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     Network error code (if applicable) for auto-enrollment requests.
+    {EnterpriseAutoEnrollmentType}
   </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
-<histogram base="true" name="Enterprise.AutoEnrollmentRequestStatus"
+<histogram
+    name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
     enum="EnterpriseDeviceManagementStatus" expires_after="2021-12-12">
-<!-- Name completed by histogram_suffixes name="EnterpriseAutoEnrollmentType". -->
-
   <owner>pmarko@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
-  <summary>URL fetcher status for auto-enrollment requests.</summary>
+  <summary>
+    URL fetcher status for auto-enrollment requests.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
@@ -289,8 +377,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed"
     enum="RemoteCommandExecutionStatus" expires_after="2021-11-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -302,8 +388,6 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
 <histogram name="Enterprise.CBCMRemoteCommand.Executed.Unsigned"
     enum="RemoteCommandExecutionStatus" expires_after="2021-11-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
   <owner>anthonyvd@chromium.org</owner>
   <owner>cbe-eng@google.com</owner>
   <summary>
@@ -444,18 +528,37 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Enterprise.DevicePolicyDeviceIdValidity"
+<histogram
+    name="Enterprise.DevicePolicyDeviceIdValidity{EnterpriseDevicePolicyDeviceIdValidity}"
     enum="EnterprisePolicyDeviceIdValidity" expires_after="M85">
   <obsolete>
     Removed in M91 since the data is no longer required.
   </obsolete>
-<!-- Name completed by histogram_suffixes name="EnterpriseDevicePolicyDeviceIdValidity" -->
-
   <owner>emaxx@chromium.org</owner>
   <owner>poromov@chromium.org</owner>
   <summary>
     Result of the device ID validation in the device policy blob.
+    {EnterpriseDevicePolicyDeviceIdValidity}
   </summary>
+  <token key="EnterpriseDevicePolicyDeviceIdValidity">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".InitialStore"
+        summary="the initial device policy stored during enrollment">
+      <obsolete>
+        Removed in M91 since the data is no longer required.
+      </obsolete>
+    </variant>
+    <variant name=".Update"
+        summary="the updated device policy that overwrites the previous one">
+      <obsolete>
+        Removed in M91 since the data is no longer required.
+      </obsolete>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyInvalidations2"
@@ -489,30 +592,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DeviceRemoteCommand.Executed"
+<histogram
+    name="Enterprise.DeviceRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
-  <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
-  <summary>
-    Events for counting status of executed device remote commands. The metric
-    includes only signed device remote commands. Reports a final status of
-    finished remote command (e.g. success, failure or termination).
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.DeviceRemoteCommand.Executed.Unsigned"
-    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
   <owner>asumaneev@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
     Events for counting status of executed device remote commands. The metric
     includes only unsigned device remote commands. Reports a final status of
     finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
   </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed device remote commands. The metric
+    includes only signed device remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.DeviceRemoteCommand.Received"
@@ -739,7 +850,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.DMServerRequestSuccess"
+<histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
     enum="EnterpriseDMServerRequestSuccess" expires_after="2021-12-12">
   <owner>poromov@chromium.org</owner>
   <owner>managed-devices@google.com</owner>
@@ -747,8 +858,114 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
     Number of retries the client did to execute a DeviceManagementServer
     request. It's recorded after the request has been completed, either
     successfully after 0 or more retries, with a failure (too many retries or
-    non-retriable error) or with a server error.
+    non-retriable error) or with a server error. {EnterpriseDMServerRequest}
   </summary>
+  <token key="EnterpriseDMServerRequest">
+    <variant name=""/>
+    <variant name=".ActiveDirectoryEnrollPlayUser"
+        summary="Active Directory Enroll Play User.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ActiveDirectoryPlayActivity"
+        summary="Active Directory Play Activity.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AndroidManagementCheck" summary="Android Management Check.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ApiAuthCodeFetch" summary="Api Auth Code Fetch.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AttributeUpdate" summary="Attribute Update.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AttributeUpdatePermission"
+        summary="Attribute Update Permission.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AutoEnrollment" summary="Auto Enrollment.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".CertBasedRegistration" summary="Cert Based Registration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ChromeDesktopReport" summary="Chrome Desktop Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".DeviceStateRetrieval" summary="Device State Retrieval.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".GcmIdUpdate" summary="Gcm Id Update.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".InitialEnrollmentStateRetrieval"
+        summary="Initial Enrollment State Retrieval.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Invalid" summary="Invalid.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".PolicyFetch" summary="Policy Fetch.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Registration" summary="Registration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".RemoteCommands" summary="Remote Commands.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".RequestLicenseTypes" summary="Request License Types.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".TokenEnrollment" summary="Token Enrollment.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Unregistration" summary="Unregistration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadAppInstallReport"
+        summary="Upload App Install Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadCertificate" summary="Upload Certificate.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadPolicyValidationReport"
+        summary="Upload Policy Validation Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadrealtimeReport"
+        summary="Upload of real-time reports.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadStatus" summary="Upload Status.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+  </token>
 </histogram>
 
 <histogram
@@ -1566,18 +1783,55 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram base="true" name="Enterprise.RetrievePolicyResponse"
+<histogram
+    name="Enterprise.RetrievePolicyResponse{EnterpriseRetrievePolicyResponse}"
     enum="EnterpriseRetrievePolicyResponseType" expires_after="2020-02-16">
   <obsolete>
     Removed in M91 since the data is no longer monitored.
   </obsolete>
-<!-- Name completed by histogram_suffixes name="EnterpriseRetrievePolicyResponse" -->
-
   <owner>emaxx@chromium.org</owner>
   <owner>igorcov@chromium.org</owner>
   <summary>
     On Chrome OS, the response obtained to retrieve policy request.
+    {EnterpriseRetrievePolicyResponse}
   </summary>
+  <token key="EnterpriseRetrievePolicyResponse">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Device" summary="Device policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".DeviceLocalAccount"
+        summary="DeviceLocalAccount policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".User" summary="User policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".UserDuringLogin"
+        summary="User policy fetch response during login.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.StorePolicy.Duration" units="ms"
@@ -1849,30 +2103,38 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Enterprise.UserRemoteCommand.Executed"
+<histogram
+    name="Enterprise.UserRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
     enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
-  <owner>asumaneev@google.com</owner>
-  <owner>managed-platforms@google.com</owner>
-  <summary>
-    Events for counting status of executed user remote commands. The metric
-    includes only signed user remote commands. Reports a final status of
-    finished remote command (e.g. success, failure or termination).
-  </summary>
-</histogram>
-
-<histogram name="Enterprise.UserRemoteCommand.Executed.Unsigned"
-    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
-<!-- Name completed by histogram_suffixes name="Enterprise.RemoteCommandType". -->
-
   <owner>asumaneev@google.com</owner>
   <owner>managed-platforms@google.com</owner>
   <summary>
     Events for counting status of executed user remote commands. The metric
     includes only unsigned user remote commands. Reports a final status of
     finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
   </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.UserRemoteCommand.Executed{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed user remote commands. The metric
+    includes only signed user remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
 </histogram>
 
 <histogram name="Enterprise.UserRemoteCommand.Received"
