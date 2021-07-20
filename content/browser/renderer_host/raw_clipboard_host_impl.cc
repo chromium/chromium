@@ -12,6 +12,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/browser/permissions/permission_controller_impl.h"
 #include "content/browser/renderer_host/clipboard_host_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/child_process_host.h"
@@ -160,7 +161,8 @@ std::unique_ptr<ui::DataTransferEndpoint>
 RawClipboardHostImpl::CreateDataEndpoint() {
   RenderFrameHostImpl* render_frame_host =
       RenderFrameHostImpl::FromID(render_frame_routing_id_);
-  if (!render_frame_host)
+  if (!render_frame_host ||
+      render_frame_host->GetBrowserContext()->IsOffTheRecord())
     return nullptr;
 
   return std::make_unique<ui::DataTransferEndpoint>(

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_TAB_HELPER_H_
 #define CHROME_BROWSER_ASH_POLICY_DLP_DLP_CONTENT_TAB_HELPER_H_
 
+#include "base/auto_reset.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_restriction_set.h"
 #include "content/public/browser/visibility.h"
@@ -31,6 +32,15 @@ class DlpContentTabHelper
     : public content::WebContentsUserData<DlpContentTabHelper>,
       public content::WebContentsObserver {
  public:
+  // Creates DlpContentTabHelper and attaches it the |web_contents| if the user
+  // is managed and it's not an incognito profile.
+  static void MaybeCreateForWebContents(content::WebContents* web_contents);
+
+  // Allows to create DlpContentTabHelper even the user is not managed and do
+  // not initialize DlpRulesManager in tests.
+  using ScopedIgnoreDlpRulesManager = base::AutoReset<bool>;
+  static ScopedIgnoreDlpRulesManager IgnoreDlpRulesManagerForTesting();
+
   ~DlpContentTabHelper() override;
 
   // content::WebContentsObserver:

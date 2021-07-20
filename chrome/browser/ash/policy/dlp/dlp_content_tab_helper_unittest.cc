@@ -49,11 +49,28 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+  DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_{
+      DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()};
   MockDlpContentManager mock_dlp_content_manager_;
   TabActivitySimulator tab_activity_simulator_;
   TabStripModel* tab_strip_model_;
   std::unique_ptr<Browser> browser_;
 };
+
+TEST_F(DlpContentTabHelperTest, NotCreatedForIncognito) {
+  const Browser::CreateParams params(
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
+      /*user_gesture=*/true);
+  auto browser = CreateBrowserWithTestWindowForParams(params);
+
+  content::WebContents* web_contents =
+      tab_activity_simulator_.AddWebContentsAndNavigate(
+          browser->tab_strip_model(), GURL("https://example.com"));
+  EXPECT_EQ(nullptr, DlpContentTabHelper::FromWebContents(web_contents));
+
+  // Close tabs before |browser| is destructed.
+  browser->tab_strip_model()->CloseAllTabs();
+}
 
 TEST_F(DlpContentTabHelperTest, NotConfidential) {
   GURL kUrl = GURL("https://example.com");

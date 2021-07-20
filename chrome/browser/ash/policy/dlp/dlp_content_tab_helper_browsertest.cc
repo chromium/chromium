@@ -37,7 +37,9 @@ class DlpContentTabHelperBrowserTest
     : public extensions::PlatformAppBrowserTest {
  public:
   DlpContentTabHelperBrowserTest()
-      : scoped_dlp_content_manager_(&mock_dlp_content_manager_) {}
+      : scoped_dlp_content_manager_(&mock_dlp_content_manager_),
+        ignore_dlp_rules_manager_(
+            DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()) {}
 
  protected:
   void SetUp() override {
@@ -50,6 +52,7 @@ class DlpContentTabHelperBrowserTest
 
   MockDlpContentManager mock_dlp_content_manager_;
   ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
+  DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_;
 };
 
 IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
@@ -94,7 +97,9 @@ IN_PROC_BROWSER_TEST_F(DlpContentTabHelperBrowserTest, PlatformApp) {
 class DlpContentTabHelperBFCacheBrowserTest : public InProcessBrowserTest {
  public:
   DlpContentTabHelperBFCacheBrowserTest()
-      : scoped_dlp_content_manager_(&mock_dlp_content_manager_) {
+      : scoped_dlp_content_manager_(&mock_dlp_content_manager_),
+        ignore_dlp_rules_manager_(
+            DlpContentTabHelper::IgnoreDlpRulesManagerForTesting()) {
     bfcache_feature_list_.InitWithFeatures(
         {features::kBackForwardCache},
         // Allow BackForwardCache for all devices regardless of their memory.
@@ -112,6 +117,7 @@ class DlpContentTabHelperBFCacheBrowserTest : public InProcessBrowserTest {
 
  private:
   ScopedDlpContentManagerForTesting scoped_dlp_content_manager_;
+  DlpContentTabHelper::ScopedIgnoreDlpRulesManager ignore_dlp_rules_manager_;
   base::test::ScopedFeatureList bfcache_feature_list_;
 };
 

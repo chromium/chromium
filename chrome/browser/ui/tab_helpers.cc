@@ -416,7 +416,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   app_list::CrOSActionRecorderTabTracker::CreateForWebContents(web_contents);
   ash::app_time::WebTimeNavigationObserver::MaybeCreateForWebContents(
       web_contents);
-  policy::DlpContentTabHelper::CreateForWebContents(web_contents);
+  policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
