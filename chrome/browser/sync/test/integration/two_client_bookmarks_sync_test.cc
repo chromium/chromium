@@ -105,7 +105,7 @@ class TwoClientBookmarksSyncTest : public SyncTest {
 
  protected:
   // Needs to be deleted after all Profiles are deleted.
-  policy::MockConfigurationPolicyProvider policy_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, Sanity) {
@@ -2567,10 +2567,9 @@ IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest,
 // Verifies that managed bookmarks (installed by policy) don't get synced.
 IN_PROC_BROWSER_TEST_F(TwoClientBookmarksSyncTest, ManagedBookmarks) {
   // Make sure the first Profile has an overridden policy provider.
-  EXPECT_CALL(policy_provider_, IsInitializationComplete(testing::_))
-      .WillRepeatedly(testing::Return(true));
-  EXPECT_CALL(policy_provider_, IsFirstPolicyLoadComplete(testing::_))
-      .WillRepeatedly(testing::Return(true));
+  policy_provider_.SetDefaultReturns(
+      /*is_initialization_complete_return=*/true,
+      /*is_first_policy_load_complete_return=*/true);
   policy::PushProfilePolicyConnectorProviderForTesting(&policy_provider_);
 
   // Set up sync.
