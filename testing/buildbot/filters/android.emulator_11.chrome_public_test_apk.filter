@@ -46,13 +46,7 @@
 -org.chromium.chrome.browser.password_manager.settings.PasswordSettingsTest.testExportMenuDisabled
 
 # crbug.com/1036556
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testEagerSuspension
 -org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMediaSuspension
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testMultiWindow
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testNavigationFromSuspendedTabToInterstitial
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testRendererCrashOnSuspendedTab
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabAddedFromCustomTab
--org.chromium.chrome.browser.usage_stats.TabSuspensionTest.testTabUnsuspendedInBackground
 
 # crbug.com/1195097
 -org.chromium.chrome.browser.permissions.RuntimePermissionTest.testDenyRuntimeDownload
