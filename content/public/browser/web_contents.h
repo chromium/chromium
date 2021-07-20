@@ -455,9 +455,8 @@ class WebContents : public PageNavigator,
   // understand.
   virtual void SetPageBaseBackgroundColor(absl::optional<SkColor> color) = 0;
 
-  // Returns the committed WebUI if one exists, otherwise the pending one.
+  // Returns the committed WebUI if one exists.
   virtual WebUI* GetWebUI() = 0;
-  virtual WebUI* GetCommittedWebUI() = 0;
 
   // Sets the user-agent that may be used for navigations in this WebContents.
   // The user-agent is *only* used when

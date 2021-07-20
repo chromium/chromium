@@ -1656,17 +1656,6 @@ void WebContentsImpl::OnManifestUrlChanged(const PageImpl& page) {
 }
 
 WebUI* WebContentsImpl::GetWebUI() {
-  WebUI* committed_web_ui = GetCommittedWebUI();
-  if (committed_web_ui)
-    return committed_web_ui;
-
-  if (GetRenderManager()->speculative_frame_host())
-    return GetRenderManager()->speculative_frame_host()->web_ui();
-
-  return nullptr;
-}
-
-WebUI* WebContentsImpl::GetCommittedWebUI() {
   return frame_tree_.root()->current_frame_host()->web_ui();
 }
 

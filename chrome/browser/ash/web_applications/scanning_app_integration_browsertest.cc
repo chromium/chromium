@@ -57,7 +57,7 @@ IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppDisabled) {
   content::WebContents* web_contents =
       app_browser->tab_strip_model()->GetActiveWebContents();
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
-  content::WebUI* web_ui = web_contents->GetCommittedWebUI();
+  content::WebUI* web_ui = web_contents->GetWebUI();
   ASSERT_TRUE(web_ui);
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_CHROME_URLS_DISABLED_PAGE_HEADER),
             web_contents->GetTitle());

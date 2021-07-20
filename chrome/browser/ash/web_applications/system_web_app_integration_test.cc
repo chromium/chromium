@@ -62,7 +62,7 @@ void SystemWebAppIntegrationTest::ExpectSystemWebAppValid(
   observer.WaitForNavigationFinished();
   EXPECT_EQ(url, web_contents->GetLastCommittedURL());
 
-  content::WebUI* web_ui = web_contents->GetCommittedWebUI();
+  content::WebUI* web_ui = web_contents->GetWebUI();
   ASSERT_TRUE(web_ui);
   EXPECT_TRUE(web_ui->GetController());
 

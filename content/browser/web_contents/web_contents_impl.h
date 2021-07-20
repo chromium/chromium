@@ -361,7 +361,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   absl::optional<SkColor> GetBackgroundColor() override;
   void SetPageBaseBackgroundColor(absl::optional<SkColor> color) override;
   WebUI* GetWebUI() override;
-  WebUI* GetCommittedWebUI() override;
   void SetUserAgentOverride(const blink::UserAgentOverride& ua_override,
                             bool override_in_new_tabs) override;
   void SetRendererInitiatedUserAgentOverrideOption(
