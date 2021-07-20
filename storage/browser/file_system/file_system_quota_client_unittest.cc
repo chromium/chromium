@@ -439,18 +439,10 @@ TEST_F(FileSystemQuotaClientTest, GetStorageKeysForType) {
                         {true, "", 0, kDummyURL3, kFileSystemTypePersistent},
                     });
 
-  std::vector<StorageKey> storage_keys =
-      GetStorageKeysForType(quota_client, kTemporary);
-  EXPECT_EQ(2U, storage_keys.size());
-  EXPECT_THAT(
-      storage_keys,
-      testing::Contains(StorageKey::CreateFromStringForTesting(kDummyURL1)));
-  EXPECT_THAT(
-      storage_keys,
-      testing::Contains(StorageKey::CreateFromStringForTesting(kDummyURL2)));
-  EXPECT_THAT(storage_keys,
-              testing::Not(testing::Contains(
-                  StorageKey::CreateFromStringForTesting(kDummyURL3))));
+  EXPECT_THAT(GetStorageKeysForType(quota_client, kTemporary),
+              testing::UnorderedElementsAre(
+                  StorageKey::CreateFromStringForTesting(kDummyURL1),
+                  StorageKey::CreateFromStringForTesting(kDummyURL2)));
 }
 
 TEST_F(FileSystemQuotaClientTest, GetStorageKeysForHost) {
@@ -469,23 +461,11 @@ TEST_F(FileSystemQuotaClientTest, GetStorageKeysForHost) {
                             {true, "", 0, kURL5, kFileSystemTypePersistent},
                         });
 
-  std::vector<StorageKey> storage_keys =
-      GetStorageKeysForHost(quota_client, kTemporary, "foo.com");
-  EXPECT_EQ(3U, storage_keys.size());
-  EXPECT_THAT(storage_keys,
-              testing::Contains(StorageKey::CreateFromStringForTesting(kURL1)));
-  EXPECT_THAT(storage_keys,
-              testing::Contains(StorageKey::CreateFromStringForTesting(kURL2)));
-  EXPECT_THAT(storage_keys,
-              testing::Contains(StorageKey::CreateFromStringForTesting(kURL3)));
-  EXPECT_THAT(
-      storage_keys,
-      testing::Not(testing::Contains(
-          StorageKey::CreateFromStringForTesting(kURL4))));  // Different host.
-  EXPECT_THAT(
-      storage_keys,
-      testing::Not(testing::Contains(
-          StorageKey::CreateFromStringForTesting(kURL5))));  // Different type.
+  EXPECT_THAT(GetStorageKeysForHost(quota_client, kTemporary, "foo.com"),
+              testing::UnorderedElementsAre(
+                  StorageKey::CreateFromStringForTesting(kURL1),
+                  StorageKey::CreateFromStringForTesting(kURL2),
+                  StorageKey::CreateFromStringForTesting(kURL3)));
 }
 
 TEST_F(FileSystemQuotaClientTest, DeleteOriginTest) {
