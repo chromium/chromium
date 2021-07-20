@@ -57,6 +57,11 @@
 // Set |enabled| on the Edit button.
 - (void)setEditButtonEnabled:(BOOL)enabled;
 
+// Sets the title of the Select All button to "Deselect All".
+- (void)configureDeselectAllButtonTitle;
+// Sets the title of the Select All button to "Select All".
+- (void)configureSelectAllButtonTitle;
+
 // Hides components and uses a black background color for tab grid transition
 // animation.
 - (void)hide;

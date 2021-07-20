@@ -16094,6 +16094,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="MobileTabGridSelectionDeselectAll">
+  <owner>mrefaat@chromium.org</owner>
+  <owner>michaeldo@chromium.org</owner>
+  <description>
+    User in the iOS tab grid used the Deselect All button to deselect all items.
+  </description>
+</action>
+
 <action name="MobileTabGridSelectionDone">
   <owner>mrefaat@chromium.org</owner>
   <owner>michaeldo@chromium.org</owner>

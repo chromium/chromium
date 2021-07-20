@@ -75,6 +75,18 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 
+id<GREYMatcher> DeselectAllButton() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_TAB_GRID_DESELECT_ALL_BUTTON),
+                    grey_userInteractionEnabled(), nullptr);
+}
+
+id<GREYMatcher> SelectAllButton() {
+  return grey_allOf(chrome_test_util::ButtonWithAccessibilityLabelId(
+                        IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON),
+                    grey_userInteractionEnabled(), nullptr);
+}
+
 }  // namespace
 
 @interface TabGridTestCase : WebHttpServerChromeTestCase {
@@ -103,10 +115,11 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   }
 
   if ([self isRunningTest:@selector(testTabGridBulkActionCloseTabs)] ||
+      [self isRunningTest:@selector(testTabGridBulkActionDeselectAll)] ||
       [self isRunningTest:@selector(testTabGridBulkActionSelectAll)] ||
       [self isRunningTest:@selector(testTabGridBulkActionAddToReadingList)]) {
     config.features_enabled.push_back(kTabsBulkActions);
-      }
+  }
 
   config.features_disabled.push_back(kStartSurface);
 
@@ -1011,6 +1024,70 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   // Verify edit mode is exited.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
       assertWithMatcher:grey_notNil()];
+}
+
+// Tests deselecting all items in the tab grid edit mode using the "Deselect
+// all" button.
+- (void)testTabGridBulkActionDeselectAll {
+  if (!base::ios::IsRunningOnIOS14OrLater()) {
+    EARL_GREY_TEST_SKIPPED(
+        @"Bulk actions are only supported on iOS 14 and later.");
+  }
+
+  [ChromeEarlGrey loadURL:_URL1];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse1];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL2];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse2];
+
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey loadURL:_URL3];
+  [ChromeEarlGrey waitForWebStateContainingText:kResponse3];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::ShowTabsButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridEditButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridSelectTabsMenuButton()]
+      performAction:grey_tap()];
+
+  // Ensure button label is "Select All" and select all items.
+  [[EarlGrey selectElementWithMatcher:SelectAllButton()]
+      performAction:grey_tap()];
+
+  // Deselect all button should be visible when all items are selected.
+  // Tapping deselect all button should deselect all items.
+  [[EarlGrey selectElementWithMatcher:DeselectAllButton()]
+      performAction:grey_tap()];
+
+  // Verify deselection by manually tapping each item (to re-select) and closing
+  // the selected items.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(1)]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(2)]
+      performAction:grey_tap()];
+
+  // All tabs should have been re-selected and closing selected tabs should
+  // empty the tab grid.
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::TabGridEditCloseTabsButton()]
+      performAction:grey_tap()];
+  NSString* closeTabsButtonText =
+      base::SysUTF16ToNSString(l10n_util::GetPluralStringFUTF16(
+          IDS_IOS_TAB_GRID_CLOSE_ALL_TABS_CONFIRMATION,
+          /*number=*/3));
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::ButtonWithAccessibilityLabel(
+                                   closeTabsButtonText)]
+      performAction:grey_tap()];
+
+  // Make sure that the tab grid is empty.
+  [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 }
 
 // Tests adding items to the readinglist from the tab grid edit mode.

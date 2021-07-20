@@ -1542,6 +1542,12 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
   self.bottomToolbar.selectedTabsCount = selectedItemsCount;
   [self.bottomToolbar setShareTabsButtonEnabled:sharableSelectedItemsCount > 0];
   [self.bottomToolbar setAddToButtonEnabled:sharableSelectedItemsCount > 0];
+
+  if (currentGridViewController.allItemsSelectedForEditing) {
+    [self.topToolbar configureDeselectAllButtonTitle];
+  } else {
+    [self.topToolbar configureSelectAllButtonTitle];
+  }
 }
 
 // Records when the user switches between incognito and regular pages in the tab
@@ -1878,12 +1884,20 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 }
 
 - (void)selectAllButtonTapped:(id)sender {
-  base::RecordAction(
-      base::UserMetricsAction("MobileTabGridSelectionSelectAll"));
-
   GridViewController* gridViewController =
       [self gridViewControllerForPage:self.currentPage];
-  [gridViewController selectAllItemsForEditing];
+
+  // Deselect all items if they are all already selected.
+  if (gridViewController.allItemsSelectedForEditing) {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridSelectionDeselectAll"));
+    [gridViewController deselectAllItemsForEditing];
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("MobileTabGridSelectionSelectAll"));
+    [gridViewController selectAllItemsForEditing];
+  }
+
   [self updateSelectionModeToolbars];
 }
 

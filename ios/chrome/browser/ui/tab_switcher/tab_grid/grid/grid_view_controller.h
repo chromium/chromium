@@ -113,6 +113,10 @@
 @property(nonatomic, readonly)
     NSArray<NSString*>* selectedShareableItemIDsForEditing;
 
+// Whether or not all items are selected. NO if |mode| is not
+// TabGridModeSelection.
+@property(nonatomic, readonly) BOOL allItemsSelectedForEditing;
+
 // Returns the layout of the grid for use in an animated transition.
 - (GridTransitionLayout*)transitionLayout;
 
@@ -126,6 +130,10 @@
 // Selects all items in the grid for editing. No-op if |mode| is not
 // TabGridModeSelection.
 - (void)selectAllItemsForEditing;
+
+// Deselects all items in the grid for editing. No-op if |mode| is not
+// TabGridModeSelection.
+- (void)deselectAllItemsForEditing;
 
 @end
 

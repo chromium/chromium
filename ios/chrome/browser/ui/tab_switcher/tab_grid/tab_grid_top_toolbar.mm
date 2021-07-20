@@ -126,6 +126,16 @@ const int kNewTabButtonTrailingSpace = 20;
   }
 }
 
+- (void)configureDeselectAllButtonTitle {
+  _selectAllButton.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_DESELECT_ALL_BUTTON);
+}
+
+- (void)configureSelectAllButtonTitle {
+  _selectAllButton.title =
+      l10n_util::GetNSString(IDS_IOS_TAB_GRID_SELECT_ALL_BUTTON);
+}
+
 - (void)hide {
   self.backgroundColor = UIColor.blackColor;
   self.pageControl.alpha = 0.0;

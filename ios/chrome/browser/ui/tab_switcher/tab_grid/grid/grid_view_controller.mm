@@ -1147,12 +1147,28 @@ NSIndexPath* CreateIndexPath(NSInteger index) {
   [self.collectionView reloadData];
 }
 
+- (void)deselectAllItemsForEditing {
+  if (_mode != TabGridModeSelection) {
+    return;
+  }
+
+  for (TabSwitcherItem* item in self.items) {
+    [self deselectItemWithIDForEditing:item.identifier];
+  }
+  [self.collectionView reloadData];
+}
+
 - (NSArray<NSString*>*)selectedItemIDsForEditing {
   return [self.selectedEditingItemIDs allObjects];
 }
 
 - (NSArray<NSString*>*)selectedShareableItemIDsForEditing {
   return [self.selectedSharableEditingItemIDs allObjects];
+}
+
+- (BOOL)allItemsSelectedForEditing {
+  return _mode == TabGridModeSelection &&
+         self.items.count == self.selectedEditingItemIDs.count;
 }
 
 #pragma mark - Private Editing Mode Selection
