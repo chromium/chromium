@@ -51,6 +51,7 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
   ForeignSessionHandler();
   ~ForeignSessionHandler() override;
@@ -72,6 +73,8 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // Returns a pointer to the current session model associator or nullptr.
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
       content::WebUI* web_ui);
+
+  void SetWebUIForTesting(content::WebUI* web_ui) { set_web_ui(web_ui); }
 
  private:
   void OnForeignSessionUpdated();

@@ -261,6 +261,13 @@ void ForeignSessionHandler::OnJavascriptAllowed() {
   }
 }
 
+void ForeignSessionHandler::OnJavascriptDisallowed() {
+  // Avoid notifying Javascript listeners due to foreign session changes, which
+  // is now disallowed and would otherwise run into CHECK failures in
+  // OnForeignSessionUpdated().
+  foreign_session_updated_subscription_ = base::CallbackListSubscription();
+}
+
 void ForeignSessionHandler::OnForeignSessionUpdated() {
   FireWebUIListener("foreign-sessions-changed",
                     std::move(GetForeignSessions()));
