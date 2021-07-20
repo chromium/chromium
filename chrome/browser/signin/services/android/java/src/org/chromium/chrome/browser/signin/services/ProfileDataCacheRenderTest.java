@@ -125,12 +125,12 @@ public class ProfileDataCacheRenderTest extends DummyUiChromeActivityTestCase {
     @Before
     public void setUp() {
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
-        AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
         doAnswer(AdditionalAnswers.answerVoid(Runnable::run))
                 .when(mAccountTrackerServiceMock)
                 .seedAccountsIfNeeded(any(Runnable.class));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            AccountInfoServiceProvider.init(mIdentityManager, mAccountTrackerServiceMock);
             Activity activity = getActivity();
             mContentView = new FrameLayout(activity);
             mImageView = new ChromeImageView(activity);
