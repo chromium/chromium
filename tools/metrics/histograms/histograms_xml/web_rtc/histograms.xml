@@ -459,7 +459,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.DelayedPacketOutageEventMs" units="ms"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the duration of each packet loss concealment (a.k.a. expand) event
@@ -783,7 +783,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="WebRTC.Audio.ExpandRatePercent" units="%"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>hlundin@chromium.org</owner>
   <summary>
     Measures the expand rate for an incoming WebRTC audio stream. The expand

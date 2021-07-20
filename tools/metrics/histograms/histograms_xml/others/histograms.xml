@@ -728,7 +728,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>pjmclachlan@google.com</owner>
   <owner>pcovell@google.com</owner>
   <summary>
@@ -3043,7 +3043,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="CompositorLatency" units="microseconds"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -6794,7 +6794,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Graphics.Smoothness.Checkerboarding" units="%"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>sadrul@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
@@ -9043,7 +9043,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Lens.ImageClassification.ClassificationTime.EarlyTerminatedMs"
-    units="ms" expires_after="2021-11-14">
+    units="ms" expires_after="2022-01-16">
   <owner>yusuyoutube@google.com</owner>
   <owner>benwgold@google.com</owner>
   <summary>
@@ -14099,7 +14099,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="SB2.RemoteCall.CanCheckUrl" enum="BooleanCanCheckUrl"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -15251,7 +15251,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteEngagementService.EngagementType"
-    enum="SiteEngagementServiceEngagementType" expires_after="2021-11-14">
+    enum="SiteEngagementServiceEngagementType" expires_after="2022-01-16">
   <owner>calamity@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <summary>
@@ -15331,7 +15331,7 @@ should be kept until we remove incident reporting. -->
 </histogram>
 
 <histogram name="SiteIsolatedCodeCache.JS.Behaviour"
-    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2021-11-14">
+    enum="SiteIsolatedCodeCacheJSBehaviour" expires_after="2022-01-16">
   <owner>mythria@chromium.org</owner>
   <owner>v8-team@google.com</owner>
   <summary>
@@ -18859,7 +18859,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>dominickn@chromium.org</owner>
   <owner>loyso@chromium.org</owner>
   <owner>calamity@chromium.org</owner>
@@ -18903,7 +18903,7 @@ regressions. -->
 </histogram>
 
 <histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
 <!-- Name completed by histogram_suffixes name="WebAppType" -->
 
   <owner>calamity@chromium.org</owner>

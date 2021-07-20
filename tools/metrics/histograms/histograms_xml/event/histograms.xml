@@ -299,7 +299,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.EndToEnd.KeyPress" units="microseconds"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>flackr@chromium.org</owner>
   <owner>input-dev@chromium.org</owner>
   <summary>
@@ -676,7 +676,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2"
-    units="microseconds" expires_after="2021-11-14">
+    units="microseconds" expires_after="2022-01-16">
   <owner>nzolghadr@chromium.org</owner>
   <summary>
     Time between initial creation of a wheel/touch event and start of the frame

@@ -1081,7 +1081,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeCommitRequest" enum="SyncModelTypes"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>
@@ -1095,7 +1095,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Sync.PostedDataTypeGetUpdatesRequest" enum="SyncModelTypes"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>mastiz@chromium.org</owner>
   <owner>jkrcal@chromium.org</owner>
   <component>Services&gt;Sync</component>

@@ -1692,7 +1692,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram base="true" name="Media.EME.CdmFileIO.TimeTo" units="ms"
-    expires_after="2021-11-14">
+    expires_after="2022-01-16">
   <owner>jrummell@chromium.org</owner>
   <owner>media-dev@chromium.org</owner>
   <summary>

@@ -265,7 +265,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="UMA.LogUpload.Canceled.CellularConstraint"
-    enum="BooleanCanceled" expires_after="2021-11-14">
+    enum="BooleanCanceled" expires_after="2022-01-16">
   <owner>holte@chromium.org</owner>
   <owner>asvitkine@chromium.org</owner>
   <owner>src/base/metrics/OWNERS</owner>
