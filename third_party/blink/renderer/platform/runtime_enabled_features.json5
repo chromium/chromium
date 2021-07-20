@@ -1963,6 +1963,9 @@
       name: "SecurePaymentConfirmationAPIV2",
     },
     {
+      name: "SecurePaymentConfirmationAPIV3",
+    },
+    {
       name: "SecurePaymentConfirmationDebug",
     },
     {

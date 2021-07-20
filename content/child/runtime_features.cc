@@ -287,6 +287,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
     {wf::EnableScrollUnification, features::kScrollUnification},
     {wf::EnableSecurePaymentConfirmationAPIV2,
      features::kSecurePaymentConfirmationAPIV2},
+    {wf::EnableSecurePaymentConfirmationAPIV3,
+     features::kSecurePaymentConfirmationAPIV3},
     {wf::EnableSecurePaymentConfirmationDebug,
      features::kSecurePaymentConfirmationDebug},
     {wf::EnableSendBeaconThrowForBlobWithNonSimpleType,

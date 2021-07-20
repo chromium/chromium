@@ -650,6 +650,11 @@ const base::Feature kSecurePaymentConfirmation{
 const base::Feature kSecurePaymentConfirmationAPIV2{
     "SecurePaymentConfirmationAPIV2", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Used to enable API changes for Secure Payment Confirmation.
+// TODO(crbug.com/1228924): Enable by default in M94.
+const base::Feature kSecurePaymentConfirmationAPIV3{
+    "SecurePaymentConfirmationAPIV3", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Used to control whether to remove the restriction that PaymentCredential in
 // WebAuthn and secure payment confirmation method in PaymentRequest API must
 // use a user verifying platform authenticator. When enabled, this allows using
