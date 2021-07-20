@@ -1203,7 +1203,7 @@ TEST(PermissionsTest, GetWarningMessages_DeclarativeWebRequest) {
                                            "Block parts of web pages"));
     EXPECT_FALSE(VerifyHasPermissionMessage(
         set, extension->GetType(),
-        "Read and change all your data on the websites you visit"));
+        "Read and change all your data on all websites"));
   }
 
   {
@@ -1217,7 +1217,7 @@ TEST(PermissionsTest, GetWarningMessages_DeclarativeWebRequest) {
                                           "Block parts of web pages"));
   EXPECT_TRUE(VerifyHasPermissionMessage(
       set, extension->GetType(),
-      "Read and change all your data on the websites you visit"));
+      "Read and change all your data on all websites"));
   }
 }
 

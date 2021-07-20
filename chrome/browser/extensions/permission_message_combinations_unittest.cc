@@ -1209,7 +1209,7 @@ TEST_F(PermissionMessageCombinationsUnittest,
       "  ]"
       "}");
   ASSERT_TRUE(CheckManifestProducesPermissions(
-      "Read and change all your data on the websites you visit"));
+      "Read and change all your data on all websites"));
 }
 
 // TODO(sashab): Add a test that checks that messages are generated correctly

@@ -4070,7 +4070,7 @@ are declared in tools/grit/grit_rule.gni.
       </message>
 
       <message name="IDS_EXTENSION_PERMISSION_LINE" desc="Template for item in list of privileges that an extension or app has">
-          • <ph name="PERMISSION">$1<ex>Read and change all your data on the websites you visit</ex></ph>
+          • <ph name="PERMISSION">$1<ex>Read and change all your data on all websites</ex></ph>
       </message>
       <message name="IDS_EXTENSION_RATING_COUNT" desc="Number of ratings an app or extensions has (displayed after star icons)">
         (<ph name="RATING_COUNT">$1<ex>46</ex></ph>)
@@ -4103,16 +4103,16 @@ are declared in tools/grit/grit_rule.gni.
 
       <if expr="enable_extensions">
         <message name="IDS_EXTENSION_PROMPT_WARNING_FULL_ACCESS" desc="Permission string for full access to the computer and all websites.">
-          Read and change all your data on your computer and the websites you visit
+          Read and change all your data on your computer and all websites
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS" desc="Permission string for access to data on all websites.">
-          Read and change all your data on the websites you visit
+          Read and change all your data on all websites
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_CURRENT_HOST" desc="Permission string for access to data on current website.">
           Read and change all your data on the current website when invoked
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_ALL_HOSTS_READ_ONLY" desc="Permission string for read-only access to data on all websites.">
-          Read all your data on the websites you visit
+          Read all your data on all websites
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_AUDIO_CAPTURE" desc="Permission string for access to audio capture devices.">
           Use your microphone
@@ -4154,7 +4154,7 @@ are declared in tools/grit/grit_rule.gni.
           Block parts of web pages
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_DECLARATIVE_NET_REQUEST" desc="Permission string for Declarative Net Request API.">
-          Block content on any page you visit
+          Block content on any page
         </message>
         <message name="IDS_EXTENSION_PROMPT_WARNING_DOCUMENT_SCAN" desc="Permission string for access to document scanning.">
           Access document scanners attached via USB or on the local network
