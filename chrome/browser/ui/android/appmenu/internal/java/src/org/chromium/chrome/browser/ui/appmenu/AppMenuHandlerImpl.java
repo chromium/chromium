@@ -45,6 +45,7 @@ class AppMenuHandlerImpl
     private final int mMenuResourceId;
     private final View mHardwareButtonMenuAnchor;
 
+    private final Context mContext;
     private final AppMenuPropertiesDelegate mDelegate;
     private final AppMenuDelegate mAppMenuDelegate;
     private final View mDecorView;
@@ -61,6 +62,7 @@ class AppMenuHandlerImpl
 
     /**
      * Constructs an AppMenuHandlerImpl object.
+     * @param context The activity context.
      * @param delegate Delegate used to check the desired AppMenu properties on show.
      * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
      * @param menuResourceId Resource Id that should be used as the source for the menu items.
@@ -72,10 +74,11 @@ class AppMenuHandlerImpl
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
      *            displayed using a hardware button.
      */
-    public AppMenuHandlerImpl(AppMenuPropertiesDelegate delegate, AppMenuDelegate appMenuDelegate,
-            int menuResourceId, View decorView,
+    public AppMenuHandlerImpl(Context context, AppMenuPropertiesDelegate delegate,
+            AppMenuDelegate appMenuDelegate, int menuResourceId, View decorView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View hardwareButtonAnchorView) {
+        mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
         mDecorView = decorView;
@@ -141,13 +144,12 @@ class AppMenuHandlerImpl
         TextBubble.dismissBubbles();
         boolean isByPermanentButton = false;
 
-        Context context = mDecorView.getContext();
-        Display display = DisplayAndroidManager.getDefaultDisplayForContext(context);
+        Display display = DisplayAndroidManager.getDefaultDisplayForContext(mContext);
         int rotation = display.getRotation();
         if (anchorView == null) {
             // This fixes the bug where the bottom of the menu starts at the top of
             // the keyboard, instead of overlapping the keyboard as it should.
-            int displayHeight = context.getResources().getDisplayMetrics().heightPixels;
+            int displayHeight = mContext.getResources().getDisplayMetrics().heightPixels;
             Rect rect = new Rect();
             mDecorView.getWindowVisibleDisplayFrame(rect);
             int statusBarHeight = rect.top;
@@ -170,23 +172,23 @@ class AppMenuHandlerImpl
         if (mMenu == null) {
             // Use a PopupMenu to create the Menu object. Note this is not the same as the
             // AppMenu (mAppMenu) created below.
-            PopupMenu tempMenu = new PopupMenu(context, anchorView);
+            PopupMenu tempMenu = new PopupMenu(mContext, anchorView);
             tempMenu.inflate(mMenuResourceId);
             mMenu = tempMenu.getMenu();
         }
         mDelegate.prepareMenu(mMenu, this);
 
         ContextThemeWrapper wrapper =
-                new ContextThemeWrapper(context, R.style.OverflowMenuThemeOverlay);
+                new ContextThemeWrapper(mContext, R.style.OverflowMenuThemeOverlay);
 
         if (mAppMenu == null) {
             TypedArray a = wrapper.obtainStyledAttributes(
                     new int[] {android.R.attr.listPreferredItemHeightSmall});
             int itemRowHeight = a.getDimensionPixelSize(0, 0);
             a.recycle();
-            mAppMenu = new AppMenu(mMenu, itemRowHeight, this, context.getResources(),
+            mAppMenu = new AppMenu(mMenu, itemRowHeight, this, mContext.getResources(),
                     mDelegate.shouldShowIconBeforeItem());
-            mAppMenuDragHelper = new AppMenuDragHelper(context, mAppMenu, itemRowHeight);
+            mAppMenuDragHelper = new AppMenuDragHelper(mContext, mAppMenu, itemRowHeight);
         }
 
         // Get the height and width of the display.
