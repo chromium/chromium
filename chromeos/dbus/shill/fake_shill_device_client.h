@@ -94,7 +94,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   void SetUsbEthernetMacAddressSourceError(
       const std::string& device_path,
       const std::string& error_name) override;
-  void SetSimulateUninhibitScanning(bool simulate_uninhibit_scanning) override;
+  void SetSimulateInhibitScanning(bool simulate_inhibit_scanning) override;
   void SetPropertyChangeDelay(
       absl::optional<base::TimeDelta> time_delay) override;
 
@@ -136,8 +136,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   base::Value* GetDeviceProperties(const std::string& device_path);
   PropertyObserverList& GetObserverList(const dbus::ObjectPath& device_path);
 
-  void SimulateUninhibitScanning(const dbus::ObjectPath& device_path);
-  void StopUninhibitScanning(const dbus::ObjectPath& device_path);
+  void SetScanning(const dbus::ObjectPath& device_path, bool is_scanning);
 
   // Dictionary of <device_name, Dictionary>.
   base::Value stub_devices_{base::Value::Type::DICTIONARY};
@@ -158,7 +157,7 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
   // When true, this class will simulate the inhibit flow by setting the
   // Scanning property to true, then false. This mimics the behavior of Shill
   // during normal operation.
-  bool simulate_uninhibit_scanning_ = true;
+  bool simulate_inhibit_scanning_ = true;
 
   // When set, causes SetProperty call to return immediately and delay the value
   // change by given amount.
