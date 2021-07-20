@@ -85,6 +85,17 @@ TEST_F(InstalledVersionUpdaterTest, Update) {
                                   base::Version(new_version)))),
                      Property(&BuildState::critical_version, IsFalse()))));
   NotifyStatusChanged(std::move(status));
+
+  // Change status back to IDLE to invalidate the update.
+  status.set_current_operation(update_engine::IDLE);
+  // Resets build state.
+  EXPECT_CALL(
+      mock_observer_,
+      OnUpdate(AllOf(
+          Eq(&build_state_),
+          Property(&BuildState::update_type, Eq(BuildState::UpdateType::kNone)),
+          Property(&BuildState::critical_version, IsFalse()))));
+  NotifyStatusChanged(std::move(status));
 }
 
 // Tests that a rollback without channel change notifies the BuildState

@@ -134,6 +134,13 @@ class UpgradeDetectorChromeosTest : public ::testing::Test {
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
+  void NotifyStatusIdle() {
+    update_engine::StatusResult status;
+    status.set_current_operation(update_engine::Operation::IDLE);
+    fake_update_engine_client_->set_default_status(status);
+    fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
+  }
+
   // Sets the browser.relaunch_notification preference in Local State to
   // |value|.
   void SetIsRelaunchNotificationPolicyEnabled(bool enabled) {
@@ -637,6 +644,41 @@ TEST_F(UpgradeDetectorChromeosTest, TestUpdateInProgress) {
   ::testing::Mock::VerifyAndClear(&mock_observer);
   EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
             UpgradeDetector::UPGRADE_ANNOYANCE_HIGH);
+
+  upgrade_detector.Shutdown();
+  RunUntilIdle();
+}
+
+TEST_F(UpgradeDetectorChromeosTest, TestInvalidateUpdate) {
+  TestUpgradeDetectorChromeos upgrade_detector(GetMockClock(),
+                                               GetMockTickClock());
+  upgrade_detector.Init();
+  ::testing::StrictMock<MockUpgradeObserver> mock_observer(&upgrade_detector);
+
+  // Finish the first update and set annoyance level to ELEVATED.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(testing::AtLeast(1));
+  NotifyUpdateReadyToInstall("1.0.0.0");
+  FastForwardBy(upgrade_detector.GetDefaultElevatedAnnoyanceThreshold());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
+
+  // Invalidate update by resetting the status. Annoyance level should go
+  // back down to NONE.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended());
+  NotifyStatusIdle();
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
+
+  // Make sure any future updates complete successfully and observers are
+  // notified.
+  EXPECT_CALL(mock_observer, OnUpgradeRecommended()).Times(testing::AtLeast(1));
+  NotifyUpdateReadyToInstall("1.0.0.0");
+  FastForwardBy(upgrade_detector.GetDefaultElevatedAnnoyanceThreshold());
+  ::testing::Mock::VerifyAndClear(&mock_observer);
+  EXPECT_EQ(upgrade_detector.upgrade_notification_stage(),
+            UpgradeDetector::UPGRADE_ANNOYANCE_ELEVATED);
 
   upgrade_detector.Shutdown();
   RunUntilIdle();

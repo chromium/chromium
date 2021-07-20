@@ -123,7 +123,14 @@ void UpgradeDetectorChromeos::ResetOverriddenDeadline() {
 }
 
 void UpgradeDetectorChromeos::OnUpdate(const BuildState* build_state) {
-  if (upgrade_detected_time().is_null()) {
+  if (build_state->update_type() == BuildState::UpdateType::kNone) {
+    // If the update state changed to `kNone`, reset the state as there is no
+    // longer a valid update.
+    upgrade_notification_timer_.Stop();
+    set_upgrade_available(UPGRADE_AVAILABLE_NONE);
+    set_upgrade_detected_time(base::Time());
+  } else if (upgrade_detected_time().is_null()) {
+    // Only start the timer if the build state is valid.
     set_upgrade_detected_time(clock()->Now());
     CalculateDeadlines();
   }
@@ -235,6 +242,8 @@ void UpgradeDetectorChromeos::NotifyOnUpgrade() {
   if (update_in_progress_) {
     // Cancel any notification of a previous update (if there was one) while a
     // new update is being downloaded.
+    set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
+  } else if (upgrade_detected_time().is_null()) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_NONE);
   } else if (current_time >= high_deadline_) {
     set_upgrade_notification_stage(UPGRADE_ANNOYANCE_HIGH);

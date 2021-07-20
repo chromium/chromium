@@ -38,6 +38,13 @@ void InstalledVersionUpdater::UpdateStatusChanged(
     const update_engine::StatusResult& status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // If status changes to `IDLE`, there is no currently available update.
+  if (status.current_operation() == update_engine::Operation::IDLE) {
+    build_state_->SetUpdate(BuildState::UpdateType::kNone, base::Version(),
+                            absl::nullopt);
+    return;
+  }
+
   if (status.current_operation() !=
       update_engine::Operation::UPDATED_NEED_REBOOT) {
     return;
