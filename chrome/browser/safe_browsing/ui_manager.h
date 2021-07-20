@@ -71,6 +71,21 @@ class SafeBrowsingUIManager : public BaseUIManager {
     // distinguishing information to the language tag (e.g. both "en-US" and
     // "fr" are correct here).
     virtual const std::string& GetApplicationLocale() = 0;
+
+    // Notifies the embedder that given events occurred so that the embedder can
+    // trigger corresponding extension events if desired. This triggering is
+    // optional (e.g., not all embedders support extensions, even those who do
+    // might not wish to trigger extension events in incognito mode, etc).
+    virtual void TriggerSecurityInterstitialShownExtensionEventIfDesired(
+        content::WebContents* web_contents,
+        const GURL& page_url,
+        const std::string& reason,
+        int net_error_code) = 0;
+    virtual void TriggerSecurityInterstitialProceededExtensionEventIfDesired(
+        content::WebContents* web_contents,
+        const GURL& page_url,
+        const std::string& reason,
+        int net_error_code) = 0;
   };
 
   SafeBrowsingUIManager(

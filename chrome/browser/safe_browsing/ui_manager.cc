@@ -12,7 +12,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/interstitials/enterprise_util.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -311,7 +310,7 @@ void SafeBrowsingUIManager::OnBlockingPageDone(
   BaseUIManager::OnBlockingPageDone(resources, proceed, web_contents,
                                     main_frame_url, showed_interstitial);
   if (proceed && !resources.empty()) {
-    MaybeTriggerSecurityInterstitialProceededEvent(
+    delegate_->TriggerSecurityInterstitialProceededExtensionEventIfDesired(
         web_contents, main_frame_url,
         GetThreatTypeStringForInterstitial(resources[0].threat_type),
         /*net_error_code=*/0);
@@ -338,7 +337,7 @@ BaseBlockingPage* SafeBrowsingUIManager::CreateBlockingPageForSubresource(
           /*should_trigger_reporting=*/false);
 
   // Report that we showed an interstitial.
-  MaybeTriggerSecurityInterstitialShownEvent(
+  delegate_->TriggerSecurityInterstitialShownExtensionEventIfDesired(
       contents, blocked_url,
       GetThreatTypeStringForInterstitial(unsafe_resource.threat_type),
       /*net_error_code=*/0);

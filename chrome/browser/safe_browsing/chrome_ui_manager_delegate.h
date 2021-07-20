@@ -23,6 +23,16 @@ class ChromeSafeBrowsingUIManagerDelegate
 
   // SafeBrowsingUIManager::Delegate:
   const std::string& GetApplicationLocale() override;
+  void TriggerSecurityInterstitialShownExtensionEventIfDesired(
+      content::WebContents* web_contents,
+      const GURL& page_url,
+      const std::string& reason,
+      int net_error_code) override;
+  void TriggerSecurityInterstitialProceededExtensionEventIfDesired(
+      content::WebContents* web_contents,
+      const GURL& page_url,
+      const std::string& reason,
+      int net_error_code) override;
 };
 
 }  // namespace safe_browsing
