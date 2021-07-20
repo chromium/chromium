@@ -47,17 +47,17 @@ import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUi
 import static org.chromium.chrome.browser.autofill_assistant.AutofillAssistantUiTestUtil.withTextId;
 import static org.chromium.chrome.browser.autofill_assistant.ProtoTestUtil.toCssSelector;
 
-import android.support.test.InstrumentationRegistry;
 import android.widget.RadioButton;
 
 import androidx.test.espresso.Espresso;
 import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
@@ -79,7 +79,6 @@ import org.chromium.chrome.browser.autofill_assistant.proto.UseAddressProto;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression;
 import org.chromium.chrome.browser.autofill_assistant.proto.ValueExpression.Chunk;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
-import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.WebContents;
@@ -95,14 +94,11 @@ import java.util.Collections;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class AutofillAssistantPersonalDataManagerTest {
+    private final CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
+
     @Rule
-    public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
-
-    private final AutofillAssistantScreenOrientationHelper<CustomTabActivityTestRule>
-            mScreenOrientationHelper = new AutofillAssistantScreenOrientationHelper<>(mTestRule);
-
-    private static final String TEST_PAGE = "/components/test/data/autofill_assistant/html/"
-            + "form_target_website.html";
+    public final TestRule mRulesChain = RuleChain.outerRule(mTestRule).around(
+            new AutofillAssistantCustomTabTestRule(mTestRule, "form_target_website.html"));
 
     private AutofillAssistantCollectUserDataTestHelper mHelper;
     private AutofillTestHelper mAutofillHelper;
@@ -113,18 +109,8 @@ public class AutofillAssistantPersonalDataManagerTest {
 
     @Before
     public void setUp() throws Exception {
-        AutofillAssistantPreferencesUtil.setInitialPreferences(true);
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(),
-                mTestRule.getTestServer().getURL(TEST_PAGE)));
-        mScreenOrientationHelper.setPortraitOrientation();
         mHelper = new AutofillAssistantCollectUserDataTestHelper();
         mAutofillHelper = new AutofillTestHelper();
-    }
-
-    @After
-    public void tearDown() {
-        mScreenOrientationHelper.restoreOrientation();
     }
 
     /**
