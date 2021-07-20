@@ -19,6 +19,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "base/trace_event/trace_event.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -109,6 +110,7 @@ void DoLoadExtension(Profile* profile,
                      const std::string& extension_id,
                      const std::string& manifest,
                      const base::FilePath& file_path) {
+  TRACE_EVENT1("ime", "DoLoadExtension", "ext_id", extension_id);
   extensions::ExtensionRegistry* extension_registry =
       extensions::ExtensionRegistry::Get(profile);
   DCHECK(extension_registry);
@@ -154,18 +156,7 @@ void OnFilePathChecked(Profile* profile,
                        const base::FilePath* file_path,
                        bool result) {
   if (result) {
-    std::string manifest_str = *manifest;
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-    // Load Mojo-only background page for ChromeOS IME extension when feature
-    // 'ImeMojoDecoder' is enabled. See http://b/181170189 for more details.
-    // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
-    if ((*extension_id == extension_ime_util::kXkbExtensionId) &&
-        base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
-      base::ReplaceFirstSubstringAfterOffset(
-          &manifest_str, 0, "background.html", "background_mojo.html");
-    }
-#endif
-    DoLoadExtension(profile, *extension_id, manifest_str, *file_path);
+    DoLoadExtension(profile, *extension_id, *manifest, *file_path);
   } else {
     LOG_IF(ERROR, base::SysInfo::IsRunningOnChromeOS())
         << "IME extension file path does not exist: " << file_path->value();
@@ -194,6 +185,26 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
     const std::string& extension_id,
     const std::string& manifest,
     const base::FilePath& file_path) {
+  TRACE_EVENT0("ime", "ComponentExtensionIMEManagerDelegateImpl::Load");
+  std::string* manifest_cp = new std::string(manifest);
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Skip checking the path of the Chrome OS IME component extension when it's
+  // Google Chrome brand, since it is bundled resource on Chrome OS image. This
+  // will improve the IME extension load latency a lot.
+  // See http://b/192032670 for more details.
+  if (extension_id == extension_ime_util::kXkbExtensionId) {
+    // Update manifest content inplace to load Mojo background page for ChromeOS
+    // IME extension when the feature 'ImeMojoDecoder' is enabled.
+    // See http://b/181170189 for more details.
+    // TODO(http://b/170278753): Remove this once NaCl decoder is removed.
+    if (base::FeatureList::IsEnabled(chromeos::features::kImeMojoDecoder)) {
+      base::ReplaceFirstSubstringAfterOffset(manifest_cp, 0, "background.html",
+                                             "background_mojo.html");
+    }
+    DoLoadExtension(profile, extension_id, *manifest_cp, file_path);
+    return;
+  }
+#endif
   // Check the existence of file path to avoid unnecessary extension loading
   // and InputMethodEngine creation, so that the virtual keyboard web content
   // url won't be override by IME component extensions.
@@ -205,8 +216,7 @@ void ComponentExtensionIMEManagerDelegateImpl::Load(
       base::BindOnce(&CheckFilePath, base::Unretained(copied_file_path)),
       base::BindOnce(&OnFilePathChecked, base::Unretained(profile),
                      base::Owned(new std::string(extension_id)),
-                     base::Owned(new std::string(manifest)),
-                     base::Owned(copied_file_path)));
+                     base::Owned(manifest_cp), base::Owned(copied_file_path)));
 }
 
 bool ComponentExtensionIMEManagerDelegateImpl::IsInLoginLayoutAllowlist(

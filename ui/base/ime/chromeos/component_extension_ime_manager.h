@@ -53,11 +53,16 @@ class COMPONENT_EXPORT(UI_BASE_IME_CHROMEOS) ComponentExtensionIMEManager {
       std::unique_ptr<ComponentExtensionIMEManagerDelegate> delegate);
   virtual ~ComponentExtensionIMEManager();
 
-  // Loads |input_method_id| component extension IME. This function returns true
-  // on success. This function is safe to call multiple times. Returns false if
-  // already corresponding component extension is loaded.
-  bool LoadComponentExtensionIME(Profile* profile,
-                                 const std::string& input_method_id);
+  // Loads the IME component extension for |input_method_id| if the extension Id
+  // is not in the |extension_loaded|. This function returns true once an
+  // corresponding IME extension will be loaded. This function is safe to call
+  // multiple times. Returns false if the corresponding component extension is
+  // already loaded or there is not any IME extension found for the
+  // |input_method_id|.
+  bool LoadComponentExtensionIME(
+      Profile* profile,
+      const std::string& input_method_id,
+      std::set<std::string>* extension_loaded = nullptr);
 
   // Returns true if |input_method_id| is allowlisted component extension input
   // method.
