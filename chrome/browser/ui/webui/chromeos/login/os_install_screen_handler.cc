@@ -87,7 +87,7 @@ void OsInstallScreenHandler::Show() {
   ShowScreen(kScreenId);
 }
 
-void OsInstallScreenHandler::Bind(OsInstallScreen* screen) {
+void OsInstallScreenHandler::Bind(ash::OsInstallScreen* screen) {
   screen_ = screen;
   BaseScreenHandler::SetBaseScreen(screen_);
 }

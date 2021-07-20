@@ -12,8 +12,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "content/public/test/browser_test.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 const test::UIPath kWelcomeScreen = {"connect", "welcomeScreen"};
@@ -172,4 +171,4 @@ IN_PROC_BROWSER_TEST_F(OsInstallScreenTest, OsInstallSuccess) {
   EXPECT_EQ(power_manager_client->num_request_shutdown_calls(), 1);
 }
 
-}  // namespace chromeos
+}  // namespace ash

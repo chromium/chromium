@@ -9,8 +9,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/os_install_screen_handler.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 
-namespace chromeos {
-
+namespace ash {
 namespace {
 
 constexpr const char kUserActionIntroNextClicked[] = "os-install-intro-next";
@@ -58,7 +57,7 @@ void OsInstallScreen::OnUserAction(const std::string& action_id) {
     view_->StartInstall();
   } else if (action_id == kUserActionErrorSendFeedbackClicked) {
     LoginDisplayHost::default_host()->HandleAccelerator(
-        ash::LoginAcceleratorAction::kShowFeedback);
+        LoginAcceleratorAction::kShowFeedback);
   } else if (action_id == kUserActionErrorShutdownClicked ||
              action_id == kUserActionSuccessShutdownClicked) {
     Shutdown();
@@ -72,4 +71,4 @@ void OsInstallScreen::Shutdown() {
       power_manager::REQUEST_SHUTDOWN_FOR_USER, "OS install shut down");
 }
 
-}  // namespace chromeos
+}  // namespace ash
