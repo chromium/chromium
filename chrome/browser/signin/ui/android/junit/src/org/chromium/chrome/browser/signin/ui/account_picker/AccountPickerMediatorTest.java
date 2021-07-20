@@ -4,12 +4,10 @@
 
 package org.chromium.chrome.browser.signin.ui.account_picker;
 
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 import org.junit.After;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,9 +24,6 @@ import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerPropert
 import org.chromium.chrome.browser.signin.ui.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
-import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
-import org.chromium.components.signin.identitymanager.AccountTrackerService;
-import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.FakeAccountInfoService;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -61,18 +56,11 @@ public class AccountPickerMediatorTest {
 
     private AccountPickerMediator mMediator;
 
-    @Before
-    public void setUp() {
-        AccountInfoServiceProvider.init(
-                mock(IdentityManager.class), mock(AccountTrackerService.class));
-    }
-
     @After
     public void tearDown() {
         if (mMediator != null) {
             mMediator.destroy();
         }
-        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test

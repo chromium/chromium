@@ -34,6 +34,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -50,7 +51,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@Features.DisableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
+@Features.EnableFeatures({ChromeFeatureList.DEPRECATE_MENAGERIE_API})
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -106,6 +107,7 @@ public class SigninManagerImplTest {
     @After
     public void tearDown() {
         mSigninManager.destroy();
+        AccountInfoServiceProvider.resetForTests();
     }
 
     @Test
