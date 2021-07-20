@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -89,6 +90,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcher;
 import org.chromium.chrome.browser.endpoint_fetcher.EndpointFetcherJni;
@@ -1706,9 +1708,16 @@ public class TabListMediatorUnitTest {
         assertEquals(TabProperties.UiType.DIVIDER, mModel.get(1).type);
     }
 
-    @Test(expected = AssertionError.class)
+    @Test
     public void addSpecialItem_withoutTabListModelProperties() {
-        mMediator.addSpecialItemToModel(0, TabProperties.UiType.DIVIDER, new PropertyModel());
+        if (!BuildConfig.ENABLE_ASSERTS) return;
+
+        try {
+            mMediator.addSpecialItemToModel(0, TabProperties.UiType.DIVIDER, new PropertyModel());
+        } catch (AssertionError e) {
+            return;
+        }
+        fail("PropertyModel#validateKey() assert should have failed.");
     }
 
     @Test
