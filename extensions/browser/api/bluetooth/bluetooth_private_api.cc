@@ -705,7 +705,7 @@ void BluetoothPrivateRecordReconnectionFunction::DoWork(
   if (success || IsActualConnectionFailure(result)) {
     device::RecordUserInitiatedReconnectionAttemptResult(
         success ? absl::nullopt : GetConnectionFailureReason(result),
-        device::BluetoothUiSurface::kSettings);
+        device::UserInitiatedReconnectionUISurfaces::kSettings);
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -730,7 +730,7 @@ void BluetoothPrivateRecordDeviceSelectionFunction::DoWork(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   device::RecordDeviceSelectionDuration(
       base::TimeDelta::FromMilliseconds(params_->selection_duration_ms),
-      device::BluetoothUiSurface::kSettings, params_->was_paired,
+      device::DeviceSelectionUISurfaces::kSettings, params_->was_paired,
       GetBluetoothTransport(params_->transport));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

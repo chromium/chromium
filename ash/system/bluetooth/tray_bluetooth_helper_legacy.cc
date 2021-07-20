@@ -69,7 +69,7 @@ void OnBluetoothDeviceConnect(
         error_code
             ? absl::make_optional(GetConnectionFailureReason(*error_code))
             : absl::nullopt,
-        device::BluetoothUiSurface::kSystemTray);
+        device::UserInitiatedReconnectionUISurfaces::kSystemTray);
   }
   if (error_code) {
     LOG(ERROR) << "Failed to connect to device, error code ["
@@ -230,7 +230,7 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
   if (!discovery_start_timestamp_.is_null()) {
     device::RecordDeviceSelectionDuration(
         base::DefaultClock::GetInstance()->Now() - discovery_start_timestamp_,
-        device::BluetoothUiSurface::kSystemTray, device->IsPaired(),
+        device::DeviceSelectionUISurfaces::kSystemTray, device->IsPaired(),
         device->GetType());
     discovery_start_timestamp_ = base::Time();
   }
@@ -244,7 +244,7 @@ void TrayBluetoothHelperLegacy::ConnectToBluetoothDevice(
     if (!device->IsConnectable()) {
       device::RecordUserInitiatedReconnectionAttemptResult(
           device::ConnectionFailureReason::kNotConnectable,
-          device::BluetoothUiSurface::kSystemTray);
+          device::UserInitiatedReconnectionUISurfaces::kSystemTray);
       return;
     }
 

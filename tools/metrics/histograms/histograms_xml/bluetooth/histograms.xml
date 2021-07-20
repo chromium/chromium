@@ -32,7 +32,12 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   <variant name=".Dual"/>
 </variants>
 
-<variants name="BluetoothUISurfaces">
+<variants name="DeviceSelectionUISurfaces">
+  <variant name=".Settings"/>
+  <variant name=".SystemTray"/>
+</variants>
+
+<variants name="UserInitiatedReconnectionUISurfaces">
   <variant name=".Settings"/>
   <variant name=".SystemTray"/>
 </variants>
@@ -87,45 +92,45 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}"
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}"
     units="ms" expires_after="2022-07-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
-    open. {BluetoothUISurfaces}
+    open. {DeviceSelectionUISurfaces}
   </summary>
-  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+  <token key="DeviceSelectionUISurfaces" variants="DeviceSelectionUISurfaces">
     <variant name=""/>
   </token>
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}.NotPaired{BluetoothTransportTypes}"
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}.NotPaired{BluetoothTransportTypes}"
     units="ms" expires_after="2022-07-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
-    open. {BluetoothUISurfaces}{BluetoothTransportTypes}
+    open. {DeviceSelectionUISurfaces}{BluetoothTransportTypes}
   </summary>
-  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces"/>
+  <token key="DeviceSelectionUISurfaces" variants="DeviceSelectionUISurfaces"/>
   <token key="BluetoothTransportTypes" variants="BluetoothTransportTypes"/>
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.DeviceSelectionDuration{BluetoothUISurfaces}{BluetoothPairedStates}"
+    name="Bluetooth.ChromeOS.DeviceSelectionDuration{DeviceSelectionUISurfaces}{BluetoothPairedStates}"
     units="ms" expires_after="2022-07-01">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
   <summary>
     Records how long it takes for the user to select a device either after they
     open the UI and Bluetooth is on, or after Bluetooth turns on while the UI is
-    open. {BluetoothUISurfaces}{BluetoothPairedStates}
+    open. {DeviceSelectionUISurfaces}{BluetoothPairedStates}
   </summary>
-  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces"/>
+  <token key="DeviceSelectionUISurfaces" variants="DeviceSelectionUISurfaces"/>
   <token key="BluetoothPairedStates" variants="BluetoothPairedStates"/>
 </histogram>
 
@@ -220,7 +225,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{BluetoothUISurfaces}"
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result.FailureReason{UserInitiatedReconnectionUISurfaces}"
     enum="BluetoothConnectionFailureReason" expires_after="2022-03-05">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -230,15 +235,16 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Suffixed by Bluetooth UI surface. View the base histogram to see results for
     all UI surfaces aggregated together, and suffixed histograms for the results
-    of just that particular UI surfaces. {BluetoothUISurfaces}
+    of just that particular UI surfaces. {UserInitiatedReconnectionUISurfaces}
   </summary>
-  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+  <token key="UserInitiatedReconnectionUISurfaces"
+      variants="UserInitiatedReconnectionUISurfaces">
     <variant name=""/>
   </token>
 </histogram>
 
 <histogram
-    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{BluetoothUISurfaces}"
+    name="Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result{UserInitiatedReconnectionUISurfaces}"
     enum="BooleanSuccess" expires_after="2021-11-14">
   <owner>khorimoto@chromium.org</owner>
   <owner>cros-connectivity@google.com</owner>
@@ -250,9 +256,10 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 
     Suffixed by Bluetooth UI surface. View the base histogram to see results for
     all UI surfaces aggregated together, and suffixed histograms for the results
-    of just that particular UI surfaces. {BluetoothUISurfaces}
+    of just that particular UI surfaces. {UserInitiatedReconnectionUISurfaces}
   </summary>
-  <token key="BluetoothUISurfaces" variants="BluetoothUISurfaces">
+  <token key="UserInitiatedReconnectionUISurfaces"
+      variants="UserInitiatedReconnectionUISurfaces">
     <variant name=""/>
   </token>
 </histogram>

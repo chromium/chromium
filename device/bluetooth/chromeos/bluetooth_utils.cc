@@ -248,7 +248,7 @@ void RecordPairingResult(absl::optional<ConnectionFailureReason> failure_reason,
 
 void RecordUserInitiatedReconnectionAttemptResult(
     absl::optional<ConnectionFailureReason> failure_reason,
-    BluetoothUiSurface surface) {
+    UserInitiatedReconnectionUISurfaces surface) {
   bool success = !failure_reason.has_value();
   std::string base_histogram_name =
       "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Result";
@@ -256,7 +256,9 @@ void RecordUserInitiatedReconnectionAttemptResult(
   base::UmaHistogramBoolean(base_histogram_name, success);
 
   std::string surface_name =
-      (surface == BluetoothUiSurface::kSettings ? "Settings" : "SystemTray");
+      (surface == UserInitiatedReconnectionUISurfaces::kSettings
+           ? "Settings"
+           : "SystemTray");
   base::UmaHistogramBoolean(base_histogram_name + "." + surface_name, success);
 
   if (!success) {
@@ -269,7 +271,7 @@ void RecordUserInitiatedReconnectionAttemptResult(
 }
 
 void RecordDeviceSelectionDuration(base::TimeDelta duration,
-                                   BluetoothUiSurface surface,
+                                   DeviceSelectionUISurfaces surface,
                                    bool was_paired,
                                    BluetoothTransport transport) {
   // Throw out longtail results of the user taking longer than
@@ -284,7 +286,8 @@ void RecordDeviceSelectionDuration(base::TimeDelta duration,
   RecordDeviceSelectionDuration(base_histogram_name, duration);
 
   std::string surface_name =
-      (surface == BluetoothUiSurface::kSettings ? "Settings" : "SystemTray");
+      (surface == DeviceSelectionUISurfaces::kSettings ? "Settings"
+                                                       : "SystemTray");
   std::string surface_histogram_name = base_histogram_name + "." + surface_name;
   RecordDeviceSelectionDuration(surface_histogram_name, duration);
 

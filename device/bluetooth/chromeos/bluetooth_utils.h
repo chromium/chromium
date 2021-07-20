@@ -25,11 +25,15 @@ enum class BluetoothFilterType {
   KNOWN,
 };
 
-enum class BluetoothUiSurface {
+enum class DeviceSelectionUISurfaces {
   kSettings,
   kSystemTray,
 };
 
+enum class UserInitiatedReconnectionUISurfaces {
+  kSettings,
+  kSystemTray,
+};
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
 // change one without changing the other).
@@ -60,13 +64,13 @@ DEVICE_BLUETOOTH_EXPORT void RecordPairingResult(
 // Record outcome of user attempting to reconnect to a previously paired device.
 DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptResult(
     absl::optional<ConnectionFailureReason> failure_reason,
-    BluetoothUiSurface surface);
+    UserInitiatedReconnectionUISurfaces surface);
 
 // Record how long it took for a user to find and select the device they wished
 // to connect to.
 DEVICE_BLUETOOTH_EXPORT void RecordDeviceSelectionDuration(
     base::TimeDelta duration,
-    BluetoothUiSurface surface,
+    DeviceSelectionUISurfaces surface,
     bool was_paired,
     BluetoothTransport transport);
 
