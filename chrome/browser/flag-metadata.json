@@ -2041,8 +2041,8 @@
   },
   {
     "name": "enable-hostname-setting",
-    "owners": [ "jhawkins" ],
-    "expiry_milestone": 92
+    "owners": [ "khorimoto", "cros-connectivity@google.com" ],
+    "expiry_milestone": 97
   },
   {
     "name": "enable-image-reader",
