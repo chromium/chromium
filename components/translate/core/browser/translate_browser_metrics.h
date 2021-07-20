@@ -124,12 +124,12 @@ void ReportLocalesOnDisabledByPrefs(base::StringPiece locale);
 void ReportUnsupportedLanguageAtInitiation(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the source
-// language of the translated page. Buckets are labelled with CLD3LanguageCode
+// language of the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
 void ReportTranslateSourceLanguage(base::StringPiece language);
 
 // Called when a request is sent to the translate server to report the target
-// language for the translated page. Buckets are labelled with CLD3LanguageCode
+// language for the translated page. Buckets are labelled with LocaleCodeISO639
 // values.
 void ReportTranslateTargetLanguage(base::StringPiece language);
 

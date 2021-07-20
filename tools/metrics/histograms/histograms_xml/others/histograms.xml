@@ -8636,7 +8636,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageSettings.AppLanguagePrompt.Language"
-    enum="CLD3LanguageCode" expires_after="2021-12-01">
+    enum="LocaleCodeISO639" expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -8680,7 +8680,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.AcceptLanguage" enum="LanguageCode"
+<histogram name="LanguageUsage.AcceptLanguage" enum="LanguageName"
     expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -8700,7 +8700,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageCode"
+<histogram name="LanguageUsage.ApplicationLanguage" enum="LanguageName"
     expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -8710,7 +8710,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageCode"
+<histogram name="LanguageUsage.MostFrequentPageLanguages" enum="LanguageName"
     expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
@@ -8786,7 +8786,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="LanguageUsage.UI.Android.OverrideLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-12-01">
+    enum="LocaleCodeISO639" expires_after="2021-12-01">
   <owner>perrier@chromium.org</owner>
   <owner>chrome-language@google.com</owner>
   <summary>

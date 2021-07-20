@@ -263,7 +263,7 @@ bool Dictation::OnToggleDictation() {
   }
   has_committed_text_ = false;
   const std::string locale = GetUserLocale(profile_);
-  // Log the locale used with CLD3LanguageCode.
+  // Log the locale used with LocaleCodeISO639 values.
   base::UmaHistogramSparse("Accessibility.CrosDictation.Language",
                            base::HashMetricName(locale));
 

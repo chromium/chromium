@@ -60,7 +60,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.CLD3.LanguageDetected" enum="CLD3LanguageCode"
+<histogram name="Translate.CLD3.LanguageDetected" enum="LocaleCodeISO639"
     expires_after="2021-12-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -99,7 +99,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.AlwaysTranslate"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -109,7 +109,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.MoreLanguages"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -118,7 +118,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.NeverTranslate"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -128,7 +128,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.PageNotIn"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -138,7 +138,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.CompactInfobar.Language.Translate"
-    enum="CLD3LanguageCode" expires_after="M85">
+    enum="LocaleCodeISO639" expires_after="M85">
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -228,7 +228,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageAdded"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>yyushkina@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -238,7 +238,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.ExplicitLanguageAsk.LanguageRemoved"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>yyushkina@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
@@ -403,7 +403,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.LocalesOnDisabledByPrefs" enum="LanguageCode"
+<histogram name="Translate.LocalesOnDisabledByPrefs" enum="LanguageName"
     expires_after="2021-01-31">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -506,7 +506,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalSourceLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-12-12">
+    enum="LocaleCodeISO639" expires_after="2021-12-12">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -534,7 +534,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.FinalTargetLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-10-10">
+    enum="LocaleCodeISO639" expires_after="2021-10-10">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -561,7 +561,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialSourceLanguage"
-    enum="CLD3LanguageCode" expires_after="M105">
+    enum="LocaleCodeISO639" expires_after="M105">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -589,7 +589,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
 </histogram>
 
 <histogram name="Translate.PageLoad.InitialTargetLanguage"
-    enum="CLD3LanguageCode" expires_after="2021-12-19">
+    enum="LocaleCodeISO639" expires_after="2021-12-19">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -912,7 +912,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.SourceLanguage" enum="CLD3LanguageCode"
+<histogram name="Translate.SourceLanguage" enum="LocaleCodeISO639"
     expires_after="2021-12-12">
   <owner>yyushkina@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -922,7 +922,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.TargetLanguage" enum="CLD3LanguageCode"
+<histogram name="Translate.TargetLanguage" enum="LocaleCodeISO639"
     expires_after="2021-12-12">
   <owner>yyushkina@google.com</owner>
   <owner>chrome-language@google.com</owner>
@@ -1066,7 +1066,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.Translation.SourceLanguage" enum="CLD3LanguageCode"
+<histogram name="Translate.Translation.SourceLanguage" enum="LocaleCodeISO639"
     expires_after="M98">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
@@ -1099,7 +1099,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.Translation.TargetLanguage" enum="CLD3LanguageCode"
+<histogram name="Translate.Translation.TargetLanguage" enum="LocaleCodeISO639"
     expires_after="M98">
   <owner>curranmax@google.com</owner>
   <owner>megjablon@google.com</owner>
@@ -1192,7 +1192,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.UndisplayableLanguage" enum="LanguageCode"
+<histogram name="Translate.UndisplayableLanguage" enum="LanguageName"
     expires_after="M81">
   <obsolete>
     Removed 01/09/2021. Not used anymore.
@@ -1207,7 +1207,7 @@ reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
-<histogram name="Translate.UnsupportedLanguageAtInitiation" enum="LanguageCode"
+<histogram name="Translate.UnsupportedLanguageAtInitiation" enum="LanguageName"
     expires_after="M81">
   <owner>kenjibaheux@google.com</owner>
   <owner>chrome-language@google.com</owner>
