@@ -72,7 +72,7 @@ interface Performance : EventTarget {
     [MeasureAs=MeasureMemory, Exposed=(Window,ServiceWorker,SharedWorker), CallWith=ScriptState, RuntimeEnabled=MeasureMemory, RaisesException, CrossOriginIsolated] Promise<MemoryMeasurement> measureUserAgentSpecificMemory();
 
     // Event Timing
-    [Exposed=Window, SameObject, SaveSameObject, RuntimeEnabled=EventTiming] readonly attribute EventCounts eventCounts;
+    [Exposed=Window, SameObject, SaveSameObject] readonly attribute EventCounts eventCounts;
 
     [CallWith=ScriptState, ImplementedAs=toJSONForBinding] object toJSON();
 };

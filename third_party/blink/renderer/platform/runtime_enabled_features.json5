@@ -908,10 +908,6 @@
       status: "stable",
     },
     {
-      name: "EventTiming",
-      status: "stable",
-    },
-    {
       name: "ExceptionMetaDataForDevTools",
       status: "stable",
     },

@@ -59,8 +59,7 @@ Vector<AtomicString> PerformanceObserver::supportedEntryTypes(
   auto* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
     supportedEntryTypes.push_back(performance_entry_names::kElement);
-    if (RuntimeEnabledFeatures::EventTimingEnabled(execution_context))
-      supportedEntryTypes.push_back(performance_entry_names::kEvent);
+    supportedEntryTypes.push_back(performance_entry_names::kEvent);
     supportedEntryTypes.push_back(performance_entry_names::kFirstInput);
     supportedEntryTypes.push_back(
         performance_entry_names::kLargestContentfulPaint);

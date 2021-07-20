@@ -418,8 +418,6 @@ void WindowPerformance::ReportEventTimings(
     return;
   InteractiveDetector* interactive_detector =
       InteractiveDetector::From(*(DomWindow()->document()));
-  bool event_timing_enabled =
-      RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext());
   DOMHighResTimeStamp end_time =
       MonotonicTimeToDOMHighResTimeStamp(presentation_timestamp);
   while (!events_data_.IsEmpty()) {
@@ -483,8 +481,6 @@ void WindowPerformance::ReportEventTimings(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
     }
-    if (!event_timing_enabled)
-      continue;
 
     if (HasObserverFor(PerformanceEntry::kEvent)) {
       UseCounter::Count(GetExecutionContext(),
@@ -565,7 +561,6 @@ void WindowPerformance::PageVisibilityChanged() {
 }
 
 EventCounts* WindowPerformance::eventCounts() {
-  DCHECK(RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   if (!event_counts_)
     event_counts_ = MakeGarbageCollected<EventCounts>();
   return event_counts_;

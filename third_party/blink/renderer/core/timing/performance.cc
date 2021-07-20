@@ -82,7 +82,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "v8/include/v8-metrics.h"
@@ -681,7 +680,6 @@ void Performance::AddElementTimingBuffer(PerformanceElementTiming& entry) {
 }
 
 void Performance::AddEventTimingBuffer(PerformanceEventTiming& entry) {
-  DCHECK(RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   if (!IsEventTimingBufferFull()) {
     event_timing_buffer_.push_back(&entry);
   }
@@ -970,8 +968,6 @@ void Performance::UpdatePerformanceObserverFilterOptions() {
 }
 
 void Performance::NotifyObserversOfEntry(PerformanceEntry& entry) const {
-  DCHECK(entry.EntryTypeEnum() != PerformanceEntry::kEvent ||
-         RuntimeEnabledFeatures::EventTimingEnabled(GetExecutionContext()));
   bool observer_found = false;
   for (auto& observer : observers_) {
     if (observer->FilterOptions() & entry.EntryTypeEnum() &&

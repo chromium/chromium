@@ -8,5 +8,5 @@ dictionary PerformanceObserverInit {
     sequence<DOMString> entryTypes;
     DOMString type;
     boolean buffered = false;
-    [RuntimeEnabled=EventTiming] DOMHighResTimeStamp durationThreshold;
+    DOMHighResTimeStamp durationThreshold;
 };

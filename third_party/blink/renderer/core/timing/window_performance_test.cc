@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/testing/mock_policy_container_host.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -244,7 +243,6 @@ TEST_F(WindowPerformanceTest, EnsureEntryListOrder) {
 }
 
 TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
-  ScopedEventTimingForTest event_timing(true);
   EXPECT_TRUE(page_holder_->GetFrame().Loader().GetDocumentLoader());
 
   base::TimeTicks start_time =
@@ -280,7 +278,6 @@ TEST_F(WindowPerformanceTest, EventTimingEntryBuffering) {
 }
 
 TEST_F(WindowPerformanceTest, Expose100MsEvents) {
-  ScopedEventTimingForTest event_timing(true);
   base::TimeTicks start_time =
       GetTimeOrigin() + base::TimeDelta::FromSeconds(1);
   base::TimeTicks processing_start =
@@ -307,8 +304,6 @@ TEST_F(WindowPerformanceTest, Expose100MsEvents) {
 }
 
 TEST_F(WindowPerformanceTest, EventTimingDuration) {
-  ScopedEventTimingForTest event_timing(true);
-
   base::TimeTicks start_time =
       GetTimeOrigin() + base::TimeDelta::FromMilliseconds(1000);
   base::TimeTicks processing_start =
@@ -341,8 +336,6 @@ TEST_F(WindowPerformanceTest, EventTimingDuration) {
 // Test the case where multiple events are registered and then their swap
 // promise is resolved.
 TEST_F(WindowPerformanceTest, MultipleEventsThenSwap) {
-  ScopedEventTimingForTest event_timing(true);
-
   size_t num_events = 10;
   for (size_t i = 0; i < num_events; ++i) {
     base::TimeTicks start_time =

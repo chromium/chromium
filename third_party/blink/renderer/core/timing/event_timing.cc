@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/performance_event_timing.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 namespace {
@@ -37,10 +36,6 @@ bool ShouldLogEvent(const Event& event) {
 bool ShouldReportForEventTiming(WindowPerformance* performance) {
   if (!performance->FirstInputDetected())
     return true;
-
-  if (!RuntimeEnabledFeatures::EventTimingEnabled(
-          performance->GetExecutionContext()))
-    return false;
 
   return (!performance->IsEventTimingBufferFull() ||
           performance->HasObserverFor(PerformanceEntry::kEvent));
