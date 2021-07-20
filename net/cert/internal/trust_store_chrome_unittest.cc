@@ -38,8 +38,8 @@ scoped_refptr<ParsedCertificate> ParseCertFromFile(base::FilePath dir_name,
   return parsed;
 }
 
-const base::FilePath kCertDirPath =
-    GetTestNetDataDirectory().AppendASCII("ssl/chrome_root_store/testdata");
+const base::FilePath kCertDirPath = GetTestNetDataDirectory().AppendASCII(
+    "ssl/chrome_root_store/testdata/certs");
 
 const char kCertInStoreFile1[] =
     "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5.pem";

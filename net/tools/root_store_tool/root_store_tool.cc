@@ -55,11 +55,9 @@ absl::optional<std::string> DecodePEM(base::StringPiece pem) {
 }
 
 absl::optional<RootStore> ReadTextRootStore(
-    const base::FilePath& root_store_dir,
-    const std::string certs_sub_dir,
-    const std::string root_store_filename) {
+    const base::FilePath& root_store_dir) {
   base::FilePath root_store_path =
-      root_store_dir.AppendASCII(root_store_filename);
+      root_store_dir.AppendASCII("root_store.textproto");
   std::string root_store_text;
   if (!base::ReadFileToString(root_store_path, &root_store_text)) {
     LOG(ERROR) << "Could not read " << root_store_path;
@@ -74,7 +72,7 @@ absl::optional<RootStore> ReadTextRootStore(
   }
 
   // Replace the filenames with the actual certificate contents.
-  base::FilePath certs_dir = root_store_dir.AppendASCII(certs_sub_dir);
+  base::FilePath certs_dir = root_store_dir.AppendASCII("certs");
   for (auto& anchor : *root_store.mutable_trust_anchors()) {
     base::FilePath pem_path = certs_dir.AppendASCII(anchor.filename());
 
@@ -127,38 +125,37 @@ int main(int argc, char** argv) {
   base::FilePath cpp_path = command_line.GetSwitchValuePath("write-cpp");
   if ((proto_path.empty() && cpp_path.empty()) ||
       command_line.HasSwitch("help")) {
-    std::cerr << "Usage: root_store_tool [--write-proto=PROTO_FILE] "
+    std::cerr << "Usage: root_store_tool "
+                 "[--root-store-dir=<relative-path>]
+                 "[--write-proto=PROTO_FILE] "
                  "[--write-cpp=CPP_FILE]"
               << std::endl;
     return 1;
   }
 
-  // TODO(hchao): simplify command line options to just specify a single
-  // directory which stores the textproto and certs (possibly in different
-  // subdirectories), and have tool assume a structure from there.
+  // Find root store directory. Assumptions:
+  //  - Root store directory is relative to base::DIR_SOURCE_ROOT
+  //
+  //  - $(ROOT_STORE_DIR)/root_store.textproto contains the textproto definition
+  //    of the root store
+  //
+  //  - Any certificate files referenced in
+  //    $(ROOT_STORE_DIR)/root_store.textproto exist in the
+  //    $(ROOT_STORE_DIR)/certs/ subdirectory.
   base::FilePath root_store_dir =
       command_line.GetSwitchValuePath("root-store-dir");
+  base::FilePath source_root;
+  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
   if (root_store_dir.empty()) {
-    base::FilePath source_root;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
     root_store_dir = source_root.AppendASCII("net")
                          .AppendASCII("data")
                          .AppendASCII("ssl")
-                         .AppendASCII("chrome_root_store");
+                         .AppendASCII("chrome_root_store")
+                         .AppendASCII("base");
+  } else {
+    root_store_dir = source_root.Append(root_store_dir);
   }
-  std::string certs_sub_dir = command_line.GetSwitchValueASCII("certs-sub-dir");
-  if (certs_sub_dir.empty()) {
-    certs_sub_dir = "certs";
-  }
-
-  std::string root_store_filename =
-      command_line.GetSwitchValueASCII("root-store-filename");
-  if (root_store_filename.empty()) {
-    root_store_filename = "root_store.textproto";
-  }
-
-  absl::optional<RootStore> root_store =
-      ReadTextRootStore(root_store_dir, certs_sub_dir, root_store_filename);
+  absl::optional<RootStore> root_store = ReadTextRootStore(root_store_dir);
   if (!root_store) {
     return 1;
   }
