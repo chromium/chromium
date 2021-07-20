@@ -61,7 +61,6 @@
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_mediator.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/main/default_browser_scene_agent.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
 #import "ios/chrome/browser/ui/open_in/open_in_coordinator.h"
@@ -441,7 +440,6 @@
       initWithBaseViewController:self.viewController
                          browser:self.browser];
 
-  if (base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
     self.infobarBannerOverlayContainerCoordinator =
         [[OverlayContainerCoordinator alloc]
             initWithBaseViewController:self.viewController
@@ -459,7 +457,6 @@
     [self.infobarModalOverlayContainerCoordinator start];
     self.viewController.infobarModalOverlayContainerViewController =
         self.infobarModalOverlayContainerCoordinator.viewController;
-  }
 }
 
 // Stops child coordinators.

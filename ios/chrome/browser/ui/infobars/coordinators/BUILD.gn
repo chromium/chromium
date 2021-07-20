@@ -11,24 +11,14 @@ source_set("coordinators") {
     "infobar_coordinator.h",
     "infobar_coordinator.mm",
     "infobar_coordinator_implementation.h",
-    "infobar_password_coordinator.h",
-    "infobar_password_coordinator.mm",
-    "infobar_save_card_coordinator.h",
-    "infobar_save_card_coordinator.mm",
   ]
   deps = [
     "//base",
-    "//components/autofill/core/browser",
     "//components/infobars/core",
-    "//components/translate/core/browser",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/infobars:public",
     "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/passwords:infobar_delegates",
-    "//ios/chrome/browser/passwords:public",
-    "//ios/chrome/browser/translate:public",
-    "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/fullscreen",
@@ -52,38 +42,4 @@ source_set("translate_public") {
     "infobar_translate_modal_consumer.h",
   ]
   deps = []
-}
-
-source_set("translate") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_translate_coordinator.h",
-    "infobar_translate_coordinator.mm",
-    "infobar_translate_mediator.h",
-    "infobar_translate_mediator.mm",
-  ]
-  deps = [
-    ":coordinators",
-    ":translate_public",
-    "//base",
-    "//components/metrics",
-    "//components/strings:components_strings_grit",
-    "//components/translate/core/browser",
-    "//components/translate/core/common",
-    "//ios/chrome/app/strings:ios_strings_grit",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/translate:public",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
-    "//ios/chrome/browser/ui/infobars:public",
-    "//ios/chrome/browser/ui/infobars/banners",
-    "//ios/chrome/browser/ui/infobars/banners:public",
-    "//ios/chrome/browser/ui/infobars/modals",
-    "//ios/chrome/browser/ui/list_model",
-    "//ios/chrome/browser/ui/table_view",
-    "//ios/chrome/browser/ui/util",
-    "//ios/third_party/material_components_ios",
-    "//ui/base",
-  ]
 }

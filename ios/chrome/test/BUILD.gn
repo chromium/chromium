@@ -299,7 +299,6 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/history:unit_tests",
     "//ios/chrome/browser/ui/icons:unit_tests",
     "//ios/chrome/browser/ui/incognito_reauth:unit_tests",
-    "//ios/chrome/browser/ui/infobars:unit_tests",
     "//ios/chrome/browser/ui/infobars/banners:unit_tests",
     "//ios/chrome/browser/ui/infobars/modals/autofill_address_profile:unit_tests",
     "//ios/chrome/browser/ui/keyboard:unit_tests",

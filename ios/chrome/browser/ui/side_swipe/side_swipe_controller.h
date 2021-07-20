@@ -35,10 +35,6 @@ extern NSString* const kSideSwipeDidStopNotification;
 - (UIView*)sideSwipeContentView;
 // Makes |tab| the currently visible tab, displaying its view.
 - (void)sideSwipeRedisplayWebState:(web::WebState*)webState;
-// Check the invariant of "toolbar in front of infobar container which
-// is in front of content area." This DCHECK happens if addSubview and/or
-// insertSubview messed up the view ordering earlier.
-- (BOOL)verifyToolbarViewPlacementInView:(UIView*)views;
 // Controls the visibility of views such as the findbar, infobar and voice
 // search bar.
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible;

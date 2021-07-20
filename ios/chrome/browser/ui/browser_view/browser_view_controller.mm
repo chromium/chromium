@@ -105,8 +105,6 @@
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_commands.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_scene_agent.h"
 #import "ios/chrome/browser/ui/incognito_reauth/incognito_reauth_view.h"
-#import "ios/chrome/browser/ui/infobars/infobar_container_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/infobars/infobar_positioner.h"
 #include "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -522,9 +520,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     TabStripLegacyCoordinator* legacyTabStripCoordinator;
 // Coordinator for the new tablet tab strip.
 @property(nonatomic, strong) TabStripCoordinator* tabStripCoordinator;
-// Coordinator for Infobars.
-@property(nonatomic, strong)
-    InfobarContainerCoordinator* infobarContainerCoordinator;
 // A weak reference to the view of the tab strip on tablet.
 @property(nonatomic, weak) UIView<TabStripContaining>* tabStripView;
 // A snapshot of the tab strip used on the thumb strip reveal/hide animation.
@@ -1076,13 +1071,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 }
 
 - (void)userEnteredTabSwitcher {
-  // TODO(crbug.com/977761): In preparation for dismissing BVC, make sure any
-  // ongoing ViewController presentations are stopped.
-  if (self.infobarContainerCoordinator.infobarBannerState !=
-      InfobarBannerPresentationState::NotPresented) {
-    [self.infobarContainerCoordinator dismissInfobarBannerAnimated:NO
-                                                        completion:nil];
-  }
   [self.bubblePresenter userEnteredTabSwitcher];
 }
 
@@ -1372,8 +1360,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [_downloadManagerCoordinator stop];
   _downloadManagerCoordinator = nil;
   self.toolbarInterface = nil;
-  [self.infobarContainerCoordinator stop];
-  self.infobarContainerCoordinator = nil;
   _sideSwipeController = nil;
   _webStateListObserver.reset();
   _allWebStateObservationForwarder = nullptr;
@@ -1536,7 +1522,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   self.viewVisible = YES;
   [self updateBroadcastState];
   [self updateToolbarState];
-  [self.infobarContainerCoordinator baseViewDidAppear];
 
   // |viewDidAppear| can be called after |browserState| is destroyed. Since
   // |presentBubblesIfEligible| requires that |self.browserState| is not NULL,
@@ -1574,16 +1559,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
       activeWebState->SetKeepRenderProcessAlive(false);
   }
 
-  // TODO(crbug.com/976411):This should probably move to the BannerVC once/if
-  // the dismiss event from BVC is observable.
-  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
-    [self.infobarContainerCoordinator baseViewWillDisappear];
-    if (self.infobarContainerCoordinator.infobarBannerState !=
-        InfobarBannerPresentationState::NotPresented) {
-      [self.infobarContainerCoordinator dismissInfobarBannerAnimated:NO
-                                                          completion:nil];
-    }
-  }
   [_bookmarkInteractionController dismissSnackbar];
   [super viewWillDisappear:animated];
 }
@@ -1599,8 +1574,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   [super didReceiveMemoryWarning];
 
   if (![self isViewLoaded]) {
-    // Do not release |_infobarContainerCoordinator|, as this must have the same
-    // lifecycle as the BrowserViewController.
     self.typingShield = nil;
     if (_voiceSearchController)
       _voiceSearchController->SetDispatcher(nil);
@@ -1846,17 +1819,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                         animated:flag
                       completion:finalCompletionHandler];
   };
-  // TODO(crbug.com/965688): An Infobar message or the Default Browser Promo are
-  // currently the only presented controller that allow interaction with the
+  // TODO(crbug.com/965688): The Default Browser Promo is
+  // currently the only presented controller that allows interaction with the
   // rest of the App while they are being presented. Dismiss it in case the user
   // or system has triggered another presentation.
-  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
-      (self.infobarContainerCoordinator.infobarBannerState !=
-       InfobarBannerPresentationState::NotPresented)) {
-    [self.infobarContainerCoordinator dismissInfobarBannerAnimated:NO
-                                                        completion:superCall];
-  } else if ([self.nonModalPromoPresentationDelegate
-                     defaultNonModalPromoIsShowing]) {
+  if ([self.nonModalPromoPresentationDelegate defaultNonModalPromoIsShowing]) {
     [self.nonModalPromoPresentationDelegate
         dismissDefaultNonModalPromoAnimated:NO
                                  completion:superCall];
@@ -2046,16 +2013,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 
       [self.legacyTabStripCoordinator start];
     }
-  }
-
-  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI)) {
-    // Create the Infobar Container Coordinator.
-    self.infobarContainerCoordinator = [[InfobarContainerCoordinator alloc]
-        initWithBaseViewController:self
-                           browser:self.browser];
-    self.infobarContainerCoordinator.positioner = self;
-    self.infobarContainerCoordinator.syncPresenter = self;
-    [self.infobarContainerCoordinator start];
   }
 }
 
@@ -3318,16 +3275,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (!webState || self.currentWebState != webState)
     return nil;
 
-  if (base::FeatureList::IsEnabled(kInfobarOverlayUI))
-    return self.infobarBannerOverlayContainerViewController.view;
-
-  DCHECK(self.infobarContainerCoordinator);
-  if ([self.infobarContainerCoordinator
-          isInfobarPresentingForWebState:self.currentWebState]) {
-    return [self.infobarContainerCoordinator legacyContainerView];
-  }
-
-  return nil;
+  return self.infobarBannerOverlayContainerViewController.view;
 }
 
 #pragma mark - PasswordControllerDelegate methods
@@ -3730,19 +3678,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                             handler(shouldContinue);
                           }));
   };
-
-  // TODO(crbug.com/965688): An Infobar message is currently the only presented
-  // controller that allows interaction with the rest of the App while its being
-  // presented. Dismiss it in case the user or system has triggered repost form.
-  if (!base::FeatureList::IsEnabled(kInfobarOverlayUI) &&
-      (self.infobarContainerCoordinator.infobarBannerState !=
-       InfobarBannerPresentationState::NotPresented)) {
-    [self.infobarContainerCoordinator
-        dismissInfobarBannerAnimated:NO
-                          completion:presentDialog];
-  } else {
     presentDialog();
-  }
 }
 
 - (web::JavaScriptDialogPresenter*)javaScriptDialogPresenterForWebState:
@@ -4125,15 +4061,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = YES;
   self.secondaryToolbarContainerView.accessibilityElementsHidden = YES;
-  self.infobarContainerCoordinator.legacyContainerView
-      .accessibilityElementsHidden = YES;
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = NO;
   self.secondaryToolbarContainerView.accessibilityElementsHidden = NO;
-  self.infobarContainerCoordinator.legacyContainerView
-      .accessibilityElementsHidden = NO;
 }
 
 #pragma mark - OverscrollActionsControllerDelegate methods.
@@ -4328,11 +4260,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
     [self.secondaryToolbarContainerView setNeedsLayout];
     [self.secondaryToolbarContainerView layoutIfNeeded];
   }
-
-  // Resize the InfobarContainer to take into account the changes in the
-  // toolbar.
-  [self.infobarContainerCoordinator updateInfobarContainer];
-
 }
 
 // Updates the browser container view such that its viewport is the space
@@ -5133,13 +5060,11 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 - (void)updateAccessoryViewsForSideSwipeWithVisibility:(BOOL)visible {
   if (visible) {
     [self updateToolbar];
-    [self.infobarContainerCoordinator hideContainer:NO];
   } else {
     // Hide UI accessories such as find bar and first visit overlays
     // for welcome page.
     [self.dispatcher hideFindUI];
     [self.textZoomHandler hideTextZoomUI];
-    [self.infobarContainerCoordinator hideContainer:YES];
   }
 }
 
@@ -5150,22 +5075,6 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   if (self.primaryToolbarCoordinator.viewController.view.hidden)
     return self.view.safeAreaInsets.top;
   return self.headerHeight;
-}
-
-- (BOOL)verifyToolbarViewPlacementInView:(UIView*)views {
-  BOOL seenToolbar = NO;
-  BOOL seenInfoBarContainer = NO;
-  BOOL seenContentArea = NO;
-  for (UIView* view in views.subviews) {
-    if (view == [self.infobarContainerCoordinator legacyContainerView])
-      seenInfoBarContainer = YES;
-    else if (view == self.contentArea)
-      seenContentArea = YES;
-    if ((seenToolbar && !seenInfoBarContainer) ||
-        (seenInfoBarContainer && !seenContentArea))
-      return NO;
-  }
-  return YES;
 }
 
 - (BOOL)canBeginToolbarSwipe {

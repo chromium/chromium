@@ -32,8 +32,6 @@
 #import "ios/chrome/browser/translate/translate_option_selection_handler.h"
 #include "ios/chrome/browser/translate/translate_ranker_factory.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_translate_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/translate/translate_notification_handler.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/browser_state.h"
@@ -95,16 +93,8 @@ std::unique_ptr<infobars::InfoBar> ChromeIOSTranslateClient::CreateInfoBar(
     std::unique_ptr<translate::TranslateInfoBarDelegate> delegate) const {
   bool skip_banner = delegate->translate_step() ==
                      translate::TranslateStep::TRANSLATE_STEP_TRANSLATING;
-  if (IsInfobarOverlayUIEnabled()) {
     return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeTranslate,
                                         std::move(delegate), skip_banner);
-  } else {
-    TranslateInfobarCoordinator* coordinator =
-        [[TranslateInfobarCoordinator alloc]
-            initWithInfoBarDelegate:delegate.get()];
-    return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate),
-                                        skip_banner);
-  }
 }
 
 bool ChromeIOSTranslateClient::ShowTranslateUI(

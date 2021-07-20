@@ -614,9 +614,6 @@ class SideSwipeControllerBrowserRemover : public BrowserObserver {
     // Layout tabs with new snapshots in the current orientation.
     [_tabSideSwipeView updateViewsForDirection:gesture.direction];
 
-    // Insert behind infobar container (which is below toolbar)
-    // so card border doesn't look janky during animation.
-    DCHECK([_swipeDelegate verifyToolbarViewPlacementInView:gesture.view]);
     // Insert above the toolbar.
     [gesture.view addSubview:_tabSideSwipeView];
   }

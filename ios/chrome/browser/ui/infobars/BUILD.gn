@@ -2,36 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-source_set("infobars") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "infobar_container_coordinator.h",
-    "infobar_container_coordinator.mm",
-    "infobar_container_mediator.h",
-    "infobar_container_mediator.mm",
-  ]
-  deps = [
-    ":feature_flags",
-    ":infobars_ui",
-    ":public",
-    "//base",
-    "//ios/chrome/browser",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:badge",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main:public",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
-    "//ios/chrome/browser/ui/fullscreen",
-    "//ios/chrome/browser/ui/fullscreen:feature_flags",
-    "//ios/chrome/browser/ui/infobars/banners:public",
-    "//ios/chrome/browser/ui/infobars/coordinators",
-    "//ios/chrome/browser/upgrade",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
-    "//ios/chrome/browser/web_state_list",
-  ]
-}
-
 source_set("public") {
   sources = [
     "infobar_container.h",
@@ -110,36 +80,6 @@ source_set("infobars_ui") {
     "CoreGraphics.framework",
     "QuartzCore.framework",
     "UIKit.framework",
-  ]
-}
-
-source_set("unit_tests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [ "infobar_container_coordinator_unittest.mm" ]
-  deps = [
-    ":feature_flags",
-    ":infobars",
-    ":infobars_ui",
-    ":public",
-    ":test_support",
-    "//base/test:test_support",
-    "//ios/chrome/browser/browser_state:test_support",
-    "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars:badge",
-    "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/main:test_support",
-    "//ios/chrome/browser/ui/commands",
-    "//ios/chrome/browser/ui/infobars/coordinators",
-    "//ios/chrome/browser/ui/infobars/test",
-    "//ios/chrome/browser/web_state_list",
-    "//ios/chrome/browser/web_state_list:test_support",
-    "//ios/chrome/test:test_support",
-    "//ios/web/common",
-    "//ios/web/public/test/fakes",
-    "//testing/gtest",
-    "//testing/gtest",
-    "//third_party/ocmock",
   ]
 }
 

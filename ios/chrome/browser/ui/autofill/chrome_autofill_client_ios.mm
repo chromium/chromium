@@ -47,8 +47,6 @@
 #include "ios/chrome/browser/ui/autofill/card_expiration_date_fix_flow_view_bridge.h"
 #include "ios/chrome/browser/ui/autofill/card_name_fix_flow_view_bridge.h"
 #include "ios/chrome/browser/ui/autofill/card_unmask_prompt_view_bridge.h"
-#import "ios/chrome/browser/ui/infobars/coordinators/infobar_save_card_coordinator.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #include "ios/chrome/browser/webdata_services/web_data_service_factory.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
@@ -67,9 +65,8 @@ namespace {
 // Creates and returns an infobar for saving credit cards.
 std::unique_ptr<infobars::InfoBar> CreateSaveCardInfoBarMobile(
     std::unique_ptr<AutofillSaveCardInfoBarDelegateMobile> delegate) {
-  InfobarSaveCardCoordinator* coordinator = [[InfobarSaveCardCoordinator alloc]
-      initWithInfoBarDelegate:delegate.get()];
-  return std::make_unique<InfoBarIOS>(coordinator, std::move(delegate));
+  return std::make_unique<InfoBarIOS>(InfobarType::kInfobarTypeSaveCard,
+                                      std::move(delegate));
 }
 
 CardUnmaskPromptView* CreateCardUnmaskPromptViewBridge(
@@ -348,7 +345,6 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     AddressProfileSavePromptCallback callback) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
-  if (IsInfobarOverlayUIEnabled()) {
     // TODO(crbug.com/1167062): Respect SaveAddressProfilePromptOptions.
     auto delegate =
         std::make_unique<AutofillSaveUpdateAddressProfileDelegateIOS>(
@@ -358,12 +354,6 @@ void ChromeAutofillClientIOS::ConfirmSaveAddressProfile(
     infobar_manager_->AddInfoBar(std::make_unique<InfoBarIOS>(
         InfobarType::kInfobarTypeSaveAutofillAddressProfile,
         std::move(delegate)));
-  } else {
-    // Fallback to the default behavior to saving without the confirmation.
-    std::move(callback).Run(
-        AutofillClient::SaveAddressProfileOfferUserDecision::kUserNotAsked,
-        profile);
-  }
 }
 
 bool ChromeAutofillClientIOS::HasCreditCardScanFeature() {

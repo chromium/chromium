@@ -116,8 +116,6 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_scene_agent",
     "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
-    "//ios/chrome/browser/ui/infobars",
-    "//ios/chrome/browser/ui/infobars:feature_flags",
     "//ios/chrome/browser/ui/infobars:public",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/location_bar:location_bar_model_delegate",
