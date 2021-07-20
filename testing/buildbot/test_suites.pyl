@@ -6567,7 +6567,6 @@
 
     'gpu_fyi_win_optional_gtests': [
       'gpu_angle_end2end_gtests',
-      'gpu_angle_gles1_conformance_gtests',
       'gpu_angle_white_box_gtests',
       'gpu_default_and_optional_win_specific_gtests',
       'gpu_fyi_and_optional_non_linux_gtests',
