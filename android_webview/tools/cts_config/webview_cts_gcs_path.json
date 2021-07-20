@@ -71,6 +71,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testLoadDataWithBaseUrl",
             "_bug_id": "crbug.com/900915"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testFlingScroll",
+            "_bug_id": "crbug.com/1230911"
           }
         ]
       },
@@ -156,6 +160,10 @@
           {
             "match": "android.webkit.cts.WebViewTest#testLoadDataWithBaseUrl",
             "_bug_id": "crbug.com/900915"
+          },
+          {
+            "match": "android.webkit.cts.WebViewTest#testFlingScroll",
+            "_bug_id": "crbug.com/1230911"
           }
         ]
       },
@@ -184,7 +192,13 @@
     },
     "test_runs": [
       {
-        "apk": "android-cts/testcases/CtsWebkitTestCases.apk"
+        "apk": "android-cts/testcases/CtsWebkitTestCases.apk",
+        "excludes": [
+          {
+            "match": "android.webkit.cts.WebViewTest#testFlingScroll",
+            "_bug_id": "crbug.com/1230911"
+          }
+        ]
       },
       {
         "apk": "android-cts/testcases/CtsWidgetTestCases.apk",
