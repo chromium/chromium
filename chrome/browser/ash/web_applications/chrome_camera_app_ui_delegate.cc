@@ -8,9 +8,14 @@
 
 #include "ash/constants/devicetype.h"
 #include "ash/public/cpp/tablet_mode.h"
+#include "base/bind_post_task.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/sequenced_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -101,10 +106,65 @@ bool ChromeCameraAppUIDelegate::CameraAppDialog::CheckMediaAccessPermission(
       ->CheckMediaAccessPermission(render_frame_host, security_origin, type);
 }
 
-ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
-    : web_ui_(web_ui) {}
+ChromeCameraAppUIDelegate::FileMonitor::FileMonitor() {}
 
-ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() = default;
+ChromeCameraAppUIDelegate::FileMonitor::~FileMonitor() = default;
+
+void ChromeCameraAppUIDelegate::FileMonitor::Monitor(
+    const base::FilePath& file_path,
+    base::OnceCallback<void(FileMonitorResult)> callback) {
+  // Cancel the previous monitor callback if it hasn't been notified.
+  if (!callback_.is_null()) {
+    std::move(callback_).Run(FileMonitorResult::CANCELED);
+  }
+
+  // There is chance that the file is deleted during the task is scheduled and
+  // executed. Therefore, check here before watching it.
+  if (!base::PathExists(file_path)) {
+    std::move(callback).Run(FileMonitorResult::DELETED);
+    return;
+  }
+
+  callback_ = std::move(callback);
+  file_watcher_ = std::make_unique<base::FilePathWatcher>();
+  if (!file_watcher_->Watch(
+          file_path, base::FilePathWatcher::Type::kNonRecursive,
+          base::BindRepeating(
+              &ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion,
+              base::Unretained(this)))) {
+    std::move(callback_).Run(FileMonitorResult::ERROR);
+  }
+}
+
+void ChromeCameraAppUIDelegate::FileMonitor::OnFileDeletion(
+    const base::FilePath& path,
+    bool error) {
+  if (callback_.is_null()) {
+    return;
+  }
+
+  if (error) {
+    std::move(callback_).Run(FileMonitorResult::ERROR);
+    return;
+  }
+  std::move(callback_).Run(FileMonitorResult::DELETED);
+}
+
+ChromeCameraAppUIDelegate::ChromeCameraAppUIDelegate(content::WebUI* web_ui)
+    : web_ui_(web_ui),
+      file_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
+  file_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread,
+                     base::Unretained(this)));
+}
+
+ChromeCameraAppUIDelegate::~ChromeCameraAppUIDelegate() {
+  // Destroy |file_monitor_| on |file_task_runner_|.
+  // TODO(wtlee): Ensure there is no lifetime issue before actually deleting it.
+  file_task_runner_->DeleteSoon(FROM_HERE, std::move(file_monitor_));
+}
 
 void ChromeCameraAppUIDelegate::SetLaunchDirectory() {
   Profile* profile = Profile::FromWebUI(web_ui_);
@@ -204,19 +264,15 @@ void ChromeCameraAppUIDelegate::MonitorFileDeletion(
     return;
   }
 
-  // Cancel the previous monitor callback if it hasn't been notified.
-  if (!cur_file_monitor_callback_.is_null()) {
-    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::CANCELED);
-  }
-
-  cur_file_monitor_callback_ = std::move(callback);
-  file_watcher_.reset(new base::FilePathWatcher);
-  if (!file_watcher_->Watch(
-          file_path, base::FilePathWatcher::Type::kNonRecursive,
-          base::BindRepeating(&ChromeCameraAppUIDelegate::OnFileDeletion,
-                              base::Unretained(this)))) {
-    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::ERROR);
-  }
+  // We should return the response on current thread (mojo thread).
+  auto callback_on_current_thread = base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(), std::move(callback), FROM_HERE);
+  file_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread,
+          base::Unretained(this), file_monitor_.get(), std::move(file_path),
+          std::move(callback_on_current_thread)));
 }
 
 base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
@@ -233,15 +289,17 @@ base::FilePath ChromeCameraAppUIDelegate::GetFilePathByName(
       .Append(name_component);
 }
 
-void ChromeCameraAppUIDelegate::OnFileDeletion(const base::FilePath& path,
-                                               bool error) {
-  if (cur_file_monitor_callback_.is_null()) {
-    return;
-  }
+void ChromeCameraAppUIDelegate::InitFileMonitorOnFileThread() {
+  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
 
-  if (error) {
-    std::move(cur_file_monitor_callback_).Run(FileMonitorResult::ERROR);
-    return;
-  }
-  std::move(cur_file_monitor_callback_).Run(FileMonitorResult::DELETED);
+  file_monitor_ = std::make_unique<FileMonitor>();
+}
+
+void ChromeCameraAppUIDelegate::MonitorFileDeletionOnFileThread(
+    FileMonitor* file_monitor,
+    const base::FilePath& file_path,
+    base::OnceCallback<void(FileMonitorResult)> callback) {
+  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
+
+  file_monitor->Monitor(file_path, std::move(callback));
 }

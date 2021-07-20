@@ -65,6 +65,25 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
     DISALLOW_COPY_AND_ASSIGN(CameraAppDialog);
   };
 
+  class FileMonitor {
+   public:
+    FileMonitor();
+    FileMonitor(const FileMonitor&) = delete;
+    FileMonitor& operator=(const FileMonitor&) = delete;
+    ~FileMonitor();
+
+    void Monitor(const base::FilePath& file_path,
+                 base::OnceCallback<void(FileMonitorResult)> callback);
+
+   private:
+    void OnFileDeletion(const base::FilePath& path, bool error);
+
+    // Things which might be touched by the callback of |file_watcher_| should
+    // be destroyed later than the destruction of |file_watcher_|.
+    base::OnceCallback<void(FileMonitorResult)> callback_;
+    std::unique_ptr<base::FilePathWatcher> file_watcher_;
+  };
+
   explicit ChromeCameraAppUIDelegate(content::WebUI* web_ui);
 
   ChromeCameraAppUIDelegate(const ChromeCameraAppUIDelegate&) = delete;
@@ -86,12 +105,17 @@ class ChromeCameraAppUIDelegate : public CameraAppUIDelegate {
 
  private:
   base::FilePath GetFilePathByName(const std::string& name);
-  void OnFileDeletion(const base::FilePath& path, bool error);
+  void InitFileMonitorOnFileThread();
+  void MonitorFileDeletionOnFileThread(
+      FileMonitor* file_monitor,
+      const base::FilePath& file_path,
+      base::OnceCallback<void(FileMonitorResult)> callback);
 
   content::WebUI* web_ui_;  // Owns |this|.
 
-  std::unique_ptr<base::FilePathWatcher> file_watcher_;
-  base::OnceCallback<void(FileMonitorResult)> cur_file_monitor_callback_;
+  scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
+  // It should only be created, used and destroyed on |file_task_runner_|.
+  std::unique_ptr<FileMonitor> file_monitor_;
 };
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CHROME_CAMERA_APP_UI_DELEGATE_H_
