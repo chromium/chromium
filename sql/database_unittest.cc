@@ -1458,6 +1458,43 @@ TEST_P(SQLDatabaseTest, GetMemoryUsage) {
       << "Page cache usage should go down after calling TrimMemory()";
 }
 
+TEST_P(SQLDatabaseTest, DoubleQuotedStringLiteralsDisabledByDefault) {
+  ASSERT_TRUE(db_->Execute("CREATE TABLE data(item TEXT NOT NULL);"));
+
+  struct TestCase {
+    const char* sql;
+    bool is_valid;
+  };
+  std::vector<TestCase> test_cases = {
+      // DML tests.
+      {"SELECT item FROM data WHERE item >= 'string literal'", true},
+      {"SELECT item FROM data WHERE item >= \"string literal\"", false},
+      {"INSERT INTO data(item) VALUES('string literal')", true},
+      {"INSERT INTO data(item) VALUES(\"string literal\")", false},
+      {"UPDATE data SET item = 'string literal'", true},
+      {"UPDATE data SET item = \"string literal\"", false},
+      {"DELETE FROM data WHERE item >= 'string literal'", true},
+      {"DELETE FROM data WHERE item >= \"string literal\"", false},
+
+      // DDL tests.
+      {"CREATE INDEX data_item ON data(item) WHERE item >= 'string literal'",
+       true},
+      {"CREATE INDEX data_item ON data(item) WHERE item >= \"string literal\"",
+       false},
+      {"CREATE TABLE data2(item TEXT DEFAULT 'string literal')", true},
+
+      // This should be an invalid DDL statement, due to the double-quoted
+      // string literal. However, SQLite currently parses it.
+      {"CREATE TABLE data2(item TEXT DEFAULT \"string literal\")", true},
+  };
+
+  for (const TestCase& test_case : test_cases) {
+    SCOPED_TRACE(test_case.sql);
+
+    EXPECT_EQ(test_case.is_valid, db_->IsSQLValid(test_case.sql));
+  }
+}
+
 TEST_P(SQLDatabaseTest, TriggersDisabledByDefault) {
   ASSERT_TRUE(db_->Execute("CREATE TABLE data(id INTEGER)"));
 

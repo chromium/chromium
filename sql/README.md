@@ -448,6 +448,10 @@ statement parameters and the `Statement::Bind*()` methods.
 Double-quoted string literals are non-standard SQL syntax. The SQLite authors
 [currently consider this be a misfeature](https://www.sqlite.org/quirks.html#double_quoted_string_literals_are_accepted).
 
+SQLite support for double-quoted string literals is disabled for databases
+opened with Chrome's `sql::Database` infrastructure. This is intended to steer
+feature developers away from this discouraged feature.
+
 After
 [WebSQL](https://www.w3.org/TR/webdatabase/) is removed from Chrome, we plan
 to disable SQLite's support for double-quoted string literals using
