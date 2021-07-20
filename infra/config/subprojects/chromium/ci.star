@@ -5815,10 +5815,6 @@ ci.mac_builder(
     cq_mirrors_console_view = "mirrors",
     main_console_view = "main",
     os = os.MAC_10_15,
-    experiments = {
-        # TODO(crbug.com/1225524): remove this.
-        "chromium.isolate.use_new_lib": 50,
-    },
 )
 
 ci.mac_builder(
@@ -6430,10 +6426,6 @@ ci.win_builder(
     cores = 32,
     main_console_view = "main",
     os = os.WINDOWS_ANY,
-    experiments = {
-        # TODO(crbug.com/1225524): remove this.
-        "chromium.isolate.use_new_lib": 50,
-    },
 )
 
 ci.win_builder(
