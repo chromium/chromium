@@ -70,7 +70,6 @@
 #include "net/base/net_errors.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_options.h"
-#include "net/cookies/cookie_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/http/http_response_headers.h"
@@ -734,11 +733,14 @@ IN_PROC_BROWSER_TEST_P(NetworkContextConfigurationBrowserTest,
                        SecureCookiesAllowedForChromeScheme) {
   if (IsRestartStateWithInProcessNetworkService())
     return;
-  // TODO(crbug.com/1007320): This does not work under SameSiteByDefaultCookies,
-  // (and also does not work for SameSite cookies, in general). This is not
-  // easily fixable, so disable the test for now.
-  if (net::cookie_util::IsSameSiteByDefaultCookiesEnabled())
+  // The system and SafeBrowsing network contexts don't support cookie options,
+  // including the special scheme-based rules.
+  bool system =
+      GetParam().network_context_type == NetworkContextType::kSystem ||
+      GetParam().network_context_type == NetworkContextType::kSafeBrowsing;
+  if (system)
     return;
+
   // Cookies are only allowed for chrome:// schemes requesting a secure origin,
   // so create an HTTPS server.
   net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
