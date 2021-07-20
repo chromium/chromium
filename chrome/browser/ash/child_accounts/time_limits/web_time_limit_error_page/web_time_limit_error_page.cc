@@ -20,6 +20,7 @@
 #include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
 
+namespace ash {
 namespace {
 
 std::u16string GetTimeLimitMessage(base::TimeDelta time_limit) {
@@ -94,3 +95,5 @@ std::string GetWebTimeLimitAppErrorPage(base::TimeDelta time_limit,
   return GetWebTimeLimitErrorPage(block_header, block_message, time_limit,
                                   app_locale, base::UTF8ToUTF16(app_name));
 }
+
+}  // namespace ash

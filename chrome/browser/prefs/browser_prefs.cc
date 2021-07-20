@@ -1278,7 +1278,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   ash::quick_unlock::RegisterProfilePrefs(registry);
   ash::RegisterSamlProfilePrefs(registry);
   ash::ScreenTimeController::RegisterProfilePrefs(registry);
-  SecondaryAccountConsentLogger::RegisterPrefs(registry);
+  ash::SecondaryAccountConsentLogger::RegisterPrefs(registry);
   ash::EduCoexistenceConsentInvalidationController::RegisterProfilePrefs(
       registry);
   ash::SigninErrorNotifier::RegisterPrefs(registry);

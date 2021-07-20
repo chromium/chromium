@@ -6,13 +6,14 @@
 #define CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_LIMIT_ERROR_PAGE_WEB_TIME_LIMIT_ERROR_PAGE_H_
 
 #include <string>
+
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-
 class TimeDelta;
+}
 
-}  // namespace base
+namespace ash {
 
 // Generates the appropriate time limit error page for Chrome.
 // |domain| is the domain of the website that is being paused.
@@ -31,5 +32,7 @@ std::string GetWebTimeLimitChromeErrorPage(
 std::string GetWebTimeLimitAppErrorPage(base::TimeDelta time_limit,
                                         const std::string& app_locale,
                                         const std::string& app_name);
+
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_TIME_LIMITS_WEB_TIME_LIMIT_ERROR_PAGE_WEB_TIME_LIMIT_ERROR_PAGE_H_

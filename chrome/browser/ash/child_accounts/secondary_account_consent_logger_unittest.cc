@@ -25,7 +25,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+namespace ash {
 namespace {
+
 constexpr char kAccountEmail[] = "user@gmail.com";
 constexpr char kSecondaryEmail[] = "secondary@gmail.com";
 constexpr char kParentObfuscatedGaiaId[] = "parent-obfuscated-gaia-id";
@@ -67,7 +69,7 @@ class SecondaryAccountConsentLoggerTest : public testing::Test {
 
   void SetUp() {
     SecondaryAccountConsentLogger::RegisterPrefs(local_state_.registry());
-    local_state_.SetUserPref(ash::prefs::kEduCoexistenceId,
+    local_state_.SetUserPref(prefs::kEduCoexistenceId,
                              std::make_unique<base::Value>(kChromeSyncId));
   }
 
@@ -225,3 +227,5 @@ TEST_F(SecondaryAccountConsentLoggerTest, RequestBody) {
   base::DictionaryValue request_body = CreateRequestBody();
   EXPECT_EQ(test_request_body.value(), request_body);
 }
+
+}  // namespace ash

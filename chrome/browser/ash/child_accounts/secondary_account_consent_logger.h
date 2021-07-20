@@ -32,6 +32,8 @@ class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
 
+namespace ash {
+
 // Logs parental consent for addition of secondary EDU account.
 // Firstly fetches access token with "kid.management.privileged" scope. Then
 // logs consent with provided parent id, rapt, coexistence id and text version.
@@ -102,5 +104,13 @@ class SecondaryAccountConsentLogger {
   base::OnceCallback<void(Result)> callback_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
+
+}  // namespace ash
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace chromeos {
+using ::ash::SecondaryAccountConsentLogger;
+}
 
 #endif  // CHROME_BROWSER_ASH_CHILD_ACCOUNTS_SECONDARY_ACCOUNT_CONSENT_LOGGER_H_

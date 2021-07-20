@@ -32,6 +32,7 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 constexpr char kConsentApiPath[] =
@@ -74,10 +75,10 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
         })");
 
 std::string GetOrCreateEduCoexistenceId(PrefService* pref_service) {
-  std::string id = pref_service->GetString(ash::prefs::kEduCoexistenceId);
+  std::string id = pref_service->GetString(prefs::kEduCoexistenceId);
   if (id.empty()) {
     id = base::GenerateGUID();
-    pref_service->SetString(ash::prefs::kEduCoexistenceId, id);
+    pref_service->SetString(prefs::kEduCoexistenceId, id);
   }
   return id;
 }
@@ -87,10 +88,10 @@ std::string GetOrCreateEduCoexistenceId(PrefService* pref_service) {
 // static
 void SecondaryAccountConsentLogger::RegisterPrefs(
     PrefRegistrySimple* registry) {
-  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
+  registry->RegisterStringPref(prefs::kEduCoexistenceId,
                                std::string() /* default_value */);
   registry->RegisterStringPref(
-      ash::prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
+      prefs::kEduCoexistenceSecondaryAccountsInvalidationVersion,
       "iv2153049" /* default_value, the first invalidation version */);
 }
 
@@ -220,3 +221,5 @@ void SecondaryAccountConsentLogger::OnSimpleLoaderCompleteInternal(
 
   std::move(callback_).Run(Result::kSuccess);
 }
+
+}  // namespace ash

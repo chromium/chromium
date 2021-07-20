@@ -44,6 +44,7 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
+namespace ash {
 namespace {
 
 constexpr char kExampleHost1[] = "www.example.com";
@@ -69,7 +70,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
                                  const std::string& url_in,
                                  WindowOpenDisposition disposition);
 
-  ash::app_time::ChromeAppActivityState GetChromeAppActivityState();
+  app_time::ChromeAppActivityState GetChromeAppActivityState();
 
  private:
   void UpdatePolicy();
@@ -78,7 +79,7 @@ class WebTimeCalculationBrowserTest : public MixinBasedInProcessBrowserTest {
 
   base::test::ScopedFeatureList scoped_feature_list_;
 
-  ash::app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
+  app_time::AppTimeLimitsAllowlistPolicyBuilder builder_;
 
   chromeos::LoggedInUserMixin logged_in_user_mixin_{
       &mixin_host_, chromeos::LoggedInUserMixin::LogInType::kChild,
@@ -104,11 +105,10 @@ void WebTimeCalculationBrowserTest::SetUpOnMainThread() {
 
   // During tests, AppService doesn't notify AppActivityRegistry that chrome app
   // is installed. Mark chrome as installed here.
-  ash::ChildUserService* service =
-      ash::ChildUserServiceFactory::GetForBrowserContext(profile_);
-  ash::ChildUserService::TestApi test_api(service);
+  auto* service = ChildUserServiceFactory::GetForBrowserContext(profile_);
+  ChildUserService::TestApi test_api(service);
   test_api.app_time_controller()->app_registry()->OnAppInstalled(
-      ash::app_time::GetChromeAppId());
+      app_time::GetChromeAppId());
 }
 
 void WebTimeCalculationBrowserTest::TearDown() {
@@ -141,11 +141,10 @@ content::WebContents* WebTimeCalculationBrowserTest::Navigate(
   return params.navigated_or_inserted_contents;
 }
 
-ash::app_time::ChromeAppActivityState
+app_time::ChromeAppActivityState
 WebTimeCalculationBrowserTest::GetChromeAppActivityState() {
-  ash::ChildUserService* service =
-      chromeos::ChildUserServiceFactory::GetForBrowserContext(profile_);
-  ash::ChildUserService::TestApi test_api(service);
+  auto* service = ChildUserServiceFactory::GetForBrowserContext(profile_);
+  ChildUserService::TestApi test_api(service);
   auto* web_time_activity_provider =
       test_api.app_time_controller()->web_time_activity_provider();
   return web_time_activity_provider->chrome_app_activty_state();
@@ -173,11 +172,11 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabSelectionChanges) {
   // Create a new tab and navigate it to some url.
   Navigate(browser(), kExampleHost2, WindowOpenDisposition::NEW_FOREGROUND_TAB);
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
   browser()->tab_strip_model()->ActivateTabAt(0);
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   bool destroyed = browser()->tab_strip_model()->CloseWebContentsAt(
@@ -186,7 +185,7 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabSelectionChanges) {
 
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 }
 
@@ -200,12 +199,12 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabDetached) {
 
   browser()->tab_strip_model()->ActivateTabAt(0);
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   Browser* new_browser = DetachTabToNewBrowser(browser(), 1);
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActive,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActive,
             GetChromeAppActivityState());
 
   // Now we have two browser windows. One hosting a allowlisted url and the
@@ -214,16 +213,18 @@ IN_PROC_BROWSER_TEST_F(WebTimeCalculationBrowserTest, TabDetached) {
       0, TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kActiveAllowlisted,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kActiveAllowlisted,
             GetChromeAppActivityState());
 
   EXPECT_TRUE(browser()->tab_strip_model()->CloseWebContentsAt(
       0, TabStripModel::CloseTypes::CLOSE_USER_GESTURE));
   base::RunLoop().RunUntilIdle();
 
-  EXPECT_EQ(ash::app_time::ChromeAppActivityState::kInactive,
+  EXPECT_EQ(app_time::ChromeAppActivityState::kInactive,
             GetChromeAppActivityState());
 }
 
 // TODO(yilkal): Write test to check that going to a URL in the current tab of
 // the first browser will result in chrome being active or active allowlisted.
+
+}  // namespace ash
