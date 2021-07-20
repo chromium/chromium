@@ -67,10 +67,6 @@ class FormCache {
       const std::vector<FieldRendererId>& fields_eligible_for_manual_filling);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FormCacheTest,
-                           ShouldShowAutocompleteConsoleWarnings_Enabled);
-  FRIEND_TEST_ALL_PREFIXES(FormCacheTest,
-                           ShouldShowAutocompleteConsoleWarnings_Disabled);
   FRIEND_TEST_ALL_PREFIXES(FormCacheBrowserTest, FreeDataOnElementRemoval);
   FRIEND_TEST_ALL_PREFIXES(
       FormCacheBrowserTest,
@@ -89,14 +85,6 @@ class FormCache {
   // Saves initial state of checkbox and select elements.
   void SaveInitialValues(
       const std::vector<blink::WebFormControlElement>& control_elements);
-
-  // Returns whether we should show a console warning related to a wrong
-  // autocomplete attribute. We will show a warning if (1) there is no
-  // autocomplete attribute and we have a guess for one or (2) we recognize the
-  // autocomplete attribute but it appears to be the wrong one.
-  bool ShouldShowAutocompleteConsoleWarnings(
-      const std::string& predicted_autocomplete,
-      const std::string& actual_autocomplete);
 
   // Clears the value of the |control_element|.
   void ClearElement(blink::WebFormControlElement& control_element,
