@@ -14,14 +14,16 @@
     /* Dark mode styles copied from
        ui/webui/resources/cr_elements/shared_vars_css.html. Unfortunately there
        seems to be no great way to share styles with the
-       "prefers-color-scheme: dark" @media query selector. */
+       "prefers-color-scheme: dark" @media query selector.
+       TODO(crbug.com/1231199): Remove these overrides when the PDF viewer
+       supports light and dark modes. */
     cr-action-menu,
     viewer-bookmark {
       --cr-menu-background-color: var(--google-grey-900);
       --cr-menu-shadow: rgba(0, 0, 0, .3) 0 1px 2px 0,
                         rgba(0, 0, 0, .15) 0 3px 6px 2px;
       --cr-primary-text-color: var(--google-grey-200);
-      --cr-menu-background-focus-color: rgba(var(--google-grey-800-rgb), .6);
+      --cr-menu-background-focus-color: var(--google-grey-refresh-700);
       --cr-menu-background-sheen: rgba(255, 255, 255, .06);
       --cr-separator-line: var(--cr-separator-height) solid
           rgba(255, 255, 255, .1);
