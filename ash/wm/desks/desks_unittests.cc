@@ -6087,6 +6087,92 @@ TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithChromeVoxOn) {
   EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
 }
 
+// Tests that the bar will not be created if any window is fullscreened.
+TEST_F(PersistentDesksBarTest, NoPersistentDesksBarWithFullscreenedWindow) {
+  // Create a secondary display.
+  UpdateDisplay("400x300,500x400");
+  WMEvent event_toggle_fullscreen(WM_EVENT_TOGGLE_FULLSCREEN);
+  WMEvent event_fullscreen(WM_EVENT_FULLSCREEN);
+  std::unique_ptr<aura::Window> window1 =
+      CreateTestWindow(gfx::Rect(0, 0, 300, 300));
+  std::unique_ptr<aura::Window> window2 =
+      CreateTestWindow(gfx::Rect(0, 0, 300, 300));
+  WindowState* window_state1 = WindowState::Get(window1.get());
+  WindowState* window_state2 = WindowState::Get(window2.get());
+  NewDesk();
+  gfx::Rect bounds = GetBarWidget()->GetWindowBoundsInScreen();
+
+  // window1 and window2 should fall into the primary display.
+  EXPECT_EQ(window1->GetRootWindow(), Shell::GetPrimaryRootWindow());
+  EXPECT_EQ(window2->GetRootWindow(), Shell::GetPrimaryRootWindow());
+
+  // The bar should be destroyed after `window1` entering fullscreen mode and be
+  // recreated after 'window1' exiting fullscreen mode.
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_TRUE(window_state1->IsFullscreen());
+  EXPECT_FALSE(GetBarWidget());
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_FALSE(window_state1->IsFullscreen());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+
+  // The bar should not be created until both `window1` and `window2` exiting
+  // fullscreen mode.
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  window_state2->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_FALSE(GetBarWidget());
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_FALSE(GetBarWidget());
+  window_state2->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+
+  // Fullscreen window within the secondary display should not impact
+  // the persistent desks bar.
+  std::unique_ptr<aura::Window> window3 = CreateTestWindow();
+  window3->SetBoundsInScreen(gfx::Rect(600, 0, 125, 100),
+                             GetSecondaryDisplay());
+  WindowState* window_state3 = WindowState::Get(window3.get());
+  EXPECT_EQ(window3->GetRootWindow(), Shell::Get()->GetAllRootWindows()[1]);
+  window_state3->OnWMEvent(&event_toggle_fullscreen);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+
+  // The bar should be created after `window1` being hidden.
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  window1->Hide();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+  window1->Show();
+  EXPECT_FALSE(GetBarWidget());
+
+  // The bar should be created after `window1` being minimized.
+  window_state1->Minimize();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+  window_state1->OnWMEvent(&event_fullscreen);
+  EXPECT_FALSE(GetBarWidget());
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+
+  // The bar should not be created until both `window1` and `window2` being
+  // closed.
+  window_state1->OnWMEvent(&event_toggle_fullscreen);
+  window_state2->OnWMEvent(&event_toggle_fullscreen);
+  views::Widget::GetWidgetForNativeWindow(window1.get())
+      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_FALSE(GetBarWidget());
+  views::Widget::GetWidgetForNativeWindow(window2.get())
+      ->CloseWithReason(views::Widget::ClosedReason::kCloseButtonClicked);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+  EXPECT_EQ(bounds, GetBarWidget()->GetWindowBoundsInScreen());
+}
+
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.
 // - Reusing containers when desks are removed and created.
