@@ -181,6 +181,9 @@ class MESSAGE_CENTER_EXPORT MessageView
   // Changes the background color and schedules a paint.
   virtual void SetDrawBackgroundAsActive(bool active);
 
+  void UpdateControlButtonsVisibilityWithNotification(
+      const Notification& notification);
+
   void SetCornerRadius(int top_radius, int bottom_radius);
 
   views::ScrollView* scroller() { return scroller_; }

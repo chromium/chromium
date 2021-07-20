@@ -510,4 +510,18 @@ void MessageView::SetDrawBackgroundAsActive(bool active) {
   UpdateBackgroundPainter();
 }
 
+void MessageView::UpdateControlButtonsVisibilityWithNotification(
+    const Notification& notification) {
+  auto* control_buttons_view = GetControlButtonsView();
+  if (control_buttons_view) {
+    control_buttons_view->ShowButtons(ShouldShowControlButtons());
+    control_buttons_view->ShowSettingsButton(
+        notification.should_show_settings_button());
+    control_buttons_view->ShowSnoozeButton(
+        notification.should_show_snooze_button());
+    control_buttons_view->ShowCloseButton(GetMode() != Mode::PINNED);
+  }
+  UpdateControlButtonsVisibility();
+}
+
 }  // namespace message_center

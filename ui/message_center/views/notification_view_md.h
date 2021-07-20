@@ -252,9 +252,6 @@ class MESSAGE_CENTER_EXPORT NotificationViewMD
 
   class NotificationViewMDPathGenerator;
 
-  void UpdateControlButtonsVisibilityWithNotification(
-      const Notification& notification);
-
   void CreateOrUpdateViews(const Notification& notification);
 
   void CreateOrUpdateContextTitleView(const Notification& notification);
