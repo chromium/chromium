@@ -27,4 +27,7 @@ class AutofillAssistantCustomTabTestRule
                         InstrumentationRegistry.getTargetContext(),
                         getTestRule().getTestServer().getURL(HTML_DIRECTORY + mTestPage)));
     }
+
+    @Override
+    public void stop() {}
 }

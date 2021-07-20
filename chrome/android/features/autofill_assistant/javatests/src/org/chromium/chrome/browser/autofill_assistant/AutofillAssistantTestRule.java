@@ -27,6 +27,7 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
     }
 
     abstract void start();
+    abstract void stop();
 
     @Override
     public Statement apply(final Statement base, Description description) {
@@ -41,6 +42,7 @@ abstract class AutofillAssistantTestRule<T extends ChromeActivityTestRule> imple
                 } finally {
                     restoreOrientation();
                 }
+                stop();
             }
         };
     }
