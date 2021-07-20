@@ -65,6 +65,11 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
 
   void SetActiveProfilePath(const base::FilePath& profile_path);
 
+  // Sets whether we should check the restore data for `profile_path`. If the
+  // user selects `Restore`, then we should check the restore data for restored
+  // windows. Otherwise, we don't need to to check the restore data.
+  void SetCheckRestoreData(const base::FilePath& profile_path);
+
   // Invoked when the task is created for an ARC app.
   void OnTaskCreated(const std::string& app_id,
                      int32_t task_id,
@@ -199,6 +204,12 @@ class COMPONENT_EXPORT(FULL_RESTORE) FullRestoreReadHandler
       window_id_to_app_restore_info_;
 
   std::unique_ptr<ArcReadHandler> arc_read_handler_;
+
+  // Records whether we need to check the restore data for the profile path. If
+  // the profile path is recorded, we should check the restore data. Otherwise,
+  // we don't need to check the restore data, because the restore process hasn't
+  // started yet.
+  std::set<base::FilePath> should_check_restore_data_;
 
   base::ScopedObservation<aura::Env, aura::EnvObserver> env_observer_{this};
 
