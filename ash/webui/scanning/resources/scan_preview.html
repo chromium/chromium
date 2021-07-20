@@ -95,19 +95,15 @@
     --paper-progress-container-color: var(--google-grey-200);
   }
 
-  #scannedImages {
-    position: relative;
-  }
-
   action-toolbar {
-    display: none;
-    left: 270px;
+    left: var(--action-toolbar-left);
     position: fixed;
-    top: 425px;
+    top: var(--action-toolbar-top);
+    visibility: hidden;
   }
 
   .preview:hover action-toolbar {
-    display: block;
+    visibility: visible;
   }
 </style>
 <div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
@@ -137,7 +133,7 @@
         num-total-pages="[[objectUrls.length]]"
         current-page-in-view="[[currentPageInView_]]"></action-toolbar>
     <template is="dom-repeat" items="[[objectUrls]]" as="url">
-      <img class="preview-item scanned-image" src="[[url]]">
+      <img class="preview-item scanned-image" src="[[url]]" on-load="onScannedImagesLoaded_">
     </template>
   </div>
 </div>

@@ -9,6 +9,7 @@ import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {afterNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppState} from './scanning_app_types.js';
@@ -109,6 +110,25 @@ Polymer({
       type: Number,
       value: -1,
     },
+
+    /**
+     * Set to true once the first scanned image from a scan is loaded. This is
+     * needed to prevent checking the dimensions of every scanned image. The
+     * assumption is that all scanned images share the same dimensions.
+     * @private {boolean}
+     */
+    scannedImagesLoaded_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private {boolean} */
+    scanAppMultiPageScanEnabled_: {
+      type: Boolean,
+      value: function() {
+        return loadTimeData.getBoolean('scanAppMultiPageScanEnabled');
+      }
+    },
   },
 
   observers: [
@@ -128,6 +148,16 @@ Polymer({
   ready() {
     this.style.setProperty(
         '--scanned-image-margin-bottom', SCANNED_IMG_MARGIN_BOTTOM_PX + 'px');
+    if (this.scanAppMultiPageScanEnabled_) {
+      window.addEventListener('resize', () => this.setActionToolbarPosition_());
+    }
+  },
+
+  /** @override */
+  detached() {
+    if (this.scanAppMultiPageScanEnabled_) {
+      window.removeEventListener('resize', this.setActionToolbarPosition_);
+    }
   },
 
   /** @private */
@@ -261,5 +291,46 @@ Polymer({
       scannedImages[this.currentPageInView_ - 1].classList.add(
           'focused-scanned-image');
     });
+  },
+
+  /**
+   * Once the scanned images load, set the action toolbar position.
+   * @private
+   */
+  onScannedImagesLoaded_() {
+    if (!this.scanAppMultiPageScanEnabled_) {
+      return;
+    }
+
+    // If the position was already set after the first scanned image loaded,
+    // there's no need to position it again.
+    if (this.scannedImagesLoaded_) {
+      return;
+    }
+
+    this.scannedImagesLoaded_ = true;
+    this.setActionToolbarPosition_();
+  },
+
+  /**
+   * Set the position of the action toolbar based on the size of the scanned
+   * images and the current size of the app window.
+   * @private
+   */
+  setActionToolbarPosition_() {
+    assert(this.scanAppMultiPageScanEnabled_);
+
+    const scannedImage = this.$$('.scanned-image');
+    if (!scannedImage) {
+      return;
+    }
+
+    const scannedImageRect = scannedImage.getBoundingClientRect();
+    const topPosition = scannedImageRect.height * .85;
+    this.style.setProperty('--action-toolbar-top', topPosition + 'px');
+
+    const leftPosition = scannedImageRect.x + (scannedImageRect.width / 2) -
+        (this.$$('action-toolbar').offsetWidth / 2);
+    this.style.setProperty('--action-toolbar-left', leftPosition + 'px');
   },
 });
