@@ -158,12 +158,6 @@ class CONTENT_EXPORT RenderFrameHostManager
     // to see what it should do.
     virtual bool FocusLocationBarByDefault() = 0;
 
-    // If the delegate is an inner WebContents, this method returns the
-    // FrameTreeNode ID of the frame in the outer WebContents which hosts
-    // the inner WebContents. Returns FrameTreeNode::kFrameTreeNodeInvalidId
-    // if the delegate does not have an outer WebContents.
-    virtual int GetOuterDelegateFrameTreeNodeId() = 0;
-
     // If the delegate is an inner WebContents, reattach it to the outer
     // WebContents.
     virtual void ReattachOuterDelegateIfNeeded() = 0;

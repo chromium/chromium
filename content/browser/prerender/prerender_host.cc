@@ -136,6 +136,14 @@ class PrerenderHost::PageHolder : public FrameTree::Delegate,
   void DidChangeLoadProgress() override {}
   bool IsHidden() override { return true; }
   void NotifyPageChanged(PageImpl& page) override {}
+  int GetOuterDelegateFrameTreeNodeId() override {
+    // A prerendered FrameTree is not "inner to" or "nested inside" another
+    // FrameTree; it exists in parallel to the primary FrameTree of the current
+    // WebContents. Therefore, it must not attempt to access the primary
+    // FrameTree in the sense of an "outer delegate" relationship, so we return
+    // the invalid ID here.
+    return FrameTreeNode::kFrameTreeNodeInvalidId;
+  }
 
   // NavigationControllerDelegate
   void NotifyNavigationStateChanged(InvalidateTypes changed_flags) override {}

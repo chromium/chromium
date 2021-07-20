@@ -989,7 +989,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       RenderFrameHostImpl* old_frame,
       RenderFrameHostImpl* new_frame) override;
   bool FocusLocationBarByDefault() override;
-  int GetOuterDelegateFrameTreeNodeId() override;
   void OnFrameTreeNodeDestroyed(FrameTreeNode* node) override;
 
   // PageDelegate -------------------------------------------------------------
@@ -1020,6 +1019,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void DidChangeLoadProgress() override;
   bool IsHidden() override;
   void NotifyPageChanged(PageImpl& page) override;
+  int GetOuterDelegateFrameTreeNodeId() override;
 
   // NavigationControllerDelegate ----------------------------------------------
 

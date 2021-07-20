@@ -7957,10 +7957,6 @@ void WebContentsImpl::OnDialogClosed(int render_process_id,
   is_showing_before_unload_dialog_ = false;
 }
 
-int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
-  return node_.outer_contents_frame_tree_node_id();
-}
-
 RenderFrameHostManager* WebContentsImpl::GetRenderManager() const {
   return frame_tree_.root()->render_manager();
 }
@@ -8869,6 +8865,10 @@ void WebContentsImpl::NotifyPageChanged(PageImpl& page) {
     save_package_.reset();
   }
   observers_.NotifyObservers(&WebContentsObserver::PrimaryPageChanged, page);
+}
+
+int WebContentsImpl::GetOuterDelegateFrameTreeNodeId() {
+  return node_.outer_contents_frame_tree_node_id();
 }
 
 void WebContentsImpl::RenderFrameHostStateChanged(
