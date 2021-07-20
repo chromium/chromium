@@ -36,10 +36,15 @@ class ScanningFilePathHelper {
   // are not supported.
   bool IsFilePathSupported(const base::FilePath& path_to_file) const;
 
+  void SetRemoveableMediaPathForTesting(const base::FilePath& path);
+
  private:
   // The paths to the user's My files and Google Drive directories.
   base::FilePath google_drive_path_;
   base::FilePath my_files_path_;
+
+  // The root path to the user's connected removable media.
+  base::FilePath removable_media_path_;
 };
 
 }  // namespace ash

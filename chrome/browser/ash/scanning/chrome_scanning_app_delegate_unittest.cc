@@ -69,10 +69,14 @@ class ChromeScanningAppDelegateTest : public testing::Test {
     EXPECT_TRUE(base::CreateDirectory(drive_path_));
     my_files_path_ = temp_dir_.GetPath().Append("MyFiles");
     EXPECT_TRUE(base::CreateDirectory(my_files_path_));
+    removable_media_path_ = temp_dir_.GetPath().Append("removable/media");
+    EXPECT_TRUE(base::CreateDirectory(removable_media_path_));
 
     chrome_scanning_app_delegate_ =
         std::make_unique<ChromeScanningAppDelegate>(web_ui_.get());
     chrome_scanning_app_delegate_->SetValidPaths(drive_path_, my_files_path_);
+    chrome_scanning_app_delegate_->SetRemoveableMediaPathForTesting(
+        removable_media_path_);
   }
 
  protected:
@@ -82,6 +86,7 @@ class ChromeScanningAppDelegateTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
   base::FilePath my_files_path_;
   base::FilePath drive_path_;
+  base::FilePath removable_media_path_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -130,6 +135,15 @@ TEST_F(ChromeScanningAppDelegateTest, ShowFilesAppMyFilesChild) {
 // path returns true for showing the Files app.
 TEST_F(ChromeScanningAppDelegateTest, ShowFilesAppGoogleDrivePathChild) {
   const base::FilePath test_file = drive_path_.Append("test_file.png");
+  base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
+  EXPECT_TRUE(chrome_scanning_app_delegate_->ShowFileInFilesApp(test_file));
+}
+
+// Validates that passing a file path that exists and is a child of a removable
+// media returns true for showing the Files app.
+TEST_F(ChromeScanningAppDelegateTest, ShowFilesAppRemovableMediaPathChild) {
+  const base::FilePath test_file =
+      removable_media_path_.Append("test_file.png");
   base::File(test_file, base::File::FLAG_CREATE | base::File::FLAG_READ);
   EXPECT_TRUE(chrome_scanning_app_delegate_->ShowFileInFilesApp(test_file));
 }

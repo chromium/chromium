@@ -89,4 +89,11 @@ TEST_F(ScanningFilePathHelperTest, FilePathReferencesNotSupported) {
       my_files_path_.Append("../MyFiles/test_file.png")));
 }
 
+// Validates that passing a file path that is a child of a removable media
+// returns true for IsFilePathSupported().
+TEST_F(ScanningFilePathHelperTest, FilePathSupportedRemovableMedia) {
+  ASSERT_TRUE(file_path_helper_.IsFilePathSupported(
+      base::FilePath("/media/removable/STATE/test_file.png")));
+}
+
 }  // namespace ash

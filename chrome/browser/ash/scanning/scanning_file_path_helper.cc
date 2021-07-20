@@ -15,6 +15,9 @@ namespace ash {
 
 namespace {
 
+// The default root path for connected removable media.
+constexpr char kRemovableMediaPath[] = "/media/removable";
+
 // "root" is appended to the user's Google Drive directory to form the
 // complete path.
 constexpr char kRoot[] = "root";
@@ -25,7 +28,9 @@ ScanningFilePathHelper::ScanningFilePathHelper() = default;
 ScanningFilePathHelper::ScanningFilePathHelper(
     const base::FilePath& google_drive_path,
     const base::FilePath& my_files_path)
-    : google_drive_path_(google_drive_path), my_files_path_(my_files_path) {}
+    : google_drive_path_(google_drive_path),
+      my_files_path_(my_files_path),
+      removable_media_path_(base::FilePath(kRemovableMediaPath)) {}
 
 ScanningFilePathHelper::ScanningFilePathHelper(ScanningFilePathHelper&& other) =
     default;
@@ -63,7 +68,13 @@ bool ScanningFilePathHelper::IsFilePathSupported(
   return path_to_file == my_files_path_ ||
          (!path_to_file.ReferencesParent() &&
           (google_drive_path_.IsParent(path_to_file) ||
-           my_files_path_.IsParent(path_to_file)));
+           my_files_path_.IsParent(path_to_file) ||
+           removable_media_path_.IsParent(path_to_file)));
+}
+
+void ScanningFilePathHelper::SetRemoveableMediaPathForTesting(
+    const base::FilePath& path) {
+  removable_media_path_ = path;
 }
 
 }  // namespace ash
