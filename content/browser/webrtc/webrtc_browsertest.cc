@@ -104,14 +104,14 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        CanSetupVideoCallWith16To9AspectRatio) {
 #if defined(OS_ANDROID)
   // Android requires 16x16 alignment for hardware encoding.
-  constexpr char kExpectedResolution[] = "640, 352";
+  constexpr int kExpectedAlignment = 16;
 #else
-  constexpr char kExpectedResolution[] = "640, 360";
+  constexpr int kExpectedAlignment = 1;
 #endif
   const std::string javascript = base::StringPrintf(
       "callAndExpectResolution({video: {mandatory: {minWidth: 640,"
-      " maxWidth: 640, minAspectRatio: 1.777}}}, %s);",
-      kExpectedResolution);
+      " maxWidth: 640, minAspectRatio: 1.777}}}, 640, 360, %d);",
+      kExpectedAlignment);
   MakeTypicalPeerConnectionCall(javascript);
 }
 

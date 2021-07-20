@@ -84,15 +84,18 @@
   // the video resolution is as expected.
   function callAndExpectResolution(constraints,
                                    expected_width,
-                                   expected_height) {
+                                   expected_height,
+                                   alignment) {
     createConnections(null);
     navigator.mediaDevices.getUserMedia(constraints)
         .then(addStreamToBothConnectionsAndNegotiate)
         .catch(failTest);
 
     Promise.all([
-      detectVideoPlayingWithExpectedResolution('remote-view-1', expected_width, expected_height),
-      detectVideoPlayingWithExpectedResolution('remote-view-2', expected_width, expected_height)
+      detectVideoPlayingWithExpectedResolution(
+          'remote-view-1', expected_width, expected_height, alignment),
+      detectVideoPlayingWithExpectedResolution(
+          'remote-view-2', expected_width, expected_height, alignment)
     ]).then(reportTestSuccess);
   }
 
