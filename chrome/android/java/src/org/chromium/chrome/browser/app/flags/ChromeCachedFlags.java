@@ -82,6 +82,7 @@ public class ChromeCachedFlags {
                 add(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE);
                 add(ChromeFeatureList.DYNAMIC_COLOR_ANDROID);
                 add(ChromeFeatureList.EARLY_LIBRARY_LOAD);
+                add(ChromeFeatureList.ELASTIC_OVERSCROLL);
                 add(ChromeFeatureList.IMMERSIVE_UI_MODE);
                 add(ChromeFeatureList.INSTANT_START);
                 add(ChromeFeatureList.INTEREST_FEED_V2);

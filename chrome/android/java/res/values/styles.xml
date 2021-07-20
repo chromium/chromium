@@ -134,11 +134,9 @@
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
     </style>
-    <!-- TODO(https://crbug.com/933438): Move v29 override to upstream. -->
     <style name="Base.Theme.Chromium.DialogWhenLarge"
         parent="Base.V17.Theme.Chromium.DialogWhenLarge" />
-    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
-    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.V27.Theme.Chromium.DialogWhenLarge" />
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
     <style name="DimmingDialog" parent="Base.Theme.Chromium.DialogWhenLarge">
         <item name="android:windowLightNavigationBar" tools:targetApi="28">false</item>
     </style>
@@ -490,5 +488,9 @@
     </style>
     <style name="ColorOverlay.ChromiumAndroid.DayNight" parent="ColorOverlay">
       <!-- TODO(https://crbug.com/1216642): Move color attributes here. -->
+    </style>
+
+    <style name="ThemeOverlay.DisableOverscroll" parent="">
+        <item name="android:overScrollMode">never</item>
     </style>
 </resources>

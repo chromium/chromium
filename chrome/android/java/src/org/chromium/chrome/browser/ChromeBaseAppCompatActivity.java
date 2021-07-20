@@ -16,6 +16,7 @@ import androidx.annotation.Nullable;
 import androidx.annotation.StyleRes;
 import androidx.appcompat.app.AppCompatActivity;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -177,6 +178,16 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
 
         if (CachedFeatureFlags.isEnabled(ChromeFeatureList.DYNAMIC_COLOR_ANDROID)) {
             new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
+        }
+        // Try to enable browser overscroll when content overscroll is enabled for consistency. This
+        // needs to be in a cached feature because activity startup happens before native is
+        // initialized. Unfortunately content overscroll is read in renderer threads, and these two
+        // are not synchronized. Typically the first time overscroll is enabled, the following will
+        // use the old value and then content will pick up the enabled value, causing one execution
+        // of inconsistency.
+        if (BuildInfo.isAtLeastS()
+                && !CachedFeatureFlags.isEnabled(ChromeFeatureList.ELASTIC_OVERSCROLL)) {
+            setTheme(R.style.ThemeOverlay_DisableOverscroll);
         }
     }
 

@@ -24,8 +24,7 @@ bool IsElasticOverscrollEnabled() {
 #elif defined(OS_WIN)
   return base::FeatureList::IsEnabled(features::kElasticOverscroll);
 #elif defined(OS_ANDROID)
-  return base::android::BuildInfo::GetInstance()->sdk_int() >=
-             base::android::SDK_VERSION_R &&
+  return base::android::BuildInfo::GetInstance()->IsAtLeastS() &&
          !base::CommandLine::ForCurrentProcess()->HasSwitch(
              switches::kDisableOverscrollEdgeEffect) &&
          base::FeatureList::IsEnabled(features::kElasticOverscroll);

@@ -5,6 +5,6 @@
 
 <resources>
     <style name="Theme.Chromium.WithWindowAnimation"
-        parent="Base.Theme.Chromium.WithWindowAnimation" />
-    <style name="Base.V27.Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge" />
+        parent="Base.Theme.Chromium.WithWindowAnimation"/>
+    <style name="Theme.Chromium.DialogWhenLarge" parent="Base.Theme.Chromium.DialogWhenLarge"/>
 </resources>

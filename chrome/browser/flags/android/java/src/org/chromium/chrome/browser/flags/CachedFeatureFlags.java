@@ -55,6 +55,7 @@ public class CachedFeatureFlags {
             put(ChromeFeatureList.COMMAND_LINE_ON_NON_ROOTED, false);
             put(ChromeFeatureList.DOWNLOADS_AUTO_RESUMPTION_NATIVE, true);
             put(ChromeFeatureList.EARLY_LIBRARY_LOAD, false);
+            put(ChromeFeatureList.ELASTIC_OVERSCROLL, false);
             put(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS, true);
             put(ChromeFeatureList.IMMERSIVE_UI_MODE, false);
             put(ChromeFeatureList.SWAP_PIXEL_FORMAT_TO_FIX_CONVERT_FROM_TRANSLUCENT, true);

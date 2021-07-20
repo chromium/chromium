@@ -139,6 +139,7 @@ const base::Feature kExperimentalFlingAnimation {
 };
 
 #if defined(OS_WIN) || defined(OS_ANDROID)
+// Cached in Java as well, make sure defaults are updated together.
 const base::Feature kElasticOverscroll = {"ElasticOverscroll",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // defined(OS_WIN) || defined(OS_ANDROID)
