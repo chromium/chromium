@@ -2149,12 +2149,13 @@ void TabStrip::OnMouseEventInTab(views::View* source,
 }
 
 void TabStrip::UpdateHoverCard(Tab* tab, HoverCardUpdateType update_type) {
-  // We don't want to show a hover card while the tabstrip is animating.
+  // Some operations (including e.g. starting a drag) can cause the tab focus
+  // to change at the same time as the tabstrip is starting to animate; the
+  // hover card should not be visible at this time.
+  // See crbug.com/1220840 for an example case.
   if (bounds_animator_.IsAnimating()) {
-    // Once we're animating the hover card should already be hidden.
-    DCHECK(!tab || !hover_card_controller_ ||
-           !hover_card_controller_->IsHoverCardVisible());
-    return;
+    tab = nullptr;
+    update_type = HoverCardUpdateType::kAnimating;
   }
 
   if (!hover_card_controller_) {
