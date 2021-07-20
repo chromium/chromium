@@ -210,7 +210,13 @@ TEST_F(ScrollBarViewsTest, ThumbFullLengthOfTrack) {
   EXPECT_EQ(0, scrollbar_->GetPosition());
 }
 
-TEST_F(ScrollBarViewsTest, RightClickOpensMenu) {
+// TODO(http://crbug.com/1230866): flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_RightClickOpensMenu DISABLED_RightClickOpensMenu
+#else
+#define MAYBE_RightClickOpensMenu RightClickOpensMenu
+#endif
+TEST_F(ScrollBarViewsTest, MAYBE_RightClickOpensMenu) {
   EXPECT_EQ(nullptr, scrollbar_->menu_model_);
   EXPECT_EQ(nullptr, scrollbar_->menu_runner_);
   scrollbar_->set_context_menu_controller(scrollbar_);
