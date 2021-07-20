@@ -3,12 +3,9 @@
 // found in the LICENSE file.
 
 enum DevicePostureType {
-    "no-fold",
-    "laptop",
-    "flat",
-    "tent",
-    "tablet",
-    "book"
+  "continuous",
+  "folded",
+  "folded-over"
 };
 
 [Exposed=Window, RuntimeEnabled=DevicePosture, SecureContext]

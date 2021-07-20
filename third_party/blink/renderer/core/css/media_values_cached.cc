@@ -196,7 +196,8 @@ ScreenSpanning MediaValuesCached::GetScreenSpanning() const {
   return data_.screen_spanning;
 }
 
-DevicePosture MediaValuesCached::GetDevicePosture() const {
+device::mojom::blink::DevicePostureType MediaValuesCached::GetDevicePosture()
+    const {
   return data_.device_posture;
 }
 

@@ -44,7 +44,7 @@ PASS window.cached_navigator_connection.onchange is null
 PASS window.cached_navigator_connection.ontypechange is null
 PASS window.cached_navigator_connection.saveData is false
 PASS window.cached_navigator_devicePosture.onchange is null
-PASS window.cached_navigator_devicePosture.type is 'no-fold'
+PASS window.cached_navigator_devicePosture.type is 'continuous'
 PASS window.cached_navigator_hid.onconnect is null
 PASS window.cached_navigator_hid.ondisconnect is null
 PASS window.cached_navigator_managed.onmanagedconfigurationchange is null

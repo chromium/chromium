@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_CACHED_H_
 
+#include "services/device/public/mojom/device_posture_provider.mojom-blink.h"
 #include "third_party/blink/public/common/css/forced_colors.h"
 #include "third_party/blink/public/common/css/navigation_controls.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink.h"
@@ -58,7 +59,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
     ForcedColors forced_colors = ForcedColors::kNone;
     NavigationControls navigation_controls = NavigationControls::kNone;
     ScreenSpanning screen_spanning = ScreenSpanning::kNone;
-    DevicePosture device_posture = DevicePosture::kNoFold;
+    device::mojom::blink::DevicePostureType device_posture =
+        device::mojom::blink::DevicePostureType::kContinuous;
 
     MediaValuesCachedData();
     explicit MediaValuesCachedData(Document&);
@@ -133,7 +135,7 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   ForcedColors GetForcedColors() const override;
   NavigationControls GetNavigationControls() const override;
   ScreenSpanning GetScreenSpanning() const override;
-  DevicePosture GetDevicePosture() const override;
+  device::mojom::blink::DevicePostureType GetDevicePosture() const override;
 
   void OverrideViewportDimensions(double width, double height) override;
 

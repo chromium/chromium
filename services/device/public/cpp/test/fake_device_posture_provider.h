@@ -35,7 +35,8 @@ class FakeDevicePostureProvider : public mojom::DevicePostureProvider {
   void DispatchPostureChanges();
   mojo::ReceiverSet<mojom::DevicePostureProvider> receivers_;
   mojo::RemoteSet<mojom::DevicePostureProviderClient> clients_;
-  mojom::DevicePostureType current_posture_ = mojom::DevicePostureType::kNoFold;
+  mojom::DevicePostureType current_posture_ =
+      mojom::DevicePostureType::kContinuous;
 };
 
 }  // namespace device

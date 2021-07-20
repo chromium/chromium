@@ -1394,12 +1394,9 @@
     "single-fold-horizontal",
 
     // (device-posture) media feature
-    "no-fold",
-    "laptop",
-    // flat,
-    "tent",
-    "tablet",
-    "book",
+    "continuous",
+    "folded",
+    "folded-over",
 
     // scrollbar-gutter
     // auto

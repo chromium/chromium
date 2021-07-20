@@ -7,12 +7,9 @@ module device.mojom;
 // An enum representing the posture of device, or an no type fold state.
 // Defined https://w3c.github.io/device-posture/#posture-types
 enum DevicePostureType {
-  kNoFold,
-  kLaptop,
-  kFlat,
-  kTent,
-  kTablet,
-  kBook,
+  kContinuous,
+  kFolded,
+  kFoldedOver,
 };
 
 // This interface is used to get the posture of the device from

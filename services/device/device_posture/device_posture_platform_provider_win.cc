@@ -13,7 +13,7 @@ DevicePosturePlatformProviderWin::DevicePosturePlatformProviderWin() = default;
 DevicePosturePlatformProviderWin::~DevicePosturePlatformProviderWin() = default;
 
 mojom::DevicePostureType DevicePosturePlatformProviderWin::GetDevicePosture() {
-  return mojom::DevicePostureType::kNoFold;
+  return mojom::DevicePostureType::kContinuous;
 }
 
 void DevicePosturePlatformProviderWin::Shutdown() {}

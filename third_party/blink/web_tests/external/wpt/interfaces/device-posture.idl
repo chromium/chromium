@@ -15,10 +15,7 @@ interface DevicePosture : EventTarget {
 };
 
 enum DevicePostureType {
-  "no-fold",
-  "laptop",
-  "flat",
-  "tent",
-  "tablet",
-  "book"
+  "continuous",
+  "folded",
+  "folded-over"
 };

@@ -299,9 +299,10 @@ ScreenSpanning MediaValues::CalculateScreenSpanning(LocalFrame* frame) {
   return ScreenSpanning::kNone;
 }
 
-DevicePosture MediaValues::CalculateDevicePosture(LocalFrame* frame) {
+device::mojom::blink::DevicePostureType MediaValues::CalculateDevicePosture(
+    LocalFrame* frame) {
   // TODO(darktears): Retrieve information from the host.
-  return DevicePosture::kNoFold;
+  return device::mojom::blink::DevicePostureType::kContinuous;
 }
 
 bool MediaValues::ComputeLengthImpl(double value,

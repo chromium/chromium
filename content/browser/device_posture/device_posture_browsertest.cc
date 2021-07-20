@@ -75,7 +75,7 @@ class DevicePostureBrowserTest : public ContentBrowserTest {
 IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, GetPostureDefault) {
   // This basic test will ensure that the default posture is working.
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  EXPECT_EQ("no-fold", EvalJs(shell(), "navigator.devicePosture.type"));
+  EXPECT_EQ("continuous", EvalJs(shell(), "navigator.devicePosture.type"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureChangeEventTest) {
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureChangeEventTest) {
   // event handler is properly called and that the new posture has the correct
   // value.
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "simple_page.html")));
-  EXPECT_EQ("no-fold", EvalJs(shell(), "navigator.devicePosture.type"));
+  EXPECT_EQ("continuous", EvalJs(shell(), "navigator.devicePosture.type"));
   EXPECT_EQ(true, ExecJs(shell(),
                          R"(
                            var postureReceived = new Promise(resolve => {
@@ -92,8 +92,8 @@ IN_PROC_BROWSER_TEST_F(DevicePostureBrowserTest, PostureChangeEventTest) {
                               }
                            });
                           )"));
-  set_current_posture(device::mojom::DevicePostureType::kLaptop);
-  EXPECT_EQ("laptop", EvalJs(shell(), "postureReceived"));
+  set_current_posture(device::mojom::DevicePostureType::kFolded);
+  EXPECT_EQ("folded", EvalJs(shell(), "postureReceived"));
 }
 
 }  //  namespace

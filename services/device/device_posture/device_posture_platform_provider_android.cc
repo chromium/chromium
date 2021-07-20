@@ -14,7 +14,7 @@ DevicePosturePlatformProviderAndroid::~DevicePosturePlatformProviderAndroid() =
 
 device::mojom::DevicePostureType
 DevicePosturePlatformProviderAndroid::GetDevicePosture() {
-  return device::mojom::DevicePostureType::kNoFold;
+  return device::mojom::DevicePostureType::kContinuous;
 }
 
 void DevicePosturePlatformProviderAndroid::Shutdown() {}

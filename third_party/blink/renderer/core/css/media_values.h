@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_VALUES_H_
 
+#include "services/device/public/mojom/device_posture_provider.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/css/preferred_contrast.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -24,7 +25,6 @@ enum class ColorSpaceGamut;
 enum class ForcedColors;
 enum class NavigationControls;
 enum class ScreenSpanning { kNone, kSingleFoldHorizontal, kSingleFoldVertical };
-enum class DevicePosture { kNoFold, kLaptop, kFlat, kTent, kTablet, kBook };
 
 mojom::blink::PreferredColorScheme CSSValueIDToPreferredColorScheme(
     CSSValueID id);
@@ -93,7 +93,7 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   virtual ForcedColors GetForcedColors() const = 0;
   virtual NavigationControls GetNavigationControls() const = 0;
   virtual ScreenSpanning GetScreenSpanning() const = 0;
-  virtual DevicePosture GetDevicePosture() const = 0;
+  virtual device::mojom::blink::DevicePostureType GetDevicePosture() const = 0;
 
  protected:
   static double CalculateViewportWidth(LocalFrame*);
@@ -123,7 +123,8 @@ class CORE_EXPORT MediaValues : public GarbageCollected<MediaValues> {
   static ForcedColors CalculateForcedColors(LocalFrame*);
   static NavigationControls CalculateNavigationControls(LocalFrame*);
   static ScreenSpanning CalculateScreenSpanning(LocalFrame*);
-  static DevicePosture CalculateDevicePosture(LocalFrame*);
+  static device::mojom::blink::DevicePostureType CalculateDevicePosture(
+      LocalFrame*);
 };
 
 }  // namespace blink

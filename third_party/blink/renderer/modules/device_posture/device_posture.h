@@ -46,7 +46,7 @@ class MODULES_EXPORT DevicePosture
   void EnsureServiceConnection();
 
   device::mojom::blink::DevicePostureType posture_ =
-      device::mojom::blink::DevicePostureType::kNoFold;
+      device::mojom::blink::DevicePostureType::kContinuous;
   HeapMojoRemote<device::mojom::blink::DevicePostureProvider> service_;
   HeapMojoReceiver<device::mojom::blink::DevicePostureProviderClient,
                    DevicePosture>

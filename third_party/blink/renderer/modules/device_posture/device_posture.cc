@@ -14,21 +14,13 @@ namespace {
 
 String PostureToString(device::mojom::blink::DevicePostureType posture) {
   switch (posture) {
-    case device::mojom::blink::DevicePostureType::kNoFold:
-      return "no-fold";
-    case device::mojom::blink::DevicePostureType::kLaptop:
-      return "laptop";
-    case device::mojom::blink::DevicePostureType::kFlat:
-      return "flat";
-    case device::mojom::blink::DevicePostureType::kTent:
-      return "tent";
-    case device::mojom::blink::DevicePostureType::kTablet:
-      return "tablet";
-    case device::mojom::blink::DevicePostureType::kBook:
-      return "book";
+    case device::mojom::blink::DevicePostureType::kContinuous:
+      return "continuous";
+    case device::mojom::blink::DevicePostureType::kFolded:
+      return "folded";
+    case device::mojom::blink::DevicePostureType::kFoldedOver:
+      return "folded-over";
   }
-  NOTREACHED();
-  return "no-fold";
 }
 
 }  // namespace

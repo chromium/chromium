@@ -116,9 +116,8 @@ static inline bool FeatureWithValidIdent(const String& media_feature,
 
   if (RuntimeEnabledFeatures::DevicePostureEnabled()) {
     if (media_feature == media_feature_names::kDevicePostureMediaFeature) {
-      return ident == CSSValueID::kNoFold || ident == CSSValueID::kLaptop ||
-             ident == CSSValueID::kFlat || ident == CSSValueID::kTent ||
-             ident == CSSValueID::kTablet || ident == CSSValueID::kBook;
+      return ident == CSSValueID::kContinuous || ident == CSSValueID::kFolded ||
+             ident == CSSValueID::kFoldedOver;
     }
   }
 

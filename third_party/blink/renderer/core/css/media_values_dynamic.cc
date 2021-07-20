@@ -169,7 +169,8 @@ ScreenSpanning MediaValuesDynamic::GetScreenSpanning() const {
   return CalculateScreenSpanning(frame_);
 }
 
-DevicePosture MediaValuesDynamic::GetDevicePosture() const {
+device::mojom::blink::DevicePostureType MediaValuesDynamic::GetDevicePosture()
+    const {
   return CalculateDevicePosture(frame_);
 }
 

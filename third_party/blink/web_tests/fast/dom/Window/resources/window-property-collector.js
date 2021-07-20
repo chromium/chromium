@@ -119,7 +119,7 @@ function emitExpectedResult(path, expected)
         expected = "window." + propertyPath;
         break;
     case "navigator.devicePosture.type":
-        expected = "'no-fold'";
+        expected = "'continuous'";
         break;
     case "navigator.mediaSession.playbackState":
         expected = "'none'";
