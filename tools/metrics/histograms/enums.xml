@@ -47561,6 +47561,7 @@ from previous Chrome versions.
   <int value="-1108636917" label="DetectedSourceLanguageOption:enabled"/>
   <int value="-1107762575" label="enable-data-reduction-proxy-config-client"/>
   <int value="-1107103335" label="FsNosymfollow:enabled"/>
+  <int value="-1105686819" label="ShareUsageRanking:enabled"/>
   <int value="-1105637876" label="FilteringScrollPrediction:enabled"/>
   <int value="-1104914981" label="frame-throttle-fps"/>
   <int value="-1103221768" label="DefaultChatWebApp:enabled"/>
@@ -47687,6 +47688,7 @@ from previous Chrome versions.
   <int value="-998731974" label="WinUseBrowserSpellChecker:enabled"/>
   <int value="-998310305" label="OmniboxContextMenuShowFullUrls:disabled"/>
   <int value="-998255750" label="ExperimentalKeyboardLockUI:enabled"/>
+  <int value="-997491100" label="ShareUsageRanking:disabled"/>
   <int value="-996868396" label="SmartDimNewMlAgent:enabled"/>
   <int value="-996673716" label="enable-web-app-frame"/>
   <int value="-994558985" label="EnableNotificationIndicator:disabled"/>
