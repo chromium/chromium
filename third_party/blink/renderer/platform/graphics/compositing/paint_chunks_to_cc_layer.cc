@@ -920,8 +920,12 @@ static void UpdateNonFastScrollableRegion(
   // composited scrollers.
   if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
     if (const auto* scroll_translation = hit_test_data.scroll_translation) {
-      const auto& scroll_node = *scroll_translation->ScrollNode();
-      auto scroll_element_id = scroll_node.GetCompositorElementId();
+      const auto* scroll_node = scroll_translation->ScrollNode();
+      DCHECK(scroll_node);
+      // TODO(crbug.com/1222613): Remove this when we fix the root cause.
+      if (!scroll_node)
+        return;
+      auto scroll_element_id = scroll_node->GetCompositorElementId();
       if (layer.element_id() == scroll_element_id)
         return;
     }
