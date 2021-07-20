@@ -387,7 +387,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
                       extractable, usages, &key));
 
   // Pass: JWK alg missing but input algorithm specified: use input value
-  dict.Remove("alg", nullptr);
+  dict.RemoveKey("alg");
   EXPECT_EQ(Status::Success(),
             ImportKeyJwkFromDict(dict,
                                  CreateHmacImportAlgorithmNoLength(

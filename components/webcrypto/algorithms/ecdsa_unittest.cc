@@ -114,7 +114,7 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // public key (WebCrypto doesn't provide a mechanism for importing a public
   // key given a private key).
   std::unique_ptr<base::DictionaryValue> key_jwk_copy(key_jwk->DeepCopy());
-  key_jwk_copy->Remove("d", nullptr);
+  key_jwk_copy->RemoveKey("d");
   blink::WebCryptoKey public_key;
   ASSERT_EQ(
       Status::Success(),
