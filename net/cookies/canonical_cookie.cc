@@ -477,12 +477,17 @@ std::unique_ptr<CanonicalCookie> CanonicalCookie::Create(
   if (parsed_cookie.IsSameParty())
     base::UmaHistogramBoolean("Cookie.IsSamePartyValid", is_same_party_valid);
 
-  if (!IsCookiePartitionedValid(parsed_cookie)) {
+  bool is_partitioned_valid = IsCookiePartitionedValid(parsed_cookie);
+  if (!is_partitioned_valid) {
     status->AddExclusionReason(
         CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED);
   }
-  // TODO(crbug.com/1225444) Log histogram metric for seeing how often
-  // Partitioned attribute is used correctly.
+
+  // Collect metrics on whether usage of the Partitioned attribute is correct.
+  if (parsed_cookie.IsPartitioned()) {
+    base::UmaHistogramBoolean("Cookie.IsPartitionedValid",
+                              is_partitioned_valid);
+  }
 
   if (!status->IsInclude())
     return nullptr;
