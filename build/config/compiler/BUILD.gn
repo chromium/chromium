@@ -1217,6 +1217,7 @@ config("compiler_deterministic") {
     # we build same files with same compile flag.
     # Other paths are already given in relative, no need to normalize them.
     if (is_nacl) {
+      # TODO(https://crbug.com/1231236): Use -ffile-compilation-dir= here.
       cflags += [
         "-Xclang",
         "-fdebug-compilation-dir",
