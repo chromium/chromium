@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/android/callback_android.h"
+#include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/unguessable_token_android.h"
 #include "base/bind.h"
@@ -186,15 +187,18 @@ jboolean RenderFrameHostAndroid::IsProcessBlocked(
   return render_frame_host_->GetProcess()->IsBlocked();
 }
 
-jint RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
+ScopedJavaLocalRef<jobject>
+RenderFrameHostAndroid::PerformGetAssertionWebAuthSecurityChecks(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,
     const base::android::JavaParamRef<jstring>& relying_party_id,
     const base::android::JavaParamRef<jobject>& effective_origin) const {
   url::Origin origin = url::Origin::FromJavaObject(effective_origin);
-  return static_cast<int32_t>(
+  std::pair<blink::mojom::AuthenticatorStatus, bool> results =
       render_frame_host_->PerformGetAssertionWebAuthSecurityChecks(
-          ConvertJavaStringToUTF8(env, relying_party_id), origin));
+          ConvertJavaStringToUTF8(env, relying_party_id), origin);
+  return Java_RenderFrameHostImpl_createWebAuthSecurityChecksResults(
+      env, static_cast<jint>(results.first), results.second);
 }
 
 jint RenderFrameHostAndroid::PerformMakeCredentialWebAuthSecurityChecks(

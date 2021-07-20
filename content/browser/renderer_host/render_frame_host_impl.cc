@@ -11536,27 +11536,23 @@ void RenderFrameHostImpl::UpdateIsAdSubframe(bool is_ad_subframe) {
   frame_tree_node_->SetIsAdSubframe(is_ad_subframe);
 }
 
-blink::mojom::AuthenticatorStatus
+std::pair<blink::mojom::AuthenticatorStatus, bool>
 RenderFrameHostImpl::PerformGetAssertionWebAuthSecurityChecks(
     const std::string& relying_party_id,
     const url::Origin& effective_origin) {
-  bool is_cross_origin;
+  bool is_cross_origin = true;  // Will be reset in ValidateAncestorOrigins().
   blink::mojom::AuthenticatorStatus status =
       GetWebAuthRequestSecurityChecker()->ValidateAncestorOrigins(
           effective_origin,
           WebAuthRequestSecurityChecker::RequestType::kGetAssertion,
           &is_cross_origin);
   if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    return status;
+    return std::make_pair(status, is_cross_origin);
   }
 
   status = GetWebAuthRequestSecurityChecker()->ValidateDomainAndRelyingPartyID(
       effective_origin, relying_party_id);
-  if (status != blink::mojom::AuthenticatorStatus::SUCCESS) {
-    return status;
-  }
-
-  return blink::mojom::AuthenticatorStatus::SUCCESS;
+  return std::make_pair(status, is_cross_origin);
 }
 
 blink::mojom::AuthenticatorStatus

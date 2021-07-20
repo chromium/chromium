@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_RENDER_FRAME_HOST_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -879,7 +880,11 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // from the browser process, this may be different.
   // |is_payment_credential_creation| indicates whether MakeCredential is making
   // a payment credential.
-  virtual blink::mojom::AuthenticatorStatus
+  // |PerformGetAssertionWebAuthSecurityChecks| returns a security check result
+  // and a boolean representing whether the given origin is cross-origin with
+  // any frame in this frame's ancestor chain. This extra cross-origin bit is
+  // relevant in case callers need it for crypto signature.
+  virtual std::pair<blink::mojom::AuthenticatorStatus, bool>
   PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin) = 0;

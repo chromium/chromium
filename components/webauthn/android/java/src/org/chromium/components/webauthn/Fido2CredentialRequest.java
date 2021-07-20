@@ -32,6 +32,7 @@ import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.net.GURLUtils;
@@ -129,7 +130,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
     }
 
     public void handleGetAssertionRequest(PublicKeyCredentialRequestOptions options,
-            RenderFrameHost frameHost, Origin origin, GetAssertionResponseCallback callback,
+            RenderFrameHost frameHost, Origin callerOrigin, GetAssertionResponseCallback callback,
             FidoErrorResponseCallback errorCallback) {
         assert mGetAssertionCallback == null && mErrorCallback == null;
         mGetAssertionCallback = callback;
@@ -146,10 +147,11 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
             return;
         }
 
-        int securityCheck =
-                frameHost.performGetAssertionWebAuthSecurityChecks(options.relyingPartyId, origin);
-        if (securityCheck != AuthenticatorStatus.SUCCESS) {
-            returnErrorAndResetCallback(securityCheck);
+        WebAuthSecurityChecksResults webAuthSecurityChecksResults =
+                frameHost.performGetAssertionWebAuthSecurityChecks(
+                        options.relyingPartyId, callerOrigin);
+        if (webAuthSecurityChecksResults.securityCheckResult != AuthenticatorStatus.SUCCESS) {
+            returnErrorAndResetCallback(webAuthSecurityChecksResults.securityCheckResult);
             return;
         }
 
@@ -164,7 +166,7 @@ public class Fido2CredentialRequest implements WindowAndroid.IntentCallback {
         BrowserPublicKeyCredentialRequestOptions browserRequestOptions =
                 new BrowserPublicKeyCredentialRequestOptions.Builder()
                         .setPublicKeyCredentialRequestOptions(getAssertionOptions)
-                        .setOrigin(Uri.parse(convertOriginToString(origin)))
+                        .setOrigin(Uri.parse(convertOriginToString(callerOrigin)))
                         .build();
 
         Task<PendingIntent> result = mFido2ApiClient.getSignPendingIntent(browserRequestOptions);

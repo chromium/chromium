@@ -392,7 +392,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   bool Reload() override;
   bool IsDOMContentLoaded() override;
   void UpdateIsAdSubframe(bool is_ad_subframe) override;
-  blink::mojom::AuthenticatorStatus PerformGetAssertionWebAuthSecurityChecks(
+  std::pair<blink::mojom::AuthenticatorStatus, bool>
+  PerformGetAssertionWebAuthSecurityChecks(
       const std::string& relying_party_id,
       const url::Origin& effective_origin) override;
   blink::mojom::AuthenticatorStatus PerformMakeCredentialWebAuthSecurityChecks(

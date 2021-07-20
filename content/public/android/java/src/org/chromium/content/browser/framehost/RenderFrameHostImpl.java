@@ -176,12 +176,21 @@ public class RenderFrameHostImpl implements RenderFrameHost {
     }
 
     @Override
-    public int performGetAssertionWebAuthSecurityChecks(
+    public WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
             String relyingPartyId, Origin effectiveOrigin) {
-        if (mNativeRenderFrameHostAndroid == 0) return AuthenticatorStatus.UNKNOWN_ERROR;
+        if (mNativeRenderFrameHostAndroid == 0) {
+            return new WebAuthSecurityChecksResults(
+                    AuthenticatorStatus.UNKNOWN_ERROR, false /*unused*/);
+        }
         return RenderFrameHostImplJni.get().performGetAssertionWebAuthSecurityChecks(
                 mNativeRenderFrameHostAndroid, RenderFrameHostImpl.this, relyingPartyId,
                 effectiveOrigin);
+    }
+
+    @CalledByNative
+    private static WebAuthSecurityChecksResults createWebAuthSecurityChecksResults(
+            @AuthenticatorStatus.EnumType int securityCheckResult, boolean isCrossOrigin) {
+        return new WebAuthSecurityChecksResults(securityCheckResult, isCrossOrigin);
     }
 
     @Override
@@ -226,8 +235,9 @@ public class RenderFrameHostImpl implements RenderFrameHost {
         void terminateRendererDueToBadMessage(
                 long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller, int reason);
         boolean isProcessBlocked(long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller);
-        int performGetAssertionWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
-                RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin);
+        WebAuthSecurityChecksResults performGetAssertionWebAuthSecurityChecks(
+                long nativeRenderFrameHostAndroid, RenderFrameHostImpl caller,
+                String relyingPartyId, Origin effectiveOrigin);
         int performMakeCredentialWebAuthSecurityChecks(long nativeRenderFrameHostAndroid,
                 RenderFrameHostImpl caller, String relyingPartyId, Origin effectiveOrigin,
                 boolean isPaymentCredentialCreation);
