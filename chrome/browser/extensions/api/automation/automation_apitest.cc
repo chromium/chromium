@@ -377,7 +377,13 @@ IN_PROC_BROWSER_TEST_F(AutomationApiTest, EnumValidity) {
 
 #if defined(USE_AURA)
 
-IN_PROC_BROWSER_TEST_F(AutomationApiTest, IframeNav) {
+// TODO(http://crbug.com/1230863): flaky on ChromeOS.
+#if defined(OS_CHROMEOS)
+#define MAYBE_IframeNav DISABLED_IframeNav
+#else
+#define MAYBE_IframeNav IframeNav
+#endif
+IN_PROC_BROWSER_TEST_F(AutomationApiTest, MAYBE_IframeNav) {
   StartEmbeddedTestServer();
   ASSERT_TRUE(RunExtensionTest("automation/tests/desktop",
                                {.page_url = "iframenav.html"}))
