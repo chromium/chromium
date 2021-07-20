@@ -1223,6 +1223,14 @@ IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
   EXPECT_TRUE(web_app_menu_button_->HasFocus());
 }
 
+// Tests the app icon and title are not shown.
+IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest, IconAndTitleNotShown) {
+  SetUpWebApp();
+  auto* browser_view = BrowserView::GetBrowserViewForBrowser(app_browser_);
+  EXPECT_FALSE(browser_view->ShouldShowWindowIcon());
+  EXPECT_FALSE(browser_view->ShouldShowWindowTitle());
+}
+
 // Tests that the custom tab bar is focusable from the keyboard.
 IN_PROC_BROWSER_TEST_P(WebAppNonClientFrameViewAshTest,
                        CustomTabBarIsFocusable) {
