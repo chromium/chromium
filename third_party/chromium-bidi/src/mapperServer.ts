@@ -27,7 +27,7 @@ export class MapperServer implements IServer {
   private _handlers: ((messageObj: any) => void)[] = new Array();
   private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
   private _ws: WebSocket;
-  private _mapperSessionId;
+  private _mapperSessionId: string;
   private _launchedPromiseResolve: () => void;
   private _launchedPromise: Promise<void> = new Promise((resolve) => {
     this._launchedPromiseResolve = resolve;
@@ -50,23 +50,22 @@ export class MapperServer implements IServer {
     return this._sendBidiMessage(messageObj);
   }
 
-  private _establishCdpSession: (cdpUrl: string) => Promise<void> =
-    async function (cdpUrl: string) {
-      return new Promise((resolve) => {
-        debugInternal('Establishing session with cdpUrl: ', cdpUrl);
+  private async _establishCdpSession(cdpUrl: string): Promise<void> {
+    return new Promise((resolve) => {
+      debugInternal('Establishing session with cdpUrl: ', cdpUrl);
 
-        this._ws = new WebSocket(cdpUrl);
+      this._ws = new WebSocket(cdpUrl);
 
-        this._ws.on('message', (dataStr: string) => {
-          this._onCdpMessage(dataStr);
-        });
-
-        this._ws.on('open', () => {
-          debugInternal('Session established.');
-          resolve();
-        });
+      this._ws.on('message', (dataStr: string) => {
+        this._onCdpMessage(dataStr);
       });
-    };
+
+      this._ws.on('open', () => {
+        debugInternal('Session established.');
+        resolve();
+      });
+    });
+  }
 
   private _sendBidiMessage(bidiMessageObj: any): Promise<void> {
     return this._sendCdpCommand({
@@ -106,7 +105,7 @@ export class MapperServer implements IServer {
       if (data.method === 'Runtime.consoleAPICalled') {
         debugLog.apply(
           null,
-          data.params.args.map((arg) => arg.value)
+          data.params.args.map((arg: any) => arg.value)
         );
         return;
       }

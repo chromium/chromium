@@ -39,7 +39,7 @@ export class ServerBinding {
     this._sendMessage = sendMessage;
   }
 
-  public set onmessage(messageHandler: (string) => void) {
+  public set onmessage(messageHandler: (message: string) => void) {
     this._messageHandlerSetter(messageHandler);
   }
 

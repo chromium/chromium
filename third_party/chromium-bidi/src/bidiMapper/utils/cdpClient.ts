@@ -13,50 +13,150 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { ServerBinding, AbstractServer } from './iServer';
 import { log } from './log';
 const logCdp = log('cdp');
 
-// TODO: Remove. This is a quick test to verify we can import a node module.
-import { version } from 'devtools-protocol/json/browser_protocol.json';
-logCdp(`Using CDP version: ${version}`);
+import { EventEmitter } from './events';
 
-export class CdpClient extends AbstractServer {
-  private _commandCallbacks: Map<number, (messageObj: any) => void> = new Map();
+import * as browserProtocol from 'devtools-protocol/json/browser_protocol.json';
+import * as jsProtocol from 'devtools-protocol/json/js_protocol.json';
+import ProtocolProxyApi from 'devtools-protocol/types/protocol-proxy-api';
 
-  constructor(cdpBinding: ServerBinding) {
-    super(cdpBinding);
+export type CdpClient = EventEmitter & ProtocolProxyApi.ProtocolApi;
 
-    this._binding.onmessage = (messageStr: string) => {
-      this._onCdpMessage(messageStr);
-    };
+export interface CdpTransport {
+  sendMessage(message: string): void;
+  onmessage?: (message: string) => void;
+}
+
+export interface CdpError {
+  code: number;
+  message: string;
+}
+
+interface CdpMessage {
+  id?: number;
+  result?: {};
+  error?: {};
+  method?: string;
+  params?: {};
+}
+
+interface CdpCallbacks {
+  resolve: (messageObj: {}) => void;
+  reject: (errorObj: {}) => void;
+}
+
+const mergedProtocol = [...browserProtocol.domains, ...jsProtocol.domains];
+
+// Generate classes for each Domain and store constructors here.
+const domainConstructorMap = new Map<
+  string,
+  { new (client: CdpClientImpl): DomainBase }
+>();
+
+// Base class for all domains.
+class DomainBase extends EventEmitter {
+  constructor(private _client: CdpClientImpl) {
+    super();
+  }
+}
+
+for (let domainInfo of mergedProtocol) {
+  // Dynamically create a subclass for this domain. Note: This class definition is scoped
+  // to this for-loop, so there will be a unique ThisDomain definition for each domain.
+  class ThisDomain extends DomainBase {
+    constructor(_client: CdpClientImpl) {
+      super(_client);
+    }
+  }
+
+  // Add methods to our Domain for each available command.
+  for (let command of domainInfo.commands) {
+    Object.defineProperty(ThisDomain.prototype, command.name, {
+      value: async function (params: {}) {
+        return await this._client.sendCommand(
+          `${domainInfo.domain}.${command.name}`,
+          params
+        );
+      },
+    });
+  }
+
+  domainConstructorMap.set(domainInfo.domain, ThisDomain);
+}
+
+class CdpClientImpl extends EventEmitter {
+  private _commandCallbacks: Map<number, CdpCallbacks>;
+  private _domains: Map<string, DomainBase>;
+  private _nextId: number;
+
+  constructor(private _transport: CdpTransport) {
+    super();
+
+    this._commandCallbacks = new Map();
+    this._nextId = 0;
+    this._transport.onmessage = this._onCdpMessage.bind(this);
+
+    this._domains = new Map();
+    for (const [domainName, ctor] of domainConstructorMap.entries()) {
+      this._domains.set(domainName, new ctor(this));
+      Object.defineProperty(this, domainName, {
+        get(this: CdpClientImpl) {
+          return this._domains.get(domainName);
+        },
+      });
+    }
   }
 
   /**
    * Returns command promise, which will be resolved wth the command result after receiving CDP result.
-   * @param messageObj Message object to be sent. Will be automatically enriched with `id`.
+   * @param method Name of the CDP command to call.
+   * @param params Parameters to pass to the CDP command.
    */
-  sendMessage(messageObj: any): Promise<any> {
-    return new Promise((resolve) => {
-      const id = this._commandCallbacks.size;
-      this._commandCallbacks.set(id, resolve);
-      messageObj.id = id;
+  sendCommand(method: string, params: {}): Promise<{}> {
+    return new Promise((resolve, reject) => {
+      const id = this._nextId++;
+      this._commandCallbacks.set(id, { resolve, reject });
+      const messageObj = { id, method, params };
       const messageStr = JSON.stringify(messageObj);
 
       logCdp('sent > ' + messageStr);
-      this._binding.sendMessage(messageStr);
+      this._transport.sendMessage(messageStr);
     });
   }
 
   private _onCdpMessage(messageStr: string): void {
     logCdp('received < ' + messageStr);
 
-    const messageObj = JSON.parse(messageStr);
-    if (this._commandCallbacks.has(messageObj.id)) {
-      this._commandCallbacks.get(messageObj.id)(messageObj.result);
-      return;
-    } else {
-      this.notifySubscribersOnMessage(messageObj);
+    const messageObj: CdpMessage = JSON.parse(messageStr);
+    if (messageObj.id !== undefined) {
+      // Handle command response.
+      const callbacks = this._commandCallbacks.get(messageObj.id);
+      if (callbacks) {
+        if (messageObj.result) {
+          callbacks.resolve(messageObj.result);
+        } else if (messageObj.error) {
+          callbacks.reject(messageObj.error);
+        }
+      }
+    } else if (messageObj.method) {
+      // Emit a generic "event" event from here that includes the method name. Useful as a catch-all.
+      this.emit('event', messageObj.method, messageObj.params);
+
+      // Next, get the correct domain instance and tell it to emit the strongly typed event.
+      const [domainName, eventName] = messageObj.method.split('.');
+      this._domains.get(domainName).emit(eventName, messageObj.params);
     }
   }
+}
+
+/**
+ * Creates a new CDP client object that communicates with the browser using a given
+ * transport mechanism.
+ * @param transport A transport object that will be used to send and receive raw CDP messages.
+ * @returns A connected CDP client object.
+ */
+export function connectCdp(transport: CdpTransport) {
+  return new CdpClientImpl(transport) as unknown as CdpClient;
 }

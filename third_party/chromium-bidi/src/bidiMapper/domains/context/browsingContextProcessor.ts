@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 import { log } from '../../utils/log';
-import { IServer } from '../../utils/iServer';
+import { CdpClient } from '../../utils/cdpClient';
 import { Context } from './context';
+import Protocol from 'devtools-protocol';
 const logContext = log('context');
 
 export class BrowsingContextProcessor {
@@ -23,19 +24,19 @@ export class BrowsingContextProcessor {
   private _sessionToTargets: Map<string, Context> = new Map();
 
   // Set from outside.
-  private _cdpServer: IServer;
+  private _cdpClient: CdpClient;
   private _selfTargetId: string;
 
   private _onContextCreated: (t: Context) => Promise<void>;
   private _onContextDestroyed: (t: Context) => Promise<void>;
 
   constructor(
-    cdpServer: IServer,
+    cdpClient: CdpClient,
     selfTargetId: string,
     onContextCreated: (t: Context) => Promise<void>,
     onContextDestroyed: (t: Context) => Promise<void>
   ) {
-    this._cdpServer = cdpServer;
+    this._cdpClient = cdpClient;
     this._selfTargetId = selfTargetId;
     this._onContextCreated = onContextCreated;
     this._onContextDestroyed = onContextDestroyed;
@@ -57,16 +58,16 @@ export class BrowsingContextProcessor {
     return this._contexts.has(contextId);
   }
 
-  handleAttachedToTargetEvent(eventData: any) {
-    logContext('AttachedToTarget event recevied', eventData);
+  handleAttachedToTargetEvent(params: Protocol.Target.AttachedToTargetEvent) {
+    logContext('AttachedToTarget event received', params);
 
-    const targetInfo: TargetInfo = eventData.params.targetInfo;
+    const targetInfo = params.targetInfo;
     if (!this._isValidTarget(targetInfo)) return;
 
     const context = this._getOrCreateContext(targetInfo.targetId);
     context._updateTargetInfo(targetInfo);
 
-    const sessionId = eventData.params.sessionId;
+    const sessionId = params.sessionId;
     if (sessionId) this._sessionToTargets.delete(sessionId);
 
     this._sessionToTargets.set(sessionId, context);
@@ -76,10 +77,10 @@ export class BrowsingContextProcessor {
     this._onContextCreated(context);
   }
 
-  handleInfoChangedEvent(eventData: any) {
-    logContext('infoChangedEvent event recevied', eventData);
+  handleInfoChangedEvent(params: Protocol.Target.TargetInfoChangedEvent) {
+    logContext('infoChangedEvent event recevied', params);
 
-    const targetInfo: TargetInfo = eventData.params.targetInfo;
+    const targetInfo = params.targetInfo;
     if (!this._isValidTarget(targetInfo)) return;
 
     const context = this._getOrCreateContext(targetInfo.targetId);
@@ -87,10 +88,12 @@ export class BrowsingContextProcessor {
   }
 
   // { "method": "Target.detachedFromTarget", "params": { "sessionId": "7EFBFB2A4942A8989B3EADC561BC46E9", "targetId": "19416886405CBA4E03DBB59FA67FF4E8" } }
-  async handleDetachedFromTargetEvent(eventData: any) {
-    logContext('detachedFromTarget event recevied', eventData);
+  async handleDetachedFromTargetEvent(
+    params: Protocol.Target.DetachedFromTargetEvent
+  ) {
+    logContext('detachedFromTarget event recevied', params);
 
-    const targetId = eventData.params.targetId;
+    const targetId = params.targetId;
     if (!this._isKnownContext(targetId)) return;
 
     const context = this._getOrCreateContext(targetId);
@@ -98,18 +101,17 @@ export class BrowsingContextProcessor {
 
     if (context._sessionId) this._sessionToTargets.delete(context._sessionId);
 
-    delete this._contexts[context._contextId];
+    this._contexts.delete(context._contextId);
   }
 
   async process_createContext(params: any): Promise<any> {
-    const { targetId } = await this._cdpServer.sendMessage({
-      method: 'Target.createTarget',
-      params: { url: params.url },
+    const { targetId } = await this._cdpClient.Target.createTarget({
+      url: params.url,
     });
     return this._getOrCreateContext(targetId).toBidi();
   }
 
-  _isValidTarget = (target: TargetInfo) => {
+  _isValidTarget = (target: Protocol.Target.TargetInfo) => {
     if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;

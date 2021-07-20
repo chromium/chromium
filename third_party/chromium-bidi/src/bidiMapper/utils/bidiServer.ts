@@ -54,7 +54,11 @@ export class BidiServer extends AbstractServer {
     this.notifySubscribersOnMessage(messageObj);
   }
 
-  private _respondWithError(plainCommandData, errorCode, errorMessage) {
+  private _respondWithError(
+    plainCommandData: any,
+    errorCode: string,
+    errorMessage: string
+  ) {
     const errorResponse = this._getErrorResponse(
       plainCommandData,
       errorCode,
@@ -63,7 +67,7 @@ export class BidiServer extends AbstractServer {
     this.sendMessage(errorResponse);
   }
 
-  private _getJsonType(value) {
+  private _getJsonType(value: any) {
     if (value === null) {
       return 'null';
     }
@@ -73,7 +77,11 @@ export class BidiServer extends AbstractServer {
     return typeof value;
   }
 
-  private _getErrorResponse(messageStr, errorCode, errorMessage) {
+  private _getErrorResponse(
+    messageStr: string,
+    errorCode: string,
+    errorMessage: string
+  ) {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let messageId = undefined;

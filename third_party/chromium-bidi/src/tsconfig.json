@@ -10,7 +10,8 @@
     "module": "ESNext",
     "declaration": true,
     "declarationMap": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "noImplicitAny": true
   },
   "files": ["index.ts"]
 }

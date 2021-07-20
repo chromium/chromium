@@ -25,6 +25,8 @@
   "devDependencies": {
     "@rollup/plugin-json": "^4.1.0",
     "@rollup/plugin-typescript": "^8.2.1",
+    "@types/argparse": "^2.0.10",
+    "@types/debug": "^4.1.6",
     "@types/websocket": "^1.0.2",
     "@types/ws": "^7.4.4",
     "devtools-protocol": "^0.0.900357",

@@ -15,7 +15,7 @@
  */
 import { CommandProcessor } from './commandProcessor';
 
-import { CdpClient } from './utils/cdpClient';
+import { CdpClient, CdpTransport, connectCdp } from './utils/cdpClient';
 import { BidiServer } from './utils/bidiServer';
 import { ServerBinding } from './utils/iServer';
 
@@ -23,28 +23,24 @@ import { log } from './utils/log';
 const logSystem = log('system');
 
 declare global {
-  interface Window extends GlobalObj {}
-
-  interface GlobalObj {
+  interface Window {
     //`window.cdp` is exposed by `Target.exposeDevToolsProtocol` from the server side.
     // https://chromedevtools.github.io/devtools-protocol/tot/Target/#method-exposeDevToolsProtocol
     cdp: {
-      send: (string) => void;
-      onmessage: (string) => void;
+      send: (message: string) => void;
+      onmessage: (message: string) => void;
     };
 
     // `window.sendBidiResponse` is exposed by `Runtime.addBinding` from the server side.
-    sendBidiResponse: (string) => void;
+    sendBidiResponse: (response: string) => void;
 
     // `window.onBidiMessage` is called via `Runtime.evaluate` from the server side.
-    onBidiMessage: (string) => void;
+    onBidiMessage: (message: string) => void;
 
     // `window.setSelfTargetId` is called via `Runtime.evaluate` from the server side.
-    setSelfTargetId: (string) => void;
+    setSelfTargetId: (targetId: string) => void;
   }
 }
-
-const globalObj = window as GlobalObj;
 
 // Initiate `setSelfTargetId` as soon as possible to prevent race condition.
 const _waitSelfTargetIdPromise = _waitSelfTargetId();
@@ -53,41 +49,51 @@ const _waitSelfTargetIdPromise = _waitSelfTargetId();
   window.document.documentElement.innerHTML = `<h1>Bidi mapper runs here!</h1><h2>Don't close.</h2>`;
   window.document.title = 'BiDi Mapper';
 
-  const cdpServer = _createCdpServer();
+  const cdpClient = _createCdpClient();
   const bidiServer = _createBidiServer();
 
   // Needed to filter out info related to BiDi target.
   const selfTargetId = await _waitSelfTargetIdPromise;
 
   // Needed to get events about new targets.
-  await _prepareCdp(cdpServer);
+  await _prepareCdp(cdpClient);
 
-  CommandProcessor.run(cdpServer, bidiServer, selfTargetId);
+  CommandProcessor.run(cdpClient, bidiServer, selfTargetId);
 
   logSystem('launched');
 
   bidiServer.sendMessage('launched');
 })();
 
-function _createCdpServer() {
-  const cdpBinding = new ServerBinding(
-    (message) => {
-      globalObj.cdp.send(message);
-    },
-    (handler) => {
-      globalObj.cdp.onmessage = handler;
+function _createCdpClient() {
+  // A CdpTransport implementation that uses the window.cdp bindings
+  // injected by Target.exposeDevToolsProtocol.
+  class WindowCdpTransport implements CdpTransport {
+    onmessage?: (message: string) => void;
+
+    constructor() {
+      window.cdp.onmessage = (message: string) => {
+        if (this.onmessage) {
+          this.onmessage.call(null, message);
+        }
+      };
     }
-  );
-  return new CdpClient(cdpBinding);
+
+    sendMessage(message: string): void {
+      window.cdp.send(message);
+    }
+  }
+
+  return connectCdp(new WindowCdpTransport());
 }
 
 function _createBidiServer() {
   const bidiBinding = new ServerBinding(
     (message) => {
-      globalObj.sendBidiResponse(message);
+      window.sendBidiResponse(message);
     },
     (handler) => {
-      globalObj.onBidiMessage = handler;
+      window.onBidiMessage = handler;
     }
   );
   return new BidiServer(bidiBinding);
@@ -96,27 +102,21 @@ function _createBidiServer() {
 // Needed to filter out info related to BiDi target.
 async function _waitSelfTargetId(): Promise<string> {
   return await new Promise((resolve) => {
-    globalObj.setSelfTargetId = function (targetId) {
+    window.setSelfTargetId = function (targetId) {
       logSystem('current target ID: ' + targetId);
       resolve(targetId);
     };
   });
 }
 
-async function _prepareCdp(cdpServer) {
+async function _prepareCdp(cdpClient: CdpClient) {
   // Needed to get events about new targets.
-  await cdpServer.sendMessage({
-    method: 'Target.setDiscoverTargets',
-    params: { discover: true },
-  });
+  await cdpClient.Target.setDiscoverTargets({ discover: true });
 
   // Needed to automatically attach to new targets.
-  await cdpServer.sendMessage({
-    method: 'Target.setAutoAttach',
-    params: {
-      autoAttach: true,
-      waitForDebuggerOnStart: false,
-      flatten: true,
-    },
+  await cdpClient.Target.setAutoAttach({
+    autoAttach: true,
+    waitForDebuggerOnStart: false,
+    flatten: true,
   });
 }

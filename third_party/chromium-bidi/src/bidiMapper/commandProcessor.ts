@@ -14,18 +14,26 @@
  * limitations under the License.
  */
 import { IServer } from './utils/iServer';
+import { CdpClient } from './utils/cdpClient';
 import { BrowsingContextProcessor } from './domains/context/browsingContextProcessor';
 import { Context } from './domains/context/context';
+import { Protocol } from 'devtools-protocol';
+
+interface BidiCommandMessage {
+  id: number;
+  method: string;
+  params?: any;
+}
 
 export class CommandProcessor {
-  private _cdpServer: IServer;
+  private _cdpClient: CdpClient;
   private _bidiServer: IServer;
   private _selfTargetId: string;
   private _contextProcessor: BrowsingContextProcessor;
 
-  static run(cdpServer: IServer, bidiServer: IServer, selfTargetId: string) {
+  static run(cdpClient: CdpClient, bidiServer: IServer, selfTargetId: string) {
     const commandProcessor = new CommandProcessor(
-      cdpServer,
+      cdpClient,
       bidiServer,
       selfTargetId
     );
@@ -34,18 +42,18 @@ export class CommandProcessor {
   }
 
   private constructor(
-    cdpServer: IServer,
+    cdpClient: CdpClient,
     bidiServer: IServer,
     selfTargetId: string
   ) {
     this._bidiServer = bidiServer;
-    this._cdpServer = cdpServer;
+    this._cdpClient = cdpClient;
     this._selfTargetId = selfTargetId;
   }
 
   private run() {
     this._contextProcessor = new BrowsingContextProcessor(
-      this._cdpServer,
+      this._cdpClient,
       this._selfTargetId,
       (t: Context) => {
         return this._onContextCreated(t);
@@ -55,21 +63,32 @@ export class CommandProcessor {
       }
     );
 
-    this._cdpServer.setOnMessage((messageObj) => {
-      return this._onCdpMessage(messageObj);
+    this._cdpClient.Target.on('attachedToTarget', (params) => {
+      this._contextProcessor.handleAttachedToTargetEvent(params);
     });
+    this._cdpClient.Target.on('targetInfoChanged', (params) => {
+      this._contextProcessor.handleInfoChangedEvent(params);
+    });
+    this._cdpClient.Target.on('detachedFromTarget', (params) => {
+      this._contextProcessor.handleDetachedFromTargetEvent(params);
+    });
+
     this._bidiServer.setOnMessage((messageObj) => {
       return this._onBidiMessage(messageObj);
     });
   }
 
-  private _isValidTarget = (target) => {
+  private _isValidTarget = (target: Protocol.Target.TargetInfo) => {
     if (target.targetId === this._selfTargetId) return false;
     if (!target.type || target.type !== 'page') return false;
     return true;
   };
 
-  private _getErrorResponse(commandData, errorCode, errorMessage) {
+  private _getErrorResponse(
+    commandData: any,
+    errorCode: string,
+    errorMessage: string
+  ) {
     // TODO: this is bizarre per spec. We reparse the payload and
     // extract the ID, regardless of what kind of value it was.
     let commandId = undefined;
@@ -85,7 +104,11 @@ export class CommandProcessor {
     };
   }
 
-  private _respondWithError(commandData, errorCode, errorMessage) {
+  private _respondWithError(
+    commandData: any,
+    errorCode: string,
+    errorMessage: string
+  ) {
     const errorResponse = this._getErrorResponse(
       commandData,
       errorCode,
@@ -94,66 +117,46 @@ export class CommandProcessor {
     this._bidiServer.sendMessage(errorResponse);
   }
 
-  private _targetToContext = (t) => ({
-    context: t.targetId,
-    parent: t.openerId ? t.openerId : null,
-    url: t.url,
-  });
+  private _targetToContext(target: Protocol.Target.TargetInfo) {
+    return {
+      context: target.targetId,
+      parent: target.openerId ? target.openerId : null,
+      url: target.url,
+    };
+  }
 
-  private _process_browsingContext_getTree = async function (params) {
-    const cdpTargets = await this._cdpServer.sendMessage({
-      method: 'Target.getTargets',
-    });
-    const contexts = cdpTargets.targetInfos
+  private async _process_browsingContext_getTree(params: {}) {
+    const { targetInfos } = await this._cdpClient.Target.getTargets();
+    const contexts = targetInfos
       // Don't expose any information about the tab with Mapper running.
       .filter(this._isValidTarget)
       .map(this._targetToContext);
     return { contexts };
-  };
+  }
 
-  private async _process_DEBUG_Page_close(params) {
-    await this._cdpServer.sendMessage({
-      method: 'Target.closeTarget',
-      params: { targetId: params.context },
-    });
+  private async _process_DEBUG_Page_close(params: { context: string }) {
+    await this._cdpClient.Target.closeTarget({ targetId: params.context });
     return {};
   }
 
-  private _process_session_status = async function (params) {
+  private _process_session_status = async function (params: {}) {
     return { ready: true, message: 'ready' };
   };
 
-  private async _onContextCreated(context) {
+  private async _onContextCreated(context: Context) {
     await this._bidiServer.sendMessage({
       method: 'browsingContext.contextCreated',
       params: context.toBidi(),
     });
   }
-  private async _onContextDestroyed(context) {
+  private async _onContextDestroyed(context: Context) {
     await this._bidiServer.sendMessage({
       method: 'browsingContext.contextDestroyed',
       params: context.toBidi(),
     });
   }
 
-  private _onCdpMessage = function (messageObj: any) {
-    switch (messageObj.method) {
-      case 'Target.attachedToTarget':
-        this._contextProcessor.handleAttachedToTargetEvent(messageObj);
-        return Promise.resolve();
-      case 'Target.targetInfoChanged':
-        this._contextProcessor.handleInfoChangedEvent(messageObj);
-        return Promise.resolve();
-      case 'Target.detachedFromTarget':
-        this._contextProcessor.handleDetachedFromTargetEvent(messageObj);
-        return Promise.resolve();
-    }
-  };
-
-  private async _processCommand(commandData) {
-    const response: any = {};
-    response.id = commandData.id;
-
+  private async _processCommand(commandData: BidiCommandMessage) {
     switch (commandData.method) {
       case 'session.status':
         return await this._process_session_status(commandData.params);
@@ -173,19 +176,19 @@ export class CommandProcessor {
     }
   }
 
-  private _onBidiMessage = async (message) => {
-    await this._processCommand(message)
-      .then((result) => {
-        const response = {
-          id: message.id,
-          result,
-        };
+  private _onBidiMessage = async (message: BidiCommandMessage) => {
+    try {
+      const result = await this._processCommand(message);
 
-        this._bidiServer.sendMessage(response);
-      })
-      .catch((e) => {
-        console.error(e);
-        this._respondWithError(message, 'unknown error', e.message);
-      });
+      const response = {
+        id: message.id,
+        result,
+      };
+
+      this._bidiServer.sendMessage(response);
+    } catch (e) {
+      console.error(e);
+      this._respondWithError(message, 'unknown error', e.message);
+    }
   };
 }

@@ -1,5 +1,7 @@
+import { Protocol } from 'devtools-protocol';
+
 export class Context {
-  _targetInfo: TargetInfo;
+  _targetInfo: Protocol.Target.TargetInfo;
   _contextId: string;
   _sessionId: string;
 
@@ -11,11 +13,11 @@ export class Context {
     this._sessionId = sessionId;
   }
 
-  _updateTargetInfo(targetInfo: TargetInfo) {
+  _updateTargetInfo(targetInfo: Protocol.Target.TargetInfo) {
     this._targetInfo = targetInfo;
   }
 
-  _onInfoChangedEvent(targetInfo: TargetInfo) {
+  _onInfoChangedEvent(targetInfo: Protocol.Target.TargetInfo) {
     this._updateTargetInfo(targetInfo);
   }
 

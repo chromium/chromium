@@ -44,7 +44,7 @@ export class BrowserProcess {
 }
 
 export async function launchBrowser(
-  browserExecutablePath,
+  browserExecutablePath: string,
   headless: boolean
 ): Promise<BrowserProcess> {
   const tempDir = await _getTempDir();
@@ -94,7 +94,9 @@ async function _getTempDir(): Promise<string> {
   return await mkdtempAsync(profilePath);
 }
 
-async function _waitForWSEndpoint(browserProcess): Promise<string> {
+async function _waitForWSEndpoint(
+  browserProcess: childProcess.ChildProcessWithoutNullStreams
+): Promise<string> {
   // Potential errors during Chrome launch to make error message more sensible.
   const chromeLaunchErrors = [
     {
@@ -105,9 +107,7 @@ async function _waitForWSEndpoint(browserProcess): Promise<string> {
   ];
   return new Promise((resolve, reject) => {
     const rl = readline.createInterface({ input: browserProcess.stderr });
-    _addEventListener(rl, 'line', onLine);
-
-    function onLine(line) {
+    rl.on('line', (line) => {
       for (const error of chromeLaunchErrors) {
         const errorMatch = line.match(error.regex);
         if (errorMatch) {
@@ -120,11 +120,6 @@ async function _waitForWSEndpoint(browserProcess): Promise<string> {
       if (match) {
         resolve(match[1]);
       }
-    }
+    });
   });
-}
-
-function _addEventListener(emitter, eventName, handler) {
-  emitter.on(eventName, handler);
-  return { emitter, eventName, handler };
 }
